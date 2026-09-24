@@ -26,6 +26,8 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 - **Nombres décimaux** (Maths) : 6 quêtes de 8 questions générées — lire un décimal (chiffre des dixièmes, centièmes…), comparer (piège « 3,45 > 3,5 »), droite graduée au dixième, fractions décimales, × et ÷ par 10, 100, 1 000, compléter à 1. Calculs en millièmes entiers (aucune erreur d’arrondi). Le joker ouvre le tableau de numération avec la virgule marquée et des zéros grisés pour aligner.
 
+- **Lecture** (Français) : 5 textes du domaine public — *Le Corbeau et le Renard*, *La Cigale et la Fourmi*, *Le Loup et l’Agneau* (La Fontaine, texte intégral), *La chèvre de monsieur Seguin* (d’après Daudet) et *Le pari de Phileas Fogg* (d’après Jules Verne), textes adaptés. Une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue (ou une seule ligne au toucher), mots difficiles expliqués, puis 5 questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions dans `src/apps/lecture/texts.json`.
+
 ## Développer
 
 ```bash
@@ -84,4 +86,4 @@ src/
 
 ## Feuille de route
 
-- Français : lecture et compréhension (textes du domaine public)
+- Plus de textes de lecture, et de nouvelles quêtes selon les besoins de la classe

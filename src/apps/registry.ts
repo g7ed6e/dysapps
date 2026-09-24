@@ -40,7 +40,15 @@ export const APPS: AppDef[] = [
     status: 'disponible',
     component: lazy(() => import('./homophones/HomophonesApp')),
   },
-  { id: 'lecture', subject: 'francais', title: 'Lecture', description: 'Des textes classiques lus à voix haute, avec des questions.', icon: 'library', status: 'bientot' },
+  {
+    id: 'lecture',
+    subject: 'francais',
+    title: 'Lecture',
+    description: 'Fables de La Fontaine, Daudet, Jules Verne : écoute, lis à ton rythme, réponds aux questions.',
+    icon: 'library',
+    status: 'disponible',
+    component: lazy(() => import('./lecture/LectureApp')),
+  },
   {
     id: 'tables',
     subject: 'maths',

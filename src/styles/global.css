@@ -1406,3 +1406,134 @@ a.app-card:active {
   color: var(--muted);
   opacity: 0.55;
 }
+
+/* ===== Lecture ===== */
+.link-button {
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.reader-head {
+  margin-bottom: 0.8rem;
+}
+.reader-title {
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin: 0;
+}
+.reader-source {
+  color: var(--muted);
+  margin: 0;
+}
+.reader-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.2rem;
+}
+.reader-tip {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0.4rem 0 0.8rem;
+}
+.reader-text {
+  padding: 0.8rem;
+}
+.reader-paragraph + .reader-paragraph {
+  margin-top: 1rem;
+}
+.segment {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+/* Lignes alternées : aide à ne pas sauter de ligne. */
+.reader.alternate .reader-paragraph .segment:nth-child(even) {
+  background: color-mix(in srgb, var(--cyan) 16%, transparent);
+}
+.segment:hover {
+  border-color: var(--ink);
+}
+.segment.reading {
+  background: var(--yellow) !important;
+  color: #111118;
+  border-color: var(--ink);
+}
+.line-number {
+  flex-shrink: 0;
+  min-width: 1.6rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: right;
+  padding-top: 0.25em;
+  font-variant-numeric: tabular-nums;
+}
+.segment.reading .line-number {
+  color: #111118;
+}
+.glossary {
+  margin-top: 1.2rem;
+}
+.glossary h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+.glossary dl {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.glossary dt {
+  display: inline;
+  font-weight: 700;
+}
+.glossary dt::after {
+  content: '\00a0: ';
+}
+.glossary dd {
+  display: inline;
+  margin: 0;
+}
+.reread {
+  margin-bottom: 1rem;
+}
+.reread summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reread[open] .reader {
+  margin: 0.5rem 0 1rem;
+}
+.passage {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 6px solid var(--violet);
+}
+.passage p {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+}
