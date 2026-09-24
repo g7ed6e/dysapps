@@ -4,6 +4,7 @@ import { useProgress } from '../core/ProgressContext';
 import { Feedback, type FeedbackTone } from './Feedback';
 import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
+import { RichText } from './math/RichText';
 
 export interface Question {
   id: string;
@@ -17,6 +18,8 @@ export interface Question {
   aid?: ReactNode;
   /** Version à lire à voix haute quand l'énoncé contient des symboles (« 7 fois 8 »). */
   spokenPrompt?: string;
+  /** Figure qui fait partie de l'énoncé (toujours visible). */
+  figure?: ReactNode;
   /** Explication affichée une fois la question terminée. */
   explanation?: string;
 }
@@ -199,10 +202,11 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         </p>
         <div className="question-prompt">
           <h2 id="question-titre">
-            <Prompt text={question.prompt} />
+            <RichText text={question.prompt} />
           </h2>
           <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" />
         </div>
+        {question.figure && <div className="figure">{question.figure}</div>}
 
         <div className="choices" role="group" aria-label="Réponses possibles">
           {question.choices.map((choice) => {
@@ -218,7 +222,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               >
                 {isAnswer && <Icon name="check" />}
                 {isWrong && <Icon name="close" />}
-                <span>{choice}</span>
+                <span>
+                  <RichText text={choice} />
+                </span>
               </button>
             );
           })}
@@ -236,7 +242,10 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <div className="resolution">
             {question.explanation && (
               <p className="explanation">
-                <Icon name="lightbulb" /> {question.explanation}
+                <Icon name="lightbulb" />{' '}
+                <span>
+                  <RichText text={question.explanation} />
+                </span>
               </p>
             )}
             <button type="button" className="button primary" onClick={next} autoFocus>
@@ -254,20 +263,5 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         )}
       </div>
     </section>
-  );
-}
-
-/** Met en évidence le trou « … » à compléter dans l'énoncé. */
-function Prompt({ text }: { text: string }) {
-  const parts = text.split('…');
-  return (
-    <>
-      {parts.map((part, i) => (
-        <span key={i}>
-          {part}
-          {i < parts.length - 1 && <span className="blank">…</span>}
-        </span>
-      ))}
-    </>
   );
 }

@@ -50,7 +50,15 @@ export const APPS: AppDef[] = [
     status: 'disponible',
     component: lazy(() => import('./tables/TablesApp')),
   },
-  { id: 'fractions', subject: 'maths', title: 'Fractions', description: 'Parts et barres pour comprendre les fractions.', icon: 'pizza', status: 'bientot' },
+  {
+    id: 'fractions',
+    subject: 'maths',
+    title: 'Fractions',
+    description: 'Lire, comparer, fractions égales, fraction d’une quantité, droite graduée.',
+    icon: 'pizza',
+    status: 'disponible',
+    component: lazy(() => import('./fractions/FractionsApp')),
+  },
   { id: 'decimaux', subject: 'maths', title: 'Nombres décimaux', description: 'Tableau de numération et droite graduée.', icon: 'ruler', status: 'bientot' },
 ];
 
