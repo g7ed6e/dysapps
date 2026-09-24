@@ -4,6 +4,7 @@ import {
   levelFromXp,
   recordAnswer,
   recordSession,
+  sanitizeProgress,
   type Progress,
   type ProgressUpdate,
 } from './progress';
@@ -29,7 +30,7 @@ const ProgressContext = createContext<ProgressContextValue | null>(null);
 const STORAGE_KEY = 'progress';
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const [progress, setProgress] = useState<Progress>(() => loadJSON(STORAGE_KEY, EMPTY_PROGRESS));
+  const [progress, setProgress] = useState<Progress>(() => sanitizeProgress(loadJSON(STORAGE_KEY, EMPTY_PROGRESS)));
   const [celebrations, setCelebrations] = useState<Celebration[]>([]);
   // Référence synchrone pour enchaîner plusieurs évènements dans le même rendu.
   const progressRef = useRef(progress);

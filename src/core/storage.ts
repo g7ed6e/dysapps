@@ -5,7 +5,9 @@ export function loadJSON<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(PREFIX + key);
     if (raw === null) return fallback;
-    return { ...fallback, ...JSON.parse(raw) } as T;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return fallback;
+    return { ...fallback, ...parsed } as T;
   } catch {
     return fallback;
   }

@@ -9,16 +9,18 @@ interface Props {
   mood?: MascotMood;
   /** Lit automatiquement le message si l'élève a activé la lecture automatique. */
   autoSpeak?: boolean;
+  /** À changer pour relire un message identique (ex. une nouvelle question). */
+  speakKey?: string | number;
 }
 
 /** Plume, la mascotte chouette qui guide et encourage l'élève. */
-export function Mascot({ message, mood = 'content', autoSpeak = true }: Props) {
+export function Mascot({ message, mood = 'content', autoSpeak = true, speakKey }: Props) {
   const { settings, speak } = useSettings();
 
   useEffect(() => {
     if (autoSpeak && settings.autoRead) speak(message);
-    // On ne relit que si le message change.
-  }, [message]);
+    // On ne relit que lorsque Plume dit quelque chose de nouveau.
+  }, [message, speakKey]);
 
   return (
     <div className={`mascot mascot-${mood}`}>

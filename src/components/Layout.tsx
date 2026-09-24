@@ -1,10 +1,17 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
 
 export function Layout() {
   const { progress } = useProgress();
+  const { pathname } = useLocation();
+
+  // Changer de page coupe la lecture vocale en cours.
+  useEffect(() => stopSpeaking, [pathname]);
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#contenu">

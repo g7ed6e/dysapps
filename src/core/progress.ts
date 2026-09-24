@@ -30,6 +30,46 @@ export const EMPTY_PROGRESS: Progress = {
   apps: {},
 };
 
+function nonNegativeInt(value: unknown): number {
+  const n = Math.floor(Number(value));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Corrige une progression lue depuis le stockage (champs manquants, types invalides). */
+export function sanitizeProgress(input: unknown): Progress {
+  const raw = isRecord(input) ? input : {};
+  const badges: Record<string, string> = {};
+  if (isRecord(raw.badges)) {
+    for (const [id, date] of Object.entries(raw.badges)) if (typeof date === 'string') badges[id] = date;
+  }
+  const apps: Record<string, AppStats> = {};
+  if (isRecord(raw.apps)) {
+    for (const [id, stats] of Object.entries(raw.apps)) {
+      if (!isRecord(stats)) continue;
+      apps[id] = {
+        sessions: nonNegativeInt(stats.sessions),
+        bestScore: Math.min(100, nonNegativeInt(stats.bestScore)),
+        lastPlayed: typeof stats.lastPlayed === 'string' ? stats.lastPlayed : null,
+      };
+    }
+  }
+  return {
+    xp: nonNegativeInt(raw.xp),
+    totalAnswers: nonNegativeInt(raw.totalAnswers),
+    correctAnswers: nonNegativeInt(raw.correctAnswers),
+    currentStreak: nonNegativeInt(raw.currentStreak),
+    bestStreak: nonNegativeInt(raw.bestStreak),
+    sessionsCompleted: nonNegativeInt(raw.sessionsCompleted),
+    perfectSessions: nonNegativeInt(raw.perfectSessions),
+    badges,
+    apps,
+  };
+}
+
 /** Points gagnés. Une erreur rapporte quand même un point : on valorise l'effort. */
 export const XP = {
   firstTry: 10,

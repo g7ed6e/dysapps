@@ -11,3 +11,8 @@ describe('storage', () => {
     expect(loadJSON('test', { a: 0 })).toEqual({ a: 0 });
   });
 });
+
+it('ignore une valeur stockée qui n’est pas un objet', () => {
+  localStorage.setItem('dysapps:test', '42');
+  expect(loadJSON('test', { a: 0 })).toEqual({ a: 0 });
+});

@@ -1,4 +1,4 @@
-import { EMPTY_PROGRESS, XP, levelFromXp, recordAnswer, recordSession, xpToNextLevel } from './progress';
+import { EMPTY_PROGRESS, XP, levelFromXp, recordAnswer, recordSession, sanitizeProgress, xpToNextLevel } from './progress';
 
 describe('niveaux', () => {
   it('commence au niveau 1', () => {
@@ -67,5 +67,25 @@ describe('recordSession', () => {
     const update = recordSession(EMPTY_PROGRESS, 'demo', 100);
     expect(update.xpGained).toBe(XP.sessionBonus + XP.perfectBonus);
     expect(update.newBadges.map((b) => b.id)).toEqual(expect.arrayContaining(['premiere-seance', 'sans-faute']));
+  });
+});
+
+describe('sanitizeProgress', () => {
+  it('répare des données corrompues', () => {
+    const p = sanitizeProgress({ xp: 'beaucoup', apps: null, badges: { 'premier-pas': 12, 'serie-5': '2026-01-01' }, bestStreak: -3 });
+    expect(p.xp).toBe(0);
+    expect(p.apps).toEqual({});
+    expect(p.badges).toEqual({ 'serie-5': '2026-01-01' });
+    expect(p.bestStreak).toBe(0);
+    expect(() => recordSession(p, 'demo', 50)).not.toThrow();
+  });
+
+  it('conserve des données valides', () => {
+    const valid = recordSession(recordAnswer(EMPTY_PROGRESS, true).progress, 'demo', 80, '2026-01-01').progress;
+    expect(sanitizeProgress(JSON.parse(JSON.stringify(valid)))).toEqual(valid);
+  });
+
+  it('accepte une valeur qui n’est pas un objet', () => {
+    expect(sanitizeProgress(null)).toEqual(EMPTY_PROGRESS);
   });
 });

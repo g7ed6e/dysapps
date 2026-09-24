@@ -10,7 +10,7 @@ export interface Question {
   prompt: string;
   choices: string[];
   answer: string;
-  /** Indice proposé après une première erreur. */
+  /** Indice proposé sur demande, ou après une première erreur. */
   hint?: string;
   /** Explication affichée une fois la question terminée. */
   explanation?: string;
@@ -38,13 +38,18 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   const [index, setIndex] = useState(0);
   const [attempt, setAttempt] = useState(1);
   const [wrongChoices, setWrongChoices] = useState<string[]>([]);
+  const [hintUsed, setHintUsed] = useState(false);
   const [phase, setPhase] = useState<Phase>('question');
   const [points, setPoints] = useState(0); // 1 au premier essai, 0,5 ensuite
   const [xpGained, setXpGained] = useState(0);
-  const [mascot, setMascot] = useState<{ message: string; mood: MascotMood }>({
+  const [mascot, setMascotState] = useState<{ message: string; mood: MascotMood; key: number }>({
     message: 'Prends ton temps, il n’y a pas de chrono. Tu peux écouter la consigne avec le haut-parleur.',
     mood: 'content',
+    key: 0,
   });
+  // La clé change à chaque intervention de Plume : un message identique est donc relu.
+  const setMascot = (next: { message: string; mood: MascotMood }) =>
+    setMascotState((prev) => ({ ...next, key: prev.key + 1 }));
 
   const question = questions[index];
   const finalScore = useMemo(() => Math.round((points / questions.length) * 100), [points, questions.length]);
@@ -52,11 +57,13 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   const choose = (choice: string) => {
     if (phase !== 'question' || wrongChoices.includes(choice)) return;
     const correct = choice === question.answer;
+    // Utiliser l'indice compte comme un second essai (moins de points, aucune autre pénalité).
+    const effectiveAttempt = hintUsed ? Math.max(attempt, 2) : attempt;
 
     if (correct) {
-      const update = answer(true, attempt);
+      const update = answer(true, effectiveAttempt);
       setXpGained((x) => x + update.xpGained);
-      setPoints((p) => p + (attempt === 1 ? 1 : 0.5));
+      setPoints((p) => p + (effectiveAttempt === 1 ? 1 : 0.5));
       setPhase('resolved');
       setMascot({ message: `${PRAISE[index % PRAISE.length]} +${update.xpGained} XP`, mood: 'bravo' });
       return;
@@ -71,10 +78,11 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
         message: question.hint ? `Pas tout à fait. Un indice : ${question.hint}` : 'Pas tout à fait, essaie encore !',
         mood: 'reflechit',
       });
+      if (question.hint) setHintUsed(true);
       return;
     }
 
-    const update = answer(false, attempt);
+    const update = answer(false, effectiveAttempt);
     setXpGained((x) => x + update.xpGained);
     setPhase('resolved');
     setMascot({
@@ -83,11 +91,18 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
     });
   };
 
+  const showHint = () => {
+    if (!question.hint) return;
+    setHintUsed(true);
+    setMascot({ message: `Indice : ${question.hint}`, mood: 'reflechit' });
+  };
+
   const next = () => {
     if (index + 1 < questions.length) {
       setIndex(index + 1);
       setAttempt(1);
       setWrongChoices([]);
+      setHintUsed(false);
       setPhase('question');
       setMascot({ message: 'Question suivante ! Prends ton temps.', mood: 'content' });
       return;
@@ -111,6 +126,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
     setIndex(0);
     setAttempt(1);
     setWrongChoices([]);
+    setHintUsed(false);
     setPoints(0);
     setXpGained(0);
     setPhase('question');
@@ -120,7 +136,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   if (phase === 'summary') {
     return (
       <section className="quiz" aria-labelledby="bilan-titre">
-        <Mascot message={mascot.message} mood={mascot.mood} />
+        <Mascot message={mascot.message} mood={mascot.mood} speakKey={mascot.key} />
         <div className="card summary">
           <h2 id="bilan-titre">Bilan de la séance</h2>
           <p className="summary-score">{finalScore} %</p>
@@ -148,7 +164,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
         ))}
       </ol>
 
-      <Mascot message={mascot.message} mood={mascot.mood} />
+      <Mascot message={mascot.message} mood={mascot.mood} speakKey={mascot.key} />
 
       <div className="card question">
         <p className="question-count">
@@ -178,6 +194,12 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
             );
           })}
         </div>
+
+        {phase === 'question' && question.hint && !hintUsed && (
+          <button type="button" className="button hint-button" onClick={showHint}>
+            <span aria-hidden="true">💡 </span>Un indice ?
+          </button>
+        )}
 
         {phase === 'resolved' && (
           <div className="resolution">

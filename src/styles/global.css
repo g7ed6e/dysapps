@@ -583,6 +583,11 @@ a.app-card:hover {
   background: var(--success-bg);
   color: var(--success);
 }
+.hint-button {
+  margin-top: 1rem;
+  border-color: var(--accent);
+  color: var(--text);
+}
 .resolution {
   margin-top: 1.2rem;
 }
