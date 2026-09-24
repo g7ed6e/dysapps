@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useProgress } from '../core/ProgressContext';
 import { Feedback, type FeedbackTone } from './Feedback';
@@ -13,6 +13,10 @@ export interface Question {
   answer: string;
   /** Indice (« joker ») proposé sur demande, ou après une première erreur. */
   hint?: string;
+  /** Aide visuelle (grille, droite graduée…) montrée avec le joker et après la correction. */
+  aid?: ReactNode;
+  /** Version à lire à voix haute quand l'énoncé contient des symboles (« 7 fois 8 »). */
+  spokenPrompt?: string;
   /** Explication affichée une fois la question terminée. */
   explanation?: string;
 }
@@ -64,6 +68,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   const say = (next: Omit<FeedbackState, 'key'>) => setFeedbackState((prev) => ({ ...next, key: prev.key + 1 }));
 
   const question = questions[index];
+  const hasJoker = Boolean(question.hint || question.aid);
   const finalScore = useMemo(() => Math.round((points / questions.length) * 100), [points, questions.length]);
 
   const choose = (choice: string) => {
@@ -93,10 +98,10 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
       setAttempt((a) => a + 1);
       say({
         shout: 'RATÉ…',
-        message: question.hint ? `Joker : ${question.hint}` : 'Retente ta chance.',
+        message: question.hint ? `Joker : ${question.hint}` : question.aid ? 'Joker : regarde l’aide.' : 'Retente ta chance.',
         tone: 'rate',
       });
-      if (question.hint) setHintUsed(true);
+      if (hasJoker) setHintUsed(true);
       return;
     }
 
@@ -111,9 +116,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   };
 
   const takeJoker = () => {
-    if (!question.hint) return;
+    if (!hasJoker) return;
     setHintUsed(true);
-    say({ shout: 'JOKER', message: question.hint, tone: 'indice' });
+    say({ shout: 'JOKER', message: question.hint ?? 'Regarde l’aide.', tone: 'indice' });
   };
 
   const next = () => {
@@ -196,7 +201,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <h2 id="question-titre">
             <Prompt text={question.prompt} />
           </h2>
-          <SpeakButton text={question.prompt} label="Écouter" />
+          <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" />
         </div>
 
         <div className="choices" role="group" aria-label="Réponses possibles">
@@ -219,7 +224,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           })}
         </div>
 
-        {phase === 'question' && question.hint && !hintUsed && (
+        {question.aid && (hintUsed || phase === 'resolved') && <div className="aid">{question.aid}</div>}
+
+        {phase === 'question' && hasJoker && !hintUsed && (
           <button type="button" className="button joker-button" onClick={takeJoker}>
             <Icon name="lightbulb" /> Prendre un joker
           </button>

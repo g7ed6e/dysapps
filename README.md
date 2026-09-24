@@ -20,6 +20,8 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 - **Homophones** (Français) : 13 paires réparties en 3 niveaux — Les bases (6e) : a/à, et/est, son/sont, on/ont ; Confirmé (5e) : ces/ses, ou/où, ce/se, la/là/l’a ; Expert (4e-3e) : leur/leurs, quand/quant/qu’en, peu/peut/peux, -é/-er, c’est/s’est. Quêtes de 10 phrases par niveau ou entraînement ciblé sur une paire. Le joker donne l’astuce de remplacement (« remplace par *avait* »), la correction rappelle la règle. Les phrases sont dans `src/apps/homophones/sets.json` (vérifiées par les tests : un seul trou, jamais en début de phrase, chaque réponse travaillée).
 
+- **Tables & calcul mental** (Maths) : 6 quêtes de 10 calculs générés au hasard — tables faciles (× 2, 3, 4, 5, 10), tables costaudes (× 6 à 9), divisions, compléments à 10 et à 100, doubles et moitiés, × et ÷ par 10, 100, 1 000 — et la révision d’une table complète. 4 réponses rangées dans l’ordre croissant, avec des pièges tirés des erreurs fréquentes (oubli de retenue, table voisine…). Le joker donne une astuce et une aide visuelle : grille de points groupés par 5, boîte de 10, droite par bonds ou tableau de numération. Les consignes sont lues « 7 fois 8 » et non « 7 × 8 ».
+
 ## Développer
 
 ```bash
@@ -79,4 +81,4 @@ src/
 ## Feuille de route
 
 - Français : lecture et compréhension (textes du domaine public)
-- Maths : tables et calcul mental, fractions, nombres décimaux et numération
+- Maths : fractions, nombres décimaux et numération
