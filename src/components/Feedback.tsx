@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSettings } from '../core/SettingsContext';
 import { SpeakButton } from './SpeakButton';
+import { frenchTypography } from './math/RichText';
 
 export type FeedbackTone = 'info' | 'bien' | 'rate' | 'indice';
 
@@ -13,10 +14,12 @@ interface Props {
   autoSpeak?: boolean;
   /** À changer pour relire un message identique (ex. une nouvelle question). */
   speakKey?: string | number;
+  /** Version compacte sur une ligne (bandeau de résultat). */
+  compact?: boolean;
 }
 
 /** Bulle de BD qui annonce le résultat, les combos et les indices. */
-export function Feedback({ shout, message, tone = 'info', autoSpeak = true, speakKey }: Props) {
+export function Feedback({ shout, message, tone = 'info', autoSpeak = true, speakKey, compact = false }: Props) {
   const { settings, speak } = useSettings();
   const text = shout ? `${shout} ${message}` : message;
 
@@ -26,14 +29,14 @@ export function Feedback({ shout, message, tone = 'info', autoSpeak = true, spea
   }, [text, speakKey]);
 
   return (
-    <div className={`feedback feedback-${tone}`} role="status" aria-live="polite">
+    <div className={`feedback feedback-${tone}${compact ? ' feedback-compact' : ''}`} role="status" aria-live="polite">
       {shout && (
         <p className="feedback-shout" key={speakKey}>
           {shout}
         </p>
       )}
       <div className="feedback-body">
-        <p>{message}</p>
+        <p>{frenchTypography(message)}</p>
         <SpeakButton text={text} compact />
       </div>
     </div>

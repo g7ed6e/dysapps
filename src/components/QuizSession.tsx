@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useProgress } from '../core/ProgressContext';
 import { Feedback, type FeedbackTone } from './Feedback';
@@ -33,6 +33,8 @@ interface Props {
   /** Action supplémentaire proposée à la fin (ex. revenir au choix du niveau). */
   onExit?: () => void;
   exitLabel?: string;
+  /** Contenu affiché sous la question (ex. « Revoir le texte »). */
+  after?: ReactNode;
 }
 
 type Phase = 'question' | 'resolved' | 'summary';
@@ -52,7 +54,7 @@ const COMBO_FROM = 3;
  * Moteur de quête à choix, sans chrono.
  * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
-export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour' }: Props) {
+export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', after }: Props) {
   const { answer, completeSession } = useProgress();
   const [questions, setQuestions] = useState(makeQuestions);
   const [index, setIndex] = useState(0);
@@ -62,13 +64,16 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   const [phase, setPhase] = useState<Phase>('question');
   const [points, setPoints] = useState(0); // 1 au premier essai, 0,5 avec joker ou second essai
   const [xpGained, setXpGained] = useState(0);
-  const [feedback, setFeedbackState] = useState<FeedbackState>({
-    message: 'Pas de chrono. Écoute la consigne avec le haut-parleur, et prends un joker si tu bloques.',
-    tone: 'info',
-    key: 0,
-  });
+  const [feedback, setFeedbackState] = useState<FeedbackState | null>(null);
   // La clé change à chaque message : un texte identique est donc relu.
-  const say = (next: Omit<FeedbackState, 'key'>) => setFeedbackState((prev) => ({ ...next, key: prev.key + 1 }));
+  const say = (next: Omit<FeedbackState, 'key'> | null) =>
+    setFeedbackState((prev) => (next ? { ...next, key: (prev?.key ?? 0) + 1 } : null));
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Chaque nouvelle question (et le résultat) s'affiche en haut de l'écran : pas besoin de défiler.
+  useEffect(() => {
+    sectionRef.current?.scrollIntoView?.({ block: 'start' });
+  }, [index, questions, phase === 'summary']);
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -131,7 +136,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
       setWrongChoices([]);
       setHintUsed(false);
       setPhase('question');
-      say({ message: 'Question suivante. Pas de pression.', tone: 'info' });
+      say(null);
       return;
     }
     const update = completeSession(appId, finalScore);
@@ -155,13 +160,13 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     setPoints(0);
     setXpGained(0);
     setPhase('question');
-    say({ message: 'Nouvelle partie. Prends ton temps.', tone: 'info' });
+    say(null);
   };
 
   if (phase === 'summary') {
     return (
-      <section className="quiz" aria-labelledby="bilan-titre">
-        <Feedback {...feedback} speakKey={feedback.key} />
+      <section className="quiz" aria-labelledby="bilan-titre" ref={sectionRef}>
+        {feedback && <Feedback {...feedback} speakKey={feedback.key} />}
         <div className="panel summary">
           <h2 id="bilan-titre">Résultat</h2>
           <p className="summary-score">{finalScore} %</p>
@@ -187,28 +192,27 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   }
 
   return (
-    <section className="quiz" aria-labelledby="question-titre">
+    <section className={`quiz${phase === 'resolved' ? ' has-sheet' : ''}`} aria-labelledby="question-titre" ref={sectionRef}>
       <ol className="quiz-steps" aria-label={`Question ${index + 1} sur ${questions.length}`}>
         {questions.map((q, i) => (
           <li key={q.id} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />
         ))}
       </ol>
 
-      <Feedback {...feedback} speakKey={feedback.key} />
-
       <div className="panel question">
-        <p className="question-count">
-          Question {index + 1} / {questions.length}
-        </p>
-        <div className="question-prompt">
-          <h2 id="question-titre">
-            <RichText text={question.prompt} />
-          </h2>
+        <div className="question-head">
+          <p className="question-count">
+            Question {index + 1} / {questions.length}
+          </p>
           <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" />
         </div>
+        <h2 id="question-titre" className="question-prompt">
+          <RichText text={question.prompt} />
+        </h2>
         {question.figure && <div className="figure">{question.figure}</div>}
 
-        <div className="choices" role="group" aria-label="Réponses possibles">
+        {/* Réponses courtes (nombres, fractions, petits mots) : 2 colonnes, pour tenir dans l'écran. */}
+        <div className={`choices${question.choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
           {question.choices.map((choice) => {
             const isWrong = wrongChoices.includes(choice);
             const isAnswer = phase === 'resolved' && choice === question.answer;
@@ -230,6 +234,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           })}
         </div>
 
+        {/* Raté ou joker : le message s'affiche juste sous les réponses, sans les repousser vers le bas. */}
+        {phase === 'question' && feedback && <Feedback {...feedback} speakKey={feedback.key} />}
+
         {question.aid && (hintUsed || phase === 'resolved') && <div className="aid">{question.aid}</div>}
 
         {phase === 'question' && hasJoker && !hintUsed && (
@@ -237,18 +244,27 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
             <Icon name="lightbulb" /> Prendre un joker
           </button>
         )}
+      </div>
 
-        {phase === 'resolved' && (
-          <div className="resolution">
-            {question.explanation && (
-              <p className="explanation">
-                <Icon name="lightbulb" />{' '}
-                <span>
-                  <RichText text={question.explanation} />
-                </span>
-              </p>
-            )}
-            <button type="button" className="button primary" onClick={next} autoFocus>
+      {after}
+
+      {phase === 'resolved' && feedback && (
+        // Bandeau fixé en bas de l'écran : résultat, correction et bouton pour continuer, toujours visibles.
+        <div className={`result-sheet result-${feedback.tone}`} role="region" aria-label="Résultat de la question">
+          <div className="result-sheet-inner">
+            <div className="result-sheet-body">
+              <Feedback {...feedback} speakKey={feedback.key} compact />
+              {question.explanation && (
+                <p className="explanation">
+                  <Icon name="lightbulb" />{' '}
+                  <span>
+                    <RichText text={question.explanation} />
+                  </span>
+                </p>
+              )}
+            </div>
+            {/* Hors de la zone qui défile : toujours visible. */}
+            <button type="button" className="button primary next-button" onClick={next} autoFocus>
               {index + 1 < questions.length ? (
                 <>
                   Suivante <Icon name="play" />
@@ -260,8 +276,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               )}
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

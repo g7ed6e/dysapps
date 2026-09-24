@@ -732,7 +732,7 @@ a.app-card:active {
 .celebration {
   position: fixed;
   left: 50%;
-  bottom: 1.2rem;
+  top: 5.2rem;
   transform: translateX(-50%) rotate(-1deg);
   z-index: 20;
   display: flex;
@@ -812,18 +812,21 @@ a.app-card:active {
   font-size: 0.85rem;
   margin-bottom: 0.6rem;
 }
-.question-prompt {
+.question-head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.8rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.6rem;
+}
+.question-head .question-count {
+  margin: 0;
+  white-space: nowrap;
 }
 /* L'énoncé reste dans la police de lecture choisie par l'élève. */
-.question-prompt h2 {
-  flex: 1 1 14rem;
+.question-prompt {
   font-size: 1.3rem;
-  margin: 0;
+  margin: 0 0 1.1rem;
 }
 .blank {
   display: inline-block;
@@ -1136,7 +1139,7 @@ a.app-card:active {
 
 /* ===== Quête Tables & calcul mental ===== */
 .choice,
-.question-prompt h2,
+.question-prompt,
 .summary-score {
   font-variant-numeric: tabular-nums;
 }
@@ -1514,7 +1517,7 @@ a.app-card:active {
   margin: 0;
 }
 .reread {
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 .reread summary {
   display: inline-flex;
@@ -1536,4 +1539,166 @@ a.app-card:active {
   display: flex;
   gap: 0.6rem;
   margin: 0;
+}
+
+/* ===== Pas de défilement pour continuer ===== */
+.quiz {
+  /* Laisse la barre du haut visible quand la question est ramenée en haut de l'écran. */
+  scroll-margin-top: 5.5rem;
+}
+/* Place pour faire défiler le contenu au-dessus du bandeau de résultat. */
+.quiz.has-sheet {
+  padding-bottom: 22rem;
+}
+.question .feedback {
+  margin: 1.4rem 0 0.4rem;
+}
+/* Bandeau de résultat fixé en bas de l'écran */
+.result-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  background: var(--surface);
+  border-top: var(--border-width) solid var(--ink);
+  box-shadow: 0 -6px 0 var(--shadow-color);
+  padding: 0.6rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+  animation: sheet-up 0.2s ease-out;
+}
+.result-bien {
+  background: var(--success-bg);
+}
+.result-rate {
+  background: var(--error-bg);
+}
+.result-sheet-inner {
+  display: flex;
+  flex-direction: column;
+  max-width: 60rem;
+  max-height: 65vh;
+  margin: 0 auto;
+}
+/* Seule la correction défile si elle est longue ; le bouton reste visible. */
+.result-sheet-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.feedback-compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.8rem;
+  margin: 0 0 0.5rem;
+}
+.feedback-compact .feedback-shout {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.feedback-compact .feedback-body {
+  flex: 1 1 10rem;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  font-weight: 700;
+}
+.feedback-compact .feedback-body::after {
+  display: none;
+}
+.result-sheet .explanation {
+  background: var(--surface);
+  margin: 0 0 0.7rem;
+  padding: 0.5rem 0.8rem;
+}
+.result-sheet .next-button {
+  flex-shrink: 0;
+}
+.next-button {
+  width: 100%;
+  font-size: 1.1rem;
+}
+@media (min-width: 641px) {
+  .next-button {
+    width: auto;
+    min-width: 16rem;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+/* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte */
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  margin-top: 1.2rem;
+  padding: 0.7rem 0 calc(0.7rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--bg) 35%);
+}
+.sticky-actions .button {
+  width: 100%;
+  max-width: 26rem;
+}
+
+/* ===== Écrans de téléphone : la question tient dans l'écran ===== */
+.choices.short {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  .content {
+    padding-top: 1rem;
+  }
+  .question.panel {
+    padding: 0.9rem;
+  }
+  .question-prompt {
+    font-size: 1.15rem;
+    margin-bottom: 0.9rem;
+  }
+  .choices {
+    gap: 0.7rem;
+  }
+  .choice {
+    min-height: 62px;
+    font-size: 1.2rem;
+  }
+  .figure {
+    margin-bottom: 0.9rem;
+  }
+  .fraction-disc {
+    width: 8.5rem;
+  }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  .fraction-disc {
+    width: 7rem;
+  }
+  /* Réponses en phrases (lecture) : plus compactes sur les petits écrans. */
+  .choices:not(.short) .choice {
+    min-height: 52px;
+    padding: 0.4rem 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+  .reread summary {
+    min-height: 44px;
+  }
+  .quiz-steps {
+    margin-bottom: 0.6rem;
+  }
+}
+@media (max-width: 420px) {
+  /* Écrans étroits : l'icône suffit (le nom du bouton reste lu par les lecteurs d'écran). */
+  .question-head .speak-button {
+    padding: 0.2rem;
+  }
+  .question-head .speak-button span {
+    display: none;
+  }
 }
