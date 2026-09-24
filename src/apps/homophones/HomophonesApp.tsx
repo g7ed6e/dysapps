@@ -41,7 +41,7 @@ export default function HomophonesApp() {
         Quêtes
       </h2>
       <ul className="grid levels">
-        {LEVELS.map(({ level, title, grade }) => {
+        {LEVELS.map(({ level, title }) => {
           const record = best({ kind: 'niveau', level });
           return (
             <li key={level}>
@@ -52,7 +52,6 @@ export default function HomophonesApp() {
                 <span className="level-title">
                   Niveau {level} · {title}
                 </span>
-                <span className="level-grade">{grade}</span>
                 <span className="level-sets">
                   {setsForLevel(level).map((s) => (
                     <span key={s.id}>{s.label}</span>

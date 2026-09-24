@@ -20,9 +20,9 @@ export interface HomophoneSet {
 export const SETS = rawSets as unknown as HomophoneSet[];
 
 export const LEVELS = [
-  { level: 1, title: 'Les bases', grade: '6e' },
-  { level: 2, title: 'Confirmé', grade: '5e' },
-  { level: 3, title: 'Expert', grade: '4e – 3e' },
+  { level: 1, title: 'Les bases' },
+  { level: 2, title: 'Confirmé' },
+  { level: 3, title: 'Expert' },
 ] as const;
 
 export type Level = (typeof LEVELS)[number]['level'];
