@@ -26,7 +26,7 @@ it('donne un indice, puis corrige, puis affiche le bilan', async () => {
   const user = userEvent.setup();
   renderQuiz();
 
-  expect(screen.getByRole('heading', { name: 'Combien font 2 + 2 ?' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /^Combien font 2 \+ 2\s\?$/ })).toBeInTheDocument();
 
   // Première erreur : indice et nouvel essai
   await user.click(screen.getByRole('button', { name: '3' }));
