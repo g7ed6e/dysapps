@@ -1,0 +1,107 @@
+{
+  "id": "foret-chasse-son-s",
+  "biome": "foret",
+  "type": "chasse-son",
+  "level": 2,
+  "instruction": "Tape les mots où tu entends le son [s], comme dans soleil. Puis valide.",
+  "target": "s",
+  "items": [
+    {
+      "key": "souris",
+      "word": "souris",
+      "image": "🐭",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "maison",
+      "word": "maison",
+      "image": "🏠",
+      "correct": false,
+      "heard": "[z]"
+    },
+    {
+      "key": "poisson",
+      "word": "poisson",
+      "image": "🐟",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "chaussette",
+      "word": "chaussette",
+      "image": "🧦",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "zèbre",
+      "word": "zèbre",
+      "image": "🦓",
+      "correct": false,
+      "heard": "[z]"
+    },
+    {
+      "key": "salade",
+      "word": "salade",
+      "image": "🥗",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "tasse",
+      "word": "tasse",
+      "image": "☕",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "valise",
+      "word": "valise",
+      "image": "🧳",
+      "correct": false,
+      "heard": "[z]"
+    },
+    {
+      "key": "serpent",
+      "word": "serpent",
+      "image": "🐍",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "rose",
+      "word": "rose",
+      "image": "🌹",
+      "correct": false,
+      "heard": "[z]"
+    },
+    {
+      "key": "glace",
+      "word": "glace",
+      "image": "🍦",
+      "correct": true,
+      "heard": "[s]"
+    },
+    {
+      "key": "sucre",
+      "word": "sucre",
+      "image": "🍬",
+      "correct": true,
+      "heard": "[s]"
+    }
+  ],
+  "feedback": {
+    "correct": "Bravo, tu entends bien [s] !",
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

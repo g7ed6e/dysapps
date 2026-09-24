@@ -1,0 +1,95 @@
+{
+  "id": "mine-filon-p",
+  "biome": "mine",
+  "type": "filon",
+  "level": 1,
+  "instruction": "Pioche seulement les blocs avec la lettre p. Laisse passer les autres.",
+  "target": "p",
+  "items": [
+    {
+      "key": "0-q",
+      "letter": "q",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "1-b",
+      "letter": "b",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "2-q",
+      "letter": "q",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "3-q",
+      "letter": "q",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "4-b",
+      "letter": "b",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "5-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "6-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "7-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "8-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "9-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "10-p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "11-d",
+      "letter": "d",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien piochée !",
+    "wrong": "C’était un {letter}, pas un {target} : {tip}."
+  },
+  "reward": {
+    "block": "pierre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.9,
+    "demoteAt": 0.5
+  }
+}

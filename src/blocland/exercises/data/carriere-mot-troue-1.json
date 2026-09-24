@@ -1,0 +1,142 @@
+{
+  "id": "carriere-mot-troue-1",
+  "biome": "carriere",
+  "type": "mot-troue",
+  "level": 1,
+  "instruction": "Écoute le mot, puis tape le bloc de lettres qui manque.",
+  "items": [
+    {
+      "key": "enfant",
+      "word": "enfant",
+      "before": "",
+      "after": "fant",
+      "answer": "en",
+      "choices": [
+        "en",
+        "an",
+        "in"
+      ]
+    },
+    {
+      "key": "pantalon",
+      "word": "pantalon",
+      "before": "p",
+      "after": "talon",
+      "answer": "an",
+      "choices": [
+        "an",
+        "en",
+        "on"
+      ]
+    },
+    {
+      "key": "montagne",
+      "word": "montagne",
+      "before": "m",
+      "after": "tagne",
+      "answer": "on",
+      "choices": [
+        "on",
+        "om",
+        "an"
+      ]
+    },
+    {
+      "key": "tomber",
+      "word": "tomber",
+      "before": "t",
+      "after": "ber",
+      "answer": "om",
+      "choices": [
+        "om",
+        "on",
+        "an"
+      ]
+    },
+    {
+      "key": "maison",
+      "word": "maison",
+      "before": "m",
+      "after": "son",
+      "answer": "ai",
+      "choices": [
+        "ai",
+        "ei",
+        "è"
+      ]
+    },
+    {
+      "key": "neige",
+      "word": "neige",
+      "before": "n",
+      "after": "ge",
+      "answer": "ei",
+      "choices": [
+        "ei",
+        "ai",
+        "è"
+      ]
+    },
+    {
+      "key": "lapin",
+      "word": "lapin",
+      "before": "lap",
+      "after": "",
+      "answer": "in",
+      "choices": [
+        "in",
+        "ain",
+        "un"
+      ]
+    },
+    {
+      "key": "main",
+      "word": "main",
+      "before": "m",
+      "after": "",
+      "answer": "ain",
+      "choices": [
+        "ain",
+        "in",
+        "ein"
+      ]
+    },
+    {
+      "key": "éléphant",
+      "word": "éléphant",
+      "before": "élé",
+      "after": "ant",
+      "answer": "ph",
+      "choices": [
+        "ph",
+        "f",
+        "v"
+      ]
+    },
+    {
+      "key": "chanson",
+      "word": "chanson",
+      "before": "",
+      "after": "anson",
+      "answer": "ch",
+      "choices": [
+        "ch",
+        "j",
+        "s"
+      ]
+    }
+  ],
+  "feedback": {
+    "correct": "Le mot est complet !",
+    "wrong": "{word} s’écrit avec « {answer} », pas « {chosen} »."
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

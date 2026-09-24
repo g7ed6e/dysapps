@@ -42,6 +42,8 @@ export interface BloclandState {
   types: Record<string, TypeStats>;
   /** Nombre de coffres de régularité gagnés. */
   chests: number;
+  /** Temps de lecture (secondes) par texte d'Ascension, du plus ancien au plus récent. */
+  fluence: Record<string, number[]>;
 }
 
 export const EMPTY_STATE: BloclandState = {
@@ -51,6 +53,7 @@ export const EMPTY_STATE: BloclandState = {
   streak: { current: 0, lastDay: null, cracked: false },
   types: {},
   chests: 0,
+  fluence: {},
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -114,6 +117,10 @@ export function sanitizeState(input: unknown): BloclandState {
       types[id] = { level: Math.max(1, Math.round(num(t.level, 1))), recent: Array.isArray(t.recent) ? t.recent.map((x) => num(x)).slice(-2) : [] };
     }
   }
+  const fluence: Record<string, number[]> = {};
+  if (isRecord(raw.fluence)) {
+    for (const [id, arr] of Object.entries(raw.fluence)) if (Array.isArray(arr)) fluence[id] = arr.map((x) => num(x)).filter((x) => x > 0).slice(-10);
+  }
   return {
     progress,
     spaced,
@@ -121,7 +128,15 @@ export function sanitizeState(input: unknown): BloclandState {
     streak: { current: Math.max(0, Math.round(num(st.current))), lastDay: typeof st.lastDay === 'string' ? st.lastDay : null, cracked: Boolean(st.cracked) },
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
+    fluence,
   };
+}
+
+/** Enregistre un temps de lecture ; renvoie le temps précédent pour se comparer à soi-même. */
+export function recordFluence(state: BloclandState, textId: string, seconds: number): { state: BloclandState; previous: number | null } {
+  const history = state.fluence[textId] ?? [];
+  const previous = history.length ? history[history.length - 1] : null;
+  return { state: { ...state, fluence: { ...state.fluence, [textId]: [...history, Math.round(seconds)].slice(-10) } }, previous };
 }
 
 // ---------- Score et étoiles ----------
@@ -246,7 +261,7 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
   const types = { ...state.types, [def.type]: adapt(state.types[def.type], score, def.adaptive) };
 
   return {
-    state: { progress, spaced, inventory, streak: streak.streak, types, chests },
+    state: { ...state, progress, spaced, inventory, streak: streak.streak, types, chests },
     score,
     stars,
     newBest,

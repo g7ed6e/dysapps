@@ -1,0 +1,95 @@
+{
+  "id": "mine-filon-b",
+  "biome": "mine",
+  "type": "filon",
+  "level": 1,
+  "instruction": "Pioche seulement les blocs avec la lettre b. Laisse passer les autres.",
+  "target": "b",
+  "items": [
+    {
+      "key": "0-d",
+      "letter": "d",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "1-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "2-q",
+      "letter": "q",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "3-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "4-d",
+      "letter": "d",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "5-p",
+      "letter": "p",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "6-d",
+      "letter": "d",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "7-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "8-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "9-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "10-b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "11-p",
+      "letter": "p",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien piochée !",
+    "wrong": "C’était un {letter}, pas un {target} : {tip}."
+  },
+  "reward": {
+    "block": "pierre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.9,
+    "demoteAt": 0.5
+  }
+}

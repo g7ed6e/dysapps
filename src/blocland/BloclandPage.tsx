@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BIOMES, BLOCKS } from './biomes';
+import { BIOMES, BLOCKS, isBiomeUnlocked } from './biomes';
+import { useBlocland } from './BloclandContext';
 import { Creature } from './Creatures';
 import { BlockIcon } from './Voxel';
 
 /** Carte du village : un biome par module, dans l'ordre conseillé. */
 export function BloclandPage() {
+  const { state } = useBlocland();
   return (
     <>
       <Link to="/" className="back-link">
@@ -26,9 +28,11 @@ export function BloclandPage() {
       <ol className="biome-map">
         {BIOMES.map((biome, i) => {
           const block = BLOCKS[biome.block];
+          const unlocked = isBiomeUnlocked(biome.id, state.progress);
+          const owned = state.inventory[biome.block] ?? 0;
           return (
             <li key={biome.id}>
-              <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}`}>
+              <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                 <span className="biome-step" aria-hidden="true">
                   {i + 1}
                 </span>
@@ -37,8 +41,13 @@ export function BloclandPage() {
                 <span className="biome-module">{biome.module}</span>
                 <span className="biome-block">
                   <BlockIcon top={block.top} side={block.side} size={28} />
-                  Blocs de {block.name.toLowerCase()}
+                  {owned} bloc{owned > 1 ? 's' : ''} de {block.name.toLowerCase()}
                 </span>
+                {!unlocked && (
+                  <span className="tag">
+                    <Icon name="lock" /> Termine une quête de {BIOMES[i - 1].name}
+                  </span>
+                )}
               </Link>
             </li>
           );

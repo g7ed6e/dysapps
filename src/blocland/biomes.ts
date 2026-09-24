@@ -139,3 +139,16 @@ export const BIOMES: BiomeDef[] = [
 export function getBiome(id: string | undefined): BiomeDef | undefined {
   return BIOMES.find((b) => b.id === id);
 }
+
+/** Un biome s'ouvre quand une quête du biome précédent a au moins une étoile (le premier est toujours ouvert). */
+export function isBiomeUnlocked(biomeId: BiomeId, progress: Record<string, { stars: number }>): boolean {
+  const index = BIOMES.findIndex((b) => b.id === biomeId);
+  if (index <= 0) return true;
+  const previous = BIOMES[index - 1];
+  return Object.entries(progress).some(([id, p]) => id.startsWith(`${previous.id}-`) && p.stars >= 1);
+}
+
+export function previousBiome(biomeId: BiomeId): BiomeDef | undefined {
+  const index = BIOMES.findIndex((b) => b.id === biomeId);
+  return index > 0 ? BIOMES[index - 1] : undefined;
+}

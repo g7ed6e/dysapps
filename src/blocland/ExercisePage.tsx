@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -15,7 +15,13 @@ export function ExercisePage() {
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
   const type = biome?.exercises.find((e) => e.id === typeId);
-  const def = biome && typeId ? pickExercise(biome.id, typeId, levelFor(state, typeId)) : undefined;
+  // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
+  // sinon la fin de partie relancerait un autre exercice au lieu d'afficher la récompense.
+  const def = useMemo(
+    () => (biome && typeId ? pickExercise(biome.id, typeId, levelFor(state, typeId), state.progress) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [biome?.id, typeId, run],
+  );
   if (!biome || !type || !def) return <NotFoundPage />;
 
   return (

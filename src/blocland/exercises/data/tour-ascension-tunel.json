@@ -1,0 +1,39 @@
+{
+  "id": "tour-ascension-tunel",
+  "biome": "tour",
+  "type": "ascension",
+  "level": 1,
+  "title": "La mine de Tunel",
+  "instruction": "Lis « La mine de Tunel » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.",
+  "items": [
+    {
+      "key": "p1",
+      "text": "Sous la colline, il y a une mine. Dedans vit une taupe carrée qui s’appelle Tunel."
+    },
+    {
+      "key": "p2",
+      "text": "Tunel creuse des galeries avec ses pattes. Chaque jour, elle trouve des pierres grises, des pierres bleues et parfois de l’or."
+    },
+    {
+      "key": "p3",
+      "text": "Mais Tunel a un problème : elle ne voit presque rien. Dans le noir, les lettres b et d se ressemblent."
+    },
+    {
+      "key": "p4",
+      "text": "Elle demande de l’aide au bâtisseur. Ensemble, ils rangent les pierres, une lettre après l’autre."
+    }
+  ],
+  "feedback": {
+    "correct": "Tour terminée. Chaque paragraphe lu est un étage de plus.",
+    "wrong": ""
+  },
+  "reward": {
+    "block": "verre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 2,
+    "demoteAt": -1
+  }
+}

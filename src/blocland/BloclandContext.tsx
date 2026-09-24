@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { loadJSON, removeKey, saveJSON } from '../core/storage';
-import { EMPTY_STATE, completeExercise, dueItems, sanitizeState, todayISO, type BloclandState, type Completion } from './engine';
+import { EMPTY_STATE, completeExercise, dueItems, recordFluence as recordFluencePure, sanitizeState, todayISO, type BloclandState, type Completion } from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -18,6 +18,8 @@ interface BloclandContextValue {
   pauseAfterNext: boolean;
   /** L'élève choisit de continuer : on repart pour une nouvelle petite session. */
   continueSession: () => void;
+  /** Temps de lecture d'un texte d'Ascension ; renvoie le temps précédent (comparaison à soi-même). */
+  recordFluence: (textId: string, seconds: number) => { previous: number | null };
   reset: () => void;
 }
 
@@ -42,6 +44,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     return completion;
   }, []);
 
+  const recordFluence = useCallback((textId: string, seconds: number) => {
+    const r = recordFluencePure(stateRef.current, textId, seconds);
+    stateRef.current = r.state;
+    setState(r.state);
+    return { previous: r.previous };
+  }, []);
+
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
@@ -57,8 +66,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const dueCount = useMemo(() => dueItems(state.spaced, todayISO()).length, [state.spaced]);
 
   const value = useMemo(
-    () => ({ state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, reset }),
-    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, reset],
+    () => ({ state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, reset }),
+    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }
