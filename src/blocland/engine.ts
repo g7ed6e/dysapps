@@ -44,7 +44,20 @@ export interface BloclandState {
   chests: number;
   /** Temps de lecture (secondes) par texte d'Ascension, du plus ancien au plus récent. */
   fluence: Record<string, number[]>;
+  /** La construction : un bloc par case et par hauteur. */
+  build: BuildCell[];
 }
+
+export interface BuildCell {
+  x: number;
+  y: number;
+  z: number;
+  block: BlockId;
+}
+
+/** Grille de construction : GRID_SIZE × GRID_SIZE cases, MAX_HEIGHT blocs de haut. */
+export const GRID_SIZE = 8;
+export const MAX_HEIGHT = 6;
 
 export const EMPTY_STATE: BloclandState = {
   progress: {},
@@ -54,6 +67,7 @@ export const EMPTY_STATE: BloclandState = {
   types: {},
   chests: 0,
   fluence: {},
+  build: [],
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -121,6 +135,18 @@ export function sanitizeState(input: unknown): BloclandState {
   if (isRecord(raw.fluence)) {
     for (const [id, arr] of Object.entries(raw.fluence)) if (Array.isArray(arr)) fluence[id] = arr.map((x) => num(x)).filter((x) => x > 0).slice(-10);
   }
+  const build: BuildCell[] = [];
+  if (Array.isArray(raw.build)) {
+    for (const c of raw.build) {
+      if (!isRecord(c) || !(typeof c.block === 'string' && c.block in BLOCKS)) continue;
+      const x = Math.round(num(c.x, -1));
+      const y = Math.round(num(c.y, -1));
+      const z = Math.round(num(c.z, -1));
+      if (x < 0 || y < 0 || z < 0 || x >= GRID_SIZE || y >= GRID_SIZE || z >= MAX_HEIGHT) continue;
+      if (build.some((b) => b.x === x && b.y === y && b.z === z)) continue;
+      build.push({ x, y, z, block: c.block as BlockId });
+    }
+  }
   return {
     progress,
     spaced,
@@ -129,7 +155,54 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
+    build,
   };
+}
+
+// ---------- Construction ----------
+
+export function columnHeight(build: BuildCell[], x: number, y: number): number {
+  return build.filter((c) => c.x === x && c.y === y).length;
+}
+
+export type PlaceResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: 'hors-grille' | 'plus-de-blocs' | 'trop-haut' };
+
+/** Pose un bloc du type choisi au sommet de la colonne (x, y) ; consomme un bloc de l'inventaire. */
+export function placeBlock(state: BloclandState, x: number, y: number, block: BlockId): PlaceResult {
+  if (x < 0 || y < 0 || x >= GRID_SIZE || y >= GRID_SIZE) return { state, ok: false, reason: 'hors-grille' };
+  if ((state.inventory[block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs' };
+  const z = columnHeight(state.build, x, y);
+  if (z >= MAX_HEIGHT) return { state, ok: false, reason: 'trop-haut' };
+  return {
+    ok: true,
+    state: {
+      ...state,
+      build: [...state.build, { x, y, z, block }],
+      inventory: { ...state.inventory, [block]: (state.inventory[block] ?? 0) - 1 },
+    },
+  };
+}
+
+/** Retire le bloc du sommet de la colonne (x, y) ; il revient dans l'inventaire. */
+export function removeBlock(state: BloclandState, x: number, y: number): { state: BloclandState; removed: BlockId | null } {
+  const column = state.build.filter((c) => c.x === x && c.y === y);
+  if (column.length === 0) return { state, removed: null };
+  const top = column.reduce((a, b) => (b.z > a.z ? b : a));
+  return {
+    removed: top.block,
+    state: {
+      ...state,
+      build: state.build.filter((c) => c !== top),
+      inventory: { ...state.inventory, [top.block]: (state.inventory[top.block] ?? 0) + 1 },
+    },
+  };
+}
+
+/** Démonte toute la construction : tous les blocs reviennent dans l'inventaire. */
+export function clearBuild(state: BloclandState): BloclandState {
+  const inventory = { ...state.inventory };
+  for (const c of state.build) inventory[c.block] = (inventory[c.block] ?? 0) + 1;
+  return { ...state, build: [], inventory };
 }
 
 /** Enregistre un temps de lecture ; renvoie le temps précédent pour se comparer à soi-même. */
