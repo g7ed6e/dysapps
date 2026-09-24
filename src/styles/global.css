@@ -1922,3 +1922,76 @@ a.app-card:active {
     transform: rotate(90deg);
   }
 }
+
+/* ===== Blocland : exercices, étoiles, récompenses, pause ===== */
+.item-word {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.stars {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+.star {
+  color: var(--shadow-color);
+}
+.star.lit {
+  color: #f2b705;
+}
+.star.lit svg {
+  fill: #ffd54a;
+}
+:root[data-theme='contraste'] .star.lit,
+:root[data-theme='contraste'] .star.lit svg {
+  color: var(--yellow);
+  fill: var(--yellow);
+}
+.reward-panel .stars {
+  margin: 0.4rem 0 0.8rem;
+}
+.reward-best {
+  font-weight: 700;
+  color: var(--success);
+}
+.reward-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 1rem;
+  display: grid;
+  gap: 0.6rem;
+  max-width: 24rem;
+  text-align: left;
+}
+.reward-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.reward-list strong {
+  font-family: var(--pixel-font);
+  font-size: 1.1rem;
+}
+.reward-chest {
+  background: var(--yellow) !important;
+  color: var(--on-accent);
+}
+.reward-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+.pause-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.pause-panel p {
+  max-width: none;
+}

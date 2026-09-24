@@ -4,14 +4,17 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
+import { BloclandProvider } from './blocland/BloclandContext';
 
 function renderAt(path: string) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
-        <MemoryRouter initialEntries={[path]}>
-          <AppRoutes />
-        </MemoryRouter>
+        <BloclandProvider>
+          <MemoryRouter initialEntries={[path]}>
+            <AppRoutes />
+          </MemoryRouter>
+        </BloclandProvider>
       </ProgressProvider>
     </SettingsProvider>,
   );

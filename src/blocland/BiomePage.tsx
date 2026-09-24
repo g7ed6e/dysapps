@@ -2,15 +2,21 @@ import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, getBiome } from './biomes';
+import { useBlocland } from './BloclandContext';
+import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
+import { pickExercise } from './exercises';
+import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
 
 /** Un biome : sa créature donne la quête, puis la liste des exercices. */
 export function BiomePage() {
   const { biomeId } = useParams();
+  const { state } = useBlocland();
   const biome = getBiome(biomeId);
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
+  const owned = state.inventory[biome.block] ?? 0;
 
   return (
     <>
@@ -27,23 +33,44 @@ export function BiomePage() {
         <Icon name="hammer" /> Quêtes
       </h2>
       <ul className="grid apps">
-        {biome.exercises.map((exercise) => (
-          <li key={exercise.id}>
-            <div className="panel app-card locked" aria-disabled="true">
+        {biome.exercises.map((exercise) => {
+          const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id));
+          const progress = def ? state.progress[def.id] : undefined;
+          const content = (
+            <>
               <span className="app-icon">
-                <Icon name="lock" size="1.8rem" />
+                <Icon name={def ? 'play' : 'lock'} size="1.8rem" />
               </span>
               <span className="app-title">{exercise.title}</span>
               <span className="app-desc">{exercise.description}</span>
-              <span className="tag">Bientôt</span>
-            </div>
-          </li>
-        ))}
+              {!def ? (
+                <span className="tag">Bientôt</span>
+              ) : progress ? (
+                <Stars count={progress.stars} label={`${progress.stars} étoile${progress.stars > 1 ? 's' : ''} sur 3, meilleur score ${Math.round(progress.best * 100)} %`} />
+              ) : (
+                <span className="tag tag-new">Nouveau</span>
+              )}
+            </>
+          );
+          return (
+            <li key={exercise.id}>
+              {def ? (
+                <Link to={`/aventure/${biome.id}/${exercise.id}`} className={`panel app-card biome-${biome.id}`}>
+                  {content}
+                </Link>
+              ) : (
+                <div className="panel app-card locked" aria-disabled="true">
+                  {content}
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />
-        Chaque quête réussie ici rapporte des blocs de {block.name.toLowerCase()}.
+        Chaque quête réussie ici rapporte des blocs de {block.name.toLowerCase()}. Tu en as {owned}.
       </p>
     </>
   );

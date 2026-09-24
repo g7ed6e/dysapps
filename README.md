@@ -30,6 +30,14 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 - **Lecture** (Français) : 5 textes du domaine public — *Le Corbeau et le Renard*, *La Cigale et la Fourmi*, *Le Loup et l’Agneau* (La Fontaine, texte intégral), *La chèvre de monsieur Seguin* (d’après Daudet) et *Le pari de Phileas Fogg* (d’après Jules Verne), textes adaptés. Une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue (ou une seule ligne au toucher), mots difficiles expliqués, puis 5 questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions dans `src/apps/lecture/texts.json`.
 
+## Moteur d’exercice Blocland
+
+- Un exercice = un fichier JSON dans `src/blocland/exercises/data/` (format du brief : `instruction`, `items`, `feedback` avec `{word}`/`{heard}`/`{answer}`, `reward`, `adaptive`), référencé dans `src/blocland/exercises/index.ts`. Le champ `type` choisit le composant d’item (`src/blocland/exercises/registry.ts`) ; le type générique `qcm` est fourni.
+- `ExerciseRunner` : la créature lit la consigne, un item à la fois, feedback immédiat jamais punitif (bonne réponse + explication d’une ligne) dans le bandeau fixe, puis écran de récompense.
+- `engine.ts` (logique pure, testée) : score (1 point du premier coup, ½ avec aide ou après erreur), **étoiles** (1 = terminé, 2 = ≥ 70 %, 3 = ≥ 90 %, la meilleure compte), **blocs** proportionnels au score (jamais 0 dès une bonne réponse), **XP** à chaque exercice terminé (+50 % sans aide ni erreur), **répétition espacée** des items ratés à J+1, J+3, J+7, J+15 (sortie après 3 réussites d’affilée), **streak** quotidien qui se fissure après un jour manqué (réparable le lendemain) avec un coffre de 6 blocs tous les 3 jours, **adaptation** du niveau par type d’exercice (monte après 2 sessions ≥ `promoteAt`, descend après 2 sessions ≤ `demoteAt`, jamais affiché comme une baisse).
+- Sessions courtes : après 3 exercices (ou 10 minutes), l’app propose d’arrêter.
+- Tout est enregistré sur l’appareil (`localStorage`, clé `dysapps:blocland`), et l’XP alimente aussi les rangs et succès communs à toute l’app.
+
 ## Police Luciole
 
 Luciole (CC BY 4.0) n’est pas distribuée sur npm. Déposez `Luciole-Regular.woff2` et `Luciole-Bold.woff2` dans `public/fonts/luciole/` (voir le README de ce dossier) : l’option s’active dans les réglages, et vous pouvez la mettre par défaut dans `src/core/settings.ts`.
@@ -93,7 +101,7 @@ src/
 ## Feuille de route (Blocland)
 
 1. ✅ Coquille : profil d’accessibilité, lecture vocale des consignes, carte des biomes et créatures.
-2. Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
+2. ✅ Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
 3. Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
 4. Inventaire et grille de construction isométrique.
 5. Coffre à mots, boss de biome, craft, journal hebdomadaire, autres exercices.
