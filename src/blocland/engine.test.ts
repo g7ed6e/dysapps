@@ -1,6 +1,10 @@
 import {
   EMPTY_STATE,
+  MAX_HEIGHT,
   adapt,
+  clearBuild,
+  placeBlock,
+  removeBlock,
   addDays,
   completeExercise,
   daysBetween,
@@ -11,6 +15,7 @@ import {
   starsFor,
   updateStreak,
 } from './engine';
+import type { BloclandState } from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 const DEF: ExerciseDef = {
@@ -148,4 +153,43 @@ it('sanitizeState répare des données corrompues', () => {
   expect(s.spaced).toEqual([]);
   expect(s.streak).toEqual(EMPTY_STATE.streak);
   expect(sanitizeState(undefined)).toEqual(EMPTY_STATE);
+});
+
+describe('construction', () => {
+  const withBlocks = { ...EMPTY_STATE, inventory: { bois: 2, pierre: 1 } };
+
+  it('pose un bloc au sommet de la colonne et le consomme', () => {
+    const r1 = placeBlock(withBlocks, 2, 3, 'bois');
+    expect(r1.ok).toBe(true);
+    expect(r1.state.build).toEqual([{ x: 2, y: 3, z: 0, block: 'bois' }]);
+    expect(r1.state.inventory.bois).toBe(1);
+    const r2 = placeBlock(r1.state, 2, 3, 'pierre');
+    expect(r2.state.build[1]).toEqual({ x: 2, y: 3, z: 1, block: 'pierre' });
+  });
+
+  it('refuse hors grille, sans bloc, ou trop haut', () => {
+    expect(placeBlock(withBlocks, 8, 0, 'bois')).toMatchObject({ ok: false, reason: 'hors-grille' });
+    expect(placeBlock(withBlocks, 0, 0, 'sable')).toMatchObject({ ok: false, reason: 'plus-de-blocs' });
+    let s: BloclandState = { ...EMPTY_STATE, inventory: { bois: 10 } };
+    for (let i = 0; i < MAX_HEIGHT; i++) s = placeBlock(s, 0, 0, 'bois').state;
+    expect(placeBlock(s, 0, 0, 'bois')).toMatchObject({ ok: false, reason: 'trop-haut' });
+  });
+
+  it('retire le bloc du dessus et le rend, et démonte tout', () => {
+    let s = placeBlock(withBlocks, 1, 1, 'bois').state;
+    s = placeBlock(s, 1, 1, 'pierre').state;
+    const r = removeBlock(s, 1, 1);
+    expect(r.removed).toBe('pierre');
+    expect(r.state.build).toEqual([{ x: 1, y: 1, z: 0, block: 'bois' }]);
+    expect(r.state.inventory).toEqual({ bois: 1, pierre: 1 });
+    expect(removeBlock(r.state, 5, 5).removed).toBeNull();
+    const cleared = clearBuild(r.state);
+    expect(cleared.build).toEqual([]);
+    expect(cleared.inventory).toEqual({ bois: 2, pierre: 1 });
+  });
+
+  it('sanitizeState ignore les blocs invalides ou en double', () => {
+    const s = sanitizeState({ build: [{ x: 1, y: 1, z: 0, block: 'bois' }, { x: 1, y: 1, z: 0, block: 'terre' }, { x: 9, y: 0, z: 0, block: 'bois' }, { x: 0, y: 0, z: 0, block: 'neige' }] });
+    expect(s.build).toEqual([{ x: 1, y: 1, z: 0, block: 'bois' }]);
+  });
 });

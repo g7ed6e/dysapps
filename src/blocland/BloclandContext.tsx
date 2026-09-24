@@ -1,6 +1,20 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { loadJSON, removeKey, saveJSON } from '../core/storage';
-import { EMPTY_STATE, completeExercise, dueItems, recordFluence as recordFluencePure, sanitizeState, todayISO, type BloclandState, type Completion } from './engine';
+import type { BlockId } from './biomes';
+import {
+  EMPTY_STATE,
+  clearBuild as clearBuildPure,
+  completeExercise,
+  dueItems,
+  placeBlock as placeBlockPure,
+  recordFluence as recordFluencePure,
+  removeBlock as removeBlockPure,
+  sanitizeState,
+  todayISO,
+  type BloclandState,
+  type Completion,
+  type PlaceResult,
+} from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -20,6 +34,10 @@ interface BloclandContextValue {
   continueSession: () => void;
   /** Temps de lecture d'un texte d'Ascension ; renvoie le temps précédent (comparaison à soi-même). */
   recordFluence: (textId: string, seconds: number) => { previous: number | null };
+  /** Construction : poser, retirer, tout démonter. */
+  place: (x: number, y: number, block: BlockId) => PlaceResult;
+  remove: (x: number, y: number) => BlockId | null;
+  clearBuild: () => void;
   reset: () => void;
 }
 
@@ -51,6 +69,27 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     return { previous: r.previous };
   }, []);
 
+  const place = useCallback((x: number, y: number, block: BlockId) => {
+    const r = placeBlockPure(stateRef.current, x, y, block);
+    if (r.ok) {
+      stateRef.current = r.state;
+      setState(r.state);
+    }
+    return r;
+  }, []);
+
+  const remove = useCallback((x: number, y: number) => {
+    const r = removeBlockPure(stateRef.current, x, y);
+    stateRef.current = r.state;
+    setState(r.state);
+    return r.removed;
+  }, []);
+
+  const clearBuild = useCallback(() => {
+    stateRef.current = clearBuildPure(stateRef.current);
+    setState(stateRef.current);
+  }, []);
+
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
@@ -66,8 +105,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const dueCount = useMemo(() => dueItems(state.spaced, todayISO()).length, [state.spaced]);
 
   const value = useMemo(
-    () => ({ state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, reset }),
-    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, reset],
+    () => ({ state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, place, remove, clearBuild, reset }),
+    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, place, remove, clearBuild, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

@@ -51,6 +51,11 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent débloque le suivant. À niveau égal, l’exercice le moins joué est proposé.
 
+## Chantier (construction)
+
+- Inventaire des blocs gagnés (par type), grille isométrique 8 × 8 cases, 6 blocs de haut ; poser (le bloc choisi s’empile sur la colonne touchée), retirer (le bloc du dessus revient dans l’inventaire), tout démonter (avec confirmation). Aucune physique : rien ne tombe, l’échec d’un exercice ne touche jamais la construction.
+- Accessible au clavier (chaque case est un bouton) et au toucher ; la construction est enregistrée sur l’appareil.
+
 ## Police Luciole
 
 Luciole (CC BY 4.0) n’est pas distribuée sur npm. Déposez `Luciole-Regular.woff2` et `Luciole-Bold.woff2` dans `public/fonts/luciole/` (voir le README de ce dossier) : l’option s’active dans les réglages, et vous pouvez la mettre par défaut dans `src/core/settings.ts`.
@@ -116,5 +121,5 @@ src/
 1. ✅ Coquille : profil d’accessibilité, lecture vocale des consignes, carte des biomes et créatures.
 2. ✅ Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
 3. ✅ Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
-4. Inventaire et grille de construction isométrique.
+4. ✅ Inventaire et grille de construction isométrique.
 5. Coffre à mots, boss de biome, craft, journal hebdomadaire, autres exercices.

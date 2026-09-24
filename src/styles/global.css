@@ -2217,3 +2217,128 @@ a.app-card:active {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* ===== Chantier : inventaire et grille de construction ===== */
+.chantier-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.2rem;
+  margin-bottom: 1.6rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.chantier-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+}
+.chantier-icon {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.inventory {
+  margin-bottom: 1.2rem;
+}
+.inventory-title {
+  margin-top: 0;
+}
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+.palette-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 5.2rem;
+  padding: 0.5rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.palette-block .block-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0;
+}
+.palette-block.selected {
+  background: var(--yellow);
+  color: var(--on-accent);
+  box-shadow: 0 4px 0 var(--shadow-color);
+}
+.palette-block.empty {
+  opacity: 0.5;
+}
+.palette-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.palette-count {
+  font-family: var(--pixel-font);
+  font-size: 1rem;
+}
+.build-modes {
+  display: flex;
+  gap: 0.7rem;
+}
+.build-panel {
+  padding: 0.6rem;
+  overflow: hidden;
+}
+.build-grid {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  touch-action: manipulation;
+}
+.build-grid .tile polygon {
+  fill: #a9d18e;
+  stroke: #6f9c58;
+  stroke-width: 0.8;
+  cursor: pointer;
+}
+.build-grid .tile.alt polygon {
+  fill: #9cc782;
+}
+.build-grid .tile:hover polygon,
+.build-grid .tile:focus-visible polygon {
+  fill: #f0d27a;
+}
+.build-grid .tile:focus-visible {
+  outline: none;
+}
+.build-grid .placed {
+  cursor: pointer;
+}
+.build-grid .cursor {
+  fill: none;
+  stroke: var(--focus);
+  stroke-width: 2.5;
+  pointer-events: none;
+}
+:root[data-theme='contraste'] .build-grid .tile polygon {
+  fill: #222;
+  stroke: #ffe600;
+}
+:root[data-theme='contraste'] .build-grid .tile.alt polygon {
+  fill: #333;
+}
+.build-status {
+  margin: 0.6rem 0 0;
+  text-align: center;
+  color: var(--muted);
+  max-width: none;
+}

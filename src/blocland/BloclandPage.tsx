@@ -9,6 +9,7 @@ import { BlockIcon } from './Voxel';
 /** Carte du village : un biome par module, dans l'ordre conseillé. */
 export function BloclandPage() {
   const { state } = useBlocland();
+  const totalBlocks = Object.values(state.inventory).reduce((a, b) => a + (b ?? 0), 0);
   return (
     <>
       <Link to="/" className="back-link">
@@ -21,6 +22,21 @@ export function BloclandPage() {
           <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire." />
         </p>
       </section>
+
+      <Link to="/aventure/chantier" className="panel chantier-card">
+        <span className="chantier-icon">
+          <Icon name="hammer" size="2rem" />
+        </span>
+        <span className="adventure-text">
+          <span className="adventure-title">Chantier</span>
+          <span className="adventure-desc">
+            {totalBlocks} bloc{totalBlocks > 1 ? 's' : ''} dans l’inventaire, {state.build.length} posé{state.build.length > 1 ? 's' : ''}. Viens construire !
+          </span>
+        </span>
+        <span className="subject-count">
+          Construire <Icon name="play" />
+        </span>
+      </Link>
 
       <h2 className="section-title">
         <Icon name="map" /> Les biomes
