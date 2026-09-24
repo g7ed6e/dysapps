@@ -24,6 +24,8 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 - **Fractions** (Maths) : 5 quêtes de 8 questions générées — lire une fraction (barres et disques), comparer (même dénominateur, même numérateur, fractions égales), fractions égales, fraction d’une quantité, repérage sur la droite graduée. Fractions écrites en colonne et lues en toutes lettres (« 3 quarts »). Le joker les dessine : barres alignées, groupes de points.
 
+- **Nombres décimaux** (Maths) : 6 quêtes de 8 questions générées — lire un décimal (chiffre des dixièmes, centièmes…), comparer (piège « 3,45 > 3,5 »), droite graduée au dixième, fractions décimales, × et ÷ par 10, 100, 1 000, compléter à 1. Calculs en millièmes entiers (aucune erreur d’arrondi). Le joker ouvre le tableau de numération avec la virgule marquée et des zéros grisés pour aligner.
+
 ## Développer
 
 ```bash
@@ -83,4 +85,3 @@ src/
 ## Feuille de route
 
 - Français : lecture et compréhension (textes du domaine public)
-- Maths : nombres décimaux et numération

@@ -1377,3 +1377,32 @@ a.app-card:active {
 .dot-group.taken .dot {
   background: var(--pink);
 }
+
+/* ===== Nombres décimaux ===== */
+.decimal-table th:nth-child(-n + 3) {
+  background: transparent;
+  color: inherit;
+}
+.decimal-table .comma-col {
+  position: relative;
+  border-right: 6px solid var(--pink);
+}
+/* La virgule, dessinée sur la séparation unités | dixièmes */
+.decimal-table td.comma-col:not(:empty)::after {
+  content: ',';
+  position: absolute;
+  right: 0.12rem;
+  bottom: 0.05rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--pink);
+}
+.decimal-table th.dec-col {
+  background: var(--cyan);
+  color: #111118;
+}
+.decimal-table td.faded {
+  color: var(--muted);
+  opacity: 0.55;
+}

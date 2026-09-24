@@ -18,7 +18,9 @@ const TOKEN = /((?:\d+|…)\/(?:\d+|…)|…)/;
  * « n/d » devient une fraction en colonne, « … » une case à compléter bien visible.
  */
 export function RichText({ text }: { text: string }) {
-  const parts = text.split(TOKEN);
+  // Typographie française : espace insécable avant ? ! : ; » et après «, pour qu'ils ne restent pas seuls en début de ligne.
+  const typo = text.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+  const parts = typo.split(TOKEN);
   return (
     <>
       {parts.map((part, i) => {

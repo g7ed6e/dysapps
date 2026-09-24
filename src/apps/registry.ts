@@ -59,7 +59,15 @@ export const APPS: AppDef[] = [
     status: 'disponible',
     component: lazy(() => import('./fractions/FractionsApp')),
   },
-  { id: 'decimaux', subject: 'maths', title: 'Nombres décimaux', description: 'Tableau de numération et droite graduée.', icon: 'ruler', status: 'bientot' },
+  {
+    id: 'decimaux',
+    subject: 'maths',
+    title: 'Nombres décimaux',
+    description: 'Lire, comparer, droite graduée, fractions décimales, × et ÷ par 10, compléments.',
+    icon: 'ruler',
+    status: 'disponible',
+    component: lazy(() => import('./decimaux/DecimauxApp')),
+  },
 ];
 
 export function getApp(id: string | undefined): AppDef | undefined {
