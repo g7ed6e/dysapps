@@ -45,3 +45,12 @@ it('affiche une page introuvable', () => {
   renderAt('/nimporte-quoi');
   expect(screen.getByText(/Zone introuvable/)).toBeInTheDocument();
 });
+
+it('affiche le record d’une quête tous modes confondus', () => {
+  localStorage.setItem(
+    'dysapps:progress',
+    JSON.stringify({ apps: { 'homophones:niveau-1': { sessions: 1, bestScore: 70, lastPlayed: null }, 'homophones:serie-a': { sessions: 1, bestScore: 90, lastPlayed: null } } }),
+  );
+  renderAt('/matiere/francais');
+  expect(screen.getByText('Record : 90 %')).toBeInTheDocument();
+});

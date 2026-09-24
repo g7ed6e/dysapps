@@ -825,6 +825,16 @@ a.app-card:active {
   font-size: 1.3rem;
   margin: 0;
 }
+.blank {
+  display: inline-block;
+  min-width: 2.6em;
+  margin: 0 0.1em;
+  padding: 0 0.3em;
+  border-bottom: 4px solid var(--violet);
+  background: var(--yellow);
+  color: #111118;
+  text-align: center;
+}
 .choices {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
@@ -1031,4 +1041,95 @@ a.app-card:active {
   width: 1.5rem;
   height: 1.5rem;
   accent-color: var(--violet);
+}
+
+/* ===== Quête Homophones ===== */
+.intro {
+  color: var(--muted);
+}
+.level-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.level-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: calc(var(--shadow-offset) + 3px) calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+}
+.level-card:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--shadow-color);
+}
+.level-number {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: var(--border-width) solid var(--ink);
+  font-family: var(--shout-font);
+  font-size: 1.9rem;
+  color: #111118;
+  transform: rotate(-4deg);
+}
+.level-1 .level-number {
+  background: var(--yellow);
+}
+.level-2 .level-number {
+  background: var(--cyan);
+}
+.level-3 .level-number {
+  background: var(--pink);
+}
+.level-title {
+  font-family: var(--display-font);
+  font-size: 1.15rem;
+}
+.level-grade {
+  font-weight: 700;
+  color: var(--muted);
+}
+.level-sets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.2rem;
+  margin-bottom: 0.4rem;
+}
+.level-sets > span {
+  white-space: nowrap;
+}
+.set-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+}
+.set-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  padding: 0.3rem 1rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.set-chip:hover {
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+.set-record {
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 0.8rem;
 }

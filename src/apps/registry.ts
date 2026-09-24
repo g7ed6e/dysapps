@@ -31,7 +31,15 @@ export const APPS: AppDef[] = [
     status: 'disponible',
     component: lazy(() => import('./demo/DemoApp')),
   },
-  { id: 'homophones', subject: 'francais', title: 'Homophones', description: 'a / à, et / est, son / sont, ces / ses, on / ont…', icon: 'shuffle', status: 'bientot' },
+  {
+    id: 'homophones',
+    subject: 'francais',
+    title: 'Homophones',
+    description: 'a / à, et / est, son / sont, ces / ses… 3 niveaux et 13 paires à maîtriser.',
+    icon: 'shuffle',
+    status: 'disponible',
+    component: lazy(() => import('./homophones/HomophonesApp')),
+  },
   { id: 'lecture', subject: 'francais', title: 'Lecture', description: 'Des textes classiques lus à voix haute, avec des questions.', icon: 'library', status: 'bientot' },
   { id: 'tables', subject: 'maths', title: 'Tables & calcul mental', description: 'Multiplications et compléments, avec aides visuelles.', icon: 'zap', status: 'bientot' },
   { id: 'fractions', subject: 'maths', title: 'Fractions', description: 'Parts et barres pour comprendre les fractions.', icon: 'pizza', status: 'bientot' },
@@ -40,6 +48,14 @@ export const APPS: AppDef[] = [
 
 export function getApp(id: string | undefined): AppDef | undefined {
   return APPS.find((a) => a.id === id);
+}
+
+/** Meilleur score d'une quête, tous modes confondus (« homophones », « homophones:niveau-1 »…). */
+export function bestScore(apps: Record<string, { bestScore: number }>, appId: string): number | undefined {
+  const scores = Object.entries(apps)
+    .filter(([key]) => key === appId || key.startsWith(`${appId}:`))
+    .map(([, stats]) => stats.bestScore);
+  return scores.length ? Math.max(...scores) : undefined;
 }
 
 export function appsBySubject(subject: Subject): AppDef[] {

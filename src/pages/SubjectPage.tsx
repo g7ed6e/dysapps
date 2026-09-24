@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { SUBJECTS, appsBySubject, type Subject } from '../apps/registry';
+import { SUBJECTS, appsBySubject, bestScore, type Subject } from '../apps/registry';
 import { Icon } from '../components/Icon';
 import { useProgress } from '../core/ProgressContext';
 import { NotFoundPage } from './NotFoundPage';
@@ -20,7 +20,7 @@ export function SubjectPage() {
       </h1>
       <ul className="grid apps">
         {appsBySubject(subject as Subject).map((app) => {
-          const stats = progress.apps[app.id];
+          const record = bestScore(progress.apps, app.id);
           const content = (
             <>
               <span className="app-icon">
@@ -30,8 +30,8 @@ export function SubjectPage() {
               <span className="app-desc">{app.description}</span>
               {app.status === 'bientot' ? (
                 <span className="tag">Bientôt</span>
-              ) : stats ? (
-                <span className="tag tag-ok">Record : {stats.bestScore} %</span>
+              ) : record !== undefined ? (
+                <span className="tag tag-ok">Record : {record} %</span>
               ) : (
                 <span className="tag tag-new">Nouveau</span>
               )}
