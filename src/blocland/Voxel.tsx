@@ -8,6 +8,8 @@ export interface VoxelCube {
   color: string;
   /** Couleur explicite du dessus (ex. bloc avec une face « herbe »). */
   top?: string;
+  /** Étiquette de sélection en 3D (ex. l'identifiant d'un biome). */
+  tag?: string;
 }
 
 /** Éclaircit ou assombrit une couleur hexadécimale. */

@@ -2383,3 +2383,21 @@ a.app-card:active {
     height: 8rem;
   }
 }
+.map3d {
+  margin-bottom: 1.4rem;
+}
+.voxel-canvas-map {
+  aspect-ratio: 16 / 9;
+  max-height: 30rem;
+  border: var(--border-width) solid var(--ink);
+  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
+}
+.map3d .view-note {
+  display: block;
+  margin-top: 0.5rem;
+}
+@media (max-width: 640px) {
+  .voxel-canvas-map {
+    aspect-ratio: 4 / 3;
+  }
+}
