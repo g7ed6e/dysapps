@@ -68,3 +68,10 @@ it('se pose aussi au clavier', async () => {
   await user.keyboard('{Enter}');
   expect(saved().build).toEqual([{ x: 0, y: 0, z: 0, block: 'sable' }]);
 });
+
+it('sans WebGL, affiche la vue simple et le signale', () => {
+  renderAt('/aventure/chantier');
+  expect(screen.getByText(/la 3D n’est pas disponible/)).toBeInTheDocument();
+  expect(screen.queryByRole('img', { name: 'Chantier en 3D' })).not.toBeInTheDocument();
+  expect(screen.getByRole('group', { name: 'Chantier' })).toBeInTheDocument();
+});

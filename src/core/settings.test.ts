@@ -20,6 +20,11 @@ it('convertit les anciens thèmes et polices', () => {
   expect(sanitizeSettings({ font: 'systeme' as never }).font).toBe('arial');
 });
 
+it('active la vue 3D par défaut et lit la préférence enregistrée', () => {
+  expect(sanitizeSettings({}).view3d).toBe(true);
+  expect(sanitizeSettings({ view3d: false }).view3d).toBe(false);
+});
+
 it('respecte les minimums orthophoniques', () => {
   const s = sanitizeSettings({ fontSize: 12, lineHeight: 1.1 });
   expect(s.fontSize).toBe(18);

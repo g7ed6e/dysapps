@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
@@ -7,6 +7,9 @@ import { useBlocland } from './BloclandContext';
 import { BuildGrid } from './BuildGrid';
 import { GRID_SIZE, MAX_HEIGHT } from './engine';
 import { BlockIcon } from './Voxel';
+import { VoxelCanvas, hasWebGL } from './three';
+import { useSettings } from '../core/SettingsContext';
+import { columnHeight } from './engine';
 
 type Mode = 'poser' | 'retirer';
 
@@ -19,6 +22,9 @@ const REASONS: Record<string, string> = {
 /** Le chantier : inventaire des blocs et grille de construction libre (poser / retirer, sans physique). */
 export function ChantierPage() {
   const { state, place, remove, clearBuild } = useBlocland();
+  const { settings, update } = useSettings();
+  const webgl = hasWebGL();
+  const in3d = settings.view3d && webgl;
   const blocks = (Object.keys(BLOCKS) as BlockId[]).filter((b) => (state.inventory[b] ?? 0) > 0 || state.build.some((c) => c.block === b));
   const [selectedBlock, setSelectedBlock] = useState<BlockId | null>(() => blocks[0] ?? null);
   const [mode, setMode] = useState<Mode>('poser');
@@ -96,7 +102,35 @@ export function ChantierPage() {
       </section>
 
       <div className="panel build-panel">
-        <BuildGrid build={state.build} selected={cell} onSelect={(x, y) => setCell({ x, y })} onAction={onAction} />
+        <div className="view-toggle">
+          {webgl ? (
+            <button type="button" className="button" aria-pressed={in3d} onClick={() => update({ view3d: !settings.view3d })}>
+              <Icon name="blocks" /> {in3d ? 'Passer en vue simple' : 'Passer en vue 3D'}
+            </button>
+          ) : (
+            <span className="view-note">Vue simple (la 3D n’est pas disponible sur cet appareil).</span>
+          )}
+          {in3d && <span className="view-note">Glisse pour tourner, pince pour zoomer, touche une case pour poser.</span>}
+        </div>
+        {in3d ? (
+          <Suspense fallback={<p className="loading">Chargement de la 3D…</p>}>
+            <VoxelCanvas
+              cubes={state.build.map((c) => ({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, top: BLOCKS[c.block].top }))}
+              gridSize={GRID_SIZE}
+              selected={cell}
+              selectedHeight={cell ? columnHeight(state.build, cell.x, cell.y) : 0}
+              reduceMotion={settings.reduceMotion}
+              onPick={(x, y) => {
+                setCell({ x, y });
+                onAction(x, y);
+              }}
+              className="voxel-canvas-build"
+              label="Chantier en 3D"
+            />
+          </Suspense>
+        ) : (
+          <BuildGrid build={state.build} selected={cell} onSelect={(x, y) => setCell({ x, y })} onAction={onAction} />
+        )}
         <p className="build-status" role="status" aria-live="polite">
           {notice ?? `${state.build.length} bloc${state.build.length > 1 ? 's' : ''} posé${state.build.length > 1 ? 's' : ''} sur le chantier (${GRID_SIZE} × ${GRID_SIZE} cases).`}
         </p>

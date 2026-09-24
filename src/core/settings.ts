@@ -14,6 +14,8 @@ export interface Settings {
   /** Surligner les syllabes en couleurs alternées. */
   syllables: boolean;
   reduceMotion: boolean;
+  /** Vues 3D (Three.js) quand WebGL est disponible ; sinon la vue simple, accessible. */
+  view3d: boolean;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -32,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoRead: true,
   syllables: true,
   reduceMotion: false,
+  view3d: true,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -79,6 +82,7 @@ export function sanitizeSettings(input: Partial<Settings>): Settings {
     autoRead: s.autoRead === undefined ? DEFAULT_SETTINGS.autoRead : Boolean(s.autoRead),
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
     reduceMotion: Boolean(s.reduceMotion),
+    view3d: s.view3d === undefined ? DEFAULT_SETTINGS.view3d : Boolean(s.view3d),
   };
 }
 
