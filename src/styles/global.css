@@ -2342,3 +2342,30 @@ a.app-card:active {
   color: var(--muted);
   max-width: none;
 }
+
+/* ===== Vues 3D (Three.js) ===== */
+.voxel-canvas {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cyan) 35%, var(--surface)) 0%, var(--surface) 100%);
+}
+.voxel-canvas canvas {
+  display: block;
+}
+.voxel-canvas-build {
+  aspect-ratio: 4 / 3;
+  max-height: 34rem;
+}
+.view-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.6rem;
+}
+.view-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+}

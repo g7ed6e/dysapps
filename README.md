@@ -53,6 +53,8 @@ Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent d�
 
 ## Chantier (construction)
 
+- **Vue 3D** (Three.js, chargé seulement en entrant dans le Chantier, ~140 Ko compressés) : rotation au doigt ou à la souris, zoom, tap sur une case ou un bloc pour poser. Désactivable dans les réglages (« Vues en 3D dans Blocland ») ; sans WebGL, la vue simple prend le relais automatiquement.
+- **Vue simple** (SVG isométrique) : accessible au clavier et au lecteur d’écran ; c’est aussi la vue utilisée dans les tests.
 - Inventaire des blocs gagnés (par type), grille isométrique 8 × 8 cases, 6 blocs de haut ; poser (le bloc choisi s’empile sur la colonne touchée), retirer (le bloc du dessus revient dans l’inventaire), tout démonter (avec confirmation). Aucune physique : rien ne tombe, l’échec d’un exercice ne touche jamais la construction.
 - Accessible au clavier (chaque case est un bouton) et au toucher ; la construction est enregistrée sur l’appareil.
 

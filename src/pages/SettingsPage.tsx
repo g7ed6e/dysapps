@@ -107,6 +107,10 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.reduceMotion} onChange={(e) => update({ reduceMotion: e.target.checked })} />
             Réduire les animations
           </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.view3d} onChange={(e) => update({ view3d: e.target.checked })} />
+            Vues en 3D dans Blocland (sinon, vue simple)
+          </label>
         </fieldset>
 
         <div className="actions">
