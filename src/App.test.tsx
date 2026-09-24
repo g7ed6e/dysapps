@@ -31,12 +31,17 @@ it('liste les activités d’une matière', () => {
 it('applique et sauvegarde les réglages', async () => {
   const user = userEvent.setup();
   renderAt('/reglages');
-  await user.click(screen.getByLabelText('Sombre'));
-  expect(document.documentElement.dataset.theme).toBe('sombre');
-  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('sombre');
+  await user.click(screen.getByLabelText('BD nuit'));
+  expect(document.documentElement.dataset.theme).toBe('nuit');
+  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
+});
+
+it('redirige l’ancienne adresse de progression vers les succès', () => {
+  renderAt('/progression');
+  expect(screen.getByRole('heading', { name: /Succès/ })).toBeInTheDocument();
 });
 
 it('affiche une page introuvable', () => {
   renderAt('/nimporte-quoi');
-  expect(screen.getByText(/je ne trouve pas cette page/)).toBeInTheDocument();
+  expect(screen.getByText(/Zone introuvable/)).toBeInTheDocument();
 });

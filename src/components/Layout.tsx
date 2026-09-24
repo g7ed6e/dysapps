@@ -4,6 +4,7 @@ import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
+import { Icon } from './Icon';
 
 export function Layout() {
   const { progress } = useProgress();
@@ -18,20 +19,22 @@ export function Layout() {
         Aller au contenu
       </a>
       <header className="topbar">
-        <Link to="/" className="brand" aria-label="Accueil DysApps">
-          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width="40" height="40" />
-          <span>DysApps</span>
+        <Link to="/" className="brand" aria-label="Menu DysApps">
+          <span className="brand-mark" aria-hidden="true">
+            D
+          </span>
+          <span className="brand-name">DysApps</span>
         </Link>
-        <Link to="/progression" className="topbar-xp" aria-label="Voir ma progression">
+        <Link to="/succes" className="topbar-xp" aria-label="Voir mon rang et mes succès">
           <XpBar xp={progress.xp} />
         </Link>
         <nav className="topbar-nav" aria-label="Navigation principale">
-          <NavLink to="/progression" className="nav-button">
-            <span aria-hidden="true">🏆</span>
-            <span className="nav-label">Badges</span>
+          <NavLink to="/succes" className="nav-button">
+            <Icon name="trophy" />
+            <span className="nav-label">Succès</span>
           </NavLink>
           <NavLink to="/reglages" className="nav-button">
-            <span aria-hidden="true">⚙️</span>
+            <Icon name="settings" />
             <span className="nav-label">Réglages</span>
           </NavLink>
         </nav>

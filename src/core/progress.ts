@@ -90,23 +90,36 @@ export interface LevelInfo {
   level: number;
   xpIntoLevel: number;
   xpForLevel: number;
+  /** Rang affiché, ex. « Argent II ». */
   title: string;
+  tier: Tier;
 }
 
-const LEVEL_TITLES = [
-  'Explorateur·rice',
-  'Apprenti·e',
-  'Curieux·se',
-  'Aventurier·ère',
-  'Stratège',
-  'Expert·e',
-  'Champion·ne',
-  'Maître',
-  'Légende',
-];
+export type Tier = 'bronze' | 'argent' | 'or' | 'platine' | 'diamant' | 'legende';
 
-export function levelTitle(level: number): string {
-  return LEVEL_TITLES[Math.min(Math.floor((level - 1) / 3), LEVEL_TITLES.length - 1)];
+const TIERS: { id: Tier; name: string }[] = [
+  { id: 'bronze', name: 'Bronze' },
+  { id: 'argent', name: 'Argent' },
+  { id: 'or', name: 'Or' },
+  { id: 'platine', name: 'Platine' },
+  { id: 'diamant', name: 'Diamant' },
+];
+const DIVISIONS = ['I', 'II', 'III'];
+/** Premier niveau du rang Légende (après Diamant III). */
+export const LEGEND_LEVEL = TIERS.length * DIVISIONS.length + 1;
+
+/** Rang d'un niveau : 3 divisions par rang (Bronze I, II, III, puis Argent I…), puis Légende. */
+export function rankForLevel(level: number): { title: string; tier: Tier } {
+  if (level >= LEGEND_LEVEL) return { title: `Légende ${level - LEGEND_LEVEL + 1}`, tier: 'legende' };
+  const index = Math.max(0, level - 1);
+  const tier = TIERS[Math.floor(index / DIVISIONS.length)];
+  return { title: `${tier.name} ${DIVISIONS[index % DIVISIONS.length]}`, tier: tier.id };
+}
+
+/** Niveau à partir duquel un rang est atteint (ex. Argent → 4). */
+export function firstLevelOf(tier: Tier): number {
+  if (tier === 'legende') return LEGEND_LEVEL;
+  return TIERS.findIndex((t) => t.id === tier) * DIVISIONS.length + 1;
 }
 
 export function levelFromXp(xp: number): LevelInfo {
@@ -116,31 +129,49 @@ export function levelFromXp(xp: number): LevelInfo {
     remaining -= xpToNextLevel(level);
     level += 1;
   }
-  return { level, xpIntoLevel: remaining, xpForLevel: xpToNextLevel(level), title: levelTitle(level) };
+  return { level, xpIntoLevel: remaining, xpForLevel: xpToNextLevel(level), ...rankForLevel(level) };
 }
 
-// ---------- Badges ----------
+// ---------- Succès ----------
+
+/** Nom d'icône (voir components/Icon.tsx) : la logique reste indépendante de l'interface. */
+export type IconName =
+  | 'footprints'
+  | 'flag'
+  | 'flame'
+  | 'zap'
+  | 'star'
+  | 'dumbbell'
+  | 'target'
+  | 'mountain'
+  | 'medal'
+  | 'trophy'
+  | 'gem'
+  | 'crown';
 
 export interface BadgeDef {
   id: string;
-  icon: string;
+  icon: IconName;
   title: string;
   description: string;
   earned: (p: Progress) => boolean;
 }
 
+const reached = (p: Progress, tier: Tier) => levelFromXp(p.xp).level >= firstLevelOf(tier);
+
 export const BADGES: BadgeDef[] = [
-  { id: 'premier-pas', icon: '👣', title: 'Premier pas', description: 'Répondre à ta première question.', earned: (p) => p.totalAnswers >= 1 },
-  { id: 'premiere-seance', icon: '🎒', title: 'Première séance', description: 'Terminer une séance d’exercices.', earned: (p) => p.sessionsCompleted >= 1 },
-  { id: 'serie-5', icon: '🔥', title: 'En forme', description: '5 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 5 },
-  { id: 'serie-10', icon: '⚡', title: 'Inarrêtable', description: '10 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 10 },
-  { id: 'sans-faute', icon: '🌟', title: 'Sans faute', description: 'Réussir une séance à 100 %.', earned: (p) => p.perfectSessions >= 1 },
-  { id: 'perseverant', icon: '🧗', title: 'Persévérant·e', description: 'Terminer 10 séances.', earned: (p) => p.sessionsCompleted >= 10 },
-  { id: 'cinquante', icon: '🎯', title: '50 réponses', description: 'Répondre à 50 questions.', earned: (p) => p.totalAnswers >= 50 },
-  { id: 'deux-cents', icon: '🏔️', title: '200 réponses', description: 'Répondre à 200 questions.', earned: (p) => p.totalAnswers >= 200 },
-  { id: 'niveau-5', icon: '🥉', title: 'Niveau 5', description: 'Atteindre le niveau 5.', earned: (p) => levelFromXp(p.xp).level >= 5 },
-  { id: 'niveau-10', icon: '🥈', title: 'Niveau 10', description: 'Atteindre le niveau 10.', earned: (p) => levelFromXp(p.xp).level >= 10 },
-  { id: 'niveau-20', icon: '🥇', title: 'Niveau 20', description: 'Atteindre le niveau 20.', earned: (p) => levelFromXp(p.xp).level >= 20 },
+  { id: 'premier-pas', icon: 'footprints', title: 'Échauffement', description: 'Répondre à ta première question.', earned: (p) => p.totalAnswers >= 1 },
+  { id: 'premiere-seance', icon: 'flag', title: 'Première quête', description: 'Terminer une quête.', earned: (p) => p.sessionsCompleted >= 1 },
+  { id: 'serie-5', icon: 'flame', title: 'Combo x5', description: '5 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 5 },
+  { id: 'serie-10', icon: 'zap', title: 'Combo x10', description: '10 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 10 },
+  { id: 'sans-faute', icon: 'star', title: 'Perfect', description: 'Finir une quête à 100 %.', earned: (p) => p.perfectSessions >= 1 },
+  { id: 'perseverant', icon: 'dumbbell', title: 'Acharné·e', description: 'Terminer 10 quêtes.', earned: (p) => p.sessionsCompleted >= 10 },
+  { id: 'cinquante', icon: 'target', title: 'Rodé·e', description: 'Répondre à 50 questions.', earned: (p) => p.totalAnswers >= 50 },
+  { id: 'deux-cents', icon: 'mountain', title: 'Vétéran·e', description: 'Répondre à 200 questions.', earned: (p) => p.totalAnswers >= 200 },
+  { id: 'rang-argent', icon: 'medal', title: 'Rang Argent', description: 'Atteindre le rang Argent.', earned: (p) => reached(p, 'argent') },
+  { id: 'rang-or', icon: 'trophy', title: 'Rang Or', description: 'Atteindre le rang Or.', earned: (p) => reached(p, 'or') },
+  { id: 'rang-diamant', icon: 'gem', title: 'Rang Diamant', description: 'Atteindre le rang Diamant.', earned: (p) => reached(p, 'diamant') },
+  { id: 'rang-legende', icon: 'crown', title: 'Légende', description: 'Atteindre le rang Légende.', earned: (p) => reached(p, 'legende') },
 ];
 
 export function getBadge(id: string): BadgeDef | undefined {

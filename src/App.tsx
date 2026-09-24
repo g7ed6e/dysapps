@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
@@ -30,7 +30,8 @@ export function AppRoutes() {
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
         <Route path="reglages" element={<SettingsPage />} />
-        <Route path="progression" element={<ProgressPage />} />
+        <Route path="succes" element={<ProgressPage />} />
+        <Route path="progression" element={<Navigate to="/succes" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

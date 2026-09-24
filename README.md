@@ -6,11 +6,12 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 ## Ce que contient le socle
 
-- **Portail** : accueil par matière (Français, Maths) et catalogue des activités.
-- **Réglages d’affichage** : police (Atkinson Hyperlegible, OpenDyslexic, Verdana), taille, interlignage, espacement des lettres et des mots, thèmes (crème, clair, sombre, contraste élevé), réduction des animations.
+- **Style Street / BD** pensé pour des ados : cases de BD, onomatopées, couleurs vives, icônes (Lucide). Les polices « affiche » (Archivo Black, Bangers) ne servent qu’aux titres courts : le texte à lire reste dans la police dys choisie.
+- **Portail** : accueil par matière (Français, Maths) et catalogue des quêtes.
+- **Réglages d’affichage** : police (Atkinson Hyperlegible, OpenDyslexic, Verdana), taille, interlignage, espacement des lettres et des mots, thèmes (BD, BD nuit, sobre, contraste élevé), réduction des animations.
 - **Lecture vocale** : bouton 🔊 sur les consignes (synthèse vocale du navigateur, sans serveur), vitesse réglable et lecture automatique en option.
-- **Gamification** : XP, niveaux, 11 badges et Plume, la mascotte qui encourage.
-- **Pas de stress** : pas de chronomètre, un bouton « 💡 Un indice ? » avant de répondre (ou après une erreur), et un point d’effort même quand la réponse est fausse.
+- **Gamification** : XP, niveaux et rangs (Bronze I → Diamant III, puis Légende), combos, 12 succès, et des messages façon jeu vidéo (« BIEN VU ! », « COMBO x5 », « QUÊTE TERMINÉE »).
+- **Pas de stress** : pas de chronomètre, un joker (indice) disponible avant de répondre ou après une erreur, et un point d’effort même quand la réponse est fausse.
 - **Moteur d’exercices** `QuizSession`, réutilisable par toutes les activités.
 - **Progression enregistrée sur l’appareil** (`localStorage`) : pas de compte, pas de serveur, aucune donnée ne quitte l’appareil.
 - **PWA** : l’application s’installe sur l’écran d’accueil et fonctionne hors ligne après la première visite.
