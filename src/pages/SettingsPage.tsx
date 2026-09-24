@@ -1,23 +1,44 @@
-import { useState } from 'react';
-import { FONT_LABELS, THEME_LABELS, type FontChoice, type ThemeChoice } from '../core/settings';
+import { useEffect, useState } from 'react';
+import {
+  FONT_LABELS,
+  MIN_FONT_SIZE,
+  MIN_LINE_HEIGHT,
+  THEME_LABELS,
+  isFontAvailable,
+  type FontChoice,
+  type ThemeChoice,
+} from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
+import { Syllabified } from '../components/Syllabified';
 
-const SAMPLE = 'Le petit chat boit son lait. Il a 3 bols et en vide 2 : il en reste 1.';
+const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
 
 export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
   const { resetProgress } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
+  // Luciole doit être installée à la main (voir public/fonts/luciole/README.md).
+  const [lucioleReady, setLucioleReady] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    isFontAvailable('Luciole').then((ok) => alive && setLucioleReady(ok));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
     <>
       <h1 className="page-title">Réglages</h1>
 
       <div className="panel preview" aria-label="Aperçu">
-        <p>{SAMPLE}</p>
+        <p>
+          <Syllabified text={SAMPLE} />
+        </p>
       </div>
 
       <form className="settings" onSubmit={(e) => e.preventDefault()}>
@@ -28,9 +49,22 @@ export function SettingsPage() {
               <label key={font} className={`option font-${font}${settings.font === font ? ' selected' : ''}`}>
                 <input type="radio" name="font" value={font} checked={settings.font === font} onChange={() => update({ font })} />
                 {FONT_LABELS[font]}
+                {font === 'luciole' && lucioleReady === false && <span className="option-note">(fichiers à installer)</span>}
               </label>
             ))}
           </div>
+        </fieldset>
+
+        <fieldset className="panel">
+          <legend>Lecture</legend>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.syllables} onChange={(e) => update({ syllables: e.target.checked })} />
+            Syllabes en couleurs alternées
+          </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.autoRead} onChange={(e) => update({ autoRead: e.target.checked })} />
+            Lire les consignes à voix haute dès qu’elles apparaissent
+          </label>
         </fieldset>
 
         <fieldset className="panel">
@@ -47,8 +81,8 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Espacements</legend>
-          <Slider label="Taille du texte" value={settings.fontSize} min={16} max={32} step={1} display={`${settings.fontSize} px`} onChange={(fontSize) => update({ fontSize })} />
-          <Slider label="Espace entre les lignes" value={settings.lineHeight} min={1.3} max={2.4} step={0.1} display={settings.lineHeight.toFixed(1)} onChange={(lineHeight) => update({ lineHeight })} />
+          <Slider label="Taille du texte" value={settings.fontSize} min={MIN_FONT_SIZE} max={32} step={1} display={`${settings.fontSize} px`} onChange={(fontSize) => update({ fontSize })} />
+          <Slider label="Espace entre les lignes" value={settings.lineHeight} min={MIN_LINE_HEIGHT} max={2.4} step={0.1} display={settings.lineHeight.toFixed(1)} onChange={(lineHeight) => update({ lineHeight })} />
           <Slider label="Espace entre les lettres" value={settings.letterSpacing} min={0} max={0.2} step={0.01} display={settings.letterSpacing.toFixed(2)} onChange={(letterSpacing) => update({ letterSpacing })} />
           <Slider label="Espace entre les mots" value={settings.wordSpacing} min={0} max={0.5} step={0.02} display={settings.wordSpacing.toFixed(2)} onChange={(wordSpacing) => update({ wordSpacing })} />
         </fieldset>
@@ -61,10 +95,6 @@ export function SettingsPage() {
               <button type="button" className="button" onClick={() => speak(SAMPLE)}>
                 <Icon name="speaker" /> Tester la voix
               </button>
-              <label className="toggle">
-                <input type="checkbox" checked={settings.autoRead} onChange={(e) => update({ autoRead: e.target.checked })} />
-                Lire automatiquement les messages
-              </label>
             </>
           ) : (
             <p>La lecture à voix haute n’est pas disponible sur ce navigateur.</p>

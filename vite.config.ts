@@ -36,6 +36,10 @@ function securityHeaders(): Plugin {
 
 export default defineConfig({
   base,
+  build: {
+    // Jamais d'inclusion en data: (la CSP n'autorise que les fichiers du site).
+    assetsInlineLimit: 0,
+  },
   plugins: [
     react(),
     securityHeaders(),
@@ -47,8 +51,8 @@ export default defineConfig({
         short_name: 'DysApps',
         description: "Exercices adaptés aux élèves dys du collège (français et maths)",
         lang: 'fr',
-        theme_color: '#111118',
-        background_color: '#fff6d8',
+        theme_color: '#3b2d20',
+        background_color: '#fbf6ea',
         display: 'standalone',
         start_url: base,
         scope: base,

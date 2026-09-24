@@ -1,8 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#111118"/>
-  <g transform="rotate(-6 256 256)">
-    <rect x="128" y="128" width="276" height="276" rx="18" fill="#ff3d7f"/>
-    <rect x="108" y="108" width="276" height="276" rx="18" fill="#ffd60a" stroke="#111118" stroke-width="16"/>
-    <path d="M186 168 h58 a78 78 0 0 1 0 156 h-58 z" fill="none" stroke="#111118" stroke-width="38" stroke-linejoin="round"/>
+  <rect width="512" height="512" rx="96" fill="#fbf6ea"/>
+  <!-- cube de bois en projection isométrique -->
+  <polygon points="256,88 416,180 256,272 96,180" fill="#e0b078"/>
+  <polygon points="96,180 256,272 256,456 96,364" fill="#c98d4b"/>
+  <polygon points="416,180 256,272 256,456 416,364" fill="#8a5a26"/>
+  <polygon points="256,88 416,180 256,272 96,180" fill="none" stroke="#3b2d20" stroke-width="14" stroke-linejoin="round"/>
+  <polygon points="96,180 256,272 256,456 96,364" fill="none" stroke="#3b2d20" stroke-width="14" stroke-linejoin="round"/>
+  <polygon points="416,180 256,272 256,456 416,364" fill="none" stroke="#3b2d20" stroke-width="14" stroke-linejoin="round"/>
+  <!-- D sur la face de gauche -->
+  <g transform="translate(120 200) skewY(30)">
+    <path d="M22 0 h34 c44 0 70 30 70 66 c0 36 -26 66 -70 66 h-34 z M52 30 v72 h6 c22 0 36 -14 36 -36 c0 -22 -14 -36 -36 -36 z" fill="#3b2d20" fill-rule="evenodd"/>
   </g>
 </svg>

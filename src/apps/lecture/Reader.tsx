@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { frenchTypography } from '../../components/math/RichText';
 import { isSpeechAvailable } from '../../core/speech';
+import { useSettings } from '../../core/SettingsContext';
+import { Syllabified } from '../../components/Syllabified';
 import { segmentsOf, type ReadingText } from './data';
 import { useReadAloud } from './useReadAloud';
 
@@ -19,6 +21,7 @@ export function Reader({ text, compact = false }: Props) {
   const segments = segmentsOf(text);
   const { current, playing, start, stop } = useReadAloud(segments);
   const [alternate, setAlternate] = useState(true);
+  const { settings, update } = useSettings();
   const speech = isSpeechAvailable();
   let index = 0;
 
@@ -50,6 +53,10 @@ export function Reader({ text, compact = false }: Props) {
           <input type="checkbox" checked={alternate} onChange={(e) => setAlternate(e.target.checked)} />
           Lignes en couleurs alternées
         </label>
+        <label className="toggle">
+          <input type="checkbox" checked={settings.syllables} onChange={(e) => update({ syllables: e.target.checked })} />
+          Syllabes en couleurs
+        </label>
       </div>
       {speech && <p className="reader-tip">Touche une ligne pour l’écouter seule.</p>}
 
@@ -70,7 +77,9 @@ export function Reader({ text, compact = false }: Props) {
                       {i + 1}
                     </span>
                   )}
-                  <span className="segment-text">{frenchTypography(segment)}</span>
+                  <span className="segment-text">
+                    <Syllabified text={frenchTypography(segment)} />
+                  </span>
                 </>
               );
               return speech ? (
