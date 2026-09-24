@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { QuizSession } from '../../components/QuizSession';
 import { useProgress } from '../../core/ProgressContext';
@@ -12,6 +12,11 @@ export default function LectureApp() {
   const [step, setStep] = useState<Step | null>(null);
   const key = (id: string) => `lecture:${id}`;
 
+  // Le texte choisi s'ouvre en haut de l'écran, même si la liste était défilée.
+  useEffect(() => {
+    if (step?.phase === 'lecture') window.scrollTo?.(0, 0);
+  }, [step]);
+
   if (step?.phase === 'lecture') {
     return (
       <>
@@ -19,9 +24,10 @@ export default function LectureApp() {
           <Icon name="back" /> Tous les textes
         </button>
         <Reader text={step.text} />
-        <div className="actions">
+        {/* Toujours visible en bas de l'écran, même au milieu d'un long texte. */}
+        <div className="sticky-actions">
           <button type="button" className="button primary" onClick={() => setStep({ text: step.text, phase: 'questions' })}>
-            J’ai lu : aux questions ! <Icon name="play" />
+            J’ai lu : aux questions ! <Icon name="play" />
           </button>
         </div>
       </>
@@ -30,21 +36,21 @@ export default function LectureApp() {
 
   if (step?.phase === 'questions') {
     return (
-      <>
-        <details className="reread">
-          <summary>
-            <Icon name="book" /> Revoir le texte
-          </summary>
-          <Reader text={step.text} compact />
-        </details>
-        <QuizSession
-          key={step.text.id}
-          appId={key(step.text.id)}
-          makeQuestions={() => questionsFor(step.text)}
-          onExit={() => setStep(null)}
-          exitLabel="Autre texte"
-        />
-      </>
+      <QuizSession
+        key={step.text.id}
+        appId={key(step.text.id)}
+        makeQuestions={() => questionsFor(step.text)}
+        onExit={() => setStep(null)}
+        exitLabel="Autre texte"
+        after={
+          <details className="reread">
+            <summary>
+              <Icon name="book" /> Revoir le texte
+            </summary>
+            <Reader text={step.text} compact />
+          </details>
+        }
+      />
     );
   }
 

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -119,10 +119,29 @@ it('relit un message identique quand la lecture automatique est active', async (
     </SettingsProvider>,
   );
 
+  // Deux erreurs de suite : la même correction doit être relue à chaque fois.
   for (let i = 0; i < 2; i++) {
-    await user.click(screen.getByRole('button', { name: 'oui' }));
+    await user.click(screen.getByRole('button', { name: 'non' }));
     await user.click(screen.getByRole('button', { name: /Suivante/ }));
   }
-  expect(spoken.filter((t) => t.startsWith('Question suivante'))).toHaveLength(2);
+  expect(spoken.filter((t) => t.startsWith('PAS CETTE FOIS'))).toHaveLength(2);
   vi.unstubAllGlobals();
+});
+
+it('affiche le résultat et le bouton pour continuer dans le bandeau fixé en bas', async () => {
+  const user = userEvent.setup();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <MemoryRouter>
+          <QuizSession appId="test" makeQuestions={() => questions} />
+        </MemoryRouter>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  expect(screen.queryByRole('region', { name: 'Résultat de la question' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: '4' }));
+  const sheet = screen.getByRole('region', { name: 'Résultat de la question' });
+  expect(within(sheet).getByRole('button', { name: /Suivante/ })).toHaveFocus();
+  expect(within(sheet).getByText(/\+10 XP/)).toBeInTheDocument();
 });
