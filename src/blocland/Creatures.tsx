@@ -73,7 +73,7 @@ const GRIMOIRE = fromLayers(
   { S: '#8c93a0', s: '#b3b9c4', Y: '#f5d63d', B: '#e0a33a' },
 );
 
-const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
+export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
   carriere: ROUXEL,

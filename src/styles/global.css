@@ -2369,3 +2369,17 @@ a.app-card:active {
   font-size: 0.85rem;
   color: var(--muted);
 }
+.creature-3d {
+  background: transparent;
+  flex-shrink: 0;
+}
+.creature-3d.creature-large {
+  width: 9rem;
+  height: 9rem;
+}
+@media (max-width: 640px) {
+  .creature-3d.creature-large {
+    width: 8rem;
+    height: 8rem;
+  }
+}

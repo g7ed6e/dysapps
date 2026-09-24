@@ -3,7 +3,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { Creature } from './Creatures';
+import { Creature3D } from './Creature3D';
 import type { BiomeDef } from './biomes';
 
 interface Props {
@@ -25,7 +25,7 @@ export function CreatureBubble({ biome, text, autoSpeak = true }: Props) {
 
   return (
     <div className="creature-bubble">
-      <Creature biome={biome.id} label={`${biome.creature.name}, ${biome.creature.species}`} className="creature-large" />
+      <Creature3D biome={biome.id} label={`${biome.creature.name}, ${biome.creature.species}`} className="creature-large" />
       <div className="creature-says" role="status" aria-live="polite">
         <p className="creature-name">{biome.creature.name}</p>
         <p className="creature-text">
