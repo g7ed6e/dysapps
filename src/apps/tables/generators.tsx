@@ -220,14 +220,7 @@ export function tableQuest(t: number, rng: Rng = Math.random): Question[] {
   );
 }
 
-export interface QuestDef {
-  id: string;
-  title: string;
-  detail: string;
-  make: (rng?: Rng) => Question[];
-}
-
-export const QUESTS: QuestDef[] = [
+export const QUESTS: { id: string; title: string; detail: string; make: (rng?: Rng) => Question[] }[] = [
   { id: 'faciles', title: 'Tables faciles', detail: '× 2, 3, 4, 5 et 10', make: (rng) => buildQuest([multiplicationFrom([2, 3, 4, 5, 10])], undefined, rng) },
   { id: 'costaudes', title: 'Tables costaudes', detail: '× 6, 7, 8 et 9', make: (rng) => buildQuest([multiplicationFrom([6, 7, 8, 9])], undefined, rng) },
   { id: 'divisions', title: 'Divisions', detail: 'Les tables à l’envers', make: (rng) => buildQuest([division], undefined, rng) },

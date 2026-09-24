@@ -22,6 +22,8 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 - **Tables & calcul mental** (Maths) : 6 quêtes de 10 calculs générés au hasard — tables faciles (× 2, 3, 4, 5, 10), tables costaudes (× 6 à 9), divisions, compléments à 10 et à 100, doubles et moitiés, × et ÷ par 10, 100, 1 000 — et la révision d’une table complète. 4 réponses rangées dans l’ordre croissant, avec des pièges tirés des erreurs fréquentes (oubli de retenue, table voisine…). Le joker donne une astuce et une aide visuelle : grille de points groupés par 5, boîte de 10, droite par bonds ou tableau de numération. Les consignes sont lues « 7 fois 8 » et non « 7 × 8 ».
 
+- **Fractions** (Maths) : 5 quêtes de 8 questions générées — lire une fraction (barres et disques), comparer (même dénominateur, même numérateur, fractions égales), fractions égales, fraction d’une quantité, repérage sur la droite graduée. Fractions écrites en colonne et lues en toutes lettres (« 3 quarts »). Le joker les dessine : barres alignées, groupes de points.
+
 ## Développer
 
 ```bash
@@ -81,4 +83,4 @@ src/
 ## Feuille de route
 
 - Français : lecture et compréhension (textes du domaine public)
-- Maths : fractions, nombres décimaux et numération
+- Maths : nombres décimaux et numération
