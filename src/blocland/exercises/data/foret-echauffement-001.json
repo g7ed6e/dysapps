@@ -1,0 +1,21 @@
+{
+  "id": "foret-echauffement-001",
+  "biome": "foret",
+  "type": "abattage",
+  "level": 1,
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes.",
+  "items": [
+    { "key": "cabane", "word": "cabane", "prompt": "cabane", "choices": ["2", "3", "4"], "answer": "3", "heard": "ca-ba-ne" },
+    { "key": "bois", "word": "bois", "prompt": "bois", "choices": ["1", "2", "3"], "answer": "1", "heard": "bois" },
+    { "key": "village", "word": "village", "prompt": "village", "choices": ["2", "3", "4"], "answer": "3", "heard": "vil-la-ge" },
+    { "key": "pont", "word": "pont", "prompt": "pont", "choices": ["1", "2", "3"], "answer": "1", "heard": "pont" },
+    { "key": "lanterne", "word": "lanterne", "prompt": "lanterne", "choices": ["2", "3", "4"], "answer": "3", "heard": "lan-ter-ne" },
+    { "key": "tour", "word": "tour", "prompt": "tour", "choices": ["1", "2", "3"], "answer": "1", "heard": "tour" }
+  ],
+  "feedback": {
+    "correct": "Bien entendu !",
+    "wrong": "{word} se coupe en {heard} : {answer} syllabes."
+  },
+  "reward": { "block": "bois", "amount": 3, "xp": 10 },
+  "adaptive": { "promoteAt": 0.85, "demoteAt": 0.5 }
+}
