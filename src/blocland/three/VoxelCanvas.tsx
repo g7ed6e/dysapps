@@ -10,6 +10,8 @@ export interface VoxelCanvasProps {
   gridSize?: number;
   /** Case touchée (sol ou cube) : coordonnées de la colonne. */
   onPick?: (x: number, y: number) => void;
+  /** Cube étiqueté touché (voir VoxelCube.tag). */
+  onPickTag?: (tag: string) => void;
   selected?: { x: number; y: number } | null;
   /** Hauteur de la colonne sélectionnée, pour placer le curseur. */
   selectedHeight?: number;
@@ -22,6 +24,10 @@ export interface VoxelCanvasProps {
   distance?: number;
   /** Rotation et zoom au doigt (faux pour une simple vitrine, comme une créature). */
   interactive?: boolean;
+  /** Cadrage : direction horizontale de la caméra (x, y de la grille), hauteur relative, et facteur de distance. */
+  cameraDirection?: [number, number];
+  elevation?: number;
+  fit?: number;
   className?: string;
   label: string;
 }
@@ -37,6 +43,7 @@ export default function VoxelCanvas({
   cubes,
   gridSize,
   onPick,
+  onPickTag,
   selected,
   selectedHeight = 0,
   autoRotate = false,
@@ -44,6 +51,9 @@ export default function VoxelCanvas({
   breathe = false,
   distance,
   interactive = true,
+  cameraDirection,
+  elevation,
+  fit,
   className,
   label,
 }: VoxelCanvasProps) {
@@ -60,6 +70,8 @@ export default function VoxelCanvas({
   } | null>(null);
   const pickRef = useRef(onPick);
   pickRef.current = onPick;
+  const pickTagRef = useRef(onPickTag);
+  pickTagRef.current = onPickTag;
 
   // Centre et rayon de la scène, pour cadrer la caméra.
   const extent = (() => {
@@ -154,7 +166,7 @@ export default function VoxelCanvas({
       down = { x: e.clientX, y: e.clientY };
     };
     const onUp = (e: PointerEvent) => {
-      if (!down || !pickRef.current) return;
+      if (!down || (!pickRef.current && !pickTagRef.current)) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       down = null;
       if (moved > 8) return;
@@ -162,13 +174,20 @@ export default function VoxelCanvas({
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
       const hit = ray.intersectObjects(world.current?.pickables ?? [], false)[0];
-      if (hit && typeof hit.object.userData.x === 'number') pickRef.current(hit.object.userData.x, hit.object.userData.y);
+      if (!hit) return;
+      if (typeof hit.object.userData.tag === 'string') pickTagRef.current?.(hit.object.userData.tag);
+      else if (typeof hit.object.userData.x === 'number') pickRef.current?.(hit.object.userData.x, hit.object.userData.y);
     };
     const onHover = (e: PointerEvent) => {
-      if (!gridSize || e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch') return;
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
+      if (!gridSize) {
+        const over = ray.intersectObjects(world.current?.pickables ?? [], false)[0];
+        renderer.domElement.style.cursor = over ? 'pointer' : 'grab';
+        return;
+      }
       const hit = ray.intersectObjects(tilesGroup.children, false)[0];
       for (const t of tilesGroup.children) {
         const m = t as THREE.Mesh;
@@ -229,16 +248,17 @@ export default function VoxelCanvas({
     const w = world.current;
     if (!w) return;
     // Assez près pour que la scène remplisse le cadre, vue de trois quarts en plongée légère.
-    const d = distance ?? extent.radius * (gridSize ? 1.15 : 1.6) + 1.5;
+    const d = distance ?? extent.radius * (fit ?? (gridSize ? 1.15 : 1.6)) + 1.5;
     w.controls.target.set(extent.cx, gridSize ? Math.min(extent.cz, 1.5) : extent.cz, extent.cy);
-    // Sol : plongée de trois quarts ; créature : presque de face, pour voir les yeux.
-    // Les créatures ont leur visage du côté y négatif : la caméra se place devant elles.
-    const side = gridSize ? 1 : -1;
-    w.camera.position.set(extent.cx + d * 0.75, extent.cz + d * (gridSize ? 0.62 : 0.3), extent.cy + side * d * 0.75);
+    // Par défaut : sol vu depuis le coin (+x, +y) en plongée ; créature vue presque de face
+    // (son visage est du côté y négatif), pour voir les yeux.
+    const [dx, dy] = cameraDirection ?? (gridSize ? [0.75, 0.75] : [0.75, -0.75]);
+    const up = elevation ?? (gridSize ? 0.62 : 0.3);
+    w.camera.position.set(extent.cx + d * dx, extent.cz + d * up, extent.cy + d * dy);
     w.controls.update();
     // Uniquement au montage et quand la taille de la scène change nettement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gridSize, distance, Math.round(extent.radius)]);
+  }, [gridSize, distance, fit, elevation, cameraDirection?.[0], cameraDirection?.[1], Math.round(extent.radius)]);
 
   // ---- Cubes
   useEffect(() => {
@@ -255,9 +275,9 @@ export default function VoxelCanvas({
     for (const c of cubes) {
       const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: new THREE.Color(c.color) }));
       mesh.position.copy(toWorld(c.x, c.y, c.z));
-      mesh.userData = { x: c.x, y: c.y };
+      mesh.userData = c.tag ? { tag: c.tag } : { x: c.x, y: c.y };
       w.cubesGroup.add(mesh);
-      if (gridSize) w.pickables.push(mesh);
+      if (gridSize || c.tag) w.pickables.push(mesh);
     }
   }, [cubes, gridSize]);
 
