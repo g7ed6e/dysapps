@@ -14,9 +14,16 @@ describe('sanitizeSettings', () => {
   });
 });
 
-it('convertit les anciens thèmes', () => {
-  expect(sanitizeSettings({ theme: 'creme' as never }).theme).toBe('bd');
+it('convertit les anciens thèmes et polices', () => {
+  expect(sanitizeSettings({ theme: 'bd' as never }).theme).toBe('creme');
   expect(sanitizeSettings({ theme: 'sombre' as never }).theme).toBe('nuit');
+  expect(sanitizeSettings({ font: 'systeme' as never }).font).toBe('arial');
+});
+
+it('respecte les minimums orthophoniques', () => {
+  const s = sanitizeSettings({ fontSize: 12, lineHeight: 1.1 });
+  expect(s.fontSize).toBe(18);
+  expect(s.lineHeight).toBe(1.5);
 });
 
 describe('applySettings', () => {

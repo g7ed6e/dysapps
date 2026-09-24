@@ -6,10 +6,12 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 ## Ce que contient le socle
 
-- **Style Street / BD** pensé pour des ados : cases de BD, onomatopées, couleurs vives, icônes (Lucide). Les polices « affiche » (Archivo Black, Bangers) ne servent qu’aux titres courts : le texte à lire reste dans la police dys choisie.
+- **Style « Blocland »** : monde en blocs (low-poly), fond crème `#FBF6EA`, encre brune, panneaux à ombre « face de cube », icônes (Lucide). La police « affiche » (Archivo Black) ne sert qu’aux titres courts, la police pixel (Silkscreen) qu’au logo et aux compteurs : le texte à lire reste dans la police dys choisie.
+- **Aventure Blocland** : le village est en ruine, l’élève est le bâtisseur. Cinq biomes = cinq modules (Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur), chacun avec sa créature originale qui donne les quêtes (Mousso le golem de mousse, Tunel la taupe, Rouxel le renard, Bloquette la vache, Grimoire le hibou) et son type de bloc. Univers et créatures sont dessinés en cubes (`src/blocland/Voxel.tsx`).
 - **Portail** : accueil par matière (Français, Maths) et catalogue des quêtes.
-- **Réglages d’affichage** : police (Atkinson Hyperlegible, OpenDyslexic, Verdana), taille, interlignage, espacement des lettres et des mots, thèmes (BD, BD nuit, sobre, contraste élevé), réduction des animations.
-- **Lecture vocale** : bouton 🔊 sur les consignes (synthèse vocale du navigateur, sans serveur), vitesse réglable et lecture automatique en option.
+- **Réglages d’affichage** : police (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), taille (jamais moins de 18 px), interlignage (jamais moins de 1,5), espacement des lettres et des mots, thèmes (crème, nuit, clair, contraste élevé), réduction des animations.
+- **Syllabes en couleurs alternées** (activable) : découpage écrit par règles (`src/core/syllables.ts`, vérifié sur une quarantaine de mots), appliqué aux textes de lecture, aux consignes et aux messages des créatures.
+- **Lecture vocale** : les consignes sont lues à voix haute dès qu’elles apparaissent (désactivable) et relançables avec le bouton 🔊 ; synthèse vocale du navigateur, sans serveur, vitesse réglable.
 - **Gamification** : XP, niveaux et rangs (Bronze I → Diamant III, puis Légende), combos, 12 succès, et des messages façon jeu vidéo (« BIEN VU ! », « COMBO x5 », « QUÊTE TERMINÉE »).
 - **Pas de stress** : pas de chronomètre, un joker (indice) disponible avant de répondre ou après une erreur, et un point d’effort même quand la réponse est fausse.
 - **Moteur d’exercices** `QuizSession`, réutilisable par toutes les activités.
@@ -27,6 +29,10 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 - **Nombres décimaux** (Maths) : 6 quêtes de 8 questions générées — lire un décimal (chiffre des dixièmes, centièmes…), comparer (piège « 3,45 > 3,5 »), droite graduée au dixième, fractions décimales, × et ÷ par 10, 100, 1 000, compléter à 1. Calculs en millièmes entiers (aucune erreur d’arrondi). Le joker ouvre le tableau de numération avec la virgule marquée et des zéros grisés pour aligner.
 
 - **Lecture** (Français) : 5 textes du domaine public — *Le Corbeau et le Renard*, *La Cigale et la Fourmi*, *Le Loup et l’Agneau* (La Fontaine, texte intégral), *La chèvre de monsieur Seguin* (d’après Daudet) et *Le pari de Phileas Fogg* (d’après Jules Verne), textes adaptés. Une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue (ou une seule ligne au toucher), mots difficiles expliqués, puis 5 questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions dans `src/apps/lecture/texts.json`.
+
+## Police Luciole
+
+Luciole (CC BY 4.0) n’est pas distribuée sur npm. Déposez `Luciole-Regular.woff2` et `Luciole-Bold.woff2` dans `public/fonts/luciole/` (voir le README de ce dossier) : l’option s’active dans les réglages, et vous pouvez la mettre par défaut dans `src/core/settings.ts`.
 
 ## Développer
 
@@ -84,6 +90,10 @@ src/
   styles/        thèmes et styles globaux
 ```
 
-## Feuille de route
+## Feuille de route (Blocland)
 
-- Plus de textes de lecture, et de nouvelles quêtes selon les besoins de la classe
+1. ✅ Coquille : profil d’accessibilité, lecture vocale des consignes, carte des biomes et créatures.
+2. Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
+3. Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
+4. Inventaire et grille de construction isométrique.
+5. Coffre à mots, boss de biome, craft, journal hebdomadaire, autres exercices.

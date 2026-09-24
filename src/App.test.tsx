@@ -31,7 +31,7 @@ it('liste les activités d’une matière', () => {
 it('applique et sauvegarde les réglages', async () => {
   const user = userEvent.setup();
   renderAt('/reglages');
-  await user.click(screen.getByLabelText('BD nuit'));
+  await user.click(screen.getByLabelText('Nuit'));
   expect(document.documentElement.dataset.theme).toBe('nuit');
   expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
 });
@@ -53,4 +53,24 @@ it('affiche le record d’une quête tous modes confondus', () => {
   );
   renderAt('/matiere/francais');
   expect(screen.getByText('Record : 90 %')).toBeInTheDocument();
+});
+
+it('ouvre la carte de Blocland puis un biome, dont la créature donne la quête', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+  await user.click(screen.getByRole('link', { name: /Forêt des sons/ }));
+  expect(screen.getByRole('heading', { name: /Forêt des sons/ })).toBeInTheDocument();
+  expect(screen.getByText('Mousso')).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: 'Mousso, golem de mousse' })).toBeInTheDocument();
+  expect(screen.getByText('Chasse au son')).toBeInTheDocument();
+});
+
+it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {
+  localStorage.setItem('dysapps:settings', JSON.stringify({ syllables: true }));
+  const { container } = renderAt('/aventure');
+  const syllables = container.querySelectorAll('.syl');
+  expect(syllables.length).toBeGreaterThan(10);
+  expect(container.querySelectorAll('.syl-0').length).toBeGreaterThan(0);
+  expect(container.querySelectorAll('.syl-1').length).toBeGreaterThan(0);
 });
