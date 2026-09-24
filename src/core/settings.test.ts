@@ -14,11 +14,16 @@ describe('sanitizeSettings', () => {
   });
 });
 
+it('convertit les anciens thèmes', () => {
+  expect(sanitizeSettings({ theme: 'creme' as never }).theme).toBe('bd');
+  expect(sanitizeSettings({ theme: 'sombre' as never }).theme).toBe('nuit');
+});
+
 describe('applySettings', () => {
   it('pose le thème et les variables CSS', () => {
     const root = document.createElement('div');
-    applySettings({ ...DEFAULT_SETTINGS, theme: 'sombre', fontSize: 24, font: 'opendyslexic' }, root);
-    expect(root.dataset.theme).toBe('sombre');
+    applySettings({ ...DEFAULT_SETTINGS, theme: 'nuit', fontSize: 24, font: 'opendyslexic' }, root);
+    expect(root.dataset.theme).toBe('nuit');
     expect(root.style.getPropertyValue('--font-size')).toBe('24px');
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });

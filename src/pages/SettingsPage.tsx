@@ -3,6 +3,7 @@ import { FONT_LABELS, THEME_LABELS, type FontChoice, type ThemeChoice } from '..
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
+import { Icon } from '../components/Icon';
 
 const SAMPLE = 'Le petit chat boit son lait. Il a 3 bols et en vide 2 : il en reste 1.';
 
@@ -15,12 +16,12 @@ export function SettingsPage() {
     <>
       <h1 className="page-title">Réglages</h1>
 
-      <div className="card preview" aria-label="Aperçu">
+      <div className="panel preview" aria-label="Aperçu">
         <p>{SAMPLE}</p>
       </div>
 
       <form className="settings" onSubmit={(e) => e.preventDefault()}>
-        <fieldset className="card">
+        <fieldset className="panel">
           <legend>Police d’écriture</legend>
           <div className="option-row">
             {(Object.keys(FONT_LABELS) as FontChoice[]).map((font) => (
@@ -32,7 +33,7 @@ export function SettingsPage() {
           </div>
         </fieldset>
 
-        <fieldset className="card">
+        <fieldset className="panel">
           <legend>Couleurs</legend>
           <div className="option-row">
             {(Object.keys(THEME_LABELS) as ThemeChoice[]).map((theme) => (
@@ -44,7 +45,7 @@ export function SettingsPage() {
           </div>
         </fieldset>
 
-        <fieldset className="card">
+        <fieldset className="panel">
           <legend>Espacements</legend>
           <Slider label="Taille du texte" value={settings.fontSize} min={16} max={32} step={1} display={`${settings.fontSize} px`} onChange={(fontSize) => update({ fontSize })} />
           <Slider label="Espace entre les lignes" value={settings.lineHeight} min={1.3} max={2.4} step={0.1} display={settings.lineHeight.toFixed(1)} onChange={(lineHeight) => update({ lineHeight })} />
@@ -52,17 +53,17 @@ export function SettingsPage() {
           <Slider label="Espace entre les mots" value={settings.wordSpacing} min={0} max={0.5} step={0.02} display={settings.wordSpacing.toFixed(2)} onChange={(wordSpacing) => update({ wordSpacing })} />
         </fieldset>
 
-        <fieldset className="card">
+        <fieldset className="panel">
           <legend>Voix</legend>
           {isSpeechAvailable() ? (
             <>
               <Slider label="Vitesse de lecture" value={settings.speechRate} min={0.5} max={1.3} step={0.1} display={`× ${settings.speechRate.toFixed(1)}`} onChange={(speechRate) => update({ speechRate })} />
               <button type="button" className="button" onClick={() => speak(SAMPLE)}>
-                <span aria-hidden="true">🔊 </span>Tester la voix
+                <Icon name="speaker" /> Tester la voix
               </button>
               <label className="toggle">
                 <input type="checkbox" checked={settings.autoRead} onChange={(e) => update({ autoRead: e.target.checked })} />
-                Lire automatiquement les messages de Plume
+                Lire automatiquement les messages
               </label>
             </>
           ) : (
@@ -70,7 +71,7 @@ export function SettingsPage() {
           )}
         </fieldset>
 
-        <fieldset className="card">
+        <fieldset className="panel">
           <legend>Animations</legend>
           <label className="toggle">
             <input type="checkbox" checked={settings.reduceMotion} onChange={(e) => update({ reduceMotion: e.target.checked })} />
@@ -80,7 +81,7 @@ export function SettingsPage() {
 
         <div className="actions">
           <button type="button" className="button" onClick={reset}>
-            Remettre l’affichage par défaut
+            Affichage par défaut
           </button>
           {confirmReset ? (
             <>

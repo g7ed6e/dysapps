@@ -1,4 +1,4 @@
-import { EMPTY_PROGRESS, XP, levelFromXp, recordAnswer, recordSession, sanitizeProgress, xpToNextLevel } from './progress';
+import { EMPTY_PROGRESS, XP, firstLevelOf, levelFromXp, rankForLevel, recordAnswer, recordSession, sanitizeProgress, xpToNextLevel } from './progress';
 
 describe('niveaux', () => {
   it('commence au niveau 1', () => {
@@ -87,5 +87,28 @@ describe('sanitizeProgress', () => {
 
   it('accepte une valeur qui n’est pas un objet', () => {
     expect(sanitizeProgress(null)).toEqual(EMPTY_PROGRESS);
+  });
+});
+
+describe('rangs', () => {
+  it('enchaîne Bronze I à III, puis Argent', () => {
+    expect(rankForLevel(1)).toEqual({ title: 'Bronze I', tier: 'bronze' });
+    expect(rankForLevel(3)).toEqual({ title: 'Bronze III', tier: 'bronze' });
+    expect(rankForLevel(4)).toEqual({ title: 'Argent I', tier: 'argent' });
+    expect(firstLevelOf('diamant')).toBe(13);
+  });
+
+  it('passe en Légende après Diamant III', () => {
+    expect(rankForLevel(15).title).toBe('Diamant III');
+    expect(rankForLevel(16)).toEqual({ title: 'Légende 1', tier: 'legende' });
+    expect(rankForLevel(18).title).toBe('Légende 3');
+  });
+
+  it('débloque le succès du rang Argent au niveau 4', () => {
+    let xp = 0;
+    for (let l = 1; l < 4; l++) xp += xpToNextLevel(l);
+    const update = recordAnswer({ ...EMPTY_PROGRESS, xp: xp - 1, totalAnswers: 1, badges: { 'premier-pas': 'x' } }, true);
+    expect(update.leveledUp).toBe(true);
+    expect(update.newBadges.map((b) => b.id)).toContain('rang-argent');
   });
 });

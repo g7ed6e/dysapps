@@ -1,5 +1,5 @@
 export type FontChoice = 'atkinson' | 'opendyslexic' | 'systeme';
-export type ThemeChoice = 'creme' | 'clair' | 'sombre' | 'contraste';
+export type ThemeChoice = 'bd' | 'nuit' | 'clair' | 'contraste';
 
 export interface Settings {
   font: FontChoice;
@@ -19,7 +19,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lineHeight: 1.7,
   letterSpacing: 0.03,
   wordSpacing: 0.12,
-  theme: 'creme',
+  theme: 'bd',
   speechRate: 0.9,
   autoRead: false,
   reduceMotion: false,
@@ -32,11 +32,14 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
-  creme: 'Crème (fond doux)',
-  clair: 'Clair',
-  sombre: 'Sombre',
+  bd: 'BD',
+  nuit: 'BD nuit',
+  clair: 'Sobre',
   contraste: 'Contraste élevé',
 };
+
+/** Anciens noms de thèmes (première version) vers les nouveaux. */
+const LEGACY_THEMES: Record<string, ThemeChoice> = { creme: 'bd', sombre: 'nuit' };
 
 const FONT_STACKS: Record<FontChoice, string> = {
   atkinson: "'Atkinson Hyperlegible', Verdana, Arial, sans-serif",
@@ -51,6 +54,7 @@ function clamp(value: number, min: number, max: number): number {
 /** Corrige des réglages lus depuis le stockage (valeurs manquantes ou hors bornes). */
 export function sanitizeSettings(input: Partial<Settings>): Settings {
   const s = { ...DEFAULT_SETTINGS, ...input };
+  if (typeof s.theme === 'string' && s.theme in LEGACY_THEMES) s.theme = LEGACY_THEMES[s.theme];
   return {
     font: s.font in FONT_STACKS ? s.font : DEFAULT_SETTINGS.font,
     fontSize: clamp(Number(s.fontSize) || DEFAULT_SETTINGS.fontSize, 16, 32),

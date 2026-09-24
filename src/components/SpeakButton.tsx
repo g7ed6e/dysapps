@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
 import { isSpeechAvailable } from '../core/speech';
+import { Icon } from './Icon';
 
 interface Props {
   text: string;
@@ -32,7 +33,7 @@ export function SpeakButton({ text, label = 'Écouter', compact = false }: Props
       aria-label={speaking ? 'Arrêter la lecture' : `${label} : ${text}`}
       aria-pressed={speaking}
     >
-      <span aria-hidden="true">{speaking ? '⏹️' : '🔊'}</span>
+      <Icon name={speaking ? 'stop' : 'speaker'} />
       {!compact && <span>{speaking ? 'Stop' : label}</span>}
     </button>
   );

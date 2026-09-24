@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
-import { Mascot } from '../components/Mascot';
+import { Feedback } from '../components/Feedback';
+import { Icon } from '../components/Icon';
 
 export function NotFoundPage() {
   return (
     <>
-      <Mascot message="Oups, je ne trouve pas cette page. Retournons à l’accueil !" mood="reflechit" autoSpeak={false} />
+      <Feedback shout="404" message="Zone introuvable. Retour au menu." tone="rate" autoSpeak={false} />
       <Link to="/" className="button primary">
-        Retour à l’accueil
+        <Icon name="home" /> Menu
       </Link>
     </>
   );

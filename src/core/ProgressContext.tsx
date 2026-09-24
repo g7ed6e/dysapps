@@ -3,6 +3,7 @@ import {
   EMPTY_PROGRESS,
   levelFromXp,
   recordAnswer,
+  type IconName,
   recordSession,
   sanitizeProgress,
   type Progress,
@@ -12,7 +13,8 @@ import { loadJSON, removeKey, saveJSON } from './storage';
 
 export interface Celebration {
   id: number;
-  icon: string;
+  kind: 'levelup' | 'badge';
+  icon: IconName;
   title: string;
   message: string;
 }
@@ -46,10 +48,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const items: Celebration[] = [];
     if (update.leveledUp) {
       const info = levelFromXp(update.progress.xp);
-      items.push({ id: nextId.current++, icon: '🚀', title: `Niveau ${info.level} !`, message: `Tu es maintenant ${info.title}.` });
+      items.push({ id: nextId.current++, kind: 'levelup', icon: 'zap', title: 'Level up !', message: `Niveau ${info.level} · rang ${info.title}` });
     }
     for (const b of update.newBadges) {
-      items.push({ id: nextId.current++, icon: b.icon, title: `Badge : ${b.title}`, message: b.description });
+      items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: b.title });
     }
     if (items.length) setCelebrations((prev) => [...prev, ...items]);
     return update;

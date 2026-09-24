@@ -36,15 +36,15 @@ it('donne un indice, puis corrige, puis affiche le bilan', async () => {
   // Bonne réponse au deuxième essai
   await user.click(screen.getByRole('button', { name: '4' }));
   expect(screen.getByText(/\+5 XP/)).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Question suivante' }));
+  await user.click(screen.getByRole('button', { name: /Suivante/ }));
 
   // Deux erreurs : la bonne réponse est montrée
   await user.click(screen.getByRole('button', { name: 'à' }));
   expect(screen.getByText('Verbe avoir.')).toBeInTheDocument();
-  expect(screen.getByText(/La bonne réponse était\s«\sa\s»/)).toBeInTheDocument();
+  expect(screen.getByText(/La bonne réponse\s:\s«\sa\s»/)).toBeInTheDocument();
 
-  await user.click(screen.getByRole('button', { name: 'Voir mon bilan' }));
-  expect(screen.getByRole('heading', { name: 'Bilan de la séance' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
+  expect(screen.getByRole('heading', { name: 'Résultat' })).toBeInTheDocument();
   expect(screen.getByText('25 %')).toBeInTheDocument();
 
   const saved = JSON.parse(localStorage.getItem('dysapps:progress')!);
@@ -64,7 +64,7 @@ it('n’affiche pas de bouton d’indice sans indice', () => {
   );
 
   // Pas d'indice défini pour cette question : pas de bouton
-  expect(screen.queryByRole('button', { name: /Un indice/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Prendre un joker/ })).not.toBeInTheDocument();
 });
 
 it('affiche l’indice sur demande et compte la réponse comme un second essai', async () => {
@@ -80,15 +80,15 @@ it('affiche l’indice sur demande et compte la réponse comme un second essai',
     </SettingsProvider>,
   );
 
-  await user.click(screen.getByRole('button', { name: /Un indice/ }));
+  await user.click(screen.getByRole('button', { name: /Prendre un joker/ }));
   expect(screen.getByText(/Remplace par « était »/)).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: /Un indice/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Prendre un joker/ })).not.toBeInTheDocument();
 
   await user.click(screen.getByRole('button', { name: 'est' }));
   expect(screen.getByText(/\+5 XP/)).toBeInTheDocument();
 });
 
-it('relit un message identique de Plume quand la lecture automatique est active', async () => {
+it('relit un message identique quand la lecture automatique est active', async () => {
   const spoken: string[] = [];
   class FakeUtterance {
     text: string;
@@ -121,7 +121,7 @@ it('relit un message identique de Plume quand la lecture automatique est active'
 
   for (let i = 0; i < 2; i++) {
     await user.click(screen.getByRole('button', { name: 'oui' }));
-    await user.click(screen.getByRole('button', { name: 'Question suivante' }));
+    await user.click(screen.getByRole('button', { name: /Suivante/ }));
   }
   expect(spoken.filter((t) => t.startsWith('Question suivante'))).toHaveLength(2);
   vi.unstubAllGlobals();

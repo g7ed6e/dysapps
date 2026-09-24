@@ -1,32 +1,37 @@
 import { Link } from 'react-router-dom';
 import { SUBJECTS, appsBySubject, type Subject } from '../apps/registry';
-import { Mascot } from '../components/Mascot';
+import { Icon } from '../components/Icon';
 import { useProgress } from '../core/ProgressContext';
+import { levelFromXp } from '../core/progress';
 
 export function HomePage() {
   const { progress } = useProgress();
-  const message =
-    progress.totalAnswers === 0
-      ? 'Bonjour, je suis Plume ! Choisis une matière pour commencer. Tu peux régler l’affichage dans « Réglages ».'
-      : 'Content de te revoir ! Qu’est-ce qu’on travaille aujourd’hui ?';
+  const rank = levelFromXp(progress.xp);
+  const firstTime = progress.totalAnswers === 0;
 
   return (
     <>
-      <Mascot message={message} autoSpeak={false} />
-      <h1 className="page-title">Que veux-tu travailler ?</h1>
+      <section className="hero">
+        <p className="hero-kicker">{firstTime ? 'Nouvelle partie' : `Rang ${rank.title}`}</p>
+        <h1 className="hero-title">{firstTime ? 'Prêt·e à jouer ?' : 'On reprend ?'}</h1>
+        <p className="hero-text">
+          Choisis ton terrain. Pas de chrono, des jokers si tu bloques, et de l’XP à chaque réponse.
+        </p>
+      </section>
+
       <div className="grid subjects">
         {(Object.keys(SUBJECTS) as Subject[]).map((key) => {
           const subject = SUBJECTS[key];
           const available = appsBySubject(key).filter((a) => a.status === 'disponible').length;
           return (
-            <Link key={key} to={`/matiere/${key}`} className={`card subject-card subject-${key}`}>
-              <span className="subject-icon" aria-hidden="true">
-                {subject.icon}
+            <Link key={key} to={`/matiere/${key}`} className={`panel subject-card subject-${key}`}>
+              <span className="subject-icon">
+                <Icon name={subject.icon} size="2.2rem" />
               </span>
               <span className="subject-title">{subject.title}</span>
               <span className="subject-desc">{subject.description}</span>
               <span className="subject-count">
-                {available} activité{available > 1 ? 's' : ''} disponible{available > 1 ? 's' : ''}
+                {available} quête{available > 1 ? 's' : ''} dispo <Icon name="play" />
               </span>
             </Link>
           );

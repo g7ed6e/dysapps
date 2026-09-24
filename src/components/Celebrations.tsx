@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useProgress } from '../core/ProgressContext';
+import { Icon } from './Icon';
 
-/** Affiche les récompenses (badge, niveau) sous forme de bandeaux qui se ferment seuls. */
+/** Récompenses (succès, level up) en bandeau « POW » qui se ferme seul. */
 export function Celebrations() {
   const { celebrations, dismissCelebration } = useProgress();
   const first = celebrations[0];
@@ -14,16 +15,16 @@ export function Celebrations() {
 
   if (!first) return null;
   return (
-    <div className="celebration" role="status" aria-live="polite">
-      <span className="celebration-icon" aria-hidden="true">
-        {first.icon}
+    <div className={`celebration celebration-${first.kind}`} role="status" aria-live="polite">
+      <span className="celebration-icon">
+        <Icon name={first.icon} size="1.8rem" />
       </span>
-      <div>
-        <strong>{first.title}</strong>
-        <p>{first.message}</p>
+      <div className="celebration-text">
+        <p className="celebration-kicker">{first.title}</p>
+        <strong>{first.message}</strong>
       </div>
       <button type="button" className="icon-button" onClick={() => dismissCelebration(first.id)} aria-label="Fermer">
-        ✕
+        <Icon name="close" />
       </button>
     </div>
   );

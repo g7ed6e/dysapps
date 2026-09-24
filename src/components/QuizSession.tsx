@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProgress } from '../core/ProgressContext';
-import { Mascot, type MascotMood } from './Mascot';
+import { Feedback, type FeedbackTone } from './Feedback';
+import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
 
 export interface Question {
@@ -10,7 +11,7 @@ export interface Question {
   prompt: string;
   choices: string[];
   answer: string;
-  /** Indice proposé sur demande, ou après une première erreur. */
+  /** Indice (« joker ») proposé sur demande, ou après une première erreur. */
   hint?: string;
   /** Explication affichée une fois la question terminée. */
   explanation?: string;
@@ -18,19 +19,28 @@ export interface Question {
 
 interface Props {
   appId: string;
-  /** Génère les questions d'une séance (appelé à chaque nouvelle séance). */
+  /** Génère les questions d'une quête (appelé à chaque nouvelle partie). */
   makeQuestions: () => Question[];
-  /** Nombre d'essais par question (2 par défaut : un essai + un essai avec indice). */
+  /** Nombre d'essais par question (2 par défaut). */
   maxAttempts?: number;
 }
 
 type Phase = 'question' | 'resolved' | 'summary';
 
-const PRAISE = ['Bravo !', 'Super, c’est juste !', 'Excellent !', 'Bien joué !', 'Parfait !'];
+interface FeedbackState {
+  shout?: string;
+  message: string;
+  tone: FeedbackTone;
+  key: number;
+}
+
+const SHOUTS = ['BIEN VU !', 'PROPRE !', 'EXACT !', 'CARTON !', 'IMPARABLE !'];
+/** Un combo s'affiche à partir de cette série de bonnes réponses. */
+const COMBO_FROM = 3;
 
 /**
- * Moteur de séance d'exercices à choix, sans chronomètre.
- * L'erreur fait partie de l'apprentissage : un indice est donné avant la correction.
+ * Moteur de quête à choix, sans chrono.
+ * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
 export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   const { answer, completeSession } = useProgress();
@@ -40,16 +50,15 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   const [wrongChoices, setWrongChoices] = useState<string[]>([]);
   const [hintUsed, setHintUsed] = useState(false);
   const [phase, setPhase] = useState<Phase>('question');
-  const [points, setPoints] = useState(0); // 1 au premier essai, 0,5 ensuite
+  const [points, setPoints] = useState(0); // 1 au premier essai, 0,5 avec joker ou second essai
   const [xpGained, setXpGained] = useState(0);
-  const [mascot, setMascotState] = useState<{ message: string; mood: MascotMood; key: number }>({
-    message: 'Prends ton temps, il n’y a pas de chrono. Tu peux écouter la consigne avec le haut-parleur.',
-    mood: 'content',
+  const [feedback, setFeedbackState] = useState<FeedbackState>({
+    message: 'Pas de chrono. Écoute la consigne avec le haut-parleur, et prends un joker si tu bloques.',
+    tone: 'info',
     key: 0,
   });
-  // La clé change à chaque intervention de Plume : un message identique est donc relu.
-  const setMascot = (next: { message: string; mood: MascotMood }) =>
-    setMascotState((prev) => ({ ...next, key: prev.key + 1 }));
+  // La clé change à chaque message : un texte identique est donc relu.
+  const say = (next: Omit<FeedbackState, 'key'>) => setFeedbackState((prev) => ({ ...next, key: prev.key + 1 }));
 
   const question = questions[index];
   const finalScore = useMemo(() => Math.round((points / questions.length) * 100), [points, questions.length]);
@@ -57,7 +66,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
   const choose = (choice: string) => {
     if (phase !== 'question' || wrongChoices.includes(choice)) return;
     const correct = choice === question.answer;
-    // Utiliser l'indice compte comme un second essai (moins de points, aucune autre pénalité).
+    // Le joker compte comme un second essai (moins d'XP, aucune autre pénalité).
     const effectiveAttempt = hintUsed ? Math.max(attempt, 2) : attempt;
 
     if (correct) {
@@ -65,7 +74,12 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
       setXpGained((x) => x + update.xpGained);
       setPoints((p) => p + (effectiveAttempt === 1 ? 1 : 0.5));
       setPhase('resolved');
-      setMascot({ message: `${PRAISE[index % PRAISE.length]} +${update.xpGained} XP`, mood: 'bravo' });
+      const streak = update.progress.currentStreak;
+      say({
+        shout: effectiveAttempt === 1 && streak >= COMBO_FROM ? `COMBO x${streak} !` : SHOUTS[index % SHOUTS.length],
+        message: `+${update.xpGained} XP`,
+        tone: 'bien',
+      });
       return;
     }
 
@@ -74,9 +88,10 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
     const attemptsAllowed = Math.min(maxAttempts, question.choices.length - 1);
     if (attempt < attemptsAllowed) {
       setAttempt((a) => a + 1);
-      setMascot({
-        message: question.hint ? `Pas tout à fait. Un indice : ${question.hint}` : 'Pas tout à fait, essaie encore !',
-        mood: 'reflechit',
+      say({
+        shout: 'RATÉ…',
+        message: question.hint ? `Joker : ${question.hint}` : 'Retente ta chance.',
+        tone: 'rate',
       });
       if (question.hint) setHintUsed(true);
       return;
@@ -85,16 +100,17 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
     const update = answer(false, effectiveAttempt);
     setXpGained((x) => x + update.xpGained);
     setPhase('resolved');
-    setMascot({
-      message: `La bonne réponse était « ${question.answer} ». Ce n’est pas grave, tu vas y arriver ! +${update.xpGained} XP pour l’effort.`,
-      mood: 'encourage',
+    say({
+      shout: 'PAS CETTE FOIS',
+      message: `La bonne réponse : « ${question.answer} ». +${update.xpGained} XP pour l’effort, tu l’auras la prochaine fois.`,
+      tone: 'rate',
     });
   };
 
-  const showHint = () => {
+  const takeJoker = () => {
     if (!question.hint) return;
     setHintUsed(true);
-    setMascot({ message: `Indice : ${question.hint}`, mood: 'reflechit' });
+    say({ shout: 'JOKER', message: question.hint, tone: 'indice' });
   };
 
   const next = () => {
@@ -104,21 +120,19 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
       setWrongChoices([]);
       setHintUsed(false);
       setPhase('question');
-      setMascot({ message: 'Question suivante ! Prends ton temps.', mood: 'content' });
+      say({ message: 'Question suivante. Pas de pression.', tone: 'info' });
       return;
     }
     const update = completeSession(appId, finalScore);
     setXpGained((x) => x + update.xpGained);
     setPhase('summary');
-    setMascot({
-      message:
-        finalScore === 100
-          ? 'Séance parfaite ! Je suis fière de toi !'
-          : finalScore >= 60
-            ? 'Belle séance, tu progresses !'
-            : 'Tu as terminé la séance, c’est ça le plus important. On recommence quand tu veux !',
-      mood: 'bravo',
-    });
+    say(
+      finalScore === 100
+        ? { shout: 'PERFECT !', message: 'Zéro faute. Respect.', tone: 'bien' }
+        : finalScore >= 60
+          ? { shout: 'QUÊTE TERMINÉE', message: 'Belle partie, tu progresses.', tone: 'bien' }
+          : { shout: 'QUÊTE TERMINÉE', message: 'Tu es allé·e au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
+    );
   };
 
   const restart = () => {
@@ -130,25 +144,25 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
     setPoints(0);
     setXpGained(0);
     setPhase('question');
-    setMascot({ message: 'C’est reparti ! Prends ton temps.', mood: 'content' });
+    say({ message: 'Nouvelle partie. Prends ton temps.', tone: 'info' });
   };
 
   if (phase === 'summary') {
     return (
       <section className="quiz" aria-labelledby="bilan-titre">
-        <Mascot message={mascot.message} mood={mascot.mood} speakKey={mascot.key} />
-        <div className="card summary">
-          <h2 id="bilan-titre">Bilan de la séance</h2>
+        <Feedback {...feedback} speakKey={feedback.key} />
+        <div className="panel summary">
+          <h2 id="bilan-titre">Résultat</h2>
           <p className="summary-score">{finalScore} %</p>
-          <p>
-            Tu as gagné <strong>{xpGained} XP</strong>.
+          <p className="summary-xp">
+            <Icon name="zap" /> +{xpGained} XP
           </p>
           <div className="actions">
             <button type="button" className="button primary" onClick={restart}>
-              Nouvelle séance
+              <Icon name="replay" /> Rejouer
             </button>
             <Link to="/" className="button">
-              Retour à l’accueil
+              <Icon name="home" /> Menu
             </Link>
           </div>
         </div>
@@ -164,15 +178,15 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
         ))}
       </ol>
 
-      <Mascot message={mascot.message} mood={mascot.mood} speakKey={mascot.key} />
+      <Feedback {...feedback} speakKey={feedback.key} />
 
-      <div className="card question">
+      <div className="panel question">
         <p className="question-count">
           Question {index + 1} / {questions.length}
         </p>
         <div className="question-prompt">
           <h2 id="question-titre">{question.prompt}</h2>
-          <SpeakButton text={question.prompt} label="Écouter la question" />
+          <SpeakButton text={question.prompt} label="Écouter" />
         </div>
 
         <div className="choices" role="group" aria-label="Réponses possibles">
@@ -187,17 +201,17 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
                 onClick={() => choose(choice)}
                 disabled={phase === 'resolved' || isWrong}
               >
-                {isAnswer && <span aria-hidden="true">✔ </span>}
-                {isWrong && <span aria-hidden="true">✘ </span>}
-                {choice}
+                {isAnswer && <Icon name="check" />}
+                {isWrong && <Icon name="close" />}
+                <span>{choice}</span>
               </button>
             );
           })}
         </div>
 
         {phase === 'question' && question.hint && !hintUsed && (
-          <button type="button" className="button hint-button" onClick={showHint}>
-            <span aria-hidden="true">💡 </span>Un indice ?
+          <button type="button" className="button joker-button" onClick={takeJoker}>
+            <Icon name="lightbulb" /> Prendre un joker
           </button>
         )}
 
@@ -205,12 +219,19 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
           <div className="resolution">
             {question.explanation && (
               <p className="explanation">
-                <span aria-hidden="true">💡 </span>
-                {question.explanation}
+                <Icon name="lightbulb" /> {question.explanation}
               </p>
             )}
             <button type="button" className="button primary" onClick={next} autoFocus>
-              {index + 1 < questions.length ? 'Question suivante' : 'Voir mon bilan'}
+              {index + 1 < questions.length ? (
+                <>
+                  Suivante <Icon name="play" />
+                </>
+              ) : (
+                <>
+                  Voir le résultat <Icon name="flag" />
+                </>
+              )}
             </button>
           </div>
         )}

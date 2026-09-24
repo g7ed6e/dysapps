@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { SUBJECTS, getApp } from '../apps/registry';
+import { Icon } from '../components/Icon';
 import { NotFoundPage } from './NotFoundPage';
 
 export function AppPage() {
@@ -12,11 +13,10 @@ export function AppPage() {
   return (
     <>
       <Link to={`/matiere/${app.subject}`} className="back-link">
-        ← {SUBJECTS[app.subject].title}
+        <Icon name="back" /> {SUBJECTS[app.subject].title}
       </Link>
-      <h1 className="page-title">
-        <span aria-hidden="true">{app.icon} </span>
-        {app.title}
+      <h1 className={`page-title title-${app.subject}`}>
+        <Icon name={app.icon} /> {app.title}
       </h1>
       <Suspense fallback={<p className="loading">Chargement…</p>}>
         <Component />
