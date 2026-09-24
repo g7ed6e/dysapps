@@ -1,0 +1,107 @@
+{
+  "id": "foret-chasse-son-ch",
+  "biome": "foret",
+  "type": "chasse-son",
+  "level": 2,
+  "instruction": "Tape les mots où tu entends le son [ch], comme dans chapeau. Puis valide.",
+  "target": "ch",
+  "items": [
+    {
+      "key": "chat",
+      "word": "chat",
+      "image": "🐱",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "jupe",
+      "word": "jupe",
+      "image": "👗",
+      "correct": false,
+      "heard": "[j]"
+    },
+    {
+      "key": "chien",
+      "word": "chien",
+      "image": "🐶",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "cheval",
+      "word": "cheval",
+      "image": "🐴",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "girafe",
+      "word": "girafe",
+      "image": "🦒",
+      "correct": false,
+      "heard": "[j]"
+    },
+    {
+      "key": "chaussure",
+      "word": "chaussure",
+      "image": "👟",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "vache",
+      "word": "vache",
+      "image": "🐄",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "orange",
+      "word": "orange",
+      "image": "🍊",
+      "correct": false,
+      "heard": "[j]"
+    },
+    {
+      "key": "bouche",
+      "word": "bouche",
+      "image": "👄",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "chocolat",
+      "word": "chocolat",
+      "image": "🍫",
+      "correct": true,
+      "heard": "[ch]"
+    },
+    {
+      "key": "jardin",
+      "word": "jardin",
+      "image": "🌷",
+      "correct": false,
+      "heard": "[j]"
+    },
+    {
+      "key": "cheminée",
+      "word": "cheminée",
+      "image": "🏠",
+      "correct": true,
+      "heard": "[ch]"
+    }
+  ],
+  "feedback": {
+    "correct": "Bravo, tu entends bien [ch] !",
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1995,3 +1995,225 @@ a.app-card:active {
 .pause-panel p {
   max-width: none;
 }
+
+/* ===== Blocland : écrans d'exercices ===== */
+.biome-card.locked {
+  border-style: dashed;
+  box-shadow: none;
+}
+.biome-card.locked .creature {
+  opacity: 0.45;
+}
+.biome-card .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.sound-target strong {
+  display: inline-block;
+  padding: 0 0.5rem;
+  background: var(--yellow);
+  color: var(--on-accent);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+}
+.word-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+.word-cards li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.word-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: 100%;
+  min-height: 6rem;
+  padding: 0.6rem 0.5rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 4px 0 var(--shadow-color);
+  font-weight: 700;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+.word-card.picked {
+  background: var(--yellow);
+  color: var(--on-accent);
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--shadow-color);
+}
+.word-card.right {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+.word-card.wrong {
+  border-color: var(--error);
+  background: var(--error-bg);
+  color: var(--error);
+}
+.word-card.right .syl-0,
+.word-card.right .syl-1,
+.word-card.wrong .syl-0,
+.word-card.wrong .syl-1,
+.word-card.picked .syl-0,
+.word-card.picked .syl-1 {
+  color: inherit;
+}
+.word-picto {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+.word-mark {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+}
+.validate-button {
+  width: 100%;
+}
+/* Filon */
+.filon-target {
+  display: inline-block;
+  min-width: 2.2rem;
+  padding: 0 0.5rem;
+  text-align: center;
+  background: var(--yellow);
+  color: var(--on-accent);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  font-size: 1.4em;
+}
+.filon-lane {
+  position: relative;
+  height: 6.5rem;
+  margin: 0.6rem 0 1rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  background: repeating-linear-gradient(90deg, #6b7380 0 14px, #7d8592 14px 28px);
+  overflow: hidden;
+}
+:root[data-theme='contraste'] .filon-lane {
+  background: #222;
+}
+.filon-block {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.5rem;
+  width: 5rem;
+  height: 5rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  background: #a7aeb8;
+  box-shadow: 0 5px 0 #4c535e;
+  color: #1f1a16;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.filon-block.moving {
+  animation: filon-slide var(--filon-duration) linear forwards;
+}
+@keyframes filon-slide {
+  from {
+    left: 0.5rem;
+  }
+  to {
+    left: calc(100% - 5.5rem);
+  }
+}
+.filon-block.right {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+.filon-block.wrong {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+.filon-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.4rem;
+}
+/* Mot troué */
+.gap-word {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.gap {
+  display: inline-block;
+  min-width: 2.4em;
+  margin: 0 0.1em;
+  padding: 0 0.3em;
+  text-align: center;
+  border-bottom: 4px solid var(--violet);
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.gap.filled {
+  background: var(--success-bg);
+  color: var(--success);
+  border-bottom-color: var(--success);
+}
+.letter-block {
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.letter-block:disabled {
+  background: var(--surface);
+  color: var(--text);
+}
+/* Ascension */
+.ascension {
+  display: grid;
+  gap: 1rem;
+}
+.tower {
+  width: 7rem;
+  height: 9rem;
+  justify-self: center;
+}
+.ascension-paragraph {
+  font-size: 1.15rem;
+  max-width: none;
+}
+.fluence-note {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+@media (min-width: 700px) {
+  .ascension {
+    grid-template-columns: 8rem 1fr;
+    align-items: start;
+  }
+  .tower {
+    justify-self: start;
+    width: 8rem;
+    height: 11rem;
+  }
+  .word-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

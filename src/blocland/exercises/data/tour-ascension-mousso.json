@@ -1,0 +1,39 @@
+{
+  "id": "tour-ascension-mousso",
+  "biome": "tour",
+  "type": "ascension",
+  "level": 1,
+  "title": "Le réveil de Mousso",
+  "instruction": "Lis « Le réveil de Mousso » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.",
+  "items": [
+    {
+      "key": "p1",
+      "text": "Au bord de la forêt, un golem de mousse dort depuis très longtemps. Les oiseaux ont fait leur nid sur sa tête."
+    },
+    {
+      "key": "p2",
+      "text": "Un matin, une pierre roule sur son pied. Le golem ouvre un œil, puis l’autre. Il s’appelle Mousso."
+    },
+    {
+      "key": "p3",
+      "text": "Il regarde le village, tout en bas. Les maisons sont cassées, le pont est tombé dans la rivière."
+    },
+    {
+      "key": "p4",
+      "text": "Alors Mousso se lève. Il a une idée : il va chercher un bâtisseur pour tout reconstruire, bloc par bloc."
+    }
+  ],
+  "feedback": {
+    "correct": "Tour terminée. Chaque paragraphe lu est un étage de plus.",
+    "wrong": ""
+  },
+  "reward": {
+    "block": "verre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 2,
+    "demoteAt": -1
+  }
+}

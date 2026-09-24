@@ -62,7 +62,8 @@ it('ouvre la carte de Blocland puis un biome, dont la créature donne la quête'
   const user = userEvent.setup();
   renderAt('/aventure');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
-  await user.click(screen.getByRole('link', { name: /Forêt des sons/ }));
+  // Le nom commence par le nom du biome ; les cartes verrouillées citent aussi le biome précédent.
+  await user.click(screen.getByRole('link', { name: /^Forêt des sons/ }));
   expect(screen.getByRole('heading', { name: /Forêt des sons/ })).toBeInTheDocument();
   expect(screen.getByText('Mousso')).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'Mousso, golem de mousse' })).toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome } from './biomes';
+import { BLOCKS, getBiome, isBiomeUnlocked, previousBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
@@ -17,6 +17,8 @@ export function BiomePage() {
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.inventory[biome.block] ?? 0;
+  const unlocked = isBiomeUnlocked(biome.id, state.progress);
+  const previous = previousBiome(biome.id);
 
   return (
     <>
@@ -27,24 +29,29 @@ export function BiomePage() {
         <Icon name={biome.icon} /> {biome.name}
       </h1>
 
-      <CreatureBubble biome={biome} text={biome.creature.greeting} />
+      <CreatureBubble
+        biome={biome}
+        text={unlocked || !previous ? biome.creature.greeting : `Pas si vite ! Termine d’abord une quête dans ${previous.name}, puis reviens me voir.`}
+      />
 
       <h2 className="section-title">
         <Icon name="hammer" /> Quêtes
       </h2>
       <ul className="grid apps">
         {biome.exercises.map((exercise) => {
-          const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id));
+          const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? state.progress[def.id] : undefined;
           const content = (
             <>
               <span className="app-icon">
-                <Icon name={def ? 'play' : 'lock'} size="1.8rem" />
+                <Icon name={def && unlocked ? 'play' : 'lock'} size="1.8rem" />
               </span>
               <span className="app-title">{exercise.title}</span>
               <span className="app-desc">{exercise.description}</span>
               {!def ? (
                 <span className="tag">Bientôt</span>
+              ) : !unlocked ? (
+                <span className="tag">Verrouillé</span>
               ) : progress ? (
                 <Stars count={progress.stars} label={`${progress.stars} étoile${progress.stars > 1 ? 's' : ''} sur 3, meilleur score ${Math.round(progress.best * 100)} %`} />
               ) : (
@@ -54,7 +61,7 @@ export function BiomePage() {
           );
           return (
             <li key={exercise.id}>
-              {def ? (
+              {def && unlocked ? (
                 <Link to={`/aventure/${biome.id}/${exercise.id}`} className={`panel app-card biome-${biome.id}`}>
                   {content}
                 </Link>

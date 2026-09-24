@@ -1,0 +1,142 @@
+{
+  "id": "carriere-mot-troue-2",
+  "biome": "carriere",
+  "type": "mot-troue",
+  "level": 2,
+  "instruction": "Écoute le mot, puis tape le bloc de lettres qui manque.",
+  "items": [
+    {
+      "key": "beaucoup",
+      "word": "beaucoup",
+      "before": "b",
+      "after": "coup",
+      "answer": "eau",
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ]
+    },
+    {
+      "key": "bateau",
+      "word": "bateau",
+      "before": "bat",
+      "after": "",
+      "answer": "eau",
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ]
+    },
+    {
+      "key": "toujours",
+      "word": "toujours",
+      "before": "t",
+      "after": "jours",
+      "answer": "ou",
+      "choices": [
+        "ou",
+        "oo",
+        "u"
+      ]
+    },
+    {
+      "key": "jamais",
+      "word": "jamais",
+      "before": "jam",
+      "after": "",
+      "answer": "ais",
+      "choices": [
+        "ais",
+        "ai",
+        "é"
+      ]
+    },
+    {
+      "key": "longtemps",
+      "word": "longtemps",
+      "before": "longt",
+      "after": "",
+      "answer": "emps",
+      "choices": [
+        "emps",
+        "ent",
+        "an"
+      ]
+    },
+    {
+      "key": "quand",
+      "word": "quand",
+      "before": "qu",
+      "after": "",
+      "answer": "and",
+      "choices": [
+        "and",
+        "an",
+        "ant"
+      ]
+    },
+    {
+      "key": "parce",
+      "word": "parce",
+      "before": "par",
+      "after": "",
+      "answer": "ce",
+      "choices": [
+        "ce",
+        "se",
+        "sse"
+      ]
+    },
+    {
+      "key": "aujourd'hui",
+      "word": "aujourd’hui",
+      "before": "aujourd",
+      "after": "",
+      "answer": "’hui",
+      "choices": [
+        "’hui",
+        "ui",
+        "oui"
+      ]
+    },
+    {
+      "key": "temps",
+      "word": "temps",
+      "before": "t",
+      "after": "",
+      "answer": "emps",
+      "choices": [
+        "emps",
+        "ent",
+        "ant"
+      ]
+    },
+    {
+      "key": "plusieurs",
+      "word": "plusieurs",
+      "before": "plusi",
+      "after": "s",
+      "answer": "eur",
+      "choices": [
+        "eur",
+        "eure",
+        "er"
+      ]
+    }
+  ],
+  "feedback": {
+    "correct": "Le mot est complet !",
+    "wrong": "{word} s’écrit avec « {answer} », pas « {chosen} »."
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

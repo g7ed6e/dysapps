@@ -38,6 +38,19 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 - Sessions courtes : après 3 exercices (ou 10 minutes), l’app propose d’arrêter.
 - Tout est enregistré sur l’appareil (`localStorage`, clé `dysapps:blocland`), et l’XP alimente aussi les rangs et succès communs à toute l’app.
 
+## Exercices des biomes
+
+| Biome | Exercice | Contenu | Adaptation dys |
+|---|---|---|---|
+| Forêt des sons | **Chasse au son** | 6 sons ([an], [on], [oi] ; [in], [ch]/[j], [s]/[z]), 12 mots avec pictogramme par son, 4 par écran | mots lus à voix haute, correction « dans *bonbon* on entend [on] » |
+| Forêt des sons | Abattage syllabique | compter les syllabes (QCM d’attente) | |
+| Mine des lettres | **Filon** | cibles b, d, p, q parmi les lettres miroirs | vitesse selon le niveau, ne monte qu’après 90 % ; « Plus lent » ; avec « réduire les animations », le bloc attend |
+| Carrière des mots | **Mot troué** | 2 niveaux × 10 mots, 3 blocs dont un piège phonétiquement plausible | mot lu à voix haute, correction lettre par lettre |
+| Ferme des accords | **Tri des graines** | a/à, et/est, on/ont, son/sont, ce/se (phrases de la quête Homophones) | astuce de substitution après l’erreur |
+| Tour du lecteur | **Ascension** | 3 textes originaux de 70–80 mots en 4 paragraphes | mode manuel, un étage par paragraphe, temps discret comparé aux lectures précédentes |
+
+Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent débloque le suivant. À niveau égal, l’exercice le moins joué est proposé.
+
 ## Police Luciole
 
 Luciole (CC BY 4.0) n’est pas distribuée sur npm. Déposez `Luciole-Regular.woff2` et `Luciole-Bold.woff2` dans `public/fonts/luciole/` (voir le README de ce dossier) : l’option s’active dans les réglages, et vous pouvez la mettre par défaut dans `src/core/settings.ts`.
@@ -102,6 +115,6 @@ src/
 
 1. ✅ Coquille : profil d’accessibilité, lecture vocale des consignes, carte des biomes et créatures.
 2. ✅ Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
-3. Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
+3. ✅ Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
 4. Inventaire et grille de construction isométrique.
 5. Coffre à mots, boss de biome, craft, journal hebdomadaire, autres exercices.

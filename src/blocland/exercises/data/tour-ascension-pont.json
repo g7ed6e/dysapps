@@ -1,0 +1,39 @@
+{
+  "id": "tour-ascension-pont",
+  "biome": "tour",
+  "type": "ascension",
+  "level": 1,
+  "title": "Le pont du village",
+  "instruction": "Lis « Le pont du village » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.",
+  "items": [
+    {
+      "key": "p1",
+      "text": "Le vieux pont est tombé pendant l’orage. Pour aller à l’école, les enfants doivent faire un grand tour."
+    },
+    {
+      "key": "p2",
+      "text": "Le bâtisseur arrive avec ses blocs de bois et de pierre. Il pose le premier bloc sur la rive."
+    },
+    {
+      "key": "p3",
+      "text": "Rouxel, le renard, apporte du sable pour boucher les trous. Bloquette, la vache, tasse la terre avec ses sabots."
+    },
+    {
+      "key": "p4",
+      "text": "Au soir, le pont est fini. Les enfants le traversent en courant, et Grimoire le hibou hulule de joie."
+    }
+  ],
+  "feedback": {
+    "correct": "Tour terminée. Chaque paragraphe lu est un étage de plus.",
+    "wrong": ""
+  },
+  "reward": {
+    "block": "verre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 2,
+    "demoteAt": -1
+  }
+}

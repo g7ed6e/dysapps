@@ -1,0 +1,107 @@
+{
+  "id": "foret-chasse-son-oi",
+  "biome": "foret",
+  "type": "chasse-son",
+  "level": 1,
+  "instruction": "Tape les mots où tu entends le son [oi], comme dans étoile. Puis valide.",
+  "target": "oi",
+  "items": [
+    {
+      "key": "roi",
+      "word": "roi",
+      "image": "👑",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "pain",
+      "word": "pain",
+      "image": "🍞",
+      "correct": false,
+      "heard": "[in]"
+    },
+    {
+      "key": "poire",
+      "word": "poire",
+      "image": "🍐",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "oiseau",
+      "word": "oiseau",
+      "image": "🐦",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "lune",
+      "word": "lune",
+      "image": "🌙",
+      "correct": false,
+      "heard": "[u]"
+    },
+    {
+      "key": "voiture",
+      "word": "voiture",
+      "image": "🚗",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "toit",
+      "word": "toit",
+      "image": "🏠",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "pomme",
+      "word": "pomme",
+      "image": "🍎",
+      "correct": false,
+      "heard": "[o]"
+    },
+    {
+      "key": "noix",
+      "word": "noix",
+      "image": "🌰",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "chat",
+      "word": "chat",
+      "image": "🐱",
+      "correct": false,
+      "heard": "[a]"
+    },
+    {
+      "key": "poisson",
+      "word": "poisson",
+      "image": "🐟",
+      "correct": true,
+      "heard": "[oi]"
+    },
+    {
+      "key": "bois",
+      "word": "bois",
+      "image": "🪵",
+      "correct": true,
+      "heard": "[oi]"
+    }
+  ],
+  "feedback": {
+    "correct": "Bravo, tu entends bien [oi] !",
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
