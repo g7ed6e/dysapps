@@ -23,6 +23,9 @@ interface Props {
   makeQuestions: () => Question[];
   /** Nombre d'essais par question (2 par défaut). */
   maxAttempts?: number;
+  /** Action supplémentaire proposée à la fin (ex. revenir au choix du niveau). */
+  onExit?: () => void;
+  exitLabel?: string;
 }
 
 type Phase = 'question' | 'resolved' | 'summary';
@@ -42,7 +45,7 @@ const COMBO_FROM = 3;
  * Moteur de quête à choix, sans chrono.
  * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
-export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
+export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour' }: Props) {
   const { answer, completeSession } = useProgress();
   const [questions, setQuestions] = useState(makeQuestions);
   const [index, setIndex] = useState(0);
@@ -161,6 +164,11 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
             <button type="button" className="button primary" onClick={restart}>
               <Icon name="replay" /> Rejouer
             </button>
+            {onExit && (
+              <button type="button" className="button" onClick={onExit}>
+                <Icon name="back" /> {exitLabel}
+              </button>
+            )}
             <Link to="/" className="button">
               <Icon name="home" /> Menu
             </Link>
@@ -185,7 +193,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
           Question {index + 1} / {questions.length}
         </p>
         <div className="question-prompt">
-          <h2 id="question-titre">{question.prompt}</h2>
+          <h2 id="question-titre">
+            <Prompt text={question.prompt} />
+          </h2>
           <SpeakButton text={question.prompt} label="Écouter" />
         </div>
 
@@ -237,5 +247,20 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2 }: Props) {
         )}
       </div>
     </section>
+  );
+}
+
+/** Met en évidence le trou « … » à compléter dans l'énoncé. */
+function Prompt({ text }: { text: string }) {
+  const parts = text.split('…');
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i}>
+          {part}
+          {i < parts.length - 1 && <span className="blank">…</span>}
+        </span>
+      ))}
+    </>
   );
 }

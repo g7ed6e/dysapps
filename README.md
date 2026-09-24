@@ -16,6 +16,10 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 - **Progression enregistrée sur l’appareil** (`localStorage`) : pas de compte, pas de serveur, aucune donnée ne quitte l’appareil.
 - **PWA** : l’application s’installe sur l’écran d’accueil et fonctionne hors ligne après la première visite.
 
+## Quêtes disponibles
+
+- **Homophones** (Français) : 13 paires réparties en 3 niveaux — Les bases (6e) : a/à, et/est, son/sont, on/ont ; Confirmé (5e) : ces/ses, ou/où, ce/se, la/là/l’a ; Expert (4e-3e) : leur/leurs, quand/quant/qu’en, peu/peut/peux, -é/-er, c’est/s’est. Quêtes de 10 phrases par niveau ou entraînement ciblé sur une paire. Le joker donne l’astuce de remplacement (« remplace par *avait* »), la correction rappelle la règle. Les phrases sont dans `src/apps/homophones/sets.json` (vérifiées par les tests : un seul trou, jamais en début de phrase, chaque réponse travaillée).
+
 ## Développer
 
 ```bash
@@ -74,5 +78,5 @@ src/
 
 ## Feuille de route
 
-- Français : homophones grammaticaux, lecture et compréhension (textes du domaine public)
+- Français : lecture et compréhension (textes du domaine public)
 - Maths : tables et calcul mental, fractions, nombres décimaux et numération

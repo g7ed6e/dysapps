@@ -1,0 +1,632 @@
+[
+  {
+    "id": "a",
+    "level": 1,
+    "label": "a / à",
+    "choices": [
+      "a",
+      "à"
+    ],
+    "hint": "Remplace par « avait ». Si ça marche, c’est « a » sans accent.",
+    "rules": {
+      "a": "« a » = verbe avoir : on peut dire « avait ».",
+      "à": "« à » est une préposition : on ne peut pas dire « avait »."
+    },
+    "sentences": [
+      {
+        "text": "Lina … raté son bus ce matin.",
+        "answer": "a"
+      },
+      {
+        "text": "On se retrouve … la cantine.",
+        "answer": "à"
+      },
+      {
+        "text": "Mon frère … gagné le tournoi de foot.",
+        "answer": "a"
+      },
+      {
+        "text": "Je vais … la piscine avec Sami.",
+        "answer": "à"
+      },
+      {
+        "text": "Le prof … oublié ses clés.",
+        "answer": "a"
+      },
+      {
+        "text": "Elle joue … la console tous les soirs.",
+        "answer": "à"
+      },
+      {
+        "text": "Il … un nouveau skate.",
+        "answer": "a"
+      },
+      {
+        "text": "Le match commence … 18 heures.",
+        "answer": "à"
+      }
+    ]
+  },
+  {
+    "id": "et",
+    "level": 1,
+    "label": "et / est",
+    "choices": [
+      "et",
+      "est"
+    ],
+    "hint": "Remplace par « était ». Si ça marche, c’est « est ».",
+    "rules": {
+      "est": "« est » = verbe être : on peut dire « était ».",
+      "et": "« et » relie deux mots ou deux idées : on peut dire « et puis »."
+    },
+    "sentences": [
+      {
+        "text": "Le film … trop long.",
+        "answer": "est"
+      },
+      {
+        "text": "J’ai pris un sandwich … une pomme.",
+        "answer": "et"
+      },
+      {
+        "text": "Ma sœur … en 3e.",
+        "answer": "est"
+      },
+      {
+        "text": "Il pleut … il fait froid.",
+        "answer": "et"
+      },
+      {
+        "text": "Ce jeu … vraiment difficile.",
+        "answer": "est"
+      },
+      {
+        "text": "Nora … Hugo font leurs devoirs ensemble.",
+        "answer": "et"
+      },
+      {
+        "text": "La salle de sport … fermée aujourd’hui.",
+        "answer": "est"
+      },
+      {
+        "text": "Il a couru vite … il a gagné.",
+        "answer": "et"
+      }
+    ]
+  },
+  {
+    "id": "son",
+    "level": 1,
+    "label": "son / sont",
+    "choices": [
+      "son",
+      "sont"
+    ],
+    "hint": "Remplace par « étaient ». Si ça marche, c’est « sont ».",
+    "rules": {
+      "sont": "« sont » = verbe être : on peut dire « étaient ».",
+      "son": "« son » = le sien, la sienne : on peut dire « mon »."
+    },
+    "sentences": [
+      {
+        "text": "Les résultats … affichés dans le hall.",
+        "answer": "sont"
+      },
+      {
+        "text": "Tom a perdu … téléphone.",
+        "answer": "son"
+      },
+      {
+        "text": "Mes amis … partis sans moi.",
+        "answer": "sont"
+      },
+      {
+        "text": "Elle range … sac de sport.",
+        "answer": "son"
+      },
+      {
+        "text": "Ces exercices … faciles.",
+        "answer": "sont"
+      },
+      {
+        "text": "Il écoute … groupe préféré.",
+        "answer": "son"
+      },
+      {
+        "text": "Les élèves … en sortie au musée.",
+        "answer": "sont"
+      },
+      {
+        "text": "Adam prête … vélo à Léo.",
+        "answer": "son"
+      }
+    ]
+  },
+  {
+    "id": "on",
+    "level": 1,
+    "label": "on / ont",
+    "choices": [
+      "on",
+      "ont"
+    ],
+    "hint": "Remplace par « avaient ». Si ça marche, c’est « ont ».",
+    "rules": {
+      "ont": "« ont » = verbe avoir : on peut dire « avaient ».",
+      "on": "« on » est un pronom sujet : on peut dire « il »."
+    },
+    "sentences": [
+      {
+        "text": "Mes cousins … adopté un chien.",
+        "answer": "ont"
+      },
+      {
+        "text": "Ce soir, … regarde le match.",
+        "answer": "on"
+      },
+      {
+        "text": "Les joueurs … marqué deux buts.",
+        "answer": "ont"
+      },
+      {
+        "text": "Demain, … part en vacances.",
+        "answer": "on"
+      },
+      {
+        "text": "Elles … fini leur projet en avance.",
+        "answer": "ont"
+      },
+      {
+        "text": "Si … s’entraîne, on progresse.",
+        "answer": "on"
+      },
+      {
+        "text": "Mes parents … changé de voiture.",
+        "answer": "ont"
+      },
+      {
+        "text": "À la récré, … joue au basket.",
+        "answer": "on"
+      }
+    ]
+  },
+  {
+    "id": "ces",
+    "level": 2,
+    "label": "ces / ses",
+    "choices": [
+      "ces",
+      "ses"
+    ],
+    "hint": "« ses » = les siens, les siennes. « ces » montre quelque chose : on peut ajouter « -là ».",
+    "rules": {
+      "ses": "« ses » = les siens, les siennes : c’est à lui ou à elle.",
+      "ces": "« ces » montre quelque chose : on peut dire « ces … -là »."
+    },
+    "sentences": [
+      {
+        "text": "Lucas cherche … écouteurs partout.",
+        "answer": "ses"
+      },
+      {
+        "text": "Regarde … nuages, il va pleuvoir.",
+        "answer": "ces"
+      },
+      {
+        "text": "Elle a invité tous … amis.",
+        "answer": "ses"
+      },
+      {
+        "text": "Qui a laissé … chaussures ici ?",
+        "answer": "ces"
+      },
+      {
+        "text": "Il n’a pas fait … devoirs.",
+        "answer": "ses"
+      },
+      {
+        "text": "Tu as vu … vidéos ? Elles sont drôles.",
+        "answer": "ces"
+      },
+      {
+        "text": "Maya range … cahiers dans son casier.",
+        "answer": "ses"
+      },
+      {
+        "text": "Je suis fatigué … jours-ci.",
+        "answer": "ces"
+      }
+    ]
+  },
+  {
+    "id": "ou",
+    "level": 2,
+    "label": "ou / où",
+    "choices": [
+      "ou",
+      "où"
+    ],
+    "hint": "Remplace par « ou bien ». Si ça marche, c’est « ou » sans accent.",
+    "rules": {
+      "ou": "« ou » indique un choix : on peut dire « ou bien ».",
+      "où": "« où » indique un lieu ou un moment."
+    },
+    "sentences": [
+      {
+        "text": "Tu préfères la pizza … les pâtes ?",
+        "answer": "ou"
+      },
+      {
+        "text": "Je ne sais pas … j’ai mis mes clés.",
+        "answer": "où"
+      },
+      {
+        "text": "On y va à pied … à vélo ?",
+        "answer": "ou"
+      },
+      {
+        "text": "C’est la ville … je suis né.",
+        "answer": "où"
+      },
+      {
+        "text": "Tu viens samedi … dimanche ?",
+        "answer": "ou"
+      },
+      {
+        "text": "Le jour … il a neigé, le collège était fermé.",
+        "answer": "où"
+      },
+      {
+        "text": "Rouge … bleu, choisis vite.",
+        "answer": "ou"
+      },
+      {
+        "text": "Dis-moi … tu habites.",
+        "answer": "où"
+      }
+    ]
+  },
+  {
+    "id": "ce",
+    "level": 2,
+    "label": "ce / se",
+    "choices": [
+      "ce",
+      "se"
+    ],
+    "hint": "Essaie avec « je me » ou « tu te ». Si ça marche, c’est « se ».",
+    "rules": {
+      "se": "« se » va avec un verbe : on peut dire « je me… », « tu te… ».",
+      "ce": "« ce » accompagne un nom ou veut dire « cela »."
+    },
+    "sentences": [
+      {
+        "text": "Il … lève tôt le lundi.",
+        "answer": "se"
+      },
+      {
+        "text": "J’ai adoré … film.",
+        "answer": "ce"
+      },
+      {
+        "text": "Elle … prépare pour le cross.",
+        "answer": "se"
+      },
+      {
+        "text": "Tu as compris … que j’ai dit ?",
+        "answer": "ce"
+      },
+      {
+        "text": "Les joueurs … serrent la main.",
+        "answer": "se"
+      },
+      {
+        "text": "Je ne connais pas … jeu.",
+        "answer": "ce"
+      },
+      {
+        "text": "Léa … souvient de tout.",
+        "answer": "se"
+      },
+      {
+        "text": "Il faisait froid … matin.",
+        "answer": "ce"
+      }
+    ]
+  },
+  {
+    "id": "la",
+    "level": 2,
+    "label": "la / là / l’a",
+    "choices": [
+      "la",
+      "là",
+      "l’a"
+    ],
+    "hint": "« l’a » = « l’avait ». « là » = un lieu, on peut dire « ici ». Sinon, c’est « la ».",
+    "rules": {
+      "l’a": "« l’a » : on peut dire « l’avait ».",
+      "là": "« là » indique un lieu : on peut dire « ici ».",
+      "la": "« la » accompagne un nom ou remplace un nom féminin."
+    },
+    "sentences": [
+      {
+        "text": "Pose ton sac …, près de la porte.",
+        "answer": "là"
+      },
+      {
+        "text": "Sa casquette, il … oubliée dans le bus.",
+        "answer": "l’a"
+      },
+      {
+        "text": "Ferme … fenêtre, s’il te plaît.",
+        "answer": "la"
+      },
+      {
+        "text": "Ce film, elle … déjà vu deux fois.",
+        "answer": "l’a"
+      },
+      {
+        "text": "Je t’attends …, devant le gymnase.",
+        "answer": "là"
+      },
+      {
+        "text": "Passe-moi … balle !",
+        "answer": "la"
+      },
+      {
+        "text": "Sa trottinette, il … réparée tout seul.",
+        "answer": "l’a"
+      },
+      {
+        "text": "Tu es … ? Je ne te vois pas.",
+        "answer": "là"
+      }
+    ]
+  },
+  {
+    "id": "leur",
+    "level": 3,
+    "label": "leur / leurs",
+    "choices": [
+      "leur",
+      "leurs"
+    ],
+    "hint": "Devant un verbe, « leur » ne prend jamais de s. Devant un nom au pluriel, on écrit « leurs ».",
+    "rules": {
+      "leur": "« leur » devant un verbe (= à eux) ou devant un nom au singulier : pas de s.",
+      "leurs": "« leurs » devant un nom au pluriel : avec un s."
+    },
+    "sentences": [
+      {
+        "text": "Les élèves ont oublié … affaires.",
+        "answer": "leurs"
+      },
+      {
+        "text": "Je … ai envoyé un message.",
+        "answer": "leur"
+      },
+      {
+        "text": "Mes voisins promènent … chien.",
+        "answer": "leur"
+      },
+      {
+        "text": "Ils ont rangé … chambres.",
+        "answer": "leurs"
+      },
+      {
+        "text": "Le coach … explique la tactique.",
+        "answer": "leur"
+      },
+      {
+        "text": "Elles ont retrouvé … amies.",
+        "answer": "leurs"
+      },
+      {
+        "text": "Je … prête mon ballon.",
+        "answer": "leur"
+      },
+      {
+        "text": "Ils attendent … résultats.",
+        "answer": "leurs"
+      }
+    ]
+  },
+  {
+    "id": "quand",
+    "level": 3,
+    "label": "quand / quant / qu’en",
+    "choices": [
+      "quand",
+      "quant",
+      "qu’en"
+    ],
+    "hint": "« quand » = lorsque. « quant à » = en ce qui concerne. « qu’en » = que + en.",
+    "rules": {
+      "quand": "« quand » indique un moment : on peut dire « lorsque ».",
+      "quant": "« quant » s’emploie toujours avec « à » ou « aux » : « en ce qui concerne ».",
+      "qu’en": "« qu’en » = « que » + « en »."
+    },
+    "sentences": [
+      {
+        "text": "Appelle-moi … tu arrives.",
+        "answer": "quand"
+      },
+      {
+        "text": "Les autres partent ; … à moi, je reste.",
+        "answer": "quant"
+      },
+      {
+        "text": "Je ne sais pas … penser.",
+        "answer": "qu’en"
+      },
+      {
+        "text": "Il sourit … il gagne.",
+        "answer": "quand"
+      },
+      {
+        "text": "On joue d’abord ; … aux devoirs, on verra demain.",
+        "answer": "quant"
+      },
+      {
+        "text": "Il ne neige … hiver ici.",
+        "answer": "qu’en"
+      },
+      {
+        "text": "Tu viendras … ?",
+        "answer": "quand"
+      },
+      {
+        "text": "Elle ne voyage … train.",
+        "answer": "qu’en"
+      }
+    ]
+  },
+  {
+    "id": "peu",
+    "level": 3,
+    "label": "peu / peut / peux",
+    "choices": [
+      "peu",
+      "peut",
+      "peux"
+    ],
+    "hint": "« peux » va avec je ou tu. « peut » va avec il, elle, on. « peu » = pas beaucoup.",
+    "rules": {
+      "peux": "« peux » : verbe pouvoir avec je ou tu.",
+      "peut": "« peut » : verbe pouvoir avec il, elle ou on (on peut dire « pouvait »).",
+      "peu": "« peu » = pas beaucoup."
+    },
+    "sentences": [
+      {
+        "text": "Tu … venir samedi ?",
+        "answer": "peux"
+      },
+      {
+        "text": "Il … réussir s’il s’entraîne.",
+        "answer": "peut"
+      },
+      {
+        "text": "J’ai très … dormi cette nuit.",
+        "answer": "peu"
+      },
+      {
+        "text": "Je ne … pas sortir ce soir.",
+        "answer": "peux"
+      },
+      {
+        "text": "On … commencer ?",
+        "answer": "peut"
+      },
+      {
+        "text": "Il reste un … de gâteau.",
+        "answer": "peu"
+      },
+      {
+        "text": "Elle … jouer du piano.",
+        "answer": "peut"
+      },
+      {
+        "text": "Je … t’aider si tu veux.",
+        "answer": "peux"
+      }
+    ]
+  },
+  {
+    "id": "er",
+    "level": 3,
+    "label": "-é / -er",
+    "choices": [
+      "é",
+      "er"
+    ],
+    "hint": "Remplace par « vendre » ou « vendu ». « vendre » → -er. « vendu » → -é.",
+    "rules": {
+      "é": "Participe passé : on peut dire « vendu », donc -é.",
+      "er": "Infinitif : on peut dire « vendre », donc -er."
+    },
+    "sentences": [
+      {
+        "text": "Il a mang… toute la pizza.",
+        "answer": "é"
+      },
+      {
+        "text": "Je vais jou… au foot.",
+        "answer": "er"
+      },
+      {
+        "text": "Elle a termin… son exposé.",
+        "answer": "é"
+      },
+      {
+        "text": "Il faut rang… ta chambre.",
+        "answer": "er"
+      },
+      {
+        "text": "Nous avons regard… un film.",
+        "answer": "é"
+      },
+      {
+        "text": "Tu dois révis… ton contrôle.",
+        "answer": "er"
+      },
+      {
+        "text": "Le match est annul….",
+        "answer": "é"
+      },
+      {
+        "text": "J’aime dessin… des mangas.",
+        "answer": "er"
+      }
+    ]
+  },
+  {
+    "id": "cest",
+    "level": 3,
+    "label": "c’est / s’est",
+    "choices": [
+      "c’est",
+      "s’est"
+    ],
+    "hint": "« s’est » va avec un verbe comme « se lever » : on peut dire « je me suis… ». « c’est » = « cela est ».",
+    "rules": {
+      "s’est": "« s’est » : verbe pronominal au passé (on peut dire « je me suis… »).",
+      "c’est": "« c’est » = « cela est »."
+    },
+    "sentences": [
+      {
+        "text": "Il … blessé au genou.",
+        "answer": "s’est"
+      },
+      {
+        "text": "Franchement, … mon jeu préféré.",
+        "answer": "c’est"
+      },
+      {
+        "text": "Elle … inscrite au club de théâtre.",
+        "answer": "s’est"
+      },
+      {
+        "text": "Tu sais, … facile.",
+        "answer": "c’est"
+      },
+      {
+        "text": "Le chat … caché sous le lit.",
+        "answer": "s’est"
+      },
+      {
+        "text": "Je crois que … fini.",
+        "answer": "c’est"
+      },
+      {
+        "text": "Mon frère … trompé de salle.",
+        "answer": "s’est"
+      },
+      {
+        "text": "Viens vite, … l’heure !",
+        "answer": "c’est"
+      }
+    ]
+  }
+]
