@@ -20,6 +20,8 @@ export interface VoxelCanvasProps {
   breathe?: boolean;
   /** Distance initiale de la caméra (par défaut selon la taille de la scène). */
   distance?: number;
+  /** Rotation et zoom au doigt (faux pour une simple vitrine, comme une créature). */
+  interactive?: boolean;
   className?: string;
   label: string;
 }
@@ -41,6 +43,7 @@ export default function VoxelCanvas({
   reduceMotion = false,
   breathe = false,
   distance,
+  interactive = true,
   className,
   label,
 }: VoxelCanvasProps) {
@@ -100,11 +103,14 @@ export default function VoxelCanvas({
     controls.enableDamping = !reduceMotion;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
+    controls.enableRotate = interactive;
+    controls.enableZoom = interactive;
+    if (!interactive) renderer.domElement.style.touchAction = 'auto';
     controls.maxPolarAngle = Math.PI * 0.47;
     controls.minDistance = 3;
     controls.maxDistance = 60;
     controls.autoRotate = autoRotate && !reduceMotion;
-    controls.autoRotateSpeed = 0.6;
+    controls.autoRotateSpeed = interactive ? 0.6 : 2.2;
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6a4a, 1.1));
     const sun = new THREE.DirectionalLight(0xffffff, 1.6);
@@ -216,16 +222,19 @@ export default function VoxelCanvas({
     };
     // La scène est construite une fois ; les cubes, la sélection et la caméra sont mis à jour à part.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gridSize, reduceMotion, autoRotate, breathe]);
+  }, [gridSize, reduceMotion, autoRotate, breathe, interactive]);
 
   // ---- Cadrage initial de la caméra
   useEffect(() => {
     const w = world.current;
     if (!w) return;
     // Assez près pour que la scène remplisse le cadre, vue de trois quarts en plongée légère.
-    const d = distance ?? extent.radius * 1.15 + 1.5;
-    w.controls.target.set(extent.cx, Math.min(extent.cz, 1.5), extent.cy);
-    w.camera.position.set(extent.cx + d * 0.75, extent.cz + d * 0.62, extent.cy + d * 0.75);
+    const d = distance ?? extent.radius * (gridSize ? 1.15 : 1.6) + 1.5;
+    w.controls.target.set(extent.cx, gridSize ? Math.min(extent.cz, 1.5) : extent.cz, extent.cy);
+    // Sol : plongée de trois quarts ; créature : presque de face, pour voir les yeux.
+    // Les créatures ont leur visage du côté y négatif : la caméra se place devant elles.
+    const side = gridSize ? 1 : -1;
+    w.camera.position.set(extent.cx + d * 0.75, extent.cz + d * (gridSize ? 0.62 : 0.3), extent.cy + side * d * 0.75);
     w.controls.update();
     // Uniquement au montage et quand la taille de la scène change nettement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
