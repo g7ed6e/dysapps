@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { DEPTH, GAP, ISLAND, groundHeight, islandAt, islandCenter, islandOrigin, worldBounds, worldCubes } from './terrain';
+import { DEPTH, GAP, ISLAND, creaturePlacements, groundHeight, islandAt, islandCenter, islandOrigin, worldBounds, worldCubes } from './terrain';
 
 it('construit une île par biome, avec créature seulement si débloqué', () => {
   const cubes = worldCubes({});
@@ -10,6 +10,10 @@ it('construit une île par biome, avec créature seulement si débloqué', () =>
   const mine = cubes.filter((c) => c.tag === 'mine' && onIsland(c));
   // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est grise et sans créature.
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
+  // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
+  expect(worldCubes({}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
+  expect(creaturePlacements({}).map((c) => c.id)).toEqual(['foret']);
+  expect(creaturePlacements({ 'foret-x': { stars: 1 } }).map((c) => c.id)).toEqual(['foret', 'mine']);
   expect(mine.every((c) => c.color === '#b9b4a8' && c.texture === 'pierre')).toBe(true);
   const unlocked = worldCubes({ 'foret-x': { stars: 1 } });
   expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.color !== '#b9b4a8')).toBe(true);

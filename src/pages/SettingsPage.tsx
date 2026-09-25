@@ -147,6 +147,10 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.sounds} onChange={(e) => update({ sounds: e.target.checked })} />
             Sons dans le village (poser, retirer un bloc)
           </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.ambience} onChange={(e) => update({ ambience: e.target.checked })} />
+            Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit)
+          </label>
         </fieldset>
 
         <div className="actions">

@@ -18,6 +18,8 @@ export interface Settings {
   view3d: boolean;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
   sounds: boolean;
+  /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
+  ambience: boolean;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reduceMotion: false,
   view3d: true,
   sounds: true,
+  ambience: false,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -87,6 +90,7 @@ export function sanitizeSettings(input: Partial<Settings>): Settings {
     reduceMotion: Boolean(s.reduceMotion),
     view3d: s.view3d === undefined ? DEFAULT_SETTINGS.view3d : Boolean(s.view3d),
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
+    ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
   };
 }
 

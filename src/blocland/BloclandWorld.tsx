@@ -1,40 +1,64 @@
 import { Suspense, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
+import { SpeakButton } from '../components/SpeakButton';
+import { Syllabified } from '../components/Syllabified';
+import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, isBiomeUnlocked, type BiomeId } from './biomes';
+import { BIOMES, getBiome, isBiomeUnlocked, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { WorldCanvas, hasWebGL } from './three';
-import { worldCubes } from './world/terrain';
+import { useAmbience } from './useAmbience';
+import { daylight } from './world/daylight';
+import { creaturePlacements, worldCubes } from './world/terrain';
 
 /**
  * Le village en 3D : les cinq îles dans une seule scène. On tourne, on se déplace, on zoome,
- * on vole vers une île avec les boutons, et on touche une île pour y entrer.
+ * on vole vers une île avec les boutons, on touche une île pour y entrer, une créature pour l'écouter.
  * La liste des biomes en dessous reste la version accessible.
  */
 export function BloclandWorld() {
-  const { settings } = useSettings();
+  const { settings, speak } = useSettings();
   const { state } = useBlocland();
   const navigate = useNavigate();
-  const cubes = useMemo(() => worldCubes(state.progress, state.village), [state.progress, state.village]);
-  const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({
-    island: null,
-    seq: 0,
-  });
+  const cubes = useMemo(() => worldCubes(state.progress, state.village, false), [state.progress, state.village]);
+  const creatures = useMemo(() => creaturePlacements(state.progress), [state.progress]);
+  const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: null, seq: 0 });
+  const [forceDay, setForceDay] = useState(false);
+  const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
+  useAmbience(forceDay);
   if (!settings.view3d || !hasWebGL()) return null;
   const goTo = (island: BiomeId | null) => setFocus((f) => ({ island, seq: f.seq + 1 }));
+  const night = !forceDay && daylight().light < 0.5;
+  const onCreature = (id: BiomeId) => {
+    const biome = getBiome(id);
+    if (!biome) return;
+    const lines = biome.creature.lines;
+    const text = lines[Math.floor(Math.random() * lines.length)];
+    setSaid({ id, text });
+    if (settings.autoRead) speak(frenchTypography(text));
+  };
   return (
     <section className="world" aria-label="Le village en 3D">
       <Suspense fallback={<p className="loading">Chargement du village…</p>}>
         <WorldCanvas
           cubes={cubes}
+          creatures={creatures}
           focus={focus}
           reduceMotion={settings.reduceMotion}
+          forceDay={forceDay}
           onPickIsland={(id) => navigate(`/aventure/${id}`)}
+          onPickCreature={onCreature}
           className="voxel-canvas-world"
           label="Le village de Blocland en 3D : cinq îles reliées par des ponts"
         />
       </Suspense>
+      {said && (
+        <div className="creature-line" role="status" aria-live="polite">
+          <strong>{getBiome(said.id)?.creature.name} :</strong> <Syllabified text={said.text} />
+          <SpeakButton text={said.text} />
+        </div>
+      )}
       <div className="world-nav" role="group" aria-label="Aller à">
         <button type="button" className={`button${focus.island === null ? ' primary' : ''}`} aria-pressed={focus.island === null} onClick={() => goTo(null)}>
           <Icon name="map" /> Vue d’ensemble
@@ -53,8 +77,18 @@ export function BloclandWorld() {
             </button>
           );
         })}
+        {night && (
+          <button type="button" className="button" onClick={() => setForceDay(true)}>
+            <Icon name="sun" /> Forcer le jour
+          </button>
+        )}
+        {forceDay && (
+          <button type="button" className="button" onClick={() => setForceDay(false)}>
+            <Icon name="moon" /> Revenir à l’heure réelle
+          </button>
+        )}
       </div>
-      <p className="view-note">Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île pour y entrer.</p>
+      <p className="view-note">Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île pour y entrer, une créature pour l’écouter.</p>
     </section>
   );
 }
