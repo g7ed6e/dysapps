@@ -45,7 +45,12 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Tutoriel réécrit (îles pâles, ouvrages et conditions, « touche la Forêt sous la flèche »).
 - Le message « ouvrage construit » ne suit plus sur une autre île.
 
-## 7. À venir
+## 7. Rythme et fête (PR 5)
+
+- **Blocs selon les étoiles** (`blocksBonus()` dans `engine.ts`) : +1 bloc à deux étoiles, +2 à trois, et **+2 la première fois** qu'une quête est jouée. Toujours au moins 1 bloc dès une bonne réponse, jamais rien de retiré. Une première quête réussie donne donc 5 à 7 blocs au lieu de 3 : de quoi construire un pont et commencer la cabane. L'écran de fin détaille le bonus.
+- **La fête d'un ouvrage** : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille (le panneau s'ouvre sur l'île d'en face).
+
+## 8. À venir
 
 
 - Gabarits de bâtiments variés pour les plans clonés (tour ronde, longère, dôme, gradins, atelier en L).

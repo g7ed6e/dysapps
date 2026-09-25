@@ -10,6 +10,8 @@ import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText,
 
 interface Props {
   island: BiomeId;
+  /** Ouvrage construit : l'île d'en face s'ouvre (la caméra y vole, la créature accueille). */
+  onBuilt?: (to: BiomeId) => void;
 }
 
 /** « le pont », « l'escalier taillé »… */
@@ -23,7 +25,7 @@ function withArticle(kind: BridgeDef['kind']): string {
  * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
  * terminé, le tunnel et le col un Gardien vaincu. Un seul bouton par ouvrage ; ce qui manque est dit clairement.
  */
-export function Bridges({ island }: Props) {
+export function Bridges({ island, onBuilt }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
@@ -45,6 +47,7 @@ export function Bridges({ island }: Props) {
       const built = b.kind === 'pont' || b.kind === 'bac' ? 'construit' : b.kind === 'tunnel' ? 'percé' : 'taillé';
       text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}. L’île est ouverte.`;
       if (settings.sounds) playDone();
+      onBuilt?.(otherEnd(b, island));
     } else if (r.reason === 'blocs') {
       text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une quête pour en gagner.`;
       if (settings.sounds) playNope();

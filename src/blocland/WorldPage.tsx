@@ -14,7 +14,7 @@ import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { creaturePlacements, guardianPlacements, islandAt, worldCubes } from './world/terrain';
+import { creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
 import { usePlanBuilder } from './usePlanBuilder';
 
 /**
@@ -123,7 +123,20 @@ export function WorldPage() {
           </button>
         </nav>
       </div>
-      {island && <IslandSheet biome={island} builder={builder} in3d onClose={() => navigate('/aventure')} />}
+      {island && (
+        <IslandSheet
+          biome={island}
+          builder={builder}
+          in3d
+          onClose={() => navigate('/aventure')}
+          onBuilt={(to) => {
+            // La fête : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille.
+            const c = islandCenter(to);
+            builder.celebrate({ x: c.x, y: c.y, z: c.z + 2 }, '#f2c944');
+            window.setTimeout(() => navigate(`/aventure/${to}`), 900);
+          }}
+        />
+      )}
     </div>
   );
 }

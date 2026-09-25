@@ -3916,3 +3916,10 @@ a.island-quest:focus-visible {
 .bridge-compact {
   opacity: 0.85;
 }
+
+/* Le détail des blocs en plus (étoiles, première fois) sur l'écran de fin. */
+.reward-bonus {
+  display: block;
+  font-size: 0.85em;
+  opacity: 0.85;
+}

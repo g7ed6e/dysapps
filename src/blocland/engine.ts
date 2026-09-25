@@ -359,11 +359,20 @@ export interface Completion {
   newBest: boolean;
   blocks: number;
   block: BlockId;
+  /** Ce qui, dans `blocks`, vient des étoiles et de la première fois. */
+  bonus: { stars: number; first: number };
   xp: number;
   /** Terminé sans aide ni erreur. */
   perfect: boolean;
   streak: StreakUpdate;
   chestBlock?: BlockId;
+}
+
+/** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une quête est jouée. Rien sans bonne réponse. */
+export const FIRST_TIME_BLOCKS = 2;
+export function blocksBonus(stars: number, firstTime: boolean, anyCorrect = true): { stars: number; first: number } {
+  if (!anyCorrect) return { stars: 0, first: 0 };
+  return { stars: stars >= 3 ? 2 : stars >= 2 ? 1 : 0, first: firstTime ? FIRST_TIME_BLOCKS : 0 };
 }
 
 /** Enregistre un exercice terminé : progression, blocs, XP, répétition espacée, streak, adaptation. */
@@ -380,7 +389,8 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
 
   // Des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
   const anyCorrect = results.some((r) => r.correct);
-  const blocks = anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) : 0;
+  const bonus = blocksBonus(stars, prev.attempts === 0, anyCorrect);
+  const blocks = anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
   // XP à chaque exercice terminé ; bonus si terminé sans aide.
   const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
 
@@ -407,6 +417,7 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
     newBest,
     blocks,
     block: def.reward.block,
+    bonus,
     xp,
     perfect,
     streak,

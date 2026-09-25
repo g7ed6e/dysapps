@@ -47,12 +47,13 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   await play(user, [1]);
   expect(screen.getByRole('heading', { name: 'Bien joué !' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: '2 étoiles sur 3' })).toBeInTheDocument();
-  expect(screen.getByText('+3')).toBeInTheDocument(); // 3 blocs × 5/6 arrondi
+  expect(screen.getByText('+6')).toBeInTheDocument(); // 3 blocs × 5/6 arrondi, +1 pour deux étoiles, +2 première fois
+  expect(screen.getByText(/\+2 première fois, \+1 pour 2 étoiles/)).toBeInTheDocument();
   expect(screen.getByText('+10')).toBeInTheDocument();
   expect(screen.getByText(/1 jour d’affilée/)).toBeInTheDocument();
 
   const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.inventory.bois).toBe(3);
+  expect(saved.inventory.bois).toBe(6);
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
   expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${DEF.items[1].key}`);
@@ -62,7 +63,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   // Le lien de retour (en haut) et le bouton de fin mènent au même endroit.
   await user.click(screen.getAllByRole('link', { name: /Forêt des sons/ })[0]);
   expect(screen.getByRole('img', { name: /2 étoiles sur 3, meilleur score 83 %/ })).toBeInTheDocument();
-  expect(screen.getByText(/Tu en as 3/)).toBeInTheDocument();
+  expect(screen.getByText(/Tu en as 6/)).toBeInTheDocument();
 });
 
 it('propose une pause après 3 exercices, et laisse continuer', async () => {
