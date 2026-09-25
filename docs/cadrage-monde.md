@@ -64,7 +64,7 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 
 ## 10. Le bonhomme (PR 8)
 
-- L'**avatar** de l'élève (`Avatar.ts`, casquette rouge, salopette bleue) se tient sur l'île où l'on est, à côté de la créature. Sa position est mémorisée (`village.at`, la Forêt au début ; oubliée si l'île n'est plus ouverte).
+- L'**avatar** de l'élève (`Avatar.ts`, casquette rouge, salopette bleue, un peu plus de deux blocs de haut) se tient sur l'île où l'on est, à côté de la créature. Sa position est mémorisée (`village.at`, la Forêt au début ; oubliée si l'île n'est plus ouverte).
 - Quand on ouvre une autre île ouverte, il **marche** jusqu'à elle le long des ouvrages construits (`avatarRoute()` : plus court chemin en nombre d'ouvrages, sur le tablier des ponts, sur le sol des sentiers), à six cases par seconde, quatre secondes au plus. Vers une île fermée, il reste où il est. Avec « réduire les animations », il apparaît directement à l'arrivée.
 - On voit ainsi d'un coup d'œil, même dans la vue d'ensemble, jusqu'où on est arrivé.
 

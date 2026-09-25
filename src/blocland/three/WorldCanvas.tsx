@@ -77,6 +77,8 @@ const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
+/** Échelle du bonhomme : 6 cubes de haut deviennent 2,4 blocs. */
+const AVATAR_SCALE = 0.4;
 const FLIGHT_MS = 700;
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
@@ -429,6 +431,8 @@ export default function WorldCanvas({
 
     // Le bonhomme (ses cubes arrivent par la prop `avatar`).
     const avatarGroup = new THREE.Group();
+    // Ses cubes font 3 × 2 × 6 : réduits pour qu'il fasse un peu plus de deux blocs de haut, à l'échelle des maisons.
+    avatarGroup.scale.setScalar(AVATAR_SCALE);
     avatarGroup.visible = false;
     scene.add(avatarGroup);
 
@@ -611,7 +615,7 @@ export default function WorldCanvas({
         const y = a.y + (b.y - a.y) * f;
         const z = a.z + (b.z - a.z) * f;
         const hop = k < 1 ? Math.abs(Math.sin(t * 14)) * 0.18 : 0;
-        w.avatar.position.set(x - 1, z + hop, y);
+        w.avatar.position.set(x + 0.5 - 1.5 * AVATAR_SCALE, z + hop, y + 0.5 - AVATAR_SCALE);
         if (b.x !== a.x || b.y !== a.y) w.avatar.rotation.y = Math.atan2(-(b.y - a.y), b.x - a.x) + Math.PI / 2;
         if (k >= 1) w.walk = null;
       }
