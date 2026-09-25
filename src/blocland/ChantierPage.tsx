@@ -6,10 +6,13 @@ import { useSettings } from '../core/SettingsContext';
 import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BuildGrid } from './BuildGrid';
-import { FREE_ZONE, MAX_HEIGHT, columnHeight, inFreeZone, placedOn, type PlaceReason } from './engine';
-import { playNope, playPlace, playRemove } from './sound';
+import { useProgress } from '../core/ProgressContext';
+import { FREE_ZONE, MAX_HEIGHT, columnHeight, inFreeZone, nextFillable, planCellAt, planStatus, placedOn, type PlaceReason } from './engine';
+import { PlanPanel, whereToEarn } from './PlanPanel';
+import { playDone, playNope, playPlace, playRemove } from './sound';
 import { WorldCanvas, hasWebGL } from './three';
 import { BlockIcon } from './Voxel';
+import { plansFor } from './world/plans';
 import { freeZoneOf, toIslandCell, worldCubes } from './world/terrain';
 
 type Mode = 'poser' | 'retirer';
@@ -23,8 +26,9 @@ const REASONS: Record<PlaceReason, string> = {
 
 /** Le chantier : on construit ce qu'on veut sur la zone libre de chaque île, dans le village en 3D ou dans la vue simple. */
 export function ChantierPage() {
-  const { state, placeAt, placeOnColumn, removeAt, removeFromColumn, clearIsland } = useBlocland();
-  const { settings, update } = useSettings();
+  const { state, placeAt, placeOnColumn, removeAt, removeFromColumn, clearIsland, fillPlan } = useBlocland();
+  const { settings, update, speak } = useSettings();
+  const { completePlan } = useProgress();
   const webgl = hasWebGL();
   const in3d = settings.view3d && webgl;
   const unlockedIslands = BIOMES.filter((b) => isBiomeUnlocked(b.id, state.progress)).map((b) => b.id);
@@ -39,6 +43,10 @@ export function ChantierPage() {
   const [confirmClear, setConfirmClear] = useState(false);
   const total = Object.values(state.inventory).reduce((a, b) => a + (b ?? 0), 0);
   const sound = (f: () => void) => settings.sounds && f();
+  // Le plan en cours de l'île : le premier qui n'est pas terminé (sinon le dernier, pour afficher « terminé »).
+  const plans = plansFor(island);
+  const plan = plans.find((p) => !planStatus(state, p).complete) ?? plans[plans.length - 1];
+  const status = plan ? planStatus(state, plan) : null;
 
   // Le premier type disponible est présélectionné dès qu'il y en a un.
   useEffect(() => {
@@ -72,6 +80,36 @@ export function ChantierPage() {
     }
   };
 
+  /** Pose le bloc attendu à une cellule du plan (coordonnées relatives à l'île). */
+  const fillAt = (x: number, y: number, z: number) => {
+    if (!plan) return;
+    const r = fillPlan(plan, x, y, z);
+    if (!r.ok) {
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc de ${BLOCKS[r.block].name.toLowerCase()} : va dans ${whereToEarn(r.block)}.`);
+      else if (r.reason === 'deja-pose') setNotice('Ce bloc du plan est déjà posé.');
+      sound(playNope);
+      return;
+    }
+    if (r.completed) {
+      const chest = Object.entries(plan.reward.chest)
+        .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
+        .join(', ');
+      const msg = `${plan.name} : terminé ! ${plan.done} Coffre : ${chest}. +${plan.reward.xp} XP.`;
+      setNotice(msg);
+      completePlan(plan.reward.xp);
+      sound(playDone);
+      if (settings.autoRead) speak(msg);
+    } else {
+      setNotice(null);
+      sound(playPlace);
+    }
+  };
+  const fillNext = () => {
+    if (!plan) return;
+    const next = nextFillable(state, plan);
+    if (next) fillAt(next.x, next.y, next.z);
+  };
+
   /** Vue simple : la case (x, y) de la zone libre, en colonne. */
   const onColumn = (gx: number, gy: number) => {
     const x = FREE_ZONE.x + gx;
@@ -84,6 +122,11 @@ export function ChantierPage() {
 
   /** 3D : on a touché la face d'un bloc (`hit`) ; la case devant est `next`. */
   const onFace = (hit: { x: number; y: number; z: number }, next: { x: number; y: number; z: number }) => {
+    // Une cellule du plan (fantôme ou déjà posée) : on y pose le bloc attendu, quel que soit le mode.
+    if (plan) {
+      const h = toIslandCell(island, hit.x, hit.y, hit.z);
+      if (planCellAt(plan, h.x, h.y, h.z)) return fillAt(h.x, h.y, h.z);
+    }
     if (mode === 'retirer') {
       const c = toIslandCell(island, hit.x, hit.y, hit.z);
       return afterRemove(removeAt(island, c.x, c.y, c.z));
@@ -126,6 +169,8 @@ export function ChantierPage() {
           );
         })}
       </div>
+
+      {plan && status && <PlanPanel plan={plan} status={status} canFill={!status.complete && nextFillable(state, plan) !== null} onFillNext={fillNext} />}
 
       <section className="panel inventory" aria-labelledby="inventaire-titre">
         <h2 id="inventaire-titre" className="section-title inventory-title">
@@ -191,7 +236,7 @@ export function ChantierPage() {
         {in3d ? (
           <Suspense fallback={<p className="loading">Chargement du village…</p>}>
             <WorldCanvas
-              cubes={worldCubes(state.progress, state.village.placed)}
+              cubes={worldCubes(state.progress, state.village)}
               focus={{ island, seq }}
               reduceMotion={settings.reduceMotion}
               build={{ zone: freeZoneOf(island), onPickFace: onFace }}

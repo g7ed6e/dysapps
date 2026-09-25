@@ -4,6 +4,7 @@ import {
   levelFromXp,
   recordAnswer,
   type IconName,
+  recordPlan,
   recordSession,
   sanitizeProgress,
   type Progress,
@@ -23,6 +24,8 @@ interface ProgressContextValue {
   progress: Progress;
   answer: (correct: boolean, attempt?: number) => ProgressUpdate;
   completeSession: (appId: string, score: number) => ProgressUpdate;
+  /** Un bâtiment du village terminé : XP et succès. */
+  completePlan: (xp: number) => ProgressUpdate;
   resetProgress: () => void;
   celebrations: Celebration[];
   dismissCelebration: (id: number) => void;
@@ -57,15 +60,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return update;
   }, []);
 
-  const answer = useCallback(
-    (correct: boolean, attempt = 1) => apply(recordAnswer(progressRef.current, correct, attempt)),
-    [apply],
-  );
+  const answer = useCallback((correct: boolean, attempt = 1) => apply(recordAnswer(progressRef.current, correct, attempt)), [apply]);
 
-  const completeSession = useCallback(
-    (appId: string, score: number) => apply(recordSession(progressRef.current, appId, score)),
-    [apply],
-  );
+  const completeSession = useCallback((appId: string, score: number) => apply(recordSession(progressRef.current, appId, score)), [apply]);
+
+  const completePlan = useCallback((xp: number) => apply(recordPlan(progressRef.current, xp)), [apply]);
 
   const resetProgress = useCallback(() => {
     removeKey(STORAGE_KEY);
@@ -79,8 +78,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ progress, answer, completeSession, resetProgress, celebrations, dismissCelebration }),
-    [progress, answer, completeSession, resetProgress, celebrations, dismissCelebration],
+    () => ({ progress, answer, completeSession, completePlan, resetProgress, celebrations, dismissCelebration }),
+    [progress, answer, completeSession, completePlan, resetProgress, celebrations, dismissCelebration],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

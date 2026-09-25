@@ -12,6 +12,8 @@ export interface VoxelCube {
   tag?: string;
   /** Bloc posé par l'élève (on peut le retirer). */
   placed?: boolean;
+  /** Cellule de plan encore à poser : dessinée translucide. */
+  ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
   texture?: string;
 }

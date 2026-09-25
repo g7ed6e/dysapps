@@ -1,0 +1,102 @@
+{
+  "id": "tour-phare",
+  "biome": "tour",
+  "name": "Le phare de Grimoire",
+  "origin": {
+    "x": 2,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "verre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "verre"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "verre"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "verre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "block": "verre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "block": "verre"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "block": "verre"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "block": "verre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "block": "verre"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "block": "verre"
+    }
+  ],
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "bois": 4
+    }
+  },
+  "done": "Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village."
+}

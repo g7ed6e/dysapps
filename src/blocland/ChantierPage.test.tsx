@@ -6,6 +6,7 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { AppRoutes } from '../App';
 import { BloclandProvider } from './BloclandContext';
 import { FREE_ZONE } from './engine';
+import { planCells, plansFor } from './world/plans';
 
 function renderAt(path: string) {
   return render(
@@ -84,4 +85,31 @@ it('sans WebGL, affiche la vue simple et le signale', () => {
   expect(screen.getByText(/la 3D n’est pas disponible/)).toBeInTheDocument();
   expect(screen.queryByRole('img', { name: /Chantier en 3D/ })).not.toBeInTheDocument();
   expect(screen.getByRole('group', { name: 'Chantier' })).toBeInTheDocument();
+});
+
+it('propose le plan de l’île et pose ses blocs avec le bouton, jusqu’à la récompense', async () => {
+  const plan = plansFor('foret')[0];
+  const n = planCells(plan).length;
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: n } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/chantier');
+  expect(screen.getByRole('heading', { name: /Plan : La cabane de Mousso/ })).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '0');
+  const button = () => screen.getByRole('button', { name: /Poser le bloc suivant/ });
+  await user.click(button());
+  expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
+  expect(saved().village.plans[plan.id]).toHaveLength(1);
+  for (let i = 1; i < n; i++) await user.click(button());
+  expect(screen.getByText(/Terminé !/)).toBeInTheDocument();
+  expect(screen.getByText(/La cabane de Mousso : terminé/)).toBeInTheDocument();
+  expect(saved().inventory).toMatchObject({ bois: 0, pierre: 3 });
+  expect(JSON.parse(localStorage.getItem('dysapps:progress')!).plansCompleted).toBe(1);
+  expect(screen.queryByRole('button', { name: /Poser le bloc suivant/ })).not.toBeInTheDocument();
+});
+
+it('sans le bon bloc, le plan dit où le gagner', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { pierre: 2 } }));
+  renderAt('/aventure/chantier');
+  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
+  expect(screen.getByRole('list', { name: /Blocs qu’il manque/ })).toHaveTextContent(/bois · à gagner dans Forêt des sons/);
 });

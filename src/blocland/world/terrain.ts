@@ -3,7 +3,8 @@
 import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeDef, type BiomeId } from '../biomes';
 import { CREATURE_CUBES } from '../Creatures';
 import type { VoxelCube } from '../Voxel';
-import { FREE_ZONE, type BuildCell } from '../engine';
+import { FREE_ZONE, type Village } from '../engine';
+import { PLAN_ZONE, planCells, plansFor } from './plans';
 
 /** Côté d'une île (en blocs) et espace entre deux îles. */
 export const ISLAND = 12;
@@ -93,7 +94,8 @@ export function islandAt(x: number, y: number): BiomeId {
 export function groundHeight(index: number, x: number, y: number): number {
   const fromBack = ISLAND - 1 - x;
   const shape = index % 3;
-  const inner = x >= 7 && y >= 2 && y <= ISLAND - 3;
+  // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).
+  const inner = x >= 7 && y >= 2 && y <= 5;
   if (!inner) return 0;
   if (shape === 0) return fromBack + Math.abs(y - ISLAND / 2 + 0.5) < 7.5 ? 1 : 0;
   if (shape === 1) return y <= ISLAND / 2 + 1 || fromBack < 2 ? 1 : 0;
@@ -113,9 +115,9 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
   foret: (put, h) => {
     for (const [tx, ty, tall] of [
       [8, 2, 2],
-      [9, 8, 3],
+      [10, 4, 3],
       [3, 9, 2],
-      [10, 5, 2],
+      [1, 10, 3],
     ] as const)
       tree(put, tx, ty, h(tx, ty), tall);
   },
@@ -129,41 +131,41 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     ] as const)
       put(x, y, h(x, y) + z, BLOCKS.pierre.side);
     for (const [x, y] of [
-      [9, 8],
-      [10, 8],
+      [2, 10],
+      [3, 10],
     ] as const) {
       put(x, y, h(x, y) + 1, DARK);
       put(x, y, h(x, y) + 2, DARK);
     }
-    put(9, 7, h(9, 7) + 1, BLOCKS.pierre.side);
-    put(10, 9, h(10, 9) + 1, BLOCKS.pierre.side);
+    put(1, 9, h(1, 9) + 1, BLOCKS.pierre.side);
+    put(4, 11, h(4, 11) + 1, BLOCKS.pierre.side);
   },
   carriere: (put, h) => {
-    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 4 + dy, h(8 + dx, 4 + dy) + 1, BLOCKS.sable.side);
-    put(9, 5, h(9, 5) + 2, BLOCKS.sable.side);
+    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS.sable.side);
+    put(9, 4, h(9, 4) + 2, BLOCKS.sable.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.sable.side);
   },
   ferme: (put, h) => {
     // Un champ de blé et deux poteaux de barrière.
-    for (let dy = 2; dy <= 9; dy++) {
+    for (let dy = 2; dy <= 5; dy++) {
       put(8, dy, h(8, dy) + 1, HAY);
       if (dy % 2) put(9, dy, h(9, dy) + 1, HAY);
     }
     put(6, 1, h(6, 1) + 1, TRUNK);
-    put(6, 10, h(6, 10) + 1, TRUNK);
-    tree(put, 10, 10, h(10, 10), 2);
+    put(3, 10, h(3, 10) + 1, TRUNK);
+    tree(put, 1, 9, h(1, 9), 2);
   },
   tour: (put, h) => {
     // Une tour de verre avec un sommet en or.
     for (let z = 1; z <= 5; z++)
       for (const [dx, dy] of [
+        [8, 4],
+        [9, 4],
         [8, 5],
         [9, 5],
-        [8, 6],
-        [9, 6],
       ] as const)
         put(dx, dy, h(dx, dy) + z, BLOCKS.verre.side);
-    put(8, 5, h(8, 5) + 6, BLOCKS.or.side);
+    put(8, 4, h(8, 4) + 6, BLOCKS.or.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
   },
 };
@@ -213,7 +215,14 @@ export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x:
 }
 
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
-export function worldCubes(progress: Record<string, { stars: number }>, placed: Partial<Record<BiomeId, BuildCell[]>> = {}): VoxelCube[] {
+/** Zone des plans d'une île en coordonnées du monde (bornes hautes exclues). */
+export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
+  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
+}
+
+export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {} }): VoxelCube[] {
+  const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
     const { ox, oy } = islandOrigin(index);
@@ -252,6 +261,17 @@ export function worldCubes(progress: Record<string, { stars: number }>, placed: 
     for (const c of placed[biome.id] ?? []) {
       const def = BLOCKS[c.block];
       cubes.push({ x: ox + c.x, y: oy + c.y, z: c.z + 1, color: def.side, top: def.top, texture: def.texture, tag: biome.id, placed: true });
+    }
+    // Les plans : cellules posées en dur, cellules restantes en fantôme (seulement si l'île est ouverte).
+    if (unlocked) {
+      for (const plan of plansFor(biome.id)) {
+        const done = new Set(village.plans[plan.id] ?? []);
+        for (const c of planCells(plan)) {
+          const def = BLOCKS[c.block];
+          const built = done.has(c.key);
+          cubes.push({ x: ox + c.x, y: oy + c.y, z: c.z + 1, color: def.side, top: def.top, texture: def.texture, tag: biome.id, ghost: !built });
+        }
+      }
     }
     if (index > 0) bridge(BIOMES[index - 1], biome, cubes);
   });
