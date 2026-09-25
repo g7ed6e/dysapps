@@ -184,18 +184,34 @@
   --tex-gold: none;
 }
 
-/* Luciole : à installer dans public/fonts/luciole/ (voir le README de ce dossier). */
+/* Luciole © Laurent Bourcellier & Jonathan Fabreguettes (Perez), CC BY 4.0 : voir public/fonts/luciole/README.md. */
 @font-face {
   font-family: "Luciole";
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
   src: url("/fonts/luciole/Luciole-Regular.woff2") format("woff2");
 }
 @font-face {
   font-family: "Luciole";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/luciole/Luciole-Italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Luciole";
   font-weight: 700;
+  font-style: normal;
   font-display: swap;
   src: url("/fonts/luciole/Luciole-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Luciole";
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/luciole/Luciole-BoldItalic.woff2") format("woff2");
 }
 
 /* ===== Base ===== */
@@ -2088,7 +2104,8 @@ a.app-card:active {
 .font-arial {
   font-family: Arial, Helvetica, sans-serif;
 }
-.option-note {
+.font-credit {
+  margin: 0.75rem 0 0;
   font-size: 0.8rem;
   color: var(--muted);
 }

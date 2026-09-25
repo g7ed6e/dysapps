@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, isFontAvailable, type FontChoice, type ThemeChoice } from '../core/settings';
+import { useState } from 'react';
+import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, type FontChoice, type ThemeChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -12,16 +12,6 @@ export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
   const { resetProgress } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
-  // Luciole doit être installée à la main (voir public/fonts/luciole/README.md).
-  const [lucioleReady, setLucioleReady] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    isFontAvailable('Luciole').then((ok) => alive && setLucioleReady(ok));
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   return (
     <>
@@ -41,10 +31,16 @@ export function SettingsPage() {
               <label key={font} className={`option font-${font}${settings.font === font ? ' selected' : ''}`}>
                 <input type="radio" name="font" value={font} checked={settings.font === font} onChange={() => update({ font })} />
                 {FONT_LABELS[font]}
-                {font === 'luciole' && lucioleReady === false && <span className="option-note">(fichiers à installer)</span>}
               </label>
             ))}
           </div>
+          <p className="font-credit">
+            Police Luciole © Laurent Bourcellier & Jonathan Fabreguettes (Perez), typographies.fr, sous licence{' '}
+            <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener noreferrer">
+              CC BY 4.0
+            </a>
+            .
+          </p>
         </fieldset>
 
         <fieldset className="panel">

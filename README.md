@@ -92,7 +92,7 @@ Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent d�
 
 ## Police Luciole
 
-Luciole (CC BY 4.0) n’est pas distribuée sur npm. Déposez `Luciole-Regular.woff2` et `Luciole-Bold.woff2` dans `public/fonts/luciole/` (voir le README de ce dossier) : l’option s’active dans les réglages, et vous pouvez la mettre par défaut dans `src/core/settings.ts`.
+Luciole est la police par défaut. Ses fichiers WOFF2 (version 2.001, non modifiés) sont dans `public/fonts/luciole/`. Luciole © Laurent Bourcellier & Jonathan Fabreguettes (Perez), distribuée sous licence [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode.fr) : le texte de la licence et le détail des crédits sont dans `public/fonts/luciole/`, et le crédit est aussi affiché dans l’application (page Réglages). La licence MIT du dépôt ne couvre pas ces fichiers de police.
 
 ## Développer
 
