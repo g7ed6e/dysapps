@@ -10,6 +10,7 @@ import { useBlocland } from './BloclandContext';
 import { WorldCanvas, hasWebGL } from './three';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
+import { isPlanDone, plansFor } from './world/plans';
 import { creaturePlacements, worldCubes } from './world/terrain';
 
 /**
@@ -33,7 +34,10 @@ export function BloclandWorld() {
   const onCreature = (id: BiomeId) => {
     const biome = getBiome(id);
     if (!biome) return;
-    const lines = biome.creature.lines;
+    // Une fois sa maison (premier plan) terminée, la créature en parle une fois sur deux.
+    const first = plansFor(id)[0];
+    const home = first && isPlanDone(first, state.village.plans);
+    const lines = home && Math.random() < 0.5 ? [biome.creature.home] : biome.creature.lines;
     const text = lines[Math.floor(Math.random() * lines.length)];
     setSaid({ id, text });
     if (settings.autoRead) speak(frenchTypography(text));

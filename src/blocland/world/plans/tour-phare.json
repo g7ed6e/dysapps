@@ -95,7 +95,10 @@
   "reward": {
     "xp": 60,
     "chest": {
-      "bois": 4
+      "bois": 4,
+      "lanterne": 2,
+      "toit": 5,
+      "porte": 1
     }
   },
   "done": "Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village."

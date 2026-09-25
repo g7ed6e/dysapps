@@ -1,11 +1,21 @@
 // Les plans du village : un bâtiment en ruine par île, à reconstruire bloc par bloc.
 // Chaque plan est un fichier JSON (cellules relatives à la zone des plans de l'île).
 import type { BiomeId, BlockId } from '../biomes';
+import carriereAbri from './plans/carriere-abri.json';
+import carriereCour from './plans/carriere-cour.json';
 import carriereFour from './plans/carriere-four.json';
+import fermeEnclos from './plans/ferme-enclos.json';
 import fermeEtable from './plans/ferme-etable.json';
+import fermeToit from './plans/ferme-toit.json';
 import foretCabane from './plans/foret-cabane.json';
+import foretCour from './plans/foret-cour.json';
+import foretToit from './plans/foret-toit.json';
+import mineCour from './plans/mine-cour.json';
 import mineForge from './plans/mine-forge.json';
+import mineToit from './plans/mine-toit.json';
+import tourLanterne from './plans/tour-lanterne.json';
 import tourPhare from './plans/tour-phare.json';
+import tourQuai from './plans/tour-quai.json';
 
 export interface PlanCell {
   x: number;
@@ -29,7 +39,24 @@ export interface PlanDef {
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
 export const PLAN_ZONE = { x: 6, y: 7, w: 6, h: 5 };
 
-export const PLANS: PlanDef[] = [foretCabane, mineForge, carriereFour, fermeEtable, tourPhare] as PlanDef[];
+/** Dans l'ordre : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
+export const PLANS: PlanDef[] = [
+  foretCabane,
+  foretToit,
+  foretCour,
+  mineForge,
+  mineToit,
+  mineCour,
+  carriereFour,
+  carriereAbri,
+  carriereCour,
+  fermeEtable,
+  fermeToit,
+  fermeEnclos,
+  tourPhare,
+  tourLanterne,
+  tourQuai,
+] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {
   return PLANS.filter((p) => p.biome === biome);
@@ -48,4 +75,14 @@ export function planCells(plan: PlanDef): (PlanCell & { key: string })[] {
     const y = PLAN_ZONE.y + plan.origin.y + c.y;
     return { x, y, z: c.z, block: c.block, key: cellKey(x, y, c.z) };
   });
+}
+
+/** Un plan est terminé quand toutes ses cellules sont posées. */
+export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
+  return (done[plan.id]?.length ?? 0) >= plan.cells.length;
+}
+
+/** Le plan en cours d'une île : le premier qui n'est pas terminé, ou `null` si tout est construit. */
+export function activePlan(biome: BiomeId, done: Record<string, string[]>): PlanDef | null {
+  return plansFor(biome).find((p) => !isPlanDone(p, done)) ?? null;
 }

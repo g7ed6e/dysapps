@@ -107,7 +107,10 @@
   "reward": {
     "xp": 40,
     "chest": {
-      "pierre": 3
+      "pierre": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
     }
   },
   "done": "Ma cabane ! Merci, bâtisseur·se. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit."

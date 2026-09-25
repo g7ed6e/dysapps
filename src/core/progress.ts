@@ -180,6 +180,7 @@ export const BADGES: BadgeDef[] = [
   { id: 'rang-legende', icon: 'crown', title: 'Légende', description: 'Atteindre le rang Légende.', earned: (p) => reached(p, 'legende') },
   { id: 'batisseur', icon: 'hammer', title: 'Bâtisseur·se', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
   { id: 'architecte', icon: 'blocks', title: 'Architecte', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
+  { id: 'village', icon: 'crown', title: 'Village reconstruit', description: 'Terminer les quinze plans du village.', earned: (p) => p.plansCompleted >= 15 },
 ];
 
 export function getBadge(id: string): BadgeDef | undefined {

@@ -89,7 +89,10 @@
   "reward": {
     "xp": 50,
     "chest": {
-      "verre": 3
+      "verre": 3,
+      "toit": 12,
+      "porte": 1,
+      "lanterne": 1
     }
   },
   "done": "Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble."

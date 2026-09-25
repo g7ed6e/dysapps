@@ -2847,3 +2847,25 @@ a.app-card:active {
     var(--bevel-shadow),
     0 var(--shadow-offset) 0 var(--shadow-color);
 }
+
+/* ===== Village : journal de construction ===== */
+.journal {
+  margin-top: 1.2rem;
+}
+.journal-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.journal-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.8rem;
+}
+.journal-day {
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-width: 8rem;
+}

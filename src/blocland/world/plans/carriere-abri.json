@@ -1,0 +1,122 @@
+{
+  "id": "carriere-abri",
+  "biome": "carriere",
+  "name": "L’abri du four",
+  "origin": {
+    "x": 2,
+    "y": 2
+  },
+  "cells": [
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "block": "bois"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "block": "bois"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "block": "bois"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "bois"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "block": "lanterne"
+    }
+  ],
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "barriere": 3,
+      "escalier": 1,
+      "lanterne": 2
+    }
+  },
+  "done": "Un abri sur mon four : plus de pluie sur le pain ! Merci."
+}

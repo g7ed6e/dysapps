@@ -1,0 +1,67 @@
+{
+  "id": "carriere-cour",
+  "biome": "carriere",
+  "name": "La cour du four",
+  "origin": {
+    "x": 2,
+    "y": 2
+  },
+  "cells": [
+    {
+      "x": -1,
+      "y": -2,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 1,
+      "y": -2,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 2,
+      "y": -2,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 0,
+      "y": -2,
+      "z": 0,
+      "block": "escalier"
+    },
+    {
+      "x": -1,
+      "y": -2,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": 2,
+      "y": -2,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 0,
+      "block": "sable"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "block": "sable"
+    }
+  ],
+  "reward": {
+    "xp": 70,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Une cour pour le four. Les mots bien écrits viendront y chercher leur pain."
+}

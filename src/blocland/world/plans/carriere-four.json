@@ -4,7 +4,7 @@
   "name": "Le four de Rouxel",
   "origin": {
     "x": 2,
-    "y": 1
+    "y": 2
   },
   "cells": [
     {
@@ -95,7 +95,9 @@
   "reward": {
     "xp": 50,
     "chest": {
-      "terre": 3
+      "terre": 3,
+      "toit": 8,
+      "lanterne": 1
     }
   },
   "done": "Mon four est reconstruit ! Le pain va sentir bon dans tout le village."
