@@ -536,6 +536,24 @@ a.app-card:active {
 .subject-maths {
   background-image: var(--tex-rock);
 }
+/* Cartes de quête d'une matière : la texture reste un bandeau en tête, jamais derrière le texte. */
+.app-card.subject-francais,
+.app-card.subject-maths {
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+}
+.app-card.locked.subject-francais,
+.app-card.locked.subject-maths,
+:root[data-theme="clair"] .app-card.subject-francais,
+:root[data-theme="clair"] .app-card.subject-maths,
+:root[data-theme="contraste"] .app-card.subject-francais,
+:root[data-theme="contraste"] .app-card.subject-maths {
+  background-image: none;
+  padding-top: 1.2rem;
+}
 :root[data-theme="clair"] .subject-card,
 :root[data-theme="contraste"] .subject-card {
   border-top-width: 12px;
