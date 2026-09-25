@@ -3,3 +3,4 @@ import { lazy } from 'react';
 
 export const VoxelCanvas = lazy(() => import('./VoxelCanvas'));
 export { hasWebGL } from './webgl';
+export const WorldCanvas = lazy(() => import('./WorldCanvas'));

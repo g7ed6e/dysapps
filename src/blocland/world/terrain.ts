@@ -1,0 +1,242 @@
+// Le terrain du village : une île par biome (relief léger, décor, créature), reliées par des ponts de bois.
+// Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
+import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeDef, type BiomeId } from '../biomes';
+import { CREATURE_CUBES } from '../Creatures';
+import type { VoxelCube } from '../Voxel';
+
+/** Côté d'une île (en blocs) et espace entre deux îles. */
+export const ISLAND = 12;
+export const GAP = 4;
+/** Nombre de couches de terre sous le sol (visibles au-dessus de l'eau, sur les berges). */
+export const DEPTH = 2;
+
+const LOCKED = { top: '#d6d1c4', side: '#b9b4a8' };
+const TRUNK = '#6b4a2e';
+const LEAF = '#4e8f36';
+const GRASS = '#6cb33f';
+const DARK = '#3b2d20';
+const HAY = '#e8c66f';
+
+/** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
+const TEXTURES: Record<string, string> = {
+  [TRUNK]: 'tronc',
+  [LEAF]: 'feuilles',
+  [GRASS]: 'herbe',
+  [BLOCKS.terre.side]: 'terre',
+  [BLOCKS.pierre.side]: 'pierre',
+  [BLOCKS.sable.side]: 'sable',
+  [BLOCKS.verre.side]: 'verre',
+  [BLOCKS.or.side]: 'or',
+  [BLOCKS.bois.side]: 'planches',
+  [HAY]: 'or',
+};
+
+/**
+ * Coin (x, y) de l'île d'un biome : les îles se suivent en zigzag, la première à l'x le plus grand.
+ * (Vue depuis le côté où les créatures ont leur visage, l'axe x s'affiche de droite à gauche :
+ * la Forêt apparaît donc à gauche.)
+ */
+export function islandOrigin(index: number): { ox: number; oy: number } {
+  return {
+    ox: (BIOMES.length - 1 - index) * (ISLAND + GAP),
+    oy: index % 2 ? ISLAND - 2 : 0,
+  };
+}
+
+/** Centre d'une île (coordonnées de grille), pour y amener la caméra. */
+export function islandCenter(id: BiomeId): { x: number; y: number } {
+  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  return { x: ox + ISLAND / 2, y: oy + ISLAND / 2 };
+}
+
+/** Étendue du monde (coordonnées de grille), ponts compris. */
+export function worldBounds(): {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+} {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  BIOMES.forEach((_, i) => {
+    const { ox, oy } = islandOrigin(i);
+    minX = Math.min(minX, ox);
+    maxX = Math.max(maxX, ox + ISLAND);
+    minY = Math.min(minY, oy);
+    maxY = Math.max(maxY, oy + ISLAND);
+  });
+  return { minX, maxX, minY, maxY };
+}
+
+/** Île la plus proche d'un point de la grille (pour le toucher : une île ou le pont qui y mène). */
+export function islandAt(x: number, y: number): BiomeId {
+  let best: BiomeId = BIOMES[0].id;
+  let bestD = Infinity;
+  for (const b of BIOMES) {
+    const c = islandCenter(b.id);
+    const d = Math.hypot(c.x - x, c.y - y);
+    if (d < bestD) {
+      bestD = d;
+      best = b.id;
+    }
+  }
+  return best;
+}
+
+/**
+ * Relief léger : un plateau d'un bloc de haut sur la moitié arrière de l'île (loin de la créature),
+ * aux coins arrondis, différent selon l'île. Hauteur du sol (0 ou 1) pour une case de l'île.
+ */
+export function groundHeight(index: number, x: number, y: number): number {
+  const fromBack = ISLAND - 1 - x;
+  const shape = index % 3;
+  const inner = x >= 7 && y >= 2 && y <= ISLAND - 3;
+  if (!inner) return 0;
+  if (shape === 0) return fromBack + Math.abs(y - ISLAND / 2 + 0.5) < 7.5 ? 1 : 0;
+  if (shape === 1) return y <= ISLAND / 2 + 1 || fromBack < 2 ? 1 : 0;
+  return fromBack < 3 || (y >= 4 && y <= ISLAND - 5) ? 1 : 0;
+}
+
+type Put = (x: number, y: number, z: number, color: string) => void;
+
+function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
+  for (let z = 1; z <= tall; z++) put(x, y, base + z, TRUNK);
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, base + tall + 1, LEAF);
+  put(x, y, base + tall + 2, LEAF);
+}
+
+/** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
+const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
+  foret: (put, h) => {
+    for (const [tx, ty, tall] of [
+      [8, 2, 2],
+      [9, 8, 3],
+      [3, 9, 2],
+      [10, 5, 2],
+    ] as const)
+      tree(put, tx, ty, h(tx, ty), tall);
+  },
+  mine: (put, h) => {
+    // Un amas de roche et l'entrée sombre d'une galerie.
+    for (const [x, y, z] of [
+      [8, 3, 1],
+      [9, 3, 1],
+      [9, 4, 1],
+      [8, 3, 2],
+    ] as const)
+      put(x, y, h(x, y) + z, BLOCKS.pierre.side);
+    for (const [x, y] of [
+      [9, 8],
+      [10, 8],
+    ] as const) {
+      put(x, y, h(x, y) + 1, DARK);
+      put(x, y, h(x, y) + 2, DARK);
+    }
+    put(9, 7, h(9, 7) + 1, BLOCKS.pierre.side);
+    put(10, 9, h(10, 9) + 1, BLOCKS.pierre.side);
+  },
+  carriere: (put, h) => {
+    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 4 + dy, h(8 + dx, 4 + dy) + 1, BLOCKS.sable.side);
+    put(9, 5, h(9, 5) + 2, BLOCKS.sable.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.sable.side);
+  },
+  ferme: (put, h) => {
+    // Un champ de blé et deux poteaux de barrière.
+    for (let dy = 2; dy <= 9; dy++) {
+      put(8, dy, h(8, dy) + 1, HAY);
+      if (dy % 2) put(9, dy, h(9, dy) + 1, HAY);
+    }
+    put(6, 1, h(6, 1) + 1, TRUNK);
+    put(6, 10, h(6, 10) + 1, TRUNK);
+    tree(put, 10, 10, h(10, 10), 2);
+  },
+  tour: (put, h) => {
+    // Une tour de verre avec un sommet en or.
+    for (let z = 1; z <= 5; z++)
+      for (const [dx, dy] of [
+        [8, 5],
+        [9, 5],
+        [8, 6],
+        [9, 6],
+      ] as const)
+        put(dx, dy, h(dx, dy) + z, BLOCKS.verre.side);
+    put(8, 5, h(8, 5) + 6, BLOCKS.or.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
+  },
+};
+
+/** Pont de bois entre deux îles voisines, à hauteur du sol. */
+function bridge(from: BiomeDef, to: BiomeDef, cubes: VoxelCube[]): void {
+  const a = islandOrigin(BIOMES.indexOf(from));
+  const b = islandOrigin(BIOMES.indexOf(to));
+  const forward = b.ox > a.ox;
+  const start = {
+    x: forward ? a.ox + ISLAND : a.ox - 1,
+    y: a.oy + Math.floor(ISLAND / 2),
+  };
+  const end = {
+    x: forward ? b.ox - 1 : b.ox + ISLAND,
+    y: b.oy + Math.floor(ISLAND / 2),
+  };
+  const steps = Math.max(Math.abs(end.x - start.x), Math.abs(end.y - start.y));
+  const seen = new Set<string>();
+  for (let i = 0; i <= steps; i++) {
+    const x = Math.round(start.x + ((end.x - start.x) * i) / steps);
+    const y = Math.round(start.y + ((end.y - start.y) * i) / steps);
+    const key = `${x},${y}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    cubes.push({
+      x,
+      y,
+      z: 0,
+      color: BLOCKS.bois.side,
+      texture: 'planches',
+      tag: to.id,
+    });
+  }
+}
+
+/** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
+export function worldCubes(progress: Record<string, { stars: number }>): VoxelCube[] {
+  const cubes: VoxelCube[] = [];
+  BIOMES.forEach((biome, index) => {
+    const { ox, oy } = islandOrigin(index);
+    const unlocked = isBiomeUnlocked(biome.id, progress);
+    const block = BLOCKS[biome.block];
+    const grassy = biome.id === 'foret' || biome.id === 'ferme';
+    const h = (x: number, y: number) => groundHeight(index, x, y);
+    const put: Put = (x, y, z, color) =>
+      cubes.push({
+        x: ox + x,
+        y: oy + y,
+        z,
+        color: unlocked ? color : LOCKED.side,
+        texture: unlocked ? TEXTURES[color] : 'pierre',
+        tag: biome.id,
+      });
+    for (let x = 0; x < ISLAND; x++) {
+      for (let y = 0; y < ISLAND; y++) {
+        for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
+        const top = h(x, y);
+        if (top > 0) put(x, y, 0, BLOCKS.terre.side);
+        put(x, y, top, grassy ? GRASS : block.side);
+      }
+    }
+    DECOR[biome.id](put, h);
+    if (unlocked) {
+      for (const c of CREATURE_CUBES[biome.id])
+        cubes.push({
+          x: ox + 2 + c.x,
+          y: oy + 4 + c.y,
+          z: c.z + 1,
+          color: c.color,
+          tag: biome.id,
+        });
+    }
+    if (index > 0) bridge(BIOMES[index - 1], biome, cubes);
+  });
+  return cubes;
+}
