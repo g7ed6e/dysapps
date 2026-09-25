@@ -20,7 +20,8 @@ export type BiomeId =
   | 'cabinet'
   | 'belvedere'
   | 'donnees'
-  | 'phare';
+  | 'phare'
+  | 'textes';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -41,6 +42,7 @@ export type BlockId =
   | 'marbre'
   | 'quartz'
   | 'prisme'
+  | 'lentille'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -81,6 +83,7 @@ export type BlockTexture =
   | 'marbre'
   | 'quartz'
   | 'prisme'
+  | 'lentille'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -112,6 +115,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   marbre: { id: 'marbre', name: 'Marbre', top: '#f1eee8', side: '#d6d1c8', texture: 'marbre' },
   quartz: { id: 'quartz', name: 'Quartz', top: '#e6dcf2', side: '#b9a8d6', texture: 'quartz' },
   prisme: { id: 'prisme', name: 'Prisme', top: '#fff4c2', side: '#f0c95a', texture: 'prisme' },
+  lentille: { id: 'lentille', name: 'Lentille', top: '#cfe6f2', side: '#7fb2cc', texture: 'lentille' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -796,6 +800,35 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.' },
       { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.' },
+    ],
+  },
+  {
+    id: 'textes',
+    name: 'Observatoire des textes',
+    module: 'Lecture fine et grammaire',
+    subject: 'francais',
+    classe: '3e',
+    description: 'Lire entre les lignes, reconnaître les figures de style, la nature et la fonction des mots.',
+    block: 'lentille',
+    guardian: 'le Grand Lecteur',
+    guardianSays: {
+      hit: 'Mmh… Juste. Tu lis ce qui n’est pas écrit.',
+      miss: 'Ce n’est rien : relis la phrase, cherche l’indice, et reprends.',
+      beaten: 'Je ferme mon livre. L’observatoire est à toi… et à Astra. Tu sais lire, vraiment lire.',
+    },
+    challenge: 'Le Grand Lecteur lève les yeux de son livre : « Tu as observé tous mes textes. Montre-moi que tu vois ce qu’ils cachent. »',
+    icon: 'book',
+    creature: {
+      name: 'Astra',
+      species: 'luciole lectrice',
+      greeting: 'Bonsoir, bâtisseur·se ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
+      lines: ['Un parapluie fermé et des cheveux mouillés : le texte n’a pas dit « pluie », et pourtant.', 'Rapide comme l’éclair : le « comme » fait la comparaison.', 'Ma lanterne est en lentilles. Chaque lecture en polit une.'],
+      home: 'Ma lanterne de lentilles est finie ! Elle grossit les mots pour mieux les lire.',
+    },
+    exercises: [
+      { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.' },
+      { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…' },
+      { id: 'rouages', title: 'Rouages', description: 'Nature et fonction des mots, connecteurs logiques.' },
     ],
   },
 ];

@@ -226,6 +226,16 @@ const FI = fromLayers(
   { D: '#e0b842', L: '#fff4c2', E: '#1f1a16' },
 );
 
+// Astra : une luciole au corps sombre et à l'abdomen lumineux, ailes claires.
+const ASTRA = fromLayers(
+  [
+    ['.KKK.', 'KKKKK', '.LLL.', '.LLL.'],
+    ['W.K.W', 'WKKKW', '..L..', '.....'],
+    ['.EKE.', '.....', '.....', '.....'],
+  ],
+  { K: '#2a2622', L: '#fff4a0', W: '#e6f2f8', E: '#f5d63d' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -246,6 +256,7 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   belvedere: THEO,
   donnees: STAT,
   phare: FI,
+  textes: ASTRA,
 };
 
 interface Props {

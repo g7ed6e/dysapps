@@ -185,14 +185,14 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
 });
 
 it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
-  const defs = EXERCISES.filter((e) => ['carrefour', 'marais', 'falaise', 'cabinet'].includes(e.biome));
+  const defs = EXERCISES.filter((e) => ['carrefour', 'marais', 'falaise', 'cabinet', 'textes'].includes(e.biome));
   expect(
     defs
       .filter((e) => e.type === 'panneaux')
       .map((e) => e.id)
       .sort(),
   ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `carrefour-panneaux-${s}`).sort());
-  expect(defs.length).toBe(27);
+  expect(defs.length).toBe(33);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);

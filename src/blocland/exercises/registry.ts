@@ -100,4 +100,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   chances: { component: CalculScreen, batch: 1 },
   images: { component: CalculScreen, batch: 1 },
   droites: { component: CalculScreen, batch: 1 },
+  inferences: { component: CalculScreen, batch: 1 },
+  figures: { component: CalculScreen, batch: 1 },
+  rouages: { component: CalculScreen, batch: 1 },
 };

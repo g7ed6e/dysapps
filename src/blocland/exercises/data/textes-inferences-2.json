@@ -1,0 +1,214 @@
+{
+  "id": "textes-inferences-2",
+  "biome": "textes",
+  "type": "inferences",
+  "level": 2,
+  "instruction": "Devine le sentiment ou la cause à partir des indices de la phrase.",
+  "items": [
+    {
+      "key": "textes-inferences-2-0",
+      "prompt": "« Il claqua la porte et monta les escaliers quatre à quatre. » Il est …",
+      "spoken": "« Il claqua la porte et monta les escaliers quatre à quatre. » Il est  (mot manquant) ",
+      "choices": [
+        "en colère",
+        "joyeux",
+        "endormi"
+      ],
+      "answer": "en colère",
+      "hint": "Claquer une porte, monter vite.",
+      "explanation": "Claquer la porte et monter en courant : il est en colère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-1",
+      "prompt": "« Elle courait vers l’arrêt, mais le bus démarrait déjà. » Que va-t-il arriver ?",
+      "spoken": "« Elle courait vers l’arrêt, mais le bus démarrait déjà. » Que va-t-il arriver ?",
+      "choices": [
+        "elle va rater le bus",
+        "elle va conduire le bus",
+        "le bus va l’attendre"
+      ],
+      "answer": "elle va rater le bus",
+      "hint": "Le bus démarre pendant qu’elle court.",
+      "explanation": "Le bus part déjà : elle va probablement le rater.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-2",
+      "prompt": "« Le jardin était couvert de feuilles rousses et l’air sentait la fumée. » Quelle saison ?",
+      "spoken": "« Le jardin était couvert de feuilles rousses et l’air sentait la fumée. » Quelle saison ?",
+      "choices": [
+        "l’automne",
+        "l’été",
+        "le printemps"
+      ],
+      "answer": "l’automne",
+      "hint": "Feuilles rousses.",
+      "explanation": "Feuilles rousses tombées : l’automne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-3",
+      "prompt": "« Ils chuchotaient en se cachant derrière le canapé, un paquet à la main. » Que préparent-ils ?",
+      "spoken": "« Ils chuchotaient en se cachant derrière le canapé, un paquet à la main. » Que préparent-ils ?",
+      "choices": [
+        "une surprise",
+        "un vol",
+        "une dispute"
+      ],
+      "answer": "une surprise",
+      "hint": "Se cacher, chuchoter, un paquet.",
+      "explanation": "Se cacher avec un paquet en chuchotant : ils préparent une surprise.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-4",
+      "prompt": "« Ma grand-mère plissa les yeux et approcha la lettre de son nez. » Pourquoi ?",
+      "spoken": "« Ma grand-mère plissa les yeux et approcha la lettre de son nez. » Pourquoi ?",
+      "choices": [
+        "elle voit mal",
+        "elle sent la lettre",
+        "elle est en colère"
+      ],
+      "answer": "elle voit mal",
+      "hint": "Plisser les yeux, rapprocher le papier.",
+      "explanation": "Plisser les yeux et rapprocher la lettre : elle voit mal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-5",
+      "prompt": "« Le stade était silencieux ; seul un joueur, à genoux, fixait le sol. » Que s’est-il passé ?",
+      "spoken": "« Le stade était silencieux ; seul un joueur, à genoux, fixait le sol. » Que s’est-il passé ?",
+      "choices": [
+        "son équipe a perdu",
+        "son équipe a gagné",
+        "le match commence"
+      ],
+      "answer": "son équipe a perdu",
+      "hint": "Silence, joueur à genoux, tête basse.",
+      "explanation": "Le silence et le joueur effondré : une défaite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-6",
+      "prompt": "« Il avait enfilé deux pulls et gardé son écharpe à l’intérieur. » Pourquoi ?",
+      "spoken": "« Il avait enfilé deux pulls et gardé son écharpe à l’intérieur. » Pourquoi ?",
+      "choices": [
+        "il fait froid dans la maison",
+        "il va sortir",
+        "il est malade"
+      ],
+      "answer": "il fait froid dans la maison",
+      "hint": "Deux pulls et une écharpe, dedans.",
+      "explanation": "S’habiller chaudement à l’intérieur : il fait froid dans la maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-2-7",
+      "prompt": "« Elle rougit et cacha vite le dessin sous son cahier. » Elle est …",
+      "spoken": "« Elle rougit et cacha vite le dessin sous son cahier. » Elle est  (mot manquant) ",
+      "choices": [
+        "gênée",
+        "fière",
+        "fatiguée"
+      ],
+      "answer": "gênée",
+      "hint": "Rougir, cacher.",
+      "explanation": "Rougir et cacher le dessin : elle est gênée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Inférer un sentiment, une cause",
+          "lines": [
+            "Le sentiment se devine aux gestes, au ton, aux mots choisis.",
+            "La cause se devine en reliant deux faits : « il court, le bus démarre » → il va le rater.",
+            "Une inférence reste une hypothèse : la plus probable, pas la seule."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lentille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

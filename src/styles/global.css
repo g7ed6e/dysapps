@@ -81,6 +81,7 @@
   --tex-marble: url("./textures/marbre.png");
   --tex-quartz: url("./textures/quartz.png");
   --tex-prism: url("./textures/prisme.png");
+  --tex-lens: url("./textures/lentille.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -141,6 +142,7 @@
   --tex-marble: none;
   --tex-quartz: none;
   --tex-prism: none;
+  --tex-lens: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2274,6 +2276,10 @@ a.app-card:active {
 .app-card.biome-phare {
   background-image: var(--tex-prism);
 }
+.biome-card.biome-textes,
+.app-card.biome-textes {
+  background-image: var(--tex-lens);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2354,6 +2360,9 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-phare {
   border-top-color: #f0c95a;
+}
+:root[data-theme="clair"] .biome-textes {
+  border-top-color: #7fb2cc;
 }
 .biome-step {
   position: absolute;
@@ -3495,6 +3504,9 @@ a.app-card:active {
 }
 .island-sheet.biome-phare {
   background-image: var(--tex-prism);
+}
+.island-sheet.biome-textes {
+  background-image: var(--tex-lens);
 }
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {

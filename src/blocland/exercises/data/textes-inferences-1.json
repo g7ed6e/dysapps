@@ -1,0 +1,214 @@
+{
+  "id": "textes-inferences-1",
+  "biome": "textes",
+  "type": "inferences",
+  "level": 1,
+  "instruction": "Lis la phrase et choisis ce qu’elle laisse comprendre sans le dire. Relie les indices.",
+  "items": [
+    {
+      "key": "textes-inferences-1-0",
+      "prompt": "« Léa referme son parapluie et secoue ses cheveux trempés. » Quel temps fait-il ?",
+      "spoken": "« Léa referme son parapluie et secoue ses cheveux trempés. » Quel temps fait-il ?",
+      "choices": [
+        "il pleut",
+        "il neige",
+        "il fait beau"
+      ],
+      "answer": "il pleut",
+      "hint": "Parapluie + cheveux trempés.",
+      "explanation": "Le parapluie et les cheveux trempés indiquent la pluie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-1",
+      "prompt": "« Il souffla les bougies d’un coup et tout le monde applaudit. » Que se passe-t-il ?",
+      "spoken": "« Il souffla les bougies d’un coup et tout le monde applaudit. » Que se passe-t-il ?",
+      "choices": [
+        "un anniversaire",
+        "une panne de courant",
+        "un incendie"
+      ],
+      "answer": "un anniversaire",
+      "hint": "Des bougies qu’on souffle, des applaudissements.",
+      "explanation": "Souffler des bougies sous les applaudissements : c’est un anniversaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-2",
+      "prompt": "« Elle regarda sa montre pour la dixième fois et soupira. » Comment se sent-elle ?",
+      "spoken": "« Elle regarda sa montre pour la dixième fois et soupira. » Comment se sent-elle ?",
+      "choices": [
+        "impatiente",
+        "heureuse",
+        "fatiguée"
+      ],
+      "answer": "impatiente",
+      "hint": "Regarder l’heure sans arrêt, soupirer.",
+      "explanation": "Regarder sa montre dix fois : elle attend, elle est impatiente.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-3",
+      "prompt": "« Le chien gratta la porte en gémissant, sa laisse dans la gueule. » Que veut-il ?",
+      "spoken": "« Le chien gratta la porte en gémissant, sa laisse dans la gueule. » Que veut-il ?",
+      "choices": [
+        "sortir se promener",
+        "manger",
+        "dormir"
+      ],
+      "answer": "sortir se promener",
+      "hint": "La laisse, la porte.",
+      "explanation": "La laisse dans la gueule et la porte : il veut sortir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-4",
+      "prompt": "« Sur la table, les assiettes vides et une seule part de gâteau. » Que s’est-il passé ?",
+      "spoken": "« Sur la table, les assiettes vides et une seule part de gâteau. » Que s’est-il passé ?",
+      "choices": [
+        "on a presque tout mangé",
+        "personne n’a mangé",
+        "le repas va commencer"
+      ],
+      "answer": "on a presque tout mangé",
+      "hint": "Assiettes vides, une seule part qui reste.",
+      "explanation": "Les assiettes sont vides et il reste une part : le repas est presque fini.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-5",
+      "prompt": "« Tom rangea ses crayons en bâillant et éteignit la lampe. » Quel moment ?",
+      "spoken": "« Tom rangea ses crayons en bâillant et éteignit la lampe. » Quel moment ?",
+      "choices": [
+        "le soir",
+        "le matin",
+        "midi"
+      ],
+      "answer": "le soir",
+      "hint": "Bâiller, éteindre la lampe.",
+      "explanation": "Bâiller et éteindre la lampe : c’est le soir, l’heure de dormir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-6",
+      "prompt": "« Ses mains tremblaient en ouvrant l’enveloppe des résultats. » Comment est-il ?",
+      "spoken": "« Ses mains tremblaient en ouvrant l’enveloppe des résultats. » Comment est-il ?",
+      "choices": [
+        "anxieux",
+        "en colère",
+        "amusé"
+      ],
+      "answer": "anxieux",
+      "hint": "Mains qui tremblent devant des résultats.",
+      "explanation": "Les mains tremblent : il est anxieux, inquiet du résultat.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-1-7",
+      "prompt": "« Le vendeur lui rendit la monnaie et un ticket. » Où est-on ?",
+      "spoken": "« Le vendeur lui rendit la monnaie et un ticket. » Où est-on ?",
+      "choices": [
+        "dans un magasin",
+        "à l’école",
+        "chez le médecin"
+      ],
+      "answer": "dans un magasin",
+      "hint": "Vendeur, monnaie, ticket.",
+      "explanation": "Un vendeur, de la monnaie, un ticket : un magasin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
+            "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
+            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lentille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "textes-lanterne",
+  "biome": "textes",
+  "name": "La lanterne d’Astra",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "lentille"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "lentille"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "quartz": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Ma lanterne ! Merci, bâtisseur·se. Elle grossit les mots : on y lit même ce qui n’est pas écrit."
+}

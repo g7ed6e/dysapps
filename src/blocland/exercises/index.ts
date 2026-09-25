@@ -53,6 +53,12 @@ import cabinetRacines1 from './data/cabinet-racines-1.json';
 import cabinetRacines2 from './data/cabinet-racines-2.json';
 import cabinetSens1 from './data/cabinet-sens-1.json';
 import cabinetNuances1 from './data/cabinet-nuances-1.json';
+import textesInferences1 from './data/textes-inferences-1.json';
+import textesInferences2 from './data/textes-inferences-2.json';
+import textesFigures1 from './data/textes-figures-1.json';
+import textesFigures2 from './data/textes-figures-2.json';
+import textesRouages1 from './data/textes-rouages-1.json';
+import textesRouages2 from './data/textes-rouages-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -155,6 +161,12 @@ export const EXERCISES: ExerciseDef[] = [
   cabinetRacines2,
   cabinetSens1,
   cabinetNuances1,
+  textesInferences1,
+  textesInferences2,
+  textesFigures1,
+  textesFigures2,
+  textesRouages1,
+  textesRouages2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */
