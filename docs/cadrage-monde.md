@@ -28,6 +28,15 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - États : construit, constructible, **bloqué** (une île ouverte le touche mais la condition manque : on l'affiche en expliquant quoi faire, sans pénalité), loin. Le monde 3D montre en fantôme les ouvrages constructibles et bloqués.
 - Sauvegardes : les identifiants des ouvrages sont ceux des anciens ponts, rien à migrer.
 
-## 5. À venir
+## 5. Repères et vie (PR 3)
 
-- PR 3 — Repères et vie : un repère par région (grand arbre, cône fumant, phare), cascades entre niveaux, brume sur les sommets, oiseaux, lanternes visibles la nuit.
+- **Repères** (`landmark()` dans `terrain.ts`), un par région, posés sur la terre autour du cœur (jamais sur le cœur, un lac ou la lave) : le grand chêne de la Forêt, le champignon géant du Marais, la fumée du Volcan au-dessus du cratère, la tour de guet à bannière au sommet du pic de la Mine, le grand phare à lanterne du Phare.
+- **Cascades** : d'un lac d'une île en altitude, l'eau déborde au bord le plus proche et tombe jusqu'à la mer, avec son écume.
+- **Lanternes** à chaque bout des ouvrages : la nuit, les chemins se devinent de loin (la lave brille aussi).
+- **Brume des sommets** : une nappe translucide à dégradé radial sous chaque île à 9, qui respire lentement.
+- **Oiseaux** : six petits V sombres qui tournent au-dessus du monde, ailes battantes (immobiles avec « réduire les animations »).
+
+## 6. À venir
+
+
+- Gabarits de bâtiments variés pour les plans clonés (tour ronde, longère, dôme, gradins, atelier en L).

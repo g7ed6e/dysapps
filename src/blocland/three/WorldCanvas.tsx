@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { islandAt, islandCenter, worldBounds } from '../world/terrain';
+import { islandAt, islandCenter, worldBounds, mistPatches } from '../world/terrain';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface WorldFocus {
@@ -89,6 +89,25 @@ const STEPS: [number, number][] = [
   [0, 1],
   [-1, 1],
 ];
+
+/** Une nappe de brume : blanc au centre, qui s'efface vers les bords (dégradé radial peint une fois). */
+function mistTexture(): THREE.Texture | null {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const g = ctx.createRadialGradient(size / 2, size / 2, 4, size / 2, size / 2, size / 2);
+  g.addColorStop(0, 'rgba(246, 249, 252, 1)');
+  g.addColorStop(0.55, 'rgba(246, 249, 252, 0.7)');
+  g.addColorStop(1, 'rgba(246, 249, 252, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
 
 const ghostCache = new Map<string, THREE.Material>();
 
@@ -315,6 +334,41 @@ export default function WorldCanvas({
     }
     scene.add(clouds);
 
+    // La brume des sommets : une nappe translucide sous chaque île la plus haute, qui respire lentement.
+    const mistMat = new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
+    const mists: THREE.Mesh[] = [];
+    for (const m of mistPatches()) {
+      const mist = new THREE.Mesh(new THREE.PlaneGeometry(m.w, m.h), mistMat);
+      mist.rotation.x = -Math.PI / 2;
+      mist.position.set(m.x, m.z, m.y);
+      scene.add(mist);
+      mists.push(mist);
+    }
+
+    // Les oiseaux : de petits V sombres qui tournent au-dessus du monde, ailes battantes.
+    const birdMat = new THREE.MeshLambertMaterial({ color: 0x3a2f2a });
+    const wingGeo = new THREE.BoxGeometry(0.5, 0.08, 0.16);
+    const birds: { group: THREE.Group; wings: THREE.Mesh[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
+    for (let i = 0; i < 6; i++) {
+      const group = new THREE.Group();
+      const left = new THREE.Mesh(wingGeo, birdMat);
+      const right = new THREE.Mesh(wingGeo, birdMat);
+      left.position.x = -0.25;
+      right.position.x = 0.25;
+      group.add(left, right);
+      scene.add(group);
+      birds.push({
+        group,
+        wings: [left, right],
+        cx: bounds.minX + (0.2 + 0.6 * ((i * 0.37) % 1)) * width,
+        cy: bounds.minY + (0.2 + 0.6 * ((i * 0.61) % 1)) * (bounds.maxY - bounds.minY),
+        r: 8 + (i % 3) * 4,
+        alt: 13 + (i % 2) * 3,
+        phase: i * 1.7,
+        speed: 0.25 + (i % 3) * 0.05,
+      });
+    }
+
     const terrain = new THREE.Group();
     scene.add(terrain);
     const creaturesGroup = new THREE.Group();
@@ -486,6 +540,15 @@ export default function WorldCanvas({
           if (cloud.position.x < bounds.minX - 12) cloud.position.x = bounds.maxX + 12;
         }
         if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
+        for (const b of birds) {
+          const a = t * b.speed + b.phase;
+          b.group.position.set(b.cx + Math.cos(a) * b.r, b.alt + Math.sin(t * 0.7 + b.phase) * 0.6, b.cy + Math.sin(a) * b.r);
+          b.group.rotation.y = -a;
+          const flap = Math.sin(t * 9 + b.phase) * 0.6;
+          b.wings[0].rotation.z = flap;
+          b.wings[1].rotation.z = -flap;
+        }
+        for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
         // Créatures : petit balancement, et un pas de temps en temps.
         for (const wk of w.walkers) {
           if (!wk.still && now >= wk.next && wk.start === 0) {

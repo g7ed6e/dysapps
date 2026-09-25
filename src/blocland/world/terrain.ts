@@ -71,6 +71,9 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.quartz.side]: 'quartz',
   [BLOCKS.prisme.side]: 'prisme',
   [BLOCKS.lentille.side]: 'lentille',
+  [BLOCKS.lanterne.side]: 'lanterne',
+  [BLOCKS.barriere.side]: 'barriere',
+  [BLOCKS.escalier.side]: 'escalier',
   [SNOW]: 'nuage',
   [HAY]: 'or',
   [MOSS]: 'mousse',
@@ -165,10 +168,11 @@ export function worldBounds(): {
   let maxY = -Infinity;
   for (const def of MAP) {
     const b = landBox(def);
-    minX = Math.min(minX, b.x0);
-    maxX = Math.max(maxX, b.x1);
+    // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
+    minX = Math.min(minX, b.x0 - 2);
+    maxX = Math.max(maxX, b.x1 + 2);
     minY = Math.min(minY, b.y0 - ISLET_H - 2);
-    maxY = Math.max(maxY, b.y1);
+    maxY = Math.max(maxY, b.y1 + 2);
   }
   return { minX, maxX, minY, maxY };
 }
@@ -554,6 +558,8 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
       }
     }
   });
+  // Une lanterne à chaque bout : la nuit, les chemins se devinent de loin.
+  for (const c of [path[0], path[n - 1]]) if (c) add(c.x, c.y, c.z + 1, BLOCKS.lanterne.side, 'lanterne');
 }
 
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
@@ -625,6 +631,154 @@ function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): str
   return BLOCKS.terre.side;
 }
 
+const SMOKE = '#a9a4a0';
+
+/** Les repères : un grand ouvrage par région, visible de loin, posé sur la terre autour du cœur. */
+const LANDMARK_OF: Partial<Record<BiomeId, 'grand-arbre' | 'champignon-geant' | 'fumee' | 'tour-de-guet' | 'grand-phare'>> = {
+  foret: 'grand-arbre',
+  marais: 'champignon-geant',
+  volcan: 'fumee',
+  mine: 'tour-de-guet',
+  phare: 'grand-phare',
+};
+
+type Spot = { x: number; y: number; h: number };
+
+/** Une place de `size` × `size` cases de terre, hors du cœur, à la même hauteur, la plus proche du point voulu. */
+function findSpot(def: IslandDef, scenery: LandCell[], wantX: number, wantY: number, size: number): Spot | null {
+  const at = new Map(scenery.map((c) => [`${c.x},${c.y}`, c]));
+  let best: Spot | null = null;
+  let bestD = Infinity;
+  for (const c of scenery) {
+    if (c.h < 0 || c.ground === 'eau' || c.ground === 'lave') continue;
+    let ok = true;
+    for (let dx = 0; dx < size && ok; dx++)
+      for (let dy = 0; dy < size && ok; dy++) {
+        const o = at.get(`${c.x + dx},${c.y + dy}`);
+        if (!o || o.h !== c.h || o.ground === 'eau' || o.ground === 'lave' || inCore(def, c.x + dx, c.y + dy)) ok = false;
+      }
+    if (!ok) continue;
+    const d = Math.hypot(c.x - wantX, c.y - wantY);
+    if (d < bestD) {
+      bestD = d;
+      best = { x: c.x, y: c.y, h: c.h };
+    }
+  }
+  return best;
+}
+
+/** Pose le repère d'une île (s'il en a un). `put` travaille en coordonnées du monde, z relatif au sol de l'île. */
+function landmark(def: IslandDef, scenery: LandCell[], put: (x: number, y: number, z: number, color: string) => void): void {
+  const kind = LANDMARK_OF[def.id];
+  if (!kind) return;
+  const backY = def.core.y + CORE + 1;
+  switch (kind) {
+    case 'grand-arbre': {
+      // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages.
+      const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+      if (!s) return;
+      for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
+      for (let dx = -2; dx <= 3; dx++)
+        for (let dy = -2; dy <= 3; dy++) if (Math.abs(dx - 0.5) + Math.abs(dy - 0.5) <= 4) put(s.x + dx, s.y + dy, s.h + 7, LEAF);
+      for (let dx = -1; dx <= 2; dx++) for (let dy = -1; dy <= 2; dy++) put(s.x + dx, s.y + dy, s.h + 8, LEAF);
+      for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 9, LEAF);
+      return;
+    }
+    case 'champignon-geant': {
+      // Un champignon géant : pied clair de trois blocs, chapeau rouge à points blancs.
+      const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 1);
+      if (!s) return;
+      for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS.sable.side);
+      for (let dx = -2; dx <= 2; dx++)
+        for (let dy = -2; dy <= 2; dy++)
+          if (Math.abs(dx) + Math.abs(dy) <= 3) put(s.x + dx, s.y + dy, s.h + 4, (dx + dy) % 2 === 0 && Math.abs(dx) + Math.abs(dy) === 2 ? SNOW : MUSHROOM);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(s.x + dx, s.y + dy, s.h + 5, MUSHROOM);
+      put(s.x, s.y, s.h + 6, SNOW);
+      return;
+    }
+    case 'fumee': {
+      // Le cône fume : des volutes grises qui montent au-dessus du cratère, décalées comme au vent.
+      const lava = scenery.filter((c) => c.ground === 'lave');
+      if (!lava.length) return;
+      const cx = Math.round(lava.reduce((a, c) => a + c.x, 0) / lava.length);
+      const cy = Math.round(lava.reduce((a, c) => a + c.y, 0) / lava.length);
+      const top = Math.max(...lava.map((c) => c.h)) + 2;
+      const puffs: [number, number, number][] = [
+        [0, 0, 2],
+        [1, 0, 3],
+        [0, 1, 3],
+        [1, 1, 4],
+        [2, 1, 5],
+        [1, 2, 5],
+        [2, 2, 6],
+        [3, 2, 7],
+      ];
+      for (const [dx, dy, dz] of puffs) put(cx + dx, cy + dy, top + dz, SMOKE);
+      return;
+    }
+    case 'tour-de-guet': {
+      // Une tour de guet de pierre au sommet du pic, sa bannière de toile en haut.
+      const peak = scenery.reduce((a, c) => (c.h > a.h && c.ground !== 'lave' ? c : a), scenery[0]);
+      for (let z = 1; z <= 4; z++) put(peak.x, peak.y, peak.h + z, BLOCKS.pierre.side);
+      put(peak.x, peak.y, peak.h + 5, BLOCKS.lanterne.side);
+      put(peak.x + 1, peak.y, peak.h + 5, BLOCKS.toile.side);
+      put(peak.x + 1, peak.y, peak.h + 4, BLOCKS.toile.side);
+      return;
+    }
+    case 'grand-phare': {
+      // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
+      const s = findSpot(def, scenery, def.core.x + CORE + 1, backY, 2);
+      if (!s) return;
+      for (let z = 1; z <= 10; z++)
+        for (let dx = 0; dx < 2; dx++)
+          for (let dy = 0; dy < 2; dy++)
+            put(s.x + dx, s.y + dy, s.h + z, z === 9 ? BLOCKS.lanterne.side : z === 10 ? BLOCKS.prisme.side : z % 4 === 0 ? SNOW : BLOCKS.pierre.side);
+      return;
+    }
+  }
+}
+
+/** Les cascades : d'un lac d'une île en altitude, l'eau déborde au bord le plus proche et tombe jusqu'à la mer. */
+function cascades(def: IslandDef, scenery: LandCell[], put: (x: number, y: number, z: number, color: string) => void): void {
+  if (def.altitude === 0) return;
+  const lakes = scenery.filter((c) => c.ground === 'eau');
+  if (!lakes.length) return;
+  const isLandAt = (x: number, y: number) => isLand(def, x, y);
+  const edges = scenery.filter(
+    (c) =>
+      c.h >= 0 &&
+      c.ground !== 'eau' &&
+      [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ].some(([dx, dy]) => !isLandAt(c.x + dx, c.y + dy)),
+  );
+  if (!edges.length) return;
+  const lake = lakes[0];
+  const edge = edges.reduce((a, c) => (Math.hypot(c.x - lake.x, c.y - lake.y) < Math.hypot(a.x - lake.x, a.y - lake.y) ? c : a), edges[0]);
+  const out = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ].find(([dx, dy]) => !isLandAt(edge.x + dx, edge.y + dy));
+  if (!out) return;
+  // Un filet d'eau sur la case du bord, puis la chute, jusqu'au niveau de la mer.
+  put(edge.x, edge.y, edge.h + 1, WATER);
+  for (let z = edge.h; z >= -def.altitude; z--) put(edge.x + out[0], edge.y + out[1], z, WATER);
+  put(edge.x + 2 * out[0], edge.y + 2 * out[1], -def.altitude, SNOW);
+}
+
+/** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */
+export function mistPatches(): { x: number; y: number; z: number; w: number; h: number }[] {
+  return MAP.filter((d) => d.altitude >= 9).map((d) => {
+    const b = landBox(d);
+    return { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, z: d.altitude - 1.5, w: b.x1 - b.x0 + 8, h: b.y1 - b.y0 + 8 };
+  });
+}
+
 export function worldCubes(
   progress: Record<string, { stars: number }>,
   village: Village = { plans: {}, journal: [], bridges: [] },
@@ -665,6 +819,8 @@ export function worldCubes(
       putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
     }
     DECOR[biome.id](put, h);
+    landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
+    cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     for (const c of scenery) {
       if (!c.decor) continue;
       const r = noise(def.seed + 5, c.x, c.y);
