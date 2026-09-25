@@ -96,15 +96,20 @@ describe('completeExercise', () => {
     const c = completeExercise(EMPTY_STATE, DEF, [ok('a'), ok('b'), ok('c'), ko('d')], '2026-09-24');
     expect(c.score).toBe(0.75);
     expect(c.stars).toBe(2);
-    expect(c.blocks).toBe(3);
+    // 3 blocs pour le score, +1 pour deux étoiles, +2 pour la première fois.
+    expect(c.blocks).toBe(6);
+    expect(c.bonus).toEqual({ stars: 1, first: 2 });
     expect(c.xp).toBe(10);
     expect(c.perfect).toBe(false);
-    expect(c.state.inventory.bois).toBe(3);
+    expect(c.state.inventory.bois).toBe(6);
     expect(c.state.progress[DEF.id]).toEqual({ stars: 2, attempts: 1, best: 0.75 });
     expect(c.state.spaced.map((s) => s.itemId)).toEqual(['foret-test-001:d']);
 
     const c2 = completeExercise(c.state, DEF, [ok('a'), ok('b'), ko('c'), ko('d')], '2026-09-24');
     expect(c2.newBest).toBe(false);
+    // Rejouée : plus de bonus « première fois », une étoile : pas de bonus d'étoiles.
+    expect(c2.bonus).toEqual({ stars: 0, first: 0 });
+    expect(c2.blocks).toBe(2);
     expect(c2.state.progress[DEF.id]).toEqual({ stars: 2, attempts: 2, best: 0.75 });
   });
 
@@ -115,9 +120,10 @@ describe('completeExercise', () => {
       DEF.items.map((i) => ok(i.key)),
       '2026-09-24',
     );
-    expect(perfect).toMatchObject({ perfect: true, xp: 15, blocks: 4, stars: 3 });
+    expect(perfect).toMatchObject({ perfect: true, xp: 15, blocks: 8, stars: 3, bonus: { stars: 2, first: 2 } });
     const one = completeExercise(EMPTY_STATE, DEF, [ok('a'), ko('b'), ko('c'), ko('d')], '2026-09-24');
-    expect(one.blocks).toBe(1);
+    // Une seule bonne réponse : 1 bloc, plus les 2 de la première fois.
+    expect(one.blocks).toBe(3);
     const none = completeExercise(
       EMPTY_STATE,
       DEF,
@@ -134,8 +140,8 @@ describe('completeExercise', () => {
     const c = completeExercise(state, DEF, [ok('a')], '2026-09-26', () => 0);
     expect(c.chestBlock).toBe('bois');
     expect(c.state.chests).toBe(1);
-    // 4 blocs par exercice sans faute (1 item juste = score 1), plus le coffre de 6.
-    expect(c.state.inventory.bois).toBe(4 + 4 + 4 + 6);
+    // 4 blocs par exercice sans faute (1 item juste = score 1) +2 pour trois étoiles, +2 la première fois, plus le coffre de 6.
+    expect(c.state.inventory.bois).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
   });
 });
 

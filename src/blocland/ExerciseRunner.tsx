@@ -100,6 +100,13 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
             <li>
               <BlockIcon top={block.top} side={block.side} size={44} />
               <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
+              {(done.bonus.first > 0 || done.bonus.stars > 0) && (
+                <span className="reward-bonus">
+                  {[done.bonus.first > 0 && `+${done.bonus.first} première fois`, done.bonus.stars > 0 && `+${done.bonus.stars} pour ${done.stars} étoiles`]
+                    .filter(Boolean)
+                    .join(', ')}
+                </span>
+              )}
             </li>
             <li>
               <Icon name="zap" size="1.6rem" />

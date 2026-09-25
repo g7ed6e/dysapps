@@ -27,6 +27,8 @@ export interface PlanBuilder {
   notice: string | null;
   /** Éclats à dessiner dans le monde 3D. */
   burst: Burst;
+  /** Des éclats de fête à un endroit du monde (coordonnées du monde), sans poser de bloc. */
+  celebrate: (cell: { x: number; y: number; z: number }, color: string) => void;
   /** Pose le bloc attendu à une cellule du plan (coordonnées relatives à l'île). */
   fillAt: (x: number, y: number, z: number) => void;
   /** Pose le prochain bloc possible. */
@@ -107,6 +109,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     canFill: Boolean(plan && status && !status.complete && nextFillable(state, plan) !== null),
     notice,
     burst,
+    celebrate: (cell, color) => setBurst((b) => ({ seq: b.seq + 1, cell, color })),
     fillAt,
     fillNext,
     tryFill,

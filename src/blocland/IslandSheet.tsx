@@ -23,13 +23,15 @@ interface Props {
   builder: PlanBuilder;
   in3d?: boolean;
   onClose: () => void;
+  /** Un ouvrage vient d'être construit depuis cette île : l'île d'en face s'ouvre. */
+  onBuilt?: (to: BiomeDef['id']) => void;
 }
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le plan en cours,
  * le Gardien et le plan à construire. Tout est en HTML (police dys), on ne quitte pas le monde.
  */
-export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
+export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
@@ -71,7 +73,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
           <Icon name="flag" /> <strong>Prochain objectif :</strong> <Syllabified text={goal} />
         </p>
       )}
-      {!unlocked && <Bridges island={biome.id} />}
+      {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} />}
 
       <h3 className="island-sheet-heading">
         <Icon name="hammer" /> Quêtes
@@ -144,7 +146,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
         </li>
       </ul>
 
-      {unlocked && <Bridges island={biome.id} />}
+      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} />}
     </section>
   );
 }

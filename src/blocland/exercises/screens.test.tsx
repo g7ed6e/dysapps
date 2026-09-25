@@ -169,5 +169,6 @@ it('ascension : un étage par paragraphe validé, temps comparé à soi-même', 
   expect(screen.getByRole('img', { name: '3 étoiles sur 3' })).toBeInTheDocument();
   const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
   expect(saved.fluence[def.id]).toHaveLength(1);
-  expect(saved.inventory.verre).toBe(4);
+  // 4 blocs, +2 pour trois étoiles, +2 la première fois.
+  expect(saved.inventory.verre).toBe(8);
 });
