@@ -138,6 +138,31 @@ const COLPORTEUR = fromLayers(
   { P: '#5b3a8a', T: '#e9d9b8', S: '#e8b98a', E: '#1f1a16', H: '#3a2a1a' },
 );
 
+// Le Sphinx des routes : un lion de pierre couché, tête coiffée, regard doré.
+const SPHINX = fromLayers(
+  [
+    ['SSSSSSS', 'SSSSSSS', 'SSSSSSS', 'SSSSSSS'],
+    ['.SSSSS.', 'SSSSSSS', 'SSSSSSS', '.SSSS..'],
+    ['..SSS..', '.SSSSS.', '.SSSS..', '.......'],
+    ['..SES..', '..SSS..', '.......', '.......'],
+    ['..HHH..', '..HHH..', '.......', '.......'],
+  ],
+  { S: '#d6c8a0', E: '#f5d63d', H: '#3a4a7a' },
+);
+
+// L'Hydre des marais : trois cous verts sortant de la vase, trois têtes aux yeux jaunes.
+const HYDRE = fromLayers(
+  [
+    ['VVVVVVV', 'VVVVVVV', 'VVVVVVV', '.VVVVV.'],
+    ['V..V..V', '.VVVVV.', '.......', '.......'],
+    ['V..V..V', '.......', '.......', '.......'],
+    ['V..V..V', '.......', '.......', '.......'],
+    ['E..E..E', 'V..V..V', '.......', '.......'],
+    ['V..V..V', '.......', '.......', '.......'],
+  ],
+  { V: '#3f6b3a', E: '#f5d63d' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -149,6 +174,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   volcan: DRAGON,
   glacier: MAMMOUTH,
   marche: COLPORTEUR,
+  carrefour: SPHINX,
+  marais: HYDRE,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

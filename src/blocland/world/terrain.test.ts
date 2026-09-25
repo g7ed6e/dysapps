@@ -52,6 +52,9 @@ it('place les îles selon l’archipel : la Forêt au centre, une rangée devant
   expect(at('volcan')).toEqual({ ox: at('ferme').ox, oy: at('plaine').oy });
   expect(at('glacier')).toEqual({ ox: at('foret').ox, oy: -2 * (ISLAND + ROW_GAP) });
   expect(at('glacier').oy + ISLAND).toBeLessThan(bossIsletOrigin(BIOMES.findIndex((b) => b.id === 'plaine')).y);
+  // Le français du cycle 4 est derrière la Forêt ; l'îlot du Gardien du Carrefour reste au-dessus de la Forêt.
+  expect(at('carrefour')).toEqual({ ox: at('foret').ox, oy: ISLAND + ROW_GAP });
+  expect(bossIsletOrigin(BIOMES.findIndex((b) => b.id === 'carrefour')).y).toBeGreaterThanOrEqual(ISLAND + 1);
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -98,7 +101,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   const cubes = worldCubes({});
   const bounds = worldBounds();
   expect(bounds.maxX - bounds.minX).toBe(5 * ISLAND + 4 * GAP);
-  expect(bounds.maxY - bounds.minY).toBe(3 * ISLAND + 2 * ROW_GAP);
+  expect(bounds.maxY - bounds.minY).toBe(4 * ISLAND + 3 * ROW_GAP);
   for (const c of cubes) {
     expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
     expect(c.x).toBeLessThan(bounds.maxX);

@@ -1,7 +1,7 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan' | 'glacier' | 'marche';
+export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan' | 'glacier' | 'marche' | 'carrefour' | 'marais';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -13,6 +13,8 @@ export type BlockId =
   | 'obsidienne'
   | 'glace'
   | 'toile'
+  | 'panneau'
+  | 'tourbe'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -44,6 +46,8 @@ export type BlockTexture =
   | 'obsidienne'
   | 'glace'
   | 'toile'
+  | 'panneau'
+  | 'tourbe'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -66,6 +70,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   obsidienne: { id: 'obsidienne', name: 'Obsidienne', top: '#4a3d5c', side: '#2e2538', texture: 'obsidienne' },
   glace: { id: 'glace', name: 'Glace', top: '#dff4fb', side: '#b6e0ee', texture: 'glace' },
   toile: { id: 'toile', name: 'Toile', top: '#e9d9b8', side: '#c9463f', texture: 'toile' },
+  panneau: { id: 'panneau', name: 'Panneau', top: '#f2d16b', side: '#e0b73f', texture: 'panneau' },
+  tourbe: { id: 'tourbe', name: 'Tourbe', top: '#5a4a2a', side: '#3f3320', texture: 'tourbe' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -446,6 +452,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'etals', title: 'Étals', description: 'Complète un tableau de proportionnalité.' },
       { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.' },
       { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte.' },
+    ],
+  },
+  {
+    id: 'carrefour',
+    name: 'Carrefour des homophones',
+    module: 'Homophones grammaticaux',
+    subject: 'francais',
+    classe: '5e',
+    description: 'Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.',
+    block: 'panneau',
+    guardian: 'le Sphinx des routes',
+    guardianSays: {
+      hit: 'Hmm… Juste. Tu connais le chemin des mots.',
+      miss: 'Ce n’est rien : relis la règle sur le panneau, remplace le mot, et reprends.',
+      beaten: 'Je m’écarte. Toutes les routes sont à toi… et à Sema.',
+    },
+    challenge: 'Le Sphinx des routes se dresse : « Tu as lu tous mes panneaux. Montre-moi que tu ne te trompes plus de chemin. »',
+    icon: 'compass',
+    creature: {
+      name: 'Sema',
+      species: 'caméléon des panneaux',
+      greeting:
+        'Salut, bâtisseur·se ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
+      lines: [
+        'Ses, ces, c’est, s’est : quatre routes, un seul bon chemin.',
+        'Remplace par « avait » : si ça marche, c’est « a » sans accent.',
+        'Ma cabane est faite de panneaux. Chaque bonne réponse en cloue un.',
+      ],
+      home: 'Ma cabane est finie ! Tous ses panneaux montrent la bonne direction.',
+    },
+    exercises: [
+      { id: 'panneaux', title: 'Panneaux', description: 'Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.' },
+      { id: 'aiguillage', title: 'Aiguillage', description: 'Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…' },
+      { id: 'bifurcation', title: 'Bifurcation', description: 'Deux trous dans la phrase : choisis la bonne paire de mots.' },
+    ],
+  },
+  {
+    id: 'marais',
+    name: 'Marais des temps',
+    module: 'Conjugaison',
+    subject: 'francais',
+    classe: '5e',
+    description: 'Imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.',
+    block: 'tourbe',
+    guardian: 'l’Hydre des marais',
+    guardianSays: {
+      hit: 'Sss… Juste. Une de mes têtes s’incline.',
+      miss: 'Ce n’est rien : cherche l’indice de temps dans la phrase, et reprends.',
+      beaten: 'Sss. Mes trois têtes se taisent. Le marais est à toi… et à Kroa.',
+    },
+    challenge: 'L’Hydre des marais sort de la vase : « Tu as traversé mes trois eaux. Montre-moi que tu connais le passé, le futur et le doute. »',
+    icon: 'footprints',
+    creature: {
+      name: 'Kroa',
+      species: 'triton des roseaux',
+      greeting:
+        'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur·se ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
+      lines: [
+        'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
+        'Demain je nagerai. Si j’avais des ailes, je volerais.',
+        'Il faut que tu viennes voir ma hutte de tourbe.',
+      ],
+      home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
+    },
+    exercises: [
+      { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.' },
+      { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.' },
+      { id: 'roseaux', title: 'Roseaux du subjonctif', description: 'Le subjonctif présent, puis reconnaître le temps d’un verbe.' },
     ],
   },
 ];

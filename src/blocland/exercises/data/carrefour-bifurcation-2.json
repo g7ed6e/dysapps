@@ -1,0 +1,222 @@
+{
+  "id": "carrefour-bifurcation-2",
+  "biome": "carrefour",
+  "type": "bifurcation",
+  "level": 2,
+  "instruction": "Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.",
+  "items": [
+    {
+      "key": "carrefour-bifurcation-2-0",
+      "prompt": "… … va pas sans lui.",
+      "spoken": " (mot manquant)   (mot manquant)  va pas sans lui.",
+      "choices": [
+        "On / n’y",
+        "On / ni",
+        "Ont / n’y"
+      ],
+      "answer": "On / n’y",
+      "hint": "« quelqu’un » : on. « ne + y » : n’y.",
+      "explanation": "On n’y va pas : quelqu’un (on), ne + y (n’y).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-1",
+      "prompt": "… mal … sortir sans manteau.",
+      "spoken": " (mot manquant)  mal  (mot manquant)  sortir sans manteau.",
+      "choices": [
+        "C’est / de",
+        "S’est / de",
+        "C’est / d’en"
+      ],
+      "answer": "C’est / de",
+      "hint": "« cela est » : c’est. Puis « de ».",
+      "explanation": "C’est mal de sortir : cela est mal de.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-2",
+      "prompt": "… tu veux, on … va.",
+      "spoken": " (mot manquant)  tu veux, on  (mot manquant)  va.",
+      "choices": [
+        "Si / s’y",
+        "S’y / si",
+        "Si / si"
+      ],
+      "answer": "Si / s’y",
+      "hint": "condition : si. « s’y rendre » : s’y.",
+      "explanation": "Si tu veux (condition), on s’y va (se + y).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-3",
+      "prompt": "Il … dit … partir.",
+      "spoken": "Il  (mot manquant)  dit  (mot manquant)  partir.",
+      "choices": [
+        "s’est / sans",
+        "c’est / sans",
+        "s’est / s’en"
+      ],
+      "answer": "s’est / sans",
+      "hint": "« il se dit » au passé : s’est. « pas de » : sans.",
+      "explanation": "Il s’est dit (verbe pronominal) sans partir (pas de).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-4",
+      "prompt": "… … fini, ils rentrent.",
+      "spoken": " (mot manquant)   (mot manquant)  fini, ils rentrent.",
+      "choices": [
+        "Quand c’est",
+        "Quant s’est",
+        "Qu’en c’est"
+      ],
+      "answer": "Quand c’est",
+      "hint": "« lorsque » : quand. « cela est » : c’est.",
+      "explanation": "Quand c’est fini : lorsque cela est fini.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-5",
+      "prompt": "Elle … … chaussures neuves.",
+      "spoken": "Elle  (mot manquant)   (mot manquant)  chaussures neuves.",
+      "choices": [
+        "a / ses",
+        "à / ces",
+        "a / ces"
+      ],
+      "answer": "a / ses",
+      "hint": "« avait » : a. « les siennes » : ses.",
+      "explanation": "Elle a (avait) ses (les siennes) chaussures neuves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-6",
+      "prompt": "… vélos … à eux.",
+      "spoken": " (mot manquant)  vélos  (mot manquant)  à eux.",
+      "choices": [
+        "Leurs / sont",
+        "Leur / sont",
+        "Leurs / son"
+      ],
+      "answer": "Leurs / sont",
+      "hint": "devant un nom pluriel : leurs. « étaient » : sont.",
+      "explanation": "Leurs vélos (nom pluriel) sont (étaient) à eux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carrefour-bifurcation-2-7",
+      "prompt": "Je … sais pas … tu viens.",
+      "spoken": "Je  (mot manquant)  sais pas  (mot manquant)  tu viens.",
+      "choices": [
+        "ne / si",
+        "n’y / si",
+        "ne / s’y"
+      ],
+      "answer": "ne / si",
+      "hint": "négation : ne. condition : si.",
+      "explanation": "Je ne sais pas si tu viens : négation, puis condition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
+            "son = le sien · sont = verbe être (ils sont).",
+            "a = avait · à = préposition.",
+            "on = quelqu’un · ont = verbe avoir (ils ont)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "panneau",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -183,3 +183,23 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
   expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
   expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
 });
+
+it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
+  const defs = EXERCISES.filter((e) => e.biome === 'carrefour' || e.biome === 'marais');
+  expect(
+    defs
+      .filter((e) => e.type === 'panneaux')
+      .map((e) => e.id)
+      .sort(),
+  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `carrefour-panneaux-${s}`).sort());
+  expect(defs.length).toBe(17);
+  for (const def of defs)
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect((it.choices as string[]).length).toBeGreaterThanOrEqual(2);
+      expect(new Set(it.choices as string[]).size).toBe((it.choices as string[]).length);
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
+      expect(String(it.explanation).length).toBeGreaterThan(5);
+      expect(String(it.spoken)).not.toContain('…');
+    }
+});

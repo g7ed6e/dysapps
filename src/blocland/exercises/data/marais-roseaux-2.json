@@ -1,0 +1,222 @@
+{
+  "id": "marais-roseaux-2",
+  "biome": "marais",
+  "type": "roseaux",
+  "level": 2,
+  "instruction": "Quel est le temps du verbe de la phrase ? Le tableau des temps est affiché.",
+  "items": [
+    {
+      "key": "marais-roseaux-2-0",
+      "prompt": "« Nous chanterions volontiers. »",
+      "spoken": "« Nous chanterions volontiers. »",
+      "choices": [
+        "conditionnel",
+        "futur",
+        "imparfait"
+      ],
+      "answer": "conditionnel",
+      "hint": "-rions : conditionnel.",
+      "explanation": "« chanterions » : -rions, conditionnel présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-1",
+      "prompt": "« Ils ont couru jusqu’ici. »",
+      "spoken": "« Ils ont couru jusqu’ici. »",
+      "choices": [
+        "passé composé",
+        "passé simple",
+        "présent"
+      ],
+      "answer": "passé composé",
+      "hint": "Avoir + participe passé.",
+      "explanation": "« ont couru » : auxiliaire avoir + participe, passé composé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-2",
+      "prompt": "« Qu’elle prenne son temps. »",
+      "spoken": "« Qu’elle prenne son temps. »",
+      "choices": [
+        "subjonctif",
+        "présent",
+        "futur"
+      ],
+      "answer": "subjonctif",
+      "hint": "« qu’elle » + verbe : subjonctif.",
+      "explanation": "« qu’elle prenne » : subjonctif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-3",
+      "prompt": "« Vous finirez demain. »",
+      "spoken": "« Vous finirez demain. »",
+      "choices": [
+        "futur",
+        "conditionnel",
+        "présent"
+      ],
+      "answer": "futur",
+      "hint": "-rez : futur.",
+      "explanation": "« finirez » : futur simple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-4",
+      "prompt": "« Le vent soufflait fort. »",
+      "spoken": "« Le vent soufflait fort. »",
+      "choices": [
+        "imparfait",
+        "passé simple",
+        "présent"
+      ],
+      "answer": "imparfait",
+      "hint": "-ait : imparfait.",
+      "explanation": "« soufflait » : imparfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-5",
+      "prompt": "« Elle ouvrit les yeux. »",
+      "spoken": "« Elle ouvrit les yeux. »",
+      "choices": [
+        "passé simple",
+        "présent",
+        "imparfait"
+      ],
+      "answer": "passé simple",
+      "hint": "-it au passé, dans un récit : passé simple.",
+      "explanation": "« ouvrit » : passé simple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-6",
+      "prompt": "« Nous prenons le bus. »",
+      "spoken": "« Nous prenons le bus. »",
+      "choices": [
+        "présent",
+        "futur",
+        "subjonctif"
+      ],
+      "answer": "présent",
+      "hint": "Action maintenant : présent.",
+      "explanation": "« prenons » : présent de l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-roseaux-2-7",
+      "prompt": "« Il faudrait que tu viennes. »",
+      "spoken": "« Il faudrait que tu viennes. »",
+      "choices": [
+        "subjonctif",
+        "conditionnel",
+        "futur"
+      ],
+      "answer": "subjonctif",
+      "hint": "Le verbe après « que tu » : « viennes », subjonctif.",
+      "explanation": "« que tu viennes » : subjonctif présent (« faudrait » est au conditionnel).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.",
+            "Passé composé : avoir ou être + participe (j’ai mangé).",
+            "Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.",
+            "Subjonctif : après « que » (qu’il prenne, que nous soyons)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "tourbe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

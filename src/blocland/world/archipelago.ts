@@ -15,6 +15,8 @@ export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
   volcan: { col: 3, row: 1 },
   glacier: { col: 2, row: 2 },
   marche: { col: 1, row: 2 },
+  carrefour: { col: 2, row: -1 },
+  marais: { col: 1, row: -1 },
 };
 
 /** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
@@ -43,10 +45,28 @@ export const BRIDGES: BridgeDef[] = [
   { id: 'plaine-glacier', from: 'plaine', to: 'glacier', cost: 6 },
   { id: 'riviere-marche', from: 'riviere', to: 'marche', cost: 6 },
   { id: 'glacier-marche', from: 'glacier', to: 'marche', cost: 6 },
+  { id: 'foret-carrefour', from: 'foret', to: 'carrefour', cost: 6 },
+  { id: 'mine-marais', from: 'mine', to: 'marais', cost: 6 },
+  { id: 'carrefour-marais', from: 'carrefour', to: 'marais', cost: 6 },
 ];
 
 /** Les blocs qui servent à payer un pont : ceux des îles (et les coffres), jamais les kits de finition des plans. */
-export const BRIDGE_BLOCKS: BlockId[] = ['bois', 'pierre', 'sable', 'terre', 'verre', 'brique', 'galet', 'obsidienne', 'glace', 'toile', 'or', 'cristal'];
+export const BRIDGE_BLOCKS: BlockId[] = [
+  'bois',
+  'pierre',
+  'sable',
+  'terre',
+  'verre',
+  'brique',
+  'galet',
+  'obsidienne',
+  'glace',
+  'toile',
+  'panneau',
+  'tourbe',
+  'or',
+  'cristal',
+];
 
 export function getBridge(id: string): BridgeDef | undefined {
   return BRIDGES.find((b) => b.id === id);

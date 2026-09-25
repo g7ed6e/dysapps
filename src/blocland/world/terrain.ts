@@ -40,6 +40,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.obsidienne.side]: 'obsidienne',
   [BLOCKS.glace.side]: 'glace',
   [BLOCKS.toile.side]: 'toile',
+  [BLOCKS.panneau.side]: 'panneau',
+  [BLOCKS.tourbe.side]: 'tourbe',
   [SNOW]: 'nuage',
   [HAY]: 'or',
 };
@@ -249,6 +251,37 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(3, 9, h(3, 9) + 1, BLOCKS.bois.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.toile.side);
   },
+  carrefour: (put, h) => {
+    // Un poteau indicateur à trois panneaux, et une borne.
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, TRUNK);
+    put(8, 3, h(8, 3) + 3, BLOCKS.panneau.side);
+    put(10, 3, h(10, 3) + 4, BLOCKS.panneau.side);
+    put(9, 4, h(9, 4) + 2, BLOCKS.panneau.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.panneau.side);
+    tree(put, 7, 5, h(7, 5), 2);
+  },
+  marais: (put, h) => {
+    // Des flaques de verre, des roseaux, une souche.
+    for (const [x, y] of [
+      [8, 2],
+      [9, 2],
+      [8, 3],
+      [10, 4],
+      [10, 5],
+    ] as const)
+      put(x, y, h(x, y) + 1, BLOCKS.verre.side);
+    for (const [x, y] of [
+      [7, 4],
+      [9, 5],
+      [3, 9],
+    ] as const) {
+      put(x, y, h(x, y) + 1, TRUNK);
+      put(x, y, h(x, y) + 2, TRUNK);
+      put(x, y, h(x, y) + 3, HAY);
+    }
+    put(1, 10, h(1, 10) + 1, TRUNK);
+  },
 };
 
 /**
@@ -363,7 +396,8 @@ export function worldCubes(
     const { ox, oy } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
-    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche';
+    const grassy =
+      biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
     const h = (x: number, y: number) => groundHeight(index, x, y);
     const put: Put = (x, y, z, color) =>
       cubes.push({

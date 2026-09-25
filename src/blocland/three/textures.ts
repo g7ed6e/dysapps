@@ -13,6 +13,8 @@ export type TextureKind =
   | 'obsidienne'
   | 'glace'
   | 'toile'
+  | 'panneau'
+  | 'tourbe'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -100,6 +102,21 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   toile: {
     top: (x, y, r) => (Math.floor(x / 4) % 2 === 0 ? grain('#c9463f', '#d9574f')(x, y, r) : grain('#e9d9b8', '#f4e8cc')(x, y, r)),
     side: (x, y, r) => (Math.floor(x / 4) % 2 === 0 ? grain('#b83d37', '#c9463f')(x, y, r) : grain('#dccba8', '#e9d9b8')(x, y, r)),
+  },
+  // Panneau : planches peintes en jaune, une flèche sombre sur le côté.
+  panneau: {
+    top: (x, y, r) => (y % 4 === 3 ? [180, 140, 40] : grain('#e0b73f', '#f2d16b')(x, y, r)),
+    side: (x, y, r) =>
+      (y === 7 || y === 8) && x >= 3 && x <= 12
+        ? [60, 44, 30]
+        : x >= 10 && x <= 12 && Math.abs(y - 7.5) <= 12 - x + 1
+          ? [60, 44, 30]
+          : grain('#e0b73f', '#f2d16b')(x, y, r),
+  },
+  // Tourbe : brun très sombre, fibres claires et mousse.
+  tourbe: {
+    top: (x, y, r) => (r() < 0.1 ? [96, 128, 60] : grain('#3f3320', '#5a4a2a')(x, y, r)),
+    side: (x, y, r) => (r() < 0.06 ? [120, 100, 60] : grain('#33291a', '#4a3d24')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),
