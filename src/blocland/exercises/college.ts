@@ -364,6 +364,338 @@ export const mapScale: ItemGenerator = (rng) => {
   };
 };
 
+// ---------- Forge des puissances ----------
+
+const SUP: Record<string, string> = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
+/** « 10⁴ » avec des exposants Unicode (lisibles sans balise). */
+export const pow = (base: string | number, exp: number): string =>
+  `${base}${String(exp)
+    .split('')
+    .map((c) => SUP[c] ?? c)
+    .join('')}`;
+
+/** Réponses textuelles : la bonne et trois pièges, sans doublon, dans un ordre mélangé mais reproductible. */
+export function textChoices(answer: string, traps: string[], rng: Rng): string[] {
+  const pool = [...new Set(traps)].filter((t) => t !== answer).slice(0, 3);
+  return shuffle([answer, ...pool], rng);
+}
+
+const POW10_RULES = [
+  '10ⁿ, c’est 1 suivi de n zéros : 10³ = 1 000.',
+  '10⁰ = 1. 10¹ = 10.',
+  'Multiplier par 10ⁿ décale chaque chiffre de n rangs vers la gauche.',
+];
+
+export const powerOfTen: ItemGenerator = (rng) => {
+  const n = randomInt(1, 6, rng);
+  const v = 10 ** n;
+  return {
+    key: `p10-${n}`,
+    prompt: `${pow(10, n)} = …`,
+    spoken: `10 puissance ${n}, combien ?`,
+    choices: choices(v, [10 * n, 10 ** (n + 1), 10 ** (n - 1), n * 100], rng),
+    answer: fmt(v),
+    hint: `Écris 1, puis ${n} zéro${n > 1 ? 's' : ''}.`,
+    explanation: `${pow(10, n)} = 1 suivi de ${n} zéro${n > 1 ? 's' : ''} = ${fmt(v)}.`,
+    aid: { kind: 'rule-card', props: { title: 'Puissances de 10', lines: POW10_RULES } },
+  };
+};
+
+/** L'inverse : 1 000 = 10 puissance combien ? */
+export const powerOfTenReverse: ItemGenerator = (rng) => {
+  const n = randomInt(2, 7, rng);
+  const answer = pow(10, n);
+  return {
+    key: `p10r-${n}`,
+    prompt: `${fmt(10 ** n)} = …`,
+    spoken: `${fmt(10 ** n)}, c’est 10 puissance combien ?`,
+    choices: textChoices(answer, [pow(10, n - 1), pow(10, n + 1), pow(n, 10), pow(10, n * 10)], rng),
+    answer,
+    hint: 'Compte les zéros : c’est l’exposant.',
+    explanation: `${fmt(10 ** n)} a ${n} zéros : c’est ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Puissances de 10', lines: POW10_RULES } },
+  };
+};
+
+const SCI_RULES = [
+  'Notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 (un seul chiffre avant la virgule).',
+  'n = le nombre de rangs dont la virgule se déplace.',
+  '3 400 = 3,4 × 10³ (la virgule a reculé de 3 rangs).',
+];
+
+export const scientific: ItemGenerator = (rng) => {
+  const a = randomInt(11, 99, rng);
+  const n = randomInt(2, 6, rng);
+  const value = a * 10 ** (n - 1);
+  const mant = `${Math.floor(a / 10)},${a % 10}`;
+  const answer = `${mant} × ${pow(10, n)}`;
+  return {
+    key: `sci-${a}-${n}`,
+    prompt: `${fmt(value)} = …`,
+    spoken: `Écris ${fmt(value)} en notation scientifique.`,
+    choices: textChoices(answer, [`${a} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n + 1)}`, `0,${a} × ${pow(10, n + 1)}`], rng),
+    answer,
+    hint: 'Un seul chiffre avant la virgule, puis compte de combien de rangs la virgule a bougé.',
+    explanation: `${fmt(value)} = ${mant} × ${pow(10, n)} : la virgule recule de ${n} rangs.`,
+    aid: { kind: 'rule-card', props: { title: 'Notation scientifique', lines: SCI_RULES } },
+  };
+};
+
+export const powerOfNumber: ItemGenerator = (rng) => {
+  const b = randomInt(2, 6, rng);
+  const n = b <= 3 ? randomInt(2, 5, rng) : randomInt(2, 3, rng);
+  const v = b ** n;
+  return {
+    key: `pow-${b}-${n}`,
+    prompt: `${pow(b, n)} = …`,
+    spoken: `${b} puissance ${n}, combien ?`,
+    choices: choices(v, [b * n, b ** (n - 1), b ** (n + 1), b + n], rng),
+    answer: fmt(v),
+    hint: `${pow(b, n)}, c’est ${b} multiplié par lui-même ${n} fois : ${Array(n).fill(b).join(' × ')}.`,
+    explanation: `${Array(n).fill(b).join(' × ')} = ${fmt(v)}.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Puissance d’un nombre',
+        lines: [`${pow('a', 'n' as unknown as number)} : a multiplié par lui-même n fois.`, '2³ = 2 × 2 × 2 = 8 (pas 2 × 3 !).', 'a¹ = a et a⁰ = 1.'],
+      },
+    },
+  };
+};
+
+const PROD_RULES = [
+  'aⁿ × aᵐ = aⁿ⁺ᵐ : on additionne les exposants.',
+  'aⁿ ÷ aᵐ = aⁿ⁻ᵐ : on soustrait les exposants.',
+  '(aⁿ)ᵐ = aⁿˣᵐ : on multiplie les exposants.',
+];
+
+export const productOfPowers: ItemGenerator = (rng) => {
+  const b = randomInt(2, 7, rng);
+  const n = randomInt(2, 6, rng);
+  const m = randomInt(2, 6, rng);
+  const divide = rng() < 0.4 && n > m;
+  const e = divide ? n - m : n + m;
+  const answer = pow(b, e);
+  return {
+    key: `pp-${b}-${n}-${m}-${divide ? 'd' : 'x'}`,
+    prompt: `${pow(b, n)} ${divide ? '÷' : '×'} ${pow(b, m)} = …`,
+    spoken: `${b} puissance ${n} ${divide ? 'divisé par' : 'fois'} ${b} puissance ${m}, combien ?`,
+    choices: textChoices(answer, [pow(b, n * m), pow(b * b, e), pow(b, divide ? n + m : n - m), pow(b, e + 1)], rng),
+    answer,
+    hint: divide ? 'Même base : on soustrait les exposants.' : 'Même base : on additionne les exposants.',
+    explanation: `${pow(b, n)} ${divide ? '÷' : '×'} ${pow(b, m)} = ${b} puissance ${n} ${divide ? '−' : '+'} ${m} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Même base', lines: PROD_RULES } },
+  };
+};
+
+export const squareRoot: ItemGenerator = (rng) => {
+  const r = randomInt(2, 15, rng);
+  const v = r * r;
+  return {
+    key: `sqrt-${v}`,
+    prompt: `√${v} = …`,
+    spoken: `Racine carrée de ${v}, combien ?`,
+    choices: choices(r, [v / 2, r + 1, r - 1, r * 2], rng),
+    answer: fmt(r),
+    hint: `Cherche le nombre qui, multiplié par lui-même, donne ${v}.`,
+    explanation: `${r} × ${r} = ${v}, donc √${v} = ${r}.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Racine carrée',
+        lines: [
+          '√a est le nombre positif dont le carré est a.',
+          '√49 = 7 car 7 × 7 = 49.',
+          'Carrés à connaître : 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.',
+        ],
+      },
+    },
+  };
+};
+
+const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+const isPrime = (n: number) => n > 1 && PRIMES.includes(n);
+
+export const primeOrDivisor: ItemGenerator = (rng) => {
+  if (rng() < 0.5) {
+    const p = PRIMES[randomInt(2, PRIMES.length - 1, rng)];
+    const traps = [p + 1, p + 3, p * 2].filter((t) => !isPrime(t));
+    while (traps.length < 3) traps.push(randomInt(4, 50, rng) * 2);
+    return {
+      key: `prime-${p}`,
+      prompt: 'Lequel est un nombre premier ?',
+      spoken: 'Lequel de ces nombres est un nombre premier ?',
+      choices: [p, ...traps.slice(0, 3)].sort((a, b) => a - b).map(fmt),
+      answer: fmt(p),
+      hint: 'Un nombre premier a exactement deux diviseurs : 1 et lui-même. Élimine les pairs (sauf 2) et les multiples de 3 et de 5.',
+      explanation: `${p} n’est divisible que par 1 et par ${p} : c’est un nombre premier.`,
+      aid: {
+        kind: 'rule-card',
+        props: {
+          title: 'Nombres premiers',
+          lines: ['Exactement deux diviseurs : 1 et lui-même.', '2, 3, 5, 7, 11, 13, 17, 19, 23, 29…', 'Un nombre pair (sauf 2) n’est jamais premier.'],
+        },
+      },
+    };
+  }
+  const n = [12, 18, 20, 24, 30, 36, 42, 45, 48][randomInt(0, 8, rng)];
+  const divs = Array.from({ length: n }, (_, i) => i + 1).filter((d) => n % d === 0);
+  const d = divs[randomInt(1, divs.length - 2, rng)];
+  const notDivs = [d + 1, d + 2, d + 3, d + 5].filter((x) => n % x !== 0);
+  return {
+    key: `div-${n}-${d}`,
+    prompt: `Lequel est un diviseur de ${n} ?`,
+    spoken: `Lequel de ces nombres est un diviseur de ${n} ?`,
+    choices: [d, ...notDivs.slice(0, 3)].sort((a, b) => a - b).map(fmt),
+    answer: fmt(d),
+    hint: `Un diviseur de ${n} : la division ${n} ÷ d tombe juste, sans reste.`,
+    explanation: `${n} ÷ ${d} = ${n / d}, sans reste : ${d} est un diviseur de ${n}.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Diviseurs',
+        lines: [
+          `Diviseurs de ${n} : ${divs.join(', ')}.`,
+          'd divise n quand n ÷ d tombe juste.',
+          'Critères : pair → divisible par 2 ; somme des chiffres multiple de 3 → par 3 ; finit par 0 ou 5 → par 5.',
+        ],
+      },
+    },
+  };
+};
+
+// ---------- Atelier du calcul littéral ----------
+
+const REDUCE_RULES = ['On additionne les x entre eux, et les nombres entre eux.', '3x + 5x = 8x (comme 3 pommes + 5 pommes).', 'x + x = 2x, mais x × x = x².'];
+const ax = (a: number, letter = 'x') => (a === 1 ? letter : a === -1 ? `−${letter}` : `${fmt(a)}${letter}`);
+const plus = (a: number) => (a < 0 ? `− ${fmt(-a)}` : `+ ${fmt(a)}`);
+
+export const reduceSimple: ItemGenerator = (rng) => {
+  const a = randomInt(2, 9, rng);
+  const b = randomInt(2, 9, rng);
+  const s = a + b;
+  return {
+    key: `red-${a}-${b}`,
+    prompt: `${ax(a)} + ${ax(b)} = …`,
+    spoken: `${a} x plus ${b} x, combien ?`,
+    choices: textChoices(ax(s), [`${fmt(a * b)}x`, `${fmt(s)}x²`, fmt(s), `${fmt(a * b)}x²`], rng),
+    answer: ax(s),
+    hint: `${a} x et ${b} x, c’est ${a} + ${b} fois x.`,
+    explanation: `${ax(a)} + ${ax(b)} = (${a} + ${b})x = ${ax(s)}.`,
+    aid: { kind: 'rule-card', props: { title: 'Réduire', lines: REDUCE_RULES } },
+  };
+};
+
+export const reduceMixed: ItemGenerator = (rng) => {
+  const a = randomInt(2, 7, rng);
+  const b = randomInt(1, 9, rng);
+  const c = randomInt(1, 5, rng);
+  const d = randomInt(-6, 6, rng) || 2;
+  const sx = a + c;
+  const sn = b + d;
+  const answer = sn === 0 ? ax(sx) : `${ax(sx)} ${plus(sn)}`;
+  return {
+    key: `redm-${a}-${b}-${c}-${d}`,
+    prompt: `${ax(a)} + ${b} + ${ax(c)} ${plus(d)} = …`,
+    spoken: `${a} x plus ${b} plus ${c} x ${d < 0 ? 'moins' : 'plus'} ${Math.abs(d)}, combien ?`,
+    choices: textChoices(answer, [`${ax(sx)} ${plus(b - d)}`, `${ax(sx + sn)}`, `${ax(a + b)} ${plus(c + d)}`, `${ax(sx)} ${plus(sn + 1)}`], rng),
+    answer,
+    hint: 'Regroupe d’abord les x, puis les nombres seuls.',
+    explanation: `Les x : ${a} + ${c} = ${sx}. Les nombres : ${b} ${plus(d)} = ${fmt(sn)}. Résultat : ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Réduire', lines: REDUCE_RULES } },
+  };
+};
+
+const DEV_RULES = [
+  'k(a + b) = ka + kb : on distribue k à chaque terme.',
+  '3(x + 4) = 3x + 12.',
+  '(a + b)(c + d) = ac + ad + bc + bd : chaque terme avec chaque terme.',
+];
+
+export const developSimple: ItemGenerator = (rng) => {
+  const k = randomInt(2, 7, rng);
+  const b = randomInt(1, 9, rng);
+  const answer = `${ax(k)} + ${fmt(k * b)}`;
+  return {
+    key: `dev-${k}-${b}`,
+    prompt: `${k}(x + ${b}) = …`,
+    spoken: `${k} facteur de x plus ${b}, développe.`,
+    choices: textChoices(answer, [`${ax(k)} + ${b}`, `x + ${fmt(k * b)}`, `${ax(k)} + ${fmt(k + b)}`, `${ax(k + b)}`], rng),
+    answer,
+    hint: `Multiplie ${k} par x, puis ${k} par ${b}.`,
+    explanation: `${k} × x = ${ax(k)} et ${k} × ${b} = ${k * b}, donc ${k}(x + ${b}) = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Développer', lines: DEV_RULES } },
+  };
+};
+
+export const developDouble: ItemGenerator = (rng) => {
+  const a = randomInt(1, 6, rng);
+  const b = randomInt(1, 6, rng);
+  const answer = `x² + ${ax(a + b)} + ${fmt(a * b)}`;
+  return {
+    key: `devd-${a}-${b}`,
+    prompt: `(x + ${a})(x + ${b}) = …`,
+    spoken: `x plus ${a}, facteur de x plus ${b}, développe.`,
+    choices: textChoices(answer, [`x² + ${fmt(a * b)}`, `x² + ${ax(a * b)} + ${fmt(a + b)}`, `${ax(2)} + ${fmt(a + b)}`, `x² + ${ax(a + b)}`], rng),
+    answer,
+    hint: 'Quatre produits : x × x, x × b, a × x, a × b. Puis réduis.',
+    explanation: `x² + ${ax(b)} + ${ax(a)} + ${a * b} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Double distributivité', lines: DEV_RULES } },
+  };
+};
+
+const EQ_RULES = [
+  'Une équation reste vraie si on fait la même opération des deux côtés.',
+  'x + 7 = 12 → on enlève 7 des deux côtés → x = 5.',
+  '3x = 15 → on divise par 3 des deux côtés → x = 5.',
+];
+
+export const equationOneStep: ItemGenerator = (rng) => {
+  const x = randomInt(-6, 12, rng);
+  const mul = rng() < 0.4;
+  if (mul) {
+    const k = randomInt(2, 9, rng);
+    return {
+      key: `eq1m-${k}-${x}`,
+      prompt: `${ax(k)} = ${fmt(k * x)}. Alors x = …`,
+      spoken: `${k} x égale ${say(k * x)}. Combien vaut x ?`,
+      choices: choices(x, [k * x - k, -x, x + k, k], rng),
+      answer: fmt(x),
+      hint: `Divise les deux côtés par ${k}.`,
+      explanation: `${fmt(k * x)} ÷ ${k} = ${fmt(x)}.`,
+      aid: { kind: 'rule-card', props: { title: 'Équation', lines: EQ_RULES } },
+    };
+  }
+  const b = randomInt(1, 15, rng);
+  return {
+    key: `eq1a-${b}-${x}`,
+    prompt: `x + ${b} = ${fmt(x + b)}. Alors x = …`,
+    spoken: `x plus ${b} égale ${say(x + b)}. Combien vaut x ?`,
+    choices: choices(x, [x + 2 * b, -x, x + b, b], rng),
+    answer: fmt(x),
+    hint: `Enlève ${b} des deux côtés.`,
+    explanation: `${fmt(x + b)} − ${b} = ${fmt(x)}.`,
+    aid: { kind: 'rule-card', props: { title: 'Équation', lines: EQ_RULES } },
+  };
+};
+
+export const equationTwoSteps: ItemGenerator = (rng) => {
+  const x = randomInt(-5, 9, rng);
+  const k = randomInt(2, 6, rng);
+  const b = randomInt(-9, 9, rng) || 3;
+  const r = k * x + b;
+  return {
+    key: `eq2-${k}-${b}-${x}`,
+    prompt: `${ax(k)} ${plus(b)} = ${fmt(r)}. Alors x = …`,
+    spoken: `${k} x ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)} égale ${say(r)}. Combien vaut x ?`,
+    choices: choices(x, [(r + b) / k, -x, r - b, x + 1].filter(Number.isInteger), rng),
+    answer: fmt(x),
+    hint: `D’abord ${b < 0 ? 'ajoute' : 'enlève'} ${Math.abs(b)} des deux côtés, puis divise par ${k}.`,
+    explanation: `${fmt(r)} ${plus(-b)} = ${fmt(r - b)}, puis ${fmt(r - b)} ÷ ${k} = ${fmt(x)}.`,
+    aid: { kind: 'rule-card', props: { title: 'Équation en deux étapes', lines: EQ_RULES } },
+  };
+};
+
 // ---------- Les exercices ----------
 
 const THERMO = 'Compare les deux nombres. Sur la droite, le plus petit est toujours à gauche.';
@@ -379,6 +711,19 @@ const REMISES_CHANGE = 'Calcule le nouveau prix après la hausse ou la baisse, e
 const BALANCES = 'Vitesse constante : trouve la distance en une heure, puis multiplie.';
 const BALANCES_SCALE = 'Échelle : chaque centimètre de la carte vaut la même distance réelle.';
 
+const ETINCELLES = 'Écris la puissance de 10 en nombre : un 1 suivi d’autant de zéros que l’exposant.';
+const ETINCELLES_SCI = 'Écris le nombre en notation scientifique : un seul chiffre avant la virgule, fois une puissance de 10.';
+const ENCLUME = 'Calcule la puissance : le nombre multiplié par lui-même, autant de fois que l’exposant.';
+const ENCLUME_PROD = 'Même base : additionne les exposants pour un produit, soustrais-les pour un quotient.';
+const TREMPE = 'Trouve la racine carrée : le nombre qui, multiplié par lui-même, donne celui-ci.';
+const TREMPE_PRIME = 'Nombres premiers et diviseurs : la règle et les critères sont affichés.';
+const REDUIRE = 'Réduis l’expression : regroupe les x entre eux, puis les nombres entre eux.';
+const REDUIRE_MIXTE = 'Réduis l’expression : les x d’un côté, les nombres de l’autre, attention aux signes.';
+const DEVELOPPER = 'Développe : distribue le nombre à chaque terme de la parenthèse.';
+const DEVELOPPER_DOUBLE = 'Développe la double distributivité : chaque terme avec chaque terme, puis réduis.';
+const EQUILIBRE = 'Trouve x : fais la même opération des deux côtés de l’égalité.';
+const EQUILIBRE_DEUX = 'Trouve x en deux étapes : d’abord le nombre seul, puis divise.';
+
 export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'glacier', type: 'thermometre', level: 1, instruction: THERMO, generators: [compareRelatifs], block: 'glace' }),
   defineData({ biome: 'glacier', type: 'thermometre', level: 2, instruction: THERMO_READ, generators: [readRelatif], block: 'glace' }),
@@ -392,4 +737,16 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'marche', type: 'remises', level: 2, instruction: REMISES_CHANGE, generators: [percentChange], block: 'toile' }),
   defineData({ biome: 'marche', type: 'balances', level: 1, instruction: BALANCES, generators: [speed], block: 'toile' }),
   defineData({ biome: 'marche', type: 'balances', level: 2, instruction: BALANCES_SCALE, generators: [mapScale], block: 'toile' }),
+  defineData({ biome: 'forge', type: 'etincelles', level: 1, instruction: ETINCELLES, generators: [powerOfTen, powerOfTenReverse], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'etincelles', level: 2, instruction: ETINCELLES_SCI, generators: [scientific], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'enclume', level: 1, instruction: ENCLUME, generators: [powerOfNumber], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'enclume', level: 2, instruction: ENCLUME_PROD, generators: [productOfPowers], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'trempe', level: 1, instruction: TREMPE, generators: [squareRoot], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'trempe', level: 2, instruction: TREMPE_PRIME, generators: [primeOrDivisor], block: 'acier' }),
+  defineData({ biome: 'atelier', type: 'reduire', level: 1, instruction: REDUIRE, generators: [reduceSimple], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'reduire', level: 2, instruction: REDUIRE_MIXTE, generators: [reduceMixed], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'developper', level: 1, instruction: DEVELOPPER, generators: [developSimple], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'developper', level: 2, instruction: DEVELOPPER_DOUBLE, generators: [developDouble], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 1, instruction: EQUILIBRE, generators: [equationOneStep], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 2, instruction: EQUILIBRE_DEUX, generators: [equationTwoSteps], block: 'calque' }),
 ];

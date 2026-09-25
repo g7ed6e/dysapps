@@ -1,4 +1,17 @@
-import { COLLEGE_EXERCISES, addRelatifs, choices, compareRelatifs, fmt, mulRelatifs, percentChange, seededItems } from './college';
+import {
+  COLLEGE_EXERCISES,
+  addRelatifs,
+  choices,
+  compareRelatifs,
+  developDouble,
+  equationTwoSteps,
+  fmt,
+  mulRelatifs,
+  percentChange,
+  pow,
+  scientific,
+  seededItems,
+} from './college';
 
 it('formate et lit les relatifs, range les réponses', () => {
   expect(fmt(-7)).toBe('−7');
@@ -48,4 +61,33 @@ it('Glacier et Marché : six exercices chacun, huit items avec aide et explicati
   }
   expect(glacier[0].items.every((it) => (it.aid as { kind: string }).kind === 'number-line')).toBe(true);
   expect(marche[0].items.every((it) => (it.aid as { kind: string }).kind === 'ratio-table')).toBe(true);
+});
+
+it('Forge et Atelier : exposants lisibles, notation scientifique et équations cohérentes', () => {
+  expect(pow(10, 4)).toBe('10⁴');
+  expect(pow(2, 12)).toBe('2¹²');
+  const rng = seededItems('forge');
+  for (let i = 0; i < 20; i++) {
+    const s = scientific(rng);
+    expect(s.choices).toContain(s.answer);
+    expect(String(s.answer)).toMatch(/^\d,\d × 10[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+    const e = equationTwoSteps(rng);
+    expect(e.choices).toContain(e.answer);
+    expect((e.choices as string[]).length).toBe(4);
+    const d = developDouble(rng);
+    expect(d.choices).toContain(d.answer);
+    expect(new Set(d.choices as string[]).size).toBe((d.choices as string[]).length);
+  }
+  const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'forge');
+  const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'atelier');
+  expect(forge).toHaveLength(6);
+  expect(atelier).toHaveLength(6);
+  for (const def of [...forge, ...atelier]) {
+    expect(def.items).toHaveLength(8);
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect(new Set(it.choices as string[]).size).toBe((it.choices as string[]).length);
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
+    }
+  }
 });

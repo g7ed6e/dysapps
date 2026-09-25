@@ -145,6 +145,29 @@ const KROA = fromLayers(
   { T: '#3f6b3a', O: '#f28c28', E: '#f5d63d', K: '#1f1a16', C: '#f28c28' },
 );
 
+// Braise : un golem trapu de fonte sombre, cœur de braise orange, marteau.
+const BRAISE = fromLayers(
+  [
+    ['.FFF.', 'FFFFF', 'FFFFF', '.FFF.'],
+    ['.FFF.', 'FFOFF', 'FFFFF', '.FFF.'],
+    ['..F.M', '.FFF.', '.FFF.', '.....'],
+    ['....M', '.FEF.', '.....', '.....'],
+    ['....M', '.....', '.....', '.....'],
+  ],
+  { F: '#4a4a52', O: '#f28c28', E: '#f5d63d', M: '#8a6a3c' },
+);
+
+// Ixe : un petit robot cubique crème, écran bleu, antenne.
+const IXE = fromLayers(
+  [
+    ['.CCC.', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.CCC.', 'CBBBC', 'CCCCC', '.CCC.'],
+    ['.CCC.', 'CBXBC', 'CCCCC', '.....'],
+    ['..A..', '.....', '.....', '.....'],
+  ],
+  { C: '#f4f1e4', B: '#3b82f6', X: '#1f1a16', A: '#d8402e' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -158,6 +181,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   marche: BAZAR,
   carrefour: SEMA,
   marais: KROA,
+  forge: BRAISE,
+  atelier: IXE,
 };
 
 interface Props {

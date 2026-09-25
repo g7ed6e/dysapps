@@ -17,6 +17,8 @@ export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
   marche: { col: 1, row: 2 },
   carrefour: { col: 2, row: -1 },
   marais: { col: 1, row: -1 },
+  forge: { col: 3, row: 2 },
+  atelier: { col: 0, row: 2 },
 };
 
 /** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
@@ -48,6 +50,9 @@ export const BRIDGES: BridgeDef[] = [
   { id: 'foret-carrefour', from: 'foret', to: 'carrefour', cost: 6 },
   { id: 'mine-marais', from: 'mine', to: 'marais', cost: 6 },
   { id: 'carrefour-marais', from: 'carrefour', to: 'marais', cost: 6 },
+  { id: 'volcan-forge', from: 'volcan', to: 'forge', cost: 7 },
+  { id: 'glacier-forge', from: 'glacier', to: 'forge', cost: 7 },
+  { id: 'marche-atelier', from: 'marche', to: 'atelier', cost: 7 },
 ];
 
 /** Les blocs qui servent à payer un pont : ceux des îles (et les coffres), jamais les kits de finition des plans. */
@@ -64,6 +69,8 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'toile',
   'panneau',
   'tourbe',
+  'acier',
+  'calque',
   'or',
   'cristal',
 ];

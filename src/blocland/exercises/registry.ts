@@ -81,4 +81,10 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   rives: { component: CalculScreen, batch: 1 },
   brume: { component: CalculScreen, batch: 1 },
   roseaux: { component: CalculScreen, batch: 1 },
+  etincelles: { component: CalculScreen, batch: 1 },
+  enclume: { component: CalculScreen, batch: 1 },
+  trempe: { component: CalculScreen, batch: 1 },
+  reduire: { component: CalculScreen, batch: 1 },
+  developper: { component: CalculScreen, batch: 1 },
+  equilibre: { component: CalculScreen, batch: 1 },
 };

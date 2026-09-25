@@ -163,6 +163,34 @@ const HYDRE = fromLayers(
   { V: '#3f6b3a', E: '#f5d63d' },
 );
 
+// Le Titan d'acier : un colosse en plaques d'acier, yeux rouges, épaules carrées.
+const TITAN = fromLayers(
+  [
+    ['.AA.AA.', '.AA.AA.', '.AA.AA.', '.......'],
+    ['.AA.AA.', '.AA.AA.', '.AA.AA.', '.......'],
+    ['AAAAAAA', 'AaaaaaA', 'AAAAAAA', '.......'],
+    ['AAAAAAA', 'AaaaaaA', 'AAAAAAA', '.......'],
+    ['AAAAAAA', 'AAAAAAA', 'AAAAAAA', '.......'],
+    ['..AAA..', '..ARA..', '..AAA..', '.......'],
+    ['..AAA..', '..AAA..', '..AAA..', '.......'],
+  ],
+  { A: '#8f9aa6', a: '#c4ccd4', R: '#e03a2e' },
+);
+
+// Le Golem des équations : deux plateaux de balance sur un fléau, un corps de calque, un œil.
+const GOLEM_EQ = fromLayers(
+  [
+    ['CCC.CCC', 'CCC.CCC', '.......', '.......'],
+    ['...C...', '...C...', '.......', '.......'],
+    ['..CCC..', '.CCCCC.', '..CCC..', '.......'],
+    ['..CCC..', '.CCCCC.', '..CCC..', '.......'],
+    ['CCCCCCC', 'CCCCCCC', '.......', '.......'],
+    ['..CCC..', '..CEC..', '..CCC..', '.......'],
+    ['..CCC..', '..CCC..', '.......', '.......'],
+  ],
+  { C: '#dcd6c0', E: '#3b82f6' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -176,6 +204,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   marche: COLPORTEUR,
   carrefour: SPHINX,
   marais: HYDRE,
+  forge: TITAN,
+  atelier: GOLEM_EQ,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
