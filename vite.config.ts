@@ -51,7 +51,7 @@ export default defineConfig({
         short_name: 'DysApps',
         description: "Exercices adaptés aux élèves dys du collège (français et maths)",
         lang: 'fr',
-        theme_color: '#3b2d20',
+        theme_color: '#6b4a2e',
         background_color: '#fbf6ea',
         display: 'standalone',
         start_url: base,

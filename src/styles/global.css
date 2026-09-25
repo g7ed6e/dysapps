@@ -784,36 +784,102 @@ a.app-card:active {
   align-items: center;
   gap: 0.6rem;
 }
+/* Écusson pixel : contour crénelé en escalier, bord sombre, minerai du rang à l'intérieur. */
 .rank-shield {
+  --shield: polygon(
+    0 0,
+    100% 0,
+    100% 55%,
+    87.5% 55%,
+    87.5% 67%,
+    75% 67%,
+    75% 78%,
+    62.5% 78%,
+    62.5% 89%,
+    56.25% 89%,
+    56.25% 100%,
+    43.75% 100%,
+    43.75% 89%,
+    37.5% 89%,
+    37.5% 78%,
+    25% 78%,
+    25% 67%,
+    12.5% 67%,
+    12.5% 55%,
+    0 55%
+  );
+  position: relative;
   display: grid;
   place-items: center;
   width: 2.3rem;
   height: 2.6rem;
   flex-shrink: 0;
-  clip-path: polygon(50% 0, 100% 15%, 100% 60%, 50% 100%, 0 60%, 0 15%);
+  clip-path: var(--shield);
+  background: var(--ink);
   color: var(--on-accent);
-  font-family: var(--display-font);
-  font-size: 0.95rem;
-  padding-bottom: 0.3rem;
+  font-family: var(--pixel-font);
+  font-size: 0.9rem;
+  padding-bottom: 0.5rem;
+}
+/* Le numéro de niveau sur une plaque sombre, lisible sur le minerai. */
+.rank-level {
+  font-weight: 400;
+  line-height: 1;
+  padding: 0.15rem 0.2rem 0.05rem;
+  background: var(--ink);
+  color: #fbf6ea;
+}
+.rank-shield::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  clip-path: var(--shield);
+  background-color: var(--tier-color);
+  background-image: var(--tier-tex);
+  background-size: 24px;
+  image-rendering: pixelated;
+}
+.rank-shield {
+  isolation: isolate;
 }
 .tier-bronze {
-  background: linear-gradient(160deg, #f0b27a, #b86b2b);
+  --tier-color: #d08a52;
+  --tier-tex: url("./textures/minerai-cuivre.png");
 }
 .tier-argent {
-  background: linear-gradient(160deg, #f1f4f8, #9aa5b4);
+  --tier-color: #d5d9e0;
+  --tier-tex: url("./textures/minerai-fer.png");
 }
 .tier-or {
-  background: linear-gradient(160deg, #fff09a, #f2b705);
+  --tier-color: #f2c944;
+  --tier-tex: url("./textures/minerai-or.png");
 }
 .tier-platine {
-  background: linear-gradient(160deg, #b7fff1, #2dd4bf);
+  --tier-color: #7fe8d6;
+  --tier-tex: url("./textures/minerai-platine.png");
 }
 .tier-diamant {
-  background: linear-gradient(160deg, #c7e3ff, #3b82f6);
+  --tier-color: #8fc3ff;
+  --tier-tex: url("./textures/minerai-diamant.png");
 }
 .tier-legende {
-  background: linear-gradient(160deg, #ff8fc0, #7b3fe4);
-  color: #ffffff;
+  --tier-color: #7b3fe4;
+  --tier-tex: url("./textures/minerai-legende.png");
+}
+:root[data-theme="clair"] .rank-shield::before,
+:root[data-theme="contraste"] .rank-shield::before {
+  background-image: none;
+}
+:root[data-theme="contraste"] .rank-shield {
+  background: var(--yellow);
+}
+:root[data-theme="contraste"] .rank-shield::before {
+  background-color: #000000;
+}
+:root[data-theme="contraste"] .rank-level {
+  background: #000000;
+  color: var(--yellow);
 }
 .xp-info {
   flex: 1;
@@ -854,6 +920,14 @@ a.app-card:active {
   width: 4rem;
   height: 4.5rem;
   font-size: 1.5rem;
+  padding-bottom: 0.8rem;
+}
+.xp-large .rank-level {
+  padding: 0.2rem 0.3rem 0.1rem;
+}
+.xp-large .rank-shield::before {
+  inset: 5px;
+  background-size: 32px;
 }
 .xp-large .xp-title {
   font-family: var(--display-font);
