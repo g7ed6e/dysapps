@@ -16,12 +16,27 @@ export interface WorldFocus {
   seq: number;
 }
 
+export interface Cell {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface BuildProps {
+  /** Zone libre mise en évidence (coordonnées du monde, bornes hautes exclues). */
+  zone: { x0: number; y0: number; x1: number; y1: number };
+  /** Face touchée : le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
+  onPickFace: (cell: Cell, next: Cell) => void;
+}
+
 export interface WorldCanvasProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
   /** Île touchée (un tap, pas un glissé), sur l'île elle-même ou sur le pont qui y mène. */
   onPickIsland?: (id: BiomeId) => void;
+  /** Mode construction : on touche une face pour poser ou retirer, au lieu d'entrer dans l'île. */
+  build?: BuildProps;
   className?: string;
   label: string;
 }
@@ -56,7 +71,7 @@ function materialFor(texture: string | undefined, face: FaceSide, color: string 
 
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
-export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPickIsland, className, label }: WorldCanvasProps) {
+export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPickIsland, build, className, label }: WorldCanvasProps) {
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<{
     scene: THREE.Scene;
@@ -64,6 +79,8 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
     terrain: THREE.Group;
+    zone: THREE.Mesh;
+    hover: THREE.LineSegments;
     flight: {
       fromPos: THREE.Vector3;
       fromTarget: THREE.Vector3;
@@ -74,6 +91,8 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
+  const buildRef = useRef(build);
+  buildRef.current = build;
   const bounds = worldBounds();
   const center = {
     x: (bounds.minX + bounds.maxX) / 2,
@@ -167,14 +186,18 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
 
     const terrain = new THREE.Group();
     scene.add(terrain);
-    world.current = {
-      scene,
-      camera,
-      renderer,
-      controls,
-      terrain,
-      flight: null,
-    };
+    // Zone libre (mode construction) : un tapis translucide au ras du sol ; et le contour de la case visée.
+    const zone = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35, depthWrite: false }),
+    );
+    zone.rotation.x = -Math.PI / 2;
+    zone.visible = false;
+    scene.add(zone);
+    const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
+    hover.visible = false;
+    scene.add(hover);
+    world.current = { scene, camera, renderer, controls, terrain, zone, hover, flight: null };
 
     // Toucher une île : un tap, pas un glissé.
     const ray = new THREE.Raycaster();
@@ -189,21 +212,46 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     const onDown = (e: PointerEvent) => {
       down = { x: e.clientX, y: e.clientY };
     };
+    /** Bloc touché et case voisine devant la face, en coordonnées de grille (x, y, z = hauteur). */
+    const cellsOf = (hit: THREE.Intersection) => {
+      const n = hit.face?.normal ?? new THREE.Vector3(0, 1, 0);
+      const inside = hit.point.clone().addScaledVector(n, -0.5);
+      const outside = hit.point.clone().addScaledVector(n, 0.5);
+      const cell = { x: Math.floor(inside.x), y: Math.floor(inside.z), z: Math.floor(inside.y) };
+      const next = { x: Math.floor(outside.x), y: Math.floor(outside.z), z: Math.floor(outside.y) };
+      return { cell, next };
+    };
     const onUp = (e: PointerEvent) => {
-      if (!down || !pickRef.current) return;
+      if (!down || (!pickRef.current && !buildRef.current)) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       down = null;
       if (moved > 8) return;
       const hit = aim(e);
-      if (hit) pickRef.current(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
+      if (!hit) return;
+      if (buildRef.current) {
+        const { cell, next } = cellsOf(hit);
+        buildRef.current.onPickFace(cell, next);
+      } else pickRef.current?.(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
     };
     const onHover = (e: PointerEvent) => {
-      if (e.pointerType === 'touch' || !pickRef.current) return;
-      renderer.domElement.style.cursor = aim(e) ? 'pointer' : 'grab';
+      if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current)) return;
+      const hit = aim(e);
+      renderer.domElement.style.cursor = hit ? 'pointer' : 'grab';
+      const h = world.current?.hover;
+      if (!h) return;
+      if (hit && buildRef.current) {
+        const { next } = cellsOf(hit);
+        h.visible = true;
+        h.position.set(next.x + 0.5, next.z + 0.5, next.y + 0.5);
+      } else h.visible = false;
+    };
+    const onLeave = () => {
+      if (world.current) world.current.hover.visible = false;
     };
     renderer.domElement.addEventListener('pointerdown', onDown);
     renderer.domElement.addEventListener('pointerup', onUp);
     renderer.domElement.addEventListener('pointermove', onHover);
+    renderer.domElement.addEventListener('pointerleave', onLeave);
 
     const resize = () => {
       const w = el.clientWidth;
@@ -238,7 +286,12 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onHover);
+      renderer.domElement.removeEventListener('pointerleave', onLeave);
       controls.removeEventListener('change', clamp);
+      zone.geometry.dispose();
+      (zone.material as THREE.Material).dispose();
+      hover.geometry.dispose();
+      (hover.material as THREE.Material).dispose();
       controls.dispose();
       for (const m of terrain.children) (m as THREE.Mesh).geometry.dispose();
       water.geometry.dispose();
@@ -272,6 +325,20 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       w.terrain.add(mesh);
     }
   }, [cubes]);
+
+  // ---- Zone libre mise en évidence
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    w.zone.visible = Boolean(build);
+    w.hover.visible = false;
+    if (!build) return;
+    const { x0, y0, x1, y1 } = build.zone;
+    w.zone.scale.set(x1 - x0, y1 - y0, 1);
+    // Le sol de la zone est à z = 0, donc son dessus à la hauteur 1.
+    w.zone.position.set((x0 + x1) / 2, 1.02, (y0 + y1) / 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [build?.zone.x0, build?.zone.y0, build?.zone.x1, build?.zone.y1, Boolean(build)]);
 
   // ---- Caméra : vol vers l'île demandée (ou la vue d'ensemble)
   useEffect(() => {

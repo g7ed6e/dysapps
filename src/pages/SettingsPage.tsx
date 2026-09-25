@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  FONT_LABELS,
-  MIN_FONT_SIZE,
-  MIN_LINE_HEIGHT,
-  THEME_LABELS,
-  isFontAvailable,
-  type FontChoice,
-  type ThemeChoice,
-} from '../core/settings';
+import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, isFontAvailable, type FontChoice, type ThemeChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -81,17 +73,57 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Espacements</legend>
-          <Slider label="Taille du texte" value={settings.fontSize} min={MIN_FONT_SIZE} max={32} step={1} display={`${settings.fontSize} px`} onChange={(fontSize) => update({ fontSize })} />
-          <Slider label="Espace entre les lignes" value={settings.lineHeight} min={MIN_LINE_HEIGHT} max={2.4} step={0.1} display={settings.lineHeight.toFixed(1)} onChange={(lineHeight) => update({ lineHeight })} />
-          <Slider label="Espace entre les lettres" value={settings.letterSpacing} min={0} max={0.2} step={0.01} display={settings.letterSpacing.toFixed(2)} onChange={(letterSpacing) => update({ letterSpacing })} />
-          <Slider label="Espace entre les mots" value={settings.wordSpacing} min={0} max={0.5} step={0.02} display={settings.wordSpacing.toFixed(2)} onChange={(wordSpacing) => update({ wordSpacing })} />
+          <Slider
+            label="Taille du texte"
+            value={settings.fontSize}
+            min={MIN_FONT_SIZE}
+            max={32}
+            step={1}
+            display={`${settings.fontSize} px`}
+            onChange={(fontSize) => update({ fontSize })}
+          />
+          <Slider
+            label="Espace entre les lignes"
+            value={settings.lineHeight}
+            min={MIN_LINE_HEIGHT}
+            max={2.4}
+            step={0.1}
+            display={settings.lineHeight.toFixed(1)}
+            onChange={(lineHeight) => update({ lineHeight })}
+          />
+          <Slider
+            label="Espace entre les lettres"
+            value={settings.letterSpacing}
+            min={0}
+            max={0.2}
+            step={0.01}
+            display={settings.letterSpacing.toFixed(2)}
+            onChange={(letterSpacing) => update({ letterSpacing })}
+          />
+          <Slider
+            label="Espace entre les mots"
+            value={settings.wordSpacing}
+            min={0}
+            max={0.5}
+            step={0.02}
+            display={settings.wordSpacing.toFixed(2)}
+            onChange={(wordSpacing) => update({ wordSpacing })}
+          />
         </fieldset>
 
         <fieldset className="panel">
           <legend>Voix</legend>
           {isSpeechAvailable() ? (
             <>
-              <Slider label="Vitesse de lecture" value={settings.speechRate} min={0.5} max={1.3} step={0.1} display={`× ${settings.speechRate.toFixed(1)}`} onChange={(speechRate) => update({ speechRate })} />
+              <Slider
+                label="Vitesse de lecture"
+                value={settings.speechRate}
+                min={0.5}
+                max={1.3}
+                step={0.1}
+                display={`× ${settings.speechRate.toFixed(1)}`}
+                onChange={(speechRate) => update({ speechRate })}
+              />
               <button type="button" className="button" onClick={() => speak(SAMPLE)}>
                 <Icon name="speaker" /> Tester la voix
               </button>
@@ -110,6 +142,10 @@ export function SettingsPage() {
           <label className="toggle">
             <input type="checkbox" checked={settings.view3d} onChange={(e) => update({ view3d: e.target.checked })} />
             Vues en 3D dans Blocland (sinon, vue simple)
+          </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.sounds} onChange={(e) => update({ sounds: e.target.checked })} />
+            Sons dans le village (poser, retirer un bloc)
           </label>
         </fieldset>
 

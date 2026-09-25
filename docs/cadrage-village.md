@@ -52,7 +52,7 @@ Ce que le chantier actuel n'offre pas, et qui manque :
 }
 ```
 
-- **Zone libre** — **Décidé** : à côté des bâtiments, chaque île a un petit terrain (environ 6 × 6) où l'on pose ce qu'on veut, pour garder la créativité sans détourner des plans.
+- **Zone libre** — **Décidé** : à l'avant de chaque île, un petit terrain de 6 × 4 cases (le tapis jaune) où l'on pose ce qu'on veut, pour garder la créativité sans détourner des plans.
 - **Constructions actuelles** (grille 8 × 8) — **Décidé** : non migrées ; à la première ouverture du village, les blocs posés reviennent dans l'inventaire (aucune perte de ressources).
 
 ## 5. Le monde qui vit
@@ -79,7 +79,7 @@ Le reste (`inventory`, `streak`, `chests`, `progress`) ne change pas. `sanitizeS
 Chaque PR est livrable seule, testée, avec la vue simple qui suit.
 
 1. ✅ **Le monde continu** — les cinq îles praticables dans une seule scène (instanciation, faces cachées supprimées, eau, relief léger), caméra libre avec limites, boutons « Aller à… » et « Vue d'ensemble », remplacement de la carte 3D actuelle par cette scène.
-2. **Poser dans le monde** — inventaire en HUD, pose sur la face touchée, retrait (appui long + bouton), zone libre par île, retour des anciens blocs dans l'inventaire, sons de pose et retrait, vue simple équivalente.
+2. ✅ **Poser dans le monde** — inventaire en HUD, pose sur la face touchée, retrait (appui long + bouton), zone libre par île, retour des anciens blocs dans l'inventaire, sons de pose et retrait, vue simple équivalente.
 3. **Les plans** — format JSON, fantômes, validation par type de bloc, avancement, premier plan par île, récompense (XP, coffre, succès), consignes lues à voix haute.
 4. **Le monde qui vit** — jour et nuit selon l'heure réelle, nuages, eau animée, créatures qui se promènent et parlent, particules, ambiance sonore en option, tout coupé par « réduire les animations ».
 5. **Le village s'achève** — deuxième et troisième plans par île, nouveaux blocs (porte, escalier, torche, toit, barrière), créature qui emménage, journal de construction (étape 6 du brief), succès dédiés.

@@ -20,7 +20,12 @@ function Tower({ floors, total }: { floors: number; total: number }) {
       cubes.push({ x, y, z, color: built ? '#6fbdd3' : '#e6e2d8', top: built ? '#bfe8f2' : '#f3f0e8' });
     }
   }
-  cubes.push({ x: 0, y: 0, z: -1, color: '#8a5a26', top: '#c98d4b' }, { x: 1, y: 0, z: -1, color: '#8a5a26', top: '#c98d4b' }, { x: 0, y: 1, z: -1, color: '#8a5a26', top: '#c98d4b' }, { x: 1, y: 1, z: -1, color: '#8a5a26', top: '#c98d4b' });
+  cubes.push(
+    { x: 0, y: 0, z: -1, color: '#8a5a26', top: '#c98d4b' },
+    { x: 1, y: 0, z: -1, color: '#8a5a26', top: '#c98d4b' },
+    { x: 0, y: 1, z: -1, color: '#8a5a26', top: '#c98d4b' },
+    { x: 1, y: 1, z: -1, color: '#8a5a26', top: '#c98d4b' },
+  );
   return <VoxelScene cubes={cubes} s={12} className="tower" label={`Tour : ${floors} étage${floors > 1 ? 's' : ''} sur ${total}`} />;
 }
 

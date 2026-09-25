@@ -1,10 +1,13 @@
 import type { KeyboardEvent } from 'react';
 import { BLOCKS } from './biomes';
-import { GRID_SIZE, columnHeight, type BuildCell } from './engine';
+import { columnHeight, type BuildCell } from './engine';
 import { Cube, PixelGrainDefs, project } from './Voxel';
 
 interface Props {
+  /** Blocs posés, en coordonnées de la grille (0..width-1, 0..height-1). */
   build: BuildCell[];
+  width: number;
+  height: number;
   /** Case sélectionnée au clavier ou au toucher. */
   selected: { x: number; y: number } | null;
   onSelect: (x: number, y: number) => void;
@@ -15,15 +18,15 @@ interface Props {
 const S = 22;
 
 /** Grille isométrique cliquable : le sol en damier, puis les blocs posés. */
-export function BuildGrid({ build, selected, onSelect, onAction }: Props) {
+export function BuildGrid({ build, width, height, selected, onSelect, onAction }: Props) {
   const p = (x: number, y: number, z: number) => project(x, y, z, S);
   const pts = (list: [number, number][]) => list.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
   // La hauteur affichée suit la construction : une case de marge au-dessus de la colonne la plus haute.
   const tallest = build.reduce((m, c) => Math.max(m, c.z + 1), 0);
-  const [minX] = p(0, GRID_SIZE, 0);
-  const [maxX] = p(GRID_SIZE, 0, 0);
+  const [minX] = p(0, height, 0);
+  const [maxX] = p(width, 0, 0);
   const [, minY] = p(0, 0, tallest + 1);
-  const [, maxY] = p(GRID_SIZE, GRID_SIZE, 0);
+  const [, maxY] = p(width, height, 0);
   const viewBox = `${minX - 4} ${minY - 4} ${maxX - minX + 8} ${maxY - minY + 8}`;
 
   const activate = (x: number, y: number) => {
@@ -38,7 +41,7 @@ export function BuildGrid({ build, selected, onSelect, onAction }: Props) {
   };
 
   const tiles: { x: number; y: number }[] = [];
-  for (let y = 0; y < GRID_SIZE; y++) for (let x = 0; x < GRID_SIZE; x++) tiles.push({ x, y });
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) tiles.push({ x, y });
 
   return (
     <svg className="build-grid" viewBox={viewBox} role="group" aria-label="Chantier">
@@ -65,13 +68,13 @@ export function BuildGrid({ build, selected, onSelect, onAction }: Props) {
       {[...build]
         .sort((a, b) => a.x + a.y - (b.x + b.y) || a.z - b.z)
         .map((c) => {
-        const def = BLOCKS[c.block];
-        return (
-          <g key={`${c.x}-${c.y}-${c.z}`} className="placed" onClick={() => activate(c.x, c.y)} aria-hidden="true">
-            <Cube x={c.x} y={c.y} z={c.z} color={def.side} top={def.top} s={S} />
-          </g>
-        );
-      })}
+          const def = BLOCKS[c.block];
+          return (
+            <g key={`${c.x}-${c.y}-${c.z}`} className="placed" onClick={() => activate(c.x, c.y)} aria-hidden="true">
+              <Cube x={c.x} y={c.y} z={c.z} color={def.side} top={def.top} s={S} />
+            </g>
+          );
+        })}
       {selected && (
         <polygon
           className="cursor"

@@ -2,9 +2,13 @@ import {
   EMPTY_STATE,
   MAX_HEIGHT,
   adapt,
-  clearBuild,
-  placeBlock,
-  removeBlock,
+  clearIsland,
+  FREE_ZONE,
+  placeAt,
+  placeOnColumn,
+  placedOn,
+  removeAt,
+  removeFromColumn,
   addDays,
   completeExercise,
   daysBetween,
@@ -15,7 +19,6 @@ import {
   starsFor,
   updateStreak,
 } from './engine';
-import type { BloclandState } from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 const DEF: ExerciseDef = {
@@ -126,11 +129,21 @@ describe('completeExercise', () => {
   });
 
   it('bonus XP sans aide ni erreur, au moins 1 bloc dès une bonne réponse, 0 sinon', () => {
-    const perfect = completeExercise(EMPTY_STATE, DEF, DEF.items.map((i) => ok(i.key)), '2026-09-24');
+    const perfect = completeExercise(
+      EMPTY_STATE,
+      DEF,
+      DEF.items.map((i) => ok(i.key)),
+      '2026-09-24',
+    );
     expect(perfect).toMatchObject({ perfect: true, xp: 15, blocks: 4, stars: 3 });
     const one = completeExercise(EMPTY_STATE, DEF, [ok('a'), ko('b'), ko('c'), ko('d')], '2026-09-24');
     expect(one.blocks).toBe(1);
-    const none = completeExercise(EMPTY_STATE, DEF, DEF.items.map((i) => ko(i.key)), '2026-09-24');
+    const none = completeExercise(
+      EMPTY_STATE,
+      DEF,
+      DEF.items.map((i) => ko(i.key)),
+      '2026-09-24',
+    );
     expect(none.blocks).toBe(0);
     expect(none.xp).toBe(10);
   });
@@ -147,7 +160,12 @@ describe('completeExercise', () => {
 });
 
 it('sanitizeState répare des données corrompues', () => {
-  const s = sanitizeState({ progress: { x: { stars: 9, attempts: -1, best: 2 } }, inventory: { bois: '3', faux: 5 }, spaced: [{ itemId: 'a' }, 'rien'], streak: null });
+  const s = sanitizeState({
+    progress: { x: { stars: 9, attempts: -1, best: 2 } },
+    inventory: { bois: '3', faux: 5 },
+    spaced: [{ itemId: 'a' }, 'rien'],
+    streak: null,
+  });
   expect(s.progress.x).toEqual({ stars: 3, attempts: 0, best: 1 });
   expect(s.inventory).toEqual({ bois: 3 });
   expect(s.spaced).toEqual([]);
@@ -157,39 +175,59 @@ it('sanitizeState répare des données corrompues', () => {
 
 describe('construction', () => {
   const withBlocks = { ...EMPTY_STATE, inventory: { bois: 2, pierre: 1 } };
+  const zx = FREE_ZONE.x + 2;
+  const zy = FREE_ZONE.y + 1;
 
-  it('pose un bloc au sommet de la colonne et le consomme', () => {
-    const r1 = placeBlock(withBlocks, 2, 3, 'bois');
+  it('pose un bloc dans la zone libre d’une île et le consomme', () => {
+    const r1 = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois');
     expect(r1.ok).toBe(true);
-    expect(r1.state.build).toEqual([{ x: 2, y: 3, z: 0, block: 'bois' }]);
+    expect(placedOn(r1.state, 'foret')).toEqual([{ x: zx, y: zy, z: 0, block: 'bois' }]);
     expect(r1.state.inventory.bois).toBe(1);
-    const r2 = placeBlock(r1.state, 2, 3, 'pierre');
-    expect(r2.state.build[1]).toEqual({ x: 2, y: 3, z: 1, block: 'pierre' });
+    const r2 = placeOnColumn(r1.state, 'foret', zx, zy, 'pierre');
+    expect(placedOn(r2.state, 'foret')[1]).toEqual({ x: zx, y: zy, z: 1, block: 'pierre' });
+    expect(placedOn(r2.state, 'mine')).toEqual([]);
   });
 
-  it('refuse hors grille, sans bloc, ou trop haut', () => {
-    expect(placeBlock(withBlocks, 8, 0, 'bois')).toMatchObject({ ok: false, reason: 'hors-grille' });
-    expect(placeBlock(withBlocks, 0, 0, 'sable')).toMatchObject({ ok: false, reason: 'plus-de-blocs' });
-    let s: BloclandState = { ...EMPTY_STATE, inventory: { bois: 10 } };
-    for (let i = 0; i < MAX_HEIGHT; i++) s = placeBlock(s, 0, 0, 'bois').state;
-    expect(placeBlock(s, 0, 0, 'bois')).toMatchObject({ ok: false, reason: 'trop-haut' });
+  it('refuse hors zone, sans bloc, trop haut ou sur une case occupée', () => {
+    expect(placeAt(withBlocks, 'foret', 11, 0, 0, 'bois')).toMatchObject({ ok: false, reason: 'hors-zone' });
+    expect(placeAt(withBlocks, 'foret', zx, zy, 0, 'sable')).toMatchObject({ ok: false, reason: 'plus-de-blocs' });
+    expect(placeAt(withBlocks, 'foret', zx, zy, MAX_HEIGHT, 'bois')).toMatchObject({ ok: false, reason: 'trop-haut' });
+    const s = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois').state;
+    expect(placeAt(s, 'foret', zx, zy, 0, 'bois')).toMatchObject({ ok: false, reason: 'occupe' });
   });
 
-  it('retire le bloc du dessus et le rend, et démonte tout', () => {
-    let s = placeBlock(withBlocks, 1, 1, 'bois').state;
-    s = placeBlock(s, 1, 1, 'pierre').state;
-    const r = removeBlock(s, 1, 1);
+  it('retire un bloc et le rend, et démonte une île', () => {
+    let s = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois').state;
+    s = placeAt(s, 'foret', zx, zy, 1, 'pierre').state;
+    const r = removeFromColumn(s, 'foret', zx, zy);
     expect(r.removed).toBe('pierre');
-    expect(r.state.build).toEqual([{ x: 1, y: 1, z: 0, block: 'bois' }]);
+    expect(placedOn(r.state, 'foret')).toEqual([{ x: zx, y: zy, z: 0, block: 'bois' }]);
     expect(r.state.inventory).toEqual({ bois: 1, pierre: 1 });
-    expect(removeBlock(r.state, 5, 5).removed).toBeNull();
-    const cleared = clearBuild(r.state);
-    expect(cleared.build).toEqual([]);
+    expect(removeAt(r.state, 'foret', zx, zy, 3).removed).toBeNull();
+    const cleared = clearIsland(r.state, 'foret');
+    expect(cleared.village.placed).toEqual({});
     expect(cleared.inventory).toEqual({ bois: 2, pierre: 1 });
   });
 
-  it('sanitizeState ignore les blocs invalides ou en double', () => {
-    const s = sanitizeState({ build: [{ x: 1, y: 1, z: 0, block: 'bois' }, { x: 1, y: 1, z: 0, block: 'terre' }, { x: 9, y: 0, z: 0, block: 'bois' }, { x: 0, y: 0, z: 0, block: 'neige' }] });
-    expect(s.build).toEqual([{ x: 1, y: 1, z: 0, block: 'bois' }]);
+  it('sanitizeState ignore les blocs invalides ou en double, et rend les blocs de l’ancien chantier', () => {
+    const s = sanitizeState({
+      inventory: { bois: 1 },
+      build: [
+        { x: 1, y: 1, z: 0, block: 'bois' },
+        { x: 0, y: 0, z: 0, block: 'neige' },
+      ],
+      village: {
+        placed: {
+          foret: [
+            { x: zx, y: zy, z: 0, block: 'bois' },
+            { x: zx, y: zy, z: 0, block: 'terre' },
+            { x: 11, y: 0, z: 0, block: 'bois' },
+          ],
+          nulle: [],
+        },
+      },
+    });
+    expect(s.village.placed).toEqual({ foret: [{ x: zx, y: zy, z: 0, block: 'bois' }] });
+    expect(s.inventory.bois).toBe(2);
   });
 });

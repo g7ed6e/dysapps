@@ -34,6 +34,7 @@ import {
   TreePine,
   Trophy,
   Volume2,
+  VolumeX,
   Wheat,
   X,
   Zap,
@@ -78,6 +79,8 @@ const ICONS = {
   star: Star,
   target: Target,
   trophy: Trophy,
+  volume: Volume2,
+  volumeOff: VolumeX,
   zap: Zap,
 } satisfies Record<string, LucideIcon>;
 

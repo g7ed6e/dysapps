@@ -10,6 +10,8 @@ export interface VoxelCube {
   top?: string;
   /** Étiquette de sélection en 3D (ex. l'identifiant d'un biome). */
   tag?: string;
+  /** Bloc posé par l'élève (on peut le retirer). */
+  placed?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
   texture?: string;
 }
@@ -103,14 +105,7 @@ export function VoxelScene({ cubes, s = 16, pad = 4, className, label }: ScenePr
   }
   const viewBox = `${(minX - pad).toFixed(1)} ${(minY - pad).toFixed(1)} ${(maxX - minX + 2 * pad).toFixed(1)} ${(maxY - minY + 2 * pad).toFixed(1)}`;
   return (
-    <svg
-      className={className}
-      viewBox={viewBox}
-      role={label ? 'img' : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-      focusable="false"
-    >
+    <svg className={className} viewBox={viewBox} role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true} focusable="false">
       <PixelGrainDefs />
       {sortCubes(cubes).map((c, i) => (
         <Cube key={i} {...c} s={s} />
@@ -121,7 +116,5 @@ export function VoxelScene({ cubes, s = 16, pad = 4, className, label }: ScenePr
 
 /** Un bloc seul (inventaire, récompense). */
 export function BlockIcon({ top, side, size = 40, label }: { top: string; side: string; size?: number; label?: string }) {
-  return (
-    <VoxelScene cubes={[{ x: 0, y: 0, z: 0, color: side, top }]} s={size / 2.3} pad={2} className="block-icon" label={label} />
-  );
+  return <VoxelScene cubes={[{ x: 0, y: 0, z: 0, color: side, top }]} s={size / 2.3} pad={2} className="block-icon" label={label} />;
 }

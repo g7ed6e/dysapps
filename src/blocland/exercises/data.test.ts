@@ -68,12 +68,13 @@ it('mot troué : le trou reconstitue le mot, 3 blocs dont la réponse', () => {
 it('tri des graines : construit depuis les homophones, avec règle et astuce', () => {
   const defs = EXERCISES.filter((e) => e.type === 'graines');
   expect(defs.map((d) => d.id).sort()).toEqual(['ferme-graines-a', 'ferme-graines-ce', 'ferme-graines-et', 'ferme-graines-on', 'ferme-graines-son']);
-  for (const def of defs) for (const it of def.items) {
-    expect(String(it.prompt)).toContain('…');
-    expect(it.choices).toContain(it.answer);
-    expect(String(it.rule).length).toBeGreaterThan(5);
-    expect(fillTemplate(def.feedback.wrong, it)).not.toMatch(/\{\w+\}/);
-  }
+  for (const def of defs)
+    for (const it of def.items) {
+      expect(String(it.prompt)).toContain('…');
+      expect(it.choices).toContain(it.answer);
+      expect(String(it.rule).length).toBeGreaterThan(5);
+      expect(fillTemplate(def.feedback.wrong, it)).not.toMatch(/\{\w+\}/);
+    }
 });
 
 it('ascension : textes de 60 à 120 mots en 3 à 5 paragraphes', () => {
