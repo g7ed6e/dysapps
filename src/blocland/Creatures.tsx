@@ -73,12 +73,24 @@ const GRIMOIRE = fromLayers(
   { S: '#8c93a0', s: '#b3b9c4', Y: '#f5d63d', B: '#e0a33a' },
 );
 
+// Coco : une coccinelle ronde, rouge à points noirs, tête noire et deux antennes.
+const COCO = fromLayers(
+  [
+    ['.RRR.', 'RRRRR', 'RRRRR', '.RRR.'],
+    ['.KKK.', 'RKRKR', 'RRRRR', '.RKR.'],
+    ['.KEK.', '.RRR.', '.RRR.', '.....'],
+    ['.A.A.', '.....', '.....', '.....'],
+  ],
+  { R: '#d8402e', K: '#1f1a16', E: '#f6f1e6', A: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
   carriere: ROUXEL,
   ferme: BLOQUETTE,
   tour: GRIMOIRE,
+  plaine: COCO,
 };
 
 interface Props {

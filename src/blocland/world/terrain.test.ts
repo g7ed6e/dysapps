@@ -5,6 +5,7 @@ import {
   ISLAND,
   ISLET_H,
   ISLET_W,
+  ROW_GAP,
   bossIsletOrigin,
   creaturePlacements,
   groundHeight,
@@ -29,8 +30,8 @@ it('construit une île par biome, avec créature seulement si un pont y mène', 
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
   // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
   expect(worldCubes({}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
-  expect(creaturePlacements([]).map((c) => c.id)).toEqual(['foret']);
-  expect(creaturePlacements(['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine']);
+  expect(creaturePlacements([]).map((c) => c.id)).toEqual(['foret', 'plaine']);
+  expect(creaturePlacements(['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine', 'plaine']);
   expect(mine.every((c) => c.color === '#b9b4a8' && c.texture === 'pierre')).toBe(true);
   const unlocked = worldCubes({}, village(['foret-mine']));
   expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.color !== '#b9b4a8')).toBe(true);
@@ -43,6 +44,10 @@ it('place les îles selon l’archipel : la Forêt au centre, une rangée devant
   expect(at('ferme').ox).toBe(at('foret').ox - ISLAND - GAP);
   expect(at('carriere').ox).toBe(at('mine').ox + ISLAND + GAP);
   expect(at('tour').ox).toBe(at('ferme').ox - ISLAND - GAP);
+  // La Plaine des nombres, devant la Forêt, laisse la place à l'îlot du Gardien entre les deux rangées.
+  expect(at('plaine').ox).toBe(at('foret').ox);
+  expect(at('plaine').oy).toBe(-(ISLAND + ROW_GAP));
+  expect(at('plaine').oy + ISLAND).toBeLessThan(bossIsletOrigin(0).y);
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -86,7 +91,8 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   expect(worldCubes({}, village(['foret-mine'])).filter(far).length).toBeGreaterThanOrEqual(GAP);
   const cubes = worldCubes({});
   const bounds = worldBounds();
-  expect(bounds.maxX - bounds.minX).toBe(BIOMES.length * ISLAND + (BIOMES.length - 1) * GAP);
+  expect(bounds.maxX - bounds.minX).toBe(5 * ISLAND + 4 * GAP);
+  expect(bounds.maxY - bounds.minY).toBe(2 * ISLAND + ROW_GAP);
   for (const c of cubes) {
     expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
     expect(c.x).toBeLessThan(bounds.maxX);
@@ -110,7 +116,7 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   const ready: Record<string, { stars: number }> = {};
   for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
   expect(guardianPlacements({}, [])).toEqual([]);
-  expect(worldCubes({}).some((c) => c.y < 0)).toBe(false);
+  expect(worldCubes({}).some((c) => c.tag === 'foret' && c.y < 0)).toBe(false);
   const [g] = guardianPlacements(ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
   const islet = worldCubes(ready).filter((c) => c.tag === 'foret' && c.y < 0);

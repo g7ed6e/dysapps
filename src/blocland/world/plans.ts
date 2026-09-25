@@ -13,6 +13,9 @@ import foretToit from './plans/foret-toit.json';
 import mineCour from './plans/mine-cour.json';
 import mineForge from './plans/mine-forge.json';
 import mineToit from './plans/mine-toit.json';
+import plaineCour from './plans/plaine-cour.json';
+import plaineNid from './plans/plaine-nid.json';
+import plaineToit from './plans/plaine-toit.json';
 import tourLanterne from './plans/tour-lanterne.json';
 import tourPhare from './plans/tour-phare.json';
 import tourQuai from './plans/tour-quai.json';
@@ -56,6 +59,9 @@ export const PLANS: PlanDef[] = [
   tourPhare,
   tourLanterne,
   tourQuai,
+  plaineNid,
+  plaineToit,
+  plaineCour,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

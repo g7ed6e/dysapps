@@ -34,6 +34,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.verre.side]: 'verre',
   [BLOCKS.or.side]: 'or',
   [BLOCKS.bois.side]: 'planches',
+  [BLOCKS.brique.side]: 'brique',
   [HAY]: 'or',
 };
 
@@ -171,6 +172,16 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(8, 4, h(8, 4) + 6, BLOCKS.or.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
   },
+  plaine: (put, h) => {
+    // Un boulier de briques : deux rangées de cinq, séparées (on compte par cinq), et une borne de brique.
+    for (let i = 0; i < 5; i++) {
+      put(7 + i, 2, h(7 + i, 2) + 1, i < 3 ? BLOCKS.brique.side : BLOCKS.sable.side);
+      put(7 + i, 4, h(7 + i, 4) + 1, i < 2 ? BLOCKS.brique.side : BLOCKS.sable.side);
+    }
+    put(3, 9, h(3, 9) + 1, BLOCKS.brique.side);
+    put(3, 9, h(3, 9) + 2, BLOCKS.brique.side);
+    tree(put, 1, 10, h(1, 10), 2);
+  },
 };
 
 /**
@@ -285,7 +296,7 @@ export function worldCubes(
     const { ox, oy } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
-    const grassy = biome.id === 'foret' || biome.id === 'ferme';
+    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine';
     const h = (x: number, y: number) => groundHeight(index, x, y);
     const put: Put = (x, y, z, color) =>
       cubes.push({

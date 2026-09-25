@@ -81,7 +81,7 @@ it('affiche les fantômes d’un plan seulement sur une île ouverte, et les rem
   const first = planCells(plan)[0];
   const cubes = worldCubes({}, { placed: {}, plans: { [plan.id]: [first.key] }, journal: [], bridges: [] });
   // Les fantômes des plans (les ponts fantômes sont au niveau du sol, z = 0).
-  const ghosts = cubes.filter((c) => c.ghost && c.z > 0);
+  const ghosts = cubes.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret');
   expect(ghosts.length).toBe(planCells(plan).length - 1);
   expect(ghosts.every((c) => c.tag === 'foret')).toBe(true);
   const { ox, oy } = islandOrigin(0);
@@ -114,13 +114,13 @@ it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournis
 it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant', () => {
   const [first, second] = plansFor('foret');
   const none = worldCubes({}, { placed: {}, plans: {}, journal: [], bridges: [] });
-  expect(none.filter((c) => c.ghost && c.z > 0).length).toBe(planCells(first).length);
+  expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(first).length);
   expect(activePlan('foret', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
   expect(activePlan('foret', doneFirst)).toBe(second);
   const after = worldCubes({}, { placed: {}, plans: doneFirst, journal: [], bridges: [] });
-  expect(after.filter((c) => c.ghost && c.z > 0).length).toBe(planCells(second).length);
+  expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(second).length);
   expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'foret' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
 });
 
