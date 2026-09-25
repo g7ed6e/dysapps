@@ -10,7 +10,7 @@ import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { IslandSheet } from './IslandSheet';
 import { WorldCanvas } from './three';
-import { Tutorial } from './Tutorial';
+import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
@@ -34,7 +34,8 @@ export function WorldPage() {
     [state.progress, state.village.bridges],
   );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
-  const [forceDay, setForceDay] = useState(false);
+  // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
+  const [forceDay, setForceDay] = useState(() => !hasSeenTutorial('village-immersif'));
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
@@ -49,6 +50,8 @@ export function WorldPage() {
 
   if (biomeId && !island) return <NotFoundPage />;
   const night = !forceDay && daylight().light < 0.5;
+  // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée.
+  const marker = !island && Object.keys(state.progress).length === 0 ? 'foret' : null;
 
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
@@ -73,6 +76,8 @@ export function WorldPage() {
             reduceMotion={settings.reduceMotion}
             cameraSpeed={settings.cameraSpeed}
             forceDay={forceDay}
+            bridges={state.village.bridges}
+            marker={marker}
             onPickIsland={(id) => navigate(`/aventure/${id}`)}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
             burst={builder.burst}
@@ -86,10 +91,10 @@ export function WorldPage() {
             id="village-immersif"
             replay={replay}
             steps={[
-              'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis. Tu es dans le monde en 3D.',
-              'Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île : la caméra y vole et son panneau s’ouvre en bas.',
-              'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Touche une case bleue du bâtiment, ou le bouton « Poser le bloc suivant », pour poser un bloc.',
-              'Deux îles sont ouvertes : la Forêt des sons (français) et la Plaine des nombres (maths). Les îles grises sont fermées : les ponts transparents se construisent avec tes blocs, choisis ta direction.',
+              'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
+              'Touche la Forêt des sons, sous la flèche jaune : la caméra y vole et son panneau s’ouvre. Un doigt pour tourner, deux doigts pour te déplacer et zoomer.',
+              'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
+              'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont ou un bac coûte des blocs, un escalier demande un plan terminé, un tunnel un Gardien vaincu. Choisis ta direction.',
             ]}
           />
           {said && (

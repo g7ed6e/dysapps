@@ -16,6 +16,7 @@ import { levelFor } from './engine';
 import { pickExercise } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
+import { nextGoal } from './world/goals';
 
 interface Props {
   biome: BiomeDef;
@@ -35,6 +36,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
   const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.`;
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
+  const goal = unlocked ? nextGoal(state, biome.id) : null;
 
   // La créature accueille à voix haute quand le panneau s'ouvre.
   useEffect(() => {
@@ -64,7 +66,12 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
         <SpeakButton text={greeting} label="Réécouter" compact />
       </p>
 
-      <Bridges island={biome.id} />
+      {goal && (
+        <p className="island-goal">
+          <Icon name="flag" /> <strong>Prochain objectif :</strong> <Syllabified text={goal} />
+        </p>
+      )}
+      {!unlocked && <Bridges island={biome.id} />}
 
       <h3 className="island-sheet-heading">
         <Icon name="hammer" /> Quêtes
@@ -106,6 +113,8 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
         })}
       </ul>
 
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
+
       <ul className="island-actions" aria-label="Sur cette île">
         <li>
           {bossReady ? (
@@ -135,7 +144,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
         </li>
       </ul>
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
+      {unlocked && <Bridges island={biome.id} />}
     </section>
   );
 }

@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { BRIDGES, bridgeState, isBiomeUnlocked, type BridgeDef } from './archipelago';
+import { BRIDGES, bridgeState, isBiomeUnlocked, reachableIslands, type BridgeDef } from './archipelago';
 import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
@@ -175,6 +175,32 @@ export function worldBounds(): {
     maxY = Math.max(maxY, b.y1 + 2);
   }
   return { minX, maxX, minY, maxY };
+}
+
+/**
+ * L'étendue à cadrer dans la vue d'ensemble : les îles ouvertes et celles qu'un ouvrage proposé peut atteindre,
+ * avec une marge. Au début, deux îles et leurs voisines ; le cadre s'élargit à mesure que le monde s'ouvre.
+ */
+export function overviewBounds(bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
+  const open = reachableIslands(bridges);
+  const shown = new Set<BiomeId>(open);
+  for (const b of BRIDGES) {
+    if (bridgeState(b, bridges) === 'far') continue;
+    shown.add(b.from);
+    shown.add(b.to);
+  }
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const id of shown) {
+    const b = landBox(islandDef(id));
+    minX = Math.min(minX, b.x0);
+    maxX = Math.max(maxX, b.x1);
+    minY = Math.min(minY, b.y0 - ISLET_H - 2);
+    maxY = Math.max(maxY, b.y1);
+  }
+  return { minX: minX - 4, maxX: maxX + 4, minY: minY - 4, maxY: maxY + 4 };
 }
 
 /** Île la plus proche d'un point de la grille (pour le toucher : une île ou le pont qui y mène). */
