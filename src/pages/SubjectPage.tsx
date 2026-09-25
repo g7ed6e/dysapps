@@ -6,6 +6,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { biomesOf } from '../blocland/biomes';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Creature } from '../blocland/Creatures';
+import { questProgress } from '../blocland/exercises';
 import { isBiomeUnlocked } from '../blocland/world/archipelago';
 
 export function SubjectPage() {
@@ -67,17 +68,7 @@ export function SubjectPage() {
       <ul className="grid apps blocland-islands">
         {biomesOf(subject as Subject).map((biome) => {
           const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-          const stars = biome.exercises.reduce(
-            (n, x) =>
-              n +
-              Math.max(
-                0,
-                ...Object.entries(state.progress)
-                  .filter(([id]) => id.startsWith(`${biome.id}-${x.id}`))
-                  .map(([, p]) => p.stars),
-              ),
-            0,
-          );
+          const stars = biome.exercises.reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>
               <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
