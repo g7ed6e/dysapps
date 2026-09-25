@@ -3183,3 +3183,318 @@ a.app-card:active {
   color: #fff;
   border-color: var(--yellow);
 }
+
+/* ===== Blocland en immersion : le monde en plein écran, panneaux glissants ===== */
+.app-shell.immersive {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+.app-shell.immersive .topbar {
+  flex-shrink: 0;
+}
+.app-shell.immersive .content {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.world-page {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+.world-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  transition: flex-basis 0.3s ease;
+}
+.voxel-canvas-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  border-radius: 0;
+}
+.voxel-canvas-stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.world-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+}
+/* Par-dessus le monde, en haut : tutoriel et paroles de créature. */
+.world-overlay-top {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  right: 0.6rem;
+  display: grid;
+  gap: 0.5rem;
+  pointer-events: none;
+  max-height: 60%;
+  overflow: auto;
+}
+.world-overlay-top > * {
+  pointer-events: auto;
+}
+.world-overlay-top .tutorial {
+  margin: 0 auto;
+  max-width: 34rem;
+}
+.world-line {
+  margin: 0 auto;
+  max-width: 34rem;
+}
+/* Barre du bas, par-dessus le monde : Carte, Chantier, jour/nuit, aide. */
+.world-bar {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.world-bar .button {
+  min-height: 48px;
+  padding: 0.2rem 0.8rem;
+}
+.has-sheet .world-overlay-top {
+  max-height: 45%;
+}
+.world-bar .button[aria-pressed="true"] {
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+/* Le panneau d'une île glisse depuis le bas ; le monde garde le haut de l'écran, l'île reste visible. */
+.island-sheet {
+  flex: 0 0 auto;
+  max-height: 55%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.8rem 1rem 1.2rem;
+  background: var(--surface);
+  border-top: var(--border-width) solid var(--ink);
+  box-shadow: 0 calc(-1 * var(--shadow-offset)) 0 var(--shadow-color);
+  /* Une rangée du bloc de l'île en haut du panneau. */
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.6rem);
+  animation: sheet-in 0.3s ease;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .island-sheet {
+    animation: none;
+  }
+}
+.island-sheet.biome-foret {
+  background-image: var(--tex-grass);
+}
+.island-sheet.biome-mine {
+  background-image: var(--tex-rock);
+}
+.island-sheet.biome-carriere {
+  background-image: var(--tex-sand);
+}
+.island-sheet.biome-ferme {
+  background-image: var(--tex-planks);
+}
+.island-sheet.biome-tour {
+  background-image: var(--tex-gold);
+}
+:root[data-theme="clair"] .island-sheet,
+:root[data-theme="contraste"] .island-sheet {
+  background-image: none;
+  border-top-width: 12px;
+  padding-top: 0.8rem;
+}
+.island-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.island-sheet-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.island-sheet-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1.5rem;
+}
+.island-sheet-module {
+  margin: 0;
+  color: var(--muted);
+}
+.island-sheet-close {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.island-sheet-says {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  margin: 0.6rem 0 0.8rem;
+  padding: 0.5rem 0.8rem;
+  border: var(--border-width) solid var(--ink);
+  background: color-mix(in srgb, var(--cyan) 20%, var(--surface));
+}
+:root[data-theme="contraste"] .island-sheet-says {
+  background: var(--surface);
+}
+.island-sheet-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+  font-size: 1.1rem;
+}
+.island-quests,
+.island-actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.island-actions {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 2px dashed var(--muted);
+}
+.island-quest {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 56px;
+  padding: 0.4rem 0.7rem;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--surface);
+  border: var(--border-width) solid var(--ink);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
+}
+a.island-quest:hover,
+a.island-quest:focus-visible {
+  transform: translateY(-2px);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 2px) 0 var(--shadow-color);
+}
+.island-quest.locked {
+  color: var(--muted);
+  box-shadow: none;
+  border-style: dashed;
+}
+.island-quest-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--yellow);
+  color: var(--on-accent);
+  border: var(--border-width) solid var(--ink);
+}
+.island-quest.locked .island-quest-icon {
+  background: var(--surface-2, var(--surface));
+  color: var(--muted);
+}
+.island-quest-icon.boss-icon {
+  background: var(--pink);
+}
+.island-quest-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.island-quest-title {
+  font-weight: 700;
+}
+.island-quest-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.island-owned {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+}
+@media (max-width: 640px) {
+  .world-bar {
+    flex-wrap: nowrap;
+  }
+  .island-sheet {
+    max-height: 58%;
+  }
+  .island-sheet .creature-small {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .island-sheet-title {
+    font-size: 1.25rem;
+  }
+}
+@media (min-width: 900px) {
+  /* Sur grand écran, le panneau glisse depuis la droite et le monde garde toute la hauteur. */
+  .world-page {
+    flex-direction: row;
+  }
+  .island-sheet {
+    flex: 0 0 26rem;
+    max-height: none;
+    border-top: none;
+    border-left: var(--border-width) solid var(--ink);
+    box-shadow: none;
+    animation-name: sheet-in-right;
+  }
+  @keyframes sheet-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  :root[data-theme="clair"] .island-sheet,
+  :root[data-theme="contraste"] .island-sheet {
+    border-top: none;
+    border-left-width: 12px;
+  }
+}
