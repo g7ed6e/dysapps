@@ -168,6 +168,29 @@ const IXE = fromLayers(
   { C: '#f4f1e4', B: '#3b82f6', X: '#1f1a16', A: '#d8402e' },
 );
 
+// Cléa : une chèvre blanche aux cornes courbes, barbichette, sabots noirs.
+const CLEA = fromLayers(
+  [
+    ['.K.K.', '.....', '.K.K.', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WBW.', '.WWW.', '.....', '.....'],
+    ['.EWE.', '.....', '.....', '.....'],
+    ['H...H', '.....', '.....', '.....'],
+  ],
+  { W: '#f6f1e6', K: '#1f1a16', B: '#d8c9b0', E: '#1f1a16', H: '#8a6a3c' },
+);
+
+// Plume : une pie noire et blanche, longue queue, bec noir, un objet doré dans le bec.
+const PLUME = fromLayers(
+  [
+    ['.KKK.', 'KWWWK', 'KKKKK', '.KKK.', '..K..', '..K..'],
+    ['.KKK.', 'KWWWK', 'KKKKK', '.....', '.....', '.....'],
+    ['.OKE.', '.KKK.', '.....', '.....', '.....', '.....'],
+  ],
+  { K: '#1f1a16', W: '#f6f1e6', E: '#f5d63d', O: '#f2c944' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -183,6 +206,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   marais: KROA,
   forge: BRAISE,
   atelier: IXE,
+  falaise: CLEA,
+  cabinet: PLUME,
 };
 
 interface Props {

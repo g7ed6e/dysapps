@@ -1,0 +1,214 @@
+{
+  "id": "falaise-sommet-1",
+  "biome": "falaise",
+  "type": "sommet",
+  "level": 1,
+  "instruction": "Trouve le sujet avec « qui est-ce qui ? », puis accorde le verbe. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-sommet-1-0",
+      "prompt": "Les enfants de la voisine … dans le jardin.",
+      "spoken": "Les enfants de la voisine  (mot manquant)  dans le jardin.",
+      "choices": [
+        "jouent",
+        "joue",
+        "jouons"
+      ],
+      "answer": "jouent",
+      "hint": "Qui est-ce qui joue ? les enfants → pluriel.",
+      "explanation": "Sujet « les enfants » (pluriel) : « jouent ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-1",
+      "prompt": "Dans la cour … deux chats.",
+      "spoken": "Dans la cour  (mot manquant)  deux chats.",
+      "choices": [
+        "dorment",
+        "dort",
+        "dors"
+      ],
+      "answer": "dorment",
+      "hint": "Qui est-ce qui dort ? deux chats, placés après le verbe.",
+      "explanation": "Sujet inversé « deux chats » : « dorment ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-2",
+      "prompt": "On … demain matin.",
+      "spoken": "On  (mot manquant)  demain matin.",
+      "choices": [
+        "part",
+        "partent",
+        "pars"
+      ],
+      "answer": "part",
+      "hint": "« on » : toujours singulier.",
+      "explanation": "« on » = 3e personne du singulier : « part ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-3",
+      "prompt": "Tout le monde … la réponse.",
+      "spoken": "Tout le monde  (mot manquant)  la réponse.",
+      "choices": [
+        "connaît",
+        "connaissent",
+        "connais"
+      ],
+      "answer": "connaît",
+      "hint": "« tout le monde » : singulier.",
+      "explanation": "« tout le monde » est singulier : « connaît ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-4",
+      "prompt": "Le sac de billes … lourd.",
+      "spoken": "Le sac de billes  (mot manquant)  lourd.",
+      "choices": [
+        "est",
+        "sont",
+        "es"
+      ],
+      "answer": "est",
+      "hint": "Qui est-ce qui est lourd ? le sac, pas les billes.",
+      "explanation": "Sujet « le sac » (singulier) : « est ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-5",
+      "prompt": "La plupart des élèves … réussi.",
+      "spoken": "La plupart des élèves  (mot manquant)  réussi.",
+      "choices": [
+        "ont",
+        "a",
+        "as"
+      ],
+      "answer": "ont",
+      "hint": "« la plupart des élèves » : pluriel.",
+      "explanation": "« la plupart des… » se conjugue au pluriel : « ont ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-6",
+      "prompt": "Pierre et toi … en avance.",
+      "spoken": "Pierre et toi  (mot manquant)  en avance.",
+      "choices": [
+        "êtes",
+        "sont",
+        "es"
+      ],
+      "answer": "êtes",
+      "hint": "Pierre et toi = vous.",
+      "explanation": "« Pierre et toi » = vous : « êtes ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-sommet-1-7",
+      "prompt": "Chacun … sa place.",
+      "spoken": "Chacun  (mot manquant)  sa place.",
+      "choices": [
+        "reprend",
+        "reprennent",
+        "reprends"
+      ],
+      "answer": "reprend",
+      "hint": "« chacun » : singulier.",
+      "explanation": "« chacun » est singulier : « reprend ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Le verbe s’accorde avec son sujet, même s’il est loin ou après le verbe.",
+            "Pose la question « qui est-ce qui ? » avant le verbe.",
+            "« on », « chacun », « tout le monde » : singulier. « la plupart des… » : pluriel."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -44,6 +44,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.tourbe.side]: 'tourbe',
   [BLOCKS.acier.side]: 'acier',
   [BLOCKS.calque.side]: 'calque',
+  [BLOCKS.ardoise.side]: 'ardoise',
+  [BLOCKS.parchemin.side]: 'parchemin',
   [SNOW]: 'nuage',
   [HAY]: 'or',
 };
@@ -303,6 +305,24 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(3, 9, h(3, 9) + 1, BLOCKS.calque.side);
     put(3, 9, h(3, 9) + 2, BLOCKS.calque.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  falaise: (put, h) => {
+    // Une paroi d'ardoise en escalier, une corde (barrière) qui pend, un rocher.
+    for (let z = 1; z <= 4; z++) for (let dx = 0; dx < 5 - z; dx++) put(7 + dx, 2, h(7 + dx, 2) + z, BLOCKS.ardoise.side);
+    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.ardoise.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(1, 10, h(1, 10) + 2, BLOCKS.pierre.side);
+  },
+  cabinet: (put, h) => {
+    // Des étagères de bois chargées de parchemins, un pupitre.
+    for (const x of [8, 10]) for (let z = 1; z <= 3; z++) put(x, 3, h(x, 3) + z, z === 2 ? BLOCKS.parchemin.side : BLOCKS.bois.side);
+    put(9, 3, h(9, 3) + 3, BLOCKS.bois.side);
+    put(9, 3, h(9, 3) + 1, BLOCKS.parchemin.side);
+    put(8, 5, h(8, 5) + 1, BLOCKS.bois.side);
+    put(8, 5, h(8, 5) + 2, BLOCKS.parchemin.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.parchemin.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.bois.side);
   },
 };
 

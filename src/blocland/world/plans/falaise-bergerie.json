@@ -1,0 +1,117 @@
+{
+  "id": "falaise-bergerie",
+  "biome": "falaise",
+  "name": "La bergerie de Cléa",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "ardoise"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "ardoise"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "ardoise"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "acier": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Ma bergerie ! Merci, bâtisseur·se. Les ardoises sont posées, la bergerie est finie : tout est accordé."
+}

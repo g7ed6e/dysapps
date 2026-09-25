@@ -1,0 +1,214 @@
+{
+  "id": "cabinet-racines-2",
+  "biome": "cabinet",
+  "type": "racines",
+  "level": 2,
+  "instruction": "Préfixes et suffixes : forme le mot ou retrouve son sens. La liste est affichée.",
+  "items": [
+    {
+      "key": "cabinet-racines-2-0",
+      "prompt": "Le contraire de « lisible » :",
+      "spoken": "Le contraire de « lisible » :",
+      "choices": [
+        "illisible",
+        "inlisible",
+        "délisible"
+      ],
+      "answer": "illisible",
+      "hint": "Devant un l, in- devient il-.",
+      "explanation": "in- + lisible → « illisible » (le n devient l devant l).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-1",
+      "prompt": "Le contraire de « possible » :",
+      "spoken": "Le contraire de « possible » :",
+      "choices": [
+        "impossible",
+        "inpossible",
+        "dépossible"
+      ],
+      "answer": "impossible",
+      "hint": "Devant p ou b, in- devient im-.",
+      "explanation": "in- + possible → « impossible ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-2",
+      "prompt": "« Préhistoire » signifie …",
+      "spoken": "« Préhistoire » signifie  (mot manquant) ",
+      "choices": [
+        "avant l’histoire",
+        "après l’histoire",
+        "contre l’histoire"
+      ],
+      "answer": "avant l’histoire",
+      "hint": "pré- = avant.",
+      "explanation": "pré- (avant) + histoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-3",
+      "prompt": "Un objet « lavable » …",
+      "spoken": "Un objet « lavable »  (mot manquant) ",
+      "choices": [
+        "peut être lavé",
+        "est déjà lavé",
+        "lave les autres"
+      ],
+      "answer": "peut être lavé",
+      "hint": "-able = qui peut être.",
+      "explanation": "-able = qui peut être : lavable = qui peut être lavé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-4",
+      "prompt": "« Refaire », c’est faire …",
+      "spoken": "« Refaire », c’est faire  (mot manquant) ",
+      "choices": [
+        "de nouveau",
+        "contre",
+        "avant"
+      ],
+      "answer": "de nouveau",
+      "hint": "re- = de nouveau.",
+      "explanation": "re- = de nouveau : refaire = faire encore une fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-5",
+      "prompt": "Un « antivol » sert à …",
+      "spoken": "Un « antivol » sert à  (mot manquant) ",
+      "choices": [
+        "empêcher le vol",
+        "voler",
+        "voler avant"
+      ],
+      "answer": "empêcher le vol",
+      "hint": "anti- = contre.",
+      "explanation": "anti- (contre) + vol.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-6",
+      "prompt": "« Construction » est …",
+      "spoken": "« Construction » est  (mot manquant) ",
+      "choices": [
+        "l’action de construire",
+        "celui qui construit",
+        "ce qui peut être construit"
+      ],
+      "answer": "l’action de construire",
+      "hint": "-tion = action.",
+      "explanation": "-tion = action : construction = action de construire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-racines-2-7",
+      "prompt": "Le contraire de « régulier » :",
+      "spoken": "Le contraire de « régulier » :",
+      "choices": [
+        "irrégulier",
+        "inrégulier",
+        "dérégulier"
+      ],
+      "answer": "irrégulier",
+      "hint": "Devant un r, in- devient ir-.",
+      "explanation": "in- + régulier → « irrégulier ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préfixes et suffixes",
+          "lines": [
+            "in-, im-, il-, ir- = contraire (inutile, impossible, illisible, irrégulier).",
+            "re- = de nouveau (refaire). pré- = avant (préhistoire). anti- = contre (antivol).",
+            "-able = qui peut être (lavable). -eur = celui qui fait (chanteur). -tion = action (construction)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "parchemin",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

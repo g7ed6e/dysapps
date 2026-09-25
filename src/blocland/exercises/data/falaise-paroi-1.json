@@ -1,0 +1,214 @@
+{
+  "id": "falaise-paroi-1",
+  "biome": "falaise",
+  "type": "paroi",
+  "level": 1,
+  "instruction": "Accorde l’adjectif avec le nom, ou avec le sujet après être. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-paroi-1-0",
+      "prompt": "Des maisons … bordent la rue.",
+      "spoken": "Des maisons  (mot manquant)  bordent la rue.",
+      "choices": [
+        "blanches",
+        "blancs",
+        "blanche"
+      ],
+      "answer": "blanches",
+      "hint": "« maisons » : féminin pluriel.",
+      "explanation": "Accord avec « maisons » (féminin pluriel) : « blanches ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-1",
+      "prompt": "Ces chiens sont … .",
+      "spoken": "Ces chiens sont  (mot manquant)  .",
+      "choices": [
+        "gentils",
+        "gentil",
+        "gentilles"
+      ],
+      "answer": "gentils",
+      "hint": "Attribut de « ces chiens » (masculin pluriel).",
+      "explanation": "Attribut du sujet masculin pluriel : « gentils ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-2",
+      "prompt": "Une … idée !",
+      "spoken": "Une  (mot manquant)  idée !",
+      "choices": [
+        "bonne",
+        "bon",
+        "bonnes"
+      ],
+      "answer": "bonne",
+      "hint": "« idée » : féminin singulier.",
+      "explanation": "Accord avec « idée » : « bonne ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-3",
+      "prompt": "Les rues étaient … .",
+      "spoken": "Les rues étaient  (mot manquant)  .",
+      "choices": [
+        "désertes",
+        "désert",
+        "déserts"
+      ],
+      "answer": "désertes",
+      "hint": "Attribut de « les rues » (féminin pluriel).",
+      "explanation": "Accord avec « les rues » : « désertes ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-4",
+      "prompt": "Il porte des chaussures … .",
+      "spoken": "Il porte des chaussures  (mot manquant)  .",
+      "choices": [
+        "neuves",
+        "neufs",
+        "neuve"
+      ],
+      "answer": "neuves",
+      "hint": "« chaussures » : féminin pluriel.",
+      "explanation": "Accord avec « chaussures » : « neuves ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-5",
+      "prompt": "Ma cousine semble … .",
+      "spoken": "Ma cousine semble  (mot manquant)  .",
+      "choices": [
+        "fatiguée",
+        "fatigué",
+        "fatigués"
+      ],
+      "answer": "fatiguée",
+      "hint": "Après « semble », attribut de « ma cousine ».",
+      "explanation": "Attribut du sujet féminin : « fatiguée ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-6",
+      "prompt": "Des nuages … arrivent.",
+      "spoken": "Des nuages  (mot manquant)  arrivent.",
+      "choices": [
+        "gris",
+        "grise",
+        "grises"
+      ],
+      "answer": "gris",
+      "hint": "« nuages » : masculin pluriel ; « gris » ne change pas au pluriel.",
+      "explanation": "Masculin pluriel : « gris » (déjà terminé par s).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-1-7",
+      "prompt": "Ces histoires sont … .",
+      "spoken": "Ces histoires sont  (mot manquant)  .",
+      "choices": [
+        "vraies",
+        "vrais",
+        "vraie"
+      ],
+      "answer": "vraies",
+      "hint": "Attribut de « ces histoires » (féminin pluriel).",
+      "explanation": "Accord avec « ces histoires » : « vraies ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Accord de l’adjectif",
+          "lines": [
+            "L’adjectif s’accorde avec le nom : une fleur rouge, des fleurs rouges.",
+            "Féminin : souvent + e (grand → grande). Pluriel : souvent + s (grands).",
+            "Attribut (après être, sembler, devenir) : accord avec le sujet."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

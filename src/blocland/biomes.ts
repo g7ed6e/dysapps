@@ -15,7 +15,9 @@ export type BiomeId =
   | 'carrefour'
   | 'marais'
   | 'forge'
-  | 'atelier';
+  | 'atelier'
+  | 'falaise'
+  | 'cabinet';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -31,6 +33,8 @@ export type BlockId =
   | 'tourbe'
   | 'acier'
   | 'calque'
+  | 'ardoise'
+  | 'parchemin'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -66,6 +70,8 @@ export type BlockTexture =
   | 'tourbe'
   | 'acier'
   | 'calque'
+  | 'ardoise'
+  | 'parchemin'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -92,6 +98,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   tourbe: { id: 'tourbe', name: 'Tourbe', top: '#5a4a2a', side: '#3f3320', texture: 'tourbe' },
   acier: { id: 'acier', name: 'Acier', top: '#c4ccd4', side: '#8f9aa6', texture: 'acier' },
   calque: { id: 'calque', name: 'Calque', top: '#f4f1e4', side: '#dcd6c0', texture: 'calque' },
+  ardoise: { id: 'ardoise', name: 'Ardoise', top: '#5c6470', side: '#3f4650', texture: 'ardoise' },
+  parchemin: { id: 'parchemin', name: 'Parchemin', top: '#e8d8a8', side: '#cdb97f', texture: 'parchemin' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -608,6 +616,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.' },
       { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.' },
       { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.' },
+    ],
+  },
+  {
+    id: 'falaise',
+    name: 'Falaise des accords',
+    module: 'Accords',
+    subject: 'francais',
+    classe: '4e',
+    description: 'Participe passé, adjectifs, sujet caché : accorder sans se tromper, la règle sous les yeux.',
+    block: 'ardoise',
+    guardian: 'le Bélier de granit',
+    guardianSays: {
+      hit: 'Boum… Juste. Mes cornes s’émoussent.',
+      miss: 'Ce n’est rien : cherche le sujet, cherche le complément, et reprends.',
+      beaten: 'Boum. Tu grimpes plus sûrement que moi. La falaise est à toi… et à Cléa.',
+    },
+    challenge: 'Le Bélier de granit frappe le rocher : « Tu as gravi toute ma paroi. Montre-moi que tes accords tiennent la corde. »',
+    icon: 'mountain',
+    creature: {
+      name: 'Cléa',
+      species: 'chèvre des cimes',
+      greeting:
+        'Bêêê, bâtisseur·se ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
+      lines: [
+        'Les filles sont parties : avec être, le participe suit le sujet.',
+        'Qui est-ce qui grimpe ? Voilà le sujet, voilà l’accord.',
+        'Ma bergerie est en ardoise. Chaque accord en pose une.',
+      ],
+      home: 'Ma bergerie d’ardoise est finie ! Elle est solide, elles sont solides, tout est accordé.',
+    },
+    exercises: [
+      { id: 'corde', title: 'Corde du participe', description: 'Participe passé avec être, avec avoir, puis avec le COD placé avant.' },
+      { id: 'paroi', title: 'Paroi des adjectifs', description: 'Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.' },
+      { id: 'sommet', title: 'Sommet du sujet', description: 'Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.' },
+    ],
+  },
+  {
+    id: 'cabinet',
+    name: 'Cabinet des mots',
+    module: 'Vocabulaire',
+    subject: 'francais',
+    classe: '4e',
+    description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, synonymes et registres.',
+    block: 'parchemin',
+    guardian: 'le Hibou lexicographe',
+    guardianSays: {
+      hit: 'Hou… Juste. Tu as lu jusqu’à la racine.',
+      miss: 'Ce n’est rien : découpe le mot, cherche le petit morceau connu, et reprends.',
+      beaten: 'Hou. Tu connais mes mots mieux que mon dictionnaire. Le cabinet est à toi… et à Plume.',
+    },
+    challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Tu as ouvert tous mes tiroirs. Montre-moi que tu sais démonter les mots. »',
+    icon: 'library',
+    creature: {
+      name: 'Plume',
+      species: 'pie collectionneuse',
+      greeting:
+        'Bonjour, bâtisseur·se ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
+      lines: [
+        'Télé-phone : la voix, de loin. Deux morceaux, un mot.',
+        'Une pluie de cadeaux ne mouille pas : c’est le sens figuré.',
+        'Mon nid est en parchemins. Chaque mot en roule un.',
+      ],
+      home: 'Mon nid de parchemins est fini ! Au sens propre : il tient. Au figuré : c’est un trésor.',
+    },
+    exercises: [
+      { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.' },
+      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.' },
+      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.' },
     ],
   },
 ];

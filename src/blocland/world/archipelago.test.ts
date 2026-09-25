@@ -34,6 +34,8 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
   ).toEqual(['foret-carrefour', 'foret-ferme', 'foret-mine', 'plaine-glacier', 'plaine-riviere', 'plaine-volcan']);
   expect(isBiomeUnlocked('marais', ['foret-mine', 'mine-marais'])).toBe(true);
   expect(isBiomeUnlocked('forge', ['plaine-volcan', 'volcan-forge'])).toBe(true);
+  expect(isBiomeUnlocked('falaise', ['foret-ferme', 'ferme-falaise'])).toBe(true);
+  expect(isBiomeUnlocked('cabinet', ['foret-carrefour', 'carrefour-marais', 'marais-cabinet'])).toBe(true);
   expect(isBiomeUnlocked('atelier', ['plaine-glacier', 'glacier-marche', 'marche-atelier'])).toBe(true);
   expect(isBiomeUnlocked('marche', ['plaine-glacier', 'glacier-marche'])).toBe(true);
   expect(isBiomeUnlocked('volcan', ['foret-ferme', 'ferme-volcan'])).toBe(true);
@@ -47,7 +49,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
     buildableBridges(['foret-ferme'], 'ferme')
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['ferme-tour', 'ferme-volcan']);
+  ).toEqual(['ferme-falaise', 'ferme-tour', 'ferme-volcan']);
   // Un pont construit sans chemin jusqu'à lui n'ouvre rien.
   expect(isBiomeUnlocked('tour', ['ferme-tour'])).toBe(false);
 });
