@@ -39,17 +39,29 @@
     },
     {
       "x": 2,
-      "y": 1,
-      "z": 0,
-      "block": "tourbe"
-    },
-    {
-      "x": 2,
       "y": 2,
       "z": 0,
       "block": "tourbe"
     },
     {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "tourbe"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "block": "tourbe"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "tourbe"
+    },
+    {
       "x": 0,
       "y": 0,
       "z": 1,
@@ -75,12 +87,6 @@
     },
     {
       "x": 1,
-      "y": 1,
-      "z": 1,
-      "block": "tourbe"
-    },
-    {
-      "x": 1,
       "y": 2,
       "z": 1,
       "block": "tourbe"
@@ -93,12 +99,24 @@
     },
     {
       "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "tourbe"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "block": "tourbe"
+    },
+    {
+      "x": 3,
       "y": 1,
       "z": 1,
       "block": "tourbe"
     },
     {
-      "x": 2,
+      "x": 3,
       "y": 2,
       "z": 1,
       "block": "tourbe"
@@ -108,8 +126,8 @@
     "xp": 40,
     "chest": {
       "toile": 3,
-      "toit": 9,
       "porte": 1,
+      "toit": 12,
       "lanterne": 1
     }
   },

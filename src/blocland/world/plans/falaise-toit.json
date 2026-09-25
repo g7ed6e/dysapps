@@ -8,14 +8,14 @@
   },
   "cells": [
     {
-      "x": 0,
+      "x": 1,
       "y": 0,
-      "z": 2,
-      "block": "toit"
+      "z": 0,
+      "block": "porte"
     },
     {
       "x": 0,
-      "y": 1,
+      "y": 0,
       "z": 2,
       "block": "toit"
     },
@@ -45,14 +45,26 @@
     },
     {
       "x": 2,
-      "y": 1,
+      "y": 2,
       "z": 2,
       "block": "toit"
     },
     {
-      "x": 2,
+      "x": 3,
+      "y": 0,
+      "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 3,
       "y": 2,
       "z": 2,
+      "block": "toit"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
       "block": "toit"
     },
     {
@@ -62,34 +74,28 @@
       "block": "toit"
     },
     {
-      "x": 1,
-      "y": 0,
-      "z": 0,
-      "block": "porte"
-    },
-    {
-      "x": 3,
-      "y": 0,
-      "z": 0,
-      "block": "lanterne"
-    },
-    {
-      "x": -1,
-      "y": 0,
-      "z": 0,
-      "block": "ardoise"
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "block": "toit"
     },
     {
       "x": 3,
       "y": 1,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 4,
+      "y": 1,
       "z": 0,
-      "block": "ardoise"
+      "block": "lanterne"
     }
   ],
   "reward": {
     "xp": 50,
     "chest": {
-      "barriere": 4,
+      "barriere": 5,
       "escalier": 1,
       "lanterne": 2
     }

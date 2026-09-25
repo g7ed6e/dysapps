@@ -8,82 +8,112 @@
   },
   "cells": [
     {
-      "x": 0,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 0,
-      "y": 1,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 0,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 1,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 1,
-      "z": 3,
-      "block": "toit"
-    },
-    {
       "x": 1,
       "y": 0,
       "z": 0,
       "block": "porte"
     },
     {
-      "x": 3,
+      "x": 0,
       "y": 0,
-      "z": 0,
-      "block": "lanterne"
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 2,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "block": "brique"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "block": "brique"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 3,
+      "block": "brique"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "block": "brique"
     },
     {
       "x": -1,
-      "y": 0,
+      "y": 1,
       "z": 0,
-      "block": "brique"
+      "block": "lanterne"
     },
     {
       "x": 3,
       "y": 1,
       "z": 0,
-      "block": "brique"
+      "block": "lanterne"
     }
   ],
   "reward": {

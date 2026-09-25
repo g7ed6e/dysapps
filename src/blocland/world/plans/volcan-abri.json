@@ -75,12 +75,6 @@
     },
     {
       "x": 1,
-      "y": 1,
-      "z": 1,
-      "block": "obsidienne"
-    },
-    {
-      "x": 1,
       "y": 2,
       "z": 1,
       "block": "obsidienne"
@@ -108,9 +102,8 @@
     "xp": 40,
     "chest": {
       "terre": 3,
-      "toit": 9,
       "porte": 1,
-      "lanterne": 1
+      "lanterne": 2
     }
   },
   "done": "Mon abri ! Merci, bâtisseur·se. Noir, brillant, et chaud comme une coulée de 1,5 degré de trop."
