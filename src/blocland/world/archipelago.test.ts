@@ -2,7 +2,7 @@ import { BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import {
   BRIDGES,
-  ISLAND_POS,
+  ISLANDS,
   bridgeState,
   bridgesFromLegacyProgress,
   buildBridge,
@@ -13,14 +13,12 @@ import {
   reachableIslands,
 } from './archipelago';
 
-it('chaque île a une place et chaque pont relie deux îles voisines', () => {
-  for (const b of BIOMES) expect(ISLAND_POS[b.id]).toBeDefined();
+it('chaque île a une place et tous les ponts construits ouvrent tout l’archipel', () => {
+  for (const b of BIOMES) expect(ISLANDS.find((i) => i.id === b.id)).toBeDefined();
   for (const b of BRIDGES) {
-    const a = ISLAND_POS[b.from];
-    const c = ISLAND_POS[b.to];
-    expect(Math.abs(a.col - c.col) + Math.abs(a.row - c.row)).toBe(1);
+    expect(ISLANDS.find((i) => i.id === b.from)).toBeDefined();
+    expect(ISLANDS.find((i) => i.id === b.to)).toBeDefined();
   }
-  // Toutes les îles sont atteignables une fois tous les ponts construits.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(BIOMES.length);
 });
 

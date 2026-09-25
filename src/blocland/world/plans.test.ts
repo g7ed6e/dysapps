@@ -12,7 +12,7 @@ it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sa
   BIOMES.forEach((b, i) => {
     const plans = plansFor(b.id);
     expect(plans.length).toBe(3);
-    const { ox, oy } = islandOrigin(i);
+    const { ox, oy, oz } = islandOrigin(i);
     for (const plan of plans) {
       const cells = planCells(plan);
       expect(cells.length).toBeGreaterThanOrEqual(8);
@@ -24,7 +24,7 @@ it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sa
         expect(c.y).toBeLessThan(PLAN_ZONE.y + PLAN_ZONE.h);
         expect(c.z).toBeLessThan(6);
         expect(groundHeight(i, c.x, c.y)).toBe(0);
-        expect(at.has(`${ox + c.x},${oy + c.y},${c.z + 1}`)).toBe(false);
+        expect(at.has(`${ox + c.x},${oy + c.y},${oz + c.z + 1}`)).toBe(false);
         // Or et cristal ne se gagnent pas dans les biomes : un plan ne les demande pas.
         expect(BLOCKS[c.block].rare).toBeFalsy();
       }

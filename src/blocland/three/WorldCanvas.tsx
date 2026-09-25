@@ -203,11 +203,11 @@ export default function WorldCanvas({
 
   /** Position et cible de la caméra pour une île (ou la vue d'ensemble). */
   const framing = (island: BiomeId | null) => {
-    const c = island ? islandCenter(island) : center;
+    const c = island ? islandCenter(island) : { ...center, z: 0 };
     const d = island ? ISLAND_DISTANCE : width * 0.8 + 6;
-    const target = new THREE.Vector3(c.x, 1, c.y);
+    const target = new THREE.Vector3(c.x, c.z + 1, c.y);
     const v = island ? ISLAND_VIEW : VIEW;
-    const pos = new THREE.Vector3(c.x + d * v.dx, 1 + d * v.up, c.y + d * v.dy);
+    const pos = new THREE.Vector3(c.x + d * v.dx, c.z + 1 + d * v.up, c.y + d * v.dy);
     return { target, pos };
   };
 
@@ -259,7 +259,7 @@ export default function WorldCanvas({
       const t = controls.target;
       const cx = THREE.MathUtils.clamp(t.x, bounds.minX - margin, bounds.maxX + margin);
       const cz = THREE.MathUtils.clamp(t.z, bounds.minY - margin, bounds.maxY + margin);
-      const cy = THREE.MathUtils.clamp(t.y, 0, 6);
+      const cy = THREE.MathUtils.clamp(t.y, 0, 18);
       const dx = cx - t.x;
       const dy = cy - t.y;
       const dz = cz - t.z;

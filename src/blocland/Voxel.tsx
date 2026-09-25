@@ -10,8 +10,8 @@ export interface VoxelCube {
   top?: string;
   /** Étiquette de sélection en 3D (ex. l'identifiant d'un biome). */
   tag?: string;
-  /** Bloc posé par l'élève (on peut le retirer). */
-  placed?: boolean;
+  /** Cube d'un pont : l'identifiant du pont. */
+  bridge?: string;
   /** Cellule de plan encore à poser : dessinée translucide. */
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
