@@ -1,8 +1,8 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour';
-export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'or' | 'cristal' | 'toit' | 'porte' | 'lanterne' | 'barriere' | 'escalier';
+export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine';
+export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'brique' | 'or' | 'cristal' | 'toit' | 'porte' | 'lanterne' | 'barriere' | 'escalier';
 
 export interface BlockDef {
   id: BlockId;
@@ -22,6 +22,7 @@ export type BlockTexture =
   | 'planches'
   | 'sable'
   | 'verre'
+  | 'brique'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -39,6 +40,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   sable: { id: 'sable', name: 'Sable', top: '#e8e0b4', side: '#cfc48f', texture: 'sable' },
   terre: { id: 'terre', name: 'Terre', top: '#94694a', side: '#6e4a2e', texture: 'terre' },
   verre: { id: 'verre', name: 'Verre', top: '#d6f2f8', side: '#a9dbe6', texture: 'verre' },
+  brique: { id: 'brique', name: 'Brique', top: '#d98a5a', side: '#b8623a', texture: 'brique' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -88,7 +90,7 @@ export interface BiomeDef {
   exercises: ExerciseTypeDef[];
 }
 
-/** Ordre de déblocage conseillé : Forêt → Mine → Carrière → Ferme → Tour. */
+/** Les îles du français (Forêt au centre de l'archipel), puis celles des maths (rangée de devant). */
 export const BIOMES: BiomeDef[] = [
   {
     id: 'foret',
@@ -236,9 +238,40 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.' }],
   },
+  {
+    id: 'plaine',
+    name: 'Plaine des nombres',
+    module: 'Calcul mental',
+    description: 'Tables, compléments, doubles et moitiés, avec des aides visuelles toujours affichées.',
+    block: 'brique',
+    guardian: 'le Hanneton de bronze',
+    guardianSays: {
+      hit: 'Bzzz… Juste ! Mes ailes de bronze grincent.',
+      miss: 'Ce n’est rien : regarde les points, compte par cinq, et recommence.',
+      beaten: 'Bzzz. Tu calcules plus vite que mes ailes. La plaine est à toi… et à Coco.',
+    },
+    challenge: 'Le Hanneton de bronze bourdonne : « Tu as compté toute ma plaine. Montre-moi ce que tu sais calculer. »',
+    icon: 'calculator',
+    creature: {
+      name: 'Coco',
+      species: 'coccinelle à dix points',
+      greeting:
+        'Bonjour, bâtisseur·se ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
+      lines: [
+        'Compte mes points par cinq : deux rangées de cinq, ça fait dix.',
+        'Un nombre et son complément font toujours dix. Comme mes deux ailes.',
+        'Ma maison est en brique. Chaque calcul en pose une.',
+      ],
+      home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
+    },
+    exercises: [
+      { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.' },
+      { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.' },
+      { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.' },
+    ],
+  },
 ];
 
 export function getBiome(id: string | undefined): BiomeDef | undefined {
   return BIOMES.find((b) => b.id === id);
 }
-

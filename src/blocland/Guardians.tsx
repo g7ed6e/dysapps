@@ -69,12 +69,26 @@ const CHOUETTE = fromLayers(
   { V: '#a9dbe6', v: '#d6f2f8', Y: '#f5d63d', O: '#e0a33a' },
 );
 
+// Le Hanneton de bronze : un gros scarabée aux élytres de bronze, six pattes, deux antennes en éventail.
+const HANNETON = fromLayers(
+  [
+    ['P.....P', 'P.....P', 'P.....P', '.......'],
+    ['.BBBBB.', 'BBBBBBB', 'BBBBBBB', '.BBBBB.'],
+    ['.BBBBB.', 'BbbbbbB', 'BbbbbbB', '.BBBBB.'],
+    ['..BBB..', '.BbBbB.', '.BBBBB.', '..BBB..'],
+    ['..KKK..', '..KEK..', '..KKK..', '.......'],
+    ['.A...A.', '..AAA..', '.......', '.......'],
+  ],
+  { P: '#3a2a1a', B: '#a8742a', b: '#d19a3f', K: '#3a2a1a', E: '#f5d63d', A: '#3a2a1a' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
   carriere: DUNE,
   ferme: TAUREAU,
   tour: CHOUETTE,
+  plaine: HANNETON,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

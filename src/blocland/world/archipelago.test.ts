@@ -24,8 +24,9 @@ it('chaque île a une place et chaque pont relie deux îles voisines', () => {
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(BIOMES.length);
 });
 
-it('seule la Forêt est ouverte au début ; depuis elle, deux ponts au choix', () => {
-  expect([...reachableIslands([])]).toEqual(['foret']);
+it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la Forêt, deux ponts au choix', () => {
+  expect([...reachableIslands([])].sort()).toEqual(['foret', 'plaine']);
+  expect(bridgeState(BRIDGES.find((b) => b.id === 'foret-plaine')!, [])).toBe('built');
   expect(
     buildableBridges([])
       .map((b) => b.id)
@@ -60,6 +61,8 @@ it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamai
 it('les anciennes sauvegardes gardent leurs îles ouvertes : les ponts du chemin sont offerts', () => {
   expect(pathTo('tour').map((b) => b.id)).toEqual(['foret-ferme', 'ferme-tour']);
   expect(bridgesFromLegacyProgress({})).toEqual([]);
+  // La Plaine est une île de départ : aucun pont à offrir.
+  expect(pathTo('plaine')).toEqual([]);
   expect(bridgesFromLegacyProgress({ 'foret-abattage-1': { stars: 1 } })).toEqual(['foret-mine']);
   // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle.
   const old = { 'foret-a': { stars: 1 }, 'mine-a': { stars: 2 }, 'carriere-a': { stars: 1 } };

@@ -2,6 +2,7 @@
 import { SETS } from '../../apps/homophones/data';
 import type { BiomeId } from '../biomes';
 import type { ExerciseDef } from './types';
+import { MATHS_EXERCISES } from './maths';
 import foretEchauffement from './data/foret-echauffement-001.json';
 import chasseAn from './data/foret-chasse-son-an.json';
 import chasseOn from './data/foret-chasse-son-on.json';
@@ -86,6 +87,7 @@ export const EXERCISES: ExerciseDef[] = [
   enclos2,
   recolte1,
   recolte2,
+  ...MATHS_EXERCISES,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

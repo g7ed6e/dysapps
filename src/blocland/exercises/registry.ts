@@ -11,6 +11,7 @@ import { DicteeItem } from './DicteeItem';
 import { FamillesScreen } from './FamillesScreen';
 import { EnclosScreen } from './EnclosScreen';
 import { BossScreen } from './BossScreen';
+import { CalculScreen } from './CalculScreen';
 
 export interface ScreenAnswer {
   /** Résultat par item de l'écran. */
@@ -57,4 +58,8 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   enclos: { component: EnclosScreen, batch: 4 },
   recolte: { component: QcmItem, batch: 1 },
   boss: { component: BossScreen, batch: 1 },
+  // Maths : une opération par écran, aide visuelle toujours affichée.
+  tables: { component: CalculScreen, batch: 1 },
+  complements: { component: CalculScreen, batch: 1 },
+  doubles: { component: CalculScreen, batch: 1 },
 };

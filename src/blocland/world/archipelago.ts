@@ -3,23 +3,24 @@
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 
-/** Colonne et rangée de chaque île. Rangée 0 : le français, la Forêt au centre ; rangée 1 (devant) : les maths, à venir. */
+/** Colonne et rangée de chaque île. Rangée 0 : le français, la Forêt au centre ; rangée 1 (devant) : les maths. */
 export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
   carriere: { col: 0, row: 0 },
   mine: { col: 1, row: 0 },
   foret: { col: 2, row: 0 },
   ferme: { col: 3, row: 0 },
   tour: { col: 4, row: 0 },
+  plaine: { col: 2, row: 1 },
 };
 
-/** Les îles ouvertes dès le début (sans pont). */
-export const START_ISLANDS: BiomeId[] = ['foret'];
+/** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
+export const START_ISLANDS: BiomeId[] = ['foret', 'plaine'];
 
 export interface BridgeDef {
   id: string;
   from: BiomeId;
   to: BiomeId;
-  /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire. */
+  /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire ; 0 = pont déjà construit. */
   cost: number;
 }
 
@@ -29,6 +30,7 @@ export const BRIDGES: BridgeDef[] = [
   { id: 'foret-ferme', from: 'foret', to: 'ferme', cost: 3 },
   { id: 'mine-carriere', from: 'mine', to: 'carriere', cost: 5 },
   { id: 'ferme-tour', from: 'ferme', to: 'tour', cost: 5 },
+  { id: 'foret-plaine', from: 'foret', to: 'plaine', cost: 0 },
 ];
 
 /** Les blocs qui servent à payer un pont : ceux des îles (et les coffres), jamais les kits de finition des plans. */
@@ -49,7 +51,7 @@ export function otherEnd(bridge: BridgeDef, island: BiomeId): BiomeId {
 
 /** Les îles que l'on peut atteindre depuis les îles de départ par les ponts construits. */
 export function reachableIslands(bridges: string[]): Set<BiomeId> {
-  const built = new Set(bridges);
+  const built = new Set([...bridges, ...BRIDGES.filter((b) => b.cost === 0).map((b) => b.id)]);
   const seen = new Set<BiomeId>(START_ISLANDS);
   const queue = [...START_ISLANDS];
   while (queue.length) {
@@ -74,7 +76,7 @@ export type BridgeState = 'built' | 'buildable' | 'far';
 
 /** Construit, constructible (une de ses deux îles est ouverte) ou trop loin pour l'instant. */
 export function bridgeState(bridge: BridgeDef, bridges: string[]): BridgeState {
-  if (bridges.includes(bridge.id)) return 'built';
+  if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
   const open = reachableIslands(bridges);
   return open.has(bridge.from) || open.has(bridge.to) ? 'buildable' : 'far';
 }

@@ -8,6 +8,7 @@ export type TextureKind =
   | 'planches'
   | 'sable'
   | 'verre'
+  | 'brique'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -70,6 +71,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   verre: {
     top: (x, y) => (x === 0 || y === 0 || x === SIZE - 1 || y === SIZE - 1 ? [230, 250, 255] : x === y || x === y + 1 ? [240, 252, 255] : [190, 232, 242]),
     side: (x, y) => (x === 0 || y === 0 || x === SIZE - 1 || y === SIZE - 1 ? [230, 250, 255] : x === y || x === y + 1 ? [240, 252, 255] : [190, 232, 242]),
+  },
+  // Brique : rangées de briques orangées décalées, joints clairs.
+  brique: {
+    top: (x, y, r) => (y % 4 === 3 || (x + (y % 8 < 4 ? 0 : 4)) % 8 === 7 ? [214, 196, 170] : grain('#b8623a', '#d98a5a')(x, y, r)),
+    side: (x, y, r) => (y % 4 === 3 || (x + (y % 8 < 4 ? 0 : 4)) % 8 === 7 ? [214, 196, 170] : grain('#b8623a', '#d98a5a')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

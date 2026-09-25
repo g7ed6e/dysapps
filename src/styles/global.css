@@ -67,6 +67,7 @@
   --tex-planks: url("./textures/planches.png");
   --tex-sand: url("./textures/sable.png");
   --tex-gold: url("./textures/or.png");
+  --tex-brick: url("./textures/brique.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -113,6 +114,7 @@
   --tex-rock: none;
   --tex-planks: none;
   --tex-sand: none;
+  --tex-brick: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2190,6 +2192,10 @@ a.app-card:active {
 .app-card.biome-tour {
   background-image: var(--tex-gold);
 }
+.biome-card.biome-plaine,
+.app-card.biome-plaine {
+  background-image: var(--tex-brick);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2228,6 +2234,9 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-tour {
   border-top-color: var(--cyan);
+}
+:root[data-theme="clair"] .biome-plaine {
+  border-top-color: var(--pink);
 }
 .biome-step {
   position: absolute;
@@ -3328,6 +3337,9 @@ a.app-card:active {
 .island-sheet.biome-tour {
   background-image: var(--tex-gold);
 }
+.island-sheet.biome-plaine {
+  background-image: var(--tex-brick);
+}
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {
   background-image: none;
@@ -3529,5 +3541,32 @@ a.island-quest:focus-visible {
   background: color-mix(in srgb, var(--green) 25%, var(--surface));
 }
 :root[data-theme="contraste"] .bridges-said {
+  background: var(--surface);
+}
+
+/* ===== Blocland : écran de calcul (Plaine des nombres) ===== */
+.calcul-prompt {
+  font-size: 1.6rem;
+}
+.calcul-aid {
+  margin: 0.4rem 0 0.8rem;
+}
+.calcul-figure {
+  margin: 0.4rem 0 0.8rem;
+}
+.calcul-help {
+  margin-top: 0.8rem;
+}
+.calcul-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border: var(--border-width) solid var(--ink);
+  background: color-mix(in srgb, var(--yellow) 30%, var(--surface));
+}
+:root[data-theme="contraste"] .calcul-hint {
   background: var(--surface);
 }
