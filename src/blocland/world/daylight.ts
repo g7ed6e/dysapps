@@ -37,10 +37,11 @@ export function mixColor(night: number, day: number, light: number): number {
 /** Palette du ciel, de l'eau et de la lumière selon le moment. */
 export function palette(light: number): { sky: number; water: number; sun: number; sunIntensity: number; ambient: number } {
   return {
-    sky: mixColor(0x1a2340, 0x8fd0f5, light),
-    water: mixColor(0x152a4a, 0x4a9be0, light),
-    sun: mixColor(0x6d7fb8, 0xffffff, light),
-    sunIntensity: 0.35 + 1.15 * light,
-    ambient: 0.45 + 0.75 * light,
+    // La nuit reste lisible pour un enfant : un bleu de crépuscule, jamais un noir.
+    sky: mixColor(0x2c3f70, 0x8fd0f5, light),
+    water: mixColor(0x22437a, 0x4a9be0, light),
+    sun: mixColor(0x8fa0d0, 0xffffff, light),
+    sunIntensity: 0.6 + 0.9 * light,
+    ambient: 0.7 + 0.5 * light,
   };
 }

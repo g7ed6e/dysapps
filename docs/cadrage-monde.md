@@ -36,7 +36,16 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Brume des sommets** : une nappe translucide à dégradé radial sous chaque île à 9, qui respire lentement.
 - **Oiseaux** : six petits V sombres qui tournent au-dessus du monde, ailes battantes (immobiles avec « réduire les animations »).
 
-## 6. À venir
+## 6. La première minute (PR 4, après un test de jeu)
+
+- La vue d'ensemble cadre les **îles ouvertes et leurs voisines** (`overviewBounds()`), et s'élargit à mesure que le monde s'ouvre : au début, deux îles vertes bien visibles, pas vingt taches grises.
+- **Jour forcé** tant que le tutoriel n'est pas vu ; ensuite l'heure réelle, avec une **nuit plus claire** (bleu de crépuscule, jamais noir).
+- Une **flèche jaune** flotte au-dessus de la Forêt tant qu'aucune quête n'a été jouée (« Commence ici », dite dans le tutoriel).
+- Panneau d'île réordonné : **Prochain objectif** (`nextGoal()`), Quêtes, Plan, Gardien, Ouvrages. Les ouvrages pas encore possibles sont une ligne compacte (« Encore 3 blocs »), sans bouton grisé.
+- Tutoriel réécrit (îles pâles, ouvrages et conditions, « touche la Forêt sous la flèche »).
+- Le message « ouvrage construit » ne suit plus sur une autre île.
+
+## 7. À venir
 
 
 - Gabarits de bâtiments variés pour les plans clonés (tour ronde, longère, dôme, gradins, atelier en L).

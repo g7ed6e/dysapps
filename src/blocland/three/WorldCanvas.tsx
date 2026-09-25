@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { islandAt, islandCenter, worldBounds, mistPatches } from '../world/terrain';
+import { islandAt, islandCenter, mistPatches, overviewBounds, worldBounds } from '../world/terrain';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface WorldFocus {
@@ -57,6 +57,10 @@ export interface WorldCanvasProps {
   onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
+  /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
+  bridges?: string[];
+  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »). */
+  marker?: BiomeId | null;
   burst?: Burst;
   /** Sensibilité de la caméra (rotation, zoom, déplacement). */
   cameraSpeed?: number;
@@ -191,6 +195,8 @@ export default function WorldCanvas({
   creatures = [],
   onPickCreature,
   forceDay = false,
+  bridges = [],
+  marker = null,
   burst,
   className,
   label,
@@ -209,6 +215,7 @@ export default function WorldCanvas({
     hover: THREE.LineSegments;
     sky: { hemi: THREE.HemisphereLight; sun: THREE.DirectionalLight; water: THREE.MeshLambertMaterial; fog: THREE.Fog };
     flight: { fromPos: THREE.Vector3; fromTarget: THREE.Vector3; toPos: THREE.Vector3; toTarget: THREE.Vector3; start: number } | null;
+    marker: THREE.Group;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
@@ -218,15 +225,20 @@ export default function WorldCanvas({
   creatureRef.current = onPickCreature;
   const forceDayRef = useRef(forceDay);
   forceDayRef.current = forceDay;
+  const bridgesRef = useRef(bridges);
+  bridgesRef.current = bridges;
   const bounds = worldBounds();
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
   const width = Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
 
-  /** Position et cible de la caméra pour une île (ou la vue d'ensemble). */
+  /** Position et cible de la caméra pour une île (ou la vue d'ensemble : les îles ouvertes et leurs voisines). */
   const framing = (island: BiomeId | null) => {
-    const c = island ? islandCenter(island) : { ...center, z: 0 };
-    const d = island ? ISLAND_DISTANCE : width * 0.78 + 6;
+    const ob = overviewBounds(bridgesRef.current);
+    const oc = { x: (ob.minX + ob.maxX) / 2, y: (ob.minY + ob.maxY) / 2 };
+    const ow = Math.max(ob.maxX - ob.minX, ob.maxY - ob.minY);
+    const c = island ? islandCenter(island) : { ...oc, z: 0 };
+    const d = island ? ISLAND_DISTANCE : Math.min(width * 0.78 + 6, ow * 0.9 + 10);
     const target = new THREE.Vector3(c.x, c.z + 1, c.y);
     const v = island ? ISLAND_VIEW : VIEW;
     const pos = new THREE.Vector3(c.x + d * v.dx, c.z + 1 + d * v.up, c.y + d * v.dy);
@@ -369,6 +381,19 @@ export default function WorldCanvas({
       });
     }
 
+    // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
+    const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
+    const markerGroup = new THREE.Group();
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.6, 4), markerMat);
+    tip.rotation.x = Math.PI;
+    tip.rotation.y = Math.PI / 4;
+    markerGroup.add(tip);
+    const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.4, 0.6), markerMat);
+    shaft.position.y = 1.4;
+    markerGroup.add(shaft);
+    markerGroup.visible = false;
+    scene.add(markerGroup);
+
     const terrain = new THREE.Group();
     scene.add(terrain);
     const creaturesGroup = new THREE.Group();
@@ -391,6 +416,7 @@ export default function WorldCanvas({
       hover,
       sky: { hemi, sun, water: waterMat, fog },
       flight: null,
+      marker: markerGroup,
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -549,6 +575,10 @@ export default function WorldCanvas({
           b.wings[1].rotation.z = -flap;
         }
         for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
+        if (markerGroup.visible) {
+          markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
+          markerGroup.rotation.y = t * 0.8;
+        }
         // Créatures : petit balancement, et un pas de temps en temps.
         for (const wk of w.walkers) {
           if (!wk.still && now >= wk.next && wk.start === 0) {
@@ -670,6 +700,20 @@ export default function WorldCanvas({
       };
     });
   }, [creatures]);
+
+  // ---- La flèche « Commence ici »
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    if (!marker) {
+      w.marker.visible = false;
+      return;
+    }
+    const c = islandCenter(marker);
+    w.marker.userData.base = c.z + 8;
+    w.marker.position.set(c.x, c.z + 8.5, c.y);
+    w.marker.visible = true;
+  }, [marker]);
 
   // ---- Sensibilité de la caméra
   useEffect(() => {

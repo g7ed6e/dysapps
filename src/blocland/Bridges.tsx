@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
@@ -27,6 +27,8 @@ export function Bridges({ island }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
+  // Le message d'un ouvrage construit ne suit pas sur une autre île.
+  useEffect(() => setSaid(null), [island]);
   const world = { progress: state.progress, plans: state.village.plans };
   const bridges = buildableBridges(state.village.bridges, island, world);
   const have = payableBlocks(state.inventory);
@@ -61,7 +63,7 @@ export function Bridges({ island }: Props) {
       </h3>
       {bridges.length > 0 && (
         <p className="bridges-have">
-          Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire.
+          Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire. Un ouvrage ouvre l’île d’en face.
         </p>
       )}
       <ul className="island-actions bridges-list" aria-label="Ouvrages à construire">
@@ -71,21 +73,34 @@ export function Bridges({ island }: Props) {
           const met = conditionMet(b, state.village.bridges, world);
           const ready = enough && met;
           const condition = CONDITION_OF[b.kind];
+          const title = `${KIND_NAME[b.kind]} vers ${other.name}`;
+          // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
+          if (!ready)
+            return (
+              <li key={b.id} className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}`} aria-disabled="true">
+                <span className="island-quest-icon bridge-icon">
+                  <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
+                </span>
+                <span className="island-quest-text">
+                  <span className="island-quest-title">{title}</span>
+                  <span className="island-quest-desc">
+                    {!enough && `Encore ${b.cost - have} bloc${b.cost - have > 1 ? 's' : ''} (${b.cost} en tout)`}
+                    {!enough && !met && ' · '}
+                    {!met && conditionText(b, state.village.bridges)}
+                  </span>
+                </span>
+              </li>
+            );
           return (
             <li key={b.id} className={`island-quest bridge-item bridge-${b.kind}`}>
               <span className="island-quest-icon bridge-icon">
                 <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
               </span>
               <span className="island-quest-text">
-                <span className="island-quest-title">
-                  {KIND_NAME[b.kind]} vers {other.name}
-                </span>
-                <span className="island-quest-desc">
-                  {b.cost} blocs{enough ? '' : ` · il en manque ${b.cost - have}`}
-                  {!met && ` · ${conditionText(b, state.village.bridges)}`}
-                </span>
+                <span className="island-quest-title">{title}</span>
+                <span className="island-quest-desc">{b.cost} blocs</span>
               </span>
-              <button type="button" className={`button${ready ? ' primary' : ''}`} disabled={!ready} onClick={() => build(b, other.name)}>
+              <button type="button" className="button primary" onClick={() => build(b, other.name)}>
                 <Icon name="hammer" /> Construire
               </button>
             </li>
