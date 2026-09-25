@@ -5,7 +5,6 @@ import { BIOMES, BLOCKS, isBiomeUnlocked, ofBlock } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Creature } from './Creatures';
 import { BlockIcon } from './Voxel';
-import { BloclandWorld } from './BloclandWorld';
 
 /** Carte du village : un biome par module, dans l'ordre conseillé. */
 export function BloclandPage() {
@@ -24,8 +23,6 @@ export function BloclandPage() {
           <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire." />
         </p>
       </section>
-
-      <BloclandWorld />
 
       <Link to="/aventure/chantier" className="panel chantier-card">
         <span className="chantier-icon">

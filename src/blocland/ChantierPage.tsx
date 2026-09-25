@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useSettings } from '../core/SettingsContext';
@@ -36,7 +36,10 @@ export function ChantierPage() {
   const webgl = hasWebGL();
   const in3d = settings.view3d && webgl;
   const unlockedIslands = BIOMES.filter((b) => isBiomeUnlocked(b.id, state.progress)).map((b) => b.id);
-  const [island, setIsland] = useState<BiomeId>(unlockedIslands[0] ?? 'foret');
+  // « ?ile=mine » (depuis le panneau d'une île) présélectionne cette île.
+  const [params] = useSearchParams();
+  const asked = params.get('ile') as BiomeId | null;
+  const [island, setIsland] = useState<BiomeId>(asked && unlockedIslands.includes(asked) ? asked : (unlockedIslands[0] ?? 'foret'));
   const [seq, setSeq] = useState(1);
   const [forceDay, setForceDay] = useState(false);
   const [replay, setReplay] = useState(0);

@@ -5,16 +5,19 @@ import { useProgress } from '../core/ProgressContext';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
 import { Icon } from './Icon';
+import { useImmersive } from '../blocland/useImmersive';
 
 export function Layout() {
   const { progress } = useProgress();
   const { pathname } = useLocation();
+  // Carte et îles de Blocland en 3D : le monde prend tout l'écran sous la barre du haut.
+  const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname) && !pathname.endsWith('/chantier');
 
   // Changer de page coupe la lecture vocale en cours.
   useEffect(() => stopSpeaking, [pathname]);
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${immersive ? ' immersive' : ''}`}>
       <a className="skip-link" href="#contenu">
         Aller au contenu
       </a>

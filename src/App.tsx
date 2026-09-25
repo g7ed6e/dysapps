@@ -14,6 +14,8 @@ import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
 import { ChantierPage } from './blocland/ChantierPage';
 import { BloclandProvider } from './blocland/BloclandContext';
+import { WorldPage } from './blocland/WorldPage';
+import { useImmersive } from './blocland/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
 export function App() {
@@ -37,9 +39,9 @@ export function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
-        <Route path="aventure" element={<BloclandPage />} />
+        <Route path="aventure" element={<AventureEntry />} />
         <Route path="aventure/chantier" element={<ChantierPage />} />
-        <Route path="aventure/:biomeId" element={<BiomePage />} />
+        <Route path="aventure/:biomeId" element={<IslandEntry />} />
         <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
         <Route path="reglages" element={<SettingsPage />} />
@@ -49,4 +51,12 @@ export function AppRoutes() {
       </Route>
     </Routes>
   );
+}
+
+// En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).
+function AventureEntry() {
+  return useImmersive() ? <WorldPage /> : <BloclandPage />;
+}
+function IslandEntry() {
+  return useImmersive() ? <WorldPage /> : <BiomePage />;
 }
