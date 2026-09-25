@@ -22,6 +22,12 @@ import riviereToit from './plans/riviere-toit.json';
 import volcanAbri from './plans/volcan-abri.json';
 import volcanTerrasse from './plans/volcan-terrasse.json';
 import volcanToit from './plans/volcan-toit.json';
+import glacierIgloo from './plans/glacier-igloo.json';
+import glacierToit from './plans/glacier-toit.json';
+import glacierPatinoire from './plans/glacier-patinoire.json';
+import marcheEchoppe from './plans/marche-echoppe.json';
+import marcheToit from './plans/marche-toit.json';
+import marcheEtal from './plans/marche-etal.json';
 import tourLanterne from './plans/tour-lanterne.json';
 import tourPhare from './plans/tour-phare.json';
 import tourQuai from './plans/tour-quai.json';
@@ -74,6 +80,12 @@ export const PLANS: PlanDef[] = [
   volcanAbri,
   volcanToit,
   volcanTerrasse,
+  glacierIgloo,
+  glacierToit,
+  glacierPatinoire,
+  marcheEchoppe,
+  marcheToit,
+  marcheEtal,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

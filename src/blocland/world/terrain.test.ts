@@ -50,6 +50,8 @@ it('place les îles selon l’archipel : la Forêt au centre, une rangée devant
   expect(at('plaine').oy + ISLAND).toBeLessThan(bossIsletOrigin(0).y);
   expect(at('riviere')).toEqual({ ox: at('mine').ox, oy: at('plaine').oy });
   expect(at('volcan')).toEqual({ ox: at('ferme').ox, oy: at('plaine').oy });
+  expect(at('glacier')).toEqual({ ox: at('foret').ox, oy: -2 * (ISLAND + ROW_GAP) });
+  expect(at('glacier').oy + ISLAND).toBeLessThan(bossIsletOrigin(BIOMES.findIndex((b) => b.id === 'plaine')).y);
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -96,7 +98,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   const cubes = worldCubes({});
   const bounds = worldBounds();
   expect(bounds.maxX - bounds.minX).toBe(5 * ISLAND + 4 * GAP);
-  expect(bounds.maxY - bounds.minY).toBe(2 * ISLAND + ROW_GAP);
+  expect(bounds.maxY - bounds.minY).toBe(3 * ISLAND + 2 * ROW_GAP);
   for (const c of cubes) {
     expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
     expect(c.x).toBeLessThan(bounds.maxX);

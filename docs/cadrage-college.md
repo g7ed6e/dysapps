@@ -54,7 +54,7 @@ Ponts : verticaux depuis la rangée voisine (6 à 8 blocs), horizontaux dans la 
 ## 5. Découpage en PR
 
 1. ✅ Socle : classe et matière par île, badge « Maître de l'archipel », îles Blocland sur les pages Français et Maths, ce cadrage.
-2. Glacier des relatifs + Marché des proportions (maths 5e).
+2. ✅ Glacier des relatifs + Marché des proportions (maths 5e).
 3. Carrefour des homophones + Marais des temps (français 5e-4e).
 4. Forge des puissances + Atelier du calcul littéral (maths 4e-3e).
 5. Falaise des accords + Cabinet des mots (français 4e-3e).

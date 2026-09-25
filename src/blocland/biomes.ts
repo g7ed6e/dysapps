@@ -1,7 +1,7 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan';
+export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan' | 'glacier' | 'marche';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -11,6 +11,8 @@ export type BlockId =
   | 'brique'
   | 'galet'
   | 'obsidienne'
+  | 'glace'
+  | 'toile'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -40,6 +42,8 @@ export type BlockTexture =
   | 'brique'
   | 'galet'
   | 'obsidienne'
+  | 'glace'
+  | 'toile'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -60,6 +64,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   brique: { id: 'brique', name: 'Brique', top: '#d98a5a', side: '#b8623a', texture: 'brique' },
   galet: { id: 'galet', name: 'Galet', top: '#a9bccf', side: '#7f96ad', texture: 'galet' },
   obsidienne: { id: 'obsidienne', name: 'Obsidienne', top: '#4a3d5c', side: '#2e2538', texture: 'obsidienne' },
+  glace: { id: 'glace', name: 'Glace', top: '#dff4fb', side: '#b6e0ee', texture: 'glace' },
+  toile: { id: 'toile', name: 'Toile', top: '#e9d9b8', side: '#c9463f', texture: 'toile' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -372,6 +378,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'cratere', title: 'Cratère des rangs', description: 'Quel est le chiffre des dixièmes ? Puis la fraction décimale.' },
       { id: 'coulee', title: 'Coulée de lave', description: 'Compare deux décimaux, tableau sous les yeux.' },
       { id: 'pente', title: 'Pente graduée', description: 'Repère un décimal sur la droite, puis complète jusqu’à 1.' },
+    ],
+  },
+  {
+    id: 'glacier',
+    name: 'Glacier des relatifs',
+    module: 'Nombres relatifs',
+    subject: 'maths',
+    classe: '5e',
+    description: 'Comparer, additionner, soustraire, multiplier des nombres négatifs, la droite sous les yeux.',
+    block: 'glace',
+    guardian: 'le Mammouth de givre',
+    guardianSays: {
+      hit: 'Brrr… Juste. Mes défenses en tremblent.',
+      miss: 'Ce n’est rien : regarde la droite, zéro au milieu, et reprends.',
+      beaten: 'Brrr. Tu comptes même sous zéro. Le glacier est à toi… et à Frimas.',
+    },
+    challenge: 'Le Mammouth de givre barrit : « Tu as traversé toute ma banquise. Montre-moi comment tu comptes sous zéro. »',
+    icon: 'mountain',
+    creature: {
+      name: 'Frimas',
+      species: 'pingouin comptable',
+      greeting:
+        'Salut, bâtisseur·se ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
+      lines: [
+        'Moins cinq, c’est plus petit que moins deux. Plus on va à gauche, plus il fait froid.',
+        'Soustraire, c’est ajouter l’opposé. Comme enlever un manteau.',
+        'Mon igloo est en glace. Chaque calcul en taille un bloc.',
+      ],
+      home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
+    },
+    exercises: [
+      { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.' },
+      { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.' },
+      { id: 'crevasses', title: 'Crevasses', description: 'Multiplie et divise avec la règle des signes affichée.' },
+    ],
+  },
+  {
+    id: 'marche',
+    name: 'Marché des proportions',
+    module: 'Proportionnalité',
+    subject: 'maths',
+    classe: '5e',
+    description: 'Tableaux de proportionnalité, pourcentages, vitesses et échelles, avec le tableau toujours affiché.',
+    block: 'toile',
+    guardian: 'le Colporteur',
+    guardianSays: {
+      hit: 'Hé hé… Juste ! Tu sais compter tes sous.',
+      miss: 'Ce n’est rien : passe par la valeur d’un seul, et reprends.',
+      beaten: 'Hé hé. Tu marchandes mieux que moi. Le marché est à toi… et à Bazar.',
+    },
+    challenge: 'Le Colporteur pose sa besace : « Tu as fait le tour de mes étals. Montre-moi comment tu fais les comptes. »',
+    icon: 'ruler',
+    creature: {
+      name: 'Bazar',
+      species: 'raton laveur marchand',
+      greeting:
+        'Bienvenue au marché, bâtisseur·se ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
+      lines: [
+        'Trois pommes, six euros. Une pomme ? Passe par un seul, toujours.',
+        'Cinquante pour cent, c’est la moitié. Même pour les raisins.',
+        'Mon échoppe est en toile. Chaque compte juste en tend un morceau.',
+      ],
+      home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
+    },
+    exercises: [
+      { id: 'etals', title: 'Étals', description: 'Complète un tableau de proportionnalité.' },
+      { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.' },
+      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte.' },
     ],
   },
 ];

@@ -70,6 +70,8 @@
   --tex-brick: url("./textures/brique.png");
   --tex-pebble: url("./textures/galet.png");
   --tex-obsidian: url("./textures/obsidienne.png");
+  --tex-ice: url("./textures/glace.png");
+  --tex-canvas: url("./textures/toile.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -119,6 +121,8 @@
   --tex-brick: none;
   --tex-pebble: none;
   --tex-obsidian: none;
+  --tex-ice: none;
+  --tex-canvas: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2208,6 +2212,14 @@ a.app-card:active {
 .app-card.biome-volcan {
   background-image: var(--tex-obsidian);
 }
+.biome-card.biome-glacier,
+.app-card.biome-glacier {
+  background-image: var(--tex-ice);
+}
+.biome-card.biome-marche,
+.app-card.biome-marche {
+  background-image: var(--tex-canvas);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2255,6 +2267,12 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-volcan {
   border-top-color: #4a3d5c;
+}
+:root[data-theme="clair"] .biome-glacier {
+  border-top-color: #b6e0ee;
+}
+:root[data-theme="clair"] .biome-marche {
+  border-top-color: #c9463f;
 }
 .biome-step {
   position: absolute;
@@ -3364,6 +3382,12 @@ a.app-card:active {
 .island-sheet.biome-volcan {
   background-image: var(--tex-obsidian);
 }
+.island-sheet.biome-glacier {
+  background-image: var(--tex-ice);
+}
+.island-sheet.biome-marche {
+  background-image: var(--tex-canvas);
+}
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {
   background-image: none;
@@ -3616,4 +3640,53 @@ a.island-quest:focus-visible {
 .tag-classe {
   font-family: var(--pixel-font);
   font-size: 0.8rem;
+}
+
+/* ===== Aides du collège ===== */
+.int-line .int-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.int-line .int-point.p1 {
+  fill: var(--yellow);
+}
+.ratio-table table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 1.1rem;
+}
+.ratio-table th,
+.ratio-table td {
+  border: var(--border-width) solid var(--ink);
+  padding: 0.35rem 0.8rem;
+  text-align: center;
+  background: var(--surface);
+}
+.ratio-table th {
+  background: color-mix(in srgb, var(--cyan) 35%, var(--surface));
+  font-weight: 700;
+}
+.ratio-table td.unknown {
+  background: var(--yellow);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.rule-card {
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border: var(--border-width) dashed var(--ink);
+  background: color-mix(in srgb, var(--yellow) 20%, var(--surface));
+}
+.rule-card figcaption {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.rule-card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+:root[data-theme="contraste"] .rule-card,
+:root[data-theme="contraste"] .ratio-table th {
+  background: var(--surface);
 }

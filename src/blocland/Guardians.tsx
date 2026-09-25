@@ -110,6 +110,34 @@ const DRAGON = fromLayers(
   { C: '#6b6670', R: '#e8742e', W: '#4a4550', E: '#e03a2e' },
 );
 
+// Le Mammouth de givre : massif, poil brun givré, longues défenses blanches.
+const MAMMOUTH = fromLayers(
+  [
+    ['.M.M.M.', '.......', '.M.M.M.', '.......'],
+    ['MMMMMMM', 'MMMMMMM', 'MMMMMMM', '.......'],
+    ['MMMMMMM', 'MmmmmmM', 'MMMMMMM', '.......'],
+    ['.MMMMM.', 'MMMMMMM', '.MMMMM.', '.......'],
+    ['D.MMM.D', '.MEMEM.', '.......', '.......'],
+    ['D..M..D', '.......', '.......', '.......'],
+    ['...M...', '.......', '.......', '.......'],
+  ],
+  { M: '#6e4a2e', m: '#a8c8d8', D: '#f6f1e6', E: '#1f1a16' },
+);
+
+// Le Colporteur : grand personnage à cape violette, chapeau large, besace de toile.
+const COLPORTEUR = fromLayers(
+  [
+    ['..P.P..', '..P.P..', '.......', '.......'],
+    ['..PPP..', '.PPPPP.', '..TTT..', '.......'],
+    ['..PPP..', '.PPPPP.', '..TTT..', '.......'],
+    ['.PPPPP.', 'PPPPPPP', '.PTTTP.', '.......'],
+    ['..SSS..', '.SESES.', '..SSS..', '.......'],
+    ['.HHHHH.', 'HHHHHHH', '.HHHHH.', '.......'],
+    ['..HHH..', '..HHH..', '.......', '.......'],
+  ],
+  { P: '#5b3a8a', T: '#e9d9b8', S: '#e8b98a', E: '#1f1a16', H: '#3a2a1a' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -119,6 +147,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   plaine: HANNETON,
   riviere: BROCHET,
   volcan: DRAGON,
+  glacier: MAMMOUTH,
+  marche: COLPORTEUR,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
