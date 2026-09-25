@@ -1,24 +1,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { loadJSON, removeKey, saveJSON } from '../core/storage';
-import type { BiomeId, BlockId } from './biomes';
 import {
   EMPTY_STATE,
   buildBridge as buildBridgePure,
-  clearIsland as clearIslandPure,
   completeExercise,
   dueItems,
   fillPlanCell as fillPlanCellPure,
-  placeAt as placeAtPure,
-  placeOnColumn as placeOnColumnPure,
   recordFluence as recordFluencePure,
-  removeAt as removeAtPure,
-  removeFromColumn as removeFromColumnPure,
   sanitizeState,
   todayISO,
   type BloclandState,
   type Completion,
   type FillResult,
-  type PlaceResult,
 } from './engine';
 import type { PlanDef } from './world/plans';
 import type { BuildBridgeResult } from './world/archipelago';
@@ -41,12 +34,6 @@ interface BloclandContextValue {
   continueSession: () => void;
   /** Temps de lecture d'un texte d'Ascension ; renvoie le temps précédent (comparaison à soi-même). */
   recordFluence: (textId: string, seconds: number) => { previous: number | null };
-  /** Construction sur la zone libre d'une île : à une case précise (3D) ou au sommet d'une colonne (vue simple). */
-  placeAt: (island: BiomeId, x: number, y: number, z: number, block: BlockId) => PlaceResult;
-  placeOnColumn: (island: BiomeId, x: number, y: number, block: BlockId) => PlaceResult;
-  removeAt: (island: BiomeId, x: number, y: number, z: number) => BlockId | null;
-  removeFromColumn: (island: BiomeId, x: number, y: number) => BlockId | null;
-  clearIsland: (island: BiomeId) => void;
   /** Pose le bloc attendu à une cellule d'un plan. */
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
@@ -82,28 +69,6 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     return { previous: r.previous };
   }, []);
 
-  const applyPlace = (r: PlaceResult) => {
-    if (r.ok) {
-      stateRef.current = r.state;
-      setState(r.state);
-    }
-    return r;
-  };
-  const placeAt = useCallback(
-    (island: BiomeId, x: number, y: number, z: number, block: BlockId) => applyPlace(placeAtPure(stateRef.current, island, x, y, z, block)),
-    [],
-  );
-  const placeOnColumn = useCallback(
-    (island: BiomeId, x: number, y: number, block: BlockId) => applyPlace(placeOnColumnPure(stateRef.current, island, x, y, block)),
-    [],
-  );
-  const applyRemove = (r: { state: BloclandState; removed: BlockId | null }) => {
-    stateRef.current = r.state;
-    setState(r.state);
-    return r.removed;
-  };
-  const removeAt = useCallback((island: BiomeId, x: number, y: number, z: number) => applyRemove(removeAtPure(stateRef.current, island, x, y, z)), []);
-  const removeFromColumn = useCallback((island: BiomeId, x: number, y: number) => applyRemove(removeFromColumnPure(stateRef.current, island, x, y)), []);
   const fillPlan = useCallback((plan: PlanDef, x: number, y: number, z: number) => {
     const r = fillPlanCellPure(stateRef.current, plan, x, y, z);
     if (r.ok) {
@@ -118,11 +83,6 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(r.state);
     return r.result;
   }, []);
-  const clearIsland = useCallback((island: BiomeId) => {
-    stateRef.current = clearIslandPure(stateRef.current, island);
-    setState(stateRef.current);
-  }, []);
-
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
@@ -146,32 +106,11 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       pauseAfterNext,
       continueSession,
       recordFluence,
-      placeAt,
-      placeOnColumn,
-      removeAt,
-      removeFromColumn,
-      clearIsland,
       fillPlan,
       buildBridge,
       reset,
     }),
-    [
-      state,
-      complete,
-      dueCount,
-      sessionCount,
-      pauseAfterNext,
-      continueSession,
-      recordFluence,
-      placeAt,
-      placeOnColumn,
-      removeAt,
-      removeFromColumn,
-      clearIsland,
-      fillPlan,
-      buildBridge,
-      reset,
-    ],
+    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

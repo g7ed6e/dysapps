@@ -821,8 +821,13 @@ export const BIOMES: BiomeDef[] = [
     creature: {
       name: 'Astra',
       species: 'luciole lectrice',
-      greeting: 'Bonsoir, bâtisseur·se ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
-      lines: ['Un parapluie fermé et des cheveux mouillés : le texte n’a pas dit « pluie », et pourtant.', 'Rapide comme l’éclair : le « comme » fait la comparaison.', 'Ma lanterne est en lentilles. Chaque lecture en polit une.'],
+      greeting:
+        'Bonsoir, bâtisseur·se ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
+      lines: [
+        'Un parapluie fermé et des cheveux mouillés : le texte n’a pas dit « pluie », et pourtant.',
+        'Rapide comme l’éclair : le « comme » fait la comparaison.',
+        'Ma lanterne est en lentilles. Chaque lecture en polit une.',
+      ],
       home: 'Ma lanterne de lentilles est finie ! Elle grossit les mots pour mieux les lire.',
     },
     exercises: [

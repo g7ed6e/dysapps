@@ -1,7 +1,7 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 import type { BiomeId, BlockId } from './biomes';
-import { BIOMES, BLOCKS } from './biomes';
+import { BLOCKS } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
 import { bridgesFromLegacyProgress, buildBridge as buildBridgePure, getBridge, type BuildBridgeResult } from './world/archipelago';
@@ -51,7 +51,6 @@ export interface BloclandState {
 }
 
 export interface Village {
-  placed: Partial<Record<BiomeId, BuildCell[]>>;
   /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
   plans: Record<string, string[]>;
   /** Journal de construction : un bâtiment terminé par ligne, du plus ancien au plus récent. */
@@ -65,22 +64,6 @@ export interface JournalEntry {
   plan: string;
 }
 
-/** Un bloc posé, en coordonnées relatives à l'île ; z = 0 est le premier bloc sur le sol. */
-export interface BuildCell {
-  x: number;
-  y: number;
-  z: number;
-  block: BlockId;
-}
-
-/** Zone libre de chaque île (coordonnées relatives à l'île) : on y pose ce qu'on veut, jusqu'à MAX_HEIGHT blocs de haut. */
-export const FREE_ZONE = { x: 0, y: 0, w: 6, h: 4 };
-export const MAX_HEIGHT = 6;
-
-export function inFreeZone(x: number, y: number): boolean {
-  return x >= FREE_ZONE.x && x < FREE_ZONE.x + FREE_ZONE.w && y >= FREE_ZONE.y && y < FREE_ZONE.y + FREE_ZONE.h;
-}
-
 export const EMPTY_STATE: BloclandState = {
   progress: {},
   spaced: [],
@@ -89,7 +72,7 @@ export const EMPTY_STATE: BloclandState = {
   types: {},
   chests: 0,
   fluence: {},
-  village: { placed: {}, plans: {}, journal: [], bridges: [] },
+  village: { plans: {}, journal: [], bridges: [] },
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -173,22 +156,14 @@ export function sanitizeState(input: unknown): BloclandState {
       if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) inventory[c.block as BlockId] = (inventory[c.block as BlockId] ?? 0) + 1;
     }
   }
-  const placed: Partial<Record<BiomeId, BuildCell[]>> = {};
   const village = isRecord(raw.village) ? raw.village : {};
+  // Ancienne zone libre (tapis jaune) : les blocs posés reviennent aussi dans l'inventaire.
   if (isRecord(village.placed)) {
-    for (const [island, cells] of Object.entries(village.placed)) {
-      if (!BIOMES.some((b) => b.id === island) || !Array.isArray(cells)) continue;
-      const list: BuildCell[] = [];
+    for (const cells of Object.values(village.placed)) {
+      if (!Array.isArray(cells)) continue;
       for (const c of cells) {
-        if (!isRecord(c) || !(typeof c.block === 'string' && c.block in BLOCKS)) continue;
-        const x = Math.round(num(c.x, -1));
-        const y = Math.round(num(c.y, -1));
-        const z = Math.round(num(c.z, -1));
-        if (!inFreeZone(x, y) || z < 0 || z >= MAX_HEIGHT) continue;
-        if (list.some((b) => b.x === x && b.y === y && b.z === z)) continue;
-        list.push({ x, y, z, block: c.block as BlockId });
+        if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) inventory[c.block as BlockId] = (inventory[c.block as BlockId] ?? 0) + 1;
       }
-      if (list.length) placed[island as BiomeId] = list;
     }
   }
   const plans: Record<string, string[]> = {};
@@ -221,63 +196,8 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
-    village: { placed, plans, journal, bridges },
+    village: { plans, journal, bridges },
   };
-}
-
-// ---------- Construction ----------
-
-export function columnHeight(cells: BuildCell[], x: number, y: number): number {
-  return cells.reduce((m, c) => (c.x === x && c.y === y ? Math.max(m, c.z + 1) : m), 0);
-}
-
-export function placedOn(state: BloclandState, island: BiomeId): BuildCell[] {
-  return state.village.placed[island] ?? [];
-}
-
-export type PlaceReason = 'hors-zone' | 'plus-de-blocs' | 'trop-haut' | 'occupe';
-export type PlaceResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: PlaceReason };
-
-/** Pose un bloc à une case précise de la zone libre d'une île (dans n'importe quel ordre : rien ne tombe). */
-export function placeAt(state: BloclandState, island: BiomeId, x: number, y: number, z: number, block: BlockId): PlaceResult {
-  if (!inFreeZone(x, y) || z < 0) return { state, ok: false, reason: 'hors-zone' };
-  if (z >= MAX_HEIGHT) return { state, ok: false, reason: 'trop-haut' };
-  if ((state.inventory[block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs' };
-  const cells = placedOn(state, island);
-  if (cells.some((c) => c.x === x && c.y === y && c.z === z)) return { state, ok: false, reason: 'occupe' };
-  return {
-    ok: true,
-    state: {
-      ...state,
-      village: { ...state.village, placed: { ...state.village.placed, [island]: [...cells, { x, y, z, block }] } },
-      inventory: { ...state.inventory, [block]: (state.inventory[block] ?? 0) - 1 },
-    },
-  };
-}
-
-/** Pose au sommet d'une colonne (vue simple). */
-export function placeOnColumn(state: BloclandState, island: BiomeId, x: number, y: number, block: BlockId): PlaceResult {
-  return placeAt(state, island, x, y, columnHeight(placedOn(state, island), x, y), block);
-}
-
-/** Retire un bloc précis et le rend à l'inventaire. */
-export function removeAt(state: BloclandState, island: BiomeId, x: number, y: number, z: number): { state: BloclandState; removed: BlockId | null } {
-  const cells = placedOn(state, island);
-  const cell = cells.find((c) => c.x === x && c.y === y && c.z === z);
-  if (!cell) return { state, removed: null };
-  return {
-    removed: cell.block,
-    state: {
-      ...state,
-      village: { ...state.village, placed: { ...state.village.placed, [island]: cells.filter((c) => c !== cell) } },
-      inventory: { ...state.inventory, [cell.block]: (state.inventory[cell.block] ?? 0) + 1 },
-    },
-  };
-}
-
-/** Retire le bloc du dessus d'une colonne (vue simple). */
-export function removeFromColumn(state: BloclandState, island: BiomeId, x: number, y: number): { state: BloclandState; removed: BlockId | null } {
-  return removeAt(state, island, x, y, columnHeight(placedOn(state, island), x, y) - 1);
 }
 
 // ---------- Plans (construction guidée) ----------
@@ -353,14 +273,6 @@ export function planCellAt(plan: PlanDef, x: number, y: number, z: number): { ke
 }
 
 /** Démonte tout ce qui est posé sur une île : les blocs reviennent dans l'inventaire. */
-export function clearIsland(state: BloclandState, island: BiomeId): BloclandState {
-  const inventory = { ...state.inventory };
-  for (const c of placedOn(state, island)) inventory[c.block] = (inventory[c.block] ?? 0) + 1;
-  const placed = { ...state.village.placed };
-  delete placed[island];
-  return { ...state, village: { ...state.village, placed }, inventory };
-}
-
 export function recordFluence(state: BloclandState, textId: string, seconds: number): { state: BloclandState; previous: number | null } {
   const history = state.fluence[textId] ?? [];
   const previous = history.length ? history[history.length - 1] : null;

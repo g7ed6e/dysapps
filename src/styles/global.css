@@ -2853,38 +2853,6 @@ a.app-card:active {
   padding: 0.6rem;
   overflow: hidden;
 }
-.build-grid {
-  display: block;
-  width: 100%;
-  max-width: 36rem;
-  margin: 0 auto;
-  touch-action: manipulation;
-}
-.build-grid .tile polygon {
-  fill: #7cc24a;
-  stroke: #5a9a33;
-  stroke-width: 0.8;
-  cursor: pointer;
-}
-.build-grid .tile.alt polygon {
-  fill: #6fb541;
-}
-.build-grid .tile:hover polygon,
-.build-grid .tile:focus-visible polygon {
-  fill: #f0d27a;
-}
-.build-grid .tile:focus-visible {
-  outline: none;
-}
-.build-grid .placed {
-  cursor: pointer;
-}
-.build-grid .cursor {
-  fill: none;
-  stroke: var(--focus);
-  stroke-width: 2.5;
-  pointer-events: none;
-}
 :root[data-theme="contraste"] .build-grid .tile polygon {
   fill: #222;
   stroke: #ffe600;

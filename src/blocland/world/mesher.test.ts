@@ -48,7 +48,7 @@ it('le village entier, tout construit, reste dans le budget de faces des tablett
   const { worldCubes } = await import('./terrain');
   const progress = Object.fromEntries(BIOMES.map((b) => [`${b.id}-x`, { stars: 3 }]));
   const plans = Object.fromEntries(PLANS.map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const groups = buildMesh(worldCubes(progress, { placed: {}, plans, journal: [], bridges: [] }));
+  const groups = buildMesh(worldCubes(progress, { plans, journal: [], bridges: [] }));
   expect(faceCount(groups)).toBeLessThan(12000);
   expect(groups.length).toBeLessThan(60);
 });

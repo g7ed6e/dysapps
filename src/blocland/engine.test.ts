@@ -1,24 +1,4 @@
-import {
-  EMPTY_STATE,
-  MAX_HEIGHT,
-  adapt,
-  clearIsland,
-  FREE_ZONE,
-  placeAt,
-  placeOnColumn,
-  placedOn,
-  removeAt,
-  removeFromColumn,
-  addDays,
-  completeExercise,
-  daysBetween,
-  dueItems,
-  recordSpaced,
-  sanitizeState,
-  scoreOf,
-  starsFor,
-  updateStreak,
-} from './engine';
+import { EMPTY_STATE, adapt, addDays, completeExercise, daysBetween, dueItems, recordSpaced, sanitizeState, scoreOf, starsFor, updateStreak } from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 const DEF: ExerciseDef = {
@@ -173,61 +153,23 @@ it('sanitizeState répare des données corrompues', () => {
   expect(sanitizeState(undefined)).toEqual(EMPTY_STATE);
 });
 
-describe('construction', () => {
-  const withBlocks = { ...EMPTY_STATE, inventory: { bois: 2, pierre: 1 } };
-  const zx = FREE_ZONE.x + 2;
-  const zy = FREE_ZONE.y + 1;
-
-  it('pose un bloc dans la zone libre d’une île et le consomme', () => {
-    const r1 = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois');
-    expect(r1.ok).toBe(true);
-    expect(placedOn(r1.state, 'foret')).toEqual([{ x: zx, y: zy, z: 0, block: 'bois' }]);
-    expect(r1.state.inventory.bois).toBe(1);
-    const r2 = placeOnColumn(r1.state, 'foret', zx, zy, 'pierre');
-    expect(placedOn(r2.state, 'foret')[1]).toEqual({ x: zx, y: zy, z: 1, block: 'pierre' });
-    expect(placedOn(r2.state, 'mine')).toEqual([]);
-  });
-
-  it('refuse hors zone, sans bloc, trop haut ou sur une case occupée', () => {
-    expect(placeAt(withBlocks, 'foret', 11, 0, 0, 'bois')).toMatchObject({ ok: false, reason: 'hors-zone' });
-    expect(placeAt(withBlocks, 'foret', zx, zy, 0, 'sable')).toMatchObject({ ok: false, reason: 'plus-de-blocs' });
-    expect(placeAt(withBlocks, 'foret', zx, zy, MAX_HEIGHT, 'bois')).toMatchObject({ ok: false, reason: 'trop-haut' });
-    const s = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois').state;
-    expect(placeAt(s, 'foret', zx, zy, 0, 'bois')).toMatchObject({ ok: false, reason: 'occupe' });
-  });
-
-  it('retire un bloc et le rend, et démonte une île', () => {
-    let s = placeAt(withBlocks, 'foret', zx, zy, 0, 'bois').state;
-    s = placeAt(s, 'foret', zx, zy, 1, 'pierre').state;
-    const r = removeFromColumn(s, 'foret', zx, zy);
-    expect(r.removed).toBe('pierre');
-    expect(placedOn(r.state, 'foret')).toEqual([{ x: zx, y: zy, z: 0, block: 'bois' }]);
-    expect(r.state.inventory).toEqual({ bois: 1, pierre: 1 });
-    expect(removeAt(r.state, 'foret', zx, zy, 3).removed).toBeNull();
-    const cleared = clearIsland(r.state, 'foret');
-    expect(cleared.village.placed).toEqual({});
-    expect(cleared.inventory).toEqual({ bois: 2, pierre: 1 });
-  });
-
-  it('sanitizeState ignore les blocs invalides ou en double, et rend les blocs de l’ancien chantier', () => {
-    const s = sanitizeState({
-      inventory: { bois: 1 },
-      build: [
-        { x: 1, y: 1, z: 0, block: 'bois' },
-        { x: 0, y: 0, z: 0, block: 'neige' },
-      ],
-      village: {
-        placed: {
-          foret: [
-            { x: zx, y: zy, z: 0, block: 'bois' },
-            { x: zx, y: zy, z: 0, block: 'terre' },
-            { x: 11, y: 0, z: 0, block: 'bois' },
-          ],
-          nulle: [],
-        },
+it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de l’ancienne zone libre', () => {
+  const s = sanitizeState({
+    inventory: { bois: 1 },
+    build: [
+      { x: 1, y: 1, z: 0, block: 'bois' },
+      { x: 0, y: 0, z: 0, block: 'neige' },
+    ],
+    village: {
+      placed: {
+        foret: [
+          { x: 2, y: 1, z: 0, block: 'bois' },
+          { x: 2, y: 1, z: 1, block: 'pierre' },
+        ],
+        nulle: [],
       },
-    });
-    expect(s.village.placed).toEqual({ foret: [{ x: zx, y: zy, z: 0, block: 'bois' }] });
-    expect(s.inventory.bois).toBe(2);
+    },
   });
+  expect(s.inventory).toEqual({ bois: 3, pierre: 1 });
+  expect(s.village).toEqual({ plans: {}, journal: [], bridges: [] });
 });
