@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -14,11 +14,12 @@ import { Tutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { creaturePlacements, guardianPlacements, worldCubes } from './world/terrain';
+import { creaturePlacements, guardianPlacements, islandAt, worldCubes } from './world/terrain';
+import { usePlanBuilder } from './usePlanBuilder';
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran. On touche une île : la caméra y vole et son panneau
- * glisse depuis le bas (créature, quêtes, plan, Gardien, chantier) sans quitter le monde. L'URL /aventure/:ile
+ * glisse depuis le bas (créature, quêtes, plan, Gardien) sans quitter le monde. L'URL /aventure/:ile
  * garde le panneau ouvert, pour revenir au même endroit après un exercice.
  */
 export function WorldPage() {
@@ -37,6 +38,8 @@ export function WorldPage() {
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
+  // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde.
+  const builder = usePlanBuilder(island?.id ?? 'foret');
 
   // L'île de l'URL est cadrée (vol) à chaque changement.
   useEffect(() => {
@@ -71,6 +74,8 @@ export function WorldPage() {
             cameraSpeed={settings.cameraSpeed}
             forceDay={forceDay}
             onPickIsland={(id) => navigate(`/aventure/${id}`)}
+            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
+            burst={builder.burst}
             onPickCreature={onCreature}
             className="voxel-canvas-stage"
             label="Le village de Blocland en 3D : un archipel d’îles, la Forêt au centre, reliées par des ponts à construire"
@@ -83,7 +88,7 @@ export function WorldPage() {
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis. Tu es dans le monde en 3D.',
               'Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île : la caméra y vole et son panneau s’ouvre en bas.',
-              'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Le bouton Chantier, en bas, sert à poser les blocs des plans.',
+              'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Touche une case bleue du bâtiment, ou le bouton « Poser le bloc suivant », pour poser un bloc.',
               'Deux îles sont ouvertes : la Forêt des sons (français) et la Plaine des nombres (maths). Les îles grises sont fermées : les ponts transparents se construisent avec tes blocs, choisis ta direction.',
             ]}
           />
@@ -98,9 +103,6 @@ export function WorldPage() {
           <button type="button" className="button" aria-pressed={focus.island === null} onClick={() => navigate('/aventure')}>
             <Icon name="map" /> Carte
           </button>
-          <Link to="/aventure/chantier" className="button">
-            <Icon name="hammer" /> Chantier
-          </Link>
           {night && (
             <button type="button" className="button" onClick={() => setForceDay(true)} aria-label="Forcer le jour">
               <Icon name="sun" />
@@ -116,7 +118,7 @@ export function WorldPage() {
           </button>
         </nav>
       </div>
-      {island && <IslandSheet biome={island} onClose={() => navigate('/aventure')} />}
+      {island && <IslandSheet biome={island} builder={builder} in3d onClose={() => navigate('/aventure')} />}
     </div>
   );
 }

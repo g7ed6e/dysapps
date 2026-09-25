@@ -142,15 +142,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
             </div>
           ) : (
             <div className="actions">
-              <Link to="/aventure/chantier" className="button primary">
-                <Icon name="hammer" /> Construire
+              <Link to={`/aventure/${biome.id}`} className="button primary">
+                <Icon name="hammer" /> Construire sur {biome.name}
               </Link>
               <button type="button" className="button" onClick={onReplay}>
                 <Icon name="replay" /> Rejouer
               </button>
-              <Link to={`/aventure/${biome.id}`} className="button">
-                <Icon name="back" /> {biome.name}
-              </Link>
             </div>
           )}
         </div>

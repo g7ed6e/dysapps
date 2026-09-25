@@ -11,12 +11,15 @@ import { pickExercise } from './exercises';
 import { Stars } from './Stars';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { BlockIcon } from './Voxel';
+import { PlanSection } from './PlanSection';
+import { usePlanBuilder } from './usePlanBuilder';
 
 /** Un biome : sa créature donne la quête, puis la liste des exercices. */
 export function BiomePage() {
   const { biomeId } = useParams();
   const { state } = useBlocland();
   const biome = getBiome(biomeId);
+  const builder = usePlanBuilder(biome?.id ?? 'foret');
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.inventory[biome.block] ?? 0;
@@ -117,6 +120,17 @@ export function BiomePage() {
           </div>
         );
       })()}
+
+      {unlocked && (
+        <>
+          <h2 className="section-title">
+            <Icon name="map" /> Le plan
+          </h2>
+          <div className="panel plan-panel">
+            <PlanSection biome={biome} builder={builder} />
+          </div>
+        </>
+      )}
 
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />

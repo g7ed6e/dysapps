@@ -5,34 +5,34 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, ofBlock, type BiomeDef } from './biomes';
+import type { BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
+import { PlanSection } from './PlanSection';
+import type { PlanBuilder } from './usePlanBuilder';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
-import { currentPlan, levelFor, planStatus } from './engine';
+import { levelFor } from './engine';
 import { pickExercise } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
-import { BlockIcon } from './Voxel';
 
 interface Props {
   biome: BiomeDef;
+  builder: PlanBuilder;
+  in3d?: boolean;
   onClose: () => void;
 }
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le plan en cours,
- * le Gardien et le chantier. Tout est en HTML (police dys), on ne quitte pas le monde.
+ * le Gardien et le plan à construire. Tout est en HTML (police dys), on ne quitte pas le monde.
  */
-export function IslandSheet({ biome, onClose }: Props) {
+export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un pont jusqu’à mon île, puis reviens me voir.`;
-  const owned = state.inventory[biome.block] ?? 0;
-  const plan = currentPlan(state, biome.id);
-  const status = plan ? planStatus(state, plan.plan) : null;
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
 
@@ -133,27 +133,9 @@ export function IslandSheet({ biome, onClose }: Props) {
             </div>
           )}
         </li>
-        <li>
-          <Link to={`/aventure/chantier?ile=${biome.id}`} className="island-quest island-build">
-            <span className="island-quest-icon">
-              <Icon name="blocks" />
-            </span>
-            <span className="island-quest-text">
-              <span className="island-quest-title">Construire ici</span>
-              <span className="island-quest-desc">
-                {plan && status
-                  ? status.complete && plan.allDone
-                    ? 'Tous les plans sont construits.'
-                    : `${plan.plan.name} : ${status.done} / ${status.total} blocs`
-                  : 'Aucun plan sur cette île'}
-              </span>
-            </span>
-            <span className="island-owned">
-              <BlockIcon top={BLOCKS[biome.block].top} side={BLOCKS[biome.block].side} size={26} /> {owned} {ofBlock(biome.block)}
-            </span>
-          </Link>
-        </li>
       </ul>
+
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
     </section>
   );
 }
