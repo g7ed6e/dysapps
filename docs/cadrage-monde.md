@@ -56,7 +56,13 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Les noms, les phrases de fin et l'XP ne changent pas ; les coffres donnent exactement le kit (toit, porte, lanterne, barrière, escalier) du plan suivant.
 - Les blocs déjà posés sur un plan dont la forme a changé sont oubliés à la lecture de la sauvegarde (les blocs gagnés restent dans l'inventaire).
 
-## 9. À venir
+## 9. Des îles qui se touchent (PR 7)
+
+- Quatre paires d'îles de même niveau sont maintenant **côte à côte et reliées par un isthme** de terre (`ISTHMUSES`, `inIsthmus()` dans `map.ts`) : Forêt–Mine, Ferme–Tour, Glacier–Marché, Carrefour–Marais. L'isthme appartient à la première île de la paire, il est plat, en herbe (sable au bord), avec quelques buissons ; sa largeur ondule.
+- L'ouvrage entre deux îles qui se touchent est un **sentier** : des pierres de gué une case sur deux, posées sur le sol, une lanterne à chaque bout. Il coûte des blocs comme un pont, sans autre condition. `groundLevelAt()` (`world/ground.ts`) donne le niveau du sol en un point.
+- Sept îles ont été rapprochées (Mine, Carrière, Tour, Marché, Atelier, Marais, Cabinet, Textes). Le décor ne déborde plus au-dessus du cœur d'une île, et un cube d'ouvrage ne remplace jamais un cube du terrain.
+
+## 10. À venir
 
 
-- Rien pour l'instant : jouer, écouter les retours des enfants.
+- Le bonhomme (un avatar qui marche d'île en île le long des ouvrages construits), des baleines au large.

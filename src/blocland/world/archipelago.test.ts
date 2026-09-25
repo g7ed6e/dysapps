@@ -94,7 +94,7 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : les ponts du chemin
 
 it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
   const kinds = new Set(BRIDGES.map((b) => b.kind));
-  expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'tunnel']);
+  expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'sentier', 'tunnel']);
   expect(CONDITION_OF.pont).toBe('aucune');
   const empty = { progress: {}, plans: {} };
   const stairs = BRIDGES.find((b) => b.id === 'foret-carrefour')!;

@@ -14,10 +14,10 @@ export const ISLANDS = MAP;
 export const START_ISLANDS: BiomeId[] = ['foret', 'plaine'];
 
 /**
- * Les ouvrages : un pont entre deux îles au même niveau, un bac (radeau) sur un large bras de mer, un escalier taillé
+ * Les ouvrages : un sentier de pierres de gué entre deux îles qui se touchent, un pont entre deux îles au même niveau, un bac (radeau) sur un large bras de mer, un escalier taillé
  * pour monter d'un niveau, un tunnel dans la montagne pour en monter deux, un col pour monter tout en haut.
  */
-export type BridgeKind = 'pont' | 'bac' | 'escalier' | 'tunnel' | 'col';
+export type BridgeKind = 'pont' | 'bac' | 'escalier' | 'tunnel' | 'col' | 'sentier';
 
 /** Ce qu'il faut en plus des blocs : rien, le premier plan de l'île de départ terminé, ou son Gardien vaincu. */
 export type BridgeCondition = 'aucune' | 'plan' | 'gardien';
@@ -32,19 +32,33 @@ export interface BridgeDef {
 }
 
 /** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (un plan), le tunnel et le col un Gardien vaincu. */
-export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = { pont: 'aucune', bac: 'aucune', escalier: 'plan', tunnel: 'gardien', col: 'gardien' };
+export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = {
+  pont: 'aucune',
+  bac: 'aucune',
+  escalier: 'plan',
+  tunnel: 'gardien',
+  col: 'gardien',
+  sentier: 'aucune',
+};
 
-export const KIND_NAME: Record<BridgeKind, string> = { pont: 'Pont', bac: 'Bac', escalier: 'Escalier taillé', tunnel: 'Tunnel', col: 'Col' };
+export const KIND_NAME: Record<BridgeKind, string> = {
+  pont: 'Pont',
+  bac: 'Bac',
+  escalier: 'Escalier taillé',
+  tunnel: 'Tunnel',
+  col: 'Col',
+  sentier: 'Sentier',
+};
 
 const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDef => ({ id: `${from}-${to}`, from, to, kind, cost });
 
 /** Les ouvrages possibles, entre îles voisines. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
 export const BRIDGES: BridgeDef[] = [
   // Basses Terres (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
-  b('foret', 'mine', 'pont', 3),
+  b('foret', 'mine', 'sentier', 3),
   b('foret', 'ferme', 'pont', 3),
   b('mine', 'carriere', 'pont', 5),
-  b('ferme', 'tour', 'pont', 5),
+  b('ferme', 'tour', 'sentier', 5),
   b('foret', 'plaine', 'pont', 0),
   b('plaine', 'riviere', 'bac', 3),
   b('mine', 'riviere', 'pont', 4),
@@ -53,10 +67,10 @@ export const BRIDGES: BridgeDef[] = [
   // Vers les Collines (5e) : des escaliers taillés, qui demandent un premier plan terminé.
   b('plaine', 'glacier', 'escalier', 5),
   b('riviere', 'marche', 'escalier', 5),
-  b('glacier', 'marche', 'pont', 6),
+  b('glacier', 'marche', 'sentier', 6),
   b('foret', 'carrefour', 'escalier', 5),
   b('mine', 'marais', 'escalier', 5),
-  b('carrefour', 'marais', 'pont', 6),
+  b('carrefour', 'marais', 'sentier', 6),
   // Vers les Monts (4e) : escaliers depuis les collines, tunnels depuis la mer (un Gardien vaincu).
   b('volcan', 'forge', 'tunnel', 5),
   b('glacier', 'forge', 'escalier', 6),

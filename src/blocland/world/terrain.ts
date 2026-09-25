@@ -4,6 +4,7 @@
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
 import { BRIDGES, bridgeState, isBiomeUnlocked, reachableIslands, type BridgeDef } from './archipelago';
 import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
+import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
@@ -515,10 +516,11 @@ function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing
       cells.push({ x, y });
     }
   }
-  // On ne garde que la partie hors des deux terres.
-  let first = cells.findIndex((c) => !isLand(a, c.x, c.y));
+  // Un sentier suit la terre : de bord de cœur à bord de cœur, posé sur le sol. Les autres ouvrages franchissent
+  // l'eau : on ne garde que la partie hors des deux terres.
+  let first = cells.findIndex((c) => (def.kind === 'sentier' ? !inCore(a, c.x, c.y) : !isLand(a, c.x, c.y)));
   let last = cells.length - 1;
-  while (last > 0 && isLand(b, cells[last].x, cells[last].y)) last--;
+  while (last > 0 && (def.kind === 'sentier' ? inCore(b, cells[last].x, cells[last].y) : isLand(b, cells[last].x, cells[last].y))) last--;
   if (first < 0 || first > last) {
     first = 0;
     last = cells.length - 1;
@@ -526,7 +528,7 @@ function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing
   const span = cells.slice(first, last + 1);
   let prevZ = a.altitude;
   return span.map((c, i) => {
-    const z = Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
+    const z = def.kind === 'sentier' ? groundLevelAt(c.x, c.y) : Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
     const climbing = z !== prevZ;
     prevZ = z;
     const next = span[Math.min(i + 1, span.length - 1)];
@@ -540,16 +542,25 @@ function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing
  * au fil de l'eau), escalier taillé dans la pierre, tunnel (galerie voûtée, lanternes), col (escalier à garde-fou).
  * Fantôme tant qu'il n'est pas construit.
  */
-function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
+function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Set<string>): void {
   const path = bridgePath(def);
-  const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) =>
+  // Un cube d'ouvrage ne remplace jamais un cube du terrain (un buisson sur l'isthme, par exemple).
+  const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) => {
+    const key = `${x},${y},${z}`;
+    if (occupied.has(key)) return;
+    occupied.add(key);
     cubes.push({ x, y, z, color, top, texture, tag: def.to, bridge: def.id, ghost: ghost || undefined });
+  };
   const n = path.length;
   path.forEach((c, i) => {
     // Perpendiculaire au tracé (pour les arches et le garde-fou).
     const px = c.dy !== 0 ? 1 : 0;
     const py = c.dy !== 0 ? 0 : 1;
     switch (def.kind) {
+      case 'sentier':
+        // Des pierres de gué une case sur deux, posées sur le sol de l'isthme.
+        if (i % 2 === 0) add(c.x, c.y, c.z + 1, BLOCKS.galet.side, 'galet');
+        break;
       case 'pont':
         add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
         break;
@@ -584,8 +595,9 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
       }
     }
   });
-  // Une lanterne à chaque bout : la nuit, les chemins se devinent de loin.
-  for (const c of [path[0], path[n - 1]]) if (c) add(c.x, c.y, c.z + 1, BLOCKS.lanterne.side, 'lanterne');
+  // Une lanterne à chaque bout : la nuit, les chemins se devinent de loin (sur le sol pour un sentier).
+  const lift = def.kind === 'sentier' ? 2 : 1;
+  for (const c of [path[0], path[n - 1]]) if (c) add(c.x, c.y, c.z + lift, BLOCKS.lanterne.side, 'lanterne');
 }
 
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
@@ -851,7 +863,8 @@ export function worldCubes(
       if (!c.decor) continue;
       const r = noise(def.seed + 5, c.x, c.y);
       // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
-      decorate((x, y, z, color) => !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
+      // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
+      decorate((x, y, z, color) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
     }
     // Une île en altitude flotte : sa roche s'amincit dessous.
     if (def.altitude > 0) {
@@ -910,9 +923,10 @@ export function worldCubes(
     }
   });
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
+  const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
   for (const def of BRIDGES) {
     const state = bridgeState(def, village.bridges);
-    if (state !== 'far') bridge(def, cubes, state === 'buildable');
+    if (state !== 'far') bridge(def, cubes, state === 'buildable', occupied);
   }
   return cubes;
 }
