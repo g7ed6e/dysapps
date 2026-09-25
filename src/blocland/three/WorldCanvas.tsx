@@ -47,7 +47,9 @@ const WATER = 0x4a9be0;
 const WATER_LEVEL = -0.45;
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.55 };
-const ISLAND_DISTANCE = 22;
+/** Vue d'une île : plus haute, pour voir le plan au fond et la zone libre devant. */
+const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
+const ISLAND_DISTANCE = 24;
 const FLIGHT_MS = 700;
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
@@ -60,8 +62,22 @@ const CLOUDS: [number, number, number][] = [
   [1.02, 0.2, 2],
 ];
 
+const ghostCache = new Map<string, THREE.Material>();
+
 /** Matériau d'une face : les blocs texturés partagent les matériaux (cache), le reste est une couleur grainée. */
-function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined): THREE.Material {
+function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false): THREE.Material {
+  if (ghost) {
+    const k = texture ?? color ?? 'gris';
+    let m = ghostCache.get(k);
+    if (!m) {
+      const base = texture ? blockMaterial(texture as TextureKind) : tintedMaterial(color ?? '#9c9c9c');
+      const src = (Array.isArray(base) ? base[0] : base) as THREE.MeshLambertMaterial;
+      // Bleuté et translucide : on voit que c'est « à poser », et ce qu'il y a derrière.
+      m = new THREE.MeshLambertMaterial({ map: src.map, color: 0xa8d8ff, emissive: 0x2a4a6a, transparent: true, opacity: 0.6, depthWrite: false });
+      ghostCache.set(k, m);
+    }
+    return m;
+  }
   if (!texture) return tintedMaterial(color ?? '#9c9c9c');
   const m = blockMaterial(texture as TextureKind);
   if (!Array.isArray(m)) return m;
@@ -105,7 +121,8 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     const c = island ? islandCenter(island) : center;
     const d = island ? ISLAND_DISTANCE : width * 0.8 + 6;
     const target = new THREE.Vector3(c.x, 1, c.y);
-    const pos = new THREE.Vector3(c.x + d * VIEW.dx, 1 + d * VIEW.up, c.y + d * VIEW.dy);
+    const v = island ? ISLAND_VIEW : VIEW;
+    const pos = new THREE.Vector3(c.x + d * v.dx, 1 + d * v.up, c.y + d * v.dy);
     return { target, pos };
   };
 
@@ -319,7 +336,8 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
       geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
       geo.setIndex(g.indices);
-      const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color));
+      const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost));
+      if (g.ghost) mesh.renderOrder = 1;
       // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
       mesh.frustumCulled = false;
       w.terrain.add(mesh);

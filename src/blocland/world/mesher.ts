@@ -10,6 +10,8 @@ export interface MeshGroup {
   texture?: string;
   face: FaceSide;
   color?: string;
+  /** Fantôme de plan : translucide, ne cache rien. */
+  ghost?: boolean;
   positions: number[];
   normals: number[];
   uvs: number[];
@@ -97,8 +99,9 @@ export function buildMesh(cubes: VoxelCube[]): MeshGroup[] {
   for (const c of cubes) {
     for (const { d, face } of DIRS) {
       const neighbour = byPos.get(key(c.x + d[0], c.y + d[1], c.z + d[2]));
-      if (neighbour && !(seeThrough(neighbour) && !seeThrough(c))) continue;
-      const gkey = c.texture ? `tex:${c.texture}:${face}` : `tint:${c.color}`;
+      // Un fantôme ne cache jamais une face, et garde toutes les siennes.
+      if (neighbour && !neighbour.ghost && !c.ghost && !(seeThrough(neighbour) && !seeThrough(c))) continue;
+      const gkey = c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${face}` : `tint:${c.color}`;
       let g = groups.get(gkey);
       if (!g) {
         g = {
@@ -106,6 +109,7 @@ export function buildMesh(cubes: VoxelCube[]): MeshGroup[] {
           texture: c.texture,
           face,
           color: c.texture ? undefined : c.color,
+          ghost: c.ghost,
           positions: [],
           normals: [],
           uvs: [],

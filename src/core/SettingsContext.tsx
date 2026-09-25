@@ -29,10 +29,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const reset = useCallback(() => setSettings(DEFAULT_SETTINGS), []);
 
-  const speak = useCallback(
-    (text: string, onEnd?: () => void) => speakRaw(text, settings.speechRate, onEnd),
-    [settings.speechRate],
-  );
+  const speak = useCallback((text: string, onEnd?: () => void) => speakRaw(text, settings.speechRate, onEnd), [settings.speechRate]);
 
   const value = useMemo(() => ({ settings, update, reset, speak, stop: stopSpeaking }), [settings, update, reset, speak]);
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

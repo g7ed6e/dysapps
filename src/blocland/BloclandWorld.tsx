@@ -16,7 +16,7 @@ export function BloclandWorld() {
   const { settings } = useSettings();
   const { state } = useBlocland();
   const navigate = useNavigate();
-  const cubes = useMemo(() => worldCubes(state.progress), [state.progress]);
+  const cubes = useMemo(() => worldCubes(state.progress, state.village), [state.progress, state.village]);
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({
     island: null,
     seq: 0,

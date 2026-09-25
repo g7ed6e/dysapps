@@ -3,6 +3,7 @@
 import type { BiomeId, BlockId } from './biomes';
 import { BIOMES, BLOCKS } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
+import { cellKey, getPlan, planCells, type PlanDef } from './world/plans';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -50,6 +51,8 @@ export interface BloclandState {
 
 export interface Village {
   placed: Partial<Record<BiomeId, BuildCell[]>>;
+  /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
+  plans: Record<string, string[]>;
 }
 
 /** Un bloc posé, en coordonnées relatives à l'île ; z = 0 est le premier bloc sur le sol. */
@@ -76,7 +79,7 @@ export const EMPTY_STATE: BloclandState = {
   types: {},
   chests: 0,
   fluence: {},
-  village: { placed: {} },
+  village: { placed: {}, plans: {} },
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -178,6 +181,16 @@ export function sanitizeState(input: unknown): BloclandState {
       if (list.length) placed[island as BiomeId] = list;
     }
   }
+  const plans: Record<string, string[]> = {};
+  if (isRecord(village.plans)) {
+    for (const [id, keys] of Object.entries(village.plans)) {
+      const plan = getPlan(id);
+      if (!plan || !Array.isArray(keys)) continue;
+      const valid = new Set(planCells(plan).map((c) => c.key));
+      const list = [...new Set(keys.filter((k): k is string => typeof k === 'string' && valid.has(k)))];
+      if (list.length) plans[id] = list;
+    }
+  }
   return {
     progress,
     spaced,
@@ -186,7 +199,7 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
-    village: { placed },
+    village: { placed, plans },
   };
 }
 
@@ -243,6 +256,62 @@ export function removeAt(state: BloclandState, island: BiomeId, x: number, y: nu
 /** Retire le bloc du dessus d'une colonne (vue simple). */
 export function removeFromColumn(state: BloclandState, island: BiomeId, x: number, y: number): { state: BloclandState; removed: BlockId | null } {
   return removeAt(state, island, x, y, columnHeight(placedOn(state, island), x, y) - 1);
+}
+
+// ---------- Plans (construction guidée) ----------
+
+export interface PlanStatus {
+  done: number;
+  total: number;
+  complete: boolean;
+  /** Blocs encore à poser, par type. */
+  missing: Partial<Record<BlockId, number>>;
+}
+
+export function planStatus(state: BloclandState, plan: PlanDef): PlanStatus {
+  const done = new Set(state.village.plans[plan.id] ?? []);
+  const cells = planCells(plan);
+  const missing: Partial<Record<BlockId, number>> = {};
+  for (const c of cells) if (!done.has(c.key)) missing[c.block] = (missing[c.block] ?? 0) + 1;
+  const n = cells.filter((c) => done.has(c.key)).length;
+  return { done: n, total: cells.length, complete: n === cells.length, missing };
+}
+
+export type FillReason = 'pas-dans-le-plan' | 'deja-pose' | 'plus-de-blocs';
+export type FillResult =
+  | { state: BloclandState; ok: true; block: BlockId; completed: boolean }
+  | { state: BloclandState; ok: false; reason: FillReason; block?: BlockId };
+
+/** Pose le bloc attendu à une cellule du plan (le type est imposé par le plan). Termine le plan si c'était la dernière. */
+export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: number, z: number): FillResult {
+  const cell = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
+  if (!cell) return { state, ok: false, reason: 'pas-dans-le-plan' };
+  const done = state.village.plans[plan.id] ?? [];
+  if (done.includes(cell.key)) return { state, ok: false, reason: 'deja-pose', block: cell.block };
+  if ((state.inventory[cell.block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs', block: cell.block };
+  const inventory = { ...state.inventory, [cell.block]: (state.inventory[cell.block] ?? 0) - 1 };
+  const nextDone = [...done, cell.key];
+  const completed = nextDone.length === plan.cells.length;
+  if (completed) for (const [b, n] of Object.entries(plan.reward.chest)) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + (n ?? 0);
+  return {
+    ok: true,
+    block: cell.block,
+    completed,
+    state: { ...state, inventory, village: { ...state.village, plans: { ...state.village.plans, [plan.id]: nextDone } } },
+  };
+}
+
+/** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
+export function nextFillable(state: BloclandState, plan: PlanDef): { x: number; y: number; z: number } | null {
+  const done = new Set(state.village.plans[plan.id] ?? []);
+  const cell = planCells(plan).find((c) => !done.has(c.key) && (state.inventory[c.block] ?? 0) > 0);
+  return cell ? { x: cell.x, y: cell.y, z: cell.z } : null;
+}
+
+/** La cellule d'un plan à ces coordonnées, si elle existe (posée ou non). */
+export function planCellAt(plan: PlanDef, x: number, y: number, z: number): { key: string; block: BlockId } | null {
+  const c = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
+  return c ? { key: cellKey(c.x, c.y, c.z), block: c.block } : null;
 }
 
 /** Démonte tout ce qui est posé sur une île : les blocs reviennent dans l'inventaire. */

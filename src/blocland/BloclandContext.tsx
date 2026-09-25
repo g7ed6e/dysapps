@@ -6,6 +6,7 @@ import {
   clearIsland as clearIslandPure,
   completeExercise,
   dueItems,
+  fillPlanCell as fillPlanCellPure,
   placeAt as placeAtPure,
   placeOnColumn as placeOnColumnPure,
   recordFluence as recordFluencePure,
@@ -15,8 +16,10 @@ import {
   todayISO,
   type BloclandState,
   type Completion,
+  type FillResult,
   type PlaceResult,
 } from './engine';
+import type { PlanDef } from './world/plans';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -42,6 +45,8 @@ interface BloclandContextValue {
   removeAt: (island: BiomeId, x: number, y: number, z: number) => BlockId | null;
   removeFromColumn: (island: BiomeId, x: number, y: number) => BlockId | null;
   clearIsland: (island: BiomeId) => void;
+  /** Pose le bloc attendu à une cellule d'un plan. */
+  fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
   reset: () => void;
 }
 
@@ -95,6 +100,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   };
   const removeAt = useCallback((island: BiomeId, x: number, y: number, z: number) => applyRemove(removeAtPure(stateRef.current, island, x, y, z)), []);
   const removeFromColumn = useCallback((island: BiomeId, x: number, y: number) => applyRemove(removeFromColumnPure(stateRef.current, island, x, y)), []);
+  const fillPlan = useCallback((plan: PlanDef, x: number, y: number, z: number) => {
+    const r = fillPlanCellPure(stateRef.current, plan, x, y, z);
+    if (r.ok) {
+      stateRef.current = r.state;
+      setState(r.state);
+    }
+    return r;
+  }, []);
   const clearIsland = useCallback((island: BiomeId) => {
     stateRef.current = clearIslandPure(stateRef.current, island);
     setState(stateRef.current);
@@ -128,6 +141,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       removeAt,
       removeFromColumn,
       clearIsland,
+      fillPlan,
       reset,
     }),
     [
@@ -143,6 +157,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       removeAt,
       removeFromColumn,
       clearIsland,
+      fillPlan,
       reset,
     ],
   );

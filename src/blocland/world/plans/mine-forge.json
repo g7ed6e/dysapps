@@ -1,0 +1,126 @@
+{
+  "id": "mine-forge",
+  "biome": "mine",
+  "name": "La forge de Tunel",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "pierre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "block": "bois"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "block": "bois"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "block": "bois"
+    }
+  ],
+  "reward": {
+    "xp": 50,
+    "chest": {
+      "sable": 3
+    }
+  },
+  "done": "Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur·se."
+}

@@ -5,10 +5,7 @@
 const VOWELS = 'aeiouyàâäéèêëîïôöùûüÿœæ';
 const ACCENTED = 'éèêëïöü';
 /** Groupes de deux consonnes qu'on ne sépare jamais. */
-const INSEPARABLE = new Set([
-  'bl', 'cl', 'fl', 'gl', 'pl', 'br', 'cr', 'dr', 'fr', 'gr', 'pr', 'tr', 'vr',
-  'ch', 'ph', 'th', 'sh', 'gn',
-]);
+const INSEPARABLE = new Set(['bl', 'cl', 'fl', 'gl', 'pl', 'br', 'cr', 'dr', 'fr', 'gr', 'pr', 'tr', 'vr', 'ch', 'ph', 'th', 'sh', 'gn']);
 
 const isVowel = (c: string) => VOWELS.includes(c);
 

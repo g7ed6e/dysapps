@@ -1,0 +1,96 @@
+{
+  "id": "ferme-etable",
+  "biome": "ferme",
+  "name": "L’étable de Bloquette",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "terre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "bois"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 1,
+      "block": "bois"
+    }
+  ],
+  "reward": {
+    "xp": 50,
+    "chest": {
+      "verre": 3
+    }
+  },
+  "done": "Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble."
+}

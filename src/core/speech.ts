@@ -6,11 +6,7 @@ export function isSpeechAvailable(): boolean {
 
 function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
-  return (
-    voices.find((v) => v.lang === 'fr-FR' && v.localService) ??
-    voices.find((v) => v.lang === 'fr-FR') ??
-    voices.find((v) => v.lang.startsWith('fr'))
-  );
+  return voices.find((v) => v.lang === 'fr-FR' && v.localService) ?? voices.find((v) => v.lang === 'fr-FR') ?? voices.find((v) => v.lang.startsWith('fr'));
 }
 
 export function speak(text: string, rate = 0.9, onEnd?: () => void): void {
