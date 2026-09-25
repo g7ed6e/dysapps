@@ -44,7 +44,7 @@ export function Bridges({ island, onBuilt }: Props) {
       const used = Object.entries(r.used)
         .map(([id, n]) => `${n} ${BLOCKS[id as keyof typeof BLOCKS].name.toLowerCase()}`)
         .join(', ');
-      const built = b.kind === 'pont' || b.kind === 'bac' ? 'construit' : b.kind === 'tunnel' ? 'percé' : 'taillé';
+      const built = b.kind === 'pont' || b.kind === 'bac' ? 'construit' : b.kind === 'tunnel' ? 'percé' : b.kind === 'sentier' ? 'tracé' : 'taillé';
       text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}. L’île est ouverte.`;
       if (settings.sounds) playDone();
       onBuilt?.(otherEnd(b, island));

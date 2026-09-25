@@ -49,7 +49,7 @@ it('une île fermée montre ses quêtes verrouillées et renvoie à l’île pr�
   expect(document.body.textContent).toContain('Construis d’abord un chemin');
   // Sans bloc : l'ouvrage est une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
   expect(screen.queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
-  expect(document.body.textContent).toContain('Pont vers Forêt des sons');
+  expect(document.body.textContent).toContain('Sentier vers Forêt des sons');
   expect(document.body.textContent).toContain('Encore 3 blocs (3 en tout)');
   expect(screen.getByRole('list', { name: 'Quêtes de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);

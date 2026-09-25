@@ -82,13 +82,18 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
 
 it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), en rampe entre deux altitudes', () => {
   const bridgeCubes = (bridges: string[], id: string) => worldCubes({}, village(bridges)).filter((c) => c.bridge === id);
-  // Forêt–Mine : constructible dès le début, donc en fantôme ; construit, en planches, à plat (même altitude).
-  const ghost = bridgeCubes([], 'foret-mine').filter((c) => c.ghost);
+  // Forêt–Mine : un sentier sur l'isthme, constructible dès le début, donc en fantôme : des pierres de gué sur le sol.
+  const trail = bridgeCubes([], 'foret-mine');
+  expect(trail.length).toBeGreaterThanOrEqual(4);
+  expect(trail.every((c) => c.ghost)).toBe(true);
+  expect(trail.filter((c) => c.texture === 'galet').every((c) => c.z >= 1 && c.z <= 4)).toBe(true);
+  // Forêt–Ferme : un pont, en planches, à plat (même altitude).
+  const ghost = bridgeCubes([], 'foret-ferme').filter((c) => c.ghost);
   expect(ghost.length).toBeGreaterThanOrEqual(4);
   expect(ghost.filter((c) => c.texture !== 'lanterne').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
   // Une lanterne à chaque bout.
   expect(ghost.filter((c) => c.texture === 'lanterne')).toHaveLength(2);
-  const built = bridgeCubes(['foret-mine'], 'foret-mine').filter((c) => !c.ghost);
+  const built = bridgeCubes(['foret-ferme'], 'foret-ferme').filter((c) => !c.ghost);
   expect(built.length).toBe(ghost.length);
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
   expect(bridgeCubes([], 'mine-carriere')).toHaveLength(0);

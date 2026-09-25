@@ -44,7 +44,8 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/aventure');
-    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(3);
+    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(2);
+    expect(screen.getAllByText(/Sentier à construire : 3 blocs/).length).toBe(1);
     expect(screen.getAllByText(/Bac à construire : 3 blocs/).length).toBe(1);
     expect(screen.getAllByText(/Île lointaine/).length).toBe(12);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
@@ -60,7 +61,7 @@ describe('déblocage des biomes', () => {
     renderAt('/aventure/mine');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Construire/ }));
-    expect(document.body.textContent).toMatch(/Le pont vers Forêt des sons est construit/);
+    expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.bridges).toEqual(['foret-mine']);
     expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toEqual({ pierre: 1 });

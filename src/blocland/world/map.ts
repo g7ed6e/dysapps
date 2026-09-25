@@ -32,28 +32,45 @@ export const MAP: IslandDef[] = [
   // Basses Terres (6e)
   { id: 'foret', region: 'basses-terres', core: { x: 50, y: 44 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
   { id: 'ferme', region: 'basses-terres', core: { x: 20, y: 46 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
-  { id: 'mine', region: 'montagne', core: { x: 80, y: 46 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
-  { id: 'tour', region: 'basses-terres', core: { x: -10, y: 42 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
-  { id: 'carriere', region: 'montagne', core: { x: 110, y: 42 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
+  { id: 'mine', region: 'montagne', core: { x: 72, y: 46 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
+  { id: 'tour', region: 'basses-terres', core: { x: -2, y: 42 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
+  { id: 'carriere', region: 'montagne', core: { x: 102, y: 42 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
   { id: 'plaine', region: 'basses-terres', core: { x: 48, y: 16 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
   { id: 'riviere', region: 'marais', core: { x: 82, y: 14 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
   { id: 'volcan', region: 'feu', core: { x: 16, y: 14 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
   // Collines (5e)
   { id: 'glacier', region: 'montagne', core: { x: 48, y: -16 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
-  { id: 'marche', region: 'marais', core: { x: 84, y: -18 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
+  { id: 'marche', region: 'marais', core: { x: 70, y: -18 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
   { id: 'carrefour', region: 'basses-terres', core: { x: 50, y: 74 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
-  { id: 'marais', region: 'marais', core: { x: 82, y: 78 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
+  { id: 'marais', region: 'marais', core: { x: 72, y: 78 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
   // Monts (4e)
   { id: 'forge', region: 'feu', core: { x: 14, y: -20 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
-  { id: 'atelier', region: 'hauteurs', core: { x: 116, y: -14 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
+  { id: 'atelier', region: 'hauteurs', core: { x: 104, y: -14 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
   { id: 'falaise', region: 'montagne', core: { x: 16, y: 80 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
-  { id: 'cabinet', region: 'hauteurs', core: { x: 114, y: 78 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
+  { id: 'cabinet', region: 'hauteurs', core: { x: 106, y: 78 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
   // Sommets (3e)
   { id: 'belvedere', region: 'montagne', core: { x: -18, y: -18 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
   { id: 'phare', region: 'hauteurs', core: { x: 16, y: -50 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
   { id: 'donnees', region: 'hauteurs', core: { x: 86, y: -50 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: -16, y: 82 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'textes', region: 'hauteurs', core: { x: -10, y: 82 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
 ];
+
+/**
+ * Les isthmes : deux îles voisines de même niveau, côte à côte, partagent une bande de terre. Le monde n'est plus
+ * un semis d'îles : quatre paires forment de petits continents. L'ouvrage entre elles est un sentier.
+ */
+export const ISTHMUSES: [BiomeId, BiomeId][] = [
+  ['foret', 'mine'],
+  ['ferme', 'tour'],
+  ['glacier', 'marche'],
+  ['carrefour', 'marais'],
+];
+
+/** L'île avec laquelle une île partage un isthme, s'il y en a un. */
+export function isthmusOf(id: BiomeId): BiomeId | null {
+  const pair = ISTHMUSES.find(([a, b]) => a === id || b === id);
+  return pair ? (pair[0] === id ? pair[1] : pair[0]) : null;
+}
 
 export function islandDef(id: BiomeId): IslandDef {
   const def = MAP.find((i) => i.id === id);
@@ -84,9 +101,44 @@ export function smoothNoise(seed: number, x: number, y: number, cell = 4): numbe
   return a + (b - a) * s(fy);
 }
 
-/** Boîte englobante de la terre d'une île (bornes hautes exclues). */
+/** L'île qui « possède » l'isthme (la première de la paire) et sa voisine, ou null. */
+function isthmusPair(def: IslandDef): { owner: IslandDef; other: IslandDef } | null {
+  const pair = ISTHMUSES.find(([a]) => a === def.id);
+  if (!pair) return null;
+  return { owner: def, other: islandDef(pair[1]) };
+}
+
+/** Les rangées de l'isthme entre deux îles côte à côte, pour une colonne x : bornes [y0, y1), bords adoucis par un bruit. */
+function isthmusRows(owner: IslandDef, other: IslandDef, x: number): { y0: number; y1: number } {
+  const y0 = Math.max(owner.core.y, other.core.y) + 1;
+  const y1 = Math.min(owner.core.y + CORE, other.core.y + CORE) - 1;
+  const n0 = Math.floor(smoothNoise(owner.seed + 17, x, 0, 3) * 2.5);
+  const n1 = Math.floor(smoothNoise(owner.seed + 19, x, 7, 3) * 2.5);
+  return { y0: y0 + n0, y1: y1 - n1 };
+}
+
+/** La case (x, y) est-elle sur l'isthme que possède cette île ? (Jamais sur la terre propre de la voisine.) */
+export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
+  const pair = isthmusPair(def);
+  if (!pair) return false;
+  const { owner, other } = pair;
+  const left = owner.core.x < other.core.x ? owner : other;
+  const right = left === owner ? other : owner;
+  if (x < left.core.x + CORE || x >= right.core.x) return false;
+  const { y0, y1 } = isthmusRows(owner, other, x);
+  if (y < y0 || y >= y1) return false;
+  return !isLandProper(other, x, y);
+}
+
+/** Boîte englobante de la terre d'une île (bornes hautes exclues), isthme compris. */
 export function landBox(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
-  return { x0: def.core.x - def.ext.left, y0: def.core.y - def.ext.front, x1: def.core.x + CORE + def.ext.right, y1: def.core.y + CORE + def.ext.back };
+  const box = { x0: def.core.x - def.ext.left, y0: def.core.y - def.ext.front, x1: def.core.x + CORE + def.ext.right, y1: def.core.y + CORE + def.ext.back };
+  const pair = isthmusPair(def);
+  if (pair) {
+    box.x0 = Math.min(box.x0, pair.other.core.x + CORE);
+    box.x1 = Math.max(box.x1, pair.other.core.x);
+  }
+  return box;
 }
 
 export function inCore(def: IslandDef, x: number, y: number): boolean {
@@ -105,8 +157,16 @@ function coreDistance(def: IslandDef, x: number, y: number): number {
  * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain.
  */
 export function isLand(def: IslandDef, x: number, y: number): boolean {
+  return isLandProper(def, x, y) || inIsthmus(def, x, y);
+}
+
+/** La terre propre d'une île (sans l'isthme). */
+function isLandProper(def: IslandDef, x: number, y: number): boolean {
   if (inCore(def, x, y)) return true;
-  const { x0, y0, x1, y1 } = landBox(def);
+  const x0 = def.core.x - def.ext.left;
+  const y0 = def.core.y - def.ext.front;
+  const x1 = def.core.x + CORE + def.ext.right;
+  const y1 = def.core.y + CORE + def.ext.back;
   if (x < x0 || x >= x1 || y < y0 || y >= y1) return false;
   const d = coreDistance(def, x, y);
   const coast = (smoothNoise(def.seed, x, y, 5) - 0.5) * 0.7 + (noise(def.seed + 1, x, y) - 0.5) * 0.15;
@@ -175,6 +235,13 @@ function computeLandscape(def: IslandDef): LandCell[] {
     const fine = noise(def.seed + 3, c.x, c.y);
     const edge = !isLandAt(c.x - 1, c.y) || !isLandAt(c.x + 1, c.y) || !isLandAt(c.x, c.y - 1) || !isLandAt(c.x, c.y + 1);
     const nearCore = coreDistance(def, c.x, c.y) < 0.35;
+    if (inIsthmus(def, c.x, c.y)) {
+      // L'isthme : une bande plate qui relie deux îles, herbe et sable au bord, quelques buissons.
+      const sandy = edge && def.altitude === 0 && def.region !== 'feu';
+      const ground: Ground = sandy ? 'sable' : def.region === 'feu' ? 'basalte' : def.region === 'marais' ? 'mousse' : def.id === 'glacier' ? 'glace' : 'herbe';
+      out.push({ x: c.x, y: c.y, h: 0, ground, decor: !edge && fine > 0.8 ? pickDecor(def, ground, 0, fine) : undefined });
+      continue;
+    }
     // Hauteur : collines douces, puis les pics par-dessus.
     let h = def.relief === 'plat' ? (n > 0.8 ? 1 : 0) : Math.min(2, Math.floor(n * 3));
     let crater = false;
