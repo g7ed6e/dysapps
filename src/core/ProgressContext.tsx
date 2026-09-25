@@ -4,6 +4,7 @@ import {
   levelFromXp,
   recordAnswer,
   type IconName,
+  recordBoss,
   recordPlan,
   recordSession,
   sanitizeProgress,
@@ -26,6 +27,8 @@ interface ProgressContextValue {
   completeSession: (appId: string, score: number) => ProgressUpdate;
   /** Un bâtiment du village terminé : XP et succès. */
   completePlan: (xp: number) => ProgressUpdate;
+  /** Un Gardien de biome vaincu : succès. */
+  beatBoss: () => ProgressUpdate;
   resetProgress: () => void;
   celebrations: Celebration[];
   dismissCelebration: (id: number) => void;
@@ -65,6 +68,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const completeSession = useCallback((appId: string, score: number) => apply(recordSession(progressRef.current, appId, score)), [apply]);
 
   const completePlan = useCallback((xp: number) => apply(recordPlan(progressRef.current, xp)), [apply]);
+  const beatBoss = useCallback(() => apply(recordBoss(progressRef.current)), [apply]);
 
   const resetProgress = useCallback(() => {
     removeKey(STORAGE_KEY);
@@ -78,8 +82,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ progress, answer, completeSession, completePlan, resetProgress, celebrations, dismissCelebration }),
-    [progress, answer, completeSession, completePlan, resetProgress, celebrations, dismissCelebration],
+    () => ({ progress, answer, completeSession, completePlan, beatBoss, resetProgress, celebrations, dismissCelebration }),
+    [progress, answer, completeSession, completePlan, beatBoss, resetProgress, celebrations, dismissCelebration],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

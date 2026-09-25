@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BIOMES, BLOCKS, isBiomeUnlocked } from './biomes';
+import { BIOMES, BLOCKS, isBiomeUnlocked, ofBlock } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Creature } from './Creatures';
 import { BlockIcon } from './Voxel';
@@ -61,7 +61,7 @@ export function BloclandPage() {
                 <span className="biome-module">{biome.module}</span>
                 <span className="biome-block">
                   <BlockIcon top={block.top} side={block.side} size={28} />
-                  {owned} bloc{owned > 1 ? 's' : ''} de {block.name.toLowerCase()}
+                  {owned} bloc{owned > 1 ? 's' : ''} {ofBlock(biome.block)}
                 </span>
                 {!unlocked && (
                   <span className="tag">

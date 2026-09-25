@@ -10,6 +10,7 @@ import { ProgressPage } from './pages/ProgressPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { BloclandPage } from './blocland/BloclandPage';
 import { BiomePage } from './blocland/BiomePage';
+import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
 import { ChantierPage } from './blocland/ChantierPage';
 import { BloclandProvider } from './blocland/BloclandContext';
@@ -39,6 +40,7 @@ export function AppRoutes() {
         <Route path="aventure" element={<BloclandPage />} />
         <Route path="aventure/chantier" element={<ChantierPage />} />
         <Route path="aventure/:biomeId" element={<BiomePage />} />
+        <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
         <Route path="reglages" element={<SettingsPage />} />
         <Route path="succes" element={<ProgressPage />} />

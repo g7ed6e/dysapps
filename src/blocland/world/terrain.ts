@@ -262,6 +262,8 @@ export function worldCubes(
       }
     }
     DECOR[biome.id](put, h);
+    // Le Gardien vaincu : un bloc d'or planté sur le plateau, visible de loin.
+    if (unlocked && (progress[`${biome.id}-gardien`]?.stars ?? 0) >= 2) put(7, 2, h(7, 2) + 1, BLOCKS.or.side);
     if (unlocked && withCreatures) {
       for (const c of CREATURE_CUBES[biome.id])
         cubes.push({

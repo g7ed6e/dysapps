@@ -10,6 +10,7 @@ import { RimesScreen } from './RimesScreen';
 import { DicteeItem } from './DicteeItem';
 import { FamillesScreen } from './FamillesScreen';
 import { EnclosScreen } from './EnclosScreen';
+import { BossScreen } from './BossScreen';
 
 export interface ScreenAnswer {
   /** Résultat par item de l'écran. */
@@ -55,4 +56,5 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   familles: { component: FamillesScreen, batch: 1 },
   enclos: { component: EnclosScreen, batch: 4 },
   recolte: { component: QcmItem, batch: 1 },
+  boss: { component: BossScreen, batch: 1 },
 };

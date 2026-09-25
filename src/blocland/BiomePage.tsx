@@ -1,12 +1,13 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, isBiomeUnlocked, previousBiome } from './biomes';
+import { BLOCKS, getBiome, isBiomeUnlocked, ofBlock, previousBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
 import { pickExercise } from './exercises';
 import { Stars } from './Stars';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { BlockIcon } from './Voxel';
 
 /** Un biome : sa créature donne la quête, puis la liste des exercices. */
@@ -78,9 +79,45 @@ export function BiomePage() {
         })}
       </ul>
 
+      <h2 className="section-title">
+        <Icon name="shield" /> Le Gardien
+      </h2>
+      {(() => {
+        const ready = unlocked && isBossUnlocked(biome, state.progress);
+        const beaten = isBossBeaten(biome.id, state.progress);
+        const boss = state.progress[`${biome.id}-gardien`];
+        const content = (
+          <>
+            <span className="app-icon boss-icon">
+              <Icon name={ready ? 'shield' : 'lock'} size="1.8rem" />
+            </span>
+            <span className="app-title">{biome.guardian}</span>
+            <span className="app-desc">Une épreuve de chaque quête, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
+            {beaten && boss ? (
+              <Stars count={boss.stars} label={`Gardien vaincu : ${boss.stars} étoiles sur 3`} />
+            ) : ready ? (
+              <span className="tag tag-new">Prêt à t’affronter</span>
+            ) : (
+              <span className="tag">
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque quête'}
+              </span>
+            )}
+          </>
+        );
+        return ready ? (
+          <Link to={`/aventure/${biome.id}/gardien`} className={`panel app-card boss-card biome-${biome.id}`}>
+            {content}
+          </Link>
+        ) : (
+          <div className="panel app-card boss-card locked" aria-disabled="true">
+            {content}
+          </div>
+        );
+      })()}
+
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />
-        Chaque quête réussie ici rapporte des blocs de {block.name.toLowerCase()}. Tu en as {owned}.
+        Chaque quête réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}.
       </p>
     </>
   );
