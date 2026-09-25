@@ -8,82 +8,112 @@
   },
   "cells": [
     {
-      "x": 0,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 0,
-      "y": 1,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 0,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 0,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 1,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 2,
-      "y": 2,
-      "z": 2,
-      "block": "toit"
-    },
-    {
-      "x": 1,
-      "y": 1,
-      "z": 3,
-      "block": "toit"
-    },
-    {
       "x": 1,
       "y": 0,
       "z": 0,
       "block": "porte"
     },
     {
-      "x": 3,
+      "x": 0,
       "y": 0,
-      "z": 0,
-      "block": "lanterne"
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 2,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "block": "obsidienne"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "block": "obsidienne"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 3,
+      "block": "obsidienne"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "block": "obsidienne"
     },
     {
       "x": -1,
-      "y": 0,
+      "y": 1,
       "z": 0,
-      "block": "obsidienne"
+      "block": "lanterne"
     },
     {
       "x": 3,
       "y": 1,
       "z": 0,
-      "block": "obsidienne"
+      "block": "lanterne"
     }
   ],
   "reward": {

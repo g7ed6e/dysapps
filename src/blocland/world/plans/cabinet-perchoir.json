@@ -32,6 +32,12 @@
       "block": "barriere"
     },
     {
+      "x": 4,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
       "x": 1,
       "y": -1,
       "z": 0,
@@ -44,20 +50,14 @@
       "block": "lanterne"
     },
     {
-      "x": 3,
+      "x": 4,
       "y": -1,
       "z": 1,
       "block": "lanterne"
     },
     {
-      "x": -1,
+      "x": 4,
       "y": 1,
-      "z": 0,
-      "block": "parchemin"
-    },
-    {
-      "x": 3,
-      "y": 2,
       "z": 0,
       "block": "parchemin"
     }

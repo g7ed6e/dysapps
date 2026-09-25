@@ -50,7 +50,13 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Blocs selon les étoiles** (`blocksBonus()` dans `engine.ts`) : +1 bloc à deux étoiles, +2 à trois, et **+2 la première fois** qu'une quête est jouée. Toujours au moins 1 bloc dès une bonne réponse, jamais rien de retiré. Une première quête réussie donne donc 5 à 7 blocs au lieu de 3 : de quoi construire un pont et commencer la cabane. L'écran de fin détaille le bonus.
 - **La fête d'un ouvrage** : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille (le panneau s'ouvre sur l'île d'en face).
 
-## 8. À venir
+## 8. Des bâtiments différents sur chaque île (PR 6)
+
+- Quinze îles construisaient la même cabane, le même toit et la même cour que la Forêt. Elles ont maintenant cinq **gabarits** en trois étapes, choisis selon leur thème : **dôme** (nid de Coco, abri de Lavi, igloo, dôme de Stat), **longère** (huttes de Nénu et de Kroa, bergerie), **gradins** (échoppe, nid de Plume, kiosque), **atelier en L** (cabane de Sema, ateliers de Braise et d'Ixe), **tour ronde** (lanternes de Fi et d'Astra). Les cinq premières îles gardent leurs bâtiments propres.
+- Les noms, les phrases de fin et l'XP ne changent pas ; les coffres donnent exactement le kit (toit, porte, lanterne, barrière, escalier) du plan suivant.
+- Les blocs déjà posés sur un plan dont la forme a changé sont oubliés à la lecture de la sauvegarde (les blocs gagnés restent dans l'inventaire).
+
+## 9. À venir
 
 
-- Gabarits de bâtiments variés pour les plans clonés (tour ronde, longère, dôme, gradins, atelier en L).
+- Rien pour l'instant : jouer, écouter les retours des enfants.

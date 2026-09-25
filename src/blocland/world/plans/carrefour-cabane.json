@@ -15,13 +15,13 @@
     },
     {
       "x": 0,
-      "y": 1,
+      "y": 2,
       "z": 0,
       "block": "panneau"
     },
     {
-      "x": 0,
-      "y": 2,
+      "x": 1,
+      "y": 0,
       "z": 0,
       "block": "panneau"
     },
@@ -75,12 +75,6 @@
     },
     {
       "x": 1,
-      "y": 1,
-      "z": 1,
-      "block": "panneau"
-    },
-    {
-      "x": 1,
       "y": 2,
       "z": 1,
       "block": "panneau"
@@ -101,6 +95,36 @@
       "x": 2,
       "y": 2,
       "z": 1,
+      "block": "panneau"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "panneau"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 0,
+      "block": "panneau"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 0,
+      "block": "panneau"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 0,
+      "block": "panneau"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
       "block": "panneau"
     }
   ],
@@ -108,8 +132,8 @@
     "xp": 40,
     "chest": {
       "glace": 3,
-      "toit": 9,
       "porte": 1,
+      "toit": 15,
       "lanterne": 1
     }
   },
