@@ -6,11 +6,15 @@ import {
   developDouble,
   equationTwoSteps,
   fmt,
+  mean,
   mulRelatifs,
   percentChange,
   pow,
+  pythagoreHyp,
+  pythagoreSide,
   scientific,
   seededItems,
+  thales,
 } from './college';
 
 it('formate et lit les relatifs, range les réponses', () => {
@@ -88,6 +92,34 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
       expect(it.choices).toContain(it.answer);
       expect(new Set(it.choices as string[]).size).toBe((it.choices as string[]).length);
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
+    }
+  }
+});
+
+it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données', () => {
+  const rng = seededItems('3e');
+  for (let i = 0; i < 20; i++) {
+    const h = pythagoreHyp(rng);
+    const f = (h.figure as { props: { a: number; b: number } }).props;
+    expect(h.answer).toBe(`${Math.sqrt(f.a * f.a + f.b * f.b)} cm`);
+    const s = pythagoreSide(rng);
+    expect(s.choices).toContain(s.answer);
+    const t = thales(rng);
+    expect(t.choices).toContain(t.answer);
+    const m = mean(rng);
+    const vals = (m.aid as { props: { values: number[] } }).props.values;
+    expect(Number(m.answer)).toBe(vals.reduce((a, b) => a + b, 0) / vals.length);
+  }
+  for (const biome of ['belvedere', 'donnees', 'phare']) {
+    const defs = COLLEGE_EXERCISES.filter((e) => e.biome === biome);
+    expect(defs.length).toBeGreaterThanOrEqual(3);
+    for (const def of defs) {
+      expect(def.items).toHaveLength(8);
+      for (const it of def.items) {
+        expect(it.choices).toContain(it.answer);
+        expect(it.aid ?? it.figure).toBeDefined();
+        expect(JSON.parse(JSON.stringify(it))).toEqual(it);
+      }
     }
   }
 });

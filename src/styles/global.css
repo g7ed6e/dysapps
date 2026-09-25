@@ -78,6 +78,9 @@
   --tex-paper: url("./textures/calque.png");
   --tex-slate: url("./textures/ardoise.png");
   --tex-scroll: url("./textures/parchemin.png");
+  --tex-marble: url("./textures/marbre.png");
+  --tex-quartz: url("./textures/quartz.png");
+  --tex-prism: url("./textures/prisme.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -135,6 +138,9 @@
   --tex-paper: none;
   --tex-slate: none;
   --tex-scroll: none;
+  --tex-marble: none;
+  --tex-quartz: none;
+  --tex-prism: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2256,6 +2262,18 @@ a.app-card:active {
 .app-card.biome-cabinet {
   background-image: var(--tex-scroll);
 }
+.biome-card.biome-belvedere,
+.app-card.biome-belvedere {
+  background-image: var(--tex-marble);
+}
+.biome-card.biome-donnees,
+.app-card.biome-donnees {
+  background-image: var(--tex-quartz);
+}
+.biome-card.biome-phare,
+.app-card.biome-phare {
+  background-image: var(--tex-prism);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2327,6 +2345,15 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-cabinet {
   border-top-color: #cdb97f;
+}
+:root[data-theme="clair"] .biome-belvedere {
+  border-top-color: #d6d1c8;
+}
+:root[data-theme="clair"] .biome-donnees {
+  border-top-color: #b9a8d6;
+}
+:root[data-theme="clair"] .biome-phare {
+  border-top-color: #f0c95a;
 }
 .biome-step {
   position: absolute;
@@ -3460,6 +3487,15 @@ a.app-card:active {
 .island-sheet.biome-cabinet {
   background-image: var(--tex-scroll);
 }
+.island-sheet.biome-belvedere {
+  background-image: var(--tex-marble);
+}
+.island-sheet.biome-donnees {
+  background-image: var(--tex-quartz);
+}
+.island-sheet.biome-phare {
+  background-image: var(--tex-prism);
+}
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {
   background-image: none;
@@ -3768,4 +3804,72 @@ a.island-quest:focus-visible {
   border: none;
   padding: 0;
   background: transparent;
+}
+
+/* ===== Aides de 3e : figures et barres ===== */
+.right-triangle svg,
+.thales-figure svg {
+  width: 100%;
+  max-width: 22rem;
+  display: block;
+  margin: 0 auto;
+}
+.right-triangle .tri,
+.thales-figure .tri {
+  fill: color-mix(in srgb, var(--cyan) 25%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.right-triangle .right-mark {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.right-triangle .angle-mark {
+  fill: none;
+  stroke: var(--pink);
+  stroke-width: 3;
+}
+.thales-figure .par {
+  stroke: var(--violet);
+  stroke-width: 4;
+}
+.right-triangle text,
+.thales-figure text {
+  font-family: var(--dys-font, inherit);
+  font-size: 15px;
+  fill: currentColor;
+}
+.right-triangle .pt,
+.thales-figure .pt {
+  font-weight: 700;
+}
+.right-triangle .hyp,
+.thales-figure .hyp {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.bar-list [role="img"] {
+  display: grid;
+  gap: 0.3rem;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+.bar-value {
+  text-align: right;
+  font-weight: 700;
+}
+.bar-list .bar {
+  display: block;
+  height: 1.1rem;
+  background: var(--cyan);
+  border: 2px solid var(--ink);
+}
+.bar-list .bar.mark {
+  background: var(--yellow);
+  border-style: dashed;
 }

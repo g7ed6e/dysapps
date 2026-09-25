@@ -49,6 +49,15 @@ import falaiseEnclos from './plans/falaise-enclos.json';
 import cabinetNid from './plans/cabinet-nid.json';
 import cabinetToit from './plans/cabinet-toit.json';
 import cabinetPerchoir from './plans/cabinet-perchoir.json';
+import belvedereKiosque from './plans/belvedere-kiosque.json';
+import belvedereToit from './plans/belvedere-toit.json';
+import belvedereTerrasse from './plans/belvedere-terrasse.json';
+import donneesDome from './plans/donnees-dome.json';
+import donneesToit from './plans/donnees-toit.json';
+import donneesTerrasse from './plans/donnees-terrasse.json';
+import phareLanterne from './plans/phare-lanterne.json';
+import phareToit from './plans/phare-toit.json';
+import phareJetee from './plans/phare-jetee.json';
 
 export interface PlanCell {
   x: number;
@@ -122,6 +131,15 @@ export const PLANS: PlanDef[] = [
   cabinetNid,
   cabinetToit,
   cabinetPerchoir,
+  belvedereKiosque,
+  belvedereToit,
+  belvedereTerrasse,
+  donneesDome,
+  donneesToit,
+  donneesTerrasse,
+  phareLanterne,
+  phareToit,
+  phareJetee,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

@@ -696,6 +696,312 @@ export const equationTwoSteps: ItemGenerator = (rng) => {
   };
 };
 
+// ---------- Belvédère de Thalès ----------
+
+const TRIPLES: [number, number, number][] = [
+  [3, 4, 5],
+  [6, 8, 10],
+  [5, 12, 13],
+  [9, 12, 15],
+  [8, 15, 17],
+  [12, 16, 20],
+  [7, 24, 25],
+  [15, 20, 25],
+];
+
+export const pythagoreHyp: ItemGenerator = (rng) => {
+  const [a, b, c] = TRIPLES[randomInt(0, TRIPLES.length - 1, rng)];
+  return {
+    key: `pyth-h-${a}-${b}`,
+    prompt: `Triangle ABC rectangle en A, AB = ${a} cm et AC = ${b} cm. BC = …`,
+    spoken: `Triangle A B C rectangle en A, A B égale ${a} centimètres et A C égale ${b} centimètres. Combien mesure B C, l’hypoténuse ?`,
+    choices: choices(c, [a + b, c + 1, c - 1, b * 2], rng, (n) => `${fmt(n)} cm`),
+    answer: `${fmt(c)} cm`,
+    hint: `BC² = AB² + AC² = ${a * a} + ${b * b}. Puis la racine carrée.`,
+    explanation: `BC² = ${a}² + ${b}² = ${a * a} + ${b * b} = ${c * c}, donc BC = √${c * c} = ${c} cm.`,
+    figure: { kind: 'right-triangle', props: { a, b, c: '?', labels: ['A', 'B', 'C'] } },
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Pythagore',
+        lines: [
+          'Dans un triangle rectangle, hypoténuse² = côté² + côté².',
+          'L’hypoténuse est le plus grand côté, en face de l’angle droit.',
+          'Pour la trouver : additionne les carrés, puis racine carrée.',
+        ],
+      },
+    },
+  };
+};
+
+export const pythagoreSide: ItemGenerator = (rng) => {
+  const [a, b, c] = TRIPLES[randomInt(0, TRIPLES.length - 1, rng)];
+  return {
+    key: `pyth-s-${a}-${c}`,
+    prompt: `Triangle ABC rectangle en A, BC = ${c} cm et AB = ${a} cm. AC = …`,
+    spoken: `Triangle A B C rectangle en A, B C égale ${c} centimètres et A B égale ${a} centimètres. Combien mesure A C ?`,
+    choices: choices(b, [c + a, b + 1, b - 1, c - a], rng, (n) => `${fmt(n)} cm`),
+    answer: `${fmt(b)} cm`,
+    hint: `AC² = BC² − AB² = ${c * c} − ${a * a}. Puis la racine carrée.`,
+    explanation: `AC² = ${c}² − ${a}² = ${c * c} − ${a * a} = ${b * b}, donc AC = √${b * b} = ${b} cm.`,
+    figure: { kind: 'right-triangle', props: { a, b: '?', c, labels: ['A', 'B', 'C'] } },
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Pythagore (un côté)',
+        lines: ['côté² = hypoténuse² − autre côté².', 'On soustrait, puis racine carrée.', 'L’hypoténuse BC est en face de l’angle droit A.'],
+      },
+    },
+  };
+};
+
+export const thales: ItemGenerator = (rng) => {
+  const k = [2, 3, 1.5, 2.5][randomInt(0, 3, rng)];
+  const am = randomInt(2, 6, rng);
+  const ab = am * k;
+  const an = randomInt(2, 6, rng);
+  const ac = an * k;
+  const f = (n: number) => n.toLocaleString('fr-FR');
+  return {
+    key: `thales-${am}-${k}-${an}`,
+    prompt: `(MN) est parallèle à (BC). AM = ${f(am)}, AB = ${f(ab)}, AN = ${f(an)}. AC = …`,
+    spoken: `M N est parallèle à B C. A M égale ${f(am)}, A B égale ${f(ab)}, A N égale ${f(an)}. Combien mesure A C ?`,
+    choices: choices(ac, [an + (ab - am), ac + 1, an * 2, ab], rng, f),
+    answer: f(ac),
+    hint: `AM / AB = AN / AC : ${f(am)} / ${f(ab)} = ${f(an)} / AC. Le coefficient est × ${f(k)}.`,
+    explanation: `AB = AM × ${f(k)}, donc AC = AN × ${f(k)} = ${f(ac)}.`,
+    figure: { kind: 'thales-figure', props: { am: f(am), ab: f(ab), an: f(an), ac: '?' } },
+    aid: {
+      kind: 'ratio-table',
+      props: {
+        cols: ['petit triangle', 'grand triangle'],
+        rows: [
+          [f(am), f(ab)],
+          [f(an), '?'],
+        ],
+        caption: `Coefficient : × ${f(k)}`,
+      },
+    },
+  };
+};
+
+export const trigo: ItemGenerator = (rng) => {
+  const kind = ['cos', 'sin', 'tan'][randomInt(0, 2, rng)];
+  const [a, b, c] = TRIPLES[randomInt(0, 3, rng)];
+  // Angle en B : côté adjacent AB = a, côté opposé AC = b, hypoténuse BC = c.
+  const answer = kind === 'cos' ? `${a} / ${c}` : kind === 'sin' ? `${b} / ${c}` : `${b} / ${a}`;
+  return {
+    key: `trig-${kind}-${a}-${b}`,
+    prompt: `Triangle ABC rectangle en A. AB = ${a}, AC = ${b}, BC = ${c}. ${kind} B̂ = …`,
+    spoken: `Triangle A B C rectangle en A. A B égale ${a}, A C égale ${b}, B C égale ${c}. Que vaut ${kind === 'cos' ? 'cosinus' : kind === 'sin' ? 'sinus' : 'tangente'} de l’angle B ?`,
+    choices: textChoices(answer, [`${a} / ${c}`, `${b} / ${c}`, `${b} / ${a}`, `${c} / ${a}`], rng),
+    answer,
+    hint: `Pour l’angle B : adjacent = AB (${a}), opposé = AC (${b}), hypoténuse = BC (${c}). ${kind === 'cos' ? 'cos = adjacent / hypoténuse' : kind === 'sin' ? 'sin = opposé / hypoténuse' : 'tan = opposé / adjacent'}.`,
+    explanation: `${kind} B̂ = ${kind === 'cos' ? 'adjacent / hypoténuse' : kind === 'sin' ? 'opposé / hypoténuse' : 'opposé / adjacent'} = ${answer}.`,
+    figure: { kind: 'right-triangle', props: { a, b, c, labels: ['A', 'B', 'C'], angle: 'B' } },
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'CAH SOH TOA',
+        lines: [
+          'cos = Adjacent / Hypoténuse.',
+          'sin = Opposé / Hypoténuse.',
+          'tan = Opposé / Adjacent.',
+          'L’hypoténuse est en face de l’angle droit ; l’adjacent touche l’angle.',
+        ],
+      },
+    },
+  };
+};
+
+// ---------- Observatoire des données ----------
+
+const series = (rng: Rng, n: number, max: number) => Array.from({ length: n }, () => randomInt(1, max, rng));
+
+export const mean: ItemGenerator = (rng) => {
+  let s = series(rng, randomInt(4, 5, rng), 12);
+  let sum = s.reduce((a, b) => a + b, 0);
+  while (sum % s.length !== 0) {
+    s = series(rng, s.length, 12);
+    sum = s.reduce((a, b) => a + b, 0);
+  }
+  const m = sum / s.length;
+  return {
+    key: `mean-${s.join('-')}`,
+    prompt: `Notes : ${s.join(' ; ')}. Moyenne = …`,
+    spoken: `Les notes sont ${s.join(', ')}. Quelle est la moyenne ?`,
+    choices: choices(m, [sum, Math.max(...s), m + 1, m - 1], rng),
+    answer: fmt(m),
+    hint: `Additionne tout (${sum}), puis divise par le nombre de notes (${s.length}).`,
+    explanation: `${s.join(' + ')} = ${sum}, et ${sum} ÷ ${s.length} = ${m}.`,
+    // Les barres seulement : la valeur repère n'est pas dessinée, sinon elle donnerait la réponse.
+    aid: { kind: 'bar-list', props: { values: s } },
+  };
+};
+
+export const medianRange: ItemGenerator = (rng) => {
+  const s = series(rng, 5, 15).sort((a, b) => a - b);
+  const med = s[2];
+  const range = s[4] - s[0];
+  const askRange = rng() < 0.4;
+  return {
+    key: `med-${s.join('-')}-${askRange ? 'r' : 'm'}`,
+    prompt: `Série rangée : ${s.join(' ; ')}. ${askRange ? 'Étendue' : 'Médiane'} = …`,
+    spoken: `La série rangée est ${s.join(', ')}. Quelle est ${askRange ? 'l’étendue' : 'la médiane'} ?`,
+    choices: choices(askRange ? range : med, askRange ? [s[4], s[0], range + 1, med] : [s[1], s[3], (s[0] + s[4]) / 2, range].filter(Number.isInteger), rng),
+    answer: fmt(askRange ? range : med),
+    hint: askRange
+      ? 'Étendue = plus grande valeur − plus petite valeur.'
+      : 'Médiane : la valeur du milieu de la série rangée (autant de valeurs avant qu’après).',
+    explanation: askRange ? `${s[4]} − ${s[0]} = ${range}.` : `Cinq valeurs rangées : la troisième, ${med}, est au milieu.`,
+    aid: { kind: 'bar-list', props: { values: s } },
+  };
+};
+
+export const probability: ItemGenerator = (rng) => {
+  const kind = randomInt(0, 2, rng);
+  if (kind === 0) {
+    const red = randomInt(1, 5, rng);
+    const blue = randomInt(1, 5, rng);
+    const total = red + blue;
+    const answer = `${red}/${total}`;
+    return {
+      key: `proba-urne-${red}-${blue}`,
+      prompt: `Un sac contient ${red} boule${red > 1 ? 's' : ''} rouge${red > 1 ? 's' : ''} et ${blue} bleue${blue > 1 ? 's' : ''}. Probabilité de tirer une rouge = …`,
+      spoken: `Un sac contient ${red} boules rouges et ${blue} boules bleues. Quelle est la probabilité de tirer une rouge ?`,
+      choices: textChoices(answer, [`${blue}/${total}`, `${red}/${blue}`, `1/${total}`, `${total}/${red}`], rng),
+      answer,
+      hint: `Cas favorables : ${red} rouges. Cas possibles : ${total} boules en tout.`,
+      explanation: `${red} boules rouges sur ${total} boules : ${answer}.`,
+      aid: {
+        kind: 'rule-card',
+        props: {
+          title: 'Probabilité',
+          lines: ['Probabilité = cas favorables / cas possibles.', 'Toujours entre 0 (impossible) et 1 (certain).', 'Un dé équilibré : chaque face a 1/6.'],
+        },
+      },
+    };
+  }
+  const faces = [1, 2, 3, 4, 5, 6];
+  const even = kind === 1;
+  const fav = even ? faces.filter((f) => f % 2 === 0) : faces.filter((f) => f > 4);
+  const answer = even ? '3/6' : '2/6';
+  return {
+    key: `proba-de-${even ? 'pair' : 'sup4'}`,
+    prompt: `On lance un dé à 6 faces. Probabilité d’obtenir ${even ? 'un nombre pair' : 'plus de 4'} = …`,
+    spoken: `On lance un dé à six faces. Quelle est la probabilité d’obtenir ${even ? 'un nombre pair' : 'plus de 4'} ?`,
+    choices: textChoices(answer, ['1/6', '4/6', '5/6', even ? '2/6' : '3/6'], rng),
+    answer,
+    hint: `Faces qui conviennent : ${fav.join(', ')}. Faces possibles : 6.`,
+    explanation: `${fav.length} face${fav.length > 1 ? 's' : ''} sur 6 : ${answer}.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Probabilité',
+        lines: ['Probabilité = cas favorables / cas possibles.', 'Dé à 6 faces : 6 cas possibles.', `Faces qui conviennent ici : ${fav.join(', ')}.`],
+      },
+    },
+  };
+};
+
+// ---------- Phare des fonctions ----------
+
+export const imageOf: ItemGenerator = (rng) => {
+  const a = nonZero(-4, 5, rng);
+  const b = randomInt(-6, 8, rng);
+  const x = randomInt(-3, 6, rng);
+  const y = a * x + b;
+  const expr = `f(x) = ${ax(a)} ${plus(b)}`;
+  return {
+    key: `img-${a}-${b}-${x}`,
+    prompt: `${expr}. Image de ${fmt(x)} = …`,
+    spoken: `f de x égale ${say(a)} x ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}. Quelle est l’image de ${say(x)} ?`,
+    choices: choices(y, [a * x - b, a + b + x, -y, y + a], rng),
+    answer: fmt(y),
+    hint: `Remplace x par ${fmt(x)} : ${a} × ${par(x)} ${plus(b)}.`,
+    explanation: `f(${fmt(x)}) = ${a} × ${par(x)} ${plus(b)} = ${fmt(a * x)} ${plus(b)} = ${fmt(y)}.`,
+    aid: {
+      kind: 'ratio-table',
+      props: {
+        cols: ['x', 'f(x)'],
+        rows: [
+          [fmt(x - 1), fmt(a * (x - 1) + b)],
+          [fmt(x), '?'],
+          [fmt(x + 1), fmt(a * (x + 1) + b)],
+        ],
+        caption: 'Tableau de valeurs',
+      },
+    },
+  };
+};
+
+export const antecedent: ItemGenerator = (rng) => {
+  const a = nonZero(-3, 4, rng);
+  const b = randomInt(-5, 5, rng);
+  const x = randomInt(-3, 6, rng);
+  const y = a * x + b;
+  return {
+    key: `ant-${a}-${b}-${x}`,
+    prompt: `f(x) = ${ax(a)} ${plus(b)}. Antécédent de ${fmt(y)} = …`,
+    spoken: `f de x égale ${say(a)} x ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}. Quel est l’antécédent de ${say(y)} ?`,
+    choices: choices(x, [y, -x, x + 1, x - 1], rng),
+    answer: fmt(x),
+    hint: `Résous ${ax(a)} ${plus(b)} = ${fmt(y)} : enlève ${fmt(b)}, puis divise par ${fmt(a)}.`,
+    explanation: `${ax(a)} = ${fmt(y)} ${plus(-b)} = ${fmt(y - b)}, donc x = ${fmt(y - b)} ÷ ${par(a)} = ${fmt(x)}.`,
+    aid: { kind: 'ratio-table', props: { cols: ['x', 'f(x)'], rows: [['?', fmt(y)]], caption: 'On cherche x tel que f(x) = ' + fmt(y) } },
+  };
+};
+
+export const linearOrAffine: ItemGenerator = (rng) => {
+  const a = nonZero(-4, 5, rng);
+  const b = rng() < 0.4 ? 0 : nonZero(-6, 6, rng);
+  const expr = b === 0 ? `f(x) = ${ax(a)}` : `f(x) = ${ax(a)} ${plus(b)}`;
+  const askCoef = rng() < 0.5;
+  if (askCoef) {
+    return {
+      key: `coef-${a}-${b}`,
+      prompt: `${expr}. Coefficient directeur = …`,
+      spoken: `f de x égale ${say(a)} x ${b === 0 ? '' : (b < 0 ? 'moins ' : 'plus ') + Math.abs(b)}. Quel est le coefficient directeur ?`,
+      choices: choices(a, [b, -a, a + b, 1], rng),
+      answer: fmt(a),
+      hint: 'Le coefficient directeur est le nombre devant x.',
+      explanation: `Dans ${expr}, le nombre devant x est ${fmt(a)}.`,
+      aid: {
+        kind: 'rule-card',
+        props: {
+          title: 'Linéaire, affine',
+          lines: [
+            'f(x) = ax : fonction linéaire (droite qui passe par l’origine).',
+            'f(x) = ax + b : fonction affine (a = coefficient directeur, b = ordonnée à l’origine).',
+            'a positif : la droite monte. a négatif : elle descend.',
+          ],
+        },
+      },
+    };
+  }
+  const answer = b === 0 ? 'linéaire' : 'affine';
+  return {
+    key: `kind-${a}-${b}`,
+    prompt: `${expr}. Cette fonction est …`,
+    spoken: `f de x égale ${say(a)} x ${b === 0 ? '' : (b < 0 ? 'moins ' : 'plus ') + Math.abs(b)}. Cette fonction est linéaire ou affine ?`,
+    choices: ['affine', 'linéaire'],
+    answer,
+    hint: 'Linéaire : f(x) = ax, rien d’ajouté. Affine : f(x) = ax + b.',
+    explanation: b === 0 ? `${expr} est de la forme ax : linéaire.` : `${expr} est de la forme ax + b avec b = ${fmt(b)} : affine.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Linéaire, affine',
+        lines: [
+          'f(x) = ax : fonction linéaire (droite qui passe par l’origine).',
+          'f(x) = ax + b : fonction affine (a = coefficient directeur, b = ordonnée à l’origine).',
+          'Une fonction linéaire est aussi affine, avec b = 0.',
+        ],
+      },
+    },
+  };
+};
+
 // ---------- Les exercices ----------
 
 const THERMO = 'Compare les deux nombres. Sur la droite, le plus petit est toujours à gauche.';
@@ -724,6 +1030,17 @@ const DEVELOPPER_DOUBLE = 'Développe la double distributivité : chaque terme a
 const EQUILIBRE = 'Trouve x : fais la même opération des deux côtés de l’égalité.';
 const EQUILIBRE_DEUX = 'Trouve x en deux étapes : d’abord le nombre seul, puis divise.';
 
+const PYTHAGORE = 'Trouve l’hypoténuse : hypoténuse au carré égale la somme des carrés des deux autres côtés. La figure est codée.';
+const PYTHAGORE_COTE = 'Trouve un côté de l’angle droit : hypoténuse au carré moins l’autre côté au carré, puis racine carrée.';
+const THALES = 'Les droites sont parallèles : les longueurs du grand triangle sont celles du petit multipliées par le même nombre.';
+const TRIGO = 'Choisis le bon rapport pour l’angle B : cosinus, sinus ou tangente. Le rappel est affiché.';
+const MOYENNE = 'Calcule la moyenne : additionne toutes les valeurs, puis divise par leur nombre.';
+const MEDIANE = 'Médiane ou étendue de la série rangée : la valeur du milieu, ou la plus grande moins la plus petite.';
+const CHANCES = 'Probabilité : cas favorables sur cas possibles. Compte-les avant de répondre.';
+const IMAGES = 'Calcule l’image : remplace x par le nombre dans la formule. Le tableau de valeurs t’aide.';
+const ANTECEDENT = 'Trouve l’antécédent : résous l’équation f(x) égale le nombre donné.';
+const DROITES = 'Coefficient directeur, fonction linéaire ou affine : la règle est affichée.';
+
 export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'glacier', type: 'thermometre', level: 1, instruction: THERMO, generators: [compareRelatifs], block: 'glace' }),
   defineData({ biome: 'glacier', type: 'thermometre', level: 2, instruction: THERMO_READ, generators: [readRelatif], block: 'glace' }),
@@ -749,4 +1066,14 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'atelier', type: 'developper', level: 2, instruction: DEVELOPPER_DOUBLE, generators: [developDouble], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 1, instruction: EQUILIBRE, generators: [equationOneStep], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 2, instruction: EQUILIBRE_DEUX, generators: [equationTwoSteps], block: 'calque' }),
+  defineData({ biome: 'belvedere', type: 'pythagore', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'marbre' }),
+  defineData({ biome: 'belvedere', type: 'pythagore', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'marbre' }),
+  defineData({ biome: 'belvedere', type: 'thales', level: 1, instruction: THALES, generators: [thales], block: 'marbre' }),
+  defineData({ biome: 'belvedere', type: 'trigo', level: 1, instruction: TRIGO, generators: [trigo], block: 'marbre' }),
+  defineData({ biome: 'donnees', type: 'moyenne', level: 1, instruction: MOYENNE, generators: [mean], block: 'quartz' }),
+  defineData({ biome: 'donnees', type: 'moyenne', level: 2, instruction: MEDIANE, generators: [medianRange], block: 'quartz' }),
+  defineData({ biome: 'donnees', type: 'chances', level: 1, instruction: CHANCES, generators: [probability], block: 'quartz' }),
+  defineData({ biome: 'phare', type: 'images', level: 1, instruction: IMAGES, generators: [imageOf], block: 'prisme' }),
+  defineData({ biome: 'phare', type: 'images', level: 2, instruction: ANTECEDENT, generators: [antecedent], block: 'prisme' }),
+  defineData({ biome: 'phare', type: 'droites', level: 1, instruction: DROITES, generators: [linearOrAffine], block: 'prisme' }),
 ];

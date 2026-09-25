@@ -46,6 +46,9 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.calque.side]: 'calque',
   [BLOCKS.ardoise.side]: 'ardoise',
   [BLOCKS.parchemin.side]: 'parchemin',
+  [BLOCKS.marbre.side]: 'marbre',
+  [BLOCKS.quartz.side]: 'quartz',
+  [BLOCKS.prisme.side]: 'prisme',
   [SNOW]: 'nuage',
   [HAY]: 'or',
 };
@@ -323,6 +326,34 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(8, 5, h(8, 5) + 2, BLOCKS.parchemin.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.parchemin.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.bois.side);
+  },
+  belvedere: (put, h) => {
+    // Un kiosque : quatre colonnes de marbre et un toit de marbre, un triangle 3-4-5 au sol.
+    for (const [x, y] of [
+      [7, 2],
+      [10, 2],
+      [7, 5],
+      [10, 5],
+    ] as const)
+      for (let z = 1; z <= 3; z++) put(x, y, h(x, y) + z, BLOCKS.marbre.side);
+    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 4, BLOCKS.marbre.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.marbre.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  donnees: (put, h) => {
+    // Un télescope (tronc incliné en escalier) et un dôme de quartz.
+    for (let i = 0; i < 4; i++) put(7 + i, 3, h(7 + i, 3) + 1 + i, i === 3 ? BLOCKS.verre.side : TRUNK);
+    put(9, 5, h(9, 5) + 1, BLOCKS.quartz.side);
+    put(9, 5, h(9, 5) + 2, BLOCKS.quartz.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.quartz.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  phare: (put, h) => {
+    // Un phare : tour de pierre, lanterne de prisme au sommet.
+    for (let z = 1; z <= 5; z++) put(9, 3, h(9, 3) + z, z === 5 ? BLOCKS.prisme.side : BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 6, BLOCKS.or.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.prisme.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };
 
