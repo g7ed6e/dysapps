@@ -855,6 +855,18 @@ function cascades(def: IslandDef, scenery: LandCell[], put: (x: number, y: numbe
   put(edge.x + 2 * out[0], edge.y + 2 * out[1], -def.altitude, SNOW);
 }
 
+/** Où nagent les baleines : trois ronds au large, hors de toute terre (centre et rayon, coordonnées de grille). */
+export function whaleSpots(): { x: number; y: number; r: number }[] {
+  const b = worldBounds();
+  const cx = (b.minX + b.maxX) / 2;
+  const cy = (b.minY + b.maxY) / 2;
+  return [
+    { x: b.minX - 14, y: cy + 6, r: 7 },
+    { x: b.maxX + 16, y: cy - 12, r: 8 },
+    { x: cx + 10, y: b.maxY + 16, r: 7 },
+  ];
+}
+
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */
 export function mistPatches(): { x: number; y: number; z: number; w: number; h: number }[] {
   return MAP.filter((d) => d.altitude >= 9).map((d) => {

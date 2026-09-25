@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { islandAt, islandCenter, mistPatches, overviewBounds, worldBounds } from '../world/terrain';
+import { islandAt, islandCenter, mistPatches, overviewBounds, whaleSpots, worldBounds } from '../world/terrain';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface WorldFocus {
@@ -386,6 +386,34 @@ export default function WorldCanvas({
       });
     }
 
+    // Les baleines : trois grandes bêtes bleu ardoise qui tournent au large, font surface et soufflent.
+    const whaleMat = new THREE.MeshLambertMaterial({ color: 0x3f5d7a });
+    const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
+    const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
+    const whales: { group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; cx: number; cy: number; r: number; phase: number; speed: number }[] = [];
+    whaleSpots().forEach((spot, i) => {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), whaleMat);
+      head.position.x = 2.3;
+      const belly = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.3, 1.1), bellyMat);
+      belly.position.y = -0.6;
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.15, 0.7), whaleMat);
+      fin.position.set(0.6, -0.2, 1.0);
+      const fluke = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.18, 2.2), whaleMat);
+      fluke.position.x = -2.2;
+      const spout = new THREE.Group();
+      for (let k = 0; k < 3; k++) {
+        const puff = new THREE.Mesh(new THREE.BoxGeometry(0.3 + k * 0.15, 0.3, 0.3 + k * 0.15), spoutMat);
+        puff.position.set(2.3 + (k - 1) * 0.2, 0.9 + k * 0.45, 0);
+        spout.add(puff);
+      }
+      spout.visible = false;
+      group.add(body, head, belly, fin, fluke, spout);
+      scene.add(group);
+      whales.push({ group, fluke, spout, cx: spot.x, cy: spot.y, r: spot.r, phase: i * 2.1, speed: 0.12 + i * 0.03 });
+    });
+
     // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
     const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
     const markerGroup = new THREE.Group();
@@ -604,6 +632,18 @@ export default function WorldCanvas({
           b.wings[1].rotation.z = -flap;
         }
         for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
+        for (const wh of whales) {
+          const a = t * wh.speed + wh.phase;
+          // Elle monte et descend lentement ; en surface, elle souffle.
+          const rise = Math.sin(t * 0.45 + wh.phase);
+          wh.group.position.set(wh.cx + Math.cos(a) * wh.r, -0.9 + rise * 0.9, wh.cy + Math.sin(a) * wh.r);
+          wh.group.rotation.y = -a - Math.PI / 2;
+          wh.group.rotation.z = rise * 0.12;
+          wh.fluke.rotation.z = Math.sin(t * 2.4 + wh.phase) * 0.35;
+          const surfacing = rise > 0.7;
+          wh.spout.visible = surfacing;
+          if (surfacing) wh.spout.scale.setScalar(0.6 + (rise - 0.7) * 2.5);
+        }
         if (markerGroup.visible) {
           markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
           markerGroup.rotation.y = t * 0.8;

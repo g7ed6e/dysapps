@@ -16,6 +16,7 @@ import {
   islandCenter,
   islandOrigin,
   mistPatches,
+  whaleSpots,
   worldBounds,
   worldCubes,
 } from './terrain';
@@ -204,4 +205,14 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   // En montant vers le Glacier (3), l'itinéraire monte.
   const up = avatarRoute('plaine', 'glacier', ['plaine-glacier'])!;
   expect(Math.max(...up.map((p) => p.z))).toBe(4);
+});
+
+it('les baleines nagent au large, jamais sur une terre', () => {
+  const b = worldBounds();
+  const spots = whaleSpots();
+  expect(spots).toHaveLength(3);
+  for (const s of spots) {
+    const outside = s.x + s.r + 2 <= b.minX || s.x - s.r - 2 >= b.maxX || s.y + s.r + 2 <= b.minY || s.y - s.r - 2 >= b.maxY;
+    expect(outside, `${s.x},${s.y}`).toBe(true);
+  }
 });
