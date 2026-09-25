@@ -5,7 +5,9 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, isBiomeUnlocked, ofBlock, previousBiome, type BiomeDef } from './biomes';
+import { BLOCKS, ofBlock, type BiomeDef } from './biomes';
+import { Bridges } from './Bridges';
+import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { currentPlan, levelFor, planStatus } from './engine';
@@ -26,9 +28,8 @@ interface Props {
 export function IslandSheet({ biome, onClose }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
-  const unlocked = isBiomeUnlocked(biome.id, state.progress);
-  const previous = previousBiome(biome.id);
-  const greeting = unlocked || !previous ? biome.creature.greeting : `Pas si vite ! Termine d’abord une quête dans ${previous.name}, puis reviens me voir.`;
+  const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+  const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un pont jusqu’à mon île, puis reviens me voir.`;
   const owned = state.inventory[biome.block] ?? 0;
   const plan = currentPlan(state, biome.id);
   const status = plan ? planStatus(state, plan.plan) : null;
@@ -60,6 +61,8 @@ export function IslandSheet({ biome, onClose }: Props) {
         <strong>{biome.creature.name} :</strong> <Syllabified text={greeting} />
         <SpeakButton text={greeting} label="Réécouter" compact />
       </p>
+
+      <Bridges island={biome.id} />
 
       <h3 className="island-sheet-heading">
         <Icon name="hammer" /> Quêtes

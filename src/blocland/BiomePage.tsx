@@ -1,7 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, isBiomeUnlocked, ofBlock, previousBiome } from './biomes';
+import { BLOCKS, getBiome, ofBlock } from './biomes';
+import { Bridges } from './Bridges';
+import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
@@ -18,8 +20,7 @@ export function BiomePage() {
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.inventory[biome.block] ?? 0;
-  const unlocked = isBiomeUnlocked(biome.id, state.progress);
-  const previous = previousBiome(biome.id);
+  const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
 
   return (
     <>
@@ -32,8 +33,10 @@ export function BiomePage() {
 
       <CreatureBubble
         biome={biome}
-        text={unlocked || !previous ? biome.creature.greeting : `Pas si vite ! Termine d’abord une quête dans ${previous.name}, puis reviens me voir.`}
+        text={unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un pont jusqu’à mon île, puis reviens me voir.`}
       />
+
+      <Bridges island={biome.id} />
 
       <h2 className="section-title">
         <Icon name="hammer" /> Quêtes

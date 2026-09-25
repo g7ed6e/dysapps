@@ -3,6 +3,7 @@ import { loadJSON, removeKey, saveJSON } from '../core/storage';
 import type { BiomeId, BlockId } from './biomes';
 import {
   EMPTY_STATE,
+  buildBridge as buildBridgePure,
   clearIsland as clearIslandPure,
   completeExercise,
   dueItems,
@@ -20,6 +21,7 @@ import {
   type PlaceResult,
 } from './engine';
 import type { PlanDef } from './world/plans';
+import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -47,6 +49,8 @@ interface BloclandContextValue {
   clearIsland: (island: BiomeId) => void;
   /** Pose le bloc attendu à une cellule d'un plan. */
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
+  /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
+  buildBridge: (id: string) => BuildBridgeResult;
   reset: () => void;
 }
 
@@ -54,7 +58,7 @@ const BloclandContext = createContext<BloclandContextValue | null>(null);
 const STORAGE_KEY = 'blocland';
 
 export function BloclandProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<BloclandState>(() => sanitizeState(loadJSON(STORAGE_KEY, EMPTY_STATE)));
+  const [state, setState] = useState<BloclandState>(() => sanitizeState(loadJSON<unknown>(STORAGE_KEY, {})));
   const stateRef = useRef(state);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
@@ -108,6 +112,12 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }
     return r;
   }, []);
+  const buildBridge = useCallback((id: string) => {
+    const r = buildBridgePure(stateRef.current, id);
+    stateRef.current = r.state;
+    setState(r.state);
+    return r.result;
+  }, []);
   const clearIsland = useCallback((island: BiomeId) => {
     stateRef.current = clearIslandPure(stateRef.current, island);
     setState(stateRef.current);
@@ -142,6 +152,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       removeFromColumn,
       clearIsland,
       fillPlan,
+      buildBridge,
       reset,
     }),
     [
@@ -158,6 +169,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       removeFromColumn,
       clearIsland,
       fillPlan,
+      buildBridge,
       reset,
     ],
   );

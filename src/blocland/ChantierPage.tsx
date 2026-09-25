@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, BLOCKS, isBiomeUnlocked, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { BuildGrid } from './BuildGrid';
 import { useProgress } from '../core/ProgressContext';
@@ -35,7 +36,7 @@ export function ChantierPage() {
   const { completePlan } = useProgress();
   const webgl = hasWebGL();
   const in3d = settings.view3d && webgl;
-  const unlockedIslands = BIOMES.filter((b) => isBiomeUnlocked(b.id, state.progress)).map((b) => b.id);
+  const unlockedIslands = BIOMES.filter((b) => isBiomeUnlocked(b.id, state.village.bridges)).map((b) => b.id);
   // « ?ile=mine » (depuis le panneau d'une île) présélectionne cette île.
   const [params] = useSearchParams();
   const asked = params.get('ile') as BiomeId | null;
@@ -311,7 +312,7 @@ export function ChantierPage() {
           <Suspense fallback={<p className="loading">Chargement du village…</p>}>
             <WorldCanvas
               cubes={worldCubes(state.progress, state.village, false)}
-              creatures={[...creaturePlacements(state.progress), ...guardianPlacements(state.progress)]}
+              creatures={[...creaturePlacements(state.village.bridges), ...guardianPlacements(state.progress, state.village.bridges)]}
               forceDay={forceDay}
               burst={burst}
               focus={{ island, seq }}

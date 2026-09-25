@@ -94,3 +94,11 @@ Les six étapes sont livrées (PR #20 à #25).
 - Marcher à la première personne ou diriger un avatar (la caméra libre est un choix assumé pour des 6e sur tablette).
 - Multijoueur, partage de constructions, sauvegarde en ligne.
 - Physique (rien ne tombe, rien ne casse) : règle du brief conservée.
+
+## 9. Suite : Blocland immersif (décisions du 25 septembre 2026)
+
+Trois PR, dans cet ordre :
+
+1. ✅ **Plein écran + panneaux glissants** : le monde 3D occupe l'écran ; toucher une île fait voler la caméra et ouvre son panneau (créature, quêtes, plan, Gardien, chantier). Les exercices s'ouvrent par-dessus, on revient au même endroit.
+2. ✅ **Ponts à construire** : l'archipel remplace la chaîne. La Forêt est au centre et ouverte ; chaque pont coûte quelques blocs gagnés n'importe où ; deux directions dès le début (Mine ou Ferme). Rangée 1 (devant) réservée aux îles de maths. Anciennes sauvegardes migrées (ponts du chemin offerts).
+3. **Trois îles de maths** : Plaine des nombres (calcul mental), Rivière des fractions, Volcan des décimaux ; chacune avec sa créature, son bloc, ses plans et son Gardien, en réutilisant le contenu des quêtes de maths existantes. Règles dys : une opération par écran, nombres lus à voix haute, aides visuelles toujours affichées, pas de chrono, manipulables. La Plaine des nombres est ouverte dès le début (deuxième île de départ).

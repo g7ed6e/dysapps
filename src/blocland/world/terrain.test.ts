@@ -16,22 +16,33 @@ import {
   worldCubes,
 } from './terrain';
 
-it('construit une île par biome, avec créature seulement si débloqué', () => {
+const village = (bridges: string[]) => ({ placed: {}, plans: {}, journal: [], bridges });
+
+it('construit une île par biome, avec créature seulement si un pont y mène', () => {
   const cubes = worldCubes({});
   for (const b of BIOMES) expect(cubes.filter((c) => c.tag === b.id).length).toBeGreaterThanOrEqual(ISLAND * ISLAND * (DEPTH + 1));
   const o = islandOrigin(1);
-  const onIsland = (c: { x: number }) => c.x >= o.ox && c.x < o.ox + ISLAND;
+  const onIsland = (c: { x: number; y: number }) => c.x >= o.ox && c.x < o.ox + ISLAND && c.y >= o.oy && c.y < o.oy + ISLAND;
   const foret = cubes.filter((c) => c.tag === 'foret');
   const mine = cubes.filter((c) => c.tag === 'mine' && onIsland(c));
   // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est grise et sans créature.
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
   // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
   expect(worldCubes({}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
-  expect(creaturePlacements({}).map((c) => c.id)).toEqual(['foret']);
-  expect(creaturePlacements({ 'foret-x': { stars: 1 } }).map((c) => c.id)).toEqual(['foret', 'mine']);
+  expect(creaturePlacements([]).map((c) => c.id)).toEqual(['foret']);
+  expect(creaturePlacements(['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine']);
   expect(mine.every((c) => c.color === '#b9b4a8' && c.texture === 'pierre')).toBe(true);
-  const unlocked = worldCubes({ 'foret-x': { stars: 1 } });
+  const unlocked = worldCubes({}, village(['foret-mine']));
   expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.color !== '#b9b4a8')).toBe(true);
+});
+
+it('place les îles selon l’archipel : la Forêt au centre, une rangée devant pour les maths', () => {
+  const at = (id: string) => islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  expect(at('foret').oy).toBe(0);
+  expect(at('mine').ox).toBe(at('foret').ox + ISLAND + GAP);
+  expect(at('ferme').ox).toBe(at('foret').ox - ISLAND - GAP);
+  expect(at('carriere').ox).toBe(at('mine').ox + ISLAND + GAP);
+  expect(at('tour').ox).toBe(at('ferme').ox - ISLAND - GAP);
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -55,13 +66,25 @@ it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases sur
   expect(at.size).toBe(cubes.length);
 });
 
-it('relie les îles par des ponts continus et connaît les bornes du monde', () => {
-  const cubes = worldCubes({});
+it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits) et connaît les bornes du monde', () => {
   const a = islandOrigin(0);
   const b = islandOrigin(1);
   const [left, right] = a.ox < b.ox ? [a, b] : [b, a];
-  const bridge = cubes.filter((c) => c.z === 0 && c.x >= left.ox + ISLAND && c.x < right.ox);
-  expect(bridge.length).toBeGreaterThanOrEqual(GAP);
+  const between = (c: { x: number; z: number }) => c.z === 0 && c.x >= left.ox + ISLAND && c.x < right.ox;
+  // Forêt–Mine : constructible dès le début, donc en fantôme ; construit, en planches.
+  const ghost = worldCubes({}).filter(between);
+  expect(ghost.length).toBeGreaterThanOrEqual(GAP);
+  expect(ghost.every((c) => c.ghost && c.texture === 'planches')).toBe(true);
+  const built = worldCubes({}, village(['foret-mine'])).filter(between);
+  expect(built.length).toBe(ghost.length);
+  expect(built.every((c) => !c.ghost)).toBe(true);
+  // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube.
+  const m = islandOrigin(BIOMES.findIndex((x) => x.id === 'mine'));
+  const q = islandOrigin(BIOMES.findIndex((x) => x.id === 'carriere'));
+  const far = (c: { x: number; z: number }) => c.z === 0 && c.x >= m.ox + ISLAND && c.x < q.ox;
+  expect(worldCubes({}).filter(far)).toHaveLength(0);
+  expect(worldCubes({}, village(['foret-mine'])).filter(far).length).toBeGreaterThanOrEqual(GAP);
+  const cubes = worldCubes({});
   const bounds = worldBounds();
   expect(bounds.maxX - bounds.minX).toBe(BIOMES.length * ISLAND + (BIOMES.length - 1) * GAP);
   for (const c of cubes) {
@@ -86,9 +109,9 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   const { getBiome } = await import('../biomes');
   const ready: Record<string, { stars: number }> = {};
   for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
-  expect(guardianPlacements({})).toEqual([]);
+  expect(guardianPlacements({}, [])).toEqual([]);
   expect(worldCubes({}).some((c) => c.y < 0)).toBe(false);
-  const [g] = guardianPlacements(ready);
+  const [g] = guardianPlacements(ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
   const islet = worldCubes(ready).filter((c) => c.tag === 'foret' && c.y < 0);
   // Plateforme de pierre sur deux couches de terre, devant l'île, sous les pieds du Gardien.
@@ -98,7 +121,7 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(islet.some((c) => c.texture === 'or')).toBe(false);
   // Vaincu : statue grise et bloc d'or.
   const beaten = { ...ready, 'foret-gardien': { stars: 2 } };
-  const [s] = guardianPlacements(beaten);
+  const [s] = guardianPlacements(beaten, []);
   expect(s.beaten).toBe(true);
   expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
   expect(worldCubes(beaten).some((c) => c.tag === 'foret' && c.y < 0 && c.texture === 'or')).toBe(true);

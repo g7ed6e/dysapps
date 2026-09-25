@@ -68,7 +68,7 @@ it('pose, empile, retire et démonte des blocs sur la zone libre d’une île', 
 it('construit sur une autre île une fois débloquée, et rend les blocs de l’ancien chantier', async () => {
   localStorage.setItem(
     'dysapps:blocland',
-    JSON.stringify({ inventory: { sable: 1 }, progress: { 'foret-x': { stars: 1, attempts: 1, best: 1 } }, build: [{ x: 0, y: 0, z: 0, block: 'bois' }] }),
+    JSON.stringify({ inventory: { sable: 1 }, village: { bridges: ['foret-mine'] }, build: [{ x: 0, y: 0, z: 0, block: 'bois' }] }),
   );
   const user = userEvent.setup();
   renderAt('/aventure/chantier');

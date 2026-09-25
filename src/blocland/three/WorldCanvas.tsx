@@ -201,7 +201,8 @@ export default function WorldCanvas({
   forceDayRef.current = forceDay;
   const bounds = worldBounds();
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
-  const width = bounds.maxX - bounds.minX;
+  // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
+  const width = Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
 
   /** Position et cible de la caméra pour une île (ou la vue d'ensemble). */
   const framing = (island: BiomeId | null) => {
