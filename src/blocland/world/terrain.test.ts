@@ -1,4 +1,5 @@
 import { BIOMES } from '../biomes';
+import { MAP, landCells } from './map';
 import { BRIDGES } from './archipelago';
 import {
   avatarHome,
@@ -207,12 +208,23 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   expect(Math.max(...up.map((p) => p.z))).toBe(4);
 });
 
-it('les baleines nagent au large, jamais sur une terre', () => {
-  const b = worldBounds();
+it('les baleines nagent dans les clairières d’eau entre les îles, jamais sur une terre ni un îlot', () => {
   const spots = whaleSpots();
   expect(spots).toHaveLength(3);
+  const land = new Set<string>();
+  MAP.forEach((def, i) => {
+    for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
+    const o = bossIsletOrigin(i);
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.add(`${o.x + x},${o.y + y}`);
+  });
+  const b = worldBounds();
   for (const s of spots) {
-    const outside = s.x + s.r + 2 <= b.minX || s.x - s.r - 2 >= b.maxX || s.y + s.r + 2 <= b.minY || s.y - s.r - 2 >= b.maxY;
-    expect(outside, `${s.x},${s.y}`).toBe(true);
+    expect(s.r).toBeGreaterThanOrEqual(4);
+    // Dans le monde (visible), et tout le rond (avec deux cases de marge) dans l'eau.
+    expect(s.x).toBeGreaterThan(b.minX);
+    expect(s.x).toBeLessThan(b.maxX);
+    for (let x = Math.floor(s.x - s.r - 2); x <= Math.ceil(s.x + s.r + 2); x++)
+      for (let y = Math.floor(s.y - s.r - 2); y <= Math.ceil(s.y + s.r + 2); y++)
+        if (Math.hypot(x - s.x, y - s.y) <= s.r + 2) expect(land.has(`${x},${y}`), `baleine sur la terre en ${x},${y}`).toBe(false);
   }
 });
