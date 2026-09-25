@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, isBiomeUnlocked, previousBiome } from './biomes';
+import { BLOCKS, getBiome, isBiomeUnlocked, ofBlock, previousBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
@@ -117,7 +117,7 @@ export function BiomePage() {
 
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />
-        Chaque quête réussie ici rapporte des blocs de {block.name.toLowerCase()}. Tu en as {owned}.
+        Chaque quête réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}.
       </p>
     </>
   );

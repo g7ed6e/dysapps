@@ -4,7 +4,7 @@ import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
 import { RichText } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
-import { BLOCKS, type BiomeDef } from './biomes';
+import { BLOCKS, ofBlock, type BiomeDef } from './biomes';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
@@ -96,7 +96,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete }: Props) {
           <ul className="reward-list">
             <li>
               <BlockIcon top={block.top} side={block.side} size={44} />
-              <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} de {block.name.toLowerCase()}
+              <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
             </li>
             <li>
               <Icon name="zap" size="1.6rem" />
@@ -105,7 +105,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete }: Props) {
             {done.chestBlock && (
               <li className="reward-chest">
                 <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
-                Coffre de régularité : <strong>+6</strong> blocs de {BLOCKS[done.chestBlock].name.toLowerCase()} !
+                Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
               </li>
             )}
           </ul>

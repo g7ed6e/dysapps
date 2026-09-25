@@ -49,6 +49,12 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   escalier: { id: 'escalier', name: 'Escalier', top: '#c29a5f', side: '#8a6a3c', texture: 'escalier' },
 };
 
+/** « de bois », « d’or », « d’escalier » : le nom du bloc avec la bonne élision. */
+export function ofBlock(id: BlockId): string {
+  const name = BLOCKS[id].name.toLowerCase();
+  return /^[aeiouyéèêh]/.test(name) ? `d’${name}` : `de ${name}`;
+}
+
 export interface ExerciseTypeDef {
   id: string;
   title: string;

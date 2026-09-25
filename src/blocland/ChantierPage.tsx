@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeId, type BlockId } from './biomes';
+import { BIOMES, BLOCKS, isBiomeUnlocked, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BuildGrid } from './BuildGrid';
 import { useProgress } from '../core/ProgressContext';
@@ -111,7 +111,7 @@ export function ChantierPage() {
     if (!plan) return;
     const r = fillPlan(plan, x, y, z);
     if (!r.ok) {
-      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc de ${BLOCKS[r.block].name.toLowerCase()} : va dans ${whereToEarn(r.block)}.`);
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : va dans ${whereToEarn(r.block)}.`);
       else if (r.reason === 'deja-pose') setNotice('Ce bloc du plan est déjà posé.');
       sound(playNope);
       return;
