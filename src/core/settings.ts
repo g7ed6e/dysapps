@@ -16,6 +16,8 @@ export interface Settings {
   reduceMotion: boolean;
   /** Vues 3D (Three.js) quand WebGL est disponible ; sinon la vue simple, accessible. */
   view3d: boolean;
+  /** Sons d'action dans le village (poser, retirer, plan terminé). */
+  sounds: boolean;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -35,6 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   syllables: true,
   reduceMotion: false,
   view3d: true,
+  sounds: true,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -83,6 +86,7 @@ export function sanitizeSettings(input: Partial<Settings>): Settings {
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
     reduceMotion: Boolean(s.reduceMotion),
     view3d: s.view3d === undefined ? DEFAULT_SETTINGS.view3d : Boolean(s.view3d),
+    sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
   };
 }
 

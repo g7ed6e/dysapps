@@ -53,7 +53,10 @@ export function BiomePage() {
               ) : !unlocked ? (
                 <span className="tag">Verrouillé</span>
               ) : progress ? (
-                <Stars count={progress.stars} label={`${progress.stars} étoile${progress.stars > 1 ? 's' : ''} sur 3, meilleur score ${Math.round(progress.best * 100)} %`} />
+                <Stars
+                  count={progress.stars}
+                  label={`${progress.stars} étoile${progress.stars > 1 ? 's' : ''} sur 3, meilleur score ${Math.round(progress.best * 100)} %`}
+                />
               ) : (
                 <span className="tag tag-new">Nouveau</span>
               )}

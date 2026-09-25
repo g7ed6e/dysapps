@@ -53,13 +53,12 @@ Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent d�
 
 ## Chantier (construction)
 
-- **Vue 3D** (Three.js, chargé seulement en entrant dans le Chantier, ~140 Ko compressés) : rotation au doigt ou à la souris, zoom, tap sur une case ou un bloc pour poser. Désactivable dans les réglages (« Vues en 3D dans Blocland ») ; sans WebGL, la vue simple prend le relais automatiquement.
-- **Vue simple** (SVG isométrique) : accessible au clavier et au lecteur d’écran ; c’est aussi la vue utilisée dans les tests.
-- **Textures pixel** : chaque type de bloc a une texture 16 × 16 générée par le code (herbe sur terre, pierre mouchetée, planches, sable, verre, or, cristal, feuilles, tronc), sans lissage ; ciel bleu et nuages en cubes dans le Chantier et sur la carte. Aucune image ni texture empruntée à un jeu existant.
-- **Créatures en 3D** : la créature de chaque biome respire et tourne lentement dans sa bulle.
-- **Le village en 3D** (`src/blocland/world/`, cadrage dans `docs/cadrage-village.md`) : les cinq îles (12 × 12, relief léger, décor, créature, îles verrouillées en pierre grise) reliées par des ponts, dans une seule scène avec l’eau autour et des nuages. Caméra libre bornée (un doigt pour tourner, deux doigts pour se déplacer et zoomer ; à la souris : glisser, molette, clic droit), boutons « Vue d’ensemble » et « Aller à… » par île avec un vol en douceur (instantané avec « réduire les animations »), toucher une île ou son pont pour y entrer. Le terrain (`terrain.ts`) et le mailleur (`mesher.ts`, qui ne garde que les faces visibles et les regroupe par matériau) sont du code pur, testé. La liste des biomes reste en dessous, en HTML accessible. Tout cela respecte « réduire les animations » et le réglage « Vues en 3D ».
-- Inventaire des blocs gagnés (par type), grille isométrique 8 × 8 cases, 6 blocs de haut ; poser (le bloc choisi s’empile sur la colonne touchée), retirer (le bloc du dessus revient dans l’inventaire), tout démonter (avec confirmation). Aucune physique : rien ne tombe, l’échec d’un exercice ne touche jamais la construction.
-- Accessible au clavier (chaque case est un bouton) et au toucher ; la construction est enregistrée sur l’appareil.
+- **Le village** : chaque île a une **zone libre** de 6 × 4 cases (le tapis jaune, à l'avant de l'île) où l'on pose ce que l'on veut, jusqu'à 6 blocs de haut, dans n'importe quel ordre : rien ne tombe, rien ne casse. On choisit l'île avec les boutons (une île verrouillée n'est pas constructible), un type de bloc dans l'inventaire, puis **Poser** ou **Retirer**.
+- **En 3D** : on touche la face d'un bloc (ou du sol) pour poser à côté, un bloc posé pour le retirer ; la case visée est encadrée à la souris. Tout ce qui est hors du tapis est refusé avec un message clair ; le bouton « Tout démonter sur cette île » rend les blocs à l'inventaire.
+- **Vue simple** (sans WebGL, ou « Vues en 3D » désactivé) : la zone libre en grille isométrique cliquable et accessible au clavier (pose au sommet de la colonne, retrait du bloc du dessus), même inventaire, mêmes messages.
+- **Sons** (Web Audio, générés par le code, aucun fichier) : un « toc » à la pose, un « pop » au retrait, un refus doux ; jamais pendant la lecture à voix haute. Réglage « Sons dans le village » et bouton « Couper les sons » dans le chantier.
+- **Ancien chantier** (grille 8 × 8 des versions précédentes) : à la première ouverture, ses blocs reviennent dans l'inventaire.
+- **Textures pixel** : chaque type de bloc a une texture 16 × 16 générée par le code (herbe sur terre, pierre mouchetée, planches, sable, verre, or, cristal, feuilles, tronc), sans lissage ; ciel bleu et nuages en cubes. Aucune image ni texture empruntée à un jeu existant.
 
 ## Police Luciole
 

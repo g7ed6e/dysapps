@@ -11,11 +11,7 @@
       "before": "b",
       "after": "coup",
       "answer": "eau",
-      "choices": [
-        "eau",
-        "au",
-        "o"
-      ]
+      "choices": ["eau", "au", "o"]
     },
     {
       "key": "bateau",
@@ -23,11 +19,7 @@
       "before": "bat",
       "after": "",
       "answer": "eau",
-      "choices": [
-        "eau",
-        "au",
-        "o"
-      ]
+      "choices": ["eau", "au", "o"]
     },
     {
       "key": "toujours",
@@ -35,11 +27,7 @@
       "before": "t",
       "after": "jours",
       "answer": "ou",
-      "choices": [
-        "ou",
-        "oo",
-        "u"
-      ]
+      "choices": ["ou", "oo", "u"]
     },
     {
       "key": "jamais",
@@ -47,11 +35,7 @@
       "before": "jam",
       "after": "",
       "answer": "ais",
-      "choices": [
-        "ais",
-        "ai",
-        "é"
-      ]
+      "choices": ["ais", "ai", "é"]
     },
     {
       "key": "longtemps",
@@ -59,11 +43,7 @@
       "before": "longt",
       "after": "",
       "answer": "emps",
-      "choices": [
-        "emps",
-        "ent",
-        "an"
-      ]
+      "choices": ["emps", "ent", "an"]
     },
     {
       "key": "quand",
@@ -71,11 +51,7 @@
       "before": "qu",
       "after": "",
       "answer": "and",
-      "choices": [
-        "and",
-        "an",
-        "ant"
-      ]
+      "choices": ["and", "an", "ant"]
     },
     {
       "key": "parce",
@@ -83,11 +59,7 @@
       "before": "par",
       "after": "",
       "answer": "ce",
-      "choices": [
-        "ce",
-        "se",
-        "sse"
-      ]
+      "choices": ["ce", "se", "sse"]
     },
     {
       "key": "aujourd'hui",
@@ -95,11 +67,7 @@
       "before": "aujourd",
       "after": "",
       "answer": "’hui",
-      "choices": [
-        "’hui",
-        "ui",
-        "oui"
-      ]
+      "choices": ["’hui", "ui", "oui"]
     },
     {
       "key": "temps",
@@ -107,11 +75,7 @@
       "before": "t",
       "after": "",
       "answer": "emps",
-      "choices": [
-        "emps",
-        "ent",
-        "ant"
-      ]
+      "choices": ["emps", "ent", "ant"]
     },
     {
       "key": "plusieurs",
@@ -119,11 +83,7 @@
       "before": "plusi",
       "after": "s",
       "answer": "eur",
-      "choices": [
-        "eur",
-        "eure",
-        "er"
-      ]
+      "choices": ["eur", "eure", "er"]
     }
   ],
   "feedback": {

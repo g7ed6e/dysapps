@@ -154,8 +154,19 @@ export function ExerciseRunner({ biome, def, onReplay }: Props) {
 
   const allCorrect = answered ? answered.results.every((r) => r.correct) : false;
   // Variables du message : les champs de l'item fautif (ou du premier), puis les détails de l'écran.
-  const firstWrong = answered ? items[Math.max(0, answered.results.findIndex((r) => !r.correct))] : items[0];
-  const message = answered ? (allCorrect ? def.feedback.correct : fillTemplate(def.feedback.wrong, { target: def.target, ...firstWrong, ...answered.detail })) : null;
+  const firstWrong = answered
+    ? items[
+        Math.max(
+          0,
+          answered.results.findIndex((r) => !r.correct),
+        )
+      ]
+    : items[0];
+  const message = answered
+    ? allCorrect
+      ? def.feedback.correct
+      : fillTemplate(def.feedback.wrong, { target: def.target, ...firstWrong, ...answered.detail })
+    : null;
 
   return (
     <section className={`quiz${answered ? ' has-sheet' : ''}`} ref={sectionRef} aria-labelledby="consigne">
@@ -183,7 +194,14 @@ export function ExerciseRunner({ biome, def, onReplay }: Props) {
         <div className={`result-sheet result-${allCorrect ? 'bien' : 'rate'}`} role="region" aria-label="Résultat">
           <div className="result-sheet-inner">
             <div className="result-sheet-body">
-              <Feedback shout={allCorrect ? 'BIEN VU !' : 'PAS TOUT À FAIT'} message="" tone={allCorrect ? 'bien' : 'rate'} compact speakKey={index} autoSpeak={false} />
+              <Feedback
+                shout={allCorrect ? 'BIEN VU !' : 'PAS TOUT À FAIT'}
+                message=""
+                tone={allCorrect ? 'bien' : 'rate'}
+                compact
+                speakKey={index}
+                autoSpeak={false}
+              />
               <p className="explanation">
                 <Icon name="lightbulb" />{' '}
                 <span>
