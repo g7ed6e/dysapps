@@ -3,7 +3,7 @@
 import { fromLayers } from './Creatures';
 import type { VoxelCube } from './Voxel';
 
-/** Trois cubes de large, deux de profond, six de haut : bottes, salopette bleue, tee-shirt jaune, tête, casquette rouge. */
+/** Trois cubes de large, deux de profond, six de haut (réduits à l'affichage) : bottes, salopette bleue, tee-shirt jaune, tête, casquette rouge. */
 export const AVATAR_CUBES: VoxelCube[] = fromLayers(
   [
     ['b.b', '...'],
