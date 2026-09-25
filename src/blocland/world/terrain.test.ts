@@ -13,6 +13,7 @@ import {
   islandAt,
   islandCenter,
   islandOrigin,
+  mistPatches,
   worldBounds,
   worldCubes,
 } from './terrain';
@@ -54,7 +55,8 @@ it('place les îles sur la carte du continent, à leur altitude', () => {
   const phare = cubes.filter((c) => c.tag === 'phare');
   expect(phare.some((c) => c.z === 9)).toBe(true);
   expect(phare.some((c) => c.z < 9 - DEPTH && c.texture === 'pierre')).toBe(true);
-  expect(phare.some((c) => c.z <= 0)).toBe(false);
+  // (Seule une cascade descend jusqu'à la mer.)
+  expect(phare.some((c) => c.z <= 0 && c.texture !== 'eau' && c.texture !== 'nuage')).toBe(false);
 });
 
 it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -83,7 +85,9 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Forêt–Mine : constructible dès le début, donc en fantôme ; construit, en planches, à plat (même altitude).
   const ghost = bridgeCubes([], 'foret-mine').filter((c) => c.ghost);
   expect(ghost.length).toBeGreaterThanOrEqual(4);
-  expect(ghost.every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
+  expect(ghost.filter((c) => c.texture !== 'lanterne').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
+  // Une lanterne à chaque bout.
+  expect(ghost.filter((c) => c.texture === 'lanterne')).toHaveLength(2);
   const built = bridgeCubes(['foret-mine'], 'foret-mine').filter((c) => !c.ghost);
   expect(built.length).toBe(ghost.length);
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
@@ -92,13 +96,13 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Plaine (0) → Glacier (3) : un escalier taillé qui monte, marches de pierre.
   const ramp = bridgeCubes([], 'plaine-glacier').filter((c) => c.ghost);
   expect(ramp.some((c) => c.texture === 'marche')).toBe(true);
-  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre')).toBe(true);
+  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre' || c.texture === 'lanterne')).toBe(true);
   expect(Math.max(...ramp.map((c) => c.z))).toBeGreaterThan(Math.min(...ramp.map((c) => c.z)));
   // Plaine–Rivière : un bac, des poteaux de bois et un radeau, au fil de l'eau.
   const ferry = bridgeCubes([], 'plaine-riviere');
   expect(ferry.some((c) => c.texture === 'tronc')).toBe(true);
   expect(ferry.filter((c) => c.texture === 'planches').length).toBeGreaterThanOrEqual(3);
-  expect(ferry.every((c) => c.z === 0)).toBe(true);
+  expect(ferry.filter((c) => c.texture !== 'lanterne').every((c) => c.z === 0)).toBe(true);
   // Volcan (0) → Forge (6) : un tunnel, arches de pierre et lanternes au-dessus du chemin.
   const tunnel = bridgeCubes(['plaine-volcan'], 'volcan-forge');
   expect(tunnel.some((c) => c.texture === 'lanterne')).toBe(true);
@@ -157,4 +161,22 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(s.beaten).toBe(true);
   expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
   expect(worldCubes(beaten).some((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')).toBe(true);
+});
+
+it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
+  const cubes = worldCubes({}, village(BRIDGES.map((b) => b.id)), false);
+  const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
+  const foret = of('foret');
+  expect(Math.max(...foret.filter((c) => c.texture === 'feuilles').map((c) => c.z))).toBeGreaterThanOrEqual(8);
+  const phare = of('phare');
+  expect(phare.filter((c) => c.texture === 'lanterne').length).toBeGreaterThanOrEqual(4);
+  expect(Math.max(...phare.map((c) => c.z))).toBeGreaterThanOrEqual(9 + 10);
+  expect(of('volcan').some((c) => c.color === '#a9a4a0')).toBe(true);
+  expect(of('mine').some((c) => c.texture === 'toile')).toBe(true);
+  expect(of('marais').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
+  // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
+  const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
+  expect(falls.length).toBeGreaterThanOrEqual(1);
+  expect(mistPatches().length).toBe(4);
+  for (const m of mistPatches()) expect(m.z).toBe(7.5);
 });
