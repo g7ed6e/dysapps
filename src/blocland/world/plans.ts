@@ -37,6 +37,12 @@ import carrefourRondpoint from './plans/carrefour-rondpoint.json';
 import maraisHutte from './plans/marais-hutte.json';
 import maraisToit from './plans/marais-toit.json';
 import maraisPonton from './plans/marais-ponton.json';
+import forgeAtelier from './plans/forge-atelier.json';
+import forgeToit from './plans/forge-toit.json';
+import forgeCour from './plans/forge-cour.json';
+import atelierBureau from './plans/atelier-bureau.json';
+import atelierToit from './plans/atelier-toit.json';
+import atelierTerrasse from './plans/atelier-terrasse.json';
 
 export interface PlanCell {
   x: number;
@@ -98,6 +104,12 @@ export const PLANS: PlanDef[] = [
   maraisHutte,
   maraisToit,
   maraisPonton,
+  forgeAtelier,
+  forgeToit,
+  forgeCour,
+  atelierBureau,
+  atelierToit,
+  atelierTerrasse,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

@@ -1,7 +1,21 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan' | 'glacier' | 'marche' | 'carrefour' | 'marais';
+export type BiomeId =
+  | 'foret'
+  | 'mine'
+  | 'carriere'
+  | 'ferme'
+  | 'tour'
+  | 'plaine'
+  | 'riviere'
+  | 'volcan'
+  | 'glacier'
+  | 'marche'
+  | 'carrefour'
+  | 'marais'
+  | 'forge'
+  | 'atelier';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -15,6 +29,8 @@ export type BlockId =
   | 'toile'
   | 'panneau'
   | 'tourbe'
+  | 'acier'
+  | 'calque'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -48,6 +64,8 @@ export type BlockTexture =
   | 'toile'
   | 'panneau'
   | 'tourbe'
+  | 'acier'
+  | 'calque'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -72,6 +90,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   toile: { id: 'toile', name: 'Toile', top: '#e9d9b8', side: '#c9463f', texture: 'toile' },
   panneau: { id: 'panneau', name: 'Panneau', top: '#f2d16b', side: '#e0b73f', texture: 'panneau' },
   tourbe: { id: 'tourbe', name: 'Tourbe', top: '#5a4a2a', side: '#3f3320', texture: 'tourbe' },
+  acier: { id: 'acier', name: 'Acier', top: '#c4ccd4', side: '#8f9aa6', texture: 'acier' },
+  calque: { id: 'calque', name: 'Calque', top: '#f4f1e4', side: '#dcd6c0', texture: 'calque' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -520,6 +540,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.' },
       { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.' },
       { id: 'roseaux', title: 'Roseaux du subjonctif', description: 'Le subjonctif présent, puis reconnaître le temps d’un verbe.' },
+    ],
+  },
+  {
+    id: 'forge',
+    name: 'Forge des puissances',
+    module: 'Puissances et racines',
+    subject: 'maths',
+    classe: '4e',
+    description: 'Puissances de 10, notation scientifique, puissances, racines carrées, nombres premiers.',
+    block: 'acier',
+    guardian: 'le Titan d’acier',
+    guardianSays: {
+      hit: 'Clang ! Juste. Mon armure sonne creux.',
+      miss: 'Ce n’est rien : relis la règle, compte les zéros, et reprends.',
+      beaten: 'Clang. Tu frappes plus fort que mon marteau. La forge est à toi… et à Braise.',
+    },
+    challenge: 'Le Titan d’acier lève son marteau : « Tu as chauffé toute ma forge. Montre-moi la puissance de tes calculs. »',
+    icon: 'zap',
+    creature: {
+      name: 'Braise',
+      species: 'golem forgeron',
+      greeting:
+        'Salut, bâtisseur·se ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
+      lines: [
+        '10⁶ : un million. Un 1 et six zéros, comme mes six enclumes.',
+        '2³, c’est 2 × 2 × 2 = 8. Pas 6 ! Le marteau compte trois coups.',
+        'Mon atelier est en acier. Chaque calcul en forge une plaque.',
+      ],
+      home: 'Mon atelier d’acier est fini ! Solide comme 10 puissance 10.',
+    },
+    exercises: [
+      { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.' },
+      { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.' },
+      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers.' },
+    ],
+  },
+  {
+    id: 'atelier',
+    name: 'Atelier du calcul littéral',
+    module: 'Calcul littéral et équations',
+    subject: 'maths',
+    classe: '4e',
+    description: 'Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée.',
+    block: 'calque',
+    guardian: 'le Golem des équations',
+    guardianSays: {
+      hit: 'Égal… Juste. Mes deux plateaux sont à niveau.',
+      miss: 'Ce n’est rien : fais la même chose des deux côtés, et reprends.',
+      beaten: 'Égal. Tu as trouvé tous mes x. L’atelier est à toi… et à Ixe.',
+    },
+    challenge: 'Le Golem des équations se met en équilibre : « Tu as tracé tous mes plans. Montre-moi que tu sais trouver l’inconnue. »',
+    icon: 'ruler',
+    creature: {
+      name: 'Ixe',
+      species: 'robot dessinateur',
+      greeting:
+        'Bip. Bonjour, bâtisseur·se ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
+      lines: [
+        '3x + 5x = 8x. Trois blocs plus cinq blocs, huit blocs.',
+        'Une équation, c’est une balance : même geste des deux côtés.',
+        'Mon bureau est en calques. Chaque calcul en trace un.',
+      ],
+      home: 'Mon bureau de calques est fini ! Plan développé, réduit, résolu.',
+    },
+    exercises: [
+      { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.' },
+      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.' },
+      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.' },
     ],
   },
 ];

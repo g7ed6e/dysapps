@@ -42,6 +42,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.toile.side]: 'toile',
   [BLOCKS.panneau.side]: 'panneau',
   [BLOCKS.tourbe.side]: 'tourbe',
+  [BLOCKS.acier.side]: 'acier',
+  [BLOCKS.calque.side]: 'calque',
   [SNOW]: 'nuage',
   [HAY]: 'or',
 };
@@ -281,6 +283,26 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
       put(x, y, h(x, y) + 3, HAY);
     }
     put(1, 10, h(1, 10) + 1, TRUNK);
+  },
+  forge: (put, h) => {
+    // Une cheminée de pierre au sommet incandescent, une enclume d'acier, des lingots.
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? HAY : BLOCKS.pierre.side);
+    put(8, 5, h(8, 5) + 1, BLOCKS.acier.side);
+    put(10, 5, h(10, 5) + 1, BLOCKS.acier.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.or.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.acier.side);
+    put(1, 10, h(1, 10) + 2, BLOCKS.acier.side);
+  },
+  atelier: (put, h) => {
+    // Une table à dessin (planches sur pieds) avec un calque, une pile de calques.
+    put(8, 3, h(8, 3) + 1, TRUNK);
+    put(10, 3, h(10, 3) + 1, TRUNK);
+    for (let dx = 8; dx <= 10; dx++) put(dx, 3, h(dx, 3) + 2, BLOCKS.bois.side);
+    put(9, 3, h(9, 3) + 3, BLOCKS.calque.side);
+    put(9, 5, h(9, 5) + 1, BLOCKS.calque.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.calque.side);
+    put(3, 9, h(3, 9) + 2, BLOCKS.calque.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };
 

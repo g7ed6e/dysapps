@@ -1,0 +1,117 @@
+{
+  "id": "atelier-bureau",
+  "biome": "atelier",
+  "name": "Le bureau d’Ixe",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "calque"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "calque"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "calque"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "panneau": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Mon bureau ! Merci, bâtisseur·se. Bip : x blocs posés, x = tous."
+}

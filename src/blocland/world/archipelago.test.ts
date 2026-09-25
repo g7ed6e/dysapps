@@ -33,6 +33,8 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
       .sort(),
   ).toEqual(['foret-carrefour', 'foret-ferme', 'foret-mine', 'plaine-glacier', 'plaine-riviere', 'plaine-volcan']);
   expect(isBiomeUnlocked('marais', ['foret-mine', 'mine-marais'])).toBe(true);
+  expect(isBiomeUnlocked('forge', ['plaine-volcan', 'volcan-forge'])).toBe(true);
+  expect(isBiomeUnlocked('atelier', ['plaine-glacier', 'glacier-marche', 'marche-atelier'])).toBe(true);
   expect(isBiomeUnlocked('marche', ['plaine-glacier', 'glacier-marche'])).toBe(true);
   expect(isBiomeUnlocked('volcan', ['foret-ferme', 'ferme-volcan'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.

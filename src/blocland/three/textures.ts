@@ -15,6 +15,8 @@ export type TextureKind =
   | 'toile'
   | 'panneau'
   | 'tourbe'
+  | 'acier'
+  | 'calque'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -117,6 +119,21 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   tourbe: {
     top: (x, y, r) => (r() < 0.1 ? [96, 128, 60] : grain('#3f3320', '#5a4a2a')(x, y, r)),
     side: (x, y, r) => (r() < 0.06 ? [120, 100, 60] : grain('#33291a', '#4a3d24')(x, y, r)),
+  },
+  // Acier : plaques grises rivetées.
+  acier: {
+    top: (x, y, r) =>
+      x % 8 === 0 || y % 8 === 0
+        ? [100, 110, 120]
+        : (x % 8 === 2 && y % 8 === 2) || (x % 8 === 6 && y % 8 === 6)
+          ? [200, 208, 216]
+          : grain('#8f9aa6', '#aab4be')(x, y, r),
+    side: (x, y, r) => (x % 8 === 0 || y % 8 === 0 ? [90, 100, 110] : grain('#7f8a96', '#9aa4ae')(x, y, r)),
+  },
+  // Calque : papier clair quadrillé de lignes bleues.
+  calque: {
+    top: (x, y, r) => (x % 4 === 0 || y % 4 === 0 ? [150, 180, 220] : grain('#f4f1e4', '#faf8ef')(x, y, r)),
+    side: (x, y, r) => (x % 4 === 0 || y % 4 === 0 ? [140, 170, 210] : grain('#dcd6c0', '#e8e3cf')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

@@ -74,6 +74,8 @@
   --tex-canvas: url("./textures/toile.png");
   --tex-sign: url("./textures/panneau.png");
   --tex-peat: url("./textures/tourbe.png");
+  --tex-steel: url("./textures/acier.png");
+  --tex-paper: url("./textures/calque.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -127,6 +129,8 @@
   --tex-canvas: none;
   --tex-sign: none;
   --tex-peat: none;
+  --tex-steel: none;
+  --tex-paper: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2232,6 +2236,14 @@ a.app-card:active {
 .app-card.biome-marais {
   background-image: var(--tex-peat);
 }
+.biome-card.biome-forge,
+.app-card.biome-forge {
+  background-image: var(--tex-steel);
+}
+.biome-card.biome-atelier,
+.app-card.biome-atelier {
+  background-image: var(--tex-paper);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2291,6 +2303,12 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-marais {
   border-top-color: #5a4a2a;
+}
+:root[data-theme="clair"] .biome-forge {
+  border-top-color: #8f9aa6;
+}
+:root[data-theme="clair"] .biome-atelier {
+  border-top-color: #96b4dc;
 }
 .biome-step {
   position: absolute;
@@ -3411,6 +3429,12 @@ a.app-card:active {
 }
 .island-sheet.biome-marais {
   background-image: var(--tex-peat);
+}
+.island-sheet.biome-forge {
+  background-image: var(--tex-steel);
+}
+.island-sheet.biome-atelier {
+  background-image: var(--tex-paper);
 }
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {
