@@ -1,5 +1,6 @@
 import { BIOMES } from '../biomes';
 import {
+  fade,
   DEPTH,
   ISLAND,
   ISLET_H,
@@ -24,20 +25,24 @@ it('construit une île par biome, avec créature seulement si un pont y mène', 
   const onIsland = (c: { x: number; y: number }) => c.x >= o.ox && c.x < o.ox + ISLAND && c.y >= o.oy && c.y < o.oy + ISLAND;
   const foret = cubes.filter((c) => c.tag === 'foret');
   const mine = cubes.filter((c) => c.tag === 'mine' && onIsland(c));
-  // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est grise et sans créature.
+  // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est délavée et sans créature.
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
   // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
   expect(worldCubes({}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
   expect(creaturePlacements([]).map((c) => c.id)).toEqual(['foret', 'plaine']);
   expect(creaturePlacements(['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine', 'plaine']);
-  expect(mine.every((c) => c.color === '#b9b4a8' && c.texture === 'pierre')).toBe(true);
+  expect(mine.every((c) => c.muted)).toBe(true);
+  expect(mine.some((c) => c.texture === 'pierre')).toBe(true);
+  expect(foret.some((c) => c.muted)).toBe(false);
   const unlocked = worldCubes({}, village(['foret-mine']));
-  expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.color !== '#b9b4a8')).toBe(true);
+  expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.muted)).toBe(false);
+  // Délavé : plus clair et moins saturé, jamais gris uniforme.
+  expect(fade('#6cb33f')).not.toBe(fade('#b8623a'));
 });
 
 it('place les îles sur la carte du continent, à leur altitude', () => {
   const at = (id: string) => islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  expect(at('foret')).toEqual({ ox: 44, oy: 40, oz: 0 });
+  expect(at('foret')).toEqual({ ox: 50, oy: 44, oz: 0 });
   expect(at('plaine').oz).toBe(0);
   expect(at('glacier').oz).toBe(3);
   expect(at('forge').oz).toBe(6);

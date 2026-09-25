@@ -3,7 +3,7 @@
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
 import { BRIDGES, bridgeState, isBiomeUnlocked, type BridgeDef } from './archipelago';
-import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, reliefHeight, type IslandDef } from './map';
+import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
@@ -18,13 +18,32 @@ export const DEPTH = 2;
 /** Couches de roche qui s'amincissent sous une île en altitude (elle flotte). */
 export const TAPER = 3;
 
-const LOCKED = { top: '#d6d1c4', side: '#b9b4a8' };
 const TRUNK = '#6b4a2e';
 const LEAF = '#4e8f36';
 const GRASS = '#6cb33f';
 const DARK = '#3b2d20';
 const HAY = '#e8c66f';
 const SNOW = '#f4f8fb';
+const MOSS = '#4f8a3a';
+const BASALT = '#4a4448';
+const LAVA = '#ff7a1a';
+const WATER = '#4a9be0';
+const PINE = '#2f6b4a';
+const REED = '#8fae4f';
+const CRYSTAL = '#5cd0c8';
+const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
+const MUSHROOM = '#d9453f';
+
+/** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
+export function fade(color: string): string {
+  const n = parseInt(color.slice(1), 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  const lum = r * 0.3 + g * 0.59 + b * 0.11;
+  const mix = (c: number) => Math.round((c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45);
+  return `#${((mix(r) << 16) | (mix(g) << 8) | mix(b)).toString(16).padStart(6, '0')}`;
+}
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
 const TEXTURES: Record<string, string> = {
@@ -54,7 +73,72 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.lentille.side]: 'lentille',
   [SNOW]: 'nuage',
   [HAY]: 'or',
+  [MOSS]: 'mousse',
+  [BASALT]: 'basalte',
+  [LAVA]: 'lave',
+  [WATER]: 'eau',
+  [PINE]: 'sapin',
+  [CRYSTAL]: 'cristal',
 };
+
+/** Couleur du dessus d'une case de paysage selon son sol. */
+const GROUND_COLOR: Record<Ground, string> = {
+  herbe: GRASS,
+  sable: BLOCKS.sable.side,
+  roche: BLOCKS.pierre.side,
+  neige: SNOW,
+  eau: WATER,
+  lave: LAVA,
+  glace: BLOCKS.glace.side,
+  basalte: BASALT,
+  mousse: MOSS,
+};
+
+/** Un élément de décor posé sur une case, au-dessus de son sol (z = 1 juste au-dessus). `r` : grain 0..1 pour varier. */
+function decorate(put: Put, kind: Decor, x: number, y: number, r: number): void {
+  switch (kind) {
+    case 'arbre':
+      tree(put, x, y, 0, r > 0.5 ? 3 : 2);
+      break;
+    case 'sapin': {
+      const tall = r > 0.5 ? 2 : 1;
+      for (let z = 1; z <= tall; z++) put(x, y, z, TRUNK);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, tall + 1, PINE);
+      put(x + 1, y, tall + 2, PINE);
+      put(x - 1, y, tall + 2, PINE);
+      put(x, y + 1, tall + 2, PINE);
+      put(x, y - 1, tall + 2, PINE);
+      put(x, y, tall + 2, PINE);
+      put(x, y, tall + 3, PINE);
+      break;
+    }
+    case 'buisson':
+      put(x, y, 1, LEAF);
+      if (r > 0.7) put(x + 1, y, 1, LEAF);
+      break;
+    case 'fleur':
+      put(x, y, 1, FLOWERS[Math.floor(r * FLOWERS.length) % FLOWERS.length]);
+      break;
+    case 'rocher':
+      put(x, y, 1, BLOCKS.pierre.side);
+      if (r > 0.8) put(x, y, 2, BLOCKS.pierre.side);
+      break;
+    case 'roseau':
+      put(x, y, 1, REED);
+      put(x, y, 2, REED);
+      break;
+    case 'cristal':
+      put(x, y, 1, CRYSTAL);
+      if (r > 0.6) put(x, y, 2, CRYSTAL);
+      break;
+    case 'souche':
+      put(x, y, 1, TRUNK);
+      break;
+    case 'champignon':
+      put(x, y, 1, MUSHROOM);
+      break;
+  }
+}
 
 /** Coin (x, y) du cœur de l'île d'un biome et altitude de son sol. */
 export function islandOrigin(index: number): { ox: number; oy: number; oz: number } {
@@ -491,20 +575,11 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
   return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
 }
 
-/** Couleurs de la terre autour du cœur, selon la région : sol, roche du relief, hauteur à partir de laquelle il neige. */
-function reliefPalette(def: IslandDef): { ground: string; rock: string; snowFrom: number } {
-  switch (def.region) {
-    case 'feu':
-      return { ground: BLOCKS.obsidienne.side, rock: BLOCKS.pierre.side, snowFrom: 99 };
-    case 'montagne':
-      return { ground: GRASS, rock: BLOCKS.pierre.side, snowFrom: 4 };
-    case 'hauteurs':
-      return { ground: BLOCKS.pierre.side, rock: BLOCKS.pierre.side, snowFrom: 3 };
-    case 'marais':
-      return { ground: GRASS, rock: BLOCKS.terre.side, snowFrom: 99 };
-    default:
-      return { ground: GRASS, rock: BLOCKS.terre.side, snowFrom: 99 };
-  }
+/** Roche sous le sol d'une case de paysage, selon la région et la hauteur. */
+function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): string {
+  if (def.region === 'feu') return BASALT;
+  if (cell.h - depthBelowTop >= 2 || def.region === 'hauteurs' || def.region === 'montagne') return BLOCKS.pierre.side;
+  return BLOCKS.terre.side;
 }
 
 export function worldCubes(
@@ -522,34 +597,36 @@ export function worldCubes(
       biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
     const h = (x: number, y: number) => groundHeight(index, x, y);
     // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
-    const put: Put = (x, y, z, color) =>
-      cubes.push({
-        x: ox + x,
-        y: oy + y,
-        z: oz + z,
-        color: unlocked ? color : LOCKED.side,
-        texture: unlocked ? TEXTURES[color] : 'pierre',
-        tag: biome.id,
-      });
-    // Cubes de la terre autour du cœur (coordonnées du monde).
-    const putWorld = (x: number, y: number, z: number, color: string) =>
-      cubes.push({ x, y, z: oz + z, color: unlocked ? color : LOCKED.side, texture: unlocked ? TEXTURES[color] : 'pierre', tag: biome.id });
-    const relief = reliefPalette(def);
+    // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
+    const taken = new Set<string>();
+    const putWorld = (x: number, y: number, z: number, color: string) => {
+      taken.add(`${x},${y},${z}`);
+      cubes.push({ x, y, z: oz + z, color: unlocked ? color : fade(color), texture: TEXTURES[color], tag: biome.id, muted: unlocked ? undefined : true });
+    };
+    const put: Put = (x, y, z, color) => putWorld(ox + x, oy + y, z, color);
     const land = landCells(def);
     for (const c of land) {
-      if (inCore(def, c.x, c.y)) {
-        const x = c.x - ox;
-        const y = c.y - oy;
-        for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
-        const top = h(x, y);
-        if (top > 0) put(x, y, 0, BLOCKS.terre.side);
-        put(x, y, top, grassy ? GRASS : block.side);
-      } else {
-        const top = reliefHeight(def, c.x, c.y);
-        for (let d = 1; d <= DEPTH; d++) putWorld(c.x, c.y, -d, BLOCKS.terre.side);
-        for (let z = 0; z < top; z++) putWorld(c.x, c.y, z, relief.rock);
-        putWorld(c.x, c.y, top, top >= relief.snowFrom ? SNOW : top > 0 ? relief.rock : relief.ground);
-      }
+      if (!inCore(def, c.x, c.y)) continue;
+      const x = c.x - ox;
+      const y = c.y - oy;
+      for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
+      const top = h(x, y);
+      if (top > 0) put(x, y, 0, BLOCKS.terre.side);
+      put(x, y, top, grassy ? GRASS : block.side);
+    }
+    // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
+    const scenery = landscape(def);
+    for (const c of scenery) {
+      for (let d = 1; d <= DEPTH; d++) putWorld(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
+      for (let z = 0; z < c.h; z++) putWorld(c.x, c.y, z, underground(def, c, c.h - z));
+      putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
+    }
+    DECOR[biome.id](put, h);
+    for (const c of scenery) {
+      if (!c.decor) continue;
+      const r = noise(def.seed + 5, c.x, c.y);
+      // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
+      decorate((x, y, z, color) => !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
     }
     // Une île en altitude flotte : sa roche s'amincit dessous.
     if (def.altitude > 0) {
@@ -563,12 +640,11 @@ export function worldCubes(
         layer = next;
         for (const key of layer) {
           const [x, y] = key.split(',').map(Number);
-          putWorld(x, y, -DEPTH - d, BLOCKS.pierre.side);
+          if (!taken.has(`${x},${y},${-DEPTH - d}`)) putWorld(x, y, -DEPTH - d, BLOCKS.pierre.side);
         }
         if (layer.size === 0) break;
       }
     }
-    DECOR[biome.id](put, h);
     // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une plateforme de pierre sur deux couches de terre.
     const guardian = guardianStatus(biome, progress, village.bridges);
     if (guardian !== 'hidden') {

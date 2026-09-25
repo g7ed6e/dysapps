@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, CORE, MAP, isLand, islandDef, landCells, reliefHeight } from './map';
+import { ALTITUDE, CORE, MAP, isLand, islandDef, landCells, landscape, reliefHeight } from './map';
 import { BRIDGES } from './archipelago';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
@@ -46,7 +46,7 @@ it('les ponts relient des îles proches, jamais séparées de plus d’un niveau
   }
 });
 
-it('le relief : plat, collines de 0 à 2, montagne jusqu’à 6 derrière le cœur, jamais dans le cœur', () => {
+it('le relief : plat, collines de 0 à 2, montagne de 6 à 9, volcan avec son cratère de lave, jamais dans le cœur', () => {
   for (const def of MAP) {
     let max = 0;
     for (const c of landCells(def)) {
@@ -55,13 +55,39 @@ it('le relief : plat, collines de 0 à 2, montagne jusqu’à 6 derrière le cœ
       if (def.core.x <= c.x && c.x < def.core.x + CORE && def.core.y <= c.y && c.y < def.core.y + CORE) expect(h).toBe(0);
       max = Math.max(max, h);
     }
-    if (def.relief === 'plat') expect(max).toBeLessThanOrEqual(1);
-    if (def.relief === 'collines') expect(max).toBeLessThanOrEqual(2);
+    if (def.relief === 'plat') expect(max, def.id).toBeLessThanOrEqual(1);
+    if (def.relief === 'collines') expect(max, def.id).toBeLessThanOrEqual(2);
     if (def.relief === 'montagne') {
-      expect(max).toBeGreaterThanOrEqual(4);
-      expect(max).toBeLessThanOrEqual(6);
+      expect(max, def.id).toBeGreaterThanOrEqual(6);
+      expect(max, def.id).toBeLessThanOrEqual(9);
+    }
+    if (def.relief === 'volcan') {
+      expect(max, def.id).toBeGreaterThanOrEqual(6);
+      expect(landscape(def).some((c) => c.ground === 'lave')).toBe(true);
     }
   }
+});
+
+it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des lacs sur quelques îles, de la neige sur les sommets', () => {
+  let lakes = 0;
+  for (const def of MAP) {
+    const cells = landscape(def);
+    expect(
+      cells.some((c) => c.decor),
+      def.id,
+    ).toBe(true);
+    for (const c of cells) {
+      if (c.ground === 'eau' || c.ground === 'lave') expect(c.decor, `${def.id} ${c.x},${c.y}`).toBeUndefined();
+      if (c.ground === 'eau') expect(c.h).toBe(-1);
+    }
+    if (cells.some((c) => c.ground === 'eau')) lakes++;
+    if (def.relief === 'montagne' && def.region !== 'feu')
+      expect(
+        cells.some((c) => c.ground === 'neige'),
+        def.id,
+      ).toBe(true);
+  }
+  expect(lakes).toBeGreaterThanOrEqual(3);
 });
 
 it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre île', () => {

@@ -16,6 +16,8 @@ export interface VoxelCube {
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
   texture?: string;
+  /** Île verrouillée : couleurs délavées (la texture est gardée, effacée vers le gris). */
+  muted?: boolean;
 }
 
 /** Motif de grain pixel à déclarer une fois par SVG (<defs>). */

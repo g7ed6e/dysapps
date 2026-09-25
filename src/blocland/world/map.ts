@@ -1,10 +1,11 @@
 // La carte de Blocland : un continent qui monte. Chaque île a un cœur de 12 × 12 (zone des plans, créature, décor)
-// posé sur une terre plus large aux contours irréguliers, à une altitude qui monte avec la classe :
-// 6e au niveau de la mer, 5e sur les collines, 4e sur les monts, 3e sur les sommets.
+// posé sur une terre bien plus large aux côtes irrégulières (baies, caps), avec ses collines, ses pics, ses lacs,
+// sa végétation, à une altitude qui monte avec la classe : 6e au niveau de la mer, 5e sur les collines, 4e sur les
+// monts, 3e sur les sommets.
 import type { BiomeId } from '../biomes';
 
 export type RegionId = 'basses-terres' | 'marais' | 'feu' | 'montagne' | 'hauteurs';
-export type Relief = 'plat' | 'collines' | 'montagne';
+export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 
 export interface IslandDef {
   id: BiomeId;
@@ -28,31 +29,30 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
 
 /** Les vingt îles, placées à la main : la Forêt et la Plaine au centre, les sommets aux bords. */
 export const MAP: IslandDef[] = [
-  // Basses Terres (6e, français)
-  { id: 'foret', region: 'basses-terres', core: { x: 44, y: 40 }, altitude: 0, ext: e(3, 3, 2, 3), relief: 'collines', seed: 11 },
-  { id: 'ferme', region: 'basses-terres', core: { x: 22, y: 40 }, altitude: 0, ext: e(2, 3, 1, 3), relief: 'plat', seed: 12 },
-  { id: 'mine', region: 'montagne', core: { x: 66, y: 40 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'collines', seed: 13 },
-  { id: 'tour', region: 'basses-terres', core: { x: 0, y: 40 }, altitude: 0, ext: e(1, 2, 2, 2), relief: 'plat', seed: 14 },
-  { id: 'carriere', region: 'montagne', core: { x: 88, y: 40 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'collines', seed: 15 },
-  // Basses Terres (6e, maths)
-  { id: 'plaine', region: 'basses-terres', core: { x: 44, y: 18 }, altitude: 0, ext: e(2, 2, 2, 1), relief: 'plat', seed: 16 },
-  { id: 'riviere', region: 'marais', core: { x: 68, y: 16 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 17 },
-  { id: 'volcan', region: 'feu', core: { x: 20, y: 16 }, altitude: 0, ext: e(2, 2, 2, 3), relief: 'montagne', seed: 18 },
+  // Basses Terres (6e)
+  { id: 'foret', region: 'basses-terres', core: { x: 50, y: 44 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
+  { id: 'ferme', region: 'basses-terres', core: { x: 20, y: 46 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
+  { id: 'mine', region: 'montagne', core: { x: 80, y: 46 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
+  { id: 'tour', region: 'basses-terres', core: { x: -10, y: 42 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
+  { id: 'carriere', region: 'montagne', core: { x: 110, y: 42 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
+  { id: 'plaine', region: 'basses-terres', core: { x: 48, y: 16 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
+  { id: 'riviere', region: 'marais', core: { x: 82, y: 14 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
+  { id: 'volcan', region: 'feu', core: { x: 16, y: 14 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
   // Collines (5e)
-  { id: 'glacier', region: 'montagne', core: { x: 44, y: -6 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'montagne', seed: 21 },
-  { id: 'marche', region: 'marais', core: { x: 70, y: -8 }, altitude: 3, ext: e(2, 2, 1, 2), relief: 'plat', seed: 22 },
-  { id: 'carrefour', region: 'basses-terres', core: { x: 44, y: 64 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'collines', seed: 23 },
-  { id: 'marais', region: 'marais', core: { x: 68, y: 66 }, altitude: 3, ext: e(3, 2, 2, 2), relief: 'plat', seed: 24 },
+  { id: 'glacier', region: 'montagne', core: { x: 48, y: -16 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
+  { id: 'marche', region: 'marais', core: { x: 84, y: -18 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
+  { id: 'carrefour', region: 'basses-terres', core: { x: 50, y: 74 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
+  { id: 'marais', region: 'marais', core: { x: 82, y: 78 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
   // Monts (4e)
-  { id: 'forge', region: 'feu', core: { x: 18, y: -8 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'montagne', seed: 31 },
-  { id: 'atelier', region: 'hauteurs', core: { x: 94, y: -6 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'collines', seed: 32 },
-  { id: 'falaise', region: 'montagne', core: { x: 16, y: 66 }, altitude: 6, ext: e(2, 2, 2, 3), relief: 'montagne', seed: 33 },
-  { id: 'cabinet', region: 'hauteurs', core: { x: 92, y: 66 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'collines', seed: 34 },
+  { id: 'forge', region: 'feu', core: { x: 14, y: -20 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
+  { id: 'atelier', region: 'hauteurs', core: { x: 116, y: -14 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
+  { id: 'falaise', region: 'montagne', core: { x: 16, y: 80 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
+  { id: 'cabinet', region: 'hauteurs', core: { x: 114, y: 78 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
   // Sommets (3e)
-  { id: 'belvedere', region: 'montagne', core: { x: -8, y: -8 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'montagne', seed: 41 },
-  { id: 'phare', region: 'hauteurs', core: { x: 18, y: -32 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 42 },
-  { id: 'donnees', region: 'hauteurs', core: { x: 72, y: -32 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: -6, y: 66 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 44 },
+  { id: 'belvedere', region: 'montagne', core: { x: -18, y: -18 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
+  { id: 'phare', region: 'hauteurs', core: { x: 16, y: -50 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
+  { id: 'donnees', region: 'hauteurs', core: { x: 86, y: -50 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
+  { id: 'textes', region: 'hauteurs', core: { x: -16, y: 82 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
 ];
 
 export function islandDef(id: BiomeId): IslandDef {
@@ -68,7 +68,7 @@ export function noise(seed: number, x: number, y: number): number {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
 
-/** Bruit lissé (interpolation bilinéaire d'un bruit sur une grille de 4 cases). */
+/** Bruit lissé (interpolation bilinéaire d'un bruit sur une grille de `cell` cases). */
 export function smoothNoise(seed: number, x: number, y: number, cell = 4): number {
   const gx = Math.floor(x / cell);
   const gy = Math.floor(y / cell);
@@ -93,15 +93,24 @@ export function inCore(def: IslandDef, x: number, y: number): boolean {
   return x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
 }
 
-/** La case (x, y) du monde fait-elle partie de la terre de l'île ? Le cœur toujours ; autour, un contour irrégulier. */
+/** Distance normalisée au cœur (0 sur le cœur, 1 au bord de la boîte). */
+function coreDistance(def: IslandDef, x: number, y: number): number {
+  const dx = x < def.core.x ? (def.core.x - x) / (def.ext.left + 0.5) : x >= def.core.x + CORE ? (x - (def.core.x + CORE - 1)) / (def.ext.right + 0.5) : 0;
+  const dy = y < def.core.y ? (def.core.y - y) / (def.ext.front + 0.5) : y >= def.core.y + CORE ? (y - (def.core.y + CORE - 1)) / (def.ext.back + 0.5) : 0;
+  return Math.hypot(dx, dy);
+}
+
+/**
+ * La case (x, y) du monde fait-elle partie de la terre de l'île ? Le cœur toujours ; autour, une côte
+ * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain.
+ */
 export function isLand(def: IslandDef, x: number, y: number): boolean {
   if (inCore(def, x, y)) return true;
   const { x0, y0, x1, y1 } = landBox(def);
   if (x < x0 || x >= x1 || y < y0 || y >= y1) return false;
-  const dx = x < def.core.x ? (def.core.x - x) / (def.ext.left + 0.5) : x >= def.core.x + CORE ? (x - (def.core.x + CORE - 1)) / (def.ext.right + 0.5) : 0;
-  const dy = y < def.core.y ? (def.core.y - y) / (def.ext.front + 0.5) : y >= def.core.y + CORE ? (y - (def.core.y + CORE - 1)) / (def.ext.back + 0.5) : 0;
-  const d = Math.hypot(dx, dy);
-  return d + (noise(def.seed, x, y) - 0.5) * 0.45 < 1;
+  const d = coreDistance(def, x, y);
+  const coast = (smoothNoise(def.seed, x, y, 5) - 0.5) * 0.7 + (noise(def.seed + 1, x, y) - 0.5) * 0.15;
+  return d + coast < 0.92;
 }
 
 /** Toutes les cases de terre d'une île. */
@@ -112,19 +121,120 @@ export function landCells(def: IslandDef): { x: number; y: number }[] {
   return out;
 }
 
-/**
- * Hauteur du sol hors du cœur (en blocs au-dessus de l'altitude de l'île) : plat, collines douces,
- * ou une montagne qui monte derrière le cœur, en terrasses.
- */
+/** Nature du sol d'une case hors du cœur. */
+export type Ground = 'herbe' | 'sable' | 'roche' | 'neige' | 'eau' | 'lave' | 'glace' | 'basalte' | 'mousse';
+
+/** Un élément de décor posé sur la terre autour du cœur. */
+export type Decor = 'arbre' | 'sapin' | 'buisson' | 'fleur' | 'rocher' | 'roseau' | 'cristal' | 'souche' | 'champignon';
+
+export interface LandCell {
+  x: number;
+  y: number;
+  /** Hauteur du sol au-dessus de l'altitude de l'île (négatif : creux d'un lac ou d'un cratère). */
+  h: number;
+  ground: Ground;
+  decor?: Decor;
+}
+
+/** Les pics d'une île (relatifs au coin du cœur) : centre, hauteur, rayon. */
+function peaks(def: IslandDef): { x: number; y: number; h: number; r: number }[] {
+  const back = def.core.y + CORE + def.ext.back - 1;
+  const mid = def.core.x + CORE / 2;
+  if (def.relief === 'montagne') {
+    const two = def.ext.back >= 6;
+    return two
+      ? [
+          { x: mid - 3, y: back - 1, h: 9, r: 6 },
+          { x: mid + 4, y: back - 2, h: 6, r: 4 },
+        ]
+      : [{ x: mid + 1, y: back - 1, h: 7, r: 5 }];
+  }
+  if (def.relief === 'volcan') return [{ x: mid, y: back - 2, h: 8, r: 6 }];
+  return [];
+}
+
+const landscapeCache = new Map<BiomeId, LandCell[]>();
+
+/** Le paysage d'une île : chaque case de terre hors du cœur avec sa hauteur, son sol et son décor (mémorisé). */
+export function landscape(def: IslandDef): LandCell[] {
+  const cached = landscapeCache.get(def.id);
+  if (cached) return cached;
+  const out = computeLandscape(def);
+  landscapeCache.set(def.id, out);
+  return out;
+}
+
+function computeLandscape(def: IslandDef): LandCell[] {
+  const cells = landCells(def);
+  const isLandAt = (x: number, y: number) => isLand(def, x, y);
+  const pk = peaks(def);
+  const out: LandCell[] = [];
+  for (const c of cells) {
+    if (inCore(def, c.x, c.y)) continue;
+    const n = smoothNoise(def.seed + 7, c.x, c.y, 4);
+    const fine = noise(def.seed + 3, c.x, c.y);
+    const edge = !isLandAt(c.x - 1, c.y) || !isLandAt(c.x + 1, c.y) || !isLandAt(c.x, c.y - 1) || !isLandAt(c.x, c.y + 1);
+    const nearCore = coreDistance(def, c.x, c.y) < 0.35;
+    // Hauteur : collines douces, puis les pics par-dessus.
+    let h = def.relief === 'plat' ? (n > 0.8 ? 1 : 0) : Math.min(2, Math.floor(n * 3));
+    let crater = false;
+    for (const p of pk) {
+      const d = Math.hypot(c.x - p.x, c.y - p.y) / p.r;
+      if (d < 1) {
+        const ph = Math.round(p.h * (1 - d * d));
+        if (def.relief === 'volcan' && d < 0.3) {
+          crater = true;
+          h = Math.max(h, p.h - 2);
+        } else h = Math.max(h, ph);
+      }
+    }
+    if (edge) h = Math.min(h, 1);
+    if (nearCore) h = Math.min(h, 1);
+    // Sol.
+    let ground: Ground = 'herbe';
+    if (def.region === 'feu') ground = 'basalte';
+    else if (def.region === 'hauteurs') ground = h > 0 ? 'roche' : 'herbe';
+    else if (def.region === 'marais') ground = 'mousse';
+    if (def.id === 'glacier') ground = 'glace';
+    if (h >= 3) ground = def.region === 'feu' ? 'basalte' : 'roche';
+    if (h >= 5 && def.region !== 'feu') ground = 'neige';
+    if (def.id === 'glacier' && h >= 2) ground = 'neige';
+    if (crater) ground = 'lave';
+    if (edge && def.altitude === 0 && h === 0 && def.region !== 'feu') ground = 'sable';
+    // Lacs et mares : dans un creux, loin du bord et du cœur.
+    let decor: Decor | undefined;
+    if (!edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, c.x, c.y, 3) > 0.78 && def.relief !== 'volcan') {
+      ground = 'eau';
+      h = -1;
+    } else if (h <= 2 && !edge && fine > 0.62) {
+      decor = pickDecor(def, ground, h, fine);
+    }
+    out.push({ x: c.x, y: c.y, h, ground, decor });
+  }
+  return out;
+}
+
+function pickDecor(def: IslandDef, ground: Ground, h: number, r: number): Decor | undefined {
+  if (ground === 'eau' || ground === 'lave' || ground === 'sable') return undefined;
+  const t = (r - 0.62) / 0.38; // 0..1
+  switch (def.region) {
+    case 'basses-terres':
+      return t > 0.8 ? 'arbre' : t > 0.55 ? 'buisson' : t > 0.42 ? 'fleur' : t > 0.34 ? 'champignon' : undefined;
+    case 'marais':
+      return t > 0.85 ? 'arbre' : t > 0.5 ? 'roseau' : t > 0.3 ? 'champignon' : undefined;
+    case 'feu':
+      return t > 0.85 ? 'souche' : t > 0.6 ? 'rocher' : undefined;
+    case 'montagne':
+      if (ground === 'neige' || ground === 'glace') return t > 0.85 ? 'rocher' : undefined;
+      return t > 0.75 ? 'sapin' : t > 0.55 ? 'rocher' : t > 0.4 && h === 0 ? 'fleur' : undefined;
+    case 'hauteurs':
+      return t > 0.8 ? 'cristal' : t > 0.6 ? 'rocher' : t > 0.45 && h === 0 ? 'sapin' : undefined;
+  }
+}
+
+/** Hauteur du sol hors du cœur (compatibilité : la même que dans `landscape`). */
 export function reliefHeight(def: IslandDef, x: number, y: number): number {
   if (inCore(def, x, y)) return 0;
-  const n = smoothNoise(def.seed, x, y);
-  if (def.relief === 'plat') return n > 0.85 ? 1 : 0;
-  if (def.relief === 'collines') return Math.min(2, Math.floor(n * 3));
-  // Montagne : un pic derrière le cœur, au milieu ; le reste en collines.
-  const peak = { x: def.core.x + CORE / 2, y: def.core.y + CORE + def.ext.back };
-  const behind = y >= def.core.y + CORE;
-  if (!behind) return Math.min(1, Math.floor(n * 2));
-  const dist = Math.hypot((x - peak.x) / (CORE / 2 + 1), (y - peak.y) / (def.ext.back + 1));
-  return Math.max(1, Math.min(6, Math.round(6 * (1 - dist) + 1)));
+  const cell = landscape(def).find((c) => c.x === x && c.y === y);
+  return cell ? Math.max(0, cell.h) : 0;
 }

@@ -67,7 +67,7 @@ export interface WorldCanvasProps {
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
-const VIEW = { dx: 0.3, dy: -0.95, up: 0.55 };
+const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
@@ -93,7 +93,10 @@ const STEPS: [number, number][] = [
 const ghostCache = new Map<string, THREE.Material>();
 
 /** Matériau d'une face : les blocs texturés partagent les matériaux (cache), le reste est une couleur grainée. */
-function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false): THREE.Material {
+/** Blocs qui brillent d'eux-mêmes (surtout la nuit). */
+const GLOW: Partial<Record<TextureKind, [number, number]>> = { lanterne: [0xffb830, 0.55], lave: [0xff5a00, 0.6] };
+
+function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false, muted = false): THREE.Material {
   if (ghost) {
     const k = texture ?? color ?? 'gris';
     let m = ghostCache.get(k);
@@ -107,18 +110,18 @@ function materialFor(texture: string | undefined, face: FaceSide, color: string 
     return m;
   }
   if (!texture) return tintedMaterial(color ?? '#9c9c9c');
-  // La lanterne brille (surtout la nuit).
-  if (texture === 'lanterne') {
-    let m = ghostCache.get('lit:lanterne');
+  const glow = GLOW[texture as TextureKind];
+  if (glow && !muted) {
+    let m = ghostCache.get(`lit:${texture}`);
     if (!m) {
-      const base = blockMaterial('lanterne');
+      const base = blockMaterial(texture as TextureKind);
       const src = (Array.isArray(base) ? base[0] : base) as THREE.MeshLambertMaterial;
-      m = new THREE.MeshLambertMaterial({ map: src.map, emissive: 0xffb830, emissiveIntensity: 0.55 });
-      ghostCache.set('lit:lanterne', m);
+      m = new THREE.MeshLambertMaterial({ map: src.map, emissive: glow[0], emissiveIntensity: glow[1] });
+      ghostCache.set(`lit:${texture}`, m);
     }
     return m;
   }
-  const m = blockMaterial(texture as TextureKind);
+  const m = blockMaterial(texture as TextureKind, muted);
   if (!Array.isArray(m)) return m;
   // Ordre d'une BoxGeometry : +x, −x, +y (dessus), −y (dessous), +z, −z.
   return m[face === 'top' ? 2 : face === 'bottom' ? 3 : 0];
@@ -130,7 +133,7 @@ function meshOf(g: MeshGroup): THREE.Mesh {
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
   geo.setIndex(g.indices);
-  const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost));
+  const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost, g.muted));
   if (g.ghost) mesh.renderOrder = 1;
   // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
   mesh.frustumCulled = false;
@@ -204,7 +207,7 @@ export default function WorldCanvas({
   /** Position et cible de la caméra pour une île (ou la vue d'ensemble). */
   const framing = (island: BiomeId | null) => {
     const c = island ? islandCenter(island) : { ...center, z: 0 };
-    const d = island ? ISLAND_DISTANCE : width * 0.8 + 6;
+    const d = island ? ISLAND_DISTANCE : width * 0.78 + 6;
     const target = new THREE.Vector3(c.x, c.z + 1, c.y);
     const v = island ? ISLAND_VIEW : VIEW;
     const pos = new THREE.Vector3(c.x + d * v.dx, c.z + 1 + d * v.up, c.y + d * v.dy);
