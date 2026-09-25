@@ -14,7 +14,9 @@ import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
+import { avatarHome, avatarRoute, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
+import { AVATAR_CUBES } from './Avatar';
+import { isBiomeUnlocked } from './world/archipelago';
 import { usePlanBuilder } from './usePlanBuilder';
 
 /**
@@ -26,7 +28,7 @@ export function WorldPage() {
   const { biomeId } = useParams();
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
-  const { state } = useBlocland();
+  const { state, moveTo } = useBlocland();
   const island = biomeId ? getBiome(biomeId) : undefined;
   const cubes = useMemo(() => worldCubes(state.progress, state.village, false), [state.progress, state.village]);
   const creatures = useMemo(
@@ -42,10 +44,23 @@ export function WorldPage() {
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde.
   const builder = usePlanBuilder(island?.id ?? 'foret');
 
-  // L'île de l'URL est cadrée (vol) à chaque changement.
+  // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
+  const at = state.village.at ?? 'foret';
+  const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [avatarHome(at)], seq: 0 }));
+  const avatar = useMemo(() => ({ cubes: AVATAR_CUBES, route: walk.route, seq: walk.seq }), [walk]);
+
+  // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   useEffect(() => {
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
     setSaid(null);
+    if (island && island.id !== at && isBiomeUnlocked(island.id, state.village.bridges)) {
+      const route = avatarRoute(at, island.id, state.village.bridges);
+      if (route) {
+        setWalk((w) => ({ route, seq: w.seq + 1 }));
+        moveTo(island.id);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id]);
 
   if (biomeId && !island) return <NotFoundPage />;
@@ -78,6 +93,7 @@ export function WorldPage() {
             forceDay={forceDay}
             bridges={state.village.bridges}
             marker={marker}
+            avatar={avatar}
             onPickIsland={(id) => navigate(`/aventure/${id}`)}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
             burst={builder.burst}

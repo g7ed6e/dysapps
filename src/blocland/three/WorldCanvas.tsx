@@ -61,6 +61,8 @@ export interface WorldCanvasProps {
   bridges?: string[];
   /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »). */
   marker?: BiomeId | null;
+  /** Le bonhomme : ses cubes et son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
+  avatar?: { cubes: VoxelCube[]; route: Cell[]; seq: number };
   burst?: Burst;
   /** Sensibilité de la caméra (rotation, zoom, déplacement). */
   cameraSpeed?: number;
@@ -197,6 +199,7 @@ export default function WorldCanvas({
   forceDay = false,
   bridges = [],
   marker = null,
+  avatar,
   burst,
   className,
   label,
@@ -216,6 +219,8 @@ export default function WorldCanvas({
     sky: { hemi: THREE.HemisphereLight; sun: THREE.DirectionalLight; water: THREE.MeshLambertMaterial; fog: THREE.Fog };
     flight: { fromPos: THREE.Vector3; fromTarget: THREE.Vector3; toPos: THREE.Vector3; toTarget: THREE.Vector3; start: number } | null;
     marker: THREE.Group;
+    avatar: THREE.Group;
+    walk: { route: Cell[]; start: number; duration: number } | null;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
@@ -394,6 +399,11 @@ export default function WorldCanvas({
     markerGroup.visible = false;
     scene.add(markerGroup);
 
+    // Le bonhomme (ses cubes arrivent par la prop `avatar`).
+    const avatarGroup = new THREE.Group();
+    avatarGroup.visible = false;
+    scene.add(avatarGroup);
+
     const terrain = new THREE.Group();
     scene.add(terrain);
     const creaturesGroup = new THREE.Group();
@@ -417,6 +427,8 @@ export default function WorldCanvas({
       sky: { hemi, sun, water: waterMat, fog },
       flight: null,
       marker: markerGroup,
+      avatar: avatarGroup,
+      walk: null,
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -557,6 +569,23 @@ export default function WorldCanvas({
         camera.position.lerpVectors(w.flight.fromPos, w.flight.toPos, k);
         controls.target.lerpVectors(w.flight.fromTarget, w.flight.toTarget, k);
         if (k >= 1) w.flight = null;
+      }
+      // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
+      if (w.walk) {
+        const { route, start, duration } = w.walk;
+        const k = reduceMotion ? 1 : Math.min(1, (now - start) / duration);
+        const pos = k * (route.length - 1);
+        const i = Math.min(route.length - 2, Math.floor(pos));
+        const f = pos - i;
+        const a = route[i];
+        const b = route[i + 1];
+        const x = a.x + (b.x - a.x) * f;
+        const y = a.y + (b.y - a.y) * f;
+        const z = a.z + (b.z - a.z) * f;
+        const hop = k < 1 ? Math.abs(Math.sin(t * 14)) * 0.18 : 0;
+        w.avatar.position.set(x - 1, z + hop, y);
+        if (b.x !== a.x || b.y !== a.y) w.avatar.rotation.y = Math.atan2(-(b.y - a.y), b.x - a.x) + Math.PI / 2;
+        if (k >= 1) w.walk = null;
       }
       if (!reduceMotion) {
         if (forceDayRef.current ? light !== 1 : false) applyDaylight();
@@ -745,6 +774,32 @@ export default function WorldCanvas({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
+
+  // ---- Le bonhomme : ses cubes (une fois), puis chaque itinéraire
+  useEffect(() => {
+    const w = world.current;
+    if (!w || !avatar) return;
+    for (const child of [...w.avatar.children]) {
+      w.avatar.remove(child);
+      child.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
+    }
+    for (const g of buildMesh(avatar.cubes)) w.avatar.add(meshOf(g));
+    w.avatar.visible = avatar.cubes.length > 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [avatar?.cubes]);
+  useEffect(() => {
+    const w = world.current;
+    if (!w || !avatar || !avatar.route.length) return;
+    const route = avatar.route;
+    let length = 0;
+    for (let i = 1; i < route.length; i++) length += Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y);
+    // Six cases par seconde, mais jamais plus de quatre secondes de marche.
+    const duration = route.length < 2 || avatar.seq === 0 ? 0 : Math.min(4000, (length / 6) * 1000);
+    w.walk = { route: route.length < 2 ? [route[0], route[0]] : route, start: performance.now(), duration: Math.max(1, duration) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [avatar?.seq]);
 
   // ---- Caméra : vol vers l'île demandée (ou la vue d'ensemble)
   useEffect(() => {

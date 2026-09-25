@@ -62,7 +62,13 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - L'ouvrage entre deux îles qui se touchent est un **sentier** : des pierres de gué une case sur deux, posées sur le sol, une lanterne à chaque bout. Il coûte des blocs comme un pont, sans autre condition. `groundLevelAt()` (`world/ground.ts`) donne le niveau du sol en un point.
 - Sept îles ont été rapprochées (Mine, Carrière, Tour, Marché, Atelier, Marais, Cabinet, Textes). Le décor ne déborde plus au-dessus du cœur d'une île, et un cube d'ouvrage ne remplace jamais un cube du terrain.
 
-## 10. À venir
+## 10. Le bonhomme (PR 8)
+
+- L'**avatar** de l'élève (`Avatar.ts`, casquette rouge, salopette bleue) se tient sur l'île où l'on est, à côté de la créature. Sa position est mémorisée (`village.at`, la Forêt au début ; oubliée si l'île n'est plus ouverte).
+- Quand on ouvre une autre île ouverte, il **marche** jusqu'à elle le long des ouvrages construits (`avatarRoute()` : plus court chemin en nombre d'ouvrages, sur le tablier des ponts, sur le sol des sentiers), à six cases par seconde, quatre secondes au plus. Vers une île fermée, il reste où il est. Avec « réduire les animations », il apparaît directement à l'arrivée.
+- On voit ainsi d'un coup d'œil, même dans la vue d'ensemble, jusqu'où on est arrivé.
+
+## 11. À venir
 
 
-- Le bonhomme (un avatar qui marche d'île en île le long des ouvrages construits), des baleines au large.
+- Des baleines au large.

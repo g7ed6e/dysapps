@@ -1,10 +1,10 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 import type { BiomeId, BlockId } from './biomes';
-import { BLOCKS } from './biomes';
+import { BLOCKS, getBiome } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
-import { bridgesFromLegacyProgress, buildBridge as buildBridgePure, getBridge, type BuildBridgeResult } from './world/archipelago';
+import { bridgesFromLegacyProgress, buildBridge as buildBridgePure, getBridge, isBiomeUnlocked, type BuildBridgeResult } from './world/archipelago';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -57,6 +57,8 @@ export interface Village {
   journal: JournalEntry[];
   /** Les ponts construits (identifiants de `world/archipelago.ts`) : ils ouvrent les îles. */
   bridges: string[];
+  /** L'île où se tient le bonhomme (la dernière île ouverte visitée) ; la Forêt au début. */
+  at?: BiomeId;
 }
 
 export interface JournalEntry {
@@ -188,6 +190,8 @@ export function sanitizeState(input: unknown): BloclandState {
   const bridges = Array.isArray(village.bridges)
     ? [...new Set(village.bridges.filter((id): id is string => typeof id === 'string' && Boolean(getBridge(id))))]
     : bridgesFromLegacyProgress(progress);
+  // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
+  const at = typeof village.at === 'string' && getBiome(village.at) && isBiomeUnlocked(village.at as BiomeId, bridges) ? (village.at as BiomeId) : undefined;
   return {
     progress,
     spaced,
@@ -196,7 +200,7 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
-    village: { plans, journal, bridges },
+    village: at ? { plans, journal, bridges, at } : { plans, journal, bridges },
   };
 }
 
@@ -430,4 +434,10 @@ export function buildBridge(state: BloclandState, id: string): { state: Blocland
   const result = buildBridgePure(id, state.village.bridges, state.inventory, { progress: state.progress, plans: state.village.plans });
   if (!result.ok) return { state, result };
   return { state: { ...state, inventory: result.inventory, village: { ...state.village, bridges: result.bridges } }, result };
+}
+
+/** Le bonhomme va sur une île ouverte (sinon, rien ne change). */
+export function moveAvatar(state: BloclandState, to: BiomeId): BloclandState {
+  if (!isBiomeUnlocked(to, state.village.bridges) || state.village.at === to) return state;
+  return { ...state, village: { ...state.village, at: to } };
 }

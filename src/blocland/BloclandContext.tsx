@@ -6,6 +6,7 @@ import {
   completeExercise,
   dueItems,
   fillPlanCell as fillPlanCellPure,
+  moveAvatar,
   recordFluence as recordFluencePure,
   sanitizeState,
   todayISO,
@@ -13,6 +14,7 @@ import {
   type Completion,
   type FillResult,
 } from './engine';
+import type { BiomeId } from './biomes';
 import type { PlanDef } from './world/plans';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
@@ -38,6 +40,8 @@ interface BloclandContextValue {
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
+  /** Le bonhomme va sur une île ouverte. */
+  moveTo: (id: BiomeId) => void;
   reset: () => void;
 }
 
@@ -83,6 +87,12 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(r.state);
     return r.result;
   }, []);
+  const moveTo = useCallback((id: BiomeId) => {
+    const next = moveAvatar(stateRef.current, id);
+    if (next === stateRef.current) return;
+    stateRef.current = next;
+    setState(next);
+  }, []);
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
@@ -108,9 +118,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       buildBridge,
+      moveTo,
       reset,
     }),
-    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, reset],
+    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }
