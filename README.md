@@ -57,6 +57,8 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 
 Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent débloque le suivant. À niveau égal, l’exercice le moins joué est proposé.
 
+**Le Gardien** (boss de biome) : chaque biome a un Gardien (le Grand Chêne, le Golem de roche, la Dune vivante, le Taureau de terre, la Chouette de verre). Il accepte le défi quand chaque quête du biome a au moins deux étoiles ; la page du biome dit ce qui manque. Le défi (`src/blocland/boss.ts`) enchaîne deux manches de chaque quête du biome, tirées d’exercices au niveau de l’élève, avec leurs écrans et leurs corrections habituels, sans chrono. Deux étoiles = Gardien vaincu : blocs d’or, XP, succès « Face au Gardien » puis « Maître des cinq îles », et un bloc d’or planté sur l’île. On peut le réaffronter.
+
 ## Chantier (construction)
 
 - **Le village** : chaque île a une **zone libre** de 6 × 4 cases (le tapis jaune, à l'avant de l'île) où l'on pose ce que l'on veut, jusqu'à 6 blocs de haut, dans n'importe quel ordre : rien ne tombe, rien ne casse. On choisit l'île avec les boutons (une île verrouillée n'est pas constructible), un type de bloc dans l'inventaire, puis **Poser** ou **Retirer**.
@@ -135,4 +137,4 @@ src/
 2. ✅ Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
 3. ✅ Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
 4. ✅ Inventaire et grille de construction isométrique.
-5. ✅ Tous les types d’exercices annoncés ont du contenu (Rimes-échelle, Oreille du mineur, Familles-craft, Coffre à mots, Enclos, Récolte). Restent : boss de biome, journal hebdomadaire.
+5. ✅ Tous les types d’exercices annoncés ont du contenu (Rimes-échelle, Oreille du mineur, Familles-craft, Coffre à mots, Enclos, Récolte). Le Gardien (boss de biome) est en place. Reste : journal hebdomadaire.

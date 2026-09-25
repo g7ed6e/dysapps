@@ -73,6 +73,9 @@ export interface BiomeDef {
   description: string;
   block: BlockId;
   icon: AnyIconName;
+  /** Le Gardien du biome (boss de fin de biome) et ce qu'il dit quand on l'affronte. */
+  guardian: string;
+  challenge: string;
   creature: CreatureDef;
   exercises: ExerciseTypeDef[];
 }
@@ -85,6 +88,8 @@ export const BIOMES: BiomeDef[] = [
     module: 'Conscience phonologique',
     description: 'Écouter, couper en syllabes, repérer les sons et les rimes.',
     block: 'bois',
+    guardian: 'le Grand Chêne',
+    challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Montre-moi tout ce que tu sais faire. »',
     icon: 'tree',
     creature: {
       name: 'Mousso',
@@ -109,6 +114,8 @@ export const BIOMES: BiomeDef[] = [
     module: 'Confusions de lettres',
     description: 'b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.',
     block: 'pierre',
+    guardian: 'le Golem de roche',
+    challenge: 'Le Golem de roche gronde : « Mes lettres se ressemblent toutes. Toi, tu les reconnais ? Prouve-le. »',
     icon: 'pickaxe',
     creature: {
       name: 'Tunel',
@@ -132,6 +139,8 @@ export const BIOMES: BiomeDef[] = [
     module: 'Orthographe lexicale',
     description: 'Écrire les mots juste, les familles de mots, les mots-outils.',
     block: 'sable',
+    guardian: 'la Dune vivante',
+    challenge: 'La Dune vivante siffle : « Chaque mot bien écrit me fait reculer. Écris juste, et je te laisserai passer. »',
     icon: 'mountain',
     creature: {
       name: 'Rouxel',
@@ -156,6 +165,8 @@ export const BIOMES: BiomeDef[] = [
     module: 'Orthographe grammaticale',
     description: 'Accorder sujet et verbe, choisir a/à, et/est, -é/-er.',
     block: 'terre',
+    guardian: 'le Taureau de terre',
+    challenge: 'Le Taureau de terre frappe le sol : « Ici, tout s’accorde ou tout s’écroule. À toi de jouer. »',
     icon: 'wheat',
     creature: {
       name: 'Bloquette',
@@ -180,6 +191,8 @@ export const BIOMES: BiomeDef[] = [
     module: 'Fluence de lecture',
     description: 'Lire à voix haute, étage par étage.',
     block: 'verre',
+    guardian: 'la Chouette de verre',
+    challenge: 'La Chouette de verre cligne des yeux : « Lis-moi, à ton rythme. Le phare t’attend en haut. »',
     icon: 'castle',
     creature: {
       name: 'Grimoire',

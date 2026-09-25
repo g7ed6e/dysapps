@@ -16,6 +16,8 @@ export interface Progress {
   perfectSessions: number;
   /** Bâtiments du village terminés. */
   plansCompleted: number;
+  /** Gardiens de biome vaincus. */
+  bossesBeaten: number;
   badges: Record<string, string>; // id du badge -> date d'obtention (ISO)
   apps: Record<string, AppStats>;
 }
@@ -29,6 +31,7 @@ export const EMPTY_PROGRESS: Progress = {
   sessionsCompleted: 0,
   perfectSessions: 0,
   plansCompleted: 0,
+  bossesBeaten: 0,
   badges: {},
   apps: {},
 };
@@ -68,6 +71,7 @@ export function sanitizeProgress(input: unknown): Progress {
     bestStreak: nonNegativeInt(raw.bestStreak),
     sessionsCompleted: nonNegativeInt(raw.sessionsCompleted),
     plansCompleted: nonNegativeInt(raw.plansCompleted),
+    bossesBeaten: nonNegativeInt(raw.bossesBeaten),
     perfectSessions: nonNegativeInt(raw.perfectSessions),
     badges,
     apps,
@@ -153,7 +157,8 @@ export type IconName =
   | 'gem'
   | 'crown'
   | 'hammer'
-  | 'blocks';
+  | 'blocks'
+  | 'shield';
 
 export interface BadgeDef {
   id: string;
@@ -181,6 +186,8 @@ export const BADGES: BadgeDef[] = [
   { id: 'batisseur', icon: 'hammer', title: 'Bâtisseur·se', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
   { id: 'architecte', icon: 'blocks', title: 'Architecte', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
   { id: 'village', icon: 'crown', title: 'Village reconstruit', description: 'Terminer les quinze plans du village.', earned: (p) => p.plansCompleted >= 15 },
+  { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
+  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre les cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
 ];
 
 export function getBadge(id: string): BadgeDef | undefined {
@@ -234,6 +241,11 @@ export function recordAnswer(p: Progress, correct: boolean, attempt = 1, now = n
 
 /** Enregistre la fin d'une séance d'une application. `score` en pourcentage. */
 /** Un bâtiment du village est terminé : XP du plan et compteur pour les succès. */
+/** Un Gardien de biome vaincu (deux étoiles au défi) : compteur pour les succès. */
+export function recordBoss(p: Progress, now = new Date().toISOString()): ProgressUpdate {
+  return finish(p, { ...p, bossesBeaten: p.bossesBeaten + 1 }, 0, now);
+}
+
 export function recordPlan(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
   const after: Progress = { ...p, xp: p.xp + xp, plansCompleted: p.plansCompleted + 1 };
   return finish(p, after, xp, now);

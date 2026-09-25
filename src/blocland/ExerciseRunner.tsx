@@ -17,6 +17,8 @@ interface Props {
   biome: BiomeDef;
   def: ExerciseDef;
   onReplay: () => void;
+  /** Appelé une fois l'exercice terminé (le Gardien s'en sert pour les succès). */
+  onComplete?: (completion: Completion) => void;
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -32,7 +34,7 @@ export function screensOf(def: ExerciseDef): ExerciseItem[][] {
  * Lanceur d'exercice générique : la créature a donné la consigne (lue à voix haute),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
-export function ExerciseRunner({ biome, def, onReplay }: Props) {
+export function ExerciseRunner({ biome, def, onReplay, onComplete }: Props) {
   const { state, complete, pauseAfterNext, continueSession } = useBlocland();
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
@@ -79,6 +81,7 @@ export function ExerciseRunner({ biome, def, onReplay }: Props) {
     const completion = complete(def, all);
     completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));
     setDone(completion);
+    onComplete?.(completion);
     setPaused(pauseAfterNext);
   };
 

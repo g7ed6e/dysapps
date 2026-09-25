@@ -2962,3 +2962,24 @@ a.app-card:active {
   background: var(--yellow);
   color: var(--on-accent);
 }
+
+/* ===== Blocland : le Gardien (boss de biome) ===== */
+.boss-card {
+  max-width: 34rem;
+}
+.boss-icon {
+  background: var(--yellow);
+}
+.boss-round {
+  display: grid;
+  gap: 0.6rem;
+}
+.boss-round-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
