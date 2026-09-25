@@ -35,6 +35,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.or.side]: 'or',
   [BLOCKS.bois.side]: 'planches',
   [BLOCKS.brique.side]: 'brique',
+  [BLOCKS.galet.side]: 'galet',
   [HAY]: 'or',
 };
 
@@ -182,6 +183,27 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(3, 9, h(3, 9) + 2, BLOCKS.brique.side);
     tree(put, 1, 10, h(1, 10), 2);
   },
+  riviere: (put, h) => {
+    // Une mare de verre bordée de galets, un nénuphar, et des roseaux.
+    for (const [x, y] of [
+      [8, 3],
+      [9, 3],
+      [8, 4],
+      [9, 4],
+    ] as const)
+      put(x, y, h(x, y) + 1, BLOCKS.verre.side);
+    put(9, 4, h(9, 4) + 2, LEAF);
+    for (const [x, y] of [
+      [7, 2],
+      [10, 5],
+      [7, 5],
+    ] as const)
+      put(x, y, h(x, y) + 1, BLOCKS.galet.side);
+    put(3, 9, h(3, 9) + 1, TRUNK);
+    put(3, 9, h(3, 9) + 2, TRUNK);
+    put(3, 9, h(3, 9) + 3, LEAF);
+    put(1, 10, h(1, 10) + 1, BLOCKS.galet.side);
+  },
 };
 
 /**
@@ -296,7 +318,7 @@ export function worldCubes(
     const { ox, oy } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
-    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine';
+    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere';
     const h = (x: number, y: number) => groundHeight(index, x, y);
     const put: Put = (x, y, z, color) =>
       cubes.push({

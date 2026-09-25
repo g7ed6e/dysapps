@@ -7,6 +7,7 @@ import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
+import { compare as compareFractions, equivalent, ofQuantity, onLine as fractionOnLine, readFraction } from '../../apps/fractions/generators';
 import type { BiomeId, BlockId } from '../biomes';
 import type { ExerciseDef, ExerciseItem } from './types';
 
@@ -115,6 +116,14 @@ const TABLES = 'Calcule la multiplication. La grille de points te montre le rés
 const COMPLEMENTS = 'Trouve le nombre qui manque pour arriver à dix, ou à cent. Regarde la boîte de dix ou la droite.';
 const DOUBLES = 'Trouve le double ou la moitié. Sépare le nombre en dizaines et en unités, puis assemble.';
 
+// ---------- Rivière des fractions ----------
+
+const NENUPHARS = 'Regarde la figure : en bas, le nombre de parts égales ; en haut, le nombre de parts coloriées.';
+const NENUPHARS_LINE = 'Sur la droite, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’au point.';
+const DEUX_RIVES = 'Compare les deux fractions. Les barres te montrent laquelle est la plus grande.';
+const PARTAGE = 'Partage la quantité en parts égales, puis prends le nombre de parts demandé. Les points t’aident.';
+const PARTAGE_EGALES = 'Deux fractions égales : le nombre de parts a été multiplié, multiplie aussi les parts prises.';
+
 export const MATHS_EXERCISES: ExerciseDef[] = [
   define({ biome: 'plaine', type: 'tables', level: 1, instruction: TABLES, generators: [multiplicationFrom([2, 5, 10])], block: 'brique' }),
   define({ biome: 'plaine', type: 'tables', level: 2, instruction: TABLES, generators: [multiplicationFrom([3, 4])], block: 'brique' }),
@@ -122,4 +131,10 @@ export const MATHS_EXERCISES: ExerciseDef[] = [
   define({ biome: 'plaine', type: 'complements', level: 1, instruction: COMPLEMENTS, generators: [complement10], block: 'brique' }),
   define({ biome: 'plaine', type: 'complements', level: 2, instruction: COMPLEMENTS, generators: [complement100], block: 'brique' }),
   define({ biome: 'plaine', type: 'doubles', level: 1, instruction: DOUBLES, generators: [double, half], block: 'brique' }),
+  // Rivière des fractions
+  define({ biome: 'riviere', type: 'nenuphars', level: 1, instruction: NENUPHARS, generators: [readFraction], block: 'galet' }),
+  define({ biome: 'riviere', type: 'nenuphars', level: 2, instruction: NENUPHARS_LINE, generators: [fractionOnLine], block: 'galet' }),
+  define({ biome: 'riviere', type: 'deux-rives', level: 1, instruction: DEUX_RIVES, generators: [compareFractions], block: 'galet' }),
+  define({ biome: 'riviere', type: 'partage', level: 1, instruction: PARTAGE, generators: [ofQuantity], block: 'galet' }),
+  define({ biome: 'riviere', type: 'partage', level: 2, instruction: PARTAGE_EGALES, generators: [equivalent], block: 'galet' }),
 ];

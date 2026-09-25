@@ -44,7 +44,7 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/aventure');
-    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(2);
+    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(3);
     expect(screen.getAllByText(/Île lointaine/).length).toBe(2);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.

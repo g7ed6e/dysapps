@@ -84,6 +84,16 @@ const COCO = fromLayers(
   { R: '#d8402e', K: '#1f1a16', E: '#f6f1e6', A: '#1f1a16' },
 );
 
+// Nénu : une grenouille verte accroupie, gros yeux dorés au-dessus de la tête, ventre clair.
+const NENU = fromLayers(
+  [
+    ['.VVV.', 'VVVVV', 'VVVVV', '.VVV.'],
+    ['.VvV.', 'VvvvV', 'VVVVV', '.....'],
+    ['Y.V.Y', '.VVV.', '.....', '.....'],
+  ],
+  { V: '#4f9e3f', v: '#c8e6a0', Y: '#f5d63d' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -91,6 +101,7 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   ferme: BLOQUETTE,
   tour: GRIMOIRE,
   plaine: COCO,
+  riviere: NENU,
 };
 
 interface Props {

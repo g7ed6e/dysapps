@@ -24,6 +24,20 @@ it('tire des items reproductibles et tous différents', () => {
   expect(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key))).toEqual(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key)));
 });
 
+it('les quêtes de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
+  const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'riviere');
+  expect(riviere.map((e) => e.id)).toEqual(['riviere-nenuphars-1', 'riviere-nenuphars-2', 'riviere-deux-rives-1', 'riviere-partage-1', 'riviere-partage-2']);
+  for (const def of riviere) {
+    expect(def.items.length).toBe(8);
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect(String(it.explanation).length).toBeGreaterThan(3);
+      if (def.type === 'nenuphars') expect(it.figure).toBeDefined();
+      if (def.type === 'deux-rives') expect(it.aid).toEqual({ kind: 'compare-bars', props: expect.anything() });
+    }
+  }
+});
+
 it('les quêtes de la Plaine : une aide visuelle et une explication sur chaque item, réponses dans l’ordre croissant', () => {
   const plaine = MATHS_EXERCISES.filter((e) => e.biome === 'plaine');
   expect(plaine.map((e) => e.id)).toEqual([

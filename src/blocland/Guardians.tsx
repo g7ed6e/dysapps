@@ -82,6 +82,20 @@ const HANNETON = fromLayers(
   { P: '#3a2a1a', B: '#a8742a', b: '#d19a3f', K: '#3a2a1a', E: '#f5d63d', A: '#3a2a1a' },
 );
 
+// Le Brochet d'argent : un long poisson dressé sur sa queue, écailles argentées, nageoires et œil doré.
+const BROCHET = fromLayers(
+  [
+    ['..SSS..', '.SSSSS.', '..SSS..', '.......'],
+    ['..SSS..', '..SSS..', '..SSS..', '.......'],
+    ['.SSSSS.', '.SsssS.', '.SSSSS.', '.......'],
+    ['SSSSSSS', 'SsssssS', 'SSSSSSS', '.......'],
+    ['.SSSSS.', '.SsssS.', '.SSSSS.', '.......'],
+    ['..SES..', '..SSS..', '..SSS..', '.......'],
+    ['..SSS..', '...S...', '.......', '.......'],
+  ],
+  { S: '#b9c4d1', s: '#dfe6ee', E: '#f5d63d' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -89,6 +103,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   ferme: TAUREAU,
   tour: CHOUETTE,
   plaine: HANNETON,
+  riviere: BROCHET,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

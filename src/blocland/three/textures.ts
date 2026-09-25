@@ -9,6 +9,7 @@ export type TextureKind =
   | 'sable'
   | 'verre'
   | 'brique'
+  | 'galet'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -76,6 +77,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   brique: {
     top: (x, y, r) => (y % 4 === 3 || (x + (y % 8 < 4 ? 0 : 4)) % 8 === 7 ? [214, 196, 170] : grain('#b8623a', '#d98a5a')(x, y, r)),
     side: (x, y, r) => (y % 4 === 3 || (x + (y % 8 < 4 ? 0 : 4)) % 8 === 7 ? [214, 196, 170] : grain('#b8623a', '#d98a5a')(x, y, r)),
+  },
+  // Galet : gros cailloux ronds bleu-gris, joints sombres entre eux.
+  galet: {
+    top: (x, y, r) => (Math.hypot((x % 8) - 3.5, (y % 8) - 3.5) > 3.6 ? [88, 104, 122] : grain('#7f96ad', '#a9bccf')(x, y, r)),
+    side: (x, y, r) => (Math.hypot((x % 8) - 3.5, (y % 8) - 3.5) > 3.6 ? [88, 104, 122] : grain('#7f96ad', '#a9bccf')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

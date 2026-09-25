@@ -62,4 +62,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   tables: { component: CalculScreen, batch: 1 },
   complements: { component: CalculScreen, batch: 1 },
   doubles: { component: CalculScreen, batch: 1 },
+  nenuphars: { component: CalculScreen, batch: 1 },
+  'deux-rives': { component: CalculScreen, batch: 1 },
+  partage: { component: CalculScreen, batch: 1 },
 };

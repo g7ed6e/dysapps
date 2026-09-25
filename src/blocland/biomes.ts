@@ -1,8 +1,22 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine';
-export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'brique' | 'or' | 'cristal' | 'toit' | 'porte' | 'lanterne' | 'barriere' | 'escalier';
+export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere';
+export type BlockId =
+  | 'bois'
+  | 'pierre'
+  | 'sable'
+  | 'terre'
+  | 'verre'
+  | 'brique'
+  | 'galet'
+  | 'or'
+  | 'cristal'
+  | 'toit'
+  | 'porte'
+  | 'lanterne'
+  | 'barriere'
+  | 'escalier';
 
 export interface BlockDef {
   id: BlockId;
@@ -23,6 +37,7 @@ export type BlockTexture =
   | 'sable'
   | 'verre'
   | 'brique'
+  | 'galet'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -41,6 +56,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   terre: { id: 'terre', name: 'Terre', top: '#94694a', side: '#6e4a2e', texture: 'terre' },
   verre: { id: 'verre', name: 'Verre', top: '#d6f2f8', side: '#a9dbe6', texture: 'verre' },
   brique: { id: 'brique', name: 'Brique', top: '#d98a5a', side: '#b8623a', texture: 'brique' },
+  galet: { id: 'galet', name: 'Galet', top: '#a9bccf', side: '#7f96ad', texture: 'galet' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -268,6 +284,38 @@ export const BIOMES: BiomeDef[] = [
       { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.' },
       { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.' },
       { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.' },
+    ],
+  },
+  {
+    id: 'riviere',
+    name: 'Rivière des fractions',
+    module: 'Fractions',
+    description: 'Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.',
+    block: 'galet',
+    guardian: 'le Brochet d’argent',
+    guardianSays: {
+      hit: 'Plouf ! Juste. Mes écailles frissonnent.',
+      miss: 'Ce n’est rien : regarde les parts, compte celles qui sont coloriées, et reprends.',
+      beaten: 'Glou. Tu partages mieux que la rivière elle-même. Elle est à toi… et à Nénu.',
+    },
+    challenge: 'Le Brochet d’argent fend l’eau : « Tu as partagé toute ma rivière. Montre-moi comment tu lis les parts. »',
+    icon: 'pizza',
+    creature: {
+      name: 'Nénu',
+      species: 'grenouille des nénuphars',
+      greeting:
+        'Coâ ! Bienvenue à la rivière. Ici, on coupe en parts égales et on regarde la figure avant de répondre. Chaque fraction lue, c’est un galet pour le village.',
+      lines: [
+        'Un nénuphar coupé en quatre : chaque part, c’est un quart.',
+        'Plus il y a de parts, plus chaque part est petite. Même pour les moucherons.',
+        'Ma hutte est en galets. Chaque fraction en apporte un.',
+      ],
+      home: 'Ma hutte de galets est finie ! Une moitié pour dormir, une moitié pour chanter.',
+    },
+    exercises: [
+      { id: 'nenuphars', title: 'Nénuphars', description: 'Quelle fraction de la figure est coloriée ? Puis sur la droite.' },
+      { id: 'deux-rives', title: 'Deux rives', description: 'Compare deux fractions avec les barres sous les yeux.' },
+      { id: 'partage', title: 'Partage du gâteau', description: 'Une fraction d’une quantité, puis des fractions égales.' },
     ],
   },
 ];
