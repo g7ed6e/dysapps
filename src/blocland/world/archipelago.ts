@@ -2,30 +2,10 @@
 // n'importe où ; une île s'ouvre quand un chemin de ponts construits y mène depuis une île de départ.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { MAP } from './map';
 
-/** Colonne et rangée de chaque île. Rangée 0 : le français 6e, la Forêt au centre ; rangée 1 : les maths 6e ; rangée 2 : les maths du cycle 4 (devant) ; rangée −1 : le français du cycle 4 (derrière). */
-export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
-  carriere: { col: 0, row: 0 },
-  mine: { col: 1, row: 0 },
-  foret: { col: 2, row: 0 },
-  ferme: { col: 3, row: 0 },
-  tour: { col: 4, row: 0 },
-  plaine: { col: 2, row: 1 },
-  riviere: { col: 1, row: 1 },
-  volcan: { col: 3, row: 1 },
-  glacier: { col: 2, row: 2 },
-  marche: { col: 1, row: 2 },
-  carrefour: { col: 2, row: -1 },
-  marais: { col: 1, row: -1 },
-  forge: { col: 3, row: 2 },
-  atelier: { col: 0, row: 2 },
-  falaise: { col: 3, row: -1 },
-  cabinet: { col: 0, row: -1 },
-  belvedere: { col: 4, row: 2 },
-  donnees: { col: 1, row: 3 },
-  phare: { col: 3, row: 3 },
-  textes: { col: 4, row: -1 },
-};
+/** La place de chaque île est dans `map.ts` (MAP). */
+export const ISLANDS = MAP;
 
 /** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
 export const START_ISLANDS: BiomeId[] = ['foret', 'plaine'];

@@ -10,12 +10,14 @@ export interface VoxelCube {
   top?: string;
   /** Étiquette de sélection en 3D (ex. l'identifiant d'un biome). */
   tag?: string;
-  /** Bloc posé par l'élève (on peut le retirer). */
-  placed?: boolean;
+  /** Cube d'un pont : l'identifiant du pont. */
+  bridge?: string;
   /** Cellule de plan encore à poser : dessinée translucide. */
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
   texture?: string;
+  /** Île verrouillée : couleurs délavées (la texture est gardée, effacée vers le gris). */
+  muted?: boolean;
 }
 
 /** Motif de grain pixel à déclarer une fois par SVG (<defs>). */

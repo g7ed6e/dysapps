@@ -1,7 +1,9 @@
-// Le terrain du village : une île par biome (relief léger, décor, créature), reliées par des ponts de bois.
+// Le terrain du village : une île par biome (cœur 12 × 12 avec relief léger, décor et créature, posé sur une terre
+// plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { BRIDGES, ISLAND_POS, bridgeState, isBiomeUnlocked, type BridgeDef } from './archipelago';
+import { BRIDGES, bridgeState, isBiomeUnlocked, type BridgeDef } from './archipelago';
+import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
@@ -9,20 +11,39 @@ import type { VoxelCube } from '../Voxel';
 import type { Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 
-/** Côté d'une île (en blocs), espace entre deux îles d'une rangée, espace entre deux rangées (l'îlot du Gardien y tient). */
-export const ISLAND = 12;
-export const GAP = 4;
-export const ROW_GAP = 8;
+/** Côté du cœur d'une île (en blocs). */
+export const ISLAND = CORE;
 /** Nombre de couches de terre sous le sol (visibles au-dessus de l'eau, sur les berges). */
 export const DEPTH = 2;
+/** Couches de roche qui s'amincissent sous une île en altitude (elle flotte). */
+export const TAPER = 3;
 
-const LOCKED = { top: '#d6d1c4', side: '#b9b4a8' };
 const TRUNK = '#6b4a2e';
 const LEAF = '#4e8f36';
 const GRASS = '#6cb33f';
 const DARK = '#3b2d20';
 const HAY = '#e8c66f';
 const SNOW = '#f4f8fb';
+const MOSS = '#4f8a3a';
+const BASALT = '#4a4448';
+const LAVA = '#ff7a1a';
+const WATER = '#4a9be0';
+const PINE = '#2f6b4a';
+const REED = '#8fae4f';
+const CRYSTAL = '#5cd0c8';
+const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
+const MUSHROOM = '#d9453f';
+
+/** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
+export function fade(color: string): string {
+  const n = parseInt(color.slice(1), 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  const lum = r * 0.3 + g * 0.59 + b * 0.11;
+  const mix = (c: number) => Math.round((c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45);
+  return `#${((mix(r) << 16) | (mix(g) << 8) | mix(b)).toString(16).padStart(6, '0')}`;
+}
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
 const TEXTURES: Record<string, string> = {
@@ -52,26 +73,86 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.lentille.side]: 'lentille',
   [SNOW]: 'nuage',
   [HAY]: 'or',
+  [MOSS]: 'mousse',
+  [BASALT]: 'basalte',
+  [LAVA]: 'lave',
+  [WATER]: 'eau',
+  [PINE]: 'sapin',
+  [CRYSTAL]: 'cristal',
 };
 
-/**
- * Coin (x, y) de l'île d'un biome, d'après sa colonne et sa rangée dans l'archipel. La rangée 0 est au fond,
- * les suivantes devant (vers la caméra). Vue depuis le côté où les créatures ont leur visage, l'axe x s'affiche
- * de droite à gauche : la colonne 0 apparaît donc à gauche.
- */
-export function islandOrigin(index: number): { ox: number; oy: number } {
-  const { col, row } = ISLAND_POS[BIOMES[index].id];
-  const cols = Math.max(...Object.values(ISLAND_POS).map((p) => p.col)) + 1;
-  return { ox: (cols - 1 - col) * (ISLAND + GAP), oy: 0 - row * (ISLAND + ROW_GAP) };
+/** Couleur du dessus d'une case de paysage selon son sol. */
+const GROUND_COLOR: Record<Ground, string> = {
+  herbe: GRASS,
+  sable: BLOCKS.sable.side,
+  roche: BLOCKS.pierre.side,
+  neige: SNOW,
+  eau: WATER,
+  lave: LAVA,
+  glace: BLOCKS.glace.side,
+  basalte: BASALT,
+  mousse: MOSS,
+};
+
+/** Un élément de décor posé sur une case, au-dessus de son sol (z = 1 juste au-dessus). `r` : grain 0..1 pour varier. */
+function decorate(put: Put, kind: Decor, x: number, y: number, r: number): void {
+  switch (kind) {
+    case 'arbre':
+      tree(put, x, y, 0, r > 0.5 ? 3 : 2);
+      break;
+    case 'sapin': {
+      const tall = r > 0.5 ? 2 : 1;
+      for (let z = 1; z <= tall; z++) put(x, y, z, TRUNK);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, tall + 1, PINE);
+      put(x + 1, y, tall + 2, PINE);
+      put(x - 1, y, tall + 2, PINE);
+      put(x, y + 1, tall + 2, PINE);
+      put(x, y - 1, tall + 2, PINE);
+      put(x, y, tall + 2, PINE);
+      put(x, y, tall + 3, PINE);
+      break;
+    }
+    case 'buisson':
+      put(x, y, 1, LEAF);
+      if (r > 0.7) put(x + 1, y, 1, LEAF);
+      break;
+    case 'fleur':
+      put(x, y, 1, FLOWERS[Math.floor(r * FLOWERS.length) % FLOWERS.length]);
+      break;
+    case 'rocher':
+      put(x, y, 1, BLOCKS.pierre.side);
+      if (r > 0.8) put(x, y, 2, BLOCKS.pierre.side);
+      break;
+    case 'roseau':
+      put(x, y, 1, REED);
+      put(x, y, 2, REED);
+      break;
+    case 'cristal':
+      put(x, y, 1, CRYSTAL);
+      if (r > 0.6) put(x, y, 2, CRYSTAL);
+      break;
+    case 'souche':
+      put(x, y, 1, TRUNK);
+      break;
+    case 'champignon':
+      put(x, y, 1, MUSHROOM);
+      break;
+  }
 }
 
-/** Centre d'une île (coordonnées de grille), pour y amener la caméra. */
-export function islandCenter(id: BiomeId): { x: number; y: number } {
-  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: ox + ISLAND / 2, y: oy + ISLAND / 2 };
+/** Coin (x, y) du cœur de l'île d'un biome et altitude de son sol. */
+export function islandOrigin(index: number): { ox: number; oy: number; oz: number } {
+  const def = islandDef(BIOMES[index].id);
+  return { ox: def.core.x, oy: def.core.y, oz: def.altitude };
 }
 
-/** Étendue du monde (coordonnées de grille), ponts compris. */
+/** Centre du cœur d'une île (coordonnées de grille) et altitude, pour y amener la caméra. */
+export function islandCenter(id: BiomeId): { x: number; y: number; z: number } {
+  const def = islandDef(id);
+  return { x: def.core.x + CORE / 2, y: def.core.y + CORE / 2, z: def.altitude };
+}
+
+/** Étendue du monde (coordonnées de grille), terres et îlots compris. */
 export function worldBounds(): {
   minX: number;
   maxX: number;
@@ -82,13 +163,13 @@ export function worldBounds(): {
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
-  BIOMES.forEach((_, i) => {
-    const { ox, oy } = islandOrigin(i);
-    minX = Math.min(minX, ox);
-    maxX = Math.max(maxX, ox + ISLAND);
-    minY = Math.min(minY, oy);
-    maxY = Math.max(maxY, oy + ISLAND);
-  });
+  for (const def of MAP) {
+    const b = landBox(def);
+    minX = Math.min(minX, b.x0);
+    maxX = Math.max(maxX, b.x1);
+    minY = Math.min(minY, b.y0 - ISLET_H - 2);
+    maxY = Math.max(maxY, b.y1);
+  }
   return { minX, maxX, minY, maxY };
 }
 
@@ -369,59 +450,90 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
 };
 
 /**
- * Pont de bois entre deux îles voisines, à hauteur du sol : d'un bord à l'autre, au milieu du côté entre deux
- * colonnes, sur le côté droit (loin de l'îlot du Gardien) entre deux rangées. Fantôme tant qu'il n'est pas construit.
+ * Pont de bois entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
+ * Quand les îles ne sont pas à la même altitude, le pont devient une rampe (marches d'escalier).
+ * Fantôme tant qu'il n'est pas construit.
  */
 function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
-  const from = BIOMES.find((b) => b.id === def.from)!;
-  const to = BIOMES.find((b) => b.id === def.to)!;
-  const a = islandOrigin(BIOMES.indexOf(from));
-  const b = islandOrigin(BIOMES.indexOf(to));
-  const sideways = a.ox !== b.ox;
-  let start: { x: number; y: number };
-  let end: { x: number; y: number };
-  if (sideways) {
-    const forward = b.ox > a.ox;
-    start = { x: forward ? a.ox + ISLAND : a.ox - 1, y: a.oy + Math.floor(ISLAND / 2) };
-    end = { x: forward ? b.ox - 1 : b.ox + ISLAND, y: b.oy + Math.floor(ISLAND / 2) };
-  } else {
-    const forward = b.oy > a.oy;
-    start = { x: a.ox + ISLAND - 1, y: forward ? a.oy + ISLAND : a.oy - 1 };
-    end = { x: b.ox + ISLAND - 1, y: forward ? b.oy - 1 : b.oy + ISLAND };
+  const a = islandDef(def.from);
+  const b = islandDef(def.to);
+  // Les deux îles sont-elles l'une devant l'autre ? Le pont part alors du côté droit du cœur (l'îlot du Gardien est
+  // devant, à gauche), descend jusqu'au bord de l'île de devant, fait un coude, puis y entre.
+  const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
+  const anchor = (d: IslandDef) => ({ x: d.core.x + (vertical ? CORE - 1 : CORE / 2), y: d.core.y + CORE / 2 });
+  const ca = anchor(a);
+  const cb = anchor(b);
+  const points = [ca];
+  if (vertical && ca.x !== cb.x) {
+    const front = a.core.y < b.core.y ? a : b;
+    const jog = front.core.y + CORE + front.ext.back + 1;
+    points.push({ x: ca.x, y: jog }, { x: cb.x, y: jog });
   }
-  const steps = Math.max(Math.abs(end.x - start.x), Math.abs(end.y - start.y));
+  points.push(cb);
+  const cells: { x: number; y: number }[] = [];
   const seen = new Set<string>();
-  for (let i = 0; i <= steps; i++) {
-    const x = Math.round(start.x + ((end.x - start.x) * i) / steps);
-    const y = Math.round(start.y + ((end.y - start.y) * i) / steps);
-    const key = `${x},${y}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    cubes.push({ x, y, z: 0, color: BLOCKS.bois.side, texture: 'planches', tag: to.id, ghost: ghost || undefined });
+  for (let s = 0; s + 1 < points.length; s++) {
+    const p = points[s];
+    const q = points[s + 1];
+    const steps = Math.max(1, Math.abs(q.x - p.x), Math.abs(q.y - p.y));
+    for (let i = 0; i <= steps; i++) {
+      const x = Math.floor(p.x + ((q.x - p.x) * i) / steps);
+      const y = Math.floor(p.y + ((q.y - p.y) * i) / steps);
+      const key = `${x},${y}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      cells.push({ x, y });
+    }
   }
+  // On ne garde que la partie hors des deux terres.
+  let first = cells.findIndex((c) => !isLand(a, c.x, c.y));
+  let last = cells.length - 1;
+  while (last > 0 && isLand(b, cells[last].x, cells[last].y)) last--;
+  if (first < 0 || first > last) {
+    first = 0;
+    last = cells.length - 1;
+  }
+  const span = cells.slice(first, last + 1);
+  let prevZ = a.altitude;
+  span.forEach((c, i) => {
+    const z = Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
+    const climbing = z !== prevZ;
+    prevZ = z;
+    cubes.push({
+      x: c.x,
+      y: c.y,
+      z,
+      color: BLOCKS.bois.side,
+      top: climbing ? BLOCKS.escalier.top : undefined,
+      texture: climbing ? 'escalier' : 'planches',
+      tag: b.id,
+      bridge: def.id,
+      ghost: ghost || undefined,
+    });
+  });
 }
 
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
 export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x: number; y: number; z: number } {
-  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: x - ox, y: y - oy, z: z - 1 };
+  const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  return { x: x - ox, y: y - oy, z: z - oz - 1 };
 }
 
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
 export function creaturePlacements(bridges: string[]): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   return BIOMES.filter((b) => isBiomeUnlocked(b.id, bridges)).map((b) => {
-    const { ox, oy } = islandOrigin(BIOMES.indexOf(b));
-    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + 2, y: oy + 4, z: 1 } };
+    const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
+    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + 2, y: oy + 4, z: oz + 1 } };
   });
 }
 
 /** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases. */
 export const ISLET_W = 8;
 export const ISLET_H = 4;
-export function bossIsletOrigin(index: number): { x: number; y: number } {
-  const { ox, oy } = islandOrigin(index);
-  return { x: ox + 2, y: oy - ISLET_H - 2 };
+export function bossIsletOrigin(index: number): { x: number; y: number; z: number } {
+  const def = islandDef(BIOMES[index].id);
+  return { x: def.core.x + 2, y: def.core.y - def.ext.front - ISLET_H - 2, z: def.altitude };
 }
 
 export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
@@ -449,10 +561,10 @@ export function guardianPlacements(
   BIOMES.forEach((b, index) => {
     const status = guardianStatus(b, progress, bridges);
     if (status === 'hidden') return;
-    const { x, y } = bossIsletOrigin(index);
+    const { x, y, z } = bossIsletOrigin(index);
     const beaten = status === 'beaten';
     const cubes = beaten ? GUARDIAN_CUBES[b.id].map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : GUARDIAN_CUBES[b.id];
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x, y, z: 1 } });
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x, y, z: z + 1 } });
   });
   return out;
 }
@@ -463,6 +575,13 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
   return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
 }
 
+/** Roche sous le sol d'une case de paysage, selon la région et la hauteur. */
+function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): string {
+  if (def.region === 'feu') return BASALT;
+  if (cell.h - depthBelowTop >= 2 || def.region === 'hauteurs' || def.region === 'montagne') return BLOCKS.pierre.side;
+  return BLOCKS.terre.side;
+}
+
 export function worldCubes(
   progress: Record<string, { stars: number }>,
   village: Village = { plans: {}, journal: [], bridges: [] },
@@ -470,49 +589,81 @@ export function worldCubes(
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
-    const { ox, oy } = islandOrigin(index);
+    const def = islandDef(biome.id);
+    const { ox, oy, oz } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
     const grassy =
       biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
     const h = (x: number, y: number) => groundHeight(index, x, y);
-    const put: Put = (x, y, z, color) =>
-      cubes.push({
-        x: ox + x,
-        y: oy + y,
-        z,
-        color: unlocked ? color : LOCKED.side,
-        texture: unlocked ? TEXTURES[color] : 'pierre',
-        tag: biome.id,
-      });
-    for (let x = 0; x < ISLAND; x++) {
-      for (let y = 0; y < ISLAND; y++) {
-        for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
-        const top = h(x, y);
-        if (top > 0) put(x, y, 0, BLOCKS.terre.side);
-        put(x, y, top, grassy ? GRASS : block.side);
-      }
+    // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
+    // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
+    const taken = new Set<string>();
+    const putWorld = (x: number, y: number, z: number, color: string) => {
+      taken.add(`${x},${y},${z}`);
+      cubes.push({ x, y, z: oz + z, color: unlocked ? color : fade(color), texture: TEXTURES[color], tag: biome.id, muted: unlocked ? undefined : true });
+    };
+    const put: Put = (x, y, z, color) => putWorld(ox + x, oy + y, z, color);
+    const land = landCells(def);
+    for (const c of land) {
+      if (!inCore(def, c.x, c.y)) continue;
+      const x = c.x - ox;
+      const y = c.y - oy;
+      for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
+      const top = h(x, y);
+      if (top > 0) put(x, y, 0, BLOCKS.terre.side);
+      put(x, y, top, grassy ? GRASS : block.side);
+    }
+    // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
+    const scenery = landscape(def);
+    for (const c of scenery) {
+      for (let d = 1; d <= DEPTH; d++) putWorld(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
+      for (let z = 0; z < c.h; z++) putWorld(c.x, c.y, z, underground(def, c, c.h - z));
+      putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
     }
     DECOR[biome.id](put, h);
+    for (const c of scenery) {
+      if (!c.decor) continue;
+      const r = noise(def.seed + 5, c.x, c.y);
+      // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
+      decorate((x, y, z, color) => !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
+    }
+    // Une île en altitude flotte : sa roche s'amincit dessous.
+    if (def.altitude > 0) {
+      let layer = new Set(land.map((c) => `${c.x},${c.y}`));
+      for (let d = 1; d <= TAPER; d++) {
+        const next = new Set<string>();
+        for (const key of layer) {
+          const [x, y] = key.split(',').map(Number);
+          if ([`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].every((k) => layer.has(k))) next.add(key);
+        }
+        layer = next;
+        for (const key of layer) {
+          const [x, y] = key.split(',').map(Number);
+          if (!taken.has(`${x},${y},${-DEPTH - d}`)) putWorld(x, y, -DEPTH - d, BLOCKS.pierre.side);
+        }
+        if (layer.size === 0) break;
+      }
+    }
     // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une plateforme de pierre sur deux couches de terre.
     const guardian = guardianStatus(biome, progress, village.bridges);
     if (guardian !== 'hidden') {
-      const { x: gx, y: gy } = bossIsletOrigin(index);
+      const { x: gx, y: gy, z: gz } = bossIsletOrigin(index);
       for (let x = 0; x < ISLET_W; x++) {
         for (let y = 0; y < ISLET_H; y++) {
-          for (let d = 1; d <= DEPTH; d++) cubes.push({ x: gx + x, y: gy + y, z: -d, color: BLOCKS.terre.side, texture: 'terre', tag: biome.id });
-          cubes.push({ x: gx + x, y: gy + y, z: 0, color: BLOCKS.pierre.side, texture: 'pierre', tag: biome.id });
+          for (let d = 1; d <= DEPTH; d++) cubes.push({ x: gx + x, y: gy + y, z: gz - d, color: BLOCKS.terre.side, texture: 'terre', tag: biome.id });
+          cubes.push({ x: gx + x, y: gy + y, z: gz, color: BLOCKS.pierre.side, texture: 'pierre', tag: biome.id });
         }
       }
       // Vaincu : un bloc d'or à côté de la statue.
-      if (guardian === 'beaten') cubes.push({ x: gx + ISLET_W - 1, y: gy, z: 1, color: BLOCKS.or.side, top: BLOCKS.or.top, texture: 'or', tag: biome.id });
+      if (guardian === 'beaten') cubes.push({ x: gx + ISLET_W - 1, y: gy, z: gz + 1, color: BLOCKS.or.side, top: BLOCKS.or.top, texture: 'or', tag: biome.id });
     }
     if (unlocked && withCreatures) {
       for (const c of CREATURE_CUBES[biome.id])
         cubes.push({
           x: ox + 2 + c.x,
           y: oy + 4 + c.y,
-          z: c.z + 1,
+          z: oz + c.z + 1,
           color: c.color,
           tag: biome.id,
         });
@@ -526,9 +677,9 @@ export function worldCubes(
         if (!finished && ghostsShown) break;
         if (!finished) ghostsShown = true;
         for (const c of planCells(plan)) {
-          const def = BLOCKS[c.block];
+          const bd = BLOCKS[c.block];
           const built = done.has(c.key);
-          cubes.push({ x: ox + c.x, y: oy + c.y, z: c.z + 1, color: def.side, top: def.top, texture: def.texture, tag: biome.id, ghost: !built });
+          cubes.push({ x: ox + c.x, y: oy + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, ghost: !built });
         }
       }
     }

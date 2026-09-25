@@ -33,7 +33,11 @@ export type TextureKind =
   | 'porte'
   | 'lanterne'
   | 'barriere'
-  | 'escalier';
+  | 'escalier'
+  | 'mousse'
+  | 'basalte'
+  | 'lave'
+  | 'sapin';
 
 const SIZE = 16;
 
@@ -227,7 +231,38 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
     top: (x, y, r) => ((x + y) % 8 === 0 && r() < 0.6 ? [150, 205, 240] : grain('#4a9be0', '#5eaae8')(x, y, r)),
     side: grain('#4a9be0', '#5eaae8'),
   },
+  // Mousse : herbe sombre et humide des marais, quelques touffes plus claires.
+  mousse: {
+    top: (x, y, r) => (r() < 0.1 ? [120, 160, 70] : grain('#3f7a3a', '#528f45')(x, y, r)),
+    side: (x, y, r) => (y < 3 ? grain('#3f7a3a', '#528f45')(x, y, r) : grain('#4a3a2c', '#5e4a38')(x, y, r)),
+    bottom: grain('#4a3a2c', '#5e4a38'),
+  },
+  // Basalte : roche volcanique gris sombre, veinée de rouge cendre.
+  basalte: {
+    top: (x, y, r) => (r() < 0.06 ? [150, 80, 60] : grain('#4a4448', '#5c5559')(x, y, r)),
+    side: (x, y, r) => (r() < 0.06 ? [150, 80, 60] : grain('#3f3a3d', '#524b4f')(x, y, r)),
+  },
+  // Lave : orange incandescent, croûte sombre par plaques.
+  lave: {
+    top: (x, y, r) => (r() < 0.18 ? [90, 30, 20] : grain('#ff6a1a', '#ffb03a')(x, y, r)),
+    side: (x, y, r) => (r() < 0.18 ? [90, 30, 20] : grain('#e85a12', '#ff9a2a')(x, y, r)),
+  },
+  // Sapin : aiguilles vert sombre, bleutées.
+  sapin: {
+    top: (x, y, r) => (r() < 0.15 ? [22, 60, 40] : grain('#2f6b4a', '#3d8557')(x, y, r)),
+    side: (x, y, r) => (r() < 0.15 ? [22, 60, 40] : grain('#2a5f42', '#387a50')(x, y, r)),
+  },
 };
+
+/** Version délavée d'un peintre (île verrouillée : les couleurs s'effacent vers un gris clair, comme dans la brume). */
+const faded =
+  (p: Painter): Painter =>
+  (x, y, r) => {
+    const [cr, cg, cb] = p(x, y, r);
+    const lum = cr * 0.3 + cg * 0.59 + cb * 0.11;
+    const mix = (c: number) => (c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45;
+    return [mix(cr), mix(cg), mix(cb)];
+  };
 
 function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | null {
   const canvas = document.createElement('canvas');
@@ -265,14 +300,15 @@ function textureOf(painter: Painter, seed: number): THREE.Texture | null {
 const cache = new Map<string, THREE.Material | THREE.Material[]>();
 
 /** Matériau (6 faces) d'un bloc texturé, partagé entre tous les cubes du même type. */
-export function blockMaterial(kind: TextureKind): THREE.Material | THREE.Material[] {
-  const key = `kind:${kind}`;
+export function blockMaterial(kind: TextureKind, muted = false): THREE.Material | THREE.Material[] {
+  const key = muted ? `muted:${kind}` : `kind:${kind}`;
   const cached = cache.get(key);
   if (cached) return cached;
   const p = PAINTERS[kind];
-  const side = textureOf(p.side, 11);
-  const top = textureOf(p.top, 23);
-  const bottom = textureOf(p.bottom ?? p.top, 37);
+  const wrap = muted ? faded : (q: Painter) => q;
+  const side = textureOf(wrap(p.side), 11);
+  const top = textureOf(wrap(p.top), 23);
+  const bottom = textureOf(wrap(p.bottom ?? p.top), 37);
   let material: THREE.Material | THREE.Material[];
   if (!side || !top || !bottom) material = new THREE.MeshLambertMaterial({ color: 0x9c9c9c });
   else {

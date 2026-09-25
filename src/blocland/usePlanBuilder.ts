@@ -68,8 +68,8 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       sound(playNope);
       return;
     }
-    const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: z + 1 }, color: BLOCKS[r.block].top }));
+    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
+    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[r.block].top }));
     if (r.completed) {
       const chest = Object.entries(plan.reward.chest)
         .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
