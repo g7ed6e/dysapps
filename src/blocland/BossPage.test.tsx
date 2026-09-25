@@ -51,6 +51,27 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret/gardien');
   expect(screen.getAllByText(/Épreuve : Abattage syllabique/).length).toBeGreaterThan(0);
+  // L'arène : le Gardien et sa jauge de résistance, pleine au départ.
+  expect(screen.getByRole('region', { name: /L’arène du Gardien/ })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /le Grand Chêne, le Gardien/ })).toBeInTheDocument();
+  const gauge = screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
+  expect(gauge).toHaveAttribute('aria-valuenow', gauge.getAttribute('aria-valuemax'));
   // L'écran de la manche est celui de la quête : un QCM de syllabes.
   expect(screen.getByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
+});
+
+it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  const user = (await import('@testing-library/user-event')).default.setup();
+  renderAt('/aventure/foret/gardien');
+  const gauge = () => screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
+  const max = Number(gauge().getAttribute('aria-valuemax'));
+  // Première épreuve : un QCM de syllabes, on répond juste (la bonne réponse est dans les données de l'exercice).
+  const { getExercise } = await import('./exercises');
+  const def = getExercise('foret-echauffement-001')!;
+  const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
+  const item = def.items.find((i) => prompt.includes(String(i.word)))!;
+  await user.click(screen.getByRole('button', { name: String(item.answer) }));
+  expect(gauge()).toHaveAttribute('aria-valuenow', String(max - 1));
+  expect(document.body.textContent).toMatch(/Mes branches tremblent/);
 });

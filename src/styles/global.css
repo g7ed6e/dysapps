@@ -2983,3 +2983,145 @@ a.app-card:active {
   font-size: 0.9rem;
   color: var(--muted);
 }
+
+/* ===== Le Gardien : arène ===== */
+.arena {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) 1fr;
+  gap: 1rem 1.4rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.2rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  color: #fbf6ea;
+  background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
+  box-shadow: var(--bevel-shadow), 0 var(--shadow-offset) 0 var(--shadow-color);
+}
+.arena-beaten {
+  background: linear-gradient(180deg, #4a7bb5 0%, #8fd0f5 70%, #6cb33f 100%);
+  color: #2b2118;
+}
+.guardian {
+  display: grid;
+  place-items: center;
+  transform-origin: 50% 90%;
+}
+.guardian-3d {
+  width: 11rem;
+  height: 11rem;
+}
+.guardian-svg {
+  width: 10rem;
+  height: 10rem;
+}
+.guardian-hit {
+  animation: guardian-bow 0.7s ease-out;
+}
+.guardian-miss {
+  animation: guardian-growl 0.6s ease-in-out;
+}
+.guardian-beaten {
+  animation: guardian-fall 1.2s ease-in forwards;
+}
+@keyframes guardian-bow {
+  0% {
+    transform: none;
+  }
+  40% {
+    transform: rotate(-10deg) translateY(0.3rem) scale(0.96);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes guardian-growl {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-0.35rem) rotate(-2deg);
+  }
+  40% {
+    transform: translateX(0.35rem) rotate(2deg);
+  }
+  60% {
+    transform: translateX(-0.25rem);
+  }
+  80% {
+    transform: translateX(0.25rem);
+  }
+}
+@keyframes guardian-fall {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotate(-70deg) translateY(1rem) scale(0.85);
+    opacity: 0.85;
+  }
+}
+.arena-info {
+  display: grid;
+  gap: 0.5rem;
+}
+.arena-name {
+  margin: 0;
+  font-family: var(--display-font);
+  font-size: 1.4rem;
+}
+.arena-gauge-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+}
+.arena-gauge {
+  height: 1.1rem;
+  border: 2px solid #fbf6ea;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.arena-beaten .arena-gauge {
+  border-color: var(--ink);
+}
+.arena-gauge-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #d9772e 0 8px, #b85e1c 8px 10px);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  transition: width 0.6s ease;
+}
+.arena-line {
+  margin: 0;
+  font-weight: 700;
+  max-width: none;
+}
+.arena-line .syl-0,
+.arena-line .syl-1 {
+  color: inherit;
+}
+.arena-beaten .arena-line .syl-1 {
+  color: var(--syl-1);
+}
+@media (max-width: 640px) {
+  .arena {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .arena-info {
+    width: 100%;
+  }
+  .arena-line {
+    text-align: left;
+  }
+}
+:root[data-theme='contraste'] .arena {
+  background: #000;
+  color: #fff;
+  border-color: var(--yellow);
+}
