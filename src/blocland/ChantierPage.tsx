@@ -6,32 +6,22 @@ import { useSettings } from '../core/SettingsContext';
 import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { BuildGrid } from './BuildGrid';
 import { useProgress } from '../core/ProgressContext';
-import { FREE_ZONE, MAX_HEIGHT, columnHeight, currentPlan, inFreeZone, nextFillable, planCellAt, planStatus, placedOn, type PlaceReason } from './engine';
+import { currentPlan, nextFillable, planCellAt, planStatus } from './engine';
 import { PlanPanel, whereToEarn } from './PlanPanel';
-import { playDone, playNope, playPlace, playRemove } from './sound';
+import { playDone, playNope, playPlace } from './sound';
 import { WorldCanvas, hasWebGL } from './three';
 import { BlockIcon } from './Voxel';
 import { getPlan, plansFor } from './world/plans';
-import { creaturePlacements, freeZoneOf, guardianPlacements, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
+import { creaturePlacements, guardianPlacements, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
 import { useAmbience } from './useAmbience';
 import { Tutorial } from './Tutorial';
 import { SESSION_MAX_MINUTES } from './BloclandContext';
 import { daylight } from './world/daylight';
 
-type Mode = 'poser' | 'retirer';
-
-const REASONS: Record<PlaceReason, string> = {
-  'plus-de-blocs': 'Tu n’as plus de blocs de ce type. Gagne-en dans les biomes !',
-  'trop-haut': `On ne monte pas plus haut que ${MAX_HEIGHT} blocs.`,
-  'hors-zone': 'Ici, ce n’est pas la zone libre : pose tes blocs sur le tapis jaune.',
-  occupe: 'Il y a déjà un bloc ici.',
-};
-
-/** Le chantier : on construit ce qu'on veut sur la zone libre de chaque île, dans le village en 3D ou dans la vue simple. */
+/** Le chantier : on reconstruit les bâtiments de chaque île en suivant les plans, dans le village en 3D ou en vue simple. */
 export function ChantierPage() {
-  const { state, placeAt, placeOnColumn, removeAt, removeFromColumn, clearIsland, fillPlan } = useBlocland();
+  const { state, fillPlan } = useBlocland();
   const { settings, update, speak } = useSettings();
   const { completePlan } = useProgress();
   const webgl = hasWebGL();
@@ -57,13 +47,8 @@ export function ChantierPage() {
   });
   useAmbience(forceDay);
   const night = !forceDay && daylight().light < 0.5;
-  const cells = placedOn(state, island);
-  const blocks = (Object.keys(BLOCKS) as BlockId[]).filter((b) => (state.inventory[b] ?? 0) > 0 || cells.some((c) => c.block === b));
-  const [selectedBlock, setSelectedBlock] = useState<BlockId | null>(() => blocks[0] ?? null);
-  const [mode, setMode] = useState<Mode>('poser');
-  const [cell, setCell] = useState<{ x: number; y: number } | null>(null);
+  const blocks = (Object.keys(BLOCKS) as BlockId[]).filter((b) => (state.inventory[b] ?? 0) > 0);
   const [notice, setNotice] = useState<string | null>(null);
-  const [confirmClear, setConfirmClear] = useState(false);
   const total = Object.values(state.inventory).reduce((a, b) => a + (b ?? 0), 0);
   const sound = (f: () => void) => settings.sounds && f();
   // Le plan en cours de l'île : le premier qui n'est pas terminé (sinon le dernier, pour afficher « terminé »).
@@ -73,41 +58,16 @@ export function ChantierPage() {
   const status = plan ? planStatus(state, plan) : null;
   const journal = [...state.village.journal].reverse();
 
-  // Le premier type disponible est présélectionné dès qu'il y en a un.
-  useEffect(() => {
-    if (selectedBlock === null && blocks[0]) setSelectedBlock(blocks[0]);
-  }, [blocks, selectedBlock]);
-
   const chooseIsland = (id: BiomeId) => {
     setIsland(id);
     setSeq((n) => n + 1);
-    setCell(null);
     setNotice(null);
-    setConfirmClear(false);
   };
 
   /** Éclats de la couleur du bloc à une case relative à l'île (z relatif). */
   const sparkle = (x: number, y: number, z: number, block: BlockId) => {
     const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
     setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: z + 1 }, color: BLOCKS[block].top }));
-  };
-  const afterPlace = (ok: boolean, reason?: PlaceReason) => {
-    if (ok) {
-      setNotice(null);
-      sound(playPlace);
-    } else {
-      setNotice(reason ? REASONS[reason] : null);
-      sound(playNope);
-    }
-  };
-  const afterRemove = (removed: BlockId | null) => {
-    if (removed) {
-      setNotice(`Bloc de ${BLOCKS[removed].name.toLowerCase()} rangé dans l’inventaire.`);
-      sound(playRemove);
-    } else {
-      setNotice('Rien à retirer ici : touche un bloc que tu as posé.');
-      sound(playNope);
-    }
   };
 
   /** Pose le bloc attendu à une cellule du plan (coordonnées relatives à l'île). */
@@ -141,37 +101,14 @@ export function ChantierPage() {
     if (next) fillAt(next.x, next.y, next.z);
   };
 
-  /** Vue simple : la case (x, y) de la zone libre, en colonne. */
-  const onColumn = (gx: number, gy: number) => {
-    const x = FREE_ZONE.x + gx;
-    const y = FREE_ZONE.y + gy;
-    if (mode === 'retirer') return afterRemove(removeFromColumn(island, x, y));
-    if (!selectedBlock) return setNotice('Choisis d’abord un type de bloc.');
-    const r = placeOnColumn(island, x, y, selectedBlock);
-    if (r.ok) sparkle(x, y, columnHeight(placedOn(r.state, island), x, y) - 1, selectedBlock);
-    afterPlace(r.ok, r.ok ? undefined : r.reason);
+  /** 3D : on a touché la face d'un bloc (`hit`) ; seules les cellules du plan réagissent. */
+  const onFace = (hit: { x: number; y: number; z: number }) => {
+    if (!plan) return;
+    const h = toIslandCell(island, hit.x, hit.y, hit.z);
+    if (planCellAt(plan, h.x, h.y, h.z)) return fillAt(h.x, h.y, h.z);
+    setNotice('Touche une case bleue du plan : c’est là que le bloc va.');
+    sound(playNope);
   };
-
-  /** 3D : on a touché la face d'un bloc (`hit`) ; la case devant est `next`. */
-  const onFace = (hit: { x: number; y: number; z: number }, next: { x: number; y: number; z: number }) => {
-    // Une cellule du plan (fantôme ou déjà posée) : on y pose le bloc attendu, quel que soit le mode.
-    if (plan) {
-      const h = toIslandCell(island, hit.x, hit.y, hit.z);
-      if (planCellAt(plan, h.x, h.y, h.z)) return fillAt(h.x, h.y, h.z);
-    }
-    if (mode === 'retirer') {
-      const c = toIslandCell(island, hit.x, hit.y, hit.z);
-      return afterRemove(removeAt(island, c.x, c.y, c.z));
-    }
-    if (!selectedBlock) return setNotice('Choisis d’abord un type de bloc.');
-    const c = toIslandCell(island, next.x, next.y, next.z);
-    if (!inFreeZone(c.x, c.y)) return afterPlace(false, 'hors-zone');
-    const r = placeAt(island, c.x, c.y, c.z, selectedBlock);
-    if (r.ok) sparkle(c.x, c.y, c.z, selectedBlock);
-    afterPlace(r.ok, r.ok ? undefined : r.reason);
-  };
-
-  const gridCells = cells.map((c) => ({ ...c, x: c.x - FREE_ZONE.x, y: c.y - FREE_ZONE.y }));
 
   return (
     <>
@@ -182,15 +119,15 @@ export function ChantierPage() {
         <Icon name="hammer" /> Chantier
       </h1>
       <p className="intro">
-        <Syllabified text="Chaque île a un terrain libre. Choisis un bloc, puis touche une case pour le poser. Rien ne tombe, rien ne casse." />
+        <Syllabified text="Chaque île a un bâtiment en ruine à reconstruire. Suis le plan : les cases bleues attendent leurs blocs." />
       </p>
 
       <Tutorial
         id="chantier"
         replay={replay}
         steps={[
-          'Ici, tu construis. Chaque île a un plan : un bâtiment en ruine, dessiné en bleu transparent. Touche une case bleue pour y poser le bon bloc.',
-          'Le tapis jaune est ta zone libre : tu y poses ce que tu veux. Choisis un bloc dans « Mes blocs », puis touche une case. Pour retirer, choisis « Retirer ».',
+          'Ici, tu reconstruis le village. Chaque île a un plan : un bâtiment en ruine, dessiné en bleu transparent.',
+          'Touche une case bleue pour y poser le bon bloc, ou utilise le bouton « Poser le bloc suivant ». Le plan te dit quels blocs il manque.',
           'Les blocs se gagnent dans les quêtes des îles. Quand un plan est fini, la créature te remercie et t’offre un coffre.',
         ]}
       />
@@ -243,41 +180,17 @@ export function ChantierPage() {
             Ton inventaire est vide. <Link to="/aventure">Va gagner des blocs dans les biomes !</Link>
           </p>
         ) : (
-          <div className="palette" role="radiogroup" aria-label="Type de bloc à poser">
-            {blocks.map((b) => {
-              const n = state.inventory[b] ?? 0;
-              return (
-                <button
-                  key={b}
-                  type="button"
-                  role="radio"
-                  aria-checked={selectedBlock === b && mode === 'poser'}
-                  className={`palette-block${selectedBlock === b && mode === 'poser' ? ' selected' : ''}${n === 0 ? ' empty' : ''}`}
-                  onClick={() => {
-                    setSelectedBlock(b);
-                    setMode('poser');
-                  }}
-                >
-                  <BlockIcon top={BLOCKS[b].top} side={BLOCKS[b].side} size={40} />
-                  <span className="palette-name">{BLOCKS[b].name}</span>
-                  <span className="palette-count">{n}</span>
-                </button>
-              );
-            })}
-          </div>
+          <ul className="palette" aria-label="Blocs dans l’inventaire">
+            {blocks.map((b) => (
+              <li key={b} className="palette-block">
+                <BlockIcon top={BLOCKS[b].top} side={BLOCKS[b].side} size={40} />
+                <span className="palette-name">{BLOCKS[b].name}</span>
+                <span className="palette-count">{state.inventory[b] ?? 0}</span>
+              </li>
+            ))}
+          </ul>
         )}
-        <div className="build-modes" role="group" aria-label="Action">
-          <button type="button" className={`button${mode === 'poser' ? ' primary' : ''}`} aria-pressed={mode === 'poser'} onClick={() => setMode('poser')}>
-            <Icon name="hammer" /> Poser
-          </button>
-          <button
-            type="button"
-            className={`button${mode === 'retirer' ? ' primary' : ''}`}
-            aria-pressed={mode === 'retirer'}
-            onClick={() => setMode('retirer')}
-          >
-            <Icon name="pickaxe" /> Retirer
-          </button>
+        <div className="build-modes" role="group" aria-label="Chantier">
           <button type="button" className="button" aria-pressed={!settings.sounds} onClick={() => update({ sounds: !settings.sounds })}>
             <Icon name={settings.sounds ? 'volume' : 'volumeOff'} /> {settings.sounds ? 'Couper les sons' : 'Remettre les sons'}
           </button>
@@ -306,9 +219,9 @@ export function ChantierPage() {
           ) : (
             <span className="view-note">Vue simple (la 3D n’est pas disponible sur cet appareil).</span>
           )}
-          {in3d && <span className="view-note">Touche une face pour poser à côté, touche un bloc posé pour le retirer. Le tapis jaune est ta zone libre.</span>}
+          {in3d && <span className="view-note">Touche une case bleue du plan pour y poser le bloc attendu.</span>}
         </div>
-        {in3d ? (
+        {in3d && (
           <Suspense fallback={<p className="loading">Chargement du village…</p>}>
             <WorldCanvas
               cubes={worldCubes(state.progress, state.village, false)}
@@ -318,46 +231,17 @@ export function ChantierPage() {
               focus={{ island, seq }}
               reduceMotion={settings.reduceMotion}
               cameraSpeed={settings.cameraSpeed}
-              build={{ zone: freeZoneOf(island), onPickFace: onFace }}
+              build={{ onPickFace: onFace }}
               className="voxel-canvas-world"
               label={`Chantier en 3D : ${BIOMES.find((b) => b.id === island)?.name}`}
             />
           </Suspense>
-        ) : (
-          <BuildGrid build={gridCells} width={FREE_ZONE.w} height={FREE_ZONE.h} selected={cell} onSelect={(x, y) => setCell({ x, y })} onAction={onColumn} />
         )}
         <p className="build-status" role="status" aria-live="polite">
-          {notice ??
-            `${cells.length} bloc${cells.length > 1 ? 's' : ''} posé${cells.length > 1 ? 's' : ''} sur cette île (zone libre de ${FREE_ZONE.w} × ${FREE_ZONE.h} cases).`}
+          {notice ?? (status ? `${status.done} bloc${status.done > 1 ? 's' : ''} posé${status.done > 1 ? 's' : ''} sur ${status.total} pour ce plan.` : '')}
         </p>
       </div>
 
-      {cells.length > 0 && (
-        <div className="actions">
-          {confirmClear ? (
-            <>
-              <button
-                type="button"
-                className="button danger"
-                onClick={() => {
-                  clearIsland(island);
-                  setConfirmClear(false);
-                  setNotice('Tout est rangé dans l’inventaire.');
-                }}
-              >
-                Oui, tout démonter
-              </button>
-              <button type="button" className="button" onClick={() => setConfirmClear(false)}>
-                Annuler
-              </button>
-            </>
-          ) : (
-            <button type="button" className="button" onClick={() => setConfirmClear(true)}>
-              Tout démonter sur cette île (les blocs reviennent dans l’inventaire)
-            </button>
-          )}
-        </div>
-      )}
       {journal.length > 0 && (
         <section className="panel journal" aria-labelledby="journal-titre">
           <h2 id="journal-titre" className="section-title inventory-title">
@@ -379,7 +263,6 @@ export function ChantierPage() {
           </ol>
         </section>
       )}
-      {!in3d && cell && <span className="visually-hidden">{`Colonne ${cell.x + 1}, ${cell.y + 1} : ${columnHeight(gridCells, cell.x, cell.y)} bloc(s)`}</span>}
     </>
   );
 }

@@ -24,8 +24,6 @@ export interface Cell {
 }
 
 export interface BuildProps {
-  /** Zone libre mise en évidence (coordonnées du monde, bornes hautes exclues). */
-  zone: { x0: number; y0: number; x1: number; y1: number };
   /** Face touchée : le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
   onPickFace: (cell: Cell, next: Cell) => void;
 }
@@ -52,7 +50,7 @@ export interface WorldCanvasProps {
   reduceMotion?: boolean;
   /** Île touchée (un tap, pas un glissé), sur l'île elle-même ou sur le pont qui y mène. */
   onPickIsland?: (id: BiomeId) => void;
-  /** Mode construction : on touche une face pour poser ou retirer, au lieu d'entrer dans l'île. */
+  /** Mode chantier : on touche une face (un fantôme du plan) au lieu d'entrer dans l'île. */
   build?: BuildProps;
   /** Les créatures, animées à part du terrain. */
   creatures?: CreaturePlacement[];
@@ -70,7 +68,7 @@ export interface WorldCanvasProps {
 const WATER_LEVEL = -0.45;
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.55 };
-/** Vue d'une île : plus haute, pour voir le plan au fond et la zone libre devant. */
+/** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
 const FLIGHT_MS = 700;
@@ -84,7 +82,7 @@ const CLOUDS: [number, number, number][] = [
   [0.88, 0.6, 3],
   [1.02, 0.2, 2],
 ];
-/** Promenade des créatures : un pas d'une case, à gauche ou en arrière, jamais vers la zone libre ni les plans. */
+/** Promenade des créatures : un pas d'une case, à gauche ou en arrière, jamais vers les plans. */
 const STEPS: [number, number][] = [
   [0, 0],
   [-1, 0],
@@ -186,7 +184,6 @@ export default function WorldCanvas({
     walkers: Walker[];
     sparks: Spark[];
     sparkGeo: THREE.BoxGeometry;
-    zone: THREE.Mesh;
     hover: THREE.LineSegments;
     sky: { hemi: THREE.HemisphereLight; sun: THREE.DirectionalLight; water: THREE.MeshLambertMaterial; fog: THREE.Fog };
     flight: { fromPos: THREE.Vector3; fromTarget: THREE.Vector3; toPos: THREE.Vector3; toTarget: THREE.Vector3; start: number } | null;
@@ -319,14 +316,7 @@ export default function WorldCanvas({
     scene.add(terrain);
     const creaturesGroup = new THREE.Group();
     scene.add(creaturesGroup);
-    // Zone libre (mode construction) : un tapis translucide au ras du sol ; et le contour de la case visée.
-    const zone = new THREE.Mesh(
-      new THREE.PlaneGeometry(1, 1),
-      new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35, depthWrite: false }),
-    );
-    zone.rotation.x = -Math.PI / 2;
-    zone.visible = false;
-    scene.add(zone);
+    // Le contour de la case visée (mode chantier).
     const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
     hover.visible = false;
     scene.add(hover);
@@ -341,7 +331,6 @@ export default function WorldCanvas({
       walkers: [],
       sparks: [],
       sparkGeo,
-      zone,
       hover,
       sky: { hemi, sun, water: waterMat, fog },
       flight: null,
@@ -553,8 +542,6 @@ export default function WorldCanvas({
       renderer.domElement.removeEventListener('pointermove', onHover);
       renderer.domElement.removeEventListener('pointerleave', onLeave);
       controls.removeEventListener('change', clamp);
-      zone.geometry.dispose();
-      (zone.material as THREE.Material).dispose();
       hover.geometry.dispose();
       (hover.material as THREE.Material).dispose();
       controls.dispose();
@@ -627,19 +614,11 @@ export default function WorldCanvas({
     c.panSpeed = cameraSpeed;
   }, [cameraSpeed]);
 
-  // ---- Zone libre mise en évidence
+  // ---- Mode chantier : pas de case visée en dehors
   useEffect(() => {
     const w = world.current;
-    if (!w) return;
-    w.zone.visible = Boolean(build);
-    w.hover.visible = false;
-    if (!build) return;
-    const { x0, y0, x1, y1 } = build.zone;
-    w.zone.scale.set(x1 - x0, y1 - y0, 1);
-    // Le sol de la zone est à z = 0, donc son dessus à la hauteur 1.
-    w.zone.position.set((x0 + x1) / 2, 1.02, (y0 + y1) / 2);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [build?.zone.x0, build?.zone.y0, build?.zone.x1, build?.zone.y1, Boolean(build)]);
+    if (w) w.hover.visible = false;
+  }, [Boolean(build)]);
 
   // ---- Éclats à la pose d'un bloc
   useEffect(() => {

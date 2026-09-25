@@ -145,7 +145,7 @@ export function IslandSheet({ biome, onClose }: Props) {
                   ? status.complete && plan.allDone
                     ? 'Tous les plans sont construits.'
                     : `${plan.plan.name} : ${status.done} / ${status.total} blocs`
-                  : 'Zone libre'}
+                  : 'Aucun plan sur cette île'}
               </span>
             </span>
             <span className="island-owned">

@@ -17,7 +17,7 @@ import {
   worldCubes,
 } from './terrain';
 
-const village = (bridges: string[]) => ({ placed: {}, plans: {}, journal: [], bridges });
+const village = (bridges: string[]) => ({ plans: {}, journal: [], bridges });
 
 it('construit une île par biome, avec créature seulement si un pont y mène', () => {
   const cubes = worldCubes({});

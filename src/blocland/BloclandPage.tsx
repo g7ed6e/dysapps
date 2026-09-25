@@ -11,7 +11,7 @@ import { BlockIcon } from './Voxel';
 export function BloclandPage() {
   const { state } = useBlocland();
   const totalBlocks = Object.values(state.inventory).reduce((a, b) => a + (b ?? 0), 0);
-  const placedCount = Object.values(state.village.placed).reduce((a, cells) => a + (cells?.length ?? 0), 0);
+  const built = state.village.journal.length;
   return (
     <>
       <Link to="/" className="back-link">
@@ -32,7 +32,8 @@ export function BloclandPage() {
         <span className="adventure-text">
           <span className="adventure-title">Chantier</span>
           <span className="adventure-desc">
-            {totalBlocks} bloc{totalBlocks > 1 ? 's' : ''} dans l’inventaire, {placedCount} posé{placedCount > 1 ? 's' : ''} dans le village. Viens construire !
+            {totalBlocks} bloc{totalBlocks > 1 ? 's' : ''} dans l’inventaire, {built} bâtiment{built > 1 ? 's' : ''} terminé{built > 1 ? 's' : ''}. Viens
+            reconstruire le village !
           </span>
         </span>
         <span className="subject-count">

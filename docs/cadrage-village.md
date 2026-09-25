@@ -52,7 +52,7 @@ Ce que le chantier actuel n'offre pas, et qui manque :
 }
 ```
 
-- **Zone libre** — **Décidé** : à l'avant de chaque île, un petit terrain de 6 × 4 cases (le tapis jaune) où l'on pose ce qu'on veut, pour garder la créativité sans détourner des plans.
+- **Zone libre** — **Décidé, puis retiré** (25 septembre 2026) : le terrain libre de 6 × 4 cases (tapis jaune) n'apportait rien face aux plans ; il est supprimé, ses blocs reviennent dans l'inventaire. La construction est entièrement guidée.
 - **Constructions actuelles** (grille 8 × 8) — **Décidé** : non migrées ; à la première ouverture du village, les blocs posés reviennent dans l'inventaire (aucune perte de ressources).
 
 ## 5. Le monde qui vit
@@ -66,7 +66,7 @@ Ce que le chantier actuel n'offre pas, et qui manque :
 
 ```ts
 interface VillageState {
-  placed: Record<BiomeId, BuildCell[]>;        // blocs posés, par île (fantômes remplis et zone libre)
+  // (placed : retiré avec la zone libre)
   plans: Record<string, { done: string[] }>;   // cellules remplies par plan ("x,y,z")
   camera?: { island: BiomeId };                // dernière île visitée
 }

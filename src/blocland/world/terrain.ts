@@ -6,7 +6,7 @@ import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
 import type { VoxelCube } from '../Voxel';
-import { FREE_ZONE, type Village } from '../engine';
+import type { Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 
 /** Côté d'une île (en blocs), espace entre deux îles d'une rangée, espace entre deux rangées (l'îlot du Gardien y tient). */
@@ -401,12 +401,6 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
   }
 }
 
-/** Zone libre d'une île en coordonnées du monde (x0, y0 inclus ; x1, y1 exclus). */
-export function freeZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
-  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x0: ox + FREE_ZONE.x, y0: oy + FREE_ZONE.y, x1: ox + FREE_ZONE.x + FREE_ZONE.w, y1: oy + FREE_ZONE.y + FREE_ZONE.h };
-}
-
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
 export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x: number; y: number; z: number } {
   const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
@@ -471,10 +465,9 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
 
 export function worldCubes(
   progress: Record<string, { stars: number }>,
-  village: Village = { placed: {}, plans: {}, journal: [], bridges: [] },
+  village: Village = { plans: {}, journal: [], bridges: [] },
   withCreatures = true,
 ): VoxelCube[] {
-  const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
     const { ox, oy } = islandOrigin(index);
@@ -523,10 +516,6 @@ export function worldCubes(
           color: c.color,
           tag: biome.id,
         });
-    }
-    for (const c of placed[biome.id] ?? []) {
-      const def = BLOCKS[c.block];
-      cubes.push({ x: ox + c.x, y: oy + c.y, z: c.z + 1, color: def.side, top: def.top, texture: def.texture, tag: biome.id, placed: true });
     }
     // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
     if (unlocked) {

@@ -83,7 +83,7 @@ export function WorldPage() {
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis. Tu es dans le monde en 3D.',
               'Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île : la caméra y vole et son panneau s’ouvre en bas.',
-              'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Le bouton Chantier, en bas, sert à poser tes blocs.',
+              'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Le bouton Chantier, en bas, sert à poser les blocs des plans.',
               'Deux îles sont ouvertes : la Forêt des sons (français) et la Plaine des nombres (maths). Les îles grises sont fermées : les ponts transparents se construisent avec tes blocs, choisis ta direction.',
             ]}
           />
