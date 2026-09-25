@@ -20,6 +20,8 @@ export interface Settings {
   sounds: boolean;
   /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
   ambience: boolean;
+  /** Sensibilité de la caméra dans le village (0,5 = lente, 2 = rapide). */
+  cameraSpeed: number;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -41,6 +43,7 @@ export const DEFAULT_SETTINGS: Settings = {
   view3d: true,
   sounds: true,
   ambience: false,
+  cameraSpeed: 1,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -91,6 +94,7 @@ export function sanitizeSettings(input: Partial<Settings>): Settings {
     view3d: s.view3d === undefined ? DEFAULT_SETTINGS.view3d : Boolean(s.view3d),
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
+    cameraSpeed: clamp(Number(s.cameraSpeed) || DEFAULT_SETTINGS.cameraSpeed, 0.5, 2),
   };
 }
 

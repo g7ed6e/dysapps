@@ -231,7 +231,11 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
   return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
 }
 
-export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {}, journal: [] }, withCreatures = true): VoxelCube[] {
+export function worldCubes(
+  progress: Record<string, { stars: number }>,
+  village: Village = { placed: {}, plans: {}, journal: [] },
+  withCreatures = true,
+): VoxelCube[] {
   const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
