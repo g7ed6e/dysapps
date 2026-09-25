@@ -1,8 +1,11 @@
-// L'archipel : la place de chaque île et les ponts qui les relient. Un pont se construit avec des blocs gagnés
-// n'importe où ; une île s'ouvre quand un chemin de ponts construits y mène depuis une île de départ.
+// Le continent : la place de chaque île et les ouvrages qui les relient (pont, bac, escalier taillé, tunnel, col).
+// Un ouvrage coûte des blocs gagnés n'importe où ; certains demandent aussi un plan terminé ou un Gardien vaincu
+// sur l'île de départ. Une île s'ouvre quand un chemin d'ouvrages construits y mène depuis une île de départ.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
-import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { BIOMES, getBiome, type BiomeId, type BlockId } from '../biomes';
+import { isBossBeaten } from '../bossCore';
 import { MAP } from './map';
+import { plansFor, isPlanDone } from './plans';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
 export const ISLANDS = MAP;
@@ -10,47 +13,67 @@ export const ISLANDS = MAP;
 /** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
 export const START_ISLANDS: BiomeId[] = ['foret', 'plaine'];
 
+/**
+ * Les ouvrages : un pont entre deux îles au même niveau, un bac (radeau) sur un large bras de mer, un escalier taillé
+ * pour monter d'un niveau, un tunnel dans la montagne pour en monter deux, un col pour monter tout en haut.
+ */
+export type BridgeKind = 'pont' | 'bac' | 'escalier' | 'tunnel' | 'col';
+
+/** Ce qu'il faut en plus des blocs : rien, le premier plan de l'île de départ terminé, ou son Gardien vaincu. */
+export type BridgeCondition = 'aucune' | 'plan' | 'gardien';
+
 export interface BridgeDef {
   id: string;
   from: BiomeId;
   to: BiomeId;
+  kind: BridgeKind;
   /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire ; 0 = pont déjà construit. */
   cost: number;
 }
 
-/** Les ponts possibles, entre îles voisines. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
+/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (un plan), le tunnel et le col un Gardien vaincu. */
+export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = { pont: 'aucune', bac: 'aucune', escalier: 'plan', tunnel: 'gardien', col: 'gardien' };
+
+export const KIND_NAME: Record<BridgeKind, string> = { pont: 'Pont', bac: 'Bac', escalier: 'Escalier taillé', tunnel: 'Tunnel', col: 'Col' };
+
+const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDef => ({ id: `${from}-${to}`, from, to, kind, cost });
+
+/** Les ouvrages possibles, entre îles voisines. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
 export const BRIDGES: BridgeDef[] = [
-  { id: 'foret-mine', from: 'foret', to: 'mine', cost: 3 },
-  { id: 'foret-ferme', from: 'foret', to: 'ferme', cost: 3 },
-  { id: 'mine-carriere', from: 'mine', to: 'carriere', cost: 5 },
-  { id: 'ferme-tour', from: 'ferme', to: 'tour', cost: 5 },
-  { id: 'foret-plaine', from: 'foret', to: 'plaine', cost: 0 },
-  { id: 'plaine-riviere', from: 'plaine', to: 'riviere', cost: 3 },
-  { id: 'mine-riviere', from: 'mine', to: 'riviere', cost: 4 },
-  { id: 'plaine-volcan', from: 'plaine', to: 'volcan', cost: 3 },
-  { id: 'ferme-volcan', from: 'ferme', to: 'volcan', cost: 4 },
-  // Cycle 4 : coûts plus élevés, les blocs des nouvelles îles servent.
-  { id: 'plaine-glacier', from: 'plaine', to: 'glacier', cost: 6 },
-  { id: 'riviere-marche', from: 'riviere', to: 'marche', cost: 6 },
-  { id: 'glacier-marche', from: 'glacier', to: 'marche', cost: 6 },
-  { id: 'foret-carrefour', from: 'foret', to: 'carrefour', cost: 6 },
-  { id: 'mine-marais', from: 'mine', to: 'marais', cost: 6 },
-  { id: 'carrefour-marais', from: 'carrefour', to: 'marais', cost: 6 },
-  { id: 'volcan-forge', from: 'volcan', to: 'forge', cost: 7 },
-  { id: 'glacier-forge', from: 'glacier', to: 'forge', cost: 7 },
-  { id: 'marche-atelier', from: 'marche', to: 'atelier', cost: 7 },
-  { id: 'ferme-falaise', from: 'ferme', to: 'falaise', cost: 7 },
-  { id: 'carrefour-falaise', from: 'carrefour', to: 'falaise', cost: 7 },
-  { id: 'carriere-cabinet', from: 'carriere', to: 'cabinet', cost: 7 },
-  { id: 'marais-cabinet', from: 'marais', to: 'cabinet', cost: 7 },
-  { id: 'forge-belvedere', from: 'forge', to: 'belvedere', cost: 8 },
-  { id: 'marche-donnees', from: 'marche', to: 'donnees', cost: 8 },
-  { id: 'forge-phare', from: 'forge', to: 'phare', cost: 8 },
-  { id: 'tour-textes', from: 'tour', to: 'textes', cost: 8 },
-  { id: 'falaise-textes', from: 'falaise', to: 'textes', cost: 8 },
+  // Basses Terres (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
+  b('foret', 'mine', 'pont', 3),
+  b('foret', 'ferme', 'pont', 3),
+  b('mine', 'carriere', 'pont', 5),
+  b('ferme', 'tour', 'pont', 5),
+  b('foret', 'plaine', 'pont', 0),
+  b('plaine', 'riviere', 'bac', 3),
+  b('mine', 'riviere', 'pont', 4),
+  b('plaine', 'volcan', 'pont', 3),
+  b('ferme', 'volcan', 'bac', 4),
+  // Vers les Collines (5e) : des escaliers taillés, qui demandent un premier plan terminé.
+  b('plaine', 'glacier', 'escalier', 5),
+  b('riviere', 'marche', 'escalier', 5),
+  b('glacier', 'marche', 'pont', 6),
+  b('foret', 'carrefour', 'escalier', 5),
+  b('mine', 'marais', 'escalier', 5),
+  b('carrefour', 'marais', 'pont', 6),
+  // Vers les Monts (4e) : escaliers depuis les collines, tunnels depuis la mer (un Gardien vaincu).
+  b('volcan', 'forge', 'tunnel', 5),
+  b('glacier', 'forge', 'escalier', 6),
+  b('marche', 'atelier', 'escalier', 6),
+  b('ferme', 'falaise', 'tunnel', 5),
+  b('carrefour', 'falaise', 'escalier', 6),
+  b('carriere', 'cabinet', 'tunnel', 5),
+  b('marais', 'cabinet', 'escalier', 6),
+  // Vers les Sommets (3e).
+  b('forge', 'belvedere', 'escalier', 7),
+  b('marche', 'donnees', 'tunnel', 6),
+  b('forge', 'phare', 'escalier', 7),
+  b('tour', 'textes', 'col', 6),
+  b('falaise', 'textes', 'escalier', 7),
 ];
 
-/** Les blocs qui servent à payer un pont : ceux des îles (et les coffres), jamais les kits de finition des plans. */
+/** Les blocs qui servent à payer un ouvrage : ceux des îles (et les coffres), jamais les kits de finition des plans. */
 export const BRIDGE_BLOCKS: BlockId[] = [
   'bois',
   'pierre',
@@ -112,18 +135,57 @@ export function isBiomeUnlocked(island: BiomeId, bridges: string[]): boolean {
   return reachableIslands(bridges).has(island);
 }
 
-export type BridgeState = 'built' | 'buildable' | 'far';
-
-/** Construit, constructible (une de ses deux îles est ouverte) ou trop loin pour l'instant. */
-export function bridgeState(bridge: BridgeDef, bridges: string[]): BridgeState {
-  if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
-  const open = reachableIslands(bridges);
-  return open.has(bridge.from) || open.has(bridge.to) ? 'buildable' : 'far';
+/** Ce que sait le monde pour juger une condition : les étoiles et les plans posés. */
+export interface WorldProgress {
+  progress: Record<string, { stars: number }>;
+  plans: Record<string, string[]>;
 }
 
-/** Les ponts que l'on peut construire maintenant, qui touchent une île donnée (ou tous). */
-export function buildableBridges(bridges: string[], island?: BiomeId): BridgeDef[] {
-  return (island ? bridgesOf(island) : BRIDGES).filter((b) => bridgeState(b, bridges) === 'buildable');
+export type BridgeState = 'built' | 'buildable' | 'blocked' | 'far';
+
+/** La condition d'un ouvrage est-elle remplie depuis une île ouverte qu'il touche ? */
+export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldProgress): boolean {
+  const condition = CONDITION_OF[bridge.kind];
+  if (condition === 'aucune') return true;
+  const open = reachableIslands(bridges);
+  return [bridge.from, bridge.to]
+    .filter((island) => open.has(island))
+    .some((island) => {
+      if (condition === 'gardien') return isBossBeaten(island, world.progress);
+      const first = plansFor(island)[0];
+      return Boolean(first) && isPlanDone(first, world.plans);
+    });
+}
+
+/** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
+export function conditionText(bridge: BridgeDef, bridges: string[]): string | null {
+  const condition = CONDITION_OF[bridge.kind];
+  if (condition === 'aucune') return null;
+  const open = reachableIslands(bridges);
+  const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
+  const name = getBiome(island)?.name ?? island;
+  if (condition === 'gardien') return `Bats d’abord le Gardien de ${name}.`;
+  const first = plansFor(island)[0];
+  return `Termine d’abord le plan « ${first?.name ?? 'premier plan'} » de ${name}.`;
+}
+
+/**
+ * Construit ; constructible (une de ses deux îles est ouverte, la condition est remplie) ; bloqué (île ouverte mais
+ * condition à remplir) ; ou trop loin pour l'instant. Sans `world`, les conditions ne sont pas regardées.
+ */
+export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldProgress): BridgeState {
+  if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
+  const open = reachableIslands(bridges);
+  if (!open.has(bridge.from) && !open.has(bridge.to)) return 'far';
+  return !world || conditionMet(bridge, bridges, world) ? 'buildable' : 'blocked';
+}
+
+/** Les ouvrages proposés maintenant (constructibles ou bloqués par une condition), qui touchent une île donnée (ou tous). */
+export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress): BridgeDef[] {
+  return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
+    const state = bridgeState(b, bridges, world);
+    return state === 'buildable' || state === 'blocked';
+  });
 }
 
 /** Combien de blocs de l'inventaire peuvent payer un pont. */
@@ -133,18 +195,19 @@ export function payableBlocks(inventory: Partial<Record<BlockId, number>>): numb
 
 export type BuildBridgeResult =
   | { ok: true; bridges: string[]; inventory: Partial<Record<BlockId, number>>; used: Partial<Record<BlockId, number>> }
-  | { ok: false; reason: 'inconnu' | 'construit' | 'loin' | 'blocs'; missing?: number };
+  | { ok: false; reason: 'inconnu' | 'construit' | 'loin' | 'blocs' | 'plan' | 'gardien'; missing?: number };
 
 /**
  * Paie et construit un pont : les blocs sont pris dans l'inventaire, les types les plus nombreux d'abord
  * (on garde ainsi les blocs rares pour les plans).
  */
-export function buildBridge(id: string, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
+export function buildBridge(id: string, bridges: string[], inventory: Partial<Record<BlockId, number>>, world?: WorldProgress): BuildBridgeResult {
   const bridge = getBridge(id);
   if (!bridge) return { ok: false, reason: 'inconnu' };
-  const state = bridgeState(bridge, bridges);
+  const state = bridgeState(bridge, bridges, world);
   if (state === 'built') return { ok: false, reason: 'construit' };
   if (state === 'far') return { ok: false, reason: 'loin' };
+  if (state === 'blocked') return { ok: false, reason: CONDITION_OF[bridge.kind] === 'gardien' ? 'gardien' : 'plan' };
   const have = payableBlocks(inventory);
   if (have < bridge.cost) return { ok: false, reason: 'blocs', missing: bridge.cost - have };
   const next = { ...inventory };

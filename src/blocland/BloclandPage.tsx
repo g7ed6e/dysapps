@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { BIOMES, BLOCKS, ofBlock } from './biomes';
-import { buildableBridges, isBiomeUnlocked } from './world/archipelago';
+import { KIND_NAME, buildableBridges, isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { Creature } from './Creatures';
 import { BlockIcon } from './Voxel';
@@ -46,7 +46,7 @@ export function BloclandPage() {
                 </span>
                 {!unlocked && (
                   <span className="tag">
-                    <Icon name="lock" /> {bridge ? `Pont à construire : ${bridge.cost} blocs` : 'Île lointaine'}
+                    <Icon name="lock" /> {bridge ? `${KIND_NAME[bridge.kind]} à construire : ${bridge.cost} blocs` : 'Île lointaine'}
                   </span>
                 )}
               </Link>

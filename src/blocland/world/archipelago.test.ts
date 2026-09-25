@@ -1,10 +1,14 @@
 import { BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
+import { planCells, plansFor } from './plans';
 import {
   BRIDGES,
   ISLANDS,
+  CONDITION_OF,
   bridgeState,
   bridgesFromLegacyProgress,
+  conditionMet,
+  conditionText,
   buildBridge,
   buildableBridges,
   isBiomeUnlocked,
@@ -86,4 +90,30 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : les ponts du chemin
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés.
   expect(sanitizeState({ progress: old }).village.bridges.sort()).toEqual(['foret-ferme', 'foret-mine', 'mine-carriere']);
   expect(sanitizeState({ progress: old, village: { bridges: ['foret-mine', 'x', 'foret-mine'] } }).village.bridges).toEqual(['foret-mine']);
+});
+
+it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
+  const kinds = new Set(BRIDGES.map((b) => b.kind));
+  expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'tunnel']);
+  expect(CONDITION_OF.pont).toBe('aucune');
+  const empty = { progress: {}, plans: {} };
+  const stairs = BRIDGES.find((b) => b.id === 'foret-carrefour')!;
+  expect(bridgeState(stairs, [], empty)).toBe('blocked');
+  expect(bridgeState(stairs, [])).toBe('buildable');
+  expect(conditionText(stairs, [])).toContain('Termine d’abord le plan');
+  expect(buildBridge('foret-carrefour', [], { bois: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
+  // Le premier plan de la Forêt terminé : l'escalier se construit.
+  const cabane = plansFor('foret')[0];
+  const withPlan = { progress: {}, plans: { [cabane.id]: planCells(cabane).map((c) => c.key) } };
+  expect(conditionMet(stairs, [], withPlan)).toBe(true);
+  expect(buildBridge('foret-carrefour', [], { bois: 9 }, withPlan).ok).toBe(true);
+  // Le tunnel Volcan → Forge : le Gardien du Volcan.
+  const tunnel = BRIDGES.find((b) => b.id === 'volcan-forge')!;
+  expect(bridgeState(tunnel, ['plaine-volcan'], empty)).toBe('blocked');
+  expect(conditionText(tunnel, ['plaine-volcan'])).toBe('Bats d’abord le Gardien de Volcan des décimaux.');
+  expect(buildBridge('volcan-forge', ['plaine-volcan'], { bois: 9 }, empty)).toEqual({ ok: false, reason: 'gardien' });
+  expect(bridgeState(tunnel, ['plaine-volcan'], { progress: { 'volcan-gardien': { stars: 2 } }, plans: {} })).toBe('buildable');
+  // Les ouvrages proposés comprennent ceux qui sont bloqués (on explique la condition), pas ceux qui sont loin.
+  expect(buildableBridges([], 'foret', empty).map((b) => b.id)).toContain('foret-carrefour');
+  expect(buildableBridges([], 'carrefour', empty).map((b) => b.id)).toEqual(['foret-carrefour']);
 });

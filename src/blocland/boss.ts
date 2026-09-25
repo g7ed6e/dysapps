@@ -6,13 +6,12 @@ import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, pickExercise } from './exercises';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
 
+import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten } from './bossCore';
+
 /** Manches par type de quête. */
 export const ROUNDS_PER_TYPE = 2;
-/** Étoiles à obtenir dans chaque quête pour affronter le Gardien, et pour le vaincre. */
-export const STARS_TO_UNLOCK = 2;
-export const STARS_TO_BEAT = 2;
 
-export const bossId = (biome: BiomeId) => `${biome}-gardien`;
+export { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten };
 
 /** Une manche : un écran d'un type de quête, avec ses items. */
 export interface BossRound extends ExerciseItem {
@@ -40,10 +39,6 @@ export function missingForBoss(biome: BiomeDef, progress: Record<string, { stars
     .filter((x) => typesWithContent(biome).includes(x.id))
     .filter((x) => !exercisesOf(biome.id, x.id).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK))
     .map((x) => x.title);
-}
-
-export function isBossBeaten(biome: BiomeId, progress: Record<string, { stars: number }>): boolean {
-  return (progress[bossId(biome)]?.stars ?? 0) >= STARS_TO_BEAT;
 }
 
 export function bossesBeaten(progress: Record<string, { stars: number }>): BiomeId[] {

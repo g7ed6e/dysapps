@@ -1,4 +1,5 @@
 import { BIOMES } from '../biomes';
+import { BRIDGES } from './archipelago';
 import {
   fade,
   DEPTH,
@@ -88,10 +89,31 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
   expect(bridgeCubes([], 'mine-carriere')).toHaveLength(0);
   expect(bridgeCubes(['foret-mine'], 'mine-carriere').filter((c) => c.ghost).length).toBeGreaterThanOrEqual(4);
-  // Plaine (0) → Glacier (3) : une rampe qui monte, avec des marches.
+  // Plaine (0) → Glacier (3) : un escalier taillé qui monte, marches de pierre.
   const ramp = bridgeCubes([], 'plaine-glacier').filter((c) => c.ghost);
-  expect(ramp.some((c) => c.texture === 'escalier')).toBe(true);
+  expect(ramp.some((c) => c.texture === 'marche')).toBe(true);
+  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre')).toBe(true);
   expect(Math.max(...ramp.map((c) => c.z))).toBeGreaterThan(Math.min(...ramp.map((c) => c.z)));
+  // Plaine–Rivière : un bac, des poteaux de bois et un radeau, au fil de l'eau.
+  const ferry = bridgeCubes([], 'plaine-riviere');
+  expect(ferry.some((c) => c.texture === 'tronc')).toBe(true);
+  expect(ferry.filter((c) => c.texture === 'planches').length).toBeGreaterThanOrEqual(3);
+  expect(ferry.every((c) => c.z === 0)).toBe(true);
+  // Volcan (0) → Forge (6) : un tunnel, arches de pierre et lanternes au-dessus du chemin.
+  const tunnel = bridgeCubes(['plaine-volcan'], 'volcan-forge');
+  expect(tunnel.some((c) => c.texture === 'lanterne')).toBe(true);
+  expect(tunnel.filter((c) => c.texture === 'pierre').length).toBeGreaterThanOrEqual(8);
+  // Tour (0) → Textes (9) : un col, avec son garde-fou.
+  const pass = bridgeCubes(['foret-ferme', 'ferme-tour'], 'tour-textes');
+  expect(pass.some((c) => c.texture === 'barriere')).toBe(true);
+  // Tout construit : aucun cube d'ouvrage en double, ni sur un autre cube.
+  const all = worldCubes({}, village(BRIDGES.map((b) => b.id)), false);
+  const seen = new Set<string>();
+  for (const c of all) {
+    const key = `${c.x},${c.y},${c.z}`;
+    expect(seen.has(key), `cube en double en ${key} (${c.tag}, ${c.bridge})`).toBe(false);
+    seen.add(key);
+  }
   const cubes = worldCubes({});
   const bounds = worldBounds();
   for (const c of cubes) {

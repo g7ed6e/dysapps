@@ -36,7 +36,7 @@ export function BiomePage() {
 
       <CreatureBubble
         biome={biome}
-        text={unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un pont jusqu’à mon île, puis reviens me voir.`}
+        text={unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.`}
       />
 
       <Bridges island={biome.id} />

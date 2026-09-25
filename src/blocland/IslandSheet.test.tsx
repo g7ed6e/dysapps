@@ -46,7 +46,7 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
 it('une île fermée montre ses quêtes verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('mine', onClose);
-  expect(document.body.textContent).toContain('Construis d’abord un pont');
+  expect(document.body.textContent).toContain('Construis d’abord un chemin');
   expect(screen.getByRole('button', { name: /Construire/ })).toBeDisabled();
   expect(document.body.textContent).toContain('Pont vers Forêt des sons');
   expect(screen.getByRole('list', { name: 'Quêtes de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);

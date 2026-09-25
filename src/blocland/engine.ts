@@ -416,7 +416,7 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
 
 /** Construit un pont en payant avec les blocs de l'inventaire. */
 export function buildBridge(state: BloclandState, id: string): { state: BloclandState; result: BuildBridgeResult } {
-  const result = buildBridgePure(id, state.village.bridges, state.inventory);
+  const result = buildBridgePure(id, state.village.bridges, state.inventory, { progress: state.progress, plans: state.village.plans });
   if (!result.ok) return { state, result };
   return { state: { ...state, inventory: result.inventory, village: { ...state.village, bridges: result.bridges } }, result };
 }
