@@ -2869,3 +2869,37 @@ a.app-card:active {
   color: var(--muted);
   min-width: 8rem;
 }
+
+/* ===== Village : tutoriel d'entrée ===== */
+.tutorial {
+  margin-bottom: 1.2rem;
+  background: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+:root[data-theme='contraste'] .tutorial {
+  background: var(--surface);
+  border-color: var(--yellow);
+}
+.tutorial-step {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 0 0 0.8rem;
+  max-width: none;
+}
+.tutorial-count {
+  flex-shrink: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.9rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--ink);
+  color: #fbf6ea;
+}
+.tutorial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.pause-note {
+  margin-top: 1rem;
+}

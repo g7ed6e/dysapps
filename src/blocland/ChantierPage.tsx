@@ -15,6 +15,8 @@ import { BlockIcon } from './Voxel';
 import { getPlan, plansFor } from './world/plans';
 import { creaturePlacements, freeZoneOf, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
 import { useAmbience } from './useAmbience';
+import { Tutorial } from './Tutorial';
+import { SESSION_MAX_MINUTES } from './BloclandContext';
 import { daylight } from './world/daylight';
 
 type Mode = 'poser' | 'retirer';
@@ -37,6 +39,13 @@ export function ChantierPage() {
   const [island, setIsland] = useState<BiomeId>(unlockedIslands[0] ?? 'foret');
   const [seq, setSeq] = useState(1);
   const [forceDay, setForceDay] = useState(false);
+  const [replay, setReplay] = useState(0);
+  // Sessions courtes : après dix minutes de construction, on propose une pause (sans rien bloquer).
+  const [pauseOffered, setPauseOffered] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setPauseOffered(true), SESSION_MAX_MINUTES * 60_000);
+    return () => window.clearTimeout(t);
+  }, []);
   const [burst, setBurst] = useState<{ seq: number; cell: { x: number; y: number; z: number }; color: string }>({
     seq: 0,
     cell: { x: 0, y: 0, z: 0 },
@@ -172,6 +181,25 @@ export function ChantierPage() {
         <Syllabified text="Chaque île a un terrain libre. Choisis un bloc, puis touche une case pour le poser. Rien ne tombe, rien ne casse." />
       </p>
 
+      <Tutorial
+        id="chantier"
+        replay={replay}
+        steps={[
+          'Ici, tu construis. Chaque île a un plan : un bâtiment en ruine, dessiné en bleu transparent. Touche une case bleue pour y poser le bon bloc.',
+          'Le tapis jaune est ta zone libre : tu y poses ce que tu veux. Choisis un bloc dans « Mes blocs », puis touche une case. Pour retirer, choisis « Retirer ».',
+          'Les blocs se gagnent dans les quêtes des îles. Quand un plan est fini, la créature te remercie et t’offre un coffre.',
+        ]}
+      />
+      {pauseOffered && (
+        <div className="panel pause-note" role="status">
+          <p>
+            <Syllabified text="Tu construis depuis dix minutes. C’est un bon moment pour faire une pause ; le village t’attendra." />
+          </p>
+          <button type="button" className="button" onClick={() => setPauseOffered(false)}>
+            <Icon name="check" /> D’accord
+          </button>
+        </div>
+      )}
       <div className="world-nav" role="group" aria-label="Île">
         {BIOMES.map((b) => {
           const unlocked = unlockedIslands.includes(b.id);
@@ -259,6 +287,9 @@ export function ChantierPage() {
               <Icon name="moon" /> Revenir à l’heure réelle
             </button>
           )}
+          <button type="button" className="button" onClick={() => setReplay((n) => n + 1)}>
+            <Icon name="help" /> Revoir l’aide
+          </button>
         </div>
       </section>
 
@@ -282,6 +313,7 @@ export function ChantierPage() {
               burst={burst}
               focus={{ island, seq }}
               reduceMotion={settings.reduceMotion}
+              cameraSpeed={settings.cameraSpeed}
               build={{ zone: freeZoneOf(island), onPickFace: onFace }}
               className="voxel-canvas-world"
               label={`Chantier en 3D : ${BIOMES.find((b) => b.id === island)?.name}`}

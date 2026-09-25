@@ -5,7 +5,9 @@ import { groundHeight, islandOrigin, worldCubes } from './terrain';
 
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
   // Le décor sans les créatures (elles se promènent) et sans les fantômes.
-  const decor = worldCubes({ 'foret-x': { stars: 1 }, 'mine-x': { stars: 1 }, 'carriere-x': { stars: 1 }, 'ferme-x': { stars: 1 } }, undefined, false).filter((c) => !c.ghost);
+  const decor = worldCubes({ 'foret-x': { stars: 1 }, 'mine-x': { stars: 1 }, 'carriere-x': { stars: 1 }, 'ferme-x': { stars: 1 } }, undefined, false).filter(
+    (c) => !c.ghost,
+  );
   const at = new Set(decor.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((b, i) => {
     const plans = plansFor(b.id);

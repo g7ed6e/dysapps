@@ -151,6 +151,15 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.ambience} onChange={(e) => update({ ambience: e.target.checked })} />
             Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit)
           </label>
+          <Slider
+            label="Sensibilité de la caméra dans le village"
+            value={settings.cameraSpeed}
+            min={0.5}
+            max={2}
+            step={0.25}
+            display={`× ${settings.cameraSpeed.toFixed(2).replace(/\.?0+$/, '')}`}
+            onChange={(cameraSpeed) => update({ cameraSpeed })}
+          />
         </fieldset>
 
         <div className="actions">

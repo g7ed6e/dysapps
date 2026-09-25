@@ -41,3 +41,14 @@ it('laisse voir à travers le verre', () => {
   const groups = buildMesh([cube(0, 0, 0), cube(1, 0, 0, 'verre')]);
   expect(faceCount(groups)).toBe(11);
 });
+
+it('le village entier, tout construit, reste dans le budget de faces des tablettes', async () => {
+  const { BIOMES } = await import('../biomes');
+  const { PLANS, planCells } = await import('./plans');
+  const { worldCubes } = await import('./terrain');
+  const progress = Object.fromEntries(BIOMES.map((b) => [`${b.id}-x`, { stars: 3 }]));
+  const plans = Object.fromEntries(PLANS.map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const groups = buildMesh(worldCubes(progress, { placed: {}, plans, journal: [] }));
+  expect(faceCount(groups)).toBeLessThan(12000);
+  expect(groups.length).toBeLessThan(60);
+});

@@ -57,6 +57,8 @@ export interface WorldCanvasProps {
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   burst?: Burst;
+  /** Sensibilité de la caméra (rotation, zoom, déplacement). */
+  cameraSpeed?: number;
   className?: string;
   label: string;
 }
@@ -159,6 +161,7 @@ export default function WorldCanvas({
   cubes,
   focus,
   reduceMotion = false,
+  cameraSpeed = 1,
   onPickIsland,
   build,
   creatures = [],
@@ -233,6 +236,20 @@ export default function WorldCanvas({
     controls.maxPolarAngle = Math.PI * 0.46;
     controls.minDistance = 6;
     controls.maxDistance = width * 1.6;
+    // Clavier : flèches pour se déplacer, + et − pour zoomer (le canvas prend le focus).
+    el.tabIndex = 0;
+    controls.listenToKeyEvents(el);
+    controls.keyPanSpeed = 14;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '+' && e.key !== '-' && e.key !== '=') return;
+      e.preventDefault();
+      const dir = camera.position.clone().sub(controls.target);
+      const factor = e.key === '-' ? 1.2 : 1 / 1.2;
+      const d = THREE.MathUtils.clamp(dir.length() * factor, controls.minDistance, controls.maxDistance);
+      camera.position.copy(controls.target).addScaledVector(dir.normalize(), d);
+      controls.update();
+    };
+    el.addEventListener('keydown', onKey);
 
     // On ne sort pas du monde : la cible reste au-dessus des îles, la caméra suit.
     const margin = 6;
@@ -423,10 +440,36 @@ export default function WorldCanvas({
     applyDaylight();
     const dayTimer = reduceMotion ? 0 : window.setInterval(applyDaylight, 60_000);
 
+    // Économie de batterie : on ne dessine que si le canvas est visible et l'onglet actif ;
+    // et si l'appareil peine (images trop longues), on baisse la finesse du rendu.
+    let visible = true;
+    let running = true;
+    let slowFrames = 0;
+    const seen = new IntersectionObserver((entries) => {
+      visible = entries.some((e) => e.isIntersecting);
+      if (visible && !running) start();
+    });
+    seen.observe(el);
+    const onVisibility = () => {
+      if (!document.hidden && !running) start();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     let frame = 0;
     const clock = new THREE.Clock();
+    let lastFrame = performance.now();
     const loop = () => {
+      if (!visible || document.hidden) {
+        running = false;
+        return;
+      }
+      running = true;
       frame = requestAnimationFrame(loop);
+      const nowMs = performance.now();
+      if (nowMs - lastFrame > 45 && renderer.getPixelRatio() > 1) {
+        if (++slowFrames > 30) renderer.setPixelRatio(1);
+      } else slowFrames = 0;
+      lastFrame = nowMs;
       const w = world.current;
       if (!w) return;
       const now = performance.now();
@@ -485,10 +528,18 @@ export default function WorldCanvas({
       controls.update();
       renderer.render(scene, camera);
     };
-    loop();
+    const start = () => {
+      lastFrame = performance.now();
+      loop();
+    };
+    start();
 
     return () => {
       cancelAnimationFrame(frame);
+      seen.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
+      el.removeEventListener('keydown', onKey);
+      controls.stopListenToKeyEvents();
       if (dayTimer) window.clearInterval(dayTimer);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
@@ -550,6 +601,15 @@ export default function WorldCanvas({
     });
   }, [creatures]);
 
+  // ---- Sensibilité de la caméra
+  useEffect(() => {
+    const c = world.current?.controls;
+    if (!c) return;
+    c.rotateSpeed = cameraSpeed;
+    c.zoomSpeed = cameraSpeed;
+    c.panSpeed = cameraSpeed;
+  }, [cameraSpeed]);
+
   // ---- Zone libre mise en évidence
   useEffect(() => {
     const w = world.current;
@@ -596,5 +656,12 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus.island, focus.seq, reduceMotion]);
 
-  return <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} role="img" aria-label={label} />;
+  return (
+    <div
+      ref={host}
+      className={`voxel-canvas ${className ?? ''}`.trim()}
+      role="img"
+      aria-label={`${label}. Au clavier : flèches pour se déplacer, plus et moins pour zoomer.`}
+    />
+  );
 }

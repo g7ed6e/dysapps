@@ -8,6 +8,7 @@ import { useSettings } from '../core/SettingsContext';
 import { BIOMES, getBiome, isBiomeUnlocked, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { WorldCanvas, hasWebGL } from './three';
+import { Tutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
@@ -27,6 +28,7 @@ export function BloclandWorld() {
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: null, seq: 0 });
   const [forceDay, setForceDay] = useState(false);
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
+  const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
   if (!settings.view3d || !hasWebGL()) return null;
   const goTo = (island: BiomeId | null) => setFocus((f) => ({ island, seq: f.seq + 1 }));
@@ -44,12 +46,22 @@ export function BloclandWorld() {
   };
   return (
     <section className="world" aria-label="Le village en 3D">
+      <Tutorial
+        id="village"
+        replay={replay}
+        steps={[
+          'Voici le village de Blocland : cinq îles reliées par des ponts. Il est en ruine, et c’est toi qui le reconstruis.',
+          'Avec un doigt, tu tournes autour. Avec deux doigts, tu te déplaces et tu zoomes. Les boutons t’emmènent d’une île à l’autre.',
+          'Touche une île pour y faire des quêtes et gagner des blocs. Touche une créature pour l’écouter.',
+        ]}
+      />
       <Suspense fallback={<p className="loading">Chargement du village…</p>}>
         <WorldCanvas
           cubes={cubes}
           creatures={creatures}
           focus={focus}
           reduceMotion={settings.reduceMotion}
+          cameraSpeed={settings.cameraSpeed}
           forceDay={forceDay}
           onPickIsland={(id) => navigate(`/aventure/${id}`)}
           onPickCreature={onCreature}
@@ -91,6 +103,9 @@ export function BloclandWorld() {
             <Icon name="moon" /> Revenir à l’heure réelle
           </button>
         )}
+        <button type="button" className="button" onClick={() => setReplay((n) => n + 1)}>
+          <Icon name="help" /> Revoir l’aide
+        </button>
       </div>
       <p className="view-note">Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île pour y entrer, une créature pour l’écouter.</p>
     </section>
