@@ -41,10 +41,11 @@ const sheet = () => screen.getByRole('region', { name: 'Résultat' });
 afterEach(() => vi.useRealTimers());
 
 describe('déblocage des biomes', () => {
-  it('verrouille la Mine tant que la Forêt n’a pas une étoile', async () => {
+  it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/aventure');
-    expect(screen.getByText(/Termine une quête de Forêt des sons/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(2);
+    expect(screen.getAllByText(/Île lointaine/).length).toBe(2);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);
@@ -52,7 +53,19 @@ describe('déblocage des biomes', () => {
     expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
   });
 
-  it('ouvre la Mine après une étoile en Forêt', () => {
+  it('ouvre la Mine quand on construit le pont avec ses blocs', async () => {
+    localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 2, pierre: 2 } }));
+    const user = userEvent.setup();
+    renderAt('/aventure/mine');
+    expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Construire/ }));
+    expect(document.body.textContent).toMatch(/Le pont vers Forêt des sons est construit/);
+    expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.bridges).toEqual(['foret-mine']);
+    expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toEqual({ pierre: 1 });
+  });
+
+  it('une sauvegarde d’avant les ponts garde la Mine ouverte', () => {
     localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: { 'foret-chasse-son-an': { stars: 1, attempts: 1, best: 0.5 } } }));
     renderAt('/aventure/mine');
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();

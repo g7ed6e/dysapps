@@ -28,7 +28,10 @@ export function WorldPage() {
   const { state } = useBlocland();
   const island = biomeId ? getBiome(biomeId) : undefined;
   const cubes = useMemo(() => worldCubes(state.progress, state.village, false), [state.progress, state.village]);
-  const creatures = useMemo(() => [...creaturePlacements(state.progress), ...guardianPlacements(state.progress)], [state.progress]);
+  const creatures = useMemo(
+    () => [...creaturePlacements(state.village.bridges), ...guardianPlacements(state.progress, state.village.bridges)],
+    [state.progress, state.village.bridges],
+  );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   const [forceDay, setForceDay] = useState(false);
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
@@ -70,7 +73,7 @@ export function WorldPage() {
             onPickIsland={(id) => navigate(`/aventure/${id}`)}
             onPickCreature={onCreature}
             className="voxel-canvas-stage"
-            label="Le village de Blocland en 3D : cinq îles reliées par des ponts"
+            label="Le village de Blocland en 3D : un archipel d’îles, la Forêt au centre, reliées par des ponts à construire"
           />
         </Suspense>
         <div className="world-overlay-top">
@@ -81,6 +84,7 @@ export function WorldPage() {
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis. Tu es dans le monde en 3D.',
               'Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île : la caméra y vole et son panneau s’ouvre en bas.',
               'Dans le panneau : les quêtes de l’île (elles donnent des blocs), le plan à construire et le Gardien. Le bouton Chantier, en bas, sert à poser tes blocs.',
+              'Les îles grises sont fermées. Les ponts transparents se construisent avec tes blocs : choisis ta direction, il n’y a pas d’ordre imposé.',
             ]}
           />
           {said && (

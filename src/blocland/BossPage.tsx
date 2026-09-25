@@ -7,7 +7,8 @@ import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { getBiome, isBiomeUnlocked } from './biomes';
+import { getBiome } from './biomes';
+import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
@@ -23,7 +24,7 @@ export function BossPage() {
   const { settings, speak } = useSettings();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.progress) && isBossUnlocked(biome, state.progress));
+  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossUnlocked(biome, state.progress));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Le défi est tiré au lancement (et à chaque « Rejouer »), pas à chaque changement de progression.
   const def = useMemo(

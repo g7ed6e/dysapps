@@ -1,6 +1,7 @@
 // Le terrain du village : une île par biome (relief léger, décor, créature), reliées par des ponts de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
-import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeDef, type BiomeId } from '../biomes';
+import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
+import { BRIDGES, ISLAND_POS, bridgeState, isBiomeUnlocked, type BridgeDef } from './archipelago';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
@@ -8,9 +9,10 @@ import type { VoxelCube } from '../Voxel';
 import { FREE_ZONE, type Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 
-/** Côté d'une île (en blocs) et espace entre deux îles. */
+/** Côté d'une île (en blocs), espace entre deux îles d'une rangée, espace entre deux rangées (l'îlot du Gardien y tient). */
 export const ISLAND = 12;
 export const GAP = 4;
+export const ROW_GAP = 8;
 /** Nombre de couches de terre sous le sol (visibles au-dessus de l'eau, sur les berges). */
 export const DEPTH = 2;
 
@@ -36,15 +38,14 @@ const TEXTURES: Record<string, string> = {
 };
 
 /**
- * Coin (x, y) de l'île d'un biome : les îles se suivent en zigzag, la première à l'x le plus grand.
- * (Vue depuis le côté où les créatures ont leur visage, l'axe x s'affiche de droite à gauche :
- * la Forêt apparaît donc à gauche.)
+ * Coin (x, y) de l'île d'un biome, d'après sa colonne et sa rangée dans l'archipel. La rangée 0 est au fond,
+ * les suivantes devant (vers la caméra). Vue depuis le côté où les créatures ont leur visage, l'axe x s'affiche
+ * de droite à gauche : la colonne 0 apparaît donc à gauche.
  */
 export function islandOrigin(index: number): { ox: number; oy: number } {
-  return {
-    ox: (BIOMES.length - 1 - index) * (ISLAND + GAP),
-    oy: index % 2 ? ISLAND - 2 : 0,
-  };
+  const { col, row } = ISLAND_POS[BIOMES[index].id];
+  const cols = Math.max(...Object.values(ISLAND_POS).map((p) => p.col)) + 1;
+  return { ox: (cols - 1 - col) * (ISLAND + GAP), oy: 0 - row * (ISLAND + ROW_GAP) };
 }
 
 /** Centre d'une île (coordonnées de grille), pour y amener la caméra. */
@@ -172,19 +173,27 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
   },
 };
 
-/** Pont de bois entre deux îles voisines, à hauteur du sol. */
-function bridge(from: BiomeDef, to: BiomeDef, cubes: VoxelCube[]): void {
+/**
+ * Pont de bois entre deux îles voisines, à hauteur du sol : d'un bord à l'autre, au milieu du côté entre deux
+ * colonnes, sur le côté droit (loin de l'îlot du Gardien) entre deux rangées. Fantôme tant qu'il n'est pas construit.
+ */
+function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
+  const from = BIOMES.find((b) => b.id === def.from)!;
+  const to = BIOMES.find((b) => b.id === def.to)!;
   const a = islandOrigin(BIOMES.indexOf(from));
   const b = islandOrigin(BIOMES.indexOf(to));
-  const forward = b.ox > a.ox;
-  const start = {
-    x: forward ? a.ox + ISLAND : a.ox - 1,
-    y: a.oy + Math.floor(ISLAND / 2),
-  };
-  const end = {
-    x: forward ? b.ox - 1 : b.ox + ISLAND,
-    y: b.oy + Math.floor(ISLAND / 2),
-  };
+  const sideways = a.ox !== b.ox;
+  let start: { x: number; y: number };
+  let end: { x: number; y: number };
+  if (sideways) {
+    const forward = b.ox > a.ox;
+    start = { x: forward ? a.ox + ISLAND : a.ox - 1, y: a.oy + Math.floor(ISLAND / 2) };
+    end = { x: forward ? b.ox - 1 : b.ox + ISLAND, y: b.oy + Math.floor(ISLAND / 2) };
+  } else {
+    const forward = b.oy > a.oy;
+    start = { x: a.ox + ISLAND - 1, y: forward ? a.oy + ISLAND : a.oy - 1 };
+    end = { x: b.ox + ISLAND - 1, y: forward ? b.oy - 1 : b.oy + ISLAND };
+  }
   const steps = Math.max(Math.abs(end.x - start.x), Math.abs(end.y - start.y));
   const seen = new Set<string>();
   for (let i = 0; i <= steps; i++) {
@@ -193,14 +202,7 @@ function bridge(from: BiomeDef, to: BiomeDef, cubes: VoxelCube[]): void {
     const key = `${x},${y}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    cubes.push({
-      x,
-      y,
-      z: 0,
-      color: BLOCKS.bois.side,
-      texture: 'planches',
-      tag: to.id,
-    });
+    cubes.push({ x, y, z: 0, color: BLOCKS.bois.side, texture: 'planches', tag: to.id, ghost: ghost || undefined });
   }
 }
 
@@ -218,10 +220,8 @@ export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x:
 
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
-export function creaturePlacements(
-  progress: Record<string, { stars: number }>,
-): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
-  return BIOMES.filter((b) => isBiomeUnlocked(b.id, progress)).map((b) => {
+export function creaturePlacements(bridges: string[]): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
+  return BIOMES.filter((b) => isBiomeUnlocked(b.id, bridges)).map((b) => {
     const { ox, oy } = islandOrigin(BIOMES.indexOf(b));
     return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + 2, y: oy + 4, z: 1 } };
   });
@@ -238,8 +238,8 @@ export function bossIsletOrigin(index: number): { x: number; y: number } {
 export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
 
 /** Le Gardien n'apparaît que lorsqu'il accepte le défi ; vaincu, il devient une statue. */
-export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>): GuardianStatus {
-  if (!isBiomeUnlocked(biome.id, progress) || !isBossUnlocked(biome, progress)) return 'hidden';
+export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[]): GuardianStatus {
+  if (!isBiomeUnlocked(biome.id, bridges) || !isBossUnlocked(biome, progress)) return 'hidden';
   return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
 }
 
@@ -254,10 +254,11 @@ function stoneOf(color: string): string {
 /** Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. */
 export function guardianPlacements(
   progress: Record<string, { stars: number }>,
+  bridges: string[],
 ): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
   BIOMES.forEach((b, index) => {
-    const status = guardianStatus(b, progress);
+    const status = guardianStatus(b, progress, bridges);
     if (status === 'hidden') return;
     const { x, y } = bossIsletOrigin(index);
     const beaten = status === 'beaten';
@@ -275,14 +276,14 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
 
 export function worldCubes(
   progress: Record<string, { stars: number }>,
-  village: Village = { placed: {}, plans: {}, journal: [] },
+  village: Village = { placed: {}, plans: {}, journal: [], bridges: [] },
   withCreatures = true,
 ): VoxelCube[] {
   const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
     const { ox, oy } = islandOrigin(index);
-    const unlocked = isBiomeUnlocked(biome.id, progress);
+    const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
     const grassy = biome.id === 'foret' || biome.id === 'ferme';
     const h = (x: number, y: number) => groundHeight(index, x, y);
@@ -305,7 +306,7 @@ export function worldCubes(
     }
     DECOR[biome.id](put, h);
     // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une plateforme de pierre sur deux couches de terre.
-    const guardian = guardianStatus(biome, progress);
+    const guardian = guardianStatus(biome, progress, village.bridges);
     if (guardian !== 'hidden') {
       const { x: gx, y: gy } = bossIsletOrigin(index);
       for (let x = 0; x < ISLET_W; x++) {
@@ -346,7 +347,11 @@ export function worldCubes(
         }
       }
     }
-    if (index > 0) bridge(BIOMES[index - 1], biome, cubes);
   });
+  // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
+  for (const def of BRIDGES) {
+    const state = bridgeState(def, village.bridges);
+    if (state !== 'far') bridge(def, cubes, state === 'buildable');
+  }
   return cubes;
 }

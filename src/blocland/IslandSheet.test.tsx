@@ -37,7 +37,9 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
 it('une île fermée montre ses quêtes verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('mine', onClose);
-  expect(document.body.textContent).toContain('Termine d’abord une quête dans Forêt');
+  expect(document.body.textContent).toContain('Construis d’abord un pont');
+  expect(screen.getByRole('button', { name: /Construire/ })).toBeDisabled();
+  expect(document.body.textContent).toContain('Pont vers Forêt des sons');
   expect(screen.getByRole('list', { name: 'Quêtes de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
   await userEvent.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -50,7 +52,7 @@ function Probe() {
 }
 
 it('le chantier présélectionne l’île demandée par « ?ile= » si elle est ouverte', () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: { 'foret-abattage': { stars: 1, attempts: 1, best: 0.5 } } }));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['foret-mine'] } }));
   render(
     <SettingsProvider>
       <ProgressProvider>

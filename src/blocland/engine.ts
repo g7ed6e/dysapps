@@ -4,6 +4,7 @@ import type { BiomeId, BlockId } from './biomes';
 import { BIOMES, BLOCKS } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
+import { bridgesFromLegacyProgress, buildBridge as buildBridgePure, getBridge, type BuildBridgeResult } from './world/archipelago';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -55,6 +56,8 @@ export interface Village {
   plans: Record<string, string[]>;
   /** Journal de construction : un bâtiment terminé par ligne, du plus ancien au plus récent. */
   journal: JournalEntry[];
+  /** Les ponts construits (identifiants de `world/archipelago.ts`) : ils ouvrent les îles. */
+  bridges: string[];
 }
 
 export interface JournalEntry {
@@ -86,7 +89,7 @@ export const EMPTY_STATE: BloclandState = {
   types: {},
   chests: 0,
   fluence: {},
-  village: { placed: {}, plans: {}, journal: [] },
+  village: { placed: {}, plans: {}, journal: [], bridges: [] },
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -206,6 +209,10 @@ export function sanitizeState(input: unknown): BloclandState {
         .map((e) => ({ day: e.day as string, plan: e.plan as string }))
         .slice(-100)
     : [];
+  // Ponts : liste d'identifiants connus ; une sauvegarde d'avant les ponts reçoit ceux des îles déjà ouvertes.
+  const bridges = Array.isArray(village.bridges)
+    ? [...new Set(village.bridges.filter((id): id is string => typeof id === 'string' && Boolean(getBridge(id))))]
+    : bridgesFromLegacyProgress(progress);
   return {
     progress,
     spaced,
@@ -214,7 +221,7 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
-    village: { placed, plans, journal },
+    village: { placed, plans, journal, bridges },
   };
 }
 
@@ -493,4 +500,11 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
     streak,
     chestBlock,
   };
+}
+
+/** Construit un pont en payant avec les blocs de l'inventaire. */
+export function buildBridge(state: BloclandState, id: string): { state: BloclandState; result: BuildBridgeResult } {
+  const result = buildBridgePure(id, state.village.bridges, state.inventory);
+  if (!result.ok) return { state, result };
+  return { state: { ...state, inventory: result.inventory, village: { ...state.village, bridges: result.bridges } }, result };
 }

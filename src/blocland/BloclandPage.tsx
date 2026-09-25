@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BIOMES, BLOCKS, isBiomeUnlocked, ofBlock } from './biomes';
+import { BIOMES, BLOCKS, ofBlock } from './biomes';
+import { buildableBridges, isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { Creature } from './Creatures';
 import { BlockIcon } from './Voxel';
@@ -43,16 +44,14 @@ export function BloclandPage() {
         <Icon name="map" /> Les biomes
       </h2>
       <ol className="biome-map">
-        {BIOMES.map((biome, i) => {
+        {BIOMES.map((biome) => {
           const block = BLOCKS[biome.block];
-          const unlocked = isBiomeUnlocked(biome.id, state.progress);
+          const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+          const bridge = unlocked ? undefined : buildableBridges(state.village.bridges, biome.id)[0];
           const owned = state.inventory[biome.block] ?? 0;
           return (
             <li key={biome.id}>
               <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
-                <span className="biome-step" aria-hidden="true">
-                  {i + 1}
-                </span>
                 <Creature biome={biome.id} className="creature-small" />
                 <span className="biome-name">{biome.name}</span>
                 <span className="biome-module">{biome.module}</span>
@@ -62,7 +61,7 @@ export function BloclandPage() {
                 </span>
                 {!unlocked && (
                   <span className="tag">
-                    <Icon name="lock" /> Termine une quête de {BIOMES[i - 1].name}
+                    <Icon name="lock" /> {bridge ? `Pont à construire : ${bridge.cost} blocs` : 'Île lointaine'}
                   </span>
                 )}
               </Link>
