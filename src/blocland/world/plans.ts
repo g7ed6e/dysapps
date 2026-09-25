@@ -58,6 +58,9 @@ import donneesTerrasse from './plans/donnees-terrasse.json';
 import phareLanterne from './plans/phare-lanterne.json';
 import phareToit from './plans/phare-toit.json';
 import phareJetee from './plans/phare-jetee.json';
+import textesLanterne from './plans/textes-lanterne.json';
+import textesToit from './plans/textes-toit.json';
+import textesCoupole from './plans/textes-coupole.json';
 
 export interface PlanCell {
   x: number;
@@ -140,6 +143,9 @@ export const PLANS: PlanDef[] = [
   phareLanterne,
   phareToit,
   phareJetee,
+  textesLanterne,
+  textesToit,
+  textesCoupole,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

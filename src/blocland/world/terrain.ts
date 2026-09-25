@@ -49,6 +49,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.marbre.side]: 'marbre',
   [BLOCKS.quartz.side]: 'quartz',
   [BLOCKS.prisme.side]: 'prisme',
+  [BLOCKS.lentille.side]: 'lentille',
   [SNOW]: 'nuage',
   [HAY]: 'or',
 };
@@ -353,6 +354,16 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     for (let z = 1; z <= 5; z++) put(9, 3, h(9, 3) + z, z === 5 ? BLOCKS.prisme.side : BLOCKS.pierre.side);
     put(9, 3, h(9, 3) + 6, BLOCKS.or.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.prisme.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  textes: (put, h) => {
+    // Une lunette d'observation sur son pied, une pile de livres (planches et parchemin), une lentille au sol.
+    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 2, BLOCKS.pierre.side);
+    for (let i = 0; i < 3; i++) put(8 + i, 4, h(8 + i, 4) + 3, i === 2 ? BLOCKS.lentille.side : TRUNK);
+    put(7, 2, h(7, 2) + 1, BLOCKS.bois.side);
+    put(7, 2, h(7, 2) + 2, BLOCKS.parchemin.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.lentille.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };

@@ -36,6 +36,8 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
   expect(isBiomeUnlocked('forge', ['plaine-volcan', 'volcan-forge'])).toBe(true);
   expect(isBiomeUnlocked('falaise', ['foret-ferme', 'ferme-falaise'])).toBe(true);
   expect(isBiomeUnlocked('phare', ['plaine-volcan', 'volcan-forge', 'forge-phare'])).toBe(true);
+  expect(isBiomeUnlocked('textes', ['foret-ferme', 'ferme-tour', 'tour-textes'])).toBe(true);
+  expect(BIOMES.length).toBe(20);
   expect(isBiomeUnlocked('donnees', ['plaine-glacier', 'glacier-marche', 'marche-donnees'])).toBe(true);
   expect(isBiomeUnlocked('cabinet', ['foret-carrefour', 'carrefour-marais', 'marais-cabinet'])).toBe(true);
   expect(isBiomeUnlocked('atelier', ['plaine-glacier', 'glacier-marche', 'marche-atelier'])).toBe(true);

@@ -1,0 +1,222 @@
+{
+  "id": "textes-figures-2",
+  "biome": "textes",
+  "type": "figures",
+  "level": 2,
+  "instruction": "Quelle figure de style ? Énumération, répétition, antithèse ou litote. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "textes-figures-2-0",
+      "prompt": "« Ce n’est pas mauvais du tout, ton gâteau. »",
+      "spoken": "« Ce n’est pas mauvais du tout, ton gâteau. »",
+      "choices": [
+        "litote",
+        "hyperbole",
+        "antithèse"
+      ],
+      "answer": "litote",
+      "hint": "On dit moins (« pas mauvais ») pour dire plus (délicieux).",
+      "explanation": "Dire moins pour suggérer plus : litote.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-1",
+      "prompt": "« Elle rit le jour, elle pleure la nuit. »",
+      "spoken": "« Elle rit le jour, elle pleure la nuit. »",
+      "choices": [
+        "antithèse",
+        "énumération",
+        "litote"
+      ],
+      "answer": "antithèse",
+      "hint": "Deux opposés : rire / pleurer, jour / nuit.",
+      "explanation": "Deux idées contraires rapprochées : antithèse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-2",
+      "prompt": "« Il a acheté du pain, du fromage, des fruits, du chocolat. »",
+      "spoken": "« Il a acheté du pain, du fromage, des fruits, du chocolat. »",
+      "choices": [
+        "énumération",
+        "répétition",
+        "métaphore"
+      ],
+      "answer": "énumération",
+      "hint": "Une liste.",
+      "explanation": "Une suite d’éléments : énumération.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-3",
+      "prompt": "« Partir, partir loin, partir vite, partir maintenant. »",
+      "spoken": "« Partir, partir loin, partir vite, partir maintenant. »",
+      "choices": [
+        "répétition",
+        "antithèse",
+        "litote"
+      ],
+      "answer": "répétition",
+      "hint": "Le même mot revient.",
+      "explanation": "« partir » répété : répétition (anaphore).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-4",
+      "prompt": "« Je ne te déteste pas. »",
+      "spoken": "« Je ne te déteste pas. »",
+      "choices": [
+        "litote",
+        "hyperbole",
+        "énumération"
+      ],
+      "answer": "litote",
+      "hint": "Négation pour dire… le contraire, en plus fort.",
+      "explanation": "« ne pas détester » pour dire « aimer » : litote.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-5",
+      "prompt": "« Ce géant minuscule me faisait rire. »",
+      "spoken": "« Ce géant minuscule me faisait rire. »",
+      "choices": [
+        "antithèse",
+        "énumération",
+        "répétition"
+      ],
+      "answer": "antithèse",
+      "hint": "Géant / minuscule : opposés.",
+      "explanation": "Deux mots opposés côte à côte : antithèse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-6",
+      "prompt": "« Des rires, des cris, des chants, des applaudissements. »",
+      "spoken": "« Des rires, des cris, des chants, des applaudissements. »",
+      "choices": [
+        "énumération",
+        "répétition",
+        "litote"
+      ],
+      "answer": "énumération",
+      "hint": "Une liste de bruits.",
+      "explanation": "Une liste : énumération.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-figures-2-7",
+      "prompt": "« Toujours plus haut, toujours plus loin, toujours plus fort. »",
+      "spoken": "« Toujours plus haut, toujours plus loin, toujours plus fort. »",
+      "choices": [
+        "répétition",
+        "antithèse",
+        "litote"
+      ],
+      "answer": "répétition",
+      "hint": "« toujours plus » revient.",
+      "explanation": "Formule répétée trois fois : répétition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Autres figures",
+          "lines": [
+            "Énumération : une liste de mots : des pommes, des poires, des prunes.",
+            "Répétition (anaphore) : le même mot en début de phrase, plusieurs fois.",
+            "Antithèse : deux idées opposées rapprochées : le jour et la nuit, rire et pleurer.",
+            "Litote : dire moins pour dire plus : ce n’est pas mauvais (= c’est très bon)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lentille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

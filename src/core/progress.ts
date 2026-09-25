@@ -1,4 +1,5 @@
 import { BIOMES } from '../blocland/biomes';
+import { PLANS } from '../blocland/world/plans';
 // Gamification : XP, niveaux et badges. Logique pure, facile à tester.
 
 export interface AppStats {
@@ -159,7 +160,8 @@ export type IconName =
   | 'crown'
   | 'hammer'
   | 'blocks'
-  | 'shield';
+  | 'shield'
+  | 'castle';
 
 export interface BadgeDef {
   id: string;
@@ -186,9 +188,23 @@ export const BADGES: BadgeDef[] = [
   { id: 'rang-legende', icon: 'crown', title: 'Légende', description: 'Atteindre le rang Légende.', earned: (p) => reached(p, 'legende') },
   { id: 'batisseur', icon: 'hammer', title: 'Bâtisseur·se', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
   { id: 'architecte', icon: 'blocks', title: 'Architecte', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
-  { id: 'village', icon: 'crown', title: 'Village reconstruit', description: 'Terminer les quinze plans du village.', earned: (p) => p.plansCompleted >= 15 },
+  {
+    id: 'village',
+    icon: 'crown',
+    title: 'Village reconstruit',
+    description: 'Terminer les quinze plans des cinq premières îles.',
+    earned: (p) => p.plansCompleted >= 15,
+  },
+  {
+    id: 'archipel-bati',
+    icon: 'castle',
+    title: 'Archipel bâti',
+    description: `Terminer les ${PLANS.length} plans de l’archipel.`,
+    earned: (p) => p.plansCompleted >= PLANS.length,
+  },
   { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
   { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
+  { id: 'dix-gardiens', icon: 'medal', title: 'Collégien·ne', description: 'Vaincre dix Gardiens.', earned: (p) => p.bossesBeaten >= 10 },
   {
     id: 'archipel',
     icon: 'crown',

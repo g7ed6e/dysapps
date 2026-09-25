@@ -1,0 +1,73 @@
+{
+  "id": "textes-coupole",
+  "biome": "textes",
+  "name": "La coupole de la lanterne",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 0,
+      "block": "escalier"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "block": "lentille"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "lentille"
+    }
+  ],
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Une coupole, une barrière, un escalier… Ma lanterne est complète : fin du chapitre, pas de l’histoire."
+}

@@ -22,6 +22,7 @@ export type TextureKind =
   | 'marbre'
   | 'quartz'
   | 'prisme'
+  | 'lentille'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -164,6 +165,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   prisme: {
     top: (x, y, r) => ((x + y) % 6 === 0 ? [255, 250, 220] : grain('#f0c95a', '#fff4c2')(x, y, r)),
     side: (x, y, r) => ((x + y) % 6 === 0 ? [255, 250, 220] : grain('#e0b842', '#f5dc8c')(x, y, r)),
+  },
+  // Lentille : verre bleuté, un cercle clair (le reflet de la lentille).
+  lentille: {
+    top: (x, y, r) => (Math.abs(Math.hypot(x - 7.5, y - 7.5) - 5) < 0.8 ? [240, 250, 255] : grain('#9cc8de', '#cfe6f2')(x, y, r)),
+    side: (x, y, r) => (Math.abs(Math.hypot(x - 7.5, y - 7.5) - 5) < 0.8 ? [230, 245, 252] : grain('#7fb2cc', '#a9d0e2')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

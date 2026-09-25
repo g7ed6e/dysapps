@@ -257,6 +257,20 @@ const DRAGON_L = fromLayers(
   { D: '#e0b842', L: '#fff4c2', E: '#f6f1e6' },
 );
 
+// Le Grand Lecteur : une haute silhouette en robe bleue, un livre ouvert devant lui, lunettes rondes.
+const LECTEUR = fromLayers(
+  [
+    ['.BBBBB.', 'BBBBBBB', '.BBBBB.', '.......'],
+    ['.BBBBB.', 'BBBBBBB', '.BBBBB.', '.......'],
+    ['LLLLLLL', '.BBBBB.', '..BBB..', '.......'],
+    ['LLLLLLL', '.BBBBB.', '..BBB..', '.......'],
+    ['..BBB..', '.BBBBB.', '..BBB..', '.......'],
+    ['..SSS..', '.SOSOS.', '..SSS..', '.......'],
+    ['..BBB..', '..BBB..', '.......', '.......'],
+  ],
+  { B: '#3a4a7a', L: '#f4f1e4', S: '#e8b98a', O: '#f6f1e6' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -277,6 +291,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   belvedere: SPHINX_M,
   donnees: COMPTABLE,
   phare: DRAGON_L,
+  textes: LECTEUR,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
