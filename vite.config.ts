@@ -3,8 +3,11 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// Le site est servi par GitHub Pages sous https://<utilisateur>.github.io/dysapps/
-const base = process.env.BASE_PATH ?? '/dysapps/';
+// Deux cibles de déploiement :
+// - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
+// - Cloudflare Workers le sert à la racine : aucune variable, base « / ».
+// BASE_PATH, s'il est défini, force un autre sous-dossier.
+const base = process.env.BASE_PATH ?? (process.env.DEPLOY_TARGET === 'github' ? '/dysapps/' : '/');
 
 // Politique de sécurité du contenu : GitHub Pages ne permet pas d'en-têtes HTTP,
 // on l'injecte donc en <meta> au build (le serveur de dev Vite a besoin de scripts inline).

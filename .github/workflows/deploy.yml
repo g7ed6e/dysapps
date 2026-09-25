@@ -37,6 +37,8 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
+          # GitHub Pages sert le site dans /<nom du dépôt>/ (Cloudflare, lui, le sert à la racine).
+          DEPLOY_TARGET: github
           BASE_PATH: /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main'
