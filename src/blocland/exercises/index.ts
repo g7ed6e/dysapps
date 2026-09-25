@@ -187,6 +187,27 @@ export function pickExercise(biome: BiomeId, type: string, level: number, progre
   return candidates.reduce((best, e) => ((progress[e.id]?.attempts ?? 0) < (progress[best.id]?.attempts ?? 0) ? e : best), candidates[0]);
 }
 
+/**
+ * Progression d'une quête, toutes variantes et tous niveaux confondus : meilleures étoiles, meilleur score,
+ * parties cumulées. `undefined` si aucune n'a été jouée. (La liste des quêtes ne doit pas afficher « Nouveau »
+ * parce que la prochaine partie tombe sur une variante ou un niveau pas encore joué.)
+ */
+export function questProgress(
+  biome: BiomeId,
+  type: string,
+  progress: Record<string, { stars: number; attempts: number; best: number }>,
+): { stars: number; attempts: number; best: number } | undefined {
+  const played = exercisesOf(biome, type)
+    .map((e) => progress[e.id])
+    .filter((p) => p !== undefined);
+  if (played.length === 0) return undefined;
+  return {
+    stars: Math.max(...played.map((p) => p.stars)),
+    attempts: played.reduce((n, p) => n + p.attempts, 0),
+    best: Math.max(...played.map((p) => p.best)),
+  };
+}
+
 export function getExercise(id: string): ExerciseDef | undefined {
   return EXERCISES.find((e) => e.id === id);
 }

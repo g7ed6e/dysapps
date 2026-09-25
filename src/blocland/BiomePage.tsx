@@ -7,7 +7,7 @@ import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
-import { pickExercise } from './exercises';
+import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { BlockIcon } from './Voxel';
@@ -47,7 +47,7 @@ export function BiomePage() {
       <ul className="grid apps">
         {biome.exercises.map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
-          const progress = def ? state.progress[def.id] : undefined;
+          const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const content = (
             <>
               <span className="app-icon">

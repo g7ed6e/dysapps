@@ -13,7 +13,7 @@ import type { PlanBuilder } from './usePlanBuilder';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { levelFor } from './engine';
-import { pickExercise } from './exercises';
+import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
 import { nextGoal } from './world/goals';
@@ -81,7 +81,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
       <ul className="island-quests" aria-label="Quêtes de l’île">
         {biome.exercises.map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
-          const progress = def ? state.progress[def.id] : undefined;
+          const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);
           const inner = (
             <>

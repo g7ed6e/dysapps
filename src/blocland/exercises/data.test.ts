@@ -1,5 +1,5 @@
 import { BIOMES, BLOCKS } from '../biomes';
-import { EXERCISES, exercisesOf, pickExercise } from './index';
+import { EXERCISES, exercisesOf, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
 import { fillTemplate } from './types';
 
@@ -182,6 +182,24 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
   expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(2);
   expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
   expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
+});
+
+it('questProgress garde la progression d’une quête quand la partie suivante tombe sur une autre variante', () => {
+  expect(questProgress('foret', 'chasse-son', {})).toBeUndefined();
+  const first = pickExercise('foret', 'chasse-son', 1)!;
+  const progress = { [first.id]: { stars: 2, attempts: 1, best: 0.8 } };
+  // La prochaine partie proposée est une autre variante, jamais jouée…
+  const next = pickExercise('foret', 'chasse-son', 1, progress)!;
+  expect(next.id).not.toBe(first.id);
+  expect(progress[next.id]).toBeUndefined();
+  // … mais la quête affiche toujours ses étoiles.
+  expect(questProgress('foret', 'chasse-son', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
+  // Toutes variantes et niveaux confondus : meilleures étoiles, meilleur score, parties cumulées.
+  const level2 = exercisesOf('foret', 'chasse-son').find((e) => e.level === 2)!;
+  const more = { ...progress, [next.id]: { stars: 1, attempts: 2, best: 0.5 }, [level2.id]: { stars: 3, attempts: 1, best: 0.95 } };
+  expect(questProgress('foret', 'chasse-son', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
+  // Les exercices d’autres quêtes ne comptent pas.
+  expect(questProgress('foret', 'rimes', more)).toBeUndefined();
 });
 
 it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
