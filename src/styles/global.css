@@ -1,20 +1,21 @@
 /* =====================================================================
-   DysApps — style « Blocland » (monde en blocs, low-poly)
+   DysApps — style « monde en blocs » (pixel, cubes, biseaux)
    Règles dys conservées : texte courant en police lisible (≥ 18 px, interlignage ≥ 1,5),
-   aligné à gauche, jamais en italique ni en capitales ; la police « affiche » ne sert
-   qu'aux titres courts, la police pixel qu'au logo et aux compteurs.
+   aligné à gauche, jamais en italique ni en capitales, toujours sur un fond uni (crème) ;
+   les textures pixel ne servent qu'aux bordures, bandeaux, boutons et fonds de page.
+   La police « affiche » ne sert qu'aux titres courts, la police pixel qu'au logo et aux compteurs.
    ===================================================================== */
 
 /* ===== Thèmes ===== */
 :root {
-  --font-family: 'Atkinson Hyperlegible', Arial, sans-serif;
+  --font-family: "Atkinson Hyperlegible", Arial, sans-serif;
   --font-size: 20px;
   --line-height: 1.7;
   --letter-spacing: 0.03em;
   --word-spacing: 0.12em;
-  --display-font: 'Archivo Black', 'Arial Black', Arial, sans-serif;
-  --shout-font: 'Archivo Black', 'Arial Black', Arial, sans-serif;
-  --pixel-font: 'Silkscreen', 'Archivo Black', monospace;
+  --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --shout-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --pixel-font: "Silkscreen", "Archivo Black", monospace;
 
   /* Thème crème (par défaut) : fond crème, encre brune, blocs de bois et de sable */
   --bg: #fbf6ea;
@@ -37,14 +38,37 @@
   --error: #b23a3a;
   --error-bg: #f7dcd6;
   --focus: #1e6fd9;
-  --topbar-bg: #3b2d20;
+  --topbar-bg: #6b4a2e;
   --topbar-text: #fbf6ea;
-  --radius: 6px;
+  --radius: 0px;
   --syl-0: #2b2118;
   --syl-1: #1d5fa8;
   color-scheme: light;
+
+  /* Biseau pixel : clair en haut à gauche, sombre en bas à droite, comme une case d'inventaire. */
+  --bevel: 4px;
+  --bevel-light: rgba(255, 255, 255, 0.65);
+  --bevel-dark: rgba(59, 45, 32, 0.22);
+  --bevel-shadow:
+    inset var(--bevel) var(--bevel) 0 var(--bevel-light),
+    inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-dark);
+  --bevel-shadow-small:
+    inset 3px 3px 0 var(--bevel-light), inset -3px -3px 0 var(--bevel-dark);
+  --stone: #c8c8c8;
+  --stone-text: #2b2118;
+  /* Textures pixel 16 × 16 générées par le code (src/styles/textures), affichées en 2 px par pixel. */
+  --tex-size: 32px;
+  --tex-page: url("./textures/creme.png");
+  --tex-dirt: url("./textures/terre.png");
+  --tex-grass: url("./textures/herbe-cote.png");
+  --tex-grass-top: url("./textures/herbe-dessus.png");
+  --tex-stone: url("./textures/pierre-claire.png");
+  --tex-rock: url("./textures/pierre.png");
+  --tex-planks: url("./textures/planches.png");
+  --tex-sand: url("./textures/sable.png");
+  --tex-gold: url("./textures/or.png");
 }
-:root[data-theme='nuit'] {
+:root[data-theme="nuit"] {
   --bg: #1f1a16;
   --grid: rgba(255, 255, 255, 0.05);
   --surface: #2b241e;
@@ -57,28 +81,47 @@
   --error: #f19a92;
   --error-bg: #472523;
   --focus: #ffd54a;
-  --topbar-bg: #14100d;
+  --topbar-bg: #4a3320;
   --syl-0: #f3ede2;
   --syl-1: #9cc9ff;
   color-scheme: dark;
+  --bevel-light: rgba(255, 255, 255, 0.14);
+  --bevel-dark: rgba(0, 0, 0, 0.45);
+  --stone: #4a4239;
+  --stone-text: #f3ede2;
+  --tex-page: url("./textures/nuit.png");
+  --tex-stone: url("./textures/pierre-sombre.png");
 }
-:root[data-theme='clair'] {
+:root[data-theme="clair"] {
   --bg: #f5f6f8;
   --grid: transparent;
-  --surface: var(--surface);
+  --surface: #ffffff;
   --shadow-color: #d5d9e0;
   --border-width: 2px;
   --shadow-offset: 3px;
   --topbar-bg: var(--surface);
   --topbar-text: #2b2118;
+  /* Thème clair : plat, sans textures ni biseaux. */
+  --bevel: 0px;
+  --bevel-shadow-small: none;
+  --stone: #e4e7ec;
+  --tex-page: none;
+  --tex-dirt: none;
+  --tex-grass: none;
+  --tex-grass-top: none;
+  --tex-stone: none;
+  --tex-rock: none;
+  --tex-planks: none;
+  --tex-sand: none;
+  --tex-gold: none;
 }
-:root[data-theme='contraste'] {
+:root[data-theme="contraste"] {
   --bg: #000000;
   --grid: transparent;
   --surface: #000000;
-  --text: var(--surface);
-  --muted: var(--surface);
-  --ink: var(--surface);
+  --text: #ffffff;
+  --muted: #ffffff;
+  --ink: #ffffff;
   --shadow-color: #ffe600;
   --yellow: #ffe600;
   --pink: #ffe600;
@@ -92,24 +135,37 @@
   --error-bg: #000000;
   --focus: #00e5ff;
   --topbar-bg: #000000;
-  --topbar-text: var(--surface);
-  --syl-0: var(--surface);
+  --topbar-text: #ffffff;
+  --syl-0: #ffffff;
   --syl-1: #ffe600;
   color-scheme: dark;
+  --bevel: 0px;
+  --bevel-shadow-small: none;
+  --stone: #000000;
+  --stone-text: #ffffff;
+  --tex-page: none;
+  --tex-dirt: none;
+  --tex-grass: none;
+  --tex-grass-top: none;
+  --tex-stone: none;
+  --tex-rock: none;
+  --tex-planks: none;
+  --tex-sand: none;
+  --tex-gold: none;
 }
 
 /* Luciole : à installer dans public/fonts/luciole/ (voir le README de ce dossier). */
 @font-face {
-  font-family: 'Luciole';
+  font-family: "Luciole";
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2');
+  src: url("/fonts/luciole/Luciole-Regular.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Luciole';
+  font-family: "Luciole";
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2');
+  src: url("/fonts/luciole/Luciole-Bold.woff2") format("woff2");
 }
 
 /* ===== Base ===== */
@@ -125,9 +181,10 @@ html {
 body {
   margin: 0;
   background-color: var(--bg);
-  /* Grille de blocs discrète : uniquement en fond, jamais derrière le texte. */
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 28px 28px;
+  /* Grain pixel très discret (deux tons de crème) : uniquement en fond, le texte reste sur des panneaux unis. */
+  background-image: var(--tex-page);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
   color: var(--text);
   font-family: var(--font-family);
   line-height: var(--line-height);
@@ -164,9 +221,9 @@ svg {
   outline: 4px solid var(--focus);
   outline-offset: 3px;
 }
-:root[data-reduce-motion='true'] *,
-:root[data-reduce-motion='true'] *::before,
-:root[data-reduce-motion='true'] *::after {
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
   animation: none !important;
   transition: none !important;
 }
@@ -200,13 +257,30 @@ svg {
   top: 1rem;
 }
 
-/* ===== Panneaux (blocs) : ombre droite vers le bas, comme la face d'un cube ===== */
+/* ===== Panneaux (blocs) : biseau pixel et ombre droite vers le bas, comme la face d'un cube ===== */
 .panel {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 1.2rem;
+}
+/* Bandeau texturé (herbe, planches, pierre…) en haut ou en bas d'un panneau : une rangée de blocs. */
+.band-top,
+.band-bottom {
+  background-repeat: repeat-x;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+}
+.band-top {
+  background-position: left top;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+}
+.band-bottom {
+  background-position: left bottom;
+  padding-bottom: calc(var(--tex-size) + 0.9rem);
 }
 .grid {
   display: grid;
@@ -222,13 +296,18 @@ svg {
   min-height: 100vh;
 }
 .topbar {
-  border-top: 5px solid var(--green);
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 1rem;
-  background: var(--topbar-bg);
+  padding: 0.8rem 1rem 0.5rem;
+  /* Une rangée d'herbe, puis de la terre : la barre est le sol du monde. */
+  background-color: var(--topbar-bg);
+  background-image: var(--tex-grass), var(--tex-dirt);
+  background-repeat: repeat-x, repeat;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
   color: var(--topbar-text);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
   border-bottom: var(--border-width) solid var(--ink);
   position: sticky;
   top: 0;
@@ -246,14 +325,20 @@ svg {
   place-items: center;
   width: 2.3rem;
   height: 2.3rem;
-  background: var(--yellow);
+  background-color: var(--green);
+  background-image: var(--tex-grass-top);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
   color: var(--on-accent);
+  text-shadow: none;
   border: 3px solid var(--ink);
   font-family: var(--pixel-font);
   font-size: 1.3rem;
   line-height: 1;
-  border-radius: 4px;
-  box-shadow: 0 4px 0 #8a5a26;
+  border-radius: var(--radius);
+  box-shadow:
+    var(--bevel-shadow-small),
+    0 4px 0 var(--ink);
 }
 .brand-name {
   font-family: var(--pixel-font);
@@ -278,16 +363,29 @@ svg {
   gap: 0.4rem;
   min-height: 48px;
   padding: 0.25rem 0.8rem;
-  border: 2px solid currentColor;
+  border: 2px solid var(--ink);
   border-radius: var(--radius);
-  color: inherit;
+  background-color: var(--stone);
+  background-image: var(--tex-stone);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  box-shadow:
+    var(--bevel-shadow-small),
+    0 3px 0 var(--ink);
+  color: var(--stone-text);
+  text-shadow: none;
   text-decoration: none;
   font-weight: 700;
 }
 .nav-button.active {
-  background: var(--yellow);
-  border-color: var(--yellow);
+  background-color: var(--green);
+  background-image: var(--tex-grass-top);
   color: var(--on-accent);
+}
+
+:root[data-theme="contraste"] .nav-button.active {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
 }
 .content {
   max-width: 60rem;
@@ -350,17 +448,37 @@ svg {
 
 /* ===== Accueil ===== */
 .hero {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background-color: var(--surface);
+  /* Le ciel en haut, une rangée d'herbe et de terre en bas : le texte reste sur fond uni. */
+  background-image:
+    var(--tex-grass),
+    linear-gradient(
+      180deg,
+      var(--cyan) 0,
+      var(--cyan) 1.1rem,
+      var(--surface) 1.1rem
+    );
+  background-repeat: repeat-x, no-repeat;
+  background-position:
+    left bottom,
+    left top;
+  background-size:
+    var(--tex-size),
+    100% 100%;
+  image-rendering: pixelated;
+  color: var(--text);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
-  padding: 1.2rem 1.4rem;
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
+  padding: 1.6rem 1.4rem calc(var(--tex-size) + 0.9rem);
   margin-bottom: 1.6rem;
 }
-:root[data-theme='clair'] .hero {
-  background: var(--surface);
-  color: var(--text);
+:root[data-theme="clair"] .hero,
+:root[data-theme="contraste"] .hero {
+  background-image: none;
+  padding: 1.2rem 1.4rem;
 }
 .hero-kicker {
   display: inline-block;
@@ -368,7 +486,7 @@ svg {
   padding: 0 0.6rem;
   background: var(--ink);
   color: var(--surface);
-  font-weight: 700;
+  font-family: var(--pixel-font);
   font-size: 0.85rem;
 }
 .hero-title {
@@ -386,29 +504,48 @@ svg {
   height: 100%;
   text-decoration: none;
   color: var(--text);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 a.subject-card:hover,
 a.app-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
 }
 a.subject-card:active,
 a.app-card:active {
   transform: translateY(3px);
-  box-shadow: 0 0 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 0 0 var(--shadow-color);
 }
 .subject-card {
-  border-top-width: 12px;
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+  border-top-width: var(--border-width);
 }
 .subject-francais {
-  border-top-color: var(--pink);
+  background-image: var(--tex-planks);
 }
 .subject-maths {
-  border-top-color: var(--cyan);
+  background-image: var(--tex-rock);
 }
-:root[data-theme='contraste'] .subject-card {
-  border-top-color: var(--ink);
+:root[data-theme="clair"] .subject-card,
+:root[data-theme="contraste"] .subject-card {
+  border-top-width: 12px;
+  padding-top: 1.2rem;
+}
+:root[data-theme="clair"] .subject-francais {
+  border-top-color: var(--pink);
+}
+:root[data-theme="clair"] .subject-maths {
+  border-top-color: var(--cyan);
 }
 .subject-icon,
 .app-icon {
@@ -417,7 +554,8 @@ a.app-card:active {
   width: 3.4rem;
   height: 3.4rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: 50%;
+  border-radius: var(--radius);
+  box-shadow: var(--bevel-shadow-small);
   margin-bottom: 0.4rem;
   color: var(--on-accent);
 }
@@ -481,33 +619,54 @@ a.app-card:active {
   padding: 0.4rem 1.3rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 4px 0 var(--shadow-color);
+  /* Bouton de pierre : texture pixel, biseau, et une face sombre en dessous. */
+  background-color: var(--stone);
+  background-image: var(--tex-stone);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  color: var(--stone-text);
+  box-shadow:
+    var(--bevel-shadow),
+    0 4px 0 var(--ink);
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    filter 0.1s ease;
 }
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 5px 0 var(--shadow-color);
+  filter: brightness(1.08);
+  box-shadow:
+    var(--bevel-shadow),
+    0 5px 0 var(--ink);
 }
 .button:active {
   transform: translateY(3px);
-  box-shadow: 0 0 0 var(--shadow-color);
+  box-shadow:
+    inset var(--bevel) var(--bevel) 0 var(--bevel-dark),
+    inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-light),
+    0 1px 0 var(--ink);
 }
 .button.primary {
-  background: var(--yellow);
+  background-color: var(--green);
+  background-image: var(--tex-grass-top);
   color: var(--on-accent);
 }
-:root[data-theme='nuit'] .button.primary,
-:root[data-theme='contraste'] .button.primary {
-  border-color: var(--yellow);
-}
 .button.danger {
+  background-color: var(--surface);
+  background-image: none;
   border-color: var(--error);
   color: var(--error);
+}
+:root[data-theme="contraste"] .button {
+  box-shadow: 0 4px 0 var(--ink);
+}
+:root[data-theme="contraste"] .button.primary {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
 }
 .actions {
   display: flex;
@@ -534,9 +693,10 @@ a.app-card:active {
   min-width: 48px;
   padding: 0.2rem 0.9rem;
   border: 2px solid var(--ink);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
+  box-shadow: var(--bevel-shadow-small);
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
@@ -544,7 +704,7 @@ a.app-card:active {
 .speak-button.compact {
   padding: 0.2rem;
 }
-.speak-button[aria-pressed='true'] {
+.speak-button[aria-pressed="true"] {
   background: var(--cyan);
   color: var(--on-accent);
 }
@@ -594,13 +754,15 @@ a.app-card:active {
   gap: 0.8rem;
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  border-radius: 18px;
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
+  border-radius: var(--radius);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 0.9rem 0.8rem 0.7rem 1rem;
 }
 /* Queue de la bulle */
 .feedback-body::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 2.2rem;
   bottom: calc(-1 * 18px);
@@ -651,7 +813,7 @@ a.app-card:active {
 }
 .tier-legende {
   background: linear-gradient(160deg, #ff8fc0, #7b3fe4);
-  color: var(--surface);
+  color: #ffffff;
 }
 .xp-info {
   flex: 1;
@@ -669,15 +831,24 @@ a.app-card:active {
   opacity: 0.75;
 }
 .xp-track {
-  height: 0.75rem;
-  border: 2px solid currentColor;
-  border-radius: 999px;
+  height: 0.85rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
+/* Barre segmentée, comme une jauge de jeu en blocs. */
 .xp-fill {
   height: 100%;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 8px, #ffb703 8px 16px);
+  background: repeating-linear-gradient(90deg, #7cc24a 0 8px, #5fa233 8px 10px);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
   transition: width 0.4s ease;
+}
+:root[data-theme="contraste"] .xp-track {
+  border-color: var(--surface);
+}
+:root[data-theme="contraste"] .xp-fill {
+  background: var(--yellow);
 }
 .xp-large .rank-shield {
   width: 4rem;
@@ -706,6 +877,7 @@ a.app-card:active {
 .stats > div {
   border: 2px solid var(--ink);
   border-radius: var(--radius);
+  box-shadow: var(--bevel-shadow-small);
   padding: 0.4rem 0.7rem;
 }
 .stats dt {
@@ -734,7 +906,9 @@ a.app-card:active {
 .badges .badge.earned {
   border-style: solid;
   color: var(--text);
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
 }
 .badge-icon {
   display: grid;
@@ -742,13 +916,18 @@ a.app-card:active {
   width: 3.2rem;
   height: 3.2rem;
   border: 2px dashed currentColor;
-  border-radius: 50%;
+  border-radius: var(--radius);
   margin-bottom: 0.4rem;
 }
 .badge.earned .badge-icon {
-  background: var(--yellow);
+  background-color: var(--yellow);
+  background-image: var(--tex-gold);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
   color: var(--on-accent);
   border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--bevel-shadow-small);
 }
 
 /* ===== Notification de succès ===== */
@@ -767,7 +946,9 @@ a.app-card:active {
   color: var(--on-accent);
   border: 3px solid var(--ink);
   border-radius: var(--radius);
-  box-shadow: 0 6px 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 6px 0 var(--ink);
   animation: slam 0.35s ease-out;
 }
 .celebration-levelup {
@@ -796,7 +977,7 @@ a.app-card:active {
   height: 3rem;
   background: var(--surface);
   border: 3px solid var(--ink);
-  border-radius: 50%;
+  border-radius: var(--radius);
 }
 @keyframes slam {
   from {
@@ -876,15 +1057,21 @@ a.app-card:active {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 4px 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 4px 0 var(--ink);
   font-size: 1.35rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .choice:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 6px 0 var(--ink);
 }
 .choice:active:not(:disabled) {
   transform: translateY(3px);
@@ -907,11 +1094,12 @@ a.app-card:active {
 }
 .joker-button {
   margin-top: 1.2rem;
-  background: var(--cyan);
+  background-color: var(--cyan);
+  background-image: none;
   color: var(--on-accent);
 }
-:root[data-theme='clair'] .joker-button {
-  background: var(--surface);
+:root[data-theme="clair"] .joker-button {
+  background-color: var(--surface);
   color: var(--text);
 }
 .resolution {
@@ -953,9 +1141,13 @@ a.app-card:active {
   align-items: center;
   gap: 0.3rem;
   padding: 0.1rem 0.9rem;
-  background: var(--yellow);
+  background-color: var(--yellow);
+  background-image: var(--tex-gold);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
   color: var(--on-accent);
   border: 2px solid var(--ink);
+  box-shadow: var(--bevel-shadow-small);
   font-weight: 700;
 }
 .loading {
@@ -999,9 +1191,27 @@ a.app-card:active {
   border-radius: var(--radius);
   cursor: pointer;
 }
+.option {
+  box-shadow: var(--bevel-shadow-small);
+}
 .option.selected {
-  box-shadow: 0 4px 0 var(--violet);
+  background-color: var(--green);
+  background-image: var(--tex-grass-top);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  color: var(--on-accent);
+  box-shadow:
+    var(--bevel-shadow-small),
+    0 4px 0 var(--ink);
   font-weight: 700;
+}
+/* Contraste élevé : la sélection est un cadre jaune épais, sans changer la couleur des pastilles de thème. */
+:root[data-theme="contraste"] .option.selected {
+  background-color: var(--surface);
+  color: var(--text);
+  outline: 4px solid var(--yellow);
+  outline-offset: -4px;
+  box-shadow: none;
 }
 .option input {
   width: 1.2rem;
@@ -1009,10 +1219,10 @@ a.app-card:active {
   accent-color: var(--violet);
 }
 .font-atkinson {
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: "Atkinson Hyperlegible", sans-serif;
 }
 .font-opendyslexic {
-  font-family: 'OpenDyslexic', sans-serif;
+  font-family: "OpenDyslexic", sans-serif;
 }
 .font-systeme {
   font-family: Verdana, Arial, sans-serif;
@@ -1028,7 +1238,7 @@ a.app-card:active {
   border-color: #d9c8b0;
 }
 .theme-swatch.theme-clair {
-  background: var(--surface);
+  background: #ffffff;
   color: var(--on-accent);
   border-color: #c7cfdb;
 }
@@ -1049,7 +1259,7 @@ a.app-card:active {
 .slider output {
   font-weight: 700;
 }
-.slider input[type='range'] {
+.slider input[type="range"] {
   width: 100%;
   min-height: 44px;
   accent-color: var(--violet);
@@ -1081,15 +1291,21 @@ a.app-card:active {
   text-align: left;
   color: var(--text);
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .level-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
 }
 .level-card:active {
   transform: translateY(3px);
-  box-shadow: 0 0 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 0 0 var(--shadow-color);
 }
 .level-number {
   display: grid;
@@ -1140,7 +1356,7 @@ a.app-card:active {
   min-height: 52px;
   padding: 0.3rem 1rem;
   border: 2px solid var(--ink);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
   font-weight: 700;
@@ -1151,7 +1367,7 @@ a.app-card:active {
 }
 .set-record {
   padding: 0 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--success-bg);
   color: var(--success);
   font-size: 0.8rem;
@@ -1183,7 +1399,7 @@ a.app-card:active {
   font-weight: 700;
 }
 /* Grille de points : groupes de 5 séparés, couleur alternée par bloc de 5 rangées. */
-.dot-array [role='img'] {
+.dot-array [role="img"] {
   display: inline-flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -1209,7 +1425,7 @@ a.app-card:active {
   margin-left: 0.6rem;
 }
 /* Boîte de 10 */
-.ten-frame [role='img'] {
+.ten-frame [role="img"] {
   display: inline-grid;
   grid-template-columns: repeat(5, 2.4rem);
   gap: 0;
@@ -1222,7 +1438,7 @@ a.app-card:active {
   place-items: center;
 }
 .ten-frame .cell.filled::after {
-  content: '';
+  content: "";
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
@@ -1245,11 +1461,11 @@ a.app-card:active {
 .number-line .jump-label {
   fill: var(--violet);
 }
-:root[data-theme='nuit'] .number-line .jump-label,
-:root[data-theme='nuit'] .number-line path {
+:root[data-theme="nuit"] .number-line .jump-label,
+:root[data-theme="nuit"] .number-line path {
   fill: var(--yellow);
 }
-:root[data-theme='nuit'] .number-line path {
+:root[data-theme="nuit"] .number-line path {
   fill: none;
   stroke: var(--yellow);
 }
@@ -1384,7 +1600,7 @@ a.app-card:active {
   max-width: 6.2rem;
   padding: 0.35rem;
   border: 2px dashed var(--ink);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .dot-group .dot {
   width: 0.9rem;
@@ -1412,7 +1628,7 @@ a.app-card:active {
 }
 /* La virgule, dessinée sur la séparation unités | dixièmes */
 .decimal-table td.comma-col:not(:empty)::after {
-  content: ',';
+  content: ",";
   position: absolute;
   right: 0.12rem;
   bottom: 0.05rem;
@@ -1475,7 +1691,7 @@ a.app-card:active {
   margin: 0;
   padding: 0.25rem 0.5rem;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: transparent;
   color: var(--text);
   text-align: left;
@@ -1530,7 +1746,7 @@ a.app-card:active {
   font-weight: 700;
 }
 .glossary dt::after {
-  content: '\00a0: ';
+  content: "\00a0: ";
 }
 .glossary dd {
   display: inline;
@@ -1582,7 +1798,9 @@ a.app-card:active {
   z-index: 15;
   background: var(--surface);
   border-top: var(--border-width) solid var(--ink);
-  box-shadow: 0 -6px 0 var(--shadow-color);
+  box-shadow:
+    inset 0 var(--bevel) 0 var(--bevel-light),
+    0 -6px 0 var(--shadow-color);
   padding: 0.6rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
   animation: sheet-up 0.2s ease-out;
 }
@@ -1735,7 +1953,7 @@ a.app-card:active {
   color: inherit;
 }
 .font-luciole {
-  font-family: 'Luciole', 'Atkinson Hyperlegible', sans-serif;
+  font-family: "Luciole", "Atkinson Hyperlegible", sans-serif;
 }
 .font-arial {
   font-family: Arial, Helvetica, sans-serif;
@@ -1773,12 +1991,21 @@ a.app-card:active {
   margin-bottom: 1.6rem;
   text-decoration: none;
   color: var(--text);
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface) 60%, color-mix(in srgb, var(--green) 22%, var(--surface)) 100%);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  background-image: var(--tex-grass);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-bottom: calc(var(--tex-size) + 0.9rem);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .adventure-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
 }
 .adventure-text {
   flex: 1 1 14rem;
@@ -1799,7 +2026,15 @@ a.app-card:active {
   color: var(--muted);
 }
 .hero-blocland {
-  background: linear-gradient(180deg, var(--cyan) 0%, color-mix(in srgb, var(--cyan) 40%, var(--surface)) 100%);
+  background-image:
+    var(--tex-grass),
+    linear-gradient(
+      180deg,
+      var(--cyan) 0,
+      var(--cyan) 2.2rem,
+      var(--surface) 2.2rem
+    );
+  padding-top: 2.6rem;
 }
 .biome-map {
   display: grid;
@@ -1819,38 +2054,92 @@ a.app-card:active {
   height: 100%;
   text-decoration: none;
   color: var(--text);
-  border-top-width: 12px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  /* Une rangée du bloc du biome en haut de la carte. */
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .biome-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
 }
-.biome-foret {
+.biome-card.biome-foret,
+.app-card.biome-foret {
+  background-image: var(--tex-grass);
+}
+.biome-card.biome-mine,
+.app-card.biome-mine {
+  background-image: var(--tex-rock);
+}
+.biome-card.biome-carriere,
+.app-card.biome-carriere {
+  background-image: var(--tex-sand);
+}
+.biome-card.biome-ferme,
+.app-card.biome-ferme {
+  background-image: var(--tex-planks);
+}
+.biome-card.biome-tour,
+.app-card.biome-tour {
+  background-image: var(--tex-gold);
+}
+.biome-card.locked {
+  background-image: var(--tex-rock);
+}
+.app-card[class*="biome-"] {
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+}
+.app-card.locked[class*="biome-"] {
+  background-image: none;
+  padding-top: 1.2rem;
+}
+:root[data-theme="clair"] .app-card[class*="biome-"],
+:root[data-theme="contraste"] .app-card[class*="biome-"] {
+  background-image: none;
+  padding-top: 1.2rem;
+}
+:root[data-theme="clair"] .biome-card,
+:root[data-theme="contraste"] .biome-card {
+  border-top-width: 12px;
+  padding-top: 1.2rem;
+}
+:root[data-theme="clair"] .biome-foret {
   border-top-color: var(--green);
 }
-.biome-mine {
+:root[data-theme="clair"] .biome-mine {
   border-top-color: #8c93a0;
 }
-.biome-carriere {
+:root[data-theme="clair"] .biome-carriere {
   border-top-color: var(--yellow);
 }
-.biome-ferme {
+:root[data-theme="clair"] .biome-ferme {
   border-top-color: #a2694a;
 }
-.biome-tour {
+:root[data-theme="clair"] .biome-tour {
   border-top-color: var(--cyan);
-}
-:root[data-theme='contraste'] .biome-card {
-  border-top-color: var(--ink);
 }
 .biome-step {
   position: absolute;
-  top: 0.6rem;
+  top: calc(var(--tex-size) + 0.6rem);
   right: 0.8rem;
   font-family: var(--pixel-font);
   font-size: 1.1rem;
   color: var(--muted);
+}
+:root[data-theme="clair"] .biome-step,
+:root[data-theme="contraste"] .biome-step {
+  top: 0.6rem;
 }
 .biome-name {
   font-family: var(--display-font);
@@ -1880,12 +2169,14 @@ a.app-card:active {
   flex: 1;
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  border-radius: 14px;
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
+  border-radius: var(--radius);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 0.7rem 1rem 0.8rem;
 }
 .creature-says::after {
-  content: '';
+  content: "";
   position: absolute;
   left: -14px;
   bottom: 1.2rem;
@@ -1942,8 +2233,8 @@ a.app-card:active {
 .star.lit svg {
   fill: #ffd54a;
 }
-:root[data-theme='contraste'] .star.lit,
-:root[data-theme='contraste'] .star.lit svg {
+:root[data-theme="contraste"] .star.lit,
+:root[data-theme="contraste"] .star.lit svg {
   color: var(--yellow);
   fill: var(--yellow);
 }
@@ -2105,10 +2396,14 @@ a.app-card:active {
   margin: 0.6rem 0 1rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  background: repeating-linear-gradient(90deg, #6b7380 0 14px, #7d8592 14px 28px);
+  background: repeating-linear-gradient(
+    90deg,
+    #6b7380 0 14px,
+    #7d8592 14px 28px
+  );
   overflow: hidden;
 }
-:root[data-theme='contraste'] .filon-lane {
+:root[data-theme="contraste"] .filon-lane {
   background: #222;
 }
 .filon-block {
@@ -2228,11 +2523,21 @@ a.app-card:active {
   margin-bottom: 1.6rem;
   text-decoration: none;
   color: var(--text);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  background-image: var(--tex-planks);
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .chantier-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
 }
 .chantier-icon {
   display: grid;
@@ -2241,7 +2546,11 @@ a.app-card:active {
   height: 3.4rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  background: var(--yellow);
+  background-color: var(--yellow);
+  background-image: var(--tex-sand);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  box-shadow: var(--bevel-shadow-small);
   color: var(--on-accent);
 }
 .inventory {
@@ -2274,10 +2583,15 @@ a.app-card:active {
   height: 2.4rem;
   margin: 0;
 }
+.palette-block {
+  box-shadow: var(--bevel-shadow-small);
+}
 .palette-block.selected {
   background: var(--yellow);
   color: var(--on-accent);
-  box-shadow: 0 4px 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow-small),
+    0 4px 0 var(--ink);
 }
 .palette-block.empty {
   opacity: 0.5;
@@ -2330,11 +2644,11 @@ a.app-card:active {
   stroke-width: 2.5;
   pointer-events: none;
 }
-:root[data-theme='contraste'] .build-grid .tile polygon {
+:root[data-theme="contraste"] .build-grid .tile polygon {
   fill: #222;
   stroke: #ffe600;
 }
-:root[data-theme='contraste'] .build-grid .tile.alt polygon {
+:root[data-theme="contraste"] .build-grid .tile.alt polygon {
   fill: #333;
 }
 .build-status {
@@ -2350,7 +2664,11 @@ a.app-card:active {
   width: 100%;
   border-radius: var(--radius);
   overflow: hidden;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cyan) 35%, var(--surface)) 0%, var(--surface) 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cyan) 35%, var(--surface)) 0%,
+    var(--surface) 100%
+  );
 }
 .voxel-canvas canvas {
   display: block;
