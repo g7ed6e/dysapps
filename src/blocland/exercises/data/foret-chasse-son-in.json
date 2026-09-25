@@ -65,7 +65,7 @@
     {
       "key": "chemin",
       "word": "chemin",
-      "image": "🛤️",
+      "image": "🚶",
       "correct": true,
       "heard": "[in]"
     },
@@ -86,7 +86,7 @@
     {
       "key": "pinceau",
       "word": "pinceau",
-      "image": "🖌️",
+      "image": "🎨",
       "correct": true,
       "heard": "[in]"
     }
