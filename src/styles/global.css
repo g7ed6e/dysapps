@@ -2903,3 +2903,62 @@ a.app-card:active {
 .pause-note {
   margin-top: 1rem;
 }
+
+/* ===== Blocland : nouveaux écrans (dictée, familles, enclos) ===== */
+.dictee-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.craft-word {
+  justify-content: center;
+  margin: 0.4rem 0 1rem;
+}
+.craft-root {
+  padding: 0 0.3em;
+  border-bottom: 4px solid var(--ink);
+}
+.enclos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+.enclos-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+}
+.enclos-row.right {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.enclos-row.wrong {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+.enclos-subject {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.enclos-pens {
+  display: flex;
+  gap: 0.6rem;
+}
+.enclos-pen {
+  min-height: 56px;
+  font-size: 1.15rem;
+}
+.enclos-pen.picked {
+  background: var(--yellow);
+  color: var(--on-accent);
+}

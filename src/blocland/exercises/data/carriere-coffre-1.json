@@ -1,0 +1,64 @@
+{
+  "id": "carriere-coffre-1",
+  "biome": "carriere",
+  "type": "coffre",
+  "level": 1,
+  "instruction": "Écoute le mot-outil, puis choisis la bonne écriture. Ces mots reviennent tout le temps : on les apprend par cœur.",
+  "items": [
+    {
+      "key": "toujours",
+      "word": "toujours",
+      "choices": ["toujours", "toujour", "toujourt"],
+      "answer": "toujours",
+      "hint": "toujours finit par un s, comme jamais et alors."
+    },
+    {
+      "key": "beaucoup",
+      "word": "beaucoup",
+      "choices": ["beaucoup", "beaucou", "bocoup"],
+      "answer": "beaucoup",
+      "hint": "beaucoup : beau, puis coup ; le p ne se prononce pas."
+    },
+    {
+      "key": "maintenant",
+      "word": "maintenant",
+      "choices": ["maintenant", "maintenan", "mintenant"],
+      "answer": "maintenant",
+      "hint": "maintenant : main, te, nant, avec un t muet à la fin."
+    },
+    {
+      "key": "longtemps",
+      "word": "longtemps",
+      "choices": ["longtemps", "lontemps", "longtemp"],
+      "answer": "longtemps",
+      "hint": "longtemps : long, puis temps, deux lettres muettes."
+    },
+    {
+      "key": "pendant",
+      "word": "pendant",
+      "choices": ["pendant", "pandant", "pendan"],
+      "answer": "pendant",
+      "hint": "pendant : pen, comme dans pendre, puis dant."
+    },
+    {
+      "key": "après",
+      "word": "après",
+      "choices": ["après", "apré", "aprés"],
+      "answer": "après",
+      "hint": "après : accent grave et un s muet."
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

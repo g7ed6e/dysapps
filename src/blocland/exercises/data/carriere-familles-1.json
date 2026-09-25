@@ -1,0 +1,76 @@
+{
+  "id": "carriere-familles-1",
+  "biome": "carriere",
+  "type": "familles",
+  "level": 1,
+  "instruction": "Lis ce que veut dire le mot, puis choisis le morceau qui le fabrique avec la racine.",
+  "items": [
+    {
+      "key": "refaire",
+      "meaning": "Faire encore une fois.",
+      "root": "faire",
+      "slot": "prefix",
+      "choices": ["re", "dé", "in"],
+      "answer": "re",
+      "word": "refaire"
+    },
+    {
+      "key": "défaire",
+      "meaning": "Le contraire de faire.",
+      "root": "faire",
+      "slot": "prefix",
+      "choices": ["dé", "re", "pré"],
+      "answer": "dé",
+      "word": "défaire"
+    },
+    {
+      "key": "impossible",
+      "meaning": "Pas possible.",
+      "root": "possible",
+      "slot": "prefix",
+      "choices": ["im", "re", "dé"],
+      "answer": "im",
+      "word": "impossible"
+    },
+    {
+      "key": "mécontent",
+      "meaning": "Pas content.",
+      "root": "content",
+      "slot": "prefix",
+      "choices": ["mé", "re", "im"],
+      "answer": "mé",
+      "word": "mécontent"
+    },
+    {
+      "key": "décoller",
+      "meaning": "Le contraire de coller.",
+      "root": "coller",
+      "slot": "prefix",
+      "choices": ["dé", "re", "in"],
+      "answer": "dé",
+      "word": "décoller"
+    },
+    {
+      "key": "prévoir",
+      "meaning": "Voir à l’avance.",
+      "root": "voir",
+      "slot": "prefix",
+      "choices": ["pré", "re", "dé"],
+      "answer": "pré",
+      "word": "prévoir"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien assemblé !",
+    "wrong": "{word} se fabrique avec {answer} : {meaning}."
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

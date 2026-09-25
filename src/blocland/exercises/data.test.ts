@@ -22,7 +22,7 @@ describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercice %s', (_, def) 
     // Les variables du message de correction existent dans les items.
     for (const v of def.feedback.wrong.matchAll(/\{(\w+)\}/g)) {
       const name = v[1];
-      const known = ['target', 'chosen', 'mined', 'missed'].includes(name) || def.items.every((i) => name in i);
+      const known = ['target', 'chosen', 'mined', 'missed', 'verb'].includes(name) || def.items.every((i) => name in i);
       expect(known, `variable {${name}} inconnue`).toBe(true);
     }
   });
@@ -89,6 +89,81 @@ it('ascension : textes de 60 à 120 mots en 3 à 5 paragraphes', () => {
   }
 });
 
+it('rimes : 4 mots par écran, 2 à 3 qui riment, pictogramme et fin entendue', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'rimes');
+  expect(defs.length).toBeGreaterThanOrEqual(3);
+  for (const def of defs) {
+    expect(def.target).toBeTruthy();
+    expect(def.items.length % 4).toBe(0);
+    for (let i = 0; i < def.items.length; i += 4) {
+      const good = def.items.slice(i, i + 4).filter((it) => it.correct).length;
+      expect(good, `${def.id} écran ${i / 4}`).toBeGreaterThanOrEqual(2);
+      expect(good).toBeLessThanOrEqual(3);
+    }
+    for (const it of def.items) {
+      expect(String(it.image).length).toBeGreaterThan(0);
+      expect(String(it.ending)).toMatch(/^\[.+\]$/);
+    }
+  }
+});
+
+it('dictées à choix (oreille, coffre) : le mot est parmi 2 ou 3 écritures différentes, avec un indice', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'oreille' || e.type === 'coffre');
+  expect(defs.length).toBeGreaterThanOrEqual(4);
+  for (const def of defs)
+    for (const it of def.items) {
+      const choices = it.choices as string[];
+      expect(choices.length).toBeGreaterThanOrEqual(2);
+      expect(choices.length).toBeLessThanOrEqual(3);
+      expect(new Set(choices).size).toBe(choices.length);
+      expect(choices).toContain(it.answer);
+      expect(it.answer).toBe(it.word);
+      expect(String(it.hint).length).toBeGreaterThan(5);
+    }
+});
+
+it('familles : le morceau choisi et la racine reconstituent le mot', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'familles');
+  expect(defs.length).toBeGreaterThanOrEqual(2);
+  for (const def of defs)
+    for (const it of def.items) {
+      expect(['prefix', 'suffix']).toContain(it.slot);
+      expect(it.slot === 'prefix' ? `${it.answer}${it.root}` : `${it.root}${it.answer}`).toBe(it.word);
+      expect(it.choices).toHaveLength(3);
+      expect(it.choices).toContain(it.answer);
+      expect(String(it.meaning).length).toBeGreaterThan(5);
+    }
+});
+
+it('enclos : 4 sujets par écran, réponse singulier ou pluriel, avec une explication', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'enclos');
+  expect(defs.length).toBeGreaterThanOrEqual(2);
+  for (const def of defs) {
+    expect(def.items.length % 4).toBe(0);
+    for (const it of def.items) {
+      expect(['singulier', 'pluriel']).toContain(it.answer);
+      expect(it.singular).not.toBe(it.plural);
+      expect(String(it.why).length).toBeGreaterThan(10);
+    }
+  }
+});
+
+it('récolte : phrase à trou, trois terminaisons, règle', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'recolte');
+  expect(defs.length).toBeGreaterThanOrEqual(2);
+  for (const def of defs)
+    for (const it of def.items) {
+      expect(String(it.prompt)).toContain('…');
+      expect(it.choices).toEqual(['é', 'er', 'ez']);
+      expect(it.choices).toContain(it.answer);
+      expect(String(it.rule).length).toBeGreaterThan(10);
+    }
+});
+
+it('plus aucun type d’exercice n’est « bientôt » : chaque type déclaré a du contenu', () => {
+  for (const biome of BIOMES) for (const x of biome.exercises) expect(exercisesOf(biome.id, x.id).length, `${biome.id}/${x.id}`).toBeGreaterThanOrEqual(1);
+});
+
 it('chaque type de chaque biome a au moins un exercice', () => {
   for (const biome of BIOMES) {
     const withContent = biome.exercises.filter((x) => exercisesOf(biome.id, x.id).length > 0);
@@ -105,5 +180,6 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
   // Niveau 2 demandé : on reste au niveau 2 ; niveau 9 : le plus haut disponible.
   expect(pickExercise('foret', 'chasse-son', 2)!.level).toBe(2);
   expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(2);
-  expect(pickExercise('foret', 'rimes', 1)).toBeUndefined();
+  expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
+  expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
 });

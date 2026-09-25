@@ -1,0 +1,86 @@
+{
+  "id": "ferme-enclos-2",
+  "biome": "ferme",
+  "type": "enclos",
+  "level": 2,
+  "instruction": "Attention aux pièges : cherche qui fait l’action, puis choisis le verbe. Puis valide.",
+  "items": [
+    {
+      "key": "paul-et-léa",
+      "subject": "Paul et Léa",
+      "singular": "joue",
+      "plural": "jouent",
+      "answer": "pluriel",
+      "why": "Paul et Léa, ça fait deux personnes : le verbe prend -nt."
+    },
+    {
+      "key": "le-chien-de-mes-voisins",
+      "subject": "Le chien de mes voisins",
+      "singular": "aboie",
+      "plural": "aboient",
+      "answer": "singulier",
+      "why": "c’est le chien qui aboie, un seul, même s’il y a plusieurs voisins."
+    },
+    {
+      "key": "elles",
+      "subject": "Elles",
+      "singular": "dort",
+      "plural": "dorment",
+      "answer": "pluriel",
+      "why": "elles, c’est plusieurs : le verbe prend -nt."
+    },
+    {
+      "key": "tout-le-monde",
+      "subject": "Tout le monde",
+      "singular": "rit",
+      "plural": "rient",
+      "answer": "singulier",
+      "why": "tout le monde se conjugue comme il, au singulier."
+    },
+    {
+      "key": "les-élèves-de-la-classe",
+      "subject": "Les élèves de la classe",
+      "singular": "écoute",
+      "plural": "écoutent",
+      "answer": "pluriel",
+      "why": "ce sont les élèves qui écoutent, plusieurs : le verbe prend -nt."
+    },
+    {
+      "key": "mon-frère",
+      "subject": "Mon frère",
+      "singular": "court",
+      "plural": "courent",
+      "answer": "singulier",
+      "why": "un seul frère (mon), donc le verbe reste au singulier."
+    },
+    {
+      "key": "le-chat-et-le-chien",
+      "subject": "Le chat et le chien",
+      "singular": "dort",
+      "plural": "dorment",
+      "answer": "pluriel",
+      "why": "le chat et le chien, ça fait deux : le verbe prend -nt."
+    },
+    {
+      "key": "il",
+      "subject": "Il",
+      "singular": "mange",
+      "plural": "mangent",
+      "answer": "singulier",
+      "why": "il, c’est une seule personne : le verbe reste au singulier."
+    }
+  ],
+  "feedback": {
+    "correct": "Tout le monde dans le bon enclos !",
+    "wrong": "{subject} : {why} Le verbe est donc « {verb} »."
+  },
+  "reward": {
+    "block": "terre",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

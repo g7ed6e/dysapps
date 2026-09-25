@@ -18,6 +18,19 @@ import trou2 from './data/carriere-mot-troue-2.json';
 import ascMousso from './data/tour-ascension-mousso.json';
 import ascTunel from './data/tour-ascension-tunel.json';
 import ascPont from './data/tour-ascension-pont.json';
+import rimesEau from './data/foret-rimes-eau.json';
+import rimesOn from './data/foret-rimes-on.json';
+import rimesEtte from './data/foret-rimes-ette.json';
+import oreille1 from './data/mine-oreille-1.json';
+import oreille2 from './data/mine-oreille-2.json';
+import coffre1 from './data/carriere-coffre-1.json';
+import coffre2 from './data/carriere-coffre-2.json';
+import familles1 from './data/carriere-familles-1.json';
+import familles2 from './data/carriere-familles-2.json';
+import enclos1 from './data/ferme-enclos-1.json';
+import enclos2 from './data/ferme-enclos-2.json';
+import recolte1 from './data/ferme-recolte-1.json';
+import recolte2 from './data/ferme-recolte-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -60,6 +73,19 @@ export const EXERCISES: ExerciseDef[] = [
   ascMousso,
   ascTunel,
   ascPont,
+  rimesEau,
+  rimesOn,
+  rimesEtte,
+  oreille1,
+  oreille2,
+  coffre1,
+  coffre2,
+  familles1,
+  familles2,
+  enclos1,
+  enclos2,
+  recolte1,
+  recolte2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

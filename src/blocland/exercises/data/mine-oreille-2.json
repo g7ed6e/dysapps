@@ -1,0 +1,70 @@
+{
+  "id": "mine-oreille-2",
+  "biome": "mine",
+  "type": "oreille",
+  "level": 2,
+  "instruction": "Écoute bien le mot dans sa phrase, puis choisis le bloc qui est écrit comme tu entends.",
+  "items": [
+    {
+      "key": "poire",
+      "word": "poire",
+      "choices": ["poire", "boire"],
+      "answer": "poire",
+      "hint": "le p souffle sans vibrer, comme dans papa.",
+      "sentence": "Une poire bien mûre."
+    },
+    {
+      "key": "goûter",
+      "word": "goûter",
+      "choices": ["goûter", "coûter"],
+      "answer": "goûter",
+      "hint": "le g vibre, comme dans gomme.",
+      "sentence": "On va goûter à quatre heures."
+    },
+    {
+      "key": "doux",
+      "word": "doux",
+      "choices": ["doux", "tout"],
+      "answer": "doux",
+      "hint": "le d vibre, comme dans doigt.",
+      "sentence": "Un chat tout doux."
+    },
+    {
+      "key": "joue",
+      "word": "joue",
+      "choices": ["joue", "chou"],
+      "answer": "joue",
+      "hint": "le j vibre, comme dans jardin.",
+      "sentence": "Elle a une joue rouge."
+    },
+    {
+      "key": "ville",
+      "word": "ville",
+      "choices": ["ville", "fille"],
+      "answer": "ville",
+      "hint": "le v vibre, comme dans vélo.",
+      "sentence": "Une grande ville."
+    },
+    {
+      "key": "gare",
+      "word": "gare",
+      "choices": ["gare", "car"],
+      "answer": "gare",
+      "hint": "le g vibre, comme dans gomme.",
+      "sentence": "Le train entre en gare."
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. C’était {word} : {hint}"
+  },
+  "reward": {
+    "block": "pierre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

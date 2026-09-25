@@ -1,0 +1,79 @@
+{
+  "id": "foret-rimes-on",
+  "biome": "foret",
+  "type": "rimes",
+  "level": 1,
+  "target": "ballon",
+  "instruction": "Tape les mots qui riment avec ballon, comme dans la chanson. Puis valide.",
+  "items": [
+    {
+      "key": "pantalon",
+      "word": "pantalon",
+      "image": "👖",
+      "correct": true,
+      "ending": "[on]"
+    },
+    {
+      "key": "mouton",
+      "word": "mouton",
+      "image": "🐑",
+      "correct": true,
+      "ending": "[on]"
+    },
+    {
+      "key": "tortue",
+      "word": "tortue",
+      "image": "🐢",
+      "correct": false,
+      "ending": "[u]"
+    },
+    {
+      "key": "fleur",
+      "word": "fleur",
+      "image": "🌸",
+      "correct": false,
+      "ending": "[eur]"
+    },
+    {
+      "key": "bouton",
+      "word": "bouton",
+      "image": "🔘",
+      "correct": true,
+      "ending": "[on]"
+    },
+    {
+      "key": "chat",
+      "word": "chat",
+      "image": "🐱",
+      "correct": false,
+      "ending": "[a]"
+    },
+    {
+      "key": "poisson",
+      "word": "poisson",
+      "image": "🐟",
+      "correct": true,
+      "ending": "[on]"
+    },
+    {
+      "key": "cochon",
+      "word": "cochon",
+      "image": "🐷",
+      "correct": true,
+      "ending": "[on]"
+    }
+  ],
+  "feedback": {
+    "correct": "Ça rime !",
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
