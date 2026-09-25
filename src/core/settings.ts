@@ -29,8 +29,7 @@ export const MIN_FONT_SIZE = 18;
 export const MIN_LINE_HEIGHT = 1.5;
 
 export const DEFAULT_SETTINGS: Settings = {
-  // Luciole est la police recommandée : elle devient le défaut dès que ses fichiers sont installés (voir README).
-  font: 'atkinson',
+  font: 'luciole',
   fontSize: 20,
   lineHeight: 1.7,
   letterSpacing: 0.03,
@@ -108,15 +107,4 @@ export function applySettings(settings: Settings, root: HTMLElement = document.d
   root.style.setProperty('--line-height', String(settings.lineHeight));
   root.style.setProperty('--letter-spacing', `${settings.letterSpacing}em`);
   root.style.setProperty('--word-spacing', `${settings.wordSpacing}em`);
-}
-
-/** Vérifie si une police est réellement chargée (Luciole doit être installée à la main). */
-export async function isFontAvailable(family: string): Promise<boolean> {
-  if (typeof document === 'undefined' || !('fonts' in document)) return false;
-  try {
-    const faces = await document.fonts.load(`18px '${family}'`);
-    return faces.length > 0;
-  } catch {
-    return false;
-  }
 }
