@@ -2776,21 +2776,31 @@ a.app-card:active {
     height: 8rem;
   }
 }
-.map3d {
+.world {
   margin-bottom: 1.4rem;
 }
-.voxel-canvas-map {
+.voxel-canvas-world {
   aspect-ratio: 16 / 9;
-  max-height: 30rem;
+  max-height: 32rem;
   border: var(--border-width) solid var(--ink);
   box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
 }
-.map3d .view-note {
+.world-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.world-nav .button {
+  min-height: 48px;
+  padding: 0.2rem 0.9rem;
+}
+.world .view-note {
   display: block;
   margin-top: 0.5rem;
 }
 @media (max-width: 640px) {
-  .voxel-canvas-map {
+  .voxel-canvas-world {
     aspect-ratio: 4 / 3;
   }
 }

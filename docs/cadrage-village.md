@@ -78,7 +78,7 @@ Le reste (`inventory`, `streak`, `chests`, `progress`) ne change pas. `sanitizeS
 
 Chaque PR est livrable seule, testée, avec la vue simple qui suit.
 
-1. **Le monde continu** — les cinq îles praticables dans une seule scène (instanciation, faces cachées supprimées, eau, relief léger), caméra libre avec limites, boutons « Aller à… » et « Vue d'ensemble », remplacement de la carte 3D actuelle par cette scène.
+1. ✅ **Le monde continu** — les cinq îles praticables dans une seule scène (instanciation, faces cachées supprimées, eau, relief léger), caméra libre avec limites, boutons « Aller à… » et « Vue d'ensemble », remplacement de la carte 3D actuelle par cette scène.
 2. **Poser dans le monde** — inventaire en HUD, pose sur la face touchée, retrait (appui long + bouton), zone libre par île, retour des anciens blocs dans l'inventaire, sons de pose et retrait, vue simple équivalente.
 3. **Les plans** — format JSON, fantômes, validation par type de bloc, avancement, premier plan par île, récompense (XP, coffre, succès), consignes lues à voix haute.
 4. **Le monde qui vit** — jour et nuit selon l'heure réelle, nuages, eau animée, créatures qui se promènent et parlent, particules, ambiance sonore en option, tout coupé par « réduire les animations ».
