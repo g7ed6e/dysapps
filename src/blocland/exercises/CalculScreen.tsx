@@ -42,7 +42,7 @@ export function CalculScreen({ items, answered, onAnswer, onHelp }: ScreenProps)
           <Aid aid={aid} />
         </div>
       )}
-      <div className="choices short" role="group" aria-label="Réponses possibles">
+      <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
         {choices.map((choice) => {
           const isAnswer = answered && choice === answer;
           const isWrong = answered && chosen === choice && choice !== answer;

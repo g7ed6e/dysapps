@@ -48,6 +48,7 @@ it('place les îles selon l’archipel : la Forêt au centre, une rangée devant
   expect(at('plaine').ox).toBe(at('foret').ox);
   expect(at('plaine').oy).toBe(-(ISLAND + ROW_GAP));
   expect(at('plaine').oy + ISLAND).toBeLessThan(bossIsletOrigin(0).y);
+  expect(at('riviere')).toEqual({ ox: at('mine').ox, oy: at('plaine').oy });
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
@@ -75,7 +76,9 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   const a = islandOrigin(0);
   const b = islandOrigin(1);
   const [left, right] = a.ox < b.ox ? [a, b] : [b, a];
-  const between = (c: { x: number; z: number }) => c.z === 0 && c.x >= left.ox + ISLAND && c.x < right.ox;
+  // Sur la rangée de la Forêt seulement (la rangée des maths a ses propres ponts).
+  const between = (c: { x: number; y: number; z: number }) =>
+    c.z === 0 && c.x >= left.ox + ISLAND && c.x < right.ox && c.y >= left.oy && c.y < left.oy + ISLAND;
   // Forêt–Mine : constructible dès le début, donc en fantôme ; construit, en planches.
   const ghost = worldCubes({}).filter(between);
   expect(ghost.length).toBeGreaterThanOrEqual(GAP);
@@ -86,7 +89,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube.
   const m = islandOrigin(BIOMES.findIndex((x) => x.id === 'mine'));
   const q = islandOrigin(BIOMES.findIndex((x) => x.id === 'carriere'));
-  const far = (c: { x: number; z: number }) => c.z === 0 && c.x >= m.ox + ISLAND && c.x < q.ox;
+  const far = (c: { x: number; y: number; z: number }) => c.z === 0 && c.x >= m.ox + ISLAND && c.x < q.ox && c.y >= m.oy && c.y < m.oy + ISLAND;
   expect(worldCubes({}).filter(far)).toHaveLength(0);
   expect(worldCubes({}, village(['foret-mine'])).filter(far).length).toBeGreaterThanOrEqual(GAP);
   const cubes = worldCubes({});
