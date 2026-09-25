@@ -94,6 +94,15 @@ const NENU = fromLayers(
   { V: '#4f9e3f', v: '#c8e6a0', Y: '#f5d63d' },
 );
 
+// Lavi : une salamandre orange à taches jaunes, longue queue, deux yeux noirs.
+const LAVI = fromLayers(
+  [
+    ['.OOO.', 'OOOOO', 'OYOYO', 'OOOOO', '.OOO.', '..O..', '..O..'],
+    ['.EOE.', '.OYO.', '.OOO.', '.....', '.....', '.....', '.....'],
+  ],
+  { O: '#e8742e', Y: '#f5d63d', E: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -102,6 +111,7 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   tour: GRIMOIRE,
   plaine: COCO,
   riviere: NENU,
+  volcan: LAVI,
 };
 
 interface Props {

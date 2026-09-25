@@ -69,6 +69,7 @@
   --tex-gold: url("./textures/or.png");
   --tex-brick: url("./textures/brique.png");
   --tex-pebble: url("./textures/galet.png");
+  --tex-obsidian: url("./textures/obsidienne.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -117,6 +118,7 @@
   --tex-sand: none;
   --tex-brick: none;
   --tex-pebble: none;
+  --tex-obsidian: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2202,6 +2204,10 @@ a.app-card:active {
 .app-card.biome-riviere {
   background-image: var(--tex-pebble);
 }
+.biome-card.biome-volcan,
+.app-card.biome-volcan {
+  background-image: var(--tex-obsidian);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2246,6 +2252,9 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-riviere {
   border-top-color: #7f96ad;
+}
+:root[data-theme="clair"] .biome-volcan {
+  border-top-color: #4a3d5c;
 }
 .biome-step {
   position: absolute;
@@ -3351,6 +3360,9 @@ a.app-card:active {
 }
 .island-sheet.biome-riviere {
   background-image: var(--tex-pebble);
+}
+.island-sheet.biome-volcan {
+  background-image: var(--tex-obsidian);
 }
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {

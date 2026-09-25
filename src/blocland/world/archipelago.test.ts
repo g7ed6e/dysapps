@@ -31,14 +31,15 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
     buildableBridges([])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['foret-ferme', 'foret-mine', 'plaine-riviere']);
+  ).toEqual(['foret-ferme', 'foret-mine', 'plaine-riviere', 'plaine-volcan']);
+  expect(isBiomeUnlocked('volcan', ['foret-ferme', 'ferme-volcan'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
   expect(isBiomeUnlocked('riviere', ['plaine-riviere'])).toBe(true);
   expect(isBiomeUnlocked('riviere', ['foret-mine', 'mine-riviere'])).toBe(true);
   expect(bridgeState(BRIDGES[2], [])).toBe('far');
   expect(isBiomeUnlocked('ferme', ['foret-ferme'])).toBe(true);
   expect(isBiomeUnlocked('tour', ['foret-ferme'])).toBe(false);
-  expect(buildableBridges(['foret-ferme'], 'ferme').map((b) => b.id)).toEqual(['ferme-tour']);
+  expect(buildableBridges(['foret-ferme'], 'ferme').map((b) => b.id).sort()).toEqual(['ferme-tour', 'ferme-volcan']);
   // Un pont construit sans chemin jusqu'à lui n'ouvre rien.
   expect(isBiomeUnlocked('tour', ['ferme-tour'])).toBe(false);
 });
