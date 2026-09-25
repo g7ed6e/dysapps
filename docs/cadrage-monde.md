@@ -68,7 +68,11 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Quand on ouvre une autre île ouverte, il **marche** jusqu'à elle le long des ouvrages construits (`avatarRoute()` : plus court chemin en nombre d'ouvrages, sur le tablier des ponts, sur le sol des sentiers), à six cases par seconde, quatre secondes au plus. Vers une île fermée, il reste où il est. Avec « réduire les animations », il apparaît directement à l'arrivée.
 - On voit ainsi d'un coup d'œil, même dans la vue d'ensemble, jusqu'où on est arrivé.
 
-## 11. À venir
+## 11. Des baleines (PR 9)
+
+- Trois **baleines** bleu ardoise (`whaleSpots()` dans `terrain.ts` pour leurs ronds au large, hors de toute terre ; le reste dans `WorldCanvas.tsx`) tournent lentement dans la mer, montent et descendent, et **soufflent** quand elles font surface, la queue qui bat. Immobiles avec « réduire les animations ».
+
+## 12. À venir
 
 
-- Des baleines au large.
+- Rien pour l'instant : jouer, écouter les retours des enfants.
