@@ -1,0 +1,73 @@
+{
+  "id": "glacier-patinoire",
+  "biome": "glacier",
+  "name": "La patinoire de l’igloo",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 0,
+      "block": "escalier"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "block": "glace"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "glace"
+    }
+  ],
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant."
+}

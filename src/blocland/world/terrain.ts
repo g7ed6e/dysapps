@@ -22,6 +22,7 @@ const LEAF = '#4e8f36';
 const GRASS = '#6cb33f';
 const DARK = '#3b2d20';
 const HAY = '#e8c66f';
+const SNOW = '#f4f8fb';
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
 const TEXTURES: Record<string, string> = {
@@ -37,6 +38,9 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.brique.side]: 'brique',
   [BLOCKS.galet.side]: 'galet',
   [BLOCKS.obsidienne.side]: 'obsidienne',
+  [BLOCKS.glace.side]: 'glace',
+  [BLOCKS.toile.side]: 'toile',
+  [SNOW]: 'nuage',
   [HAY]: 'or',
 };
 
@@ -214,6 +218,37 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(1, 10, h(1, 10) + 1, BLOCKS.obsidienne.side);
     put(1, 10, h(1, 10) + 2, BLOCKS.obsidienne.side);
   },
+  glacier: (put, h) => {
+    // Des congères de neige et une stalagmite de glace ; un thermomètre de blocs (froid en bas, chaud en haut).
+    for (const [x, y] of [
+      [8, 2],
+      [9, 2],
+      [8, 3],
+      [10, 5],
+    ] as const)
+      put(x, y, h(x, y) + 1, SNOW);
+    for (let z = 1; z <= 4; z++) put(10, 3, h(10, 3) + z, z <= 2 ? BLOCKS.glace.side : z === 3 ? BLOCKS.verre.side : HAY);
+    put(3, 9, h(3, 9) + 1, SNOW);
+    put(1, 10, h(1, 10) + 1, BLOCKS.glace.side);
+    put(1, 10, h(1, 10) + 2, BLOCKS.glace.side);
+  },
+  marche: (put, h) => {
+    // Un étal à auvent de toile sur des poteaux, des caisses.
+    for (const [x, y] of [
+      [7, 2],
+      [10, 2],
+      [7, 5],
+      [10, 5],
+    ] as const) {
+      put(x, y, h(x, y) + 1, TRUNK);
+      put(x, y, h(x, y) + 2, TRUNK);
+    }
+    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 3, BLOCKS.toile.side);
+    put(8, 3, h(8, 3) + 1, BLOCKS.bois.side);
+    put(9, 4, h(9, 4) + 1, BLOCKS.bois.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.bois.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.toile.side);
+  },
 };
 
 /**
@@ -328,7 +363,7 @@ export function worldCubes(
     const { ox, oy } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
     const block = BLOCKS[biome.block];
-    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere';
+    const grassy = biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche';
     const h = (x: number, y: number) => groundHeight(index, x, y);
     const put: Put = (x, y, z, color) =>
       cubes.push({

@@ -11,6 +11,8 @@ export type TextureKind =
   | 'brique'
   | 'galet'
   | 'obsidienne'
+  | 'glace'
+  | 'toile'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -88,6 +90,16 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   obsidienne: {
     top: (x, y, r) => (r() < 0.08 ? [140, 120, 170] : grain('#2e2538', '#4a3d5c')(x, y, r)),
     side: (x, y, r) => (r() < 0.08 ? [140, 120, 170] : grain('#241c2c', '#3d3150')(x, y, r)),
+  },
+  // Glace : bleu très pâle, fissures claires en diagonale.
+  glace: {
+    top: (x, y, r) => ((x + y) % 7 === 0 ? [245, 252, 255] : grain('#b6e0ee', '#dff4fb')(x, y, r)),
+    side: (x, y, r) => ((x + y) % 7 === 0 ? [245, 252, 255] : grain('#a5d3e4', '#cdeaf4')(x, y, r)),
+  },
+  // Toile : rayures rouges et écrues d'un auvent de marché.
+  toile: {
+    top: (x, y, r) => (Math.floor(x / 4) % 2 === 0 ? grain('#c9463f', '#d9574f')(x, y, r) : grain('#e9d9b8', '#f4e8cc')(x, y, r)),
+    side: (x, y, r) => (Math.floor(x / 4) % 2 === 0 ? grain('#b83d37', '#c9463f')(x, y, r) : grain('#dccba8', '#e9d9b8')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

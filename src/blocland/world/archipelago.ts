@@ -3,7 +3,7 @@
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 
-/** Colonne et rangée de chaque île. Rangée 0 : le français, la Forêt au centre ; rangée 1 (devant) : les maths. */
+/** Colonne et rangée de chaque île. Rangée 0 : le français 6e, la Forêt au centre ; rangée 1 : les maths 6e ; rangée 2 : les maths du cycle 4 (devant) ; rangée −1 : le français du cycle 4 (derrière). */
 export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
   carriere: { col: 0, row: 0 },
   mine: { col: 1, row: 0 },
@@ -13,6 +13,8 @@ export const ISLAND_POS: Record<BiomeId, { col: number; row: number }> = {
   plaine: { col: 2, row: 1 },
   riviere: { col: 1, row: 1 },
   volcan: { col: 3, row: 1 },
+  glacier: { col: 2, row: 2 },
+  marche: { col: 1, row: 2 },
 };
 
 /** Les îles ouvertes dès le début : une de français, une de maths. Le pont entre elles est déjà là. */
@@ -37,10 +39,14 @@ export const BRIDGES: BridgeDef[] = [
   { id: 'mine-riviere', from: 'mine', to: 'riviere', cost: 4 },
   { id: 'plaine-volcan', from: 'plaine', to: 'volcan', cost: 3 },
   { id: 'ferme-volcan', from: 'ferme', to: 'volcan', cost: 4 },
+  // Cycle 4 : coûts plus élevés, les blocs des nouvelles îles servent.
+  { id: 'plaine-glacier', from: 'plaine', to: 'glacier', cost: 6 },
+  { id: 'riviere-marche', from: 'riviere', to: 'marche', cost: 6 },
+  { id: 'glacier-marche', from: 'glacier', to: 'marche', cost: 6 },
 ];
 
 /** Les blocs qui servent à payer un pont : ceux des îles (et les coffres), jamais les kits de finition des plans. */
-export const BRIDGE_BLOCKS: BlockId[] = ['bois', 'pierre', 'sable', 'terre', 'verre', 'brique', 'galet', 'obsidienne', 'or', 'cristal'];
+export const BRIDGE_BLOCKS: BlockId[] = ['bois', 'pierre', 'sable', 'terre', 'verre', 'brique', 'galet', 'obsidienne', 'glace', 'toile', 'or', 'cristal'];
 
 export function getBridge(id: string): BridgeDef | undefined {
   return BRIDGES.find((b) => b.id === id);

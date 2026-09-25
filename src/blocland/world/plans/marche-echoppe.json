@@ -1,0 +1,117 @@
+{
+  "id": "marche-echoppe",
+  "biome": "marche",
+  "name": "L’échoppe de Bazar",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "toile"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "toile"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "toile"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "galet": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Mon échoppe ! Merci, bâtisseur·se. Cent pour cent debout, prix d’ami."
+}

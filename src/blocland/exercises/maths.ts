@@ -6,6 +6,7 @@ import type { Question } from '../../components/QuizSession';
 import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from '../../components/math/FractionFigures';
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
+import { NumberLineInt, RatioTable, RuleCard } from './Aids';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
 import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
 import { compare as compareFractions, equivalent, ofQuantity, onLine as fractionOnLine, readFraction } from '../../apps/fractions/generators';
@@ -30,6 +31,9 @@ export const AID_COMPONENTS: Record<string, (props: never) => ReactNode> = {
   'graduated-line': GraduatedLine,
   'dot-groups': DotGroups,
   'decimal-table': DecimalTable,
+  'number-line': NumberLineInt,
+  'ratio-table': RatioTable,
+  'rule-card': RuleCard,
 };
 
 /** Un élément React (aide d'un générateur) → sa description en données. */

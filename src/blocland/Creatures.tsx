@@ -103,6 +103,29 @@ const LAVI = fromLayers(
   { O: '#e8742e', Y: '#f5d63d', E: '#1f1a16' },
 );
 
+// Frimas : un pingouin dodu, dos noir, ventre blanc, bec et pattes orange.
+const FRIMAS = fromLayers(
+  [
+    ['.OOO.', '.....', '.....', '.....'],
+    ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.'],
+    ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.'],
+    ['.KKK.', 'KKKKK', '.KKK.', '.....'],
+    ['.EKE.', '..O..', '.....', '.....'],
+  ],
+  { O: '#f28c28', W: '#f6f1e6', K: '#1f1a16', E: '#f6f1e6' },
+);
+
+// Bazar : un raton laveur gris, masque noir sur les yeux, queue rayée.
+const BAZAR = fromLayers(
+  [
+    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.', '..T..', '..t..', '..T..'],
+    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.', '.....', '.....', '.....'],
+    ['G.G.G', '.KKK.', '.GGG.', '.....', '.....', '.....', '.....'],
+    ['.....', '.EKE.', '.....', '.....', '.....', '.....', '.....'],
+  ],
+  { G: '#8c8c8c', K: '#1f1a16', E: '#f6f1e6', T: '#1f1a16', t: '#c2c2c2' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -112,6 +135,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   plaine: COCO,
   riviere: NENU,
   volcan: LAVI,
+  glacier: FRIMAS,
+  marche: BAZAR,
 };
 
 interface Props {
