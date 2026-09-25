@@ -70,7 +70,7 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 
 ## 11. Des baleines (PR 9)
 
-- Trois **baleines** bleu ardoise (`whaleSpots()` dans `terrain.ts` pour leurs ronds au large, hors de toute terre ; le reste dans `WorldCanvas.tsx`) tournent lentement dans la mer, montent et descendent, et **soufflent** quand elles font surface, la queue qui bat. Immobiles avec « réduire les animations ».
+- Trois **baleines** bleu ardoise (`whaleSpots()` dans `terrain.ts` choisit les trois plus larges clairières d'eau entre les îles, visibles depuis la vue d'ensemble, à distance de toute terre et de tout îlot ; le reste dans `WorldCanvas.tsx`) tournent lentement dans la mer, montent et descendent, et **soufflent** quand elles font surface, la queue qui bat. Immobiles avec « réduire les animations ».
 
 ## 12. À venir
 

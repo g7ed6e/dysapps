@@ -855,16 +855,37 @@ function cascades(def: IslandDef, scenery: LandCell[], put: (x: number, y: numbe
   put(edge.x + 2 * out[0], edge.y + 2 * out[1], -def.altitude, SNOW);
 }
 
-/** Où nagent les baleines : trois ronds au large, hors de toute terre (centre et rayon, coordonnées de grille). */
+/**
+ * Où nagent les baleines : trois ronds dans les plus larges clairières d'eau entre les îles (visibles depuis la vue
+ * d'ensemble), assez loin de toute terre et de tout îlot pour ne jamais les toucher. Centre et rayon, en grille.
+ */
 export function whaleSpots(): { x: number; y: number; r: number }[] {
+  const land: { x: number; y: number }[] = [];
+  MAP.forEach((def, i) => {
+    for (const c of landCells(def)) land.push(c);
+    const o = bossIsletOrigin(i);
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.push({ x: o.x + x, y: o.y + y });
+  });
   const b = worldBounds();
-  const cx = (b.minX + b.maxX) / 2;
-  const cy = (b.minY + b.maxY) / 2;
-  return [
-    { x: b.minX - 14, y: cy + 6, r: 7 },
-    { x: b.maxX + 16, y: cy - 12, r: 8 },
-    { x: cx + 10, y: b.maxY + 16, r: 7 },
-  ];
+  const clearance = (x: number, y: number) => {
+    let best = Infinity;
+    for (const c of land) {
+      const d = Math.hypot(c.x - x, c.y - y);
+      if (d < best) best = d;
+    }
+    return best;
+  };
+  const candidates: { x: number; y: number; r: number }[] = [];
+  for (let x = b.minX + 8; x <= b.maxX - 8; x += 3) for (let y = b.minY + 8; y <= b.maxY - 8; y += 3) candidates.push({ x, y, r: clearance(x, y) - 3 });
+  candidates.sort((p, q) => q.r - p.r);
+  const spots: { x: number; y: number; r: number }[] = [];
+  for (const c of candidates) {
+    if (c.r < 4) break;
+    if (spots.some((s) => Math.hypot(s.x - c.x, s.y - c.y) < s.r + c.r + 20)) continue;
+    spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
+    if (spots.length === 3) break;
+  }
+  return spots;
 }
 
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */
