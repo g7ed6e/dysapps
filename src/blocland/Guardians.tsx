@@ -191,6 +191,32 @@ const GOLEM_EQ = fromLayers(
   { C: '#dcd6c0', E: '#3b82f6' },
 );
 
+// Le Bélier de granit : massif, gris rose, grandes cornes enroulées.
+const BELIER = fromLayers(
+  [
+    ['.G.G.G.', '.......', '.G.G.G.', '.......'],
+    ['GGGGGGG', 'GGGGGGG', 'GGGGGGG', '.......'],
+    ['GGGGGGG', 'GgggggG', 'GGGGGGG', '.......'],
+    ['.GGGGG.', 'GGGGGGG', '.GGGGG.', '.......'],
+    ['C.GEG.C', 'CCGGGCC', '.......', '.......'],
+    ['CC...CC', '.......', '.......', '.......'],
+  ],
+  { G: '#8c8088', g: '#b3a8ae', C: '#5c5460', E: '#f5d63d' },
+);
+
+// Le Hibou lexicographe : grand hibou brun, lunettes rondes, un livre sous l'aile.
+const HIBOU = fromLayers(
+  [
+    ['..BBB..', '.BBBBB.', '..BBB..', '.......'],
+    ['.BBBBB.', 'BBLLLBB', '.BBBBB.', '.......'],
+    ['BBBBBBB', 'BBbbbBB', 'BBBBBBB', '.......'],
+    ['.BBBBB.', 'BBBBBBB', '.BBBBB.', '.......'],
+    ['.BBBBB.', 'BOBYBOB', '.BBBBB.', '.......'],
+    ['B.BBB.B', '..BBB..', '.......', '.......'],
+  ],
+  { B: '#6e4a2e', b: '#a8825a', L: '#e8d8a8', O: '#f6f1e6', Y: '#f5d63d' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -206,6 +232,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   marais: HYDRE,
   forge: TITAN,
   atelier: GOLEM_EQ,
+  falaise: BELIER,
+  cabinet: HIBOU,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

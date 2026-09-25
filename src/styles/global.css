@@ -76,6 +76,8 @@
   --tex-peat: url("./textures/tourbe.png");
   --tex-steel: url("./textures/acier.png");
   --tex-paper: url("./textures/calque.png");
+  --tex-slate: url("./textures/ardoise.png");
+  --tex-scroll: url("./textures/parchemin.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -131,6 +133,8 @@
   --tex-peat: none;
   --tex-steel: none;
   --tex-paper: none;
+  --tex-slate: none;
+  --tex-scroll: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2244,6 +2248,14 @@ a.app-card:active {
 .app-card.biome-atelier {
   background-image: var(--tex-paper);
 }
+.biome-card.biome-falaise,
+.app-card.biome-falaise {
+  background-image: var(--tex-slate);
+}
+.biome-card.biome-cabinet,
+.app-card.biome-cabinet {
+  background-image: var(--tex-scroll);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2309,6 +2321,12 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-atelier {
   border-top-color: #96b4dc;
+}
+:root[data-theme="clair"] .biome-falaise {
+  border-top-color: #5c6470;
+}
+:root[data-theme="clair"] .biome-cabinet {
+  border-top-color: #cdb97f;
 }
 .biome-step {
   position: absolute;
@@ -3435,6 +3453,12 @@ a.app-card:active {
 }
 .island-sheet.biome-atelier {
   background-image: var(--tex-paper);
+}
+.island-sheet.biome-falaise {
+  background-image: var(--tex-slate);
+}
+.island-sheet.biome-cabinet {
+  background-image: var(--tex-scroll);
 }
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {

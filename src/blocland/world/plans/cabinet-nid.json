@@ -1,0 +1,117 @@
+{
+  "id": "cabinet-nid",
+  "biome": "cabinet",
+  "name": "Le nid de Plume",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "parchemin"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "parchemin"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "calque": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Mon nid ! Merci, bâtisseur·se. Cent parchemins roulés, un mot par parchemin."
+}

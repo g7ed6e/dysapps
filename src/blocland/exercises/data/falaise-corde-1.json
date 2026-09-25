@@ -1,0 +1,214 @@
+{
+  "id": "falaise-corde-1",
+  "biome": "falaise",
+  "type": "corde",
+  "level": 1,
+  "instruction": "Accorde le participe passé : avec être, il suit le sujet ; avec avoir, il ne bouge pas. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-corde-1-0",
+      "prompt": "Les filles sont … à la piscine.",
+      "spoken": "Les filles sont  (mot manquant)  à la piscine.",
+      "choices": [
+        "allées",
+        "allé",
+        "allés"
+      ],
+      "answer": "allées",
+      "hint": "Avec être : accord avec le sujet « les filles » (féminin pluriel).",
+      "explanation": "Être + sujet féminin pluriel : « allées ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-1",
+      "prompt": "Ils ont … toute la pizza.",
+      "spoken": "Ils ont  (mot manquant)  toute la pizza.",
+      "choices": [
+        "mangé",
+        "mangés",
+        "mangée"
+      ],
+      "answer": "mangé",
+      "hint": "Avec avoir, pas d’accord avec le sujet.",
+      "explanation": "Avoir : le participe reste « mangé ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-2",
+      "prompt": "Ma sœur est … en retard.",
+      "spoken": "Ma sœur est  (mot manquant)  en retard.",
+      "choices": [
+        "arrivée",
+        "arrivé",
+        "arrivés"
+      ],
+      "answer": "arrivée",
+      "hint": "Être + « ma sœur » (féminin singulier).",
+      "explanation": "Être + sujet féminin singulier : « arrivée ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-3",
+      "prompt": "Nous avons … un film.",
+      "spoken": "Nous avons  (mot manquant)  un film.",
+      "choices": [
+        "regardé",
+        "regardés",
+        "regardées"
+      ],
+      "answer": "regardé",
+      "hint": "Avec avoir, pas d’accord.",
+      "explanation": "Avoir : « regardé » ne change pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-4",
+      "prompt": "Les garçons sont … tôt.",
+      "spoken": "Les garçons sont  (mot manquant)  tôt.",
+      "choices": [
+        "partis",
+        "parti",
+        "parties"
+      ],
+      "answer": "partis",
+      "hint": "Être + « les garçons » (masculin pluriel).",
+      "explanation": "Être + sujet masculin pluriel : « partis ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-5",
+      "prompt": "Elle a … une lettre.",
+      "spoken": "Elle a  (mot manquant)  une lettre.",
+      "choices": [
+        "écrit",
+        "écrite",
+        "écrits"
+      ],
+      "answer": "écrit",
+      "hint": "Avec avoir, pas d’accord avec « elle ».",
+      "explanation": "Avoir : « écrit » ne s’accorde pas avec le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-6",
+      "prompt": "Les feuilles sont … .",
+      "spoken": "Les feuilles sont  (mot manquant)  .",
+      "choices": [
+        "tombées",
+        "tombés",
+        "tombé"
+      ],
+      "answer": "tombées",
+      "hint": "Être + « les feuilles » (féminin pluriel).",
+      "explanation": "Être + sujet féminin pluriel : « tombées ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-corde-1-7",
+      "prompt": "Vous avez … la bonne réponse.",
+      "spoken": "Vous avez  (mot manquant)  la bonne réponse.",
+      "choices": [
+        "trouvé",
+        "trouvés",
+        "trouvée"
+      ],
+      "answer": "trouvé",
+      "hint": "Avec avoir, pas d’accord avec « vous ».",
+      "explanation": "Avoir : « trouvé » reste invariable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec être et avoir",
+          "lines": [
+            "Avec être : le participe s’accorde avec le sujet (elles sont parties).",
+            "Avec avoir : pas d’accord avec le sujet (elles ont mangé).",
+            "Astuce : remplace par « pris / prise » pour entendre le son."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

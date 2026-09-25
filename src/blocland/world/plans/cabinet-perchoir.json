@@ -1,0 +1,73 @@
+{
+  "id": "cabinet-perchoir",
+  "biome": "cabinet",
+  "name": "Le perchoir du nid",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 0,
+      "block": "escalier"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "block": "parchemin"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "parchemin"
+    }
+  ],
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré."
+}

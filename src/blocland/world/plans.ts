@@ -43,6 +43,12 @@ import forgeCour from './plans/forge-cour.json';
 import atelierBureau from './plans/atelier-bureau.json';
 import atelierToit from './plans/atelier-toit.json';
 import atelierTerrasse from './plans/atelier-terrasse.json';
+import falaiseBergerie from './plans/falaise-bergerie.json';
+import falaiseToit from './plans/falaise-toit.json';
+import falaiseEnclos from './plans/falaise-enclos.json';
+import cabinetNid from './plans/cabinet-nid.json';
+import cabinetToit from './plans/cabinet-toit.json';
+import cabinetPerchoir from './plans/cabinet-perchoir.json';
 
 export interface PlanCell {
   x: number;
@@ -110,6 +116,12 @@ export const PLANS: PlanDef[] = [
   atelierBureau,
   atelierToit,
   atelierTerrasse,
+  falaiseBergerie,
+  falaiseToit,
+  falaiseEnclos,
+  cabinetNid,
+  cabinetToit,
+  cabinetPerchoir,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

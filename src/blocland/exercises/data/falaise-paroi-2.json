@@ -1,0 +1,222 @@
+{
+  "id": "falaise-paroi-2",
+  "biome": "falaise",
+  "type": "paroi",
+  "level": 2,
+  "instruction": "Accorde ou non les adjectifs de couleur et les cas particuliers. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-paroi-2-0",
+      "prompt": "Des chaussettes … .",
+      "spoken": "Des chaussettes  (mot manquant)  .",
+      "choices": [
+        "orange",
+        "oranges",
+        "orangées"
+      ],
+      "answer": "orange",
+      "hint": "« orange » vient d’un fruit : invariable.",
+      "explanation": "Couleur venant d’un nom (le fruit) : invariable, « orange ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-1",
+      "prompt": "Des rideaux … .",
+      "spoken": "Des rideaux  (mot manquant)  .",
+      "choices": [
+        "verts",
+        "vert",
+        "vertes"
+      ],
+      "answer": "verts",
+      "hint": "Couleur simple : accord avec « rideaux ».",
+      "explanation": "Couleur simple, masculin pluriel : « verts ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-2",
+      "prompt": "Des yeux … .",
+      "spoken": "Des yeux  (mot manquant)  .",
+      "choices": [
+        "bleu clair",
+        "bleus clairs",
+        "bleus clair"
+      ],
+      "answer": "bleu clair",
+      "hint": "Couleur composée de deux mots : invariable.",
+      "explanation": "Couleur composée : invariable, « bleu clair ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-3",
+      "prompt": "Des fleurs … .",
+      "spoken": "Des fleurs  (mot manquant)  .",
+      "choices": [
+        "roses",
+        "rose",
+        "rosées"
+      ],
+      "answer": "roses",
+      "hint": "« rose » fait exception : il s’accorde.",
+      "explanation": "Exception : « rose » s’accorde, « roses ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-4",
+      "prompt": "Une … -heure de marche.",
+      "spoken": "Une  (mot manquant)  -heure de marche.",
+      "choices": [
+        "demi",
+        "demie",
+        "demis"
+      ],
+      "answer": "demi",
+      "hint": "« demi » devant le nom : invariable.",
+      "explanation": "Devant le nom, « demi » ne s’accorde pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-5",
+      "prompt": "Deux heures et … .",
+      "spoken": "Deux heures et  (mot manquant)  .",
+      "choices": [
+        "demie",
+        "demi",
+        "demies"
+      ],
+      "answer": "demie",
+      "hint": "« demi » après le nom : accord en genre seulement.",
+      "explanation": "Après « heures » (féminin) : « demie ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-6",
+      "prompt": "Des voitures … .",
+      "spoken": "Des voitures  (mot manquant)  .",
+      "choices": [
+        "marron",
+        "marrons",
+        "marrones"
+      ],
+      "answer": "marron",
+      "hint": "« marron » vient d’un nom (le fruit) : invariable.",
+      "explanation": "Couleur venant d’un nom : invariable, « marron ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-paroi-2-7",
+      "prompt": "Ils marchent … -pieds.",
+      "spoken": "Ils marchent  (mot manquant)  -pieds.",
+      "choices": [
+        "nu",
+        "nus",
+        "nue"
+      ],
+      "answer": "nu",
+      "hint": "« nu » devant le nom : invariable.",
+      "explanation": "Devant le nom, « nu » ne s’accorde pas : « nu-pieds ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Adjectifs de couleur et cas particuliers",
+          "lines": [
+            "Couleur simple : accord (des robes vertes).",
+            "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
+            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

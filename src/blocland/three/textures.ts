@@ -17,6 +17,8 @@ export type TextureKind =
   | 'tourbe'
   | 'acier'
   | 'calque'
+  | 'ardoise'
+  | 'parchemin'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -134,6 +136,16 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   calque: {
     top: (x, y, r) => (x % 4 === 0 || y % 4 === 0 ? [150, 180, 220] : grain('#f4f1e4', '#faf8ef')(x, y, r)),
     side: (x, y, r) => (x % 4 === 0 || y % 4 === 0 ? [140, 170, 210] : grain('#dcd6c0', '#e8e3cf')(x, y, r)),
+  },
+  // Ardoise : gris bleuté en feuillets horizontaux.
+  ardoise: {
+    top: (x, y, r) => (y % 5 === 4 ? [50, 56, 64] : grain('#4a525c', '#5c6470')(x, y, r)),
+    side: (x, y, r) => (y % 3 === 2 ? [46, 52, 60] : grain('#3f4650', '#525a66')(x, y, r)),
+  },
+  // Parchemin : beige avec des lignes d'écriture ondulées.
+  parchemin: {
+    top: (x, y, r) => (y % 4 === 2 && x > 1 && x < 14 && r() < 0.8 ? [120, 90, 50] : grain('#e8d8a8', '#f2e6c2')(x, y, r)),
+    side: (x, y, r) => (y % 4 === 2 && x > 1 && x < 14 && r() < 0.8 ? [110, 82, 46] : grain('#cdb97f', '#dcc994')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

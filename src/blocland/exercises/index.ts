@@ -43,6 +43,16 @@ import enclos1 from './data/ferme-enclos-1.json';
 import enclos2 from './data/ferme-enclos-2.json';
 import recolte1 from './data/ferme-recolte-1.json';
 import recolte2 from './data/ferme-recolte-2.json';
+import falaiseCorde1 from './data/falaise-corde-1.json';
+import falaiseCorde2 from './data/falaise-corde-2.json';
+import falaiseParoi1 from './data/falaise-paroi-1.json';
+import falaiseParoi2 from './data/falaise-paroi-2.json';
+import falaiseSommet1 from './data/falaise-sommet-1.json';
+import falaiseSommet2 from './data/falaise-sommet-2.json';
+import cabinetRacines1 from './data/cabinet-racines-1.json';
+import cabinetRacines2 from './data/cabinet-racines-2.json';
+import cabinetSens1 from './data/cabinet-sens-1.json';
+import cabinetNuances1 from './data/cabinet-nuances-1.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -135,6 +145,16 @@ export const EXERCISES: ExerciseDef[] = [
   maraisBrume2,
   maraisRoseaux1,
   maraisRoseaux2,
+  falaiseCorde1,
+  falaiseCorde2,
+  falaiseParoi1,
+  falaiseParoi2,
+  falaiseSommet1,
+  falaiseSommet2,
+  cabinetRacines1,
+  cabinetRacines2,
+  cabinetSens1,
+  cabinetNuances1,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */
