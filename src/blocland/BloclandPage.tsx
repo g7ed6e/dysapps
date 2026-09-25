@@ -54,7 +54,9 @@ export function BloclandPage() {
               <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                 <Creature biome={biome.id} className="creature-small" />
                 <span className="biome-name">{biome.name}</span>
-                <span className="biome-module">{biome.module}</span>
+                <span className="biome-module">
+                  {biome.module} · Niveau {biome.classe}
+                </span>
                 <span className="biome-block">
                   <BlockIcon top={block.top} side={block.side} size={28} />
                   {owned} bloc{owned > 1 ? 's' : ''} {ofBlock(biome.block)}

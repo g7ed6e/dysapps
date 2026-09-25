@@ -29,6 +29,10 @@ it('affiche les matières sur l’accueil', () => {
 it('liste les activités d’une matière', () => {
   renderAt('/matiere/maths');
   expect(screen.getByText('Fractions')).toBeInTheDocument();
+  // Les îles de maths de Blocland, avec leur classe ; la Plaine est ouverte, pas la Rivière.
+  expect(screen.getByRole('link', { name: /Plaine des nombres.*Nouveau.*Niveau 6e/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Rivière des fractions.*Pont à construire/ })).toBeInTheDocument();
+  expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
 });
 
 it('applique et sauvegarde les réglages', async () => {
@@ -52,7 +56,9 @@ it('affiche une page introuvable', () => {
 it('affiche le record d’une quête tous modes confondus', () => {
   localStorage.setItem(
     'dysapps:progress',
-    JSON.stringify({ apps: { 'homophones:niveau-1': { sessions: 1, bestScore: 70, lastPlayed: null }, 'homophones:serie-a': { sessions: 1, bestScore: 90, lastPlayed: null } } }),
+    JSON.stringify({
+      apps: { 'homophones:niveau-1': { sessions: 1, bestScore: 70, lastPlayed: null }, 'homophones:serie-a': { sessions: 1, bestScore: 90, lastPlayed: null } },
+    }),
   );
   renderAt('/matiere/francais');
   expect(screen.getByText('Record : 90 %')).toBeInTheDocument();

@@ -3594,3 +3594,26 @@ a.island-quest:focus-visible {
 :root[data-theme="contraste"] .calcul-hint {
   background: var(--surface);
 }
+
+/* ===== Pages matière : les îles de Blocland ===== */
+.section-intro {
+  margin: -0.4rem 0 0.8rem;
+  color: var(--muted);
+}
+.blocland-islands .app-card {
+  padding-top: calc(var(--tex-size) + 0.9rem);
+}
+.blocland-islands .app-icon {
+  width: auto;
+  height: auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.blocland-islands .app-card.locked {
+  opacity: 0.85;
+}
+.tag-classe {
+  font-family: var(--pixel-font);
+  font-size: 0.8rem;
+}

@@ -1,3 +1,4 @@
+import { BIOMES } from '../blocland/biomes';
 // Gamification : XP, niveaux et badges. Logique pure, facile à tester.
 
 export interface AppStats {
@@ -187,7 +188,14 @@ export const BADGES: BadgeDef[] = [
   { id: 'architecte', icon: 'blocks', title: 'Architecte', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
   { id: 'village', icon: 'crown', title: 'Village reconstruit', description: 'Terminer les quinze plans du village.', earned: (p) => p.plansCompleted >= 15 },
   { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
-  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre les cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
+  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
+  {
+    id: 'archipel',
+    icon: 'crown',
+    title: 'Maître de l’archipel',
+    description: `Vaincre les ${BIOMES.length} Gardiens de l’archipel.`,
+    earned: (p) => p.bossesBeaten >= BIOMES.length,
+  },
 ];
 
 export function getBadge(id: string): BadgeDef | undefined {
