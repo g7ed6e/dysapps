@@ -217,6 +217,46 @@ const HIBOU = fromLayers(
   { B: '#6e4a2e', b: '#a8825a', L: '#e8d8a8', O: '#f6f1e6', Y: '#f5d63d' },
 );
 
+// Le Sphinx de marbre : le sphinx blanc, couché, coiffe bleue rayée d'or.
+const SPHINX_M = fromLayers(
+  [
+    ['MMMMMMM', 'MMMMMMM', 'MMMMMMM', 'MMMMMMM'],
+    ['.MMMMM.', 'MMMMMMM', 'MMMMMMM', '.MMMM..'],
+    ['..MMM..', '.MMMMM.', '.MMMM..', '.......'],
+    ['..MEM..', '..MMM..', '.......', '.......'],
+    ['.BYBYB.', '..BBB..', '.......', '.......'],
+  ],
+  { M: '#f1eee8', E: '#3b82f6', B: '#3a4a7a', Y: '#f2c944' },
+);
+
+// Le Comptable des étoiles : haute silhouette violette, chapeau pointu, étoiles dorées.
+const COMPTABLE = fromLayers(
+  [
+    ['.VVVVV.', 'VVVVVVV', '.VVVVV.', '.......'],
+    ['.VVVVV.', 'VVYVYVV', '.VVVVV.', '.......'],
+    ['..VVV..', '.VVVVV.', '..VVV..', '.......'],
+    ['..VVV..', '.VYVYV.', '..VVV..', '.......'],
+    ['..SES..', '..SSS..', '.......', '.......'],
+    ['..VVV..', '..VVV..', '.......', '.......'],
+    ['...V...', '.......', '.......', '.......'],
+  ],
+  { V: '#5b3a8a', Y: '#f2c944', S: '#e8b98a', E: '#1f1a16' },
+);
+
+// Le Dragon de lumière : dragon doré aux ailes de verre, yeux blancs.
+const DRAGON_L = fromLayers(
+  [
+    ['.D...D.', '.D...D.', '.D...D.', '.......'],
+    ['DDDDDDD', 'DLLLLLD', 'DDDDDDD', '.DDDDD.'],
+    ['DDDDDDD', 'DLLLLLD', 'DDDDDDD', '.DDDDD.'],
+    ['L.DDD.L', 'L.DLD.L', 'L.DDD.L', '.......'],
+    ['L.DDD..', 'L.DED..', 'L.DDD..', '.......'],
+    ['..DDD..', '..DED..', '..DDD..', '.......'],
+    ['.D...D.', '..DDD..', '.......', '.......'],
+  ],
+  { D: '#e0b842', L: '#fff4c2', E: '#f6f1e6' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -234,6 +274,9 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   atelier: GOLEM_EQ,
   falaise: BELIER,
   cabinet: HIBOU,
+  belvedere: SPHINX_M,
+  donnees: COMPTABLE,
+  phare: DRAGON_L,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

@@ -191,6 +191,41 @@ const PLUME = fromLayers(
   { K: '#1f1a16', W: '#f6f1e6', E: '#f5d63d', O: '#f2c944' },
 );
 
+// Théo : un héron gris-bleu sur ses longues pattes, bec jaune, huppe noire.
+const THEO = fromLayers(
+  [
+    ['..P.P', '.....', '.....', '.....'],
+    ['..P.P', '.....', '.....', '.....'],
+    ['.GGGG', 'GGGGG', '.GGG.', '.....'],
+    ['..G..', '.....', '.....', '.....'],
+    ['Y.GK.', '.....', '.....', '.....'],
+  ],
+  { G: '#8c9bb0', P: '#e8a33a', Y: '#f5d63d', K: '#1f1a16' },
+);
+
+// Stat : une chouette mauve, grands yeux ronds, lunettes d'astronome.
+const STAT = fromLayers(
+  [
+    ['.MMM.', 'MMMMM', 'MMMMM', '.MMM.'],
+    ['.MMM.', 'MmmmM', 'MMMMM', '.MMM.'],
+    ['.EYE.', 'MMMMM', '.MMM.', '.....'],
+    ['M...M', '.....', '.....', '.....'],
+  ],
+  { M: '#7a6aa0', m: '#c9b8e8', E: '#f6f1e6', Y: '#f5d63d' },
+);
+
+// Fi : une lampe de phare vivante, socle doré, verre lumineux, un œil.
+const FI = fromLayers(
+  [
+    ['.DDD.', 'DDDDD', '.DDD.', '.....'],
+    ['..D..', '.DDD.', '..D..', '.....'],
+    ['.LLL.', 'LLLLL', '.LLL.', '.....'],
+    ['.LEL.', 'LLLLL', '.LLL.', '.....'],
+    ['..D..', '.DDD.', '..D..', '.....'],
+  ],
+  { D: '#e0b842', L: '#fff4c2', E: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -208,6 +243,9 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   atelier: IXE,
   falaise: CLEA,
   cabinet: PLUME,
+  belvedere: THEO,
+  donnees: STAT,
+  phare: FI,
 };
 
 interface Props {

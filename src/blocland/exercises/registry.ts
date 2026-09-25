@@ -93,4 +93,11 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   racines: { component: CalculScreen, batch: 1 },
   sens: { component: CalculScreen, batch: 1 },
   nuances: { component: CalculScreen, batch: 1 },
+  pythagore: { component: CalculScreen, batch: 1 },
+  thales: { component: CalculScreen, batch: 1 },
+  trigo: { component: CalculScreen, batch: 1 },
+  moyenne: { component: CalculScreen, batch: 1 },
+  chances: { component: CalculScreen, batch: 1 },
+  images: { component: CalculScreen, batch: 1 },
+  droites: { component: CalculScreen, batch: 1 },
 };

@@ -17,7 +17,10 @@ export type BiomeId =
   | 'forge'
   | 'atelier'
   | 'falaise'
-  | 'cabinet';
+  | 'cabinet'
+  | 'belvedere'
+  | 'donnees'
+  | 'phare';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -35,6 +38,9 @@ export type BlockId =
   | 'calque'
   | 'ardoise'
   | 'parchemin'
+  | 'marbre'
+  | 'quartz'
+  | 'prisme'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -72,6 +78,9 @@ export type BlockTexture =
   | 'calque'
   | 'ardoise'
   | 'parchemin'
+  | 'marbre'
+  | 'quartz'
+  | 'prisme'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -100,6 +109,9 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   calque: { id: 'calque', name: 'Calque', top: '#f4f1e4', side: '#dcd6c0', texture: 'calque' },
   ardoise: { id: 'ardoise', name: 'Ardoise', top: '#5c6470', side: '#3f4650', texture: 'ardoise' },
   parchemin: { id: 'parchemin', name: 'Parchemin', top: '#e8d8a8', side: '#cdb97f', texture: 'parchemin' },
+  marbre: { id: 'marbre', name: 'Marbre', top: '#f1eee8', side: '#d6d1c8', texture: 'marbre' },
+  quartz: { id: 'quartz', name: 'Quartz', top: '#e6dcf2', side: '#b9a8d6', texture: 'quartz' },
+  prisme: { id: 'prisme', name: 'Prisme', top: '#fff4c2', side: '#f0c95a', texture: 'prisme' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -684,6 +696,106 @@ export const BIOMES: BiomeDef[] = [
       { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.' },
       { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.' },
       { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.' },
+    ],
+  },
+  {
+    id: 'belvedere',
+    name: 'Belvédère de Thalès',
+    module: 'Géométrie : Pythagore, Thalès, trigonométrie',
+    subject: 'maths',
+    classe: '3e',
+    description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux.',
+    block: 'marbre',
+    guardian: 'le Sphinx de marbre',
+    guardianSays: {
+      hit: 'Hmm… Juste. L’angle droit te salue.',
+      miss: 'Ce n’est rien : repère l’hypoténuse, écris l’égalité, et reprends.',
+      beaten: 'Je m’incline. Toutes les longueurs sont à toi… et à Théo.',
+    },
+    challenge: 'Le Sphinx de marbre se redresse : « Tu as mesuré tout mon belvédère. Montre-moi que tu trouves ce qui manque. »',
+    icon: 'compass',
+    creature: {
+      name: 'Théo',
+      species: 'héron géomètre',
+      greeting:
+        'Bonjour, bâtisseur·se ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
+      lines: [
+        'Trois, quatre, cinq : le plus vieux triangle rectangle du monde.',
+        'Deux droites parallèles, et les longueurs se multiplient par le même nombre.',
+        'Mon kiosque est en marbre. Chaque calcul en taille une colonne.',
+      ],
+      home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
+    },
+    exercises: [
+      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit.' },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.' },
+      { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.' },
+    ],
+  },
+  {
+    id: 'donnees',
+    name: 'Observatoire des données',
+    module: 'Statistiques et probabilités',
+    subject: 'maths',
+    classe: '3e',
+    description: 'Moyenne, médiane, étendue d’une petite série, probabilités simples, les barres sous les yeux.',
+    block: 'quartz',
+    guardian: 'le Comptable des étoiles',
+    guardianSays: {
+      hit: 'Tic… Juste. Une étoile de plus dans ma colonne.',
+      miss: 'Ce n’est rien : range la série, compte les valeurs, et reprends.',
+      beaten: 'Tic. Tu comptes les étoiles mieux que moi. L’observatoire est à toi… et à Stat.',
+    },
+    challenge: 'Le Comptable des étoiles ouvre son grand livre : « Tu as relevé toutes mes séries. Montre-moi que tu sais les résumer. »',
+    icon: 'star',
+    creature: {
+      name: 'Stat',
+      species: 'chouette astronome',
+      greeting:
+        'Hou ! Bienvenue à l’observatoire, bâtisseur·se. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
+      lines: [
+        'La moyenne : tout additionner, puis partager équitablement.',
+        'La médiane coupe la série rangée en deux moitiés.',
+        'Mon dôme est en quartz. Chaque calcul en polit une facette.',
+      ],
+      home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
+    },
+    exercises: [
+      { id: 'moyenne', title: 'Moyenne', description: 'La moyenne, puis la médiane et l’étendue d’une petite série.' },
+      { id: 'chances', title: 'Chances', description: 'Probabilités simples : sac de boules, dé.' },
+    ],
+  },
+  {
+    id: 'phare',
+    name: 'Phare des fonctions',
+    module: 'Fonctions',
+    subject: 'maths',
+    classe: '3e',
+    description: 'Image, antécédent, fonction linéaire ou affine : le tableau de valeurs toujours affiché.',
+    block: 'prisme',
+    guardian: 'le Dragon de lumière',
+    guardianSays: {
+      hit: 'Flash… Juste. Ma lumière trouve son image.',
+      miss: 'Ce n’est rien : remplace x par le nombre, calcule, et reprends.',
+      beaten: 'Flash. Tu éclaires plus loin que moi. Le phare est à toi… et à Fi.',
+    },
+    challenge: 'Le Dragon de lumière déploie ses ailes : « Tu as allumé tout mon phare. Montre-moi que tu suis la lumière de x jusqu’à f(x). »',
+    icon: 'lightbulb',
+    creature: {
+      name: 'Fi',
+      species: 'lampe de phare vivante',
+      greeting:
+        'Bonjour, bâtisseur·se ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
+      lines: [
+        'Entre x, sors f(x) : ma lumière fait pareil, elle transforme.',
+        'Linéaire : la droite passe par l’origine. Affine : elle est décalée de b.',
+        'Ma lanterne est en prismes. Chaque calcul en pose un.',
+      ],
+      home: 'Ma lanterne de prismes est finie ! f(nuit) = lumière.',
+    },
+    exercises: [
+      { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.' },
+      { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.' },
     ],
   },
 ];

@@ -1,0 +1,117 @@
+{
+  "id": "donnees-dome",
+  "biome": "donnees",
+  "name": "Le dôme de Stat",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "quartz"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "quartz"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "quartz"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "parchemin": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Mon dôme ! Merci, bâtisseur·se. Moyenne des blocs : parfaite. Médiane : idem."
+}

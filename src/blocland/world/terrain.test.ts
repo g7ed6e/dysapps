@@ -101,7 +101,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   const cubes = worldCubes({});
   const bounds = worldBounds();
   expect(bounds.maxX - bounds.minX).toBe(5 * ISLAND + 4 * GAP);
-  expect(bounds.maxY - bounds.minY).toBe(4 * ISLAND + 3 * ROW_GAP);
+  expect(bounds.maxY - bounds.minY).toBe(5 * ISLAND + 4 * ROW_GAP);
   for (const c of cubes) {
     expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
     expect(c.x).toBeLessThan(bounds.maxX);

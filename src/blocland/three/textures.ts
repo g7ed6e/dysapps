@@ -19,6 +19,9 @@ export type TextureKind =
   | 'calque'
   | 'ardoise'
   | 'parchemin'
+  | 'marbre'
+  | 'quartz'
+  | 'prisme'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -146,6 +149,21 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   parchemin: {
     top: (x, y, r) => (y % 4 === 2 && x > 1 && x < 14 && r() < 0.8 ? [120, 90, 50] : grain('#e8d8a8', '#f2e6c2')(x, y, r)),
     side: (x, y, r) => (y % 4 === 2 && x > 1 && x < 14 && r() < 0.8 ? [110, 82, 46] : grain('#cdb97f', '#dcc994')(x, y, r)),
+  },
+  // Marbre : blanc cassé veiné de gris.
+  marbre: {
+    top: (x, y, r) => ((x + 2 * y) % 11 === 0 ? [180, 176, 170] : grain('#e6e2da', '#f4f1ea')(x, y, r)),
+    side: (x, y, r) => ((x + 2 * y) % 11 === 0 ? [170, 166, 160] : grain('#d6d1c8', '#e6e2da')(x, y, r)),
+  },
+  // Quartz : mauve pâle à facettes claires.
+  quartz: {
+    top: (x, y, r) => (r() < 0.1 ? [245, 240, 255] : grain('#b9a8d6', '#e6dcf2')(x, y, r)),
+    side: (x, y, r) => (r() < 0.1 ? [245, 240, 255] : grain('#a897c8', '#d2c4ea')(x, y, r)),
+  },
+  // Prisme : verre doré, rayons de lumière en diagonale.
+  prisme: {
+    top: (x, y, r) => ((x + y) % 6 === 0 ? [255, 250, 220] : grain('#f0c95a', '#fff4c2')(x, y, r)),
+    side: (x, y, r) => ((x + y) % 6 === 0 ? [255, 250, 220] : grain('#e0b842', '#f5dc8c')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

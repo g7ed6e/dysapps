@@ -1,0 +1,117 @@
+{
+  "id": "belvedere-kiosque",
+  "biome": "belvedere",
+  "name": "Le kiosque de Théo",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "marbre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "marbre"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "marbre"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "ardoise": 3,
+      "toit": 9,
+      "porte": 1,
+      "lanterne": 1
+    }
+  },
+  "done": "Mon kiosque ! Merci, bâtisseur·se. Ses angles sont droits, ses colonnes proportionnelles."
+}
