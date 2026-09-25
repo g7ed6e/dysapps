@@ -1,4 +1,17 @@
-import { EMPTY_STATE, adapt, addDays, completeExercise, daysBetween, dueItems, recordSpaced, sanitizeState, scoreOf, starsFor, updateStreak } from './engine';
+import {
+  EMPTY_STATE,
+  adapt,
+  addDays,
+  completeExercise,
+  daysBetween,
+  dueItems,
+  moveAvatar,
+  recordSpaced,
+  sanitizeState,
+  scoreOf,
+  starsFor,
+  updateStreak,
+} from './engine';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
 const DEF: ExerciseDef = {
@@ -178,4 +191,15 @@ it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de 
   });
   expect(s.inventory).toEqual({ bois: 3, pierre: 1 });
   expect(s.village).toEqual({ plans: {}, journal: [], bridges: [] });
+});
+
+it('le bonhomme se souvient de son île, seulement si elle est ouverte', () => {
+  expect(sanitizeState({ village: { at: 'foret' } }).village.at).toBe('foret');
+  expect(sanitizeState({ village: { at: 'mine' } }).village.at).toBeUndefined();
+  expect(sanitizeState({ village: { at: 'mine', bridges: ['foret-mine'] } }).village.at).toBe('mine');
+  expect(sanitizeState({ village: { at: 'nulle-part' } }).village.at).toBeUndefined();
+  const moved = moveAvatar(EMPTY_STATE, 'plaine');
+  expect(moved.village.at).toBe('plaine');
+  expect(moveAvatar(moved, 'mine')).toBe(moved);
+  expect(moveAvatar(moved, 'plaine')).toBe(moved);
 });

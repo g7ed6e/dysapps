@@ -2,7 +2,8 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { BRIDGES, bridgeState, isBiomeUnlocked, reachableIslands, type BridgeDef } from './archipelago';
+import { BRIDGES, bridgeState, bridgesOf, isBiomeUnlocked, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
+import { AVATAR_HOME } from '../Avatar';
 import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
@@ -487,7 +488,7 @@ const STEP = '#8f8f8f';
  * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
  * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Chaque case a son altitude (interpolée).
  */
-function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
+export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
   const a = islandDef(def.from);
   const b = islandDef(def.to);
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
@@ -598,6 +599,51 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
   // Une lanterne à chaque bout : la nuit, les chemins se devinent de loin (sur le sol pour un sentier).
   const lift = def.kind === 'sentier' ? 2 : 1;
   for (const c of [path[0], path[n - 1]]) if (c) add(c.x, c.y, c.z + lift, BLOCKS.lanterne.side, 'lanterne');
+}
+
+/** Où le bonhomme se tient sur une île (coordonnées du monde, z du sol). */
+export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
+  const def = islandDef(id);
+  return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z: def.altitude };
+}
+
+/**
+ * L'itinéraire du bonhomme d'une île à une autre, en marchant sur les ouvrages construits (le plus court chemin en
+ * nombre d'ouvrages), ou `null` s'il n'y en a pas. Une suite de points (x, y, z du sol sous ses pieds).
+ */
+export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x: number; y: number; z: number }[] | null {
+  if (from === to) return [avatarHome(from)];
+  const built = (b: BridgeDef) => bridgeState(b, bridges) === 'built';
+  const prev = new Map<BiomeId, BridgeDef | null>([[from, null]]);
+  const queue: BiomeId[] = [from];
+  while (queue.length && !prev.has(to)) {
+    const here = queue.shift()!;
+    for (const b of bridgesOf(here)) {
+      if (!built(b)) continue;
+      const there = otherEnd(b, here);
+      if (prev.has(there)) continue;
+      prev.set(there, b);
+      queue.push(there);
+    }
+  }
+  if (!prev.has(to)) return null;
+  const hops: { def: BridgeDef; from: BiomeId; to: BiomeId }[] = [];
+  let at = to;
+  while (prev.get(at)) {
+    const b = prev.get(at)!;
+    const before = otherEnd(b, at);
+    hops.unshift({ def: b, from: before, to: at });
+    at = before;
+  }
+  const route: { x: number; y: number; z: number }[] = [avatarHome(from)];
+  for (const hop of hops) {
+    let cells = bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z }));
+    if (hop.def.from !== hop.from) cells = cells.reverse();
+    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, sur le sol (z est déjà le sol).
+    for (const c of cells) route.push({ x: c.x, y: c.y, z: hop.def.kind === 'sentier' ? c.z : c.z + 1 });
+    route.push(avatarHome(hop.to));
+  }
+  return route;
 }
 
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */

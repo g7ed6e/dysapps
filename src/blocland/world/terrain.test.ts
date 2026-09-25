@@ -1,6 +1,8 @@
 import { BIOMES } from '../biomes';
 import { BRIDGES } from './archipelago';
 import {
+  avatarHome,
+  avatarRoute,
   fade,
   DEPTH,
   ISLAND,
@@ -184,4 +186,22 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(falls.length).toBeGreaterThanOrEqual(1);
   expect(mistPatches().length).toBe(4);
   for (const m of mistPatches()) expect(m.z).toBe(7.5);
+});
+
+it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau', () => {
+  expect(avatarRoute('foret', 'foret', [])).toEqual([avatarHome('foret')]);
+  // Sans ouvrage construit vers la Mine : pas de chemin.
+  expect(avatarRoute('foret', 'mine', [])).toBeNull();
+  const route = avatarRoute('foret', 'mine', ['foret-mine'])!;
+  expect(route[0]).toEqual(avatarHome('foret'));
+  expect(route[route.length - 1]).toEqual(avatarHome('mine'));
+  expect(route.length).toBeGreaterThan(10);
+  for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
+  // Deux ouvrages : Forêt → Ferme (pont) → Tour (sentier) ; le pont se marche sur le tablier (z = 1).
+  const far = avatarRoute('foret', 'tour', ['foret-ferme', 'ferme-tour'])!;
+  expect(far[far.length - 1]).toEqual(avatarHome('tour'));
+  expect(far.some((p) => p.z === 1)).toBe(true);
+  // En montant vers le Glacier (3), l'itinéraire monte.
+  const up = avatarRoute('plaine', 'glacier', ['plaine-glacier'])!;
+  expect(Math.max(...up.map((p) => p.z))).toBe(4);
 });
