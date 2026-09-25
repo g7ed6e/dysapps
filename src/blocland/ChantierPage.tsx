@@ -115,7 +115,7 @@ export function ChantierPage() {
         {in3d ? (
           <Suspense fallback={<p className="loading">Chargement de la 3D…</p>}>
             <VoxelCanvas
-              cubes={state.build.map((c) => ({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, top: BLOCKS[c.block].top }))}
+              cubes={state.build.map((c) => ({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, top: BLOCKS[c.block].top, texture: BLOCKS[c.block].texture }))}
               gridSize={GRID_SIZE}
               selected={cell}
               selectedHeight={cell ? columnHeight(state.build, cell.x, cell.y) : 0}

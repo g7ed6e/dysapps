@@ -7,20 +7,24 @@ export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'or' | '
 export interface BlockDef {
   id: BlockId;
   name: string;
-  /** Face du dessus, face de côté (plus sombre), pour dessiner le cube. */
+  /** Face du dessus, face de côté (plus sombre), pour dessiner le cube en SVG. */
   top: string;
   side: string;
+  /** Texture pixel du bloc en 3D (voir three/textures.ts). */
+  texture: BlockTexture;
   rare?: boolean;
 }
 
+export type BlockTexture = 'herbe' | 'terre' | 'pierre' | 'planches' | 'sable' | 'verre' | 'or' | 'cristal' | 'feuilles' | 'tronc' | 'nuage';
+
 export const BLOCKS: Record<BlockId, BlockDef> = {
-  bois: { id: 'bois', name: 'Bois', top: '#c98d4b', side: '#8a5a26' },
-  pierre: { id: 'pierre', name: 'Pierre', top: '#a7aeb8', side: '#6b7380' },
-  sable: { id: 'sable', name: 'Sable', top: '#f0d27a', side: '#c29a3a' },
-  terre: { id: 'terre', name: 'Terre', top: '#a2694a', side: '#6a3f27' },
-  verre: { id: 'verre', name: 'Verre', top: '#bfe8f2', side: '#6fbdd3' },
-  or: { id: 'or', name: 'Or', top: '#ffd54a', side: '#c9931a', rare: true },
-  cristal: { id: 'cristal', name: 'Cristal', top: '#d6b8ff', side: '#8f5ee0', rare: true },
+  bois: { id: 'bois', name: 'Bois', top: '#c29a5f', side: '#9c7a48', texture: 'planches' },
+  pierre: { id: 'pierre', name: 'Pierre', top: '#9c9c9c', side: '#7d7d7d', texture: 'pierre' },
+  sable: { id: 'sable', name: 'Sable', top: '#e8e0b4', side: '#cfc48f', texture: 'sable' },
+  terre: { id: 'terre', name: 'Terre', top: '#94694a', side: '#6e4a2e', texture: 'terre' },
+  verre: { id: 'verre', name: 'Verre', top: '#d6f2f8', side: '#a9dbe6', texture: 'verre' },
+  or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
+  cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
 };
 
 export interface ExerciseTypeDef {

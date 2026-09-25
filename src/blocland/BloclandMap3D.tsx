@@ -18,6 +18,7 @@ export function BloclandMap3D() {
         <VoxelCanvas
           cubes={cubes}
           reduceMotion={settings.reduceMotion}
+          sky
           onPickTag={(tag) => navigate(`/aventure/${tag}`)}
           cameraDirection={[0.3, -0.95]}
           elevation={0.5}

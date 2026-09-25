@@ -30,7 +30,7 @@
   --pink: #d9772e; /* brique */
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
-  --green: #5e9b4a; /* mousse */
+  --green: #6cb33f; /* herbe */
   --on-accent: #2b2118;
   --success: #2f7d3a;
   --success-bg: #dff3d8;
@@ -222,6 +222,7 @@ svg {
   min-height: 100vh;
 }
 .topbar {
+  border-top: 5px solid var(--green);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -2305,13 +2306,13 @@ a.app-card:active {
   touch-action: manipulation;
 }
 .build-grid .tile polygon {
-  fill: #a9d18e;
-  stroke: #6f9c58;
+  fill: #7cc24a;
+  stroke: #5a9a33;
   stroke-width: 0.8;
   cursor: pointer;
 }
 .build-grid .tile.alt polygon {
-  fill: #9cc782;
+  fill: #6fb541;
 }
 .build-grid .tile:hover polygon,
 .build-grid .tile:focus-visible polygon {

@@ -10,6 +10,21 @@ export interface VoxelCube {
   top?: string;
   /** Étiquette de sélection en 3D (ex. l'identifiant d'un biome). */
   tag?: string;
+  /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
+  texture?: string;
+}
+
+/** Motif de grain pixel à déclarer une fois par SVG (<defs>). */
+export function PixelGrainDefs() {
+  return (
+    <defs>
+      <pattern id="voxel-grain" width="4" height="4" patternUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="2" height="2" fill="#000" opacity="0.06" />
+        <rect x="2" y="2" width="1" height="1" fill="#fff" opacity="0.12" />
+        <rect x="1" y="3" width="1" height="1" fill="#000" opacity="0.08" />
+      </pattern>
+    </defs>
+  );
 }
 
 /** Éclaircit ou assombrit une couleur hexadécimale. */
@@ -40,6 +55,9 @@ export function Cube({ x, y, z, color, top, s = 16 }: VoxelCube & { s?: number }
       <polygon points={pts([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)])} fill={top ?? shade(color, 0.16)} />
       <polygon points={pts([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)])} fill={color} />
       <polygon points={pts([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)])} fill={shade(color, -0.18)} />
+      <polygon points={pts([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)])} fill="url(#voxel-grain)" />
+      <polygon points={pts([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)])} fill="url(#voxel-grain)" />
+      <polygon points={pts([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)])} fill="url(#voxel-grain)" />
     </g>
   );
 }
@@ -93,6 +111,7 @@ export function VoxelScene({ cubes, s = 16, pad = 4, className, label }: ScenePr
       aria-hidden={label ? undefined : true}
       focusable="false"
     >
+      <PixelGrainDefs />
       {sortCubes(cubes).map((c, i) => (
         <Cube key={i} {...c} s={s} />
       ))}
