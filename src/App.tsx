@@ -12,7 +12,6 @@ import { BloclandPage } from './blocland/BloclandPage';
 import { BiomePage } from './blocland/BiomePage';
 import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
-import { ChantierPage } from './blocland/ChantierPage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { useImmersive } from './blocland/useImmersive';
@@ -40,7 +39,6 @@ export function AppRoutes() {
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
         <Route path="aventure" element={<AventureEntry />} />
-        <Route path="aventure/chantier" element={<ChantierPage />} />
         <Route path="aventure/:biomeId" element={<IslandEntry />} />
         <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />

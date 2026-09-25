@@ -52,7 +52,7 @@ Ce que le chantier actuel n'offre pas, et qui manque :
 }
 ```
 
-- **Zone libre** — **Décidé, puis retiré** (25 septembre 2026) : le terrain libre de 6 × 4 cases (tapis jaune) n'apportait rien face aux plans ; il est supprimé, ses blocs reviennent dans l'inventaire. La construction est entièrement guidée.
+- **Zone libre** — **Décidé, puis retiré** (25 septembre 2026) : le terrain libre de 6 × 4 cases (tapis jaune) n'apportait rien face aux plans ; il est supprimé, ses blocs reviennent dans l'inventaire. La construction est entièrement guidée, et la page Chantier a disparu : le plan se construit depuis le panneau de l'île, dans le monde 3D.
 - **Constructions actuelles** (grille 8 × 8) — **Décidé** : non migrées ; à la première ouverture du village, les blocs posés reviennent dans l'inventaire (aucune perte de ressources).
 
 ## 5. Le monde qui vit

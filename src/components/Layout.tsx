@@ -11,7 +11,7 @@ export function Layout() {
   const { progress } = useProgress();
   const { pathname } = useLocation();
   // Carte et îles de Blocland en 3D : le monde prend tout l'écran sous la barre du haut.
-  const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname) && !pathname.endsWith('/chantier');
+  const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname);
 
   // Changer de page coupe la lecture vocale en cours.
   useEffect(() => stopSpeaking, [pathname]);

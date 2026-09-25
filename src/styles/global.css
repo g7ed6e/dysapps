@@ -3853,3 +3853,32 @@ a.island-quest:focus-visible {
   background: var(--yellow);
   border-style: dashed;
 }
+
+/* ===== Le plan dans le panneau d'île ===== */
+.plan-section {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 2px dashed var(--muted);
+}
+.plan-section .build-status:empty {
+  display: none;
+}
+.island-inventory,
+.island-journal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+}
+.plan-panel .plan-section {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.island-inventory .island-owned {
+  font-family: inherit;
+  font-size: inherit;
+}
