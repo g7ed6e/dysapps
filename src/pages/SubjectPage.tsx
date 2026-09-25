@@ -3,10 +3,15 @@ import { SUBJECTS, appsBySubject, bestScore, type Subject } from '../apps/regist
 import { Icon } from '../components/Icon';
 import { useProgress } from '../core/ProgressContext';
 import { NotFoundPage } from './NotFoundPage';
+import { biomesOf } from '../blocland/biomes';
+import { useBlocland } from '../blocland/BloclandContext';
+import { Creature } from '../blocland/Creatures';
+import { isBiomeUnlocked } from '../blocland/world/archipelago';
 
 export function SubjectPage() {
   const { subject } = useParams();
   const { progress } = useProgress();
+  const { state } = useBlocland();
   if (!subject || !(subject in SUBJECTS)) return <NotFoundPage />;
   const info = SUBJECTS[subject as Subject];
 
@@ -48,6 +53,44 @@ export function SubjectPage() {
                   {content}
                 </div>
               )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <h2 className="section-title">
+        <Icon name="map" /> Dans Blocland
+      </h2>
+      <p className="section-intro">
+        Les îles de {info.title.toLowerCase()} de l’aventure, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
+      </p>
+      <ul className="grid apps blocland-islands">
+        {biomesOf(subject as Subject).map((biome) => {
+          const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+          const stars = biome.exercises.reduce(
+            (n, x) =>
+              n +
+              Math.max(
+                0,
+                ...Object.entries(state.progress)
+                  .filter(([id]) => id.startsWith(`${biome.id}-${x.id}`))
+                  .map(([, p]) => p.stars),
+              ),
+            0,
+          );
+          return (
+            <li key={biome.id}>
+              <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+                <span className="app-icon">
+                  <Creature biome={biome.id} className="creature-small" />
+                </span>
+                <span className="app-title">{biome.name}</span>
+                <span className="app-desc">{biome.description}</span>
+                <span className={`tag${unlocked ? (stars ? ' tag-ok' : ' tag-new') : ''}`}>
+                  {unlocked ? (stars ? `${stars} étoile${stars > 1 ? 's' : ''}` : 'Nouveau') : 'Pont à construire'}
+                </span>
+                <span className="tag tag-classe">Niveau {biome.classe}</span>
+              </Link>
             </li>
           );
         })}

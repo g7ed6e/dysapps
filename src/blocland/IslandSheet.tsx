@@ -51,7 +51,9 @@ export function IslandSheet({ biome, onClose }: Props) {
           <h2 id={`ile-${biome.id}`} className="island-sheet-title">
             <Icon name={biome.icon} /> {biome.name}
           </h2>
-          <p className="island-sheet-module">{biome.module}</p>
+          <p className="island-sheet-module">
+            {biome.module} · Niveau {biome.classe}
+          </p>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
           <Icon name="close" />

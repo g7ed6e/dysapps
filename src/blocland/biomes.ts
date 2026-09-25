@@ -93,10 +93,15 @@ export interface CreatureDef {
   home: string;
 }
 
+export type Classe = '6e' | '5e' | '4e' | '3e';
+
 export interface BiomeDef {
   id: BiomeId;
   name: string;
   module: string;
+  /** Matière et classe visée (le contenu monte jusqu'à la fin de 3e). */
+  subject: 'francais' | 'maths';
+  classe: Classe;
   description: string;
   block: BlockId;
   icon: AnyIconName;
@@ -115,6 +120,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'foret',
     name: 'Forêt des sons',
     module: 'Conscience phonologique',
+    subject: 'francais',
+    classe: '6e',
     description: 'Écouter, couper en syllabes, repérer les sons et les rimes.',
     block: 'bois',
     guardian: 'le Grand Chêne',
@@ -146,6 +153,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'mine',
     name: 'Mine des lettres',
     module: 'Confusions de lettres',
+    subject: 'francais',
+    classe: '6e',
     description: 'b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.',
     block: 'pierre',
     guardian: 'le Golem de roche',
@@ -176,6 +185,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'carriere',
     name: 'Carrière des mots',
     module: 'Orthographe lexicale',
+    subject: 'francais',
+    classe: '6e',
     description: 'Écrire les mots juste, les familles de mots, les mots-outils.',
     block: 'sable',
     guardian: 'la Dune vivante',
@@ -207,6 +218,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'ferme',
     name: 'Ferme des accords',
     module: 'Orthographe grammaticale',
+    subject: 'francais',
+    classe: '6e',
     description: 'Accorder sujet et verbe, choisir a/à, et/est, -é/-er.',
     block: 'terre',
     guardian: 'le Taureau de terre',
@@ -238,6 +251,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'tour',
     name: 'Tour du lecteur',
     module: 'Fluence de lecture',
+    subject: 'francais',
+    classe: '6e',
     description: 'Lire à voix haute, étage par étage.',
     block: 'verre',
     guardian: 'la Chouette de verre',
@@ -261,6 +276,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'plaine',
     name: 'Plaine des nombres',
     module: 'Calcul mental',
+    subject: 'maths',
+    classe: '6e',
     description: 'Tables, compléments, doubles et moitiés, avec des aides visuelles toujours affichées.',
     block: 'brique',
     guardian: 'le Hanneton de bronze',
@@ -293,6 +310,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'riviere',
     name: 'Rivière des fractions',
     module: 'Fractions',
+    subject: 'maths',
+    classe: '6e',
     description: 'Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.',
     block: 'galet',
     guardian: 'le Brochet d’argent',
@@ -325,6 +344,8 @@ export const BIOMES: BiomeDef[] = [
     id: 'volcan',
     name: 'Volcan des décimaux',
     module: 'Nombres décimaux',
+    subject: 'maths',
+    classe: '6e',
     description: 'Lire, comparer et placer des nombres à virgule, le tableau de numération toujours affiché.',
     block: 'obsidienne',
     guardian: 'le Dragon de cendre',
@@ -354,6 +375,12 @@ export const BIOMES: BiomeDef[] = [
     ],
   },
 ];
+
+/** Les îles d'une matière, dans l'ordre des classes. */
+export function biomesOf(subject: 'francais' | 'maths'): BiomeDef[] {
+  const order: Classe[] = ['6e', '5e', '4e', '3e'];
+  return BIOMES.filter((b) => b.subject === subject).sort((a, b) => order.indexOf(a.classe) - order.indexOf(b.classe));
+}
 
 export function getBiome(id: string | undefined): BiomeDef | undefined {
   return BIOMES.find((b) => b.id === id);
