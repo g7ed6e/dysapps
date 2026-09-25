@@ -8,14 +8,14 @@
 
 /* ===== Thèmes ===== */
 :root {
-  --font-family: 'Atkinson Hyperlegible', Arial, sans-serif;
+  --font-family: "Atkinson Hyperlegible", Arial, sans-serif;
   --font-size: 20px;
   --line-height: 1.7;
   --letter-spacing: 0.03em;
   --word-spacing: 0.12em;
-  --display-font: 'Archivo Black', 'Arial Black', Arial, sans-serif;
-  --shout-font: 'Archivo Black', 'Arial Black', Arial, sans-serif;
-  --pixel-font: 'Silkscreen', 'Archivo Black', monospace;
+  --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --shout-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --pixel-font: "Silkscreen", "Archivo Black", monospace;
 
   /* Thème crème (par défaut) : fond crème, encre brune, blocs de bois et de sable */
   --bg: #fbf6ea;
@@ -49,23 +49,26 @@
   --bevel: 4px;
   --bevel-light: rgba(255, 255, 255, 0.65);
   --bevel-dark: rgba(59, 45, 32, 0.22);
-  --bevel-shadow: inset var(--bevel) var(--bevel) 0 var(--bevel-light), inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-dark);
-  --bevel-shadow-small: inset 3px 3px 0 var(--bevel-light), inset -3px -3px 0 var(--bevel-dark);
+  --bevel-shadow:
+    inset var(--bevel) var(--bevel) 0 var(--bevel-light),
+    inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-dark);
+  --bevel-shadow-small:
+    inset 3px 3px 0 var(--bevel-light), inset -3px -3px 0 var(--bevel-dark);
   --stone: #c8c8c8;
   --stone-text: #2b2118;
   /* Textures pixel 16 × 16 générées par le code (src/styles/textures), affichées en 2 px par pixel. */
   --tex-size: 32px;
-  --tex-page: url('./textures/creme.png');
-  --tex-dirt: url('./textures/terre.png');
-  --tex-grass: url('./textures/herbe-cote.png');
-  --tex-grass-top: url('./textures/herbe-dessus.png');
-  --tex-stone: url('./textures/pierre-claire.png');
-  --tex-rock: url('./textures/pierre.png');
-  --tex-planks: url('./textures/planches.png');
-  --tex-sand: url('./textures/sable.png');
-  --tex-gold: url('./textures/or.png');
+  --tex-page: url("./textures/creme.png");
+  --tex-dirt: url("./textures/terre.png");
+  --tex-grass: url("./textures/herbe-cote.png");
+  --tex-grass-top: url("./textures/herbe-dessus.png");
+  --tex-stone: url("./textures/pierre-claire.png");
+  --tex-rock: url("./textures/pierre.png");
+  --tex-planks: url("./textures/planches.png");
+  --tex-sand: url("./textures/sable.png");
+  --tex-gold: url("./textures/or.png");
 }
-:root[data-theme='nuit'] {
+:root[data-theme="nuit"] {
   --bg: #1f1a16;
   --grid: rgba(255, 255, 255, 0.05);
   --surface: #2b241e;
@@ -86,10 +89,10 @@
   --bevel-dark: rgba(0, 0, 0, 0.45);
   --stone: #4a4239;
   --stone-text: #f3ede2;
-  --tex-page: url('./textures/nuit.png');
-  --tex-stone: url('./textures/pierre-sombre.png');
+  --tex-page: url("./textures/nuit.png");
+  --tex-stone: url("./textures/pierre-sombre.png");
 }
-:root[data-theme='clair'] {
+:root[data-theme="clair"] {
   --bg: #f5f6f8;
   --grid: transparent;
   --surface: #ffffff;
@@ -112,7 +115,7 @@
   --tex-sand: none;
   --tex-gold: none;
 }
-:root[data-theme='contraste'] {
+:root[data-theme="contraste"] {
   --bg: #000000;
   --grid: transparent;
   --surface: #000000;
@@ -153,16 +156,16 @@
 
 /* Luciole : à installer dans public/fonts/luciole/ (voir le README de ce dossier). */
 @font-face {
-  font-family: 'Luciole';
+  font-family: "Luciole";
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2');
+  src: url("/fonts/luciole/Luciole-Regular.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Luciole';
+  font-family: "Luciole";
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2');
+  src: url("/fonts/luciole/Luciole-Bold.woff2") format("woff2");
 }
 
 /* ===== Base ===== */
@@ -218,9 +221,9 @@ svg {
   outline: 4px solid var(--focus);
   outline-offset: 3px;
 }
-:root[data-reduce-motion='true'] *,
-:root[data-reduce-motion='true'] *::before,
-:root[data-reduce-motion='true'] *::after {
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
   animation: none !important;
   transition: none !important;
 }
@@ -380,7 +383,7 @@ svg {
   color: var(--on-accent);
 }
 
-:root[data-theme='contraste'] .nav-button.active {
+:root[data-theme="contraste"] .nav-button.active {
   background-color: var(--yellow);
   border-color: var(--yellow);
 }
@@ -447,7 +450,14 @@ svg {
 .hero {
   background-color: var(--surface);
   /* Le ciel en haut, une rangée d'herbe et de terre en bas : le texte reste sur fond uni. */
-  background-image: var(--tex-grass), linear-gradient(180deg, var(--cyan) 0, var(--cyan) 1.1rem, var(--surface) 1.1rem);
+  background-image:
+    var(--tex-grass),
+    linear-gradient(
+      180deg,
+      var(--cyan) 0,
+      var(--cyan) 1.1rem,
+      var(--surface) 1.1rem
+    );
   background-repeat: repeat-x, no-repeat;
   background-position:
     left bottom,
@@ -465,8 +475,8 @@ svg {
   padding: 1.6rem 1.4rem calc(var(--tex-size) + 0.9rem);
   margin-bottom: 1.6rem;
 }
-:root[data-theme='clair'] .hero,
-:root[data-theme='contraste'] .hero {
+:root[data-theme="clair"] .hero,
+:root[data-theme="contraste"] .hero {
   background-image: none;
   padding: 1.2rem 1.4rem;
 }
@@ -526,15 +536,15 @@ a.app-card:active {
 .subject-maths {
   background-image: var(--tex-rock);
 }
-:root[data-theme='clair'] .subject-card,
-:root[data-theme='contraste'] .subject-card {
+:root[data-theme="clair"] .subject-card,
+:root[data-theme="contraste"] .subject-card {
   border-top-width: 12px;
   padding-top: 1.2rem;
 }
-:root[data-theme='clair'] .subject-francais {
+:root[data-theme="clair"] .subject-francais {
   border-top-color: var(--pink);
 }
-:root[data-theme='clair'] .subject-maths {
+:root[data-theme="clair"] .subject-maths {
   border-top-color: var(--cyan);
 }
 .subject-icon,
@@ -651,10 +661,10 @@ a.app-card:active {
   border-color: var(--error);
   color: var(--error);
 }
-:root[data-theme='contraste'] .button {
+:root[data-theme="contraste"] .button {
   box-shadow: 0 4px 0 var(--ink);
 }
-:root[data-theme='contraste'] .button.primary {
+:root[data-theme="contraste"] .button.primary {
   background-color: var(--yellow);
   border-color: var(--yellow);
 }
@@ -694,7 +704,7 @@ a.app-card:active {
 .speak-button.compact {
   padding: 0.2rem;
 }
-.speak-button[aria-pressed='true'] {
+.speak-button[aria-pressed="true"] {
   background: var(--cyan);
   color: var(--on-accent);
 }
@@ -752,7 +762,7 @@ a.app-card:active {
 }
 /* Queue de la bulle */
 .feedback-body::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 2.2rem;
   bottom: calc(-1 * 18px);
@@ -820,7 +830,7 @@ a.app-card:active {
   color: #fbf6ea;
 }
 .rank-shield::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 3px;
   z-index: -1;
@@ -835,39 +845,39 @@ a.app-card:active {
 }
 .tier-bronze {
   --tier-color: #d08a52;
-  --tier-tex: url('./textures/minerai-cuivre.png');
+  --tier-tex: url("./textures/minerai-cuivre.png");
 }
 .tier-argent {
   --tier-color: #d5d9e0;
-  --tier-tex: url('./textures/minerai-fer.png');
+  --tier-tex: url("./textures/minerai-fer.png");
 }
 .tier-or {
   --tier-color: #f2c944;
-  --tier-tex: url('./textures/minerai-or.png');
+  --tier-tex: url("./textures/minerai-or.png");
 }
 .tier-platine {
   --tier-color: #7fe8d6;
-  --tier-tex: url('./textures/minerai-platine.png');
+  --tier-tex: url("./textures/minerai-platine.png");
 }
 .tier-diamant {
   --tier-color: #8fc3ff;
-  --tier-tex: url('./textures/minerai-diamant.png');
+  --tier-tex: url("./textures/minerai-diamant.png");
 }
 .tier-legende {
   --tier-color: #7b3fe4;
-  --tier-tex: url('./textures/minerai-legende.png');
+  --tier-tex: url("./textures/minerai-legende.png");
 }
-:root[data-theme='clair'] .rank-shield::before,
-:root[data-theme='contraste'] .rank-shield::before {
+:root[data-theme="clair"] .rank-shield::before,
+:root[data-theme="contraste"] .rank-shield::before {
   background-image: none;
 }
-:root[data-theme='contraste'] .rank-shield {
+:root[data-theme="contraste"] .rank-shield {
   background: var(--yellow);
 }
-:root[data-theme='contraste'] .rank-shield::before {
+:root[data-theme="contraste"] .rank-shield::before {
   background-color: #000000;
 }
-:root[data-theme='contraste'] .rank-level {
+:root[data-theme="contraste"] .rank-level {
   background: #000000;
   color: var(--yellow);
 }
@@ -900,10 +910,10 @@ a.app-card:active {
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
   transition: width 0.4s ease;
 }
-:root[data-theme='contraste'] .xp-track {
+:root[data-theme="contraste"] .xp-track {
   border-color: var(--surface);
 }
-:root[data-theme='contraste'] .xp-fill {
+:root[data-theme="contraste"] .xp-fill {
   background: var(--yellow);
 }
 .xp-large .rank-shield {
@@ -1162,7 +1172,7 @@ a.app-card:active {
   background-image: none;
   color: var(--on-accent);
 }
-:root[data-theme='clair'] .joker-button {
+:root[data-theme="clair"] .joker-button {
   background-color: var(--surface);
   color: var(--text);
 }
@@ -1270,7 +1280,7 @@ a.app-card:active {
   font-weight: 700;
 }
 /* Contraste élevé : la sélection est un cadre jaune épais, sans changer la couleur des pastilles de thème. */
-:root[data-theme='contraste'] .option.selected {
+:root[data-theme="contraste"] .option.selected {
   background-color: var(--surface);
   color: var(--text);
   outline: 4px solid var(--yellow);
@@ -1283,10 +1293,10 @@ a.app-card:active {
   accent-color: var(--violet);
 }
 .font-atkinson {
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: "Atkinson Hyperlegible", sans-serif;
 }
 .font-opendyslexic {
-  font-family: 'OpenDyslexic', sans-serif;
+  font-family: "OpenDyslexic", sans-serif;
 }
 .font-systeme {
   font-family: Verdana, Arial, sans-serif;
@@ -1323,7 +1333,7 @@ a.app-card:active {
 .slider output {
   font-weight: 700;
 }
-.slider input[type='range'] {
+.slider input[type="range"] {
   width: 100%;
   min-height: 44px;
   accent-color: var(--violet);
@@ -1463,7 +1473,7 @@ a.app-card:active {
   font-weight: 700;
 }
 /* Grille de points : groupes de 5 séparés, couleur alternée par bloc de 5 rangées. */
-.dot-array [role='img'] {
+.dot-array [role="img"] {
   display: inline-flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -1489,7 +1499,7 @@ a.app-card:active {
   margin-left: 0.6rem;
 }
 /* Boîte de 10 */
-.ten-frame [role='img'] {
+.ten-frame [role="img"] {
   display: inline-grid;
   grid-template-columns: repeat(5, 2.4rem);
   gap: 0;
@@ -1502,7 +1512,7 @@ a.app-card:active {
   place-items: center;
 }
 .ten-frame .cell.filled::after {
-  content: '';
+  content: "";
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
@@ -1525,11 +1535,11 @@ a.app-card:active {
 .number-line .jump-label {
   fill: var(--violet);
 }
-:root[data-theme='nuit'] .number-line .jump-label,
-:root[data-theme='nuit'] .number-line path {
+:root[data-theme="nuit"] .number-line .jump-label,
+:root[data-theme="nuit"] .number-line path {
   fill: var(--yellow);
 }
-:root[data-theme='nuit'] .number-line path {
+:root[data-theme="nuit"] .number-line path {
   fill: none;
   stroke: var(--yellow);
 }
@@ -1692,7 +1702,7 @@ a.app-card:active {
 }
 /* La virgule, dessinée sur la séparation unités | dixièmes */
 .decimal-table td.comma-col:not(:empty)::after {
-  content: ',';
+  content: ",";
   position: absolute;
   right: 0.12rem;
   bottom: 0.05rem;
@@ -1810,7 +1820,7 @@ a.app-card:active {
   font-weight: 700;
 }
 .glossary dt::after {
-  content: '\00a0: ';
+  content: "\00a0: ";
 }
 .glossary dd {
   display: inline;
@@ -2017,7 +2027,7 @@ a.app-card:active {
   color: inherit;
 }
 .font-luciole {
-  font-family: 'Luciole', 'Atkinson Hyperlegible', sans-serif;
+  font-family: "Luciole", "Atkinson Hyperlegible", sans-serif;
 }
 .font-arial {
   font-family: Arial, Helvetica, sans-serif;
@@ -2090,7 +2100,14 @@ a.app-card:active {
   color: var(--muted);
 }
 .hero-blocland {
-  background-image: var(--tex-grass), linear-gradient(180deg, var(--cyan) 0, var(--cyan) 2.2rem, var(--surface) 2.2rem);
+  background-image:
+    var(--tex-grass),
+    linear-gradient(
+      180deg,
+      var(--cyan) 0,
+      var(--cyan) 2.2rem,
+      var(--surface) 2.2rem
+    );
   padding-top: 2.6rem;
 }
 .biome-map {
@@ -2150,40 +2167,40 @@ a.app-card:active {
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
-.app-card[class*='biome-'] {
+.app-card[class*="biome-"] {
   background-repeat: repeat-x;
   background-position: left top;
   background-size: var(--tex-size);
   image-rendering: pixelated;
   padding-top: calc(var(--tex-size) + 0.9rem);
 }
-.app-card.locked[class*='biome-'] {
+.app-card.locked[class*="biome-"] {
   background-image: none;
   padding-top: 1.2rem;
 }
-:root[data-theme='clair'] .app-card[class*='biome-'],
-:root[data-theme='contraste'] .app-card[class*='biome-'] {
+:root[data-theme="clair"] .app-card[class*="biome-"],
+:root[data-theme="contraste"] .app-card[class*="biome-"] {
   background-image: none;
   padding-top: 1.2rem;
 }
-:root[data-theme='clair'] .biome-card,
-:root[data-theme='contraste'] .biome-card {
+:root[data-theme="clair"] .biome-card,
+:root[data-theme="contraste"] .biome-card {
   border-top-width: 12px;
   padding-top: 1.2rem;
 }
-:root[data-theme='clair'] .biome-foret {
+:root[data-theme="clair"] .biome-foret {
   border-top-color: var(--green);
 }
-:root[data-theme='clair'] .biome-mine {
+:root[data-theme="clair"] .biome-mine {
   border-top-color: #8c93a0;
 }
-:root[data-theme='clair'] .biome-carriere {
+:root[data-theme="clair"] .biome-carriere {
   border-top-color: var(--yellow);
 }
-:root[data-theme='clair'] .biome-ferme {
+:root[data-theme="clair"] .biome-ferme {
   border-top-color: #a2694a;
 }
-:root[data-theme='clair'] .biome-tour {
+:root[data-theme="clair"] .biome-tour {
   border-top-color: var(--cyan);
 }
 .biome-step {
@@ -2194,8 +2211,8 @@ a.app-card:active {
   font-size: 1.1rem;
   color: var(--muted);
 }
-:root[data-theme='clair'] .biome-step,
-:root[data-theme='contraste'] .biome-step {
+:root[data-theme="clair"] .biome-step,
+:root[data-theme="contraste"] .biome-step {
   top: 0.6rem;
 }
 .biome-name {
@@ -2233,7 +2250,7 @@ a.app-card:active {
   padding: 0.7rem 1rem 0.8rem;
 }
 .creature-says::after {
-  content: '';
+  content: "";
   position: absolute;
   left: -14px;
   bottom: 1.2rem;
@@ -2290,8 +2307,8 @@ a.app-card:active {
 .star.lit svg {
   fill: #ffd54a;
 }
-:root[data-theme='contraste'] .star.lit,
-:root[data-theme='contraste'] .star.lit svg {
+:root[data-theme="contraste"] .star.lit,
+:root[data-theme="contraste"] .star.lit svg {
   color: var(--yellow);
   fill: var(--yellow);
 }
@@ -2426,6 +2443,11 @@ a.app-card:active {
 .word-picto {
   font-size: 2.2rem;
   line-height: 1.1;
+  /* Pictogrammes en emoji : toujours la police d'emoji couleur de l'appareil, jamais la police de texte. */
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    "Twemoji Mozilla", sans-serif;
+  font-variant-emoji: emoji;
 }
 .word-mark {
   position: absolute;
@@ -2453,10 +2475,14 @@ a.app-card:active {
   margin: 0.6rem 0 1rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  background: repeating-linear-gradient(90deg, #6b7380 0 14px, #7d8592 14px 28px);
+  background: repeating-linear-gradient(
+    90deg,
+    #6b7380 0 14px,
+    #7d8592 14px 28px
+  );
   overflow: hidden;
 }
-:root[data-theme='contraste'] .filon-lane {
+:root[data-theme="contraste"] .filon-lane {
   background: #222;
 }
 .filon-block {
@@ -2698,11 +2724,11 @@ a.app-card:active {
   stroke-width: 2.5;
   pointer-events: none;
 }
-:root[data-theme='contraste'] .build-grid .tile polygon {
+:root[data-theme="contraste"] .build-grid .tile polygon {
   fill: #222;
   stroke: #ffe600;
 }
-:root[data-theme='contraste'] .build-grid .tile.alt polygon {
+:root[data-theme="contraste"] .build-grid .tile.alt polygon {
   fill: #333;
 }
 .build-status {
@@ -2718,7 +2744,11 @@ a.app-card:active {
   width: 100%;
   border-radius: var(--radius);
   overflow: hidden;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cyan) 35%, var(--surface)) 0%, var(--surface) 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cyan) 35%, var(--surface)) 0%,
+    var(--surface) 100%
+  );
 }
 .voxel-canvas canvas {
   display: block;
@@ -2801,7 +2831,7 @@ a.app-card:active {
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
   transition: width 0.4s ease;
 }
-:root[data-theme='contraste'] .plan-fill {
+:root[data-theme="contraste"] .plan-fill {
   background: var(--yellow);
 }
 .plan-count {
@@ -2875,7 +2905,7 @@ a.app-card:active {
   margin-bottom: 1.2rem;
   background: color-mix(in srgb, var(--cyan) 30%, var(--surface));
 }
-:root[data-theme='contraste'] .tutorial {
+:root[data-theme="contraste"] .tutorial {
   background: var(--surface);
   border-color: var(--yellow);
 }
@@ -2997,7 +3027,9 @@ a.app-card:active {
   border-radius: var(--radius);
   color: #fbf6ea;
   background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
-  box-shadow: var(--bevel-shadow), 0 var(--shadow-offset) 0 var(--shadow-color);
+  box-shadow:
+    var(--bevel-shadow),
+    0 var(--shadow-offset) 0 var(--shadow-color);
 }
 .arena-beaten {
   background: linear-gradient(180deg, #4a7bb5 0%, #8fd0f5 70%, #6cb33f 100%);
@@ -3120,7 +3152,7 @@ a.app-card:active {
     text-align: left;
   }
 }
-:root[data-theme='contraste'] .arena {
+:root[data-theme="contraste"] .arena {
   background: #000;
   color: #fff;
   border-color: var(--yellow);
