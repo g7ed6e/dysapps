@@ -12,7 +12,7 @@ import { Tutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { creaturePlacements, worldCubes } from './world/terrain';
+import { creaturePlacements, guardianPlacements, worldCubes } from './world/terrain';
 
 /**
  * Le village en 3D : les cinq îles dans une seule scène. On tourne, on se déplace, on zoome,
@@ -24,7 +24,7 @@ export function BloclandWorld() {
   const { state } = useBlocland();
   const navigate = useNavigate();
   const cubes = useMemo(() => worldCubes(state.progress, state.village, false), [state.progress, state.village]);
-  const creatures = useMemo(() => creaturePlacements(state.progress), [state.progress]);
+  const creatures = useMemo(() => [...creaturePlacements(state.progress), ...guardianPlacements(state.progress)], [state.progress]);
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: null, seq: 0 });
   const [forceDay, setForceDay] = useState(false);
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
@@ -33,9 +33,11 @@ export function BloclandWorld() {
   if (!settings.view3d || !hasWebGL()) return null;
   const goTo = (island: BiomeId | null) => setFocus((f) => ({ island, seq: f.seq + 1 }));
   const night = !forceDay && daylight().light < 0.5;
-  const onCreature = (id: BiomeId) => {
+  const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
     if (!biome) return;
+    // Le Gardien sur son îlot : on le touche pour lancer (ou rejouer) le défi.
+    if (kind === 'guardian') return navigate(`/aventure/${id}/gardien`);
     // Une fois sa maison (premier plan) terminée, la créature en parle une fois sur deux.
     const first = plansFor(id)[0];
     const home = first && isPlanDone(first, state.village.plans);
@@ -107,7 +109,9 @@ export function BloclandWorld() {
           <Icon name="help" /> Revoir l’aide
         </button>
       </div>
-      <p className="view-note">Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île pour y entrer, une créature pour l’écouter.</p>
+      <p className="view-note">
+        Un doigt pour tourner, deux doigts pour te déplacer et zoomer. Touche une île pour y entrer, une créature pour l’écouter, un Gardien pour l’affronter.
+      </p>
     </section>
   );
 }
