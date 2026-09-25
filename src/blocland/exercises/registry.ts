@@ -74,4 +74,11 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   etals: { component: CalculScreen, batch: 1 },
   remises: { component: CalculScreen, batch: 1 },
   balances: { component: CalculScreen, batch: 1 },
+  // Français du collège : phrase à trou et règle affichée, même écran.
+  panneaux: { component: CalculScreen, batch: 1 },
+  aiguillage: { component: CalculScreen, batch: 1 },
+  bifurcation: { component: CalculScreen, batch: 1 },
+  rives: { component: CalculScreen, batch: 1 },
+  brume: { component: CalculScreen, batch: 1 },
+  roseaux: { component: CalculScreen, batch: 1 },
 };

@@ -4,6 +4,16 @@ import type { BiomeId } from '../biomes';
 import type { ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
+import carrefourAiguillage1 from './data/carrefour-aiguillage-1.json';
+import carrefourAiguillage2 from './data/carrefour-aiguillage-2.json';
+import carrefourBifurcation1 from './data/carrefour-bifurcation-1.json';
+import carrefourBifurcation2 from './data/carrefour-bifurcation-2.json';
+import maraisRives1 from './data/marais-rives-1.json';
+import maraisRives2 from './data/marais-rives-2.json';
+import maraisBrume1 from './data/marais-brume-1.json';
+import maraisBrume2 from './data/marais-brume-2.json';
+import maraisRoseaux1 from './data/marais-roseaux-1.json';
+import maraisRoseaux2 from './data/marais-roseaux-2.json';
 import foretEchauffement from './data/foret-echauffement-001.json';
 import chasseAn from './data/foret-chasse-son-an.json';
 import chasseOn from './data/foret-chasse-son-on.json';
@@ -57,6 +67,30 @@ const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).m
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
+/** Panneaux (Carrefour des homophones) : les autres jeux de la quête Homophones, avec la règle affichée. */
+const PANNEAUX_SETS: Record<string, number> = { ces: 1, ou: 1, la: 1, leur: 1, quand: 2, peu: 2, cest: 2 };
+const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((set) => ({
+  id: `carrefour-panneaux-${set.id}`,
+  biome: 'carrefour',
+  type: 'panneaux',
+  level: PANNEAUX_SETS[set.id],
+  instruction: `Complète chaque phrase avec ${set.label}. La règle est affichée : lis-la avant de répondre.`,
+  target: set.label,
+  items: set.sentences.map((s, i) => ({
+    key: `${set.id}-${i}`,
+    prompt: s.text,
+    spoken: s.text.replace('…', ' (mot manquant) '),
+    choices: set.choices,
+    answer: s.answer,
+    hint: set.hint,
+    explanation: set.rules[s.answer],
+    aid: { kind: 'rule-card', props: { title: set.label, lines: Object.values(set.rules) } },
+  })),
+  feedback: { correct: 'Bonne route !', wrong: '{explanation}' },
+  reward: { block: 'panneau', amount: 4, xp: 14 },
+  adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
+}));
+
 export const EXERCISES: ExerciseDef[] = [
   foretEchauffement,
   chasseAn,
@@ -90,6 +124,17 @@ export const EXERCISES: ExerciseDef[] = [
   recolte2,
   ...MATHS_EXERCISES,
   ...COLLEGE_EXERCISES,
+  ...panneaux,
+  carrefourAiguillage1,
+  carrefourAiguillage2,
+  carrefourBifurcation1,
+  carrefourBifurcation2,
+  maraisRives1,
+  maraisRives2,
+  maraisBrume1,
+  maraisBrume2,
+  maraisRoseaux1,
+  maraisRoseaux2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

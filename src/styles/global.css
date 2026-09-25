@@ -72,6 +72,8 @@
   --tex-obsidian: url("./textures/obsidienne.png");
   --tex-ice: url("./textures/glace.png");
   --tex-canvas: url("./textures/toile.png");
+  --tex-sign: url("./textures/panneau.png");
+  --tex-peat: url("./textures/tourbe.png");
 }
 :root[data-theme="nuit"] {
   --bg: #1f1a16;
@@ -123,6 +125,8 @@
   --tex-obsidian: none;
   --tex-ice: none;
   --tex-canvas: none;
+  --tex-sign: none;
+  --tex-peat: none;
   --tex-gold: none;
 }
 :root[data-theme="contraste"] {
@@ -2220,6 +2224,14 @@ a.app-card:active {
 .app-card.biome-marche {
   background-image: var(--tex-canvas);
 }
+.biome-card.biome-carrefour,
+.app-card.biome-carrefour {
+  background-image: var(--tex-sign);
+}
+.biome-card.biome-marais,
+.app-card.biome-marais {
+  background-image: var(--tex-peat);
+}
 .biome-card.locked {
   background-image: var(--tex-rock);
 }
@@ -2273,6 +2285,12 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-marche {
   border-top-color: #c9463f;
+}
+:root[data-theme="clair"] .biome-carrefour {
+  border-top-color: #e0b73f;
+}
+:root[data-theme="clair"] .biome-marais {
+  border-top-color: #5a4a2a;
 }
 .biome-step {
   position: absolute;
@@ -3388,6 +3406,12 @@ a.app-card:active {
 .island-sheet.biome-marche {
   background-image: var(--tex-canvas);
 }
+.island-sheet.biome-carrefour {
+  background-image: var(--tex-sign);
+}
+.island-sheet.biome-marais {
+  background-image: var(--tex-peat);
+}
 :root[data-theme="clair"] .island-sheet,
 :root[data-theme="contraste"] .island-sheet {
   background-image: none;
@@ -3689,4 +3713,11 @@ a.island-quest:focus-visible {
 :root[data-theme="contraste"] .rule-card,
 :root[data-theme="contraste"] .ratio-table th {
   background: var(--surface);
+}
+
+/* Le rappel de règle dans l'aide : un seul cadre. */
+.calcul-aid .rule-card {
+  border: none;
+  padding: 0;
+  background: transparent;
 }

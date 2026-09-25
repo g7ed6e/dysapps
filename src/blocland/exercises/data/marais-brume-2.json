@@ -1,0 +1,214 @@
+{
+  "id": "marais-brume-2",
+  "biome": "marais",
+  "type": "brume",
+  "level": 2,
+  "instruction": "Conjugue au futur : choisis la bonne forme. La règle est affichée.",
+  "items": [
+    {
+      "key": "marais-brume-2-0",
+      "prompt": "Demain, nous … tôt.",
+      "spoken": "Demain, nous  (mot manquant)  tôt.",
+      "choices": [
+        "partirons",
+        "partiront",
+        "partirions"
+      ],
+      "answer": "partirons",
+      "hint": "Nous : -ons.",
+      "explanation": "Futur avec nous : « partirons ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-1",
+      "prompt": "Ils … le film ce soir.",
+      "spoken": "Ils  (mot manquant)  le film ce soir.",
+      "choices": [
+        "verront",
+        "verrons",
+        "voiront"
+      ],
+      "answer": "verront",
+      "hint": "Voir → verr-, ils : -ont.",
+      "explanation": "Futur de voir avec ils : « verront ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-2",
+      "prompt": "Tu … ta chambre.",
+      "spoken": "Tu  (mot manquant)  ta chambre.",
+      "choices": [
+        "rangeras",
+        "rangera",
+        "rangerai"
+      ],
+      "answer": "rangeras",
+      "hint": "Tu : -as.",
+      "explanation": "Futur avec tu : « rangeras ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-3",
+      "prompt": "J’… douze ans en mai.",
+      "spoken": "J’ (mot manquant)  douze ans en mai.",
+      "choices": [
+        "aurai",
+        "aurais",
+        "aurez"
+      ],
+      "answer": "aurai",
+      "hint": "Avoir → aur-, je : -ai.",
+      "explanation": "Futur d’avoir avec je : « aurai ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-4",
+      "prompt": "Vous … les résultats lundi.",
+      "spoken": "Vous  (mot manquant)  les résultats lundi.",
+      "choices": [
+        "recevrez",
+        "recevez",
+        "receverez"
+      ],
+      "answer": "recevrez",
+      "hint": "Recevoir → recevr-, vous : -ez.",
+      "explanation": "Futur de recevoir avec vous : « recevrez ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-5",
+      "prompt": "Elle … chez sa tante.",
+      "spoken": "Elle  (mot manquant)  chez sa tante.",
+      "choices": [
+        "ira",
+        "irait",
+        "allera"
+      ],
+      "answer": "ira",
+      "hint": "Aller → ir-, elle : -a.",
+      "explanation": "Futur d’aller avec elle : « ira ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-6",
+      "prompt": "Nous … un gâteau.",
+      "spoken": "Nous  (mot manquant)  un gâteau.",
+      "choices": [
+        "ferons",
+        "fairons",
+        "ferions"
+      ],
+      "answer": "ferons",
+      "hint": "Faire → fer-, nous : -ons.",
+      "explanation": "Futur de faire avec nous : « ferons ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-brume-2-7",
+      "prompt": "Ils … à huit heures.",
+      "spoken": "Ils  (mot manquant)  à huit heures.",
+      "choices": [
+        "viendront",
+        "venirons",
+        "viendrons"
+      ],
+      "answer": "viendront",
+      "hint": "Venir → viendr-, ils : -ont.",
+      "explanation": "Futur de venir avec ils : « viendront ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le futur",
+          "lines": [
+            "Le futur se forme sur l’infinitif : manger + ai → mangerai.",
+            "Terminaisons : -ai, -as, -a, -ons, -ez, -ont.",
+            "Verbes irréguliers : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai, venir → viendrai."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "tourbe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

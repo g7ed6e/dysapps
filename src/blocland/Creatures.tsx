@@ -126,6 +126,25 @@ const BAZAR = fromLayers(
   { G: '#8c8c8c', K: '#1f1a16', E: '#f6f1e6', T: '#1f1a16', t: '#c2c2c2' },
 );
 
+// Sema : un caméléon vert pomme, queue enroulée, gros yeux ronds qui regardent chacun d'un côté.
+const SEMA = fromLayers(
+  [
+    ['.VVVV.', 'VVVVVV', '.VVVV.', '..VV..', '..V...', '.VV...'],
+    ['.VvvV.', 'VvvvvV', '.VVVV.', '......', '......', '......'],
+    ['E.VV.E', '.VVVV.', '......', '......', '......', '......'],
+  ],
+  { V: '#7cc24a', v: '#b6e08a', E: '#f5d63d' },
+);
+
+// Kroa : un triton vert sombre, ventre orange, crête sur le dos.
+const KROA = fromLayers(
+  [
+    ['.TTT.', 'TTTTT', 'TOOOT', 'TTTTT', '.TTT.', '..T..', '..T..'],
+    ['.EKE.', '.TCT.', '.TCT.', '.TCT.', '.....', '.....', '.....'],
+  ],
+  { T: '#3f6b3a', O: '#f28c28', E: '#f5d63d', K: '#1f1a16', C: '#f28c28' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -137,6 +156,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   volcan: LAVI,
   glacier: FRIMAS,
   marche: BAZAR,
+  carrefour: SEMA,
+  marais: KROA,
 };
 
 interface Props {
