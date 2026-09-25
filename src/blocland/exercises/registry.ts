@@ -65,4 +65,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   nenuphars: { component: CalculScreen, batch: 1 },
   'deux-rives': { component: CalculScreen, batch: 1 },
   partage: { component: CalculScreen, batch: 1 },
+  cratere: { component: CalculScreen, batch: 1 },
+  coulee: { component: CalculScreen, batch: 1 },
+  pente: { component: CalculScreen, batch: 1 },
 };

@@ -7,6 +7,7 @@ import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
+import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
 import { compare as compareFractions, equivalent, ofQuantity, onLine as fractionOnLine, readFraction } from '../../apps/fractions/generators';
 import type { BiomeId, BlockId } from '../biomes';
 import type { ExerciseDef, ExerciseItem } from './types';
@@ -124,6 +125,15 @@ const DEUX_RIVES = 'Compare les deux fractions. Les barres te montrent laquelle 
 const PARTAGE = 'Partage la quantité en parts égales, puis prends le nombre de parts demandé. Les points t’aident.';
 const PARTAGE_EGALES = 'Deux fractions égales : le nombre de parts a été multiplié, multiplie aussi les parts prises.';
 
+// ---------- Volcan des décimaux ----------
+
+const CRATERE = 'Repère la virgule : juste avant, les unités ; juste après, les dixièmes, puis les centièmes. Lis le rang demandé dans le tableau.';
+const CRATERE_FRACTION = 'Une fraction décimale devient un nombre à virgule : le dernier chiffre du haut va dans la colonne du bas.';
+const CRATERE_POWER = 'Multiplier ou diviser par 10, 100, 1 000 : chaque chiffre change de rang. Le tableau te montre le déplacement.';
+const COULEE = 'Compare les deux décimaux dans le tableau, rang par rang, depuis la gauche. Le plus long n’est pas toujours le plus grand.';
+const PENTE = 'Sur la droite, l’unité est coupée en dix : chaque graduation vaut un dixième. Lis le nombre repéré par le point.';
+const PENTE_UN = 'Trouve ce qui manque pour arriver à 1. La droite ou les bonds t’aident à compter.';
+
 export const MATHS_EXERCISES: ExerciseDef[] = [
   define({ biome: 'plaine', type: 'tables', level: 1, instruction: TABLES, generators: [multiplicationFrom([2, 5, 10])], block: 'brique' }),
   define({ biome: 'plaine', type: 'tables', level: 2, instruction: TABLES, generators: [multiplicationFrom([3, 4])], block: 'brique' }),
@@ -137,4 +147,11 @@ export const MATHS_EXERCISES: ExerciseDef[] = [
   define({ biome: 'riviere', type: 'deux-rives', level: 1, instruction: DEUX_RIVES, generators: [compareFractions], block: 'galet' }),
   define({ biome: 'riviere', type: 'partage', level: 1, instruction: PARTAGE, generators: [ofQuantity], block: 'galet' }),
   define({ biome: 'riviere', type: 'partage', level: 2, instruction: PARTAGE_EGALES, generators: [equivalent], block: 'galet' }),
+  // Volcan des décimaux
+  define({ biome: 'volcan', type: 'cratere', level: 1, instruction: CRATERE, generators: [readDigit], block: 'obsidienne' }),
+  define({ biome: 'volcan', type: 'cratere', level: 2, instruction: CRATERE_FRACTION, generators: [decimalFraction], block: 'obsidienne' }),
+  define({ biome: 'volcan', type: 'cratere', level: 3, instruction: CRATERE_POWER, generators: [timesPower], block: 'obsidienne' }),
+  define({ biome: 'volcan', type: 'coulee', level: 1, instruction: COULEE, generators: [compareDecimals], block: 'obsidienne' }),
+  define({ biome: 'volcan', type: 'pente', level: 1, instruction: PENTE, generators: [decimalOnLine], block: 'obsidienne' }),
+  define({ biome: 'volcan', type: 'pente', level: 2, instruction: PENTE_UN, generators: [complementToOne], block: 'obsidienne' }),
 ];

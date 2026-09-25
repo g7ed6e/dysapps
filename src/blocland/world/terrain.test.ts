@@ -49,6 +49,7 @@ it('place les îles selon l’archipel : la Forêt au centre, une rangée devant
   expect(at('plaine').oy).toBe(-(ISLAND + ROW_GAP));
   expect(at('plaine').oy + ISLAND).toBeLessThan(bossIsletOrigin(0).y);
   expect(at('riviere')).toEqual({ ox: at('mine').ox, oy: at('plaine').oy });
+  expect(at('volcan')).toEqual({ ox: at('ferme').ox, oy: at('plaine').oy });
 });
 
 it('a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {

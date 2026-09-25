@@ -96,6 +96,20 @@ const BROCHET = fromLayers(
   { S: '#b9c4d1', s: '#dfe6ee', E: '#f5d63d' },
 );
 
+// Le Dragon de cendre : un dragon trapu gris cendre, ventre braise, ailes repliées, yeux rouges.
+const DRAGON = fromLayers(
+  [
+    ['.C...C.', '.C...C.', '.C...C.', '.......'],
+    ['CCCCCCC', 'CRRRRRC', 'CCCCCCC', '.CCCCC.'],
+    ['CCCCCCC', 'CRRRRRC', 'CCCCCCC', '.CCCCC.'],
+    ['W.CCC.W', 'W.CRC.W', 'W.CCC.W', '.......'],
+    ['W.CCC..', 'W.CEC..', 'W.CCC..', '.......'],
+    ['..CCC..', '..CEC..', '..CCC..', '.......'],
+    ['.C...C.', '..CCC..', '.......', '.......'],
+  ],
+  { C: '#6b6670', R: '#e8742e', W: '#4a4550', E: '#e03a2e' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -104,6 +118,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   tour: CHOUETTE,
   plaine: HANNETON,
   riviere: BROCHET,
+  volcan: DRAGON,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

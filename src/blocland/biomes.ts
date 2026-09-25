@@ -1,7 +1,7 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { AnyIconName } from '../components/Icon';
 
-export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere';
+export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour' | 'plaine' | 'riviere' | 'volcan';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -10,6 +10,7 @@ export type BlockId =
   | 'verre'
   | 'brique'
   | 'galet'
+  | 'obsidienne'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -38,6 +39,7 @@ export type BlockTexture =
   | 'verre'
   | 'brique'
   | 'galet'
+  | 'obsidienne'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -57,6 +59,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   verre: { id: 'verre', name: 'Verre', top: '#d6f2f8', side: '#a9dbe6', texture: 'verre' },
   brique: { id: 'brique', name: 'Brique', top: '#d98a5a', side: '#b8623a', texture: 'brique' },
   galet: { id: 'galet', name: 'Galet', top: '#a9bccf', side: '#7f96ad', texture: 'galet' },
+  obsidienne: { id: 'obsidienne', name: 'Obsidienne', top: '#4a3d5c', side: '#2e2538', texture: 'obsidienne' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -316,6 +319,38 @@ export const BIOMES: BiomeDef[] = [
       { id: 'nenuphars', title: 'Nénuphars', description: 'Quelle fraction de la figure est coloriée ? Puis sur la droite.' },
       { id: 'deux-rives', title: 'Deux rives', description: 'Compare deux fractions avec les barres sous les yeux.' },
       { id: 'partage', title: 'Partage du gâteau', description: 'Une fraction d’une quantité, puis des fractions égales.' },
+    ],
+  },
+  {
+    id: 'volcan',
+    name: 'Volcan des décimaux',
+    module: 'Nombres décimaux',
+    description: 'Lire, comparer et placer des nombres à virgule, le tableau de numération toujours affiché.',
+    block: 'obsidienne',
+    guardian: 'le Dragon de cendre',
+    guardianSays: {
+      hit: 'Grrr… Exact. Ma fumée se dissipe.',
+      miss: 'Ce n’est rien : repère la virgule, puis lis les rangs un par un. Reprends.',
+      beaten: 'Grrr. Tu lis les rangs mieux que mes flammes. Le volcan est à toi… et à Lavi.',
+    },
+    challenge: 'Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. »',
+    icon: 'flame',
+    creature: {
+      name: 'Lavi',
+      species: 'salamandre de lave',
+      greeting:
+        'Salut, bâtisseur·se ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
+      lines: [
+        'La virgule, c’est la frontière : à gauche les unités, à droite les dixièmes.',
+        'Le plus long n’est pas le plus grand ! 3,5 bat 3,45.',
+        'Mon abri est en obsidienne, noire et brillante. Chaque nombre en apporte une.',
+      ],
+      home: 'Mon abri d’obsidienne est fini ! Il brille comme 1,0 : entier et sans un dixième qui manque.',
+    },
+    exercises: [
+      { id: 'cratere', title: 'Cratère des rangs', description: 'Quel est le chiffre des dixièmes ? Puis la fraction décimale.' },
+      { id: 'coulee', title: 'Coulée de lave', description: 'Compare deux décimaux, tableau sous les yeux.' },
+      { id: 'pente', title: 'Pente graduée', description: 'Repère un décimal sur la droite, puis complète jusqu’à 1.' },
     ],
   },
 ];

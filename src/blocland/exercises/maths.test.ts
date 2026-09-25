@@ -24,6 +24,20 @@ it('tire des items reproductibles et tous différents', () => {
   expect(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key))).toEqual(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key)));
 });
 
+it('les quêtes du Volcan : tableau ou droite sur chaque item, décimaux à virgule', () => {
+  const volcan = MATHS_EXERCISES.filter((e) => e.biome === 'volcan');
+  expect(volcan.map((e) => e.id)).toEqual(['volcan-cratere-1', 'volcan-cratere-2', 'volcan-cratere-3', 'volcan-coulee-1', 'volcan-pente-1', 'volcan-pente-2']);
+  for (const def of volcan) {
+    expect(def.items.length).toBe(8);
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect(it.aid ?? it.figure).toBeDefined();
+      expect(String(it.explanation).length).toBeGreaterThan(3);
+    }
+  }
+  expect(volcan[3].items.every((it) => (it.aid as { kind: string }).kind === 'decimal-table')).toBe(true);
+});
+
 it('les quêtes de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
   const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'riviere');
   expect(riviere.map((e) => e.id)).toEqual(['riviere-nenuphars-1', 'riviere-nenuphars-2', 'riviere-deux-rives-1', 'riviere-partage-1', 'riviere-partage-2']);

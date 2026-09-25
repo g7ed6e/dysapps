@@ -36,6 +36,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.bois.side]: 'planches',
   [BLOCKS.brique.side]: 'brique',
   [BLOCKS.galet.side]: 'galet',
+  [BLOCKS.obsidienne.side]: 'obsidienne',
   [HAY]: 'or',
 };
 
@@ -203,6 +204,15 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(3, 9, h(3, 9) + 2, TRUNK);
     put(3, 9, h(3, 9) + 3, LEAF);
     put(1, 10, h(1, 10) + 1, BLOCKS.galet.side);
+  },
+  volcan: (put, h) => {
+    // Un petit cône de pierre au sommet incandescent, des blocs d'obsidienne épars.
+    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS.pierre.side);
+    put(9, 4, h(9, 4) + 2, BLOCKS.pierre.side);
+    put(9, 4, h(9, 4) + 3, HAY);
+    put(3, 9, h(3, 9) + 1, BLOCKS.obsidienne.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.obsidienne.side);
+    put(1, 10, h(1, 10) + 2, BLOCKS.obsidienne.side);
   },
 };
 
