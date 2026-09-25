@@ -34,6 +34,9 @@ export interface CreaturePlacement {
   id: BiomeId;
   cubes: VoxelCube[];
   origin: Cell;
+  /** Une créature se promène ; un Gardien reste sur son îlot. */
+  kind?: 'creature' | 'guardian';
+  still?: boolean;
 }
 
 /** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
@@ -53,7 +56,7 @@ export interface WorldCanvasProps {
   build?: BuildProps;
   /** Les créatures, animées à part du terrain. */
   creatures?: CreaturePlacement[];
-  onPickCreature?: (id: BiomeId) => void;
+  onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   burst?: Burst;
@@ -141,6 +144,7 @@ const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) /
 interface Walker {
   group: THREE.Group;
   id: BiomeId;
+  still: boolean;
   origin: Cell;
   from: [number, number];
   to: [number, number];
@@ -355,10 +359,11 @@ export default function WorldCanvas({
       if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
       return { creature: undefined, hit: ground };
     };
-    const creatureIdOf = (o: THREE.Object3D): BiomeId | null => {
+    const creatureIdOf = (o: THREE.Object3D): { id: BiomeId; kind: 'creature' | 'guardian' } | null => {
       let cur: THREE.Object3D | null = o;
       while (cur) {
-        if (typeof cur.userData.creature === 'string') return cur.userData.creature as BiomeId;
+        if (typeof cur.userData.creature === 'string')
+          return { id: cur.userData.creature as BiomeId, kind: cur.userData.kind === 'guardian' ? 'guardian' : 'creature' };
         cur = cur.parent;
       }
       return null;
@@ -382,9 +387,9 @@ export default function WorldCanvas({
       if (moved > 8) return;
       const { creature, hit } = aim(e);
       if (creature) {
-        const id = creatureIdOf(creature.object);
-        if (id && creatureRef.current) return creatureRef.current(id);
-        if (id && !buildRef.current) return pickRef.current?.(id);
+        const found = creatureIdOf(creature.object);
+        if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
+        if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!hit) return;
       if (buildRef.current) {
@@ -490,7 +495,7 @@ export default function WorldCanvas({
         if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
         // Créatures : petit balancement, et un pas de temps en temps.
         for (const wk of w.walkers) {
-          if (now >= wk.next && wk.start === 0) {
+          if (!wk.still && now >= wk.next && wk.start === 0) {
             const step = STEPS[Math.floor(Math.random() * STEPS.length)];
             wk.from = wk.to;
             wk.to = step;
@@ -593,11 +598,22 @@ export default function WorldCanvas({
     }
     w.walkers = creatures.map((c, i) => {
       const group = new THREE.Group();
-      group.userData = { creature: c.id };
+      group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
       for (const g of buildMesh(c.cubes)) group.add(meshOf(g));
       group.position.set(c.origin.x, c.origin.z, c.origin.y);
       w.creatures.add(group);
-      return { group, id: c.id, origin: c.origin, from: [0, 0], to: [0, 0], start: 0, duration: 0, next: performance.now() + 2000 + i * 1500, phase: i * 1.3 };
+      return {
+        group,
+        id: c.id,
+        still: Boolean(c.still),
+        origin: c.origin,
+        from: [0, 0],
+        to: [0, 0],
+        start: 0,
+        duration: 0,
+        next: performance.now() + 2000 + i * 1500,
+        phase: i * 1.3,
+      };
     });
   }, [creatures]);
 

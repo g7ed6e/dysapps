@@ -13,7 +13,7 @@ import { playDone, playNope, playPlace, playRemove } from './sound';
 import { WorldCanvas, hasWebGL } from './three';
 import { BlockIcon } from './Voxel';
 import { getPlan, plansFor } from './world/plans';
-import { creaturePlacements, freeZoneOf, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
+import { creaturePlacements, freeZoneOf, guardianPlacements, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
 import { useAmbience } from './useAmbience';
 import { Tutorial } from './Tutorial';
 import { SESSION_MAX_MINUTES } from './BloclandContext';
@@ -308,7 +308,7 @@ export function ChantierPage() {
           <Suspense fallback={<p className="loading">Chargement du village…</p>}>
             <WorldCanvas
               cubes={worldCubes(state.progress, state.village, false)}
-              creatures={creaturePlacements(state.progress)}
+              creatures={[...creaturePlacements(state.progress), ...guardianPlacements(state.progress)]}
               forceDay={forceDay}
               burst={burst}
               focus={{ island, seq }}

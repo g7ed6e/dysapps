@@ -2,6 +2,8 @@
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeDef, type BiomeId } from '../biomes';
 import { CREATURE_CUBES } from '../Creatures';
+import { GUARDIAN_CUBES } from '../Guardians';
+import { isBossBeaten, isBossUnlocked } from '../boss';
 import type { VoxelCube } from '../Voxel';
 import { FREE_ZONE, type Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
@@ -225,6 +227,46 @@ export function creaturePlacements(
   });
 }
 
+/** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases. */
+export const ISLET_W = 8;
+export const ISLET_H = 4;
+export function bossIsletOrigin(index: number): { x: number; y: number } {
+  const { ox, oy } = islandOrigin(index);
+  return { x: ox + 2, y: oy - ISLET_H - 2 };
+}
+
+export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
+
+/** Le Gardien n'apparaît que lorsqu'il accepte le défi ; vaincu, il devient une statue. */
+export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>): GuardianStatus {
+  if (!isBiomeUnlocked(biome.id, progress) || !isBossUnlocked(biome, progress)) return 'hidden';
+  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
+}
+
+/** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
+function stoneOf(color: string): string {
+  const n = parseInt(color.slice(1), 16);
+  const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
+  const g = Math.round(90 + (lum / 255) * 90);
+  return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
+}
+
+/** Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. */
+export function guardianPlacements(
+  progress: Record<string, { stars: number }>,
+): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
+  const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
+  BIOMES.forEach((b, index) => {
+    const status = guardianStatus(b, progress);
+    if (status === 'hidden') return;
+    const { x, y } = bossIsletOrigin(index);
+    const beaten = status === 'beaten';
+    const cubes = beaten ? GUARDIAN_CUBES[b.id].map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : GUARDIAN_CUBES[b.id];
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x, y, z: 1 } });
+  });
+  return out;
+}
+
 /** Zone des plans d'une île en coordonnées du monde (bornes hautes exclues). */
 export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
   const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
@@ -262,8 +304,19 @@ export function worldCubes(
       }
     }
     DECOR[biome.id](put, h);
-    // Le Gardien vaincu : un bloc d'or planté sur le plateau, visible de loin.
-    if (unlocked && (progress[`${biome.id}-gardien`]?.stars ?? 0) >= 2) put(7, 2, h(7, 2) + 1, BLOCKS.or.side);
+    // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une plateforme de pierre sur deux couches de terre.
+    const guardian = guardianStatus(biome, progress);
+    if (guardian !== 'hidden') {
+      const { x: gx, y: gy } = bossIsletOrigin(index);
+      for (let x = 0; x < ISLET_W; x++) {
+        for (let y = 0; y < ISLET_H; y++) {
+          for (let d = 1; d <= DEPTH; d++) cubes.push({ x: gx + x, y: gy + y, z: -d, color: BLOCKS.terre.side, texture: 'terre', tag: biome.id });
+          cubes.push({ x: gx + x, y: gy + y, z: 0, color: BLOCKS.pierre.side, texture: 'pierre', tag: biome.id });
+        }
+      }
+      // Vaincu : un bloc d'or à côté de la statue.
+      if (guardian === 'beaten') cubes.push({ x: gx + ISLET_W - 1, y: gy, z: 1, color: BLOCKS.or.side, top: BLOCKS.or.top, texture: 'or', tag: biome.id });
+    }
     if (unlocked && withCreatures) {
       for (const c of CREATURE_CUBES[biome.id])
         cubes.push({
