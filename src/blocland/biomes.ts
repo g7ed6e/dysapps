@@ -2,7 +2,7 @@
 import type { AnyIconName } from '../components/Icon';
 
 export type BiomeId = 'foret' | 'mine' | 'carriere' | 'ferme' | 'tour';
-export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'or' | 'cristal';
+export type BlockId = 'bois' | 'pierre' | 'sable' | 'terre' | 'verre' | 'or' | 'cristal' | 'toit' | 'porte' | 'lanterne' | 'barriere' | 'escalier';
 
 export interface BlockDef {
   id: BlockId;
@@ -15,7 +15,23 @@ export interface BlockDef {
   rare?: boolean;
 }
 
-export type BlockTexture = 'herbe' | 'terre' | 'pierre' | 'planches' | 'sable' | 'verre' | 'or' | 'cristal' | 'feuilles' | 'tronc' | 'nuage';
+export type BlockTexture =
+  | 'herbe'
+  | 'terre'
+  | 'pierre'
+  | 'planches'
+  | 'sable'
+  | 'verre'
+  | 'or'
+  | 'cristal'
+  | 'feuilles'
+  | 'tronc'
+  | 'nuage'
+  | 'toit'
+  | 'porte'
+  | 'lanterne'
+  | 'barriere'
+  | 'escalier';
 
 export const BLOCKS: Record<BlockId, BlockDef> = {
   bois: { id: 'bois', name: 'Bois', top: '#c29a5f', side: '#9c7a48', texture: 'planches' },
@@ -25,6 +41,12 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   verre: { id: 'verre', name: 'Verre', top: '#d6f2f8', side: '#a9dbe6', texture: 'verre' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
+  // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
+  toit: { id: 'toit', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
+  porte: { id: 'porte', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
+  lanterne: { id: 'lanterne', name: 'Lanterne', top: '#ffd85c', side: '#f0b42a', texture: 'lanterne' },
+  barriere: { id: 'barriere', name: 'Barrière', top: '#d2b07a', side: '#b8945f', texture: 'barriere' },
+  escalier: { id: 'escalier', name: 'Escalier', top: '#c29a5f', side: '#8a6a3c', texture: 'escalier' },
 };
 
 export interface ExerciseTypeDef {
@@ -40,6 +62,8 @@ export interface CreatureDef {
   greeting: string;
   /** Petites phrases quand on la touche dans le village. */
   lines: string[];
+  /** Quand sa maison (premier plan de l'île) est terminée. */
+  home: string;
 }
 
 export interface BiomeDef {
@@ -71,6 +95,7 @@ export const BIOMES: BiomeDef[] = [
         'Ma cabane a besoin de bois. Viens chasser les sons !',
         'Chaque arbre ici a poussé sur une rime.',
       ],
+      home: 'J’habite ici maintenant ! Viens voir ma cabane quand tu veux.',
     },
     exercises: [
       { id: 'abattage', title: 'Abattage syllabique', description: 'Tape autant de coups que de syllabes.' },
@@ -94,6 +119,7 @@ export const BIOMES: BiomeDef[] = [
         'Ma forge attend sa poutre. Tu as du bois ?',
         'Sous terre, on prend son temps. Moi aussi.',
       ],
+      home: 'Ma forge ronfle à nouveau. Écoute : tac, tac, comme des syllabes.',
     },
     exercises: [
       { id: 'filon', title: 'Filon', description: 'Pioche seulement la lettre cible parmi b, d, p, q.' },
@@ -116,6 +142,7 @@ export const BIOMES: BiomeDef[] = [
         'Mon four ! Il me faut du sable et deux pierres.',
         'Le sable, ça vient des mots qu’on a beaucoup lus.',
       ],
+      home: 'Le four est chaud ! Tu sens ? Ça sent le pain et les mots bien cuits.',
     },
     exercises: [
       { id: 'mot-troue', title: 'Mot troué', description: 'Glisse le bloc de lettres qui manque.' },
@@ -139,6 +166,7 @@ export const BIOMES: BiomeDef[] = [
         'Mon étable, c’est de la terre et quatre poteaux de bois.',
         'Quand tout s’accorde, ça tient debout.',
       ],
+      home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur·se.',
     },
     exercises: [
       { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.' },
@@ -158,6 +186,7 @@ export const BIOMES: BiomeDef[] = [
       species: 'hibou de pierre',
       greeting: 'Hou hou. Chaque paragraphe que tu lis construit un étage de ma tour. Prends ton temps, je ne compte pas les secondes à voix haute.',
       lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
+      home: 'Hou hou ! Mon phare est allumé. Regarde-le briller ce soir.',
     },
     exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.' }],
   },

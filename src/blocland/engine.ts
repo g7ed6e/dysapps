@@ -3,7 +3,7 @@
 import type { BiomeId, BlockId } from './biomes';
 import { BIOMES, BLOCKS } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { cellKey, getPlan, planCells, type PlanDef } from './world/plans';
+import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -53,6 +53,13 @@ export interface Village {
   placed: Partial<Record<BiomeId, BuildCell[]>>;
   /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
   plans: Record<string, string[]>;
+  /** Journal de construction : un bâtiment terminé par ligne, du plus ancien au plus récent. */
+  journal: JournalEntry[];
+}
+
+export interface JournalEntry {
+  day: string;
+  plan: string;
 }
 
 /** Un bloc posé, en coordonnées relatives à l'île ; z = 0 est le premier bloc sur le sol. */
@@ -79,7 +86,7 @@ export const EMPTY_STATE: BloclandState = {
   types: {},
   chests: 0,
   fluence: {},
-  village: { placed: {}, plans: {} },
+  village: { placed: {}, plans: {}, journal: [] },
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -191,6 +198,14 @@ export function sanitizeState(input: unknown): BloclandState {
       if (list.length) plans[id] = list;
     }
   }
+  const journal: JournalEntry[] = Array.isArray(village.journal)
+    ? village.journal
+        .filter(
+          (e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.plan === 'string' && Boolean(getPlan(e.plan as string)),
+        )
+        .map((e) => ({ day: e.day as string, plan: e.plan as string }))
+        .slice(-100)
+    : [];
   return {
     progress,
     spaced,
@@ -199,7 +214,7 @@ export function sanitizeState(input: unknown): BloclandState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
-    village: { placed, plans },
+    village: { placed, plans, journal },
   };
 }
 
@@ -283,7 +298,7 @@ export type FillResult =
   | { state: BloclandState; ok: false; reason: FillReason; block?: BlockId };
 
 /** Pose le bloc attendu à une cellule du plan (le type est imposé par le plan). Termine le plan si c'était la dernière. */
-export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: number, z: number): FillResult {
+export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: number, z: number, today = todayISO()): FillResult {
   const cell = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
   if (!cell) return { state, ok: false, reason: 'pas-dans-le-plan' };
   const done = state.village.plans[plan.id] ?? [];
@@ -297,7 +312,15 @@ export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: 
     ok: true,
     block: cell.block,
     completed,
-    state: { ...state, inventory, village: { ...state.village, plans: { ...state.village.plans, [plan.id]: nextDone } } },
+    state: {
+      ...state,
+      inventory,
+      village: {
+        ...state.village,
+        plans: { ...state.village.plans, [plan.id]: nextDone },
+        journal: completed ? [...state.village.journal, { day: today, plan: plan.id }] : state.village.journal,
+      },
+    },
   };
 }
 
@@ -306,6 +329,14 @@ export function nextFillable(state: BloclandState, plan: PlanDef): { x: number; 
   const done = new Set(state.village.plans[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.inventory[c.block] ?? 0) > 0);
   return cell ? { x: cell.x, y: cell.y, z: cell.z } : null;
+}
+
+/** Le plan en cours d'une île (voir plans.ts), ou le dernier si tout est terminé. */
+export function currentPlan(state: BloclandState, island: BiomeId): { plan: PlanDef; allDone: boolean } | null {
+  const active = activePlan(island, state.village.plans);
+  if (active) return { plan: active, allDone: false };
+  const all = PLANS_OF(island);
+  return all.length ? { plan: all[all.length - 1], allDone: true } : null;
 }
 
 /** La cellule d'un plan à ces coordonnées, si elle existe (posée ou non). */

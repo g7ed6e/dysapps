@@ -82,7 +82,7 @@ Chaque PR est livrable seule, testée, avec la vue simple qui suit.
 2. ✅ **Poser dans le monde** — inventaire en HUD, pose sur la face touchée, retrait (appui long + bouton), zone libre par île, retour des anciens blocs dans l'inventaire, sons de pose et retrait, vue simple équivalente.
 3. ✅ **Les plans** — format JSON, fantômes, validation par type de bloc, avancement, premier plan par île, récompense (XP, coffre, succès), consignes lues à voix haute.
 4. ✅ **Le monde qui vit** — jour et nuit selon l'heure réelle, nuages, eau animée, créatures qui se promènent et parlent, particules, ambiance sonore en option, tout coupé par « réduire les animations ».
-5. **Le village s'achève** — deuxième et troisième plans par île, nouveaux blocs (porte, escalier, torche, toit, barrière), créature qui emménage, journal de construction (étape 6 du brief), succès dédiés.
+5. ✅ **Le village s'achève** — deuxième et troisième plans par île, nouveaux blocs (porte, escalier, torche, toit, barrière), créature qui emménage, journal de construction (étape 6 du brief), succès dédiés.
 6. **Finitions** — tests de performance sur tablette, tutoriel d'entrée dans le village (trois bulles), accessibilité clavier dans la scène, réglages (sons, sensibilité de la caméra).
 
 Ordre non négociable : 1 → 2 → 3 ; 4 et 5 peuvent s'intervertir.

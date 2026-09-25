@@ -1,0 +1,73 @@
+{
+  "id": "tour-quai",
+  "biome": "tour",
+  "name": "Le quai du phare",
+  "origin": {
+    "x": 2,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": -2,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "block": "barriere"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 1,
+      "block": "lanterne"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "block": "escalier"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "block": "verre"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "verre"
+    }
+  ],
+  "reward": {
+    "xp": 80,
+    "chest": {
+      "or": 3,
+      "cristal": 3
+    }
+  },
+  "done": "Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau."
+}

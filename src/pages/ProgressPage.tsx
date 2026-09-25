@@ -34,6 +34,10 @@ export function ProgressPage() {
             <dt>Meilleur combo</dt>
             <dd>x{progress.bestStreak}</dd>
           </div>
+          <div>
+            <dt>Bâtiments</dt>
+            <dd>{progress.plansCompleted}</dd>
+          </div>
         </dl>
       </div>
 

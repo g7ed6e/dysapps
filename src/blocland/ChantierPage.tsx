@@ -7,12 +7,12 @@ import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeId, type BlockId } from './b
 import { useBlocland } from './BloclandContext';
 import { BuildGrid } from './BuildGrid';
 import { useProgress } from '../core/ProgressContext';
-import { FREE_ZONE, MAX_HEIGHT, columnHeight, inFreeZone, nextFillable, planCellAt, planStatus, placedOn, type PlaceReason } from './engine';
+import { FREE_ZONE, MAX_HEIGHT, columnHeight, currentPlan, inFreeZone, nextFillable, planCellAt, planStatus, placedOn, type PlaceReason } from './engine';
 import { PlanPanel, whereToEarn } from './PlanPanel';
 import { playDone, playNope, playPlace, playRemove } from './sound';
 import { WorldCanvas, hasWebGL } from './three';
 import { BlockIcon } from './Voxel';
-import { plansFor } from './world/plans';
+import { getPlan, plansFor } from './world/plans';
 import { creaturePlacements, freeZoneOf, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
@@ -55,8 +55,10 @@ export function ChantierPage() {
   const sound = (f: () => void) => settings.sounds && f();
   // Le plan en cours de l'île : le premier qui n'est pas terminé (sinon le dernier, pour afficher « terminé »).
   const plans = plansFor(island);
-  const plan = plans.find((p) => !planStatus(state, p).complete) ?? plans[plans.length - 1];
+  const current = currentPlan(state, island);
+  const plan = current?.plan;
   const status = plan ? planStatus(state, plan) : null;
+  const journal = [...state.village.journal].reverse();
 
   // Le premier type disponible est présélectionné dès qu'il y en a un.
   useEffect(() => {
@@ -188,7 +190,17 @@ export function ChantierPage() {
         })}
       </div>
 
-      {plan && status && <PlanPanel plan={plan} status={status} canFill={!status.complete && nextFillable(state, plan) !== null} onFillNext={fillNext} />}
+      {plan && status && (
+        <PlanPanel
+          plan={plan}
+          status={status}
+          allDone={current?.allDone}
+          index={plans.indexOf(plan) + 1}
+          total={plans.length}
+          canFill={!status.complete && nextFillable(state, plan) !== null}
+          onFillNext={fillNext}
+        />
+      )}
 
       <section className="panel inventory" aria-labelledby="inventaire-titre">
         <h2 id="inventaire-titre" className="section-title inventory-title">
@@ -309,6 +321,27 @@ export function ChantierPage() {
             </button>
           )}
         </div>
+      )}
+      {journal.length > 0 && (
+        <section className="panel journal" aria-labelledby="journal-titre">
+          <h2 id="journal-titre" className="section-title inventory-title">
+            <Icon name="flag" /> Journal du village
+          </h2>
+          <ol className="journal-list">
+            {journal.map((e, i) => {
+              const p = getPlan(e.plan);
+              return (
+                <li key={`${e.day}-${e.plan}-${i}`}>
+                  <span className="journal-day">{new Date(e.day + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</span>
+                  <span>
+                    <strong>{p?.name ?? e.plan}</strong>
+                    {p ? ` · ${BIOMES.find((b) => b.id === p.biome)?.name}` : ''}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
       )}
       {!in3d && cell && <span className="visually-hidden">{`Colonne ${cell.x + 1}, ${cell.y + 1} : ${columnHeight(gridCells, cell.x, cell.y)} bloc(s)`}</span>}
     </>

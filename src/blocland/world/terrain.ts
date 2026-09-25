@@ -4,7 +4,7 @@ import { BIOMES, BLOCKS, isBiomeUnlocked, type BiomeDef, type BiomeId } from '..
 import { CREATURE_CUBES } from '../Creatures';
 import type { VoxelCube } from '../Voxel';
 import { FREE_ZONE, type Village } from '../engine';
-import { PLAN_ZONE, planCells, plansFor } from './plans';
+import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 
 /** Côté d'une île (en blocs) et espace entre deux îles. */
 export const ISLAND = 12;
@@ -231,7 +231,7 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
   return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
 }
 
-export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {} }, withCreatures = true): VoxelCube[] {
+export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {}, journal: [] }, withCreatures = true): VoxelCube[] {
   const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
@@ -272,10 +272,14 @@ export function worldCubes(progress: Record<string, { stars: number }>, village:
       const def = BLOCKS[c.block];
       cubes.push({ x: ox + c.x, y: oy + c.y, z: c.z + 1, color: def.side, top: def.top, texture: def.texture, tag: biome.id, placed: true });
     }
-    // Les plans : cellules posées en dur, cellules restantes en fantôme (seulement si l'île est ouverte).
+    // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
     if (unlocked) {
+      let ghostsShown = false;
       for (const plan of plansFor(biome.id)) {
         const done = new Set(village.plans[plan.id] ?? []);
+        const finished = isPlanDone(plan, village.plans);
+        if (!finished && ghostsShown) break;
+        if (!finished) ghostsShown = true;
         for (const c of planCells(plan)) {
           const def = BLOCKS[c.block];
           const built = done.has(c.key);

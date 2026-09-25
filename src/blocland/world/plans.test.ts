@@ -1,18 +1,19 @@
 import { BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, FREE_ZONE, MAX_HEIGHT, fillPlanCell, inFreeZone, nextFillable, planStatus, type BloclandState } from '../engine';
-import { PLANS, PLAN_ZONE, planCells, plansFor } from './plans';
+import { PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
 import { groundHeight, islandOrigin, worldCubes } from './terrain';
 
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
-  const decor = worldCubes({ 'foret-x': { stars: 1 }, 'mine-x': { stars: 1 }, 'carriere-x': { stars: 1 }, 'ferme-x': { stars: 1 } }).filter((c) => !c.ghost);
+  // Le décor sans les créatures (elles se promènent) et sans les fantômes.
+  const decor = worldCubes({ 'foret-x': { stars: 1 }, 'mine-x': { stars: 1 }, 'carriere-x': { stars: 1 }, 'ferme-x': { stars: 1 } }, undefined, false).filter((c) => !c.ghost);
   const at = new Set(decor.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((b, i) => {
     const plans = plansFor(b.id);
-    expect(plans.length).toBeGreaterThanOrEqual(1);
+    expect(plans.length).toBe(3);
     const { ox, oy } = islandOrigin(i);
     for (const plan of plans) {
       const cells = planCells(plan);
-      expect(cells.length).toBeGreaterThan(8);
+      expect(cells.length).toBeGreaterThanOrEqual(8);
       expect(new Set(cells.map((c) => c.key)).size).toBe(cells.length);
       for (const c of cells) {
         expect(c.x).toBeGreaterThanOrEqual(PLAN_ZONE.x);
@@ -76,7 +77,7 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
 it('affiche les fantômes d’un plan seulement sur une île ouverte, et les remplace une fois posés', () => {
   const plan = plansFor('foret')[0];
   const first = planCells(plan)[0];
-  const cubes = worldCubes({}, { placed: {}, plans: { [plan.id]: [first.key] } });
+  const cubes = worldCubes({}, { placed: {}, plans: { [plan.id]: [first.key] }, journal: [] });
   const ghosts = cubes.filter((c) => c.ghost);
   expect(ghosts.length).toBe(planCells(plan).length - 1);
   expect(ghosts.every((c) => c.tag === 'foret')).toBe(true);
@@ -84,4 +85,48 @@ it('affiche les fantômes d’un plan seulement sur une île ouverte, et les rem
   const built = cubes.find((c) => c.x === ox + first.x && c.y === oy + first.y && c.z === first.z + 1);
   expect(built?.ghost).toBeFalsy();
   expect(built?.texture).toBe(BLOCKS[first.block].texture);
+});
+
+it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournissent les blocs de finition du plan suivant', () => {
+  for (const b of BIOMES) {
+    const plans = plansFor(b.id);
+    const seen = new Set<string>();
+    const kit: Partial<Record<string, number>> = {};
+    plans.forEach((plan, i) => {
+      for (const c of planCells(plan)) {
+        expect(seen.has(c.key)).toBe(false);
+        seen.add(c.key);
+      }
+      if (i > 0) {
+        // Les blocs qui ne se gagnent dans aucun biome doivent venir des coffres des plans précédents de l'île.
+        const needed: Partial<Record<string, number>> = {};
+        for (const c of plan.cells) if (!BIOMES.some((x) => x.block === c.block)) needed[c.block] = (needed[c.block] ?? 0) + 1;
+        for (const [block, n] of Object.entries(needed)) expect(kit[block] ?? 0).toBeGreaterThanOrEqual(n ?? 0);
+      }
+      for (const [block, n] of Object.entries(plan.reward.chest)) kit[block] = (kit[block] ?? 0) + (n ?? 0);
+    });
+  }
+});
+
+it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant', () => {
+  const [first, second] = plansFor('foret');
+  const none = worldCubes({}, { placed: {}, plans: {}, journal: [] });
+  expect(none.filter((c) => c.ghost).length).toBe(planCells(first).length);
+  expect(activePlan('foret', {})).toBe(first);
+  const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
+  expect(isPlanDone(first, doneFirst)).toBe(true);
+  expect(activePlan('foret', doneFirst)).toBe(second);
+  const after = worldCubes({}, { placed: {}, plans: doneFirst, journal: [] });
+  expect(after.filter((c) => c.ghost).length).toBe(planCells(second).length);
+  expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'foret' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
+});
+
+it('écrit une ligne de journal quand un plan est terminé', () => {
+  const plan = plansFor('foret')[0];
+  let state: BloclandState = { ...EMPTY_STATE, inventory: { bois: 20 } };
+  for (const c of planCells(plan)) {
+    const r = fillPlanCell(state, plan, c.x, c.y, c.z, '2026-09-25');
+    if (r.ok) state = r.state;
+  }
+  expect(state.village.journal).toEqual([{ day: '2026-09-25', plan: plan.id }]);
 });

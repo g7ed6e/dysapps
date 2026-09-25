@@ -93,18 +93,22 @@ it('propose le plan de l’île et pose ses blocs avec le bouton, jusqu’à la 
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: n } }));
   const user = userEvent.setup();
   renderAt('/aventure/chantier');
-  expect(screen.getByRole('heading', { name: /Plan : La cabane de Mousso/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Plan 1 \/ 3 : La cabane de Mousso/ })).toBeInTheDocument();
   expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '0');
   const button = () => screen.getByRole('button', { name: /Poser le bloc suivant/ });
   await user.click(button());
   expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
   expect(saved().village.plans[plan.id]).toHaveLength(1);
   for (let i = 1; i < n; i++) await user.click(button());
-  expect(screen.getByText(/Terminé !/)).toBeInTheDocument();
   expect(screen.getByText(/La cabane de Mousso : terminé/)).toBeInTheDocument();
-  expect(saved().inventory).toMatchObject({ bois: 0, pierre: 3 });
+  expect(saved().inventory).toMatchObject({ bois: 0, pierre: 3, toit: 9, porte: 1, lanterne: 1 });
+  expect(saved().village.journal).toHaveLength(1);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).plansCompleted).toBe(1);
-  expect(screen.queryByRole('button', { name: /Poser le bloc suivant/ })).not.toBeInTheDocument();
+  // Le plan suivant de l'île prend la suite, avec le kit du coffre (il manque encore 2 bois).
+  expect(screen.getByRole('heading', { name: /Plan 2 \/ 3 : Le toit de la cabane/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeEnabled();
+  expect(screen.getByRole('list', { name: /Blocs qu’il manque/ })).toHaveTextContent(/2 bois/);
+  expect(screen.getByRole('region', { name: /Journal du village/ })).toHaveTextContent(/La cabane de Mousso/);
 });
 
 it('sans le bon bloc, le plan dit où le gagner', async () => {

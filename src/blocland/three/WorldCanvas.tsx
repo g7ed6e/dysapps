@@ -104,6 +104,17 @@ function materialFor(texture: string | undefined, face: FaceSide, color: string 
     return m;
   }
   if (!texture) return tintedMaterial(color ?? '#9c9c9c');
+  // La lanterne brille (surtout la nuit).
+  if (texture === 'lanterne') {
+    let m = ghostCache.get('lit:lanterne');
+    if (!m) {
+      const base = blockMaterial('lanterne');
+      const src = (Array.isArray(base) ? base[0] : base) as THREE.MeshLambertMaterial;
+      m = new THREE.MeshLambertMaterial({ map: src.map, emissive: 0xffb830, emissiveIntensity: 0.55 });
+      ghostCache.set('lit:lanterne', m);
+    }
+    return m;
+  }
   const m = blockMaterial(texture as TextureKind);
   if (!Array.isArray(m)) return m;
   // Ordre d'une BoxGeometry : +x, −x, +y (dessus), −y (dessous), +z, −z.

@@ -1,7 +1,24 @@
 // Textures pixel 16 × 16 générées par le code (aucune image empruntée) : herbe, terre, pierre, planches…
 import * as THREE from 'three';
 
-export type TextureKind = 'herbe' | 'terre' | 'pierre' | 'planches' | 'sable' | 'verre' | 'or' | 'cristal' | 'feuilles' | 'tronc' | 'nuage' | 'eau';
+export type TextureKind =
+  | 'herbe'
+  | 'terre'
+  | 'pierre'
+  | 'planches'
+  | 'sable'
+  | 'verre'
+  | 'or'
+  | 'cristal'
+  | 'feuilles'
+  | 'tronc'
+  | 'nuage'
+  | 'eau'
+  | 'toit'
+  | 'porte'
+  | 'lanterne'
+  | 'barriere'
+  | 'escalier';
 
 const SIZE = 16;
 
@@ -71,6 +88,40 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
     side: (x, y, r) => (x % 4 === 0 ? [80, 55, 30] : grain('#5f4128', '#7a5636')(x, y, r)),
   },
   nuage: { top: () => [255, 255, 255], side: () => [236, 244, 250] },
+  // Tuiles : rangées décalées, rouge brique.
+  toit: {
+    top: (x, y, r) => (y % 4 === 0 || (x + (y % 8 < 4 ? 0 : 4)) % 8 === 0 ? [110, 40, 34] : grain('#8a3630', '#b04a3e')(x, y, r)),
+    side: (x, y, r) => (y % 4 === 0 ? [110, 40, 34] : grain('#8a3630', '#a8443a')(x, y, r)),
+  },
+  // Porte : planches sombres, cadre et poignée.
+  porte: {
+    top: grain('#6f4d2a', '#8a6236'),
+    side: (x, y, r) =>
+      x === 0 || x === 15 || y === 0 || y === 15
+        ? [70, 46, 24]
+        : x === 11 && y >= 7 && y <= 8
+          ? [240, 200, 90]
+          : x === 7 || x === 8
+            ? [90, 62, 34]
+            : grain('#6f4d2a', '#8a6236')(x, y, r),
+  },
+  // Lanterne : cadre sombre, cœur jaune qui brille.
+  lanterne: {
+    top: (x, y) => (x <= 1 || x >= 14 || y <= 1 || y >= 14 ? [60, 44, 30] : [255, 216, 92]),
+    side: (x, y, r) =>
+      x <= 1 || x >= 14 || y <= 2 || y >= 13 ? [60, 44, 30] : Math.hypot(x - 7.5, y - 7.5) < 3.5 ? [255, 240, 170] : grain('#f0b42a', '#ffd85c')(x, y, r),
+  },
+  // Barrière : planches claires avec des poteaux et des traverses sombres.
+  barriere: {
+    top: grain('#c9a870', '#d2b07a'),
+    side: (x, y, r) =>
+      x === 1 || x === 2 || x === 13 || x === 14 || y === 4 || y === 5 || y === 10 || y === 11 ? [124, 92, 52] : grain('#c9a870', '#d8b986')(x, y, r),
+  },
+  // Escalier : marches en planches, chaque marche soulignée.
+  escalier: {
+    top: (x, y, r) => (y % 4 === 3 ? [110, 82, 46] : grain('#a67f46', '#c29a5f')(x, y, r)),
+    side: (x, y, r) => (y % 4 === 3 || x % 4 === 3 ? [110, 82, 46] : grain('#8a6a3c', '#a67f46')(x, y, r)),
+  },
   // Eau : bleu grainé avec quelques crêtes claires en diagonale, qui défilent pour onduler.
   eau: {
     top: (x, y, r) => ((x + y) % 8 === 0 && r() < 0.6 ? [150, 205, 240] : grain('#4a9be0', '#5eaae8')(x, y, r)),
