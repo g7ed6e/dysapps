@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from 'react';
 import { BLOCKS } from './biomes';
 import { GRID_SIZE, columnHeight, type BuildCell } from './engine';
-import { Cube, project } from './Voxel';
+import { Cube, PixelGrainDefs, project } from './Voxel';
 
 interface Props {
   build: BuildCell[];
@@ -42,6 +42,7 @@ export function BuildGrid({ build, selected, onSelect, onAction }: Props) {
 
   return (
     <svg className="build-grid" viewBox={viewBox} role="group" aria-label="Chantier">
+      <PixelGrainDefs />
       {tiles.map(({ x, y }) => {
         const h = columnHeight(build, x, y);
         const isSel = selected?.x === x && selected?.y === y;

@@ -6,9 +6,23 @@ import type { VoxelCube } from './Voxel';
 export const ISLAND = 7;
 const GAP = 3;
 const LOCKED = { top: '#d6d1c4', side: '#b9b4a8' };
-const TRUNK = BLOCKS.bois.side;
-const LEAF = '#5e9b4a';
+const TRUNK = '#6b4a2e';
+const LEAF = '#4e8f36';
+const GRASS = '#6cb33f';
 const DARK = '#3b2d20';
+/** Textures 3D par couleur de décor (les couleurs servent au SVG et aux îles verrouillées). */
+const TEXTURES: Record<string, string> = {
+  [TRUNK]: 'tronc',
+  [LEAF]: 'feuilles',
+  [GRASS]: 'herbe',
+  [BLOCKS.terre.side]: 'terre',
+  [BLOCKS.pierre.side]: 'pierre',
+  [BLOCKS.sable.side]: 'sable',
+  [BLOCKS.verre.side]: 'verre',
+  [BLOCKS.or.side]: 'or',
+  [BLOCKS.bois.side]: 'planches',
+  '#e8c66f': 'or',
+};
 
 /**
  * Coin (x, y) de l'île d'un biome : les îles se suivent en zigzag, la première à l'x le plus grand.
@@ -77,7 +91,7 @@ function bridge(from: BiomeDef, to: BiomeDef, cubes: VoxelCube[]): void {
     const key = `${x},${y}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    cubes.push({ x, y, z: 0, color: TRUNK, tag: to.id });
+    cubes.push({ x, y, z: 0, color: BLOCKS.bois.side, texture: 'planches', tag: to.id });
   }
 }
 
@@ -89,11 +103,11 @@ export function mapCubes(progress: Record<string, { stars: number }>): VoxelCube
     const unlocked = isBiomeUnlocked(biome.id, progress);
     const block = BLOCKS[biome.block];
     const put = (x: number, y: number, z: number, color: string) =>
-      cubes.push({ x: ox + x, y: oy + y, z, color: unlocked ? color : LOCKED.side, tag: biome.id });
+      cubes.push({ x: ox + x, y: oy + y, z, color: unlocked ? color : LOCKED.side, texture: unlocked ? TEXTURES[color] : 'pierre', tag: biome.id });
     for (let x = 0; x < ISLAND; x++) {
       for (let y = 0; y < ISLAND; y++) {
         put(x, y, -1, BLOCKS.terre.side);
-        put(x, y, 0, biome.id === 'foret' || biome.id === 'ferme' ? LEAF : block.side);
+        put(x, y, 0, biome.id === 'foret' || biome.id === 'ferme' ? GRASS : block.side);
       }
     }
     DECOR[biome.id](put);
