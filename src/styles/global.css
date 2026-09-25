@@ -585,7 +585,15 @@ a.app-card:active {
 .subject-maths .app-icon {
   background: var(--cyan);
 }
-.locked .app-icon {
+/* Cartes de quête d'un biome : l'icône sur un fond de sable, lisible dans tous les thèmes (Nuit compris). */
+.app-card[class*="biome-"] .app-icon {
+  background-color: var(--yellow);
+  background-image: var(--tex-sand);
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+}
+.locked .app-icon,
+.app-card.locked[class*="biome-"] .app-icon {
   background: transparent;
   color: var(--muted);
 }
