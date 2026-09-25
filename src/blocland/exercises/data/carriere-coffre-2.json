@@ -1,0 +1,64 @@
+{
+  "id": "carriere-coffre-2",
+  "biome": "carriere",
+  "type": "coffre",
+  "level": 2,
+  "instruction": "Écoute le mot-outil, puis choisis la bonne écriture. Ces mots sont dans le coffre : on les révise souvent.",
+  "items": [
+    {
+      "key": "plusieurs",
+      "word": "plusieurs",
+      "choices": ["plusieurs", "plusieur", "pluzieurs"],
+      "answer": "plusieurs",
+      "hint": "plusieurs finit toujours par un s, même seul."
+    },
+    {
+      "key": "quelquefois",
+      "word": "quelquefois",
+      "choices": ["quelquefois", "quelquefoi", "quelque fois"],
+      "answer": "quelquefois",
+      "hint": "quelquefois en un seul mot, avec un s muet."
+    },
+    {
+      "key": "autrefois",
+      "word": "autrefois",
+      "choices": ["autrefois", "autrefoi", "autre fois"],
+      "answer": "autrefois",
+      "hint": "autrefois : autre, puis fois, en un seul mot."
+    },
+    {
+      "key": "ensemble",
+      "word": "ensemble",
+      "choices": ["ensemble", "ansemble", "ensenble"],
+      "answer": "ensemble",
+      "hint": "ensemble : en, sem, ble ; devant b, on écrit m."
+    },
+    {
+      "key": "souvent",
+      "word": "souvent",
+      "choices": ["souvent", "souvant", "souven"],
+      "answer": "souvent",
+      "hint": "souvent : sou, puis vent, comme le vent."
+    },
+    {
+      "key": "presque",
+      "word": "presque",
+      "choices": ["presque", "prèsque", "presqe"],
+      "answer": "presque",
+      "hint": "presque : pres sans accent, puis que."
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "foret-rimes-eau",
+  "biome": "foret",
+  "type": "rimes",
+  "level": 1,
+  "target": "chapeau",
+  "instruction": "Tape les mots qui riment avec chapeau, comme dans la chanson. Puis valide.",
+  "items": [
+    {
+      "key": "bateau",
+      "word": "bateau",
+      "image": "🚤",
+      "correct": true,
+      "ending": "[o]"
+    },
+    {
+      "key": "souris",
+      "word": "souris",
+      "image": "🐭",
+      "correct": false,
+      "ending": "[i]"
+    },
+    {
+      "key": "gâteau",
+      "word": "gâteau",
+      "image": "🎂",
+      "correct": true,
+      "ending": "[o]"
+    },
+    {
+      "key": "maison",
+      "word": "maison",
+      "image": "🏠",
+      "correct": false,
+      "ending": "[on]"
+    },
+    {
+      "key": "château",
+      "word": "château",
+      "image": "🏰",
+      "correct": true,
+      "ending": "[o]"
+    },
+    {
+      "key": "cadeau",
+      "word": "cadeau",
+      "image": "🎁",
+      "correct": true,
+      "ending": "[o]"
+    },
+    {
+      "key": "lapin",
+      "word": "lapin",
+      "image": "🐰",
+      "correct": false,
+      "ending": "[in]"
+    },
+    {
+      "key": "râteau",
+      "word": "râteau",
+      "image": "🧹",
+      "correct": true,
+      "ending": "[o]"
+    }
+  ],
+  "feedback": {
+    "correct": "Ça rime !",
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

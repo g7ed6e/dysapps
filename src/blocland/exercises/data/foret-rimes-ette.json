@@ -1,0 +1,79 @@
+{
+  "id": "foret-rimes-ette",
+  "biome": "foret",
+  "type": "rimes",
+  "level": 2,
+  "target": "fourchette",
+  "instruction": "Tape les mots qui riment avec fourchette, comme dans la chanson. Puis valide.",
+  "items": [
+    {
+      "key": "bicyclette",
+      "word": "bicyclette",
+      "image": "🚲",
+      "correct": true,
+      "ending": "[ète]"
+    },
+    {
+      "key": "tomate",
+      "word": "tomate",
+      "image": "🍅",
+      "correct": false,
+      "ending": "[ate]"
+    },
+    {
+      "key": "chaussette",
+      "word": "chaussette",
+      "image": "🧦",
+      "correct": true,
+      "ending": "[ète]"
+    },
+    {
+      "key": "camion",
+      "word": "camion",
+      "image": "🚚",
+      "correct": false,
+      "ending": "[on]"
+    },
+    {
+      "key": "allumette",
+      "word": "allumette",
+      "image": "🔥",
+      "correct": true,
+      "ending": "[ète]"
+    },
+    {
+      "key": "pirate",
+      "word": "pirate",
+      "image": "🏴‍☠️",
+      "correct": false,
+      "ending": "[ate]"
+    },
+    {
+      "key": "trompette",
+      "word": "trompette",
+      "image": "🎺",
+      "correct": true,
+      "ending": "[ète]"
+    },
+    {
+      "key": "sucette",
+      "word": "sucette",
+      "image": "🍭",
+      "correct": true,
+      "ending": "[ète]"
+    }
+  ],
+  "feedback": {
+    "correct": "Ça rime !",
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

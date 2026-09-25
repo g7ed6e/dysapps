@@ -1,0 +1,70 @@
+{
+  "id": "mine-oreille-1",
+  "biome": "mine",
+  "type": "oreille",
+  "level": 1,
+  "instruction": "Écoute bien le mot, puis choisis le bloc qui est écrit comme tu entends.",
+  "items": [
+    {
+      "key": "vin",
+      "word": "vin",
+      "choices": ["vin", "fin"],
+      "answer": "vin",
+      "hint": "le v vibre dans la gorge, comme dans vélo.",
+      "sentence": "Un verre de vin."
+    },
+    {
+      "key": "poule",
+      "word": "poule",
+      "choices": ["poule", "boule"],
+      "answer": "poule",
+      "hint": "le p souffle sans vibrer, comme dans papa.",
+      "sentence": "La poule pond un œuf."
+    },
+    {
+      "key": "bain",
+      "word": "bain",
+      "choices": ["bain", "pain"],
+      "answer": "bain",
+      "hint": "le b vibre, comme dans bébé.",
+      "sentence": "Je prends un bain."
+    },
+    {
+      "key": "dent",
+      "word": "dent",
+      "choices": ["dent", "temps"],
+      "answer": "dent",
+      "hint": "le d vibre, comme dans doigt.",
+      "sentence": "Une dent qui bouge."
+    },
+    {
+      "key": "gâteau",
+      "word": "gâteau",
+      "choices": ["gâteau", "cadeau"],
+      "answer": "gâteau",
+      "hint": "le g vibre, comme dans gomme.",
+      "sentence": "Un gâteau au chocolat."
+    },
+    {
+      "key": "chou",
+      "word": "chou",
+      "choices": ["chou", "joue"],
+      "answer": "chou",
+      "hint": "le ch souffle sans vibrer, comme dans chat.",
+      "sentence": "Un chou vert."
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. C’était {word} : {hint}"
+  },
+  "reward": {
+    "block": "pierre",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

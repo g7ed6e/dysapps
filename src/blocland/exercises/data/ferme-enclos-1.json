@@ -1,0 +1,86 @@
+{
+  "id": "ferme-enclos-1",
+  "biome": "ferme",
+  "type": "enclos",
+  "level": 1,
+  "instruction": "Pour chaque sujet, choisis le verbe qui va avec : un seul, ou plusieurs. Puis valide.",
+  "items": [
+    {
+      "key": "le-chien",
+      "subject": "Le chien",
+      "singular": "mange",
+      "plural": "mangent",
+      "answer": "singulier",
+      "why": "un seul chien (le), donc le verbe reste au singulier."
+    },
+    {
+      "key": "les-chiens",
+      "subject": "Les chiens",
+      "singular": "mange",
+      "plural": "mangent",
+      "answer": "pluriel",
+      "why": "plusieurs chiens (les, un s), donc le verbe prend -nt."
+    },
+    {
+      "key": "ma-sœur",
+      "subject": "Ma sœur",
+      "singular": "chante",
+      "plural": "chantent",
+      "answer": "singulier",
+      "why": "une seule sœur (ma), donc le verbe reste au singulier."
+    },
+    {
+      "key": "les-enfants",
+      "subject": "Les enfants",
+      "singular": "joue",
+      "plural": "jouent",
+      "answer": "pluriel",
+      "why": "plusieurs enfants (les, un s), donc le verbe prend -nt."
+    },
+    {
+      "key": "un-oiseau",
+      "subject": "Un oiseau",
+      "singular": "vole",
+      "plural": "volent",
+      "answer": "singulier",
+      "why": "un seul oiseau (un), donc le verbe reste au singulier."
+    },
+    {
+      "key": "des-oiseaux",
+      "subject": "Des oiseaux",
+      "singular": "vole",
+      "plural": "volent",
+      "answer": "pluriel",
+      "why": "plusieurs oiseaux (des, un x), donc le verbe prend -nt."
+    },
+    {
+      "key": "la-fille",
+      "subject": "La fille",
+      "singular": "saute",
+      "plural": "sautent",
+      "answer": "singulier",
+      "why": "une seule fille (la), donc le verbe reste au singulier."
+    },
+    {
+      "key": "mes-amis",
+      "subject": "Mes amis",
+      "singular": "rit",
+      "plural": "rient",
+      "answer": "pluriel",
+      "why": "plusieurs amis (mes, un s), donc le verbe prend -nt."
+    }
+  ],
+  "feedback": {
+    "correct": "Tout le monde dans le bon enclos !",
+    "wrong": "{subject} : {why} Le verbe est donc « {verb} »."
+  },
+  "reward": {
+    "block": "terre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

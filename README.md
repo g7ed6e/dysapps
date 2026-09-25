@@ -44,9 +44,15 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 |---|---|---|---|
 | Forêt des sons | **Chasse au son** | 6 sons ([an], [on], [oi] ; [in], [ch]/[j], [s]/[z]), 12 mots avec pictogramme par son, 4 par écran | mots lus à voix haute, correction « dans *bonbon* on entend [on] » |
 | Forêt des sons | Abattage syllabique | compter les syllabes (QCM d’attente) | |
+| Forêt des sons | **Rimes-échelle** | 3 mots repères (chapeau, ballon, fourchette), 8 mots avec pictogramme chacun, 4 par écran : on tape ceux qui riment | mot repère et mots lus à voix haute, correction « écoute la fin de *souris* : [i] » |
 | Mine des lettres | **Filon** | cibles b, d, p, q parmi les lettres miroirs | vitesse selon le niveau, ne monte qu’après 90 % ; « Plus lent » ; avec « réduire les animations », le bloc attend |
+| Mine des lettres | **Oreille du mineur** | dictée à choix : on entend le mot dans une phrase, puis on choisit entre deux écritures proches (vin / fin, poule / boule, dent / temps, gâteau / cadeau…) | rien à lire avant d’écouter, lecture automatique, indice « le v vibre dans la gorge, comme dans vélo » |
 | Carrière des mots | **Mot troué** | 2 niveaux × 10 mots, 3 blocs dont un piège phonétiquement plausible | mot lu à voix haute, correction lettre par lettre |
+| Carrière des mots | **Familles-craft** | assembler un mot à partir d’une racine et d’un préfixe (re-, dé-, im-, mé-, pré-) ou d’un suffixe (-et, -eur, -eux, -able, -age, -nette), à partir de sa définition | définition lue, mot reconstitué affiché après la réponse |
+| Carrière des mots | **Coffre à mots** | dictée à choix de mots-outils (toujours, beaucoup, maintenant, plusieurs, quelquefois…) parmi 3 écritures | mot lu, indice mnémotechnique après l’erreur ; les mots entrent dans la répétition espacée |
 | Ferme des accords | **Tri des graines** | a/à, et/est, on/ont, son/sont, ce/se (phrases de la quête Homophones) | astuce de substitution après l’erreur |
+| Ferme des accords | **Enclos** | 4 sujets par écran, on choisit le verbe au singulier ou au pluriel ; niveau 2 avec pièges (« le chien de mes voisins », « Paul et Léa », « tout le monde ») | sujet et verbe lus ensemble, explication de la marque du nombre |
+| Ferme des accords | **Récolte -é / -er / -ez** | phrases à trou, trois terminaisons | règle de substitution (« après *va*, on peut dire *vendre* : -er ») |
 | Tour du lecteur | **Ascension** | 3 textes originaux de 70–80 mots en 4 paragraphes | mode manuel, un étage par paragraphe, temps discret comparé aux lectures précédentes |
 
 Les biomes s’ouvrent dans l’ordre : une étoile dans le biome précédent débloque le suivant. À niveau égal, l’exercice le moins joué est proposé.
@@ -129,4 +135,4 @@ src/
 2. ✅ Moteur d’exercice générique (JSON), étoiles, récompenses en blocs, répétition espacée J+1/3/7/15, streak, adaptation, pause après 3 exercices.
 3. ✅ Un exercice par biome : Chasse au son, Filon, Mot troué, Tri des graines, Ascension.
 4. ✅ Inventaire et grille de construction isométrique.
-5. Coffre à mots, boss de biome, craft, journal hebdomadaire, autres exercices.
+5. ✅ Tous les types d’exercices annoncés ont du contenu (Rimes-échelle, Oreille du mineur, Familles-craft, Coffre à mots, Enclos, Récolte). Restent : boss de biome, journal hebdomadaire.

@@ -1,0 +1,76 @@
+{
+  "id": "carriere-familles-2",
+  "biome": "carriere",
+  "type": "familles",
+  "level": 2,
+  "instruction": "Lis ce que veut dire le mot, puis choisis le morceau de la fin qui le fabrique avec la racine.",
+  "items": [
+    {
+      "key": "jardinet",
+      "meaning": "Un petit jardin.",
+      "root": "jardin",
+      "slot": "suffix",
+      "choices": ["et", "eur", "age"],
+      "answer": "et",
+      "word": "jardinet"
+    },
+    {
+      "key": "chanteur",
+      "meaning": "Celui qui chante.",
+      "root": "chant",
+      "slot": "suffix",
+      "choices": ["eur", "age", "able"],
+      "answer": "eur",
+      "word": "chanteur"
+    },
+    {
+      "key": "courageux",
+      "meaning": "Qui a du courage.",
+      "root": "courag",
+      "slot": "suffix",
+      "choices": ["eux", "et", "eur"],
+      "answer": "eux",
+      "word": "courageux"
+    },
+    {
+      "key": "lavable",
+      "meaning": "Qu’on peut laver.",
+      "root": "lav",
+      "slot": "suffix",
+      "choices": ["able", "age", "eur"],
+      "answer": "able",
+      "word": "lavable"
+    },
+    {
+      "key": "lavage",
+      "meaning": "L’action de laver.",
+      "root": "lav",
+      "slot": "suffix",
+      "choices": ["age", "able", "et"],
+      "answer": "age",
+      "word": "lavage"
+    },
+    {
+      "key": "maisonnette",
+      "meaning": "Une petite maison.",
+      "root": "maison",
+      "slot": "suffix",
+      "choices": ["nette", "eur", "age"],
+      "answer": "nette",
+      "word": "maisonnette"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien assemblé !",
+    "wrong": "{word} se fabrique avec {answer} : {meaning}."
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

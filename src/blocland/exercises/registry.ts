@@ -6,6 +6,10 @@ import { ChasseSonScreen } from './ChasseSonScreen';
 import { FilonScreen } from './FilonScreen';
 import { MotTroueScreen } from './MotTroueScreen';
 import { QcmItem } from './QcmItem';
+import { RimesScreen } from './RimesScreen';
+import { DicteeItem } from './DicteeItem';
+import { FamillesScreen } from './FamillesScreen';
+import { EnclosScreen } from './EnclosScreen';
 
 export interface ScreenAnswer {
   /** Résultat par item de l'écran. */
@@ -45,4 +49,10 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   filon: { component: FilonScreen, batch: 1 },
   'mot-troue': { component: MotTroueScreen, batch: 1 },
   ascension: { component: AscensionScreen, batch: 'all' },
+  rimes: { component: RimesScreen, batch: 4 },
+  oreille: { component: DicteeItem, batch: 1 },
+  coffre: { component: DicteeItem, batch: 1 },
+  familles: { component: FamillesScreen, batch: 1 },
+  enclos: { component: EnclosScreen, batch: 4 },
+  recolte: { component: QcmItem, batch: 1 },
 };

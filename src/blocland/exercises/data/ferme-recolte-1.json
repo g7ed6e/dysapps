@@ -1,0 +1,86 @@
+{
+  "id": "ferme-recolte-1",
+  "biome": "ferme",
+  "type": "recolte",
+  "level": 1,
+  "instruction": "Choisis la bonne fin du verbe : é, er ou ez. Astuce : remplace par vendre ou vendu.",
+  "items": [
+    {
+      "key": "va-manger",
+      "prompt": "Il va mang… à midi.",
+      "spoken": "Il va mang(terminaison) à midi.",
+      "choices": ["é", "er", "ez"],
+      "answer": "er",
+      "rule": "Après « va », on peut dire « vendre » : c’est -er."
+    },
+    {
+      "key": "a-mange",
+      "prompt": "Il a mang… une pomme.",
+      "spoken": "Il a mang(terminaison) une pomme.",
+      "choices": ["é", "er", "ez"],
+      "answer": "é",
+      "rule": "Après « a », on peut dire « vendu » : c’est -é."
+    },
+    {
+      "key": "vous-mangez",
+      "prompt": "Vous mang… trop vite.",
+      "spoken": "Vous mang(terminaison) trop vite.",
+      "choices": ["é", "er", "ez"],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez."
+    },
+    {
+      "key": "veut-jouer",
+      "prompt": "Elle veut jou… dehors.",
+      "spoken": "Elle veut jou(terminaison) dehors.",
+      "choices": ["é", "er", "ez"],
+      "answer": "er",
+      "rule": "Après « veut », on peut dire « vendre » : c’est -er."
+    },
+    {
+      "key": "est-tombe",
+      "prompt": "Le vase est tomb… par terre.",
+      "spoken": "Le vase est tomb(terminaison) par terre.",
+      "choices": ["é", "er", "ez"],
+      "answer": "é",
+      "rule": "Après « est », on peut dire « vendu » : c’est -é."
+    },
+    {
+      "key": "vous-chantez",
+      "prompt": "Vous chant… très bien.",
+      "spoken": "Vous chant(terminaison) très bien.",
+      "choices": ["é", "er", "ez"],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez."
+    },
+    {
+      "key": "pour-chanter",
+      "prompt": "Je viens pour chant… avec toi.",
+      "spoken": "Je viens pour chant(terminaison) avec toi.",
+      "choices": ["é", "er", "ez"],
+      "answer": "er",
+      "rule": "Après « pour », on peut dire « vendre » : c’est -er."
+    },
+    {
+      "key": "ont-fini",
+      "prompt": "Ils ont termin… le travail.",
+      "spoken": "Ils ont termin(terminaison) le travail.",
+      "choices": ["é", "er", "ez"],
+      "answer": "é",
+      "rule": "Après « ont », on peut dire « vendu » : c’est -é."
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne terminaison !",
+    "wrong": "{rule}"
+  },
+  "reward": {
+    "block": "terre",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
