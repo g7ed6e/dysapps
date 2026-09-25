@@ -55,6 +55,22 @@ export function playNope(): void {
   blip(200, 160, 0.14, 0.1, 'sine');
 }
 
+/** Trois coups de tambour sourds : le Gardien arrive. */
+export function playDrum(): void {
+  [0, 260, 520].forEach((d) => setTimeout(() => blip(90, 60, 0.22, 0.2, 'sine'), d));
+}
+
+/** Grondement doux (épreuve ratée) : jamais agressif. */
+export function playGrowl(): void {
+  blip(120, 70, 0.35, 0.09, 'triangle');
+}
+
+/** Victoire : la fanfare, puis une note tenue. */
+export function playVictory(): void {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, f, 0.2, 0.14, 'square'), i * 130));
+  setTimeout(() => blip(1047, 1047, 0.8, 0.1, 'triangle'), 560);
+}
+
 // ---------- Ambiance (en option) : vent continu, oiseaux le jour, grillons la nuit ----------
 
 let ambience: { gain: GainNode; stop: () => void } | null = null;

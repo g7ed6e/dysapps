@@ -19,6 +19,8 @@ interface Props {
   onReplay: () => void;
   /** Appelé une fois l'exercice terminé (le Gardien s'en sert pour les succès). */
   onComplete?: (completion: Completion) => void;
+  /** Appelé à chaque écran répondu (le Gardien réagit). */
+  onRound?: (round: { index: number; total: number; correct: boolean }) => void;
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -34,7 +36,7 @@ export function screensOf(def: ExerciseDef): ExerciseItem[][] {
  * Lanceur d'exercice générique : la créature a donné la consigne (lue à voix haute),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
-export function ExerciseRunner({ biome, def, onReplay, onComplete }: Props) {
+export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Props) {
   const { state, complete, pauseAfterNext, continueSession } = useBlocland();
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
@@ -62,6 +64,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete }: Props) {
   const onAnswer = (a: ScreenAnswer) => {
     if (answered) return;
     setAnswered(a);
+    onRound?.({ index, total: screens.length, correct: a.results.every((r) => r.correct) });
     answer(
       a.results.every((r) => r.correct),
       helpUsed ? 2 : 1,

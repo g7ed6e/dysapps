@@ -8,7 +8,7 @@ type Layer = string[];
  * Construit des cubes à partir de couches ASCII (une couche par hauteur z, de bas en haut).
  * Chaque caractère est une clé de `palette` ; « . » = vide. Ligne = y, colonne = x.
  */
-function fromLayers(layers: Layer[], palette: Record<string, string | { color: string; top?: string }>): VoxelCube[] {
+export function fromLayers(layers: Layer[], palette: Record<string, string | { color: string; top?: string }>): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   layers.forEach((layer, z) => {
     layer.forEach((row, y) => {

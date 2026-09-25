@@ -82,6 +82,8 @@ export interface BiomeDef {
   /** Le Gardien du biome (boss de fin de biome) et ce qu'il dit quand on l'affronte. */
   guardian: string;
   challenge: string;
+  /** Ce que dit le Gardien pendant le défi : épreuve réussie, épreuve ratée, et quand il est vaincu. */
+  guardianSays: { hit: string; miss: string; beaten: string };
   creature: CreatureDef;
   exercises: ExerciseTypeDef[];
 }
@@ -95,6 +97,11 @@ export const BIOMES: BiomeDef[] = [
     description: 'Écouter, couper en syllabes, repérer les sons et les rimes.',
     block: 'bois',
     guardian: 'le Grand Chêne',
+    guardianSays: {
+      hit: 'Mes branches tremblent. Tu as l’oreille fine.',
+      miss: 'Ce n’est rien : même le vent se trompe de feuille. Continue.',
+      beaten: 'Je m’incline, bâtisseur·se. La forêt est à toi… et à Mousso.',
+    },
     challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Montre-moi tout ce que tu sais faire. »',
     icon: 'tree',
     creature: {
@@ -121,6 +128,11 @@ export const BIOMES: BiomeDef[] = [
     description: 'b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.',
     block: 'pierre',
     guardian: 'le Golem de roche',
+    guardianSays: {
+      hit: 'Une fissure ! Tes yeux ne se trompent pas.',
+      miss: 'Ma roche est dure, mais tu peux la reprendre. Regarde bien.',
+      beaten: 'Je m’écroule… en pierres pour ton village. Bien joué.',
+    },
     challenge: 'Le Golem de roche gronde : « Mes lettres se ressemblent toutes. Toi, tu les reconnais ? Prouve-le. »',
     icon: 'pickaxe',
     creature: {
@@ -146,6 +158,11 @@ export const BIOMES: BiomeDef[] = [
     description: 'Écrire les mots juste, les familles de mots, les mots-outils.',
     block: 'sable',
     guardian: 'la Dune vivante',
+    guardianSays: {
+      hit: 'Je recule d’un pas. Ce mot était bien écrit.',
+      miss: 'Le sable bouge, moi aussi. Réessaie au prochain mot.',
+      beaten: 'Je me couche sur la plage. Le chemin est libre, bâtisseur·se.',
+    },
     challenge: 'La Dune vivante siffle : « Chaque mot bien écrit me fait reculer. Écris juste, et je te laisserai passer. »',
     icon: 'mountain',
     creature: {
@@ -172,6 +189,11 @@ export const BIOMES: BiomeDef[] = [
     description: 'Accorder sujet et verbe, choisir a/à, et/est, -é/-er.',
     block: 'terre',
     guardian: 'le Taureau de terre',
+    guardianSays: {
+      hit: 'Meuh ! Mes sabots glissent. C’était bien accordé.',
+      miss: 'Tout le monde trébuche parfois. Le prochain enclos est à toi.',
+      beaten: 'Je m’assieds dans l’herbe. Tout s’accorde, tu as gagné.',
+    },
     challenge: 'Le Taureau de terre frappe le sol : « Ici, tout s’accorde ou tout s’écroule. À toi de jouer. »',
     icon: 'wheat',
     creature: {
@@ -198,6 +220,11 @@ export const BIOMES: BiomeDef[] = [
     description: 'Lire à voix haute, étage par étage.',
     block: 'verre',
     guardian: 'la Chouette de verre',
+    guardianSays: {
+      hit: 'Hou… Tu lis mieux que je ne vois la nuit.',
+      miss: 'Lire lentement, c’est lire quand même. Reprends ton souffle.',
+      beaten: 'Hou hou. Le phare est à toi. Je te confie la nuit.',
+    },
     challenge: 'La Chouette de verre cligne des yeux : « Lis-moi, à ton rythme. Le phare t’attend en haut. »',
     icon: 'castle',
     creature: {
