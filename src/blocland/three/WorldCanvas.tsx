@@ -1,11 +1,12 @@
 // Le village en 3D : un seul maillage par matériau (faces visibles seulement), caméra libre bornée,
-// eau autour des îles, vol vers une île. Chargé à la demande (voir ./index.ts).
+// eau autour des îles, vol vers une île, jour et nuit, créatures qui se promènent. Chargé à la demande (voir ./index.ts).
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
-import { buildMesh, type FaceSide } from '../world/mesher';
+import { daylight, palette } from '../world/daylight';
+import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
 import { islandAt, islandCenter, worldBounds } from '../world/terrain';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
@@ -29,6 +30,19 @@ export interface BuildProps {
   onPickFace: (cell: Cell, next: Cell) => void;
 }
 
+export interface CreaturePlacement {
+  id: BiomeId;
+  cubes: VoxelCube[];
+  origin: Cell;
+}
+
+/** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
+export interface Burst {
+  seq: number;
+  cell: Cell;
+  color: string;
+}
+
 export interface WorldCanvasProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
@@ -37,12 +51,16 @@ export interface WorldCanvasProps {
   onPickIsland?: (id: BiomeId) => void;
   /** Mode construction : on touche une face pour poser ou retirer, au lieu d'entrer dans l'île. */
   build?: BuildProps;
+  /** Les créatures, animées à part du terrain. */
+  creatures?: CreaturePlacement[];
+  onPickCreature?: (id: BiomeId) => void;
+  /** Ignorer l'heure réelle : toujours en plein jour. */
+  forceDay?: boolean;
+  burst?: Burst;
   className?: string;
   label: string;
 }
 
-const SKY = 0x8fd0f5;
-const WATER = 0x4a9be0;
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
@@ -60,6 +78,13 @@ const CLOUDS: [number, number, number][] = [
   [0.7, -0.1, 4],
   [0.88, 0.6, 3],
   [1.02, 0.2, 2],
+];
+/** Promenade des créatures : un pas d'une case, à gauche ou en arrière, jamais vers la zone libre ni les plans. */
+const STEPS: [number, number][] = [
+  [0, 0],
+  [-1, 0],
+  [0, 1],
+  [-1, 1],
 ];
 
 const ghostCache = new Map<string, THREE.Material>();
@@ -85,9 +110,53 @@ function materialFor(texture: string | undefined, face: FaceSide, color: string 
   return m[face === 'top' ? 2 : face === 'bottom' ? 3 : 0];
 }
 
+function meshOf(g: MeshGroup): THREE.Mesh {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(g.positions, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
+  geo.setIndex(g.indices);
+  const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost));
+  if (g.ghost) mesh.renderOrder = 1;
+  // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
+  mesh.frustumCulled = false;
+  return mesh;
+}
+
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
-export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPickIsland, build, className, label }: WorldCanvasProps) {
+interface Walker {
+  group: THREE.Group;
+  id: BiomeId;
+  origin: Cell;
+  from: [number, number];
+  to: [number, number];
+  start: number;
+  duration: number;
+  /** Prochain départ (ms). */
+  next: number;
+  phase: number;
+}
+
+interface Spark {
+  mesh: THREE.Mesh;
+  velocity: THREE.Vector3;
+  born: number;
+}
+
+export default function WorldCanvas({
+  cubes,
+  focus,
+  reduceMotion = false,
+  onPickIsland,
+  build,
+  creatures = [],
+  onPickCreature,
+  forceDay = false,
+  burst,
+  className,
+  label,
+}: WorldCanvasProps) {
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<{
     scene: THREE.Scene;
@@ -95,25 +164,25 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
     terrain: THREE.Group;
+    creatures: THREE.Group;
+    walkers: Walker[];
+    sparks: Spark[];
+    sparkGeo: THREE.BoxGeometry;
     zone: THREE.Mesh;
     hover: THREE.LineSegments;
-    flight: {
-      fromPos: THREE.Vector3;
-      fromTarget: THREE.Vector3;
-      toPos: THREE.Vector3;
-      toTarget: THREE.Vector3;
-      start: number;
-    } | null;
+    sky: { hemi: THREE.HemisphereLight; sun: THREE.DirectionalLight; water: THREE.MeshLambertMaterial; fog: THREE.Fog };
+    flight: { fromPos: THREE.Vector3; fromTarget: THREE.Vector3; toPos: THREE.Vector3; toTarget: THREE.Vector3; start: number } | null;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
   const buildRef = useRef(build);
   buildRef.current = build;
+  const creatureRef = useRef(onPickCreature);
+  creatureRef.current = onPickCreature;
+  const forceDayRef = useRef(forceDay);
+  forceDayRef.current = forceDay;
   const bounds = worldBounds();
-  const center = {
-    x: (bounds.minX + bounds.maxX) / 2,
-    y: (bounds.minY + bounds.maxY) / 2,
-  };
+  const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
   const width = bounds.maxX - bounds.minX;
 
   /** Position et cible de la caméra pour une île (ou la vue d'ensemble). */
@@ -139,8 +208,10 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     renderer.domElement.style.touchAction = 'none';
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(SKY);
-    scene.fog = new THREE.Fog(SKY, width * 1.2, width * 3);
+    const day = palette(1);
+    scene.background = new THREE.Color(day.sky);
+    const fog = new THREE.Fog(day.sky, width * 1.2, width * 3);
+    scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 4);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = !reduceMotion;
@@ -171,20 +242,27 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     };
     controls.addEventListener('change', clamp);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6a4a, 1.2));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x8a6a4a, day.ambient);
+    scene.add(hemi);
+    const sun = new THREE.DirectionalLight(day.sun, day.sunIntensity);
     sun.position.set(40, 60, 20);
     scene.add(sun);
 
-    // L'eau : un grand plan sous le niveau du sol.
-    const water = new THREE.Mesh(
-      new THREE.PlaneGeometry(width * 8, width * 8),
-      new THREE.MeshLambertMaterial({
-        color: WATER,
-        transparent: true,
-        opacity: 0.92,
-      }),
-    );
+    // L'eau : un grand plan sous le niveau du sol, avec des crêtes pixel qui défilent.
+    const waterMaterial = (
+      Array.isArray(blockMaterial('eau')) ? (blockMaterial('eau') as THREE.Material[])[2] : blockMaterial('eau')
+    ) as THREE.MeshLambertMaterial;
+    const waterMat = waterMaterial.clone();
+    waterMat.transparent = true;
+    waterMat.opacity = 0.92;
+    if (waterMat.map) {
+      waterMat.map = waterMat.map.clone();
+      waterMat.map.wrapS = THREE.RepeatWrapping;
+      waterMat.map.wrapT = THREE.RepeatWrapping;
+      waterMat.map.repeat.set(width * 2, width * 2);
+      waterMat.map.needsUpdate = true;
+    }
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), waterMat);
     water.rotation.x = -Math.PI / 2;
     water.position.set(center.x, WATER_LEVEL, center.y);
     scene.add(water);
@@ -193,16 +271,21 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
     const clouds = new THREE.Group();
     for (const [fx, fy, len] of CLOUDS) {
+      const cloud = new THREE.Group();
       for (let i = 0; i < len; i++) {
         const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
-        puff.position.set(bounds.minX + fx * width + i, 12 + (i % 2) * 0.5, bounds.minY + fy * (bounds.maxY - bounds.minY));
-        clouds.add(puff);
+        puff.position.set(i, (i % 2) * 0.5, 0);
+        cloud.add(puff);
       }
+      cloud.position.set(bounds.minX + fx * width, 12, bounds.minY + fy * (bounds.maxY - bounds.minY));
+      clouds.add(cloud);
     }
     scene.add(clouds);
 
     const terrain = new THREE.Group();
     scene.add(terrain);
+    const creaturesGroup = new THREE.Group();
+    scene.add(creaturesGroup);
     // Zone libre (mode construction) : un tapis translucide au ras du sol ; et le contour de la case visée.
     const zone = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1),
@@ -214,9 +297,24 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
     hover.visible = false;
     scene.add(hover);
-    world.current = { scene, camera, renderer, controls, terrain, zone, hover, flight: null };
+    const sparkGeo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
+    world.current = {
+      scene,
+      camera,
+      renderer,
+      controls,
+      terrain,
+      creatures: creaturesGroup,
+      walkers: [],
+      sparks: [],
+      sparkGeo,
+      zone,
+      hover,
+      sky: { hemi, sun, water: waterMat, fog },
+      flight: null,
+    };
 
-    // Toucher une île : un tap, pas un glissé.
+    // Toucher une île, une face ou une créature : un tap, pas un glissé.
     const ray = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     let down: { x: number; y: number } | null = null;
@@ -224,7 +322,18 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
-      return ray.intersectObjects(terrain.children, false)[0];
+      const creature = ray.intersectObjects(creaturesGroup.children, true)[0];
+      const ground = ray.intersectObjects(terrain.children, false)[0];
+      if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
+      return { creature: undefined, hit: ground };
+    };
+    const creatureIdOf = (o: THREE.Object3D): BiomeId | null => {
+      let cur: THREE.Object3D | null = o;
+      while (cur) {
+        if (typeof cur.userData.creature === 'string') return cur.userData.creature as BiomeId;
+        cur = cur.parent;
+      }
+      return null;
     };
     const onDown = (e: PointerEvent) => {
       down = { x: e.clientX, y: e.clientY };
@@ -239,11 +348,16 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       return { cell, next };
     };
     const onUp = (e: PointerEvent) => {
-      if (!down || (!pickRef.current && !buildRef.current)) return;
+      if (!down) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       down = null;
       if (moved > 8) return;
-      const hit = aim(e);
+      const { creature, hit } = aim(e);
+      if (creature) {
+        const id = creatureIdOf(creature.object);
+        if (id && creatureRef.current) return creatureRef.current(id);
+        if (id && !buildRef.current) return pickRef.current?.(id);
+      }
       if (!hit) return;
       if (buildRef.current) {
         const { cell, next } = cellsOf(hit);
@@ -251,9 +365,9 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       } else pickRef.current?.(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
     };
     const onHover = (e: PointerEvent) => {
-      if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current)) return;
-      const hit = aim(e);
-      renderer.domElement.style.cursor = hit ? 'pointer' : 'grab';
+      if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current && !creatureRef.current)) return;
+      const { creature, hit } = aim(e);
+      renderer.domElement.style.cursor = creature || hit ? 'pointer' : 'grab';
       const h = world.current?.hover;
       if (!h) return;
       if (hit && buildRef.current) {
@@ -281,17 +395,82 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     const observer = new ResizeObserver(resize);
     observer.observe(el);
 
+    // Jour et nuit : la lumière suit l'heure réelle, ajustée chaque minute (figée avec « réduire les animations »).
+    let light = -1;
+    const applyDaylight = () => {
+      const target = forceDayRef.current ? 1 : daylight().light;
+      if (target === light) return;
+      light = target;
+      const p = palette(light);
+      (scene.background as THREE.Color).setHex(p.sky);
+      fog.color.setHex(p.sky);
+      hemi.intensity = p.ambient;
+      sun.color.setHex(p.sun);
+      sun.intensity = p.sunIntensity;
+      waterMat.color.setHex(p.water);
+    };
+    applyDaylight();
+    const dayTimer = reduceMotion ? 0 : window.setInterval(applyDaylight, 60_000);
+
     let frame = 0;
+    const clock = new THREE.Clock();
     const loop = () => {
       frame = requestAnimationFrame(loop);
       const w = world.current;
-      if (w?.flight) {
-        const t = Math.min(1, (performance.now() - w.flight.start) / FLIGHT_MS);
-        const k = ease(t);
+      if (!w) return;
+      const now = performance.now();
+      const t = clock.getElapsedTime();
+      if (w.flight) {
+        const k = ease(Math.min(1, (now - w.flight.start) / FLIGHT_MS));
         camera.position.lerpVectors(w.flight.fromPos, w.flight.toPos, k);
         controls.target.lerpVectors(w.flight.fromTarget, w.flight.toTarget, k);
-        if (t >= 1) w.flight = null;
+        if (k >= 1) w.flight = null;
       }
+      if (!reduceMotion) {
+        if (forceDayRef.current ? light !== 1 : false) applyDaylight();
+        // Nuages qui dérivent, eau qui ondule.
+        for (const cloud of clouds.children) {
+          cloud.position.x -= 0.004;
+          if (cloud.position.x < bounds.minX - 12) cloud.position.x = bounds.maxX + 12;
+        }
+        if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
+        // Créatures : petit balancement, et un pas de temps en temps.
+        for (const wk of w.walkers) {
+          if (now >= wk.next && wk.start === 0) {
+            const step = STEPS[Math.floor(Math.random() * STEPS.length)];
+            wk.from = wk.to;
+            wk.to = step;
+            wk.start = now;
+            wk.duration = 1800;
+          }
+          let dx = wk.to[0];
+          let dy = wk.to[1];
+          if (wk.start) {
+            const k = ease(Math.min(1, (now - wk.start) / wk.duration));
+            dx = wk.from[0] + (wk.to[0] - wk.from[0]) * k;
+            dy = wk.from[1] + (wk.to[1] - wk.from[1]) * k;
+            if (k >= 1) {
+              wk.start = 0;
+              wk.next = now + 3000 + Math.random() * 5000;
+            }
+          }
+          const bob = wk.start ? Math.abs(Math.sin(t * 8)) * 0.12 : Math.sin(t * 1.6 + wk.phase) * 0.04;
+          wk.group.position.set(wk.origin.x + dx, wk.origin.z + bob, wk.origin.y + dy);
+        }
+        // Éclats : petits cubes qui retombent et disparaissent.
+        for (const s of [...w.sparks]) {
+          const age = (now - s.born) / 1000;
+          s.velocity.y -= 9 * 0.016;
+          s.mesh.position.addScaledVector(s.velocity, 0.016);
+          s.mesh.rotation.x += 0.2;
+          s.mesh.rotation.z += 0.15;
+          if (age > 0.7) {
+            scene.remove(s.mesh);
+            (s.mesh.material as THREE.Material).dispose();
+            w.sparks.splice(w.sparks.indexOf(s), 1);
+          }
+        }
+      } else if (forceDayRef.current ? light !== 1 : false) applyDaylight();
       controls.update();
       renderer.render(scene, camera);
     };
@@ -299,6 +478,7 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
 
     return () => {
       cancelAnimationFrame(frame);
+      if (dayTimer) window.clearInterval(dayTimer);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
@@ -311,14 +491,20 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       (hover.material as THREE.Material).dispose();
       controls.dispose();
       for (const m of terrain.children) (m as THREE.Mesh).geometry.dispose();
+      creaturesGroup.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
+      for (const s of world.current?.sparks ?? []) (s.mesh.material as THREE.Material).dispose();
+      sparkGeo.dispose();
       water.geometry.dispose();
-      (water.material as THREE.Material).dispose();
+      waterMat.map?.dispose();
+      waterMat.dispose();
       cloudGeo.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
     };
-    // La scène est construite une fois ; le terrain et la caméra sont mis à jour à part.
+    // La scène est construite une fois ; le terrain, les créatures et la caméra sont mis à jour à part.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion]);
 
@@ -330,19 +516,28 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       w.terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
-    for (const g of buildMesh(cubes)) {
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(g.positions, 3));
-      geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
-      geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
-      geo.setIndex(g.indices);
-      const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost));
-      if (g.ghost) mesh.renderOrder = 1;
-      // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
-      mesh.frustumCulled = false;
-      w.terrain.add(mesh);
-    }
+    for (const g of buildMesh(cubes)) w.terrain.add(meshOf(g));
   }, [cubes]);
+
+  // ---- Créatures : un groupe chacune, positionné sur son île, animé dans la boucle
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    for (const child of [...w.creatures.children]) {
+      w.creatures.remove(child);
+      child.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
+    }
+    w.walkers = creatures.map((c, i) => {
+      const group = new THREE.Group();
+      group.userData = { creature: c.id };
+      for (const g of buildMesh(c.cubes)) group.add(meshOf(g));
+      group.position.set(c.origin.x, c.origin.z, c.origin.y);
+      w.creatures.add(group);
+      return { group, id: c.id, origin: c.origin, from: [0, 0], to: [0, 0], start: 0, duration: 0, next: performance.now() + 2000 + i * 1500, phase: i * 1.3 };
+    });
+  }, [creatures]);
 
   // ---- Zone libre mise en évidence
   useEffect(() => {
@@ -358,6 +553,22 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [build?.zone.x0, build?.zone.y0, build?.zone.x1, build?.zone.y1, Boolean(build)]);
 
+  // ---- Éclats à la pose d'un bloc
+  useEffect(() => {
+    const w = world.current;
+    if (!w || !burst || burst.seq === 0 || reduceMotion) return;
+    const color = new THREE.Color(burst.color);
+    for (let i = 0; i < 10; i++) {
+      const mesh = new THREE.Mesh(w.sparkGeo, new THREE.MeshBasicMaterial({ color }));
+      mesh.position.set(burst.cell.x + 0.5, burst.cell.z + 0.5, burst.cell.y + 0.5);
+      const a = Math.random() * Math.PI * 2;
+      const velocity = new THREE.Vector3(Math.cos(a) * (1 + Math.random() * 2), 3 + Math.random() * 3, Math.sin(a) * (1 + Math.random() * 2));
+      w.scene.add(mesh);
+      w.sparks.push({ mesh, velocity, born: performance.now() });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [burst?.seq]);
+
   // ---- Caméra : vol vers l'île demandée (ou la vue d'ensemble)
   useEffect(() => {
     const w = world.current;
@@ -370,13 +581,7 @@ export default function WorldCanvas({ cubes, focus, reduceMotion = false, onPick
       w.controls.update();
       return;
     }
-    w.flight = {
-      fromPos: w.camera.position.clone(),
-      fromTarget: w.controls.target.clone(),
-      toPos: pos,
-      toTarget: target,
-      start: performance.now(),
-    };
+    w.flight = { fromPos: w.camera.position.clone(), fromTarget: w.controls.target.clone(), toPos: pos, toTarget: target, start: performance.now() };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus.island, focus.seq, reduceMotion]);
 

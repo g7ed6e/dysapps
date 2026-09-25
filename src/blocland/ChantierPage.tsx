@@ -13,7 +13,9 @@ import { playDone, playNope, playPlace, playRemove } from './sound';
 import { WorldCanvas, hasWebGL } from './three';
 import { BlockIcon } from './Voxel';
 import { plansFor } from './world/plans';
-import { freeZoneOf, toIslandCell, worldCubes } from './world/terrain';
+import { creaturePlacements, freeZoneOf, islandOrigin, toIslandCell, worldCubes } from './world/terrain';
+import { useAmbience } from './useAmbience';
+import { daylight } from './world/daylight';
 
 type Mode = 'poser' | 'retirer';
 
@@ -34,6 +36,14 @@ export function ChantierPage() {
   const unlockedIslands = BIOMES.filter((b) => isBiomeUnlocked(b.id, state.progress)).map((b) => b.id);
   const [island, setIsland] = useState<BiomeId>(unlockedIslands[0] ?? 'foret');
   const [seq, setSeq] = useState(1);
+  const [forceDay, setForceDay] = useState(false);
+  const [burst, setBurst] = useState<{ seq: number; cell: { x: number; y: number; z: number }; color: string }>({
+    seq: 0,
+    cell: { x: 0, y: 0, z: 0 },
+    color: '#fff',
+  });
+  useAmbience(forceDay);
+  const night = !forceDay && daylight().light < 0.5;
   const cells = placedOn(state, island);
   const blocks = (Object.keys(BLOCKS) as BlockId[]).filter((b) => (state.inventory[b] ?? 0) > 0 || cells.some((c) => c.block === b));
   const [selectedBlock, setSelectedBlock] = useState<BlockId | null>(() => blocks[0] ?? null);
@@ -61,6 +71,11 @@ export function ChantierPage() {
     setConfirmClear(false);
   };
 
+  /** Éclats de la couleur du bloc à une case relative à l'île (z relatif). */
+  const sparkle = (x: number, y: number, z: number, block: BlockId) => {
+    const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
+    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: z + 1 }, color: BLOCKS[block].top }));
+  };
   const afterPlace = (ok: boolean, reason?: PlaceReason) => {
     if (ok) {
       setNotice(null);
@@ -90,6 +105,7 @@ export function ChantierPage() {
       sound(playNope);
       return;
     }
+    sparkle(x, y, z, r.block);
     if (r.completed) {
       const chest = Object.entries(plan.reward.chest)
         .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
@@ -117,6 +133,7 @@ export function ChantierPage() {
     if (mode === 'retirer') return afterRemove(removeFromColumn(island, x, y));
     if (!selectedBlock) return setNotice('Choisis d’abord un type de bloc.');
     const r = placeOnColumn(island, x, y, selectedBlock);
+    if (r.ok) sparkle(x, y, columnHeight(placedOn(r.state, island), x, y) - 1, selectedBlock);
     afterPlace(r.ok, r.ok ? undefined : r.reason);
   };
 
@@ -135,6 +152,7 @@ export function ChantierPage() {
     const c = toIslandCell(island, next.x, next.y, next.z);
     if (!inFreeZone(c.x, c.y)) return afterPlace(false, 'hors-zone');
     const r = placeAt(island, c.x, c.y, c.z, selectedBlock);
+    if (r.ok) sparkle(c.x, c.y, c.z, selectedBlock);
     afterPlace(r.ok, r.ok ? undefined : r.reason);
   };
 
@@ -219,6 +237,16 @@ export function ChantierPage() {
           <button type="button" className="button" aria-pressed={!settings.sounds} onClick={() => update({ sounds: !settings.sounds })}>
             <Icon name={settings.sounds ? 'volume' : 'volumeOff'} /> {settings.sounds ? 'Couper les sons' : 'Remettre les sons'}
           </button>
+          {night && (
+            <button type="button" className="button" onClick={() => setForceDay(true)}>
+              <Icon name="sun" /> Forcer le jour
+            </button>
+          )}
+          {forceDay && (
+            <button type="button" className="button" onClick={() => setForceDay(false)}>
+              <Icon name="moon" /> Revenir à l’heure réelle
+            </button>
+          )}
         </div>
       </section>
 
@@ -236,7 +264,10 @@ export function ChantierPage() {
         {in3d ? (
           <Suspense fallback={<p className="loading">Chargement du village…</p>}>
             <WorldCanvas
-              cubes={worldCubes(state.progress, state.village)}
+              cubes={worldCubes(state.progress, state.village, false)}
+              creatures={creaturePlacements(state.progress)}
+              forceDay={forceDay}
+              burst={burst}
               focus={{ island, seq }}
               reduceMotion={settings.reduceMotion}
               build={{ zone: freeZoneOf(island), onPickFace: onFace }}

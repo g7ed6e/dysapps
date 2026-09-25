@@ -1,7 +1,7 @@
 // Textures pixel 16 × 16 générées par le code (aucune image empruntée) : herbe, terre, pierre, planches…
 import * as THREE from 'three';
 
-export type TextureKind = 'herbe' | 'terre' | 'pierre' | 'planches' | 'sable' | 'verre' | 'or' | 'cristal' | 'feuilles' | 'tronc' | 'nuage';
+export type TextureKind = 'herbe' | 'terre' | 'pierre' | 'planches' | 'sable' | 'verre' | 'or' | 'cristal' | 'feuilles' | 'tronc' | 'nuage' | 'eau';
 
 const SIZE = 16;
 
@@ -71,6 +71,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
     side: (x, y, r) => (x % 4 === 0 ? [80, 55, 30] : grain('#5f4128', '#7a5636')(x, y, r)),
   },
   nuage: { top: () => [255, 255, 255], side: () => [236, 244, 250] },
+  // Eau : bleu grainé avec quelques crêtes claires en diagonale, qui défilent pour onduler.
+  eau: {
+    top: (x, y, r) => ((x + y) % 8 === 0 && r() < 0.6 ? [150, 205, 240] : grain('#4a9be0', '#5eaae8')(x, y, r)),
+    side: grain('#4a9be0', '#5eaae8'),
+  },
 };
 
 function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | null {

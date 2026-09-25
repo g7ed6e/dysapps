@@ -54,3 +54,63 @@ export function playDone(): void {
 export function playNope(): void {
   blip(200, 160, 0.14, 0.1, 'sine');
 }
+
+// ---------- Ambiance (en option) : vent continu, oiseaux le jour, grillons la nuit ----------
+
+let ambience: { gain: GainNode; stop: () => void } | null = null;
+
+function noiseBuffer(ac: AudioContext): AudioBuffer {
+  const seconds = 2;
+  const buffer = ac.createBuffer(1, ac.sampleRate * seconds, ac.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  return buffer;
+}
+
+/** Démarre l'ambiance (idempotent). `night` change le chant : oiseaux ou grillons. */
+export function startAmbience(night: boolean): void {
+  const ac = context();
+  if (!ac || ambience) return;
+  const gain = ac.createGain();
+  gain.gain.value = 0.05;
+  // Vent : bruit blanc filtré, dont le souffle varie lentement.
+  const wind = ac.createBufferSource();
+  wind.buffer = noiseBuffer(ac);
+  wind.loop = true;
+  const filter = ac.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 400;
+  const lfo = ac.createOscillator();
+  lfo.frequency.value = 0.15;
+  const lfoGain = ac.createGain();
+  lfoGain.gain.value = 200;
+  lfo.connect(lfoGain).connect(filter.frequency);
+  wind.connect(filter).connect(gain).connect(ac.destination);
+  wind.start();
+  lfo.start();
+  // Chants : de temps en temps, quelques notes.
+  let alive = true;
+  const sing = () => {
+    if (!alive) return;
+    if (!speaking()) {
+      if (night) for (let i = 0; i < 6; i++) setTimeout(() => alive && blip(3800, 3600, 0.05, 0.03, 'sine'), i * 90);
+      else for (let i = 0; i < 3; i++) setTimeout(() => alive && blip(1800 + Math.random() * 800, 2600, 0.12, 0.04, 'sine'), i * 160);
+    }
+    setTimeout(sing, 3000 + Math.random() * 5000);
+  };
+  setTimeout(sing, 1500);
+  ambience = {
+    gain,
+    stop: () => {
+      alive = false;
+      wind.stop();
+      lfo.stop();
+      gain.disconnect();
+    },
+  };
+}
+
+export function stopAmbience(): void {
+  ambience?.stop();
+  ambience = null;
+}

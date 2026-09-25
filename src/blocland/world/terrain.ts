@@ -153,7 +153,7 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     }
     put(6, 1, h(6, 1) + 1, TRUNK);
     put(3, 10, h(3, 10) + 1, TRUNK);
-    tree(put, 1, 9, h(1, 9), 2);
+    tree(put, 4, 10, h(4, 10), 2);
   },
   tour: (put, h) => {
     // Une tour de verre avec un sommet en or.
@@ -215,13 +215,23 @@ export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x:
 }
 
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
+/** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
+export function creaturePlacements(
+  progress: Record<string, { stars: number }>,
+): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
+  return BIOMES.filter((b) => isBiomeUnlocked(b.id, progress)).map((b) => {
+    const { ox, oy } = islandOrigin(BIOMES.indexOf(b));
+    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + 2, y: oy + 4, z: 1 } };
+  });
+}
+
 /** Zone des plans d'une île en coordonnées du monde (bornes hautes exclues). */
 export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
   const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
   return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
 }
 
-export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {} }): VoxelCube[] {
+export function worldCubes(progress: Record<string, { stars: number }>, village: Village = { placed: {}, plans: {} }, withCreatures = true): VoxelCube[] {
   const placed = village.placed;
   const cubes: VoxelCube[] = [];
   BIOMES.forEach((biome, index) => {
@@ -248,7 +258,7 @@ export function worldCubes(progress: Record<string, { stars: number }>, village:
       }
     }
     DECOR[biome.id](put, h);
-    if (unlocked) {
+    if (unlocked && withCreatures) {
       for (const c of CREATURE_CUBES[biome.id])
         cubes.push({
           x: ox + 2 + c.x,

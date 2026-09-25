@@ -38,6 +38,8 @@ export interface CreatureDef {
   species: string;
   /** Ce que dit la créature quand on arrive dans son biome. */
   greeting: string;
+  /** Petites phrases quand on la touche dans le village. */
+  lines: string[];
 }
 
 export interface BiomeDef {
@@ -64,6 +66,11 @@ export const BIOMES: BiomeDef[] = [
       name: 'Mousso',
       species: 'golem de mousse',
       greeting: 'Salut, bâtisseur·se ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
+      lines: [
+        'Tu entends ? Le vent coupe les mots en syllabes.',
+        'Ma cabane a besoin de bois. Viens chasser les sons !',
+        'Chaque arbre ici a poussé sur une rime.',
+      ],
     },
     exercises: [
       { id: 'abattage', title: 'Abattage syllabique', description: 'Tape autant de coups que de syllabes.' },
@@ -82,6 +89,11 @@ export const BIOMES: BiomeDef[] = [
       name: 'Tunel',
       species: 'taupe cubique',
       greeting: 'Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre.',
+      lines: [
+        'Un b, un d… regarde bien de quel côté est le ventre.',
+        'Ma forge attend sa poutre. Tu as du bois ?',
+        'Sous terre, on prend son temps. Moi aussi.',
+      ],
     },
     exercises: [
       { id: 'filon', title: 'Filon', description: 'Pioche seulement la lettre cible parmi b, d, p, q.' },
@@ -99,6 +111,11 @@ export const BIOMES: BiomeDef[] = [
       name: 'Rouxel',
       species: 'renard cubique',
       greeting: 'Hé, bâtisseur·se ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt·e ?',
+      lines: [
+        'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
+        'Mon four ! Il me faut du sable et deux pierres.',
+        'Le sable, ça vient des mots qu’on a beaucoup lus.',
+      ],
     },
     exercises: [
       { id: 'mot-troue', title: 'Mot troué', description: 'Glisse le bloc de lettres qui manque.' },
@@ -117,6 +134,11 @@ export const BIOMES: BiomeDef[] = [
       name: 'Bloquette',
       species: 'vache carrée',
       greeting: 'Meuh ! À la ferme, tout doit s’accorder. Trie bien les graines et je remplis tes sacs de terre.',
+      lines: [
+        'Meuh. Les vaches, au pluriel, prennent un s. Comme les murs.',
+        'Mon étable, c’est de la terre et quatre poteaux de bois.',
+        'Quand tout s’accorde, ça tient debout.',
+      ],
     },
     exercises: [
       { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.' },
@@ -135,6 +157,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Grimoire',
       species: 'hibou de pierre',
       greeting: 'Hou hou. Chaque paragraphe que tu lis construit un étage de ma tour. Prends ton temps, je ne compte pas les secondes à voix haute.',
+      lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
     },
     exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.' }],
   },
