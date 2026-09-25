@@ -31,7 +31,7 @@ it('liste les activités d’une matière', () => {
   expect(screen.getByText('Fractions')).toBeInTheDocument();
   // Les îles de maths de Blocland, avec leur classe ; la Plaine est ouverte, pas la Rivière.
   expect(screen.getByRole('link', { name: /Plaine des nombres.*Nouveau.*Niveau 6e/ })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Rivière des fractions.*Pont à construire/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Rivière des fractions.*Ouvrage à construire/ })).toBeInTheDocument();
   expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
 });
 

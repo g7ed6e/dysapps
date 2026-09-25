@@ -32,7 +32,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-  const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un pont jusqu’à mon île, puis reviens me voir.`;
+  const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.`;
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
 

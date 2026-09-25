@@ -449,16 +449,16 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
   },
 };
 
+const STEP = '#8f8f8f';
+
 /**
- * Pont de bois entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
- * Quand les îles ne sont pas à la même altitude, le pont devient une rampe (marches d'escalier).
- * Fantôme tant qu'il n'est pas construit.
+ * Le tracé d'un ouvrage entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
+ * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
+ * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Chaque case a son altitude (interpolée).
  */
-function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
+function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
   const a = islandDef(def.from);
   const b = islandDef(def.to);
-  // Les deux îles sont-elles l'une devant l'autre ? Le pont part alors du côté droit du cœur (l'îlot du Gardien est
-  // devant, à gauche), descend jusqu'au bord de l'île de devant, fait un coude, puis y entre.
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
   const anchor = (d: IslandDef) => ({ x: d.core.x + (vertical ? CORE - 1 : CORE / 2), y: d.core.y + CORE / 2 });
   const ca = anchor(a);
@@ -495,21 +495,64 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
   }
   const span = cells.slice(first, last + 1);
   let prevZ = a.altitude;
-  span.forEach((c, i) => {
+  return span.map((c, i) => {
     const z = Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
     const climbing = z !== prevZ;
     prevZ = z;
-    cubes.push({
-      x: c.x,
-      y: c.y,
-      z,
-      color: BLOCKS.bois.side,
-      top: climbing ? BLOCKS.escalier.top : undefined,
-      texture: climbing ? 'escalier' : 'planches',
-      tag: b.id,
-      bridge: def.id,
-      ghost: ghost || undefined,
-    });
+    const next = span[Math.min(i + 1, span.length - 1)];
+    const prev = span[Math.max(i - 1, 0)];
+    return { x: c.x, y: c.y, z, climbing, dx: Math.sign(next.x - prev.x), dy: Math.sign(next.y - prev.y) };
+  });
+}
+
+/**
+ * Un ouvrage entre deux îles, selon sa nature : pont de planches (marches quand il monte), bac (poteaux et radeau
+ * au fil de l'eau), escalier taillé dans la pierre, tunnel (galerie voûtée, lanternes), col (escalier à garde-fou).
+ * Fantôme tant qu'il n'est pas construit.
+ */
+function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean): void {
+  const path = bridgePath(def);
+  const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) =>
+    cubes.push({ x, y, z, color, top, texture, tag: def.to, bridge: def.id, ghost: ghost || undefined });
+  const n = path.length;
+  path.forEach((c, i) => {
+    // Perpendiculaire au tracé (pour les arches et le garde-fou).
+    const px = c.dy !== 0 ? 1 : 0;
+    const py = c.dy !== 0 ? 0 : 1;
+    switch (def.kind) {
+      case 'pont':
+        add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
+        break;
+      case 'bac': {
+        // Un radeau de trois planches au milieu, des poteaux de bois qui tiennent la corde de halage.
+        const mid = Math.abs(i - (n - 1) / 2) <= 1;
+        if (mid) {
+          add(c.x, c.y, c.z, BLOCKS.bois.side, 'planches');
+          if (i === Math.floor((n - 1) / 2)) add(c.x + px, c.y + py, c.z, BLOCKS.bois.side, 'planches');
+        } else if (i % 3 === 0 || i === n - 1) add(c.x, c.y, c.z, TRUNK, 'tronc');
+        break;
+      }
+      case 'escalier':
+        add(c.x, c.y, c.z, STEP, c.climbing ? 'marche' : 'pierre');
+        break;
+      case 'col':
+        add(c.x, c.y, c.z, STEP, c.climbing ? 'marche' : 'pierre');
+        if (i % 2 === 0) add(c.x + px, c.y + py, c.z + 1, BLOCKS.barriere.side, 'barriere');
+        break;
+      case 'tunnel': {
+        add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
+        // Une arche de pierre toutes les trois cases, une lanterne au sommet d'une arche sur deux.
+        if (i % 3 === 1 && i < n - 1) {
+          for (const side of [-1, 1]) {
+            add(c.x + side * px, c.y + side * py, c.z + 1, BLOCKS.pierre.side, 'pierre');
+            add(c.x + side * px, c.y + side * py, c.z + 2, BLOCKS.pierre.side, 'pierre');
+          }
+          const lit = ((i - 1) / 3) % 2 === 0;
+          add(c.x, c.y, c.z + 3, lit ? BLOCKS.lanterne.side : BLOCKS.pierre.side, lit ? 'lanterne' : 'pierre');
+        }
+        break;
+      }
+    }
   });
 }
 

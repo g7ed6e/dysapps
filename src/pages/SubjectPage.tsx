@@ -87,7 +87,7 @@ export function SubjectPage() {
                 <span className="app-title">{biome.name}</span>
                 <span className="app-desc">{biome.description}</span>
                 <span className={`tag${unlocked ? (stars ? ' tag-ok' : ' tag-new') : ''}`}>
-                  {unlocked ? (stars ? `${stars} étoile${stars > 1 ? 's' : ''}` : 'Nouveau') : 'Pont à construire'}
+                  {unlocked ? (stars ? `${stars} étoile${stars > 1 ? 's' : ''}` : 'Nouveau') : 'Ouvrage à construire'}
                 </span>
                 <span className="tag tag-classe">Niveau {biome.classe}</span>
               </Link>

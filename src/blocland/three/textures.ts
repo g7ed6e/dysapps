@@ -37,7 +37,8 @@ export type TextureKind =
   | 'mousse'
   | 'basalte'
   | 'lave'
-  | 'sapin';
+  | 'sapin'
+  | 'marche';
 
 const SIZE = 16;
 
@@ -246,6 +247,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   lave: {
     top: (x, y, r) => (r() < 0.18 ? [90, 30, 20] : grain('#ff6a1a', '#ffb03a')(x, y, r)),
     side: (x, y, r) => (r() < 0.18 ? [90, 30, 20] : grain('#e85a12', '#ff9a2a')(x, y, r)),
+  },
+  // Marche taillée dans la pierre : le nez de chaque marche est souligné d'un trait clair, puis d'une ombre.
+  marche: {
+    top: (x, y, r) => (y % 8 === 0 ? [176, 176, 176] : y % 8 === 1 ? [104, 104, 104] : grain('#858585', '#9c9c9c')(x, y, r)),
+    side: (x, y, r) => (y % 8 === 7 ? [104, 104, 104] : grain('#7c7c7c', '#929292')(x, y, r)),
   },
   // Sapin : aiguilles vert sombre, bleutées.
   sapin: {
