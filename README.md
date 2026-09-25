@@ -99,10 +99,12 @@ Luciole est la police par défaut. Ses fichiers WOFF2 (version 2.001, non modifi
 
 ```bash
 npm install
-npm run dev        # serveur local : http://localhost:5173/dysapps/
+npm run dev        # serveur local : http://localhost:5173/
 npm test           # tests (Vitest)
 npm run build      # vérification TypeScript + build de production dans dist/
 ```
+
+Le site est déployé à deux endroits : GitHub Pages (https://g7ed6e.github.io/dysapps/, dans un sous-dossier) et Cloudflare Workers (https://dysapps.guillaume-delahaye.workers.dev/, à la racine). Par défaut, le build sert le site à la racine (`/`), ce qui convient à Cloudflare. Pour GitHub Pages, le workflow construit avec `DEPLOY_TARGET=github` (préfixe `/dysapps/`) : en local, `DEPLOY_TARGET=github npm run build`.
 
 ## Ajouter une activité
 
