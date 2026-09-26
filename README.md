@@ -16,7 +16,7 @@ Site en ligne : https://g7ed6e.github.io/dysapps/
 - **Pas de stress** : pas de chronomètre, un joker (indice) disponible avant de répondre ou après une erreur, et un point d’effort même quand la réponse est fausse.
 - **Moteur d’exercices** `QuizSession`, réutilisable par toutes les activités.
 - **Progression enregistrée sur l’appareil** (`localStorage`) : pas de compte, pas de serveur, aucune donnée ne quitte l’appareil.
-- **PWA** : l’application s’installe sur l’écran d’accueil et fonctionne hors ligne après la première visite. Quand une nouvelle version est prête, une bande sous l’en-tête propose « Mettre à jour » (un clic, puis la page se recharge) ; les Réglages affichent la version et un bouton « Vérifier les mises à jour ».
+- **PWA** : l’application s’installe sur l’écran d’accueil et fonctionne hors ligne après la première visite. Quand une nouvelle version est prête, une bande sous l’en-tête propose « Mettre à jour » (un clic, puis la page se recharge) ; les Réglages affichent la version et un bouton « Vérifier les mises à jour ». Chaque pull request monte la version mineure (`npm run version:minor`) ; la CI refuse une pull request dont la version n'a pas monté (`npm run version:check`).
 
 ## Quêtes disponibles
 

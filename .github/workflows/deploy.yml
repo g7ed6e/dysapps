@@ -25,6 +25,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # Tout l'historique : la vérification de version compare avec la branche de base.
+          fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
@@ -34,6 +36,12 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Vérifier les signatures des paquets npm
         run: npm audit signatures
+      # Chaque pull request monte la version mineure : chaque build publié porte un numéro nouveau.
+      - name: Vérifier l'incrément de version
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: npm run version:check -- "origin/$BASE_REF"
       - run: npm test
       - run: npm run build
         env:

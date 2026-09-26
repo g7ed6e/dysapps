@@ -1,7 +1,7 @@
 {
   "name": "dysapps",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "Applications d'entraînement adaptées aux élèves dys du collège",
   "scripts": {
@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:check": "node scripts/check-version.mjs"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",
