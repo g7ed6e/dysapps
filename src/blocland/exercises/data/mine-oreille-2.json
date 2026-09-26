@@ -52,6 +52,38 @@
       "answer": "gare",
       "hint": "le g vibre, comme dans gomme.",
       "sentence": "Le train entre en gare."
+    },
+    {
+      "key": "cage",
+      "word": "cage",
+      "choices": ["cage", "cache"],
+      "answer": "cage",
+      "hint": "le j de cage vibre, comme dans girafe.",
+      "sentence": "Un oiseau dans sa cage."
+    },
+    {
+      "key": "vache",
+      "word": "vache",
+      "choices": ["vache", "fache"],
+      "answer": "vache",
+      "hint": "le v vibre dans la gorge, comme dans vélo.",
+      "sentence": "La vache broute."
+    },
+    {
+      "key": "bouche",
+      "word": "bouche",
+      "choices": ["bouche", "pouche"],
+      "answer": "bouche",
+      "hint": "le b vibre dans la gorge, comme dans bateau.",
+      "sentence": "Ouvre la bouche."
+    },
+    {
+      "key": "jupe",
+      "word": "jupe",
+      "choices": ["jupe", "chupe"],
+      "answer": "jupe",
+      "hint": "le j vibre, comme dans jouet.",
+      "sentence": "Une jupe rouge."
     }
   ],
   "feedback": {
@@ -66,5 +98,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }

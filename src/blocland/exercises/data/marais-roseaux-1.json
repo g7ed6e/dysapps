@@ -9,11 +9,7 @@
       "key": "marais-roseaux-1-0",
       "prompt": "Il faut que tu … tes devoirs.",
       "spoken": "Il faut que tu  (mot manquant)  tes devoirs.",
-      "choices": [
-        "fasses",
-        "fais",
-        "feras"
-      ],
+      "choices": ["fasses", "fais", "feras"],
       "answer": "fasses",
       "hint": "« Il faut que » appelle le subjonctif : que tu fasses.",
       "explanation": "Après « il faut que » : subjonctif, « fasses ».",
@@ -34,11 +30,7 @@
       "key": "marais-roseaux-1-1",
       "prompt": "Je veux que vous … à l’heure.",
       "spoken": "Je veux que vous  (mot manquant)  à l’heure.",
-      "choices": [
-        "soyez",
-        "êtes",
-        "serez"
-      ],
+      "choices": ["soyez", "êtes", "serez"],
       "answer": "soyez",
       "hint": "« Je veux que » + subjonctif d’être : que vous soyez.",
       "explanation": "Après « je veux que » : subjonctif, « soyez ».",
@@ -59,11 +51,7 @@
       "key": "marais-roseaux-1-2",
       "prompt": "Bien qu’il … froid, on sort.",
       "spoken": "Bien qu’il  (mot manquant)  froid, on sort.",
-      "choices": [
-        "fasse",
-        "fait",
-        "fera"
-      ],
+      "choices": ["fasse", "fait", "fera"],
       "answer": "fasse",
       "hint": "« Bien que » + subjonctif.",
       "explanation": "Après « bien que » : subjonctif, « fasse ».",
@@ -84,11 +72,7 @@
       "key": "marais-roseaux-1-3",
       "prompt": "Il est temps que nous … .",
       "spoken": "Il est temps que nous  (mot manquant)  .",
-      "choices": [
-        "partions",
-        "partons",
-        "partirons"
-      ],
+      "choices": ["partions", "partons", "partirons"],
       "answer": "partions",
       "hint": "Subjonctif avec nous : -ions.",
       "explanation": "Après « il est temps que » : subjonctif, « partions ».",
@@ -109,11 +93,7 @@
       "key": "marais-roseaux-1-4",
       "prompt": "Je souhaite qu’elle … .",
       "spoken": "Je souhaite qu’elle  (mot manquant)  .",
-      "choices": [
-        "vienne",
-        "vient",
-        "viendra"
-      ],
+      "choices": ["vienne", "vient", "viendra"],
       "answer": "vienne",
       "hint": "Formé sur « ils viennent » : que elle vienne.",
       "explanation": "Après « je souhaite que » : subjonctif, « vienne ».",
@@ -134,11 +114,7 @@
       "key": "marais-roseaux-1-5",
       "prompt": "Pour que tu … , il faut t’entraîner.",
       "spoken": "Pour que tu  (mot manquant)  , il faut t’entraîner.",
-      "choices": [
-        "réussisses",
-        "réussis",
-        "réussiras"
-      ],
+      "choices": ["réussisses", "réussis", "réussiras"],
       "answer": "réussisses",
       "hint": "« Pour que » + subjonctif : que tu réussisses.",
       "explanation": "Après « pour que » : subjonctif, « réussisses ».",
@@ -159,11 +135,7 @@
       "key": "marais-roseaux-1-6",
       "prompt": "Il faut que j’… du courage.",
       "spoken": "Il faut que j’ (mot manquant)  du courage.",
-      "choices": [
-        "aie",
-        "ai",
-        "aurai"
-      ],
+      "choices": ["aie", "ai", "aurai"],
       "answer": "aie",
       "hint": "Subjonctif d’avoir : que j’aie.",
       "explanation": "Après « il faut que » : subjonctif d’avoir, « aie ».",
@@ -184,11 +156,7 @@
       "key": "marais-roseaux-1-7",
       "prompt": "Avant que vous … , fermez la porte.",
       "spoken": "Avant que vous  (mot manquant)  , fermez la porte.",
-      "choices": [
-        "partiez",
-        "partez",
-        "partirez"
-      ],
+      "choices": ["partiez", "partez", "partirez"],
       "answer": "partiez",
       "hint": "« Avant que » + subjonctif : que vous partiez.",
       "explanation": "Après « avant que » : subjonctif, « partiez ».",

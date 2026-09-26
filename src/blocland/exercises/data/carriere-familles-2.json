@@ -58,6 +58,42 @@
       "choices": ["nette", "eur", "age"],
       "answer": "nette",
       "word": "maisonnette"
+    },
+    {
+      "key": "fillette",
+      "meaning": "Une petite fille.",
+      "root": "fill",
+      "slot": "suffix",
+      "choices": ["ette", "eur", "age"],
+      "answer": "ette",
+      "word": "fillette"
+    },
+    {
+      "key": "danseur",
+      "meaning": "Celui qui danse.",
+      "root": "dans",
+      "slot": "suffix",
+      "choices": ["eur", "ette", "able"],
+      "answer": "eur",
+      "word": "danseur"
+    },
+    {
+      "key": "peureux",
+      "meaning": "Qui a souvent peur.",
+      "root": "peur",
+      "slot": "suffix",
+      "choices": ["eux", "able", "age"],
+      "answer": "eux",
+      "word": "peureux"
+    },
+    {
+      "key": "jetable",
+      "meaning": "Que l’on peut jeter.",
+      "root": "jet",
+      "slot": "suffix",
+      "choices": ["able", "eux", "ette"],
+      "answer": "able",
+      "word": "jetable"
     }
   ],
   "feedback": {
@@ -72,5 +108,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }

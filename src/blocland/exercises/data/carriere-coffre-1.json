@@ -46,6 +46,34 @@
       "choices": ["après", "apré", "aprés"],
       "answer": "après",
       "hint": "après : accent grave et un s muet."
+    },
+    {
+      "key": "jamais",
+      "word": "jamais",
+      "choices": ["jamais", "jamai", "jammais"],
+      "answer": "jamais",
+      "hint": "jamais finit par un s, comme toujours."
+    },
+    {
+      "key": "encore",
+      "word": "encore",
+      "choices": ["encore", "ancore", "encor"],
+      "answer": "encore",
+      "hint": "encore commence par en, comme enfant."
+    },
+    {
+      "key": "aussi",
+      "word": "aussi",
+      "choices": ["aussi", "ausi", "aussie"],
+      "answer": "aussi",
+      "hint": "aussi prend deux s et finit par un i."
+    },
+    {
+      "key": "demain",
+      "word": "demain",
+      "choices": ["demain", "demin", "demein"],
+      "answer": "demain",
+      "hint": "demain finit par ain, comme main."
     }
   ],
   "feedback": {
@@ -60,5 +88,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }

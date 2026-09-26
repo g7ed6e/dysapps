@@ -9,11 +9,7 @@
       "key": "marais-brume-2-0",
       "prompt": "Demain, nous … tôt.",
       "spoken": "Demain, nous  (mot manquant)  tôt.",
-      "choices": [
-        "partirons",
-        "partiront",
-        "partirions"
-      ],
+      "choices": ["partirons", "partiront", "partirions"],
       "answer": "partirons",
       "hint": "Nous : -ons.",
       "explanation": "Futur avec nous : « partirons ».",
@@ -33,11 +29,7 @@
       "key": "marais-brume-2-1",
       "prompt": "Ils … le film ce soir.",
       "spoken": "Ils  (mot manquant)  le film ce soir.",
-      "choices": [
-        "verront",
-        "verrons",
-        "voiront"
-      ],
+      "choices": ["verront", "verrons", "voiront"],
       "answer": "verront",
       "hint": "Voir → verr-, ils : -ont.",
       "explanation": "Futur de voir avec ils : « verront ».",
@@ -57,11 +49,7 @@
       "key": "marais-brume-2-2",
       "prompt": "Tu … ta chambre.",
       "spoken": "Tu  (mot manquant)  ta chambre.",
-      "choices": [
-        "rangeras",
-        "rangera",
-        "rangerai"
-      ],
+      "choices": ["rangeras", "rangera", "rangerai"],
       "answer": "rangeras",
       "hint": "Tu : -as.",
       "explanation": "Futur avec tu : « rangeras ».",
@@ -81,11 +69,7 @@
       "key": "marais-brume-2-3",
       "prompt": "J’… douze ans en mai.",
       "spoken": "J’ (mot manquant)  douze ans en mai.",
-      "choices": [
-        "aurai",
-        "aurais",
-        "aurez"
-      ],
+      "choices": ["aurai", "aurais", "aurez"],
       "answer": "aurai",
       "hint": "Avoir → aur-, je : -ai.",
       "explanation": "Futur d’avoir avec je : « aurai ».",
@@ -105,11 +89,7 @@
       "key": "marais-brume-2-4",
       "prompt": "Vous … les résultats lundi.",
       "spoken": "Vous  (mot manquant)  les résultats lundi.",
-      "choices": [
-        "recevrez",
-        "recevez",
-        "receverez"
-      ],
+      "choices": ["recevrez", "recevez", "receverez"],
       "answer": "recevrez",
       "hint": "Recevoir → recevr-, vous : -ez.",
       "explanation": "Futur de recevoir avec vous : « recevrez ».",
@@ -129,11 +109,7 @@
       "key": "marais-brume-2-5",
       "prompt": "Elle … chez sa tante.",
       "spoken": "Elle  (mot manquant)  chez sa tante.",
-      "choices": [
-        "ira",
-        "irait",
-        "allera"
-      ],
+      "choices": ["ira", "irait", "allera"],
       "answer": "ira",
       "hint": "Aller → ir-, elle : -a.",
       "explanation": "Futur d’aller avec elle : « ira ».",
@@ -153,11 +129,7 @@
       "key": "marais-brume-2-6",
       "prompt": "Nous … un gâteau.",
       "spoken": "Nous  (mot manquant)  un gâteau.",
-      "choices": [
-        "ferons",
-        "fairons",
-        "ferions"
-      ],
+      "choices": ["ferons", "fairons", "ferions"],
       "answer": "ferons",
       "hint": "Faire → fer-, nous : -ons.",
       "explanation": "Futur de faire avec nous : « ferons ».",
@@ -177,11 +149,7 @@
       "key": "marais-brume-2-7",
       "prompt": "Ils … à huit heures.",
       "spoken": "Ils  (mot manquant)  à huit heures.",
-      "choices": [
-        "viendront",
-        "venirons",
-        "viendrons"
-      ],
+      "choices": ["viendront", "venirons", "viendrons"],
       "answer": "viendront",
       "hint": "Venir → viendr-, ils : -ont.",
       "explanation": "Futur de venir avec ils : « viendront ».",

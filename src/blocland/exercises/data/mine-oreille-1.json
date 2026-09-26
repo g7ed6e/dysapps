@@ -52,6 +52,38 @@
       "answer": "chou",
       "hint": "le ch souffle sans vibrer, comme dans chat.",
       "sentence": "Un chou vert."
+    },
+    {
+      "key": "banc",
+      "word": "banc",
+      "choices": ["banc", "panc"],
+      "answer": "banc",
+      "hint": "le b vibre dans la gorge, comme dans bateau.",
+      "sentence": "Un banc dans le parc."
+    },
+    {
+      "key": "fil",
+      "word": "fil",
+      "choices": ["fil", "vil"],
+      "answer": "fil",
+      "hint": "le f souffle sans vibrer, comme dans feu.",
+      "sentence": "Un fil de laine."
+    },
+    {
+      "key": "tas",
+      "word": "tas",
+      "choices": ["tas", "das"],
+      "answer": "tas",
+      "hint": "le t claque sans vibrer, comme dans table.",
+      "sentence": "Un tas de sable."
+    },
+    {
+      "key": "bulle",
+      "word": "bulle",
+      "choices": ["bulle", "pulle"],
+      "answer": "bulle",
+      "hint": "le b vibre dans la gorge, comme dans bulle.",
+      "sentence": "Une bulle de savon."
     }
   ],
   "feedback": {
@@ -66,5 +98,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }

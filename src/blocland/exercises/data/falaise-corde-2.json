@@ -9,11 +9,7 @@
       "key": "falaise-corde-2-0",
       "prompt": "La lettre que j’ai … est partie.",
       "spoken": "La lettre que j’ai  (mot manquant)  est partie.",
-      "choices": [
-        "écrite",
-        "écrit",
-        "écrits"
-      ],
+      "choices": ["écrite", "écrit", "écrits"],
       "answer": "écrite",
       "hint": "J’ai écrit quoi ? « que » = la lettre, placé avant : accord.",
       "explanation": "COD « que » (la lettre) avant le verbe : « écrite ».",
@@ -34,11 +30,7 @@
       "key": "falaise-corde-2-1",
       "prompt": "J’ai … la lettre ce matin.",
       "spoken": "J’ai  (mot manquant)  la lettre ce matin.",
-      "choices": [
-        "écrit",
-        "écrite",
-        "écrits"
-      ],
+      "choices": ["écrit", "écrite", "écrits"],
       "answer": "écrit",
       "hint": "J’ai écrit quoi ? la lettre, après le verbe : pas d’accord.",
       "explanation": "COD après le verbe : « écrit ».",
@@ -59,11 +51,7 @@
       "key": "falaise-corde-2-2",
       "prompt": "Les pommes que tu as … sont mûres.",
       "spoken": "Les pommes que tu as  (mot manquant)  sont mûres.",
-      "choices": [
-        "cueillies",
-        "cueilli",
-        "cueillis"
-      ],
+      "choices": ["cueillies", "cueilli", "cueillis"],
       "answer": "cueillies",
       "hint": "Tu as cueilli quoi ? « que » = les pommes, avant : accord féminin pluriel.",
       "explanation": "COD avant le verbe, féminin pluriel : « cueillies ».",
@@ -84,11 +72,7 @@
       "key": "falaise-corde-2-3",
       "prompt": "Elle les a … hier.",
       "spoken": "Elle les a  (mot manquant)  hier.",
-      "choices": [
-        "vus",
-        "vu",
-        "vue"
-      ],
+      "choices": ["vus", "vu", "vue"],
       "answer": "vus",
       "hint": "Elle a vu qui ? « les » (eux), placé avant : accord masculin pluriel.",
       "explanation": "COD « les » avant le verbe : « vus ».",
@@ -109,11 +93,7 @@
       "key": "falaise-corde-2-4",
       "prompt": "Ils ont … leurs amis.",
       "spoken": "Ils ont  (mot manquant)  leurs amis.",
-      "choices": [
-        "invité",
-        "invités",
-        "invitée"
-      ],
+      "choices": ["invité", "invités", "invitée"],
       "answer": "invité",
       "hint": "Ils ont invité qui ? leurs amis, après le verbe : pas d’accord.",
       "explanation": "COD après le verbe : « invité ».",
@@ -134,11 +114,7 @@
       "key": "falaise-corde-2-5",
       "prompt": "Quelle chanson as-tu … ?",
       "spoken": "Quelle chanson as-tu  (mot manquant)  ?",
-      "choices": [
-        "choisie",
-        "choisi",
-        "choisis"
-      ],
+      "choices": ["choisie", "choisi", "choisis"],
       "answer": "choisie",
       "hint": "Tu as choisi quoi ? « quelle chanson », avant : accord féminin.",
       "explanation": "COD « quelle chanson » avant le verbe : « choisie ».",
@@ -159,11 +135,7 @@
       "key": "falaise-corde-2-6",
       "prompt": "Les photos, je les ai … .",
       "spoken": "Les photos, je les ai  (mot manquant)  .",
-      "choices": [
-        "vues",
-        "vu",
-        "vus"
-      ],
+      "choices": ["vues", "vu", "vus"],
       "answer": "vues",
       "hint": "J’ai vu quoi ? « les » = les photos, avant : féminin pluriel.",
       "explanation": "COD « les » (les photos) avant : « vues ».",
@@ -184,11 +156,7 @@
       "key": "falaise-corde-2-7",
       "prompt": "Nous avons … des cadeaux.",
       "spoken": "Nous avons  (mot manquant)  des cadeaux.",
-      "choices": [
-        "reçu",
-        "reçus",
-        "reçue"
-      ],
+      "choices": ["reçu", "reçus", "reçue"],
       "answer": "reçu",
       "hint": "Nous avons reçu quoi ? des cadeaux, après : pas d’accord.",
       "explanation": "COD après le verbe : « reçu ».",

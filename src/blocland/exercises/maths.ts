@@ -112,6 +112,8 @@ function define({ biome, type, level, instruction, generators, block, count }: S
     level,
     instruction,
     items: buildItems(id, generators, count),
+    // Chaque partie tire d'autres nombres : la graine change avec le nombre de parties jouées.
+    generate: (seed) => buildItems(seed, generators, count),
     feedback: { correct: 'Bien calculé !', wrong: '{explanation}' },
     reward: { block, amount: 4, xp: 12 },
     adaptive: { promoteAt: 0.85, demoteAt: 0.5 },

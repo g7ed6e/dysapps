@@ -9,11 +9,7 @@
       "key": "carrefour-aiguillage-2-0",
       "prompt": "Il … a pas de pain.",
       "spoken": "Il  (mot manquant)  a pas de pain.",
-      "choices": [
-        "ni",
-        "n’y",
-        "nid"
-      ],
+      "choices": ["ni", "n’y", "nid"],
       "answer": "n’y",
       "hint": "« n’y » = ne + y : il n’y a pas.",
       "explanation": "Il n’y a pas de pain : ne + y.",
@@ -35,11 +31,7 @@
       "key": "carrefour-aiguillage-2-1",
       "prompt": "Je n’aime … le froid … la pluie.",
       "spoken": "Je n’aime  (mot manquant)  le froid  (mot manquant)  la pluie.",
-      "choices": [
-        "ni",
-        "n’y",
-        "nie"
-      ],
+      "choices": ["ni", "n’y", "nie"],
       "answer": "ni",
       "hint": "« ni » = et pas.",
       "explanation": "Ni le froid ni la pluie : et pas l’un, et pas l’autre.",
@@ -61,11 +53,7 @@
       "key": "carrefour-aiguillage-2-2",
       "prompt": "Elle … met dès ce soir.",
       "spoken": "Elle  (mot manquant)  met dès ce soir.",
-      "choices": [
-        "si",
-        "s’y",
-        "ci"
-      ],
+      "choices": ["si", "s’y", "ci"],
       "answer": "s’y",
       "hint": "« s’y mettre » : on peut dire « je m’y mets ».",
       "explanation": "Elle s’y met : se + y.",
@@ -87,11 +75,7 @@
       "key": "carrefour-aiguillage-2-3",
       "prompt": "Viens … tu veux.",
       "spoken": "Viens  (mot manquant)  tu veux.",
-      "choices": [
-        "si",
-        "s’y",
-        "ci"
-      ],
+      "choices": ["si", "s’y", "ci"],
       "answer": "si",
       "hint": "« si » = à condition que.",
       "explanation": "Viens si tu veux : condition.",
@@ -113,11 +97,7 @@
       "key": "carrefour-aiguillage-2-4",
       "prompt": "Il est arrivé … que prévu.",
       "spoken": "Il est arrivé  (mot manquant)  que prévu.",
-      "choices": [
-        "plus tôt",
-        "plutôt",
-        "plus tot"
-      ],
+      "choices": ["plus tôt", "plutôt", "plus tot"],
       "answer": "plus tôt",
       "hint": "Contraire de « plus tard » ? Alors c’est « plus tôt » en deux mots.",
       "explanation": "Plus tôt que prévu = avant l’heure prévue : contraire de plus tard.",
@@ -139,11 +119,7 @@
       "key": "carrefour-aiguillage-2-5",
       "prompt": "Je préfère … le bleu.",
       "spoken": "Je préfère  (mot manquant)  le bleu.",
-      "choices": [
-        "plus tôt",
-        "plutôt",
-        "plus tot"
-      ],
+      "choices": ["plus tôt", "plutôt", "plus tot"],
       "answer": "plutôt",
       "hint": "« plutôt » = de préférence.",
       "explanation": "Je préfère plutôt le bleu : de préférence.",
@@ -165,11 +141,7 @@
       "key": "carrefour-aiguillage-2-6",
       "prompt": "Le bus est … de l’école.",
       "spoken": "Le bus est  (mot manquant)  de l’école.",
-      "choices": [
-        "près",
-        "prêt",
-        "pré"
-      ],
+      "choices": ["près", "prêt", "pré"],
       "answer": "près",
       "hint": "« près » = pas loin.",
       "explanation": "Le bus est près de l’école : pas loin.",
@@ -191,11 +163,7 @@
       "key": "carrefour-aiguillage-2-7",
       "prompt": "Il est … à partir.",
       "spoken": "Il est  (mot manquant)  à partir.",
-      "choices": [
-        "près",
-        "prêt",
-        "pré"
-      ],
+      "choices": ["près", "prêt", "pré"],
       "answer": "prêt",
       "hint": "« prêt » = préparé (au féminin : prête).",
       "explanation": "Il est prêt à partir : préparé.",

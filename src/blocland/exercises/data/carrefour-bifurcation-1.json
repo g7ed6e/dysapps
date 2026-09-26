@@ -9,11 +9,7 @@
       "key": "carrefour-bifurcation-1-0",
       "prompt": "… amis … partis tôt.",
       "spoken": " (mot manquant)  amis  (mot manquant)  partis tôt.",
-      "choices": [
-        "Ses / sont",
-        "Ces / son",
-        "Ses / son"
-      ],
+      "choices": ["Ses / sont", "Ces / son", "Ses / son"],
       "answer": "Ses / sont",
       "hint": "« les siens » puis « étaient ».",
       "explanation": "Ses amis (les siens) sont (étaient) partis tôt.",
@@ -34,11 +30,7 @@
       "key": "carrefour-bifurcation-1-1",
       "prompt": "… chaussures-là … à lui.",
       "spoken": " (mot manquant)  chaussures-là  (mot manquant)  à lui.",
-      "choices": [
-        "Ces / son",
-        "Ces / sont",
-        "Ses / sont"
-      ],
+      "choices": ["Ces / son", "Ces / sont", "Ses / sont"],
       "answer": "Ces / sont",
       "hint": "« -là » montre : ces. « étaient » : sont.",
       "explanation": "Ces chaussures-là (on montre) sont (étaient) à lui.",
@@ -59,11 +51,7 @@
       "key": "carrefour-bifurcation-1-2",
       "prompt": "Il … levé … sept heures.",
       "spoken": "Il  (mot manquant)  levé  (mot manquant)  sept heures.",
-      "choices": [
-        "s’est / à",
-        "c’est / a",
-        "s’est / a"
-      ],
+      "choices": ["s’est / à", "c’est / a", "s’est / a"],
       "answer": "s’est / à",
       "hint": "« je me suis levé » : s’est. « avait » ne marche pas devant sept heures : à.",
       "explanation": "Il s’est levé (verbe se lever) à sept heures (préposition).",
@@ -84,11 +72,7 @@
       "key": "carrefour-bifurcation-1-3",
       "prompt": "… vrai, il … raison.",
       "spoken": " (mot manquant)  vrai, il  (mot manquant)  raison.",
-      "choices": [
-        "C’est / a",
-        "S’est / à",
-        "C’est / à"
-      ],
+      "choices": ["C’est / a", "S’est / à", "C’est / à"],
       "answer": "C’est / a",
       "hint": "« cela est » : c’est. « avait raison » : a.",
       "explanation": "C’est vrai (cela est), il a (avait) raison.",
@@ -109,11 +93,7 @@
       "key": "carrefour-bifurcation-1-4",
       "prompt": "… dit qu’ils … gagné.",
       "spoken": " (mot manquant)  dit qu’ils  (mot manquant)  gagné.",
-      "choices": [
-        "On / ont",
-        "Ont / on",
-        "On / on"
-      ],
+      "choices": ["On / ont", "Ont / on", "On / on"],
       "answer": "On / ont",
       "hint": "« quelqu’un dit » : on. « ils avaient » : ont.",
       "explanation": "On dit (quelqu’un) qu’ils ont (avaient) gagné.",
@@ -134,11 +114,7 @@
       "key": "carrefour-bifurcation-1-5",
       "prompt": "Elle … acheté … vélo.",
       "spoken": "Elle  (mot manquant)  acheté  (mot manquant)  vélo.",
-      "choices": [
-        "a / son",
-        "à / son",
-        "a / sont"
-      ],
+      "choices": ["a / son", "à / son", "a / sont"],
       "answer": "a / son",
       "hint": "« avait acheté » : a. « le sien » : son.",
       "explanation": "Elle a (avait) acheté son (le sien) vélo.",
@@ -159,11 +135,7 @@
       "key": "carrefour-bifurcation-1-6",
       "prompt": "… élèves … oublié leurs cahiers.",
       "spoken": " (mot manquant)  élèves  (mot manquant)  oublié leurs cahiers.",
-      "choices": [
-        "Ces / ont",
-        "Ses / on",
-        "Ces / on"
-      ],
+      "choices": ["Ces / ont", "Ses / on", "Ces / on"],
       "answer": "Ces / ont",
       "hint": "« ces élèves-là » : ces. « ils avaient » : ont.",
       "explanation": "Ces élèves (ceux-là) ont (avaient) oublié leurs cahiers.",
@@ -184,11 +156,7 @@
       "key": "carrefour-bifurcation-1-7",
       "prompt": "… la fête, … cousins dansent.",
       "spoken": " (mot manquant)  la fête,  (mot manquant)  cousins dansent.",
-      "choices": [
-        "À / ses",
-        "A / ces",
-        "À / ces"
-      ],
+      "choices": ["À / ses", "A / ces", "À / ces"],
       "answer": "À / ses",
       "hint": "« avait » ne marche pas : à. « les siens » : ses.",
       "explanation": "À la fête (préposition), ses cousins (les siens) dansent.",

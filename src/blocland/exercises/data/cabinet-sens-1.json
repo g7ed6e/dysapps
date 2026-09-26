@@ -9,10 +9,7 @@
       "key": "cabinet-sens-1-0",
       "prompt": "« Une pluie de cadeaux » : quel sens ?",
       "spoken": "« Une pluie de cadeaux » : quel sens ?",
-      "choices": [
-        "figuré",
-        "propre"
-      ],
+      "choices": ["figuré", "propre"],
       "answer": "figuré",
       "hint": "Des cadeaux ne tombent pas vraiment du ciel : image.",
       "explanation": "Image (beaucoup de cadeaux) : sens figuré.",
@@ -32,10 +29,7 @@
       "key": "cabinet-sens-1-1",
       "prompt": "« Il pleut depuis ce matin » : quel sens ?",
       "spoken": "« Il pleut depuis ce matin » : quel sens ?",
-      "choices": [
-        "propre",
-        "figuré"
-      ],
+      "choices": ["propre", "figuré"],
       "answer": "propre",
       "hint": "De la vraie pluie : sens concret.",
       "explanation": "Sens premier, concret : sens propre.",
@@ -55,11 +49,7 @@
       "key": "cabinet-sens-1-2",
       "prompt": "« Avoir un cœur de pierre » signifie …",
       "spoken": "« Avoir un cœur de pierre » signifie  (mot manquant) ",
-      "choices": [
-        "être insensible",
-        "avoir mal au cœur",
-        "être fort"
-      ],
+      "choices": ["être insensible", "avoir mal au cœur", "être fort"],
       "answer": "être insensible",
       "hint": "Sens figuré : dur comme la pierre.",
       "explanation": "Image : un cœur dur, insensible.",
@@ -79,11 +69,7 @@
       "key": "cabinet-sens-1-3",
       "prompt": "« Dévorer un livre » signifie …",
       "spoken": "« Dévorer un livre » signifie  (mot manquant) ",
-      "choices": [
-        "le lire avec passion",
-        "le manger",
-        "le déchirer"
-      ],
+      "choices": ["le lire avec passion", "le manger", "le déchirer"],
       "answer": "le lire avec passion",
       "hint": "On ne mange pas un livre : sens figuré.",
       "explanation": "Sens figuré : lire vite et avec plaisir.",
@@ -103,10 +89,7 @@
       "key": "cabinet-sens-1-4",
       "prompt": "« La bouche du métro » : quel sens ?",
       "spoken": "« La bouche du métro » : quel sens ?",
-      "choices": [
-        "figuré",
-        "propre"
-      ],
+      "choices": ["figuré", "propre"],
       "answer": "figuré",
       "hint": "Le métro n’a pas de vraie bouche : image de l’entrée.",
       "explanation": "Image : l’entrée ressemble à une bouche, sens figuré.",
@@ -126,10 +109,7 @@
       "key": "cabinet-sens-1-5",
       "prompt": "« Casser sa tirelire » : quel sens ?",
       "spoken": "« Casser sa tirelire » : quel sens ?",
-      "choices": [
-        "propre",
-        "figuré"
-      ],
+      "choices": ["propre", "figuré"],
       "answer": "propre",
       "hint": "On casse vraiment l’objet.",
       "explanation": "Action réelle et concrète : sens propre.",
@@ -149,11 +129,7 @@
       "key": "cabinet-sens-1-6",
       "prompt": "« Tomber dans les pommes » signifie …",
       "spoken": "« Tomber dans les pommes » signifie  (mot manquant) ",
-      "choices": [
-        "s’évanouir",
-        "cueillir des pommes",
-        "faire une chute"
-      ],
+      "choices": ["s’évanouir", "cueillir des pommes", "faire une chute"],
       "answer": "s’évanouir",
       "hint": "Expression imagée.",
       "explanation": "Sens figuré : perdre connaissance.",
@@ -173,10 +149,7 @@
       "key": "cabinet-sens-1-7",
       "prompt": "« Le pied de la table » : quel sens ?",
       "spoken": "« Le pied de la table » : quel sens ?",
-      "choices": [
-        "figuré",
-        "propre"
-      ],
+      "choices": ["figuré", "propre"],
       "answer": "figuré",
       "hint": "La table n’a pas de vrai pied : image.",
       "explanation": "Image (ce qui porte, comme un pied) : sens figuré.",

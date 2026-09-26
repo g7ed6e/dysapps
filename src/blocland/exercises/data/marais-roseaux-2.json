@@ -9,11 +9,7 @@
       "key": "marais-roseaux-2-0",
       "prompt": "« Nous chanterions volontiers. »",
       "spoken": "« Nous chanterions volontiers. »",
-      "choices": [
-        "conditionnel",
-        "futur",
-        "imparfait"
-      ],
+      "choices": ["conditionnel", "futur", "imparfait"],
       "answer": "conditionnel",
       "hint": "-rions : conditionnel.",
       "explanation": "« chanterions » : -rions, conditionnel présent.",
@@ -34,11 +30,7 @@
       "key": "marais-roseaux-2-1",
       "prompt": "« Ils ont couru jusqu’ici. »",
       "spoken": "« Ils ont couru jusqu’ici. »",
-      "choices": [
-        "passé composé",
-        "passé simple",
-        "présent"
-      ],
+      "choices": ["passé composé", "passé simple", "présent"],
       "answer": "passé composé",
       "hint": "Avoir + participe passé.",
       "explanation": "« ont couru » : auxiliaire avoir + participe, passé composé.",
@@ -59,11 +51,7 @@
       "key": "marais-roseaux-2-2",
       "prompt": "« Qu’elle prenne son temps. »",
       "spoken": "« Qu’elle prenne son temps. »",
-      "choices": [
-        "subjonctif",
-        "présent",
-        "futur"
-      ],
+      "choices": ["subjonctif", "présent", "futur"],
       "answer": "subjonctif",
       "hint": "« qu’elle » + verbe : subjonctif.",
       "explanation": "« qu’elle prenne » : subjonctif présent.",
@@ -84,11 +72,7 @@
       "key": "marais-roseaux-2-3",
       "prompt": "« Vous finirez demain. »",
       "spoken": "« Vous finirez demain. »",
-      "choices": [
-        "futur",
-        "conditionnel",
-        "présent"
-      ],
+      "choices": ["futur", "conditionnel", "présent"],
       "answer": "futur",
       "hint": "-rez : futur.",
       "explanation": "« finirez » : futur simple.",
@@ -109,11 +93,7 @@
       "key": "marais-roseaux-2-4",
       "prompt": "« Le vent soufflait fort. »",
       "spoken": "« Le vent soufflait fort. »",
-      "choices": [
-        "imparfait",
-        "passé simple",
-        "présent"
-      ],
+      "choices": ["imparfait", "passé simple", "présent"],
       "answer": "imparfait",
       "hint": "-ait : imparfait.",
       "explanation": "« soufflait » : imparfait.",
@@ -134,11 +114,7 @@
       "key": "marais-roseaux-2-5",
       "prompt": "« Elle ouvrit les yeux. »",
       "spoken": "« Elle ouvrit les yeux. »",
-      "choices": [
-        "passé simple",
-        "présent",
-        "imparfait"
-      ],
+      "choices": ["passé simple", "présent", "imparfait"],
       "answer": "passé simple",
       "hint": "-it au passé, dans un récit : passé simple.",
       "explanation": "« ouvrit » : passé simple.",
@@ -159,11 +135,7 @@
       "key": "marais-roseaux-2-6",
       "prompt": "« Nous prenons le bus. »",
       "spoken": "« Nous prenons le bus. »",
-      "choices": [
-        "présent",
-        "futur",
-        "subjonctif"
-      ],
+      "choices": ["présent", "futur", "subjonctif"],
       "answer": "présent",
       "hint": "Action maintenant : présent.",
       "explanation": "« prenons » : présent de l’indicatif.",
@@ -184,11 +156,7 @@
       "key": "marais-roseaux-2-7",
       "prompt": "« Il faudrait que tu viennes. »",
       "spoken": "« Il faudrait que tu viennes. »",
-      "choices": [
-        "subjonctif",
-        "conditionnel",
-        "futur"
-      ],
+      "choices": ["subjonctif", "conditionnel", "futur"],
       "answer": "subjonctif",
       "hint": "Le verbe après « que tu » : « viennes », subjonctif.",
       "explanation": "« que tu viennes » : subjonctif présent (« faudrait » est au conditionnel).",

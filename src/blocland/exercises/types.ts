@@ -16,7 +16,12 @@ export interface ExerciseDef {
   /** Consigne unique, courte, lue à voix haute au démarrage. */
   instruction: string;
   target?: string;
+  /** Les items de référence (Gardien, tests). Une partie en joue une variante : voir `run.ts`. */
   items: ExerciseItem[];
+  /** Exercice généré : d'autres items pour une autre graine (une par partie). */
+  generate?: (seed: string) => ExerciseItem[];
+  /** Nombre d'items joués par partie, tirés du lot (tous s'il n'est pas donné). */
+  perRun?: number;
   feedback: {
     correct: string;
     /** Peut contenir {word}, {heard}, {answer}. */
