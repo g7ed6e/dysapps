@@ -24,7 +24,9 @@ export type BiomeId =
   | 'phare'
   | 'textes'
   | 'baie'
-  | 'horloge';
+  | 'horloge'
+  | 'comptoir'
+  | 'manoir';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -48,6 +50,8 @@ export type BlockId =
   | 'lentille'
   | 'cabine'
   | 'cadran'
+  | 'tuile'
+  | 'lambris'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -91,6 +95,8 @@ export type BlockTexture =
   | 'lentille'
   | 'cabine'
   | 'cadran'
+  | 'tuile'
+  | 'lambris'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -125,6 +131,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   lentille: { id: 'lentille', name: 'Lentille', top: '#cfe6f2', side: '#7fb2cc', texture: 'lentille' },
   cabine: { id: 'cabine', name: 'Cabine', top: '#d8342c', side: '#b02a24', texture: 'cabine' },
   cadran: { id: 'cadran', name: 'Cadran', top: '#f4ecd6', side: '#c9a24a', texture: 'cadran' },
+  tuile: { id: 'tuile', name: 'Tuile', top: '#d97a48', side: '#b85a30', texture: 'tuile' },
+  lambris: { id: 'lambris', name: 'Lambris', top: '#6e4a2c', side: '#5a3a22', texture: 'lambris' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -911,6 +919,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'to-be', title: 'To be', description: 'Am, is, are ; la négation et la question.' },
       { id: 'have-got', title: 'Have got', description: 'Have got ou has got, pour dire ce qu’on a.' },
       { id: 'present-simple', title: 'Présent simple', description: 'Le s de he, she, it ; do et does pour la question et la négation.' },
+    ],
+  },
+  {
+    id: 'comptoir',
+    name: 'Comptoir',
+    module: 'Vocabulaire et compréhension',
+    subject: 'anglais',
+    classe: '5e',
+    description: 'Faire ses courses, raconter sa journée, comprendre une phrase entendue : l’anglais du quotidien.',
+    block: 'tuile',
+    guardian: 'la Reine du marché',
+    guardianSays: {
+      hit: 'Splendid! Juste. Tu parles comme au marché de Londres.',
+      miss: 'Ce n’est rien : réécoute la phrase, relis la règle, et reprends.',
+      beaten: 'Je range ma couronne. Le Comptoir est à toi… et à Pudding.',
+    },
+    challenge: 'La Reine du marché descend de son estrade : « Tu as fait toutes tes courses en anglais. Montre-moi que tu comprends tout ce qu’on te dit. »',
+    icon: 'languages',
+    creature: {
+      name: 'Pudding',
+      species: 'bouledogue marchand',
+      greeting:
+        'Hello, bâtisseur ! Au Comptoir, on achète, on compte, on raconte sa journée, en anglais. Écoute bien chaque phrase : la voix anglaise la lit pour toi. Chaque bonne réponse, c’est une tuile pour le village.',
+      lines: [
+        'Chips, ce sont des frites ; crisps, ce sont des chips !',
+        'How much is it? Ça veut dire : combien ça coûte ?',
+        'Ma boutique a un toit de tuiles. Chaque bonne réponse en pose une.',
+      ],
+      home: 'Ma boutique est finie ! Open every day, même le dimanche.',
+    },
+    exercises: [
+      { id: 'shopping', title: 'Shopping', description: 'Au magasin : quantités, prix, repas.' },
+      { id: 'routine', title: 'Routine', description: 'La journée (get up, have breakfast…) et always, often, never.' },
+      { id: 'listening', title: 'Listening', description: 'Écouter une phrase et trouver son sens.' },
+    ],
+  },
+  {
+    id: 'manoir',
+    name: 'Manoir du passé',
+    module: 'Grammaire : -ing, prétérit, comparatifs',
+    subject: 'anglais',
+    classe: '5e',
+    description: 'Ce qui se passe maintenant, ce qui s’est passé hier, et qui est le plus grand : la règle sous les yeux.',
+    block: 'lambris',
+    guardian: 'le Spectre du manoir',
+    guardianSays: {
+      hit: 'Bouh… Juste. Tu ne crains pas le passé.',
+      miss: 'Ce n’est rien : cherche le mot du temps (now, yesterday…), relis la règle, et reprends.',
+      beaten: 'Je m’efface… Le manoir est à toi… et à Moustache.',
+    },
+    challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
+    icon: 'history',
+    creature: {
+      name: 'Moustache',
+      species: 'chat du manoir',
+      greeting:
+        'Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village.',
+      lines: [
+        'Look! The cat is sleeping : en ce moment, be + -ing.',
+        'Yesterday, I played : au passé, + ed.',
+        'Mon salon est tout en lambris. Chaque bonne réponse en cire un.',
+      ],
+      home: 'Mon salon est fini ! Il est bien plus beau qu’avant : more beautiful than before.',
+    },
+    exercises: [
+      { id: 'ing', title: '-ing', description: 'Be + -ing (maintenant) ou présent simple (d’habitude).' },
+      { id: 'preterit', title: 'Prétérit', description: 'Was, were, les verbes en -ed ; did pour la question et la négation.' },
+      { id: 'comparatifs', title: 'Comparatifs', description: 'Taller than, the tallest, more… than, better, the best.' },
     ],
   },
 ];

@@ -324,6 +324,31 @@ const TICK = fromLayers(
   { S: '#5a4030', F: '#f0dcb4', K: '#1f1a16', E: '#1f1a16', G: '#c9a24a' },
 );
 
+// Pudding : un bouledogue trapu, pelage crème à taches brunes, large mâchoire aux petites dents, oreilles tombantes.
+const PUDDING = fromLayers(
+  [
+    ['.....', 'W...W', '.....', 'W...W', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', 'WWWWW', '.BWB.'],
+    ['WTKTW', 'WWWWW', 'BWWWB', 'WWWWW', '..W..'],
+    ['WKWKW', 'WWWWW', 'WWWWW', 'WWWWW', '.....'],
+    ['B...B', 'BWWWB', '.WWW.', '.....', '.....'],
+  ],
+  { W: '#efe6d8', B: '#a0703c', K: '#1f1a16', T: '#f6f1e6' },
+);
+
+// Moustache : un chat noir aux yeux verts, grandes moustaches blanches, nez rose, queue dressée derrière.
+const MOUSTACHE = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.K.K.', '.....'],
+    ['.KKK.', 'KKKKK', 'KKKKK', 'KKKKK', '..K..'],
+    ['.KPK.', 'KKKKK', 'KKKKK', 'KKKKK', '..K..'],
+    ['WGKGW', 'KKKKK', 'KKKKK', '.KKK.', '..K..'],
+    ['.KKK.', 'KKKKK', 'KKKKK', '.....', '.....'],
+    ['K...K', '.....', '.....', '.....', '.....'],
+  ],
+  { K: '#2a2622', G: '#7ad04a', W: '#f6f1e6', P: '#e8a3b8' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -347,6 +372,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   textes: ASTRA,
   baie: ROBIN,
   horloge: TICK,
+  comptoir: PUDDING,
+  manoir: MOUSTACHE,
 };
 
 interface Props {

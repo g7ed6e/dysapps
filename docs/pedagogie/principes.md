@@ -55,7 +55,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 | Classe | Français | Maths | Anglais |
 | --- | --- | --- | --- |
 | 6e | Conscience phonologique (Forêt des sons), confusions de lettres (Mine des lettres), orthographe lexicale (Carrière des mots), orthographe grammaticale (Ferme des accords), fluence (Tour du lecteur) | Calcul mental (Plaine des nombres), fractions (Rivière des fractions), décimaux (Volcan des décimaux) | Se présenter, nombres, heure, écoute (Baie des mots), to be, have got, présent simple (Horloge des verbes) |
-| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs (Glacier des relatifs), proportionnalité (Marché des proportions) | à venir |
+| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs (Glacier des relatifs), proportionnalité (Marché des proportions) | Courses, journée, écoute de phrases (Comptoir), -ing, prétérit, comparatifs (Manoir du passé) |
 | 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | à venir |
 | 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | à venir |
 

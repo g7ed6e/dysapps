@@ -95,6 +95,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.lentille.side]: 'lentille',
   [BLOCKS.cabine.side]: 'cabine',
   [BLOCKS.cadran.side]: 'cadran',
+  [BLOCKS.tuile.side]: 'tuile',
+  [BLOCKS.lambris.side]: 'lambris',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -578,6 +580,23 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(9, 3, h(9, 3) + 5, BLOCKS.or.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.cadran.side);
     put(4, 9, h(4, 9) + 1, BLOCKS.cadran.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  comptoir: (put, h) => {
+    // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
+    for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 3, BLOCKS.tuile.side);
+    put(9, 4, h(9, 4) + 1, BLOCKS.bois.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.tuile.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  manoir: (put, h) => {
+    // Une tour de lambris sombre, un toit noir et une bougie au sommet ; un pilier de grille en pierre.
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS.lambris.side);
+    put(9, 3, h(9, 3) + 5, DARK);
+    put(9, 3, h(9, 3) + 6, BLOCKS.lanterne.side);
+    for (let z = 1; z <= 2; z++) put(7, 2, h(7, 2) + z, BLOCKS.pierre.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.lambris.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };

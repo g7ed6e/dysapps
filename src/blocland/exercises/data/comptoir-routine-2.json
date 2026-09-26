@@ -1,0 +1,223 @@
+{
+  "id": "comptoir-routine-2",
+  "biome": "comptoir",
+  "type": "routine",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "comptoir-routine-2-0",
+      "prompt": "I … eat vegetables: every day!",
+      "spoken": "I blank eat vegetables: every day!",
+      "choices": [
+        "always",
+        "never",
+        "sometimes"
+      ],
+      "answer": "always",
+      "hint": "Tous les jours : à quelle fréquence ?",
+      "explanation": "every day = tous les jours : always, toujours.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-1",
+      "prompt": "He … goes swimming: he hates water.",
+      "spoken": "He blank goes swimming: he hates water.",
+      "choices": [
+        "never",
+        "always",
+        "often"
+      ],
+      "answer": "never",
+      "hint": "Il déteste l’eau : combien de fois va-t-il nager ?",
+      "explanation": "he hates water = il déteste l’eau : never, jamais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-2",
+      "prompt": "We … go to the cinema, maybe once a month.",
+      "spoken": "We blank go to the cinema, maybe once a month.",
+      "choices": [
+        "sometimes",
+        "always",
+        "never"
+      ],
+      "answer": "sometimes",
+      "hint": "Une fois par mois : ni toujours, ni jamais.",
+      "explanation": "once a month = une fois par mois : sometimes, parfois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-3",
+      "prompt": "Tom … tennis.",
+      "spoken": "Tom blank tennis.",
+      "choices": [
+        "often plays",
+        "plays often",
+        "often play"
+      ],
+      "answer": "often plays",
+      "hint": "Où se place l’adverbe ? Et Tom = he.",
+      "explanation": "Tom often plays tennis : l’adverbe avant le verbe, et un s (Tom = he).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-4",
+      "prompt": "I … late for school.",
+      "spoken": "I blank late for school.",
+      "choices": [
+        "am never",
+        "never am",
+        "never is"
+      ],
+      "answer": "am never",
+      "hint": "Avec be, l’adverbe va après le verbe.",
+      "explanation": "I am never late : avec be, l’adverbe se place après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-5",
+      "prompt": "How … do you play football? — Twice a week.",
+      "spoken": "How blank do you play football? — Twice a week.",
+      "choices": [
+        "often",
+        "much",
+        "many"
+      ],
+      "answer": "often",
+      "hint": "On demande une fréquence.",
+      "explanation": "How often? = À quelle fréquence ? Twice a week, deux fois par semaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-6",
+      "prompt": "They go to the beach … a year: in July and in August.",
+      "spoken": "They go to the beach blank a year: in July and in August.",
+      "choices": [
+        "twice",
+        "once",
+        "never"
+      ],
+      "answer": "twice",
+      "hint": "Juillet et août : combien de fois ?",
+      "explanation": "twice a year = deux fois par an.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    },
+    {
+      "key": "comptoir-routine-2-7",
+      "prompt": "She is … happy: she smiles all the time!",
+      "spoken": "She is blank happy: she smiles all the time!",
+      "choices": [
+        "always",
+        "never",
+        "sometimes"
+      ],
+      "answer": "always",
+      "hint": "Elle sourit tout le temps.",
+      "explanation": "all the time = tout le temps : always, toujours (après is).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Always, often, never",
+          "lines": [
+            "always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)",
+            "L’adverbe se place avant le verbe : She often plays.",
+            "… mais après be : She is often late.",
+            "How often? — once (une fois), twice (deux fois) a week."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "tuile",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

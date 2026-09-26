@@ -41,9 +41,9 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Tous les ouvrages construits sans voyage : seules les Basses Terres ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(21);
+  expect(BRIDGES).toHaveLength(24);
   expect(VOYAGES.map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e', 'voyage-3e']);
-  expect(BIOMES.length).toBe(22);
+  expect(BIOMES.length).toBe(24);
 });
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
@@ -117,7 +117,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     buildableBridges(['voyage-5e'])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['foret-ferme', 'foret-horloge', 'foret-mine', 'glacier-marche', 'marche-marais', 'plaine-riviere', 'plaine-volcan']);
+  ).toEqual(['foret-ferme', 'foret-horloge', 'foret-mine', 'glacier-marche', 'marche-comptoir', 'marche-marais', 'plaine-riviere', 'plaine-volcan']);
 });
 
 it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamais avec les kits de finition', () => {
