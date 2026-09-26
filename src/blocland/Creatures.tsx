@@ -108,14 +108,17 @@ const COCO = fromLayers(
   { R: '#d8402e', K: '#1f1a16', E: '#f6f1e6', A: '#1f1a16' },
 );
 
-// Nénu : une grenouille verte accroupie, gros yeux dorés au-dessus de la tête, ventre clair.
+// Nénu : une grenouille verte accroupie, ventre et sourire clairs, deux gros yeux dorés à pupille noire sur la tête.
 const NENU = fromLayers(
   [
-    ['.VVV.', 'VVVVV', 'VVVVV', '.VVV.'],
-    ['.VvV.', 'VvvvV', 'VVVVV', '.....'],
-    ['Y.V.Y', '.VVV.', '.....', '.....'],
+    ['.....', 'V...V', '.....', 'V...V', '.....'],
+    ['.vvv.', 'vvvvv', 'VVVVV', 'VVVVV', '.VVV.'],
+    ['.vvv.', 'VVVVV', 'VVVVV', 'VVVVV', '.VVV.'],
+    ['.VVV.', 'VVVVV', 'VVVVV', '.VVV.', '.....'],
+    ['Y...Y', 'YVVVY', '.....', '.....', '.....'],
+    ['K...K', '.....', '.....', '.....', '.....'],
   ],
-  { V: '#4f9e3f', v: '#c8e6a0', Y: '#f5d63d' },
+  { V: '#4f9e3f', v: '#c8e6a0', Y: '#f5d63d', K: '#1f1a16' },
 );
 
 // Lavi : une salamandre orange à taches jaunes, longue queue, deux yeux noirs.
