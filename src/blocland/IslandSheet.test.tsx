@@ -9,19 +9,19 @@ import { usePlanBuilder } from './usePlanBuilder';
 import { planCells, plansFor } from './world/plans';
 import { IslandSheet } from './IslandSheet';
 
-function Sheet({ biomeId, onClose }: { biomeId: string; onClose: () => void }) {
+function Sheet({ biomeId, onClose, highlight }: { biomeId: string; onClose: () => void; highlight?: string }) {
   const biome = getBiome(biomeId)!;
   const builder = usePlanBuilder(biome.id);
-  return <IslandSheet biome={biome} builder={builder} onClose={onClose} />;
+  return <IslandSheet biome={biome} builder={builder} onClose={onClose} highlight={highlight} />;
 }
 
-function renderSheet(biomeId: string, onClose = () => {}) {
+function renderSheet(biomeId: string, onClose = () => {}, highlight?: string) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <Sheet biomeId={biomeId} onClose={onClose} />
+            <Sheet biomeId={biomeId} onClose={onClose} highlight={highlight} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -68,4 +68,12 @@ it('le panneau pose les blocs du plan avec le bouton et affiche l’avancement',
   expect(saved.inventory.bois).toBe(cells.length - 1);
   expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
   expect(screen.getByText(/Bloc posé : 1 sur/)).toBeInTheDocument();
+});
+
+it('l’ouvrage touché dans le monde est mis en avant dans la liste', () => {
+  renderSheet('foret', () => {}, 'foret-mine');
+  const item = document.querySelector('[data-bridge="foret-mine"]');
+  expect(item).not.toBeNull();
+  expect(item!.className).toContain('bridge-highlight');
+  expect(document.querySelectorAll('.bridge-highlight')).toHaveLength(1);
 });
