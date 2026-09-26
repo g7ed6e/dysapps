@@ -124,6 +124,10 @@ export const BRIDGES: BridgeDef[] = [
   b('glacier', 'marche', 'sentier', 6),
   b('marche', 'marais', 'pont', 4),
   b('carrefour', 'marais', 'sentier', 6),
+  // Les îles d'anglais, à droite : un pont depuis le Marché (le port), un depuis le Marais, un entre les deux.
+  b('marche', 'comptoir', 'pont', 6),
+  b('marais', 'manoir', 'pont', 6),
+  b('comptoir', 'manoir', 'pont', 5),
   // Monts de Feu (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
   b('atelier', 'forge', 'pont', 4),
   b('atelier', 'falaise', 'pont', 4),
@@ -234,6 +238,8 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'lentille',
   'cabine',
   'cadran',
+  'tuile',
+  'lambris',
   'or',
   'cristal',
 ];

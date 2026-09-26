@@ -25,6 +25,8 @@ export type TextureKind =
   | 'lentille'
   | 'cabine'
   | 'cadran'
+  | 'tuile'
+  | 'lambris'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -204,6 +206,16 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
       if ((y === 7 || y === 8) && x >= 8 && x <= 11) return [40, 32, 24];
       return grain('#efe6cc', '#f8f2e0')(x, y, r);
     },
+  },
+  // Tuile : terre cuite orangée, en rangées décalées.
+  tuile: {
+    top: (x, y, r) => (y % 4 === 3 ? [150, 70, 40] : grain('#c8683a', '#d97a48')(x, y, r)),
+    side: (x, y, r) => (y % 4 === 3 || (x + 2 * Math.floor(y / 4)) % 8 === 0 ? [140, 64, 36] : grain('#b85a30', '#cc6c40')(x, y, r)),
+  },
+  // Lambris : panneaux de bois sombre, rainures verticales, deux filets dorés.
+  lambris: {
+    top: (x, y, r) => (x % 4 === 0 ? [60, 38, 22] : grain('#5a3a22', '#6e4a2c')(x, y, r)),
+    side: (x, y, r) => (x % 5 === 0 ? [58, 36, 20] : y === 1 || y === 14 ? [190, 150, 70] : grain('#5a3a22', '#704a2c')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),
