@@ -62,6 +62,19 @@ import textesFigures1 from './data/textes-figures-1.json';
 import textesFigures2 from './data/textes-figures-2.json';
 import textesRouages1 from './data/textes-rouages-1.json';
 import textesRouages2 from './data/textes-rouages-2.json';
+// Anglais 6e : Baie des mots, Horloge des verbes.
+import baieHello1 from './data/baie-hello-1.json';
+import baieHello2 from './data/baie-hello-2.json';
+import baieNumbers1 from './data/baie-numbers-1.json';
+import baieNumbers2 from './data/baie-numbers-2.json';
+import baieEars1 from './data/baie-ears-1.json';
+import baieEars2 from './data/baie-ears-2.json';
+import horlogeToBe1 from './data/horloge-to-be-1.json';
+import horlogeToBe2 from './data/horloge-to-be-2.json';
+import horlogeHaveGot1 from './data/horloge-have-got-1.json';
+import horlogeHaveGot2 from './data/horloge-have-got-2.json';
+import horlogePresentSimple1 from './data/horloge-present-simple-1.json';
+import horlogePresentSimple2 from './data/horloge-present-simple-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -173,6 +186,18 @@ export const EXERCISES: ExerciseDef[] = [
   textesFigures2,
   textesRouages1,
   textesRouages2,
+  baieHello1,
+  baieHello2,
+  baieNumbers1,
+  baieNumbers2,
+  baieEars1,
+  baieEars2,
+  horlogeToBe1,
+  horlogeToBe2,
+  horlogeHaveGot1,
+  horlogeHaveGot2,
+  horlogePresentSimple1,
+  horlogePresentSimple2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

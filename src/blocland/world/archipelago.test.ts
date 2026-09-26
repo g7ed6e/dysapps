@@ -39,11 +39,11 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
     expect(ISLANDS.find((i) => i.id === b.to)).toBeDefined();
   }
   // Tous les ouvrages construits sans voyage : seules les Basses Terres ; avec les voyages : tout.
-  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(8);
+  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(18);
+  expect(BRIDGES).toHaveLength(21);
   expect(VOYAGES.map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e', 'voyage-3e']);
-  expect(BIOMES.length).toBe(20);
+  expect(BIOMES.length).toBe(22);
 });
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
@@ -70,14 +70,14 @@ it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses î
   });
 });
 
-it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la Forêt, deux ponts au choix', () => {
+it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la Forêt, trois ponts au choix', () => {
   expect([...reachableIslands([])].sort()).toEqual(['foret', 'plaine']);
   expect(bridgeState(BRIDGES.find((b) => b.id === 'foret-plaine')!, [])).toBe('built');
   expect(
     buildableBridges([])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['foret-ferme', 'foret-mine', 'plaine-riviere', 'plaine-volcan']);
+  ).toEqual(['foret-ferme', 'foret-horloge', 'foret-mine', 'plaine-riviere', 'plaine-volcan']);
   expect(isBiomeUnlocked('volcan', ['foret-ferme', 'ferme-volcan'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
   expect(isBiomeUnlocked('riviere', ['plaine-riviere'])).toBe(true);
@@ -89,7 +89,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
     buildableBridges(['foret-ferme'], 'ferme')
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['ferme-tour', 'ferme-volcan']);
+  ).toEqual(['ferme-baie', 'ferme-tour', 'ferme-volcan']);
   // Un pont construit sans chemin jusqu'à lui n'ouvre rien.
   expect(isBiomeUnlocked('tour', ['ferme-tour'])).toBe(false);
 });
@@ -117,7 +117,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     buildableBridges(['voyage-5e'])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['foret-ferme', 'foret-mine', 'glacier-marche', 'marche-marais', 'plaine-riviere', 'plaine-volcan']);
+  ).toEqual(['foret-ferme', 'foret-horloge', 'foret-mine', 'glacier-marche', 'marche-marais', 'plaine-riviere', 'plaine-volcan']);
 });
 
 it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamais avec les kits de finition', () => {

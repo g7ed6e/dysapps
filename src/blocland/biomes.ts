@@ -22,7 +22,9 @@ export type BiomeId =
   | 'belvedere'
   | 'donnees'
   | 'phare'
-  | 'textes';
+  | 'textes'
+  | 'baie'
+  | 'horloge';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -44,6 +46,8 @@ export type BlockId =
   | 'quartz'
   | 'prisme'
   | 'lentille'
+  | 'cabine'
+  | 'cadran'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -85,6 +89,8 @@ export type BlockTexture =
   | 'quartz'
   | 'prisme'
   | 'lentille'
+  | 'cabine'
+  | 'cadran'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -117,6 +123,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   quartz: { id: 'quartz', name: 'Quartz', top: '#e6dcf2', side: '#b9a8d6', texture: 'quartz' },
   prisme: { id: 'prisme', name: 'Prisme', top: '#fff4c2', side: '#f0c95a', texture: 'prisme' },
   lentille: { id: 'lentille', name: 'Lentille', top: '#cfe6f2', side: '#7fb2cc', texture: 'lentille' },
+  cabine: { id: 'cabine', name: 'Cabine', top: '#d8342c', side: '#b02a24', texture: 'cabine' },
+  cadran: { id: 'cadran', name: 'Cadran', top: '#f4ecd6', side: '#c9a24a', texture: 'cadran' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -835,6 +843,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.' },
       { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…' },
       { id: 'rouages', title: 'Rouages', description: 'Nature et fonction des mots, connecteurs logiques.' },
+    ],
+  },
+  {
+    id: 'baie',
+    name: 'Baie des mots',
+    module: 'Vocabulaire et écoute',
+    subject: 'anglais',
+    classe: '6e',
+    description: 'Se présenter, compter, dire l’heure, reconnaître un mot à l’oreille : l’anglais de tous les jours.',
+    block: 'cabine',
+    guardian: 'le Lion de pierre',
+    guardianSays: {
+      hit: 'Rrr… Juste. Tu as l’oreille anglaise.',
+      miss: 'Ce n’est rien : réécoute le mot, relis la règle, et reprends.',
+      beaten: 'Je me recouche sur mon socle. La baie est à toi… et à Robin. Well done!',
+    },
+    challenge: 'Le Lion de pierre se dresse sur son socle : « Tu as écouté tous les mots de la baie. Montre-moi que tu les comprends. »',
+    icon: 'languages',
+    creature: {
+      name: 'Robin',
+      species: 'rouge-gorge des quais',
+      greeting:
+        'Hello, bâtisseur ! Dans la baie, on parle anglais. Écoute bien : le bouton Écouter lit chaque mot avec une voix anglaise. Chaque mot compris, c’est une cabine rouge pour le village.',
+      lines: [
+        'Thirteen ou thirty ? Écoute la fin : -teen, c’est de 13 à 19.',
+        'Hello pour arriver, goodbye pour partir.',
+        'Ma maison est une cabine rouge. Chaque bonne réponse en peint un carreau.',
+      ],
+      home: 'Ma cabine est finie ! On peut appeler jusqu’à Londres.',
+    },
+    exercises: [
+      { id: 'hello', title: 'Hello', description: 'Saluer, se présenter, les phrases de la classe.' },
+      { id: 'numbers', title: 'Numbers', description: 'Les nombres (-teen ou -ty ?), l’heure et la date.' },
+      { id: 'ears', title: 'Ears', description: 'Écouter un mot anglais et trouver son sens (house ou horse ?).' },
+    ],
+  },
+  {
+    id: 'horloge',
+    name: 'Horloge des verbes',
+    module: 'Grammaire : to be, have got, présent simple',
+    subject: 'anglais',
+    classe: '6e',
+    description: 'Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.',
+    block: 'cadran',
+    guardian: 'le Coucou de bronze',
+    guardianSays: {
+      hit: 'Coucou ! Juste. Ton verbe est à l’heure.',
+      miss: 'Ce n’est rien : cherche le sujet, relis la règle, et reprends.',
+      beaten: 'Coucou… Je rentre dans mon horloge. Les verbes sont à toi… et à Tick.',
+    },
+    challenge: 'Le Coucou de bronze jaillit de son horloge : « Tu as remonté tous mes rouages. Montre-moi que tes verbes sonnent juste. »',
+    icon: 'history',
+    creature: {
+      name: 'Tick',
+      species: 'hérisson horloger',
+      greeting:
+        'Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village.',
+      lines: [
+        'He, she, it : un seul, alors is, has, et un s au verbe.',
+        'I am, you are, he is : tic, tac, toc.',
+        'Ma maison est une horloge. Chaque bonne réponse en fait tourner une aiguille.',
+      ],
+      home: 'Mon horloge est finie ! Elle sonne à chaque verbe juste.',
+    },
+    exercises: [
+      { id: 'to-be', title: 'To be', description: 'Am, is, are ; la négation et la question.' },
+      { id: 'have-got', title: 'Have got', description: 'Have got ou has got, pour dire ce qu’on a.' },
+      { id: 'present-simple', title: 'Présent simple', description: 'Le s de he, she, it ; do et does pour la question et la négation.' },
     ],
   },
 ];

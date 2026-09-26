@@ -156,6 +156,10 @@ function describeItem(item) {
   if (item.word && item.correct !== undefined) {
     return `${item.image ? `${item.image} ` : ''}${item.word} : ${item.correct ? 'oui' : 'non'}${item.heard ? ` (${item.heard})` : ''}${item.ending ? ` (${item.ending})` : ''}`;
   }
+  // Écoute d'un mot anglais : on entend le mot, on choisit son sens (la réponse n'est pas le mot lui-même).
+  if (item.word && Array.isArray(item.choices) && item.answer !== undefined && item.answer !== item.word) {
+    return `on entend « ${item.word} » → **${item.answer}** (${item.choices.join(' / ')})`;
+  }
   if (item.word && Array.isArray(item.choices)) {
     return `${item.sentence ? `« ${item.sentence} » ` : ''}→ **${item.word}** (${item.choices.join(' / ')})`;
   }

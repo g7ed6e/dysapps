@@ -27,7 +27,7 @@ Sur la page Succès, la section **Par matière** montre un panneau par matière 
   - Une quête jamais jouée n’y figure pas : elle reste « Nouveau » sur la page de la matière.
   - Quand tout est à trois étoiles, le panneau dit « Rien à reprendre pour l’instant. »
 
-Une matière qui n’a pas encore d’île dans Blocland (l’anglais, pour l’instant) n’a pas de jauge d’étoiles : son panneau montre les records de ses quêtes du portail et ce qu’il faut y retravailler.
+Une matière sans île dans Blocland n’aurait pas de jauge d’étoiles : son panneau ne montrerait que les records de ses quêtes du portail et ce qu’il faut y retravailler.
 
 Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses quêtes et ses îles. Les règles exactes sont dans [Barème et succès](../pedagogie/bareme.md).
 

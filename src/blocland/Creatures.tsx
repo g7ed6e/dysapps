@@ -298,6 +298,32 @@ const ASTRA = fromLayers(
   { K: '#2a2622', L: '#fff4a0', W: '#e6f2f8', E: '#f5d63d', A: '#2a2622' },
 );
 
+// Robin : un rouge-gorge dodu, dos brun, gorge et poitrine orange vif, petit bec sombre, queue relevée derrière.
+const ROBIN = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.....', '.....'],
+    ['.RRR.', 'BRRRB', 'BBBBB', '.BBB.', '.....'],
+    ['.RRR.', 'BRRRB', 'BBBBB', '.BBB.', '..B..'],
+    ['.RRR.', 'BRRRB', 'BBBBB', '.BBB.', '..B..'],
+    ['.EkE.', 'BBBBB', 'BBBBB', '.BBB.', '.....'],
+    ['.....', '.BBB.', '.BBB.', '.....', '.....'],
+  ],
+  { R: '#e8642e', B: '#8a6a4a', E: '#1f1a16', k: '#3a2a1a', K: '#4a3a2a' },
+);
+
+// Tick : un hérisson horloger, piquants bruns sur le dos, museau crème et truffe noire, une petite horloge de laiton sur la tête.
+const TICK = fromLayers(
+  [
+    ['.....', '.F.F.', '.....', '.F.F.', '.....'],
+    ['.FFF.', 'SFFFS', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.FKF.', 'SFFFS', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.EFE.', 'SSSSS', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.....', '.SSS.', 'SSSSS', 'SSSSS', '.S.S.'],
+    ['.....', '..G..', '.S.S.', '.S.S.', '.....'],
+  ],
+  { S: '#5a4030', F: '#f0dcb4', K: '#1f1a16', E: '#1f1a16', G: '#c9a24a' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -319,6 +345,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   donnees: STAT,
   phare: FI,
   textes: ASTRA,
+  baie: ROBIN,
+  horloge: TICK,
 };
 
 interface Props {

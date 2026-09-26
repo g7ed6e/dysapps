@@ -343,6 +343,29 @@ const LECTEUR = fromLayers(
   { B: '#3a4a7a', L: '#f4f1e4', S: '#e8b98a', s: '#c98a6a', K: '#1f1a16', G: '#e0a33a', H: '#2a2622' },
 );
 
+// Le Lion de pierre : le lion couché des places anglaises, pierre grise, crinière plus sombre, regard d'or.
+const LION = sphinx({ S: '#b3aea4', s: '#8f8a80', D: '#7d776c', G: '#9c968a', E: '#f5d63d' });
+
+// Le Coucou de bronze : une grande horloge à coucou en bois, cadran crème, toit pointu ; l'oiseau de bronze jaillit de sa porte.
+const COUCOU = fromLayers(
+  [
+    ['..WWWWW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['..WWWWW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['..WFFFW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['..WFKFW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['..WFFKW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['..WWWWW..', '..WWWWW..', '..WWWWW..', '..WWWWW..'],
+    ['.BB.B.BB.', '..WBBBW..', '..WWWWW..', '..WWWWW..'],
+    ['...BOB...', '..WBBBW..', '..WWWWW..', '..WWWWW..'],
+    ['...EBE...', '..WBBBW..', '..WWWWW..', '..WWWWW..'],
+    ['.RRRRRRR.', '.RRRRRRR.', '.RRRRRRR.', '.RRRRRRR.'],
+    ['..RRRRR..', '..RRRRR..', '..RRRRR..', '..RRRRR..'],
+    ['...RRR...', '...RRR...', '...RRR...', '...RRR...'],
+    ['.........', '....B....', '....B....', '.........'],
+  ],
+  { W: '#6f4d2a', F: '#f4ecd6', K: '#2a2018', B: '#b0793a', O: '#e0a33a', E: '#1f1a16', R: '#4a3020' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -364,6 +387,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   donnees: COMPTABLE,
   phare: DRAGON_L,
   textes: LECTEUR,
+  baie: LION,
+  horloge: COUCOU,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
