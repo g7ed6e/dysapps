@@ -9,8 +9,9 @@ npm install
 npm run dev        # l'application : http://localhost:5173/
 npm test           # tests (Vitest)
 npm run build      # vérification TypeScript + build de production dans dist/
-npm run docs:dev   # la documentation : http://localhost:4173/
+npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run docs:build # construit la documentation dans dist-docs/
+npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
 npm run docs:check # vérifie que docs/journal.md décrit la version courante
 ```
 
