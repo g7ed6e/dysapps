@@ -78,10 +78,9 @@ export function dockCells(port: BiomeId): DockCell[] {
 /** Les poteaux de la jetée (côté ouest, une case sur trois) ; les deux derniers portent une lanterne. */
 export function dockPosts(port: BiomeId): { x: number; y: number; z: number; lantern: boolean }[] {
   const cells = dockCells(port);
-  return cells
-    .map((c, i) => ({ c, i }))
-    .filter(({ i }) => i % 3 === 0 || i === cells.length - 1)
-    .map(({ c, i }) => ({ x: c.x - 1, y: c.y, z: c.z, lantern: i >= cells.length - 3 }));
+  const posts = cells.filter((_, i) => i % 3 === 0 || i === cells.length - 1).map((c) => ({ x: c.x - 1, y: c.y, z: c.z, lantern: false }));
+  for (const p of posts.slice(-2)) p.lantern = true;
+  return posts;
 }
 
 /** L'emprise du port (jetée et navire), pour cadrer la caméra et l'étendue du monde. */

@@ -1,4 +1,4 @@
-import { BIOMES, type BiomeId } from '../biomes';
+import { BIOMES } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, islandDef, landBox, landCells, mapOf } from './map';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
@@ -26,6 +26,7 @@ import {
   mistPatches,
   questStations,
   seaDecor,
+  vehiclePlacement,
   VIEW_YAW_MAX,
   viewYaw,
   viewZone,
@@ -442,21 +443,39 @@ it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à
 
 it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étapes parties sont dessinées entières', () => {
   const [coque, ballon] = VEHICLE_STAGES;
-  const isShip = (c: { tag?: string; y: number }, port: BiomeId) => c.tag === port && c.y < islandDef(port).core.y - islandDef(port).ext.front - 1;
-  // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus).
-  const fresh = worldCubes('6e', {}, village([]), false).filter((c) => isShip(c, 'plaine') && c.ghost);
-  expect(fresh.length).toBe(coque.cells.length + coque.kit.length);
+  // Le navire n'est pas dans le terrain (il tangue, c'est un objet à part) : le terrain ne garde que la jetée.
+  const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'plaine' && c.y < islandDef('plaine').core.y - 4);
+  expect(terrain.some((c) => c.ghost)).toBe(false);
+  expect(terrain.every((c) => c.texture === 'planches' || c.texture === 'escalier' || c.texture === 'tronc' || c.texture === 'lanterne')).toBe(true);
+  // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus), amarrée au quai.
+  const fresh = vehiclePlacement('6e', {}, village([]));
+  expect(fresh.port).toBe('plaine');
+  expect(fresh.origin).toEqual(dockOrigin('plaine'));
+  expect(fresh.afloat).toBe(true);
+  expect(fresh.building).toBe(coque.id);
+  expect(fresh.cubes.filter((c) => c.ghost).length).toBe(coque.cells.length + coque.kit.length);
+  // Les cubes sont locaux : dans l'encombrement du navire.
+  for (const c of fresh.cubes) {
+    expect(c.x).toBeGreaterThanOrEqual(0);
+    expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
+    expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
+  }
   // Trois Gardiens vaincus : la voile est là, en dur.
   const guardians = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2 }]));
-  const sail = worldCubes('6e', guardians, village([]), false).filter((c) => isShip(c, 'plaine') && c.texture === 'toile');
+  const sail = vehiclePlacement('6e', guardians, village([])).cubes.filter((c) => c.texture === 'toile');
   expect(sail).toHaveLength(coque.kit.filter((c) => c.block === 'toile').length);
   expect(sail.every((c) => !c.ghost)).toBe(true);
   // Le voyage fait : la coque entière et en dur ; au Marché, le ballon en fantôme au-dessus.
-  const sailed = worldCubes('5e', {}, village(['voyage-5e']), false).filter((c) => isShip(c, 'marche'));
-  expect(sailed.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
-  expect(sailed.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
-  // Revenu dans les Basses Terres après le deuxième voyage : le navire porte son ballon, rien en fantôme.
-  const back = worldCubes('6e', {}, village(['voyage-5e', 'voyage-4e']), false).filter((c) => isShip(c, 'plaine'));
-  expect(back.some((c) => c.ghost)).toBe(false);
-  expect(back.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
+  const sailed = vehiclePlacement('5e', {}, village(['voyage-5e']));
+  expect(sailed.port).toBe('marche');
+  expect(sailed.building).toBe(ballon.id);
+  expect(sailed.cubes.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
+  expect(sailed.cubes.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
+  // Revenu dans les Basses Terres après le deuxième voyage : le navire porte son ballon, rien en fantôme, rien à construire ici.
+  const back = vehiclePlacement('6e', {}, village(['voyage-5e', 'voyage-4e']));
+  expect(back.cubes.some((c) => c.ghost)).toBe(false);
+  expect(back.building).toBeNull();
+  expect(back.cubes.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
+  // Dans les Îles du Ciel, il plane à hauteur de quai.
+  expect(vehiclePlacement('3e', {}, village(['voyage-5e', 'voyage-4e', 'voyage-3e'])).afloat).toBe(false);
 });
