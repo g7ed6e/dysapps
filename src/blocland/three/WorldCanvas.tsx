@@ -6,7 +6,7 @@ import { BIOMES, type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { islandAt, islandCenter, mistPatches, whaleSpots, worldBounds } from '../world/terrain';
+import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, whaleSpots, worldBounds } from '../world/terrain';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
@@ -35,6 +35,8 @@ export interface CreaturePlacement {
   /** Une créature se promène ; un Gardien reste sur son îlot. */
   kind?: 'creature' | 'guardian';
   still?: boolean;
+  /** Les pas possibles depuis sa place (sinon ceux par défaut). */
+  steps?: [number, number][];
 }
 
 /** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
@@ -99,13 +101,6 @@ const CLOUDS: [number, number, number][] = [
   [0.7, -0.1, 4],
   [0.88, 0.6, 3],
   [1.02, 0.2, 2],
-];
-/** Promenade des créatures : un pas d'une case, à gauche ou en arrière, jamais vers les plans. */
-const STEPS: [number, number][] = [
-  [0, 0],
-  [-1, 0],
-  [0, 1],
-  [-1, 1],
 ];
 
 /** Une nappe de brume : blanc au centre, qui s'efface vers les bords (dégradé radial peint une fois). */
@@ -183,6 +178,7 @@ interface Walker {
   group: THREE.Group;
   id: BiomeId;
   still: boolean;
+  steps: [number, number][];
   origin: Cell;
   from: [number, number];
   to: [number, number];
@@ -745,7 +741,7 @@ export default function WorldCanvas({
         // Créatures : petit balancement, et un pas de temps en temps.
         for (const wk of w.walkers) {
           if (!wk.still && now >= wk.next && wk.start === 0) {
-            const step = STEPS[Math.floor(Math.random() * STEPS.length)];
+            const step = wk.steps[Math.floor(Math.random() * wk.steps.length)];
             wk.from = wk.to;
             wk.to = step;
             wk.start = now;
@@ -848,7 +844,8 @@ export default function WorldCanvas({
       return {
         group,
         id: c.id,
-        still: Boolean(c.still),
+        still: Boolean(c.still) || (c.steps?.length ?? 2) < 2,
+        steps: c.steps ?? CREATURE_STEPS,
         origin: c.origin,
         from: [0, 0],
         to: [0, 0],
