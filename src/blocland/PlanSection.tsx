@@ -1,6 +1,6 @@
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, type BiomeDef, type BlockId } from './biomes';
+import { BIOMES, BLOCKS, type BiomeDef, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { whereToEarn, type PlanBuilder } from './usePlanBuilder';
 import { BlockIcon } from './Voxel';
@@ -23,6 +23,13 @@ export function PlanSection({ biome, builder, in3d = false }: Props) {
   const missing = status ? (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0) : [];
   const owned = (Object.keys(BLOCKS) as BlockId[]).filter((b) => (state.inventory[b] ?? 0) > 0);
   const built = state.village.journal.filter((e) => getPlan(e.plan)?.biome === biome.id);
+  // Des blocs en poche que ce plan ne demande pas : on dit où ils servent, pour ne pas croire à une panne.
+  const elsewhere: [BlockId, string][] = owned
+    .filter((b) => !missing.some(([m]) => m === b))
+    .map((b) => {
+      const home = BIOMES.find((x) => x.block === b);
+      return [b, home ? `ils construisent sur ${home.name}` : 'ils servent à un plan suivant (kit de finition)'];
+    });
   return (
     <section className="plan-section" aria-labelledby={`plan-${biome.id}`}>
       <h3 id={`plan-${biome.id}`} className="island-sheet-heading">
@@ -67,6 +74,16 @@ export function PlanSection({ biome, builder, in3d = false }: Props) {
               <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                 <Icon name="hammer" /> Poser le bloc suivant
               </button>
+              {!builder.canFill && elsewhere.length > 0 && (
+                <p className="plan-elsewhere">
+                  {elsewhere.map(([b, where], i) => (
+                    <span key={b}>
+                      {i > 0 && ' '}
+                      Tes {state.inventory[b]} {BLOCKS[b].name.toLowerCase()} ne se posent pas ici : {where}.
+                    </span>
+                  ))}
+                </p>
+              )}
             </>
           )}
         </>

@@ -9,6 +9,7 @@ import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { SCREEN_TYPES, type ScreenAnswer } from './exercises/registry';
+import { withShuffledChoices } from './exercises/shuffle';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
@@ -26,9 +27,10 @@ interface Props {
 /** Découpe les items en écrans selon le type d'exercice. */
 export function screensOf(def: ExerciseDef): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
-  if (batch === 'all') return [def.items];
+  const items = def.items.map((item) => withShuffledChoices(def, item));
+  if (batch === 'all') return [items];
   const out: ExerciseItem[][] = [];
-  for (let i = 0; i < def.items.length; i += batch) out.push(def.items.slice(i, i + batch));
+  for (let i = 0; i < items.length; i += batch) out.push(items.slice(i, i + batch));
   return out;
 }
 

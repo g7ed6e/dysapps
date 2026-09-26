@@ -3923,3 +3923,10 @@ a.island-quest:focus-visible {
   font-size: 0.85em;
   opacity: 0.85;
 }
+
+/* Des blocs en poche qui ne se posent pas sur ce plan : où ils servent. */
+.plan-elsewhere {
+  margin: 0.5rem 0 0;
+  font-size: 0.95em;
+  opacity: 0.9;
+}
