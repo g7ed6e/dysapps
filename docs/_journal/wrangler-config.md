@@ -1,0 +1,1 @@
+**Publication de l’application sans double build.** La configuration de Cloudflare (`wrangler.jsonc`) est désormais dans le dépôt : à chaque publication, l’application est construite une seule fois, puis envoyée telle quelle. Rien ne change dans l’application ni à son adresse.

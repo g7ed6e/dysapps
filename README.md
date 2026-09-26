@@ -43,7 +43,7 @@ Les consignes complètes sont dans [Contribuer](https://g7ed6e.github.io/dysapps
 
 ## Déploiement
 
-L’application est construite et publiée par Cloudflare Workers à partir de `main` (`npm run build`, à la racine). Le workflow `.github/workflows/deploy.yml` lance les tests et les deux builds à chaque push et pull request, puis publie la documentation sur GitHub Pages à chaque push sur `main`. Aucune ressource externe, aucune donnée envoyée hors de l’appareil, actions épinglées par SHA, installation sans scripts et signatures npm vérifiées.
+L’application est construite et publiée par Cloudflare Workers à partir de `main` (`npm run build`, à la racine, puis `npx wrangler deploy` selon `wrangler.jsonc`). Le workflow `.github/workflows/deploy.yml` lance les tests et les deux builds à chaque push et pull request, puis publie la documentation sur GitHub Pages à chaque push sur `main`. Aucune ressource externe, aucune donnée envoyée hors de l’appareil, actions épinglées par SHA, installation sans scripts et signatures npm vérifiées.
 
 ## Licence et crédits
 
