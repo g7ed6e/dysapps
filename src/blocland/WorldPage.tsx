@@ -15,7 +15,6 @@ import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
 import { avatarHome, avatarRoute, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
-import { AVATAR_CUBES } from './Avatar';
 import { isBiomeUnlocked } from './world/archipelago';
 import { usePlanBuilder } from './usePlanBuilder';
 
@@ -47,7 +46,7 @@ export function WorldPage() {
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
   const at = state.village.at ?? 'foret';
   const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [avatarHome(at)], seq: 0 }));
-  const avatar = useMemo(() => ({ cubes: AVATAR_CUBES, route: walk.route, seq: walk.seq }), [walk]);
+  const avatar = useMemo(() => ({ route: walk.route, seq: walk.seq }), [walk]);
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   useEffect(() => {
