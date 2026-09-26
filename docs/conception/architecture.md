@@ -12,8 +12,9 @@ src/
   core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
   pages/         accueil, matière, quête, réglages, succès
   styles/        thèmes, styles globaux, textures pixel générées
-docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire
-scripts/         vérification de version, construction de la documentation
+docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
+                 docs/_journal/ : fragments du journal des versions
+scripts/         calcul de la version depuis git, construction et vérification de la documentation
 public/          icônes, police Luciole
 ```
 

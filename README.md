@@ -24,7 +24,8 @@ npm run build      # vérification TypeScript + build de production dans dist/
 npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
-npm run docs:check # vérifie que docs/journal.md décrit la version courante
+npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/)
+npm run version:show # affiche la version calculée depuis git
 ```
 
 React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](https://g7ed6e.github.io/dysapps/conception/architecture.html), [Format des exercices](https://g7ed6e.github.io/dysapps/conception/exercices.html) et [Déploiement et sécurité](https://g7ed6e.github.io/dysapps/conception/deploiement.html).
@@ -33,8 +34,8 @@ React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice
 
 Le travail se fait par pull request sur `main`. Chaque pull request :
 
-1. monte la version mineure (`npm run version:minor`), vérifié par la CI ;
-2. ajoute une entrée pour cette version en tête de `docs/journal.md`, vérifié par la CI ;
+1. ne touche pas à la version : elle se calcule depuis git à la fusion (mineure par défaut, `+semver: major|patch|none` dans le message pour un autre cran) ;
+2. ajoute un fragment de journal `docs/_journal/<nom-de-la-branche>.md` (sans titre), vérifié par la CI ;
 3. met à jour le manuel et la conception (`docs/`) quand ce qu’ils décrivent change ; les pages du contenu pédagogique sont générées au build depuis les données du jeu ;
 4. passe `npm test`, `npm run build`, `npm run docs:check` et `npm run docs:build`.
 

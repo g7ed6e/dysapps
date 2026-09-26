@@ -6,8 +6,9 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { defineConfig, type DefaultTheme } from 'vitepress';
 import { nav, prepareDocs, SRC } from '../../scripts/docs/prepare.mjs';
+import { appVersion } from '../../scripts/version.mjs';
 
-const pkg = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
+const version = appVersion();
 const pages = await prepareDocs();
 const byPath = new Map(pages.map((p) => [p.path, p]));
 const link = (path: string) => '/' + path.replace(/\.md$/, '.html');
@@ -142,7 +143,7 @@ export default defineConfig({
       text: 'Voir la source de cette page',
     },
     footer: {
-      message: `DysApps ${pkg.version} · applications d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0.`,
+      message: `DysApps ${version} · applications d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0.`,
       copyright: 'Aucune donnée n’est collectée : ce site n’utilise ni cookie ni service externe.',
     },
     notFound: {

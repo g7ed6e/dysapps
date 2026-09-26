@@ -1,11 +1,12 @@
 // Prépare les sources du site de documentation pour VitePress (docs/.vitepress/config.mts) :
-// les pages Markdown de docs/ (sauf docs/_theme/ et docs/.vitepress/) plus les pages générées depuis
-// les données du jeu (scripts/docs/generate.mjs), copiées dans .docs-src/ avec les fichiers statiques
-// (icône, police Luciole, sw.js). Aucune ressource externe.
+// les pages Markdown de docs/ (sauf docs/_theme/, docs/_journal/ et docs/.vitepress/) plus les pages générées depuis
+// les données du jeu (scripts/docs/generate.mjs) et le journal des versions (scripts/docs/journal.mjs),
+// copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js). Aucune ressource externe.
 import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, posix, relative } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { generatePages } from './generate.mjs';
+import { journalPage } from './journal.mjs';
 
 const root = process.cwd();
 export const DOCS = join(root, 'docs');
@@ -37,6 +38,11 @@ function gitDate(relPath) {
   }
 }
 
+const GAME_NOTE =
+  'Cette page est produite à chaque publication à partir des données du jeu (`scripts/docs/generate.mjs`) : elle décrit exactement la version en ligne.';
+const JOURNAL_NOTE =
+  'Cette page est assemblée à chaque publication à partir des fragments de `docs/_journal/` (un par pull request) ; les numéros de version viennent de l’historique git (`scripts/version.mjs`).';
+
 /**
  * Écrit .docs-src/ et renvoie les pages : { path, title, generated, updated }.
  * `path` est relatif à docs/ (ex. « manuel/demarrer.md »).
@@ -50,7 +56,11 @@ export async function prepareDocs() {
       const body = readFileSync(full, 'utf8');
       return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('docs', path)) };
     });
-  const generated = (await generatePages()).map((p) => ({ ...p, generated: true, updated: today }));
+  const generated = [...(await generatePages()).map((p) => ({ ...p, note: GAME_NOTE })), { ...journalPage(root), note: JOURNAL_NOTE }].map((p) => ({
+    ...p,
+    generated: true,
+    updated: today,
+  }));
   const pages = [...disk.filter((p) => !generated.some((g) => g.path === p.path)), ...generated];
 
   rmSync(SRC, { recursive: true, force: true });
@@ -59,7 +69,7 @@ export async function prepareDocs() {
     mkdirSync(dirname(out), { recursive: true });
     // Une page générée n'a pas de fichier source à ouvrir : elle dit d'où elle vient.
     const body = page.generated
-      ? `---\neditLink: false\n---\n\n${page.body.trimEnd()}\n\n::: info Page générée\nCette page est produite à chaque publication à partir des données du jeu (\`scripts/docs/generate.mjs\`) : elle décrit exactement la version en ligne.\n:::\n`
+      ? `---\neditLink: false\n---\n\n${page.body.trimEnd()}\n\n::: info Page générée\n${page.note}\n:::\n`
       : page.body;
     writeFileSync(out, body);
   }
