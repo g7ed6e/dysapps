@@ -61,7 +61,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   }, [biome.id]);
 
   return (
-    <section className={`island-sheet biome-${biome.id}`} role="dialog" aria-labelledby={`ile-${biome.id}`} aria-modal="false">
+    <section id={`panneau-${biome.id}`} className={`island-sheet biome-${biome.id}`} role="dialog" aria-labelledby={`ile-${biome.id}`} aria-modal="false">
       <div className="island-sheet-head">
         <Creature biome={biome.id} className="creature-small" />
         <div className="island-sheet-titles">

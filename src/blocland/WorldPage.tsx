@@ -34,8 +34,9 @@ import { usePlanBuilder } from './usePlanBuilder';
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran. On touche une île : la caméra y vole et son panneau
- * glisse depuis le bas (créature, quêtes, plan, Gardien) sans quitter le monde. L'URL /aventure/:ile
- * garde le panneau ouvert, pour revenir au même endroit après un exercice. /aventure/carte est la Carte :
+ * glisse depuis le bas (créature, quêtes, plan, Gardien) sans quitter le monde. On peut replier le panneau pour
+ * regarder l'île, puis le rouvrir, sans la quitter. L'URL /aventure/:ile ouvre le panneau, pour revenir au même
+ * endroit après un exercice. /aventure/carte est la Carte :
  * tout le continent vu du ciel, un fanion sur le bonhomme ; on touche une île pour y aller.
  */
 export function WorldPage() {
@@ -50,6 +51,13 @@ export function WorldPage() {
     () => [...creaturePlacements(state.village.bridges), ...guardianPlacements(state.progress, state.village.bridges)],
     [state.progress, state.village.bridges],
   );
+  // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande.
+  const [sheetOpen, setSheetOpen] = useState(true);
+  // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte.
+  const openIsland = (id: BiomeId) => {
+    setSheetOpen(true);
+    navigate(`/aventure/${id}`);
+  };
   // Les bornes de quête de toutes les îles, avec leur état : à faire, étoiles gagnées, ou fermée.
   const quests = useMemo<QuestMark[]>(
     () =>
@@ -69,7 +77,7 @@ export function WorldPage() {
   const onPickQuest = (id: BiomeId, typeId: string) => {
     const q = quests.find((m) => m.biome === id && m.typeId === typeId);
     if (q && q.state !== 'locked') navigate(`/aventure/${id}/${typeId}`);
-    else navigate(`/aventure/${id}`);
+    else openIsland(id);
   };
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
@@ -82,7 +90,7 @@ export function WorldPage() {
     if (!def) return;
     const from = isBiomeUnlocked(def.from, state.village.bridges) ? def.from : isBiomeUnlocked(def.to, state.village.bridges) ? def.to : def.from;
     setHighlight(id);
-    navigate(`/aventure/${from}`);
+    openIsland(from);
   };
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
@@ -101,6 +109,7 @@ export function WorldPage() {
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   useEffect(() => {
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
+    setSheetOpen(true);
     setSaid(null);
     if (!island) setHighlight(null);
     if (!mapOpen) setMapTarget(null);
@@ -122,7 +131,7 @@ export function WorldPage() {
   // Toucher une île : on y va (le bonhomme marche si un chemin y mène). Sur la Carte, une île fermée montre son chemin.
   const onIsland = (id: BiomeId) => {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
-    navigate(`/aventure/${id}`);
+    openIsland(id);
   };
   const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
     `${KIND_NAME[b.kind]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
@@ -140,7 +149,7 @@ export function WorldPage() {
   };
 
   return (
-    <div className={`world-page${island ? ' has-sheet' : ''}`}>
+    <div className={`world-page${island && sheetOpen ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<p className="loading world-loading">Chargement du village…</p>}>
           <WorldCanvas
@@ -159,7 +168,7 @@ export function WorldPage() {
             onPickQuest={onPickQuest}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
-            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
+            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || openIsland(islandAt(cell.x, cell.y)) } : undefined}
             burst={builder.burst}
             onPickCreature={onCreature}
             className="voxel-canvas-stage"
@@ -209,6 +218,18 @@ export function WorldPage() {
           )}
         </div>
         <nav className="world-bar" aria-label="Village">
+          {island && (
+            <button
+              type="button"
+              className="button"
+              aria-pressed={sheetOpen}
+              aria-controls={sheetOpen ? `panneau-${island.id}` : undefined}
+              onClick={() => setSheetOpen((o) => !o)}
+              aria-label={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
+            >
+              <Icon name={island.icon} /> {island.name}
+            </button>
+          )}
           <button type="button" className="button" aria-pressed={mapOpen} onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}>
             <Icon name="map" /> Carte
           </button>
@@ -227,12 +248,12 @@ export function WorldPage() {
           </button>
         </nav>
       </div>
-      {island && (
+      {island && sheetOpen && (
         <IslandSheet
           biome={island}
           builder={builder}
           in3d
-          onClose={() => navigate('/aventure')}
+          onClose={() => setSheetOpen(false)}
           highlight={highlight}
           onBuilt={(to) => {
             // La fête : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille.
