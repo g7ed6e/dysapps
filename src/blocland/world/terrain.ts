@@ -776,6 +776,29 @@ export function boardingRoute(port: BiomeId): { x: number; y: number; z: number 
   return route;
 }
 
+/** Distance à plat parcourue depuis le départ, à chaque point d'un itinéraire (la dernière est sa longueur). */
+export function routeLengths(route: { x: number; y: number }[]): number[] {
+  const cum = [0];
+  for (let i = 1; i < route.length; i++) cum.push(cum[i - 1] + Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y));
+  return cum;
+}
+
+/**
+ * Le point d'un itinéraire à une distance donnée du départ : on avance au même pas quelle que soit la longueur des
+ * segments (une case de pont, une pierre de gué sur deux, ou toute une île d'un coup).
+ */
+export function routeAt(route: { x: number; y: number; z: number }[], cum: number[], d: number): { x: number; y: number; z: number } {
+  const last = route.length - 1;
+  if (last <= 0 || d >= cum[last]) return { ...route[last] };
+  let i = 0;
+  while (i < last - 1 && cum[i + 1] <= d) i++;
+  const span = cum[i + 1] - cum[i];
+  const f = span > 0 ? Math.max(0, d - cum[i]) / span : 1;
+  const a = route[i];
+  const b = route[i + 1];
+  return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f, z: a.z + (b.z - a.z) * f };
+}
+
 /** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
 export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x: number; y: number; z: number } {
   const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === id));

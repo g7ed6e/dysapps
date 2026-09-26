@@ -6,7 +6,7 @@ import { type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { CREATURE_STEPS, boardingRoute, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds, type VehiclePlacement } from '../world/terrain';
+import { CREATURE_STEPS, boardingRoute, islandAt, routeAt, routeLengths, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds, type VehiclePlacement } from '../world/terrain';
 import { VEHICLE_DECK } from '../world/harbour';
 import { legTiming, vehiclePath, type LegTiming, type VoyageLeg } from '../world/voyage';
 import { islandsOf, type ArchipelagoId } from '../world/archipelago';
@@ -128,6 +128,11 @@ const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 const WALK_SPEED = 6;
 const WALK_MAX_MS = 6000;
+
+/** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
+function startWalk(route: Cell[], start: number, duration: number) {
+  return { route, cum: routeLengths(route), start, duration: Math.max(1, duration) };
+}
 
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
@@ -280,7 +285,7 @@ export default function WorldCanvas({
     trail: THREE.Group;
     questMarks: THREE.Group;
     avatar: THREE.Group;
-    walk: { route: Cell[]; start: number; duration: number } | null;
+    walk: { route: Cell[]; cum: number[]; start: number; duration: number } | null;
     /** Le Bloc-Navire : la coque (qui tangue) et le ballon (qui se balance au sommet du mât). */
     vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
   } | null>(null);
@@ -835,16 +840,11 @@ export default function WorldCanvas({
       // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
       let walking = false;
       if (w.walk) {
-        const { route, start, duration } = w.walk;
+        const { route, cum, start, duration } = w.walk;
         const k = reduceMotion ? 1 : Math.min(1, (now - start) / duration);
-        const pos = k * (route.length - 1);
-        const i = Math.min(route.length - 2, Math.floor(pos));
-        const f = pos - i;
-        const a = route[i];
-        const b = route[i + 1];
-        const x = a.x + (b.x - a.x) * f;
-        const y = a.y + (b.y - a.y) * f;
-        const z = a.z + (b.z - a.z) * f;
+        // Au prorata de la distance, pas du nombre de points : même pas sur l'île (un long segment) que sur un pont.
+        const d = k * cum[cum.length - 1];
+        const { x, y, z } = routeAt(route, cum, d);
         const swing = k < 1 ? Math.sin(t * 11) * 0.8 : 0;
         limbs.arms[0].rotation.x = swing;
         limbs.arms[1].rotation.x = -swing;
@@ -853,11 +853,9 @@ export default function WorldCanvas({
         w.avatar.position.set(x + 0.5, z, y + 0.5);
         // Il regarde là où il va : un point un peu plus loin sur l'itinéraire (les tracés en escalier alternent pas
         // droits et pas en diagonale, on ne veut pas qu'il se tortille à chaque case).
-        const ahead = Math.min(route.length - 1, pos + 1.5);
-        const j = Math.min(route.length - 2, Math.floor(ahead));
-        const g = ahead - j;
-        const dx = route[j].x + (route[j + 1].x - route[j].x) * g - x;
-        const dy = route[j].y + (route[j + 1].y - route[j].y) * g - y;
+        const ahead = routeAt(route, cum, d + 1.5);
+        const dx = ahead.x - x;
+        const dy = ahead.y - y;
         // Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on tourne de atan2(-dx, -dy).
         if (Math.hypot(dx, dy) > 0.05) heading = Math.atan2(-dx, -dy);
         if (k >= 1) w.walk = null;
@@ -877,7 +875,7 @@ export default function WorldCanvas({
           // Accosté : le bonhomme débarque (le chemin d'embarquement à rebours).
           if (elapsed >= sailMs && !vy.disembarked) {
             vy.disembarked = true;
-            w.walk = { route: [...boardingRoute(v.port)].reverse(), start: now, duration: Math.max(1, walkMs) };
+            w.walk = startWalk([...boardingRoute(v.port)].reverse(), now, walkMs);
           }
         }
         const p = vehiclePath(vy.stage, k);
@@ -1171,7 +1169,7 @@ export default function WorldCanvas({
     const timing = legTiming(voyage.leg, voyage.back);
     const now = performance.now();
     voyageRef.current = { leg: voyage.leg, stage: voyage.stage, timing, start: now, ended: false, disembarked: false, lastFoam: 0 };
-    if (voyage.leg === 'depart') w.walk = { route: boardingRoute(vehicleRef.current.port), start: now, duration: Math.max(1, timing.walk) };
+    if (voyage.leg === 'depart') w.walk = startWalk(boardingRoute(vehicleRef.current.port), now, timing.walk);
     else w.walk = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voyage?.seq, voyage?.leg]);
@@ -1222,12 +1220,11 @@ export default function WorldCanvas({
   useEffect(() => {
     const w = world.current;
     if (!w || !avatar || !avatar.route.length) return;
-    const route = avatar.route;
-    let length = 0;
-    for (let i = 1; i < route.length; i++) length += Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y);
+    const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
+    const length = routeLengths(route)[route.length - 1];
     // Six cases par seconde, mais jamais plus de six secondes de marche (un tap fait arriver tout de suite).
-    const duration = route.length < 2 || avatar.seq === 0 ? 0 : Math.min(WALK_MAX_MS, (length / WALK_SPEED) * 1000);
-    w.walk = { route: route.length < 2 ? [route[0], route[0]] : route, start: performance.now(), duration: Math.max(1, duration) };
+    const duration = avatar.seq === 0 ? 0 : Math.min(WALK_MAX_MS, (length / WALK_SPEED) * 1000);
+    w.walk = startWalk(route, performance.now(), duration);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
