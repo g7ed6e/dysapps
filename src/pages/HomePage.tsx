@@ -5,11 +5,16 @@ import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useProgress } from '../core/ProgressContext';
 import { levelFromXp } from '../core/progress';
+import { useBlocland } from '../blocland/BloclandContext';
+import { canLaunch, currentStage } from '../blocland/engine';
 
 export function HomePage() {
   const { progress } = useProgress();
+  const { state } = useBlocland();
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
+  const stage = currentStage(state);
+  const shipReady = Boolean(stage && canLaunch(state, stage).ok);
 
   return (
     <>
@@ -24,7 +29,7 @@ export function HomePage() {
       <Link to="/aventure" className="panel adventure-card">
         <Creature biome="foret" className="creature-small" />
         <span className="adventure-text">
-          <span className="adventure-kicker">Aventure</span>
+          <span className="adventure-kicker">{shipReady ? 'Le Bloc-Navire est prêt !' : 'Aventure'}</span>
           <span className="adventure-title">Blocland</span>
           <span className="adventure-desc">
             <Syllabified text="Reconstruis le village bloc par bloc, puis embarque sur le Bloc-Navire vers les autres archipels." />

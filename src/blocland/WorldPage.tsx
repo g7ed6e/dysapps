@@ -12,6 +12,8 @@ import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import type { QuestMark } from './three/WorldCanvas';
 import { useBlocland } from './BloclandContext';
+import { ArchipelsSheet } from './ArchipelsSheet';
+import { ARRIVAL_STEPS } from './arrivals';
 import { IslandSheet } from './IslandSheet';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -65,7 +67,9 @@ export function WorldPage() {
   const { state, moveTo, launch } = useBlocland();
   const { launchVoyage } = useProgress();
   const mapOpen = biomeId === 'carte';
-  const island = biomeId && !mapOpen ? getBiome(biomeId) : undefined;
+  // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
+  const mondeOpen = biomeId === 'monde';
+  const island = biomeId && !mapOpen && !mondeOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
@@ -238,7 +242,7 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, mapOpen]);
 
-  if (biomeId && !mapOpen && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !mondeOpen && !island) return <NotFoundPage />;
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
@@ -319,6 +323,9 @@ export function WorldPage() {
               </button>
             </div>
           )}
+          {a !== '6e' && !voyage && (
+            <Tutorial id={`archipel-${a}`} steps={ARRIVAL_STEPS[a]} />
+          )}
           <Tutorial
             id="village-immersif"
             replay={replay}
@@ -350,7 +357,10 @@ export function WorldPage() {
               ) : (
                 <p>
                   <strong>La Carte : les {archipelago.name}.</strong> Le fanion jaune, c’est toi. Touche une île pour y aller ; une île pâle est fermée :
-                  touche-la pour voir le chemin.{reachedNext || a !== '6e' ? ' Pour changer d’archipel, va au port : le Bloc-Navire t’y attend.' : ''}
+                  touche-la pour voir le chemin.{reachedNext || a !== '6e' ? ' Pour changer d’archipel, va au port : le Bloc-Navire t’y attend.' : ''}{' '}
+                  <button type="button" className="button" onClick={() => navigate('/aventure/monde')}>
+                    <Icon name="ship" /> Les quatre archipels
+                  </button>
                 </p>
               )}
             </div>
@@ -397,7 +407,9 @@ export function WorldPage() {
         <div className="island-sheet voyage-sheet">
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
-      ) : voyage ? null : (
+      ) : voyage ? null : mondeOpen ? (
+        <ArchipelsSheet onClose={() => navigate('/aventure')} onGo={openIsland} />
+      ) : (
         island &&
         sheetOpen && (
           <IslandSheet

@@ -8,7 +8,9 @@ import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome } from './biomes';
-import { isBiomeUnlocked } from './world/archipelago';
+import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipelago';
+import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
+import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
@@ -39,6 +41,8 @@ export function BossPage() {
   const [mood, setMood] = useState<GuardianMood>('idle');
   const [seq, setSeq] = useState(0);
   const [line, setLine] = useState<string | null>(null);
+  // Ce Gardien vaincu fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
+  const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
 
   useEffect(() => {
@@ -123,6 +127,15 @@ export function BossPage() {
               <SpeakButton text={line ?? biome.challenge} label="Écouter" />
             </div>
           </section>
+          {shipHint && (
+            <p className="panel ship-hint" role="status" aria-live="polite">
+              <Icon name="ship" />{' '}
+              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${getBiome(shipHint.biome)?.name ?? shipHint.biome}, finir de le construire.`} />{' '}
+              <Link to={`/aventure/${getArchipelago(shipHint.from).port}`} className="button">
+                <Icon name="ship" /> Aller au port
+              </Link>
+            </p>
+          )}
           <ExerciseRunner
             key={`${def.id}-${run}`}
             biome={biome}
@@ -130,7 +143,14 @@ export function BossPage() {
             onReplay={() => setRun((r) => r + 1)}
             onRound={onRound}
             onComplete={(c) => {
-              if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) beatBoss();
+              if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
+                beatBoss();
+                const here = archipelagoOf(biome.id).classe;
+                const next = nextArchipelago(here);
+                const stage = next ? stageTo(next.classe) : undefined;
+                // Le compte d'avant ce Gardien : s'il manquait juste lui, le kit arrive.
+                if (stage && beatenGuardians(here, state.progress) + 1 === stage.guardians) setShipHint(stage);
+              }
             }}
           />
         </>

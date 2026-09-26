@@ -61,8 +61,8 @@ function IslandEntry() {
   const { biomeId } = useParams();
   const immersive = useImmersive();
   if (immersive) return <WorldPage />;
-  // La Carte n'existe qu'en 3D : en vue simple, c'est la liste des îles.
-  return biomeId === 'carte' ? <Navigate to="/aventure" replace /> : <BiomePage />;
+  // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
+  return biomeId === 'carte' || biomeId === 'monde' ? <Navigate to="/aventure" replace /> : <BiomePage />;
 }
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {

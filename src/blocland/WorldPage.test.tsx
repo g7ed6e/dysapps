@@ -158,6 +158,34 @@ it('avec « Réduire les animations », le voyage est un écran fixe avec un bou
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche');
 });
 
+it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il faut pour aller plus loin', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/monde');
+  const sheet = screen.getByRole('dialog', { name: 'Les quatre archipels' });
+  expect(sheet).toBeInTheDocument();
+  expect(sheet.textContent).toContain('Archipel de 6e — Les Basses Terres');
+  expect(sheet.textContent).toContain('Tu es ici');
+  expect(sheet.textContent).toContain('Archipel de 5e — Les Collines du Large');
+  expect(sheet.textContent).toContain('Le Bloc-Navire se construit sur Plaine des nombres : 0 blocs posés sur');
+  expect(sheet.textContent).toContain('Il faut d’abord le Bloc-Navire avec la voile, puis le ballon.');
+  // « Voir le chantier » mène au port ; « Aller au port » aussi, pour l'archipel où l'on est.
+  await user.click(screen.getAllByRole('button', { name: 'Voir le chantier' })[0]);
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/plaine');
+  expect(screen.getByRole('dialog', { name: /Plaine des nombres/ })).toBeInTheDocument();
+});
+
+it('à la première arrivée dans un archipel, deux bulles d’accueil, une seule fois', () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  renderAt('/aventure');
+  expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
+  expect(document.body.textContent).toContain('Bienvenue dans les Collines du Large, l’archipel de 5e !');
+  // Déjà vu : plus de bulles.
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'archipel-5e': true, 'village-immersif': true }));
+  document.body.innerHTML = '';
+  renderAt('/aventure');
+  expect(document.body.textContent).not.toContain('Bienvenue dans les Collines du Large');
+});
+
 it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {
   const { container } = renderAt('/aventure');
   expect(container.querySelector('.island-sheet')).not.toBeInTheDocument();

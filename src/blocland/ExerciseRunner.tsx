@@ -4,7 +4,11 @@ import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
 import { RichText } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
-import { BLOCKS, ofBlock, type BiomeDef } from './biomes';
+import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
+import { planStatus } from './engine';
+import { archipelagoOf } from './world/archipelago';
+import { stageAt } from './world/vehicle';
+import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
@@ -94,6 +98,17 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
 
   if (done) {
     const block = BLOCKS[done.block];
+    // Avec les blocs gagnés, l'étape du Bloc-Navire de cet archipel a tout ce qu'il lui faut : on le dit.
+    const port = archipelagoOf(biome.id).port;
+    const stage = stageAt(port);
+    const shipReady =
+      stage && !done.state.village.bridges.includes(voyageId(stage.to)) && (stage.stage === 1 || done.state.village.bridges.includes(voyageId(stage.from)))
+        ? (() => {
+            const status = planStatus(done.state, stage);
+            const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0);
+            return !status.complete && missing.every(([b, n]) => (done.state.inventory[b as keyof typeof BLOCKS] ?? 0) >= (n ?? 0)) ? stage : null;
+          })()
+        : null;
     return (
       <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
@@ -120,6 +135,14 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
               <li className="reward-chest">
                 <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
                 Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
+              </li>
+            )}
+            {shipReady && (
+              <li className="reward-ship">
+                <Icon name="ship" size="1.6rem" />
+                <span>
+                  <strong>Le Bloc-Navire a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
+                </span>
               </li>
             )}
           </ul>
