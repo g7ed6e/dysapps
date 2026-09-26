@@ -4,11 +4,12 @@ import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
-import { dockBox, dockCells, dockOrigin, VEHICLE_SIZE } from './harbour';
+import { dockBox, dockCells, dockOrigin, VEHICLE_DECK, VEHICLE_SIZE } from './harbour';
 import { VEHICLE_STAGES } from './vehicle';
 import {
   avatarHome,
   avatarRoute,
+  boardingRoute,
   bossIsletOrigin,
   bridgePath,
   creaturePlacements,
@@ -438,6 +439,23 @@ it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à
   }
   function isLandAt(x: number, y: number): boolean {
     return MAP.some((d) => landCells(d).some((c) => c.x === x && c.y === y));
+  }
+});
+
+it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu’au pont du navire', () => {
+  for (const a of ARCHIPELAGOS) {
+    const route = boardingRoute(a.port);
+    const o = dockOrigin(a.port);
+    expect(route[0]).toEqual(avatarHome(a.port));
+    // Il finit sur le pont, une case au-dessus du plancher.
+    expect(route[route.length - 1]).toEqual({ x: o.x + VEHICLE_DECK.x, y: o.y + VEHICLE_DECK.y, z: o.z + 1 });
+    // Sur la jetée, ses pieds sont sur une planche.
+    const planks = new Map(dockCells(a.port).map((c) => [`${c.x},${c.y}`, c.z]));
+    const onJetty = route.filter((p) => planks.has(`${p.x},${p.y}`));
+    expect(onJetty.length, a.port).toBeGreaterThanOrEqual(3);
+    for (const p of onJetty) expect(p.z, a.port).toBe(planks.get(`${p.x},${p.y}`)! + 1);
+    // Jamais un pas de plus d'un bloc de haut.
+    for (let i = 1; i < route.length; i++) expect(Math.abs(route[i].z - route[i - 1].z), a.port).toBeLessThanOrEqual(1);
   }
 });
 

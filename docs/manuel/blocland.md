@@ -82,10 +82,11 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 
 - **Les blocs** de chaque étape se gagnent sur les îles de l’archipel (sable, bois, galet et pierre pour la coque ; glace, panneau et toile pour le ballon ; acier, calque et ardoise pour le réacteur). Ils se posent avec le bouton « Poser le bloc suivant » de la section Bloc-Navire, ou en touchant une case bleue du navire au quai. Le navire tangue doucement à quai (il plane dans les Îles du Ciel), son ballon se balance ; quand le panneau du port est ouvert et qu’il reste des cases à poser, la flèche jaune flotte au-dessus du chantier.
 - **Le kit arrive avec les Gardiens** : la voile, le haut du ballon et les feux du réacteur ne se gagnent pas. Ils apparaissent quand assez de Gardiens de l’archipel sont vaincus : trois dans les Basses Terres, deux dans les Collines du Large, deux dans les Monts de Feu. La section dit combien il en manque et lesquels sont les plus proches.
-- **Embarquer** : quand toutes les cases sont posées et le kit arrivé, le bouton « Embarquer vers l’archipel de 5e » apparaît. Le voyage se joue (un toucher ou le bouton « Arriver » le termine tout de suite), puis la créature du port d’en face accueille. L’étape rapporte son XP et un succès (Capitaine, Aéronaute, Pilote du ciel).
+- **Embarquer** : quand toutes les cases sont posées et le kit arrivé, le bouton « Embarquer vers l’archipel de 5e » apparaît. Le voyage se joue en 3D : le bonhomme marche jusqu’au pont par la jetée, le navire s’éloigne (la voile glisse vers le large et laisse son écume ; le ballon s’élève et l’archipel rétrécit ; le réacteur monte presque à la verticale, flamme allumée), un voile blanc passe, l’archipel change, le navire accoste et le bonhomme débarque. Huit secondes en tout, cinq pour un retour. Un toucher n’importe où, Entrée, Espace, Échap ou le bouton « Arriver » terminent le voyage tout de suite. Puis la créature du port d’en face accueille. L’étape rapporte son XP et un succès (Capitaine, Aéronaute, Pilote du ciel).
 - **On revient toujours.** Le voyage fait reste fait. Sur tout port, la section Bloc-Navire propose « Revenir en 6e » ou « Repartir vers 5e » pour chaque archipel déjà atteint. Rien ne se perd, rien ne coûte.
 - **Une île d’un autre archipel** est visible dans les listes et sur les pages Français et Maths avec la mention « Archipel à rejoindre » ; sa créature dit précisément ce qu’il faut : finir le Bloc-Navire sur tel port, vaincre tant de Gardiens, ou aller d’abord jusqu’à l’archipel d’avant.
-- Sous « Réduire les animations », le voyage est un écran fixe : le navire dessiné, la phrase lue, le bouton « Arriver ».
+- **Les sons du voyage** (réglage « Sons dans le village ») : la corne de brume au départ, le vent dans la voile, le brûleur du ballon ou le grondement du réacteur, puis le carillon d’arrivée. Jamais pendant la lecture à voix haute.
+- Sous « Réduire les animations », le voyage est un écran fixe : le navire dessiné, la phrase lue, le bouton « Arriver ». Aucun son de traversée.
 
 ## Les Gardiens
 
@@ -111,6 +112,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher une créature | Elle dit une phrase, lue à voix haute |
 | Toucher le Bloc-Navire au quai (île-port) | Ouvre le panneau du port sur sa section Bloc-Navire ; une case bleue pose le bloc attendu |
 | Bouton « Embarquer » ou « Revenir en … » (panneau du port) | Le voyage vers un autre archipel |
+| Toucher pendant le voyage, Entrée, Espace, Échap, bouton « Arriver » | Le Bloc-Navire arrive tout de suite |
 | Toucher le Gardien sur son îlot | Lance le défi |
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |

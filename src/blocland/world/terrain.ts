@@ -21,7 +21,7 @@ import {
   type IslandDef,
   type LandCell,
 } from './map';
-import { dockBox, dockCells, dockOrigin, dockPosts } from './harbour';
+import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts } from './harbour';
 import { AMBIENCE } from './daylight';
 import { VEHICLE_STAGES, kitReady, launchedStages } from './vehicle';
 import { groundLevelAt } from './ground';
@@ -753,6 +753,25 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x:
     } else for (const c of cells) route.push({ x: c.x, y: c.y, z: c.z + 1 });
     route.push(avatarHome(hop.to));
   }
+  return route;
+}
+
+/**
+ * Le chemin du bonhomme de son île jusqu'au pont du Bloc-Navire : le long de la rangée de devant (sous les bornes),
+ * puis la jetée planche par planche, puis le bastingage et le pont. À rebours, c'est le débarquement.
+ */
+export function boardingRoute(port: BiomeId): { x: number; y: number; z: number }[] {
+  const def = islandDef(port);
+  const home = avatarHome(port);
+  const o = dockOrigin(port);
+  const top = def.altitude + 1;
+  const route = [home, { x: def.core.x + 1, y: def.core.y, z: top }, { x: def.core.x + DOCK_DX, y: def.core.y, z: top }];
+  for (const c of dockCells(port)) {
+    route.push({ x: c.x, y: c.y, z: c.z + 1 });
+    if (c.y === o.y + VEHICLE_DECK.y) break;
+  }
+  // Le bastingage (une case au-dessus du plancher), puis le pont.
+  route.push({ x: o.x, y: o.y + VEHICLE_DECK.y, z: o.z + 2 }, { x: o.x + VEHICLE_DECK.x, y: o.y + VEHICLE_DECK.y, z: o.z + 1 });
   return route;
 }
 

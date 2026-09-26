@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -15,14 +15,25 @@ vi.mock('./three', () => ({
     onPickIsland,
     onPickVehicle,
     vehicle,
+    archipelago,
+    voyage,
+    onVoyageLegEnd,
   }: {
     focus: { island: string | null };
     onPickIsland: (id: string) => void;
     onPickVehicle: (port: string) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
+    archipelago: string;
+    voyage: { leg: string; stage: number; back: boolean } | null;
+    onVoyageLegEnd: () => void;
   }) => (
     <div>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
+      <p data-testid="archipel">{archipelago}</p>
+      <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
+      <button type="button" onClick={onVoyageLegEnd}>
+        Fin du temps
+      </button>
       <p data-testid="navire">{vehicle ? `${vehicle.port} ${vehicle.cubes.filter((c) => c.ghost).length}` : 'aucun'}</p>
       <button type="button" onClick={() => onPickIsland('foret')}>
         Toucher la Forêt dans le monde
@@ -100,6 +111,51 @@ it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre le pan
   expect(section).not.toBeNull();
   expect(section!.className).toContain('bridge-highlight');
   expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3/)).toBeInTheDocument();
+});
+
+it('embarquer joue le voyage en deux temps : le départ, le changement d’archipel sous le voile, l’arrivée au port', async () => {
+  const { VEHICLE_STAGES } = await import('./world/vehicle');
+  const { planCells } = await import('./world/plans');
+  const [coque] = VEHICLE_STAGES;
+  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/plaine');
+  expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
+  await user.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e/ }));
+  // Le départ : la phrase du voyage, le bouton « Arriver », le panneau replié.
+  expect(screen.getByTestId('voyage')).toHaveTextContent('depart 1 aller');
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
+  expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
+  // Fin du départ : sous le voile, l'archipel change, puis l'arrivée se joue.
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
+  await waitFor(() => expect(screen.getByTestId('voyage')).toHaveTextContent('arrivee 1 aller'));
+  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
+  expect(saved.village.bridges).toContain('voyage-5e');
+  expect(saved.village.at).toBe('marche');
+  // Fin de l'arrivée : le panneau du port s'ouvre.
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche');
+  expect(screen.getByRole('dialog', { name: /Marché des proportions/ })).toBeInTheDocument();
+});
+
+it('avec « Réduire les animations », le voyage est un écran fixe avec un bouton « Arriver »', async () => {
+  const { VEHICLE_STAGES } = await import('./world/vehicle');
+  const { planCells } = await import('./world/plans');
+  const [coque] = VEHICLE_STAGES;
+  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
+  const user = userEvent.setup();
+  renderAt('/aventure/plaine');
+  await user.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e/ }));
+  expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
+  expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Arriver/ }));
+  expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche');
 });
 
 it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {
