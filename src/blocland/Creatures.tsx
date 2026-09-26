@@ -53,14 +53,18 @@ const TUNEL = fromLayers(
   { B: '#7a5236', b: '#a06f4c', N: '#e8a3b8', E: '#1f1a16', C: '#f4e6d4', H: '#f2c944', L: '#fff4a0' },
 );
 
+// Rouxel : un renard roux assis, poitrail et bout de queue blancs, museau noir, deux oreilles pointues.
 const ROUXEL = fromLayers(
   [
-    ['.OOO..', 'OOOOO.', 'OOOOO.', '.OOO..', '..OT..'],
-    ['.OOO..', 'OWWWO.', 'OWWWO.', '.OOO..', '...T..'],
-    ['O.O...', '.OOO..', '.OEO..', '......', '......'],
-    ['O.O...', '..N...', '......', '......', '......'],
+    ['.O.O.', 'OOOOO', 'OOOOO', 'OOOOO', '.OOO.', '..W..'],
+    ['.WWW.', 'OWWWO', 'OOOOO', 'OOOOO', '.OOO.', '..O..'],
+    ['.OWO.', 'OOOOO', 'OOOOO', '.OOO.', '.....', '.....'],
+    ['..N..', 'OOOOO', 'OOOOO', '.....', '.....', '.....'],
+    ['.EOE.', 'OOOOO', 'OOOOO', '.....', '.....', '.....'],
+    ['.OOO.', 'OOOOO', '.OOO.', '.....', '.....', '.....'],
+    ['.O.O.', '.O.O.', '.....', '.....', '.....', '.....'],
   ],
-  { O: '#d9772e', W: '#f4e6d4', T: '#f4e6d4', E: '#1f1a16', N: '#1f1a16' },
+  { O: '#d9772e', W: '#f4e6d4', N: '#1f1a16', E: '#1f1a16' },
 );
 
 const BLOQUETTE = fromLayers(
