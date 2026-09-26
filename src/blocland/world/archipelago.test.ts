@@ -15,6 +15,7 @@ import {
   pathTo,
   payableBlocks,
   reachableIslands,
+  remainingPath,
 } from './archipelago';
 
 it('chaque île a une place et tous les ponts construits ouvrent tout l’archipel', () => {
@@ -83,6 +84,10 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : les ponts du chemin
   expect(bridgesFromLegacyProgress({})).toEqual([]);
   // La Plaine est une île de départ : aucun pont à offrir.
   expect(pathTo('plaine')).toEqual([]);
+  // Le chemin qu'il reste à construire : les ouvrages construits en sont retirés.
+  expect(remainingPath('tour', []).map((b) => b.id)).toEqual(['foret-ferme', 'ferme-tour']);
+  expect(remainingPath('tour', ['foret-ferme']).map((b) => b.id)).toEqual(['ferme-tour']);
+  expect(remainingPath('tour', ['foret-ferme', 'ferme-tour'])).toEqual([]);
   expect(bridgesFromLegacyProgress({ 'foret-abattage-1': { stars: 1 } })).toEqual(['foret-mine']);
   // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle.
   const old = { 'foret-a': { stars: 1 }, 'mine-a': { stars: 2 }, 'carriere-a': { stars: 1 } };

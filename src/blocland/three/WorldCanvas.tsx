@@ -65,6 +65,10 @@ export interface WorldCanvasProps {
   marker?: BiomeId | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: { route: Cell[]; seq: number };
+  /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
+  map?: boolean;
+  /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
+  trail?: Cell[];
   burst?: Burst;
   className?: string;
   label: string;
@@ -79,6 +83,9 @@ const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines. */
 const FOLLOW_DISTANCE = 42;
+/** La Carte : presque à la verticale, le même nord, assez loin pour tout le continent. */
+const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
+const MAP_FOV = 40;
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 const WALK_SPEED = 6;
 const WALK_MAX_MS = 6000;
@@ -205,6 +212,8 @@ export default function WorldCanvas({
   bridges = [],
   marker = null,
   avatar,
+  map = false,
+  trail,
   burst,
   className,
   label,
@@ -225,6 +234,8 @@ export default function WorldCanvas({
     camTarget: THREE.Vector3;
     camPos: THREE.Vector3;
     marker: THREE.Group;
+    beacon: THREE.Group;
+    trail: THREE.Group;
     avatar: THREE.Group;
     walk: { route: Cell[]; start: number; duration: number } | null;
   } | null>(null);
@@ -247,6 +258,8 @@ export default function WorldCanvas({
   forceDayRef.current = forceDay;
   const bridgesRef = useRef(bridges);
   bridgesRef.current = bridges;
+  const mapRef = useRef(map);
+  mapRef.current = map;
   const bounds = worldBounds();
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
@@ -260,7 +273,19 @@ export default function WorldCanvas({
    * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
    * que tout tienne dans la largeur.
    */
-  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number) => {
+  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number, onMap = false) => {
+    if (onMap) {
+      // Tout le continent tient dans la vue, en largeur comme en profondeur (la vue est un peu inclinée).
+      const ex = bounds.maxX - bounds.minX;
+      const ey = bounds.maxY - bounds.minY;
+      const need = Math.max(ey * 1.35, (ex * 1.2) / Math.max(0.3, aspect));
+      const d = need / (2 * Math.tan((MAP_FOV / 2) * (Math.PI / 180)));
+      const len = Math.hypot(MAP_VIEW.dx, MAP_VIEW.dy, MAP_VIEW.up);
+      // Un peu au nord : le continent descend sur l'écran, sous la ligne d'aide.
+      const target = new THREE.Vector3(center.x, 0, center.y + ey * 0.18);
+      const pos = new THREE.Vector3(target.x + (d * MAP_VIEW.dx) / len, target.y + (d * MAP_VIEW.up) / len, target.z + (d * MAP_VIEW.dy) / len);
+      return { target, pos };
+    }
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const c = island ? islandCenter(island) : { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
     const d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
@@ -287,7 +312,7 @@ export default function WorldCanvas({
     scene.background = new THREE.Color(day.sky);
     const fog = new THREE.Fog(day.sky, width * 1.2, width * 3);
     scene.fog = fog;
-    const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 4);
+    const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 10);
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
     const onKey = (e: KeyboardEvent) => {
@@ -428,6 +453,19 @@ export default function WorldCanvas({
     markerGroup.add(shaft);
     markerGroup.visible = false;
     scene.add(markerGroup);
+    // Sur la Carte : un grand fanion au-dessus du bonhomme (« tu es ici »), et des balises le long d'un chemin à construire.
+    const beaconGroup = new THREE.Group();
+    const beaconTip = new THREE.Mesh(new THREE.ConeGeometry(4, 7, 4), markerMat);
+    beaconTip.rotation.x = Math.PI;
+    beaconTip.rotation.y = Math.PI / 4;
+    beaconGroup.add(beaconTip);
+    const beaconShaft = new THREE.Mesh(new THREE.BoxGeometry(2.2, 6, 2.2), markerMat);
+    beaconShaft.position.y = 6.2;
+    beaconGroup.add(beaconShaft);
+    beaconGroup.visible = false;
+    scene.add(beaconGroup);
+    const trailGroup = new THREE.Group();
+    scene.add(trailGroup);
 
     // Le bonhomme (ses cubes arrivent par la prop `avatar`).
     const avatarGroup = new THREE.Group();
@@ -471,6 +509,8 @@ export default function WorldCanvas({
       camTarget: new THREE.Vector3(),
       camPos: new THREE.Vector3(),
       marker: markerGroup,
+      beacon: beaconGroup,
+      trail: trailGroup,
       avatar: avatarGroup,
       walk: null,
     };
@@ -642,7 +682,21 @@ export default function WorldCanvas({
       // La caméra rejoint sa place en douceur : le bonhomme tant qu'il marche (elle le suit pas à pas), puis l'île
       // ouverte, sinon le bonhomme.
       {
-        const { target, pos } = framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect);
+        const onMap = Boolean(mapRef.current) && !walking;
+        const { target, pos } = framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect, onMap);
+        w.beacon.visible = onMap && w.avatar.visible;
+        // Sur la Carte, vue de très haut : pas de brume, tout le continent net.
+        fog.near = onMap ? width * 8 : width * 1.2;
+        fog.far = onMap ? width * 16 : width * 3;
+        if (w.beacon.visible) {
+          w.beacon.position.set(w.avatar.position.x, w.avatar.position.y + 8 + Math.abs(Math.sin(t * 2.2)) * 1.5, w.avatar.position.z);
+          w.beacon.rotation.y = t * 0.8;
+        }
+        if (w.trail.children.length) {
+          const pulse = 0.85 + Math.sin(t * 3) * 0.15;
+          w.trail.scale.setScalar(1);
+          for (const m of w.trail.children) m.scale.setScalar(pulse);
+        }
         const dt = Math.min(0.1, (nowMs - lastFrame) / 1000 || 0.016);
         const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.5);
         if (w.camTarget.lengthSq() === 0 && w.camPos.lengthSq() === 0) {
@@ -860,11 +914,30 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
+  // ---- Le chemin à construire (sur la Carte) : une balise toutes les deux cases, au-dessus du sol.
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    for (const child of [...w.trail.children]) {
+      w.trail.remove(child);
+      (child as THREE.Mesh).geometry.dispose();
+    }
+    if (!trail?.length) return;
+    const mat = (w.marker.children[0] as THREE.Mesh).material;
+    trail.forEach((c, i) => {
+      if (i % 3) return;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.2, 2.2), mat);
+      m.position.set(c.x + 0.5, c.z + 3.5, c.y + 0.5);
+      m.rotation.y = Math.PI / 4;
+      w.trail.add(m);
+    });
+  }, [trail]);
+
   // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {
     const w = world.current;
     if (!w || focus.seq !== 0) return;
-    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect);
+    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect, Boolean(map));
     w.camTarget.copy(target);
     w.camPos.copy(pos);
     w.camera.position.copy(pos);
