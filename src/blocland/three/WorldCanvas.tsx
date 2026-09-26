@@ -8,6 +8,7 @@ import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
 import { islandAt, islandCenter, mistPatches, overviewBounds, whaleSpots, worldBounds } from '../world/terrain';
+import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface WorldFocus {
@@ -61,8 +62,8 @@ export interface WorldCanvasProps {
   bridges?: string[];
   /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »). */
   marker?: BiomeId | null;
-  /** Le bonhomme : ses cubes et son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
-  avatar?: { cubes: VoxelCube[]; route: Cell[]; seq: number };
+  /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
+  avatar?: { route: Cell[]; seq: number };
   burst?: Burst;
   /** Sensibilité de la caméra (rotation, zoom, déplacement). */
   cameraSpeed?: number;
@@ -77,8 +78,7 @@ const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
-/** Échelle du bonhomme : 6 cubes de haut deviennent 2,4 blocs. */
-const AVATAR_SCALE = 0.4;
+
 const FLIGHT_MS = 700;
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
@@ -431,9 +431,21 @@ export default function WorldCanvas({
 
     // Le bonhomme (ses cubes arrivent par la prop `avatar`).
     const avatarGroup = new THREE.Group();
-    // Ses cubes font 3 × 2 × 6 : réduits pour qu'il fasse un peu plus de deux blocs de haut, à l'échelle des maisons.
+    // Ses pièces sont en seizièmes de bloc : deux blocs de haut, comme une porte et un bloc. Chaque membre pivote.
     avatarGroup.scale.setScalar(AVATAR_SCALE);
     avatarGroup.visible = false;
+    const limbs: { arms: THREE.Group[]; legs: THREE.Group[] } = { arms: [], legs: [] };
+    for (const part of AVATAR_PARTS) {
+      const pivot = new THREE.Group();
+      pivot.position.set(part.pivot.x, part.pivot.z, part.pivot.y);
+      const inner = new THREE.Group();
+      inner.position.set(-part.pivot.x, -part.pivot.z, -part.pivot.y);
+      for (const g of buildMesh(part.cubes)) inner.add(meshOf(g));
+      pivot.add(inner);
+      avatarGroup.add(pivot);
+      if (part.name.startsWith('bras')) limbs.arms.push(pivot);
+      if (part.name.startsWith('jambe')) limbs.legs.push(pivot);
+    }
     scene.add(avatarGroup);
 
     const terrain = new THREE.Group();
@@ -614,8 +626,12 @@ export default function WorldCanvas({
         const x = a.x + (b.x - a.x) * f;
         const y = a.y + (b.y - a.y) * f;
         const z = a.z + (b.z - a.z) * f;
-        const hop = k < 1 ? Math.abs(Math.sin(t * 14)) * 0.18 : 0;
-        w.avatar.position.set(x + 0.5 - 1.5 * AVATAR_SCALE, z + hop, y + 0.5 - AVATAR_SCALE);
+        const swing = k < 1 ? Math.sin(t * 11) * 0.8 : 0;
+        limbs.arms[0].rotation.x = swing;
+        limbs.arms[1].rotation.x = -swing;
+        limbs.legs[0].rotation.x = -swing;
+        limbs.legs[1].rotation.x = swing;
+        w.avatar.position.set(x + 0.5 - 8 * AVATAR_SCALE, z, y + 0.5 - 4 * AVATAR_SCALE);
         if (b.x !== a.x || b.y !== a.y) w.avatar.rotation.y = Math.atan2(-(b.y - a.y), b.x - a.x) + Math.PI / 2;
         if (k >= 1) w.walk = null;
       }
@@ -822,17 +838,9 @@ export default function WorldCanvas({
   // ---- Le bonhomme : ses cubes (une fois), puis chaque itinéraire
   useEffect(() => {
     const w = world.current;
-    if (!w || !avatar) return;
-    for (const child of [...w.avatar.children]) {
-      w.avatar.remove(child);
-      child.traverse((o) => {
-        if (o instanceof THREE.Mesh) o.geometry.dispose();
-      });
-    }
-    for (const g of buildMesh(avatar.cubes)) w.avatar.add(meshOf(g));
-    w.avatar.visible = avatar.cubes.length > 0;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatar?.cubes]);
+    if (!w) return;
+    w.avatar.visible = Boolean(avatar);
+  }, [Boolean(avatar)]);
   useEffect(() => {
     const w = world.current;
     if (!w || !avatar || !avatar.route.length) return;
