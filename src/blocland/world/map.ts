@@ -32,7 +32,7 @@ export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les vingt îles, placées à la main. Les Basses Terres (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les vingt-deux îles, placées à la main. Les Basses Terres (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
@@ -61,6 +61,9 @@ export const MAP: IslandDef[] = [
   { id: 'phare', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
   { id: 'donnees', region: 'hauteurs', core: { x: 96, y: 930 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
   { id: 'textes', region: 'hauteurs', core: { x: 58, y: 960 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  // Anglais 6e : derrière la Ferme et la Forêt, les deux îles se touchent (un isthme).
+  { id: 'baie', region: 'basses-terres', core: { x: 38, y: 101 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
+  { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 101 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
 ];
 
 /** La classe (l'archipel) d'une île. */
@@ -87,6 +90,7 @@ export const ISTHMUSES: [BiomeId, BiomeId][] = [
   ['ferme', 'tour'],
   ['glacier', 'marche'],
   ['carrefour', 'marais'],
+  ['baie', 'horloge'],
 ];
 
 /** L'île avec laquelle une île partage un isthme, s'il y en a un. */

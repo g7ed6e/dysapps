@@ -93,6 +93,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.quartz.side]: 'quartz',
   [BLOCKS.prisme.side]: 'prisme',
   [BLOCKS.lentille.side]: 'lentille',
+  [BLOCKS.cabine.side]: 'cabine',
+  [BLOCKS.cadran.side]: 'cadran',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -559,6 +561,23 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(7, 2, h(7, 2) + 1, BLOCKS.bois.side);
     put(7, 2, h(7, 2) + 2, BLOCKS.parchemin.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.lentille.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  baie: (put, h) => {
+    // Une cabine téléphonique rouge (vitrée, toit sombre), un réverbère, une caisse de cabines au sol.
+    for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, BLOCKS.cabine.side);
+    put(9, 3, h(9, 3) + 4, DARK);
+    for (let z = 1; z <= 3; z++) put(11, 5, h(11, 5) + z, DARK);
+    put(11, 5, h(11, 5) + 4, BLOCKS.lanterne.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.cabine.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  horloge: (put, h) => {
+    // Une tour d'horloge de pierre, cadran au sommet et flèche de laiton ; un rouage de cadrans au sol.
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? BLOCKS.cadran.side : BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 5, BLOCKS.or.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.cadran.side);
+    put(4, 9, h(4, 9) + 1, BLOCKS.cadran.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };
@@ -1040,11 +1059,16 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
     .sort((p, q) => q.r - p.r)
     .slice(0, 5);
   const trophy = beaten ? trophySpot(biome.id) : null;
+  // Deux touches voisines peuvent vouloir la même case (deux buissons qui se touchent) : un seul cube par case.
+  const placed = new Set<string>();
   for (const { c, r } of spots) {
     decorate(
       (x, y, z, color) => {
         const cell = at.get(`${x},${y}`);
         if (!cell || cell.arena || cell.guardian || (trophy && x === trophy.x && y === trophy.y)) return;
+        const key = `${x},${y},${z}`;
+        if (placed.has(key)) return;
+        placed.add(key);
         block(x, y, gz + z, color);
       },
       kinds[Math.floor(r * 97) % kinds.length],

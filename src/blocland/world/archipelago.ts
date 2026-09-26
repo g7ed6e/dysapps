@@ -116,6 +116,10 @@ export const BRIDGES: BridgeDef[] = [
   b('mine', 'riviere', 'pont', 4),
   b('plaine', 'volcan', 'pont', 3),
   b('ferme', 'volcan', 'bac', 4),
+  // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un sentier entre les deux.
+  b('ferme', 'baie', 'pont', 5),
+  b('foret', 'horloge', 'pont', 5),
+  b('baie', 'horloge', 'sentier', 4),
   // Collines du Large (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
   b('glacier', 'marche', 'sentier', 6),
   b('marche', 'marais', 'pont', 4),
@@ -228,6 +232,8 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'quartz',
   'prisme',
   'lentille',
+  'cabine',
+  'cadran',
   'or',
   'cristal',
 ];

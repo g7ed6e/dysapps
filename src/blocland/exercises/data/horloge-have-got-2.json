@@ -1,0 +1,215 @@
+{
+  "id": "horloge-have-got-2",
+  "biome": "horloge",
+  "type": "have-got",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "horloge-have-got-2-0",
+      "prompt": "… you got a pet?",
+      "spoken": "blank you got a pet?",
+      "choices": [
+        "Have",
+        "Has",
+        "Do"
+      ],
+      "answer": "Have",
+      "hint": "Question avec have got : have ou has devant le sujet.",
+      "explanation": "Have you got a pet? : avec you, c’est have, placé devant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-1",
+      "prompt": "… she got a phone?",
+      "spoken": "blank she got a phone?",
+      "choices": [
+        "Have",
+        "Has",
+        "Is"
+      ],
+      "answer": "Has",
+      "hint": "Question avec have got : have ou has devant le sujet.",
+      "explanation": "Has she got a phone? : avec she, c’est has, placé devant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-2",
+      "prompt": "I … got any brothers.",
+      "spoken": "I blank got any brothers.",
+      "choices": [
+        "haven’t",
+        "hasn’t",
+        "don’t"
+      ],
+      "answer": "haven’t",
+      "hint": "Négation avec I.",
+      "explanation": "I haven’t got : avec I, la négation est haven’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-3",
+      "prompt": "He … got a computer.",
+      "spoken": "He blank got a computer.",
+      "choices": [
+        "haven’t",
+        "hasn’t",
+        "isn’t"
+      ],
+      "answer": "hasn’t",
+      "hint": "Négation avec he.",
+      "explanation": "He hasn’t got : avec he, la négation est hasn’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-4",
+      "prompt": "… they got a car? — Yes, they have.",
+      "spoken": "blank they got a car? — Yes, they have.",
+      "choices": [
+        "Have",
+        "Has",
+        "Are"
+      ],
+      "answer": "Have",
+      "hint": "Question avec have got : have ou has devant le sujet.",
+      "explanation": "Have they got a car? : avec they, c’est have, placé devant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-5",
+      "prompt": "My sister … got a bike.",
+      "spoken": "My sister blank got a bike.",
+      "choices": [
+        "haven’t",
+        "hasn’t",
+        "don’t"
+      ],
+      "answer": "hasn’t",
+      "hint": "My sister = she.",
+      "explanation": "My sister = she : she hasn’t got.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-6",
+      "prompt": "Has he got a dog? — No, he … .",
+      "spoken": "Has he got a dog? — No, he blank .",
+      "choices": [
+        "hasn’t",
+        "haven’t",
+        "isn’t"
+      ],
+      "answer": "hasn’t",
+      "hint": "La réponse courte reprend has.",
+      "explanation": "No, he hasn’t : on reprend has, à la négation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-have-got-2-7",
+      "prompt": "Have you got a pen? — Yes, I … .",
+      "spoken": "Have you got a pen? — Yes, I blank .",
+      "choices": [
+        "have",
+        "has",
+        "am"
+      ],
+      "answer": "have",
+      "hint": "La réponse courte reprend have.",
+      "explanation": "Yes, I have : on reprend have.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have got : négation et question",
+          "lines": [
+            "Négation : I haven’t got, she hasn’t got.",
+            "Question : on inverse ! Have you got…? Has he got…?",
+            "Réponse courte : Yes, I have. No, he hasn’t."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "cadran",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

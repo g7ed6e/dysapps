@@ -1,0 +1,231 @@
+{
+  "id": "baie-hello-1",
+  "biome": "baie",
+  "type": "hello",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "baie-hello-1-0",
+      "prompt": "…, my name is Tom.",
+      "spoken": "blank, my name is Tom.",
+      "choices": [
+        "Hello",
+        "Goodbye",
+        "Thank you"
+      ],
+      "answer": "Hello",
+      "hint": "On se présente : on commence par dire bonjour.",
+      "explanation": "« Hello » = bonjour : on salue avant de se présenter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-1",
+      "prompt": "What is your …? — My name is Lina.",
+      "spoken": "What is your blank? — My name is Lina.",
+      "choices": [
+        "name",
+        "age",
+        "town"
+      ],
+      "answer": "name",
+      "hint": "On se présente : de quoi parle la question ?",
+      "explanation": "« What is your name? » = Comment t’appelles-tu ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-2",
+      "prompt": "How … are you? — I’m eleven.",
+      "spoken": "How blank are you? — I’m eleven.",
+      "choices": [
+        "old",
+        "name",
+        "from"
+      ],
+      "answer": "old",
+      "hint": "On se présente : de quoi parle la question ?",
+      "explanation": "« How old are you? » = Quel âge as-tu ? On répond avec son âge.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-3",
+      "prompt": "Where are you …? — I’m from France.",
+      "spoken": "Where are you blank? — I’m from France.",
+      "choices": [
+        "from",
+        "old",
+        "name"
+      ],
+      "answer": "from",
+      "hint": "On se présente : de quoi parle la question ?",
+      "explanation": "« Where are you from? » = D’où viens-tu ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-4",
+      "prompt": "…! See you tomorrow.",
+      "spoken": "blank! See you tomorrow.",
+      "choices": [
+        "Goodbye",
+        "Hello",
+        "Please"
+      ],
+      "answer": "Goodbye",
+      "hint": "On se quitte : que dit-on ?",
+      "explanation": "« Goodbye » = au revoir ; « See you tomorrow » = à demain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-5",
+      "prompt": "Can I have a pen, …?",
+      "spoken": "Can I have a pen, blank?",
+      "choices": [
+        "please",
+        "sorry",
+        "hello"
+      ],
+      "answer": "please",
+      "hint": "On demande quelque chose poliment.",
+      "explanation": "« please » = s’il te plaît : on le dit quand on demande.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-6",
+      "prompt": "… you very much!",
+      "spoken": "blank you very much!",
+      "choices": [
+        "Thank",
+        "Please",
+        "Sorry"
+      ],
+      "answer": "Thank",
+      "hint": "On remercie.",
+      "explanation": "« Thank you very much » = merci beaucoup.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-hello-1-7",
+      "prompt": "How are you? — I’m …, thank you.",
+      "spoken": "How are you? — I’m blank, thank you.",
+      "choices": [
+        "fine",
+        "old",
+        "from"
+      ],
+      "answer": "fine",
+      "hint": "On te demande comment tu vas.",
+      "explanation": "« I’m fine » = je vais bien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hello / Hi = bonjour. Goodbye / Bye = au revoir.",
+            "What’s your name? — My name is… (je m’appelle…)",
+            "How old are you? — I’m eleven. (j’ai 11 ans)",
+            "Where are you from? — I’m from France.",
+            "please = s’il te plaît. thank you = merci. sorry = pardon."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "cabine",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

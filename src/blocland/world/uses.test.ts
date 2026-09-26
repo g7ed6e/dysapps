@@ -78,7 +78,7 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.rows[3].uses).toEqual([]);
   // Les ouvrages : payables par 9 blocs (le toit ne compte pas), depuis une île ouverte, sans doublon.
   expect(inv.payable).toBe(9);
-  expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(['foret-ferme', 'foret-mine', 'plaine-riviere', 'plaine-volcan'].sort());
+  expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(['foret-ferme', 'foret-horloge', 'foret-mine', 'plaine-riviere', 'plaine-volcan'].sort());
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);
   expect(inv.ouvrages.find((o) => o.bridge.id === 'foret-mine')).toMatchObject({ from: 'foret', to: 'mine' });
   expect(inventoryUses(sanitizeState({})).rows).toEqual([]);

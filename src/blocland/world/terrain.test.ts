@@ -42,7 +42,7 @@ import {
 } from './terrain';
 
 const village = (bridges: string[]) => ({ plans: {}, journal: [], bridges });
-/** Tous les archipels d'un coup, pour les tests qui parcourent les vingt îles. */
+/** Tous les archipels d'un coup, pour les tests qui parcourent toutes les îles. */
 const allCubes = (progress: Record<string, { stars: number }>, v = village([]), withCreatures = true) =>
   ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, progress, v, withCreatures));
 /** Tout construit : les ouvrages et les voyages. */
