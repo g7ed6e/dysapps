@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, CORE, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
 import { BRIDGES } from './archipelago';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
@@ -99,7 +99,7 @@ it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre î
   const land = new Map<string, string>();
   for (const def of MAP) for (const c of landCells(def)) land.set(`${c.x},${c.y}`, def.id);
   const all = BRIDGES.map((b) => b.id);
-  const bridges = worldCubes({}, { plans: {}, journal: [], bridges: all }, false).filter((c) => c.bridge);
+  const bridges = ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, {}, { plans: {}, journal: [], bridges: all }, false)).filter((c) => c.bridge);
   for (const c of bridges) {
     const key = `${c.x},${c.y}`;
     expect(islets.has(key), `pont sur un îlot en ${key}`).toBe(false);

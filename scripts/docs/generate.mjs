@@ -34,6 +34,7 @@ export async function generatePages() {
         load('/src/apps/registry.ts'),
         load('/src/core/subjectProgress.ts'),
       ]);
+    const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
     const data = {
@@ -46,6 +47,9 @@ export async function generatePages() {
       KIND_NAME: archMod.KIND_NAME,
       CONDITION_OF: archMod.CONDITION_OF,
       START_ISLANDS: archMod.START_ISLANDS,
+      ARCHIPELAGOS: archMod.ARCHIPELAGOS,
+      VOYAGES: archMod.VOYAGES,
+      VEHICLE_STAGES: vehicleMod.VEHICLE_STAGES,
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -173,7 +177,25 @@ function archipelPage(d) {
     `| Plans à construire | ${PLANS.length} |`,
     `| Ouvrages entre les îles | ${BRIDGES.length} |`,
     '',
-    'Chaque île est un thème du programme. Elle a sa créature qui donne les quêtes, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés : voir [Ouvrages et plans](ouvrages.md).',
+    'Chaque île est un thème du programme. Elle a sa créature qui donne les quêtes, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
+    '',
+    '## Les quatre archipels',
+    '',
+    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire.',
+    '',
+    table(
+      ['Archipel', 'Classe', 'Île-port', 'Îles', 'Pour y aller'],
+      d.ARCHIPELAGOS.map((a, i) => {
+        const stage = d.VEHICLE_STAGES.find((s) => s.to === a.classe);
+        return [
+          `Les ${a.name}`,
+          a.classe,
+          `[${BIOMES.find((b) => b.id === a.port)?.name ?? a.port}](iles/${a.port}.md)`,
+          BIOMES.filter((b) => b.classe === a.classe).map((b) => `[${b.name}](iles/${b.id}.md)`).join(', '),
+          i === 0 ? 'le départ : la Forêt et la Plaine sont ouvertes' : `le Bloc-Navire, étape ${stage.stage} (${stage.name.toLowerCase()}), construit au port des ${d.ARCHIPELAGOS[i - 1].name}`,
+        ];
+      }),
+    ),
     '',
   ];
   for (const classe of CLASSES) {
@@ -222,12 +244,14 @@ function islandPage(b, d) {
     '',
     '| | |',
     '| --- | --- |',
+    `| Archipel | Les ${d.ARCHIPELAGOS.find((a) => a.classe === b.classe).name} (${b.classe}) |`,
+    `| Île-port | ${d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'oui : le quai et le Bloc-Navire sont devant l’île' : 'non'} |`,
     `| Créature | ${b.creature.name}, ${b.creature.species} |`,
     `| Gardien | ${b.guardian} |`,
     `| Bloc gagné | ${BLOCKS[b.block].name} |`,
     `| Quêtes | ${b.exercises.length} |`,
     `| Exercices | ${EXERCISES.filter((e) => e.biome === b.id).length} |`,
-    `| Départ | ${d.START_ISLANDS.includes(b.id) ? 'île ouverte dès le début' : 'à ouvrir par un ouvrage'} |`,
+    `| Départ | ${d.START_ISLANDS.includes(b.id) ? 'île ouverte dès le début' : d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'île-port, ouverte à l’arrivée du Bloc-Navire' : 'à ouvrir par un ouvrage'} |`,
     '',
     '## La créature',
     '',
@@ -299,6 +323,20 @@ function islandPage(b, d) {
           return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), chest || '—', `« ${p.done} »`];
         }),
       ),
+      '',
+    );
+  }
+  const stage = d.VEHICLE_STAGES.find((s) => s.biome === b.id);
+  if (stage) {
+    const count = (cells) => Object.entries(cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
+      .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+      .join(', ');
+    lines.push(
+      '## Le chantier du Bloc-Navire',
+      '',
+      `Étape ${stage.stage} : **${stage.name}**, vers les ${d.ARCHIPELAGOS.find((a) => a.classe === stage.to).name}. Blocs à poser : ${count(stage.cells)}. Kit qui arrive avec ${stage.guardians} Gardien${stage.guardians > 1 ? 's' : ''} vaincu${stage.guardians > 1 ? 's' : ''} : ${count(stage.kit)}. ${stage.reward.xp} XP au départ.`,
+      '',
+      `Quand le kit arrive : « ${stage.done} »`,
       '',
     );
   }
@@ -425,7 +463,21 @@ function ouvragesPage(d) {
   const lines = [
     '# Ouvrages et plans',
     '',
-    `Les ${BRIDGES.length} ouvrages relient les ${d.BIOMES.length} îles. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île (jamais les kits de finition des plans). Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}.`,
+    `Les ${BRIDGES.length} ouvrages relient les îles d’un même archipel. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île (jamais les kits de finition des plans). Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}. D’un archipel au suivant, on voyage avec le Bloc-Navire.`,
+    '',
+    '## Le Bloc-Navire',
+    '',
+    'Un seul navire qui grandit en trois étapes, chacune un plan à construire sur le quai de l’île-port. Le kit (voile, haut du ballon, feux) arrive avec les Gardiens vaincus de l’archipel ; le reste se pose bloc par bloc. Embarquer est un bouton ; le voyage fait reste fait, on revient quand on veut.',
+    '',
+    table(
+      ['Étape', 'Nom', 'Se construit sur', 'Blocs à poser', 'Kit', 'Gardiens', 'Mène aux', 'XP'],
+      d.VEHICLE_STAGES.map((s) => {
+        const count = (cells) => Object.entries(cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
+          .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+          .join(', ');
+        return [String(s.stage), s.name, `[${name(s.biome)}](iles/${s.biome}.md)`, count(s.cells), count(s.kit), `${s.guardians} des ${d.ARCHIPELAGOS.find((a) => a.classe === s.from).name}`, d.ARCHIPELAGOS.find((a) => a.classe === s.to).name, String(s.reward.xp)];
+      }),
+    ),
     '',
     '## Natures d’ouvrage',
     '',
@@ -436,11 +488,18 @@ function ouvragesPage(d) {
     '',
     '## Tous les ouvrages',
     '',
-    table(
-      ['De', 'Vers', 'Nature', 'Coût', 'Condition'],
-      BRIDGES.map((b) => [name(b.from), name(b.to), KIND_NAME[b.kind], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[b.kind]]]),
-    ),
-    '',
+    ...d.ARCHIPELAGOS.flatMap((a) => {
+      const own = BRIDGES.filter((b) => d.BIOMES.find((x) => x.id === b.from)?.classe === a.classe);
+      return [
+        `### Archipel de ${a.classe} — Les ${a.name}`,
+        '',
+        table(
+          ['De', 'Vers', 'Nature', 'Coût', 'Condition'],
+          own.map((b) => [name(b.from), name(b.to), KIND_NAME[b.kind], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[b.kind]]]),
+        ),
+        '',
+      ];
+    }),
     '## Les plans',
     '',
     `${PLANS.length} plans, trois par île, enchaînés : le bâtiment, puis son toit (porte et lanterne), puis sa cour (barrières et escalier). Les blocs de finition viennent des coffres, jamais des exercices.`,

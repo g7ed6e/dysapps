@@ -6,6 +6,7 @@ import {
   completeExercise,
   dueItems,
   fillPlanCell as fillPlanCellPure,
+  launchVehicle as launchVehiclePure,
   moveAvatar,
   recordFluence as recordFluencePure,
   sanitizeState,
@@ -13,9 +14,11 @@ import {
   type BloclandState,
   type Completion,
   type FillResult,
+  type LaunchResult,
 } from './engine';
 import type { BiomeId } from './biomes';
 import type { PlanDef } from './world/plans';
+import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 
@@ -42,6 +45,8 @@ interface BloclandContextValue {
   buildBridge: (id: string) => BuildBridgeResult;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
+  /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
+  launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
 }
 
@@ -93,6 +98,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = next;
     setState(next);
   }, []);
+  const launch = useCallback((stage: VehicleStage) => {
+    const r = launchVehiclePure(stateRef.current, stage);
+    if (r.result.ok) {
+      stateRef.current = r.state;
+      setState(r.state);
+    }
+    return r.result;
+  }, []);
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
@@ -119,9 +132,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       fillPlan,
       buildBridge,
       moveTo,
+      launch,
       reset,
     }),
-    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, reset],
+    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

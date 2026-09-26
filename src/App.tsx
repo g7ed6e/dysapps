@@ -10,6 +10,7 @@ import { ProgressPage } from './pages/ProgressPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { BloclandPage } from './blocland/BloclandPage';
 import { BiomePage } from './blocland/BiomePage';
+import { VoyagePage } from './blocland/VoyagePage';
 import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
@@ -40,6 +41,7 @@ export function AppRoutes() {
         <Route path="app/:appId" element={<AppPage />} />
         <Route path="aventure" element={<AventureEntry />} />
         <Route path="aventure/:biomeId" element={<IslandEntry />} />
+        <Route path="aventure/voyage/:vers" element={<VoyageEntry />} />
         <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
         <Route path="reglages" element={<SettingsPage />} />
@@ -61,4 +63,9 @@ function IslandEntry() {
   if (immersive) return <WorldPage />;
   // La Carte n'existe qu'en 3D : en vue simple, c'est la liste des îles.
   return biomeId === 'carte' ? <Navigate to="/aventure" replace /> : <BiomePage />;
+}
+// Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
+function VoyageEntry() {
+  const { vers } = useParams();
+  return useImmersive() ? <Navigate to={`/aventure/${vers === '6e' ? 'plaine' : vers === '5e' ? 'marche' : vers === '4e' ? 'atelier' : 'phare'}`} replace /> : <VoyagePage />;
 }

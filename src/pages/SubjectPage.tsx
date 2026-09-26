@@ -7,7 +7,7 @@ import { biomesOf } from '../blocland/biomes';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Creature } from '../blocland/Creatures';
 import { questProgress } from '../blocland/exercises';
-import { isBiomeUnlocked } from '../blocland/world/archipelago';
+import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../blocland/world/archipelago';
 
 export function SubjectPage() {
   const { subject } = useParams();
@@ -63,29 +63,41 @@ export function SubjectPage() {
         <Icon name="map" /> Dans Blocland
       </h2>
       <p className="section-intro">
-        Les îles de {info.title.toLowerCase()} de l’aventure, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
+        Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
       </p>
-      <ul className="grid apps blocland-islands">
-        {biomesOf(subject as Subject).map((biome) => {
-          const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-          const stars = biome.exercises.reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
-          return (
-            <li key={biome.id}>
-              <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
-                <span className="app-icon">
-                  <Creature biome={biome.id} className="creature-small" />
-                </span>
-                <span className="app-title">{biome.name}</span>
-                <span className="app-desc">{biome.description}</span>
-                <span className={`tag${unlocked ? (stars ? ' tag-ok' : ' tag-new') : ''}`}>
-                  {unlocked ? (stars ? `${stars} étoile${stars > 1 ? 's' : ''}` : 'Nouveau') : 'Ouvrage à construire'}
-                </span>
-                <span className="tag tag-classe">Niveau {biome.classe}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      {ARCHIPELAGOS.map((a) => {
+        const islands = biomesOf(subject as Subject).filter((b) => b.classe === a.classe);
+        if (!islands.length) return null;
+        const reached = isArchipelagoReached(a.classe, state.village.bridges);
+        return (
+          <section key={a.classe} aria-labelledby={`matiere-archipel-${a.classe}`}>
+            <h3 id={`matiere-archipel-${a.classe}`} className="section-subtitle">
+              {archipelagoTitle(a.classe)}
+            </h3>
+            <ul className="grid apps blocland-islands">
+              {islands.map((biome) => {
+                const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+                const stars = biome.exercises.reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
+                return (
+                  <li key={biome.id}>
+                    <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+                      <span className="app-icon">
+                        <Creature biome={biome.id} className="creature-small" />
+                      </span>
+                      <span className="app-title">{biome.name}</span>
+                      <span className="app-desc">{biome.description}</span>
+                      <span className={`tag${unlocked ? (stars ? ' tag-ok' : ' tag-new') : ''}`}>
+                        {unlocked ? (stars ? `${stars} étoile${stars > 1 ? 's' : ''}` : 'Nouveau') : reached ? 'Ouvrage à construire' : 'Archipel à rejoindre'}
+                      </span>
+                      <span className="tag tag-classe">Niveau {biome.classe}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
     </>
   );
 }

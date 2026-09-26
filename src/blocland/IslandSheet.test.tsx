@@ -6,13 +6,18 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { getBiome } from './biomes';
 import { BloclandProvider } from './BloclandContext';
 import { usePlanBuilder } from './usePlanBuilder';
+import { useVehicleBuilder } from './useVehicleBuilder';
 import { planCells, plansFor } from './world/plans';
+import { VEHICLE_STAGES } from './world/vehicle';
 import { IslandSheet } from './IslandSheet';
+
+const onBoard = vi.fn();
 
 function Sheet({ biomeId, onClose, highlight }: { biomeId: string; onClose: () => void; highlight?: string }) {
   const biome = getBiome(biomeId)!;
   const builder = usePlanBuilder(biome.id);
-  return <IslandSheet biome={biome} builder={builder} onClose={onClose} highlight={highlight} />;
+  const ship = useVehicleBuilder(biome.id);
+  return <IslandSheet biome={biome} builder={builder} ship={ship} onBoard={onBoard} onClose={onClose} highlight={highlight} />;
 }
 
 function renderSheet(biomeId: string, onClose = () => {}, highlight?: string) {
@@ -68,6 +73,34 @@ it('le panneau pose les blocs du plan avec le bouton et affiche l’avancement',
   expect(saved.inventory.bois).toBe(cells.length - 1);
   expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
   expect(screen.getByText(/Bloc posé : 1 sur/)).toBeInTheDocument();
+});
+
+it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le bouton pour embarquer', async () => {
+  const [coque] = VEHICLE_STAGES;
+  renderSheet('plaine');
+  expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3 : La coque et la voile/)).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Avancement du Bloc-Navire' })).toHaveAttribute('aria-valuenow', '0');
+  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Basses Terres pour la voile.');
+  expect(screen.queryByRole('button', { name: /Embarquer/ })).not.toBeInTheDocument();
+  // Pas de section navire sur une île qui n'est pas un port.
+  expect(screen.queryByText(/Le Bloc-Navire —/, { selector: 'h3' })).toBeInTheDocument();
+  // Tout posé et trois Gardiens vaincus : on peut embarquer.
+  const plans = { [coque.id]: planCells(coque).map((c) => c.key) };
+  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans, bridges: ['foret-mine'] } }));
+  document.body.innerHTML = '';
+  renderSheet('plaine');
+  expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
+  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Collines du Large !');
+  await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Collines du Large/ }));
+  expect(onBoard).toHaveBeenCalledWith('5e', false);
+});
+
+it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
+  renderSheet('marche');
+  expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
+  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur Plaine des nombres');
+  expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
 
 it('l’ouvrage touché dans le monde est mis en avant dans la liste', () => {

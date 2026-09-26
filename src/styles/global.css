@@ -4064,3 +4064,88 @@ a.island-quest:focus-visible {
     animation: none;
   }
 }
+
+/* ---------- Les archipels et le Bloc-Navire ---------- */
+
+.biome-archipel {
+  margin: -0.4rem 0 1rem;
+  color: var(--muted);
+}
+
+.archipel {
+  margin-top: 1.5rem;
+}
+
+.archipel .section-title .tag {
+  margin-left: 0.6rem;
+  vertical-align: middle;
+}
+
+.archipel-locked .biome-map {
+  opacity: 0.7;
+}
+
+.ship-section {
+  margin-top: 1rem;
+}
+
+.ship-section.ship-ready {
+  border-left: 6px solid var(--yellow);
+  padding-left: 0.8rem;
+}
+
+.ship-purpose,
+.ship-guardians,
+.ship-wait {
+  margin: 0.5rem 0;
+}
+
+.ship-guardians svg {
+  vertical-align: -0.2em;
+}
+
+.ship-board {
+  margin-top: 0.6rem;
+}
+
+.ship-returns {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.voyage-panel {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+  text-align: center;
+  padding: 1.2rem;
+}
+
+.voyage-title {
+  margin: 0;
+}
+
+.voyage-ship {
+  max-width: 100%;
+  width: min(100%, 22rem);
+  height: auto;
+}
+
+.voyage-text {
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.voyage-arrive {
+  min-width: 12rem;
+}
+
+.voyage-sheet {
+  display: grid;
+  align-content: center;
+}
+

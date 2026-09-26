@@ -1,6 +1,8 @@
 // Les plans du village : un bâtiment en ruine par île, à reconstruire bloc par bloc.
 // Chaque plan est un fichier JSON (cellules relatives à la zone des plans de l'île).
 import type { BiomeId, BlockId } from '../biomes';
+import { dockOrigin } from './harbour';
+import { islandDef } from './map';
 import carriereAbri from './plans/carriere-abri.json';
 import carriereCour from './plans/carriere-cour.json';
 import carriereFour from './plans/carriere-four.json';
@@ -79,6 +81,8 @@ export interface PlanDef {
   reward: { xp: number; chest: Partial<Record<BlockId, number>> };
   /** Ce que dit la créature quand le plan est terminé. */
   done: string;
+  /** Où le plan se pose : dans la zone des plans de l'île (par défaut), ou sur le quai du port (le Bloc-Navire). */
+  zone?: 'plans' | 'port';
 }
 
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
@@ -158,13 +162,28 @@ export function getPlan(id: string): PlanDef | undefined {
 
 export const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
 
-/** Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). */
-export function planCells(plan: PlanDef): (PlanCell & { key: string })[] {
-  return plan.cells.map((c) => {
-    const x = PLAN_ZONE.x + plan.origin.x + c.x;
-    const y = PLAN_ZONE.y + plan.origin.y + c.y;
-    return { x, y, z: c.z, block: c.block, key: cellKey(x, y, c.z) };
+/**
+ * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (le Bloc-Navire)
+ * est relatif au coin du navire sur le quai, devant l'île, plus bas que le sol quand l'île est en altitude.
+ */
+export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanCell & { key: string })[] {
+  const o = planOrigin(plan);
+  return cells.map((c) => {
+    const x = o.x + c.x;
+    const y = o.y + c.y;
+    const z = o.z + c.z;
+    return { x, y, z, block: c.block, key: cellKey(x, y, z) };
   });
+}
+
+/** Le coin d'un plan en coordonnées relatives à l'île (x, y, et z relatif au sol : 0 = premier bloc sur le sol). */
+export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
+  if (plan.zone === 'port') {
+    const def = islandDef(plan.biome);
+    const o = dockOrigin(plan.biome);
+    return { x: o.x - def.core.x + plan.origin.x, y: o.y - def.core.y + plan.origin.y, z: o.z - def.altitude - 1 };
+  }
+  return { x: PLAN_ZONE.x + plan.origin.x, y: PLAN_ZONE.y + plan.origin.y, z: 0 };
 }
 
 /** Un plan est terminé quand toutes ses cellules sont posées. */

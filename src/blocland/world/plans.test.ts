@@ -2,12 +2,13 @@ import { BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, type BloclandState } from '../engine';
 import { PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
 import { groundHeight, islandOrigin, worldCubes } from './terrain';
+import { ARCHIPELAGO_IDS } from './map';
 
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
   // Le décor sans les créatures (elles se promènent) et sans les fantômes.
-  const decor = worldCubes({}, { plans: {}, journal: [], bridges: ['foret-mine', 'foret-ferme', 'mine-carriere', 'ferme-tour'] }, false).filter(
-    (c) => !c.ghost,
-  );
+  const decor = ARCHIPELAGO_IDS.flatMap((a) =>
+    worldCubes(a, {}, { plans: {}, journal: [], bridges: ['foret-mine', 'foret-ferme', 'mine-carriere', 'ferme-tour'] }, false),
+  ).filter((c) => !c.ghost);
   const at = new Set(decor.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((b, i) => {
     const plans = plansFor(b.id);
@@ -72,7 +73,7 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
 it('affiche les fantômes d’un plan seulement sur une île ouverte, et les remplace une fois posés', () => {
   const plan = plansFor('foret')[0];
   const first = planCells(plan)[0];
-  const cubes = worldCubes({}, { plans: { [plan.id]: [first.key] }, journal: [], bridges: [] });
+  const cubes = worldCubes('6e', {}, { plans: { [plan.id]: [first.key] }, journal: [], bridges: [] });
   // Les fantômes des plans (les ponts fantômes sont au niveau du sol, z = 0).
   const ghosts = cubes.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret');
   expect(ghosts.length).toBe(planCells(plan).length - 1);
@@ -106,13 +107,13 @@ it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournis
 
 it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant', () => {
   const [first, second] = plansFor('foret');
-  const none = worldCubes({}, { plans: {}, journal: [], bridges: [] });
+  const none = worldCubes('6e', {}, { plans: {}, journal: [], bridges: [] });
   expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(first).length);
   expect(activePlan('foret', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
   expect(activePlan('foret', doneFirst)).toBe(second);
-  const after = worldCubes({}, { plans: doneFirst, journal: [], bridges: [] });
+  const after = worldCubes('6e', {}, { plans: doneFirst, journal: [], bridges: [] });
   expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(second).length);
   expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'foret' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
 });

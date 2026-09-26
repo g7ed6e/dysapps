@@ -2,6 +2,16 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.9.0 — 26 septembre 2026
+
+**Quatre archipels et le Bloc-Navire.** Blocland devient quatre archipels, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e). On voit un archipel à la fois, avec sa mer et sa Carte. Les ouvrages ne relient plus que les îles d’un même archipel ; pour passer au suivant, on construit le **Bloc-Navire** au quai de l’île-port (des blocs à poser comme un plan, et des Gardiens à vaincre pour que la voile, le ballon puis le réacteur apparaissent), puis on embarque. On revient quand on veut, rien ne se perd.
+
+- Nouvelle section « Le Bloc-Navire » dans le panneau du port (3D) et sur sa page (vue simple) ; écran de voyage avec la phrase lue et un bouton « Arriver » (la cinématique viendra ensuite).
+- Vue simple : îles groupées par archipel, phrase pour un archipel fermé, prochain objectif et fête d’ouvrage comme en 3D ; pages Français et Maths groupées par archipel (« Archipel à rejoindre »).
+- Succès Capitaine, Aéronaute et Pilote du ciel ; tutoriel de six bulles.
+- Les anciennes sauvegardes gardent tout : un escalier ou un tunnel déjà construit vers une autre classe vaut le voyage correspondant.
+- Documentation : cadrage « Quatre archipels et le Bloc-Navire », manuel et questions mis à jour, pages des îles avec leur archipel et leur port, ouvrages groupés par archipel, table du Bloc-Navire.
+
 ## 0.8.0 — 26 septembre 2026
 
 **Succès : la progression par matière.** La page Succès montre maintenant un panneau par matière (Français, Maths) :
@@ -11,6 +21,7 @@ Chaque pull request monte la version mineure et ajoute ici une entrée, de la pl
 - une liste **À retravailler**, la quête la plus faible en premier, pour la relancer d’un geste. Elle contient les quêtes de Blocland déjà jouées qui n’ont pas trois étoiles, et les quêtes du portail dont le record est sous 70 %, cinq au plus.
 
 Voir [Progression et récompenses](manuel/progression.md#par-matiere-progresser-et-retravailler).
+
 
 ## 0.7.0 — 26 septembre 2026
 
