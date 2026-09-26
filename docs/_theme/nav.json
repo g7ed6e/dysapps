@@ -18,7 +18,10 @@
       "pages": [
         "pedagogie/principes.md",
         "pedagogie/archipel.md",
-        { "dir": "pedagogie/iles", "title": "Les îles, une par une" },
+        {
+          "dir": "pedagogie/iles",
+          "title": "Les îles, une par une"
+        },
         "pedagogie/homophones.md",
         "pedagogie/lecture.md",
         "pedagogie/maths-portail.md",
@@ -30,6 +33,7 @@
       "title": "Conception",
       "pages": [
         "conception/architecture.md",
+        "conception/style.md",
         "conception/exercices.md",
         "conception/deploiement.md",
         "conception/contribuer.md",
@@ -40,7 +44,9 @@
     },
     {
       "title": "Versions",
-      "pages": ["journal.md"]
+      "pages": [
+        "journal.md"
+      ]
     }
   ]
 }
