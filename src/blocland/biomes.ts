@@ -184,14 +184,14 @@ export const BIOMES: BiomeDef[] = [
     guardianSays: {
       hit: 'Mes branches tremblent. Tu as l’oreille fine.',
       miss: 'Ce n’est rien : même le vent se trompe de feuille. Continue.',
-      beaten: 'Je m’incline, bâtisseur·se. La forêt est à toi… et à Mousso.',
+      beaten: 'Je m’incline, bâtisseur. La forêt est à toi… et à Mousso.',
     },
     challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Montre-moi tout ce que tu sais faire. »',
     icon: 'tree',
     creature: {
       name: 'Mousso',
       species: 'golem de mousse',
-      greeting: 'Salut, bâtisseur·se ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
+      greeting: 'Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
       lines: [
         'Tu entends ? Le vent coupe les mots en syllabes.',
         'Ma cabane a besoin de bois. Viens chasser les sons !',
@@ -249,14 +249,14 @@ export const BIOMES: BiomeDef[] = [
     guardianSays: {
       hit: 'Je recule d’un pas. Ce mot était bien écrit.',
       miss: 'Le sable bouge, moi aussi. Réessaie au prochain mot.',
-      beaten: 'Je me couche sur la plage. Le chemin est libre, bâtisseur·se.',
+      beaten: 'Je me couche sur la plage. Le chemin est libre, bâtisseur.',
     },
     challenge: 'La Dune vivante siffle : « Chaque mot bien écrit me fait reculer. Écris juste, et je te laisserai passer. »',
     icon: 'mountain',
     creature: {
       name: 'Rouxel',
       species: 'renard cubique',
-      greeting: 'Hé, bâtisseur·se ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt·e ?',
+      greeting: 'Hé, bâtisseur ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt ?',
       lines: [
         'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
         'Mon four ! Il me faut du sable et deux pierres.',
@@ -295,7 +295,7 @@ export const BIOMES: BiomeDef[] = [
         'Mon étable, c’est de la terre et quatre poteaux de bois.',
         'Quand tout s’accorde, ça tient debout.',
       ],
-      home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur·se.',
+      home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur.',
     },
     exercises: [
       { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.' },
@@ -348,7 +348,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Coco',
       species: 'coccinelle à dix points',
       greeting:
-        'Bonjour, bâtisseur·se ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
+        'Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
       lines: [
         'Compte mes points par cinq : deux rangées de cinq, ça fait dix.',
         'Un nombre et son complément font toujours dix. Comme mes deux ailes.',
@@ -416,7 +416,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Lavi',
       species: 'salamandre de lave',
       greeting:
-        'Salut, bâtisseur·se ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
+        'Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
       lines: [
         'La virgule, c’est la frontière : à gauche les unités, à droite les dixièmes.',
         'Le plus long n’est pas le plus grand ! 3,5 bat 3,45.',
@@ -450,7 +450,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Frimas',
       species: 'pingouin comptable',
       greeting:
-        'Salut, bâtisseur·se ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
+        'Salut, bâtisseur ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
       lines: [
         'Moins cinq, c’est plus petit que moins deux. Plus on va à gauche, plus il fait froid.',
         'Soustraire, c’est ajouter l’opposé. Comme enlever un manteau.',
@@ -484,7 +484,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Bazar',
       species: 'raton laveur marchand',
       greeting:
-        'Bienvenue au marché, bâtisseur·se ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
+        'Bienvenue au marché, bâtisseur ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
       lines: [
         'Trois pommes, six euros. Une pomme ? Passe par un seul, toujours.',
         'Cinquante pour cent, c’est la moitié. Même pour les raisins.',
@@ -518,7 +518,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Sema',
       species: 'caméléon des panneaux',
       greeting:
-        'Salut, bâtisseur·se ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
+        'Salut, bâtisseur ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
       lines: [
         'Ses, ces, c’est, s’est : quatre routes, un seul bon chemin.',
         'Remplace par « avait » : si ça marche, c’est « a » sans accent.',
@@ -552,7 +552,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Kroa',
       species: 'triton des roseaux',
       greeting:
-        'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur·se ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
+        'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
       lines: [
         'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
         'Demain je nagerai. Si j’avais des ailes, je volerais.',
@@ -586,7 +586,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Braise',
       species: 'golem forgeron',
       greeting:
-        'Salut, bâtisseur·se ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
+        'Salut, bâtisseur ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
       lines: [
         '10⁶ : un million. Un 1 et six zéros, comme mes six enclumes.',
         '2³, c’est 2 × 2 × 2 = 8. Pas 6 ! Le marteau compte trois coups.',
@@ -620,7 +620,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Ixe',
       species: 'robot dessinateur',
       greeting:
-        'Bip. Bonjour, bâtisseur·se ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
+        'Bip. Bonjour, bâtisseur ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
       lines: [
         '3x + 5x = 8x. Trois blocs plus cinq blocs, huit blocs.',
         'Une équation, c’est une balance : même geste des deux côtés.',
@@ -654,7 +654,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Cléa',
       species: 'chèvre des cimes',
       greeting:
-        'Bêêê, bâtisseur·se ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
+        'Bêêê, bâtisseur ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
       lines: [
         'Les filles sont parties : avec être, le participe suit le sujet.',
         'Qui est-ce qui grimpe ? Voilà le sujet, voilà l’accord.',
@@ -688,7 +688,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Plume',
       species: 'pie collectionneuse',
       greeting:
-        'Bonjour, bâtisseur·se ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
+        'Bonjour, bâtisseur ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
       lines: [
         'Télé-phone : la voix, de loin. Deux morceaux, un mot.',
         'Une pluie de cadeaux ne mouille pas : c’est le sens figuré.',
@@ -722,7 +722,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Théo',
       species: 'héron géomètre',
       greeting:
-        'Bonjour, bâtisseur·se ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
+        'Bonjour, bâtisseur ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
       lines: [
         'Trois, quatre, cinq : le plus vieux triangle rectangle du monde.',
         'Deux droites parallèles, et les longueurs se multiplient par le même nombre.',
@@ -756,7 +756,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Stat',
       species: 'chouette astronome',
       greeting:
-        'Hou ! Bienvenue à l’observatoire, bâtisseur·se. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
+        'Hou ! Bienvenue à l’observatoire, bâtisseur. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
       lines: [
         'La moyenne : tout additionner, puis partager équitablement.',
         'La médiane coupe la série rangée en deux moitiés.',
@@ -789,7 +789,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Fi',
       species: 'lampe de phare vivante',
       greeting:
-        'Bonjour, bâtisseur·se ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
+        'Bonjour, bâtisseur ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
       lines: [
         'Entre x, sors f(x) : ma lumière fait pareil, elle transforme.',
         'Linéaire : la droite passe par l’origine. Affine : elle est décalée de b.',
@@ -822,7 +822,7 @@ export const BIOMES: BiomeDef[] = [
       name: 'Astra',
       species: 'luciole lectrice',
       greeting:
-        'Bonsoir, bâtisseur·se ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
+        'Bonsoir, bâtisseur ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
       lines: [
         'Un parapluie fermé et des cheveux mouillés : le texte n’a pas dit « pluie », et pourtant.',
         'Rapide comme l’éclair : le « comme » fait la comparaison.',

@@ -15,7 +15,7 @@ export function HomePage() {
     <>
       <section className="hero">
         <p className="hero-kicker">{firstTime ? 'Nouvelle partie' : `Rang ${rank.title}`}</p>
-        <h1 className="hero-title">{firstTime ? 'Prêt·e à jouer ?' : 'On reprend ?'}</h1>
+        <h1 className="hero-title">{firstTime ? 'Prêt à jouer ?' : 'On reprend ?'}</h1>
         <p className="hero-text">
           <Syllabified text="Choisis ton terrain. Pas de chrono, des jokers si tu bloques, et de l’XP à chaque réponse." />
         </p>
