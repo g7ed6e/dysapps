@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { AppUpdateBanner } from '../core/AppUpdateBanner';
+import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
 import { XpBar } from './XpBar';
@@ -12,6 +14,7 @@ export function Layout() {
   const { pathname } = useLocation();
   // Carte et îles de Blocland en 3D : le monde prend tout l'écran sous la barre du haut.
   const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname);
+  useEffect(() => startAppUpdates(), []);
 
   // Changer de page coupe la lecture vocale en cours.
   useEffect(() => stopSpeaking, [pathname]);
@@ -42,6 +45,7 @@ export function Layout() {
           </NavLink>
         </nav>
       </header>
+      <AppUpdateBanner />
       <Celebrations />
       <main id="contenu" className="content">
         <Outlet />

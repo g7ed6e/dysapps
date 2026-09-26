@@ -39,6 +39,7 @@ function securityHeaders(): Plugin {
 
 export default defineConfig({
   base,
+  define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.0.0') },
   build: {
     // Jamais d'inclusion en data: (la CSP n'autorise que les fichiers du site).
     assetsInlineLimit: 0,
@@ -47,12 +48,13 @@ export default defineConfig({
     react(),
     securityHeaders(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // La mise à jour est proposée (bande + bouton), jamais imposée en pleine partie.
+      registerType: 'prompt',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'DysApps – Entraînement collège',
         short_name: 'DysApps',
-        description: "Exercices adaptés aux élèves dys du collège (français et maths)",
+        description: 'Exercices adaptés aux élèves dys du collège (français et maths)',
         lang: 'fr',
         theme_color: '#6b4a2e',
         background_color: '#fbf6ea',
