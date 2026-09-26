@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
@@ -12,6 +12,8 @@ interface Props {
   island: BiomeId;
   /** Ouvrage construit : l'île d'en face s'ouvre (la caméra y vole, la créature accueille). */
   onBuilt?: (to: BiomeId) => void;
+  /** L'ouvrage touché dans le monde : on le fait voir en premier. */
+  highlight?: string | null;
 }
 
 /** « le pont », « l'escalier taillé »… */
@@ -25,12 +27,19 @@ function withArticle(kind: BridgeDef['kind']): string {
  * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
  * terminé, le tunnel et le col un Gardien vaincu. Un seul bouton par ouvrage ; ce qui manque est dit clairement.
  */
-export function Bridges({ island, onBuilt }: Props) {
+export function Bridges({ island, onBuilt, highlight = null }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
   // Le message d'un ouvrage construit ne suit pas sur une autre île.
   useEffect(() => setSaid(null), [island]);
+  // L'ouvrage touché dans le monde : on amène sa proposition sous les yeux.
+  const list = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    if (!highlight) return;
+    const el = list.current?.querySelector<HTMLElement>(`[data-bridge="${highlight}"]`);
+    el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }, [highlight, island]);
   const world = { progress: state.progress, plans: state.village.plans };
   const bridges = buildableBridges(state.village.bridges, island, world);
   const have = payableBlocks(state.inventory);
@@ -69,7 +78,7 @@ export function Bridges({ island, onBuilt }: Props) {
           Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire. Un ouvrage ouvre l’île d’en face.
         </p>
       )}
-      <ul className="island-actions bridges-list" aria-label="Ouvrages à construire">
+      <ul ref={list} className="island-actions bridges-list" aria-label="Ouvrages à construire">
         {bridges.map((b) => {
           const other = getBiome(otherEnd(b, island))!;
           const enough = have >= b.cost;
@@ -80,7 +89,12 @@ export function Bridges({ island, onBuilt }: Props) {
           // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
           if (!ready)
             return (
-              <li key={b.id} className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}`} aria-disabled="true">
+              <li
+                key={b.id}
+                data-bridge={b.id}
+                className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}
+                aria-disabled="true"
+              >
                 <span className="island-quest-icon bridge-icon">
                   <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
                 </span>
@@ -95,7 +109,7 @@ export function Bridges({ island, onBuilt }: Props) {
               </li>
             );
           return (
-            <li key={b.id} className={`island-quest bridge-item bridge-${b.kind}`}>
+            <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
               <span className="island-quest-icon bridge-icon">
                 <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
               </span>

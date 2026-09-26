@@ -46,7 +46,7 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
 it('une île fermée montre ses quêtes verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('mine', onClose);
-  expect(document.body.textContent).toContain('Construis d’abord un chemin');
+  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
   // Sans bloc : l'ouvrage est une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
   expect(screen.queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
   expect(document.body.textContent).toContain('Sentier vers Forêt des sons');

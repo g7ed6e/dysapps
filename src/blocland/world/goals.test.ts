@@ -1,5 +1,5 @@
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { nextGoal } from './goals';
+import { lockedHint, nextGoal } from './goals';
 import { planCells, plansFor } from './plans';
 import { overviewBounds, worldBounds } from './terrain';
 
@@ -24,4 +24,15 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
   expect(start.maxY - start.minY).toBeLessThan(all.maxY - all.minY);
   const later = overviewBounds(['foret-mine', 'mine-carriere']);
   expect(later.maxX).toBeGreaterThan(start.maxX);
+});
+
+it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
+  const fresh = sanitizeState({});
+  expect(lockedHint(fresh, 'mine')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
+  expect(lockedHint(fresh, 'carrefour')).toBe(
+    'Pas si vite ! Pour venir ici, construis l’escalier taillé depuis Forêt des sons : 5 blocs. Il faut aussi un premier plan terminé de l’autre côté.',
+  );
+  // La Carrière est à deux ouvrages : il faut d'abord ouvrir la Mine.
+  expect(lockedHint(fresh, 'carriere')).toBe('Pas si vite ! Ouvre d’abord Mine des lettres : de là, un ouvrage mène jusqu’ici.');
+  expect(lockedHint(sanitizeState({ village: { bridges: ['foret-mine'] } }), 'carriere')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
 });

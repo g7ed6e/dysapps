@@ -48,8 +48,10 @@ export interface WorldCanvasProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
-  /** Île touchée (un tap, pas un glissé), sur l'île elle-même ou sur le pont qui y mène. */
+  /** Île touchée (un tap, pas un glissé), sur l'île elle-même. */
   onPickIsland?: (id: BiomeId) => void;
+  /** Ouvrage touché (construit ou fantôme) : son identifiant. */
+  onPickBridge?: (id: string) => void;
   /** Mode chantier : on touche une face (un fantôme du plan) au lieu d'entrer dans l'île. */
   build?: BuildProps;
   /** Les créatures, animées à part du terrain. */
@@ -195,6 +197,7 @@ export default function WorldCanvas({
   focus,
   reduceMotion = false,
   onPickIsland,
+  onPickBridge,
   build,
   creatures = [],
   onPickCreature,
@@ -227,6 +230,15 @@ export default function WorldCanvas({
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
+  const pickBridgeRef = useRef(onPickBridge);
+  pickBridgeRef.current = onPickBridge;
+  // Les cubes des ouvrages, par case : pour savoir quel ouvrage on touche.
+  const bridgeCells = useRef(new Map<string, string>());
+  useEffect(() => {
+    const m = new Map<string, string>();
+    for (const c of cubes) if (c.bridge) m.set(`${c.x},${c.y},${c.z}`, c.bridge);
+    bridgeCells.current = m;
+  }, [cubes]);
   const buildRef = useRef(build);
   buildRef.current = build;
   const creatureRef = useRef(onPickCreature);
@@ -515,10 +527,12 @@ export default function WorldCanvas({
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!hit) return;
-      if (buildRef.current) {
-        const { cell, next } = cellsOf(hit);
-        buildRef.current.onPickFace(cell, next);
-      } else pickRef.current?.(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
+      const { cell, next } = cellsOf(hit);
+      // Un ouvrage (construit ou fantôme) : sa proposition, plutôt que l'île la plus proche.
+      const bridgeId = bridgeCells.current.get(`${cell.x},${cell.y},${cell.z}`);
+      if (bridgeId && pickBridgeRef.current) return pickBridgeRef.current(bridgeId);
+      if (buildRef.current) buildRef.current.onPickFace(cell, next);
+      else pickRef.current?.(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
     };
     const onHover = (e: PointerEvent) => {
       if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current && !creatureRef.current)) return;

@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, getBiome, ofBlock } from './biomes';
 import { Bridges } from './Bridges';
+import { lockedHint } from './world/goals';
 import { isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
@@ -34,10 +35,7 @@ export function BiomePage() {
         <Icon name={biome.icon} /> {biome.name}
       </h1>
 
-      <CreatureBubble
-        biome={biome}
-        text={unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.`}
-      />
+      <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
       <Bridges island={biome.id} />
 
