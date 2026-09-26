@@ -1,0 +1,111 @@
+{
+  "id": "chateau-tour",
+  "biome": "chateau",
+  "name": "La tour de Knight",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "taille"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "taille"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "taille"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "antenne": 3,
+      "porte": 1,
+      "toit": 10,
+      "lanterne": 1
+    }
+  },
+  "done": "Ma tour ! Thank you, bâtisseur. If I were a king, I would live here."
+}

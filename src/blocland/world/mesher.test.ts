@@ -54,7 +54,7 @@ it('le village entier, tout construit, reste dans le budget de faces des tablett
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
   for (const a of ARCHIPELAGO_IDS) {
     const groups = buildMesh(worldCubes(a, progress, { plans, journal: [], bridges }));
-    // Un archipel à la fois (huit îles au plus, avec leur terre, leur relief, leur roche flottante, le quai et le navire) :
+    // Un archipel à la fois (dix îles au plus, avec leur terre, leur relief, leur roche flottante, le quai et le navire) :
     // sous les 30 000 faces, à l'aise pour une tablette.
     expect(faceCount(groups), a).toBeLessThan(30000);
     // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : une centaine d'appels de dessin.

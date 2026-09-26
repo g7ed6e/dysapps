@@ -29,6 +29,8 @@ export type TextureKind =
   | 'lambris'
   | 'velours'
   | 'rail'
+  | 'antenne'
+  | 'taille'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -228,6 +230,16 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   rail: {
     top: (x, y, r) => (x === 4 || x === 11 ? [150, 160, 170] : y % 4 < 2 ? grain('#6f4d2a', '#85603a')(x, y, r) : grain('#8a8a8a', '#a0a0a0')(x, y, r)),
     side: (x, y, r) => (x % 4 === 0 && y % 4 === 0 ? [150, 160, 170] : grain('#4a4a50', '#5c5c64')(x, y, r)),
+  },
+  // Antenne : treillis d'acier clair, croisillons sombres ; un voyant rouge au milieu du dessus.
+  antenne: {
+    top: (x, y, r) => ((x === 7 || x === 8) && (y === 7 || y === 8) ? [230, 60, 50] : (x + y) % 5 === 0 ? [70, 76, 84] : grain('#9aa4ae', '#b4bcc4')(x, y, r)),
+    side: (x, y, r) => ((x + y) % 5 === 0 || (x - y + 20) % 5 === 0 ? [70, 76, 84] : grain('#9aa4ae', '#b4bcc4')(x, y, r)),
+  },
+  // Pierre de taille : grands blocs beiges bien équarris, joints en quinconce.
+  taille: {
+    top: (x, y, r) => (x % 8 === 0 || y % 8 === 0 ? [150, 138, 116] : grain('#d8ccb0', '#e6dcc4')(x, y, r)),
+    side: (x, y, r) => (y % 5 === 4 || (x + (Math.floor(y / 5) % 2 ? 8 : 0)) % 16 === 0 ? [150, 138, 116] : grain('#d8ccb0', '#e6dcc4')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

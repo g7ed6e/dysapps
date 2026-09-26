@@ -99,6 +99,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.lambris.side]: 'lambris',
   [BLOCKS.velours.side]: 'velours',
   [BLOCKS.rail.side]: 'rail',
+  [BLOCKS.antenne.side]: 'antenne',
+  [BLOCKS.taille.side]: 'taille',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -616,6 +618,23 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     for (let z = 1; z <= 3; z++) put(12, 3, h(12, 3) + z, DARK);
     put(12, 3, h(12, 3) + 4, BLOCKS.lanterne.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.rail.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  studio: (put, h) => {
+    // Un mât d'antenne sur un socle de pierre, un voyant au sommet ; une antenne tombée au sol.
+    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
+    for (let z = 2; z <= 5; z++) put(9, 3, h(9, 3) + z, BLOCKS.antenne.side);
+    put(9, 3, h(9, 3) + 6, BLOCKS.lanterne.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.antenne.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  chateau: (put, h) => {
+    // Une tourelle de pierre de taille, deux créneaux, une bannière d'or au sommet ; un bloc de taille au sol.
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS.taille.side);
+    put(8, 3, h(8, 3) + 1, BLOCKS.taille.side);
+    put(10, 3, h(10, 3) + 1, BLOCKS.taille.side);
+    put(9, 3, h(9, 3) + 5, BLOCKS.or.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.taille.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };

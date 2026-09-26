@@ -101,6 +101,19 @@ import gareModaux1 from './data/gare-modaux-1.json';
 import gareModaux2 from './data/gare-modaux-2.json';
 import garePresentPerfect1 from './data/gare-present-perfect-1.json';
 import garePresentPerfect2 from './data/gare-present-perfect-2.json';
+// Anglais 3e.
+import studioComprendre1 from './data/studio-comprendre-1.json';
+import studioComprendre2 from './data/studio-comprendre-2.json';
+import studioConnecteurs1 from './data/studio-connecteurs-1.json';
+import studioConnecteurs2 from './data/studio-connecteurs-2.json';
+import studioFauxAmis1 from './data/studio-faux-amis-1.json';
+import studioFauxAmis2 from './data/studio-faux-amis-2.json';
+import chateauForSince1 from './data/chateau-for-since-1.json';
+import chateauForSince2 from './data/chateau-for-since-2.json';
+import chateauIf1 from './data/chateau-if-1.json';
+import chateauIf2 from './data/chateau-if-2.json';
+import chateauPassif1 from './data/chateau-passif-1.json';
+import chateauPassif2 from './data/chateau-passif-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -248,6 +261,18 @@ export const EXERCISES: ExerciseDef[] = [
   gareModaux2,
   garePresentPerfect1,
   garePresentPerfect2,
+  studioComprendre1,
+  studioComprendre2,
+  studioConnecteurs1,
+  studioConnecteurs2,
+  studioFauxAmis1,
+  studioFauxAmis2,
+  chateauForSince1,
+  chateauForSince2,
+  chateauIf1,
+  chateauIf2,
+  chateauPassif1,
+  chateauPassif2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

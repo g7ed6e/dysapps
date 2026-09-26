@@ -1,0 +1,111 @@
+{
+  "id": "studio-regie",
+  "biome": "studio",
+  "name": "La régie d’Écho",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "block": "antenne"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "block": "antenne"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "block": "antenne"
+    }
+  ],
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "taille": 3,
+      "porte": 1,
+      "toit": 10,
+      "lanterne": 1
+    }
+  },
+  "done": "Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un…"
+}
