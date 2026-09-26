@@ -1,4 +1,5 @@
 import type { Question } from '../../components/QuizSession';
+import { placeChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from './aids';
 import { formatNumber as f } from './format';
@@ -209,13 +210,17 @@ export function buildQuest(generators: Generator[], count = QUESTIONS_PER_QUEST,
     seen.add(q.key);
     out.push(q);
   }
-  return shuffle(out, rng);
+  // La bonne réponse change de place d'une question à l'autre (nombres toujours rangés).
+  return placeChoices(shuffle(out, rng), rng);
 }
 
 /** Entraînement ciblé : la table complète de t (× 1 à × 10), dans le désordre. */
 export function tableQuest(t: number, rng: Rng = Math.random): Question[] {
-  return shuffle(
-    Array.from({ length: 10 }, (_, i) => multiplication(t, i + 1, rng() < 0.3, rng)),
+  return placeChoices(
+    shuffle(
+      Array.from({ length: 10 }, (_, i) => multiplication(t, i + 1, rng() < 0.3, rng)),
+      rng,
+    ),
     rng,
   );
 }

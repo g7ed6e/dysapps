@@ -24,7 +24,7 @@ function expected(id: string, prompt: string, choices: string[]): string {
   if ((m = prompt.match(/^(\d+)\/(\d+) de (\d+) = …$/))) return String((Number(m[1]) * Number(m[3])) / Number(m[2]));
   if ((m = prompt.match(/: (\d+\/\d+) ou (\d+\/\d+) \?$/))) {
     const [a, b] = [val(m[1]), val(m[2])];
-    return a === b ? choices[2] : a > b ? m[1] : m[2];
+    return a === b ? choices.find((c) => !/\d/.test(c))! : a > b ? m[1] : m[2];
   }
   throw new Error(`Question inconnue : ${id}`);
 }

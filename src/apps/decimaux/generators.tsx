@@ -1,6 +1,7 @@
 import type { Question } from '../../components/QuizSession';
 import type { QuestDef } from '../../components/QuestMenu';
 import { GraduatedLine } from '../../components/math/FractionFigures';
+import { placeChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import { NumberLineJumps } from '../tables/aids';
 import { DecimalTable } from './DecimalTable';
@@ -200,7 +201,8 @@ export function buildQuest(generators: Generator[], rng: Rng = Math.random, coun
     seen.add(q.key);
     out.push(q);
   }
-  return shuffle(out, rng);
+  // La bonne réponse change de place d'une question à l'autre (nombres toujours rangés).
+  return placeChoices(shuffle(out, rng), rng);
 }
 
 export const QUESTS: (QuestDef & { makeWith: (rng: Rng) => Question[] })[] = [

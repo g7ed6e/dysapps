@@ -4,6 +4,7 @@ import { BIOMES, type BiomeDef, type BiomeId } from './biomes';
 import { levelFor, type BloclandState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, pickExercise } from './exercises';
+import { runItems } from './exercises/run';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
 
 import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten } from './bossCore';
@@ -47,7 +48,8 @@ export function bossesBeaten(progress: Record<string, { stars: number }>): Biome
 
 /**
  * Construit le défi : pour chaque type de quête, deux manches tirées d'un exercice au niveau de l'élève
- * (des items différents pour chaque manche ; un texte entier pour les types « tout sur un écran »).
+ * (des items différents pour chaque manche ; un texte entier pour les types « tout sur un écran »). Les items sont
+ * ceux d'une partie tirée au hasard : d'autres nombres, d'autres mots, et des réponses qui changent de place.
  */
 export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number = Math.random): ExerciseDef {
   const rounds: BossRound[] = [];
@@ -55,13 +57,14 @@ export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number
     const def = pickExercise(biome.id, type, levelFor(state, type), state.progress);
     if (!def) continue;
     const batch = SCREEN_TYPES[type]?.batch ?? 1;
+    const items = runItems(def, `${def.id}#gardien${Math.floor(rng() * 2 ** 32).toString(36)}`);
     if (batch === 'all') {
-      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, items: def.items, wrong: def.feedback.wrong });
+      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, items, wrong: def.feedback.wrong });
       continue;
     }
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
     const screens: ExerciseItem[][] = [];
-    for (let i = 0; i + batch <= def.items.length; i += batch) screens.push(def.items.slice(i, i + batch));
+    for (let i = 0; i + batch <= items.length; i += batch) screens.push(items.slice(i, i + batch));
     for (let i = screens.length - 1; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       [screens[i], screens[j]] = [screens[j], screens[i]];

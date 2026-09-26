@@ -26,7 +26,7 @@ function expected(id: string, prompt: string, choices: string[]): string {
   }
   if ((m = p.match(/^Quel est le plus grand : ([\d,]+) ou ([\d,]+) \?$/))) {
     const [a, b] = [parseDecimal(m[1]), parseDecimal(m[2])];
-    return a === b ? choices[2] : a > b ? m[1] : m[2];
+    return a === b ? choices.find((c) => !/\d/.test(c))! : a > b ? m[1] : m[2];
   }
   if ((m = id.match(/^droite-(\d+)$/))) return formatDecimal(Number(m[1]));
   if ((m = p.match(/^(\d+)\/(\d+) = …$/))) return formatDecimal((Number(m[1]) * 1000) / Number(m[2]));

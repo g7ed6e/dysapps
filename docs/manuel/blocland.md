@@ -43,7 +43,7 @@ Chaque île propose deux ou trois **quêtes**. Une partie enchaîne les items d�
 
 Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite, trois à partir de 90 %. La meilleure est gardée. Le score compte un point par item trouvé du premier coup et un demi-point avec une aide ou après une erreur.
 
-**Chaque partie change** : d’autres nombres en maths, un autre tirage de mots en français. Le **niveau** de chaque quête s’adapte à l’élève : il monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, sans jamais l’afficher comme une baisse. À niveau égal, l’exercice le moins joué est proposé.
+**Chaque partie change**, dès la première et même quand on recommence le jeu depuis le début : d’autres nombres en maths (école et collège), un autre tirage de mots en français, dans un autre ordre. La **place de la bonne réponse** change aussi : sur une partie, elle est autant de fois à gauche, au milieu ou à droite, et d’une partie à l’autre un même mot n’a pas sa réponse au même endroit. En maths, les nombres restent rangés dans l’ordre croissant ; ce sont les pièges proposés qui changent (1-2-3, 2-3-4 ou 3-4-5 syllabes, par exemple). Le **niveau** de chaque quête s’adapte à l’élève : il monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, sans jamais l’afficher comme une baisse. À niveau égal, l’exercice le moins joué est proposé.
 
 Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) et sortent après trois réussites d’affilée.
 
@@ -94,7 +94,7 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 
 Chaque île a un **Gardien** (le Grand Chêne, le Golem de roche, le Hanneton de bronze…). Il accepte le défi quand **chaque quête de l’île a au moins deux étoiles** ; tant que ce n’est pas le cas, la page de l’île dit ce qui manque.
 
-Le défi enchaîne **deux manches de chaque quête** de l’île, tirées d’exercices au niveau de l’élève, avec leurs écrans et leurs corrections habituels, **sans chrono**. Dans l’arène, le Gardien est une grande créature en cubes qui respire ; sa **jauge de résistance** baisse à chaque épreuve réussie (il n’y a jamais de jauge pour l’élève). Il s’incline quand on réussit, gronde doucement quand on rate, dit une réplique à chaque épreuve, s’écroule quand il est vaincu. Tambour à l’entrée, fanfare à la victoire ; « Réduire les animations » neutralise le tout.
+Le défi enchaîne **deux manches de chaque quête** de l’île, tirées au hasard d’exercices au niveau de l’élève (d’autres questions et d’autres places de réponse à chaque défi), avec leurs écrans et leurs corrections habituels, **sans chrono**. Dans l’arène, le Gardien est une grande créature en cubes qui respire ; sa **jauge de résistance** baisse à chaque épreuve réussie (il n’y a jamais de jauge pour l’élève). Il s’incline quand on réussit, gronde doucement quand on rate, dit une réplique à chaque épreuve, s’écroule quand il est vaincu. Tambour à l’entrée, fanfare à la victoire ; « Réduire les animations » neutralise le tout.
 
 **L’îlot du Gardien** apparaît devant l’île dès que le Gardien accepte le défi : une petite île ronde au sol de son île (herbe, neige, basalte…), bordée de sable au bord de la mer, avec quelques touches de son décor. Au milieu, le Gardien se dresse sur une **arène** pavée de pierre, bordée de galet. Des **pas japonais**, pierres posées dans l’eau, relient l’îlot à la côte de l’île. Dans les archipels en altitude, l’îlot flotte sur sa roche, comme les îles.
 

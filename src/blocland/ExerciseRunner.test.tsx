@@ -8,6 +8,16 @@ import { BloclandProvider } from './BloclandContext';
 import { getExercise } from './exercises';
 import { runItems, runSeed } from './exercises/run';
 
+// La graine d'une partie est tirée au hasard : ici, on la fixe pour savoir quels items le test doit jouer.
+const partie = vi.hoisted(() => ({ n: 0 }));
+vi.mock('./exercises/run', async (original) => ({
+  ...(await original<typeof import('./exercises/run')>()),
+  runSeed: (def: { id: string }) => `${def.id}#test${partie.n}`,
+}));
+beforeEach(() => {
+  partie.n = 0;
+});
+
 function renderAt(path: string) {
   return render(
     <SettingsProvider>
@@ -25,9 +35,9 @@ function renderAt(path: string) {
 const DEF = getExercise('foret-echauffement-001')!;
 
 /** Joue l'exercice en entier : `wrongAt` = index des items à rater volontairement. */
-async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = [], attempts = 0) {
-  // Les items de cette partie (la première joue le lot de référence, les suivantes varient).
-  const items = runItems(DEF, runSeed(DEF, attempts));
+async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = []) {
+  // Les items de la partie en cours (même graine que l'écran).
+  const items = runItems(DEF, runSeed(DEF));
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const choices = item.choices as string[];
@@ -38,6 +48,7 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
     await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
+  return items;
 }
 
 it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles sur la page du biome', async () => {
@@ -47,7 +58,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
   expect(screen.getByText(DEF.instruction)).toBeInTheDocument();
 
-  await play(user, [1]);
+  const items = await play(user, [1]);
   expect(screen.getByRole('heading', { name: 'Bien joué !' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: '2 étoiles sur 3' })).toBeInTheDocument();
   expect(screen.getByText('+6')).toBeInTheDocument(); // 3 blocs × 5/6 arrondi, +1 pour deux étoiles, +2 première fois
@@ -59,7 +70,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(saved.inventory.bois).toBe(6);
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
-  expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${DEF.items[1].key}`);
+  expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${items[1].key}`);
   // L'XP alimente aussi les rangs communs.
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).sessionsCompleted).toBe(1);
 
@@ -74,9 +85,10 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   renderAt('/aventure/foret/abattage');
   for (let round = 1; round <= 3; round++) {
     // Une erreur par partie : on reste au niveau 1 (une partie quasi parfaite ferait monter au niveau 2, un autre exercice).
-    await play(user, [0], round - 1);
+    await play(user, [0]);
     if (round < 3) {
       expect(screen.queryByText(/Belle séance/)).not.toBeInTheDocument();
+      partie.n = round;
       await user.click(screen.getByRole('button', { name: /Rejouer/ }));
     }
   }

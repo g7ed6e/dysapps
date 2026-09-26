@@ -54,8 +54,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const sectionRef = useRef<HTMLElement>(null);
 
   const type = SCREEN_TYPES[def.type];
-  // La graine est fixée au démarrage de la partie (le nombre de parties change à la fin, pas les items en cours).
-  const [seed] = useState(() => runSeed(def, state.progress[def.id]?.attempts ?? 0));
+  // La graine est tirée au hasard au démarrage de la partie, puis fixée : les items ne changent pas en cours de partie.
+  const [seed] = useState(() => runSeed(def));
   const screens = screensOf(def, seed);
   const items = screens[index];
 

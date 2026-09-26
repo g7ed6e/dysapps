@@ -1,4 +1,4 @@
-// Quêtes de maths du collège (cycle 4) : générateurs reproductibles qui produisent directement des items Blocland,
+// Quêtes de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
@@ -17,11 +17,30 @@ export const par = (n: number): string => (n < 0 ? `(${fmt(n)})` : fmt(n));
 /** Version lue à voix haute : « moins 7 ». */
 export const say = (n: number): string => (n < 0 ? `moins ${-n}` : String(n));
 
-/** 4 réponses (la bonne + 3 pièges), sans doublon, rangées de la plus petite à la plus grande. */
+/**
+ * 4 réponses (la bonne + 3 pièges), sans doublon, rangées de la plus petite à la plus grande. La place de la bonne
+ * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut.
+ */
 export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt): string[] {
   const pool = [...new Set(traps)].filter((t) => Number.isFinite(t) && t !== answer);
-  const picked = shuffle(pool, rng).slice(0, 3);
-  for (let d = 1; picked.length < 3; d++) for (const t of [answer + d, answer - d]) if (!picked.includes(t) && picked.length < 3) picked.push(t);
+  const below = shuffle(
+    pool.filter((t) => t < answer),
+    rng,
+  );
+  const above = shuffle(
+    pool.filter((t) => t > answer),
+    rng,
+  );
+  const wanted = randomInt(0, 3, rng);
+  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
+  // Pas assez de pièges du côté voulu : ceux de l'autre côté, puis des voisins (positifs si la réponse l'est).
+  for (const t of [...below.slice(wanted), ...above.slice(3 - wanted)]) if (picked.length < 3) picked.push(t);
+  const sides = wanted > 0 ? [-1, 1] : [1, -1];
+  for (let d = 1; picked.length < 3; d++)
+    for (const side of sides) {
+      const t = answer + side * d;
+      if (!picked.includes(t) && picked.length < 3 && (t > 0 || answer <= 0)) picked.push(t);
+    }
   return [answer, ...picked].sort((a, b) => a - b).map(format);
 }
 
@@ -57,6 +76,8 @@ export function defineData({ biome, type, level, instruction, generators, block 
     level,
     instruction,
     items: buildDataItems(id, generators),
+    // Chaque partie tire d'autres nombres : la graine change à chaque partie.
+    generate: (seed) => buildDataItems(seed, generators),
     feedback: { correct: 'Bien calculé !', wrong: '{explanation}' },
     reward: { block, amount: 4, xp: 14 },
     adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
