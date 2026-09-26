@@ -42,7 +42,7 @@ Aucune permission par défaut, actions épinglées par SHA et mises à jour par 
 
 Réglage à faire une seule fois dans le dépôt : **Settings → Pages → Source : GitHub Actions**.
 
-Cloudflare Workers construit l’application de son côté à partir de `main`, avec `npm run build`. Son clone est superficiel : le calcul de la version récupère l’historique et les étiquettes (`git fetch --unshallow --tags`) avant de compter.
+Cloudflare Workers construit l’application de son côté à partir de `main`, avec `npm run build`, puis la publie avec `npx wrangler deploy`. `wrangler.jsonc` décrit la publication : le Worker `dysapps`, le dossier `dist/` servi tel quel, toute adresse inconnue renvoyée vers l’application (`single-page-application`), l’adresse `*.workers.dev` et les adresses d’aperçu. Sans ce fichier, wrangler se configurait lui-même à chaque publication et reconstruisait l’application une seconde fois. Son clone est superficiel : le calcul de la version récupère l’historique et les étiquettes (`git fetch --unshallow --tags`) avant de compter.
 
 ## Version
 
