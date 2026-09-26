@@ -1,6 +1,4 @@
-# Journal des versions
-
-Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
+<!-- Entrées du journal antérieures aux fragments (0.14.0 et avant) : texte figé, ajouté tel quel sous les entrées générées. -->
 
 ## 0.14.0 — 26 septembre 2026
 

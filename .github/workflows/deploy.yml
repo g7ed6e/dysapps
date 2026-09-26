@@ -23,13 +23,15 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       # Actions épinglées par SHA (mises à jour par Dependabot).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # Tout l'historique : la vérification de version compare avec la branche de base,
-          # et la documentation date chaque page de son dernier commit.
+          # Tout l'historique et les étiquettes : la version se calcule depuis la dernière étiquette vX.Y.Z,
+          # le journal compare avec la branche de base, et la documentation date chaque page de son dernier commit.
           fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -40,16 +42,17 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Vérifier les signatures des paquets npm
         run: npm audit signatures
-      # Chaque pull request monte la version mineure : chaque build publié porte un numéro nouveau.
-      - name: Vérifier l'incrément de version
+      # La version se calcule depuis git (scripts/version.mjs, façon GitVersion) : aucune pull request ne l'écrit.
+      # Sur une pull request, c'est la version qu'aura main après la fusion.
+      - name: Calculer la version
+        id: version
+        run: echo "version=$(node scripts/version.mjs)" >> "$GITHUB_OUTPUT"
+      # Chaque pull request décrit ce qu'elle change dans un fragment du journal (docs/_journal/<nom>.md).
+      - name: Vérifier le journal de la documentation
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: npm run version:check -- "origin/$BASE_REF"
-      # … et décrit sa version dans docs/journal.md.
-      - name: Vérifier le journal de la documentation
-        if: github.event_name == 'pull_request'
-        run: npm run docs:check
+        run: npm run docs:check -- "origin/$BASE_REF"
       - run: npm test
       # L'application, telle que Cloudflare la construit (base « / ») : vérification seulement, rien n'est publié d'ici.
       - run: npm run build
@@ -61,6 +64,31 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           path: dist-docs
+
+  # Pose l'étiquette vX.Y.Z sur le commit publié : repère lisible dans l'historique, et point d'ancrage court
+  # pour le calcul des versions suivantes. N'exécute aucun code du dépôt (appel à l'API seulement).
+  tag:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Étiqueter la version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Version inattendue : $VERSION"; exit 1
+          fi
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v$VERSION" --silent 2>/dev/null; then
+            echo "v$VERSION existe déjà."
+          else
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/v$VERSION" -f sha="$GITHUB_SHA" --silent
+            echo "Étiquette v$VERSION posée sur $GITHUB_SHA."
+          fi
 
   deploy:
     if: github.ref == 'refs/heads/main'

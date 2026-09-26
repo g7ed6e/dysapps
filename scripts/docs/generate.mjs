@@ -3,6 +3,7 @@
 // Le code source est chargé par Vite (TypeScript, JSON, JSX), comme le fait l'application.
 import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
+import { appVersion } from '../version.mjs';
 
 const root = process.cwd();
 
@@ -36,9 +37,8 @@ export async function generatePages() {
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
-    const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
     const data = {
-      version: pkg.version,
+      version: appVersion(root),
       BIOMES: biomesMod.BIOMES,
       BLOCKS: biomesMod.BLOCKS,
       EXERCISES: exercisesMod.EXERCISES,

@@ -2,6 +2,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { appVersion } from './scripts/version.mjs';
 
 // Deux cibles de déploiement :
 // - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
@@ -39,7 +40,8 @@ function securityHeaders(): Plugin {
 
 export default defineConfig({
   base,
-  define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.0.0') },
+  // La version se déduit de l'historique git (scripts/version.mjs) : aucune pull request ne l'écrit.
+  define: { __APP_VERSION__: JSON.stringify(appVersion()) },
   build: {
     // Jamais d'inclusion en data: (la CSP n'autorise que les fichiers du site).
     assetsInlineLimit: 0,

@@ -1,24 +1,41 @@
-// Vérifie que la documentation suit la version : chaque pull request monte la version mineure
-// (npm run version:minor) et doit décrire ce qu'elle change dans docs/journal.md, sous un titre « ## <version> ».
-// Le build de la doc (npm run docs:build) vérifie de son côté que toutes les pages du sommaire existent.
-// Usage : node scripts/docs/check.mjs
+// Vérifie, sur une pull request, qu'elle décrit ce qu'elle change dans le journal des versions : elle ajoute un
+// fragment docs/_journal/<nom>.md (le texte de l'entrée, sans titre de version : la version se calcule à la
+// fusion, voir scripts/version.mjs). Le build de la doc (npm run docs:build) vérifie de son côté que toutes les
+// pages du sommaire existent.
+// Usage : node scripts/docs/check.mjs [ref de base]   (par défaut origin/main)
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fragmentNames, JOURNAL_DIR } from './journal.mjs';
 
-const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
-const journal = readFileSync('docs/journal.md', 'utf8');
+const base = process.argv[2] ?? 'origin/main';
 const errors = [];
 
-const escaped = version.replace(/\./g, '\\.');
-if (!new RegExp(`^## ${escaped}(\\s|$)`, 'm').test(journal)) {
-  errors.push(`docs/journal.md n'a pas d'entrée pour la version ${version} : ajouter un titre « ## ${version} — <date> » en tête du journal, avec ce que change la pull request.`);
+/** Fragments déjà présents sur la base (aucun si le dossier n'y existe pas encore). */
+function namesOnBase() {
+  try {
+    return execFileSync('git', ['ls-tree', '--name-only', `${base}:${JOURNAL_DIR}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+      .split('\n')
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 }
-const first = /^## (\d+\.\d+\.\d+)/m.exec(journal);
-if (first && first[1] !== version) {
-  errors.push(`La première entrée de docs/journal.md est ${first[1]} ; la version courante ${version} doit être en tête (les entrées vont de la plus récente à la plus ancienne).`);
+
+// Fragments ajoutés par la pull request (commités ou non) par rapport à la base.
+const onBase = new Set(namesOnBase());
+const added = fragmentNames().filter((n) => !onBase.has(n));
+if (added.length === 0) {
+  errors.push(`Aucun fragment nouveau dans ${JOURNAL_DIR}/ : ajouter un fichier ${JOURNAL_DIR}/<nom-de-la-branche>.md qui dit, pour l'élève ou pour le contenu, ce que change la pull request (sans titre de version).`);
+}
+for (const name of fragmentNames()) {
+  const body = readFileSync(join(JOURNAL_DIR, name), 'utf8').trim();
+  if (!body) errors.push(`${JOURNAL_DIR}/${name} est vide.`);
+  if (/^#{1,2}\s/m.test(body)) errors.push(`${JOURNAL_DIR}/${name} ne doit pas avoir de titre « # » ou « ## » : le titre de version est ajouté au build.`);
 }
 
 if (errors.length) {
   for (const e of errors) console.error(`✗ ${e}`);
   process.exit(1);
 }
-console.log(`✓ docs/journal.md décrit la version ${version}`);
+console.log(`✓ Journal : ${added.map((n) => `${JOURNAL_DIR}/${n}`).join(', ')}`);

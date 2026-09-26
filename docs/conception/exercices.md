@@ -81,7 +81,7 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 - **Une quête** : ajouter son entrée dans `exercises` de l’île (`biomes.ts`), écrire au moins un exercice, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`.
 - **Une île** : une entrée dans `BIOMES` (créature, Gardien, bloc, quêtes), un bloc et sa texture si nécessaire, sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans dans `world/plans/`, ses exercices. Les cadrages [du monde](cadrage-monde.md) et [du collège](cadrage-college.md) donnent les décisions déjà prises.
 
-Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvrages, barème) se met à jour toute seule au build ; le manuel et le journal des versions se mettent à jour à la main. Voir [Contribuer](contribuer.md).
+Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvrages, barème) se met à jour toute seule au build ; le manuel et le fragment du journal des versions (`docs/_journal/`) s’écrivent à la main. Voir [Contribuer](contribuer.md).
 
 ## Règles à respecter dans le contenu
 
