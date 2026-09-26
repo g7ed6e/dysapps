@@ -1014,6 +1014,74 @@ a.app-card:active {
   font-size: 0.85rem;
   color: var(--muted);
 }
+
+/* Échelle des rangs (page Succès) : atteints en couleur, à venir grisés, le rang actuel encadré. */
+.rank-ladder {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  margin: 1.2rem 0 0;
+  padding: 0;
+}
+.rank-ladder li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.2rem;
+  border: 2px dashed transparent;
+  border-radius: var(--radius);
+  text-align: center;
+  min-width: 0;
+}
+.rank-ladder li strong {
+  font-family: var(--display-font);
+  font-weight: 400;
+}
+.rank-ladder li.locked {
+  color: var(--muted);
+}
+.rank-ladder li[aria-current] {
+  border: var(--border-width) solid var(--ink);
+  box-shadow: var(--bevel-shadow-small);
+}
+.rank-ladder-note {
+  font-size: 0.9rem;
+}
+.rank-ladder .rank-shield {
+  width: 3rem;
+  height: 3.4rem;
+  font-size: 1rem;
+  padding-bottom: 0.6rem;
+}
+.rank-shield.locked::before {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.rank-shield.locked .rank-level {
+  opacity: 0.7;
+}
+:root[data-theme="contraste"] .rank-shield.locked {
+  background: var(--muted);
+}
+:root[data-theme="contraste"] .rank-shield.locked::before {
+  filter: none;
+  opacity: 1;
+}
+@media (max-width: 30rem) {
+  .rank-ladder {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem;
+  }
+  /* Les noms restent entiers sur une ligne (« Diamant », « Légende ») dans une colonne étroite. */
+  .rank-ladder li {
+    padding-inline: 0;
+  }
+  .rank-ladder li strong {
+    font-size: 0.85rem;
+  }
+}
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
