@@ -340,10 +340,17 @@ export function dueItems(queue: SpacedItem[], today: string): SpacedItem[] {
 
 // ---------- Adaptation ----------
 
-/** Monte après 2 sessions ≥ promoteAt, descend après 2 sessions ≤ demoteAt. Jamais affiché comme « niveau baissé ». */
+/** Note à partir de laquelle une seule session suffit pour monter d'un niveau. */
+export const PROMOTE_AT_ONCE = 0.95;
+
+/**
+ * Monte après 1 session quasi parfaite (≥ 95 %) ou 2 sessions ≥ promoteAt ; descend après 2 sessions ≤ demoteAt.
+ * Jamais affiché comme « niveau baissé ».
+ */
 export function adapt(stats: TypeStats | undefined, score: number, def: ExerciseDef['adaptive']): TypeStats {
   const level = stats?.level ?? 1;
   const recent = [...(stats?.recent ?? []), score].slice(-2);
+  if (score >= PROMOTE_AT_ONCE && def.promoteAt <= 1) return { level: level + 1, recent: [] };
   if (recent.length === 2 && recent.every((s) => s >= def.promoteAt)) return { level: level + 1, recent: [] };
   if (recent.length === 2 && recent.every((s) => s <= def.demoteAt)) return { level: Math.max(1, level - 1), recent: [] };
   return { level, recent };

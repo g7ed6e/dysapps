@@ -1,0 +1,107 @@
+{
+  "id": "mine-filon-mix-1",
+  "biome": "mine",
+  "type": "filon",
+  "level": 1,
+  "instruction": "À chaque bloc, la lettre à piocher change : lis-la, pioche seulement si le bloc la porte. Laisse passer les autres.",
+  "target": "b, d, p ou q",
+  "items": [
+    {
+      "key": "0-b-b",
+      "target": "b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "1-p-b",
+      "target": "p",
+      "letter": "b",
+      "correct": false,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "2-d-d",
+      "target": "d",
+      "letter": "d",
+      "correct": true,
+      "tip": "le ventre du d est à gauche, la barre monte"
+    },
+    {
+      "key": "3-q-p",
+      "target": "q",
+      "letter": "p",
+      "correct": false,
+      "tip": "le ventre du q est à gauche, la barre descend"
+    },
+    {
+      "key": "4-p-p",
+      "target": "p",
+      "letter": "p",
+      "correct": true,
+      "tip": "le ventre du p est à droite, la barre descend"
+    },
+    {
+      "key": "5-b-d",
+      "target": "b",
+      "letter": "d",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "6-q-q",
+      "target": "q",
+      "letter": "q",
+      "correct": true,
+      "tip": "le ventre du q est à gauche, la barre descend"
+    },
+    {
+      "key": "7-b-p",
+      "target": "b",
+      "letter": "p",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "8-b-b",
+      "target": "b",
+      "letter": "b",
+      "correct": true,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "9-b-q",
+      "target": "b",
+      "letter": "q",
+      "correct": false,
+      "tip": "le ventre du b est à droite, la barre monte"
+    },
+    {
+      "key": "10-d-d",
+      "target": "d",
+      "letter": "d",
+      "correct": true,
+      "tip": "le ventre du d est à gauche, la barre monte"
+    },
+    {
+      "key": "11-d-b",
+      "target": "d",
+      "letter": "b",
+      "correct": false,
+      "tip": "le ventre du d est à gauche, la barre monte"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien piochée !",
+    "wrong": "C’était un {letter}, pas un {target} : {tip}."
+  },
+  "reward": {
+    "block": "pierre",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.9,
+    "demoteAt": 0.5
+  }
+}

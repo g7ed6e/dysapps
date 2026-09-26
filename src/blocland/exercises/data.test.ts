@@ -49,7 +49,8 @@ it('filon : moitié de lettres cibles, lettres proches seulement', () => {
     expect(def.items.filter((i) => i.correct).length).toBe(def.items.length / 2);
     for (const it of def.items) {
       expect(['b', 'd', 'p', 'q']).toContain(it.letter);
-      expect(it.correct).toBe(it.letter === def.target);
+      // La cible est celle du bloc quand elle change à chaque bloc (filon mélangé), sinon celle de l'exercice.
+      expect(it.correct).toBe(it.letter === (it.target ?? def.target));
     }
   }
 });

@@ -1,0 +1,151 @@
+{
+  "id": "foret-echauffement-002",
+  "biome": "foret",
+  "type": "abattage",
+  "level": 2,
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes. Les mots sont longs : compte sur tes doigts.",
+  "items": [
+    {
+      "key": "parapluie",
+      "word": "parapluie",
+      "prompt": "parapluie",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "pa-ra-pluie"
+    },
+    {
+      "key": "chocolat",
+      "word": "chocolat",
+      "prompt": "chocolat",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "cho-co-lat"
+    },
+    {
+      "key": "éléphant",
+      "word": "éléphant",
+      "prompt": "éléphant",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "é-lé-phant"
+    },
+    {
+      "key": "dinosaure",
+      "word": "dinosaure",
+      "prompt": "dinosaure",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "di-no-saure"
+    },
+    {
+      "key": "télévision",
+      "word": "télévision",
+      "prompt": "télévision",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "té-lé-vi-sion"
+    },
+    {
+      "key": "bibliothèque",
+      "word": "bibliothèque",
+      "prompt": "bibliothèque",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "bi-bli-o-thèque"
+    },
+    {
+      "key": "hippopotame",
+      "word": "hippopotame",
+      "prompt": "hippopotame",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "hip-po-po-tame"
+    },
+    {
+      "key": "aspirateur",
+      "word": "aspirateur",
+      "prompt": "aspirateur",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "as-pi-ra-teur"
+    },
+    {
+      "key": "extraordinaire",
+      "word": "extraordinaire",
+      "prompt": "extraordinaire",
+      "choices": ["3", "4", "5"],
+      "answer": "5",
+      "heard": "ex-tra-or-di-naire"
+    },
+    {
+      "key": "anniversaire",
+      "word": "anniversaire",
+      "prompt": "anniversaire",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "an-ni-ver-saire"
+    },
+    {
+      "key": "réfrigérateur",
+      "word": "réfrigérateur",
+      "prompt": "réfrigérateur",
+      "choices": ["3", "4", "5"],
+      "answer": "5",
+      "heard": "ré-fri-gé-ra-teur"
+    },
+    {
+      "key": "calculatrice",
+      "word": "calculatrice",
+      "prompt": "calculatrice",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "cal-cu-la-trice"
+    },
+    {
+      "key": "ordinateur",
+      "word": "ordinateur",
+      "prompt": "ordinateur",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "or-di-na-teur"
+    },
+    {
+      "key": "locomotive",
+      "word": "locomotive",
+      "prompt": "locomotive",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "lo-co-mo-tive"
+    },
+    {
+      "key": "hélicoptère",
+      "word": "hélicoptère",
+      "prompt": "hélicoptère",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "hé-li-cop-tère"
+    },
+    {
+      "key": "imagination",
+      "word": "imagination",
+      "prompt": "imagination",
+      "choices": ["3", "4", "5"],
+      "answer": "5",
+      "heard": "i-ma-gi-na-tion"
+    }
+  ],
+  "perRun": 8,
+  "feedback": {
+    "correct": "Bien entendu !",
+    "wrong": "{word} se coupe en {heard} : {answer} syllabes."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

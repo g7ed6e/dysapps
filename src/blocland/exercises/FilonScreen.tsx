@@ -9,7 +9,7 @@ const DURATIONS = [8, 6, 4.5, 3.5, 3];
 /**
  * Filon : un bloc-lettre traverse la galerie ; piocher seulement la lettre cible.
  * Laisser passer une autre lettre est juste. Avec « réduire les animations », le bloc attend.
- * Champs de l'item : letter, correct, tip (repère pour la correction).
+ * Champs de l'item : letter, correct, tip (repère pour la correction), et `target` quand la lettre à piocher change à chaque bloc.
  */
 export function FilonScreen({ items, answered, onAnswer, level, target }: ScreenProps) {
   const item = items[0];
@@ -24,7 +24,7 @@ export function FilonScreen({ items, answered, onAnswer, level, target }: Screen
     if (done.current) return;
     done.current = true;
     if (timer.current) window.clearTimeout(timer.current);
-    onAnswer({ results: [{ key: item.key, correct: mined === Boolean(item.correct) }], detail: { mined, letter: item.letter } });
+    onAnswer({ results: [{ key: item.key, correct: mined === Boolean(item.correct) }], detail: { mined, letter: item.letter, target: wanted } });
   };
 
   // Le bloc sort de la galerie sans être pioché : c'est « laisser passer ».
@@ -38,12 +38,13 @@ export function FilonScreen({ items, answered, onAnswer, level, target }: Screen
   }, [item.key, duration, moving]);
 
   const letter = String(item.letter);
+  const wanted = String(item.target ?? target);
   const state = answered ? (answered.results[0].correct ? 'right' : 'wrong') : '';
 
   return (
     <div className="panel question filon">
       <p className="question-prompt">
-        Pioche seulement la lettre <strong className="filon-target">{target}</strong>
+        Pioche seulement la lettre <strong className="filon-target">{wanted}</strong>
       </p>
       <div className="filon-lane" style={{ ['--filon-duration' as string]: `${duration}s` }}>
         <button

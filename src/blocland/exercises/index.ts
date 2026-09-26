@@ -15,6 +15,7 @@ import maraisBrume2 from './data/marais-brume-2.json';
 import maraisRoseaux1 from './data/marais-roseaux-1.json';
 import maraisRoseaux2 from './data/marais-roseaux-2.json';
 import foretEchauffement from './data/foret-echauffement-001.json';
+import foretEchauffement2 from './data/foret-echauffement-002.json';
 import chasseAn from './data/foret-chasse-son-an.json';
 import chasseOn from './data/foret-chasse-son-on.json';
 import chasseOi from './data/foret-chasse-son-oi.json';
@@ -25,6 +26,8 @@ import filonB from './data/mine-filon-b.json';
 import filonD from './data/mine-filon-d.json';
 import filonP from './data/mine-filon-p.json';
 import filonQ from './data/mine-filon-q.json';
+import filonMix1 from './data/mine-filon-mix-1.json';
+import filonMix2 from './data/mine-filon-mix-2.json';
 import trou1 from './data/carriere-mot-troue-1.json';
 import trou2 from './data/carriere-mot-troue-2.json';
 import ascMousso from './data/tour-ascension-mousso.json';
@@ -109,6 +112,7 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
 
 export const EXERCISES: ExerciseDef[] = [
   foretEchauffement,
+  foretEchauffement2,
   chasseAn,
   chasseOn,
   chasseOi,
@@ -119,6 +123,8 @@ export const EXERCISES: ExerciseDef[] = [
   filonD,
   filonP,
   filonQ,
+  filonMix1,
+  filonMix2,
   trou1,
   trou2,
   ...graines,
