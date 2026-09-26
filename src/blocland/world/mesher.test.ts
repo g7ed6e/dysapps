@@ -50,7 +50,8 @@ it('le village entier, tout construit, reste dans le budget de faces des tablett
   const plans = Object.fromEntries(PLANS.map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const groups = buildMesh(worldCubes(progress, { plans, journal: [], bridges: [] }));
   // Vingt îles avec leur terre, leur relief et leur roche flottante : sous les 34 000 faces, à l'aise pour une tablette.
-  expect(faceCount(groups)).toBeLessThan(34000);
+  // Cœurs de 16 × 16 (bornes de quête) : un quart de faces en plus qu'avec des cœurs de 12.
+  expect(faceCount(groups)).toBeLessThan(48000);
   // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : un peu plus de cent appels de dessin.
   expect(groups.length).toBeLessThan(140);
 });

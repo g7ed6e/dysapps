@@ -1,22 +1,26 @@
 import { BIOMES } from '../biomes';
-import { MAP, landCells } from './map';
+import { CORE, MAP, landCells } from './map';
+import { PLAN_ZONE } from './plans';
+import { CREATURE_CUBES } from '../Creatures';
 import { BRIDGES } from './archipelago';
 import {
   avatarHome,
   avatarRoute,
-  fade,
-  DEPTH,
-  ISLAND,
-  ISLET_H,
-  ISLET_W,
   bossIsletOrigin,
   creaturePlacements,
+  creatureSpot,
+  DEPTH,
+  fade,
   groundHeight,
   guardianPlacements,
+  ISLAND,
   islandAt,
   islandCenter,
   islandOrigin,
+  ISLET_H,
+  ISLET_W,
   mistPatches,
+  questStations,
   whaleSpots,
   worldBounds,
   worldCubes,
@@ -48,7 +52,7 @@ it('construit une île par biome, avec créature seulement si un pont y mène', 
 
 it('place les îles sur la carte du continent, à leur altitude', () => {
   const at = (id: string) => islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  expect(at('foret')).toEqual({ ox: 50, oy: 44, oz: 0 });
+  expect(at('foret')).toEqual({ ox: 67, oy: 59, oz: 0 });
   expect(at('plaine').oz).toBe(0);
   expect(at('glacier').oz).toBe(3);
   expect(at('forge').oz).toBe(6);
@@ -237,4 +241,29 @@ it('les baleines nagent dans les clairières d’eau entre les îles, jamais sur
       for (let y = Math.floor(s.y - s.r - 2); y <= Math.ceil(s.y + s.r + 2); y++)
         if (Math.hypot(x - s.x, y - s.y) <= s.r + 2) expect(land.has(`${x},${y}`), `baleine sur la terre en ${x},${y}`).toBe(false);
   }
+});
+
+it('chaque quête a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {
+  for (const b of BIOMES) {
+    const stations = questStations(b.id);
+    expect(stations.map((s) => s.typeId)).toEqual(b.exercises.map((e) => e.id));
+    const spot = creatureSpot(b.id);
+    const creature = new Set<string>();
+    for (const [sx, sy] of spot.steps) for (const c of CREATURE_CUBES[b.id]) creature.add(`${spot.x + sx + c.x},${spot.y + sy + c.y}`);
+    for (const st of stations) {
+      expect(st.x).toBeGreaterThanOrEqual(0);
+      expect(st.x).toBeLessThan(CORE);
+      expect(st.y).toBeLessThan(PLAN_ZONE.y);
+      expect(creature.has(`${st.x},${st.y}`), `${b.id} ${st.typeId}`).toBe(false);
+    }
+  }
+  // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:quête », délavés sur une île fermée.
+  const cubes = worldCubes({}, { plans: {}, journal: [], bridges: [] });
+  const foret = cubes.filter((c) => c.quest?.startsWith('foret:'));
+  expect(foret).toHaveLength(2 * 3);
+  expect(foret.filter((c) => c.texture === 'borne')).toHaveLength(3);
+  expect(foret.every((c) => !c.muted)).toBe(true);
+  const mine = cubes.filter((c) => c.quest?.startsWith('mine:'));
+  expect(mine.length).toBeGreaterThan(0);
+  expect(mine.every((c) => c.muted)).toBe(true);
 });

@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, CORE, MAP, isLand, islandDef, landCells, landscape, reliefHeight } from './map';
+import { ALTITUDE, CORE, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
 import { BRIDGES } from './archipelago';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
@@ -12,8 +12,8 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
     // Le contour déborde du cœur (au moins une case en plus), mais pas partout : contour irrégulier.
     const land = landCells(def);
     expect(land.length).toBeGreaterThan(CORE * CORE);
-    const box = (def.ext.left + CORE + def.ext.right) * (def.ext.front + CORE + def.ext.back);
-    expect(land.length).toBeLessThan(box);
+    const lb = landBox(def);
+    expect(land.length).toBeLessThan((lb.x1 - lb.x0) * (lb.y1 - lb.y0));
   }
 });
 
@@ -41,7 +41,7 @@ it('les ponts relient des îles proches, jamais séparées de plus d’un niveau
     const a = islandDef(b.from);
     const c = islandDef(b.to);
     const dist = Math.hypot(a.core.x - c.core.x, a.core.y - c.core.y);
-    expect(dist, b.id).toBeLessThan(42);
+    expect(dist, b.id).toBeLessThan(56);
     expect(Math.abs(a.altitude - c.altitude), b.id).toBeLessThanOrEqual(9);
   }
 });

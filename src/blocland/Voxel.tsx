@@ -12,6 +12,8 @@ export interface VoxelCube {
   tag?: string;
   /** Cube d'un pont : l'identifiant du pont. */
   bridge?: string;
+  /** Cube d'une borne de quête : « île:quête ». */
+  quest?: string;
   /** Cellule de plan encore à poser : dessinée translucide. */
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */

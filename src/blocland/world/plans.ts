@@ -82,7 +82,7 @@ export interface PlanDef {
 }
 
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
-export const PLAN_ZONE = { x: 6, y: 7, w: 6, h: 5 };
+export const PLAN_ZONE = { x: 8, y: 10, w: 6, h: 5 };
 
 /** Dans l'ordre : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
 export const PLANS: PlanDef[] = [

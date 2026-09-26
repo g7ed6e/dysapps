@@ -6,7 +6,10 @@ import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { getBiome, type BiomeId } from './biomes';
+import { BIOMES, getBiome, type BiomeId } from './biomes';
+import { levelFor } from './engine';
+import { pickExercise, questProgress } from './exercises';
+import type { QuestMark } from './three/WorldCanvas';
 import { useBlocland } from './BloclandContext';
 import { IslandSheet } from './IslandSheet';
 import { WorldCanvas } from './three';
@@ -14,7 +17,18 @@ import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { avatarHome, avatarRoute, bridgePath, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
+import {
+  avatarHome,
+  avatarRoute,
+  bridgePath,
+  creaturePlacements,
+  guardianPlacements,
+  islandAt,
+  islandCenter,
+  islandOrigin,
+  questStations,
+  worldCubes,
+} from './world/terrain';
 import { KIND_NAME, getBridge, isBiomeUnlocked, remainingPath } from './world/archipelago';
 import { usePlanBuilder } from './usePlanBuilder';
 
@@ -36,6 +50,27 @@ export function WorldPage() {
     () => [...creaturePlacements(state.village.bridges), ...guardianPlacements(state.progress, state.village.bridges)],
     [state.progress, state.village.bridges],
   );
+  // Les bornes de quête de toutes les îles, avec leur état : à faire, étoiles gagnées, ou fermée.
+  const quests = useMemo<QuestMark[]>(
+    () =>
+      BIOMES.flatMap((b, index) => {
+        const { ox, oy, oz } = islandOrigin(index);
+        const open = isBiomeUnlocked(b.id, state.village.bridges);
+        return questStations(b.id).map((st) => {
+          const def = open ? pickExercise(b.id, st.typeId, levelFor(state, st.typeId), state.progress) : undefined;
+          const progress = def ? questProgress(b.id, st.typeId, state.progress) : undefined;
+          const s: QuestMark['state'] = !def ? 'locked' : progress ? progress.stars : 'new';
+          return { id: `${b.id}:${st.typeId}`, biome: b.id, typeId: st.typeId, cell: { x: ox + st.x, y: oy + st.y, z: oz }, state: s };
+        });
+      }),
+    [state],
+  );
+  // Une borne touchée : sa quête si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
+  const onPickQuest = (id: BiomeId, typeId: string) => {
+    const q = quests.find((m) => m.biome === id && m.typeId === typeId);
+    if (q && q.state !== 'locked') navigate(`/aventure/${id}/${typeId}`);
+    else navigate(`/aventure/${id}`);
+  };
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
   const [forceDay, setForceDay] = useState(() => !hasSeenTutorial('village-immersif'));
@@ -119,6 +154,8 @@ export function WorldPage() {
             avatar={avatar}
             map={mapOpen}
             trail={trail}
+            quests={quests}
+            onPickQuest={onPickQuest}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
@@ -135,6 +172,7 @@ export function WorldPage() {
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
               'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout le continent du ciel.',
+              'Sur chaque île, les bornes à panneau sont les quêtes : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une quête à faire, des cubes d’or comptent tes étoiles.',
               'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
               'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont ou un bac coûte des blocs, un escalier demande un plan terminé, un tunnel un Gardien vaincu. Choisis ta direction.',
             ]}

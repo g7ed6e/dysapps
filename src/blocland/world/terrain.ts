@@ -1,4 +1,4 @@
-// Le terrain du village : une île par biome (cœur 12 × 12 avec relief léger, décor et créature, posé sur une terre
+// Le terrain du village : une île par biome (cœur 16 × 16 avec bornes de quête, relief léger, décor et créature, posé sur une terre
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
@@ -224,15 +224,36 @@ export function islandAt(x: number, y: number): BiomeId {
  * Relief léger : un plateau d'un bloc de haut sur la moitié arrière de l'île (loin de la créature),
  * aux coins arrondis, différent selon l'île. Hauteur du sol (0 ou 1) pour une case de l'île.
  */
+/**
+ * Le décor et le relief du cœur sont dessinés sur une grille de 12 × 12 (LAYOUT), posée dans le cœur de 16 × 16
+ * avec une marge : les trois rangées de devant accueillent les bornes de quête, les colonnes de côté restent libres.
+ */
+const LAYOUT = 12;
+export const LAYOUT_PAD = { x: 2, y: 3 };
+
 export function groundHeight(index: number, x: number, y: number): number {
-  const fromBack = ISLAND - 1 - x;
+  const lx = x - LAYOUT_PAD.x;
+  const ly = y - LAYOUT_PAD.y;
+  if (lx < 0 || ly < 0 || lx >= LAYOUT || ly >= LAYOUT) return 0;
+  const fromBack = LAYOUT - 1 - lx;
   const shape = index % 3;
   // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).
-  const inner = x >= 7 && y >= 2 && y <= 5;
+  const inner = lx >= 7 && ly >= 2 && ly <= 5;
   if (!inner) return 0;
-  if (shape === 0) return fromBack + Math.abs(y - ISLAND / 2 + 0.5) < 7.5 ? 1 : 0;
-  if (shape === 1) return y <= ISLAND / 2 + 1 || fromBack < 2 ? 1 : 0;
-  return fromBack < 3 || (y >= 4 && y <= ISLAND - 5) ? 1 : 0;
+  if (shape === 0) return fromBack + Math.abs(ly - LAYOUT / 2 + 0.5) < 7.5 ? 1 : 0;
+  if (shape === 1) return ly <= LAYOUT / 2 + 1 || fromBack < 2 ? 1 : 0;
+  return fromBack < 3 || (ly >= 4 && ly <= LAYOUT - 5) ? 1 : 0;
+}
+
+/**
+ * Les bornes de quête d'une île : une par quête, alignées sur la rangée de devant (côté caméra), en cases relatives
+ * au cœur. On touche une borne pour lancer sa quête.
+ */
+export const QUEST_ROW = 1;
+export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
+  const biome = BIOMES.find((b) => b.id === id);
+  if (!biome) return [];
+  return biome.exercises.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
 type Put = (x: number, y: number, z: number, color: string) => void;
@@ -707,9 +728,10 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const def = islandDef(id);
   const blocked = new Set<string>();
   DECOR[id](
-    (x, y) => blocked.add(`${x},${y}`),
-    (x, y) => groundHeight(index, x, y),
+    (x, y) => blocked.add(`${x + LAYOUT_PAD.x},${y + LAYOUT_PAD.y}`),
+    (x, y) => groundHeight(index, x + LAYOUT_PAD.x, y + LAYOUT_PAD.y),
   );
+  for (const st of questStations(id)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${st.x + dx},${st.y + dy}`);
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (let x = 0; x < CORE; x++) for (let y = 0; y < CORE; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
@@ -1009,6 +1031,8 @@ export function worldCubes(
       cubes.push({ x, y, z: oz + z, color: unlocked ? color : fade(color), texture: TEXTURES[color], tag: biome.id, muted: unlocked ? undefined : true });
     };
     const put: Put = (x, y, z, color) => putWorld(ox + x, oy + y, z, color);
+    // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
+    const putDecor: Put = (x, y, z, color) => put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color);
     const land = landCells(def);
     for (const c of land) {
       if (!inCore(def, c.x, c.y)) continue;
@@ -1026,7 +1050,38 @@ export function worldCubes(
       for (let z = 0; z < c.h; z++) putWorld(c.x, c.y, z, underground(def, c, c.h - z));
       putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
     }
-    DECOR[biome.id](put, h);
+    DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
+    // Les bornes de quête : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
+    for (const st of questStations(biome.id)) {
+      const quest = `${biome.id}:${st.typeId}`;
+      const base = h(st.x, st.y);
+      const tone = (c: string) => (unlocked ? c : fade(c));
+      const muted = unlocked ? undefined : true;
+      cubes.push({
+        x: ox + st.x,
+        y: oy + st.y,
+        z: oz + base + 1,
+        color: tone(block.side),
+        top: block.top,
+        texture: block.texture,
+        tag: biome.id,
+        quest,
+        muted,
+      });
+      cubes.push({
+        x: ox + st.x,
+        y: oy + st.y,
+        z: oz + base + 2,
+        color: tone('#3a4a6a'),
+        top: '#2f3d5c',
+        texture: 'borne',
+        tag: biome.id,
+        quest,
+        muted,
+      });
+      taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
+      taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
+    }
     landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     for (const c of scenery) {

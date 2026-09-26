@@ -14,7 +14,7 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 
 ## 3. Le monde (PR 1)
 
-- `src/blocland/world/map.ts` : chaque île a un **cœur de 12 × 12** (zone des plans, créature, décor, comme avant) posé sur une **terre plus large** aux contours irréguliers (graine, bruit), une **altitude**, une **région** et un **relief** (plat, collines, montagne en terrasses derrière le cœur, neige au sommet selon la région). Les vingt îles sont placées à la main, la Forêt et la Plaine au centre.
+- `src/blocland/world/map.ts` : chaque île a un **cœur de 16 × 16** depuis la PR 15 (12 × 12 à l'origine ; bornes de quête, zone des plans, créature, décor) posé sur une **terre plus large** aux contours irréguliers (graine, bruit), une **altitude**, une **région** et un **relief** (plat, collines, montagne en terrasses derrière le cœur, neige au sommet selon la région). Les vingt îles sont placées à la main, la Forêt et la Plaine au centre.
 - Les îles en altitude **flottent** : de la roche qui s'amincit dessous, rien au niveau de la mer. Les ponts deviennent des **rampes** (marches) entre deux altitudes ; entre deux îles l'une devant l'autre, le pont part du côté droit du cœur et fait un coude pour éviter l'îlot du Gardien.
 - **Paysage** (`landscape()` dans `map.ts`) : autour du cœur, chaque case a une hauteur (collines douces, pics paraboliques des montagnes, cratère du volcan), un sol (herbe, mousse des marais, basalte du feu, roche et neige des sommets, glace du Glacier, sable des plages, eau des lacs, lave du cratère) et parfois un décor selon la région (arbres, sapins, buissons, fleurs, champignons, roseaux, rochers, souches, cristaux). Le rendu (`terrain.ts`) pose ces cubes avec leurs textures ; la lave brille comme les lanternes.
 - Les îles **verrouillées** gardent leurs formes et leurs textures, **délavées** vers un gris clair (comme dans la brume) au lieu d'un bloc de pierre uniforme : on devine ce qui attend.
@@ -107,6 +107,13 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Toucher une île fermée** garde la Carte et montre le chemin (`remainingPath()` dans `world/archipelago.ts`) : la liste des ouvrages qu'il reste à construire, des balises jaunes le long de leur tracé dans le monde, et un bouton « Voir le premier ouvrage » qui ouvre l'île d'où il part, sa proposition mise en avant.
 - En vue simple (sans 3D), `#/aventure/carte` renvoie à la liste des îles.
 
-## 17. À venir
+## 17. Des îles plus grandes, une borne par quête (PR 15)
+
+- Le cœur de chaque île passe de 12 × 12 à **16 × 16** (`CORE` dans `map.ts`) ; les positions des îles sont agrandies d'un tiers pour garder l'eau entre elles et les isthmes des quatre paires. Le décor et le relief du cœur restent dessinés sur la grille de 12 (`LAYOUT`), posée avec une marge (`LAYOUT_PAD`, 2 colonnes à gauche, 3 rangées devant) ; la zone des plans est déplacée en (8, 10).
+- **Les bornes de quête** (`questStations()` dans `terrain.ts`) : une par quête, alignées sur la rangée de devant, tous les trois blocs à partir de x = 3. Une borne, c'est un socle du bloc de l'île et un panneau dessus ; ses cubes portent `quest` (« île:quête »). Au-dessus, un repère animé (`quests` dans `WorldCanvas`) : un losange jaune qui flotte pour une quête à faire, des petits cubes d'or empilés pour les étoiles gagnées, rien sur une île fermée (bornes délavées).
+- **Toucher une borne** (socle, panneau ou repère) lance la quête si elle est jouable ; sinon, le panneau de l'île s'ouvre et explique.
+- Les créatures évitent les bornes (obstacles dans `creatureSpot()`), la caméra s'éloigne un peu (`ISLAND_DISTANCE` 30, `FOLLOW_DISTANCE` 50), la Carte se cadre toute seule.
+
+## 18. À venir
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

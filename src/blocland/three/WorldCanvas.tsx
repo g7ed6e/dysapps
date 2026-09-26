@@ -39,6 +39,17 @@ export interface CreaturePlacement {
   steps?: [number, number][];
 }
 
+export interface QuestMark {
+  /** « île:quête ». */
+  id: string;
+  biome: BiomeId;
+  typeId: string;
+  /** La case du socle (z : le sol sous le socle). */
+  cell: Cell;
+  /** `'new'` : à faire (repère jaune) ; un nombre : les étoiles gagnées ; `'locked'` : rien. */
+  state: 'new' | 'locked' | number;
+}
+
 /** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
 export interface Burst {
   seq: number;
@@ -71,6 +82,10 @@ export interface WorldCanvasProps {
   map?: boolean;
   /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
   trail?: Cell[];
+  /** Les bornes de quête : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
+  quests?: QuestMark[];
+  /** Borne de quête touchée (le socle, le panneau ou son repère). */
+  onPickQuest?: (biome: BiomeId, typeId: string) => void;
   burst?: Burst;
   className?: string;
   label: string;
@@ -82,9 +97,9 @@ const WATER_LEVEL = -0.45;
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
-const ISLAND_DISTANCE = 24;
+const ISLAND_DISTANCE = 30;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines. */
-const FOLLOW_DISTANCE = 42;
+const FOLLOW_DISTANCE = 50;
 /** La Carte : presque à la verticale, le même nord, assez loin pour tout le continent. */
 const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
@@ -210,6 +225,8 @@ export default function WorldCanvas({
   avatar,
   map = false,
   trail,
+  quests,
+  onPickQuest,
   burst,
   className,
   label,
@@ -232,6 +249,7 @@ export default function WorldCanvas({
     marker: THREE.Group;
     beacon: THREE.Group;
     trail: THREE.Group;
+    questMarks: THREE.Group;
     avatar: THREE.Group;
     walk: { route: Cell[]; start: number; duration: number } | null;
   } | null>(null);
@@ -239,12 +257,21 @@ export default function WorldCanvas({
   pickRef.current = onPickIsland;
   const pickBridgeRef = useRef(onPickBridge);
   pickBridgeRef.current = onPickBridge;
+  const pickQuestRef = useRef(onPickQuest);
+  pickQuestRef.current = onPickQuest;
+  // Les cubes des bornes de quête, par case : pour savoir quelle quête on touche.
+  const questCells = useRef(new Map<string, string>());
   // Les cubes des ouvrages, par case : pour savoir quel ouvrage on touche.
   const bridgeCells = useRef(new Map<string, string>());
   useEffect(() => {
     const m = new Map<string, string>();
-    for (const c of cubes) if (c.bridge) m.set(`${c.x},${c.y},${c.z}`, c.bridge);
+    const q = new Map<string, string>();
+    for (const c of cubes) {
+      if (c.bridge) m.set(`${c.x},${c.y},${c.z}`, c.bridge);
+      if (c.quest) q.set(`${c.x},${c.y},${c.z}`, c.quest);
+    }
     bridgeCells.current = m;
+    questCells.current = q;
   }, [cubes]);
   const buildRef = useRef(build);
   buildRef.current = build;
@@ -462,6 +489,8 @@ export default function WorldCanvas({
     scene.add(beaconGroup);
     const trailGroup = new THREE.Group();
     scene.add(trailGroup);
+    const questMarksGroup = new THREE.Group();
+    scene.add(questMarksGroup);
 
     // Le bonhomme (ses cubes arrivent par la prop `avatar`).
     const avatarGroup = new THREE.Group();
@@ -507,6 +536,7 @@ export default function WorldCanvas({
       marker: markerGroup,
       beacon: beaconGroup,
       trail: trailGroup,
+      questMarks: questMarksGroup,
       avatar: avatarGroup,
       walk: null,
     };
@@ -519,10 +549,21 @@ export default function WorldCanvas({
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
-      const creature = ray.intersectObjects(creaturesGroup.children, true)[0];
+      const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children], true)[0];
       const ground = ray.intersectObjects(terrain.children, false)[0];
       if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
       return { creature: undefined, hit: ground };
+    };
+    const questIdOf = (o: THREE.Object3D): { biome: BiomeId; typeId: string } | null => {
+      let cur: THREE.Object3D | null = o;
+      while (cur) {
+        if (typeof cur.userData.quest === 'string') {
+          const [biome, typeId] = (cur.userData.quest as string).split(':');
+          return { biome: biome as BiomeId, typeId };
+        }
+        cur = cur.parent;
+      }
+      return null;
     };
     const creatureIdOf = (o: THREE.Object3D): { id: BiomeId; kind: 'creature' | 'guardian' } | null => {
       let cur: THREE.Object3D | null = o;
@@ -558,12 +599,20 @@ export default function WorldCanvas({
       }
       const { creature, hit } = aim(e);
       if (creature) {
+        const quest = questIdOf(creature.object);
+        if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
         const found = creatureIdOf(creature.object);
         if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!hit) return;
       const { cell, next } = cellsOf(hit);
+      // Une borne de quête : sa quête.
+      const questId = questCells.current.get(`${cell.x},${cell.y},${cell.z}`);
+      if (questId && pickQuestRef.current) {
+        const [biome, typeId] = questId.split(':');
+        return pickQuestRef.current(biome as BiomeId, typeId);
+      }
       // Un ouvrage (construit ou fantôme) : sa proposition, plutôt que l'île la plus proche.
       const bridgeId = bridgeCells.current.get(`${cell.x},${cell.y},${cell.z}`);
       if (bridgeId && pickBridgeRef.current) return pickBridgeRef.current(bridgeId);
@@ -687,6 +736,12 @@ export default function WorldCanvas({
         if (w.beacon.visible) {
           w.beacon.position.set(w.avatar.position.x, w.avatar.position.y + 8 + Math.abs(Math.sin(t * 2.2)) * 1.5, w.avatar.position.z);
           w.beacon.rotation.y = t * 0.8;
+        }
+        for (const mk of w.questMarks.children) {
+          if (mk.userData.bob) {
+            mk.position.y = mk.userData.base + Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5;
+            mk.rotation.y = t * 1.2;
+          } else mk.rotation.y = t * 0.4;
         }
         if (w.trail.children.length) {
           const pulse = 0.85 + Math.sin(t * 3) * 0.15;
@@ -910,6 +965,44 @@ export default function WorldCanvas({
     w.walk = { route: route.length < 2 ? [route[0], route[0]] : route, start: performance.now(), duration: Math.max(1, duration) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
+
+  // ---- Les repères des bornes de quête : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits
+  // cubes d'or empilés. Rien sur une île fermée.
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    for (const child of [...w.questMarks.children]) {
+      w.questMarks.remove(child);
+      child.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
+    }
+    if (!quests?.length) return;
+    const gold = (w.marker.children[0] as THREE.Mesh).material;
+    quests.forEach((q, i) => {
+      if (q.state === 'locked' || q.state === 0) return;
+      const g = new THREE.Group();
+      g.userData = { quest: q.id, phase: i * 0.7 };
+      const base = q.cell.z + 3.4;
+      if (q.state === 'new') {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), gold);
+        m.rotation.x = Math.PI / 4;
+        m.rotation.z = Math.PI / 4;
+        g.add(m);
+        g.userData.bob = true;
+        g.userData.base = base;
+      } else {
+        for (let k = 0; k < q.state; k++) {
+          const m = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 0.45), gold);
+          m.position.y = k * 0.6;
+          m.rotation.y = Math.PI / 4;
+          g.add(m);
+        }
+      }
+      g.position.set(q.cell.x + 0.5, base, q.cell.y + 0.5);
+      w.questMarks.add(g);
+    });
+  }, [quests]);
 
   // ---- Le chemin à construire (sur la Carte) : une balise toutes les deux cases, au-dessus du sol.
   useEffect(() => {
