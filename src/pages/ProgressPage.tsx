@@ -23,27 +23,36 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
       <h3 id={titleId} className={`subject-progress-title title-${data.subject}`}>
         <Icon name={info.icon} /> {info.title}
       </h3>
-      <div
-        className="xp-track"
-        role="progressbar"
-        aria-label={`Étoiles en ${info.title}`}
-        aria-valuemin={0}
-        aria-valuemax={max}
-        aria-valuenow={earned}
-        aria-valuetext={`${plural(earned, 'étoile')} sur ${max}`}
-      >
-        <div className="xp-fill" style={{ width: `${percent}%` }} />
-      </div>
-      <p className="subject-progress-detail">
-        <Icon name="star" /> {earned} / {max} étoiles dans Blocland
-      </p>
+      {/* Une matière sans île dans Blocland (pas encore) : seulement ses applis. */}
+      {max > 0 && (
+        <>
+          <div
+            className="xp-track"
+            role="progressbar"
+            aria-label={`Étoiles en ${info.title}`}
+            aria-valuemin={0}
+            aria-valuemax={max}
+            aria-valuenow={earned}
+            aria-valuetext={`${plural(earned, 'étoile')} sur ${max}`}
+          >
+            <div className="xp-fill" style={{ width: `${percent}%` }} />
+          </div>
+          <p className="subject-progress-detail">
+            <Icon name="star" /> {earned} / {max} étoiles dans Blocland
+          </p>
+        </>
+      )}
       <ul className="subject-progress-facts">
-        <li className="tag">
-          {data.islands.open} / {data.islands.total} îles ouvertes
-        </li>
-        <li className="tag">
-          {data.guardians.beaten} / {data.guardians.total} Gardiens vaincus
-        </li>
+        {max > 0 && (
+          <>
+            <li className="tag">
+              {data.islands.open} / {data.islands.total} îles ouvertes
+            </li>
+            <li className="tag">
+              {data.guardians.beaten} / {data.guardians.total} Gardiens vaincus
+            </li>
+          </>
+        )}
         {data.apps
           .filter((a) => a.record !== undefined)
           .map((a) => (

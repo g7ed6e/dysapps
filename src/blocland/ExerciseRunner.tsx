@@ -225,6 +225,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
         level={levelFor(state, def.type)}
         target={def.target}
         exerciseId={def.id}
+        lang={def.lang}
       />
 
       {answered && message && (

@@ -1,6 +1,6 @@
 # Les quêtes du portail
 
-Les pages **Français** et **Maths** de l’accueil listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+Les pages **Français**, **Maths** et **Anglais** de l’accueil listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ## Comment se déroule une question
 
@@ -57,6 +57,24 @@ Cinq quêtes de huit questions : lire une fraction (barres et disques), comparer
 ### Nombres décimaux
 
 Six quêtes de huit questions : lire un décimal (chiffre des dixièmes, centièmes…), comparer, droite graduée au dixième, fractions décimales, × et ÷ par 10, 100, 1 000, compléter à 1. Les calculs sont faits en millièmes entiers, sans erreur d’arrondi. Le joker ouvre le tableau de numération avec la virgule marquée et des zéros grisés pour aligner.
+
+## Anglais
+
+La consigne, le joker et la correction sont en français. Les mots anglais sont lus avec une **voix anglaise** (britannique si l’appareil en a une) : le bouton 🔊 d’une question en anglais lit l’anglais, jamais avec l’accent français. Les mots anglais ne sont pas découpés en syllabes colorées. Le bouton **Tester la voix anglaise** des Réglages permet de vérifier la voix. Tous les mots et les verbes sont listés dans [Anglais du portail](../pedagogie/anglais-portail.md).
+
+### Vocabulaire
+
+Douze thèmes de huit mots (couleurs, nombres, famille, école, animaux, corps, vêtements, maison, nourriture, météo, jours et mois, loisirs). Trois niveaux de dix mots, tirés dans tous les thèmes :
+
+- **J’écoute** : un mot anglais, on choisit son sens parmi quatre ;
+- **Je traduis** : un mot français, on choisit le mot anglais parmi quatre ;
+- **J’écris** : le sens est affiché, le bouton 🔊 lit le mot anglais, on choisit la bonne écriture parmi trois (« dog », « dogg », « dogue ») ; le joker rappelle d’écouter puis de regarder chaque lettre.
+
+Les réponses sont d’autres mots du même thème. **Un thème** révise les huit mots d’un seul thème, dans un sens ou dans l’autre. La correction redonne le mot et son sens (« dog = le chien »).
+
+### Verbes irréguliers
+
+Soixante verbes du collège en trois niveaux de vingt : **Les indispensables** (be, have, go…), **Les fréquents** (begin, bring, put…), **Pour aller plus loin** (catch, ride, wear…). Chaque quête pose dix verbes, au prétérit ou au participe passé (« Prétérit de « go » (aller) ? ») ; le bouton 🔊 lit le verbe en anglais. Les réponses : la bonne forme, l’autre forme, la base et la fausse forme en -ed (« goed »). Le joker rappelle l’ordre des trois formes, la correction les redonne toutes (« go – went – gone : aller »).
 
 ## Le bilan et les scores
 

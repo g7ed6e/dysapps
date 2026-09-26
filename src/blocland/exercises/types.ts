@@ -1,5 +1,6 @@
 // Format d'un exercice Blocland : un objet JSON chargé statiquement (pas de serveur).
 import type { BiomeId, BlockId } from '../biomes';
+import type { Lang } from '../../core/speech';
 
 export interface ExerciseItem {
   /** Identifiant stable de l'item (répétition espacée). */
@@ -16,6 +17,12 @@ export interface ExerciseDef {
   /** Consigne unique, courte, lue à voix haute au démarrage. */
   instruction: string;
   target?: string;
+  /**
+   * Langue du contenu travaillé : `en` pour l'anglais (prompt, spoken, word, sentence et choices affichés et lus en
+   * anglais). La consigne, l'indice, l'explication et l'aide restent en français. Un item peut dire
+   * `choicesLang: 'fr'` quand ses réponses sont en français (traduire un mot anglais).
+   */
+  lang?: Lang;
   /** Les items de référence (Gardien, tests). Une partie en joue une variante : voir `run.ts`. */
   items: ExerciseItem[];
   /** Exercice généré : d'autres items pour une autre graine (une par partie). */

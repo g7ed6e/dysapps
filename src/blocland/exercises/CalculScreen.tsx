@@ -2,6 +2,7 @@ import { createElement, useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { RichText } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
+import { langAttr } from '../../core/speech';
 import { AID_COMPONENTS, type AidData } from './maths';
 import type { ScreenProps } from './registry';
 
@@ -15,8 +16,9 @@ export function Aid({ aid }: { aid: AidData }) {
  * Écran « calcul » : une seule opération, le nombre lu à voix haute, l'aide visuelle toujours affichée
  * (grille de points, boîte de dix, droite par bonds…), des réponses rangées dans l'ordre croissant,
  * un indice sur demande. Champs de l'item : prompt, spoken, choices, answer, hint, explanation, aid, figure.
+ * En anglais (`lang: 'en'`), l'énoncé et les réponses sont lus en voix anglaise ; l'indice et l'aide restent en français.
  */
-export function CalculScreen({ items, answered, onAnswer, onHelp }: ScreenProps) {
+export function CalculScreen({ items, answered, onAnswer, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
   const prompt = String(item.prompt ?? '');
   const spoken = String(item.spoken ?? prompt);
@@ -27,14 +29,15 @@ export function CalculScreen({ items, answered, onAnswer, onHelp }: ScreenProps)
   const [hintShown, setHintShown] = useState(false);
   const aid = item.aid as AidData | undefined;
   const figure = item.figure as AidData | undefined;
+  const choicesLang = item.choicesLang === 'fr' ? 'fr' : lang;
 
   return (
     <div className="panel question calcul">
       <div className="question-head">
-        <p className="question-prompt calcul-prompt">
-          <RichText text={prompt} />
+        <p className="question-prompt calcul-prompt" lang={langAttr(lang)}>
+          <RichText text={prompt} lang={lang} />
         </p>
-        <SpeakButton text={spoken} label="Écouter" />
+        <SpeakButton text={spoken} label="Écouter" lang={lang} />
       </div>
       {figure && <div className="calcul-figure">{<Aid aid={figure} />}</div>}
       {aid && (
@@ -54,8 +57,8 @@ export function CalculScreen({ items, answered, onAnswer, onHelp }: ScreenProps)
               disabled={Boolean(answered)}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
-              <span>
-                <RichText text={choice} />
+              <span lang={langAttr(choicesLang)}>
+                <RichText text={choice} lang={choicesLang} />
               </span>
             </button>
           );

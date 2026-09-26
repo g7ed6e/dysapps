@@ -1,0 +1,842 @@
+[
+  {
+    "id": "couleurs",
+    "label": "Les couleurs",
+    "words": [
+      {
+        "en": "red",
+        "fr": "rouge",
+        "traps": [
+          "redd",
+          "rhed"
+        ]
+      },
+      {
+        "en": "blue",
+        "fr": "bleu",
+        "traps": [
+          "blou",
+          "blu"
+        ]
+      },
+      {
+        "en": "green",
+        "fr": "vert",
+        "traps": [
+          "grin",
+          "greene"
+        ]
+      },
+      {
+        "en": "yellow",
+        "fr": "jaune",
+        "traps": [
+          "yelow",
+          "yellou"
+        ]
+      },
+      {
+        "en": "black",
+        "fr": "noir",
+        "traps": [
+          "blak",
+          "blac"
+        ]
+      },
+      {
+        "en": "white",
+        "fr": "blanc",
+        "traps": [
+          "wite",
+          "whait"
+        ]
+      },
+      {
+        "en": "pink",
+        "fr": "rose",
+        "traps": [
+          "pinc",
+          "pinke"
+        ]
+      },
+      {
+        "en": "brown",
+        "fr": "marron",
+        "traps": [
+          "braun",
+          "browne"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nombres",
+    "label": "Les nombres",
+    "words": [
+      {
+        "en": "one",
+        "fr": "un",
+        "traps": [
+          "wan",
+          "onn"
+        ]
+      },
+      {
+        "en": "two",
+        "fr": "deux",
+        "traps": [
+          "tou",
+          "tow"
+        ]
+      },
+      {
+        "en": "three",
+        "fr": "trois",
+        "traps": [
+          "thri",
+          "thre"
+        ]
+      },
+      {
+        "en": "four",
+        "fr": "quatre",
+        "traps": [
+          "foure",
+          "fowr"
+        ]
+      },
+      {
+        "en": "five",
+        "fr": "cinq",
+        "traps": [
+          "fiv",
+          "faive"
+        ]
+      },
+      {
+        "en": "eight",
+        "fr": "huit",
+        "traps": [
+          "eigt",
+          "heit"
+        ]
+      },
+      {
+        "en": "ten",
+        "fr": "dix",
+        "traps": [
+          "tenn",
+          "tenne"
+        ]
+      },
+      {
+        "en": "twelve",
+        "fr": "douze",
+        "traps": [
+          "twelf",
+          "twelv"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "famille",
+    "label": "La famille",
+    "words": [
+      {
+        "en": "mother",
+        "fr": "la mère",
+        "traps": [
+          "mozer",
+          "mothere"
+        ]
+      },
+      {
+        "en": "father",
+        "fr": "le père",
+        "traps": [
+          "fazer",
+          "fathere"
+        ]
+      },
+      {
+        "en": "sister",
+        "fr": "la sœur",
+        "traps": [
+          "sistere",
+          "sistter"
+        ]
+      },
+      {
+        "en": "brother",
+        "fr": "le frère",
+        "traps": [
+          "brozer",
+          "bruther"
+        ]
+      },
+      {
+        "en": "grandmother",
+        "fr": "la grand-mère",
+        "traps": [
+          "granmother",
+          "grandmozer"
+        ]
+      },
+      {
+        "en": "grandfather",
+        "fr": "le grand-père",
+        "traps": [
+          "granfather",
+          "grandfazer"
+        ]
+      },
+      {
+        "en": "uncle",
+        "fr": "l’oncle",
+        "traps": [
+          "onkle",
+          "uncel"
+        ]
+      },
+      {
+        "en": "aunt",
+        "fr": "la tante",
+        "traps": [
+          "ant",
+          "aunte"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ecole",
+    "label": "L’école",
+    "words": [
+      {
+        "en": "pen",
+        "fr": "le stylo",
+        "traps": [
+          "penn",
+          "pein"
+        ]
+      },
+      {
+        "en": "pencil",
+        "fr": "le crayon",
+        "traps": [
+          "pensil",
+          "pencile"
+        ]
+      },
+      {
+        "en": "book",
+        "fr": "le livre",
+        "traps": [
+          "bouk",
+          "bok"
+        ]
+      },
+      {
+        "en": "ruler",
+        "fr": "la règle",
+        "traps": [
+          "rouler",
+          "rular"
+        ]
+      },
+      {
+        "en": "rubber",
+        "fr": "la gomme",
+        "traps": [
+          "ruber",
+          "rubbeur"
+        ]
+      },
+      {
+        "en": "schoolbag",
+        "fr": "le cartable",
+        "traps": [
+          "skoolbag",
+          "schoolbeg"
+        ]
+      },
+      {
+        "en": "teacher",
+        "fr": "le professeur",
+        "traps": [
+          "ticher",
+          "teatcher"
+        ]
+      },
+      {
+        "en": "classroom",
+        "fr": "la salle de classe",
+        "traps": [
+          "clasroom",
+          "classroum"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "animaux",
+    "label": "Les animaux",
+    "words": [
+      {
+        "en": "dog",
+        "fr": "le chien",
+        "traps": [
+          "dogg",
+          "dogue"
+        ]
+      },
+      {
+        "en": "cat",
+        "fr": "le chat",
+        "traps": [
+          "catt",
+          "kat"
+        ]
+      },
+      {
+        "en": "bird",
+        "fr": "l’oiseau",
+        "traps": [
+          "beurd",
+          "berd"
+        ]
+      },
+      {
+        "en": "horse",
+        "fr": "le cheval",
+        "traps": [
+          "hors",
+          "horce"
+        ]
+      },
+      {
+        "en": "rabbit",
+        "fr": "le lapin",
+        "traps": [
+          "rabit",
+          "rabbitt"
+        ]
+      },
+      {
+        "en": "mouse",
+        "fr": "la souris",
+        "traps": [
+          "mause",
+          "mous"
+        ]
+      },
+      {
+        "en": "cow",
+        "fr": "la vache",
+        "traps": [
+          "caw",
+          "cao"
+        ]
+      },
+      {
+        "en": "fish",
+        "fr": "le poisson",
+        "traps": [
+          "fich",
+          "fisch"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "corps",
+    "label": "Le corps",
+    "words": [
+      {
+        "en": "head",
+        "fr": "la tête",
+        "traps": [
+          "hed",
+          "haid"
+        ]
+      },
+      {
+        "en": "eye",
+        "fr": "l’œil",
+        "traps": [
+          "aye",
+          "eie"
+        ]
+      },
+      {
+        "en": "ear",
+        "fr": "l’oreille",
+        "traps": [
+          "eer",
+          "ire"
+        ]
+      },
+      {
+        "en": "nose",
+        "fr": "le nez",
+        "traps": [
+          "nows",
+          "noze"
+        ]
+      },
+      {
+        "en": "mouth",
+        "fr": "la bouche",
+        "traps": [
+          "mauth",
+          "mouf"
+        ]
+      },
+      {
+        "en": "hand",
+        "fr": "la main",
+        "traps": [
+          "hend",
+          "handd"
+        ]
+      },
+      {
+        "en": "arm",
+        "fr": "le bras",
+        "traps": [
+          "arme",
+          "aarm"
+        ]
+      },
+      {
+        "en": "leg",
+        "fr": "la jambe",
+        "traps": [
+          "legg",
+          "leeg"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "vetements",
+    "label": "Les vêtements",
+    "words": [
+      {
+        "en": "shirt",
+        "fr": "la chemise",
+        "traps": [
+          "cheurt",
+          "shurt"
+        ]
+      },
+      {
+        "en": "trousers",
+        "fr": "le pantalon",
+        "traps": [
+          "trausers",
+          "trouzers"
+        ]
+      },
+      {
+        "en": "dress",
+        "fr": "la robe",
+        "traps": [
+          "dres",
+          "dresse"
+        ]
+      },
+      {
+        "en": "skirt",
+        "fr": "la jupe",
+        "traps": [
+          "skeurt",
+          "skurt"
+        ]
+      },
+      {
+        "en": "shoes",
+        "fr": "les chaussures",
+        "traps": [
+          "shous",
+          "chouz"
+        ]
+      },
+      {
+        "en": "hat",
+        "fr": "le chapeau",
+        "traps": [
+          "hatt",
+          "het"
+        ]
+      },
+      {
+        "en": "coat",
+        "fr": "le manteau",
+        "traps": [
+          "cote",
+          "kote"
+        ]
+      },
+      {
+        "en": "socks",
+        "fr": "les chaussettes",
+        "traps": [
+          "soks",
+          "sox"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "maison",
+    "label": "La maison",
+    "words": [
+      {
+        "en": "house",
+        "fr": "la maison",
+        "traps": [
+          "haus",
+          "hause"
+        ]
+      },
+      {
+        "en": "kitchen",
+        "fr": "la cuisine",
+        "traps": [
+          "kitchin",
+          "kichen"
+        ]
+      },
+      {
+        "en": "bedroom",
+        "fr": "la chambre",
+        "traps": [
+          "bedroum",
+          "bedrum"
+        ]
+      },
+      {
+        "en": "bathroom",
+        "fr": "la salle de bains",
+        "traps": [
+          "bathrum",
+          "bazroom"
+        ]
+      },
+      {
+        "en": "garden",
+        "fr": "le jardin",
+        "traps": [
+          "gardenn",
+          "gardin"
+        ]
+      },
+      {
+        "en": "door",
+        "fr": "la porte",
+        "traps": [
+          "dor",
+          "doore"
+        ]
+      },
+      {
+        "en": "window",
+        "fr": "la fenêtre",
+        "traps": [
+          "windo",
+          "windaw"
+        ]
+      },
+      {
+        "en": "stairs",
+        "fr": "l’escalier",
+        "traps": [
+          "stères",
+          "stairz"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nourriture",
+    "label": "La nourriture",
+    "words": [
+      {
+        "en": "bread",
+        "fr": "le pain",
+        "traps": [
+          "bred",
+          "braid"
+        ]
+      },
+      {
+        "en": "cheese",
+        "fr": "le fromage",
+        "traps": [
+          "chiz",
+          "cheez"
+        ]
+      },
+      {
+        "en": "apple",
+        "fr": "la pomme",
+        "traps": [
+          "appel",
+          "aple"
+        ]
+      },
+      {
+        "en": "water",
+        "fr": "l’eau",
+        "traps": [
+          "woter",
+          "watter"
+        ]
+      },
+      {
+        "en": "milk",
+        "fr": "le lait",
+        "traps": [
+          "milc",
+          "milke"
+        ]
+      },
+      {
+        "en": "egg",
+        "fr": "l’œuf",
+        "traps": [
+          "eg",
+          "egge"
+        ]
+      },
+      {
+        "en": "chicken",
+        "fr": "le poulet",
+        "traps": [
+          "chiken",
+          "tchicken"
+        ]
+      },
+      {
+        "en": "cake",
+        "fr": "le gâteau",
+        "traps": [
+          "kake",
+          "caike"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "meteo",
+    "label": "La météo",
+    "words": [
+      {
+        "en": "sun",
+        "fr": "le soleil",
+        "traps": [
+          "sunn",
+          "sonne"
+        ]
+      },
+      {
+        "en": "rain",
+        "fr": "la pluie",
+        "traps": [
+          "rein",
+          "raine"
+        ]
+      },
+      {
+        "en": "snow",
+        "fr": "la neige",
+        "traps": [
+          "sno",
+          "snaw"
+        ]
+      },
+      {
+        "en": "wind",
+        "fr": "le vent",
+        "traps": [
+          "winde",
+          "whind"
+        ]
+      },
+      {
+        "en": "cloud",
+        "fr": "le nuage",
+        "traps": [
+          "claud",
+          "cloude"
+        ]
+      },
+      {
+        "en": "hot",
+        "fr": "chaud",
+        "traps": [
+          "hott",
+          "hote"
+        ]
+      },
+      {
+        "en": "cold",
+        "fr": "froid",
+        "traps": [
+          "colde",
+          "caold"
+        ]
+      },
+      {
+        "en": "sunny",
+        "fr": "ensoleillé",
+        "traps": [
+          "suny",
+          "sonny"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "calendrier",
+    "label": "Les jours et les mois",
+    "words": [
+      {
+        "en": "Monday",
+        "fr": "lundi",
+        "traps": [
+          "Mondey",
+          "Munday"
+        ]
+      },
+      {
+        "en": "Tuesday",
+        "fr": "mardi",
+        "traps": [
+          "Tusday",
+          "Tiousday"
+        ]
+      },
+      {
+        "en": "Wednesday",
+        "fr": "mercredi",
+        "traps": [
+          "Wensday",
+          "Wednsday"
+        ]
+      },
+      {
+        "en": "Thursday",
+        "fr": "jeudi",
+        "traps": [
+          "Thirsday",
+          "Tursday"
+        ]
+      },
+      {
+        "en": "Friday",
+        "fr": "vendredi",
+        "traps": [
+          "Fraiday",
+          "Fridey"
+        ]
+      },
+      {
+        "en": "Saturday",
+        "fr": "samedi",
+        "traps": [
+          "Saterday",
+          "Saturdey"
+        ]
+      },
+      {
+        "en": "Sunday",
+        "fr": "dimanche",
+        "traps": [
+          "Sonday",
+          "Sundey"
+        ]
+      },
+      {
+        "en": "January",
+        "fr": "janvier",
+        "traps": [
+          "Janury",
+          "Januari"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "loisirs",
+    "label": "Les loisirs",
+    "words": [
+      {
+        "en": "swimming",
+        "fr": "la natation",
+        "traps": [
+          "swiming",
+          "swimmin"
+        ]
+      },
+      {
+        "en": "reading",
+        "fr": "la lecture",
+        "traps": [
+          "reeding",
+          "redding"
+        ]
+      },
+      {
+        "en": "dancing",
+        "fr": "la danse",
+        "traps": [
+          "dansing",
+          "dencing"
+        ]
+      },
+      {
+        "en": "cooking",
+        "fr": "la cuisine",
+        "traps": [
+          "couking",
+          "coocking"
+        ]
+      },
+      {
+        "en": "music",
+        "fr": "la musique",
+        "traps": [
+          "musik",
+          "miousic"
+        ]
+      },
+      {
+        "en": "drawing",
+        "fr": "le dessin",
+        "traps": [
+          "drowing",
+          "drawwing"
+        ]
+      },
+      {
+        "en": "cycling",
+        "fr": "le vélo",
+        "traps": [
+          "sycling",
+          "cicling"
+        ]
+      },
+      {
+        "en": "video games",
+        "fr": "les jeux vidéo",
+        "traps": [
+          "vidéo games",
+          "video gams"
+        ]
+      }
+    ]
+  }
+]

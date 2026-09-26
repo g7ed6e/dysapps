@@ -20,7 +20,7 @@ public/          icônes, police Luciole
 
 ## Le portail
 
-- `src/apps/registry.ts` : le **catalogue des quêtes** (identifiant, matière, titre, description, icône, composant chargé à la demande). Les pages Français et Maths le lisent, puis ajoutent les îles de Blocland de la matière.
+- `src/apps/registry.ts` : le **catalogue des quêtes** (identifiant, matière, titre, description, icône, composant chargé à la demande). Les pages Français, Maths et Anglais le lisent (`SUBJECTS` : la liste des matières), puis ajoutent les îles de Blocland de la matière.
 - `src/components/QuizSession.tsx` : le **moteur d’exercice du portail**, commun à toutes les quêtes. Il reçoit une fonction `makeQuestions` rappelée à chaque séance (ce qui permet de générer des questions aléatoires) et gère consigne lue, réponses, joker, correction dans un bandeau fixe, XP et bilan.
 - `src/components/QuestMenu.tsx` : le menu des quêtes d’une activité (cartes numérotées avec le meilleur score), puis la quête choisie.
 - Chaque quête a ses données ou ses générateurs : `homophones/sets.json`, `lecture/texts.json`, `tables/generators.tsx`, `fractions/generators.tsx`, `decimaux/generators.tsx`.

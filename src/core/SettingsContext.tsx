@@ -1,14 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { applySettings, DEFAULT_SETTINGS, sanitizeSettings, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
-import { speak as speakRaw, stopSpeaking } from './speech';
+import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
 
 interface SettingsContextValue {
   settings: Settings;
   update: (patch: Partial<Settings>) => void;
   reset: () => void;
-  /** Lit un texte à voix haute avec la vitesse choisie par l'élève. */
-  speak: (text: string, onEnd?: () => void) => void;
+  /** Lit un texte à voix haute avec la vitesse choisie par l'élève (en français, sauf `lang: 'en'`). */
+  speak: (text: string, onEnd?: () => void, lang?: Lang) => void;
   stop: () => void;
 }
 
@@ -29,7 +29,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const reset = useCallback(() => setSettings(DEFAULT_SETTINGS), []);
 
-  const speak = useCallback((text: string, onEnd?: () => void) => speakRaw(text, settings.speechRate, onEnd), [settings.speechRate]);
+  const speak = useCallback((text: string, onEnd?: () => void, lang?: Lang) => speakRaw(text, settings.speechRate, onEnd, lang), [settings.speechRate]);
 
   const value = useMemo(() => ({ settings, update, reset, speak, stop: stopSpeaking }), [settings, update, reset, speak]);
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

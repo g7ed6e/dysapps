@@ -38,6 +38,7 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
         level={level}
         target={round.target as string | undefined}
         exerciseId={String(round.exerciseId)}
+        lang={round.lang === 'en' ? 'en' : undefined}
       />
     </div>
   );

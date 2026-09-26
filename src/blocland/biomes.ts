@@ -1,4 +1,5 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
+import type { Subject } from '../apps/registry';
 import type { AnyIconName } from '../components/Icon';
 
 export type BiomeId =
@@ -156,7 +157,7 @@ export interface BiomeDef {
   name: string;
   module: string;
   /** Matière et classe visée (le contenu monte jusqu'à la fin de 3e). */
-  subject: 'francais' | 'maths';
+  subject: Subject;
   classe: Classe;
   description: string;
   block: BlockId;
@@ -839,7 +840,7 @@ export const BIOMES: BiomeDef[] = [
 ];
 
 /** Les îles d'une matière, dans l'ordre des classes. */
-export function biomesOf(subject: 'francais' | 'maths'): BiomeDef[] {
+export function biomesOf(subject: Subject): BiomeDef[] {
   const order: Classe[] = ['6e', '5e', '4e', '3e'];
   return BIOMES.filter((b) => b.subject === subject).sort((a, b) => order.indexOf(a.classe) - order.indexOf(b.classe));
 }

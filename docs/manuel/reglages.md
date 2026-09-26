@@ -39,6 +39,8 @@ Le texte à lire reste toujours dans la police choisie. Les polices « affiche �
 
 La lecture à voix haute utilise la **synthèse vocale du navigateur** (rien n’est envoyé à un serveur). La **vitesse de lecture** se règle de 0,5 à 1,3. Si le navigateur ne propose pas de voix française, la page l’indique ; installer une voix française dans le système (réglages d’accessibilité de l’appareil) suffit en général.
 
+Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britannique si l’appareil en a une, sinon une autre voix anglaise. **Tester la voix anglaise** lit une phrase d’exemple ; si elle est lue avec l’accent français, installer une voix anglaise (Royaume-Uni) dans le système.
+
 ## Animations et Blocland
 
 - **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.

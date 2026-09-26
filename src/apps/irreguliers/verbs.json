@@ -1,0 +1,521 @@
+[
+  {
+    "base": "be",
+    "preterit": "was / were",
+    "participle": "been",
+    "fr": "être",
+    "level": 1,
+    "traps": [
+      "is",
+      "are"
+    ],
+    "regular": false
+  },
+  {
+    "base": "have",
+    "preterit": "had",
+    "participle": "had",
+    "fr": "avoir",
+    "level": 1,
+    "traps": [
+      "has",
+      "haved"
+    ]
+  },
+  {
+    "base": "do",
+    "preterit": "did",
+    "participle": "done",
+    "fr": "faire",
+    "level": 1,
+    "traps": [
+      "does"
+    ]
+  },
+  {
+    "base": "go",
+    "preterit": "went",
+    "participle": "gone",
+    "fr": "aller",
+    "level": 1
+  },
+  {
+    "base": "come",
+    "preterit": "came",
+    "participle": "come",
+    "fr": "venir",
+    "level": 1,
+    "traps": [
+      "comed"
+    ]
+  },
+  {
+    "base": "see",
+    "preterit": "saw",
+    "participle": "seen",
+    "fr": "voir",
+    "level": 1
+  },
+  {
+    "base": "get",
+    "preterit": "got",
+    "participle": "got",
+    "fr": "obtenir",
+    "level": 1,
+    "traps": [
+      "getted",
+      "gotten"
+    ]
+  },
+  {
+    "base": "make",
+    "preterit": "made",
+    "participle": "made",
+    "fr": "fabriquer",
+    "level": 1,
+    "traps": [
+      "maked"
+    ]
+  },
+  {
+    "base": "take",
+    "preterit": "took",
+    "participle": "taken",
+    "fr": "prendre",
+    "level": 1
+  },
+  {
+    "base": "say",
+    "preterit": "said",
+    "participle": "said",
+    "fr": "dire",
+    "level": 1,
+    "traps": [
+      "sayed"
+    ]
+  },
+  {
+    "base": "know",
+    "preterit": "knew",
+    "participle": "known",
+    "fr": "savoir",
+    "level": 1
+  },
+  {
+    "base": "think",
+    "preterit": "thought",
+    "participle": "thought",
+    "fr": "penser",
+    "level": 1,
+    "traps": [
+      "thinked",
+      "taught"
+    ]
+  },
+  {
+    "base": "eat",
+    "preterit": "ate",
+    "participle": "eaten",
+    "fr": "manger",
+    "level": 1
+  },
+  {
+    "base": "drink",
+    "preterit": "drank",
+    "participle": "drunk",
+    "fr": "boire",
+    "level": 1
+  },
+  {
+    "base": "give",
+    "preterit": "gave",
+    "participle": "given",
+    "fr": "donner",
+    "level": 1
+  },
+  {
+    "base": "find",
+    "preterit": "found",
+    "participle": "found",
+    "fr": "trouver",
+    "level": 1,
+    "traps": [
+      "finded"
+    ]
+  },
+  {
+    "base": "tell",
+    "preterit": "told",
+    "participle": "told",
+    "fr": "raconter",
+    "level": 1,
+    "traps": [
+      "telled"
+    ]
+  },
+  {
+    "base": "write",
+    "preterit": "wrote",
+    "participle": "written",
+    "fr": "écrire",
+    "level": 1
+  },
+  {
+    "base": "read",
+    "preterit": "read",
+    "participle": "read",
+    "fr": "lire",
+    "level": 1,
+    "traps": [
+      "red",
+      "readen"
+    ]
+  },
+  {
+    "base": "buy",
+    "preterit": "bought",
+    "participle": "bought",
+    "fr": "acheter",
+    "level": 1,
+    "traps": [
+      "buyed",
+      "brought"
+    ]
+  },
+  {
+    "base": "begin",
+    "preterit": "began",
+    "participle": "begun",
+    "fr": "commencer",
+    "level": 2
+  },
+  {
+    "base": "break",
+    "preterit": "broke",
+    "participle": "broken",
+    "fr": "casser",
+    "level": 2
+  },
+  {
+    "base": "bring",
+    "preterit": "brought",
+    "participle": "brought",
+    "fr": "apporter",
+    "level": 2,
+    "traps": [
+      "bought"
+    ]
+  },
+  {
+    "base": "build",
+    "preterit": "built",
+    "participle": "built",
+    "fr": "construire",
+    "level": 2,
+    "traps": [
+      "builded"
+    ]
+  },
+  {
+    "base": "choose",
+    "preterit": "chose",
+    "participle": "chosen",
+    "fr": "choisir",
+    "level": 2
+  },
+  {
+    "base": "cut",
+    "preterit": "cut",
+    "participle": "cut",
+    "fr": "couper",
+    "level": 2,
+    "traps": [
+      "cutted",
+      "cutten"
+    ]
+  },
+  {
+    "base": "fall",
+    "preterit": "fell",
+    "participle": "fallen",
+    "fr": "tomber",
+    "level": 2
+  },
+  {
+    "base": "feel",
+    "preterit": "felt",
+    "participle": "felt",
+    "fr": "ressentir",
+    "level": 2,
+    "traps": [
+      "fell"
+    ]
+  },
+  {
+    "base": "fly",
+    "preterit": "flew",
+    "participle": "flown",
+    "fr": "voler (dans les airs)",
+    "level": 2
+  },
+  {
+    "base": "forget",
+    "preterit": "forgot",
+    "participle": "forgotten",
+    "fr": "oublier",
+    "level": 2
+  },
+  {
+    "base": "hear",
+    "preterit": "heard",
+    "participle": "heard",
+    "fr": "entendre",
+    "level": 2,
+    "traps": [
+      "hearded"
+    ]
+  },
+  {
+    "base": "keep",
+    "preterit": "kept",
+    "participle": "kept",
+    "fr": "garder",
+    "level": 2,
+    "traps": [
+      "keeped"
+    ]
+  },
+  {
+    "base": "leave",
+    "preterit": "left",
+    "participle": "left",
+    "fr": "partir",
+    "level": 2,
+    "traps": [
+      "leaved"
+    ]
+  },
+  {
+    "base": "lose",
+    "preterit": "lost",
+    "participle": "lost",
+    "fr": "perdre",
+    "level": 2,
+    "traps": [
+      "losed"
+    ]
+  },
+  {
+    "base": "meet",
+    "preterit": "met",
+    "participle": "met",
+    "fr": "rencontrer",
+    "level": 2,
+    "traps": [
+      "meeted"
+    ]
+  },
+  {
+    "base": "pay",
+    "preterit": "paid",
+    "participle": "paid",
+    "fr": "payer",
+    "level": 2,
+    "traps": [
+      "payed"
+    ]
+  },
+  {
+    "base": "put",
+    "preterit": "put",
+    "participle": "put",
+    "fr": "mettre",
+    "level": 2,
+    "traps": [
+      "putted",
+      "puten"
+    ]
+  },
+  {
+    "base": "run",
+    "preterit": "ran",
+    "participle": "run",
+    "fr": "courir",
+    "level": 2,
+    "traps": [
+      "runned"
+    ]
+  },
+  {
+    "base": "sell",
+    "preterit": "sold",
+    "participle": "sold",
+    "fr": "vendre",
+    "level": 2,
+    "traps": [
+      "selled"
+    ]
+  },
+  {
+    "base": "sleep",
+    "preterit": "slept",
+    "participle": "slept",
+    "fr": "dormir",
+    "level": 2,
+    "traps": [
+      "sleeped"
+    ]
+  },
+  {
+    "base": "become",
+    "preterit": "became",
+    "participle": "become",
+    "fr": "devenir",
+    "level": 3,
+    "traps": [
+      "becomed"
+    ]
+  },
+  {
+    "base": "bite",
+    "preterit": "bit",
+    "participle": "bitten",
+    "fr": "mordre",
+    "level": 3
+  },
+  {
+    "base": "blow",
+    "preterit": "blew",
+    "participle": "blown",
+    "fr": "souffler",
+    "level": 3
+  },
+  {
+    "base": "catch",
+    "preterit": "caught",
+    "participle": "caught",
+    "fr": "attraper",
+    "level": 3,
+    "traps": [
+      "catched"
+    ]
+  },
+  {
+    "base": "draw",
+    "preterit": "drew",
+    "participle": "drawn",
+    "fr": "dessiner",
+    "level": 3
+  },
+  {
+    "base": "drive",
+    "preterit": "drove",
+    "participle": "driven",
+    "fr": "conduire",
+    "level": 3
+  },
+  {
+    "base": "forgive",
+    "preterit": "forgave",
+    "participle": "forgiven",
+    "fr": "pardonner",
+    "level": 3
+  },
+  {
+    "base": "freeze",
+    "preterit": "froze",
+    "participle": "frozen",
+    "fr": "geler",
+    "level": 3
+  },
+  {
+    "base": "grow",
+    "preterit": "grew",
+    "participle": "grown",
+    "fr": "grandir",
+    "level": 3
+  },
+  {
+    "base": "hide",
+    "preterit": "hid",
+    "participle": "hidden",
+    "fr": "cacher",
+    "level": 3
+  },
+  {
+    "base": "hold",
+    "preterit": "held",
+    "participle": "held",
+    "fr": "tenir",
+    "level": 3,
+    "traps": [
+      "holded"
+    ]
+  },
+  {
+    "base": "lend",
+    "preterit": "lent",
+    "participle": "lent",
+    "fr": "prêter",
+    "level": 3,
+    "traps": [
+      "lended"
+    ]
+  },
+  {
+    "base": "ride",
+    "preterit": "rode",
+    "participle": "ridden",
+    "fr": "monter (à vélo, à cheval)",
+    "level": 3
+  },
+  {
+    "base": "ring",
+    "preterit": "rang",
+    "participle": "rung",
+    "fr": "sonner",
+    "level": 3
+  },
+  {
+    "base": "rise",
+    "preterit": "rose",
+    "participle": "risen",
+    "fr": "se lever",
+    "level": 3
+  },
+  {
+    "base": "shake",
+    "preterit": "shook",
+    "participle": "shaken",
+    "fr": "secouer",
+    "level": 3
+  },
+  {
+    "base": "sing",
+    "preterit": "sang",
+    "participle": "sung",
+    "fr": "chanter",
+    "level": 3
+  },
+  {
+    "base": "steal",
+    "preterit": "stole",
+    "participle": "stolen",
+    "fr": "voler (dérober)",
+    "level": 3
+  },
+  {
+    "base": "swim",
+    "preterit": "swam",
+    "participle": "swum",
+    "fr": "nager",
+    "level": 3
+  },
+  {
+    "base": "wear",
+    "preterit": "wore",
+    "participle": "worn",
+    "fr": "porter (un vêtement)",
+    "level": 3
+  }
+]

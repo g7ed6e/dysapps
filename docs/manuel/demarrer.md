@@ -4,7 +4,7 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-La page d’accueil présente **Blocland** (l’aventure) et les **quêtes par matière** (Français, Maths). La barre du haut donne accès partout aux **Succès** (rang, XP, progression) et aux **Réglages**.
+La page d’accueil présente **Blocland** (l’aventure) et les **quêtes par matière** (Français, Maths, Anglais). La barre du haut donne accès partout aux **Succès** (rang, XP, progression) et aux **Réglages**.
 
 ## Installer sur l’écran d’accueil
 

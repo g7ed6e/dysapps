@@ -24,6 +24,15 @@ it('affiche les matières sur l’accueil', () => {
   renderAt('/');
   expect(screen.getByRole('link', { name: /Français/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/anglais');
+});
+
+it('liste les quêtes d’anglais du portail', () => {
+  renderAt('/matiere/anglais');
+  expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Verbes irréguliers/ })).toBeInTheDocument();
+  // Pas encore d'île d'anglais : pas de section Blocland vide.
+  expect(screen.queryByRole('heading', { name: /Dans Blocland/ })).not.toBeInTheDocument();
 });
 
 it('liste les activités d’une matière', () => {
