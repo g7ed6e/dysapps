@@ -96,13 +96,14 @@ const GRIMOIRE = fromLayers(
   { C: '#5a4a8a', P: '#f4f1e4', p: '#e3dcc4', E: '#1f1a16', G: '#e0a33a', B: '#d8402e' },
 );
 
-// Coco : une coccinelle ronde, rouge à points noirs, tête noire et deux antennes.
+// Coco : une coccinelle ronde, carapace rouge à points noirs, tête noire aux yeux blancs, deux antennes, six pattes.
 const COCO = fromLayers(
   [
-    ['.RRR.', 'RRRRR', 'RRRRR', '.RRR.'],
-    ['.KKK.', 'RKRKR', 'RRRRR', '.RKR.'],
-    ['.KEK.', '.RRR.', '.RRR.', '.....'],
-    ['.A.A.', '.....', '.....', '.....'],
+    ['.....', 'K...K', 'K...K', 'K...K', '.....'],
+    ['.KKK.', 'RRRRR', 'RRRRR', 'RRRRR', '.RRR.'],
+    ['.EKE.', 'RKRKR', 'RRRRR', 'RKRKR', '.RRR.'],
+    ['.KKK.', '.RRR.', '.RKR.', '.RRR.', '.....'],
+    ['.A.A.', '.....', '.....', '.....', '.....'],
   ],
   { R: '#d8402e', K: '#1f1a16', E: '#f6f1e6', A: '#1f1a16' },
 );
