@@ -39,7 +39,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Répétition espacée** des items ratés (J+1, J+3, J+7, J+15, sortie après trois réussites d’affilée), particulièrement pour les mots-outils, les confusions de lettres et les homophones.
 - **Adaptation du niveau** par quête : monte après deux parties au-dessus du seuil, ou une seule quasi parfaite ; descend après deux parties en dessous du seuil bas.
 - **Variation** : chaque partie tire d’autres nombres ou un autre lot de mots ; le premier contact garde l’ordre écrit par l’auteur.
-- **Progression par thème, pas par classe imposée** : chaque île est un thème du programme avec une classe indicative (6e à 3e), mais rien n’empêche un élève de commencer où il veut ; seuls les ouvrages ouvrent les îles.
+- **Progression par archipel** : chaque île est un thème du programme avec une classe indicative (6e à 3e). Dans un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans l’ordre que l’on veut. Passer à l’archipel suivant demande le Bloc-Navire, construit avec des blocs et quelques Gardiens vaincus ; on revient toujours en arrière, rien ne se perd.
 - **Le geste apprend** : trier des mots, piocher une lettre, poser un bloc de lettres, glisser un sujet vers un verbe, lire à voix haute paragraphe par paragraphe.
 
 ## Ce que travaille chaque île

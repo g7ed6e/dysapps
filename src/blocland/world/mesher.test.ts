@@ -46,12 +46,18 @@ it('le village entier, tout construit, reste dans le budget de faces des tablett
   const { BIOMES } = await import('../biomes');
   const { PLANS, planCells } = await import('./plans');
   const { worldCubes } = await import('./terrain');
-  const progress = Object.fromEntries(BIOMES.map((b) => [`${b.id}-x`, { stars: 3 }]));
-  const plans = Object.fromEntries(PLANS.map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const groups = buildMesh(worldCubes(progress, { plans, journal: [], bridges: [] }));
-  // Vingt îles avec leur terre, leur relief et leur roche flottante : sous les 34 000 faces, à l'aise pour une tablette.
-  // Cœurs de 16 × 16 (bornes de quête) : un quart de faces en plus qu'avec des cœurs de 12.
-  expect(faceCount(groups)).toBeLessThan(48000);
-  // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : un peu plus de cent appels de dessin.
-  expect(groups.length).toBeLessThan(150);
+  const { ARCHIPELAGO_IDS } = await import('./map');
+  const { BRIDGES, VOYAGES } = await import('./archipelago');
+  const { VEHICLE_STAGES } = await import('./vehicle');
+  const progress = Object.fromEntries(BIOMES.flatMap((b) => [[`${b.id}-x`, { stars: 3 }], [`${b.id}-gardien`, { stars: 3 }]]));
+  const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES].map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
+  for (const a of ARCHIPELAGO_IDS) {
+    const groups = buildMesh(worldCubes(a, progress, { plans, journal: [], bridges }));
+    // Un archipel à la fois (huit îles au plus, avec leur terre, leur relief, leur roche flottante, le quai et le navire) :
+    // sous les 30 000 faces, à l'aise pour une tablette.
+    expect(faceCount(groups), a).toBeLessThan(30000);
+    // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : une centaine d'appels de dessin.
+    expect(groups.length, a).toBeLessThan(130);
+  }
 });

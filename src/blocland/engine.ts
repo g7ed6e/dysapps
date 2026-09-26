@@ -4,7 +4,20 @@ import type { BiomeId, BlockId } from './biomes';
 import { BLOCKS, getBiome } from './biomes';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
-import { bridgesFromLegacyProgress, buildBridge as buildBridgePure, getBridge, isBiomeUnlocked, type BuildBridgeResult } from './world/archipelago';
+import {
+  bridgesFromLegacyProgress,
+  buildBridge as buildBridgePure,
+  getArchipelago,
+  getBridge,
+  getVoyage,
+  grantAccess,
+  isBiomeUnlocked,
+  legacyReachable,
+  reachableIslands,
+  voyageId,
+  type BuildBridgeResult,
+} from './world/archipelago';
+import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -168,10 +181,12 @@ export function sanitizeState(input: unknown): BloclandState {
       }
     }
   }
+  // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
+  const anyPlan = (id: string) => getPlan(id) ?? getStage(id);
   const plans: Record<string, string[]> = {};
   if (isRecord(village.plans)) {
     for (const [id, keys] of Object.entries(village.plans)) {
-      const plan = getPlan(id);
+      const plan = anyPlan(id);
       if (!plan || !Array.isArray(keys)) continue;
       const valid = new Set(planCells(plan).map((c) => c.key));
       const list = [...new Set(keys.filter((k): k is string => typeof k === 'string' && valid.has(k)))];
@@ -180,16 +195,29 @@ export function sanitizeState(input: unknown): BloclandState {
   }
   const journal: JournalEntry[] = Array.isArray(village.journal)
     ? village.journal
-        .filter(
-          (e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.plan === 'string' && Boolean(getPlan(e.plan as string)),
-        )
+        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.plan === 'string' && Boolean(anyPlan(e.plan as string)))
         .map((e) => ({ day: e.day as string, plan: e.plan as string }))
         .slice(-100)
     : [];
-  // Ponts : liste d'identifiants connus ; une sauvegarde d'avant les ponts reçoit ceux des îles déjà ouvertes.
-  const bridges = Array.isArray(village.bridges)
-    ? [...new Set(village.bridges.filter((id): id is string => typeof id === 'string' && Boolean(getBridge(id))))]
-    : bridgesFromLegacyProgress(progress);
+  // Ouvrages et voyages : liste d'identifiants connus ; une sauvegarde d'avant les ponts reçoit ceux des îles déjà ouvertes.
+  // Une sauvegarde du continent d'avant les archipels (escaliers, tunnels entre classes) garde toutes ses îles ouvertes :
+  // les voyages et le chemin qui y mènent sont offerts.
+  const rawIds = Array.isArray(village.bridges) ? village.bridges.filter((id): id is string => typeof id === 'string') : null;
+  let bridges = rawIds ? [...new Set(rawIds.filter((id) => Boolean(getBridge(id) ?? getVoyage(id))))] : bridgesFromLegacyProgress(progress);
+  if (rawIds && rawIds.some((id) => !getBridge(id) && !getVoyage(id))) bridges = grantAccess(bridges, legacyReachable(rawIds));
+  // Une île où l'on a déjà joué ou vaincu le Gardien reste ouverte, quoi qu'il arrive aux ouvrages.
+  const played = new Set<BiomeId>();
+  for (const [id, p] of Object.entries(progress)) {
+    if (p.stars < 1) continue;
+    const biome = getBiome(id.slice(0, id.indexOf('-')));
+    if (biome) played.add(biome.id);
+  }
+  bridges = grantAccess(bridges, played);
+  // Un voyage fait : son étape du Bloc-Navire est forcément complète (on la dessine entière).
+  for (const id of bridges) {
+    const stage = stageFor(id);
+    if (stage && (plans[stage.id]?.length ?? 0) < stage.cells.length) plans[stage.id] = planCells(stage).map((c) => c.key);
+  }
   // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
   const at = typeof village.at === 'string' && getBiome(village.at) && isBiomeUnlocked(village.at as BiomeId, bridges) ? (village.at as BiomeId) : undefined;
   return {
@@ -447,4 +475,36 @@ export function buildBridge(state: BloclandState, id: string): { state: Blocland
 export function moveAvatar(state: BloclandState, to: BiomeId): BloclandState {
   if (!isBiomeUnlocked(to, state.village.bridges) || state.village.at === to) return state;
   return { ...state, village: { ...state.village, at: to } };
+}
+
+// ---------- Le Bloc-Navire ----------
+
+/** L'étape du Bloc-Navire en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
+export function currentStage(state: BloclandState): VehicleStage | null {
+  return VEHICLE_STAGES.find((s) => !state.village.bridges.includes(voyageId(s.to))) ?? null;
+}
+
+export type LaunchResult =
+  | { ok: true; to: BiomeId }
+  | { ok: false; reason: 'loin' | 'construit' | 'blocs' | 'gardiens'; missing: number };
+
+/** Peut-on embarquer ? Le port de départ ouvert, le voyage pas encore fait, toutes les cases posées, assez de Gardiens vaincus. */
+export function canLaunch(state: BloclandState, stage: VehicleStage): LaunchResult {
+  const bridges = state.village.bridges;
+  if (!reachableIslands(bridges).has(stage.biome)) return { ok: false, reason: 'loin', missing: 0 };
+  if (bridges.includes(voyageId(stage.to))) return { ok: false, reason: 'construit', missing: 0 };
+  const status = planStatus(state, stage);
+  if (!status.complete) return { ok: false, reason: 'blocs', missing: status.total - status.done };
+  if (!kitReady(stage, state.progress)) return { ok: false, reason: 'gardiens', missing: stage.guardians - beatenGuardians(stage.from, state.progress) };
+  return { ok: true, to: getArchipelago(stage.to).port };
+}
+
+/**
+ * Largue les amarres : le voyage est fait (et le reste : on revient quand on veut), le bonhomme arrive au port d'en face.
+ * Un acte explicite, jamais un effet du dernier bloc posé.
+ */
+export function launchVehicle(state: BloclandState, stage: VehicleStage): { state: BloclandState; result: LaunchResult } {
+  const result = canLaunch(state, stage);
+  if (!result.ok) return { state, result };
+  return { state: { ...state, village: { ...state.village, bridges: [...state.village.bridges, voyageId(stage.to)], at: result.to } }, result };
 }

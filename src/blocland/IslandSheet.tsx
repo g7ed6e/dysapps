@@ -9,7 +9,10 @@ import type { BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
+import { ShipSection } from './ShipSection';
 import type { PlanBuilder } from './usePlanBuilder';
+import type { VehicleBuilder } from './useVehicleBuilder';
+import { getArchipelago, type ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
 import { levelFor } from './engine';
@@ -27,13 +30,17 @@ interface Props {
   onBuilt?: (to: BiomeDef['id']) => void;
   /** L'ouvrage touché dans le monde : sa proposition est mise en avant. */
   highlight?: string | null;
+  /** Le chantier du Bloc-Navire (sur une île-port). */
+  ship?: VehicleBuilder;
+  /** Embarquer sur le Bloc-Navire vers un archipel. */
+  onBoard?: (to: ArchipelagoId, back: boolean) => void;
 }
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le plan en cours,
  * le Gardien et le plan à construire. Tout est en HTML (police dys), on ne quitte pas le monde.
  */
-export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null }: Props) {
+export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
@@ -69,7 +76,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
             <Icon name={biome.icon} /> {biome.name}
           </h2>
           <p className="island-sheet-module">
-            {biome.module} · Niveau {biome.classe}
+            {biome.module} · Niveau {biome.classe} · Les {getArchipelago(biome.classe).name}
           </p>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
@@ -161,6 +168,8 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       </p>
 
       {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
+
+      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
     </section>

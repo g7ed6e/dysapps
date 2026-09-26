@@ -8,7 +8,7 @@ Applications d’entraînement pour les **élèves dys du collège** (dyslexie, 
 ## Ce que c’est
 
 - **Les quêtes du portail** : Homophones, Lecture (textes du domaine public), Tables et calcul mental, Fractions, Nombres décimaux. Séances courtes, questions générées, joker avec aide visuelle, correction qui explique.
-- **L’aventure Blocland** : un archipel de vingt îles en 3D, une par thème du programme, de la 6e à la 3e. Chaque île a sa créature, ses quêtes, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles et rebâtissent le village.
+- **L’aventure Blocland** : quatre archipels en 3D, un par classe de la 6e à la 3e, vingt îles en tout, une par thème du programme. Chaque île a sa créature, ses quêtes, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais sous 18 px, consignes lues à voix haute, syllabes en couleurs, un item par écran, aide toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, rien ne se perd.
 - **Une motivation façon jeu**, sans stress : XP, rangs, succès, étoiles, blocs, bâtiments, répétition espacée et niveau adapté.
 

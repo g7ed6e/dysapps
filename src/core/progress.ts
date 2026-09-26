@@ -20,6 +20,8 @@ export interface Progress {
   plansCompleted: number;
   /** Gardiens de biome vaincus. */
   bossesBeaten: number;
+  /** Voyages du Bloc-Navire (un archipel de plus atteint). */
+  voyages: number;
   badges: Record<string, string>; // id du badge -> date d'obtention (ISO)
   apps: Record<string, AppStats>;
 }
@@ -34,6 +36,7 @@ export const EMPTY_PROGRESS: Progress = {
   perfectSessions: 0,
   plansCompleted: 0,
   bossesBeaten: 0,
+  voyages: 0,
   badges: {},
   apps: {},
 };
@@ -74,6 +77,7 @@ export function sanitizeProgress(input: unknown): Progress {
     sessionsCompleted: nonNegativeInt(raw.sessionsCompleted),
     plansCompleted: nonNegativeInt(raw.plansCompleted),
     bossesBeaten: nonNegativeInt(raw.bossesBeaten),
+    voyages: nonNegativeInt(raw.voyages),
     perfectSessions: nonNegativeInt(raw.perfectSessions),
     badges,
     apps,
@@ -161,7 +165,8 @@ export type IconName =
   | 'hammer'
   | 'blocks'
   | 'shield'
-  | 'castle';
+  | 'castle'
+  | 'ship';
 
 export interface BadgeDef {
   id: string;
@@ -199,9 +204,12 @@ export const BADGES: BadgeDef[] = [
     id: 'archipel-bati',
     icon: 'castle',
     title: 'Archipel bâti',
-    description: `Terminer les ${PLANS.length} plans de l’archipel.`,
+    description: `Terminer les ${PLANS.length} plans des quatre archipels.`,
     earned: (p) => p.plansCompleted >= PLANS.length,
   },
+  { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.voyages >= 1 },
+  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.', earned: (p) => p.voyages >= 2 },
+  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.voyages >= 3 },
   { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
   { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
   { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Vaincre dix Gardiens.', earned: (p) => p.bossesBeaten >= 10 },
@@ -209,7 +217,7 @@ export const BADGES: BadgeDef[] = [
     id: 'archipel',
     icon: 'crown',
     title: 'Maître de l’archipel',
-    description: `Vaincre les ${BIOMES.length} Gardiens de l’archipel.`,
+    description: `Vaincre les ${BIOMES.length} Gardiens des quatre archipels.`,
     earned: (p) => p.bossesBeaten >= BIOMES.length,
   },
 ];
@@ -268,6 +276,11 @@ export function recordAnswer(p: Progress, correct: boolean, attempt = 1, now = n
 /** Un Gardien de biome vaincu (deux étoiles au défi) : compteur pour les succès. */
 export function recordBoss(p: Progress, now = new Date().toISOString()): ProgressUpdate {
   return finish(p, { ...p, bossesBeaten: p.bossesBeaten + 1 }, 0, now);
+}
+
+/** Un voyage du Bloc-Navire : l'XP de l'étape et le compteur pour les succès. */
+export function recordVoyage(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
+  return finish(p, { ...p, xp: p.xp + xp, voyages: p.voyages + 1 }, xp, now);
 }
 
 export function recordPlan(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {

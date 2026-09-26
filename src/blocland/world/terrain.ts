@@ -2,9 +2,27 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { BRIDGES, bridgeState, bridgesOf, isBiomeUnlocked, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
+import { BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, voyageId, type BridgeDef } from './archipelago';
 import { AVATAR_HOME } from '../Avatar';
-import { CORE, MAP, inCore, isLand, islandDef, landBox, landCells, landscape, noise, type Decor, type Ground, type IslandDef, type LandCell } from './map';
+import {
+  CORE,
+  archipelagoOfIsland,
+  inCore,
+  isLand,
+  islandDef,
+  landBox,
+  landCells,
+  landscape,
+  mapOf,
+  noise,
+  type ArchipelagoId,
+  type Decor,
+  type Ground,
+  type IslandDef,
+  type LandCell,
+} from './map';
+import { dockBox, dockCells, dockOrigin, dockPosts } from './harbour';
+import { VEHICLE_STAGES, kitReady, launchedStages } from './vehicle';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
@@ -157,8 +175,8 @@ export function islandCenter(id: BiomeId): { x: number; y: number; z: number } {
   return { x: def.core.x + CORE / 2, y: def.core.y + CORE / 2, z: def.altitude };
 }
 
-/** Étendue du monde (coordonnées de grille), terres et îlots compris. */
-export function worldBounds(): {
+/** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
+export function worldBounds(a: ArchipelagoId): {
   minX: number;
   maxX: number;
   minY: number;
@@ -168,7 +186,7 @@ export function worldBounds(): {
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
-  for (const def of MAP) {
+  for (const def of mapOf(a)) {
     const b = landBox(def);
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
@@ -176,6 +194,10 @@ export function worldBounds(): {
     minY = Math.min(minY, b.y0 - ISLET_H - 2);
     maxY = Math.max(maxY, b.y1 + 2);
   }
+  const dock = dockBox(getArchipelago(a).port);
+  minX = Math.min(minX, dock.x0 - 2);
+  maxX = Math.max(maxX, dock.x1 + 2);
+  minY = Math.min(minY, dock.y0 - 2);
   return { minX, maxX, minY, maxY };
 }
 
@@ -183,11 +205,11 @@ export function worldBounds(): {
  * L'étendue à cadrer dans la vue d'ensemble : les îles ouvertes et celles qu'un ouvrage proposé peut atteindre,
  * avec une marge. Au début, deux îles et leurs voisines ; le cadre s'élargit à mesure que le monde s'ouvre.
  */
-export function overviewBounds(bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
+export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
   const open = reachableIslands(bridges);
-  const shown = new Set<BiomeId>(open);
+  const shown = new Set<BiomeId>([...open].filter((id) => archipelagoOfIsland(id) === a));
   for (const b of BRIDGES) {
-    if (bridgeState(b, bridges) === 'far') continue;
+    if (archipelagoOfIsland(b.from) !== a || bridgeState(b, bridges) === 'far') continue;
     shown.add(b.from);
     shown.add(b.to);
   }
@@ -235,17 +257,18 @@ export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: num
  */
 export function viewYaw(home: BiomeId): number {
   const c = islandCenter(home);
-  const b = worldBounds();
+  const b = worldBounds(archipelagoOfIsland(home));
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
   const dx = (b.minX + b.maxX) / 2 - c.x;
   return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
 }
 
-/** Île la plus proche d'un point de la grille (pour le toucher : une île ou le pont qui y mène). */
-export function islandAt(x: number, y: number): BiomeId {
-  let best: BiomeId = BIOMES[0].id;
+/** Île la plus proche d'un point de la grille d'un archipel (pour le toucher : une île ou le pont qui y mène). */
+export function islandAt(a: ArchipelagoId, x: number, y: number): BiomeId {
+  const islands = islandsOf(a);
+  let best: BiomeId = islands[0].id;
   let bestD = Infinity;
-  for (const b of BIOMES) {
+  for (const b of islands) {
     const c = islandCenter(b.id);
     const d = Math.hypot(c.x - x, c.y - y);
     if (d < bestD) {
@@ -805,13 +828,16 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
 
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
 export function creaturePlacements(
+  a: ArchipelagoId,
   bridges: string[],
 ): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number }; steps: [number, number][] }[] {
-  return BIOMES.filter((b) => isBiomeUnlocked(b.id, bridges)).map((b) => {
-    const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
-    const spot = creatureSpot(b.id);
-    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
-  });
+  return islandsOf(a)
+    .filter((b) => isBiomeUnlocked(b.id, bridges))
+    .map((b) => {
+      const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
+      const spot = creatureSpot(b.id);
+      return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
+    });
 }
 
 /** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases (les Gardiens font jusqu’à 9 × 8). */
@@ -840,11 +866,13 @@ function stoneOf(color: string): string {
 
 /** Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. */
 export function guardianPlacements(
+  a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
   bridges: string[],
 ): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
   BIOMES.forEach((b, index) => {
+    if (b.classe !== a) return;
     const status = guardianStatus(b, progress, bridges);
     if (status === 'hidden') return;
     const { x, y, z } = bossIsletOrigin(index);
@@ -1012,16 +1040,19 @@ function cascades(def: IslandDef, scenery: LandCell[], put: (x: number, y: numbe
  * Où nagent les baleines : quatre ronds dans de larges clairières d'eau, de préférence au large (les îles du bord
  * voient la mer), assez loin de toute terre et de tout îlot pour ne jamais les toucher. Centre et rayon, en grille.
  */
-let whaleCache: { x: number; y: number; r: number }[] | null = null;
-export function whaleSpots(): { x: number; y: number; r: number }[] {
-  if (whaleCache) return whaleCache;
+const whaleCache = new Map<ArchipelagoId, { x: number; y: number; r: number }[]>();
+export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
+  const known = whaleCache.get(a);
+  if (known) return known;
   const land: { x: number; y: number }[] = [];
-  MAP.forEach((def, i) => {
+  for (const def of mapOf(a)) {
     for (const c of landCells(def)) land.push(c);
-    const o = bossIsletOrigin(i);
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.push({ x: o.x + x, y: o.y + y });
-  });
-  const b = worldBounds();
+  }
+  const dock = dockBox(getArchipelago(a).port);
+  for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });
+  const b = worldBounds(a);
   const clearance = (x: number, y: number) => {
     let best = Infinity;
     for (const c of land) {
@@ -1047,36 +1078,44 @@ export function whaleSpots(): { x: number; y: number; r: number }[] {
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
     if (spots.length === 4) break;
   }
-  whaleCache = spots;
+  whaleCache.set(a, spots);
   return spots;
 }
 
-let seaCache: VoxelCube[] | null = null;
+const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
  * ras de l'eau, semés au hasard (bruit fixe) dans l'eau libre, à cinq cases au moins de toute terre, de tout îlot,
  * de tout ouvrage et des ronds des baleines. Plus denses au large, autour du continent, là où l'écran montrait
  * la mer seule. Calculé une fois.
  */
-export function seaDecor(): VoxelCube[] {
-  if (seaCache) return seaCache;
+export function seaDecor(a: ArchipelagoId): VoxelCube[] {
+  const known = seaCache.get(a);
+  if (known) return known;
   const solid = new Set<string>();
-  MAP.forEach((def, i) => {
+  for (const def of mapOf(a)) {
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(i);
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
-  });
-  for (const def of BRIDGES)
+  }
+  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
     for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
-  const whales = whaleSpots();
-  const b = worldBounds();
+  const dock = dockBox(getArchipelago(a).port);
+  for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
+  const whales = whaleSpots(a);
+  const b = worldBounds(a);
   const free = (x: number, y: number) => {
     for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
     return whales.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 4);
   };
   const cubes: VoxelCube[] = [];
-  const put = (x: number, y: number, z: number, block: (typeof BLOCKS)[keyof typeof BLOCKS]) =>
+  const used = new Set<string>();
+  const put = (x: number, y: number, z: number, block: (typeof BLOCKS)[keyof typeof BLOCKS]) => {
+    const key = `${x},${y},${z}`;
+    if (used.has(key)) return;
+    used.add(key);
     cubes.push({ x, y, z, color: block.side, top: block.top, texture: block.texture, tag: 'mer' });
+  };
   const MARGIN = 26;
   for (let gx = b.minX - MARGIN; gx <= b.maxX + MARGIN; gx += 4) {
     for (let gy = b.minY - MARGIN; gy <= b.maxY + MARGIN; gy += 4) {
@@ -1113,25 +1152,70 @@ export function seaDecor(): VoxelCube[] {
       }
     }
   }
-  seaCache = cubes;
+  seaCache.set(a, cubes);
   return cubes;
 }
 
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */
-export function mistPatches(): { x: number; y: number; z: number; w: number; h: number }[] {
-  return MAP.filter((d) => d.altitude >= 9).map((d) => {
-    const b = landBox(d);
-    return { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, z: d.altitude - 1.5, w: b.x1 - b.x0 + 8, h: b.y1 - b.y0 + 8 };
-  });
+export function mistPatches(a: ArchipelagoId): { x: number; y: number; z: number; w: number; h: number }[] {
+  return mapOf(a)
+    .filter((d) => d.altitude >= 9)
+    .map((d) => {
+      const b = landBox(d);
+      return { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, z: d.altitude - 1.5, w: b.x1 - b.x0 + 8, h: b.y1 - b.y0 + 8 };
+    });
+}
+
+/**
+ * Le port de l'archipel : la jetée de planches qui descend de la côte vers le large, ses poteaux et ses lanternes, et le
+ * Bloc-Navire amarré à côté. Les étapes du navire déjà parties sont dessinées entières ; celle qui se construit ici
+ * montre ses cases posées en dur et les autres en fantôme ; son kit (voile, ballon, feux) arrive avec les Gardiens.
+ */
+function harbour(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: Village, cubes: VoxelCube[]): void {
+  const port = getArchipelago(a).port;
+  const def = islandDef(port);
+  for (const c of dockCells(port))
+    cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS.bois.side, top: c.step ? BLOCKS.escalier.top : undefined, texture: c.step ? 'escalier' : 'planches', tag: port });
+  for (const p of dockPosts(port)) {
+    cubes.push({ x: p.x, y: p.y, z: p.z, color: TRUNK, texture: 'tronc', tag: port });
+    if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS.lanterne.side, top: BLOCKS.lanterne.top, texture: 'lanterne', tag: port });
+  }
+  const put = (c: { x: number; y: number; z: number; block: keyof typeof BLOCKS }, ghost: boolean) => {
+    const bd = BLOCKS[c.block];
+    cubes.push({ x: def.core.x + c.x, y: def.core.y + c.y, z: def.altitude + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
+  };
+  // Les étapes déjà parties : le navire les porte partout où il accoste ; ses cases locales sont posées sur ce quai.
+  const o = dockOrigin(port);
+  const bridges = village.bridges;
+  for (const stage of launchedStages(bridges)) {
+    for (const c of [...stage.cells, ...stage.kit]) {
+      const bd = BLOCKS[c.block];
+      cubes.push({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port });
+    }
+  }
+  // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
+  const building = VEHICLE_STAGES.find(
+    (st) => st.biome === port && !bridges.includes(voyageId(st.to)) && (st.stage === 1 || bridges.includes(voyageId(VEHICLE_STAGES[st.stage - 2].to))),
+  );
+  if (building) {
+    const done = new Set(village.plans[building.id] ?? []);
+    for (const c of planCells(building)) put(c, !done.has(c.key));
+    const kit = kitReady(building, progress);
+    for (const c of planCells(building, building.kit)) put(c, !kit);
+  }
 }
 
 export function worldCubes(
+  a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
   village: Village = { plans: {}, journal: [], bridges: [] },
   withCreatures = true,
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
+  // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
+  const placed = new Set<string>();
   BIOMES.forEach((biome, index) => {
+    if (biome.classe !== a) return;
     const def = islandDef(biome.id);
     const { ox, oy, oz } = islandOrigin(index);
     const unlocked = isBiomeUnlocked(biome.id, village.bridges);
@@ -1144,6 +1228,7 @@ export function worldCubes(
     const taken = new Set<string>();
     const putWorld = (x: number, y: number, z: number, color: string) => {
       taken.add(`${x},${y},${z}`);
+      placed.add(`${x},${y},${oz + z}`);
       cubes.push({ x, y, z: oz + z, color: unlocked ? color : fade(color), texture: TEXTURES[color], tag: biome.id, muted: unlocked ? undefined : true });
     };
     const put: Put = (x, y, z, color) => putWorld(ox + x, oy + y, z, color);
@@ -1199,7 +1284,7 @@ export function worldCubes(
       taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
     }
     landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
-    cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
+    cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color));
     for (const c of scenery) {
       if (!c.decor || nearSentier(c.x, c.y)) continue;
       const r = noise(def.seed + 5, c.x, c.y);
@@ -1264,11 +1349,14 @@ export function worldCubes(
       }
     }
   });
+  // Le port : la jetée et le Bloc-Navire.
+  harbour(a, progress, village, cubes);
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage).
-  for (const c of seaDecor()) cubes.push(c);
+  for (const c of seaDecor(a)) cubes.push(c);
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
   for (const def of BRIDGES) {
+    if (archipelagoOfIsland(def.from) !== a) continue;
     const state = bridgeState(def, village.bridges);
     if (state !== 'far') bridge(def, cubes, state === 'buildable', occupied);
   }

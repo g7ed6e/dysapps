@@ -27,7 +27,7 @@ export function HomePage() {
           <span className="adventure-kicker">Aventure</span>
           <span className="adventure-title">Blocland</span>
           <span className="adventure-desc">
-            <Syllabified text="Reconstruis le village bloc par bloc : sons, lettres, mots, accords, lecture." />
+            <Syllabified text="Reconstruis le village bloc par bloc, puis embarque sur le Bloc-Navire vers les autres archipels." />
           </span>
         </span>
         <span className="subject-count">

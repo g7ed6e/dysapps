@@ -6,6 +6,7 @@ import {
   type IconName,
   recordBoss,
   recordPlan,
+  recordVoyage,
   recordSession,
   sanitizeProgress,
   type Progress,
@@ -29,6 +30,8 @@ interface ProgressContextValue {
   completePlan: (xp: number) => ProgressUpdate;
   /** Un Gardien de biome vaincu : succès. */
   beatBoss: () => ProgressUpdate;
+  /** Un voyage du Bloc-Navire : l'XP de l'étape et les succès de voyage. */
+  launchVoyage: (xp: number) => ProgressUpdate;
   resetProgress: () => void;
   celebrations: Celebration[];
   dismissCelebration: (id: number) => void;
@@ -69,6 +72,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const completePlan = useCallback((xp: number) => apply(recordPlan(progressRef.current, xp)), [apply]);
   const beatBoss = useCallback(() => apply(recordBoss(progressRef.current)), [apply]);
+  const launchVoyage = useCallback((xp: number) => apply(recordVoyage(progressRef.current, xp)), [apply]);
 
   const resetProgress = useCallback(() => {
     removeKey(STORAGE_KEY);
@@ -82,8 +86,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ progress, answer, completeSession, completePlan, beatBoss, resetProgress, celebrations, dismissCelebration }),
-    [progress, answer, completeSession, completePlan, beatBoss, resetProgress, celebrations, dismissCelebration],
+    () => ({ progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration }),
+    [progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

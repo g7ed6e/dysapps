@@ -2,8 +2,22 @@
 // moins cher que l'on peut payer. Code pur, partagé par le panneau d'île.
 import { BLOCKS, getBiome, type BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
-import { currentPlan, planStatus } from '../engine';
-import { KIND_NAME, buildableBridges, conditionMet, otherEnd, pathTo, payableBlocks, reachableIslands } from './archipelago';
+import { canLaunch, currentPlan, planStatus } from '../engine';
+import {
+  KIND_NAME,
+  archipelagoOf,
+  buildableBridges,
+  conditionMet,
+  getArchipelago,
+  isArchipelagoReached,
+  otherEnd,
+  pathTo,
+  payableBlocks,
+  previousArchipelago,
+  reachableIslands,
+  remainingVoyages,
+} from './archipelago';
+import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
 
 /** « le pont vers la Mine », « l'escalier taillé vers le Carrefour ». */
 function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
@@ -16,6 +30,10 @@ function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
  * Exemples : « Encore 13 bois pour la cabane de Mousso, ou 3 blocs pour le pont vers Mine des lettres. »
  */
 export function nextGoal(state: BloclandState, island: BiomeId): string | null {
+  // Sur un port, le Bloc-Navire prêt à partir passe avant tout le reste.
+  const stage = stageAt(island);
+  const launch = stage ? canLaunch(state, stage) : null;
+  if (stage && launch?.ok) return `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`;
   const parts: string[] = [];
   const current = currentPlan(state, island);
   if (current && !current.allDone) {
@@ -38,9 +56,22 @@ export function nextGoal(state: BloclandState, island: BiomeId): string | null {
     const what = ouvrageName(cheapest.kind, to);
     parts.push(left > 0 ? `${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `tu peux construire ${what}`);
   }
+  // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait), après le plan et l'ouvrage.
+  if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin' && parts.length < 2) {
+    const status = planStatus(state, stage);
+    const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
+    if (launch.reason === 'gardiens') {
+      const left = launch.missing;
+      parts.push(`bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${getArchipelago(stage.from).name} pour ${stage.short}`);
+    } else if (missing.every(([b, n]) => (state.inventory[b] ?? 0) >= n)) parts.push(`tu as tout pour ${VEHICLE_NAME} : pose tes blocs`);
+    else {
+      const [block, n] = missing.reduce((a, b) => (b[1] - (state.inventory[b[0]] ?? 0) > a[1] - (state.inventory[a[0]] ?? 0) ? b : a));
+      parts.push(`encore ${n - (state.inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()} pour ${VEHICLE_NAME}`);
+    }
+  }
   if (!parts.length) return null;
   const text = parts.length === 2 ? `${parts[0]}, ou ${parts[1]}` : parts[0];
-  return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
+  return `${cap(text)}.`;
 }
 
 /**
@@ -51,6 +82,25 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
   const bridges = state.village.bridges;
   const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.village.plans };
+  // Une île d'un autre archipel : il faut le Bloc-Navire.
+  const archipelago = archipelagoOf(island);
+  if (!isArchipelagoReached(archipelago.classe, bridges)) {
+    const left = remainingVoyages(island, bridges);
+    const stage = stageTo(left[0].toClasse)!;
+    const port = getBiome(stage.biome)?.name ?? stage.biome;
+    const head = `Pas si vite ! Mon île est dans les ${archipelago.name}`;
+    if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${previousArchipelago(archipelago.classe)!.name} avec ${VEHICLE_NAME}.`;
+    const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
+    const launch = canLaunch(state, stage);
+    if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
+    if (launch.reason === 'gardiens') {
+      const k = stage.guardians - beatenGuardians(stage.from, state.progress);
+      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : bats encore ${k} Gardien${k > 1 ? 's' : ''} des ${getArchipelago(stage.from).name}, puis embarque.`;
+    }
+    const status = planStatus(state, stage);
+    const n = status.total - status.done;
+    return `${head}, de l’autre côté ${travel}. Finis ${VEHICLE_NAME} sur ${port} : encore ${n} bloc${n > 1 ? 's' : ''}.`;
+  }
   const here = buildableBridges(bridges, island, world);
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
@@ -66,6 +116,8 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
     ? `Pas si vite ! Ouvre d’abord ${name} : de là, un ouvrage mène jusqu’ici.`
     : 'Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.';
 }
+
+const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 function conditionTextShort(b: { kind: keyof typeof KIND_NAME }): string {
   return b.kind === 'escalier'

@@ -1,9 +1,11 @@
-import { BIOMES } from '../biomes';
-import { CORE, MAP, islandDef, landBox, landCells } from './map';
+import { BIOMES, type BiomeId } from '../biomes';
+import { ARCHIPELAGO_IDS, CORE, MAP, islandDef, landBox, landCells, mapOf } from './map';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
-import { BRIDGES } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
+import { dockBox, dockCells, dockOrigin, VEHICLE_SIZE } from './harbour';
+import { VEHICLE_STAGES } from './vehicle';
 import {
   avatarHome,
   avatarRoute,
@@ -33,9 +35,14 @@ import {
 } from './terrain';
 
 const village = (bridges: string[]) => ({ plans: {}, journal: [], bridges });
+/** Tous les archipels d'un coup, pour les tests qui parcourent les vingt îles. */
+const allCubes = (progress: Record<string, { stars: number }>, v = village([]), withCreatures = true) =>
+  ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, progress, v, withCreatures));
+/** Tout construit : les ouvrages et les voyages. */
+const everything = [...BRIDGES, ...VOYAGES].map((b) => b.id);
 
 it('construit une île par biome, avec créature seulement si un pont y mène', () => {
-  const cubes = worldCubes({});
+  const cubes = allCubes({});
   for (const b of BIOMES) expect(cubes.filter((c) => c.tag === b.id).length).toBeGreaterThanOrEqual(ISLAND * ISLAND * (DEPTH + 1));
   const o = islandOrigin(1);
   const onIsland = (c: { x: number; y: number }) => c.x >= o.ox && c.x < o.ox + ISLAND && c.y >= o.oy && c.y < o.oy + ISLAND;
@@ -44,19 +51,21 @@ it('construit une île par biome, avec créature seulement si un pont y mène', 
   // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est délavée et sans créature.
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
   // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
-  expect(worldCubes({}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
-  expect(creaturePlacements([]).map((c) => c.id)).toEqual(['foret', 'plaine']);
-  expect(creaturePlacements(['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine', 'plaine']);
+  expect(worldCubes('6e', {}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
+  expect(creaturePlacements('6e', []).map((c) => c.id)).toEqual(['foret', 'plaine']);
+  expect(creaturePlacements('6e', ['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine', 'plaine']);
+  // Les créatures d'un autre archipel ne sont pas dans cette scène.
+  expect(creaturePlacements('5e', ['voyage-5e']).map((c) => c.id)).toEqual(['marche']);
   expect(mine.every((c) => c.muted)).toBe(true);
   expect(mine.some((c) => c.texture === 'pierre')).toBe(true);
   expect(foret.some((c) => c.muted)).toBe(false);
-  const unlocked = worldCubes({}, village(['foret-mine']));
+  const unlocked = worldCubes('6e', {}, village(['foret-mine']));
   expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.muted)).toBe(false);
   // Délavé : plus clair et moins saturé, jamais gris uniforme.
   expect(fade('#6cb33f')).not.toBe(fade('#b8623a'));
 });
 
-it('place les îles sur la carte du continent, à leur altitude', () => {
+it('place les îles de chaque archipel dans leur bande, à leur altitude', () => {
   const at = (id: string) => islandOrigin(BIOMES.findIndex((b) => b.id === id));
   expect(at('foret')).toEqual({ ox: 67, oy: 59, oz: 0 });
   expect(at('plaine').oz).toBe(0);
@@ -65,16 +74,26 @@ it('place les îles sur la carte du continent, à leur altitude', () => {
   expect(at('phare').oz).toBe(9);
   expect(islandCenter('phare').z).toBe(9);
   // Le sol d'une île en altitude est bien à son altitude, et elle flotte : de la roche dessous, rien au niveau de la mer.
-  const cubes = worldCubes({});
+  const cubes = worldCubes('3e', {});
   const phare = cubes.filter((c) => c.tag === 'phare');
   expect(phare.some((c) => c.z === 9)).toBe(true);
   expect(phare.some((c) => c.z < 9 - DEPTH && c.texture === 'pierre')).toBe(true);
-  // (Seule une cascade descend jusqu'à la mer.)
+  // (Seule une cascade descend jusqu'à la mer ; le quai du Phare est à hauteur d'île.)
   expect(phare.some((c) => c.z <= 0 && c.texture !== 'eau' && c.texture !== 'nuage')).toBe(false);
+  // Chaque archipel occupe sa bande : les étendues ne se recouvrent pas, et une scène ne contient que ses îles.
+  for (let i = 0; i + 1 < ARCHIPELAGO_IDS.length; i++) {
+    const a = worldBounds(ARCHIPELAGO_IDS[i]);
+    const b = worldBounds(ARCHIPELAGO_IDS[i + 1]);
+    expect(a.maxY, `${ARCHIPELAGO_IDS[i]} / ${ARCHIPELAGO_IDS[i + 1]}`).toBeLessThan(b.minY);
+  }
+  for (const a of ARCHIPELAGO_IDS) {
+    const tags = new Set(worldCubes(a, {}).map((c) => c.tag));
+    for (const b of BIOMES) expect(tags.has(b.id), `${b.id} dans ${a}`).toBe(b.classe === a);
+  }
 });
 
 it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les cases surélevées', () => {
-  const cubes = worldCubes({});
+  const cubes = allCubes({});
   const at = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((_, i) => {
     const { ox, oy, oz } = islandOrigin(i);
@@ -94,8 +113,8 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
   expect(at.size).toBe(cubes.length);
 });
 
-it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), en rampe entre deux altitudes', () => {
-  const bridgeCubes = (bridges: string[], id: string) => worldCubes({}, village(bridges)).filter((c) => c.bridge === id);
+it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), tous dans leur archipel', () => {
+  const bridgeCubes = (bridges: string[], id: string) => allCubes({}, village(bridges)).filter((c) => c.bridge === id);
   // Forêt–Mine : un sentier sur l'isthme, constructible dès le début, donc en fantôme : des pierres de gué sur le sol.
   const trail = bridgeCubes([], 'foret-mine');
   expect(trail.length).toBeGreaterThanOrEqual(4);
@@ -115,50 +134,47 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
   expect(bridgeCubes([], 'mine-carriere')).toHaveLength(0);
   expect(bridgeCubes(['foret-mine'], 'mine-carriere').filter((c) => c.ghost).length).toBeGreaterThanOrEqual(4);
-  // Plaine (0) → Glacier (3) : un escalier taillé qui monte, marches de pierre.
-  const ramp = bridgeCubes([], 'plaine-glacier').filter((c) => c.ghost);
-  expect(ramp.some((c) => c.texture === 'marche')).toBe(true);
-  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre' || c.texture === 'lanterne' || c.texture === 'tronc')).toBe(true);
-  expect(Math.max(...ramp.map((c) => c.z))).toBeGreaterThan(Math.min(...ramp.map((c) => c.z)));
   // Plaine–Rivière : un bac, des poteaux de bois et un radeau, au fil de l'eau.
   const ferry = bridgeCubes([], 'plaine-riviere');
   expect(ferry.some((c) => c.texture === 'tronc')).toBe(true);
   expect(ferry.filter((c) => c.texture === 'planches').length).toBeGreaterThanOrEqual(3);
   expect(ferry.filter((c) => c.texture !== 'lanterne').every((c) => c.z === 0)).toBe(true);
-  // Volcan (0) → Forge (6) : un tunnel, arches de pierre et lanternes au-dessus du chemin.
-  const tunnel = bridgeCubes(['plaine-volcan'], 'volcan-forge');
-  expect(tunnel.some((c) => c.texture === 'lanterne')).toBe(true);
-  expect(tunnel.filter((c) => c.texture === 'pierre').length).toBeGreaterThanOrEqual(8);
-  // Tour (0) → Textes (9) : un col, avec son garde-fou.
-  const pass = bridgeCubes(['foret-ferme', 'ferme-tour'], 'tour-textes');
+  // Falaise → Cabinet : un escalier taillé (à plat dans un archipel : de la pierre), Phare → Textes : un col à garde-fou.
+  const stairs = bridgeCubes(['voyage-5e', 'voyage-4e', 'atelier-falaise'], 'falaise-cabinet');
+  expect(stairs.some((c) => c.texture === 'pierre')).toBe(true);
+  const pass = bridgeCubes(['voyage-5e', 'voyage-4e', 'voyage-3e'], 'phare-textes');
   expect(pass.some((c) => c.texture === 'barriere')).toBe(true);
+  // Chaque ouvrage relie deux îles du même archipel.
+  for (const b of BRIDGES) expect(archipelagoOf(b.from).classe, b.id).toBe(archipelagoOf(b.to).classe);
   // Tout construit : aucun cube d'ouvrage en double, ni sur un autre cube.
-  const all = worldCubes({}, village(BRIDGES.map((b) => b.id)), false);
+  const all = allCubes({}, village(everything), false);
   const seen = new Set<string>();
   for (const c of all) {
     const key = `${c.x},${c.y},${c.z}`;
     expect(seen.has(key), `cube en double en ${key} (${c.tag}, ${c.bridge})`).toBe(false);
     seen.add(key);
   }
-  // Tout tient dans le monde, sauf l'habillage de la mer, semé au large exprès.
-  const cubes = worldCubes({}).filter((c) => c.tag !== 'mer');
-  const bounds = worldBounds();
-  for (const c of cubes) {
-    expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
-    expect(c.x).toBeLessThan(bounds.maxX);
-    expect(c.y).toBeGreaterThanOrEqual(bounds.minY);
-    expect(c.y).toBeLessThan(bounds.maxY);
+  // Tout tient dans son archipel, sauf l'habillage de la mer, semé au large exprès.
+  for (const a of ARCHIPELAGO_IDS) {
+    const cubes = worldCubes(a, {}, village(everything)).filter((c) => c.tag !== 'mer');
+    const bounds = worldBounds(a);
+    for (const c of cubes) {
+      expect(c.x, `${a} ${c.tag}`).toBeGreaterThanOrEqual(bounds.minX);
+      expect(c.x, `${a} ${c.tag}`).toBeLessThan(bounds.maxX);
+      expect(c.y, `${a} ${c.tag}`).toBeGreaterThanOrEqual(bounds.minY);
+      expect(c.y, `${a} ${c.tag}`).toBeLessThan(bounds.maxY);
+    }
   }
 });
 
 it("retrouve l'île sous un point, y compris depuis un pont", () => {
   for (const b of BIOMES) {
     const c = islandCenter(b.id);
-    expect(islandAt(c.x, c.y)).toBe(b.id);
+    expect(islandAt(b.classe, c.x, c.y)).toBe(b.id);
   }
   const o = islandOrigin(1);
   // Juste à côté du bord du cœur de la deuxième île, sur sa terre ou son pont.
-  expect(islandAt(o.ox + ISLAND + 1, o.oy + ISLAND / 2)).toBe(BIOMES[1].id);
+  expect(islandAt('6e', o.ox + ISLAND + 1, o.oy + ISLAND / 2)).toBe(BIOMES[1].id);
 });
 
 it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi, puis en statue de pierre une fois vaincu', async () => {
@@ -167,12 +183,12 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   const { getBiome } = await import('../biomes');
   const ready: Record<string, { stars: number }> = {};
   for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
-  expect(guardianPlacements({}, [])).toEqual([]);
+  expect(guardianPlacements('6e', {}, [])).toEqual([]);
   const front = bossIsletOrigin(0).y;
-  expect(worldCubes({}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H)).toBe(false);
-  const [g] = guardianPlacements(ready, []);
+  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H)).toBe(false);
+  const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
-  const islet = worldCubes(ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
+  const islet = worldCubes('6e', ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
   // Plateforme de pierre sur deux couches de terre, devant l'île, sous les pieds du Gardien.
   expect(islet.filter((c) => c.z === 0 && c.texture === 'pierre')).toHaveLength(ISLET_W * ISLET_H);
   expect(islet.filter((c) => c.z < 0).every((c) => c.texture === 'terre')).toBe(true);
@@ -180,14 +196,14 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(islet.some((c) => c.texture === 'or')).toBe(false);
   // Vaincu : statue grise et bloc d'or.
   const beaten = { ...ready, 'foret-gardien': { stars: 2 } };
-  const [s] = guardianPlacements(beaten, []);
+  const [s] = guardianPlacements('6e', beaten, []);
   expect(s.beaten).toBe(true);
   expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
-  expect(worldCubes(beaten).some((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')).toBe(true);
+  expect(worldCubes('6e', beaten).some((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')).toBe(true);
 });
 
 it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
-  const cubes = worldCubes({}, village(BRIDGES.map((b) => b.id)), false);
+  const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('foret');
   expect(Math.max(...foret.filter((c) => c.texture === 'feuilles').map((c) => c.z))).toBeGreaterThanOrEqual(8);
@@ -200,11 +216,13 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls.length).toBeGreaterThanOrEqual(1);
-  expect(mistPatches().length).toBe(4);
-  for (const m of mistPatches()) expect(m.z).toBe(7.5);
+  // La brume des sommets : sous les quatre Îles du Ciel, nulle part ailleurs.
+  expect(mistPatches('3e').length).toBe(4);
+  for (const m of mistPatches('3e')) expect(m.z).toBe(7.5);
+  expect(mistPatches('6e')).toEqual([]);
 });
 
-it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau', () => {
+it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau, et pas d’un archipel à l’autre', () => {
   expect(avatarRoute('foret', 'foret', [])).toEqual([avatarHome('foret')]);
   // Sans ouvrage construit vers la Mine : pas de chemin.
   expect(avatarRoute('foret', 'mine', [])).toBeNull();
@@ -215,7 +233,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   expect(route.length).toBeGreaterThan(5);
   for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
   const stones = new Set(
-    worldCubes({}, village(['foret-mine']))
+    worldCubes('6e', {}, village(['foret-mine']))
       .filter((c) => c.bridge === 'foret-mine' && c.texture === 'galet')
       .map((c) => `${c.x},${c.y},${c.z}`),
   );
@@ -224,15 +242,16 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const far = avatarRoute('foret', 'tour', ['foret-ferme', 'ferme-tour'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('tour'));
   expect(far.some((p) => p.z === 1)).toBe(true);
-  // En montant vers le Glacier (3), l'itinéraire monte.
-  const up = avatarRoute('plaine', 'glacier', ['plaine-glacier'])!;
-  expect(Math.max(...up.map((p) => p.z))).toBe(4);
+  // D'un archipel à l'autre, on ne marche pas : c'est le Bloc-Navire (changement de scène).
+  expect(avatarRoute('plaine', 'marche', ['voyage-5e'])).toBeNull();
+  // Dans les Collines, on marche à leur altitude.
+  const up = avatarRoute('marche', 'marais', ['voyage-5e', 'marche-marais'])!;
+  expect(Math.min(...up.map((p) => p.z))).toBe(4);
 });
 
 it('le bonhomme a toujours les pieds sur un bloc, jamais dedans, sur chaque île et chaque ouvrage (hors bac)', () => {
-  const all = BRIDGES.map((b) => b.id);
   const solid = new Set(
-    worldCubes({}, village(all), false)
+    allCubes({}, village(everything), false)
       .filter((c) => !c.ghost)
       .map((c) => `${c.x},${c.y},${c.z}`),
   );
@@ -252,24 +271,30 @@ it('le bonhomme a toujours les pieds sur un bloc, jamais dedans, sur chaque île
   }
 });
 
-it('les baleines nagent dans les clairières d’eau entre les îles, jamais sur une terre ni un îlot', () => {
-  const spots = whaleSpots();
-  expect(spots).toHaveLength(4);
-  const land = new Set<string>();
-  MAP.forEach((def, i) => {
-    for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(i);
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.add(`${o.x + x},${o.y + y}`);
-  });
-  const b = worldBounds();
-  for (const s of spots) {
-    expect(s.r).toBeGreaterThanOrEqual(4);
-    // Dans le monde (visible), et tout le rond (avec deux cases de marge) dans l'eau.
-    expect(s.x).toBeGreaterThan(b.minX);
-    expect(s.x).toBeLessThan(b.maxX);
-    for (let x = Math.floor(s.x - s.r - 2); x <= Math.ceil(s.x + s.r + 2); x++)
-      for (let y = Math.floor(s.y - s.r - 2); y <= Math.ceil(s.y + s.r + 2); y++)
-        if (Math.hypot(x - s.x, y - s.y) <= s.r + 2) expect(land.has(`${x},${y}`), `baleine sur la terre en ${x},${y}`).toBe(false);
+it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais sur une terre, un îlot ni le port', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const spots = whaleSpots(a);
+    // Quatre dans les Basses Terres ; au moins deux dans les petits archipels, où l'eau libre est plus rare.
+    expect(spots.length, a).toBeGreaterThanOrEqual(a === '6e' ? 4 : 2);
+    expect(spots.length, a).toBeLessThanOrEqual(4);
+    const land = new Set<string>();
+    for (const def of mapOf(a)) {
+      for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
+      const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
+      for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.add(`${o.x + x},${o.y + y}`);
+    }
+    const dock = dockBox(ARCHIPELAGOS.find((x) => x.classe === a)!.port);
+    for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.add(`${x},${y}`);
+    const b = worldBounds(a);
+    for (const s of spots) {
+      expect(s.r).toBeGreaterThanOrEqual(4);
+      // Dans le monde (visible), et tout le rond (avec deux cases de marge) dans l'eau.
+      expect(s.x).toBeGreaterThan(b.minX);
+      expect(s.x).toBeLessThan(b.maxX);
+      for (let x = Math.floor(s.x - s.r - 2); x <= Math.ceil(s.x + s.r + 2); x++)
+        for (let y = Math.floor(s.y - s.r - 2); y <= Math.ceil(s.y + s.r + 2); y++)
+          if (Math.hypot(x - s.x, y - s.y) <= s.r + 2) expect(land.has(`${x},${y}`), `baleine sur la terre en ${x},${y}`).toBe(false);
+    }
   }
 });
 
@@ -288,7 +313,7 @@ it('chaque quête a sa borne sur la rangée de devant, dans le cœur, hors de la
     }
   }
   // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:quête », délavés sur une île fermée.
-  const cubes = worldCubes({}, { plans: {}, journal: [], bridges: [] });
+  const cubes = worldCubes('6e', {}, { plans: {}, journal: [], bridges: [] });
   const foret = cubes.filter((c) => c.quest?.startsWith('foret:'));
   expect(foret).toHaveLength(2 * 3);
   expect(foret.filter((c) => c.texture === 'borne')).toHaveLength(3);
@@ -312,43 +337,105 @@ it('chaque Gardien tient sur son îlot, et chaque créature reste petite devant 
   }
 });
 
-it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le continent sans dépasser 40 degrés', () => {
-  // La Forêt et ses voisines (Mine, Ferme, Plaine, Carrefour) : la zone englobe toutes leurs terres.
+it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le centre de l’archipel sans dépasser 40 degrés', () => {
+  // La Forêt et ses voisines (Mine, Ferme, Plaine) : la zone englobe toutes leurs terres ; le Carrefour est ailleurs.
   const z = viewZone('foret');
-  for (const id of ['foret', 'mine', 'ferme', 'plaine', 'carrefour'] as const) {
+  for (const id of ['foret', 'mine', 'ferme', 'plaine'] as const) {
     const b = landBox(islandDef(id));
     expect(b.x0).toBeGreaterThanOrEqual(z.minX);
     expect(b.x1).toBeLessThanOrEqual(z.maxX);
     expect(b.y0).toBeGreaterThanOrEqual(z.minY);
     expect(b.y1).toBeLessThanOrEqual(z.maxY);
   }
-  // Au centre, pas de pivot ; sur le bord ouest (Tour), la caméra tourne vers l'est ; à l'est (Cabinet), vers l'ouest.
+  expect(landBox(islandDef('carrefour')).y0).toBeGreaterThan(z.maxY);
+  // Au centre, pas de pivot ; sur le bord ouest (Tour), la caméra tourne vers l'est ; à l'est (Carrière), vers l'ouest.
   expect(Math.abs(viewYaw('foret'))).toBeLessThan(0.25);
   expect(viewYaw('tour')).toBeGreaterThan(0.3);
-  expect(viewYaw('cabinet')).toBeLessThan(-0.3);
+  expect(viewYaw('carriere')).toBeLessThan(-0.3);
   for (const b of BIOMES) expect(Math.abs(viewYaw(b.id))).toBeLessThanOrEqual(VIEW_YAW_MAX + 1e-9);
 });
 
-it('la mer est habillée de rochers et de bancs de sable, loin des terres, des îlots, des ouvrages et des baleines', () => {
-  const decor = seaDecor();
+it('la mer est habillée de rochers et de bancs de sable, loin des terres, des îlots, des ouvrages, du port et des baleines', () => {
+  const decor = seaDecor('6e');
   expect(decor.length).toBeGreaterThan(60);
   expect(decor.some((c) => c.texture === 'sable')).toBe(true);
   expect(decor.some((c) => c.texture === 'galet')).toBe(true);
   expect(decor.every((c) => c.tag === 'mer' && c.z >= -1 && c.z <= 1)).toBe(true);
   const solid = new Set<string>();
-  MAP.forEach((def, i) => {
+  for (const def of mapOf('6e')) {
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(i);
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
-  });
-  for (const def of BRIDGES) for (const c of bridgePath(def)) solid.add(`${c.x},${c.y}`);
-  const whales = whaleSpots();
+  }
+  for (const def of BRIDGES.filter((b) => archipelagoOf(b.from).classe === '6e')) for (const c of bridgePath(def)) solid.add(`${c.x},${c.y}`);
+  const dock = dockBox('plaine');
+  for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) solid.add(`${x},${y}`);
+  const whales = whaleSpots('6e');
   for (const c of decor) {
     for (let dx = -3; dx <= 3; dx++)
       for (let dy = -3; dy <= 3; dy++) expect(solid.has(`${c.x + dx},${c.y + dy}`), `décor de mer contre la terre en ${c.x},${c.y}`).toBe(false);
     for (const w of whales) expect(Math.hypot(w.x - c.x, w.y - c.y)).toBeGreaterThan(w.r + 2);
   }
   // Les cubes du monde contiennent l'habillage, et un ouvrage ne le remplace jamais.
-  const world = worldCubes({}, { plans: {}, journal: [], bridges: BRIDGES.map((b) => b.id) });
+  const world = worldCubes('6e', {}, { plans: {}, journal: [], bridges: BRIDGES.map((b) => b.id) });
   expect(world.filter((c) => c.tag === 'mer')).toHaveLength(decor.length);
+});
+
+it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à côté, hors de tout', () => {
+  for (const a of ARCHIPELAGOS) {
+    const def = islandDef(a.port);
+    const cells = dockCells(a.port);
+    expect(cells.length, a.port).toBeGreaterThanOrEqual(8);
+    // Dans l'eau, devant l'île, hors de l'îlot du Gardien et de tout ouvrage ; descend d'une marche par case au plus.
+    const islet = bossIsletOrigin(BIOMES.findIndex((b) => b.id === a.port));
+    const paths = new Set(BRIDGES.filter((b) => archipelagoOf(b.from).classe === a.classe).flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
+    let prevZ = def.altitude;
+    for (const c of cells) {
+      expect(isLandAt(c.x, c.y), `${a.port} jetée sur la terre en ${c.x},${c.y}`).toBe(false);
+      expect(c.y, a.port).toBeLessThan(def.core.y);
+      expect(c.x < islet.x || c.x >= islet.x + ISLET_W || c.y < islet.y || c.y >= islet.y + ISLET_H, `${a.port} jetée sur l'îlot`).toBe(true);
+      expect(paths.has(`${c.x},${c.y}`), `${a.port} jetée sur un ouvrage`).toBe(false);
+      expect(prevZ - c.z, a.port).toBeLessThanOrEqual(1);
+      prevZ = c.z;
+    }
+    // L'emprise du navire : dans l'eau, hors de la jetée, dans l'étendue de la scène.
+    const o = dockOrigin(a.port);
+    const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
+    const bounds = worldBounds(a.classe);
+    for (let x = o.x; x < o.x + VEHICLE_SIZE.w; x++)
+      for (let y = o.y; y < o.y + VEHICLE_SIZE.d; y++) {
+        expect(isLandAt(x, y), `${a.port} navire sur la terre en ${x},${y}`).toBe(false);
+        expect(jetty.has(`${x},${y}`), `${a.port} navire sur la jetée`).toBe(false);
+        expect(x).toBeGreaterThanOrEqual(bounds.minX);
+        expect(y).toBeGreaterThanOrEqual(bounds.minY);
+      }
+    // Dans le monde : les planches et deux lanternes du quai, étiquetées du port.
+    const cubes = worldCubes(a.classe, {}, village(everything), false).filter((c) => c.tag === a.port);
+    expect(cubes.filter((c) => c.texture === 'planches' || c.texture === 'escalier').length).toBeGreaterThanOrEqual(cells.length);
+    expect(cubes.filter((c) => c.texture === 'lanterne' && c.y < def.core.y).length).toBeGreaterThanOrEqual(2);
+  }
+  function isLandAt(x: number, y: number): boolean {
+    return MAP.some((d) => landCells(d).some((c) => c.x === x && c.y === y));
+  }
+});
+
+it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étapes parties sont dessinées entières', () => {
+  const [coque, ballon] = VEHICLE_STAGES;
+  const isShip = (c: { tag?: string; y: number }, port: BiomeId) => c.tag === port && c.y < islandDef(port).core.y - islandDef(port).ext.front - 1;
+  // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus).
+  const fresh = worldCubes('6e', {}, village([]), false).filter((c) => isShip(c, 'plaine') && c.ghost);
+  expect(fresh.length).toBe(coque.cells.length + coque.kit.length);
+  // Trois Gardiens vaincus : la voile est là, en dur.
+  const guardians = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2 }]));
+  const sail = worldCubes('6e', guardians, village([]), false).filter((c) => isShip(c, 'plaine') && c.texture === 'toile');
+  expect(sail).toHaveLength(coque.kit.filter((c) => c.block === 'toile').length);
+  expect(sail.every((c) => !c.ghost)).toBe(true);
+  // Le voyage fait : la coque entière et en dur ; au Marché, le ballon en fantôme au-dessus.
+  const sailed = worldCubes('5e', {}, village(['voyage-5e']), false).filter((c) => isShip(c, 'marche'));
+  expect(sailed.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
+  expect(sailed.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
+  // Revenu dans les Basses Terres après le deuxième voyage : le navire porte son ballon, rien en fantôme.
+  const back = worldCubes('6e', {}, village(['voyage-5e', 'voyage-4e']), false).filter((c) => isShip(c, 'plaine'));
+  expect(back.some((c) => c.ghost)).toBe(false);
+  expect(back.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
 });

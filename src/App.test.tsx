@@ -32,7 +32,31 @@ it('liste les activités d’une matière', () => {
   // Les îles de maths de Blocland, avec leur classe ; la Plaine est ouverte, pas la Rivière.
   expect(screen.getByRole('link', { name: /Plaine des nombres.*Nouveau.*Niveau 6e/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Rivière des fractions.*Ouvrage à construire/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Glacier des relatifs.*Archipel à rejoindre.*Niveau 5e/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' })).toBeInTheDocument();
   expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
+});
+
+it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
+  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
+  const { planCells } = await import('./blocland/world/plans');
+  const [coque] = VEHICLE_STAGES;
+  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/voyage/5e');
+  expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
+  await user.click(screen.getByRole('button', { name: /Arriver/ }));
+  expect(screen.getByRole('heading', { name: /Marché des proportions/ })).toBeInTheDocument();
+  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
+  expect(saved.village.bridges).toContain('voyage-5e');
+  expect(saved.village.at).toBe('marche');
+  // Un voyage impossible (rien de construit) : page introuvable.
+  localStorage.clear();
+  document.body.innerHTML = '';
+  renderAt('/aventure/voyage/5e');
+  expect(screen.getByText(/Zone introuvable/)).toBeInTheDocument();
 });
 
 it('applique et sauvegarde les réglages', async () => {

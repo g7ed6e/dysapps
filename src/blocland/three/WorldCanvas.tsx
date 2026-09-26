@@ -2,11 +2,12 @@
 // eau autour des îles, vol vers une île, jour et nuit, créatures qui se promènent. Chargé à la demande (voir ./index.ts).
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { BIOMES, type BiomeId } from '../biomes';
+import { type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
 import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
+import { islandsOf, type ArchipelagoId } from '../world/archipelago';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
@@ -58,6 +59,8 @@ export interface Burst {
 }
 
 export interface WorldCanvasProps {
+  /** L'archipel affiché : la scène (mer, brume, baleines, cadrage) est la sienne. */
+  archipelago: ArchipelagoId;
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
@@ -214,6 +217,7 @@ interface Spark {
 }
 
 export default function WorldCanvas({
+  archipelago,
   cubes,
   focus,
   reduceMotion = false,
@@ -289,7 +293,9 @@ export default function WorldCanvas({
   mapRef.current = map;
   const homeRef = useRef(home);
   homeRef.current = home;
-  const bounds = worldBounds();
+  const archRef = useRef(archipelago);
+  archRef.current = archipelago;
+  const bounds = worldBounds(archipelago);
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
   const width = Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
@@ -369,7 +375,7 @@ export default function WorldCanvas({
       const w = world.current;
       const from = w ? { x: w.camTarget.x, y: w.camTarget.z } : center;
       let best: { id: BiomeId; score: number } | null = null;
-      for (const b of BIOMES) {
+      for (const b of islandsOf(archRef.current)) {
         const c = islandCenter(b.id);
         const dx = c.x - from.x;
         const dy = c.y - from.y;
@@ -427,7 +433,7 @@ export default function WorldCanvas({
     // La brume des sommets : une nappe translucide sous chaque île la plus haute, qui respire lentement.
     const mistMat = new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
     const mists: THREE.Mesh[] = [];
-    for (const m of mistPatches()) {
+    for (const m of mistPatches(archipelago)) {
       const mist = new THREE.Mesh(new THREE.PlaneGeometry(m.w, m.h), mistMat);
       mist.rotation.x = -Math.PI / 2;
       mist.position.set(m.x, m.z, m.y);
@@ -464,7 +470,7 @@ export default function WorldCanvas({
     const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
     const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
     const whales: { group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; cx: number; cy: number; r: number; phase: number; speed: number }[] = [];
-    whaleSpots().forEach((spot, i) => {
+    whaleSpots(archipelago).forEach((spot, i) => {
       const group = new THREE.Group();
       const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
       const head = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), whaleMat);
@@ -644,7 +650,7 @@ export default function WorldCanvas({
       const bridgeId = bridgeCells.current.get(`${cell.x},${cell.y},${cell.z}`);
       if (bridgeId && pickBridgeRef.current) return pickBridgeRef.current(bridgeId);
       if (buildRef.current) buildRef.current.onPickFace(cell, next);
-      else pickRef.current?.(islandAt(Math.floor(hit.point.x), Math.floor(hit.point.z)));
+      else pickRef.current?.(islandAt(archRef.current, Math.floor(hit.point.x), Math.floor(hit.point.z)));
     };
     const onHover = (e: PointerEvent) => {
       if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current && !creatureRef.current)) return;
@@ -908,9 +914,10 @@ export default function WorldCanvas({
       renderer.domElement.remove();
       world.current = null;
     };
-    // La scène est construite une fois ; le terrain, les créatures et la caméra sont mis à jour à part.
+    // La scène est construite une fois par archipel (sa mer, sa brume, ses baleines) ; le terrain, les créatures et la
+    // caméra sont mis à jour à part. Le changement d'archipel se fait derrière l'écran du voyage.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion]);
+  }, [reduceMotion, archipelago]);
 
   // ---- Terrain : une géométrie par matériau, faces visibles seulement
   useEffect(() => {
