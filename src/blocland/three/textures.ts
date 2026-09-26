@@ -38,7 +38,8 @@ export type TextureKind =
   | 'basalte'
   | 'lave'
   | 'sapin'
-  | 'marche';
+  | 'marche'
+  | 'borne';
 
 const SIZE = 16;
 
@@ -59,6 +60,9 @@ function hex(h: string): [number, number, number] {
 }
 
 type Painter = (x: number, y: number, r: () => number) => [number, number, number];
+
+/** Une étoile de 10 × 10 pixels, dessinée à la main. */
+const STAR = ['....##....', '....##....', '...####...', '##########', '.########.', '..######..', '..######..', '.###..###.', '.##....##.', '..........'];
 
 /** Mélange entre deux couleurs, avec un grain aléatoire. */
 const grain =
@@ -125,6 +129,11 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
         : x >= 10 && x <= 12 && Math.abs(y - 7.5) <= 12 - x + 1
           ? [60, 44, 30]
           : grain('#e0b73f', '#f2d16b')(x, y, r),
+  },
+  // Borne de quête : ardoise bleu nuit, une étoile d'or sur chaque face (un pictogramme, jamais de texte).
+  borne: {
+    top: (x, y, r) => grain('#2f3d5c', '#3a4a6a')(x, y, r),
+    side: (x, y, r) => (STAR[y - 3]?.[x - 3] === '#' ? [242, 201, 68] : grain('#2f3d5c', '#3a4a6a')(x, y, r)),
   },
   // Tourbe : brun très sombre, fibres claires et mousse.
   tourbe: {

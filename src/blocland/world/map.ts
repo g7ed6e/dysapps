@@ -1,4 +1,4 @@
-// La carte de Blocland : un continent qui monte. Chaque île a un cœur de 12 × 12 (zone des plans, créature, décor)
+// La carte de Blocland : un continent qui monte. Chaque île a un cœur de 16 × 16 (bornes de quête, zone des plans, créature, décor)
 // posé sur une terre bien plus large aux côtes irrégulières (baies, caps), avec ses collines, ses pics, ses lacs,
 // sa végétation, à une altitude qui monte avec la classe : 6e au niveau de la mer, 5e sur les collines, 4e sur les
 // monts, 3e sur les sommets.
@@ -10,7 +10,7 @@ export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 export interface IslandDef {
   id: BiomeId;
   region: RegionId;
-  /** Coin (x, y) du cœur 12 × 12 dans le monde. */
+  /** Coin (x, y) du cœur 16 × 16 dans le monde. */
   core: { x: number; y: number };
   /** Altitude du sol : 0 (mer), 3 (collines), 6 (monts), 9 (sommets). */
   altitude: number;
@@ -21,7 +21,7 @@ export interface IslandDef {
 }
 
 /** Côté du cœur d'une île. */
-export const CORE = 12;
+export const CORE = 16;
 /** Altitude par classe. */
 export const ALTITUDE: Record<'6e' | '5e' | '4e' | '3e', number> = { '6e': 0, '5e': 3, '4e': 6, '3e': 9 };
 
@@ -30,29 +30,29 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
 /** Les vingt îles, placées à la main : la Forêt et la Plaine au centre, les sommets aux bords. */
 export const MAP: IslandDef[] = [
   // Basses Terres (6e)
-  { id: 'foret', region: 'basses-terres', core: { x: 50, y: 44 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
-  { id: 'ferme', region: 'basses-terres', core: { x: 20, y: 46 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
-  { id: 'mine', region: 'montagne', core: { x: 72, y: 46 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
-  { id: 'tour', region: 'basses-terres', core: { x: -2, y: 42 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
-  { id: 'carriere', region: 'montagne', core: { x: 102, y: 42 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
-  { id: 'plaine', region: 'basses-terres', core: { x: 48, y: 16 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
-  { id: 'riviere', region: 'marais', core: { x: 82, y: 14 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
-  { id: 'volcan', region: 'feu', core: { x: 16, y: 14 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
+  { id: 'foret', region: 'basses-terres', core: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
+  { id: 'ferme', region: 'basses-terres', core: { x: 27, y: 61 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
+  { id: 'mine', region: 'montagne', core: { x: 96, y: 61 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
+  { id: 'tour', region: 'basses-terres', core: { x: -3, y: 56 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
+  { id: 'carriere', region: 'montagne', core: { x: 136, y: 56 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
+  { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 21 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
+  { id: 'riviere', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
+  { id: 'volcan', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
   // Collines (5e)
-  { id: 'glacier', region: 'montagne', core: { x: 48, y: -16 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
-  { id: 'marche', region: 'marais', core: { x: 70, y: -18 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
-  { id: 'carrefour', region: 'basses-terres', core: { x: 50, y: 74 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
-  { id: 'marais', region: 'marais', core: { x: 72, y: 78 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
+  { id: 'glacier', region: 'montagne', core: { x: 64, y: -21 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
+  { id: 'marche', region: 'marais', core: { x: 93, y: -24 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
+  { id: 'carrefour', region: 'basses-terres', core: { x: 67, y: 99 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
+  { id: 'marais', region: 'marais', core: { x: 96, y: 104 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
   // Monts (4e)
-  { id: 'forge', region: 'feu', core: { x: 14, y: -20 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
-  { id: 'atelier', region: 'hauteurs', core: { x: 104, y: -14 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
-  { id: 'falaise', region: 'montagne', core: { x: 16, y: 80 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
-  { id: 'cabinet', region: 'hauteurs', core: { x: 106, y: 78 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
+  { id: 'forge', region: 'feu', core: { x: 19, y: -27 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
+  { id: 'atelier', region: 'hauteurs', core: { x: 139, y: -19 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
+  { id: 'falaise', region: 'montagne', core: { x: 21, y: 107 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
+  { id: 'cabinet', region: 'hauteurs', core: { x: 141, y: 104 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
   // Sommets (3e)
-  { id: 'belvedere', region: 'montagne', core: { x: -18, y: -18 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
-  { id: 'phare', region: 'hauteurs', core: { x: 16, y: -50 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
-  { id: 'donnees', region: 'hauteurs', core: { x: 86, y: -50 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: -10, y: 82 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'belvedere', region: 'montagne', core: { x: -24, y: -24 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
+  { id: 'phare', region: 'hauteurs', core: { x: 21, y: -67 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
+  { id: 'donnees', region: 'hauteurs', core: { x: 115, y: -67 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
+  { id: 'textes', region: 'hauteurs', core: { x: -13, y: 109 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
 ];
 
 /**
