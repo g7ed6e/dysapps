@@ -136,6 +136,25 @@ export function firstLevelOf(tier: Tier): number {
   return TIERS.findIndex((t) => t.id === tier) * DIVISIONS.length + 1;
 }
 
+export interface RankStep {
+  tier: Tier;
+  name: string;
+  /** Niveau à partir duquel le rang est atteint. */
+  firstLevel: number;
+  reached: boolean;
+  /** Le rang du niveau donné. */
+  current: boolean;
+}
+
+/** Les six rangs, de Bronze à Légende, tels qu'ils se présentent au niveau donné. */
+export function rankLadder(level: number): RankStep[] {
+  const currentTier = rankForLevel(level).tier;
+  return [...TIERS, { id: 'legende' as const, name: 'Légende' }].map(({ id, name }) => {
+    const firstLevel = firstLevelOf(id);
+    return { tier: id, name, firstLevel, reached: level >= firstLevel, current: id === currentTier };
+  });
+}
+
 export function levelFromXp(xp: number): LevelInfo {
   let level = 1;
   let remaining = Math.max(0, Math.floor(xp));

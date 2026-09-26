@@ -8,6 +8,8 @@ Chaque réponse rapporte des points d’expérience : plus du premier coup, un p
 
 L’XP fait monter de **niveau**. Les niveaux sont regroupés en **rangs** de trois divisions : Bronze I, II, III, puis Argent, Or, Platine, Diamant, et enfin **Légende**. L’écusson de rang, en pixels, est affiché dans la barre du haut et sur la page Succès, avec la jauge segmentée vers le niveau suivant.
 
+Sous la jauge, la page Succès montre **l’échelle des six rangs**, de Bronze à Légende. Les rangs atteints sont en couleur, avec une coche. Le rang actuel est encadré, avec sa division (par exemple « Or II »). Les rangs à venir restent grisés, avec le niveau qui les ouvre (« niv. 10 »).
+
 ## Combos et messages
 
 Une suite de bonnes réponses du premier coup forme un **combo** (« COMBO x5 »). La page Succès garde le meilleur combo et la **précision** (part de bonnes réponses). Les messages sont ceux d’un jeu (« BIEN VU ! », « QUÊTE TERMINÉE »), jamais des reproches.

@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import { SUBJECTS, type Subject } from '../apps/registry';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Stars } from '../blocland/Stars';
-import { BADGES } from '../core/progress';
+import { BADGES, levelFromXp } from '../core/progress';
 import { useProgress } from '../core/ProgressContext';
 import { subjectProgress, type SubjectProgress } from '../core/subjectProgress';
 import { Icon } from '../components/Icon';
+import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
@@ -99,6 +100,7 @@ export function ProgressPage() {
       <h1 className="page-title">Profil</h1>
       <div className="panel">
         <XpBar xp={progress.xp} large />
+        <RankLadder level={levelFromXp(progress.xp).level} />
         <dl className="stats">
           <div>
             <dt>XP total</dt>
