@@ -108,4 +108,11 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   inferences: { component: CalculScreen, batch: 1 },
   figures: { component: CalculScreen, batch: 1 },
   rouages: { component: CalculScreen, batch: 1 },
+  // Anglais (lang: 'en') : les phrases à trou et les nombres sur l'écran à règle, l'écoute sur la dictée.
+  hello: { component: CalculScreen, batch: 1 },
+  numbers: { component: CalculScreen, batch: 1 },
+  ears: { component: DicteeItem, batch: 1 },
+  'to-be': { component: CalculScreen, batch: 1 },
+  'have-got': { component: CalculScreen, batch: 1 },
+  'present-simple': { component: CalculScreen, batch: 1 },
 };

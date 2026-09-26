@@ -1,6 +1,8 @@
 import { BIOMES, BLOCKS } from '../biomes';
 import { EXERCISES, exercisesOf, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
+import { CalculScreen } from './CalculScreen';
+import { DicteeItem } from './DicteeItem';
 import { fillTemplate } from './types';
 
 describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercice %s', (_, def) => {
@@ -221,4 +223,34 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
       expect(String(it.explanation).length).toBeGreaterThan(5);
       expect(String(it.spoken)).not.toContain('…');
     }
+});
+
+it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix, une correction en français', () => {
+  const islands = BIOMES.filter((b) => b.subject === 'anglais').map((b) => b.id);
+  const defs = EXERCISES.filter((e) => islands.includes(e.biome));
+  expect(defs.length).toBeGreaterThan(0);
+  for (const def of defs) {
+    expect(def.lang, def.id).toBe('en');
+    const screen = SCREEN_TYPES[def.type].component;
+    for (const it of def.items) {
+      const choices = it.choices as string[];
+      expect(choices, `${def.id} ${it.key}`).toContain(it.answer);
+      expect(choices.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(choices).size).toBe(choices.length);
+      expect(String(it.explanation).length).toBeGreaterThan(5);
+      // Apostrophes typographiques partout, en anglais aussi (I’m, don’t).
+      for (const text of [it.prompt, it.spoken, it.word, it.hint, it.explanation, ...choices]) if (text !== undefined) expect(String(text), it.key).not.toContain("'");
+      if (screen === CalculScreen) {
+        // Le trou se lit « blank », comme en classe d'anglais ; la règle est toujours affichée.
+        expect(String(it.spoken)).not.toContain('…');
+        if (String(it.prompt).includes('…')) expect(String(it.spoken)).toContain('blank');
+        expect((it.aid as { kind: string }).kind).toBe('rule-card');
+      }
+      if (screen === DicteeItem) {
+        // Écoute d'abord : un mot anglais à entendre, son sens à choisir en français.
+        expect(it.choicesLang).toBe('fr');
+        expect(String(it.word).length).toBeGreaterThan(1);
+      }
+    }
+  }
 });

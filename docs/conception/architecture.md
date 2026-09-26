@@ -36,7 +36,7 @@ public/          icônes, police Luciole
 
 ## Blocland (`src/blocland/`)
 
-- `biomes.ts` : les **vingt îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, quêtes) et les **blocs**. La classe d’une île est aussi son **archipel**.
+- `biomes.ts` : les **vingt-deux îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, quêtes) et les **blocs**. La classe d’une île est aussi son **archipel**.
 - `exercises/` : le **moteur d’exercice** de Blocland. `types.ts` définit le format d’un exercice ; `index.ts` le catalogue ; `registry.ts` associe chaque type d’exercice à son écran (`QcmItem`, `ChasseSonScreen`, `FilonScreen`, `MotTroueScreen`, `AscensionScreen`, `RimesScreen`, `DicteeItem`, `FamillesScreen`, `EnclosScreen`, `CalculScreen`, `BossScreen`) ; `data/*.json` les exercices écrits à la main ; `maths.ts` et `college.ts` les exercices générés ; `run.ts` la graine de chaque partie. Voir [Format des exercices](exercices.md).
 - `engine.ts` : logique pure et testée du jeu : score, étoiles, blocs, XP, répétition espacée, série de régularité et coffres, adaptation du niveau, inventaire, lancement du Bloc-Navire et migration des sauvegardes.
 - `ExerciseRunner.tsx` : joue un exercice (créature qui lit la consigne, écrans, correction, récompense). `boss.ts` et `BossPage.tsx` : le défi du Gardien, deux manches par quête.

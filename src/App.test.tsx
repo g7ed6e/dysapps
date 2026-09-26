@@ -31,8 +31,10 @@ it('liste les quêtes d’anglais du portail', () => {
   renderAt('/matiere/anglais');
   expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Verbes irréguliers/ })).toBeInTheDocument();
-  // Pas encore d'île d'anglais : pas de section Blocland vide.
-  expect(screen.queryByRole('heading', { name: /Dans Blocland/ })).not.toBeInTheDocument();
+  // Les îles d'anglais de Blocland, avec leur classe : la Baie et l'Horloge, derrière la Ferme et la Forêt.
+  expect(screen.getByRole('heading', { name: /Dans Blocland/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Baie des mots.*Niveau 6e/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Horloge des verbes.*Ouvrage à construire.*Niveau 6e/ })).toBeInTheDocument();
 });
 
 it('liste les activités d’une matière', () => {

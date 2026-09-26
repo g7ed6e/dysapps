@@ -47,18 +47,19 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 - **Consigne en français, contenu en anglais** : la consigne, le joker, l’indice et la correction sont en français, lus avec la voix française ; les mots et les phrases à travailler sont lus avec une **voix anglaise britannique** (une autre voix anglaise si l’appareil n’en a pas, jamais la voix française).
 - **Pas de syllabes colorées sur l’anglais** : le découpage suit les règles du français et tromperait l’élève. Le texte anglais est marqué comme tel pour les lecteurs d’écran.
-- **Entendre avant d’écrire** : chaque mot anglais a son bouton Écouter ; au niveau « J’écris » du Vocabulaire, on entend le mot et on choisit son écriture.
+- **Entendre avant d’écrire** : chaque mot anglais a son bouton Écouter ; au niveau « J’écris » du Vocabulaire, on entend le mot et on choisit son écriture ; la quête Ears de la Baie des mots lit le mot dès qu’il apparaît, rien n’est écrit avant.
+- **Le trou se lit « blank »** dans une phrase anglaise, comme en classe d’anglais : la voix anglaise ne dit pas « mot manquant ».
 
 ## Ce que travaille chaque île
 
-| Classe | Français | Maths |
-| --- | --- | --- |
-| 6e | Conscience phonologique (Forêt des sons), confusions de lettres (Mine des lettres), orthographe lexicale (Carrière des mots), orthographe grammaticale (Ferme des accords), fluence (Tour du lecteur) | Calcul mental (Plaine des nombres), fractions (Rivière des fractions), décimaux (Volcan des décimaux) |
-| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs (Glacier des relatifs), proportionnalité (Marché des proportions) |
-| 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) |
-| 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) |
+| Classe | Français | Maths | Anglais |
+| --- | --- | --- | --- |
+| 6e | Conscience phonologique (Forêt des sons), confusions de lettres (Mine des lettres), orthographe lexicale (Carrière des mots), orthographe grammaticale (Ferme des accords), fluence (Tour du lecteur) | Calcul mental (Plaine des nombres), fractions (Rivière des fractions), décimaux (Volcan des décimaux) | Se présenter, nombres, heure, écoute (Baie des mots), to be, have got, présent simple (Horloge des verbes) |
+| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs (Glacier des relatifs), proportionnalité (Marché des proportions) | à venir |
+| 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | à venir |
+| 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | à venir |
 
-Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. L’anglais n’a pas encore d’île : ses deux quêtes du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md), et les îles prévues, deux par classe, dans le [cadrage de l’anglais](../conception/cadrage-anglais.md).
+Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. Les deux quêtes d’anglais du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md) ; les îles d’anglais arrivent classe par classe, deux par archipel (voir le [cadrage de l’anglais](../conception/cadrage-anglais.md)).
 
 ## Ce qui n’est pas emprunté
 

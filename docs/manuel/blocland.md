@@ -1,6 +1,6 @@
 # L’aventure Blocland
 
-Blocland, ce sont **quatre archipels** de blocs, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) et les Îles du Ciel (3e), soit vingt îles. Le village est en ruine et l’élève est le bâtisseur : chaque exercice réussi rapporte des blocs, les blocs construisent des ouvrages entre les îles, reconstruisent les bâtiments des créatures et, au port, le **Bloc-Navire** qui mène à l’archipel suivant. Chaque île est un thème du programme, en français ou en maths. Le détail du contenu de chaque île est dans [L’archipel](../pedagogie/archipel.md).
+Blocland, ce sont **quatre archipels** de blocs, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) et les Îles du Ciel (3e), soit vingt-deux îles. Le village est en ruine et l’élève est le bâtisseur : chaque exercice réussi rapporte des blocs, les blocs construisent des ouvrages entre les îles, reconstruisent les bâtiments des créatures et, au port, le **Bloc-Navire** qui mène à l’archipel suivant. Chaque île est un thème du programme, en français, en maths ou en anglais. Le détail du contenu de chaque île est dans [L’archipel](../pedagogie/archipel.md).
 
 ## Le monde
 
@@ -56,6 +56,8 @@ Les blocs servent à deux choses : **construire les ouvrages** entre les îles (
 ## Les ouvrages entre les îles
 
 Au départ, deux îles sont ouvertes : la **Forêt des sons** (français) et la **Plaine des nombres** (maths), reliées par un pont déjà construit. Les autres îles de l’archipel s’ouvrent en construisant un ouvrage depuis le panneau d’une île ouverte. Les ouvrages ne relient que les îles d’un même archipel ; pour changer d’archipel, voir le Bloc-Navire ci-dessous. Dans un archipel, rien n’est imposé : on choisit sa direction.
+
+Dans les Basses Terres, les deux **îles d’anglais** sont derrière : la **Baie des mots** s’ouvre par un pont depuis la Ferme, l’**Horloge des verbes** par un pont depuis la Forêt, et un sentier relie les deux. Dans leurs quêtes, la consigne, l’indice et la correction sont en français ; les mots et les phrases en anglais sont lus avec une voix anglaise et ne sont pas découpés en syllabes. Dans une phrase anglaise, le trou se lit « blank ». La quête **Ears** lit le mot anglais dès qu’il apparaît : on l’écoute, puis on choisit son sens.
 
 | Ouvrage | Coût | Condition en plus |
 | --- | --- | --- |

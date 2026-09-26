@@ -17,7 +17,7 @@ it('le prochain objectif dit ce qu’il manque pour le plan, ou pour l’ouvrage
   expect(nextGoal(rich, 'foret')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs, ou tu peux construire le sentier vers Mine des lettres.');
   // Tous les plans posés et tous les ouvrages construits : plus rien à dire.
   const plans = Object.fromEntries(plansFor('foret').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const done = sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme'] } });
+  const done = sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme', 'foret-horloge'] } });
   expect(nextGoal(done, 'foret')).toBeNull();
   expect(nextGoal(EMPTY_STATE, 'mine')).toContain('pour La forge de Tunel');
 });

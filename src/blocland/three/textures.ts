@@ -23,6 +23,8 @@ export type TextureKind =
   | 'quartz'
   | 'prisme'
   | 'lentille'
+  | 'cabine'
+  | 'cadran'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -184,6 +186,24 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   lentille: {
     top: (x, y, r) => (Math.abs(Math.hypot(x - 7.5, y - 7.5) - 5) < 0.8 ? [240, 250, 255] : grain('#9cc8de', '#cfe6f2')(x, y, r)),
     side: (x, y, r) => (Math.abs(Math.hypot(x - 7.5, y - 7.5) - 5) < 0.8 ? [230, 245, 252] : grain('#7fb2cc', '#a9d0e2')(x, y, r)),
+  },
+  // Cabine : rouge vif, une vitre à petits carreaux sur les côtés (la cabine téléphonique).
+  cabine: {
+    top: (x, y, r) => (x === 0 || y === 0 || x === 15 || y === 15 ? [150, 30, 26] : grain('#c42e28', '#d8342c')(x, y, r)),
+    side: (x, y, r) =>
+      x >= 3 && x <= 12 && y >= 2 && y <= 10 && (x - 3) % 3 !== 2 && (y - 2) % 3 !== 2 ? [214, 236, 244] : grain('#b02a24', '#c7322b')(x, y, r),
+  },
+  // Cadran : laiton sur le dessus, un cadran crème cerclé de laiton sur les côtés, deux aiguilles sombres.
+  cadran: {
+    top: (x, y, r) => (x % 5 === 0 ? [150, 112, 40] : grain('#b8902e', '#d4ad4e')(x, y, r)),
+    side: (x, y, r) => {
+      const d = Math.hypot(x - 7.5, y - 7.5);
+      if (d > 6.8) return grain('#b8902e', '#d4ad4e')(x, y, r);
+      if (d > 5.8) return [150, 112, 40];
+      if ((x === 7 || x === 8) && y >= 3 && y <= 8) return [40, 32, 24];
+      if ((y === 7 || y === 8) && x >= 8 && x <= 11) return [40, 32, 24];
+      return grain('#efe6cc', '#f8f2e0')(x, y, r);
+    },
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

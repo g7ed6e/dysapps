@@ -1,0 +1,231 @@
+{
+  "id": "horloge-to-be-1",
+  "biome": "horloge",
+  "type": "to-be",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "horloge-to-be-1-0",
+      "prompt": "I … eleven years old.",
+      "spoken": "I blank eleven years old.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "am",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "I am : avec I, toujours am.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-1",
+      "prompt": "She … my sister.",
+      "spoken": "She blank my sister.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "is",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "She is : avec he, she, it, c’est is.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-2",
+      "prompt": "We … in the same class.",
+      "spoken": "We blank in the same class.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "are",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "We are : avec we, you, they, c’est are.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-3",
+      "prompt": "My dog … very funny.",
+      "spoken": "My dog blank very funny.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "is",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "My dog = it : it is.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-4",
+      "prompt": "They … from London.",
+      "spoken": "They blank from London.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "are",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "They are : avec they, c’est are.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-5",
+      "prompt": "You … my best friend.",
+      "spoken": "You blank my best friend.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "are",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "You are : avec you, c’est are.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-6",
+      "prompt": "It … a big house.",
+      "spoken": "It blank a big house.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "is",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "It is : avec it, c’est is.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-to-be-1-7",
+      "prompt": "Tom and Lina … at school.",
+      "spoken": "Tom and Lina blank at school.",
+      "choices": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": "are",
+      "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
+      "explanation": "Tom and Lina = they : they are.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "To be (être) au présent",
+          "lines": [
+            "I am (I’m)",
+            "he / she / it is (he’s, she’s, it’s)",
+            "we / you / they are (we’re, you’re, they’re)",
+            "Un nom au singulier (my dog, Tom) = he, she ou it → is.",
+            "Deux personnes ou plus (Tom and Lina) = they → are."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "cadran",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

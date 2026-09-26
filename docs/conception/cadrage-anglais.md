@@ -23,7 +23,7 @@ Chaque île : un thème du programme, trois quêtes, deux niveaux par quête, hu
 
 | Classe | Île, bloc, créature, Gardien | Quêtes |
 | --- | --- | --- |
-| 6e | Baie des mots : brique rouge, Robin le rouge-gorge, le Lion de pierre | **Hello** (saluer, se présenter, consignes de classe) ; **Numbers** (nombres, dates, heure) ; **Ears** (écouter un mot, trouver son sens) |
+| 6e | Baie des mots : cabine (la cabine téléphonique rouge), Robin le rouge-gorge, le Lion de pierre | **Hello** (saluer, se présenter, consignes de classe) ; **Numbers** (nombres, dates, heure) ; **Ears** (écouter un mot, trouver son sens) |
 | 6e | Horloge des verbes : cadran, Tick le hérisson, le Coucou de bronze | **To be** (am / is / are) ; **Have got** ; **Présent simple** (-s, do / does) |
 | 5e | Comptoir : tuile, Pudding le bouledogue, la Reine du marché | **Shopping** (nourriture, quantités, prix) ; **Routine** (heures, fréquence) ; **Listening** (phrases courtes) |
 | 5e | Manoir du passé : lambris, Moustache le chat, le Spectre du manoir | **-ing** (be + V-ing ou présent simple) ; **Prétérit** (was / were, -ed) ; **Comparatifs** |
@@ -34,7 +34,7 @@ Chaque île : un thème du programme, trois quêtes, deux niveaux par quête, hu
 
 Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de chaque pull request.
 
-**Placement.** 6e : derrière la rangée Ferme – Forêt – Mine, reliées par des ponts depuis la Ferme et la Mine. 5e : une colonne à droite du Marché et du Marais, les deux îles en isthme. 4e : au bout de la crête des Monts de Feu. 3e : de part et d’autre de l’arc du Phare. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
+**Placement.** 6e : derrière la Ferme et la Forêt, les deux îles en isthme (un sentier entre elles), un pont depuis la Ferme vers la Baie, un pont depuis la Forêt vers l’Horloge. 5e : une colonne à droite du Marché et du Marais, les deux îles en isthme. 4e : au bout de la crête des Monts de Feu. 3e : de part et d’autre de l’arc du Phare. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
 
 ## 4. Format des exercices
 
@@ -42,10 +42,12 @@ Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de
 - `choicesLang: "fr"` sur un item dont les réponses sont en français (traduire un mot anglais).
 - Écrans existants : `CalculScreen` (énoncé, rappel de règle, indice), `QcmItem` (un mot, des sens), `DicteeItem` (écoute d’abord). Les identifiants de quête sont nouveaux et uniques : le niveau adapté est retenu par type de quête.
 
+**Décidé en 6e.** Dans une phrase anglaise, le trou « … » se lit « blank » (la voix anglaise ne dit pas « mot manquant »). Les quêtes à phrase à trou et les nombres utilisent l’écran à règle (`CalculScreen`, un rappel `rule-card` toujours affiché) ; l’écoute (Ears) utilise la dictée (`DicteeItem`), qui lit le mot dès l’affichage, avec des réponses en français (`choicesLang: "fr"`). Les heures et les dates se répondent en écriture française (« 3 h 30 », « 3 mai »).
+
 ## 5. Découpage en pull requests
 
 1. ✅ Socle : ce cadrage, la matière Anglais (accueil, page, progression), la voix anglaise, le texte anglais à l’écran, les quêtes Vocabulaire et Verbes irréguliers.
-2. Îles de 6e : Baie des mots, Horloge des verbes.
+2. ✅ Îles de 6e : Baie des mots, Horloge des verbes.
 3. Îles de 5e : Comptoir, Manoir du passé.
 4. Îles de 4e : Théâtre des voix, Gare du futur.
 5. Îles de 3e : Studio des ondes, Château des hypothèses.
