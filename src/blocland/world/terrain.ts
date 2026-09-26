@@ -1005,10 +1005,12 @@ function cascades(def: IslandDef, scenery: LandCell[], put: (x: number, y: numbe
 }
 
 /**
- * Où nagent les baleines : trois ronds dans les plus larges clairières d'eau entre les îles (visibles depuis la vue
- * d'ensemble), assez loin de toute terre et de tout îlot pour ne jamais les toucher. Centre et rayon, en grille.
+ * Où nagent les baleines : quatre ronds dans de larges clairières d'eau, de préférence au large (les îles du bord
+ * voient la mer), assez loin de toute terre et de tout îlot pour ne jamais les toucher. Centre et rayon, en grille.
  */
+let whaleCache: { x: number; y: number; r: number }[] | null = null;
 export function whaleSpots(): { x: number; y: number; r: number }[] {
+  if (whaleCache) return whaleCache;
   const land: { x: number; y: number }[] = [];
   MAP.forEach((def, i) => {
     for (const c of landCells(def)) land.push(c);
@@ -1024,17 +1026,91 @@ export function whaleSpots(): { x: number; y: number; r: number }[] {
     }
     return best;
   };
-  const candidates: { x: number; y: number; r: number }[] = [];
-  for (let x = b.minX + 8; x <= b.maxX - 8; x += 3) for (let y = b.minY + 8; y <= b.maxY - 8; y += 3) candidates.push({ x, y, r: clearance(x, y) - 3 });
-  candidates.sort((p, q) => q.r - p.r);
+  // Les baleines préfèrent le large : on note chaque clairière par sa largeur et son éloignement du centre.
+  const cx = (b.minX + b.maxX) / 2;
+  const cy = (b.minY + b.maxY) / 2;
+  const candidates: { x: number; y: number; r: number; score: number }[] = [];
+  for (let x = b.minX + 8; x <= b.maxX - 8; x += 3)
+    for (let y = b.minY + 8; y <= b.maxY - 8; y += 3) {
+      const r = clearance(x, y) - 3;
+      candidates.push({ x, y, r, score: Math.min(r, 9) + Math.hypot(x - cx, y - cy) * 0.12 });
+    }
+  candidates.sort((p, q) => q.score - p.score);
   const spots: { x: number; y: number; r: number }[] = [];
   for (const c of candidates) {
-    if (c.r < 4) break;
+    if (c.r < 4) continue;
     if (spots.some((s) => Math.hypot(s.x - c.x, s.y - c.y) < s.r + c.r + 20)) continue;
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
-    if (spots.length === 3) break;
+    if (spots.length === 4) break;
   }
+  whaleCache = spots;
   return spots;
+}
+
+let seaCache: VoxelCube[] | null = null;
+/**
+ * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
+ * ras de l'eau, semés au hasard (bruit fixe) dans l'eau libre, à cinq cases au moins de toute terre, de tout îlot,
+ * de tout ouvrage et des ronds des baleines. Plus denses au large, autour du continent, là où l'écran montrait
+ * la mer seule. Calculé une fois.
+ */
+export function seaDecor(): VoxelCube[] {
+  if (seaCache) return seaCache;
+  const solid = new Set<string>();
+  MAP.forEach((def, i) => {
+    for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
+    const o = bossIsletOrigin(i);
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
+  });
+  for (const def of BRIDGES)
+    for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
+  const whales = whaleSpots();
+  const b = worldBounds();
+  const free = (x: number, y: number) => {
+    for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
+    return whales.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 4);
+  };
+  const cubes: VoxelCube[] = [];
+  const put = (x: number, y: number, z: number, block: (typeof BLOCKS)[keyof typeof BLOCKS]) =>
+    cubes.push({ x, y, z, color: block.side, top: block.top, texture: block.texture, tag: 'mer' });
+  const MARGIN = 26;
+  for (let gx = b.minX - MARGIN; gx <= b.maxX + MARGIN; gx += 4) {
+    for (let gy = b.minY - MARGIN; gy <= b.maxY + MARGIN; gy += 4) {
+      const x = gx + Math.floor(noise(71, gx, gy) * 4);
+      const y = gy + Math.floor(noise(72, gx, gy) * 4);
+      // Densité en dégradé : clairsemé entre les îles, de plus en plus fourni à mesure qu'on s'éloigne au large.
+      const beyond = Math.max(b.minX - x, x - b.maxX, b.minY - y, y - b.maxY, 0);
+      const t = Math.min(1, beyond / 20);
+      const pick = noise(73, gx, gy);
+      const rockAt = 0.06 + 0.07 * t;
+      const sandAt = rockAt + 0.025 + 0.03 * t;
+      if (pick >= sandAt || !free(x, y)) continue;
+      if (pick < rockAt) {
+        // Un rocher : un galet au ras de l'eau, parfois une pierre par-dessus, parfois un voisin.
+        put(x, y, -1, BLOCKS.galet);
+        const n = noise(74, gx, gy);
+        if (n > 0.35) put(x, y, 0, BLOCKS.pierre);
+        if (n > 0.6) put(x + 1, y, -1, BLOCKS.galet);
+        if (n > 0.8) put(x, y + 1, -1, BLOCKS.pierre);
+        if (n > 0.9) put(x, y, 1, BLOCKS.pierre);
+      } else {
+        // Un banc de sable : une petite tache de trois à sept cases au ras de l'eau.
+        const cells: [number, number][] = [
+          [0, 0],
+          [1, 0],
+          [0, 1],
+          [-1, 0],
+          [0, -1],
+          [1, 1],
+          [-1, -1],
+        ];
+        const n = 3 + Math.floor(noise(75, gx, gy) * 5);
+        for (const [dx, dy] of cells.slice(0, n)) put(x + dx, y + dy, -1, BLOCKS.sable);
+      }
+    }
+  }
+  seaCache = cubes;
+  return cubes;
 }
 
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */
@@ -1184,6 +1260,8 @@ export function worldCubes(
       }
     }
   });
+  // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage).
+  for (const c of seaDecor()) cubes.push(c);
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
   for (const def of BRIDGES) {

@@ -53,5 +53,5 @@ it('le village entier, tout construit, reste dans le budget de faces des tablett
   // Cœurs de 16 × 16 (bornes de quête) : un quart de faces en plus qu'avec des cœurs de 12.
   expect(faceCount(groups)).toBeLessThan(48000);
   // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : un peu plus de cent appels de dessin.
-  expect(groups.length).toBeLessThan(140);
+  expect(groups.length).toBeLessThan(150);
 });

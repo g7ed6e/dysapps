@@ -121,6 +121,12 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Pivoter vers la colonne centrale** (`viewYaw()`) : la direction de vue tourne autour de la verticale selon l'écart est-ouest entre l'île et le centre du continent, plein pivot (40 degrés, `VIEW_YAW_MAX`) à 50 cases. Le nord reste reconnaissable, les visages restent lisibles. Le même pivot s'applique à la vue rapprochée quand le panneau est ouvert.
 - Pendant un trajet, la caméra suit le bonhomme comme avant ; sur la Carte, rien ne change.
 
-## 19. À venir
+## 19. L'habillage de la mer (PR 17)
+
+- `seaDecor()` dans `terrain.ts` : des rochers qui affleurent (galet au ras de l'eau, parfois une pierre par-dessus et un voisin) et des bancs de sable (trois à sept cases au ras de l'eau), semés par un bruit fixe sur une grille de quatre cases, à cinq cases au moins de toute terre, de tout îlot, de tout ouvrage (deux cases de marge) et des ronds des baleines. Densité en dégradé : clairsemée entre les îles, de plus en plus fournie jusqu'à vingt cases au large. Cubes étiquetés `mer`, calculés une fois, jamais sous un ouvrage.
+- Les baleines passent de trois à quatre et préfèrent le large : chaque clairière est notée par sa largeur et son éloignement du centre du continent.
+- Effet : sur une île du bord, la mer n'est plus vide ; sur la Carte, un semis de récifs entoure le continent.
+
+## 20. À venir
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

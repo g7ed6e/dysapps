@@ -8,6 +8,7 @@ import {
   avatarHome,
   avatarRoute,
   bossIsletOrigin,
+  bridgePath,
   creaturePlacements,
   creatureSpot,
   DEPTH,
@@ -22,6 +23,7 @@ import {
   ISLET_W,
   mistPatches,
   questStations,
+  seaDecor,
   VIEW_YAW_MAX,
   viewYaw,
   viewZone,
@@ -138,7 +140,8 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
     expect(seen.has(key), `cube en double en ${key} (${c.tag}, ${c.bridge})`).toBe(false);
     seen.add(key);
   }
-  const cubes = worldCubes({});
+  // Tout tient dans le monde, sauf l'habillage de la mer, semé au large exprès.
+  const cubes = worldCubes({}).filter((c) => c.tag !== 'mer');
   const bounds = worldBounds();
   for (const c of cubes) {
     expect(c.x).toBeGreaterThanOrEqual(bounds.minX);
@@ -228,7 +231,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
 
 it('les baleines nagent dans les clairières d’eau entre les îles, jamais sur une terre ni un îlot', () => {
   const spots = whaleSpots();
-  expect(spots).toHaveLength(3);
+  expect(spots).toHaveLength(4);
   const land = new Set<string>();
   MAP.forEach((def, i) => {
     for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
@@ -301,4 +304,28 @@ it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le con
   expect(viewYaw('tour')).toBeGreaterThan(0.3);
   expect(viewYaw('cabinet')).toBeLessThan(-0.3);
   for (const b of BIOMES) expect(Math.abs(viewYaw(b.id))).toBeLessThanOrEqual(VIEW_YAW_MAX + 1e-9);
+});
+
+it('la mer est habillée de rochers et de bancs de sable, loin des terres, des îlots, des ouvrages et des baleines', () => {
+  const decor = seaDecor();
+  expect(decor.length).toBeGreaterThan(60);
+  expect(decor.some((c) => c.texture === 'sable')).toBe(true);
+  expect(decor.some((c) => c.texture === 'galet')).toBe(true);
+  expect(decor.every((c) => c.tag === 'mer' && c.z >= -1 && c.z <= 1)).toBe(true);
+  const solid = new Set<string>();
+  MAP.forEach((def, i) => {
+    for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
+    const o = bossIsletOrigin(i);
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
+  });
+  for (const def of BRIDGES) for (const c of bridgePath(def)) solid.add(`${c.x},${c.y}`);
+  const whales = whaleSpots();
+  for (const c of decor) {
+    for (let dx = -3; dx <= 3; dx++)
+      for (let dy = -3; dy <= 3; dy++) expect(solid.has(`${c.x + dx},${c.y + dy}`), `décor de mer contre la terre en ${c.x},${c.y}`).toBe(false);
+    for (const w of whales) expect(Math.hypot(w.x - c.x, w.y - c.y)).toBeGreaterThan(w.r + 2);
+  }
+  // Les cubes du monde contiennent l'habillage, et un ouvrage ne le remplace jamais.
+  const world = worldCubes({}, { plans: {}, journal: [], bridges: BRIDGES.map((b) => b.id) });
+  expect(world.filter((c) => c.tag === 'mer')).toHaveLength(decor.length);
 });
