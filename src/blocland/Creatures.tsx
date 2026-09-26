@@ -39,13 +39,18 @@ const MOUSSO = fromLayers(
   { G: '#5e9b4a', M: '#4c7a3b', g: '#8fd070', S: '#8c8c8c', W: '#f6f1e6', K: '#1f1a16', F: '#e07aa0' },
 );
 
+// Tunel : une taupe brune au ventre clair, museau rose, grosses griffes pâles, casque de mineur à lampe.
 const TUNEL = fromLayers(
   [
-    ['.BBB.', 'BBBBB', 'BBBBB', '.BBB.'],
-    ['.BBB.', 'BbbbB', 'BbbbB', '.BBB.'],
-    ['..N..', '.BEB.', '.BBB.', '.....'],
+    ['.C.C.', 'BBBBB', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.bbb.', 'BbbbB', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.bNb.', 'BBBBB', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.EBE.', 'BBBBB', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.BBB.', 'BBBBB', 'BBBBB', '.BBB.', '.....'],
+    ['.HHH.', '.HHH.', '.HHH.', '.....', '.....'],
+    ['..L..', '.....', '.....', '.....', '.....'],
   ],
-  { B: '#7a5236', b: '#a06f4c', N: '#e8a3b8', E: '#1f1a16' },
+  { B: '#7a5236', b: '#a06f4c', N: '#e8a3b8', E: '#1f1a16', C: '#f4e6d4', H: '#f2c944', L: '#fff4a0' },
 );
 
 const ROUXEL = fromLayers(
