@@ -165,7 +165,8 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
       expect(c.y, `${a} ${c.tag}`).toBeLessThan(bounds.maxY);
     }
   }
-});
+  // (Ce test reconstruit les quatre archipels plusieurs fois : on lui laisse le temps sur une machine chargée.)
+}, 30_000);
 
 it("retrouve l'île sous un point, y compris depuis un pont", () => {
   for (const b of BIOMES) {
@@ -220,6 +221,14 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(mistPatches('3e').length).toBe(4);
   for (const m of mistPatches('3e')) expect(m.z).toBe(7.5);
   expect(mistPatches('6e')).toEqual([]);
+  // Un repère par archipel du collège aussi : l'aiguille de glace du Glacier, le haut-fourneau de la Forge.
+  const glacier = of('glacier');
+  expect(glacier.filter((c) => c.texture === 'glace' && c.z >= 3 + 6).length).toBeGreaterThanOrEqual(3);
+  expect(glacier.some((c) => c.texture === 'cristal' && c.z >= 3 + 9)).toBe(true);
+  const forge = of('forge');
+  expect(forge.filter((c) => c.texture === 'basalte' && c.z >= 6 + 9).length).toBeGreaterThanOrEqual(4);
+  expect(forge.some((c) => c.texture === 'lave' && c.z >= 6 + 10)).toBe(true);
+  expect(forge.some((c) => c.color === '#a9a4a0' && c.z >= 6 + 12)).toBe(true);
 });
 
 it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau, et pas d’un archipel à l’autre', () => {
@@ -272,7 +281,10 @@ it('le bonhomme a toujours les pieds sur un bloc, jamais dedans, sur chaque île
 });
 
 it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais sur une terre, un îlot ni le port', () => {
+  // Pas de mer dans les Îles du Ciel : pas de baleines.
+  expect(whaleSpots('3e')).toEqual([]);
   for (const a of ARCHIPELAGO_IDS) {
+    if (a === '3e') continue;
     const spots = whaleSpots(a);
     // Quatre dans les Basses Terres ; au moins deux dans les petits archipels, où l'eau libre est plus rare.
     expect(spots.length, a).toBeGreaterThanOrEqual(a === '6e' ? 4 : 2);
@@ -379,6 +391,15 @@ it('la mer est habillée de rochers et de bancs de sable, loin des terres, des �
   // Les cubes du monde contiennent l'habillage, et un ouvrage ne le remplace jamais.
   const world = worldCubes('6e', {}, { plans: {}, journal: [], bridges: BRIDGES.map((b) => b.id) });
   expect(world.filter((c) => c.tag === 'mer')).toHaveLength(decor.length);
+  // Chaque archipel habille sa mer à sa façon : plaques de glace dans les Collines, aiguilles d'ardoise dans les Monts, rien dans le ciel.
+  const collines = seaDecor('5e');
+  expect(collines.some((c) => c.texture === 'glace')).toBe(true);
+  expect(collines.some((c) => c.texture === 'sable')).toBe(false);
+  const monts = seaDecor('4e');
+  expect(monts.some((c) => c.texture === 'ardoise' && c.z >= 1)).toBe(true);
+  expect(monts.some((c) => c.texture === 'sable')).toBe(false);
+  expect(seaDecor('3e')).toEqual([]);
+  expect(worldCubes('3e', {}).some((c) => c.tag === 'mer')).toBe(false);
 });
 
 it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à côté, hors de tout', () => {

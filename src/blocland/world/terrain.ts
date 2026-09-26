@@ -22,6 +22,7 @@ import {
   type LandCell,
 } from './map';
 import { dockBox, dockCells, dockOrigin, dockPosts } from './harbour';
+import { AMBIENCE } from './daylight';
 import { VEHICLE_STAGES, kitReady, launchedStages } from './vehicle';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
@@ -899,13 +900,27 @@ function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): str
 const SMOKE = '#a9a4a0';
 
 /** Les repères : un grand ouvrage par région, visible de loin, posé sur la terre autour du cœur. */
-const LANDMARK_OF: Partial<Record<BiomeId, 'grand-arbre' | 'champignon-geant' | 'fumee' | 'tour-de-guet' | 'grand-phare'>> = {
+const LANDMARK_OF: Partial<Record<BiomeId, 'grand-arbre' | 'champignon-geant' | 'fumee' | 'tour-de-guet' | 'grand-phare' | 'aiguille-de-glace' | 'haut-fourneau'>> = {
   foret: 'grand-arbre',
   marais: 'champignon-geant',
   volcan: 'fumee',
   mine: 'tour-de-guet',
   phare: 'grand-phare',
+  glacier: 'aiguille-de-glace',
+  forge: 'haut-fourneau',
 };
+
+/** Les volutes d'une fumée, décalées comme au vent. */
+const PUFFS: [number, number, number][] = [
+  [0, 0, 2],
+  [1, 0, 3],
+  [0, 1, 3],
+  [1, 1, 4],
+  [2, 1, 5],
+  [1, 2, 5],
+  [2, 2, 6],
+  [3, 2, 7],
+];
 
 type Spot = { x: number; y: number; h: number };
 
@@ -968,17 +983,25 @@ function landmark(def: IslandDef, scenery: LandCell[], put: (x: number, y: numbe
       const cx = Math.round(lava.reduce((a, c) => a + c.x, 0) / lava.length);
       const cy = Math.round(lava.reduce((a, c) => a + c.y, 0) / lava.length);
       const top = Math.max(...lava.map((c) => c.h)) + 2;
-      const puffs: [number, number, number][] = [
-        [0, 0, 2],
-        [1, 0, 3],
-        [0, 1, 3],
-        [1, 1, 4],
-        [2, 1, 5],
-        [1, 2, 5],
-        [2, 2, 6],
-        [3, 2, 7],
-      ];
-      for (const [dx, dy, dz] of puffs) put(cx + dx, cy + dy, top + dz, SMOKE);
+      for (const [dx, dy, dz] of PUFFS) put(cx + dx, cy + dy, top + dz, SMOKE);
+      return;
+    }
+    case 'aiguille-de-glace': {
+      // Une aiguille de glace : un pilier 2 × 2 de cinq blocs, une pointe de trois, un cristal qui brille au sommet.
+      const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+      if (!s) return;
+      for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS.glace.side);
+      for (let z = 6; z <= 8; z++) put(s.x, s.y, s.h + z, BLOCKS.glace.side);
+      put(s.x, s.y, s.h + 9, CRYSTAL);
+      return;
+    }
+    case 'haut-fourneau': {
+      // Le haut-fourneau de la Forge : une cheminée de basalte 2 × 2 de neuf blocs, la lave qui rougeoie au sommet, la fumée au vent.
+      const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 2);
+      if (!s) return;
+      for (let z = 1; z <= 9; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BASALT);
+      for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 10, LAVA);
+      for (const [dx, dy, dz] of PUFFS) put(s.x + dx, s.y + dy, s.h + 9 + dz, SMOKE);
       return;
     }
     case 'tour-de-guet': {
@@ -1044,6 +1067,11 @@ const whaleCache = new Map<ArchipelagoId, { x: number; y: number; r: number }[]>
 export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
   const known = whaleCache.get(a);
   if (known) return known;
+  // Les Îles du Ciel n'ont pas de mer : pas de baleines.
+  if (AMBIENCE[a].sky) {
+    whaleCache.set(a, []);
+    return [];
+  }
   const land: { x: number; y: number }[] = [];
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) land.push(c);
@@ -1092,6 +1120,11 @@ const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   const known = seaCache.get(a);
   if (known) return known;
+  // Les Îles du Ciel : des nuages à la place de la mer, rien à semer.
+  if (AMBIENCE[a].sky) {
+    seaCache.set(a, []);
+    return [];
+  }
   const solid = new Set<string>();
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
@@ -1129,15 +1162,23 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
       const sandAt = rockAt + 0.025 + 0.03 * t;
       if (pick >= sandAt || !free(x, y)) continue;
       if (pick < rockAt) {
-        // Un rocher : un galet au ras de l'eau, parfois une pierre par-dessus, parfois un voisin.
-        put(x, y, -1, BLOCKS.galet);
         const n = noise(74, gx, gy);
-        if (n > 0.35) put(x, y, 0, BLOCKS.pierre);
-        if (n > 0.6) put(x + 1, y, -1, BLOCKS.galet);
-        if (n > 0.8) put(x, y + 1, -1, BLOCKS.pierre);
-        if (n > 0.9) put(x, y, 1, BLOCKS.pierre);
+        if (a === '4e') {
+          // Les Monts de Feu : des aiguilles d'ardoise qui sortent de l'eau, une pierre au pied.
+          put(x, y, -1, BLOCKS.pierre);
+          const tall = 1 + Math.floor(n * 4);
+          for (let z = 0; z < tall; z++) put(x, y, z, BLOCKS.ardoise);
+          if (n > 0.7) put(x + 1, y, -1, BLOCKS.ardoise);
+        } else {
+          // Un rocher : un galet au ras de l'eau, parfois une pierre par-dessus, parfois un voisin.
+          put(x, y, -1, BLOCKS.galet);
+          if (n > 0.35) put(x, y, 0, BLOCKS.pierre);
+          if (n > 0.6) put(x + 1, y, -1, BLOCKS.galet);
+          if (n > 0.8) put(x, y + 1, -1, BLOCKS.pierre);
+          if (n > 0.9) put(x, y, 1, BLOCKS.pierre);
+        }
       } else {
-        // Un banc de sable : une petite tache de trois à sept cases au ras de l'eau.
+        // Un banc de sable (une plaque de glace dans les Collines du Large) : une petite tache de trois à sept cases au ras de l'eau.
         const cells: [number, number][] = [
           [0, 0],
           [1, 0],
@@ -1148,7 +1189,8 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
           [-1, -1],
         ];
         const n = 3 + Math.floor(noise(75, gx, gy) * 5);
-        for (const [dx, dy] of cells.slice(0, n)) put(x + dx, y + dy, -1, BLOCKS.sable);
+        const bank = a === '5e' ? BLOCKS.glace : a === '4e' ? BLOCKS.galet : BLOCKS.sable;
+        for (const [dx, dy] of cells.slice(0, n)) put(x + dx, y + dy, -1, bank);
       }
     }
   }

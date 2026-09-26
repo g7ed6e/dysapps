@@ -2,6 +2,10 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.10.0 — 26 septembre 2026
+
+**Quatre ambiances.** Chaque archipel de Blocland a désormais son ciel, sa mer et sa lumière : la mer tempérée des Basses Terres ; un ciel plus froid et une mer turquoise semée de plaques de glace dans les Collines du Large ; un bleu profond, une brume plus proche et des aiguilles d’ardoise dans les Monts de Feu ; et, dans les Îles du Ciel, plus de mer : un plancher de nuages qui dérive sous les îles, des nuages bas entre elles, aucune baleine. Deux repères de plus : l’aiguille de glace du Glacier et le haut-fourneau de la Forge, qui rougeoie et fume. Les oiseaux volent plus nombreux et plus haut dans les Monts, tout en haut dans le ciel. Les nuits restent bleues, jamais noires.
+
 ## 0.9.0 — 26 septembre 2026
 
 **Quatre archipels et le Bloc-Navire.** Blocland devient quatre archipels, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e). On voit un archipel à la fois, avec sa mer et sa Carte. Les ouvrages ne relient plus que les îles d’un même archipel ; pour passer au suivant, on construit le **Bloc-Navire** au quai de l’île-port (des blocs à poser comme un plan, et des Gardiens à vaincre pour que la voile, le ballon puis le réacteur apparaissent), puis on embarque. On revient quand on veut, rien ne se perd.
