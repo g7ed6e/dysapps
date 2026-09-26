@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { CORE, MAP, landCells } from './map';
+import { CORE, MAP, islandDef, landBox, landCells } from './map';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
@@ -22,6 +22,9 @@ import {
   ISLET_W,
   mistPatches,
   questStations,
+  VIEW_YAW_MAX,
+  viewYaw,
+  viewZone,
   whaleSpots,
   worldBounds,
   worldCubes,
@@ -281,4 +284,21 @@ it('chaque Gardien tient sur son îlot, et chaque créature reste petite devant 
     expect(ch, b.id).toBeLessThanOrEqual(9);
     expect(ch, b.id).toBeLessThan(gh + 2);
   }
+});
+
+it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le continent sans dépasser 40 degrés', () => {
+  // La Forêt et ses voisines (Mine, Ferme, Plaine, Carrefour) : la zone englobe toutes leurs terres.
+  const z = viewZone('foret');
+  for (const id of ['foret', 'mine', 'ferme', 'plaine', 'carrefour'] as const) {
+    const b = landBox(islandDef(id));
+    expect(b.x0).toBeGreaterThanOrEqual(z.minX);
+    expect(b.x1).toBeLessThanOrEqual(z.maxX);
+    expect(b.y0).toBeGreaterThanOrEqual(z.minY);
+    expect(b.y1).toBeLessThanOrEqual(z.maxY);
+  }
+  // Au centre, pas de pivot ; sur le bord ouest (Tour), la caméra tourne vers l'est ; à l'est (Cabinet), vers l'ouest.
+  expect(Math.abs(viewYaw('foret'))).toBeLessThan(0.25);
+  expect(viewYaw('tour')).toBeGreaterThan(0.3);
+  expect(viewYaw('cabinet')).toBeLessThan(-0.3);
+  for (const b of BIOMES) expect(Math.abs(viewYaw(b.id))).toBeLessThanOrEqual(VIEW_YAW_MAX + 1e-9);
 });

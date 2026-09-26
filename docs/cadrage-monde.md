@@ -114,6 +114,13 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Toucher une borne** (socle, panneau ou repère) lance la quête si elle est jouable ; sinon, le panneau de l'île s'ouvre et explique.
 - Les créatures évitent les bornes (obstacles dans `creatureSpot()`), la caméra s'éloigne un peu (`ISLAND_DISTANCE` 30, `FOLLOW_DISTANCE` 50), la Carte se cadre toute seule.
 
-## 18. À venir
+## 18. Le cadrage vers le continent (PR 16)
+
+- Le problème : la caméra regardait toujours vers le nord, centrée sur le bonhomme ; sur une île du bord (Tour à l'ouest, Cabinet à l'est), l'écran se remplissait de mer.
+- **Cadrer la zone** (`viewZone()` dans `terrain.ts`) : quand le bonhomme se tient sur une île, la caméra vise un point entre cette île (poids 2) et le centre de « son île + ses voisines reliées par un ouvrage » (poids 1), à une distance qui fait tenir la zone (`FOLLOW_DISTANCE` à `FOLLOW_MAX`). Les voisines tirent l'image vers le continent.
+- **Pivoter vers la colonne centrale** (`viewYaw()`) : la direction de vue tourne autour de la verticale selon l'écart est-ouest entre l'île et le centre du continent, plein pivot (40 degrés, `VIEW_YAW_MAX`) à 50 cases. Le nord reste reconnaissable, les visages restent lisibles. Le même pivot s'applique à la vue rapprochée quand le panneau est ouvert.
+- Pendant un trajet, la caméra suit le bonhomme comme avant ; sur la Carte, rien ne change.
+
+## 19. À venir
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.
