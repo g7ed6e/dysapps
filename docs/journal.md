@@ -2,6 +2,16 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.8.0 — 26 septembre 2026
+
+**Succès : la progression par matière.** La page Succès montre maintenant un panneau par matière (Français, Maths) :
+
+- une jauge des étoiles gagnées dans les îles de la matière, de la 6e à la 3e ;
+- les îles ouvertes, les Gardiens vaincus et le record des quêtes du portail ;
+- une liste **À retravailler**, la quête la plus faible en premier, pour la relancer d’un geste. Elle contient les quêtes de Blocland déjà jouées qui n’ont pas trois étoiles, et les quêtes du portail dont le record est sous 70 %, cinq au plus.
+
+Voir [Progression et récompenses](manuel/progression.md#par-matiere-progresser-et-retravailler).
+
 ## 0.7.0 — 26 septembre 2026
 
 **README en porte d’entrée.** Le README du dépôt ne détaille plus chaque fonctionnalité : il présente le projet, donne les deux adresses (application, documentation), le démarrage développeur, les règles des pull requests, la licence et les crédits, et renvoie à cette documentation pour le reste. Le paragraphe sur le style « monde en blocs » (repères visuels, polices, textures, sons) devient la page [Style « monde en blocs »](conception/style.md) de la conception.
