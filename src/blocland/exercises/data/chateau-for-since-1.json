@@ -1,0 +1,223 @@
+{
+  "id": "chateau-for-since-1",
+  "biome": "chateau",
+  "type": "for-since",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "chateau-for-since-1-0",
+      "prompt": "I have lived here … ten years.",
+      "spoken": "I have lived here blank ten years.",
+      "choices": [
+        "for",
+        "since",
+        "ago"
+      ],
+      "answer": "for",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "ten years est une durée → for.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-1",
+      "prompt": "She has been ill … Monday.",
+      "spoken": "She has been ill blank Monday.",
+      "choices": [
+        "since",
+        "for",
+        "ago"
+      ],
+      "answer": "since",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "Monday est un point de départ → since.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-2",
+      "prompt": "We have known each other … 2019.",
+      "spoken": "We have known each other blank 2019.",
+      "choices": [
+        "since",
+        "for",
+        "ago"
+      ],
+      "answer": "since",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "2019 est un point de départ → since.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-3",
+      "prompt": "They have been married … a long time.",
+      "spoken": "They have been married blank a long time.",
+      "choices": [
+        "for",
+        "since",
+        "ago"
+      ],
+      "answer": "for",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "a long time est une durée → for.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-4",
+      "prompt": "I saw him two days … .",
+      "spoken": "I saw him two days blank .",
+      "choices": [
+        "ago",
+        "for",
+        "since"
+      ],
+      "answer": "ago",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "two days ago = il y a deux jours (avec le prétérit saw).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-5",
+      "prompt": "He has played the guitar … he was six.",
+      "spoken": "He has played the guitar blank he was six.",
+      "choices": [
+        "since",
+        "for",
+        "ago"
+      ],
+      "answer": "since",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "he was six est un point de départ → since.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-6",
+      "prompt": "I have waited … twenty minutes!",
+      "spoken": "I have waited blank twenty minutes!",
+      "choices": [
+        "for",
+        "since",
+        "ago"
+      ],
+      "answer": "for",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "twenty minutes est une durée → for.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-1-7",
+      "prompt": "She moved to London three years … .",
+      "spoken": "She moved to London three years blank .",
+      "choices": [
+        "ago",
+        "for",
+        "since"
+      ],
+      "answer": "ago",
+      "hint": "Une durée (for), un point de départ (since), ou « il y a » (ago) ?",
+      "explanation": "three years ago = il y a trois ans (avec le prétérit moved).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "For, since, ago",
+          "lines": [
+            "for + une durée (for ten years, for a week)",
+            "since + un point de départ (since Monday, since 2019)",
+            "ago = il y a, avec le prétérit (two days ago)",
+            "for / since → present perfect : I have lived here for ten years."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "taille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

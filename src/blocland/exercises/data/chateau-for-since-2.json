@@ -1,0 +1,215 @@
+{
+  "id": "chateau-for-since-2",
+  "biome": "chateau",
+  "type": "for-since",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "chateau-for-since-2-0",
+      "prompt": "I … in Paris since 2015.",
+      "spoken": "I blank in Paris since 2015.",
+      "choices": [
+        "have lived",
+        "lived",
+        "live"
+      ],
+      "answer": "have lived",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "since 2015 : jusqu’à maintenant → present perfect.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-1",
+      "prompt": "I … in Paris in 2015.",
+      "spoken": "I blank in Paris in 2015.",
+      "choices": [
+        "lived",
+        "have lived",
+        "live"
+      ],
+      "answer": "lived",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "in 2015 : une date terminée → prétérit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-2",
+      "prompt": "We … the film yesterday.",
+      "spoken": "We blank the film yesterday.",
+      "choices": [
+        "saw",
+        "have seen",
+        "see"
+      ],
+      "answer": "saw",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "yesterday : terminé → prétérit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-3",
+      "prompt": "She … here for two hours.",
+      "spoken": "She blank here for two hours.",
+      "choices": [
+        "has been",
+        "was",
+        "is"
+      ],
+      "answer": "has been",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "for two hours, et elle est encore là → present perfect.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-4",
+      "prompt": "They … to Spain last summer.",
+      "spoken": "They blank to Spain last summer.",
+      "choices": [
+        "went",
+        "have gone",
+        "go"
+      ],
+      "answer": "went",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "last summer : terminé → prétérit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-5",
+      "prompt": "How long … you known her?",
+      "spoken": "How long blank you known her?",
+      "choices": [
+        "have",
+        "did",
+        "do"
+      ],
+      "answer": "have",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "How long…? : jusqu’à maintenant → present perfect.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-6",
+      "prompt": "When … you arrive?",
+      "spoken": "When blank you arrive?",
+      "choices": [
+        "did",
+        "have",
+        "do"
+      ],
+      "answer": "did",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "When…? : un moment précis du passé → prétérit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    },
+    {
+      "key": "chateau-for-since-2-7",
+      "prompt": "He … his leg three weeks ago.",
+      "spoken": "He blank his leg three weeks ago.",
+      "choices": [
+        "broke",
+        "has broken",
+        "breaks"
+      ],
+      "answer": "broke",
+      "hint": "C’est terminé (une date du passé) ou ça dure jusqu’à maintenant ?",
+      "explanation": "three weeks ago : terminé → prétérit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Present perfect ou prétérit ?",
+          "lines": [
+            "Moment terminé et daté (yesterday, in 2015, last summer, ago) : prétérit.",
+            "Jusqu’à maintenant (since, for, how long) : present perfect.",
+            "When…? → prétérit ; How long…? → present perfect."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "taille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

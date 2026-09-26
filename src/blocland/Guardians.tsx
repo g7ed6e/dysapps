@@ -445,6 +445,30 @@ const LOCOMOTIVE = fromLayers(
   { K: '#2a2622', R: '#c0392b', Y: '#f2c944', L: '#fff4a0', C: '#6f4d2a', S: '#f4f8fb' },
 );
 
+// La Grande Antenne : un grand poste de radio d'acier, grille de haut-parleur pour bouche, deux cadrans jaunes pour yeux,
+// et son mât en treillis surmonté d'un voyant rouge.
+const ANTENNE = fromLayers(
+  [
+    ['.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.GKGKGKG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.GKGKGKG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.GEGGGEG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.', '.GGGGGGG.'],
+    ['.........', '....M....', '....M....', '.........'],
+    ['.........', '....M....', '....M....', '.........'],
+    ['.........', '..MMMMM..', '....M....', '.........'],
+    ['.........', '....M....', '....M....', '.........'],
+    ['.........', '...MMM...', '....M....', '.........'],
+    ['.........', '....M....', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........'],
+  ],
+  { G: '#6e7680', K: '#2a2622', E: '#f5d63d', M: '#9aa4ae', R: '#ff4a3a' },
+);
+
+// Le Dragon gallois : le dragon rouge du pays de Galles, ventre doré, ailes pourpres.
+const DRAGON_G = dragon({ C: '#c0392b', O: '#f2c944', W: '#8a1f1f', R: '#f6f1e6', M: '#4a0e0e', H: '#f4f1e4' });
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -472,6 +496,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   manoir: SPECTRE,
   theatre: MASQUE,
   gare: LOCOMOTIVE,
+  studio: ANTENNE,
+  chateau: DRAGON_G,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

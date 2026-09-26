@@ -377,6 +377,32 @@ const VAPEUR = fromLayers(
   { G: '#8c8c8c', W: '#f6f1e6', K: '#1f1a16', E: '#1f1a16', R: '#c0392b' },
 );
 
+// Écho : une chauve-souris mauve, grandes ailes sombres ouvertes, yeux dorés, deux petits crocs, grandes oreilles.
+const ECHO = fromLayers(
+  [
+    ['.......', '..P.P..', '.......'],
+    ['W.PPP.W', 'WWPPPWW', '..PPP..'],
+    ['WWPTPWW', 'WWPPPWW', '..PPP..'],
+    ['.WEPEW.', '.WPPPW.', '..PPP..'],
+    ['..P.P..', '..P.P..', '.......'],
+  ],
+  { P: '#6a5a8c', W: '#2e2538', E: '#f5d63d', T: '#f6f1e6' },
+);
+
+// Knight : un petit chevalier, heaume d'acier à visière, plumet rouge, tunique bleue à écusson d'or.
+const KNIGHT = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.BBB.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.BYB.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.SSS.', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.KKK.', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.....', '.SSS.', '.SSS.', '.....'],
+    ['.....', '..R..', '..R..', '.....'],
+  ],
+  { K: '#2a2622', B: '#2f5aa8', Y: '#f2c944', S: '#b8c0c8', R: '#c0392b' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -404,6 +430,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   manoir: MOUSTACHE,
   theatre: PUCK,
   gare: VAPEUR,
+  studio: ECHO,
+  chateau: KNIGHT,
 };
 
 interface Props {

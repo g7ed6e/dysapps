@@ -28,7 +28,9 @@ export type BiomeId =
   | 'comptoir'
   | 'manoir'
   | 'theatre'
-  | 'gare';
+  | 'gare'
+  | 'studio'
+  | 'chateau';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -56,6 +58,8 @@ export type BlockId =
   | 'lambris'
   | 'velours'
   | 'rail'
+  | 'antenne'
+  | 'taille'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -103,6 +107,8 @@ export type BlockTexture =
   | 'lambris'
   | 'velours'
   | 'rail'
+  | 'antenne'
+  | 'taille'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -141,6 +147,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   lambris: { id: 'lambris', name: 'Lambris', top: '#6e4a2c', side: '#5a3a22', texture: 'lambris' },
   velours: { id: 'velours', name: 'Velours', top: '#8e2a48', side: '#7a1f3a', texture: 'velours' },
   rail: { id: 'rail', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
+  antenne: { id: 'antenne', name: 'Antenne', top: '#b4bcc4', side: '#9aa4ae', texture: 'antenne' },
+  taille: { id: 'taille', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -1063,6 +1071,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'futur', title: 'Futur', description: 'Will et be going to.' },
       { id: 'modaux', title: 'Modaux', description: 'Can, must, should, have to.' },
       { id: 'present-perfect', title: 'Present perfect', description: 'Have been, ever, never, already, yet, just.' },
+    ],
+  },
+  {
+    id: 'studio',
+    name: 'Studio des ondes',
+    module: 'Compréhension, connecteurs, faux amis',
+    subject: 'anglais',
+    classe: '3e',
+    description: 'Comprendre un petit texte, relier ses idées, se méfier des faux amis : l’anglais de la radio.',
+    block: 'antenne',
+    guardian: 'la Grande Antenne',
+    guardianSays: {
+      hit: 'Bip… Juste. Message bien reçu.',
+      miss: 'Ce n’est rien : relis le texte, cherche l’indice, et reprends.',
+      beaten: 'Fin de l’émission. Le studio est à toi… et à Écho.',
+    },
+    challenge: 'La Grande Antenne grésille et s’allume : « Tu as capté toutes mes ondes. Montre-moi que tu comprends chaque message. »',
+    icon: 'languages',
+    creature: {
+      name: 'Écho',
+      species: 'chauve-souris animatrice radio',
+      greeting:
+        'Hello, bâtisseur ! Au studio, on lit et on écoute des messages entiers : qui, quand, pourquoi ? Et attention aux faux amis : library n’est pas une librairie ! Chaque message compris, c’est une antenne pour le village.',
+      lines: [
+        'Actually, ça veut dire « en fait », pas « actuellement ».',
+        'Because pour la cause, so pour la conséquence, but pour l’opposition.',
+        'Ma régie est hérissée d’antennes. Chaque bonne réponse en dresse une.',
+      ],
+      home: 'Ma régie est finie ! On the air!',
+    },
+    exercises: [
+      { id: 'comprendre', title: 'Comprendre', description: 'Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.' },
+      { id: 'connecteurs', title: 'Connecteurs', description: 'Because, so, but, although, however, unless…' },
+      { id: 'faux-amis', title: 'Faux amis', description: 'Actually, library, sensible : des mots qui ressemblent au français, mais trompent.' },
+    ],
+  },
+  {
+    id: 'chateau',
+    name: 'Château des hypothèses',
+    module: 'Grammaire : for et since, if, passif',
+    subject: 'anglais',
+    classe: '3e',
+    description: 'Depuis quand, et si…, et par qui : les phrases longues de 3e, la règle sous les yeux.',
+    block: 'taille',
+    guardian: 'le Dragon gallois',
+    guardianSays: {
+      hit: 'Grrr… Juste. Ma flamme vacille.',
+      miss: 'Ce n’est rien : cherche le petit mot (for, since, if, by…), relis la règle, et reprends.',
+      beaten: 'Je replie mes ailes rouges. Le château est à toi… et à Knight.',
+    },
+    challenge: 'Le Dragon gallois se pose sur le donjon : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
+    icon: 'castle',
+    creature: {
+      name: 'Knight',
+      species: 'petit chevalier',
+      greeting:
+        'Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village.',
+      lines: [
+        'For une durée, since un point de départ.',
+        'If I were a dragon, I would fly : si j’étais un dragon, je volerais.',
+        'Ma tour est en pierre de taille. Chaque bonne réponse en scelle une.',
+      ],
+      home: 'Ma tour est finie ! If I were you, I would climb to the top.',
+    },
+    exercises: [
+      { id: 'for-since', title: 'For / since', description: 'For, since, ago ; present perfect ou prétérit.' },
+      { id: 'if', title: 'If', description: 'Si… : le réel (will) et l’imaginaire (would).' },
+      { id: 'passif', title: 'Passif', description: 'Is spoken, was built, will be shown : be + participe passé.' },
     ],
   },
 ];

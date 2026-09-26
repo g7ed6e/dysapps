@@ -30,11 +30,11 @@ Chaque île : un thème du programme, trois quêtes, deux niveaux par quête, hu
 | 4e | Théâtre des voix : velours, Puck le lutin, le Masque | **Dialogues** (qui, où, quand) ; **Quantités** (some / any, much / many) ; **Prétérit irrégulier** |
 | 4e | Gare du futur : rail, Vapeur le blaireau, la Locomotive de fer | **Futur** (will / going to) ; **Modaux** (can, must, should, have to) ; **Present perfect** (ever, already, yet) |
 | 3e | Studio des ondes : antenne, Écho la chauve-souris, la Grande Antenne | **Comprendre** (texte court et question) ; **Connecteurs** (because, although, however) ; **Faux amis** |
-| 3e | Château des hypothèses : pierre de taille, Knight le petit chevalier, le Dragon gallois | **For / since** (present perfect ou prétérit) ; **If** (conditionnels 0, 1, 2) ; **Passif** |
+| 3e | Château des hypothèses : pierre de taille (bloc `taille`), Knight le petit chevalier, le Dragon gallois | **For / since** (present perfect ou prétérit) ; **If** (conditionnels 0, 1, 2) ; **Passif** |
 
 Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de chaque pull request.
 
-**Placement.** 6e : derrière la Ferme et la Forêt, les deux îles en isthme (un sentier entre elles), un pont depuis la Ferme vers la Baie, un pont depuis la Forêt vers l’Horloge. 5e : une colonne à droite du Marché et du Marais ; l’îlot du Gardien du Manoir est entre les deux îles, elles ne se touchent donc pas : trois ponts (Marché → Comptoir, Marais → Manoir, Comptoir → Manoir). 4e : aux deux bouts de la crête des Monts de Feu, la Gare avant la Forge (pont depuis la Forge), le Théâtre après le Cabinet (pont depuis le Cabinet). Les Dialogues du Théâtre sont une écoute dont la réponse est une réplique en anglais (pas de `choicesLang`). 3e : de part et d’autre de l’arc du Phare. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
+**Placement.** 6e : derrière la Ferme et la Forêt, les deux îles en isthme (un sentier entre elles), un pont depuis la Ferme vers la Baie, un pont depuis la Forêt vers l’Horloge. 5e : une colonne à droite du Marché et du Marais ; l’îlot du Gardien du Manoir est entre les deux îles, elles ne se touchent donc pas : trois ponts (Marché → Comptoir, Marais → Manoir, Comptoir → Manoir). 4e : aux deux bouts de la crête des Monts de Feu, la Gare avant la Forge (pont depuis la Forge), le Théâtre après le Cabinet (pont depuis le Cabinet). Les Dialogues du Théâtre sont une écoute dont la réponse est une réplique en anglais (pas de `choicesLang`). 3e : aux deux bouts de l’arc, le Studio avant le Belvédère (pont depuis le Belvédère), le Château après l’Observatoire des données (pont depuis l’Observatoire). Comprendre et Faux amis se lisent en entier en anglais (texte et question), sans trou ; les Faux amis se répondent en français. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
 
 ## 4. Format des exercices
 
@@ -50,4 +50,4 @@ Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de
 2. ✅ Îles de 6e : Baie des mots, Horloge des verbes.
 3. ✅ Îles de 5e : Comptoir, Manoir du passé.
 4. ✅ Îles de 4e : Théâtre des voix, Gare du futur.
-5. Îles de 3e : Studio des ondes, Château des hypothèses.
+5. ✅ Îles de 3e : Studio des ondes, Château des hypothèses.
