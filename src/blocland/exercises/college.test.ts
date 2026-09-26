@@ -20,7 +20,16 @@ import {
 it('formate et lit les relatifs, range les réponses', () => {
   expect(fmt(-7)).toBe('−7');
   expect(fmt(1200)).toMatch(/^1.200$/);
-  expect(choices(3, [5, -2, 3, 3], () => 0.5)).toEqual(['−2', '3', '4', '5']);
+  expect(choices(3, [5, -2, 3, 3], () => 0.5)).toEqual(['−2', '2', '3', '5']);
+  // La liste reste croissante, mais la bonne réponse y prend chaque place selon le tirage.
+  const rng = seededItems('places');
+  const places = new Set<number>();
+  for (let i = 0; i < 40; i++) {
+    const list = choices(10, [2, 4, 6, 8, 12, 14, 16], rng);
+    expect(list.map(Number)).toEqual([...list.map(Number)].sort((a, b) => a - b));
+    places.add(list.indexOf('10'));
+  }
+  expect([...places].sort()).toEqual([0, 1, 2, 3]);
 });
 
 it('les générateurs de relatifs sont cohérents avec la droite', () => {

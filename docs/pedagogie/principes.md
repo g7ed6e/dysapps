@@ -16,6 +16,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne fait rien bouger.
 - **Une consigne unique** par exercice, la même pour tous les items.
 - **Réponses en ordre stable** : en maths, rangées dans l’ordre croissant ; en français, mélangées à l’affichage mais jamais déplacées après un clic.
+- **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance.
 - **Cibles tactiles larges** (au moins 48 px), un geste par action ; l’appui long n’est jamais la seule façon de faire.
 
 ## Aider sans pénaliser
@@ -38,7 +39,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 - **Répétition espacée** des items ratés (J+1, J+3, J+7, J+15, sortie après trois réussites d’affilée), particulièrement pour les mots-outils, les confusions de lettres et les homophones.
 - **Adaptation du niveau** par quête : monte après deux parties au-dessus du seuil, ou une seule quasi parfaite ; descend après deux parties en dessous du seuil bas.
-- **Variation** : chaque partie tire d’autres nombres ou un autre lot de mots ; le premier contact garde l’ordre écrit par l’auteur.
+- **Variation** : chaque partie tire d’autres nombres ou un autre lot de mots, dans un autre ordre, dès la première partie et même après avoir recommencé le jeu : on ne retient pas une suite de réponses.
 - **Progression par archipel** : chaque île est un thème du programme avec une classe indicative (6e à 3e). Dans un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans l’ordre que l’on veut. Passer à l’archipel suivant demande le Bloc-Navire, construit avec des blocs et quelques Gardiens vaincus ; on revient toujours en arrière, rien ne se perd.
 - **Le geste apprend** : trier des mots, piocher une lettre, poser un bloc de lettres, glisser un sujet vers un verbe, lire à voix haute paragraphe par paragraphe.
 

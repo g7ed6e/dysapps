@@ -75,10 +75,14 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 
 ## 12. Des questions qui changent (PR 10)
 
-- Chaque partie a une **graine** (`exercises/run.ts`, `runSeed()` : l'exercice et le nombre de parties déjà jouées). La première partie joue les items tels qu'ils sont écrits (l'ordre d'un premier contact est choisi) ; les suivantes varient.
+- Chaque partie a une **graine** (`exercises/run.ts`, `runSeed()` : l'exercice et le nombre de parties déjà jouées). À l'origine, la première partie jouait les items tels qu'ils sont écrits, et les suivantes variaient (voir plus bas : la graine est désormais tirée au hasard).
 - **Maths** : les exercices générés tirent d'autres nombres à chaque partie (`generate` sur l'`ExerciseDef`) ; avant, la même graine donnait les mêmes huit questions pour toujours.
 - **Français** : le lot est mélangé, et quand il est plus large que la partie (`perRun`), on n'en joue qu'une partie. Les textes à lire (Ascension) et les manches du Gardien gardent leur ordre.
 - Lots élargis : syllabes (12 mots pour 6 joués), oreille du mineur, mots-outils du coffre, familles de mots (10 pour 6 joués). Les réponses de chaque item sont mélangées (PR précédente).
+- **Depuis la PR « hasard des quêtes »**, la graine est **tirée au hasard** à chaque partie (`runSeed(def)` : l'exercice et un tirage `crypto.getRandomValues`) : plus de première partie dans l'ordre du fichier, et recommencer le jeu ne rejoue plus la même suite. `runItems(def, seed)` reste reproductible pour une graine donnée (tests).
+- **Place de la réponse** (`core/choices.ts`, `placeChoices`) : sur une partie, la bonne réponse vise chaque place autant de fois (à un près), dans un ordre tiré au hasard. Mots : les autres choix sont mélangés autour. Nombres rangés : l'ordre croissant reste ; des entiers consécutifs forment une fenêtre qu'on décale (Abattage : 1-2-3, 2-3-4, 3-4-5, jamais sous 1), sinon un piège passe de l'autre côté de la réponse à la même distance (56 et 54 → 58), un cran plus loin si la valeur existe déjà, ou au rapport inverse (×2 → ÷2) pour rester positif. Une liste de nombres que l'auteur n'a pas rangée n'est pas touchée. Même règle dans les anciennes quêtes (tables, fractions, décimaux).
+- **Collège** : `defineData` a désormais un `generate` (d'autres nombres à chaque partie), et `choices()` tire la place de la réponse avant de choisir ses pièges.
+- **Gardien** : ses manches viennent d'une partie tirée au hasard (`runItems`), avec des réponses placées ; avant, elles reprenaient les items bruts, bonne réponse souvent en premier.
 
 ## 13. Retours du cahier (PR 11)
 

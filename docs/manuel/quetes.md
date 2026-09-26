@@ -7,7 +7,7 @@ Les pages **Français** et **Maths** de l’accueil listent les quêtes du porta
 Chaque écran tient sans défiler :
 
 1. **La consigne ou l’énoncé** est lue à voix haute dès qu’elle apparaît (désactivable dans les réglages) et relançable avec le bouton 🔊. Les symboles sont lus en mots : « 7 fois 8 », « 3 quarts ».
-2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, et les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
+2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, mais la bonne n’a pas de place favorite : d’une question à l’autre, elle est la plus petite, la plus grande ou entre les deux. Les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
 3. **Le joker** donne un indice avant de répondre, ou après une erreur : une astuce (« remplace par *avait* ») et, en maths, une aide visuelle (grille de points, boîte de dix, droite par bonds, tableau de numération, barres de fractions).
 4. **La correction** s’affiche dans un bandeau fixe, sans faire bouger la question : la bonne réponse et une explication d’une ligne qui rappelle la règle. Une réponse fausse rapporte quand même un point d’effort, puis on peut réessayer.
 

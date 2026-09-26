@@ -1,5 +1,5 @@
 // Les quêtes de maths de Blocland : construites à partir des générateurs des quêtes existantes (tables, fractions,
-// décimaux), avec un tirage reproductible par exercice. Les aides visuelles (grille de points, boîte de dix, droite…)
+// décimaux), avec un tirage reproductible par graine (une graine au hasard par partie). Les aides visuelles (grille de points, boîte de dix, droite…)
 // sont décrites en données (type + propriétés) pour rester sérialisables ; l'écran « calcul » les redessine.
 import { isValidElement, type ReactNode } from 'react';
 import type { Question } from '../../components/QuizSession';
@@ -47,7 +47,7 @@ export function aidToData(node: ReactNode): AidData | undefined {
   return { kind, props: { ...(node.props as Record<string, unknown>) } };
 }
 
-/** Générateur pseudo-aléatoire reproductible (mulberry32) : le même exercice à chaque chargement. */
+/** Générateur pseudo-aléatoire reproductible (mulberry32) : la même suite pour la même graine (une graine par partie). */
 export function seeded(seed: string): () => number {
   let s = 0;
   for (const ch of seed) s = (Math.imul(s, 31) + ch.charCodeAt(0)) | 0;

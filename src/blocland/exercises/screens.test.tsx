@@ -7,6 +7,12 @@ import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
 import { getExercise } from './index';
 
+// Ces tests décrivent les écrans : on les joue avec les items dans l'ordre du fichier (le hasard a ses propres tests).
+vi.mock('./run', async (original) => ({
+  ...(await original<typeof import('./run')>()),
+  runItems: (def: { items: unknown[]; perRun?: number }) => (def.perRun ? def.items.slice(0, def.perRun) : def.items),
+}));
+
 function renderAt(path: string) {
   return render(
     <SettingsProvider>

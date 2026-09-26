@@ -1,14 +1,22 @@
-// Une partie d'un exercice : ses items, différents d'une partie à l'autre. Les exercices générés (maths) tirent
-// d'autres nombres ; les exercices écrits (français) mélangent leur lot et n'en jouent qu'une partie quand il est
-// large. Les réponses de chaque item sont mélangées. Tout est reproductible pour une même graine.
+// Une partie d'un exercice : ses items, différents d'une partie à l'autre, même quand on recommence le jeu depuis le
+// début. Chaque partie tire une graine au hasard : les exercices générés (maths) tirent d'autres nombres ; les exercices
+// écrits (français) mélangent leur lot et n'en jouent qu'une partie quand il est large. Les réponses de chaque item
+// changent de place. Pour une même graine, tout est reproductible (tests).
 import { SCREEN_TYPES } from './registry';
 import { seeded } from './maths';
-import { withShuffledChoices } from './shuffle';
+import { shuffleRunChoices } from './shuffle';
 import type { ExerciseDef, ExerciseItem } from './types';
 
-/** La graine d'une partie : l'exercice et le nombre de parties déjà jouées (chaque partie diffère de la précédente). */
-export function runSeed(def: ExerciseDef, attempts: number): string {
-  return attempts > 0 ? `${def.id}#${attempts}` : def.id;
+/** Une part de hasard réel (pas une suite prévisible) pour la graine d'une partie. */
+function randomPart(): string {
+  const cryptoApi = globalThis.crypto;
+  if (cryptoApi?.getRandomValues) return Array.from(cryptoApi.getRandomValues(new Uint32Array(2)), (n) => n.toString(36)).join('');
+  return Math.floor(Math.random() * 2 ** 52).toString(36);
+}
+
+/** La graine d'une nouvelle partie : l'exercice et un tirage au hasard. */
+export function runSeed(def: ExerciseDef): string {
+  return `${def.id}#${randomPart()}`;
 }
 
 function shuffled<T>(list: T[], rng: () => number): T[] {
@@ -23,15 +31,15 @@ function shuffled<T>(list: T[], rng: () => number): T[] {
 /** Les items d'une partie. */
 export function runItems(def: ExerciseDef, seed: string): ExerciseItem[] {
   let items: ExerciseItem[];
-  // Première partie : les items tels qu'ils sont écrits (l'ordre d'un premier contact est choisi) ; ensuite, ça varie.
-  if (seed === runSeed(def, 0)) items = def.perRun ? def.items.slice(0, def.perRun) : def.items;
-  else if (def.generate) items = def.generate(seed);
+  if (def.generate) items = def.generate(seed);
   else if (SCREEN_TYPES[def.type]?.ordered) items = def.items;
   else {
     const rng = seeded(seed);
     for (let k = 0; k < 4; k++) rng();
     items = shuffled(def.items, rng);
     if (def.perRun && def.perRun < items.length) items = items.slice(0, def.perRun);
+    // Un petit lot peut retomber sur l'ordre du fichier : on décale d'un cran pour ne jamais le rejouer tel quel.
+    if (items.length > 1 && items.every((item, i) => item === def.items[i])) items = [...items.slice(1), items[0]];
   }
-  return items.map((item) => withShuffledChoices(def, item));
+  return shuffleRunChoices(def, items, seed);
 }

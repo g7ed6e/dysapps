@@ -59,7 +59,7 @@ Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`)
 | `instruction` | Consigne unique, courte, lue à voix haute au démarrage. |
 | `target` | Paramètre de l’exercice (son cible, lettre, mot repère). |
 | `items` | Les items de référence, chacun avec une `key` stable (répétition espacée). Leur forme dépend du type. |
-| `generate` | Exercice généré : d’autres items pour une autre graine (une par partie). |
+| `generate` | Exercice généré : d’autres items pour une autre graine (une graine tirée au hasard par partie). Toutes les quêtes de maths, école et collège, en ont un. |
 | `perRun` | Nombre d’items joués par partie quand le lot est plus large. |
 | `feedback` | Messages de correction ; `{word}`, `{heard}`, `{answer}`, `{explanation}`, `{rule}`… sont remplacés. |
 | `reward` | Bloc, quantité et XP de base (le moteur ajuste selon le score et les étoiles). |
