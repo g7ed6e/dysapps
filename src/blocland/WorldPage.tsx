@@ -153,6 +153,7 @@ export function WorldPage() {
             marker={marker}
             avatar={avatar}
             map={mapOpen}
+            home={at}
             trail={trail}
             quests={quests}
             onPickQuest={onPickQuest}

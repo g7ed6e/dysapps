@@ -6,7 +6,7 @@ import { BIOMES, type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, whaleSpots, worldBounds } from '../world/terrain';
+import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
@@ -80,6 +80,8 @@ export interface WorldCanvasProps {
   avatar?: { route: Cell[]; seq: number };
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
   map?: boolean;
+  /** L'île où le bonhomme se tient (ou se rend) : la caméra cadre cette île et ses voisines, tournée vers le continent. */
+  home?: BiomeId;
   /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
   trail?: Cell[];
   /** Les bornes de quête : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
@@ -98,8 +100,9 @@ const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 30;
-/** Vue autour du bonhomme : assez loin pour voir son île et les voisines. */
+/** Vue autour du bonhomme : assez loin pour voir son île et les voisines (bornes du cadrage de zone). */
 const FOLLOW_DISTANCE = 50;
+const FOLLOW_MAX = 64;
 /** La Carte : presque à la verticale, le même nord, assez loin pour tout le continent. */
 const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
@@ -224,6 +227,7 @@ export default function WorldCanvas({
   marker = null,
   avatar,
   map = false,
+  home,
   trail,
   quests,
   onPickQuest,
@@ -283,6 +287,8 @@ export default function WorldCanvas({
   bridgesRef.current = bridges;
   const mapRef = useRef(map);
   mapRef.current = map;
+  const homeRef = useRef(home);
+  homeRef.current = home;
   const bounds = worldBounds();
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
@@ -296,7 +302,7 @@ export default function WorldCanvas({
    * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
    * que tout tienne dans la largeur.
    */
-  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number, onMap = false) => {
+  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number, onMap = false, zone: BiomeId | null = null) => {
     if (onMap) {
       // Tout le continent tient dans la vue, en largeur comme en profondeur (la vue est un peu inclinée).
       const ex = bounds.maxX - bounds.minX;
@@ -310,11 +316,28 @@ export default function WorldCanvas({
       return { target, pos };
     }
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
-    const c = island ? islandCenter(island) : { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
-    const d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
-    const target = new THREE.Vector3(c.x, c.z + 1, c.y);
+    const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
+    let c = island ? islandCenter(island) : avatar;
+    let d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
     const v = island ? ISLAND_VIEW : VIEW;
-    const pos = new THREE.Vector3(c.x + d * v.dx, c.z + 1 + d * v.up, c.y + d * v.dy);
+    // Bonhomme posé sur son île : on cadre la zone (son île et ses voisines), le bonhomme restant au premier tiers.
+    if (!island && zone) {
+      const z = viewZone(zone);
+      const zc = { x: (z.minX + z.maxX) / 2, y: (z.minY + z.maxY) / 2 };
+      const home = islandCenter(zone);
+      c = { x: (home.x * 2 + zc.x) / 3, y: (home.y * 2 + zc.y) / 3, z: home.z };
+      const ex = z.maxX - z.minX;
+      const ey = z.maxY - z.minY;
+      const need = (Math.max(ex / Math.max(0.6, aspect), ey * 1.1) * 0.5) / Math.tan((20 * Math.PI) / 180);
+      d = Math.min(FOLLOW_MAX, Math.max(FOLLOW_DISTANCE, need * 0.8)) * portrait;
+    }
+    // Le pivot vers le cœur du continent : la direction de vue tourne autour de la verticale.
+    // (pivot positif : la caméra passe à l'ouest et regarde vers l'est, d'où le signe).
+    const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0);
+    const dx = v.dx * Math.cos(yaw) - v.dy * Math.sin(yaw);
+    const dy = v.dx * Math.sin(yaw) + v.dy * Math.cos(yaw);
+    const target = new THREE.Vector3(c.x, c.z + 1, c.y);
+    const pos = new THREE.Vector3(c.x + d * dx, c.z + 1 + d * v.up, c.y + d * dy);
     return { target, pos };
   };
 
@@ -728,7 +751,7 @@ export default function WorldCanvas({
       // ouverte, sinon le bonhomme.
       {
         const onMap = Boolean(mapRef.current) && !walking;
-        const { target, pos } = framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect, onMap);
+        const { target, pos } = framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect, onMap, walking ? null : (homeRef.current ?? null));
         w.beacon.visible = onMap && w.avatar.visible;
         // Sur la Carte, vue de très haut : pas de brume, tout le continent net.
         fog.near = onMap ? width * 8 : width * 1.2;
@@ -1027,7 +1050,7 @@ export default function WorldCanvas({
   useEffect(() => {
     const w = world.current;
     if (!w || focus.seq !== 0) return;
-    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect, Boolean(map));
+    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect, Boolean(map), home ?? null);
     w.camTarget.copy(target);
     w.camPos.copy(pos);
     w.camera.position.copy(pos);

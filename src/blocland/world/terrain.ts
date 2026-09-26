@@ -205,6 +205,42 @@ export function overviewBounds(bridges: string[]): { minX: number; maxX: number;
   return { minX: minX - 4, maxX: maxX + 4, minY: minY - 4, maxY: maxY + 4 };
 }
 
+/** Pivot maximal de la caméra vers le cœur du continent (radians) : le nord reste reconnaissable. */
+export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
+
+/**
+ * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
+ * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
+ */
+export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
+  const ids = new Set<BiomeId>([home]);
+  for (const b of bridgesOf(home)) ids.add(otherEnd(b, home));
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const id of ids) {
+    const b = landBox(islandDef(id));
+    minX = Math.min(minX, b.x0);
+    maxX = Math.max(maxX, b.x1);
+    minY = Math.min(minY, b.y0);
+    maxY = Math.max(maxY, b.y1);
+  }
+  return { minX, maxX, minY, maxY };
+}
+
+/**
+ * Le pivot de la caméra depuis une île : vers la colonne centrale du continent, borné à VIEW_YAW_MAX de part et
+ * d'autre du nord (plein pivot à 50 cases du centre). Positif : la caméra se place à l'ouest et regarde vers l'est.
+ */
+export function viewYaw(home: BiomeId): number {
+  const c = islandCenter(home);
+  const b = worldBounds();
+  // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
+  const dx = (b.minX + b.maxX) / 2 - c.x;
+  return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
+}
+
 /** Île la plus proche d'un point de la grille (pour le toucher : une île ou le pont qui y mène). */
 export function islandAt(x: number, y: number): BiomeId {
   let best: BiomeId = BIOMES[0].id;
