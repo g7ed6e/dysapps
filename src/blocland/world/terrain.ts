@@ -774,9 +774,9 @@ export function creaturePlacements(
   });
 }
 
-/** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases. */
-export const ISLET_W = 8;
-export const ISLET_H = 4;
+/** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases (les Gardiens font jusqu’à 9 × 8). */
+export const ISLET_W = 10;
+export const ISLET_H = 8;
 export function bossIsletOrigin(index: number): { x: number; y: number; z: number } {
   const def = islandDef(BIOMES[index].id);
   return { x: def.core.x + 2, y: def.core.y - def.ext.front - ISLET_H - 2, z: def.altitude };
