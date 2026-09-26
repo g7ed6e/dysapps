@@ -97,6 +97,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.cadran.side]: 'cadran',
   [BLOCKS.tuile.side]: 'tuile',
   [BLOCKS.lambris.side]: 'lambris',
+  [BLOCKS.velours.side]: 'velours',
+  [BLOCKS.rail.side]: 'rail',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -597,6 +599,23 @@ const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => 
     put(9, 3, h(9, 3) + 6, BLOCKS.lanterne.side);
     for (let z = 1; z <= 2; z++) put(7, 2, h(7, 2) + z, BLOCKS.pierre.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.lambris.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  theatre: (put, h) => {
+    // Une petite scène : deux colonnes de rideau pourpre, une frise au-dessus, deux lanternes de rampe devant.
+    for (const px of [8, 10]) for (let z = 1; z <= 3; z++) put(px, 3, h(px, 3) + z, BLOCKS.velours.side);
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 4, BLOCKS.velours.side);
+    put(8, 2, h(8, 2) + 1, BLOCKS.lanterne.side);
+    put(10, 2, h(10, 2) + 1, BLOCKS.lanterne.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.velours.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  gare: (put, h) => {
+    // Une voie ferrée courte, un signal (poteau et lanterne), une pile de rails au sol.
+    for (let x = 6; x <= 11; x++) put(x, 4, h(x, 4) + 1, BLOCKS.rail.side);
+    for (let z = 1; z <= 3; z++) put(12, 3, h(12, 3) + z, DARK);
+    put(12, 3, h(12, 3) + 4, BLOCKS.lanterne.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.rail.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
 };

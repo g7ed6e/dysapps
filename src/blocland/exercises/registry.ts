@@ -121,4 +121,10 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   ing: { component: CalculScreen, batch: 1 },
   preterit: { component: CalculScreen, batch: 1 },
   comparatifs: { component: CalculScreen, batch: 1 },
+  dialogues: { component: DicteeItem, batch: 1 },
+  quantites: { component: CalculScreen, batch: 1 },
+  'preterit-irregulier': { component: CalculScreen, batch: 1 },
+  futur: { component: CalculScreen, batch: 1 },
+  modaux: { component: CalculScreen, batch: 1 },
+  'present-perfect': { component: CalculScreen, batch: 1 },
 };

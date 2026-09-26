@@ -1,0 +1,215 @@
+{
+  "id": "gare-futur-2",
+  "biome": "gare",
+  "type": "futur",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "gare-futur-2-0",
+      "prompt": "Look at those clouds! It’s … rain.",
+      "spoken": "Look at those clouds! It’s blank rain.",
+      "choices": [
+        "going to",
+        "will",
+        "goes to"
+      ],
+      "answer": "going to",
+      "hint": "On voit les nuages : ça va arriver.",
+      "explanation": "On voit ce qui vient → it’s going to rain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-1",
+      "prompt": "I’m … visit my grandparents next weekend. It’s planned.",
+      "spoken": "I’m blank visit my grandparents next weekend. It’s planned.",
+      "choices": [
+        "going to",
+        "will",
+        "go to"
+      ],
+      "answer": "going to",
+      "hint": "Un projet déjà prévu, ou une idée du moment ?",
+      "explanation": "C’est prévu → I’m going to visit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-2",
+      "prompt": "The phone is ringing. — OK, I … get it!",
+      "spoken": "The phone is ringing. — OK, I blank get it!",
+      "choices": [
+        "will",
+        "am going to",
+        "going"
+      ],
+      "answer": "will",
+      "hint": "Un projet déjà prévu, ou une idée du moment ?",
+      "explanation": "Décision sur le moment → I will (I’ll) get it.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-3",
+      "prompt": "She … to be a doctor: she’s studying medicine.",
+      "spoken": "She blank to be a doctor: she’s studying medicine.",
+      "choices": [
+        "is going",
+        "will",
+        "goes"
+      ],
+      "answer": "is going",
+      "hint": "Un projet déjà prévu, ou une idée du moment ?",
+      "explanation": "Un projet décidé → she is going to be.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-4",
+      "prompt": "What … you going to do this summer?",
+      "spoken": "What blank you going to do this summer?",
+      "choices": [
+        "are",
+        "will",
+        "do"
+      ],
+      "answer": "are",
+      "hint": "Going to : quelle forme de be avec you ?",
+      "explanation": "What are you going to do? : be (are) + going to.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-5",
+      "prompt": "I think robots … do our homework one day.",
+      "spoken": "I think robots blank do our homework one day.",
+      "choices": [
+        "will",
+        "are going",
+        "going"
+      ],
+      "answer": "will",
+      "hint": "Un projet déjà prévu, ou une idée du moment ?",
+      "explanation": "I think… : une prédiction → robots will do.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-6",
+      "prompt": "We … going to buy a new car.",
+      "spoken": "We blank going to buy a new car.",
+      "choices": [
+        "are",
+        "will",
+        "do"
+      ],
+      "answer": "are",
+      "hint": "Going to : quelle forme de be avec we ?",
+      "explanation": "We are going to buy : be (are) + going to.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-futur-2-7",
+      "prompt": "He isn’t going … play tonight.",
+      "spoken": "He isn’t going blank play tonight.",
+      "choices": [
+        "to",
+        "for",
+        "at"
+      ],
+      "answer": "to",
+      "hint": "Going to : n’oublie pas le petit mot.",
+      "explanation": "be going to + verbe : he isn’t going to play.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Will ou be going to ?",
+          "lines": [
+            "be going to + verbe : un projet déjà décidé, ou ce qu’on voit venir (Look at the clouds!).",
+            "will + verbe : une prédiction, une décision prise sur le moment.",
+            "I’m going to, she’s going to, they’re going to."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "rail",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

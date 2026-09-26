@@ -406,6 +406,45 @@ const SPECTRE = fromLayers(
   { W: '#eef2f6', w: '#c8d0da', K: '#1f1a16', O: '#3a3a46' },
 );
 
+// Le Masque : un grand masque de théâtre blanc et or qui flotte, yeux noirs en amande, large sourire, rubans pourpres.
+const MASQUE = fromLayers(
+  [
+    ['.........', '.........', '..PP.PP..', '.........'],
+    ['...WWW...', '..WWWWW..', '..PWWWP..', '.........'],
+    ['..WWWWW..', '.WWWWWWW.', '.PWWWWWP.', '.........'],
+    ['.WKKKKKW.', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['.WWKKKWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['WWWWWWWWW', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['WWWWYWWWW', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['WKKWWWKKW', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['WWKWWWKWW', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['YWWWWWWWY', 'WWWWWWWWW', 'WWWWWWWWW', '.........'],
+    ['.YWWWWWY.', '.WWWWWWW.', '.WWWWWWW.', '.........'],
+    ['..YYYYY..', '..YYYYY..', '..YYYYY..', '.........'],
+  ],
+  { W: '#f4f1e4', K: '#1f1a16', Y: '#e0a33a', P: '#7a1f3a' },
+);
+
+// La Locomotive de fer : une locomotive à vapeur noire, chaudière ronde, grosses roues rouges, cheminée et panache blanc.
+const LOCOMOTIVE = fromLayers(
+  [
+    ['.R.R.R.R.', '.R.R.R.R.', '.R.R.R.R.', '.R.R.R.R.', '.R.R.R.R.'],
+    ['.RKRKRKR.', 'KKKKKKKKK', 'KKKKKKKKK', 'KKKKKKKKK', '.RKRKRKR.'],
+    ['.KKKKKKK.', 'KKKKKKKKK', 'KKKKKKKKK', 'KKKKKKKKK', '.KKKKKKK.'],
+    ['.KYKKKYK.', 'KKKKKKKKK', 'KKKKKKKKK', 'KKKKKKKKK', '.KKKKKKK.'],
+    ['.KKKLKKK.', 'KKKKKKKKK', 'KKKKKKKKK', 'KCCCCCCCK', '.KCCCCCK.'],
+    ['..KKKKK..', '.KKKKKKK.', '.KKKKKKK.', 'KCCCCCCCK', '.KCCCCCK.'],
+    ['...KKK...', '..KKKKK..', '..KKKKK..', 'KCCCCCCCK', '.KCCCCCK.'],
+    ['.........', '...KKK...', '.........', 'KKKKKKKKK', '.KKKKKKK.'],
+    ['.........', '...KKK...', '.........', '.........', '.........'],
+    ['.........', '...KKK...', '.........', '.........', '.........'],
+    ['.........', '..SSSSS..', '...SSS...', '.........', '.........'],
+    ['.........', '.SSSSSSS.', '..SSSSS..', '.........', '.........'],
+    ['.........', '..SSSSS..', '...SSS...', '.........', '.........'],
+  ],
+  { K: '#2a2622', R: '#c0392b', Y: '#f2c944', L: '#fff4a0', C: '#6f4d2a', S: '#f4f8fb' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -431,6 +470,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   horloge: COUCOU,
   comptoir: REINE,
   manoir: SPECTRE,
+  theatre: MASQUE,
+  gare: LOCOMOTIVE,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

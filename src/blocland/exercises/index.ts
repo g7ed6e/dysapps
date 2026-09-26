@@ -88,6 +88,19 @@ import manoirPreterit1 from './data/manoir-preterit-1.json';
 import manoirPreterit2 from './data/manoir-preterit-2.json';
 import manoirComparatifs1 from './data/manoir-comparatifs-1.json';
 import manoirComparatifs2 from './data/manoir-comparatifs-2.json';
+// Anglais 4e.
+import theatreDialogues1 from './data/theatre-dialogues-1.json';
+import theatreDialogues2 from './data/theatre-dialogues-2.json';
+import theatreQuantites1 from './data/theatre-quantites-1.json';
+import theatreQuantites2 from './data/theatre-quantites-2.json';
+import theatrePreteritIrregulier1 from './data/theatre-preterit-irregulier-1.json';
+import theatrePreteritIrregulier2 from './data/theatre-preterit-irregulier-2.json';
+import gareFutur1 from './data/gare-futur-1.json';
+import gareFutur2 from './data/gare-futur-2.json';
+import gareModaux1 from './data/gare-modaux-1.json';
+import gareModaux2 from './data/gare-modaux-2.json';
+import garePresentPerfect1 from './data/gare-present-perfect-1.json';
+import garePresentPerfect2 from './data/gare-present-perfect-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -223,6 +236,18 @@ export const EXERCISES: ExerciseDef[] = [
   manoirPreterit2,
   manoirComparatifs1,
   manoirComparatifs2,
+  theatreDialogues1,
+  theatreDialogues2,
+  theatreQuantites1,
+  theatreQuantites2,
+  theatrePreteritIrregulier1,
+  theatrePreteritIrregulier2,
+  gareFutur1,
+  gareFutur2,
+  gareModaux1,
+  gareModaux2,
+  garePresentPerfect1,
+  garePresentPerfect2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

@@ -84,6 +84,8 @@
   --tex-lens: url("./textures/lentille.png");
   --tex-phonebox: url("./textures/cabine.png");
   --tex-dial: url("./textures/cadran.png");
+  --tex-velvet: url("./textures/velours.png");
+  --tex-rail: url("./textures/rail.png");
   --tex-tile: url("./textures/tuile.png");
   --tex-panel: url("./textures/lambris.png");
 }
@@ -149,6 +151,8 @@
   --tex-lens: none;
   --tex-phonebox: none;
   --tex-dial: none;
+  --tex-velvet: none;
+  --tex-rail: none;
   --tex-tile: none;
   --tex-panel: none;
   --tex-gold: none;
@@ -2482,6 +2486,14 @@ a.app-card:active {
 .app-card.biome-horloge {
   background-image: var(--tex-dial);
 }
+.biome-card.biome-theatre,
+.app-card.biome-theatre {
+  background-image: var(--tex-velvet);
+}
+.biome-card.biome-gare,
+.app-card.biome-gare {
+  background-image: var(--tex-rail);
+}
 .biome-card.biome-comptoir,
 .app-card.biome-comptoir {
   background-image: var(--tex-tile);
@@ -2579,6 +2591,12 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .biome-horloge {
   border-top-color: #c9a24a;
+}
+:root[data-theme="clair"] .biome-theatre {
+  border-top-color: #7a1f3a;
+}
+:root[data-theme="clair"] .biome-gare {
+  border-top-color: #4a4a50;
 }
 :root[data-theme="clair"] .biome-comptoir {
   border-top-color: #b85a30;
@@ -3717,6 +3735,12 @@ a.app-card:active {
 }
 .island-sheet.biome-horloge {
   background-image: var(--tex-dial);
+}
+.island-sheet.biome-theatre {
+  background-image: var(--tex-velvet);
+}
+.island-sheet.biome-gare {
+  background-image: var(--tex-rail);
 }
 .island-sheet.biome-comptoir {
   background-image: var(--tex-tile);

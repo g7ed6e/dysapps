@@ -26,7 +26,9 @@ export type BiomeId =
   | 'baie'
   | 'horloge'
   | 'comptoir'
-  | 'manoir';
+  | 'manoir'
+  | 'theatre'
+  | 'gare';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -52,6 +54,8 @@ export type BlockId =
   | 'cadran'
   | 'tuile'
   | 'lambris'
+  | 'velours'
+  | 'rail'
   | 'or'
   | 'cristal'
   | 'toit'
@@ -97,6 +101,8 @@ export type BlockTexture =
   | 'cadran'
   | 'tuile'
   | 'lambris'
+  | 'velours'
+  | 'rail'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -133,6 +139,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   cadran: { id: 'cadran', name: 'Cadran', top: '#f4ecd6', side: '#c9a24a', texture: 'cadran' },
   tuile: { id: 'tuile', name: 'Tuile', top: '#d97a48', side: '#b85a30', texture: 'tuile' },
   lambris: { id: 'lambris', name: 'Lambris', top: '#6e4a2c', side: '#5a3a22', texture: 'lambris' },
+  velours: { id: 'velours', name: 'Velours', top: '#8e2a48', side: '#7a1f3a', texture: 'velours' },
+  rail: { id: 'rail', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
@@ -987,6 +995,74 @@ export const BIOMES: BiomeDef[] = [
       { id: 'ing', title: '-ing', description: 'Be + -ing (maintenant) ou présent simple (d’habitude).' },
       { id: 'preterit', title: 'Prétérit', description: 'Was, were, les verbes en -ed ; did pour la question et la négation.' },
       { id: 'comparatifs', title: 'Comparatifs', description: 'Taller than, the tallest, more… than, better, the best.' },
+    ],
+  },
+  {
+    id: 'theatre',
+    name: 'Théâtre des voix',
+    module: 'Compréhension, quantités, prétérit irrégulier',
+    subject: 'anglais',
+    classe: '4e',
+    description: 'Répondre à une question entendue, dire combien, raconter au passé : l’anglais sur scène.',
+    block: 'velours',
+    guardian: 'le Masque',
+    guardianSays: {
+      hit: 'Bravo! Juste. La salle applaudit.',
+      miss: 'Ce n’est rien : réécoute la réplique, relis la règle, et reprends.',
+      beaten: 'Le rideau tombe. Le théâtre est à toi… et à Puck.',
+    },
+    challenge: 'Le Masque descend des cintres : « Tu connais toutes mes répliques. Montre-moi que tu sais donner la bonne. »',
+    icon: 'languages',
+    creature: {
+      name: 'Puck',
+      species: 'lutin souffleur',
+      greeting:
+        'Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village.',
+      lines: [
+        'Where = où, when = quand, why = pourquoi : écoute le premier mot.',
+        'Some pour dire oui, any pour la question et la négation.',
+        'Ma loge est en velours rouge. Chaque bonne réplique en coud un pan.',
+      ],
+      home: 'Ma loge est finie ! The show must go on.',
+    },
+    exercises: [
+      { id: 'dialogues', title: 'Dialogues', description: 'Écouter une question et choisir la bonne réponse.' },
+      { id: 'quantites', title: 'Quantités', description: 'Some, any, much, many, a few, a little, enough.' },
+      { id: 'preterit-irregulier', title: 'Prétérit irrégulier', description: 'Went, saw, bought : les verbes irréguliers au passé.' },
+    ],
+  },
+  {
+    id: 'gare',
+    name: 'Gare du futur',
+    module: 'Grammaire : futur, modaux, present perfect',
+    subject: 'anglais',
+    classe: '4e',
+    description: 'Ce qui arrivera, ce qu’on peut ou doit faire, ce qu’on a déjà fait : la règle sous les yeux.',
+    block: 'rail',
+    guardian: 'la Locomotive de fer',
+    guardianSays: {
+      hit: 'Tchou ! Juste. Tu es sur les bons rails.',
+      miss: 'Ce n’est rien : cherche le petit mot (will, can, already…), relis la règle, et reprends.',
+      beaten: 'Je m’arrête en gare. Les voies sont à toi… et à Vapeur.',
+    },
+    challenge: 'La Locomotive de fer entre en gare dans un nuage de vapeur : « Tu as pris tous mes trains. Montre-moi que tu sais où tu vas. »',
+    icon: 'history',
+    creature: {
+      name: 'Vapeur',
+      species: 'blaireau chef de gare',
+      greeting:
+        'Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village.',
+      lines: [
+        'Will pour prédire, going to pour un projet.',
+        'Mustn’t, c’est interdit ; don’t have to, ce n’est pas obligé.',
+        'Mon abri est au bout du quai. Chaque bonne réponse pose un rail.',
+      ],
+      home: 'Mon abri est fini ! The next train will arrive on time.',
+    },
+    exercises: [
+      { id: 'futur', title: 'Futur', description: 'Will et be going to.' },
+      { id: 'modaux', title: 'Modaux', description: 'Can, must, should, have to.' },
+      { id: 'present-perfect', title: 'Present perfect', description: 'Have been, ever, never, already, yet, just.' },
     ],
   },
 ];
