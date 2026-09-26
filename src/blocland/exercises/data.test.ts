@@ -247,9 +247,11 @@ it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix
         expect((it.aid as { kind: string }).kind).toBe('rule-card');
       }
       if (screen === DicteeItem) {
-        // Écoute d'abord : un mot anglais à entendre, son sens à choisir en français.
-        expect(it.choicesLang).toBe('fr');
+        // Écoute d'abord : un mot ou une phrase à entendre ; on choisit son sens (en français) ou la bonne réplique
+        // (en anglais, comme les Dialogues). Rien n'est écrit avant l'écoute : la réponse n'est pas le texte lu.
+        expect([undefined, 'fr']).toContain(it.choicesLang);
         expect(String(it.word).length).toBeGreaterThan(1);
+        expect(it.answer).not.toBe(it.word);
       }
     }
   }

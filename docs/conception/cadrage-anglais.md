@@ -34,7 +34,7 @@ Chaque île : un thème du programme, trois quêtes, deux niveaux par quête, hu
 
 Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de chaque pull request.
 
-**Placement.** 6e : derrière la Ferme et la Forêt, les deux îles en isthme (un sentier entre elles), un pont depuis la Ferme vers la Baie, un pont depuis la Forêt vers l’Horloge. 5e : une colonne à droite du Marché et du Marais ; l’îlot du Gardien du Manoir est entre les deux îles, elles ne se touchent donc pas : trois ponts (Marché → Comptoir, Marais → Manoir, Comptoir → Manoir). 4e : au bout de la crête des Monts de Feu. 3e : de part et d’autre de l’arc du Phare. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
+**Placement.** 6e : derrière la Ferme et la Forêt, les deux îles en isthme (un sentier entre elles), un pont depuis la Ferme vers la Baie, un pont depuis la Forêt vers l’Horloge. 5e : une colonne à droite du Marché et du Marais ; l’îlot du Gardien du Manoir est entre les deux îles, elles ne se touchent donc pas : trois ponts (Marché → Comptoir, Marais → Manoir, Comptoir → Manoir). 4e : aux deux bouts de la crête des Monts de Feu, la Gare avant la Forge (pont depuis la Forge), le Théâtre après le Cabinet (pont depuis le Cabinet). Les Dialogues du Théâtre sont une écoute dont la réponse est une réplique en anglais (pas de `choicesLang`). 3e : de part et d’autre de l’arc du Phare. Aucune île n’est imposée : les ouvrages restent le seul verrou, et les étapes du Bloc-Navire (Gardiens vaincus : 3, 2, 2) ne changent pas. L’anglais donne plus de choix, pas plus d’obstacles.
 
 ## 4. Format des exercices
 
@@ -49,5 +49,5 @@ Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de
 1. ✅ Socle : ce cadrage, la matière Anglais (accueil, page, progression), la voix anglaise, le texte anglais à l’écran, les quêtes Vocabulaire et Verbes irréguliers.
 2. ✅ Îles de 6e : Baie des mots, Horloge des verbes.
 3. ✅ Îles de 5e : Comptoir, Manoir du passé.
-4. Îles de 4e : Théâtre des voix, Gare du futur.
+4. ✅ Îles de 4e : Théâtre des voix, Gare du futur.
 5. Îles de 3e : Studio des ondes, Château des hypothèses.

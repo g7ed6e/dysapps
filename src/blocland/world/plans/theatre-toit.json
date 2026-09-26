@@ -1,0 +1,140 @@
+{
+  "id": "theatre-toit",
+  "biome": "theatre",
+  "name": "Le toit de la loge",
+  "origin": {
+    "x": 1,
+    "y": 1
+  },
+  "cells": [
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "block": "porte"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 2,
+      "block": "velours"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 3,
+      "block": "toit"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "block": "toit"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "lanterne"
+    }
+  ],
+  "reward": {
+    "xp": 50,
+    "chest": {
+      "barriere": 4,
+      "escalier": 1,
+      "lanterne": 2
+    }
+  },
+  "done": "Un toit et une porte ! Les acteurs peuvent répéter à l’abri."
+}

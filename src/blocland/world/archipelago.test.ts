@@ -41,9 +41,9 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Tous les ouvrages construits sans voyage : seules les Basses Terres ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(24);
+  expect(BRIDGES).toHaveLength(26);
   expect(VOYAGES.map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e', 'voyage-3e']);
-  expect(BIOMES.length).toBe(24);
+  expect(BIOMES.length).toBe(26);
 });
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
