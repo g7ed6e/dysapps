@@ -94,9 +94,12 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Forêt–Ferme : un pont, en planches, à plat (même altitude).
   const ghost = bridgeCubes([], 'foret-ferme').filter((c) => c.ghost);
   expect(ghost.length).toBeGreaterThanOrEqual(4);
-  expect(ghost.filter((c) => c.texture !== 'lanterne').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
-  // Une lanterne à chaque bout.
-  expect(ghost.filter((c) => c.texture === 'lanterne')).toHaveLength(2);
+  expect(ghost.filter((c) => c.texture !== 'lanterne' && c.texture !== 'tronc').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
+  // Une lanterne sur un poteau à chaque bout, à côté du tablier (jamais sur le passage).
+  const lanterns = ghost.filter((c) => c.texture === 'lanterne');
+  expect(lanterns).toHaveLength(2);
+  const deck = new Set(ghost.filter((c) => c.texture === 'planches').map((c) => `${c.x},${c.y}`));
+  for (const l of lanterns) expect(deck.has(`${l.x},${l.y}`)).toBe(false);
   const built = bridgeCubes(['foret-ferme'], 'foret-ferme').filter((c) => !c.ghost);
   expect(built.length).toBe(ghost.length);
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
@@ -105,7 +108,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   // Plaine (0) → Glacier (3) : un escalier taillé qui monte, marches de pierre.
   const ramp = bridgeCubes([], 'plaine-glacier').filter((c) => c.ghost);
   expect(ramp.some((c) => c.texture === 'marche')).toBe(true);
-  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre' || c.texture === 'lanterne')).toBe(true);
+  expect(ramp.every((c) => c.texture === 'marche' || c.texture === 'pierre' || c.texture === 'lanterne' || c.texture === 'tronc')).toBe(true);
   expect(Math.max(...ramp.map((c) => c.z))).toBeGreaterThan(Math.min(...ramp.map((c) => c.z)));
   // Plaine–Rivière : un bac, des poteaux de bois et un radeau, au fil de l'eau.
   const ferry = bridgeCubes([], 'plaine-riviere');
@@ -197,8 +200,15 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const route = avatarRoute('foret', 'mine', ['foret-mine'])!;
   expect(route[0]).toEqual(avatarHome('foret'));
   expect(route[route.length - 1]).toEqual(avatarHome('mine'));
-  expect(route.length).toBeGreaterThan(10);
+  // Un sentier se marche de pierre de gué en pierre de gué (sur la pierre : z = sol + 1).
+  expect(route.length).toBeGreaterThan(5);
   for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
+  const stones = new Set(
+    worldCubes({}, village(['foret-mine']))
+      .filter((c) => c.bridge === 'foret-mine' && c.texture === 'galet')
+      .map((c) => `${c.x},${c.y},${c.z}`),
+  );
+  for (const p of route.slice(1, -1)) expect(stones.has(`${p.x},${p.y},${p.z}`)).toBe(true);
   // Deux ouvrages : Forêt → Ferme (pont) → Tour (sentier) ; le pont se marche sur le tablier (z = 1).
   const far = avatarRoute('foret', 'tour', ['foret-ferme', 'ferme-tour'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('tour'));

@@ -545,12 +545,18 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
  */
 function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Set<string>): void {
   const path = bridgePath(def);
+  const onPath = new Set(path.map((c) => `${c.x},${c.y}`));
   // Un cube d'ouvrage ne remplace jamais un cube du terrain (un buisson sur l'isthme, par exemple).
   const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) => {
     const key = `${x},${y},${z}`;
     if (occupied.has(key)) return;
     occupied.add(key);
     cubes.push({ x, y, z, color, top, texture, tag: def.to, bridge: def.id, ghost: ghost || undefined });
+  };
+  // À côté du passage (pilier, garde-fou, poteau) : jamais sur une case du tracé, où le bonhomme marche.
+  const beside = (x: number, y: number, z: number, color: string, texture: string) => {
+    if (onPath.has(`${x},${y}`)) return;
+    add(x, y, z, color, texture);
   };
   const n = path.length;
   path.forEach((c, i) => {
@@ -579,26 +585,39 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
         break;
       case 'col':
         add(c.x, c.y, c.z, STEP, c.climbing ? 'marche' : 'pierre');
-        if (i % 2 === 0) add(c.x + px, c.y + py, c.z + 1, BLOCKS.barriere.side, 'barriere');
+        if (i % 2 === 0) beside(c.x + px, c.y + py, c.z + 1, BLOCKS.barriere.side, 'barriere');
         break;
       case 'tunnel': {
         add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
         // Une arche de pierre toutes les trois cases, une lanterne au sommet d'une arche sur deux.
         if (i % 3 === 1 && i < n - 1) {
-          for (const side of [-1, 1]) {
-            add(c.x + side * px, c.y + side * py, c.z + 1, BLOCKS.pierre.side, 'pierre');
-            add(c.x + side * px, c.y + side * py, c.z + 2, BLOCKS.pierre.side, 'pierre');
-          }
+          // Assez haute pour que le bonhomme (deux blocs) passe dessous : piliers de trois, clé de voûte au quatrième.
+          for (const side of [-1, 1]) for (let up = 1; up <= 3; up++) beside(c.x + side * px, c.y + side * py, c.z + up, BLOCKS.pierre.side, 'pierre');
           const lit = ((i - 1) / 3) % 2 === 0;
-          add(c.x, c.y, c.z + 3, lit ? BLOCKS.lanterne.side : BLOCKS.pierre.side, lit ? 'lanterne' : 'pierre');
+          add(c.x, c.y, c.z + 4, lit ? BLOCKS.lanterne.side : BLOCKS.pierre.side, lit ? 'lanterne' : 'pierre');
         }
         break;
       }
     }
   });
-  // Une lanterne à chaque bout : la nuit, les chemins se devinent de loin (sur le sol pour un sentier).
-  const lift = def.kind === 'sentier' ? 2 : 1;
-  for (const c of [path[0], path[n - 1]]) if (c) add(c.x, c.y, c.z + lift, BLOCKS.lanterne.side, 'lanterne');
+  // Une lanterne sur un poteau à chaque bout, à côté du passage (le bonhomme ne la traverse pas) : la nuit, les
+  // chemins se devinent de loin.
+  for (const c of [path[0], path[n - 1]]) {
+    if (!c) continue;
+    const px = c.dy !== 0 ? 1 : 0;
+    const py = c.dy !== 0 ? 0 : 1;
+    const base = def.kind === 'sentier' ? c.z + 1 : c.z;
+    beside(c.x + px, c.y + py, base, TRUNK, 'tronc');
+    beside(c.x + px, c.y + py, base + 1, BLOCKS.lanterne.side, 'lanterne');
+  }
+}
+
+let sentierCache: Set<string> | null = null;
+/** Les cases des sentiers (pierres de gué) et leurs voisines : le décor des isthmes les laisse libres (feuillages compris). */
+function nearSentier(x: number, y: number): boolean {
+  if (!sentierCache) sentierCache = new Set(BRIDGES.filter((b) => b.kind === 'sentier').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (sentierCache.has(`${x + dx},${y + dy}`)) return true;
+  return false;
 }
 
 /** Où le bonhomme se tient sur une île (coordonnées du monde, z du sol). */
@@ -639,8 +658,14 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x:
   for (const hop of hops) {
     let cells = bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z }));
     if (hop.def.from !== hop.from) cells = cells.reverse();
-    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, sur le sol (z est déjà le sol).
-    for (const c of cells) route.push({ x: c.x, y: c.y, z: hop.def.kind === 'sentier' ? c.z : c.z + 1 });
+    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué.
+    if (hop.def.kind === 'sentier') {
+      const stones = bridgePath(hop.def)
+        .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 1, stone: i % 2 === 0 }))
+        .filter((c) => c.stone);
+      if (hop.def.from !== hop.from) stones.reverse();
+      for (const c of stones) route.push({ x: c.x, y: c.y, z: c.z });
+    } else for (const c of cells) route.push({ x: c.x, y: c.y, z: c.z + 1 });
     route.push(avatarHome(hop.to));
   }
   return route;
@@ -653,11 +678,77 @@ export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x:
 }
 
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
+/** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
+export const CREATURE_STEPS: [number, number][] = [
+  [0, 0],
+  [-1, 0],
+  [0, 1],
+  [-1, 1],
+];
+
+const creatureSpots = new Map<BiomeId, CreatureSpot>();
+
+export interface CreatureSpot {
+  x: number;
+  y: number;
+  /** Les pas qu'elle peut faire sans rien toucher (toujours au moins « rester là »). */
+  steps: [number, number][];
+}
+
+/**
+ * Où la créature d'une île se tient (case relative au cœur) : la place la plus proche de (2, 4) où elle et ses pas
+ * ne touchent ni le décor, ni la zone des plans, ni le bonhomme, ni une colline, ni l'eau. On préfère une place
+ * d'où elle peut se promener ; sinon elle reste immobile.
+ */
+export function creatureSpot(id: BiomeId): CreatureSpot {
+  const known = creatureSpots.get(id);
+  if (known) return known;
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const def = islandDef(id);
+  const blocked = new Set<string>();
+  DECOR[id](
+    (x, y) => blocked.add(`${x},${y}`),
+    (x, y) => groundHeight(index, x, y),
+  );
+  for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
+  for (let x = 0; x < CORE; x++) for (let y = 0; y < CORE; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
+  // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
+  const scenery = new Map(landscape(def).map((c) => [`${c.x - def.core.x},${c.y - def.core.y}`, c]));
+  const free = (x: number, y: number) => {
+    if (blocked.has(`${x},${y}`)) return false;
+    if (x >= 0 && y >= 0 && x < CORE && y < CORE) return true;
+    const c = scenery.get(`${x},${y}`);
+    return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
+  };
+  const cubes = CREATURE_CUBES[id];
+  const fits = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
+  let best: CreatureSpot | null = null;
+  let bestScore = Infinity;
+  for (let x = -2; x < CORE; x++) {
+    for (let y = 0; y < CORE; y++) {
+      if (!fits(x, y, [0, 0])) continue;
+      const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
+      const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
+      if (score < bestScore) {
+        best = { x, y, steps };
+        bestScore = score;
+      }
+    }
+  }
+  const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
+  creatureSpots.set(id, spot);
+  return spot;
+}
+
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
-export function creaturePlacements(bridges: string[]): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
+export function creaturePlacements(
+  bridges: string[],
+): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number }; steps: [number, number][] }[] {
   return BIOMES.filter((b) => isBiomeUnlocked(b.id, bridges)).map((b) => {
     const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
-    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + 2, y: oy + 4, z: oz + 1 } };
+    const spot = creatureSpot(b.id);
+    return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
   });
 }
 
@@ -939,7 +1030,7 @@ export function worldCubes(
     landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     for (const c of scenery) {
-      if (!c.decor) continue;
+      if (!c.decor || nearSentier(c.x, c.y)) continue;
       const r = noise(def.seed + 5, c.x, c.y);
       // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
       // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
@@ -976,10 +1067,11 @@ export function worldCubes(
       if (guardian === 'beaten') cubes.push({ x: gx + ISLET_W - 1, y: gy, z: gz + 1, color: BLOCKS.or.side, top: BLOCKS.or.top, texture: 'or', tag: biome.id });
     }
     if (unlocked && withCreatures) {
+      const spot = creatureSpot(biome.id);
       for (const c of CREATURE_CUBES[biome.id])
         cubes.push({
-          x: ox + 2 + c.x,
-          y: oy + 4 + c.y,
+          x: ox + spot.x + c.x,
+          y: oy + spot.y + c.y,
           z: oz + c.z + 1,
           color: c.color,
           tag: biome.id,
