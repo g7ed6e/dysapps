@@ -13,6 +13,7 @@ import {
   landBox,
   landCells,
   landscape,
+  smoothNoise,
   mapOf,
   noise,
   type ArchipelagoId,
@@ -192,7 +193,7 @@ export function worldBounds(a: ArchipelagoId): {
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
     maxX = Math.max(maxX, b.x1 + 2);
-    minY = Math.min(minY, b.y0 - ISLET_H - 2);
+    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
     maxY = Math.max(maxY, b.y1 + 2);
   }
   const dock = dockBox(getArchipelago(a).port);
@@ -222,7 +223,7 @@ export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: num
     const b = landBox(islandDef(id));
     minX = Math.min(minX, b.x0);
     maxX = Math.max(maxX, b.x1);
-    minY = Math.min(minY, b.y0 - ISLET_H - 2);
+    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
     maxY = Math.max(maxY, b.y1);
   }
   return { minX: minX - 4, maxX: maxX + 4, minY: minY - 4, maxY: maxY + 4 };
@@ -860,12 +861,184 @@ export function creaturePlacements(
     });
 }
 
-/** L'îlot du Gardien : devant l'île (côté caméra), ISLET_W × ISLET_H cases (les Gardiens font jusqu’à 9 × 8). */
-export const ISLET_W = 10;
-export const ISLET_H = 8;
+/** L'îlot du Gardien : une petite île devant la sienne (côté caméra), tenue dans ISLET_W × ISLET_H cases (les Gardiens font jusqu’à 9 × 8). */
+export const ISLET_W = 13;
+export const ISLET_H = 12;
+/** Cases d'eau entre l'îlot et la terre de son île : les pas japonais les franchissent. */
+export const ISLET_GAP = 3;
+/** Centre de l'îlot (coordonnées locales) : le Gardien s'y dresse, au milieu de l'arène. */
+const ISLET_CENTER = { x: 6, y: 5.5 };
+/** Demi-axes de l'arène pavée (un carré aux coins arrondis, plus petit que le Gardien : il déborde sur l'herbe). */
+const ARENA = { rx: 4.5, ry: 4 };
+
 export function bossIsletOrigin(index: number): { x: number; y: number; z: number } {
   const def = islandDef(BIOMES[index].id);
-  return { x: def.core.x + 2, y: def.core.y - def.ext.front - ISLET_H - 2, z: def.altitude };
+  return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+}
+
+/** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
+function guardianOffset(id: BiomeId): { x: number; y: number } {
+  const g = GUARDIAN_CUBES[id];
+  const mid = (vals: number[]) => (Math.min(...vals) + Math.max(...vals)) / 2;
+  return { x: Math.round(ISLET_CENTER.x - mid(g.map((c) => c.x))), y: Math.round(ISLET_CENTER.y - mid(g.map((c) => c.y))) };
+}
+
+export interface IsletCell {
+  /** Coordonnées du monde. */
+  x: number;
+  y: number;
+  /** Pavé de l'arène (pierre, bordée de galet). */
+  arena: boolean;
+  /** Sous les pieds du Gardien. */
+  guardian: boolean;
+  /** Au bord de l'eau (une voisine n'est pas de la terre). */
+  shore: boolean;
+}
+
+const isletCache = new Map<BiomeId, IsletCell[]>();
+/**
+ * La terre de l'îlot : une ellipse à la côte irrégulière (bruit lissé, comme les îles), qui porte toujours
+ * l'emprise entière de son Gardien ; au milieu, l'arène pavée. Calculée une fois par île.
+ */
+export function bossIsletCells(id: BiomeId): IsletCell[] {
+  const known = isletCache.get(id);
+  if (known) return known;
+  const def = islandDef(id);
+  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
+  const off = guardianOffset(id);
+  const under = new Set(GUARDIAN_CUBES[id].map((c) => `${off.x + c.x},${off.y + c.y}`));
+  const land = new Set<string>();
+  for (let x = 0; x < ISLET_W; x++)
+    for (let y = 0; y < ISLET_H; y++) {
+      const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
+      const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
+      const coast = (smoothNoise(def.seed + 7, o.x + x, o.y + y, 3) - 0.5) * 0.3;
+      if (under.has(`${x},${y}`) || Math.hypot(dx, dy) + coast < 0.98) land.add(`${x},${y}`);
+    }
+  const cells: IsletCell[] = [];
+  for (const key of land) {
+    const [x, y] = key.split(',').map(Number);
+    const ax = (x - ISLET_CENTER.x) / ARENA.rx;
+    const ay = (y - ISLET_CENTER.y) / ARENA.ry;
+    cells.push({
+      x: o.x + x,
+      y: o.y + y,
+      arena: ax ** 4 + ay ** 4 <= 1,
+      guardian: under.has(key),
+      shore: [`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].some((k) => !land.has(k)),
+    });
+  }
+  isletCache.set(id, cells);
+  return cells;
+}
+
+/**
+ * Les pas japonais : des pierres en quinconce dans l'eau, du fond de l'îlot à la côte de l'île, dans l'axe du
+ * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle).
+ */
+export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }[] {
+  const def = islandDef(id);
+  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
+  const x = o.x + Math.round(ISLET_CENTER.x);
+  const back = Math.max(...bossIsletCells(id).filter((c) => c.x === x).map((c) => c.y));
+  let coast = back + 1;
+  while (!isLand(def, x, coast)) coast++;
+  const steps: { x: number; y: number; z: number }[] = [];
+  for (let y = back + 1; y < coast; y++) steps.push({ x: x + ((y - back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
+  return steps;
+}
+
+/** Le socle du bloc d'or d'un Gardien vaincu : devant lui, à sa droite, sur la terre de l'îlot. */
+function trophySpot(id: BiomeId): { x: number; y: number } {
+  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
+  const target = { x: o.x + ISLET_CENTER.x + 3, y: o.y + 1 };
+  const free = bossIsletCells(id).filter((c) => !c.guardian && !c.shore);
+  free.sort((p, q) => Math.abs(p.x - target.x) + Math.abs(p.y - target.y) - (Math.abs(q.x - target.x) + Math.abs(q.y - target.y)));
+  return free[0];
+}
+
+/** Le sol de l'îlot hors de l'arène : celui qui domine sur l'île (sans les plages, l'eau ni la lave). */
+function isletGround(def: IslandDef): string {
+  const count = new Map<Ground, number>();
+  for (const c of landscape(def)) if (c.ground !== 'sable' && c.ground !== 'eau' && c.ground !== 'lave') count.set(c.ground, (count.get(c.ground) ?? 0) + 1);
+  let best: Ground = 'herbe';
+  for (const [g, n] of count) if (n > (count.get(best) ?? 0)) best = g;
+  return GROUND_COLOR[best];
+}
+
+/** Le petit décor de l'îlot : celui de l'île, sans les arbres (ils cacheraient le Gardien). */
+const SMALL_DECOR: Decor[] = ['buisson', 'fleur', 'rocher', 'roseau', 'cristal', 'souche', 'champignon'];
+
+/** Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient au-dessus. */
+function taperLayers(cells: { x: number; y: number }[]): { x: number; y: number; d: number }[] {
+  const out: { x: number; y: number; d: number }[] = [];
+  let layer = new Set(cells.map((c) => `${c.x},${c.y}`));
+  for (let d = 1; d <= TAPER; d++) {
+    const next = new Set<string>();
+    for (const key of layer) {
+      const [x, y] = key.split(',').map(Number);
+      if ([`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].every((k) => layer.has(k))) next.add(key);
+    }
+    layer = next;
+    for (const key of layer) {
+      const [x, y] = key.split(',').map(Number);
+      out.push({ x, y, d });
+    }
+    if (layer.size === 0) break;
+  }
+  return out;
+}
+
+/** L'îlot du Gardien en cubes : terre, sol de l'île, arène, petit décor, pas japonais, et le bloc d'or une fois vaincu. */
+function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
+  const def = islandDef(biome.id);
+  const gz = def.altitude;
+  const tag = biome.id;
+  const cells = bossIsletCells(biome.id);
+  const at = new Map(cells.map((c) => [`${c.x},${c.y}`, c]));
+  const block = (x: number, y: number, z: number, color: string, top?: string) =>
+    cubes.push({ x, y, z, color, top, texture: TEXTURES[color], tag });
+  const ground = isletGround(def);
+  const sandy = gz === 0 && def.region !== 'feu';
+  for (const c of cells) {
+    for (let d = 1; d <= DEPTH; d++) block(c.x, c.y, gz - d, BLOCKS.terre.side);
+    // L'arène : pierre au milieu, galet sur son pourtour ; autour, le sol de l'île, et du sable au bord de la mer.
+    const rim = c.arena && [`${c.x - 1},${c.y}`, `${c.x + 1},${c.y}`, `${c.x},${c.y - 1}`, `${c.x},${c.y + 1}`].some((k) => !at.get(k)?.arena);
+    const top = c.arena ? (rim ? BLOCKS.galet.side : BLOCKS.pierre.side) : c.shore && sandy ? BLOCKS.sable.side : ground;
+    block(c.x, c.y, gz, top);
+  }
+  if (gz > 0) for (const t of taperLayers(cells)) block(t.x, t.y, gz - DEPTH - t.d, BLOCKS.pierre.side);
+  // Quelques touches du décor de l'île, hors de l'arène et loin des pieds du Gardien.
+  const kinds = [...new Set(landscape(def).map((c) => c.decor).filter((k): k is Decor => !!k && SMALL_DECOR.includes(k)))];
+  if (kinds.length === 0) kinds.push('rocher');
+  const spots = cells
+    .filter((c) => !c.arena && !c.guardian)
+    .map((c) => ({ c, r: noise(def.seed + 8, c.x, c.y) }))
+    .sort((p, q) => q.r - p.r)
+    .slice(0, 5);
+  const trophy = beaten ? trophySpot(biome.id) : null;
+  for (const { c, r } of spots) {
+    decorate(
+      (x, y, z, color) => {
+        const cell = at.get(`${x},${y}`);
+        if (!cell || cell.arena || cell.guardian || (trophy && x === trophy.x && y === trophy.y)) return;
+        block(x, y, gz + z, color);
+      },
+      kinds[Math.floor(r * 97) % kinds.length],
+      c.x,
+      c.y,
+      r,
+    );
+  }
+  for (const s of bossIsletSteps(biome.id)) {
+    block(s.x, s.y, s.z, BLOCKS.galet.side);
+    if (s.z === 0) block(s.x, s.y, -1, BLOCKS.galet.side);
+  }
+  // Vaincu : un bloc d'or sur un socle de pierre, devant la statue.
+  if (trophy) {
+    block(trophy.x, trophy.y, gz + 1, BLOCKS.pierre.side);
+    block(trophy.x, trophy.y, gz + 2, BLOCKS.or.side, BLOCKS.or.top);
+  }
 }
 
 export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
@@ -896,9 +1069,10 @@ export function guardianPlacements(
     const status = guardianStatus(b, progress, bridges);
     if (status === 'hidden') return;
     const { x, y, z } = bossIsletOrigin(index);
+    const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
     const cubes = beaten ? GUARDIAN_CUBES[b.id].map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : GUARDIAN_CUBES[b.id];
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x, y, z: z + 1 } });
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;
 }
@@ -1371,35 +1545,11 @@ export function worldCubes(
       decorate((x, y, z, color) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
     }
     // Une île en altitude flotte : sa roche s'amincit dessous.
-    if (def.altitude > 0) {
-      let layer = new Set(land.map((c) => `${c.x},${c.y}`));
-      for (let d = 1; d <= TAPER; d++) {
-        const next = new Set<string>();
-        for (const key of layer) {
-          const [x, y] = key.split(',').map(Number);
-          if ([`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].every((k) => layer.has(k))) next.add(key);
-        }
-        layer = next;
-        for (const key of layer) {
-          const [x, y] = key.split(',').map(Number);
-          if (!taken.has(`${x},${y},${-DEPTH - d}`)) putWorld(x, y, -DEPTH - d, BLOCKS.pierre.side);
-        }
-        if (layer.size === 0) break;
-      }
-    }
-    // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une plateforme de pierre sur deux couches de terre.
+    if (def.altitude > 0)
+      for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putWorld(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+    // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais.
     const guardian = guardianStatus(biome, progress, village.bridges);
-    if (guardian !== 'hidden') {
-      const { x: gx, y: gy, z: gz } = bossIsletOrigin(index);
-      for (let x = 0; x < ISLET_W; x++) {
-        for (let y = 0; y < ISLET_H; y++) {
-          for (let d = 1; d <= DEPTH; d++) cubes.push({ x: gx + x, y: gy + y, z: gz - d, color: BLOCKS.terre.side, texture: 'terre', tag: biome.id });
-          cubes.push({ x: gx + x, y: gy + y, z: gz, color: BLOCKS.pierre.side, texture: 'pierre', tag: biome.id });
-        }
-      }
-      // Vaincu : un bloc d'or à côté de la statue.
-      if (guardian === 'beaten') cubes.push({ x: gx + ISLET_W - 1, y: gy, z: gz + 1, color: BLOCKS.or.side, top: BLOCKS.or.top, texture: 'or', tag: biome.id });
-    }
+    if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes);
     if (unlocked && withCreatures) {
       const spot = creatureSpot(biome.id);
       for (const c of CREATURE_CUBES[biome.id])

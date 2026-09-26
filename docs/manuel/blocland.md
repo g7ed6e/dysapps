@@ -96,7 +96,9 @@ Chaque île a un **Gardien** (le Grand Chêne, le Golem de roche, le Hanneton de
 
 Le défi enchaîne **deux manches de chaque quête** de l’île, tirées d’exercices au niveau de l’élève, avec leurs écrans et leurs corrections habituels, **sans chrono**. Dans l’arène, le Gardien est une grande créature en cubes qui respire ; sa **jauge de résistance** baisse à chaque épreuve réussie (il n’y a jamais de jauge pour l’élève). Il s’incline quand on réussit, gronde doucement quand on rate, dit une réplique à chaque épreuve, s’écroule quand il est vaincu. Tambour à l’entrée, fanfare à la victoire ; « Réduire les animations » neutralise le tout.
 
-**Deux étoiles au défi** : Gardien vaincu. Blocs d’or, XP, succès, un bloc d’or planté sur l’île, et le Gardien devient une statue de pierre sur son îlot devant l’île. On peut le réaffronter. Vaincre un Gardien ouvre aussi les tunnels et les cols qui partent de son île, et compte pour le kit du Bloc-Navire de l’archipel.
+**L’îlot du Gardien** apparaît devant l’île dès que le Gardien accepte le défi : une petite île ronde au sol de son île (herbe, neige, basalte…), bordée de sable au bord de la mer, avec quelques touches de son décor. Au milieu, le Gardien se dresse sur une **arène** pavée de pierre, bordée de galet. Des **pas japonais**, pierres posées dans l’eau, relient l’îlot à la côte de l’île. Dans les archipels en altitude, l’îlot flotte sur sa roche, comme les îles.
+
+**Deux étoiles au défi** : Gardien vaincu. Blocs d’or, XP, succès, et le Gardien devient une statue de pierre sur son îlot, avec un bloc d’or posé sur un socle devant lui. On peut le réaffronter. Vaincre un Gardien ouvre aussi les tunnels et les cols qui partent de son île, et compte pour le kit du Bloc-Navire de l’archipel.
 
 ## Les sons
 

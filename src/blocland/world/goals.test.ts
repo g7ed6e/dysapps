@@ -1,6 +1,7 @@
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { lockedHint, nextGoal } from './goals';
 import { planCells, plansFor } from './plans';
+import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
 
@@ -50,7 +51,9 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
   const later = overviewBounds('6e', ['foret-mine', 'mine-carriere']);
   expect(later.maxX).toBeGreaterThan(start.maxX);
   // L'étendue de la scène comprend le port (la jetée et le navire, devant la Plaine).
-  expect(all.minY).toBeLessThan(start.minY + 4);
+  const dock = dockBox('plaine');
+  expect(all.minY).toBeLessThanOrEqual(dock.y0 - 2);
+  expect(all.maxX).toBeGreaterThanOrEqual(dock.x1 + 2);
 });
 
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {

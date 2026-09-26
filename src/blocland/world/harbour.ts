@@ -3,7 +3,7 @@
 import type { BiomeId } from '../biomes';
 import { ALTITUDE, CORE, archipelagoOfIsland, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';
 
-/** Colonne de la jetée, à droite du cœur (l'îlot du Gardien occupe les colonnes 2 à 11 devant l'île). */
+/** Colonne de la jetée, à droite du cœur (l'îlot du Gardien tient dans les colonnes 0 à 12 devant l'île). */
 export const DOCK_DX = 14;
 /** Cases de jetée à plat au moins, une fois au niveau de repos du navire. */
 export const DOCK_FLAT = 3;
