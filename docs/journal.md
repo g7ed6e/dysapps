@@ -2,6 +2,10 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.7.0 — 26 septembre 2026
+
+**README en porte d’entrée.** Le README du dépôt ne détaille plus chaque fonctionnalité : il présente le projet, donne les deux adresses (application, documentation), le démarrage développeur, les règles des pull requests, la licence et les crédits, et renvoie à cette documentation pour le reste. Le paragraphe sur le style « monde en blocs » (repères visuels, polices, textures, sons) devient la page [Style « monde en blocs »](conception/style.md) de la conception.
+
 ## 0.6.0 — 26 septembre 2026
 
 **Site de documentation.** Cette documentation est publiée sur GitHub Pages (<https://g7ed6e.github.io/dysapps/>) ; l’application, elle, est désormais publiée uniquement sur Cloudflare (<https://dysapps.guillaume-delahaye.workers.dev/>).
