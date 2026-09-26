@@ -2,6 +2,7 @@ import { BIOMES } from '../biomes';
 import { CORE, MAP, landCells } from './map';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
+import { GUARDIAN_CUBES } from '../Guardians';
 import { BRIDGES } from './archipelago';
 import {
   avatarHome,
@@ -266,4 +267,18 @@ it('chaque quête a sa borne sur la rangée de devant, dans le cœur, hors de la
   const mine = cubes.filter((c) => c.quest?.startsWith('mine:'));
   expect(mine.length).toBeGreaterThan(0);
   expect(mine.every((c) => c.muted)).toBe(true);
+});
+
+it('chaque Gardien tient sur son îlot, et chaque créature reste petite devant lui', () => {
+  for (const b of BIOMES) {
+    const g = GUARDIAN_CUBES[b.id];
+    expect(Math.max(...g.map((c) => c.x)), b.id).toBeLessThan(ISLET_W);
+    expect(Math.max(...g.map((c) => c.y)), b.id).toBeLessThan(ISLET_H);
+    expect(Math.min(...g.map((c) => c.x)), b.id).toBeGreaterThanOrEqual(0);
+    const gh = Math.max(...g.map((c) => c.z)) + 1;
+    const ch = Math.max(...CREATURE_CUBES[b.id].map((c) => c.z)) + 1;
+    expect(gh, b.id).toBeGreaterThanOrEqual(6);
+    expect(ch, b.id).toBeLessThanOrEqual(9);
+    expect(ch, b.id).toBeLessThan(gh + 2);
+  }
 });
