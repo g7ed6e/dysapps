@@ -1209,42 +1209,59 @@ export function mistPatches(a: ArchipelagoId): { x: number; y: number; z: number
 }
 
 /**
- * Le port de l'archipel : la jetée de planches qui descend de la côte vers le large, ses poteaux et ses lanternes, et le
- * Bloc-Navire amarré à côté. Les étapes du navire déjà parties sont dessinées entières ; celle qui se construit ici
- * montre ses cases posées en dur et les autres en fantôme ; son kit (voile, ballon, feux) arrive avec les Gardiens.
+ * Le port de l'archipel : la jetée de planches qui descend de la côte vers le large, ses poteaux et ses lanternes.
+ * Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part (`vehiclePlacement`).
  */
-function harbour(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: Village, cubes: VoxelCube[]): void {
+function harbour(a: ArchipelagoId, cubes: VoxelCube[]): void {
   const port = getArchipelago(a).port;
-  const def = islandDef(port);
   for (const c of dockCells(port))
     cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS.bois.side, top: c.step ? BLOCKS.escalier.top : undefined, texture: c.step ? 'escalier' : 'planches', tag: port });
   for (const p of dockPosts(port)) {
     cubes.push({ x: p.x, y: p.y, z: p.z, color: TRUNK, texture: 'tronc', tag: port });
     if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS.lanterne.side, top: BLOCKS.lanterne.top, texture: 'lanterne', tag: port });
   }
+}
+
+export interface VehiclePlacement {
+  /** L'île-port où le navire est amarré. */
+  port: BiomeId;
+  /** Le coin local (0, 0, 0) du navire dans le monde. */
+  origin: { x: number; y: number; z: number };
+  /** Les cubes du navire, en coordonnées locales ; en fantôme, les cases encore à poser (ou le kit qui n'est pas arrivé). */
+  cubes: VoxelCube[];
+  /** Le navire flotte sur l'eau (il tangue) ou plane à hauteur de quai (les Îles du Ciel). */
+  afloat: boolean;
+  /** L'étape en chantier sur ce port, s'il y en a une. */
+  building: string | null;
+}
+
+/**
+ * Le Bloc-Navire au quai du port de l'archipel. Les étapes déjà parties sont dessinées entières (le navire les porte
+ * partout où il accoste) ; celle qui se construit ici montre ses cases posées en dur et les autres en fantôme ; son kit
+ * (voile, ballon, feux) arrive avec les Gardiens.
+ */
+export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: Village): VehiclePlacement {
+  const port = getArchipelago(a).port;
+  const origin = dockOrigin(port);
+  const cubes: VoxelCube[] = [];
   const put = (c: { x: number; y: number; z: number; block: keyof typeof BLOCKS }, ghost: boolean) => {
     const bd = BLOCKS[c.block];
-    cubes.push({ x: def.core.x + c.x, y: def.core.y + c.y, z: def.altitude + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
+    cubes.push({ x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
   };
-  // Les étapes déjà parties : le navire les porte partout où il accoste ; ses cases locales sont posées sur ce quai.
-  const o = dockOrigin(port);
   const bridges = village.bridges;
-  for (const stage of launchedStages(bridges)) {
-    for (const c of [...stage.cells, ...stage.kit]) {
-      const bd = BLOCKS[c.block];
-      cubes.push({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port });
-    }
-  }
+  for (const stage of launchedStages(bridges)) for (const c of [...stage.cells, ...stage.kit]) put(c, false);
   // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
   const building = VEHICLE_STAGES.find(
     (st) => st.biome === port && !bridges.includes(voyageId(st.to)) && (st.stage === 1 || bridges.includes(voyageId(VEHICLE_STAGES[st.stage - 2].to))),
   );
   if (building) {
     const done = new Set(village.plans[building.id] ?? []);
-    for (const c of planCells(building)) put(c, !done.has(c.key));
+    const placed = planCells(building);
+    building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
     const kit = kitReady(building, progress);
-    for (const c of planCells(building, building.kit)) put(c, !kit);
+    for (const c of building.kit) put(c, !kit);
   }
+  return { port, origin, cubes, afloat: !AMBIENCE[a].sky, building: building?.id ?? null };
 }
 
 export function worldCubes(
@@ -1391,8 +1408,8 @@ export function worldCubes(
       }
     }
   });
-  // Le port : la jetée et le Bloc-Navire.
-  harbour(a, progress, village, cubes);
+  // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
+  harbour(a, cubes);
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage).
   for (const c of seaDecor(a)) cubes.push(c);
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.

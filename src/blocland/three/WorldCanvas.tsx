@@ -6,7 +6,7 @@ import { type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
+import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds, type VehiclePlacement } from '../world/terrain';
 import { islandsOf, type ArchipelagoId } from '../world/archipelago';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
@@ -64,6 +64,10 @@ export interface WorldCanvasProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
+  /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
+  vehicle?: VehiclePlacement | null;
+  /** Le navire touché (hors d'une case à poser) : on ouvre le panneau du port sur sa section. */
+  onPickVehicle?: (port: BiomeId) => void;
   /** Île touchée (un tap, pas un glissé), sur l'île elle-même. */
   onPickIsland?: (id: BiomeId) => void;
   /** Ouvrage touché (construit ou fantôme) : son identifiant. */
@@ -77,8 +81,8 @@ export interface WorldCanvasProps {
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »). */
-  marker?: BiomeId | null;
+  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'une case du monde (le chantier du navire). */
+  marker?: BiomeId | Cell | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: { route: Cell[]; seq: number };
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
@@ -231,6 +235,8 @@ export default function WorldCanvas({
   forceDay = false,
   bridges = [],
   marker = null,
+  vehicle = null,
+  onPickVehicle,
   avatar,
   map = false,
   home,
@@ -262,9 +268,15 @@ export default function WorldCanvas({
     questMarks: THREE.Group;
     avatar: THREE.Group;
     walk: { route: Cell[]; start: number; duration: number } | null;
+    /** Le Bloc-Navire : la coque (qui tangue) et le ballon (qui se balance au sommet du mât). */
+    vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
+  const pickVehicleRef = useRef(onPickVehicle);
+  pickVehicleRef.current = onPickVehicle;
+  /** Le navire : son groupe, son origine dans le monde et les cases fantômes que l'on peut poser. */
+  const vehicleRef = useRef<{ origin: { x: number; y: number; z: number }; ghosts: Set<string>; afloat: boolean; port: BiomeId } | null>(null);
   const pickBridgeRef = useRef(onPickBridge);
   pickBridgeRef.current = onPickBridge;
   const pickQuestRef = useRef(onPickQuest);
@@ -572,6 +584,13 @@ export default function WorldCanvas({
     scene.add(terrain);
     const creaturesGroup = new THREE.Group();
     scene.add(creaturesGroup);
+    // Le Bloc-Navire : un groupe à part, amarré au quai, qui tangue ; le ballon pivote au sommet du mât.
+    const vehicleGroup = new THREE.Group();
+    vehicleGroup.userData = { vehicle: true };
+    const hullGroup = new THREE.Group();
+    const balloonGroup = new THREE.Group();
+    vehicleGroup.add(hullGroup, balloonGroup);
+    scene.add(vehicleGroup);
     // Le contour de la case visée (mode chantier).
     const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
     hover.visible = false;
@@ -596,6 +615,7 @@ export default function WorldCanvas({
       questMarks: questMarksGroup,
       avatar: avatarGroup,
       walk: null,
+      vehicle: { group: vehicleGroup, hull: hullGroup, balloon: balloonGroup },
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -606,7 +626,7 @@ export default function WorldCanvas({
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
-      const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children], true)[0];
+      const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children, vehicleGroup], true)[0];
       const ground = ray.intersectObjects(terrain.children, false)[0];
       if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
       return { creature: undefined, hit: ground };
@@ -630,6 +650,14 @@ export default function WorldCanvas({
         cur = cur.parent;
       }
       return null;
+    };
+    const isInside = (o: THREE.Object3D, root: THREE.Object3D): boolean => {
+      let cur: THREE.Object3D | null = o;
+      while (cur) {
+        if (cur === root) return true;
+        cur = cur.parent;
+      }
+      return false;
     };
     const onDown = (e: PointerEvent) => {
       down = { x: e.clientX, y: e.clientY };
@@ -655,6 +683,15 @@ export default function WorldCanvas({
         return;
       }
       const { creature, hit } = aim(e);
+      if (creature && vehicleRef.current && isInside(creature.object, vehicleGroup)) {
+        // Une case du navire : en coordonnées locales (le navire tangue), puis dans le monde ; un fantôme se pose.
+        const v = vehicleRef.current;
+        const n = creature.face?.normal ?? new THREE.Vector3(0, 1, 0);
+        const local = vehicleGroup.worldToLocal(creature.point.clone().addScaledVector(n, -0.5));
+        const cell = { x: v.origin.x + Math.floor(local.x), y: v.origin.y + Math.floor(local.z), z: v.origin.z + Math.floor(local.y) };
+        if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell);
+        return pickVehicleRef.current?.(v.port);
+      }
       if (creature) {
         const quest = questIdOf(creature.object);
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
@@ -867,6 +904,14 @@ export default function WorldCanvas({
           markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
           markerGroup.rotation.y = t * 0.8;
         }
+        // Le Bloc-Navire tangue doucement sur l'eau (plane, plus lentement, dans le ciel) ; son ballon se balance.
+        if (vehicleRef.current) {
+          const v = vehicleRef.current;
+          vehicleGroup.position.y = v.origin.z + (v.afloat ? Math.sin(t * 1.8) * 0.08 : 0.3 + Math.sin(t * 0.9) * 0.15);
+          vehicleGroup.rotation.z = v.afloat ? Math.sin(t * 1.3) * 0.015 : 0;
+          balloonGroup.rotation.z = Math.sin(t * 1.3) * 0.04;
+          balloonGroup.rotation.x = Math.sin(t * 0.9) * 0.03;
+        }
         // Créatures : petit balancement, et un pas de temps en temps.
         for (const wk of w.walkers) {
           if (!wk.still && now >= wk.next && wk.start === 0) {
@@ -989,7 +1034,39 @@ export default function WorldCanvas({
     });
   }, [creatures]);
 
-  // ---- La flèche « Commence ici »
+  // ---- Le Bloc-Navire : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    for (const part of [w.vehicle.hull, w.vehicle.balloon]) {
+      for (const child of [...part.children]) {
+        part.remove(child);
+        (child as THREE.Mesh).geometry.dispose();
+      }
+    }
+    if (!vehicle) {
+      vehicleRef.current = null;
+      w.vehicle.group.visible = false;
+      return;
+    }
+    const MAST_TOP = 7;
+    const hull = vehicle.cubes.filter((c) => c.z < MAST_TOP);
+    const balloon = vehicle.cubes.filter((c) => c.z >= MAST_TOP).map((c) => ({ ...c, x: c.x - 2, y: c.y - 3, z: c.z - MAST_TOP }));
+    for (const g of buildMesh(hull)) w.vehicle.hull.add(meshOf(g));
+    for (const g of buildMesh(balloon)) w.vehicle.balloon.add(meshOf(g));
+    w.vehicle.balloon.position.set(2, MAST_TOP, 3);
+    w.vehicle.group.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
+    w.vehicle.group.rotation.set(0, 0, 0);
+    w.vehicle.group.visible = true;
+    vehicleRef.current = {
+      origin: vehicle.origin,
+      port: vehicle.port,
+      afloat: vehicle.afloat,
+      ghosts: new Set(vehicle.cubes.filter((c) => c.ghost).map((c) => `${c.x},${c.y},${c.z}`)),
+    };
+  }, [vehicle]);
+
+  // ---- La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire)
   useEffect(() => {
     const w = world.current;
     if (!w) return;
@@ -997,9 +1074,10 @@ export default function WorldCanvas({
       w.marker.visible = false;
       return;
     }
-    const c = islandCenter(marker);
-    w.marker.userData.base = c.z + 8;
-    w.marker.position.set(c.x, c.z + 8.5, c.y);
+    const c = typeof marker === 'string' ? islandCenter(marker) : marker;
+    const base = typeof marker === 'string' ? c.z + 8 : c.z;
+    w.marker.userData.base = base;
+    w.marker.position.set(c.x, base + 0.5, c.y);
     w.marker.visible = true;
   }, [marker]);
 

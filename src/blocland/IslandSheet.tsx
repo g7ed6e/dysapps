@@ -169,7 +169,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
 
       {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
 
-      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} />}
+      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
     </section>

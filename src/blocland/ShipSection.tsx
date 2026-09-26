@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { BLOCKS, type BiomeDef, type BlockId } from './biomes';
@@ -15,6 +16,8 @@ interface Props {
   in3d?: boolean;
   /** Embarquer vers un archipel (le suivant, ou un archipel déjà atteint pour y revenir). */
   onBoard: (to: ArchipelagoId, back: boolean) => void;
+  /** Le navire vient d'être touché dans le monde : la section vient sous les yeux. */
+  highlight?: boolean;
 }
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
@@ -24,8 +27,12 @@ const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
  * vaincre pour le kit, bouton « Poser le bloc suivant »), le bouton « Embarquer » quand tout est prêt, et les boutons
  * pour revenir sur un archipel déjà atteint. Même contenu dans le panneau 3D et en vue simple.
  */
-export function ShipSection({ biome, builder, in3d = false, onBoard }: Props) {
+export function ShipSection({ biome, builder, in3d = false, onBoard, highlight = false }: Props) {
   const { state } = useBlocland();
+  const section = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (highlight) section.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }, [highlight, biome.id]);
   const here = stageAt(biome.id);
   if (!here) return null;
   const current = archipelagoOf(biome.id);
@@ -38,7 +45,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard }: Props) {
   const departed = !stage && state.village.bridges.includes(`voyage-${here.to}`);
   const complete = departed && here.stage === VEHICLE_STAGES.length;
   return (
-    <section className={`plan-section ship-section${ready ? ' ship-ready' : ''}`} aria-labelledby={`navire-${biome.id}`}>
+    <section ref={section} className={`plan-section ship-section${ready ? ' ship-ready' : ''}${highlight ? ' bridge-highlight' : ''}`} aria-labelledby={`navire-${biome.id}`}>
       <h3 id={`navire-${biome.id}`} className="island-sheet-heading">
         <Icon name="ship" /> {cap(VEHICLE_NAME)} — Étape {here.stage} / {VEHICLE_STAGES.length} : {here.name}
       </h3>

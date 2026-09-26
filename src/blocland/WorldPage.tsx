@@ -29,6 +29,7 @@ import {
   islandCenter,
   islandOrigin,
   questStations,
+  vehiclePlacement,
   worldCubes,
 } from './world/terrain';
 import {
@@ -71,6 +72,8 @@ export function WorldPage() {
     () => [...creaturePlacements(a, state.village.bridges), ...guardianPlacements(a, state.progress, state.village.bridges)],
     [a, state.progress, state.village.bridges],
   );
+  // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
+  const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.village), [a, state.progress, state.village]);
   // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande.
   const [sheetOpen, setSheetOpen] = useState(true);
   // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte.
@@ -173,8 +176,19 @@ export function WorldPage() {
 
   if (biomeId && !mapOpen && !island) return <NotFoundPage />;
   const night = !forceDay && daylight().light < 0.5;
-  // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée.
-  const marker = !island && a === '6e' && Object.keys(state.progress).length === 0 ? 'foret' : null;
+  // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
+  // le panneau du port est ouvert et qu'il reste des cases à poser.
+  const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
+  const marker = shipyard
+    ? { x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }
+    : !island && a === '6e' && Object.keys(state.progress).length === 0
+      ? 'foret'
+      : null;
+  // Le navire touché : le panneau du port, sa section Bloc-Navire mise en avant.
+  const onPickVehicle = (port: BiomeId) => {
+    setHighlight('navire');
+    openIsland(port);
+  };
 
   // Toucher une île : on y va (le bonhomme marche si un chemin y mène). Sur la Carte, une île fermée montre son chemin.
   const onIsland = (id: BiomeId) => {
@@ -210,6 +224,8 @@ export function WorldPage() {
             forceDay={forceDay}
             bridges={state.village.bridges}
             marker={marker}
+            vehicle={vehicle}
+            onPickVehicle={onPickVehicle}
             avatar={avatar}
             map={mapOpen}
             home={at}
