@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
@@ -22,6 +22,9 @@ function renderAt(path: string) {
   );
 }
 
+/** Attend que le contenu de l'exercice (chargé à la demande) soit là. */
+const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).not.toBeInTheDocument());
+
 function ready(biomeId: string) {
   const biome = getBiome(biomeId)!;
   const progress: Record<string, unknown> = {};
@@ -36,20 +39,22 @@ it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque quê
   expect(screen.queryByRole('link', { name: /le Grand Chêne/ })).not.toBeInTheDocument();
 });
 
-it('sans les étoiles, le Gardien refuse et renvoie aux quêtes', () => {
+it('sans les étoiles, le Gardien refuse et renvoie aux quêtes', async () => {
   renderAt('/aventure/foret/gardien');
+  await loaded();
   expect(screen.getByRole('heading', { name: /le Grand Chêne/ })).toBeInTheDocument();
   expect(document.body.textContent).toMatch(/Il te manque encore des étoiles/);
   expect(screen.getByRole('link', { name: /Voir les quêtes/ })).toBeInTheDocument();
 });
 
-it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa quête', () => {
+it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa quête', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /le Grand Chêne/ })).toBeInTheDocument();
   expect(screen.getByText(/Prêt à t’affronter/)).toBeInTheDocument();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret/gardien');
+  await loaded();
   expect(screen.getAllByText(/Épreuve : Abattage syllabique/).length).toBeGreaterThan(0);
   // L'arène : le Gardien et sa jauge de résistance, pleine au départ.
   expect(screen.getByRole('region', { name: /L’arène du Gardien/ })).toBeInTheDocument();
@@ -64,11 +69,12 @@ it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async (
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/aventure/foret/gardien');
+  await loaded();
   const gauge = () => screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
   const max = Number(gauge().getAttribute('aria-valuemax'));
   // Première épreuve : un QCM de syllabes, on répond juste (la bonne réponse est dans les données de l'exercice).
-  const { getExercise } = await import('./exercises');
-  const def = getExercise('foret-echauffement-001')!;
+  const { loadExercise } = await import('./exercises');
+  const def = (await loadExercise('foret-echauffement-001'))!;
   const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
   const item = def.items.find((i) => prompt.includes(String(i.word)))!;
   await user.click(screen.getByRole('button', { name: String(item.answer) }));

@@ -1,5 +1,6 @@
 // Les Gardiens de biome : de grandes créatures originales en cubes, qui réagissent pendant le défi.
 import { Suspense } from 'react';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
 import type { BiomeId } from './biomes';
 import { fromLayers } from './Creatures';
@@ -520,19 +521,21 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
       {!settings.view3d || !hasWebGL() ? (
         svg
       ) : (
-        <Suspense fallback={svg}>
-          <VoxelCanvas
-            cubes={cubes}
-            breathe
-            interactive={false}
-            reduceMotion={settings.reduceMotion}
-            cameraDirection={[0.55, -0.85]}
-            elevation={0.35}
-            fit={1.5}
-            className="creature-3d guardian-3d"
-            label={label}
-          />
-        </Suspense>
+        <ErrorBoundary fallback={svg}>
+          <Suspense fallback={svg}>
+            <VoxelCanvas
+              cubes={cubes}
+              breathe
+              interactive={false}
+              reduceMotion={settings.reduceMotion}
+              cameraDirection={[0.55, -0.85]}
+              elevation={0.35}
+              fit={1.5}
+              className="creature-3d guardian-3d"
+              label={label}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
     </div>
   );

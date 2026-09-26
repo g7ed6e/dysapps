@@ -1,11 +1,14 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../../core/SettingsContext';
 import { ProgressProvider } from '../../core/ProgressContext';
 import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
-import { getExercise } from './index';
+import { loadAllExercises } from './index';
+
+const ALL = await loadAllExercises();
+const getExercise = (id: string) => ALL.find((e) => e.id === id);
 
 // Ces tests décrivent les écrans : on les joue avec les items dans l'ordre du fichier (le hasard a ses propres tests).
 vi.mock('./run', async (original) => ({
@@ -26,6 +29,9 @@ function renderAt(path: string) {
     </SettingsProvider>,
   );
 }
+
+/** Attend que le contenu de l'exercice (chargé à la demande) soit là. */
+const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).not.toBeInTheDocument());
 
 /** Débloque les biomes suivants : une étoile dans chacun des biomes précédents. */
 function unlockAll() {
@@ -87,6 +93,7 @@ it('chasse au son : on choisit les mots, on valide, la correction nomme le son e
   const user = userEvent.setup();
   const def = getExercise('foret-chasse-son-an')!;
   renderAt('/aventure/foret/chasse-son');
+  await loaded();
   expect(screen.getByText(def.instruction)).toBeInTheDocument();
   const first = def.items.slice(0, 4);
   // Une erreur volontaire : le premier mauvais mot est coché aussi.
@@ -109,6 +116,7 @@ it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', 
   const user = userEvent.setup();
   const def = getExercise('mine-filon-b')!;
   renderAt('/aventure/mine/filon');
+  await loaded();
   for (let i = 0; i < 3; i++) {
     const it = def.items[i];
     const block = screen.getByRole('button', { name: `Bloc avec la lettre ${it.letter}. Piocher` });
@@ -124,12 +132,14 @@ it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', 
   expect(within(sheet()).getByText(/PAS TOUT À FAIT/)).toBeInTheDocument();
 });
 
-it('filon : sans « réduire les animations », le bloc qui sort de la galerie compte comme laissé passer', () => {
-  vi.useFakeTimers();
+it('filon : sans « réduire les animations », le bloc qui sort de la galerie compte comme laissé passer', async () => {
   unlockAll();
   // Sans historique, l'exercice proposé est le premier du catalogue pour ce type.
   const def = getExercise('mine-filon-b')!;
+  vi.useFakeTimers();
   renderAt('/aventure/mine/filon');
+  // Le contenu de l'exercice arrive par un import dynamique : on l'attend sans horloge.
+  await act(() => vi.dynamicImportSettled());
   const it = def.items[0];
   act(() => {
     vi.advanceTimersByTime(9000);
@@ -144,6 +154,7 @@ it('mot troué : le bon bloc remplit le trou, la correction montre la bonne écr
   const user = userEvent.setup();
   const def = getExercise('carriere-mot-troue-1')!;
   renderAt('/aventure/carriere/mot-troue');
+  await loaded();
   const it = def.items[0];
   const wrong = (it.choices as string[]).find((c) => c !== it.answer)!;
   await user.click(screen.getByRole('button', { name: wrong }));
@@ -155,6 +166,7 @@ it('tri des graines : phrase à trou, puis règle et astuce de substitution apr�
   unlockAll();
   const user = userEvent.setup();
   renderAt('/aventure/ferme/graines');
+  await loaded();
   const def = getExercise('ferme-graines-a')!;
   const it = def.items[0];
   const wrong = (it.choices as string[]).find((c) => c !== it.answer)!;
@@ -166,6 +178,7 @@ it('ascension : un étage par paragraphe validé, temps comparé à soi-même', 
   unlockAll();
   const user = userEvent.setup();
   renderAt('/aventure/tour/ascension');
+  await loaded();
   const def = getExercise('tour-ascension-mousso')!;
   expect(screen.getByRole('img', { name: 'Tour : 0 étage sur 4' })).toBeInTheDocument();
   for (let i = 0; i < def.items.length; i++) {

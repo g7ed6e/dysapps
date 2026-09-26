@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
 import type { BiomeId } from './biomes';
 import { CREATURE_CUBES, Creature } from './Creatures';
@@ -13,18 +14,22 @@ interface Props {
 /** Créature en 3D (respiration, rotation lente) ; en SVG si la 3D est désactivée ou indisponible. */
 export function Creature3D({ biome, label, className }: Props) {
   const { settings } = useSettings();
-  if (!settings.view3d || !hasWebGL()) return <Creature biome={biome} label={label} className={className} />;
+  const flat = <Creature biome={biome} label={label} className={className} />;
+  if (!settings.view3d || !hasWebGL()) return flat;
+  // La 3D pas encore chargée, ou impossible à charger : la créature en SVG.
   return (
-    <Suspense fallback={<Creature biome={biome} label={label} className={className} />}>
-      <VoxelCanvas
-        cubes={CREATURE_CUBES[biome]}
-        breathe
-        autoRotate
-        interactive={false}
-        reduceMotion={settings.reduceMotion}
-        className={`creature-3d ${className ?? ''}`.trim()}
-        label={label}
-      />
-    </Suspense>
+    <ErrorBoundary fallback={flat}>
+      <Suspense fallback={flat}>
+        <VoxelCanvas
+          cubes={CREATURE_CUBES[biome]}
+          breathe
+          autoRotate
+          interactive={false}
+          reduceMotion={settings.reduceMotion}
+          className={`creature-3d ${className ?? ''}`.trim()}
+          label={label}
+        />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

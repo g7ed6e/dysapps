@@ -30,6 +30,8 @@ Les séances sont pensées **courtes** : une quête du portail dure une dizaine 
 
 L’application se met à jour toute seule. Quand une nouvelle version est prête, une bande apparaît sous l’en-tête avec un bouton **Mettre à jour** : un clic, puis la page se recharge. La mise à jour n’est jamais imposée en pleine partie.
 
+Si une page affiche **« Cette page n’a pas pu s’ouvrir »**, l’application a sans doute été mise à jour pendant la séance : le bouton **Recharger** la rouvre. La progression est gardée.
+
 Dans **Réglages → Application**, la version installée est affichée, et un bouton **Vérifier les mises à jour** permet de ne pas attendre. Chaque publication porte un numéro nouveau, décrit dans le [journal des versions](../journal.md).
 
 ## Où sont mes données ?

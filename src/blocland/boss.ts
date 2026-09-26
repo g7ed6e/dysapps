@@ -3,7 +3,7 @@
 import { BIOMES, type BiomeDef, type BiomeId } from './biomes';
 import { levelFor, type BloclandState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
-import { exercisesOf, pickExercise } from './exercises';
+import { exercisesOf, loadExercise, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
 import type { Lang } from '../core/speech';
@@ -53,17 +53,25 @@ export function bossesBeaten(progress: Record<string, { stars: number }>): Biome
  * Construit le défi : pour chaque type de quête, deux manches tirées d'un exercice au niveau de l'élève
  * (des items différents pour chaque manche ; un texte entier pour les types « tout sur un écran »). Les items sont
  * ceux d'une partie tirée au hasard : d'autres nombres, d'autres mots, et des réponses qui changent de place.
+ * Le contenu des exercices est chargé à la demande (voir `loadExercise`).
  */
-export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number = Math.random): ExerciseDef {
+export async function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number = Math.random): Promise<ExerciseDef> {
+  const types = typesWithContent(biome);
+  const defs = await Promise.all(
+    types.map((type) => {
+      const picked = pickExercise(biome.id, type, levelFor(state, type), state.progress);
+      return picked ? loadExercise(picked.id) : undefined;
+    }),
+  );
   const rounds: BossRound[] = [];
-  for (const type of typesWithContent(biome)) {
-    const def = pickExercise(biome.id, type, levelFor(state, type), state.progress);
-    if (!def) continue;
+  types.forEach((type, t) => {
+    const def = defs[t];
+    if (!def) return;
     const batch = SCREEN_TYPES[type]?.batch ?? 1;
     const items = runItems(def, `${def.id}#gardien${Math.floor(rng() * 2 ** 32).toString(36)}`);
     if (batch === 'all') {
       rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
-      continue;
+      return;
     }
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
     const screens: ExerciseItem[][] = [];
@@ -75,7 +83,7 @@ export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number
     screens.slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
       rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
     });
-  }
+  });
   return {
     id: bossId(biome.id),
     biome: biome.id,

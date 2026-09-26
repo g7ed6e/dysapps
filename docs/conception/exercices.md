@@ -31,7 +31,9 @@ Une `Question` porte l’énoncé (`prompt`, et `spokenPrompt` quand il contient
 
 ## Un exercice Blocland
 
-Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`) chargé statiquement : un fichier JSON dans `src/blocland/exercises/data/`, ou un objet produit par un générateur (`maths.ts`, `college.ts`).
+Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`) : un fichier JSON dans `src/blocland/exercises/data/`, ou un objet produit par un générateur (`maths.ts`, `college.ts`).
+
+Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en garde que l’index (`id`, `biome`, `type`, `level` : le catalogue `CATALOG` de `index.ts`, extrait au build par le plugin `scripts/exerciseMeta.mjs`), qui suffit aux listes de quêtes, aux étoiles et au choix de la partie. Le contenu (consigne, items, corrections) est chargé par `loadExercise(id)` au lancement d’une partie ou d’un Gardien. Le service worker met tous ces fichiers en cache à l’installation : ils restent disponibles hors ligne. Les exercices écrits en code (générateurs, tri des graines, panneaux) sont toujours là.
 
 ```json
 {
@@ -73,8 +75,8 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 ## Ajouter un exercice à une quête existante
 
 1. Écrire le JSON dans `src/blocland/exercises/data/` en suivant un exercice voisin du même `type`.
-2. L’importer et l’ajouter à `EXERCISES` dans `src/blocland/exercises/index.ts`.
-3. Lancer `npm test` : `data.test.ts` vérifie le format et les règles du type.
+2. Ajouter son `id` à `ORDER` dans `src/blocland/exercises/index.ts`, à sa place dans la progression de l’île : cet ordre départage les variantes d’un même niveau et ordonne la page de l’île. Il n’y a rien à importer : le fichier est trouvé par son dossier.
+3. Lancer `npm test` : `data.test.ts` vérifie que chaque fichier de `data/` a sa place dans `ORDER`, puis le format et les règles du type.
 4. Vérifier la page de l’île dans la documentation (`npm run docs:build`) : l’exercice y apparaît avec sa consigne et ses items.
 
 ## Ajouter une quête ou une île
