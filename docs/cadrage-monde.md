@@ -79,7 +79,15 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Français** : le lot est mélangé, et quand il est plus large que la partie (`perRun`), on n'en joue qu'une partie. Les textes à lire (Ascension) et les manches du Gardien gardent leur ordre.
 - Lots élargis : syllabes (12 mots pour 6 joués), oreille du mineur, mots-outils du coffre, familles de mots (10 pour 6 joués). Les réponses de chaque item sont mélangées (PR précédente).
 
-## 13. À venir
+## 13. Retours du cahier (PR 11)
+
+- Le **Gardien juste sous les quêtes** dans le panneau d'île. Tant qu'il n'accepte pas le défi, sa ligne reste un bouton : le toucher dit (et lit) pourquoi ce n'est pas possible tout de suite, avec les quêtes où il manque des étoiles.
+- **Abattage syllabique** : un niveau 2 avec des mots longs (3 à 5 syllabes, seize mots, huit joués par partie).
+- **Difficulté** : une partie quasi parfaite (≥ 95 %) suffit maintenant pour monter d'un niveau (`PROMOTE_AT_ONCE`), au lieu de deux bonnes parties.
+- **Filon mélangé** (`mine-filon-mix-1`, `mine-filon-mix-2`) : la lettre à piocher change à chaque bloc (b, d, p ou q) au lieu d'une seule pour toute la partie ; le bloc porte sa cible (`item.target`).
+- L'écriture inclusive a été retirée (PR précédente).
+
+## 14. À venir
 
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

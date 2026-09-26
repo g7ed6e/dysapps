@@ -73,7 +73,8 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/foret/abattage');
   for (let round = 1; round <= 3; round++) {
-    await play(user, [], round - 1);
+    // Une erreur par partie : on reste au niveau 1 (une partie quasi parfaite ferait monter au niveau 2, un autre exercice).
+    await play(user, [0], round - 1);
     if (round < 3) {
       expect(screen.queryByText(/Belle séance/)).not.toBeInTheDocument();
       await user.click(screen.getByRole('button', { name: /Rejouer/ }));

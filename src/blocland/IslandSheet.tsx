@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -39,9 +39,20 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked ? nextGoal(state, biome.id) : null;
+  const [bossSaid, setBossSaid] = useState<string | null>(null);
+  // Le Gardien n'accepte pas encore : on le dit (et on le lit), au lieu d'un bouton qui ne répond pas.
+  const explainBoss = () => {
+    const missing = missingForBoss(biome, state.progress);
+    const text = unlocked
+      ? `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque quête'}. Fais ces quêtes, puis reviens le défier.`
+      : `Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.`;
+    setBossSaid(text);
+    if (settings.autoRead) speak(frenchTypography(text));
+  };
 
   // La créature accueille à voix haute quand le panneau s'ouvre.
   useEffect(() => {
+    setBossSaid(null);
     if (settings.autoRead) speak(frenchTypography(greeting));
     // Une lecture par île.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,8 +126,6 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
         })}
       </ul>
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
-
       <ul className="island-actions" aria-label="Sur cette île">
         <li>
           {bossReady ? (
@@ -131,7 +140,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
               {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label="Gardien vaincu" />}
             </Link>
           ) : (
-            <div className="island-quest locked" aria-disabled="true">
+            <button type="button" className="island-quest locked island-boss-locked" onClick={explainBoss} aria-describedby={`gardien-${biome.id}`}>
               <span className="island-quest-icon">
                 <Icon name="lock" />
               </span>
@@ -141,10 +150,15 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
                   {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque quête'}
                 </span>
               </span>
-            </div>
+            </button>
           )}
         </li>
       </ul>
+      <p id={`gardien-${biome.id}`} className="bridges-said" role="status" aria-live="polite">
+        {bossSaid ? <Syllabified text={bossSaid} /> : ''}
+      </p>
+
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} />}
     </section>
