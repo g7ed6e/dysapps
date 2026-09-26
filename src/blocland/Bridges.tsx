@@ -5,6 +5,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
+import { Foldable } from './IslandFold';
 import { playDone, playNope } from './sound';
 import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, otherEnd, payableBlocks, type BridgeDef } from './world/archipelago';
 
@@ -14,6 +15,8 @@ interface Props {
   onBuilt?: (to: BiomeId) => void;
   /** L'ouvrage touché dans le monde : on le fait voir en premier. */
   highlight?: string | null;
+  /** Dans le panneau 3D : la section se replie quand aucun ouvrage n'est constructible (la clé change avec l'île). */
+  fold?: string;
 }
 
 /** « le pont », « l'escalier taillé »… */
@@ -27,7 +30,7 @@ function withArticle(kind: BridgeDef['kind']): string {
  * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
  * terminé, le tunnel et le col un Gardien vaincu. Un seul bouton par ouvrage ; ce qui manque est dit clairement.
  */
-export function Bridges({ island, onBuilt, highlight = null }: Props) {
+export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
@@ -68,67 +71,80 @@ export function Bridges({ island, onBuilt, highlight = null }: Props) {
     if (settings.autoRead) speak(frenchTypography(text));
   };
 
+  const heading = (
+    <h3 id={`ponts-${island}`} className="island-sheet-heading">
+      <Icon name="map" /> Ouvrages
+    </h3>
+  );
+  const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.village.bridges, world));
+  const cheapest = bridges.length ? bridges.reduce((a, b) => (b.cost < a.cost ? b : a)) : null;
+  const status = readyOnes.length
+    ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
+    : cheapest
+      ? `Encore ${cheapest.cost - have} bloc${cheapest.cost - have > 1 ? 's' : ''} pour le moins cher`
+      : '';
+  // Ouvert quand un ouvrage est constructible, vient d'être touché dans le monde, ou vient d'être construit.
+  const defaultOpen = readyOnes.length > 0 || bridges.some((b) => b.id === highlight) || said !== null;
   return (
-    <section className="bridges" aria-labelledby={`ponts-${island}`}>
-      <h3 id={`ponts-${island}`} className="island-sheet-heading">
-        <Icon name="map" /> Ouvrages
-      </h3>
-      {bridges.length > 0 && (
-        <p className="bridges-have">
-          Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire. Un ouvrage ouvre l’île d’en face.
-        </p>
-      )}
-      <ul ref={list} className="island-actions bridges-list" aria-label="Ouvrages à construire">
-        {bridges.map((b) => {
-          const other = getBiome(otherEnd(b, island))!;
-          const enough = have >= b.cost;
-          const met = conditionMet(b, state.village.bridges, world);
-          const ready = enough && met;
-          const condition = CONDITION_OF[b.kind];
-          const title = `${KIND_NAME[b.kind]} vers ${other.name}`;
-          // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
-          if (!ready)
+    <Foldable fold={fold} name="ouvrages" heading={heading} status={status} defaultOpen={defaultOpen}>
+      <section className="bridges" aria-labelledby={`ponts-${island}`}>
+        {bridges.length > 0 && (
+          <p className="bridges-have">
+            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire. Un ouvrage ouvre l’île d’en face.
+          </p>
+        )}
+        <ul ref={list} className="island-actions bridges-list" aria-label="Ouvrages à construire">
+          {bridges.map((b) => {
+            const other = getBiome(otherEnd(b, island))!;
+            const enough = have >= b.cost;
+            const met = conditionMet(b, state.village.bridges, world);
+            const ready = enough && met;
+            const condition = CONDITION_OF[b.kind];
+            const title = `${KIND_NAME[b.kind]} vers ${other.name}`;
+            // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
+            if (!ready)
+              return (
+                <li
+                  key={b.id}
+                  data-bridge={b.id}
+                  className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}
+                  aria-disabled="true"
+                >
+                  <span className="island-quest-icon bridge-icon">
+                    <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
+                  </span>
+                  <span className="island-quest-text">
+                    <span className="island-quest-title">{title}</span>
+                    <span className="island-quest-desc">
+                      {!enough && `Encore ${b.cost - have} bloc${b.cost - have > 1 ? 's' : ''} (${b.cost} en tout)`}
+                      {!enough && !met && ' · '}
+                      {!met && conditionText(b, state.village.bridges)}
+                    </span>
+                  </span>
+                </li>
+              );
             return (
-              <li
-                key={b.id}
-                data-bridge={b.id}
-                className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}
-                aria-disabled="true"
-              >
+              <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
                 <span className="island-quest-icon bridge-icon">
                   <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
                 </span>
                 <span className="island-quest-text">
                   <span className="island-quest-title">{title}</span>
-                  <span className="island-quest-desc">
-                    {!enough && `Encore ${b.cost - have} bloc${b.cost - have > 1 ? 's' : ''} (${b.cost} en tout)`}
-                    {!enough && !met && ' · '}
-                    {!met && conditionText(b, state.village.bridges)}
-                  </span>
+                  <span className="island-quest-desc">{b.cost} blocs</span>
                 </span>
+                <button type="button" className="button primary" onClick={() => build(b, other.name)}>
+                  <Icon name="hammer" /> Construire
+                </button>
               </li>
             );
-          return (
-            <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
-              <span className="island-quest-icon bridge-icon">
-                <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
-              </span>
-              <span className="island-quest-text">
-                <span className="island-quest-title">{title}</span>
-                <span className="island-quest-desc">{b.cost} blocs</span>
-              </span>
-              <button type="button" className="button primary" onClick={() => build(b, other.name)}>
-                <Icon name="hammer" /> Construire
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      {said && (
-        <p className="bridges-said" role="status" aria-live="polite">
-          <Syllabified text={said} />
-        </p>
-      )}
-    </section>
+          })}
+        </ul>
+        {said && (
+          <p className="bridges-said" role="status" aria-live="polite">
+            <Syllabified text={said} />
+          </p>
+        )}
+      </section>
+    </Foldable>
   );
 }

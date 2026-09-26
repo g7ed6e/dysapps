@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -184,6 +184,44 @@ it('à la première arrivée dans un archipel, deux bulles d’accueil, une seul
   document.body.innerHTML = '';
   renderAt('/aventure');
   expect(document.body.textContent).not.toContain('Bienvenue dans les Collines du Large');
+});
+
+it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et panneau) ; la croix ramène sur l’île du bonhomme', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4, brique: 2 } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/plaine');
+  const blocs = screen.getByRole('button', { name: 'Mes blocs' });
+  expect(blocs).toHaveTextContent('Blocs (6)');
+  expect(blocs).toHaveAttribute('aria-pressed', 'false');
+  await user.click(blocs);
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/blocs');
+  expect(screen.getByRole('button', { name: 'Mes blocs' })).toHaveAttribute('aria-pressed', 'true');
+  const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
+  expect(sheet.textContent).toContain('6 blocs en poche');
+  expect(sheet.textContent).toContain('4 bois');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('aucune');
+  // Le bois sert au plan de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
+  await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 12 à gagner/ }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
+  expect(screen.getByRole('dialog', { name: /Forêt des sons/ })).toBeInTheDocument();
+  // Depuis l'inventaire, la croix ramène sur l'île où se tient le bonhomme.
+  await user.click(screen.getByRole('button', { name: 'Mes blocs' }));
+  await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(screen.getByRole('dialog', { name: /Forêt des sons/ })).toBeInTheDocument();
+});
+
+it('« À aller chercher » mène à l’île où gagner le bloc qui manque', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/blocs');
+  const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
+  expect(sheet.textContent).toContain('Aucun bloc pour l’instant');
+  const brique = within(sheet).getByRole('link', { name: 'Plaine des nombres' });
+  await user.click(brique);
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/plaine');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('plaine');
+  expect(screen.getByRole('dialog', { name: /Plaine des nombres/ })).toBeInTheDocument();
 });
 
 it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {

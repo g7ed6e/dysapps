@@ -4,6 +4,8 @@ import {
   BookOpen,
   Calculator,
   Castle,
+  ChevronDown,
+  ChevronRight,
   Ship,
   Check,
   CircleHelp,
@@ -48,6 +50,8 @@ import {
 
 const ICONS = {
   back: ArrowLeft,
+  chevronDown: ChevronDown,
+  chevronRight: ChevronRight,
   blocks: Blocks,
   book: BookOpen,
   calculator: Calculator,

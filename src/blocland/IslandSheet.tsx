@@ -37,8 +37,9 @@ interface Props {
 }
 
 /**
- * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le plan en cours,
- * le Gardien et le plan à construire. Tout est en HTML (police dys), on ne quitte pas le monde.
+ * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le Gardien, puis le plan en cours,
+ * le Bloc-Navire (sur un port) et les ouvrages, repliés quand il n'y a rien à y faire. Tout est en HTML (police dys),
+ * on ne quitte pas le monde.
  */
 export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
@@ -49,6 +50,9 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked ? nextGoal(state, biome.id) : null;
   const [bossSaid, setBossSaid] = useState<string | null>(null);
+  // En 3D, le plan, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
+  // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
+  const fold = in3d ? `${biome.id}:${highlight ?? ''}` : undefined;
   // Le Gardien n'accepte pas encore : on le dit (et on le lit), au lieu d'un bouton qui ne répond pas.
   const explainBoss = () => {
     const missing = missingForBoss(biome, state.progress);
@@ -167,11 +171,11 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         {bossSaid ? <Syllabified text={bossSaid} /> : ''}
       </p>
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} />}
 
-      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} />}
+      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} fold={fold} />}
 
-      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
+      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} />}
     </section>
   );
 }

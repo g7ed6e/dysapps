@@ -100,6 +100,18 @@ it('ouvre la carte de Blocland puis un biome, dont la créature donne la quête'
   expect(screen.getByText('Chasse au son')).toBeInTheDocument();
 });
 
+it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, et où aller chercher ceux qui manquent', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
+  expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 12 à gagner/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(screen.getByRole('link', { name: 'Plaine des nombres' })).toHaveAttribute('href', '/aventure/plaine');
+  await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+});
+
 it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {
   renderAt('/aventure/carte');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();

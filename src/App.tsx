@@ -10,6 +10,7 @@ import { ProgressPage } from './pages/ProgressPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { BloclandPage } from './blocland/BloclandPage';
 import { BiomePage } from './blocland/BiomePage';
+import { InventoryPage } from './blocland/Inventory';
 import { VoyagePage } from './blocland/VoyagePage';
 import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
@@ -62,7 +63,9 @@ function IslandEntry() {
   const immersive = useImmersive();
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
-  return biomeId === 'carte' || biomeId === 'monde' ? <Navigate to="/aventure" replace /> : <BiomePage />;
+  if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
+  // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
+  return biomeId === 'blocs' ? <InventoryPage /> : <BiomePage />;
 }
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {

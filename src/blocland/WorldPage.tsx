@@ -14,6 +14,7 @@ import type { QuestMark } from './three/WorldCanvas';
 import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
 import { ARRIVAL_STEPS } from './arrivals';
+import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -69,7 +70,9 @@ export function WorldPage() {
   const mapOpen = biomeId === 'carte';
   // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
   const mondeOpen = biomeId === 'monde';
-  const island = biomeId && !mapOpen && !mondeOpen ? getBiome(biomeId) : undefined;
+  // « Mes blocs » : l'inventaire commenté, un panneau à la place de celui d'une île.
+  const blocsOpen = biomeId === 'blocs';
+  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
@@ -242,7 +245,8 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, mapOpen]);
 
-  if (biomeId && !mapOpen && !mondeOpen && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !island) return <NotFoundPage />;
+  const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
@@ -280,7 +284,7 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
+    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<p className="loading world-loading">Chargement du village…</p>}>
           <WorldCanvas
@@ -388,6 +392,18 @@ export function WorldPage() {
           <button type="button" className="button" aria-pressed={mapOpen} onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}>
             <Icon name="map" /> Carte
           </button>
+          {!voyage && (
+            <button
+              type="button"
+              className="button"
+              aria-pressed={blocsOpen}
+              aria-label="Mes blocs"
+              aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
+              onClick={() => (blocsOpen ? openIsland(at) : navigate('/aventure/blocs'))}
+            >
+              <Icon name="blocks" /> Blocs ({blocksTotal})
+            </button>
+          )}
           {night && (
             <button type="button" className="button" onClick={() => setForceDay(true)} aria-label="Forcer le jour">
               <Icon name="sun" />
@@ -409,6 +425,8 @@ export function WorldPage() {
         </div>
       ) : voyage ? null : mondeOpen ? (
         <ArchipelsSheet onClose={() => navigate('/aventure')} onGo={openIsland} />
+      ) : blocsOpen ? (
+        <InventorySheet onClose={() => openIsland(at)} />
       ) : (
         island &&
         sheetOpen && (

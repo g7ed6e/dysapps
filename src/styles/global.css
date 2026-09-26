@@ -4046,7 +4046,6 @@ a.island-quest:focus-visible {
 .plan-section .build-status:empty {
   display: none;
 }
-.island-inventory,
 .island-journal {
   display: flex;
   flex-wrap: wrap;
@@ -4055,15 +4054,22 @@ a.island-quest:focus-visible {
   margin: 0.6rem 0 0;
   font-size: 0.95rem;
 }
+/* Le lien vers « Mes blocs », sous le plan. */
+.island-inventory-link {
+  margin: 0.6rem 0 0;
+}
+.island-inventory-link .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  text-decoration: none;
+  color: var(--text);
+}
 .plan-panel .plan-section {
   margin-top: 0;
   padding-top: 0;
   border-top: none;
-}
-
-.island-inventory .island-owned {
-  font-family: inherit;
-  font-size: inherit;
 }
 
 /* Le prochain objectif d'une île : une phrase en tête du panneau. */
@@ -4090,12 +4096,6 @@ a.island-quest:focus-visible {
   opacity: 0.85;
 }
 
-/* Des blocs en poche qui ne se posent pas sur ce plan : où ils servent. */
-.plan-elsewhere {
-  margin: 0.5rem 0 0;
-  font-size: 0.95em;
-  opacity: 0.9;
-}
 
 /* Une nouvelle version de l'application attend : une bande sous l'en-tête. */
 .update-banner {
@@ -4298,3 +4298,120 @@ a.island-quest:focus-visible {
   gap: 0.5rem 0.8rem;
 }
 
+/* ===== Les plis du panneau d'île : plan, Bloc-Navire, ouvrages ===== */
+/* Ouverts quand il y a quelque chose à faire, repliés sinon : une ligne d'état tient lieu de section. */
+.island-fold {
+  margin-top: 0.8rem;
+  padding-top: 0.4rem;
+  border-top: 2px dashed var(--muted);
+}
+.island-fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  list-style: none;
+  cursor: pointer;
+}
+.island-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.island-fold-chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.island-fold-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.island-fold-head .island-sheet-heading {
+  margin: 0;
+}
+.island-fold-status {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.island-fold .plan-section,
+.island-fold .bridges {
+  margin-top: 0.2rem;
+  padding-top: 0;
+  border-top: none;
+}
+.island-fold .ship-section {
+  margin-top: 0.2rem;
+}
+
+/* ===== Mes blocs : l'inventaire commenté ===== */
+.inventory-list,
+.inventory-missing,
+.inventory-ouvrages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.inventory-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  min-height: 56px;
+  padding: 0.4rem 0.7rem;
+  background: var(--surface);
+  border: var(--border-width) solid var(--ink);
+  box-shadow: var(--bevel-shadow);
+}
+.inventory-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 8rem;
+}
+.inventory-uses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.inventory-uses .tag,
+.inventory-empty .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 44px;
+  margin: 0;
+  text-decoration: none;
+  color: var(--text);
+}
+.inventory-uses .tag-ok {
+  color: var(--success);
+}
+a.tag:hover,
+a.tag:focus-visible {
+  box-shadow: 0 3px 0 var(--shadow-color);
+}
+.inventory-none {
+  color: var(--muted);
+  align-self: center;
+}
+.inventory-section {
+  margin-top: 1rem;
+}
+.inventory-line {
+  margin: 0 0 0.5rem;
+}
+.inventory-missing li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+}
+.inventory-missing a {
+  font-weight: 700;
+}
+.hero-actions {
+  margin: 0.8rem 0 0;
+}
