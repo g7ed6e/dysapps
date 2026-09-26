@@ -23,15 +23,20 @@ export function fromLayers(layers: Layer[], palette: Record<string, string | { c
   return cubes;
 }
 
+// Mousso : un golem de mousse trapu, ventre de pierre, deux grands yeux, un sourire clair, une fleur sur la tête.
+// Couches de bas en haut ; ligne = y (le visage côté y = 0, face à la caméra), colonne = x.
 const MOUSSO = fromLayers(
   [
+    ['.....', '.M.M.', '.M.M.', '.....'],
     ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.'],
-    ['.GGG.', 'GMMMG', 'GMMMG', '.GGG.'],
-    ['..G..', '.GGG.', '.GGG.', '..G..'],
-    ['.....', '.gEg.', '.ggg.', '.....'],
-    ['.....', '.ggg.', '.....', '.....'],
+    ['.SSS.', 'MGGGM', 'MGGGM', '.GGG.'],
+    ['.GgG.', 'MGGGM', 'GGGGG', '.GGG.'],
+    ['.KGK.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.WGW.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.....', '.GGG.', '.GgG.', '.....'],
+    ['.....', '..F..', '.....', '.....'],
   ],
-  { G: '#5e9b4a', g: '#7fbf63', M: '#4c7a3b', E: '#1f2a1a' },
+  { G: '#5e9b4a', M: '#4c7a3b', g: '#8fd070', S: '#8c8c8c', W: '#f6f1e6', K: '#1f1a16', F: '#e07aa0' },
 );
 
 const TUNEL = fromLayers(
