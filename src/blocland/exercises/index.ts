@@ -75,6 +75,19 @@ import horlogeHaveGot1 from './data/horloge-have-got-1.json';
 import horlogeHaveGot2 from './data/horloge-have-got-2.json';
 import horlogePresentSimple1 from './data/horloge-present-simple-1.json';
 import horlogePresentSimple2 from './data/horloge-present-simple-2.json';
+// Anglais 5e.
+import comptoirShopping1 from './data/comptoir-shopping-1.json';
+import comptoirShopping2 from './data/comptoir-shopping-2.json';
+import comptoirRoutine1 from './data/comptoir-routine-1.json';
+import comptoirRoutine2 from './data/comptoir-routine-2.json';
+import comptoirListening1 from './data/comptoir-listening-1.json';
+import comptoirListening2 from './data/comptoir-listening-2.json';
+import manoirIng1 from './data/manoir-ing-1.json';
+import manoirIng2 from './data/manoir-ing-2.json';
+import manoirPreterit1 from './data/manoir-preterit-1.json';
+import manoirPreterit2 from './data/manoir-preterit-2.json';
+import manoirComparatifs1 from './data/manoir-comparatifs-1.json';
+import manoirComparatifs2 from './data/manoir-comparatifs-2.json';
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -198,6 +211,18 @@ export const EXERCISES: ExerciseDef[] = [
   horlogeHaveGot2,
   horlogePresentSimple1,
   horlogePresentSimple2,
+  comptoirShopping1,
+  comptoirShopping2,
+  comptoirRoutine1,
+  comptoirRoutine2,
+  comptoirListening1,
+  comptoirListening2,
+  manoirIng1,
+  manoirIng2,
+  manoirPreterit1,
+  manoirPreterit2,
+  manoirComparatifs1,
+  manoirComparatifs2,
 ] as ExerciseDef[];
 
 /** Exercices d'un type dans un biome, par niveau croissant. */

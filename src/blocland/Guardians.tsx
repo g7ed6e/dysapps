@@ -366,6 +366,46 @@ const COUCOU = fromLayers(
   { W: '#6f4d2a', F: '#f4ecd6', K: '#2a2018', B: '#b0793a', O: '#e0a33a', E: '#1f1a16', R: '#4a3020' },
 );
 
+// La Reine du marché : une reine en robe rouge bordée d'hermine, couronne d'or, un sceptre à la main.
+const REINE = fromLayers(
+  [
+    ['.........', '...K.K...', '...K.K...', '.........'],
+    ['.........', '...K.K...', '...K.K...', '.........'],
+    ['..RRRRR.G', '.RRRRRRR.', '.RRRRRRR.', '..RRRRR..'],
+    ['..RRRRR.G', '.RRRRRRR.', '.RRRRRRR.', '..RRRRR..'],
+    ['..RRRRR.G', '.RRRRRRR.', '.RRRRRRR.', '..RRRRR..'],
+    ['..RRRRR.G', '.RRRRRRR.', '.RRRRRRR.', '..RRRRR..'],
+    ['..RRRRRRG', '.RRRRRRR.', '.RRRRRRR.', '..RRRRR..'],
+    ['..WKWKW.G', '.WWWWWWW.', '.WWWWWWW.', '..WWWWW..'],
+    ['...SsS..Y', '..SSSSS..', '..SSSSS..', '...SSS...'],
+    ['...KSK...', '..SSSSS..', '..SSSSS..', '...SSS...'],
+    ['...SSS...', '..HHHHH..', '..HHHHH..', '...HHH...'],
+    ['..YYYYY..', '..Y...Y..', '..Y...Y..', '..YYYYY..'],
+    ['..Y.Y.Y..', '.........', '.........', '..Y.Y.Y..'],
+  ],
+  { R: '#b0303a', W: '#f4f1e4', K: '#1f1a16', S: '#e8b98a', s: '#c98a6a', H: '#6b4a2e', Y: '#f2c944', G: '#e0a33a' },
+);
+
+// Le Spectre du manoir : un grand drap blanc qui flotte, bas ondulé, bras tendus, deux yeux noirs et une bouche ronde.
+const SPECTRE = fromLayers(
+  [
+    ['.W.W.W.W.', 'W.W.W.W.W', 'W.W.W.W.W', '.W.W.W.W.'],
+    ['.WWWWWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['.WWWWWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WwwwwwW.'],
+    ['.WWWWWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WwwwwwW.'],
+    ['.WWWWWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['WWWWWWWWW', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['.WWWOWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['.WWWWWWW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['.WKKWKKW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['.WKKWKKW.', 'WWWWWWWWW', 'WWWWWWWWW', '.WWWWWWW.'],
+    ['..WWWWW..', '.WWWWWWW.', '.WWWWWWW.', '..WWWWW..'],
+    ['...WWW...', '..WWWWW..', '..WWWWW..', '...WWW...'],
+    ['.........', '...WWW...', '...WWW...', '.........'],
+  ],
+  { W: '#eef2f6', w: '#c8d0da', K: '#1f1a16', O: '#3a3a46' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -389,6 +429,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, VoxelCube[]> = {
   textes: LECTEUR,
   baie: LION,
   horloge: COUCOU,
+  comptoir: REINE,
+  manoir: SPECTRE,
 };
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';

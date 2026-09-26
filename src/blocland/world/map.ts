@@ -32,7 +32,7 @@ export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les vingt-deux îles, placées à la main. Les Basses Terres (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les vingt-quatre îles, placées à la main. Les Basses Terres (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
@@ -64,6 +64,9 @@ export const MAP: IslandDef[] = [
   // Anglais 6e : derrière la Ferme et la Forêt, les deux îles se touchent (un isthme).
   { id: 'baie', region: 'basses-terres', core: { x: 38, y: 101 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
   { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 101 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
+  // Anglais 5e : une colonne à droite du Marché et du Marais.
+  { id: 'comptoir', region: 'basses-terres', core: { x: 101, y: 320 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
+  { id: 'manoir', region: 'hauteurs', core: { x: 101, y: 366 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
 ];
 
 /** La classe (l'archipel) d'une île. */

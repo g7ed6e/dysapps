@@ -54,7 +54,7 @@ describe('déblocage des biomes', () => {
     expect(screen.getAllByText(/Sentier à construire : 3 blocs/).length).toBe(1);
     expect(screen.getAllByText(/Bac à construire : 3 blocs/).length).toBe(1);
     expect(screen.getAllByText(/Île lointaine/).length).toBe(3);
-    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(12);
+    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(14);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);
