@@ -677,10 +677,13 @@ function nearSentier(x: number, y: number): boolean {
   return false;
 }
 
-/** Où le bonhomme se tient sur une île (coordonnées du monde, z du sol). */
+/** Où le bonhomme se tient sur une île (coordonnées du monde, z sous ses pieds : le dessus du bloc de sol). */
 export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
   const def = islandDef(id);
-  return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z: def.altitude };
+  const index = BIOMES.findIndex((b) => b.id === id);
+  // Le bloc de sol du cœur est en z = altitude (+ 1 sur le plateau) : on se tient sur son dessus, comme les créatures.
+  const z = def.altitude + groundHeight(index, AVATAR_HOME.x, AVATAR_HOME.y) + 1;
+  return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z };
 }
 
 /**
@@ -715,10 +718,11 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x:
   for (const hop of hops) {
     let cells = bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z }));
     if (hop.def.from !== hop.from) cells = cells.reverse();
-    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué.
+    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre
+    // est posée sur le sol en z + 1, on marche dessus : z + 2).
     if (hop.def.kind === 'sentier') {
       const stones = bridgePath(hop.def)
-        .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 1, stone: i % 2 === 0 }))
+        .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
         .filter((c) => c.stone);
       if (hop.def.from !== hop.from) stones.reverse();
       for (const c of stones) route.push({ x: c.x, y: c.y, z: c.z });
