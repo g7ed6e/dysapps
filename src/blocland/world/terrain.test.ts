@@ -211,7 +211,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const route = avatarRoute('foret', 'mine', ['foret-mine'])!;
   expect(route[0]).toEqual(avatarHome('foret'));
   expect(route[route.length - 1]).toEqual(avatarHome('mine'));
-  // Un sentier se marche de pierre de gué en pierre de gué (sur la pierre : z = sol + 1).
+  // Un sentier se marche de pierre de gué en pierre de gué (sur la pierre, pas dedans : ses pieds sont sur son dessus).
   expect(route.length).toBeGreaterThan(5);
   for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
   const stones = new Set(
@@ -219,7 +219,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
       .filter((c) => c.bridge === 'foret-mine' && c.texture === 'galet')
       .map((c) => `${c.x},${c.y},${c.z}`),
   );
-  for (const p of route.slice(1, -1)) expect(stones.has(`${p.x},${p.y},${p.z}`)).toBe(true);
+  for (const p of route.slice(1, -1)) expect(stones.has(`${p.x},${p.y},${p.z - 1}`)).toBe(true);
   // Deux ouvrages : Forêt → Ferme (pont) → Tour (sentier) ; le pont se marche sur le tablier (z = 1).
   const far = avatarRoute('foret', 'tour', ['foret-ferme', 'ferme-tour'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('tour'));
@@ -227,6 +227,29 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   // En montant vers le Glacier (3), l'itinéraire monte.
   const up = avatarRoute('plaine', 'glacier', ['plaine-glacier'])!;
   expect(Math.max(...up.map((p) => p.z))).toBe(4);
+});
+
+it('le bonhomme a toujours les pieds sur un bloc, jamais dedans, sur chaque île et chaque ouvrage (hors bac)', () => {
+  const all = BRIDGES.map((b) => b.id);
+  const solid = new Set(
+    worldCubes({}, village(all), false)
+      .filter((c) => !c.ghost)
+      .map((c) => `${c.x},${c.y},${c.z}`),
+  );
+  // Sur son île, il se tient sur le sol, à la même hauteur que la créature.
+  for (const b of BIOMES) {
+    const h = avatarHome(b.id);
+    expect(h.z, b.id).toBe(islandOrigin(BIOMES.indexOf(b)).oz + 1);
+  }
+  const ferries = new Set(BRIDGES.filter((b) => b.kind === 'bac').map((b) => b.id));
+  for (const bridge of BRIDGES) {
+    if (ferries.has(bridge.id)) continue; // le bac flotte au fil de l'eau, entre ses poteaux
+    const route = avatarRoute(bridge.from, bridge.to, [bridge.id])!;
+    for (const p of route) {
+      expect(solid.has(`${p.x},${p.y},${p.z - 1}`), `${bridge.id} (${p.x},${p.y},${p.z}) sur un bloc`).toBe(true);
+      expect(solid.has(`${p.x},${p.y},${p.z}`), `${bridge.id} (${p.x},${p.y},${p.z}) pas dans un bloc`).toBe(false);
+    }
+  }
 });
 
 it('les baleines nagent dans les clairières d’eau entre les îles, jamais sur une terre ni un îlot', () => {

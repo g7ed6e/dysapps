@@ -515,11 +515,15 @@ export default function WorldCanvas({
     const questMarksGroup = new THREE.Group();
     scene.add(questMarksGroup);
 
-    // Le bonhomme (ses cubes arrivent par la prop `avatar`).
+    // Le bonhomme (ses cubes arrivent par la prop `avatar`). Le groupe extérieur est posé au centre de sa case, sous
+    // ses pieds, et tourne sur lui-même ; le corps, recentré dedans, regarde vers -Z (la caméra) sans rotation.
     const avatarGroup = new THREE.Group();
-    // Ses pièces sont en seizièmes de bloc : deux blocs de haut, comme une porte et un bloc. Chaque membre pivote.
-    avatarGroup.scale.setScalar(AVATAR_SCALE);
     avatarGroup.visible = false;
+    const avatarBody = new THREE.Group();
+    // Ses pièces sont en seizièmes de bloc : deux blocs de haut, comme une porte et un bloc. Chaque membre pivote.
+    avatarBody.scale.setScalar(AVATAR_SCALE);
+    avatarBody.position.set(-8 * AVATAR_SCALE, 0, -4 * AVATAR_SCALE);
+    avatarGroup.add(avatarBody);
     const limbs: { arms: THREE.Group[]; legs: THREE.Group[] } = { arms: [], legs: [] };
     for (const part of AVATAR_PARTS) {
       const pivot = new THREE.Group();
@@ -528,7 +532,7 @@ export default function WorldCanvas({
       inner.position.set(-part.pivot.x, -part.pivot.z, -part.pivot.y);
       for (const g of buildMesh(part.cubes)) inner.add(meshOf(g));
       pivot.add(inner);
-      avatarGroup.add(pivot);
+      avatarBody.add(pivot);
       if (part.name.startsWith('bras')) limbs.arms.push(pivot);
       if (part.name.startsWith('jambe')) limbs.legs.push(pivot);
     }
@@ -708,6 +712,8 @@ export default function WorldCanvas({
     let frame = 0;
     const clock = new THREE.Clock();
     let lastFrame = performance.now();
+    // Le cap du bonhomme (rotation autour de la verticale) : face à la caméra tant qu'il n'a pas marché.
+    let heading = 0;
     const loop = () => {
       if (!visible || document.hidden) {
         running = false;
@@ -719,6 +725,7 @@ export default function WorldCanvas({
       if (nowMs - lastFrame > 45 && renderer.getPixelRatio() > 1) {
         if (++slowFrames > 30) renderer.setPixelRatio(1);
       } else slowFrames = 0;
+      const dt = Math.min(0.1, (nowMs - lastFrame) / 1000);
       lastFrame = nowMs;
       const w = world.current;
       if (!w) return;
@@ -742,10 +749,23 @@ export default function WorldCanvas({
         limbs.arms[1].rotation.x = -swing;
         limbs.legs[0].rotation.x = -swing;
         limbs.legs[1].rotation.x = swing;
-        w.avatar.position.set(x + 0.5 - 8 * AVATAR_SCALE, z, y + 0.5 - 4 * AVATAR_SCALE);
-        if (b.x !== a.x || b.y !== a.y) w.avatar.rotation.y = Math.atan2(-(b.y - a.y), b.x - a.x) + Math.PI / 2;
+        w.avatar.position.set(x + 0.5, z, y + 0.5);
+        // Il regarde là où il va : un point un peu plus loin sur l'itinéraire (les tracés en escalier alternent pas
+        // droits et pas en diagonale, on ne veut pas qu'il se tortille à chaque case).
+        const ahead = Math.min(route.length - 1, pos + 1.5);
+        const j = Math.min(route.length - 2, Math.floor(ahead));
+        const g = ahead - j;
+        const dx = route[j].x + (route[j + 1].x - route[j].x) * g - x;
+        const dy = route[j].y + (route[j + 1].y - route[j].y) * g - y;
+        // Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on tourne de atan2(-dx, -dy).
+        if (Math.hypot(dx, dy) > 0.05) heading = Math.atan2(-dx, -dy);
         if (k >= 1) w.walk = null;
         else walking = true;
+      }
+      // Il se tourne vers son cap en douceur, par le plus court.
+      {
+        const turn = Math.atan2(Math.sin(heading - w.avatar.rotation.y), Math.cos(heading - w.avatar.rotation.y));
+        w.avatar.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
       }
       // La caméra rejoint sa place en douceur : le bonhomme tant qu'il marche (elle le suit pas à pas), puis l'île
       // ouverte, sinon le bonhomme.
