@@ -100,10 +100,23 @@ it('ouvre la carte de Blocland puis un biome, dont la créature donne la quête'
   expect(screen.getByText('Chasse au son')).toBeInTheDocument();
 });
 
-it('en vue simple, la Carte renvoie à la liste des îles', () => {
+it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {
   renderAt('/aventure/carte');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Forêt des sons/ })).toBeInTheDocument();
+  document.body.innerHTML = '';
+  renderAt('/aventure/monde');
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+});
+
+it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
+  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
+  const { planCells } = await import('./blocland/world/plans');
+  const [coque] = VEHICLE_STAGES;
+  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  renderAt('/');
+  expect(screen.getByText('Le Bloc-Navire est prêt !')).toBeInTheDocument();
 });
 
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {

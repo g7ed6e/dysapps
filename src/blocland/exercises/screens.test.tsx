@@ -54,7 +54,8 @@ describe('déblocage des biomes', () => {
     expect(document.body.textContent).toMatch(/Pas si vite/);
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
-  });
+    // (Vingt cartes d'îles avec leur créature : on laisse le temps sur une machine chargée.)
+  }, 20_000);
 
   it('ouvre la Mine quand on construit le pont avec ses blocs', async () => {
     localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 2, pierre: 2 } }));

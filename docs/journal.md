@@ -2,6 +2,10 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.13.0 — 26 septembre 2026
+
+**Les quatre archipels et l’accueil.** La Carte a un bouton « Les quatre archipels » : une page qui dit où l’on est, les îles ouvertes et les Gardiens vaincus de chaque archipel, ce qu’il faut pour aller plus loin, avec le navire tel qu’il est et des boutons « Aller au port » ou « Voir le chantier ». À la première arrivée dans un archipel, sa créature-port dit deux bulles d’accueil (en 3D comme en vue simple). L’arène du Gardien dit quand le kit du Bloc-Navire arrive, avec un bouton « Aller au port » ; l’écran de récompense dit quand le navire a tous ses blocs ; l’accueil annonce « Le Bloc-Navire est prêt ! ». La série « quatre archipels » est complète.
+
 ## 0.12.0 — 26 septembre 2026
 
 **Le voyage.** Embarquer sur le Bloc-Navire joue maintenant une vraie traversée en 3D : le bonhomme marche jusqu’au pont par la jetée, le navire s’éloigne vu de côté (la voile glisse et laisse son écume, le ballon s’élève et l’archipel rétrécit, le réacteur monte presque à la verticale, flamme allumée), un voile blanc passe, l’archipel change, le navire accoste et le bonhomme débarque. Huit secondes, cinq pour un retour. Un toucher, Entrée, Espace, Échap ou le bouton « Arriver » font arriver tout de suite. Les sons du voyage : corne de brume, vent dans la voile, brûleur, réacteur, carillon d’arrivée (jamais pendant la voix). Sous « Réduire les animations », l’écran fixe reste.

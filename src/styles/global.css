@@ -4182,3 +4182,51 @@ a.island-quest:focus-visible {
   }
 }
 
+/* ---------- Les quatre archipels et l'accueil ---------- */
+
+.archipels-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.archipel-card {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.archipel-card.locked {
+  opacity: 0.75;
+}
+
+.archipel-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.archipel-card-head .island-sheet-heading {
+  margin: 0;
+}
+
+.archipel-card-line,
+.archipel-card-need {
+  margin: 0;
+}
+
+.archipel-ship {
+  max-width: 12rem;
+  height: auto;
+}
+
+.ship-hint,
+.reward-ship {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+}
+

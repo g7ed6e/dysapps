@@ -10,7 +10,7 @@ Depuis l’accueil, **Blocland** ouvre le village en 3D sur tout l’écran, sou
 - **L’île-port** de chaque archipel a un quai devant elle, avec le Bloc-Navire amarré : la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e.
 - **Les îles fermées** restent visibles, délavées comme dans la brume. Les toucher fait dire à leur créature précisément ce qu’il faut pour y arriver.
 - **Le monde vit** : jour et nuit selon l’heure réelle de l’appareil (aube à 7 h, crépuscule à 20 h, nuit toujours claire), nuages, eau qui ondule, cascades, lanternes la nuit, oiseaux, rochers et bancs de sable au large, quatre baleines qui soufflent. Le réglage « Réduire les animations » fige tout.
-- **La Carte** (barre du bas) montre tout l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée affiche le chemin d’ouvrages à construire, balisé en jaune dans le monde.
+- **La Carte** (barre du bas) montre tout l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée affiche le chemin d’ouvrages à construire, balisé en jaune dans le monde. Son bouton **« Les quatre archipels »** ouvre la page des archipels : où l’on est, les îles ouvertes et les Gardiens vaincus de chacun, ce qu’il faut pour aller plus loin, le navire tel qu’il est, et des boutons « Aller au port » ou « Voir le chantier ».
 - **Le bonhomme** est l’avatar de l’élève. Il se tient sur l’île où l’on est et marche d’île en île le long des ouvrages construits.
 - **Sans 3D** (réglage « Vues en 3D » désactivé, ou appareil sans WebGL), Blocland reste une **vue simple** en listes : la carte des îles, puis la page de chaque île avec les mêmes quêtes, plans, Gardien et ouvrages. Tout ce qui se fait en 3D se fait en vue simple.
 
@@ -85,6 +85,8 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 - **Embarquer** : quand toutes les cases sont posées et le kit arrivé, le bouton « Embarquer vers l’archipel de 5e » apparaît. Le voyage se joue en 3D : le bonhomme marche jusqu’au pont par la jetée, le navire s’éloigne (la voile glisse vers le large et laisse son écume ; le ballon s’élève et l’archipel rétrécit ; le réacteur monte presque à la verticale, flamme allumée), un voile blanc passe, l’archipel change, le navire accoste et le bonhomme débarque. Huit secondes en tout, cinq pour un retour. Un toucher n’importe où, Entrée, Espace, Échap ou le bouton « Arriver » terminent le voyage tout de suite. Puis la créature du port d’en face accueille. L’étape rapporte son XP et un succès (Capitaine, Aéronaute, Pilote du ciel).
 - **On revient toujours.** Le voyage fait reste fait. Sur tout port, la section Bloc-Navire propose « Revenir en 6e » ou « Repartir vers 5e » pour chaque archipel déjà atteint. Rien ne se perd, rien ne coûte.
 - **Une île d’un autre archipel** est visible dans les listes et sur les pages Français et Maths avec la mention « Archipel à rejoindre » ; sa créature dit précisément ce qu’il faut : finir le Bloc-Navire sur tel port, vaincre tant de Gardiens, ou aller d’abord jusqu’à l’archipel d’avant.
+- **Les coups de pouce** : quand un Gardien vaincu fait arriver le kit, l’arène le dit avec un bouton « Aller au port » ; quand une quête donne le dernier bloc qui manquait, l’écran de récompense dit « Le Bloc-Navire a tous ses blocs ! » ; quand il est prêt à partir, l’accueil annonce « Le Bloc-Navire est prêt ! ».
+- **À la première arrivée** dans un archipel, sa créature-port dit deux bulles d’accueil, lues à voix haute, une seule fois par appareil (en 3D comme en vue simple).
 - **Les sons du voyage** (réglage « Sons dans le village ») : la corne de brume au départ, le vent dans la voile, le brûleur du ballon ou le grondement du réacteur, puis le carillon d’arrivée. Jamais pendant la lecture à voix haute.
 - Sous « Réduire les animations », le voyage est un écran fixe : le navire dessiné, la phrase lue, le bouton « Arriver ». Aucun son de traversée.
 
@@ -116,6 +118,6 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher le Gardien sur son îlot | Lance le défi |
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |
-| Bouton Carte | Le continent vu du ciel |
+| Bouton Carte | L’archipel vu du ciel, et le bouton « Les quatre archipels » |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |
 | Bouton Revoir l’aide | Rejoue le tutoriel de six bulles |

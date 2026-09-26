@@ -18,6 +18,8 @@ import { ShipSection } from './ShipSection';
 import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
+import { Tutorial } from './Tutorial';
+import { ARRIVAL_STEPS } from './arrivals';
 
 /** Un biome : sa créature donne la quête, puis la liste des exercices. */
 export function BiomePage() {
@@ -46,6 +48,8 @@ export function BiomePage() {
         {archipelagoTitle(biome.classe)}
         {port && ' · Port'}
       </p>
+
+      {port && unlocked && ARRIVAL_STEPS[biome.classe].length > 0 && <Tutorial id={`archipel-${biome.classe}`} steps={ARRIVAL_STEPS[biome.classe]} />}
 
       <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
