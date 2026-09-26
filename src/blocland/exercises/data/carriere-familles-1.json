@@ -58,6 +58,42 @@
       "choices": ["pré", "re", "dé"],
       "answer": "pré",
       "word": "prévoir"
+    },
+    {
+      "key": "relire",
+      "meaning": "Lire encore une fois.",
+      "root": "lire",
+      "slot": "prefix",
+      "choices": ["re", "dé", "in"],
+      "answer": "re",
+      "word": "relire"
+    },
+    {
+      "key": "déranger",
+      "meaning": "Mettre en désordre, le contraire de ranger.",
+      "root": "ranger",
+      "slot": "prefix",
+      "choices": ["dé", "re", "pré"],
+      "answer": "dé",
+      "word": "déranger"
+    },
+    {
+      "key": "inconnu",
+      "meaning": "Que l’on ne connaît pas.",
+      "root": "connu",
+      "slot": "prefix",
+      "choices": ["in", "re", "dé"],
+      "answer": "in",
+      "word": "inconnu"
+    },
+    {
+      "key": "prénom",
+      "meaning": "Le nom qui vient avant le nom de famille.",
+      "root": "nom",
+      "slot": "prefix",
+      "choices": ["pré", "re", "dé"],
+      "answer": "pré",
+      "word": "prénom"
     }
   ],
   "feedback": {
@@ -72,5 +108,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }

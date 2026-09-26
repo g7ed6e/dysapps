@@ -6,6 +6,7 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { AppRoutes } from '../App';
 import { BloclandProvider } from './BloclandContext';
 import { getExercise } from './exercises';
+import { runItems, runSeed } from './exercises/run';
 
 function renderAt(path: string) {
   return render(
@@ -24,16 +25,18 @@ function renderAt(path: string) {
 const DEF = getExercise('foret-echauffement-001')!;
 
 /** Joue l'exercice en entier : `wrongAt` = index des items à rater volontairement. */
-async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = []) {
-  for (let i = 0; i < DEF.items.length; i++) {
-    const item = DEF.items[i];
+async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = [], attempts = 0) {
+  // Les items de cette partie (la première joue le lot de référence, les suivantes varient).
+  const items = runItems(DEF, runSeed(DEF, attempts));
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
     const choices = item.choices as string[];
     const pick = wrongAt.includes(i) ? choices.find((c) => c !== item.answer)! : (item.answer as string);
     await user.click(screen.getByRole('button', { name: pick }));
     const sheet = screen.getByRole('region', { name: 'Résultat' });
     if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`${item.heard} : ${item.answer} syllabes`))).toBeInTheDocument();
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
-    await user.click(within(sheet).getByRole('button', { name: i < DEF.items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
+    await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
 }
 
@@ -70,7 +73,7 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/foret/abattage');
   for (let round = 1; round <= 3; round++) {
-    await play(user);
+    await play(user, [], round - 1);
     if (round < 3) {
       expect(screen.queryByText(/Belle séance/)).not.toBeInTheDocument();
       await user.click(screen.getByRole('button', { name: /Rejouer/ }));

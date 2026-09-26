@@ -9,11 +9,7 @@
       "key": "falaise-sommet-2-0",
       "prompt": "C’est moi qui … le gâteau.",
       "spoken": "C’est moi qui  (mot manquant)  le gâteau.",
-      "choices": [
-        "ai fait",
-        "a fait",
-        "as fait"
-      ],
+      "choices": ["ai fait", "a fait", "as fait"],
       "answer": "ai fait",
       "hint": "« qui » = moi : 1re personne.",
       "explanation": "« qui » reprend « moi » : « ai fait ».",
@@ -33,11 +29,7 @@
       "key": "falaise-sommet-2-1",
       "prompt": "Le chien de mes voisins … la nuit.",
       "spoken": "Le chien de mes voisins  (mot manquant)  la nuit.",
-      "choices": [
-        "aboie",
-        "aboient",
-        "aboies"
-      ],
+      "choices": ["aboie", "aboient", "aboies"],
       "answer": "aboie",
       "hint": "Qui est-ce qui aboie ? le chien.",
       "explanation": "Sujet « le chien » (singulier) : « aboie ».",
@@ -57,11 +49,7 @@
       "key": "falaise-sommet-2-2",
       "prompt": "Toi et moi … amis.",
       "spoken": "Toi et moi  (mot manquant)  amis.",
-      "choices": [
-        "sommes",
-        "êtes",
-        "sont"
-      ],
+      "choices": ["sommes", "êtes", "sont"],
       "answer": "sommes",
       "hint": "Toi et moi = nous.",
       "explanation": "« toi et moi » = nous : « sommes ».",
@@ -81,11 +69,7 @@
       "key": "falaise-sommet-2-3",
       "prompt": "Le vent et la pluie … la maison.",
       "spoken": "Le vent et la pluie  (mot manquant)  la maison.",
-      "choices": [
-        "secouent",
-        "secoue",
-        "secoues"
-      ],
+      "choices": ["secouent", "secoue", "secoues"],
       "answer": "secouent",
       "hint": "Deux sujets reliés par « et » : pluriel.",
       "explanation": "« le vent et la pluie » : pluriel, « secouent ».",
@@ -105,11 +89,7 @@
       "key": "falaise-sommet-2-4",
       "prompt": "C’est toi qui … raison.",
       "spoken": "C’est toi qui  (mot manquant)  raison.",
-      "choices": [
-        "as",
-        "a",
-        "ai"
-      ],
+      "choices": ["as", "a", "ai"],
       "answer": "as",
       "hint": "« qui » = toi : 2e personne.",
       "explanation": "« qui » reprend « toi » : « as ».",
@@ -129,11 +109,7 @@
       "key": "falaise-sommet-2-5",
       "prompt": "Les résultats de l’enquête … demain.",
       "spoken": "Les résultats de l’enquête  (mot manquant)  demain.",
-      "choices": [
-        "tombent",
-        "tombe",
-        "tombes"
-      ],
+      "choices": ["tombent", "tombe", "tombes"],
       "answer": "tombent",
       "hint": "Qui est-ce qui tombe ? les résultats.",
       "explanation": "Sujet « les résultats » (pluriel) : « tombent ».",
@@ -153,11 +129,7 @@
       "key": "falaise-sommet-2-6",
       "prompt": "Ni Léa ni Tom ne … .",
       "spoken": "Ni Léa ni Tom ne  (mot manquant)  .",
-      "choices": [
-        "viennent",
-        "vient",
-        "viens"
-      ],
+      "choices": ["viennent", "vient", "viens"],
       "answer": "viennent",
       "hint": "Deux sujets avec « ni… ni » : pluriel.",
       "explanation": "« ni Léa ni Tom » : pluriel, « viennent ».",
@@ -177,11 +149,7 @@
       "key": "falaise-sommet-2-7",
       "prompt": "Le bruit des vagues me … .",
       "spoken": "Le bruit des vagues me  (mot manquant)  .",
-      "choices": [
-        "berce",
-        "bercent",
-        "berces"
-      ],
+      "choices": ["berce", "bercent", "berces"],
       "answer": "berce",
       "hint": "Qui est-ce qui berce ? le bruit.",
       "explanation": "Sujet « le bruit » (singulier) : « berce ».",

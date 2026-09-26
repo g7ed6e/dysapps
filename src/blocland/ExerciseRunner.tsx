@@ -9,7 +9,7 @@ import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { SCREEN_TYPES, type ScreenAnswer } from './exercises/registry';
-import { withShuffledChoices } from './exercises/shuffle';
+import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
@@ -25,9 +25,9 @@ interface Props {
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
-export function screensOf(def: ExerciseDef): ExerciseItem[][] {
+export function screensOf(def: ExerciseDef, seed = def.id): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
-  const items = def.items.map((item) => withShuffledChoices(def, item));
+  const items = runItems(def, seed);
   if (batch === 'all') return [items];
   const out: ExerciseItem[][] = [];
   for (let i = 0; i < items.length; i += batch) out.push(items.slice(i, i + batch));
@@ -50,7 +50,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const sectionRef = useRef<HTMLElement>(null);
 
   const type = SCREEN_TYPES[def.type];
-  const screens = screensOf(def);
+  // La graine est fixée au démarrage de la partie (le nombre de parties change à la fin, pas les items en cours).
+  const [seed] = useState(() => runSeed(def, state.progress[def.id]?.attempts ?? 0));
+  const screens = screensOf(def, seed);
   const items = screens[index];
 
   // Chaque écran suivant (et l'écran de fin) s'affiche en haut ; pas de saut au premier.

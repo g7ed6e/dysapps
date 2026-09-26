@@ -9,11 +9,7 @@
       "key": "falaise-paroi-2-0",
       "prompt": "Des chaussettes … .",
       "spoken": "Des chaussettes  (mot manquant)  .",
-      "choices": [
-        "orange",
-        "oranges",
-        "orangées"
-      ],
+      "choices": ["orange", "oranges", "orangées"],
       "answer": "orange",
       "hint": "« orange » vient d’un fruit : invariable.",
       "explanation": "Couleur venant d’un nom (le fruit) : invariable, « orange ».",
@@ -34,11 +30,7 @@
       "key": "falaise-paroi-2-1",
       "prompt": "Des rideaux … .",
       "spoken": "Des rideaux  (mot manquant)  .",
-      "choices": [
-        "verts",
-        "vert",
-        "vertes"
-      ],
+      "choices": ["verts", "vert", "vertes"],
       "answer": "verts",
       "hint": "Couleur simple : accord avec « rideaux ».",
       "explanation": "Couleur simple, masculin pluriel : « verts ».",
@@ -59,11 +51,7 @@
       "key": "falaise-paroi-2-2",
       "prompt": "Des yeux … .",
       "spoken": "Des yeux  (mot manquant)  .",
-      "choices": [
-        "bleu clair",
-        "bleus clairs",
-        "bleus clair"
-      ],
+      "choices": ["bleu clair", "bleus clairs", "bleus clair"],
       "answer": "bleu clair",
       "hint": "Couleur composée de deux mots : invariable.",
       "explanation": "Couleur composée : invariable, « bleu clair ».",
@@ -84,11 +72,7 @@
       "key": "falaise-paroi-2-3",
       "prompt": "Des fleurs … .",
       "spoken": "Des fleurs  (mot manquant)  .",
-      "choices": [
-        "roses",
-        "rose",
-        "rosées"
-      ],
+      "choices": ["roses", "rose", "rosées"],
       "answer": "roses",
       "hint": "« rose » fait exception : il s’accorde.",
       "explanation": "Exception : « rose » s’accorde, « roses ».",
@@ -109,11 +93,7 @@
       "key": "falaise-paroi-2-4",
       "prompt": "Une … -heure de marche.",
       "spoken": "Une  (mot manquant)  -heure de marche.",
-      "choices": [
-        "demi",
-        "demie",
-        "demis"
-      ],
+      "choices": ["demi", "demie", "demis"],
       "answer": "demi",
       "hint": "« demi » devant le nom : invariable.",
       "explanation": "Devant le nom, « demi » ne s’accorde pas.",
@@ -134,11 +114,7 @@
       "key": "falaise-paroi-2-5",
       "prompt": "Deux heures et … .",
       "spoken": "Deux heures et  (mot manquant)  .",
-      "choices": [
-        "demie",
-        "demi",
-        "demies"
-      ],
+      "choices": ["demie", "demi", "demies"],
       "answer": "demie",
       "hint": "« demi » après le nom : accord en genre seulement.",
       "explanation": "Après « heures » (féminin) : « demie ».",
@@ -159,11 +135,7 @@
       "key": "falaise-paroi-2-6",
       "prompt": "Des voitures … .",
       "spoken": "Des voitures  (mot manquant)  .",
-      "choices": [
-        "marron",
-        "marrons",
-        "marrones"
-      ],
+      "choices": ["marron", "marrons", "marrones"],
       "answer": "marron",
       "hint": "« marron » vient d’un nom (le fruit) : invariable.",
       "explanation": "Couleur venant d’un nom : invariable, « marron ».",
@@ -184,11 +156,7 @@
       "key": "falaise-paroi-2-7",
       "prompt": "Ils marchent … -pieds.",
       "spoken": "Ils marchent  (mot manquant)  -pieds.",
-      "choices": [
-        "nu",
-        "nus",
-        "nue"
-      ],
+      "choices": ["nu", "nus", "nue"],
       "answer": "nu",
       "hint": "« nu » devant le nom : invariable.",
       "explanation": "Devant le nom, « nu » ne s’accorde pas : « nu-pieds ».",

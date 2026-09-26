@@ -9,11 +9,7 @@
       "key": "textes-rouages-2-0",
       "prompt": "« Léa mange une pomme. » Fonction de « une pomme » ?",
       "spoken": "« Léa mange une pomme. » Fonction de « une pomme » ?",
-      "choices": [
-        "COD",
-        "sujet",
-        "COI"
-      ],
+      "choices": ["COD", "sujet", "COI"],
       "answer": "COD",
       "hint": "Léa mange quoi ?",
       "explanation": "« mange quoi ? une pomme » : complément d’objet direct.",
@@ -34,11 +30,7 @@
       "key": "textes-rouages-2-1",
       "prompt": "« Il parle à sa sœur. » Fonction de « à sa sœur » ?",
       "spoken": "« Il parle à sa sœur. » Fonction de « à sa sœur » ?",
-      "choices": [
-        "COI",
-        "COD",
-        "attribut"
-      ],
+      "choices": ["COI", "COD", "attribut"],
       "answer": "COI",
       "hint": "Il parle à qui ?",
       "explanation": "« parle à qui ? » : complément d’objet indirect.",
@@ -59,11 +51,7 @@
       "key": "textes-rouages-2-2",
       "prompt": "« Demain, nous partons. » Fonction de « demain » ?",
       "spoken": "« Demain, nous partons. » Fonction de « demain » ?",
-      "choices": [
-        "complément circonstanciel",
-        "sujet",
-        "COD"
-      ],
+      "choices": ["complément circonstanciel", "sujet", "COD"],
       "answer": "complément circonstanciel",
       "hint": "Quand ? On peut l’enlever.",
       "explanation": "« demain » répond à « quand ? » : complément circonstanciel de temps.",
@@ -84,11 +72,7 @@
       "key": "textes-rouages-2-3",
       "prompt": "« Le ciel devient gris. » Fonction de « gris » ?",
       "spoken": "« Le ciel devient gris. » Fonction de « gris » ?",
-      "choices": [
-        "attribut du sujet",
-        "COD",
-        "sujet"
-      ],
+      "choices": ["attribut du sujet", "COD", "sujet"],
       "answer": "attribut du sujet",
       "hint": "Après « devient ».",
       "explanation": "Après « devenir », « gris » est attribut du sujet « le ciel ».",
@@ -109,11 +93,7 @@
       "key": "textes-rouages-2-4",
       "prompt": "« Il pleut, … nous restons dedans. » Quel connecteur ?",
       "spoken": "« Il pleut,  (mot manquant)  nous restons dedans. » Quel connecteur ?",
-      "choices": [
-        "donc",
-        "mais",
-        "car"
-      ],
+      "choices": ["donc", "mais", "car"],
       "answer": "donc",
       "hint": "La pluie a pour conséquence : rester dedans.",
       "explanation": "Conséquence : « donc ».",
@@ -134,11 +114,7 @@
       "key": "textes-rouages-2-5",
       "prompt": "« Elle est fatiguée … elle a mal dormi. » Quel connecteur ?",
       "spoken": "« Elle est fatiguée  (mot manquant)  elle a mal dormi. » Quel connecteur ?",
-      "choices": [
-        "car",
-        "donc",
-        "puis"
-      ],
+      "choices": ["car", "donc", "puis"],
       "answer": "car",
       "hint": "La seconde phrase donne la cause.",
       "explanation": "Cause : « car ».",
@@ -159,11 +135,7 @@
       "key": "textes-rouages-2-6",
       "prompt": "« Il fait froid, … il sort sans manteau. » Quel connecteur ?",
       "spoken": "« Il fait froid,  (mot manquant)  il sort sans manteau. » Quel connecteur ?",
-      "choices": [
-        "pourtant",
-        "donc",
-        "car"
-      ],
+      "choices": ["pourtant", "donc", "car"],
       "answer": "pourtant",
       "hint": "Deux idées qui s’opposent.",
       "explanation": "Opposition : « pourtant ».",
@@ -184,11 +156,7 @@
       "key": "textes-rouages-2-7",
       "prompt": "« Dans la forêt, le loup guette. » Fonction de « le loup » ?",
       "spoken": "« Dans la forêt, le loup guette. » Fonction de « le loup » ?",
-      "choices": [
-        "sujet",
-        "COD",
-        "complément circonstanciel"
-      ],
+      "choices": ["sujet", "COD", "complément circonstanciel"],
       "answer": "sujet",
       "hint": "Qui est-ce qui guette ?",
       "explanation": "« qui est-ce qui guette ? le loup » : sujet.",

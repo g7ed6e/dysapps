@@ -40,6 +40,8 @@ export interface ScreenType {
   component: ComponentType<ScreenProps>;
   /** Items par écran ; 'all' = tout l'exercice sur un écran. */
   batch: number | 'all';
+  /** Les items forment une suite (paragraphes d'un texte) : on ne les mélange pas. */
+  ordered?: boolean;
 }
 
 /** Type d'exercice (champ `type` du JSON, identique à l'id dans biomes.ts) → écran. */
@@ -50,14 +52,14 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'chasse-son': { component: ChasseSonScreen, batch: 4 },
   filon: { component: FilonScreen, batch: 1 },
   'mot-troue': { component: MotTroueScreen, batch: 1 },
-  ascension: { component: AscensionScreen, batch: 'all' },
+  ascension: { component: AscensionScreen, batch: 'all', ordered: true },
   rimes: { component: RimesScreen, batch: 4 },
   oreille: { component: DicteeItem, batch: 1 },
   coffre: { component: DicteeItem, batch: 1 },
   familles: { component: FamillesScreen, batch: 1 },
   enclos: { component: EnclosScreen, batch: 4 },
   recolte: { component: QcmItem, batch: 1 },
-  boss: { component: BossScreen, batch: 1 },
+  boss: { component: BossScreen, batch: 1, ordered: true },
   // Maths : une opération par écran, aide visuelle toujours affichée.
   tables: { component: CalculScreen, batch: 1 },
   complements: { component: CalculScreen, batch: 1 },

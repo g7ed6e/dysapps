@@ -5,17 +5,115 @@
   "level": 1,
   "instruction": "Écoute le mot, puis tape le nombre de syllabes.",
   "items": [
-    { "key": "cabane", "word": "cabane", "prompt": "cabane", "choices": ["2", "3", "4"], "answer": "3", "heard": "ca-ba-ne" },
-    { "key": "bois", "word": "bois", "prompt": "bois", "choices": ["1", "2", "3"], "answer": "1", "heard": "bois" },
-    { "key": "village", "word": "village", "prompt": "village", "choices": ["2", "3", "4"], "answer": "3", "heard": "vil-la-ge" },
-    { "key": "pont", "word": "pont", "prompt": "pont", "choices": ["1", "2", "3"], "answer": "1", "heard": "pont" },
-    { "key": "lanterne", "word": "lanterne", "prompt": "lanterne", "choices": ["2", "3", "4"], "answer": "3", "heard": "lan-ter-ne" },
-    { "key": "tour", "word": "tour", "prompt": "tour", "choices": ["1", "2", "3"], "answer": "1", "heard": "tour" }
+    {
+      "key": "cabane",
+      "word": "cabane",
+      "prompt": "cabane",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "ca-ba-ne"
+    },
+    {
+      "key": "bois",
+      "word": "bois",
+      "prompt": "bois",
+      "choices": ["1", "2", "3"],
+      "answer": "1",
+      "heard": "bois"
+    },
+    {
+      "key": "village",
+      "word": "village",
+      "prompt": "village",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "vil-la-ge"
+    },
+    {
+      "key": "pont",
+      "word": "pont",
+      "prompt": "pont",
+      "choices": ["1", "2", "3"],
+      "answer": "1",
+      "heard": "pont"
+    },
+    {
+      "key": "lanterne",
+      "word": "lanterne",
+      "prompt": "lanterne",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "lan-ter-ne"
+    },
+    {
+      "key": "tour",
+      "word": "tour",
+      "prompt": "tour",
+      "choices": ["1", "2", "3"],
+      "answer": "1",
+      "heard": "tour"
+    },
+    {
+      "key": "chapeau",
+      "word": "chapeau",
+      "prompt": "chapeau",
+      "choices": ["1", "2", "3"],
+      "answer": "2",
+      "heard": "cha-peau"
+    },
+    {
+      "key": "papillon",
+      "word": "papillon",
+      "prompt": "papillon",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "pa-pil-lon"
+    },
+    {
+      "key": "nuit",
+      "word": "nuit",
+      "prompt": "nuit",
+      "choices": ["1", "2", "3"],
+      "answer": "1",
+      "heard": "nuit"
+    },
+    {
+      "key": "escalier",
+      "word": "escalier",
+      "prompt": "escalier",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "es-ca-lier"
+    },
+    {
+      "key": "caméra",
+      "word": "caméra",
+      "prompt": "caméra",
+      "choices": ["2", "3", "4"],
+      "answer": "3",
+      "heard": "ca-mé-ra"
+    },
+    {
+      "key": "ordinateur",
+      "word": "ordinateur",
+      "prompt": "ordinateur",
+      "choices": ["3", "4", "5"],
+      "answer": "4",
+      "heard": "or-di-na-teur"
+    }
   ],
   "feedback": {
     "correct": "Bien entendu !",
     "wrong": "{word} se coupe en {heard} : {answer} syllabes."
   },
-  "reward": { "block": "bois", "amount": 3, "xp": 10 },
-  "adaptive": { "promoteAt": 0.85, "demoteAt": 0.5 }
+  "reward": {
+    "block": "bois",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  },
+  "perRun": 6
 }

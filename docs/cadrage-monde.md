@@ -72,7 +72,14 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 
 - Trois **baleines** bleu ardoise (`whaleSpots()` dans `terrain.ts` choisit les trois plus larges clairières d'eau entre les îles, visibles depuis la vue d'ensemble, à distance de toute terre et de tout îlot ; le reste dans `WorldCanvas.tsx`) tournent lentement dans la mer, montent et descendent, et **soufflent** quand elles font surface, la queue qui bat. Immobiles avec « réduire les animations ».
 
-## 12. À venir
+## 12. Des questions qui changent (PR 10)
+
+- Chaque partie a une **graine** (`exercises/run.ts`, `runSeed()` : l'exercice et le nombre de parties déjà jouées). La première partie joue les items tels qu'ils sont écrits (l'ordre d'un premier contact est choisi) ; les suivantes varient.
+- **Maths** : les exercices générés tirent d'autres nombres à chaque partie (`generate` sur l'`ExerciseDef`) ; avant, la même graine donnait les mêmes huit questions pour toujours.
+- **Français** : le lot est mélangé, et quand il est plus large que la partie (`perRun`), on n'en joue qu'une partie. Les textes à lire (Ascension) et les manches du Gardien gardent leur ordre.
+- Lots élargis : syllabes (12 mots pour 6 joués), oreille du mineur, mots-outils du coffre, familles de mots (10 pour 6 joués). Les réponses de chaque item sont mélangées (PR précédente).
+
+## 13. À venir
 
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

@@ -9,11 +9,7 @@
       "key": "marais-rives-1-0",
       "prompt": "Tous les soirs, papa … une histoire.",
       "spoken": "Tous les soirs, papa  (mot manquant)  une histoire.",
-      "choices": [
-        "lisait",
-        "a lu",
-        "lira"
-      ],
+      "choices": ["lisait", "a lu", "lira"],
       "answer": "lisait",
       "hint": "Tous les soirs = habitude : imparfait.",
       "explanation": "Habitude (tous les soirs) : imparfait, « lisait ».",
@@ -33,11 +29,7 @@
       "key": "marais-rives-1-1",
       "prompt": "Soudain, la porte … .",
       "spoken": "Soudain, la porte  (mot manquant)  .",
-      "choices": [
-        "claquait",
-        "a claqué",
-        "claque"
-      ],
+      "choices": ["claquait", "a claqué", "claque"],
       "answer": "a claqué",
       "hint": "Soudain = action courte et finie : passé composé.",
       "explanation": "Événement soudain : passé composé, « a claqué ».",
@@ -57,11 +49,7 @@
       "key": "marais-rives-1-2",
       "prompt": "Il … beau quand nous sommes partis.",
       "spoken": "Il  (mot manquant)  beau quand nous sommes partis.",
-      "choices": [
-        "faisait",
-        "a fait",
-        "fera"
-      ],
+      "choices": ["faisait", "a fait", "fera"],
       "answer": "faisait",
       "hint": "Description du temps qu’il fait : imparfait.",
       "explanation": "Description (le temps) : imparfait, « faisait ».",
@@ -81,11 +69,7 @@
       "key": "marais-rives-1-3",
       "prompt": "Hier, j’… mon devoir en une heure.",
       "spoken": "Hier, j’ (mot manquant)  mon devoir en une heure.",
-      "choices": [
-        "finissais",
-        "ai fini",
-        "finis"
-      ],
+      "choices": ["finissais", "ai fini", "finis"],
       "answer": "ai fini",
       "hint": "Hier, action finie une fois : passé composé.",
       "explanation": "Action achevée : passé composé, « ai fini ».",
@@ -105,11 +89,7 @@
       "key": "marais-rives-1-4",
       "prompt": "Quand j’étais petit, je … peur du noir.",
       "spoken": "Quand j’étais petit, je  (mot manquant)  peur du noir.",
-      "choices": [
-        "avais",
-        "ai eu",
-        "aurai"
-      ],
+      "choices": ["avais", "ai eu", "aurai"],
       "answer": "avais",
       "hint": "Quand j’étais petit = état qui dure : imparfait.",
       "explanation": "État durable dans le passé : imparfait, « avais ».",
@@ -129,11 +109,7 @@
       "key": "marais-rives-1-5",
       "prompt": "Nous … au cinéma samedi dernier.",
       "spoken": "Nous  (mot manquant)  au cinéma samedi dernier.",
-      "choices": [
-        "allions",
-        "sommes allés",
-        "irons"
-      ],
+      "choices": ["allions", "sommes allés", "irons"],
       "answer": "sommes allés",
       "hint": "Samedi dernier, une sortie précise : passé composé.",
       "explanation": "Événement précis : passé composé, « sommes allés ».",
@@ -153,11 +129,7 @@
       "key": "marais-rives-1-6",
       "prompt": "Les enfants … pendant que je cuisinais.",
       "spoken": "Les enfants  (mot manquant)  pendant que je cuisinais.",
-      "choices": [
-        "jouaient",
-        "ont joué",
-        "jouent"
-      ],
+      "choices": ["jouaient", "ont joué", "jouent"],
       "answer": "jouaient",
       "hint": "Pendant que… = deux actions en même temps, longues : imparfait.",
       "explanation": "Action longue en arrière-plan : imparfait, « jouaient ».",
@@ -177,11 +149,7 @@
       "key": "marais-rives-1-7",
       "prompt": "Tout à coup, elle … le bruit.",
       "spoken": "Tout à coup, elle  (mot manquant)  le bruit.",
-      "choices": [
-        "entendait",
-        "a entendu",
-        "entend"
-      ],
+      "choices": ["entendait", "a entendu", "entend"],
       "answer": "a entendu",
       "hint": "Tout à coup = action brève : passé composé.",
       "explanation": "Action brève et soudaine : passé composé, « a entendu ».",

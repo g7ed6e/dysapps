@@ -9,11 +9,7 @@
       "key": "marais-rives-2-0",
       "prompt": "Le chevalier … son épée et … .",
       "spoken": "Le chevalier  (mot manquant)  son épée et  (mot manquant)  .",
-      "choices": [
-        "prit / partit",
-        "prenait / partait",
-        "a pris / est parti"
-      ],
+      "choices": ["prit / partit", "prenait / partait", "a pris / est parti"],
       "answer": "prit / partit",
       "hint": "Récit écrit, actions qui se suivent : passé simple.",
       "explanation": "Actions successives d’un récit : passé simple, « prit », « partit ».",
@@ -33,11 +29,7 @@
       "key": "marais-rives-2-1",
       "prompt": "Elle … la porte sans bruit.",
       "spoken": "Elle  (mot manquant)  la porte sans bruit.",
-      "choices": [
-        "ouvrit",
-        "ouvrait",
-        "ouvre"
-      ],
+      "choices": ["ouvrit", "ouvrait", "ouvre"],
       "answer": "ouvrit",
       "hint": "Passé simple des verbes en -ir : -it.",
       "explanation": "« ouvrit » : passé simple, action brève du récit.",
@@ -57,11 +49,7 @@
       "key": "marais-rives-2-2",
       "prompt": "Ils … toute la nuit.",
       "spoken": "Ils  (mot manquant)  toute la nuit.",
-      "choices": [
-        "marchèrent",
-        "marchaient",
-        "marchent"
-      ],
+      "choices": ["marchèrent", "marchaient", "marchent"],
       "answer": "marchèrent",
       "hint": "Verbe en -er, ils : -èrent.",
       "explanation": "« marchèrent » : passé simple, terminaison -èrent.",
@@ -81,11 +69,7 @@
       "key": "marais-rives-2-3",
       "prompt": "Le dragon … sur la tour.",
       "spoken": "Le dragon  (mot manquant)  sur la tour.",
-      "choices": [
-        "s’envola",
-        "s’envolait",
-        "s’envole"
-      ],
+      "choices": ["s’envola", "s’envolait", "s’envole"],
       "answer": "s’envola",
       "hint": "Verbe en -er, il : -a.",
       "explanation": "« s’envola » : passé simple, terminaison -a.",
@@ -105,11 +89,7 @@
       "key": "marais-rives-2-4",
       "prompt": "Quel temps est-ce ? « Il courut vers la rivière. »",
       "spoken": "Quel temps est-ce ? « Il courut vers la rivière. »",
-      "choices": [
-        "passé simple",
-        "imparfait",
-        "passé composé"
-      ],
+      "choices": ["passé simple", "imparfait", "passé composé"],
       "answer": "passé simple",
       "hint": "-ut : passé simple de courir.",
       "explanation": "« courut » se termine par -ut : passé simple.",
@@ -129,11 +109,7 @@
       "key": "marais-rives-2-5",
       "prompt": "Quel temps est-ce ? « Les oiseaux chantaient. »",
       "spoken": "Quel temps est-ce ? « Les oiseaux chantaient. »",
-      "choices": [
-        "imparfait",
-        "passé simple",
-        "futur"
-      ],
+      "choices": ["imparfait", "passé simple", "futur"],
       "answer": "imparfait",
       "hint": "-aient : imparfait.",
       "explanation": "« chantaient » se termine par -aient : imparfait.",
@@ -153,11 +129,7 @@
       "key": "marais-rives-2-6",
       "prompt": "Nous … la cabane en un jour.",
       "spoken": "Nous  (mot manquant)  la cabane en un jour.",
-      "choices": [
-        "construisîmes",
-        "construisions",
-        "construisons"
-      ],
+      "choices": ["construisîmes", "construisions", "construisons"],
       "answer": "construisîmes",
       "hint": "Passé simple, nous : -îmes.",
       "explanation": "« construisîmes » : passé simple avec nous, terminaison -îmes.",
@@ -177,11 +149,7 @@
       "key": "marais-rives-2-7",
       "prompt": "Soudain, ils … un cri.",
       "spoken": "Soudain, ils  (mot manquant)  un cri.",
-      "choices": [
-        "entendirent",
-        "entendaient",
-        "entendent"
-      ],
+      "choices": ["entendirent", "entendaient", "entendent"],
       "answer": "entendirent",
       "hint": "Ils, verbe en -re : -irent.",
       "explanation": "« entendirent » : passé simple, terminaison -irent.",

@@ -9,11 +9,7 @@
       "key": "textes-inferences-2-0",
       "prompt": "« Il claqua la porte et monta les escaliers quatre à quatre. » Il est …",
       "spoken": "« Il claqua la porte et monta les escaliers quatre à quatre. » Il est  (mot manquant) ",
-      "choices": [
-        "en colère",
-        "joyeux",
-        "endormi"
-      ],
+      "choices": ["en colère", "joyeux", "endormi"],
       "answer": "en colère",
       "hint": "Claquer une porte, monter vite.",
       "explanation": "Claquer la porte et monter en courant : il est en colère.",
@@ -57,11 +53,7 @@
       "key": "textes-inferences-2-2",
       "prompt": "« Le jardin était couvert de feuilles rousses et l’air sentait la fumée. » Quelle saison ?",
       "spoken": "« Le jardin était couvert de feuilles rousses et l’air sentait la fumée. » Quelle saison ?",
-      "choices": [
-        "l’automne",
-        "l’été",
-        "le printemps"
-      ],
+      "choices": ["l’automne", "l’été", "le printemps"],
       "answer": "l’automne",
       "hint": "Feuilles rousses.",
       "explanation": "Feuilles rousses tombées : l’automne.",
@@ -81,11 +73,7 @@
       "key": "textes-inferences-2-3",
       "prompt": "« Ils chuchotaient en se cachant derrière le canapé, un paquet à la main. » Que préparent-ils ?",
       "spoken": "« Ils chuchotaient en se cachant derrière le canapé, un paquet à la main. » Que préparent-ils ?",
-      "choices": [
-        "une surprise",
-        "un vol",
-        "une dispute"
-      ],
+      "choices": ["une surprise", "un vol", "une dispute"],
       "answer": "une surprise",
       "hint": "Se cacher, chuchoter, un paquet.",
       "explanation": "Se cacher avec un paquet en chuchotant : ils préparent une surprise.",
@@ -105,11 +93,7 @@
       "key": "textes-inferences-2-4",
       "prompt": "« Ma grand-mère plissa les yeux et approcha la lettre de son nez. » Pourquoi ?",
       "spoken": "« Ma grand-mère plissa les yeux et approcha la lettre de son nez. » Pourquoi ?",
-      "choices": [
-        "elle voit mal",
-        "elle sent la lettre",
-        "elle est en colère"
-      ],
+      "choices": ["elle voit mal", "elle sent la lettre", "elle est en colère"],
       "answer": "elle voit mal",
       "hint": "Plisser les yeux, rapprocher le papier.",
       "explanation": "Plisser les yeux et rapprocher la lettre : elle voit mal.",
@@ -177,11 +161,7 @@
       "key": "textes-inferences-2-7",
       "prompt": "« Elle rougit et cacha vite le dessin sous son cahier. » Elle est …",
       "spoken": "« Elle rougit et cacha vite le dessin sous son cahier. » Elle est  (mot manquant) ",
-      "choices": [
-        "gênée",
-        "fière",
-        "fatiguée"
-      ],
+      "choices": ["gênée", "fière", "fatiguée"],
       "answer": "gênée",
       "hint": "Rougir, cacher.",
       "explanation": "Rougir et cacher le dessin : elle est gênée.",

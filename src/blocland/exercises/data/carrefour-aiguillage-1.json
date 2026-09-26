@@ -9,11 +9,7 @@
       "key": "carrefour-aiguillage-1-0",
       "prompt": "… heure est-il ?",
       "spoken": " (mot manquant)  heure est-il ?",
-      "choices": [
-        "Quel",
-        "Quelle",
-        "Qu’elle"
-      ],
+      "choices": ["Quel", "Quelle", "Qu’elle"],
       "answer": "Quelle",
       "hint": "« heure » est un nom féminin : on cherche l’adjectif.",
       "explanation": "« Quelle heure » : quelle accompagne le nom féminin « heure ».",
@@ -34,11 +30,7 @@
       "key": "carrefour-aiguillage-1-1",
       "prompt": "Je crois … viendra demain.",
       "spoken": "Je crois  (mot manquant)  viendra demain.",
-      "choices": [
-        "quelle",
-        "qu’elle",
-        "quel"
-      ],
+      "choices": ["quelle", "qu’elle", "quel"],
       "answer": "qu’elle",
       "hint": "Remplace par « qu’il » : si ça marche, c’est « qu’elle ».",
       "explanation": "« Je crois qu’il viendra » fonctionne : c’est « qu’elle », que + elle.",
@@ -59,11 +51,7 @@
       "key": "carrefour-aiguillage-1-2",
       "prompt": "Il est parti … dire au revoir.",
       "spoken": "Il est parti  (mot manquant)  dire au revoir.",
-      "choices": [
-        "sans",
-        "s’en",
-        "sang"
-      ],
+      "choices": ["sans", "s’en", "sang"],
       "answer": "sans",
       "hint": "« sans » = pas de, l’absence.",
       "explanation": "Il est parti sans dire au revoir : « sans » signifie l’absence.",
@@ -84,11 +72,7 @@
       "key": "carrefour-aiguillage-1-3",
       "prompt": "Elle … va tout de suite.",
       "spoken": "Elle  (mot manquant)  va tout de suite.",
-      "choices": [
-        "sans",
-        "s’en",
-        "sent"
-      ],
+      "choices": ["sans", "s’en", "sent"],
       "answer": "s’en",
       "hint": "« s’en aller » : on peut dire « je m’en vais ».",
       "explanation": "« Elle s’en va » : verbe s’en aller, se + en.",
@@ -109,11 +93,7 @@
       "key": "carrefour-aiguillage-1-4",
       "prompt": "Le chat dort … le panier.",
       "spoken": "Le chat dort  (mot manquant)  le panier.",
-      "choices": [
-        "dans",
-        "d’en",
-        "dent"
-      ],
+      "choices": ["dans", "d’en", "dent"],
       "answer": "dans",
       "hint": "« dans » = à l’intérieur de.",
       "explanation": "Le chat dort dans le panier : à l’intérieur.",
@@ -134,11 +114,7 @@
       "key": "carrefour-aiguillage-1-5",
       "prompt": "Arrête … parler !",
       "spoken": "Arrête  (mot manquant)  parler !",
-      "choices": [
-        "dans",
-        "d’en",
-        "dent"
-      ],
+      "choices": ["dans", "d’en", "dent"],
       "answer": "d’en",
       "hint": "« d’en » = de + en : arrête de parler de cela.",
       "explanation": "Arrête d’en parler : de + en.",
@@ -159,11 +135,7 @@
       "key": "carrefour-aiguillage-1-6",
       "prompt": "… beau match !",
       "spoken": " (mot manquant)  beau match !",
-      "choices": [
-        "Quel",
-        "Quelle",
-        "Qu’elle"
-      ],
+      "choices": ["Quel", "Quelle", "Qu’elle"],
       "answer": "Quel",
       "hint": "« match » est un nom masculin.",
       "explanation": "« Quel beau match » : quel accompagne le nom masculin « match ».",
@@ -184,11 +156,7 @@
       "key": "carrefour-aiguillage-1-7",
       "prompt": "Je pense … a raison.",
       "spoken": "Je pense  (mot manquant)  a raison.",
-      "choices": [
-        "quelle",
-        "qu’elle",
-        "quel"
-      ],
+      "choices": ["quelle", "qu’elle", "quel"],
       "answer": "qu’elle",
       "hint": "Remplace par « qu’il ».",
       "explanation": "« Je pense qu’il a raison » fonctionne : c’est « qu’elle ».",

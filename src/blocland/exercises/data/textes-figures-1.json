@@ -9,11 +9,7 @@
       "key": "textes-figures-1-0",
       "prompt": "« Il est rapide comme l’éclair. »",
       "spoken": "« Il est rapide comme l’éclair. »",
-      "choices": [
-        "comparaison",
-        "métaphore",
-        "hyperbole"
-      ],
+      "choices": ["comparaison", "métaphore", "hyperbole"],
       "answer": "comparaison",
       "hint": "Il y a « comme ».",
       "explanation": "Le mot-outil « comme » : comparaison.",
@@ -34,11 +30,7 @@
       "key": "textes-figures-1-1",
       "prompt": "« Cette fille est un rayon de soleil. »",
       "spoken": "« Cette fille est un rayon de soleil. »",
-      "choices": [
-        "métaphore",
-        "comparaison",
-        "personnification"
-      ],
+      "choices": ["métaphore", "comparaison", "personnification"],
       "answer": "métaphore",
       "hint": "Pas de mot-outil : on dit qu’elle EST un rayon.",
       "explanation": "Image sans « comme » : métaphore.",
@@ -59,11 +51,7 @@
       "key": "textes-figures-1-2",
       "prompt": "« Le vent hurle dans la cheminée. »",
       "spoken": "« Le vent hurle dans la cheminée. »",
-      "choices": [
-        "personnification",
-        "hyperbole",
-        "comparaison"
-      ],
+      "choices": ["personnification", "hyperbole", "comparaison"],
       "answer": "personnification",
       "hint": "Le vent fait une action humaine : hurler.",
       "explanation": "Le vent agit comme une personne : personnification.",
@@ -84,11 +72,7 @@
       "key": "textes-figures-1-3",
       "prompt": "« J’ai attendu des siècles ! »",
       "spoken": "« J’ai attendu des siècles ! »",
-      "choices": [
-        "hyperbole",
-        "métaphore",
-        "personnification"
-      ],
+      "choices": ["hyperbole", "métaphore", "personnification"],
       "answer": "hyperbole",
       "hint": "Exagération énorme.",
       "explanation": "Exagération : hyperbole.",
@@ -109,11 +93,7 @@
       "key": "textes-figures-1-4",
       "prompt": "« Ses yeux brillaient tels deux étoiles. »",
       "spoken": "« Ses yeux brillaient tels deux étoiles. »",
-      "choices": [
-        "comparaison",
-        "métaphore",
-        "hyperbole"
-      ],
+      "choices": ["comparaison", "métaphore", "hyperbole"],
       "answer": "comparaison",
       "hint": "Le mot-outil « tels ».",
       "explanation": "« tels » relie les yeux aux étoiles : comparaison.",
@@ -134,11 +114,7 @@
       "key": "textes-figures-1-5",
       "prompt": "« La ville dort sous la neige. »",
       "spoken": "« La ville dort sous la neige. »",
-      "choices": [
-        "personnification",
-        "hyperbole",
-        "comparaison"
-      ],
+      "choices": ["personnification", "hyperbole", "comparaison"],
       "answer": "personnification",
       "hint": "La ville dort, comme une personne.",
       "explanation": "La ville « dort » : personnification.",
@@ -159,11 +135,7 @@
       "key": "textes-figures-1-6",
       "prompt": "« Ce sac pèse une tonne. »",
       "spoken": "« Ce sac pèse une tonne. »",
-      "choices": [
-        "hyperbole",
-        "métaphore",
-        "comparaison"
-      ],
+      "choices": ["hyperbole", "métaphore", "comparaison"],
       "answer": "hyperbole",
       "hint": "Une tonne, c’est exagéré.",
       "explanation": "Exagération : hyperbole.",
@@ -184,11 +156,7 @@
       "key": "textes-figures-1-7",
       "prompt": "« Le temps est un fleuve qui emporte tout. »",
       "spoken": "« Le temps est un fleuve qui emporte tout. »",
-      "choices": [
-        "métaphore",
-        "comparaison",
-        "personnification"
-      ],
+      "choices": ["métaphore", "comparaison", "personnification"],
       "answer": "métaphore",
       "hint": "Le temps EST un fleuve, sans « comme ».",
       "explanation": "Image directe sans mot-outil : métaphore.",

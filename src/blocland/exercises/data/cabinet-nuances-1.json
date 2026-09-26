@@ -9,11 +9,7 @@
       "key": "cabinet-nuances-1-0",
       "prompt": "Un synonyme de « peur » :",
       "spoken": "Un synonyme de « peur » :",
-      "choices": [
-        "frayeur",
-        "courage",
-        "calme"
-      ],
+      "choices": ["frayeur", "courage", "calme"],
       "answer": "frayeur",
       "hint": "Sens proche de peur.",
       "explanation": "« frayeur » = grande peur : synonyme.",
@@ -33,11 +29,7 @@
       "key": "cabinet-nuances-1-1",
       "prompt": "Un antonyme de « rapide » :",
       "spoken": "Un antonyme de « rapide » :",
-      "choices": [
-        "lent",
-        "vif",
-        "pressé"
-      ],
+      "choices": ["lent", "vif", "pressé"],
       "answer": "lent",
       "hint": "Sens contraire.",
       "explanation": "« lent » est le contraire de « rapide ».",
@@ -57,11 +49,7 @@
       "key": "cabinet-nuances-1-2",
       "prompt": "« Bagnole » appartient au registre …",
       "spoken": "« Bagnole » appartient au registre  (mot manquant) ",
-      "choices": [
-        "familier",
-        "courant",
-        "soutenu"
-      ],
+      "choices": ["familier", "courant", "soutenu"],
       "answer": "familier",
       "hint": "Mot employé entre amis, à l’oral.",
       "explanation": "« bagnole » : registre familier (courant : voiture).",
@@ -81,11 +69,7 @@
       "key": "cabinet-nuances-1-3",
       "prompt": "« Se restaurer » appartient au registre …",
       "spoken": "« Se restaurer » appartient au registre  (mot manquant) ",
-      "choices": [
-        "soutenu",
-        "familier",
-        "courant"
-      ],
+      "choices": ["soutenu", "familier", "courant"],
       "answer": "soutenu",
       "hint": "Mot recherché, langue écrite ou formelle.",
       "explanation": "« se restaurer » : registre soutenu (courant : manger).",
@@ -105,11 +89,7 @@
       "key": "cabinet-nuances-1-4",
       "prompt": "Un synonyme de « content » :",
       "spoken": "Un synonyme de « content » :",
-      "choices": [
-        "heureux",
-        "triste",
-        "fâché"
-      ],
+      "choices": ["heureux", "triste", "fâché"],
       "answer": "heureux",
       "hint": "Sens proche.",
       "explanation": "« heureux » : synonyme de « content ».",
@@ -129,11 +109,7 @@
       "key": "cabinet-nuances-1-5",
       "prompt": "Un antonyme de « ancien » :",
       "spoken": "Un antonyme de « ancien » :",
-      "choices": [
-        "nouveau",
-        "vieux",
-        "vétuste"
-      ],
+      "choices": ["nouveau", "vieux", "vétuste"],
       "answer": "nouveau",
       "hint": "Sens contraire.",
       "explanation": "« nouveau » est le contraire d’« ancien ».",
@@ -153,11 +129,7 @@
       "key": "cabinet-nuances-1-6",
       "prompt": "Le mot courant pour « bouquin » :",
       "spoken": "Le mot courant pour « bouquin » :",
-      "choices": [
-        "livre",
-        "ouvrage",
-        "bouquinerie"
-      ],
+      "choices": ["livre", "ouvrage", "bouquinerie"],
       "answer": "livre",
       "hint": "Familier → courant.",
       "explanation": "« bouquin » (familier) = « livre » (courant).",
@@ -177,11 +149,7 @@
       "key": "cabinet-nuances-1-7",
       "prompt": "Un antonyme de « généreux » :",
       "spoken": "Un antonyme de « généreux » :",
-      "choices": [
-        "avare",
-        "gentil",
-        "riche"
-      ],
+      "choices": ["avare", "gentil", "riche"],
       "answer": "avare",
       "hint": "Sens contraire : qui ne donne rien.",
       "explanation": "« avare » : contraire de « généreux ».",

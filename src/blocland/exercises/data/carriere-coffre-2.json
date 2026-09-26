@@ -46,6 +46,34 @@
       "choices": ["presque", "prèsque", "presqe"],
       "answer": "presque",
       "hint": "presque : pres sans accent, puis que."
+    },
+    {
+      "key": "parfois",
+      "word": "parfois",
+      "choices": ["parfois", "parfoi", "parfoit"],
+      "answer": "parfois",
+      "hint": "parfois finit par ois, comme fois."
+    },
+    {
+      "key": "bientôt",
+      "word": "bientôt",
+      "choices": ["bientôt", "biento", "bientot"],
+      "answer": "bientôt",
+      "hint": "bientôt porte un accent circonflexe sur le o."
+    },
+    {
+      "key": "surtout",
+      "word": "surtout",
+      "choices": ["surtout", "surtou", "surtoud"],
+      "answer": "surtout",
+      "hint": "surtout finit par tout."
+    },
+    {
+      "key": "derrière",
+      "word": "derrière",
+      "choices": ["derrière", "derriere", "dérière"],
+      "answer": "derrière",
+      "hint": "derrière prend deux r et un accent grave."
     }
   ],
   "feedback": {
@@ -60,5 +88,6 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  }
+  },
+  "perRun": 6
 }
