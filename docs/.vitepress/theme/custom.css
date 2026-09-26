@@ -1,0 +1,99 @@
+/* Documentation DysApps : thème VitePress aux couleurs de l'application (terre, herbe, crème),
+   police Luciole, texte jamais sous 18 px. Aucune ressource externe. */
+
+@font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+
+:root {
+  --vp-font-family-base: 'Luciole', 'Atkinson Hyperlegible', Arial, sans-serif;
+  --vp-c-brand-1: #1e5fb3;
+  --vp-c-brand-2: #2a6fc7;
+  --vp-c-brand-3: #4f8a2b;
+  --vp-c-brand-soft: rgba(108, 179, 63, 0.16);
+  --vp-c-bg: #fbf6ea;
+  --vp-c-bg-alt: #f3ebd9;
+  --vp-c-bg-elv: #fffdf7;
+  --vp-c-bg-soft: #f1e9d6;
+  --vp-c-text-1: #2b2118;
+  --vp-c-text-2: #5a4636;
+  --vp-c-divider: #e0d4bb;
+  --vp-c-gutter: #e0d4bb;
+  --vp-button-brand-bg: #4f8a2b;
+  --vp-button-brand-hover-bg: #6cb33f;
+  --vp-button-brand-active-bg: #4f8a2b;
+  --vp-local-search-highlight-bg: #f0d27a;
+}
+
+.dark {
+  --vp-c-brand-1: #8fc1ff;
+  --vp-c-brand-2: #a9cfff;
+  --vp-c-brand-3: #6cb33f;
+  --vp-c-bg: #1f1a16;
+  --vp-c-bg-alt: #2b241e;
+  --vp-c-bg-elv: #2b241e;
+  --vp-c-bg-soft: #362d25;
+  --vp-c-text-1: #f3ede2;
+  --vp-c-text-2: #cbbfae;
+  --vp-c-divider: #4a3d31;
+  --vp-c-gutter: #14100d;
+  --vp-local-search-highlight-bg: #6b4a2e;
+}
+
+/* Lisibilité dys : 18 px minimum, interlignage généreux, même sur téléphone. */
+.vp-doc {
+  font-size: 18px;
+  line-height: 1.7;
+}
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.7;
+}
+.vp-doc table {
+  font-size: 16px;
+}
+.VPSidebar,
+.VPDocAsideOutline {
+  font-size: 16px;
+}
+
+/* Barre du haut : la terre de l'application. */
+.VPNavBar .title {
+  font-weight: 700;
+}
+
+/* Accueil : paragraphe d'introduction et cartes « Par où commencer ». */
+.vp-doc .lead {
+  font-size: 1.15em;
+}
+.vp-doc .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 1.2rem 0;
+  padding: 0;
+  list-style: none;
+}
+.vp-doc .cards li {
+  margin: 0;
+}
+.vp-doc .cards a {
+  display: block;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+  background: var(--vp-c-bg-alt);
+  border: 2px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+.vp-doc .cards a:hover {
+  border-color: var(--vp-c-brand-3);
+}
+.vp-doc .cards a strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: 0.3rem;
+  color: var(--vp-c-brand-1);
+}

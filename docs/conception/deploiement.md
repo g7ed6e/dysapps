@@ -20,12 +20,13 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 ## Le build de la documentation
 
-`npm run docs:build` écrit `dist-docs/` :
+La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. `npm run docs:build` écrit `dist-docs/` :
 
-1. `scripts/docs/generate.mjs` charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, quêtes du portail) avec Vite et produit les pages du contenu pédagogique en Markdown.
-2. `scripts/docs/build.mjs` lit `docs/**/*.md` (sauf `docs/_theme/`), ajoute les pages générées, convertit en HTML (`marked`), construit le sommaire depuis `docs/_theme/nav.json`, la table des matières de chaque page, la navigation précédent-suivant et l’index de recherche (`search-index.json`), puis copie le thème (`style.css`, `site.js`), la police Luciole, l’icône et `sw.js`.
+1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/` et `docs/.vitepress/`) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, quêtes du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, la police Luciole et `sw.js`.
+2. La configuration construit le sommaire depuis `docs/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
+3. VitePress construit le site ; à la fin, chaque page reçoit sa politique de sécurité du contenu en `<meta>`, avec l’empreinte des scripts en ligne de VitePress.
 
-Le site n’utilise aucune ressource externe (même politique de sécurité que l’application), n’a ni cookie ni statistique, et fonctionne sans JavaScript (la recherche seule en a besoin). Les liens internes sont relatifs : le site se prévisualise en local avec `npm run docs:dev` (http://localhost:4173/) et se publie sous n’importe quel chemin.
+Le thème (`docs/.vitepress/theme/`) reprend les couleurs de l’application et la police Luciole, avec un texte à 18 px au moins. Le site n’utilise aucune ressource externe, n’a ni cookie ni statistique. Il se prévisualise en local avec `npm run docs:dev` (serveur de développement sur le port 4173) ou `npm run docs:preview` après un build.
 
 `npm run docs:check` vérifie que `docs/journal.md` décrit la version courante ; le build échoue si une page du sommaire manque.
 

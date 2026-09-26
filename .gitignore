@@ -5,3 +5,6 @@ coverage
 *.log
 .DS_Store
 dist-docs
+.docs-src
+docs/.vitepress/cache
+docs/.vitepress/.temp

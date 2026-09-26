@@ -2,6 +2,10 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.14.0 — 26 septembre 2026
+
+**Une documentation lisible sur téléphone.** Le site de documentation passe sur [VitePress](https://vitepress.dev/), un outil standard : sur téléphone, le sommaire s’ouvre par un bouton « Sommaire », la table des matières par « Sur cette page », les tableaux défilent sans déborder et le texte reste à 18 px au moins, en Luciole. La recherche porte sur tout le texte des pages, le thème clair ou sombre suit l’appareil (et se change d’un bouton), chaque page garde son adresse et ses ancres. Rien ne change dans l’application.
+
 ## 0.13.0 — 26 septembre 2026
 
 **Les quatre archipels et l’accueil.** La Carte a un bouton « Les quatre archipels » : une page qui dit où l’on est, les îles ouvertes et les Gardiens vaincus de chaque archipel, ce qu’il faut pour aller plus loin, avec le navire tel qu’il est et des boutons « Aller au port » ou « Voir le chantier ». À la première arrivée dans un archipel, sa créature-port dit deux bulles d’accueil (en 3D comme en vue simple). L’arène du Gardien dit quand le kit du Bloc-Navire arrive, avec un bouton « Aller au port » ; l’écran de récompense dit quand le navire a tous ses blocs ; l’accueil annonce « Le Bloc-Navire est prêt ! ». La série « quatre archipels » est complète.

@@ -1,7 +1,7 @@
 {
   "name": "dysapps",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.14.0",
   "type": "module",
   "description": "Applications d'entraînement adaptées aux élèves dys du collège",
   "scripts": {
@@ -13,8 +13,9 @@
     "typecheck": "tsc --noEmit",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:check": "node scripts/check-version.mjs",
-    "docs:build": "node scripts/docs/build.mjs",
-    "docs:dev": "node scripts/docs/build.mjs --serve",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs --port 4173",
+    "docs:preview": "vitepress preview docs --port 4173",
     "docs:check": "node scripts/docs/check.mjs"
   },
   "dependencies": {
@@ -38,10 +39,10 @@
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^30.1.1",
-    "marked": "^18.0.14",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
     "vite-plugin-pwa": "^1.3.0",
+    "vitepress": "^1.6.4",
     "vitest": "^5.0.1"
   }
 }
