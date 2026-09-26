@@ -1,0 +1,223 @@
+{
+  "id": "gare-modaux-1",
+  "biome": "gare",
+  "type": "modaux",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "gare-modaux-1-0",
+      "prompt": "I … swim: I learned when I was five.",
+      "spoken": "I blank swim: I learned when I was five.",
+      "choices": [
+        "can",
+        "must",
+        "should"
+      ],
+      "answer": "can",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Savoir faire → can : I can swim.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-1",
+      "prompt": "You … wear a helmet on a bike: it’s the rule.",
+      "spoken": "You blank wear a helmet on a bike: it’s the rule.",
+      "choices": [
+        "must",
+        "can",
+        "may"
+      ],
+      "answer": "must",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "C’est la règle → must (obligation).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-2",
+      "prompt": "She … speak three languages.",
+      "spoken": "She blank speak three languages.",
+      "choices": [
+        "can",
+        "must",
+        "has"
+      ],
+      "answer": "can",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Savoir faire → can : she can speak (sans s).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-3",
+      "prompt": "You … eat in the library. It’s forbidden!",
+      "spoken": "You blank eat in the library. It’s forbidden!",
+      "choices": [
+        "mustn’t",
+        "can",
+        "should"
+      ],
+      "answer": "mustn’t",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Interdit → mustn’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-4",
+      "prompt": "You look tired. You … go to bed.",
+      "spoken": "You look tired. You blank go to bed.",
+      "choices": [
+        "should",
+        "can",
+        "mustn’t"
+      ],
+      "answer": "should",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Un conseil → should.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-5",
+      "prompt": "… I open the window, please?",
+      "spoken": "blank I open the window, please?",
+      "choices": [
+        "Can",
+        "Must",
+        "Should"
+      ],
+      "answer": "Can",
+      "hint": "On demande la permission.",
+      "explanation": "Demander la permission → Can I…?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-6",
+      "prompt": "You … shout in class: it’s rude.",
+      "spoken": "You blank shout in class: it’s rude.",
+      "choices": [
+        "shouldn’t",
+        "can",
+        "should"
+      ],
+      "answer": "shouldn’t",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Un conseil de ne pas faire → shouldn’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gare-modaux-1-7",
+      "prompt": "He … play the guitar very well.",
+      "spoken": "He blank play the guitar very well.",
+      "choices": [
+        "can",
+        "must",
+        "should"
+      ],
+      "answer": "can",
+      "hint": "Capacité, obligation, interdiction ou conseil ?",
+      "explanation": "Savoir faire → can : he can play (sans s).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Can, must, should",
+          "lines": [
+            "can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.",
+            "must = devoir (obligation). mustn’t = interdiction.",
+            "should = devrait (conseil). shouldn’t = ne devrait pas.",
+            "Après un modal : verbe à la base, sans to, sans s (she can swim)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "rail",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

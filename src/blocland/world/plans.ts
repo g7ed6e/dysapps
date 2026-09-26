@@ -75,6 +75,12 @@ import comptoirTerrasse from './plans/comptoir-terrasse.json';
 import manoirSalon from './plans/manoir-salon.json';
 import manoirToit from './plans/manoir-toit.json';
 import manoirJardin from './plans/manoir-jardin.json';
+import theatreLoge from './plans/theatre-loge.json';
+import theatreToit from './plans/theatre-toit.json';
+import theatreScene from './plans/theatre-scene.json';
+import gareAbri from './plans/gare-abri.json';
+import gareToit from './plans/gare-toit.json';
+import gareQuai from './plans/gare-quai.json';
 
 export interface PlanCell {
   x: number;
@@ -174,6 +180,12 @@ export const PLANS: PlanDef[] = [
   manoirSalon,
   manoirToit,
   manoirJardin,
+  theatreLoge,
+  theatreToit,
+  theatreScene,
+  gareAbri,
+  gareToit,
+  gareQuai,
 ] as PlanDef[];
 
 export function plansFor(biome: BiomeId): PlanDef[] {

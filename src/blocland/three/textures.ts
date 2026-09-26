@@ -27,6 +27,8 @@ export type TextureKind =
   | 'cadran'
   | 'tuile'
   | 'lambris'
+  | 'velours'
+  | 'rail'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -216,6 +218,16 @@ const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Pain
   lambris: {
     top: (x, y, r) => (x % 4 === 0 ? [60, 38, 22] : grain('#5a3a22', '#6e4a2c')(x, y, r)),
     side: (x, y, r) => (x % 5 === 0 ? [58, 36, 20] : y === 1 || y === 14 ? [190, 150, 70] : grain('#5a3a22', '#704a2c')(x, y, r)),
+  },
+  // Velours : rideau de théâtre pourpre, plis clairs et sombres, galon doré sur le dessus.
+  velours: {
+    top: (x, y, r) => (x === 0 || x === 15 || y === 0 || y === 15 ? [200, 160, 70] : grain('#7a1f3a', '#8e2a48')(x, y, r)),
+    side: (x, y, r) => (x % 4 === 1 ? [150, 46, 78] : x % 4 === 3 ? [90, 20, 42] : grain('#7a1f3a', '#8a2846')(x, y, r)),
+  },
+  // Rail : traverses de bois et deux rails d'acier sur le dessus, fonte rivetée sur les côtés.
+  rail: {
+    top: (x, y, r) => (x === 4 || x === 11 ? [150, 160, 170] : y % 4 < 2 ? grain('#6f4d2a', '#85603a')(x, y, r) : grain('#8a8a8a', '#a0a0a0')(x, y, r)),
+    side: (x, y, r) => (x % 4 === 0 && y % 4 === 0 ? [150, 160, 170] : grain('#4a4a50', '#5c5c64')(x, y, r)),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

@@ -349,6 +349,34 @@ const MOUSTACHE = fromLayers(
   { K: '#2a2622', G: '#7ad04a', W: '#f6f1e6', P: '#e8a3b8' },
 );
 
+// Puck : un petit lutin souffleur, bonnet vert pointu, oreilles pointues, tunique brune, un rouleau de texte à la main.
+const PUCK = fromLayers(
+  [
+    ['.....', '.B.B.', '.....', '.....'],
+    ['.TTT.', 'TTTTT', 'TTTTT', '.TTT.'],
+    ['PTTTT', 'TTTTT', 'TTTTT', '.TTT.'],
+    ['.SSS.', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['ESKSE', 'SSSSS', 'SSSSS', '.SSS.'],
+    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.....', '.GGG.', '.GGG.', '.....'],
+    ['.....', '.....', '..G..', '.....'],
+  ],
+  { T: '#8a6236', B: '#4a3a2a', S: '#e8c8a0', K: '#1f1a16', E: '#e8c8a0', G: '#3f8a4a', P: '#f4f1e4' },
+);
+
+// Vapeur : un blaireau gris, masque rayé noir et blanc, casquette de chef de gare rouge à visière noire.
+const VAPEUR = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.K.K.', '.....'],
+    ['.GGG.', 'GGGGG', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.WKW.', 'GGGGG', 'GGGGG', 'GGGGG', '..G..'],
+    ['KWEWK', 'GWWWG', 'GGGGG', 'GGGGG', '.....'],
+    ['.KKK.', 'RRRRR', 'RRRRR', '.RRR.', '.....'],
+    ['.....', '.RRR.', '.RRR.', '.....', '.....'],
+  ],
+  { G: '#8c8c8c', W: '#f6f1e6', K: '#1f1a16', E: '#1f1a16', R: '#c0392b' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -374,6 +402,8 @@ export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
   horloge: TICK,
   comptoir: PUDDING,
   manoir: MOUSTACHE,
+  theatre: PUCK,
+  gare: VAPEUR,
 };
 
 interface Props {
