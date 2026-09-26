@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
-import { daylight, palette } from '../world/daylight';
+import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
 import { CREATURE_STEPS, islandAt, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
 import { islandsOf, type ArchipelagoId } from '../world/archipelago';
@@ -98,6 +98,8 @@ export interface WorldCanvasProps {
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
+/** Le plancher de nuages des Îles du Ciel : sous la roche des îles (à 9), au-dessus de la mer qu'on ne voit plus. */
+const CLOUD_FLOOR = 2.5;
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
@@ -360,9 +362,11 @@ export default function WorldCanvas({
     renderer.domElement.style.touchAction = 'none';
 
     const scene = new THREE.Scene();
-    const day = palette(1);
+    // L'ambiance de l'archipel : ciel, mer (ou nuages), brouillard, sol.
+    const ambience = AMBIENCE[archipelago];
+    const day = palette(1, archipelago);
     scene.background = new THREE.Color(day.sky);
-    const fog = new THREE.Fog(day.sky, width * 1.2, width * 3);
+    const fog = new THREE.Fog(day.sky, width * ambience.fog[0], width * ambience.fog[1]);
     scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 10);
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
@@ -390,7 +394,7 @@ export default function WorldCanvas({
     };
     el.addEventListener('keydown', onKey);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x8a6a4a, day.ambient);
+    const hemi = new THREE.HemisphereLight(0xffffff, day.ground, day.ambient);
     scene.add(hemi);
     const sun = new THREE.DirectionalLight(day.sun, day.sunIntensity);
     sun.position.set(40, 60, 20);
@@ -413,27 +417,44 @@ export default function WorldCanvas({
     const water = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), waterMat);
     water.rotation.x = -Math.PI / 2;
     water.position.set(center.x, WATER_LEVEL, center.y);
+    // Les Îles du Ciel : pas de mer, un plancher de nuages qui dérive lentement sous les îles.
+    water.visible = !ambience.sky;
     scene.add(water);
+    const floorTex = ambience.sky ? mistTexture() : null;
+    if (floorTex) {
+      floorTex.wrapS = THREE.RepeatWrapping;
+      floorTex.wrapT = THREE.RepeatWrapping;
+      floorTex.repeat.set(width / 6, width / 6);
+    }
+    const cloudFloorMat = new THREE.MeshBasicMaterial({ map: floorTex, color: 0xf6f9fc, transparent: true, opacity: 0.92, depthWrite: false });
+    const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
+    cloudFloor.rotation.x = -Math.PI / 2;
+    cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
+    cloudFloor.visible = ambience.sky;
+    scene.add(cloudFloor);
 
-    // Nuages en cubes, au-dessus du monde.
+    // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
     const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
     const clouds = new THREE.Group();
-    for (const [fx, fy, len] of CLOUDS) {
+    const cloudSpots: [number, number, number][] = ambience.sky ? [...CLOUDS, ...CLOUDS.map(([fx, fy, len]) => [(fx + 0.5) % 1.1, fy - 0.45, len + 1] as [number, number, number])] : CLOUDS;
+    cloudSpots.forEach(([fx, fy, len], i) => {
       const cloud = new THREE.Group();
-      for (let i = 0; i < len; i++) {
+      for (let k = 0; k < len; k++) {
         const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
-        puff.position.set(i, (i % 2) * 0.5, 0);
+        puff.position.set(k, (k % 2) * 0.5, 0);
         cloud.add(puff);
       }
-      cloud.position.set(bounds.minX + fx * width, 12, bounds.minY + fy * (bounds.maxY - bounds.minY));
+      const low = ambience.sky && i >= CLOUDS.length;
+      cloud.position.set(bounds.minX + fx * width, low ? 4 + (i % 3) : 12, bounds.minY + fy * (bounds.maxY - bounds.minY));
       clouds.add(cloud);
-    }
+    });
     scene.add(clouds);
 
     // La brume des sommets : une nappe translucide sous chaque île la plus haute, qui respire lentement.
     const mistMat = new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
     const mists: THREE.Mesh[] = [];
     for (const m of mistPatches(archipelago)) {
+      // (Les nappes de brume des sommets : seulement sous les Îles du Ciel.)
       const mist = new THREE.Mesh(new THREE.PlaneGeometry(m.w, m.h), mistMat);
       mist.rotation.x = -Math.PI / 2;
       mist.position.set(m.x, m.z, m.y);
@@ -445,7 +466,10 @@ export default function WorldCanvas({
     const birdMat = new THREE.MeshLambertMaterial({ color: 0x3a2f2a });
     const wingGeo = new THREE.BoxGeometry(0.5, 0.08, 0.16);
     const birds: { group: THREE.Group; wings: THREE.Mesh[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
-    for (let i = 0; i < 6; i++) {
+    // Plus d'oiseaux et plus haut dans les Monts de Feu ; tout en haut dans les Îles du Ciel.
+    const birdCount = archipelago === '4e' ? 8 : 6;
+    const birdAlt = archipelago === '4e' ? 17 : ambience.sky ? 18 : 13;
+    for (let i = 0; i < birdCount; i++) {
       const group = new THREE.Group();
       const left = new THREE.Mesh(wingGeo, birdMat);
       const right = new THREE.Mesh(wingGeo, birdMat);
@@ -459,7 +483,7 @@ export default function WorldCanvas({
         cx: bounds.minX + (0.2 + 0.6 * ((i * 0.37) % 1)) * width,
         cy: bounds.minY + (0.2 + 0.6 * ((i * 0.61) % 1)) * (bounds.maxY - bounds.minY),
         r: 8 + (i % 3) * 4,
-        alt: 13 + (i % 2) * 3,
+        alt: birdAlt + (i % 2) * 3,
         phase: i * 1.7,
         speed: 0.25 + (i % 3) * 0.05,
       });
@@ -689,7 +713,7 @@ export default function WorldCanvas({
       const target = forceDayRef.current ? 1 : daylight().light;
       if (target === light) return;
       light = target;
-      const p = palette(light);
+      const p = palette(light, archipelago);
       (scene.background as THREE.Color).setHex(p.sky);
       fog.color.setHex(p.sky);
       hemi.intensity = p.ambient;
@@ -817,6 +841,7 @@ export default function WorldCanvas({
           if (cloud.position.x < bounds.minX - 12) cloud.position.x = bounds.maxX + 12;
         }
         if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
+        if (floorTex) floorTex.offset.set(t * 0.004, t * 0.002);
         for (const b of birds) {
           const a = t * b.speed + b.phase;
           b.group.position.set(b.cx + Math.cos(a) * b.r, b.alt + Math.sin(t * 0.7 + b.phase) * 0.6, b.cy + Math.sin(a) * b.r);
@@ -909,6 +934,8 @@ export default function WorldCanvas({
       water.geometry.dispose();
       waterMat.map?.dispose();
       waterMat.dispose();
+      cloudFloorMat.dispose();
+      floorTex?.dispose();
       cloudGeo.dispose();
       renderer.dispose();
       renderer.domElement.remove();
