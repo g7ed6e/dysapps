@@ -81,14 +81,19 @@ const BLOQUETTE = fromLayers(
   { W: '#f6f1e6', w: '#e4dccb', K: '#2a2622', E: '#f6f1e6', P: '#f0b8c4' },
 );
 
+// Grimoire : un gros livre debout, couverture violette à coins dorés, tranche de pages crème où s'ouvrent deux yeux,
+// un signet rouge qui dépasse, deux petits pieds.
 const GRIMOIRE = fromLayers(
   [
-    ['.SSS.', 'SSSSS', 'SSSSS', '.SSS.'],
-    ['.SSS.', 'SsssS', 'SsssS', '.SSS.'],
-    ['S...S', 'SYSYS', 'SSSSS', '.SBS.'],
-    ['S...S', '.....', '.....', '.....'],
+    ['.....', '.C.C.', '.....', '.....'],
+    ['CPPPC', 'CPPPC', 'CCCCC', '.CCC.'],
+    ['CPpPC', 'CPPPC', 'CCCCC', '.CCC.'],
+    ['CEPEC', 'CPPPC', 'CCCCC', '.CCC.'],
+    ['CPPPC', 'CPPPC', 'CCCCC', '.CCC.'],
+    ['GCCCG', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.....', '..B..', '.....', '.....'],
   ],
-  { S: '#8c93a0', s: '#b3b9c4', Y: '#f5d63d', B: '#e0a33a' },
+  { C: '#5a4a8a', P: '#f4f1e4', p: '#e3dcc4', E: '#1f1a16', G: '#e0a33a', B: '#d8402e' },
 );
 
 // Coco : une coccinelle ronde, rouge à points noirs, tête noire et deux antennes.
