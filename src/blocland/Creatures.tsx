@@ -67,14 +67,18 @@ const ROUXEL = fromLayers(
   { O: '#d9772e', W: '#f4e6d4', N: '#1f1a16', E: '#1f1a16' },
 );
 
+// Bloquette : une brebis ronde en laine blanche, large tête noire aux yeux clairs, oreilles roses, pattes sombres.
 const BLOQUETTE = fromLayers(
   [
-    ['.WWWW.', 'WWKKWW', 'WKWWKW', 'WWWWWW', '.WWWW.'],
-    ['.WWWW.', 'WWWWWW', 'WKWWWW', 'WWWWKW', '.WWWW.'],
-    ['..WW..', '.WWWW.', '.WEEW.', '.PPPP.', '......'],
-    ['.H..H.', '......', '......', '......', '......'],
+    ['.....', '.K.K.', '.....', '.K.K.', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['KKKKK', 'WWWWW', 'WwWwW', 'WWWWW', '.WWW.'],
+    ['KEKEK', 'WWWWW', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['KKKKK', 'WWWWW', 'WwWwW', '.WWW.', '.....'],
+    ['PWWWP', '.WWW.', '.WWW.', '.....', '.....'],
+    ['..W..', '..W..', '.....', '.....', '.....'],
   ],
-  { W: '#f6f1e6', K: '#2a2622', E: '#1f1a16', P: '#f0b8c4', H: '#8a5a26' },
+  { W: '#f6f1e6', w: '#e4dccb', K: '#2a2622', E: '#f6f1e6', P: '#f0b8c4' },
 );
 
 const GRIMOIRE = fromLayers(
