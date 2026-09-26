@@ -121,146 +121,181 @@ const NENU = fromLayers(
   { V: '#4f9e3f', v: '#c8e6a0', Y: '#f5d63d', K: '#1f1a16' },
 );
 
-// Lavi : une salamandre orange à taches jaunes, longue queue, deux yeux noirs.
+// Lavi : une salamandre orange à taches jaunes, corps bas et long, queue derrière, tête relevée aux yeux noirs.
 const LAVI = fromLayers(
   [
-    ['.OOO.', 'OOOOO', 'OYOYO', 'OOOOO', '.OOO.', '..O..', '..O..'],
-    ['.EOE.', '.OYO.', '.OOO.', '.....', '.....', '.....', '.....'],
+    ['.OOO.', 'OOOOO', 'OYOYO', 'OOOOO', '.OYO.', '..O..', '..O..'],
+    ['.OOO.', 'OYOYO', 'OOOOO', 'OOOOO', '.OOO.', '.....', '.....'],
+    ['.EOE.', '.OOO.', '.OYO.', '.....', '.....', '.....', '.....'],
+    ['.OOO.', '.OOO.', '.....', '.....', '.....', '.....', '.....'],
   ],
   { O: '#e8742e', Y: '#f5d63d', E: '#1f1a16' },
 );
 
-// Frimas : un pingouin dodu, dos noir, ventre blanc, bec et pattes orange.
+// Frimas : un pingouin dodu, dos noir, ventre blanc, bec et pattes orange, yeux clairs.
 const FRIMAS = fromLayers(
   [
-    ['.OOO.', '.....', '.....', '.....'],
+    ['.....', '.O.O.', '.....', '.....'],
     ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.'],
     ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.'],
-    ['.KKK.', 'KKKKK', '.KKK.', '.....'],
-    ['.EKE.', '..O..', '.....', '.....'],
+    ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.'],
+    ['..O..', 'KWWWK', 'KKKKK', '.KKK.'],
+    ['.EKE.', 'KKKKK', 'KKKKK', '.KKK.'],
+    ['.KKK.', '.KKK.', '.KKK.', '.....'],
   ],
   { O: '#f28c28', W: '#f6f1e6', K: '#1f1a16', E: '#f6f1e6' },
 );
 
-// Bazar : un raton laveur gris, masque noir sur les yeux, queue rayée.
+// Bazar : un raton laveur gris au ventre clair, masque noir aux yeux blancs, queue rayée derrière, deux oreilles.
 const BAZAR = fromLayers(
   [
-    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.', '..T..', '..t..', '..T..'],
-    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.', '.....', '.....', '.....'],
-    ['G.G.G', '.KKK.', '.GGG.', '.....', '.....', '.....', '.....'],
-    ['.....', '.EKE.', '.....', '.....', '.....', '.....', '.....'],
+    ['.....', 'G...G', '.....', 'G...G', '.....', '.....', '.....'],
+    ['.ggg.', 'GgggG', 'GGGGG', 'GGGGG', '.GGG.', '..T..', '..t..'],
+    ['.ggg.', 'GGGGG', 'GGGGG', 'GGGGG', '.GGG.', '..t..', '..T..'],
+    ['.GNG.', 'GGGGG', 'GGGGG', 'GGGGG', '.GGG.', '.....', '.....'],
+    ['KEKEK', 'GGGGG', 'GGGGG', '.GGG.', '.....', '.....', '.....'],
+    ['.GGG.', 'GGGGG', '.GGG.', '.....', '.....', '.....', '.....'],
+    ['K...K', '.....', '.....', '.....', '.....', '.....', '.....'],
   ],
-  { G: '#8c8c8c', K: '#1f1a16', E: '#f6f1e6', T: '#1f1a16', t: '#c2c2c2' },
+  { G: '#8c8c8c', g: '#c2c2c2', K: '#1f1a16', E: '#f6f1e6', N: '#1f1a16', T: '#1f1a16', t: '#c2c2c2' },
 );
 
-// Sema : un caméléon vert pomme, queue enroulée, gros yeux ronds qui regardent chacun d'un côté.
+// Sema : un caméléon vert pomme, ventre clair, queue enroulée derrière, deux gros yeux dorés de chaque côté de la tête.
 const SEMA = fromLayers(
   [
-    ['.VVVV.', 'VVVVVV', '.VVVV.', '..VV..', '..V...', '.VV...'],
-    ['.VvvV.', 'VvvvvV', '.VVVV.', '......', '......', '......'],
-    ['E.VV.E', '.VVVV.', '......', '......', '......', '......'],
+    ['......', '.V..V.', '......', '.V..V.', '......', '......'],
+    ['.vvvv.', 'VvvvvV', 'VVVVVV', 'VVVVVV', '.VVVV.', '..VV..'],
+    ['.VVVV.', 'VVVVVV', 'VVVVVV', 'VVVVVV', '.VVVV.', '..V...'],
+    ['.vVVv.', 'VVVVVV', '.VVVV.', '......', '......', '......'],
+    ['Y.VV.Y', 'YVVVVY', '......', '......', '......', '......'],
+    ['K....K', '.VVVV.', '......', '......', '......', '......'],
   ],
-  { V: '#7cc24a', v: '#b6e08a', E: '#f5d63d' },
+  { V: '#7cc24a', v: '#b6e08a', Y: '#f5d63d', K: '#1f1a16' },
 );
 
-// Kroa : un triton vert sombre, ventre orange, crête sur le dos.
+// Kroa : un triton vert sombre, ventre orange, crête orange sur le dos, longue queue, tête relevée aux yeux dorés.
 const KROA = fromLayers(
   [
-    ['.TTT.', 'TTTTT', 'TOOOT', 'TTTTT', '.TTT.', '..T..', '..T..'],
-    ['.EKE.', '.TCT.', '.TCT.', '.TCT.', '.....', '.....', '.....'],
+    ['.OOO.', 'TOOOT', 'TTTTT', 'TTTTT', '.TTT.', '..T..', '..T..'],
+    ['.TTT.', 'TTCTT', 'TTCTT', 'TTCTT', '.TTT.', '.....', '.....'],
+    ['.EKE.', '.TTT.', '..C..', '..C..', '.....', '.....', '.....'],
+    ['.TTT.', '.....', '.....', '.....', '.....', '.....', '.....'],
   ],
-  { T: '#3f6b3a', O: '#f28c28', E: '#f5d63d', K: '#1f1a16', C: '#f28c28' },
+  { T: '#3f6b3a', O: '#f28c28', C: '#f28c28', E: '#f5d63d', K: '#1f1a16' },
 );
 
-// Braise : un golem trapu de fonte sombre, cœur de braise orange, marteau.
+// Braise : un golem trapu de fonte sombre, cœur de braise sur la poitrine, yeux de braise, un marteau à la main.
 const BRAISE = fromLayers(
   [
-    ['.FFF.', 'FFFFF', 'FFFFF', '.FFF.'],
-    ['.FFF.', 'FFOFF', 'FFFFF', '.FFF.'],
-    ['..F.M', '.FFF.', '.FFF.', '.....'],
-    ['....M', '.FEF.', '.....', '.....'],
-    ['....M', '.....', '.....', '.....'],
+    ['......', '.F.F..', '.F.F..', '......'],
+    ['.FFF..', 'FFFFF.', 'FFFFF.', '.FFF..'],
+    ['.FOF..', 'FFFFFM', 'FFFFF.', '.FFF..'],
+    ['.FFF..', 'FFFFFM', 'FFFFF.', '.FFF..'],
+    ['.FFF..', 'FFFFFM', 'FFFFF.', '.FFF..'],
+    ['.EFE..', '.FFFHH', '.FFF..', '......'],
+    ['.FFF..', '.FFFHH', '.FFF..', '......'],
   ],
-  { F: '#4a4a52', O: '#f28c28', E: '#f5d63d', M: '#8a6a3c' },
+  { F: '#4a4a52', O: '#f28c28', E: '#f5d63d', M: '#8a6a3c', H: '#9c9c9c' },
 );
 
-// Ixe : un petit robot cubique crème, écran bleu, antenne.
+// Ixe : un robot cubique crème, écran bleu avec deux yeux, antenne rouge, deux pieds.
 const IXE = fromLayers(
   [
+    ['.....', '.C.C.', '.....', '.....'],
     ['.CCC.', 'CCCCC', 'CCCCC', '.CCC.'],
-    ['.CCC.', 'CBBBC', 'CCCCC', '.CCC.'],
-    ['.CCC.', 'CBXBC', 'CCCCC', '.....'],
+    ['CCCCC', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.BBB.', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.XBX.', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.BBB.', 'CCCCC', 'CCCCC', '.CCC.'],
+    ['.CCC.', '.CCC.', '.CCC.', '.....'],
     ['..A..', '.....', '.....', '.....'],
   ],
   { C: '#f4f1e4', B: '#3b82f6', X: '#1f1a16', A: '#d8402e' },
 );
 
-// Cléa : une chèvre blanche aux cornes courbes, barbichette, sabots noirs.
+// Cléa : une chèvre blanche, cornes brunes, museau rose, barbichette, sabots noirs.
 const CLEA = fromLayers(
   [
-    ['.K.K.', '.....', '.K.K.', '.....'],
-    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
-    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
-    ['.WBW.', '.WWW.', '.....', '.....'],
-    ['.EWE.', '.....', '.....', '.....'],
-    ['H...H', '.....', '.....', '.....'],
+    ['.....', 'K...K', '.....', 'K...K', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WWW.', 'WWWWW', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WBW.', 'WWWWW', 'WWWWW', '.WWW.', '.....'],
+    ['.WNW.', 'WWWWW', '.WWW.', '.....', '.....'],
+    ['.EWE.', '.WWW.', '.....', '.....', '.....'],
+    ['.WWW.', '.WWW.', '.....', '.....', '.....'],
+    ['H...H', '.....', '.....', '.....', '.....'],
+    ['H...H', '.....', '.....', '.....', '.....'],
   ],
-  { W: '#f6f1e6', K: '#1f1a16', B: '#d8c9b0', E: '#1f1a16', H: '#8a6a3c' },
+  { W: '#f6f1e6', K: '#1f1a16', B: '#d8c9b0', N: '#e8a3b8', E: '#1f1a16', H: '#8a6a3c' },
 );
 
-// Plume : une pie noire et blanche, longue queue, bec noir, un objet doré dans le bec.
+// Plume : une pie noire au ventre blanc, longue queue derrière, yeux dorés, un objet doré dans le bec.
 const PLUME = fromLayers(
   [
-    ['.KKK.', 'KWWWK', 'KKKKK', '.KKK.', '..K..', '..K..'],
-    ['.KKK.', 'KWWWK', 'KKKKK', '.....', '.....', '.....'],
-    ['.OKE.', '.KKK.', '.....', '.....', '.....', '.....'],
+    ['.....', '.O.O.', '.....', '.....', '.....', '.....'],
+    ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.', '..K..', '..K..'],
+    ['.WWW.', 'KWWWK', 'KKKKK', '.KKK.', '..K..', '.....'],
+    ['.KGK.', 'KKKKK', '.KKK.', '.....', '.....', '.....'],
+    ['.EKE.', '.KKK.', '.....', '.....', '.....', '.....'],
+    ['.KKK.', '.KKK.', '.....', '.....', '.....', '.....'],
   ],
-  { K: '#1f1a16', W: '#f6f1e6', E: '#f5d63d', O: '#f2c944' },
+  { K: '#1f1a16', W: '#f6f1e6', E: '#f5d63d', G: '#f2c944', O: '#f28c28' },
 );
 
-// Théo : un héron gris-bleu sur ses longues pattes, bec jaune, huppe noire.
+// Théo : un héron gris-bleu sur ses longues pattes, long cou, bec jaune, huppe noire.
 const THEO = fromLayers(
   [
-    ['..P.P', '.....', '.....', '.....'],
-    ['..P.P', '.....', '.....', '.....'],
-    ['.GGGG', 'GGGGG', '.GGG.', '.....'],
-    ['..G..', '.....', '.....', '.....'],
-    ['Y.GK.', '.....', '.....', '.....'],
+    ['.....', '.P.P.', '.....', '.....'],
+    ['.....', '.P.P.', '.....', '.....'],
+    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.GGG.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['..G..', '..G..', '.....', '.....'],
+    ['..Y..', '..G..', '.....', '.....'],
+    ['.EGE.', '.GGG.', '.....', '.....'],
+    ['.GGG.', '.GKG.', '.....', '.....'],
   ],
-  { G: '#8c9bb0', P: '#e8a33a', Y: '#f5d63d', K: '#1f1a16' },
+  { G: '#8c9bb0', P: '#e8a33a', Y: '#f5d63d', E: '#1f1a16', K: '#1f1a16' },
 );
 
-// Stat : une chouette mauve, grands yeux ronds, lunettes d'astronome.
+// Stat : une chouette mauve au ventre clair, deux grands yeux blancs à pupille noire, bec jaune, aigrettes.
 const STAT = fromLayers(
   [
-    ['.MMM.', 'MMMMM', 'MMMMM', '.MMM.'],
-    ['.MMM.', 'MmmmM', 'MMMMM', '.MMM.'],
-    ['.EYE.', 'MMMMM', '.MMM.', '.....'],
+    ['.....', '.Y.Y.', '.....', '.....'],
+    ['.mmm.', 'MmmmM', 'MMMMM', '.MMM.'],
+    ['.mmm.', 'MmmmM', 'MMMMM', '.MMM.'],
+    ['.MYM.', 'MMMMM', 'MMMMM', '.MMM.'],
+    ['EKMKE', 'MMMMM', 'MMMMM', '.MMM.'],
+    ['EEMEE', 'MMMMM', 'MMMMM', '.MMM.'],
+    ['MMMMM', 'MMMMM', '.MMM.', '.....'],
     ['M...M', '.....', '.....', '.....'],
   ],
-  { M: '#7a6aa0', m: '#c9b8e8', E: '#f6f1e6', Y: '#f5d63d' },
+  { M: '#7a6aa0', m: '#c9b8e8', E: '#f6f1e6', K: '#1f1a16', Y: '#f5d63d' },
 );
 
-// Fi : une lampe de phare vivante, socle doré, verre lumineux, un œil.
+// Fi : une lampe de phare vivante, socle et chapeau dorés, verre lumineux, un grand œil.
 const FI = fromLayers(
   [
-    ['.DDD.', 'DDDDD', '.DDD.', '.....'],
-    ['..D..', '.DDD.', '..D..', '.....'],
-    ['.LLL.', 'LLLLL', '.LLL.', '.....'],
-    ['.LEL.', 'LLLLL', '.LLL.', '.....'],
+    ['.DDD.', 'DDDDD', 'DDDDD', '.DDD.'],
+    ['..D..', '.DDD.', '.DDD.', '..D..'],
+    ['.LLL.', 'LLLLL', 'LLLLL', '.LLL.'],
+    ['.LEL.', 'LLLLL', 'LLLLL', '.LLL.'],
+    ['.LLL.', 'LLLLL', 'LLLLL', '.LLL.'],
+    ['.DDD.', 'DDDDD', 'DDDDD', '.DDD.'],
     ['..D..', '.DDD.', '..D..', '.....'],
   ],
   { D: '#e0b842', L: '#fff4c2', E: '#1f1a16' },
 );
 
-// Astra : une luciole au corps sombre et à l'abdomen lumineux, ailes claires.
+// Astra : une luciole au corps sombre, abdomen lumineux à l'arrière, ailes claires, grands yeux dorés, antennes.
 const ASTRA = fromLayers(
   [
-    ['.KKK.', 'KKKKK', '.LLL.', '.LLL.'],
-    ['W.K.W', 'WKKKW', '..L..', '.....'],
-    ['.EKE.', '.....', '.....', '.....'],
+    ['.....', 'K...K', '.....', 'K...K', '.....'],
+    ['.KKK.', 'KKKKK', 'KLLLK', 'LLLLL', '.LLL.'],
+    ['.EKE.', 'KKKKK', 'WLLLW', 'WLLLW', '.LLL.'],
+    ['.KKK.', 'WKKKW', 'WWWWW', '.WWW.', '.....'],
+    ['A...A', '.....', '.....', '.....', '.....'],
   ],
-  { K: '#2a2622', L: '#fff4a0', W: '#e6f2f8', E: '#f5d63d' },
+  { K: '#2a2622', L: '#fff4a0', W: '#e6f2f8', E: '#f5d63d', A: '#2a2622' },
 );
 
 export const CREATURE_CUBES: Record<BiomeId, VoxelCube[]> = {
