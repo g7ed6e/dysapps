@@ -33,6 +33,46 @@ function blip(freqFrom: number, freqTo: number, duration: number, volume: number
   osc.stop(t + duration);
 }
 
+/** Une note tenue : attaque douce, tenue, extinction ; `to` pour glisser vers une autre hauteur. */
+function tone(freq: number, duration: number, type: OscillatorType, volume: number, to = freq, attack = 0.02, release = 0.12): void {
+  const ac = context();
+  if (!ac || speaking()) return;
+  const t = ac.currentTime;
+  const osc = ac.createOscillator();
+  const gain = ac.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t);
+  if (to !== freq) osc.frequency.linearRampToValueAtTime(to, t + duration);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(volume, t + attack);
+  gain.gain.setValueAtTime(volume, t + Math.max(attack, duration - release));
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  osc.connect(gain).connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + duration + 0.05);
+}
+
+/** Un souffle : du bruit blanc passé par un filtre, dont le volume monte puis redescend en cloche. */
+function whoosh(duration: number, centerHz: number, volume: number): void {
+  const ac = context();
+  if (!ac || speaking()) return;
+  const t = ac.currentTime;
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac);
+  src.loop = true;
+  const filter = ac.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = centerHz;
+  filter.Q.value = 0.8;
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(volume, t + duration * 0.4);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  src.connect(filter).connect(gain).connect(ac.destination);
+  src.start(t);
+  src.stop(t + duration + 0.05);
+}
+
 /** « Toc » sourd : un bloc se pose. */
 export function playPlace(): void {
   blip(220, 110, 0.12, 0.18, 'triangle');
@@ -69,6 +109,39 @@ export function playGrowl(): void {
 export function playVictory(): void {
   [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, f, 0.2, 0.14, 'square'), i * 130));
   setTimeout(() => blip(1047, 1047, 0.8, 0.1, 'triangle'), 560);
+}
+
+// ---------- Le voyage du Bloc-Navire ----------
+
+/** La corne de brume du départ : deux notes graves qui se suivent. */
+export function playHorn(): void {
+  tone(165, 0.7, 'triangle', 0.12);
+  setTimeout(() => tone(220, 0.6, 'triangle', 0.1), 150);
+}
+
+/** Le vent dans la voile (première étape). */
+export function playSail(): void {
+  whoosh(2.5, 600, 0.05);
+}
+
+/** Le brûleur du ballon : deux bouffées (deuxième étape). */
+export function playBurner(): void {
+  for (const d of [0, 700]) setTimeout(() => {
+    whoosh(1.2, 1800, 0.06);
+    tone(110, 1.2, 'triangle', 0.05);
+  }, d);
+}
+
+/** Le réacteur : un grondement qui monte, et le souffle (troisième étape). */
+export function playReactor(): void {
+  tone(55, 2.5, 'sawtooth', 0.08, 110);
+  whoosh(2.5, 400, 0.05);
+}
+
+/** Le carillon d'arrivée : trois notes qui montent, puis une note tenue (différent de la fanfare des plans). */
+export function playArrival(): void {
+  [659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, f, 0.16, 0.12, 'square'), i * 120));
+  setTimeout(() => tone(1047, 0.6, 'triangle', 0.08), 380);
 }
 
 // ---------- Ambiance (en option) : vent continu, oiseaux le jour, grillons la nuit ----------

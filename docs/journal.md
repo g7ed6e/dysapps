@@ -2,6 +2,10 @@
 
 Chaque pull request monte la version mineure et ajoute ici une entrée, de la plus récente à la plus ancienne. La version installée est affichée dans Réglages → Application. Les versions antérieures au journal sont résumées en bas de page.
 
+## 0.12.0 — 26 septembre 2026
+
+**Le voyage.** Embarquer sur le Bloc-Navire joue maintenant une vraie traversée en 3D : le bonhomme marche jusqu’au pont par la jetée, le navire s’éloigne vu de côté (la voile glisse et laisse son écume, le ballon s’élève et l’archipel rétrécit, le réacteur monte presque à la verticale, flamme allumée), un voile blanc passe, l’archipel change, le navire accoste et le bonhomme débarque. Huit secondes, cinq pour un retour. Un toucher, Entrée, Espace, Échap ou le bouton « Arriver » font arriver tout de suite. Les sons du voyage : corne de brume, vent dans la voile, brûleur, réacteur, carillon d’arrivée (jamais pendant la voix). Sous « Réduire les animations », l’écran fixe reste.
+
 ## 0.11.0 — 26 septembre 2026
 
 **Le Bloc-Navire au quai.** Le navire n’est plus figé dans le terrain : il tangue doucement sur l’eau (il plane à hauteur de quai dans les Îles du Ciel) et son ballon se balance au sommet du mât. Toucher une de ses cases bleues pose le bloc attendu ; le toucher ailleurs ouvre le panneau du port directement sur la section Bloc-Navire. Quand le panneau du port est ouvert et qu’il reste des cases à poser, la flèche jaune flotte au-dessus du chantier.

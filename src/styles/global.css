@@ -4149,3 +4149,36 @@ a.island-quest:focus-visible {
   align-content: center;
 }
 
+/* ---------- Le voyage du Bloc-Navire ---------- */
+
+.world-veil {
+  position: absolute;
+  inset: 0;
+  background: #f6f9fc;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.world-veil.on {
+  opacity: 1;
+}
+
+.voyage-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.voyage-line .button {
+  margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-veil {
+    transition: none;
+  }
+}
+
