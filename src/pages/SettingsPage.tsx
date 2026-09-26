@@ -5,6 +5,7 @@ import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
+import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../core/appUpdate';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
 
@@ -12,6 +13,7 @@ export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
   const { resetProgress } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
+  const appUpdate = useAppUpdate();
 
   return (
     <>
@@ -156,6 +158,29 @@ export function SettingsPage() {
             display={`× ${settings.cameraSpeed.toFixed(2).replace(/\.?0+$/, '')}`}
             onChange={(cameraSpeed) => update({ cameraSpeed })}
           />
+        </fieldset>
+
+        <fieldset className="panel">
+          <legend>Application</legend>
+          <p className="settings-version">Version {APP_VERSION}.</p>
+          {appUpdate.ready ? (
+            <button type="button" className="button primary" onClick={() => void applyUpdate()}>
+              Mettre à jour maintenant
+            </button>
+          ) : (
+            <button type="button" className="button" disabled={appUpdate.checking} onClick={() => void checkForUpdate()}>
+              {appUpdate.checking ? 'Recherche…' : 'Vérifier les mises à jour'}
+            </button>
+          )}
+          <p className="settings-note" role="status" aria-live="polite">
+            {appUpdate.ready
+              ? 'Une nouvelle version est prête : elle s’installe en un clic, puis la page se recharge.'
+              : appUpdate.checked === 'aucune'
+                ? 'Tu as la dernière version.'
+                : appUpdate.checked === 'hors-ligne'
+                  ? 'Pas de connexion : réessaie plus tard.'
+                  : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
+          </p>
         </fieldset>
 
         <div className="actions">

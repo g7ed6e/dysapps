@@ -3930,3 +3930,22 @@ a.island-quest:focus-visible {
   font-size: 0.95em;
   opacity: 0.9;
 }
+
+/* Une nouvelle version de l'application attend : une bande sous l'en-tête. */
+.update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  padding: 0.6rem 1rem;
+  border-bottom: var(--border-width) solid var(--ink);
+  background: color-mix(in srgb, var(--yellow) 35%, var(--surface));
+}
+.settings-version {
+  margin: 0 0 0.6rem;
+}
+.settings-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.95em;
+}
