@@ -1,9 +1,21 @@
 import { BIOMES, BLOCKS } from '../biomes';
-import { EXERCISES, exercisesOf, pickExercise, questProgress } from './index';
+import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
 import { CalculScreen } from './CalculScreen';
 import { DicteeItem } from './DicteeItem';
 import { fillTemplate } from './types';
+
+const EXERCISES = await loadAllExercises();
+
+it('chaque fichier de data/ a sa place dans l’ordre du catalogue, une seule fois', () => {
+  expect(UNORDERED).toEqual([]);
+  const ids = CATALOG.map((e) => e.id);
+  expect(new Set(ids).size).toBe(ids.length);
+});
+
+it('l’index du catalogue dit la même chose que le contenu chargé à la demande', () => {
+  expect(EXERCISES.map(({ id, biome, type, level }) => ({ id, biome, type, level }))).toEqual(CATALOG);
+});
 
 describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercice %s', (_, def) => {
   it('est complet et cohérent', () => {

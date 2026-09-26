@@ -4,6 +4,7 @@
 import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
 import { appVersion } from '../version.mjs';
+import { exerciseMeta } from '../exerciseMeta.mjs';
 
 const root = process.cwd();
 
@@ -16,6 +17,8 @@ export async function generatePages() {
     appType: 'custom',
     server: { middlewareMode: true, hmr: false, watch: null },
     optimizeDeps: { noDiscovery: true, include: [] },
+    // L'index des exercices (`./data/*.json?meta`), comme dans l'application.
+    plugins: [exerciseMeta()],
   });
   try {
     const load = (p) => server.ssrLoadModule(p);
@@ -43,7 +46,7 @@ export async function generatePages() {
       version: appVersion(root),
       BIOMES: biomesMod.BIOMES,
       BLOCKS: biomesMod.BLOCKS,
-      EXERCISES: exercisesMod.EXERCISES,
+      EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,

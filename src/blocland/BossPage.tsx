@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -7,6 +7,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { useLoaded } from '../core/useLoaded';
 import { getBiome } from './biomes';
 import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipelago';
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
@@ -29,11 +30,13 @@ export function BossPage() {
   const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossUnlocked(biome, state.progress));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Le défi est tiré au lancement (et à chaque « Rejouer »), pas à chaque changement de progression.
-  const def = useMemo(
-    () => (biome && unlocked ? bossDef(biome, state) : undefined),
+  // Son contenu est chargé à la demande : `undefined` le temps de l'avoir, `null` si le Gardien n'est pas accessible.
+  const loaded = useLoaded(
+    async () => (biome && unlocked ? bossDef(biome, state) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, unlocked, run],
   );
+  const def = loaded ?? undefined;
   // L'arène : résistance du Gardien (une épreuve réussie = un cran de moins), humeur et réplique.
   const total = def?.items.length ?? 0;
   const [won, setWon] = useState(0);
@@ -85,7 +88,9 @@ export function BossPage() {
       <h1 className={`page-title biome-title biome-${biome.id}`}>
         <Icon name="shield" /> {biome.guardian}
       </h1>
-      {!unlocked || !def ? (
+      {unlocked && loaded === undefined ? (
+        <p className="loading">Chargement…</p>
+      ) : !unlocked || !def ? (
         <>
           <CreatureBubble
             biome={biome}

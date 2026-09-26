@@ -1,6 +1,6 @@
 import { BIOMES, getBiome } from './biomes';
 import { EMPTY_STATE, type BloclandState, type ExerciseProgress } from './engine';
-import { exercisesOf } from './exercises';
+import { exercisesOf, loadExercise } from './exercises';
 import { SCREEN_TYPES } from './exercises/registry';
 import { ROUNDS_PER_TYPE, bossDef, bossId, bossesBeaten, isBossBeaten, isBossUnlocked, missingForBoss, typesWithContent } from './boss';
 
@@ -25,10 +25,10 @@ it('le Gardien se débloque avec deux étoiles dans chaque quête du biome, et d
   expect(missingForBoss(foret, starsEverywhere('foret'))).toEqual([]);
 });
 
-it('construit un défi avec deux manches par type de quête, aux items de l’exercice, sans doublon', () => {
+it('construit un défi avec deux manches par type de quête, aux items de l’exercice, sans doublon', async () => {
   for (const biome of BIOMES) {
     const state: BloclandState = { ...EMPTY_STATE, progress: starsEverywhere(biome.id) };
-    const def = bossDef(biome, state, () => 0.5);
+    const def = await bossDef(biome, state, () => 0.5);
     expect(def.id).toBe(bossId(biome.id));
     expect(def.type).toBe('boss');
     expect(def.reward.block).toBe('or');
@@ -42,7 +42,7 @@ it('construit un défi avec deux manches par type de quête, aux items de l’ex
       expect(types).toContain(type);
       const batch = SCREEN_TYPES[type].batch;
       const items = round.items as { key: string }[];
-      expect(items.length).toBe(batch === 'all' ? exercisesOf(biome.id, type)[0].items.length : batch);
+      expect(items.length).toBe(batch === 'all' ? (await loadExercise(exercisesOf(biome.id, type)[0].id))!.items.length : batch);
       if (batch !== 'all') expect(String(round.wrong).length).toBeGreaterThan(0);
     }
     // Deux manches du même type ne reprennent pas les mêmes items.

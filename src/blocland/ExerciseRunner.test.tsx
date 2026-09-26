@@ -1,12 +1,15 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { AppRoutes } from '../App';
 import { BloclandProvider } from './BloclandContext';
-import { getExercise } from './exercises';
+import { loadAllExercises } from './exercises';
 import { runItems, runSeed } from './exercises/run';
+
+const ALL = await loadAllExercises();
+const getExercise = (id: string) => ALL.find((e) => e.id === id);
 
 // La graine d'une partie est tirée au hasard : ici, on la fixe pour savoir quels items le test doit jouer.
 const partie = vi.hoisted(() => ({ n: 0 }));
@@ -31,6 +34,9 @@ function renderAt(path: string) {
     </SettingsProvider>,
   );
 }
+
+/** Attend que le contenu de l'exercice (chargé à la demande) soit là. */
+const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).not.toBeInTheDocument());
 
 const DEF = getExercise('foret-echauffement-001')!;
 
@@ -83,6 +89,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
 it('propose une pause après 3 exercices, et laisse continuer', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/foret/abattage');
+  await loaded();
   for (let round = 1; round <= 3; round++) {
     // Une erreur par partie : on reste au niveau 1 (une partie quasi parfaite ferait monter au niveau 2, un autre exercice).
     await play(user, [0]);

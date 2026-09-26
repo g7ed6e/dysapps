@@ -6,7 +6,8 @@ import { getBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { ExerciseRunner } from './ExerciseRunner';
-import { pickExercise } from './exercises';
+import { loadExercise, pickExercise } from './exercises';
+import { useLoaded } from '../core/useLoaded';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
 export function ExercisePage() {
@@ -17,12 +18,14 @@ export function ExercisePage() {
   const type = biome?.exercises.find((e) => e.id === typeId);
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
   // sinon la fin de partie relancerait un autre exercice au lieu d'afficher la récompense.
-  const def = useMemo(
+  const picked = useMemo(
     () => (biome && typeId ? pickExercise(biome.id, typeId, levelFor(state, typeId), state.progress) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, typeId, run],
   );
-  if (!biome || !type || !def) return <NotFoundPage />;
+  // Le contenu de l'exercice est chargé à la demande (déjà en cache hors ligne : c'est immédiat).
+  const loaded = useLoaded(async () => (picked ? ((await loadExercise(picked.id)) ?? null) : null), [picked]);
+  if (!biome || !type || !picked || loaded === null) return <NotFoundPage />;
 
   return (
     <>
@@ -32,7 +35,11 @@ export function ExercisePage() {
       <h1 className={`page-title biome-title biome-${biome.id}`}>
         <Icon name={biome.icon} /> {type.title}
       </h1>
-      <ExerciseRunner key={`${def.id}-${run}`} biome={biome} def={def} onReplay={() => setRun((r) => r + 1)} />
+      {loaded ? (
+        <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} />
+      ) : (
+        <p className="loading">Chargement…</p>
+      )}
     </>
   );
 }

@@ -1,119 +1,20 @@
-// Catalogue des exercices Blocland (JSON chargés statiquement, plus ceux dérivés des données existantes).
+// Catalogue des exercices Blocland : des fichiers JSON (data/), plus ceux dérivés des données existantes et des générateurs.
+// Le bundle principal ne porte que l'index des exercices JSON (id, île, type, niveau, par le plugin
+// scripts/exerciseMeta.mjs) ; leur contenu est chargé à la demande, au lancement d'une partie ou d'un Gardien.
+// Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
 import { SETS } from '../../apps/homophones/data';
 import type { BiomeId } from '../biomes';
 import type { ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
-import carrefourAiguillage1 from './data/carrefour-aiguillage-1.json';
-import carrefourAiguillage2 from './data/carrefour-aiguillage-2.json';
-import carrefourBifurcation1 from './data/carrefour-bifurcation-1.json';
-import carrefourBifurcation2 from './data/carrefour-bifurcation-2.json';
-import maraisRives1 from './data/marais-rives-1.json';
-import maraisRives2 from './data/marais-rives-2.json';
-import maraisBrume1 from './data/marais-brume-1.json';
-import maraisBrume2 from './data/marais-brume-2.json';
-import maraisRoseaux1 from './data/marais-roseaux-1.json';
-import maraisRoseaux2 from './data/marais-roseaux-2.json';
-import foretEchauffement from './data/foret-echauffement-001.json';
-import foretEchauffement2 from './data/foret-echauffement-002.json';
-import chasseAn from './data/foret-chasse-son-an.json';
-import chasseOn from './data/foret-chasse-son-on.json';
-import chasseOi from './data/foret-chasse-son-oi.json';
-import chasseIn from './data/foret-chasse-son-in.json';
-import chasseCh from './data/foret-chasse-son-ch.json';
-import chasseS from './data/foret-chasse-son-s.json';
-import filonB from './data/mine-filon-b.json';
-import filonD from './data/mine-filon-d.json';
-import filonP from './data/mine-filon-p.json';
-import filonQ from './data/mine-filon-q.json';
-import filonMix1 from './data/mine-filon-mix-1.json';
-import filonMix2 from './data/mine-filon-mix-2.json';
-import trou1 from './data/carriere-mot-troue-1.json';
-import trou2 from './data/carriere-mot-troue-2.json';
-import ascMousso from './data/tour-ascension-mousso.json';
-import ascTunel from './data/tour-ascension-tunel.json';
-import ascPont from './data/tour-ascension-pont.json';
-import rimesEau from './data/foret-rimes-eau.json';
-import rimesOn from './data/foret-rimes-on.json';
-import rimesEtte from './data/foret-rimes-ette.json';
-import oreille1 from './data/mine-oreille-1.json';
-import oreille2 from './data/mine-oreille-2.json';
-import coffre1 from './data/carriere-coffre-1.json';
-import coffre2 from './data/carriere-coffre-2.json';
-import familles1 from './data/carriere-familles-1.json';
-import familles2 from './data/carriere-familles-2.json';
-import enclos1 from './data/ferme-enclos-1.json';
-import enclos2 from './data/ferme-enclos-2.json';
-import recolte1 from './data/ferme-recolte-1.json';
-import recolte2 from './data/ferme-recolte-2.json';
-import falaiseCorde1 from './data/falaise-corde-1.json';
-import falaiseCorde2 from './data/falaise-corde-2.json';
-import falaiseParoi1 from './data/falaise-paroi-1.json';
-import falaiseParoi2 from './data/falaise-paroi-2.json';
-import falaiseSommet1 from './data/falaise-sommet-1.json';
-import falaiseSommet2 from './data/falaise-sommet-2.json';
-import cabinetRacines1 from './data/cabinet-racines-1.json';
-import cabinetRacines2 from './data/cabinet-racines-2.json';
-import cabinetSens1 from './data/cabinet-sens-1.json';
-import cabinetNuances1 from './data/cabinet-nuances-1.json';
-import textesInferences1 from './data/textes-inferences-1.json';
-import textesInferences2 from './data/textes-inferences-2.json';
-import textesFigures1 from './data/textes-figures-1.json';
-import textesFigures2 from './data/textes-figures-2.json';
-import textesRouages1 from './data/textes-rouages-1.json';
-import textesRouages2 from './data/textes-rouages-2.json';
-// Anglais 6e : Baie des mots, Horloge des verbes.
-import baieHello1 from './data/baie-hello-1.json';
-import baieHello2 from './data/baie-hello-2.json';
-import baieNumbers1 from './data/baie-numbers-1.json';
-import baieNumbers2 from './data/baie-numbers-2.json';
-import baieEars1 from './data/baie-ears-1.json';
-import baieEars2 from './data/baie-ears-2.json';
-import horlogeToBe1 from './data/horloge-to-be-1.json';
-import horlogeToBe2 from './data/horloge-to-be-2.json';
-import horlogeHaveGot1 from './data/horloge-have-got-1.json';
-import horlogeHaveGot2 from './data/horloge-have-got-2.json';
-import horlogePresentSimple1 from './data/horloge-present-simple-1.json';
-import horlogePresentSimple2 from './data/horloge-present-simple-2.json';
-// Anglais 5e.
-import comptoirShopping1 from './data/comptoir-shopping-1.json';
-import comptoirShopping2 from './data/comptoir-shopping-2.json';
-import comptoirRoutine1 from './data/comptoir-routine-1.json';
-import comptoirRoutine2 from './data/comptoir-routine-2.json';
-import comptoirListening1 from './data/comptoir-listening-1.json';
-import comptoirListening2 from './data/comptoir-listening-2.json';
-import manoirIng1 from './data/manoir-ing-1.json';
-import manoirIng2 from './data/manoir-ing-2.json';
-import manoirPreterit1 from './data/manoir-preterit-1.json';
-import manoirPreterit2 from './data/manoir-preterit-2.json';
-import manoirComparatifs1 from './data/manoir-comparatifs-1.json';
-import manoirComparatifs2 from './data/manoir-comparatifs-2.json';
-// Anglais 4e.
-import theatreDialogues1 from './data/theatre-dialogues-1.json';
-import theatreDialogues2 from './data/theatre-dialogues-2.json';
-import theatreQuantites1 from './data/theatre-quantites-1.json';
-import theatreQuantites2 from './data/theatre-quantites-2.json';
-import theatrePreteritIrregulier1 from './data/theatre-preterit-irregulier-1.json';
-import theatrePreteritIrregulier2 from './data/theatre-preterit-irregulier-2.json';
-import gareFutur1 from './data/gare-futur-1.json';
-import gareFutur2 from './data/gare-futur-2.json';
-import gareModaux1 from './data/gare-modaux-1.json';
-import gareModaux2 from './data/gare-modaux-2.json';
-import garePresentPerfect1 from './data/gare-present-perfect-1.json';
-import garePresentPerfect2 from './data/gare-present-perfect-2.json';
-// Anglais 3e.
-import studioComprendre1 from './data/studio-comprendre-1.json';
-import studioComprendre2 from './data/studio-comprendre-2.json';
-import studioConnecteurs1 from './data/studio-connecteurs-1.json';
-import studioConnecteurs2 from './data/studio-connecteurs-2.json';
-import studioFauxAmis1 from './data/studio-faux-amis-1.json';
-import studioFauxAmis2 from './data/studio-faux-amis-2.json';
-import chateauForSince1 from './data/chateau-for-since-1.json';
-import chateauForSince2 from './data/chateau-for-since-2.json';
-import chateauIf1 from './data/chateau-if-1.json';
-import chateauIf2 from './data/chateau-if-2.json';
-import chateauPassif1 from './data/chateau-passif-1.json';
-import chateauPassif2 from './data/chateau-passif-2.json';
+
+/** Ce qu'il faut d'un exercice pour les listes, les étoiles et le choix de la partie : sans ses items. */
+export type ExerciseMeta = Pick<ExerciseDef, 'id' | 'biome' | 'type' | 'level'>;
+
+const JSON_META = import.meta.glob<ExerciseMeta>('./data/*.json', { eager: true, query: '?meta', import: 'default' });
+const JSON_LOADERS = import.meta.glob<ExerciseDef>('./data/*.json', { import: 'default' });
+/** Chargement du contenu d'un exercice JSON, par son id. */
+const LOADERS = new Map(Object.entries(JSON_META).map(([path, meta]) => [meta.id, JSON_LOADERS[path]]));
 
 /** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
@@ -162,129 +63,72 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
-export const EXERCISES: ExerciseDef[] = [
-  foretEchauffement,
-  foretEchauffement2,
-  chasseAn,
-  chasseOn,
-  chasseOi,
-  chasseIn,
-  chasseCh,
-  chasseS,
-  filonB,
-  filonD,
-  filonP,
-  filonQ,
-  filonMix1,
-  filonMix2,
-  trou1,
-  trou2,
-  ...graines,
-  ascMousso,
-  ascTunel,
-  ascPont,
-  rimesEau,
-  rimesOn,
-  rimesEtte,
-  oreille1,
-  oreille2,
-  coffre1,
-  coffre2,
-  familles1,
-  familles2,
-  enclos1,
-  enclos2,
-  recolte1,
-  recolte2,
-  ...MATHS_EXERCISES,
-  ...COLLEGE_EXERCISES,
-  ...panneaux,
-  carrefourAiguillage1,
-  carrefourAiguillage2,
-  carrefourBifurcation1,
-  carrefourBifurcation2,
-  maraisRives1,
-  maraisRives2,
-  maraisBrume1,
-  maraisBrume2,
-  maraisRoseaux1,
-  maraisRoseaux2,
-  falaiseCorde1,
-  falaiseCorde2,
-  falaiseParoi1,
-  falaiseParoi2,
-  falaiseSommet1,
-  falaiseSommet2,
-  cabinetRacines1,
-  cabinetRacines2,
-  cabinetSens1,
-  cabinetNuances1,
-  textesInferences1,
-  textesInferences2,
-  textesFigures1,
-  textesFigures2,
-  textesRouages1,
-  textesRouages2,
-  baieHello1,
-  baieHello2,
-  baieNumbers1,
-  baieNumbers2,
-  baieEars1,
-  baieEars2,
-  horlogeToBe1,
-  horlogeToBe2,
-  horlogeHaveGot1,
-  horlogeHaveGot2,
-  horlogePresentSimple1,
-  horlogePresentSimple2,
-  comptoirShopping1,
-  comptoirShopping2,
-  comptoirRoutine1,
-  comptoirRoutine2,
-  comptoirListening1,
-  comptoirListening2,
-  manoirIng1,
-  manoirIng2,
-  manoirPreterit1,
-  manoirPreterit2,
-  manoirComparatifs1,
-  manoirComparatifs2,
-  theatreDialogues1,
-  theatreDialogues2,
-  theatreQuantites1,
-  theatreQuantites2,
-  theatrePreteritIrregulier1,
-  theatrePreteritIrregulier2,
-  gareFutur1,
-  gareFutur2,
-  gareModaux1,
-  gareModaux2,
-  garePresentPerfect1,
-  garePresentPerfect2,
-  studioComprendre1,
-  studioComprendre2,
-  studioConnecteurs1,
-  studioConnecteurs2,
-  studioFauxAmis1,
-  studioFauxAmis2,
-  chateauForSince1,
-  chateauForSince2,
-  chateauIf1,
-  chateauIf2,
-  chateauPassif1,
-  chateauPassif2,
-] as ExerciseDef[];
+/** Les exercices écrits en code (générateurs, dérivés de la quête Homophones) : déjà là, rien à charger. */
+const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...panneaux];
+
+/**
+ * L'ordre du catalogue : celui de la progression dans une île (il départage les variantes d'un même niveau et
+ * ordonne les pages de la documentation). Un exercice JSON par son id, les exercices en code par groupe.
+ * Un fichier de data/ absent de cette liste fait échouer les tests (data.test.ts).
+ */
+const ORDER: (string | ExerciseDef[])[] = [
+  'foret-echauffement-001', 'foret-echauffement-002', 'foret-chasse-son-an', 'foret-chasse-son-on',
+  'foret-chasse-son-oi', 'foret-chasse-son-in', 'foret-chasse-son-ch', 'foret-chasse-son-s', 'mine-filon-b',
+  'mine-filon-d', 'mine-filon-p', 'mine-filon-q', 'mine-filon-mix-1', 'mine-filon-mix-2', 'carriere-mot-troue-1',
+  'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont',
+  'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
+  'carriere-coffre-2', 'carriere-familles-1', 'carriere-familles-2', 'ferme-enclos-1', 'ferme-enclos-2',
+  'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
+  'carrefour-aiguillage-2', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',
+  'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'falaise-corde-1', 'falaise-corde-2',
+  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'cabinet-racines-1',
+  'cabinet-racines-2', 'cabinet-sens-1', 'cabinet-nuances-1', 'textes-inferences-1', 'textes-inferences-2',
+  'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'baie-hello-1', 'baie-hello-2',
+  'baie-numbers-1', 'baie-numbers-2', 'baie-ears-1', 'baie-ears-2', 'horloge-to-be-1', 'horloge-to-be-2',
+  'horloge-have-got-1', 'horloge-have-got-2', 'horloge-present-simple-1', 'horloge-present-simple-2',
+  'comptoir-shopping-1', 'comptoir-shopping-2', 'comptoir-routine-1', 'comptoir-routine-2', 'comptoir-listening-1',
+  'comptoir-listening-2', 'manoir-ing-1', 'manoir-ing-2', 'manoir-preterit-1', 'manoir-preterit-2',
+  'manoir-comparatifs-1', 'manoir-comparatifs-2', 'theatre-dialogues-1', 'theatre-dialogues-2', 'theatre-quantites-1',
+  'theatre-quantites-2', 'theatre-preterit-irregulier-1', 'theatre-preterit-irregulier-2', 'gare-futur-1',
+  'gare-futur-2', 'gare-modaux-1', 'gare-modaux-2', 'gare-present-perfect-1', 'gare-present-perfect-2',
+  'studio-comprendre-1', 'studio-comprendre-2', 'studio-connecteurs-1', 'studio-connecteurs-2', 'studio-faux-amis-1',
+  'studio-faux-amis-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
+  'chateau-passif-1', 'chateau-passif-2',
+];
+
+const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });
+const JSON_BY_ID = new Map(Object.values(JSON_META).map((m) => [m.id, m]));
+
+/** Tous les exercices, sans leurs items. */
+export const CATALOG: ExerciseMeta[] = ORDER.flatMap((entry) =>
+  typeof entry === 'string' ? (JSON_BY_ID.has(entry) ? [JSON_BY_ID.get(entry)!] : []) : entry.map(metaOf),
+);
+
+/** Les exercices JSON de data/ que `ORDER` oublie (vide : vérifié par les tests). */
+export const UNORDERED = [...JSON_BY_ID.keys()].filter((id) => !ORDER.includes(id));
+
+/** Le contenu d'un exercice (ses items, sa consigne…), chargé à la demande pour un exercice JSON. */
+export async function loadExercise(id: string): Promise<ExerciseDef | undefined> {
+  const code = CODE_EXERCISES.find((e) => e.id === id);
+  if (code) return code;
+  return LOADERS.get(id)?.();
+}
+
+/** Tous les exercices avec leur contenu (tests, documentation générée). */
+export async function loadAllExercises(): Promise<ExerciseDef[]> {
+  return Promise.all(CATALOG.map(async (m) => (await loadExercise(m.id))!));
+}
 
 /** Exercices d'un type dans un biome, par niveau croissant. */
-export function exercisesOf(biome: BiomeId, type: string): ExerciseDef[] {
-  return EXERCISES.filter((e) => e.biome === biome && e.type === type).sort((a, b) => a.level - b.level);
+export function exercisesOf(biome: BiomeId, type: string): ExerciseMeta[] {
+  return CATALOG.filter((e) => e.biome === biome && e.type === type).sort((a, b) => a.level - b.level);
 }
 
 /**
  * L'exercice à jouer : au niveau demandé (ou le plus proche en dessous), et parmi ceux-là
  * le moins joué, pour varier les contenus.
  */
-export function pickExercise(biome: BiomeId, type: string, level: number, progress: Record<string, { attempts: number }> = {}): ExerciseDef | undefined {
+export function pickExercise(biome: BiomeId, type: string, level: number, progress: Record<string, { attempts: number }> = {}): ExerciseMeta | undefined {
   const all = exercisesOf(biome, type);
   if (all.length === 0) return undefined;
   const below = all.filter((e) => e.level <= level);
@@ -312,8 +156,4 @@ export function questProgress(
     attempts: played.reduce((n, p) => n + p.attempts, 0),
     best: Math.max(...played.map((p) => p.best)),
   };
-}
-
-export function getExercise(id: string): ExerciseDef | undefined {
-  return EXERCISES.find((e) => e.id === id);
 }

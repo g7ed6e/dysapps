@@ -1,10 +1,12 @@
 import cabinet from './data/cabinet-nuances-1.json';
 import mine from './data/mine-oreille-1.json';
 import foret from './data/foret-echauffement-002.json';
-import { EXERCISES } from './index';
+import { loadAllExercises } from './index';
 import { runItems } from './run';
 import type { ExerciseDef, ExerciseItem } from './types';
 import { shuffleRunChoices } from './shuffle';
+
+const EXERCISES = await loadAllExercises();
 
 const at = (item: ExerciseItem) => (item.choices as unknown[]).map(String).indexOf(String(item.answer));
 

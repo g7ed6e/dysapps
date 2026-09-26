@@ -15,7 +15,8 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 - Content-Security-Policy stricte injectée en `<meta>` au build : aucune ressource externe, tout est limité à `'self'`.
 - `referrer` désactivé, aucun appel réseau vers un autre domaine.
-- PWA (`vite-plugin-pwa`) : mise à jour proposée, jamais imposée ; tout le site est mis en cache pour le hors ligne.
+- PWA (`vite-plugin-pwa`) : mise à jour proposée, jamais imposée ; tout le site est mis en cache pour le hors ligne. Le service worker enregistre à l’installation tous les fichiers `js`, `css`, `html`, `svg`, `png` et `woff2` (`globPatterns` dans `vite.config.ts`), y compris ceux que l’application ne charge qu’à la demande : la 3D (Three.js), chaque quête du portail et chaque exercice JSON de Blocland. Ils s’ouvrent donc hors ligne même si l’élève ne les a jamais ouverts en ligne. Les textures PNG de l’interface en font partie.
+- Chargement à la demande : il allège le premier affichage (moins de code à lire avant l’accueil), pas le téléchargement de l’installation. Si un fichier chargé à la demande manque (une nouvelle version publiée pendant la séance, avant que le service worker ne garde le site), la page affiche « Cette page n’a pas pu s’ouvrir » avec un bouton **Recharger** au lieu d’un écran blanc (`src/components/ErrorBoundary.tsx`) ; une créature ou un Gardien en 3D reste alors dessiné en SVG.
 - Chaque publication porte un numéro de version nouveau (voir ci-dessous).
 
 ## Le build de la documentation

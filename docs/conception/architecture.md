@@ -14,7 +14,8 @@ src/
   styles/        thèmes, styles globaux, textures pixel générées
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
-scripts/         calcul de la version depuis git, construction et vérification de la documentation
+scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
+                 construction et vérification de la documentation
 public/          icônes, police Luciole
 ```
 
@@ -33,11 +34,12 @@ public/          icônes, police Luciole
 - `progress.ts` : XP, niveaux, rangs, succès, et les évènements (`recordAnswer`, `recordSession`, `recordPlan`, `recordBoss`). Logique pure, testée.
 - `storage.ts` : lecture et écriture dans `localStorage`, avec correction des données lues (champs manquants, valeurs hors bornes).
 - `appUpdate.ts` : la mise à jour de la PWA (bande « Mettre à jour », bouton dans les réglages).
+- `useLoaded.ts` : attend un contenu chargé à la demande (un exercice, un défi de Gardien) ; un échec remonte à la limite d’erreur de la page (`components/ErrorBoundary.tsx`, message et bouton « Recharger »).
 
 ## Blocland (`src/blocland/`)
 
 - `biomes.ts` : les **vingt-huit îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, quêtes) et les **blocs**. La classe d’une île est aussi son **archipel**.
-- `exercises/` : le **moteur d’exercice** de Blocland. `types.ts` définit le format d’un exercice ; `index.ts` le catalogue ; `registry.ts` associe chaque type d’exercice à son écran (`QcmItem`, `ChasseSonScreen`, `FilonScreen`, `MotTroueScreen`, `AscensionScreen`, `RimesScreen`, `DicteeItem`, `FamillesScreen`, `EnclosScreen`, `CalculScreen`, `BossScreen`) ; `data/*.json` les exercices écrits à la main ; `maths.ts` et `college.ts` les exercices générés ; `run.ts` la graine de chaque partie. Voir [Format des exercices](exercices.md).
+- `exercises/` : le **moteur d’exercice** de Blocland. `types.ts` définit le format d’un exercice ; `index.ts` le catalogue (l’index de tous les exercices, et `loadExercise` qui charge à la demande le contenu d’un exercice JSON) ; `registry.ts` associe chaque type d’exercice à son écran (`QcmItem`, `ChasseSonScreen`, `FilonScreen`, `MotTroueScreen`, `AscensionScreen`, `RimesScreen`, `DicteeItem`, `FamillesScreen`, `EnclosScreen`, `CalculScreen`, `BossScreen`) ; `data/*.json` les exercices écrits à la main ; `maths.ts` et `college.ts` les exercices générés ; `run.ts` la graine de chaque partie. Voir [Format des exercices](exercices.md).
 - `engine.ts` : logique pure et testée du jeu : score, étoiles, blocs, XP, répétition espacée, série de régularité et coffres, adaptation du niveau, inventaire, lancement du Bloc-Navire et migration des sauvegardes.
 - `ExerciseRunner.tsx` : joue un exercice (créature qui lit la consigne, écrans, correction, récompense). `boss.ts` et `BossPage.tsx` : le défi du Gardien, deux manches par quête.
 - `world/` : le monde. `map.ts` place les îles (cœur de 16 × 16, terre irrégulière, altitude par classe, relief, paysage) dans quatre bandes, une par archipel ; `archipelago.ts` définit les archipels et leurs ports, les ouvrages (coûts, conditions), les voyages du Bloc-Navire, et calcule ce qui est ouvert ; `harbour.ts` le quai et la place du navire ; `vehicle.ts` les trois étapes du Bloc-Navire (des plans posés sur le quai) ; `plans.ts` et `plans/*.json` décrivent les bâtiments à reconstruire ; `terrain.ts` et `mesher.ts` produisent les cubes d’un archipel ; `daylight.ts` le cycle jour-nuit ; `goals.ts` le prochain objectif et les explications d’île fermée.

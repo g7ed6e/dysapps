@@ -1,12 +1,16 @@
-import { EXERCISES, exercisesOf } from './index';
+import { exercisesOf, loadAllExercises } from './index';
 import { SCREEN_TYPES } from './registry';
 import { runItems, runSeed } from './run';
 import type { ExerciseDef } from './types';
 
+const EXERCISES = await loadAllExercises();
+/** Le contenu complet d'un exercice du catalogue (chargé une fois pour tout le fichier). */
+const full = (meta: { id: string }): ExerciseDef => EXERCISES.find((e) => e.id === meta.id)!;
+
 const keysOf = (def: ExerciseDef, seed: string) => runItems(def, seed).map((i) => i.key);
 
 it('chaque partie tire une graine au hasard, même quand on recommence le jeu depuis le début', () => {
-  const def = exercisesOf('plaine', 'tables')[0];
+  const def = full(exercisesOf('plaine', 'tables')[0]);
   const seeds = new Set(Array.from({ length: 50 }, () => runSeed(def)));
   expect(seeds.size).toBe(50);
   for (const seed of seeds) expect(seed.startsWith(`${def.id}#`)).toBe(true);
@@ -35,7 +39,7 @@ it('aucune partie ne rejoue les questions dans l’ordre du fichier, ni deux foi
 });
 
 it('un exercice écrit mélange son lot, n’en joue qu’une partie s’il est large, et garde l’ordre d’un texte', () => {
-  const abattage = exercisesOf('foret', 'abattage')[0];
+  const abattage = full(exercisesOf('foret', 'abattage')[0]);
   expect(abattage.items.length).toBe(12);
   const run0 = runItems(abattage, 'a');
   const run1 = runItems(abattage, 'b');
@@ -44,10 +48,10 @@ it('un exercice écrit mélange son lot, n’en joue qu’une partie s’il est 
   expect(run0.map((i) => i.key)).not.toEqual(run1.map((i) => i.key));
   for (const item of run0) expect(abattage.items.some((i) => i.key === item.key)).toBe(true);
   // Le lot entier, mélangé, quand perRun n'est pas donné.
-  const chasse = exercisesOf('foret', 'chasse-son')[0];
+  const chasse = full(exercisesOf('foret', 'chasse-son')[0]);
   expect(keysOf(chasse, 'c').sort()).toEqual(chasse.items.map((i) => i.key).sort());
   // Un texte à lire : les paragraphes restent dans l'ordre.
-  const texte = exercisesOf('tour', 'ascension')[0];
+  const texte = full(exercisesOf('tour', 'ascension')[0]);
   expect(keysOf(texte, runSeed(texte))).toEqual(texte.items.map((i) => i.key));
 });
 

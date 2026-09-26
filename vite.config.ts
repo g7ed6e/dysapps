@@ -3,6 +3,7 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { appVersion } from './scripts/version.mjs';
+import { exerciseMeta } from './scripts/exerciseMeta.mjs';
 
 // Deux cibles de déploiement :
 // - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
@@ -48,6 +49,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    exerciseMeta(),
     securityHeaders(),
     VitePWA({
       // La mise à jour est proposée (bande + bouton), jamais imposée en pleine partie.
@@ -71,7 +73,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,woff2}'],
+        // Tout ce qui sert hors ligne, y compris les fichiers chargés à la demande (3D, quêtes, exercices)
+        // et les textures PNG de l'interface.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
       },
     }),
   ],

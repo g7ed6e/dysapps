@@ -7,6 +7,7 @@ import { useProgress } from '../core/ProgressContext';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
 import { Icon } from './Icon';
+import { ErrorBoundary } from './ErrorBoundary';
 import { useImmersive } from '../blocland/useImmersive';
 
 export function Layout() {
@@ -48,7 +49,11 @@ export function Layout() {
       <AppUpdateBanner />
       <Celebrations />
       <main id="contenu" className="content">
-        <Outlet />
+        {/* Une page qui échoue n'emporte pas la barre du haut ; changer de page efface l'erreur
+            (sans démonter la page : le monde en 3D reste le même d'une île à l'autre). */}
+        <ErrorBoundary resetKey={pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
     </div>
   );
