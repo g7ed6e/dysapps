@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ARCHIPELAGO_IDS, CORE, MAP, islandDef, landBox, landCells, mapOf } from './map';
+import { ARCHIPELAGO_IDS, CORE, MAP, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
@@ -10,7 +10,9 @@ import {
   avatarHome,
   avatarRoute,
   boardingRoute,
+  bossIsletCells,
   bossIsletOrigin,
+  bossIsletSteps,
   bridgePath,
   creaturePlacements,
   creatureSpot,
@@ -22,6 +24,7 @@ import {
   islandAt,
   islandCenter,
   islandOrigin,
+  ISLET_GAP,
   ISLET_H,
   ISLET_W,
   mistPatches,
@@ -188,21 +191,71 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
   expect(guardianPlacements('6e', {}, [])).toEqual([]);
   const front = bossIsletOrigin(0).y;
-  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H)).toBe(false);
+  // Caché, l'îlot et ses pas japonais n'existent pas.
+  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H + ISLET_GAP)).toBe(false);
   const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
   const islet = worldCubes('6e', ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
-  // Plateforme de pierre sur deux couches de terre, devant l'île, sous les pieds du Gardien.
-  expect(islet.filter((c) => c.z === 0 && c.texture === 'pierre')).toHaveLength(ISLET_W * ISLET_H);
-  expect(islet.filter((c) => c.z < 0).every((c) => c.texture === 'terre')).toBe(true);
-  expect(g.origin).toEqual({ x: bossIsletOrigin(0).x, y: bossIsletOrigin(0).y, z: 1 });
+  const cells = bossIsletCells('foret');
+  const land = new Set(cells.map((c) => `${c.x},${c.y}`));
+  // Une petite île : pas un rectangle plein, mais plus large que le Gardien ; deux couches de terre sous le sol.
+  expect(cells.length).toBeLessThan(ISLET_W * ISLET_H);
+  expect(cells.length).toBeGreaterThan(9 * 8);
+  expect(islet.filter((c) => c.z === 0)).toHaveLength(cells.length);
+  expect(islet.filter((c) => c.z < 0).every((c) => c.texture === 'terre' || (c.texture === 'galet' && !land.has(`${c.x},${c.y}`)))).toBe(true);
+  // Au milieu, l'arène pavée (pierre bordée de galet) ; autour, l'herbe de la Forêt, du sable au bord de l'eau.
+  const top = (c: { x: number; y: number }) => islet.find((k) => k.x === c.x && k.y === c.y && k.z === 0)!.texture;
+  expect(cells.filter((c) => c.arena).every((c) => ['pierre', 'galet'].includes(top(c)!))).toBe(true);
+  expect(cells.some((c) => c.arena && top(c) === 'pierre')).toBe(true);
+  expect(cells.some((c) => !c.arena && !c.shore && top(c) === 'herbe')).toBe(true);
+  expect(cells.filter((c) => c.shore && !c.arena).every((c) => top(c) === 'sable')).toBe(true);
+  // Le Gardien, centré, a toute son emprise sur la terre de l'îlot.
+  for (const c of g.cubes) expect(land.has(`${g.origin.x + c.x},${g.origin.y + c.y}`)).toBe(true);
+  expect(g.origin.z).toBe(1);
   expect(islet.some((c) => c.texture === 'or')).toBe(false);
-  // Vaincu : statue grise et bloc d'or.
+  // Les pas japonais : des galets dans l'eau, de l'îlot à la côte, chacun touchant le précédent.
+  const steps = bossIsletSteps('foret');
+  expect(steps.length).toBeGreaterThanOrEqual(ISLET_GAP);
+  const def = islandDef('foret');
+  expect(land.has(`${Math.round(steps[0].x)},${steps[0].y - 1}`) || land.has(`${steps[0].x - 1},${steps[0].y - 1}`)).toBe(true);
+  const last = steps[steps.length - 1];
+  expect(isLand(def, last.x, last.y + 1) || isLand(def, last.x - 1, last.y + 1)).toBe(true);
+  for (const s of steps) expect(isLand(def, s.x, s.y) || land.has(`${s.x},${s.y}`)).toBe(false);
+  const world = worldCubes('6e', ready);
+  for (const s of steps) expect(world.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).toBe(true);
+  // Vaincu : statue grise et bloc d'or sur un socle de pierre, sur l'îlot, hors de l'emprise du Gardien.
   const beaten = { ...ready, 'foret-gardien': { stars: 2 } };
   const [s] = guardianPlacements('6e', beaten, []);
   expect(s.beaten).toBe(true);
   expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
-  expect(worldCubes('6e', beaten).some((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')).toBe(true);
+  const gold = worldCubes('6e', beaten).find((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')!;
+  expect(gold.z).toBe(2);
+  expect(land.has(`${gold.x},${gold.y}`)).toBe(true);
+  expect(cells.find((c) => c.x === gold.x && c.y === gold.y)!.guardian).toBe(false);
+});
+
+it('chaque îlot porte tout son Gardien, a ses pas japonais, et flotte sur sa roche en altitude', async () => {
+  const { typesWithContent } = await import('../boss');
+  const { exercisesOf } = await import('../exercises');
+  const everyone: Record<string, { stars: number }> = {};
+  for (const b of BIOMES) {
+    for (const type of typesWithContent(b)) everyone[exercisesOf(b.id, type)[0].id] = { stars: 2 };
+    everyone[`${b.id}-gardien`] = { stars: 2 };
+  }
+  for (const a of ARCHIPELAGO_IDS) {
+    const world = worldCubes(a, everyone, village(everything));
+    const placements = guardianPlacements(a, everyone, everything);
+    for (const b of BIOMES.filter((x) => x.classe === a)) {
+      const land = new Set(bossIsletCells(b.id).map((c) => `${c.x},${c.y}`));
+      const g = placements.find((p) => p.id === b.id)!;
+      expect(g, b.id).toBeDefined();
+      for (const c of g.cubes) expect(land.has(`${g.origin.x + c.x},${g.origin.y + c.y}`), b.id).toBe(true);
+      expect(bossIsletSteps(b.id).length, b.id).toBeGreaterThanOrEqual(ISLET_GAP);
+      const z = islandDef(b.id).altitude;
+      // En altitude, de la roche sous la terre de l'îlot.
+      if (z > 0) expect(world.some((c) => c.tag === b.id && land.has(`${c.x},${c.y}`) && c.z < z - DEPTH && c.texture === 'pierre'), b.id).toBe(true);
+    }
+  }
 });
 
 it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
