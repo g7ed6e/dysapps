@@ -1036,6 +1036,90 @@ a.app-card:active {
   font-size: 1.4rem;
 }
 
+/* ===== Progression par matière ===== */
+.subject-progress-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  margin-bottom: 1.6rem;
+}
+/* La texture de la matière en bandeau, comme sur ses cartes de quête ; jamais derrière le texte. */
+.subject-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: var(--tex-size);
+  image-rendering: pixelated;
+  padding-top: calc(var(--tex-size) + 0.9rem);
+}
+:root[data-theme="clair"] .subject-progress,
+:root[data-theme="contraste"] .subject-progress {
+  background-image: none;
+  padding-top: 1.2rem;
+}
+/* Les enfants d'une colonne flex peuvent rétrécir : la liste ne déborde pas du panneau sur un téléphone. */
+.subject-progress > *,
+.subject-progress .island-quest-text {
+  min-width: 0;
+}
+.subject-progress-record {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+/* En contraste, la jauge de la barre du haut prend la couleur du fond : ici, sur un panneau, on garde son contour. */
+:root[data-theme="contraste"] .subject-progress .xp-track {
+  border-color: var(--text);
+}
+.subject-progress .island-quests {
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Sur un téléphone, le titre, le lieu et les étoiles d'abord : l'icône (déjà dans le titre de la liste) laisse sa place. */
+@media (max-width: 30rem) {
+  .subject-progress .island-quest-icon {
+    display: none;
+  }
+}
+.subject-progress-title,
+.subject-progress-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+.subject-progress-title {
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.4rem;
+}
+.subject-progress-heading {
+  margin-top: 0.4rem;
+  font-size: 1.1rem;
+}
+.subject-progress-detail,
+.subject-progress-empty,
+.subject-progress-more {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+}
+.subject-progress-empty,
+.subject-progress-more {
+  color: var(--muted);
+}
+.subject-progress-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.subject-progress-link {
+  align-self: flex-start;
+  margin-top: 0.4rem;
+}
+
 /* ===== Succès ===== */
 .badges .badge {
   display: flex;

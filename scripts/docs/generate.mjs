@@ -18,7 +18,7 @@ export async function generatePages() {
   });
   try {
     const load = (p) => server.ssrLoadModule(p);
-    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod] =
+    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod] =
       await Promise.all([
         load('/src/blocland/biomes.ts'),
         load('/src/blocland/exercises/index.ts'),
@@ -32,6 +32,7 @@ export async function generatePages() {
         load('/src/apps/fractions/generators.tsx'),
         load('/src/apps/decimaux/generators.tsx'),
         load('/src/apps/registry.ts'),
+        load('/src/core/subjectProgress.ts'),
       ]);
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
@@ -54,6 +55,7 @@ export async function generatePages() {
       decimaux: decimauxMod,
       APPS: registryMod.APPS,
       SUBJECTS: registryMod.SUBJECTS,
+      subjectProgress: subjectMod,
       texts,
     };
     return [
@@ -461,6 +463,7 @@ function baremePage(d) {
   const { XP, BADGES, xpToNextLevel, rankForLevel, LEGEND_LEVEL } = d.progress;
   const { INTERVALS, GRADUATE_AT, CHEST_EVERY, CHEST_BLOCKS, PROMOTE_AT_ONCE, FIRST_TIME_BLOCKS } = d.engine;
   const { DEFAULT_SETTINGS, FONT_LABELS, THEME_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT } = d.settings;
+  const { APP_REWORK_BELOW, REWORK_SHOWN } = d.subjectProgress;
   const levels = [];
   let total = 0;
   for (let l = 1; l <= LEGEND_LEVEL; l++) {
@@ -470,7 +473,7 @@ function baremePage(d) {
   const lines = [
     '# Barème, succès et valeurs par défaut',
     '',
-    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/blocland/engine.ts`, `src/core/settings.ts`).',
+    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/blocland/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
     '',
     '## Points d’expérience (quêtes du portail)',
     '',
@@ -508,6 +511,18 @@ function baremePage(d) {
         ['Régularité', `un coffre de ${CHEST_BLOCKS} blocs tous les ${CHEST_EVERY} jours de suite ; la série se fissure après un jour manqué, réparable le lendemain`],
         ['Adaptation du niveau', `monte après deux parties au-dessus du seuil de la quête, ou une seule à ${percent(PROMOTE_AT_ONCE)} ; descend après deux parties sous le seuil bas, sans jamais l’afficher comme une baisse`],
         ['Pause', 'proposée après 3 exercices ou 10 minutes'],
+      ],
+    ),
+    '',
+    '## À retravailler (page Succès)',
+    '',
+    table(
+      ['Règle', 'Valeur'],
+      [
+        ['Quête de Blocland proposée', 'déjà jouée, moins de 3 étoiles, sur une île ouverte'],
+        ['Quête du portail proposée', `record sous ${APP_REWORK_BELOW} %`],
+        ['Ordre', 'du score le plus faible au plus fort ; à score égal, le moins d’étoiles d’abord'],
+        ['Nombre affiché par matière', `${REWORK_SHOWN} au plus (les autres sont comptées)`],
       ],
     ),
     '',
