@@ -25,6 +25,7 @@
         "pedagogie/homophones.md",
         "pedagogie/lecture.md",
         "pedagogie/maths-portail.md",
+        "pedagogie/anglais-portail.md",
         "pedagogie/ouvrages.md",
         "pedagogie/bareme.md"
       ]
@@ -40,7 +41,8 @@
         "conception/cadrage-archipels.md",
         "conception/cadrage-monde.md",
         "conception/cadrage-village.md",
-        "conception/cadrage-college.md"
+        "conception/cadrage-college.md",
+        "conception/cadrage-anglais.md"
       ]
     },
     {

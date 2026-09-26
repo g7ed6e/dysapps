@@ -5,6 +5,7 @@ import { Feedback, type FeedbackTone } from './Feedback';
 import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
 import { RichText } from './math/RichText';
+import { langAttr, type Lang } from '../core/speech';
 
 export interface Question {
   id: string;
@@ -22,6 +23,12 @@ export interface Question {
   figure?: ReactNode;
   /** Explication affichée une fois la question terminée. */
   explanation?: string;
+  /** Langue de l'énoncé affiché (français par défaut). */
+  promptLang?: Lang;
+  /** Langue de l'énoncé lu : par défaut celle de l'énoncé affiché (« le chien » affiché, « dog » lu en anglais). */
+  spokenLang?: Lang;
+  /** Langue des réponses (français par défaut). */
+  choicesLang?: Lang;
 }
 
 interface Props {
@@ -204,10 +211,10 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <p className="question-count">
             Question {index + 1} / {questions.length}
           </p>
-          <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" />
+          <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" lang={question.spokenLang ?? question.promptLang} />
         </div>
-        <h2 id="question-titre" className="question-prompt">
-          <RichText text={question.prompt} />
+        <h2 id="question-titre" className="question-prompt" lang={langAttr(question.promptLang)}>
+          <RichText text={question.prompt} lang={question.promptLang} />
         </h2>
         {question.figure && <div className="figure">{question.figure}</div>}
 
@@ -226,8 +233,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               >
                 {isAnswer && <Icon name="check" />}
                 {isWrong && <Icon name="close" />}
-                <span>
-                  <RichText text={choice} />
+                <span lang={langAttr(question.choicesLang)}>
+                  <RichText text={choice} lang={question.choicesLang} />
                 </span>
               </button>
             );

@@ -4,7 +4,7 @@ import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { AnyIconName } from '../components/Icon';
 
-export type Subject = 'francais' | 'maths';
+export type Subject = 'francais' | 'maths' | 'anglais';
 
 export interface AppDef {
   id: string;
@@ -19,6 +19,7 @@ export interface AppDef {
 export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string }> = {
   francais: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension' },
   maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux' },
+  anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire' },
 };
 
 export const APPS: AppDef[] = [
@@ -75,6 +76,24 @@ export const APPS: AppDef[] = [
     icon: 'ruler',
     status: 'disponible',
     component: lazy(() => import('./decimaux/DecimauxApp')),
+  },
+  {
+    id: 'vocabulaire',
+    subject: 'anglais',
+    title: 'Vocabulaire',
+    description: 'Couleurs, famille, école, maison… 12 thèmes : écoute, traduis, écris, avec une voix anglaise.',
+    icon: 'languages',
+    status: 'disponible',
+    component: lazy(() => import('./vocabulaire/VocabulaireApp')),
+  },
+  {
+    id: 'irreguliers',
+    subject: 'anglais',
+    title: 'Verbes irréguliers',
+    description: 'go – went – gone : 60 verbes du collège en 3 niveaux, au prétérit et au participe passé.',
+    icon: 'history',
+    status: 'disponible',
+    component: lazy(() => import('./irreguliers/IrreguliersApp')),
   },
 ];
 

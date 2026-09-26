@@ -6,6 +6,7 @@ import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
+import type { Lang } from '../core/speech';
 
 import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten } from './bossCore';
 
@@ -19,6 +20,8 @@ export interface BossRound extends ExerciseItem {
   screenType: string;
   exerciseId: string;
   target?: string;
+  /** Langue du contenu de la quête d'origine. */
+  lang?: Lang;
   items: ExerciseItem[];
   /** Message de correction du type d'origine (rempli par l'écran du Gardien). */
   wrong: string;
@@ -59,7 +62,7 @@ export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number
     const batch = SCREEN_TYPES[type]?.batch ?? 1;
     const items = runItems(def, `${def.id}#gardien${Math.floor(rng() * 2 ** 32).toString(36)}`);
     if (batch === 'all') {
-      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, items, wrong: def.feedback.wrong });
+      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
       continue;
     }
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
@@ -70,7 +73,7 @@ export function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number
       [screens[i], screens[j]] = [screens[j], screens[i]];
     }
     screens.slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
-      rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, target: def.target, items, wrong: def.feedback.wrong });
+      rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
     });
   }
   return {

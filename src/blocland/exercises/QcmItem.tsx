@@ -1,14 +1,16 @@
 import { RichText } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
+import { langAttr } from '../../core/speech';
 import type { ScreenProps } from './registry';
 
 /**
  * Écran générique « qcm » : un mot ou une phrase, des réponses à choisir.
  * Champs de l'item : prompt (ou word), choices, answer, et éventuellement spoken (texte lu).
- * Un prompt contenant « … » affiche une case à compléter.
+ * Un prompt contenant « … » affiche une case à compléter. En anglais (`lang: 'en'`), le mot n'est pas découpé en
+ * syllabes (le découpage suit les règles du français) et il est lu en voix anglaise.
  */
-export function QcmItem({ items, answered, onAnswer }: ScreenProps) {
+export function QcmItem({ items, answered, onAnswer, lang = 'fr' }: ScreenProps) {
   const item = items[0];
   const prompt = String(item.prompt ?? item.word ?? '');
   const choices = Array.isArray(item.choices) ? item.choices.map(String) : [];
@@ -16,20 +18,21 @@ export function QcmItem({ items, answered, onAnswer }: ScreenProps) {
   const spoken = String(item.spoken ?? prompt);
   const chosen = answered?.detail?.chosen;
   const isSentence = prompt.includes('…') || prompt.length > 20;
+  const choicesLang = item.choicesLang === 'fr' ? 'fr' : lang;
 
   return (
     <div className="panel question">
       <div className="question-head">
-        {isSentence ? (
-          <p className="question-prompt">
-            <RichText text={prompt} />
+        {isSentence || lang !== 'fr' ? (
+          <p className={`question-prompt${isSentence ? '' : ' item-word'}`} lang={langAttr(lang)}>
+            <RichText text={prompt} lang={lang} />
           </p>
         ) : (
           <p className="question-prompt item-word">
             <Syllabified text={prompt} />
           </p>
         )}
-        <SpeakButton text={spoken} label="Écouter" />
+        <SpeakButton text={spoken} label="Écouter" lang={lang} />
       </div>
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
         {choices.map((choice) => {
@@ -43,8 +46,8 @@ export function QcmItem({ items, answered, onAnswer }: ScreenProps) {
               disabled={Boolean(answered)}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
-              <span>
-                <RichText text={choice} />
+              <span lang={langAttr(choicesLang)}>
+                <RichText text={choice} lang={choicesLang} />
               </span>
             </button>
           );

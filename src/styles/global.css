@@ -483,6 +483,9 @@ svg {
 .title-maths svg {
   color: var(--cyan);
 }
+.title-anglais svg {
+  color: var(--violet);
+}
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -582,9 +585,13 @@ a.app-card:active {
 .subject-maths {
   background-image: var(--tex-rock);
 }
+.subject-anglais {
+  background-image: var(--tex-brick);
+}
 /* Cartes de quête d'une matière : la texture reste un bandeau en tête, jamais derrière le texte. */
 .app-card.subject-francais,
-.app-card.subject-maths {
+.app-card.subject-maths,
+.app-card.subject-anglais {
   background-repeat: repeat-x;
   background-position: left top;
   background-size: var(--tex-size);
@@ -593,10 +600,13 @@ a.app-card:active {
 }
 .app-card.locked.subject-francais,
 .app-card.locked.subject-maths,
+.app-card.locked.subject-anglais,
 :root[data-theme="clair"] .app-card.subject-francais,
 :root[data-theme="clair"] .app-card.subject-maths,
+:root[data-theme="clair"] .app-card.subject-anglais,
 :root[data-theme="contraste"] .app-card.subject-francais,
-:root[data-theme="contraste"] .app-card.subject-maths {
+:root[data-theme="contraste"] .app-card.subject-maths,
+:root[data-theme="contraste"] .app-card.subject-anglais {
   background-image: none;
   padding-top: 1.2rem;
 }
@@ -610,6 +620,9 @@ a.app-card:active {
 }
 :root[data-theme="clair"] .subject-maths {
   border-top-color: var(--cyan);
+}
+:root[data-theme="clair"] .subject-anglais {
+  border-top-color: var(--violet);
 }
 .subject-icon,
 .app-icon {
@@ -630,6 +643,10 @@ a.app-card:active {
 .subject-maths .subject-icon,
 .subject-maths .app-icon {
   background: var(--cyan);
+}
+.subject-anglais .subject-icon,
+.subject-anglais .app-icon {
+  background: var(--violet);
 }
 /* Cartes de quête d'un biome : l'icône sur un fond de sable, lisible dans tous les thèmes (Nuit compris). */
 .app-card[class*="biome-"] .app-icon {

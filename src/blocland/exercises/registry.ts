@@ -1,6 +1,7 @@
 // Types d'exercices : chaque type fournit un composant d'écran et le nombre d'items par écran.
 import type { ComponentType } from 'react';
 import type { ExerciseItem } from './types';
+import type { Lang } from '../../core/speech';
 import { AscensionScreen } from './AscensionScreen';
 import { ChasseSonScreen } from './ChasseSonScreen';
 import { FilonScreen } from './FilonScreen';
@@ -34,6 +35,8 @@ export interface ScreenProps {
   /** Paramètres de l'exercice (son cible, lettre cible…). */
   target?: string;
   exerciseId: string;
+  /** Langue du contenu de l'exercice (voir `ExerciseDef.lang`) ; français par défaut. */
+  lang?: Lang;
 }
 
 export interface ScreenType {

@@ -25,7 +25,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Rappel de règle** toujours visible pour la grammaire, la conjugaison et les règles de calcul du cycle 4 (règle des signes, puissances, distributivité, Pythagore…).
 - **Indice sur demande** (le joker) avant de répondre ou après une erreur : une astuce de substitution (« remplace par *avait* »), une explication phonétique (« le v vibre dans la gorge, comme dans vélo »), le passage à relire. Il compte pour un demi-point dans Blocland, jamais en négatif.
 - **Correction qui explique** : la bonne réponse et une phrase qui donne la règle, la lettre qui manque, le son entendu.
-- **Pièges plausibles** : les distracteurs sont des erreurs réelles (table voisine, oubli de retenue, écriture phonétiquement plausible, « 3,45 > 3,5 »), jamais des réponses absurdes.
+- **Pièges plausibles** : les distracteurs sont des erreurs réelles (table voisine, oubli de retenue, écriture phonétiquement plausible, « 3,45 > 3,5 », « goed » pour *went*), jamais des réponses absurdes.
 
 ## Sans stress
 
@@ -43,6 +43,12 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Progression par archipel** : chaque île est un thème du programme avec une classe indicative (6e à 3e). Dans un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans l’ordre que l’on veut. Passer à l’archipel suivant demande le Bloc-Navire, construit avec des blocs et quelques Gardiens vaincus ; on revient toujours en arrière, rien ne se perd.
 - **Le geste apprend** : trier des mots, piocher une lettre, poser un bloc de lettres, glisser un sujet vers un verbe, lire à voix haute paragraphe par paragraphe.
 
+## L’anglais : deux voix
+
+- **Consigne en français, contenu en anglais** : la consigne, le joker, l’indice et la correction sont en français, lus avec la voix française ; les mots et les phrases à travailler sont lus avec une **voix anglaise britannique** (une autre voix anglaise si l’appareil n’en a pas, jamais la voix française).
+- **Pas de syllabes colorées sur l’anglais** : le découpage suit les règles du français et tromperait l’élève. Le texte anglais est marqué comme tel pour les lecteurs d’écran.
+- **Entendre avant d’écrire** : chaque mot anglais a son bouton Écouter ; au niveau « J’écris » du Vocabulaire, on entend le mot et on choisit son écriture.
+
 ## Ce que travaille chaque île
 
 | Classe | Français | Maths |
@@ -52,7 +58,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 | 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) |
 | 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) |
 
-Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île.
+Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. L’anglais n’a pas encore d’île : ses deux quêtes du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md), et les îles prévues, deux par classe, dans le [cadrage de l’anglais](../conception/cadrage-anglais.md).
 
 ## Ce qui n’est pas emprunté
 

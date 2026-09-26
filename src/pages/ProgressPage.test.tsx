@@ -24,11 +24,14 @@ const subject = (name: string) => screen.getByRole('region', { name });
 
 it('montre la progression de chaque matière, et rien à reprendre au départ', () => {
   renderPage();
-  for (const name of ['Français', 'Maths']) {
+  const slugs: Record<string, string> = { Français: 'francais', Maths: 'maths', Anglais: 'anglais' };
+  for (const name of Object.keys(slugs)) {
     const panel = subject(name);
-    expect(within(panel).getByRole('progressbar', { name: `Étoiles en ${name}` })).toHaveAttribute('aria-valuenow', '0');
+    // L'anglais n'a pas encore d'île dans Blocland : pas de barre d'étoiles, seulement ses applis.
+    if (name === 'Anglais') expect(within(panel).queryByRole('progressbar')).toBeNull();
+    else expect(within(panel).getByRole('progressbar', { name: `Étoiles en ${name}` })).toHaveAttribute('aria-valuenow', '0');
     expect(within(panel).getByText('Rien à reprendre pour l’instant.')).toBeInTheDocument();
-    expect(within(panel).getByRole('link', { name: /Voir la matière/ })).toHaveAttribute('href', `/matiere/${name === 'Maths' ? 'maths' : 'francais'}`);
+    expect(within(panel).getByRole('link', { name: /Voir la matière/ })).toHaveAttribute('href', `/matiere/${slugs[name]}`);
   }
   // Les succès sont toujours là.
   expect(screen.getByRole('heading', { name: /Succès \d+ \/ \d+/ })).toBeInTheDocument();

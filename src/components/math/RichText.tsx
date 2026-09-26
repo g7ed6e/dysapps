@@ -1,4 +1,5 @@
 import { fractionWords } from '../../core/fractions';
+import type { Lang } from '../../core/speech';
 
 /** Fraction « en colonne » : numérateur au-dessus, dénominateur en dessous. « … » = case à compléter. */
 export function Frac({ n, d }: { n: string; d: string }) {
@@ -22,8 +23,9 @@ export function frenchTypography(text: string): string {
   return text.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
 }
 
-export function RichText({ text }: { text: string }) {
-  const parts = frenchTypography(text).split(TOKEN);
+export function RichText({ text, lang = 'fr' }: { text: string; lang?: Lang }) {
+  // L'anglais n'a pas d'espace avant « ? ! : ; » : on n'y touche pas.
+  const parts = (lang === 'fr' ? frenchTypography(text) : text).split(TOKEN);
   return (
     <>
       {parts.map((part, i) => {

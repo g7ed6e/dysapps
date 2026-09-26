@@ -19,7 +19,7 @@ export async function generatePages() {
   });
   try {
     const load = (p) => server.ssrLoadModule(p);
-    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod] =
+    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod, vocabulaireMod, irreguliersMod] =
       await Promise.all([
         load('/src/blocland/biomes.ts'),
         load('/src/blocland/exercises/index.ts'),
@@ -34,6 +34,8 @@ export async function generatePages() {
         load('/src/apps/decimaux/generators.tsx'),
         load('/src/apps/registry.ts'),
         load('/src/core/subjectProgress.ts'),
+        load('/src/apps/vocabulaire/data.ts'),
+        load('/src/apps/irreguliers/data.ts'),
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
@@ -60,6 +62,8 @@ export async function generatePages() {
       APPS: registryMod.APPS,
       SUBJECTS: registryMod.SUBJECTS,
       subjectProgress: subjectMod,
+      vocabulaire: vocabulaireMod,
+      irreguliers: irreguliersMod,
       texts,
     };
     return [
@@ -68,6 +72,7 @@ export async function generatePages() {
       homophonesPage(data),
       lecturePage(data),
       mathsPortailPage(data),
+      anglaisPortailPage(data),
       ouvragesPage(data),
       baremePage(data),
     ];
@@ -78,7 +83,9 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { francais: 'Français', maths: 'Maths' };
+const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais' };
+/** Les matières, dans l'ordre du portail. */
+const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'le premier plan de l’île de départ terminé',
@@ -170,7 +177,10 @@ function archipelPage(d) {
     '| | |',
     '| --- | --- |',
     `| Version | ${d.version} |`,
-    `| Îles | ${BIOMES.length} (${BIOMES.filter((b) => b.subject === 'francais').length} de français, ${BIOMES.filter((b) => b.subject === 'maths').length} de maths) |`,
+    `| Îles | ${BIOMES.length} (${SUBJECT_IDS.map((s) => [s, BIOMES.filter((b) => b.subject === s).length])
+      .filter(([, n]) => n > 0)
+      .map(([s, n]) => `${n} ${s === 'anglais' ? 'd’anglais' : `de ${SUBJECT_NAME[s].toLowerCase()}`}`)
+      .join(', ')}) |`,
     `| Quêtes | ${quests} |`,
     `| Exercices (variantes et niveaux) | ${EXERCISES.length}, dont ${EXERCISES.filter((e) => e.generate).length} générés |`,
     `| Items de référence | ${items} |`,
@@ -199,7 +209,7 @@ function archipelPage(d) {
     '',
   ];
   for (const classe of CLASSES) {
-    for (const subject of ['francais', 'maths']) {
+    for (const subject of SUBJECT_IDS) {
       const list = BIOMES.filter((b) => b.classe === classe && b.subject === subject);
       if (list.length === 0) continue;
       lines.push(`## ${SUBJECT_NAME[subject]} — ${classe}`, '');
@@ -287,7 +297,7 @@ function islandPage(b, d) {
       table(
         ['Exercice', 'Niveau', 'Items', 'Origine', 'Aide visuelle', 'Récompense', 'Monte à / descend à'],
         exos.map((e) => [
-          `\`${e.id}\``,
+          `\`${e.id}\`${e.lang === 'en' ? ' (en anglais, voix anglaise)' : ''}`,
           String(e.level),
           e.perRun && e.perRun < e.items.length ? `${e.items.length} (${e.perRun} joués par partie)` : String(e.items.length),
           e.generate ? 'généré (autres nombres à chaque partie)' : 'écrit à la main',
@@ -455,6 +465,47 @@ function mathsPortailPage(d) {
     }
   }
   return { path: 'pedagogie/maths-portail.md', title: 'Maths du portail', body: lines.join('\n') };
+}
+
+function anglaisPortailPage(d) {
+  const { THEMES, LEVELS: VOCAB_LEVELS, QUESTIONS_PER_QUEST: VOCAB_PER } = d.vocabulaire;
+  const { VERBS, LEVELS: VERB_LEVELS, QUESTIONS_PER_QUEST: VERB_PER, choicesFor } = d.irreguliers;
+  const lines = [
+    '# Anglais (quêtes du portail)',
+    '',
+    'Les quêtes d’anglais gardent les règles des autres matières. La consigne, le joker et la correction sont en français, lus avec la voix française. Les mots et les phrases à travailler sont en anglais : ils sont lus avec une voix anglaise britannique et ne sont pas découpés en syllabes (le découpage suit les règles du français).',
+    '',
+    '## Vocabulaire',
+    '',
+    `${THEMES.length} thèmes de ${THEMES[0].words.length} mots. Une quête de niveau tire ${VOCAB_PER} mots dans tous les thèmes ; « Un thème » révise tous les mots d’un seul thème, de l’anglais au français ou l’inverse. Les réponses sont les autres mots du même thème ; au niveau 3, deux écritures fautives vraisemblables. Les mots sont dans \`src/apps/vocabulaire/themes.json\`.`,
+    '',
+    table(
+      ['Niveau', 'Nom', 'Ce qu’on fait'],
+      VOCAB_LEVELS.map((l) => [String(l.level), l.title, l.description]),
+    ),
+    '',
+  ];
+  for (const theme of THEMES) {
+    lines.push(`### ${theme.label}`, '');
+    lines.push(table(['Anglais', 'Français', 'Écritures fautives (niveau 3)'], theme.words.map((w) => [w.en, w.fr, w.traps.join(', ')])), '');
+  }
+  lines.push(
+    '## Verbes irréguliers',
+    '',
+    `${VERBS.length} verbes du collège en ${VERB_LEVELS.length} niveaux. Une quête tire ${VERB_PER} verbes du niveau, chacun au prétérit ou au participe passé. Les réponses : la bonne forme, l’autre forme, la base, la fausse forme en -ed (« goed », l’erreur la plus fréquente) et, quand les formes se ressemblent, des erreurs d’élève écrites à la main. La correction redonne les trois formes et le sens. Les verbes sont dans \`src/apps/irreguliers/verbs.json\`.`,
+    '',
+  );
+  for (const lvl of VERB_LEVELS) {
+    lines.push(`### Niveau ${lvl.level} : ${lvl.title}`, '');
+    lines.push(
+      table(
+        ['Base', 'Prétérit', 'Participe passé', 'Sens', 'Réponses proposées (prétérit)'],
+        VERBS.filter((v) => v.level === lvl.level).map((v) => [v.base, v.preterit, v.participle, v.fr, choicesFor(v, 'preterit').join(', ')]),
+      ),
+      '',
+    );
+  }
+  return { path: 'pedagogie/anglais-portail.md', title: 'Anglais du portail', body: lines.join('\n') };
 }
 
 function ouvragesPage(d) {

@@ -59,12 +59,17 @@ export function SubjectPage() {
         })}
       </ul>
 
-      <h2 className="section-title">
-        <Icon name="map" /> Dans Blocland
-      </h2>
-      <p className="section-intro">
-        Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
-      </p>
+      {/* Une matière sans île dans Blocland (pas encore) : pas de section vide. */}
+      {biomesOf(subject as Subject).length > 0 && (
+        <>
+          <h2 className="section-title">
+            <Icon name="map" /> Dans Blocland
+          </h2>
+          <p className="section-intro">
+            Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
+          </p>
+        </>
+      )}
       {ARCHIPELAGOS.map((a) => {
         const islands = biomesOf(subject as Subject).filter((b) => b.classe === a.classe);
         if (!islands.length) return null;

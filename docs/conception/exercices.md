@@ -58,6 +58,7 @@ Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`)
 | `level` | Niveau de difficulté ; le moteur choisit l’exercice au niveau adapté de l’élève, le moins joué à niveau égal. |
 | `instruction` | Consigne unique, courte, lue à voix haute au démarrage. |
 | `target` | Paramètre de l’exercice (son cible, lettre, mot repère). |
+| `lang` | `"en"` pour l’anglais : `prompt`, `spoken`, `word`, `sentence` et `choices` sont affichés en anglais (`lang="en"`, sans syllabes colorées ni typographie française) et lus avec la voix anglaise. `instruction`, `hint`, `explanation` et `aid` restent en français. Un item dont les réponses sont en français porte `choicesLang: "fr"`. |
 | `items` | Les items de référence, chacun avec une `key` stable (répétition espacée). Leur forme dépend du type. |
 | `generate` | Exercice généré : d’autres items pour une autre graine (une graine tirée au hasard par partie). Toutes les quêtes de maths, école et collège, en ont un. |
 | `perRun` | Nombre d’items joués par partie quand le lot est plus large. |
@@ -79,7 +80,7 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 ## Ajouter une quête ou une île
 
 - **Une quête** : ajouter son entrée dans `exercises` de l’île (`biomes.ts`), écrire au moins un exercice, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`.
-- **Une île** : une entrée dans `BIOMES` (créature, Gardien, bloc, quêtes), un bloc et sa texture si nécessaire, sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans dans `world/plans/`, ses exercices. Les cadrages [du monde](cadrage-monde.md) et [du collège](cadrage-college.md) donnent les décisions déjà prises.
+- **Une île** : une entrée dans `BIOMES` (créature, Gardien, bloc, quêtes), un bloc et sa texture si nécessaire, sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans dans `world/plans/`, ses exercices. Les cadrages [du monde](cadrage-monde.md), [du collège](cadrage-college.md) et [de l’anglais](cadrage-anglais.md) donnent les décisions déjà prises.
 
 Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvrages, barème) se met à jour toute seule au build ; le manuel et le fragment du journal des versions (`docs/_journal/`) s’écrivent à la main. Voir [Contribuer](contribuer.md).
 

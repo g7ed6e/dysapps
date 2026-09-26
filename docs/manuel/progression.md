@@ -16,7 +16,7 @@ Une suite de bonnes réponses du premier coup forme un **combo** (« COMBO x5 »
 
 ## Par matière : progresser et retravailler
 
-Sur la page Succès, la section **Par matière** montre un panneau pour le Français et un pour les Maths :
+Sur la page Succès, la section **Par matière** montre un panneau par matière (Français, Maths, Anglais) :
 
 - une **jauge d’étoiles** : les étoiles gagnées sur toutes les quêtes des îles de la matière, de la 6e à la 3e (« 7 / 81 étoiles dans Blocland ») ;
 - le nombre d’**îles ouvertes** et de **Gardiens vaincus** de la matière, et le **record** des quêtes du portail déjà jouées ;
@@ -26,6 +26,8 @@ Sur la page Succès, la section **Par matière** montre un panneau pour le Fran�
   - Cinq quêtes au plus sont affichées. S’il y en a d’autres, le panneau dit combien il en reste.
   - Une quête jamais jouée n’y figure pas : elle reste « Nouveau » sur la page de la matière.
   - Quand tout est à trois étoiles, le panneau dit « Rien à reprendre pour l’instant. »
+
+Une matière qui n’a pas encore d’île dans Blocland (l’anglais, pour l’instant) n’a pas de jauge d’étoiles : son panneau montre les records de ses quêtes du portail et ce qu’il faut y retravailler.
 
 Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses quêtes et ses îles. Les règles exactes sont dans [Barème et succès](../pedagogie/bareme.md).
 
