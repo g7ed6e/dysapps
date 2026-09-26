@@ -13,20 +13,20 @@ import { IslandSheet } from './IslandSheet';
 
 const onBoard = vi.fn();
 
-function Sheet({ biomeId, onClose, highlight }: { biomeId: string; onClose: () => void; highlight?: string }) {
+function Sheet({ biomeId, onClose, highlight, in3d }: { biomeId: string; onClose: () => void; highlight?: string; in3d?: boolean }) {
   const biome = getBiome(biomeId)!;
   const builder = usePlanBuilder(biome.id);
   const ship = useVehicleBuilder(biome.id);
-  return <IslandSheet biome={biome} builder={builder} ship={ship} onBoard={onBoard} onClose={onClose} highlight={highlight} />;
+  return <IslandSheet biome={biome} builder={builder} ship={ship} onBoard={onBoard} onClose={onClose} highlight={highlight} in3d={in3d} />;
 }
 
-function renderSheet(biomeId: string, onClose = () => {}, highlight?: string) {
+function renderSheet(biomeId: string, onClose = () => {}, highlight?: string, in3d = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <Sheet biomeId={biomeId} onClose={onClose} highlight={highlight} />
+            <Sheet biomeId={biomeId} onClose={onClose} highlight={highlight} in3d={in3d} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -45,7 +45,41 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
   expect(screen.queryByRole('link', { name: /le Grand Chêne/ })).not.toBeInTheDocument();
   expect(screen.getByText(/Plan 1 \/ 3 : La cabane de Mousso/)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
-  expect(screen.getByText(/Mes blocs/)).toHaveTextContent(/aucun/);
+  // L'inventaire est une page à part : le plan y renvoie.
+  expect(screen.getByRole('link', { name: /Mes blocs \(0\)/ })).toHaveAttribute('href', '/aventure/blocs');
+});
+
+it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y faire, et les ouvre dès que c’est possible', async () => {
+  // Rien en poche : plan et ouvrages repliés, chacun avec sa ligne d'état ; les quêtes restent visibles.
+  renderSheet('foret', () => {}, undefined, true);
+  const plan = () => document.querySelector<HTMLDetailsElement>('.island-fold-plan')!;
+  const ouvrages = () => document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages')!;
+  expect(plan()).not.toHaveAttribute('open');
+  expect(plan().textContent).toContain('0 / 16 posés · il manque 16 bois');
+  expect(ouvrages()).not.toHaveAttribute('open');
+  expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
+  expect(screen.getByRole('list', { name: 'Quêtes de l’île' })).toBeInTheDocument();
+  // L'élève ouvre le pli lui-même : son choix tient.
+  await userEvent.click(plan().querySelector('summary')!);
+  expect(plan()).toHaveAttribute('open');
+  // Des blocs en poche : le plan et les ouvrages s'ouvrent d'eux-mêmes.
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  document.body.innerHTML = '';
+  renderSheet('foret', () => {}, undefined, true);
+  expect(plan()).toHaveAttribute('open');
+  expect(ouvrages()).toHaveAttribute('open');
+  expect(screen.getAllByRole('button', { name: /Construire/ }).length).toBeGreaterThan(0);
+});
+
+it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', () => {
+  renderSheet('plaine', () => {}, undefined, true);
+  // La coque du navire demande du bois : lien vers la Forêt ; la brique du nid se gagne ici, sans lien.
+  const navire = document.querySelector('.island-fold-navire')!;
+  expect(navire).not.toHaveAttribute('open');
+  expect(navire.textContent).toContain('0 / 45 posés · il manque');
+  const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
+  expect(links[0]).toHaveAttribute('href', '/aventure/foret');
+  expect(document.body.textContent).toContain('brique · à gagner ici, dans les quêtes');
 });
 
 it('une île fermée montre ses quêtes verrouillées et renvoie à l’île précédente', async () => {
@@ -103,10 +137,18 @@ it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ou
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
 
-it('l’ouvrage touché dans le monde est mis en avant dans la liste', () => {
-  renderSheet('foret', () => {}, 'foret-mine');
+it('l’ouvrage touché dans le monde est mis en avant dans la liste, et son pli s’ouvre', () => {
+  renderSheet('foret', () => {}, 'foret-mine', true);
   const item = document.querySelector('[data-bridge="foret-mine"]');
   expect(item).not.toBeNull();
   expect(item!.className).toContain('bridge-highlight');
   expect(document.querySelectorAll('.bridge-highlight')).toHaveLength(1);
+  expect(document.querySelector('.island-fold-ouvrages')).toHaveAttribute('open');
+  expect(document.querySelector('.island-fold-plan')).not.toHaveAttribute('open');
+});
+
+it('le navire touché dans le monde ouvre son pli', () => {
+  renderSheet('plaine', () => {}, 'navire', true);
+  expect(document.querySelector('.island-fold-navire')).toHaveAttribute('open');
+  expect(document.querySelector('.ship-section')!.className).toContain('bridge-highlight');
 });

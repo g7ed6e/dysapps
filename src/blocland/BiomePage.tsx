@@ -9,6 +9,7 @@ import { archipelagoOf, archipelagoTitle, isBiomeUnlocked } from './world/archip
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
 import { CreatureBubble } from './CreatureBubble';
+import { InventoryLink } from './Inventory';
 import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
@@ -166,7 +167,7 @@ export function BiomePage() {
 
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />
-        Chaque quête réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}.
+        Chaque quête réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}. <InventoryLink />
       </p>
     </>
   );

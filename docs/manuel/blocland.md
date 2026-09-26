@@ -11,6 +11,7 @@ Depuis l’accueil, **Blocland** ouvre le village en 3D sur tout l’écran, sou
 - **Les îles fermées** restent visibles, délavées comme dans la brume. Les toucher fait dire à leur créature précisément ce qu’il faut pour y arriver.
 - **Le monde vit** : jour et nuit selon l’heure réelle de l’appareil (aube à 7 h, crépuscule à 20 h, nuit toujours claire), nuages, eau qui ondule, cascades, lanternes la nuit, oiseaux, rochers et bancs de sable au large, quatre baleines qui soufflent. Le réglage « Réduire les animations » fige tout.
 - **La Carte** (barre du bas) montre tout l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée affiche le chemin d’ouvrages à construire, balisé en jaune dans le monde. Son bouton **« Les quatre archipels »** ouvre la page des archipels : où l’on est, les îles ouvertes et les Gardiens vaincus de chacun, ce qu’il faut pour aller plus loin, le navire tel qu’il est, et des boutons « Aller au port » ou « Voir le chantier ».
+- **Les blocs** (bouton « Blocs » de la barre du bas) : l’inventaire, et pour chaque bloc ce qu’il peut construire, voir [Mes blocs](#mes-blocs).
 - **Le bonhomme** est l’avatar de l’élève. Il se tient sur l’île où l’on est et marche d’île en île le long des ouvrages construits.
 - **Sans 3D** (réglage « Vues en 3D » désactivé, ou appareil sans WebGL), Blocland reste une **vue simple** en listes : la carte des îles, puis la page de chaque île avec les mêmes quêtes, plans, Gardien et ouvrages. Tout ce qui se fait en 3D se fait en vue simple.
 
@@ -24,9 +25,11 @@ Toucher une île ouverte fait voler la caméra et ouvre son panneau (il glisse d
 2. **Le prochain objectif** : ce que l’application conseille de faire maintenant.
 3. **Les quêtes**, avec les étoiles gagnées. Un losange jaune flotte dans le monde au-dessus d’une quête à faire ; des cubes d’or comptent les étoiles.
 4. **Le Gardien** : verrouillé tant qu’il manque des étoiles ; le toucher dit lesquelles.
-5. **Le plan** de l’île : avancement, blocs manquants et où les gagner, bouton « Poser le bloc suivant », bâtiments déjà terminés ici.
-6. **Le Bloc-Navire**, sur l’île-port seulement : l’étape en chantier, les Gardiens à vaincre, le bouton « Embarquer » quand tout est prêt, et les boutons pour revenir sur un archipel déjà atteint.
+5. **Le plan** de l’île : avancement, blocs manquants et où les gagner (le nom de l’île est un lien : le toucher y emmène la caméra et le bonhomme), bouton « Poser le bloc suivant », lien « Mes blocs », bâtiments déjà terminés ici.
+6. **Le Bloc-Navire**, sur l’île-port seulement : l’étape en chantier, ses blocs manquants avec le même lien vers l’île où les gagner, les Gardiens à vaincre, le bouton « Embarquer » quand tout est prêt, et les boutons pour revenir sur un archipel déjà atteint.
 7. **Les ouvrages** qui partent de l’île, avec leur coût et leur condition.
+
+Le plan, le Bloc-Navire et les ouvrages sont des **sections repliables**. Elles s’ouvrent d’elles-mêmes quand il y a quelque chose à y faire (un bloc à poser, un ouvrage à construire, le navire prêt, ou l’ouvrage ou le navire que l’on vient de toucher dans le monde) et restent repliées sinon, avec leur état en une ligne (« 3 / 16 posés · il manque 6 bois », « Encore 3 blocs pour le moins cher »). Le panneau reste court ; un toucher sur le titre ouvre ou referme une section.
 
 Dans le monde, chaque île a **une borne par quête** (un socle et un panneau) : la toucher lance la quête. Après un exercice, on revient au même endroit, panneau ouvert.
 
@@ -52,6 +55,16 @@ Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) e
 Une quête réussie donne des **blocs** du type de l’île (bois dans la Forêt, pierre dans la Mine, brique dans la Plaine…), proportionnels au score et jamais zéro dès qu’une réponse est juste. Deux étoiles ajoutent un bloc, trois en ajoutent deux, et la **première partie** d’une quête en donne deux de plus. Une première quête réussie rapporte donc de cinq à sept blocs : de quoi construire un premier ouvrage et commencer un bâtiment.
 
 Les blocs servent à deux choses : **construire les ouvrages** entre les îles (n’importe quel type gagné sur une île) et **poser les blocs des plans** (le type est imposé par le plan). Rien ne se perd : un bloc mal posé se retire et revient dans l’inventaire.
+
+### Mes blocs
+
+Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire à la place du panneau d’île. Il ne se contente pas de compter :
+
+- **Mes blocs** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
+- **Pour les ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les ouvrages possibles depuis les îles ouvertes, avec leur coût.
+- **À aller chercher** : les blocs que réclament les plans en cours et le Bloc-Navire et que l’on n’a pas, avec l’île où les gagner (un lien, et la mention « île fermée » s’il faut d’abord un ouvrage).
+
+La croix ramène sur l’île où se tient le bonhomme.
 
 ## Les ouvrages entre les îles
 
@@ -121,5 +134,6 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |
 | Bouton Carte | L’archipel vu du ciel, et le bouton « Les quatre archipels » |
+| Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |
 | Bouton Revoir l’aide | Rejoue le tutoriel de six bulles |

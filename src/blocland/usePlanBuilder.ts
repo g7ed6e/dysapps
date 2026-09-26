@@ -7,6 +7,7 @@ import { currentPlan, nextFillable, planCellAt, planStatus, type PlanStatus } fr
 import { playDone, playNope, playPlace } from './sound';
 import { islandOrigin, toIslandCell } from './world/terrain';
 import { plansFor, type PlanDef } from './world/plans';
+import { whereToEarn } from './world/uses';
 
 export interface Burst {
   seq: number;
@@ -37,11 +38,7 @@ export interface PlanBuilder {
   tryFill: (cell: { x: number; y: number; z: number }) => boolean;
 }
 
-/** Où gagner un type de bloc : le biome dont c'est la ressource. */
-export function whereToEarn(block: BlockId): string {
-  const biome = BIOMES.find((b) => b.block === block);
-  return biome ? biome.name : 'le coffre du plan précédent (ou un coffre de régularité)';
-}
+export { whereToEarn };
 
 /**
  * La construction guidée d'une île : le plan en cours, la pose d'un bloc (par le bouton ou en touchant un fantôme

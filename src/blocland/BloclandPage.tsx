@@ -16,6 +16,7 @@ import {
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { Creature } from './Creatures';
+import { InventoryLink } from './Inventory';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 
@@ -45,6 +46,9 @@ export function BloclandPage() {
         <h1 className="hero-title">Blocland</h1>
         <p className="hero-text">
           <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis le Bloc-Navire t’emmène d’archipel en archipel." />
+        </p>
+        <p className="hero-actions">
+          <InventoryLink className="button" />
         </p>
       </section>
 

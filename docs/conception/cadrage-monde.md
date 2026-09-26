@@ -132,6 +132,16 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Les baleines passent de trois à quatre et préfèrent le large : chaque clairière est notée par sa largeur et son éloignement du centre du continent.
 - Effet : sur une île du bord, la mer n'est plus vide ; sur la Carte, un semis de récifs entoure le continent.
 
-## 20. À venir
+## 20. Mes blocs : un inventaire qui dit quoi en faire, un panneau plus court (PR « mes-blocs »)
 
-- Rien pour l'instant : jouer, écouter les retours des enfants.
+Retour des joueurs : « trop de blocs qui s'accumulent, on ne sait pas quoi en faire ». Constat : aucun écran d'inventaire (la seule liste était au fond de la section Plan du panneau), et les blocs manquants renvoyaient à une île en texte, sans lien.
+
+- **Logique pure** (`world/uses.ts`) : `blockUses()` dit ce qu'un type de bloc construit maintenant (le plan en cours de chaque île ouverte de l'archipel, le chantier du navire à portée), sinon « à garder » si des plans suivants l'attendent, sinon rien ; `inventoryUses()` range les lignes par utilité (posable sur l'île du bonhomme, posable ailleurs, à garder, sans usage), liste les ouvrages payables **une seule fois** (tout bloc d'île paie tout ouvrage : des puces par ligne se répéteraient vingt fois) et calcule `missingNow()` : les blocs que réclament les chantiers à portée moins l'inventaire, avec l'île où les gagner. `earnIsland()`/`whereToEarn()` y déménagent.
+- **Mes blocs** (`Inventory.tsx`) : un panneau à la place de celui d'une île en 3D (route `/aventure/blocs`, bouton « Blocs (N) » dans la barre du bas, croix qui ramène sur l'île du bonhomme), une page en vue simple. Trois parties : Mes blocs (puces-liens « Plan de … : encore 6 à gagner », « … : tu as tout, pose-les », « Le Bloc-Navire : … », « À garder pour … »), Pour les ouvrages, À aller chercher.
+- **Liens vers les îles** : partout, un lien `/aventure/:île` suffit ; en 3D, le changement de route fait voler la caméra sur l'île (`WorldPage` → `focus` → `framing()` dans `WorldCanvas`), y fait marcher le bonhomme et ouvre son panneau. Les blocs manquants du plan et du navire (`EarnLink` dans `PlanSection.tsx`) deviennent ce lien ; « à gagner ici, dans les quêtes » quand c'est le bloc de l'île.
+- **Panneau d'île plus court** (`IslandFold.tsx`) : Plan, Bloc-Navire et Ouvrages sont des `<details>` ouverts d'eux-mêmes quand il y a quelque chose à faire (un bloc à poser, un ouvrage constructible, le navire prêt, un élément mis en avant, une action qui vient d'aboutir), repliés sinon avec une ligne d'état. L'état est calculé au rendu (jamais dans un effet, pour que le défilement vers l'élément mis en avant trouve sa section ouverte) ; le choix de l'élève tient tant que l'île et la mise en avant ne changent pas. La ligne « Mes blocs : … » et le paragraphe « Tes N briques ne se posent pas ici » quittent la section Plan, remplacés par le lien « Mes blocs (N) ». En vue simple, la page d'île garde ses sections dépliées.
+- **Surplus** : une fois les trois plans d'une île et les ouvrages faits, son bloc ne sert plus qu'au navire (13 types) ; brique, obsidienne, verre, terre, quartz, lentille, marbre, parchemin et prisme n'ont pas d'autre débouché, et les rejouées paient sans fin. L'inventaire le dit honnêtement (« Rien à construire pour l'instant »). Un débouché (troc, décoration) reste **à cadrer** ; décision : pas dans cette PR.
+
+## 21. À venir
+
+- Un débouché pour les blocs en surplus (voir 20).
