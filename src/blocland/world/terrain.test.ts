@@ -29,6 +29,8 @@ import {
   ISLET_W,
   mistPatches,
   questStations,
+  routeAt,
+  routeLengths,
   seaDecor,
   vehiclePlacement,
   VIEW_YAW_MAX,
@@ -284,6 +286,40 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(forge.filter((c) => c.texture === 'basalte' && c.z >= 6 + 9).length).toBeGreaterThanOrEqual(4);
   expect(forge.some((c) => c.texture === 'lave' && c.z >= 6 + 10)).toBe(true);
   expect(forge.some((c) => c.color === '#a9a4a0' && c.z >= 6 + 12)).toBe(true);
+});
+
+it('le bonhomme avance au même pas le long d’un itinéraire, quelle que soit la longueur des segments', () => {
+  // Un long segment (toute une île), puis deux cases de pont.
+  const route = [
+    { x: 0, y: 0, z: 1 },
+    { x: 8, y: 0, z: 1 },
+    { x: 9, y: 0, z: 2 },
+    { x: 10, y: 0, z: 2 },
+  ];
+  const cum = routeLengths(route);
+  expect(cum).toEqual([0, 8, 9, 10]);
+  expect(routeAt(route, cum, 0)).toEqual(route[0]);
+  expect(routeAt(route, cum, 5)).toEqual({ x: 5, y: 0, z: 1 });
+  expect(routeAt(route, cum, 8.5)).toEqual({ x: 8.5, y: 0, z: 1.5 });
+  expect(routeAt(route, cum, 10)).toEqual(route[3]);
+  expect(routeAt(route, cum, 42)).toEqual(route[3]);
+  // Une route sur place (un seul point répété) : on y reste.
+  const still = [route[0], route[0]];
+  expect(routeAt(still, routeLengths(still), 0.5)).toEqual(route[0]);
+  // Un vrai trajet Forêt → Mine : à temps égaux, des pas égaux, sur l’île comme sur le sentier.
+  const walk = avatarRoute('foret', 'mine', ['foret-mine'])!;
+  const walkCum = routeLengths(walk);
+  const total = walkCum[walkCum.length - 1];
+  const steps = 40;
+  for (let i = 1; i <= steps; i++) {
+    const a = routeAt(walk, walkCum, (total * (i - 1)) / steps);
+    const b = routeAt(walk, walkCum, (total * i) / steps);
+    // Sur une ligne droite par morceaux, la corde ne dépasse jamais l’arc, et ne s’en éloigne qu’aux coudes.
+    expect(Math.hypot(b.x - a.x, b.y - a.y)).toBeLessThanOrEqual(total / steps + 1e-9);
+  }
+  const mid = routeAt(walk, walkCum, total / 2);
+  const before = walkCum.findIndex((c) => c > total / 2) - 1;
+  expect(Math.hypot(mid.x - walk[before].x, mid.y - walk[before].y)).toBeCloseTo(total / 2 - walkCum[before], 9);
 });
 
 it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau, et pas d’un archipel à l’autre', () => {
