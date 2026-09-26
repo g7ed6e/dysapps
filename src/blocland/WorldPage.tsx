@@ -88,7 +88,6 @@ export function WorldPage() {
             creatures={creatures}
             focus={focus}
             reduceMotion={settings.reduceMotion}
-            cameraSpeed={settings.cameraSpeed}
             forceDay={forceDay}
             bridges={state.village.bridges}
             marker={marker}
@@ -107,7 +106,7 @@ export function WorldPage() {
             replay={replay}
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
-              'Touche la Forêt des sons, sous la flèche jaune : la caméra y vole et son panneau s’ouvre. Un doigt pour tourner, deux doigts pour te déplacer et zoomer.',
+              'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île.',
               'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
               'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont ou un bac coûte des blocs, un escalier demande un plan terminé, un tunnel un Gardien vaincu. Choisis ta direction.',
             ]}

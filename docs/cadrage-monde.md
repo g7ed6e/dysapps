@@ -87,7 +87,15 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - **Filon mélangé** (`mine-filon-mix-1`, `mine-filon-mix-2`) : la lettre à piocher change à chaque bloc (b, d, p ou q) au lieu d'une seule pour toute la partie ; le bloc porte sa cible (`item.target`).
 - L'écriture inclusive a été retirée (PR précédente).
 
-## 14. À venir
+## 14. La caméra gérée par l'application (PR 12, 1/3)
+
+- Plus de zoom, de rotation ni de déplacement au doigt ou à la molette : la vue de trois quarts garde toujours le même nord. `OrbitControls` est retiré ; la boucle de rendu amène la caméra en douceur vers sa place (`framing()` dans `WorldCanvas.tsx`).
+- Sans panneau ouvert, la caméra est centrée sur le **bonhomme** (`FOLLOW_DISTANCE`), assez loin pour son île et les voisines ; quand il marche, elle le suit pas à pas. Panneau ouvert : vue rapprochée de l'île (`ISLAND_DISTANCE`). En portrait, un peu plus loin pour tenir dans la largeur.
+- Trajets à six cases par seconde, six secondes au plus ; un tap n'importe où pendant le trajet fait arriver tout de suite.
+- Clavier : les flèches vont à l'île voisine dans cette direction. Le réglage « Sensibilité de la caméra » est retiré.
+- À venir : PR 2 (toucher pour aller et agir : îles fermées, ouvrages fantômes), PR 3 (la Carte, le continent vu de haut).
+
+## 15. À venir
 
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

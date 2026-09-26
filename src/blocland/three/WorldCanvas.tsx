@@ -2,12 +2,11 @@
 // eau autour des îles, vol vers une île, jour et nuit, créatures qui se promènent. Chargé à la demande (voir ./index.ts).
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import type { BiomeId } from '../biomes';
+import { BIOMES, type BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import { daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { islandAt, islandCenter, mistPatches, overviewBounds, whaleSpots, worldBounds } from '../world/terrain';
+import { islandAt, islandCenter, mistPatches, whaleSpots, worldBounds } from '../world/terrain';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
@@ -65,8 +64,6 @@ export interface WorldCanvasProps {
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: { route: Cell[]; seq: number };
   burst?: Burst;
-  /** Sensibilité de la caméra (rotation, zoom, déplacement). */
-  cameraSpeed?: number;
   className?: string;
   label: string;
 }
@@ -78,8 +75,12 @@ const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond. */
 const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
 const ISLAND_DISTANCE = 24;
+/** Vue autour du bonhomme : assez loin pour voir son île et les voisines. */
+const FOLLOW_DISTANCE = 42;
+/** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
+const WALK_SPEED = 6;
+const WALK_MAX_MS = 6000;
 
-const FLIGHT_MS = 700;
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
   [0.05, 0.1, 4],
@@ -193,7 +194,6 @@ export default function WorldCanvas({
   cubes,
   focus,
   reduceMotion = false,
-  cameraSpeed = 1,
   onPickIsland,
   build,
   creatures = [],
@@ -211,7 +211,6 @@ export default function WorldCanvas({
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
-    controls: OrbitControls;
     terrain: THREE.Group;
     creatures: THREE.Group;
     walkers: Walker[];
@@ -219,7 +218,9 @@ export default function WorldCanvas({
     sparkGeo: THREE.BoxGeometry;
     hover: THREE.LineSegments;
     sky: { hemi: THREE.HemisphereLight; sun: THREE.DirectionalLight; water: THREE.MeshLambertMaterial; fog: THREE.Fog };
-    flight: { fromPos: THREE.Vector3; fromTarget: THREE.Vector3; toPos: THREE.Vector3; toTarget: THREE.Vector3; start: number } | null;
+    /** Cible et position que la caméra rejoint en douceur (calculées à chaque image). */
+    camTarget: THREE.Vector3;
+    camPos: THREE.Vector3;
     marker: THREE.Group;
     avatar: THREE.Group;
     walk: { route: Cell[]; start: number; duration: number } | null;
@@ -239,13 +240,18 @@ export default function WorldCanvas({
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
   const width = Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
 
-  /** Position et cible de la caméra pour une île (ou la vue d'ensemble : les îles ouvertes et leurs voisines). */
-  const framing = (island: BiomeId | null) => {
-    const ob = overviewBounds(bridgesRef.current);
-    const oc = { x: (ob.minX + ob.maxX) / 2, y: (ob.minY + ob.maxY) / 2 };
-    const ow = Math.max(ob.maxX - ob.minX, ob.maxY - ob.minY);
-    const c = island ? islandCenter(island) : { ...oc, z: 0 };
-    const d = island ? ISLAND_DISTANCE : Math.min(width * 0.78 + 6, ow * 0.9 + 10);
+  const focusRef = useRef(focus.island);
+  focusRef.current = focus.island;
+
+  /**
+   * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
+   * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
+   * que tout tienne dans la largeur.
+   */
+  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number) => {
+    const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
+    const c = island ? islandCenter(island) : { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
+    const d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
     const target = new THREE.Vector3(c.x, c.z + 1, c.y);
     const v = island ? ISLAND_VIEW : VIEW;
     const pos = new THREE.Vector3(c.x + d * v.dx, c.z + 1 + d * v.up, c.y + d * v.dy);
@@ -270,48 +276,30 @@ export default function WorldCanvas({
     const fog = new THREE.Fog(day.sky, width * 1.2, width * 3);
     scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 4);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = !reduceMotion;
-    controls.dampingFactor = 0.08;
-    // Un doigt : tourner ; deux doigts : se déplacer et zoomer. À la souris : glisser, molette, clic droit.
-    controls.enablePan = true;
-    controls.screenSpacePanning = false;
-    controls.maxPolarAngle = Math.PI * 0.46;
-    controls.minDistance = 6;
-    controls.maxDistance = width * 1.6;
-    // Clavier : flèches pour se déplacer, + et − pour zoomer (le canvas prend le focus).
+    // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
-    controls.listenToKeyEvents(el);
-    controls.keyPanSpeed = 14;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== '+' && e.key !== '-' && e.key !== '=') return;
+      const dirs: Record<string, [number, number]> = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
+      const dir = dirs[e.key];
+      if (!dir || !pickRef.current) return;
       e.preventDefault();
-      const dir = camera.position.clone().sub(controls.target);
-      const factor = e.key === '-' ? 1.2 : 1 / 1.2;
-      const d = THREE.MathUtils.clamp(dir.length() * factor, controls.minDistance, controls.maxDistance);
-      camera.position.copy(controls.target).addScaledVector(dir.normalize(), d);
-      controls.update();
+      const w = world.current;
+      const from = w ? { x: w.camTarget.x, y: w.camTarget.z } : center;
+      let best: { id: BiomeId; score: number } | null = null;
+      for (const b of BIOMES) {
+        const c = islandCenter(b.id);
+        const dx = c.x - from.x;
+        const dy = c.y - from.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 4) continue;
+        const along = (dx * dir[0] + dy * dir[1]) / dist;
+        if (along < 0.5) continue;
+        const score = dist / along;
+        if (!best || score < best.score) best = { id: b.id, score };
+      }
+      if (best) pickRef.current(best.id);
     };
     el.addEventListener('keydown', onKey);
-
-    // On ne sort pas du monde : la cible reste au-dessus des îles, la caméra suit.
-    const margin = 6;
-    const clamp = () => {
-      const t = controls.target;
-      const cx = THREE.MathUtils.clamp(t.x, bounds.minX - margin, bounds.maxX + margin);
-      const cz = THREE.MathUtils.clamp(t.z, bounds.minY - margin, bounds.maxY + margin);
-      const cy = THREE.MathUtils.clamp(t.y, 0, 18);
-      const dx = cx - t.x;
-      const dy = cy - t.y;
-      const dz = cz - t.z;
-      if (dx || dy || dz) {
-        t.set(cx, cy, cz);
-        camera.position.x += dx;
-        camera.position.y += dy;
-        camera.position.z += dz;
-      }
-    };
-    controls.addEventListener('change', clamp);
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0x8a6a4a, day.ambient);
     scene.add(hemi);
@@ -461,7 +449,6 @@ export default function WorldCanvas({
       scene,
       camera,
       renderer,
-      controls,
       terrain,
       creatures: creaturesGroup,
       walkers: [],
@@ -469,7 +456,8 @@ export default function WorldCanvas({
       sparkGeo,
       hover,
       sky: { hemi, sun, water: waterMat, fog },
-      flight: null,
+      camTarget: new THREE.Vector3(),
+      camPos: new THREE.Vector3(),
       marker: markerGroup,
       avatar: avatarGroup,
       walk: null,
@@ -514,6 +502,12 @@ export default function WorldCanvas({
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       down = null;
       if (moved > 8) return;
+      // Pendant un trajet, un tap n'importe où fait arriver le bonhomme tout de suite.
+      const walking = world.current?.walk;
+      if (walking && performance.now() - walking.start < walking.duration) {
+        walking.start = performance.now() - walking.duration;
+        return;
+      }
       const { creature, hit } = aim(e);
       if (creature) {
         const found = creatureIdOf(creature.object);
@@ -608,13 +602,8 @@ export default function WorldCanvas({
       if (!w) return;
       const now = performance.now();
       const t = clock.getElapsedTime();
-      if (w.flight) {
-        const k = ease(Math.min(1, (now - w.flight.start) / FLIGHT_MS));
-        camera.position.lerpVectors(w.flight.fromPos, w.flight.toPos, k);
-        controls.target.lerpVectors(w.flight.fromTarget, w.flight.toTarget, k);
-        if (k >= 1) w.flight = null;
-      }
       // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
+      let walking = false;
       if (w.walk) {
         const { route, start, duration } = w.walk;
         const k = reduceMotion ? 1 : Math.min(1, (now - start) / duration);
@@ -634,6 +623,23 @@ export default function WorldCanvas({
         w.avatar.position.set(x + 0.5 - 8 * AVATAR_SCALE, z, y + 0.5 - 4 * AVATAR_SCALE);
         if (b.x !== a.x || b.y !== a.y) w.avatar.rotation.y = Math.atan2(-(b.y - a.y), b.x - a.x) + Math.PI / 2;
         if (k >= 1) w.walk = null;
+        else walking = true;
+      }
+      // La caméra rejoint sa place en douceur : le bonhomme tant qu'il marche (elle le suit pas à pas), puis l'île
+      // ouverte, sinon le bonhomme.
+      {
+        const { target, pos } = framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect);
+        const dt = Math.min(0.1, (nowMs - lastFrame) / 1000 || 0.016);
+        const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.5);
+        if (w.camTarget.lengthSq() === 0 && w.camPos.lengthSq() === 0) {
+          w.camTarget.copy(target);
+          w.camPos.copy(pos);
+        } else {
+          w.camTarget.lerp(target, k);
+          w.camPos.lerp(pos, k);
+        }
+        camera.position.copy(w.camPos);
+        camera.lookAt(w.camTarget);
       }
       if (!reduceMotion) {
         if (forceDayRef.current ? light !== 1 : false) applyDaylight();
@@ -705,7 +711,6 @@ export default function WorldCanvas({
           }
         }
       } else if (forceDayRef.current ? light !== 1 : false) applyDaylight();
-      controls.update();
       renderer.render(scene, camera);
     };
     const start = () => {
@@ -719,17 +724,14 @@ export default function WorldCanvas({
       seen.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
       el.removeEventListener('keydown', onKey);
-      controls.stopListenToKeyEvents();
       if (dayTimer) window.clearInterval(dayTimer);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onHover);
       renderer.domElement.removeEventListener('pointerleave', onLeave);
-      controls.removeEventListener('change', clamp);
       hover.geometry.dispose();
       (hover.material as THREE.Material).dispose();
-      controls.dispose();
       for (const m of terrain.children) (m as THREE.Mesh).geometry.dispose();
       creaturesGroup.traverse((o) => {
         if (o instanceof THREE.Mesh) o.geometry.dispose();
@@ -804,15 +806,6 @@ export default function WorldCanvas({
     w.marker.visible = true;
   }, [marker]);
 
-  // ---- Sensibilité de la caméra
-  useEffect(() => {
-    const c = world.current?.controls;
-    if (!c) return;
-    c.rotateSpeed = cameraSpeed;
-    c.zoomSpeed = cameraSpeed;
-    c.panSpeed = cameraSpeed;
-  }, [cameraSpeed]);
-
   // ---- Mode chantier : pas de case visée en dehors
   useEffect(() => {
     const w = world.current;
@@ -847,34 +840,25 @@ export default function WorldCanvas({
     const route = avatar.route;
     let length = 0;
     for (let i = 1; i < route.length; i++) length += Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y);
-    // Six cases par seconde, mais jamais plus de quatre secondes de marche.
-    const duration = route.length < 2 || avatar.seq === 0 ? 0 : Math.min(4000, (length / 6) * 1000);
+    // Six cases par seconde, mais jamais plus de six secondes de marche (un tap fait arriver tout de suite).
+    const duration = route.length < 2 || avatar.seq === 0 ? 0 : Math.min(WALK_MAX_MS, (length / WALK_SPEED) * 1000);
     w.walk = { route: route.length < 2 ? [route[0], route[0]] : route, start: performance.now(), duration: Math.max(1, duration) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
-  // ---- Caméra : vol vers l'île demandée (ou la vue d'ensemble)
+  // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {
     const w = world.current;
-    if (!w) return;
-    const { target, pos } = framing(focus.island);
-    if (reduceMotion || focus.seq === 0) {
-      w.flight = null;
-      w.camera.position.copy(pos);
-      w.controls.target.copy(target);
-      w.controls.update();
-      return;
-    }
-    w.flight = { fromPos: w.camera.position.clone(), fromTarget: w.controls.target.clone(), toPos: pos, toTarget: target, start: performance.now() };
+    if (!w || focus.seq !== 0) return;
+    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect);
+    w.camTarget.copy(target);
+    w.camPos.copy(pos);
+    w.camera.position.copy(pos);
+    w.camera.lookAt(target);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focus.island, focus.seq, reduceMotion]);
+  }, [focus.island, focus.seq]);
 
   return (
-    <div
-      ref={host}
-      className={`voxel-canvas ${className ?? ''}`.trim()}
-      role="img"
-      aria-label={`${label}. Au clavier : flèches pour se déplacer, plus et moins pour zoomer.`}
-    />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} role="img" aria-label={`${label}. Au clavier : les flèches vont à l'île voisine.`} />
   );
 }
