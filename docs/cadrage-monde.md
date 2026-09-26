@@ -93,14 +93,20 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Sans panneau ouvert, la caméra est centrée sur le **bonhomme** (`FOLLOW_DISTANCE`), assez loin pour son île et les voisines ; quand il marche, elle le suit pas à pas. Panneau ouvert : vue rapprochée de l'île (`ISLAND_DISTANCE`). En portrait, un peu plus loin pour tenir dans la largeur.
 - Trajets à six cases par seconde, six secondes au plus ; un tap n'importe où pendant le trajet fait arriver tout de suite.
 - Clavier : les flèches vont à l'île voisine dans cette direction. Le réglage « Sensibilité de la caméra » est retiré.
-- À venir : PR 2 (toucher pour aller et agir : îles fermées, ouvrages fantômes), PR 3 (la Carte, le continent vu de haut).
+- Suites : section 15 (toucher pour aller et agir) et section 16 (la Carte).
 
 ## 15. Toucher pour aller et agir (PR 13, 2/3)
 
 - **Toucher un ouvrage** (construit ou fantôme) dans le monde ouvre l'île ouverte qu'il touche, avec sa proposition mise en avant dans la liste des ouvrages (`onPickBridge`, `highlight`) : la ligne se surligne et vient sous les yeux. Avant, le tap ouvrait l'île d'en face, souvent fermée.
 - **Toucher une île fermée** approche la caméra et sa créature dit précisément ce qu'il faut (`lockedHint()` dans `world/goals.ts`) : l'ouvrage qui mène ici, depuis quelle île, combien de blocs, la condition ; ou, trop loin, l'île à ouvrir d'abord.
 
-## 16. À venir
+## 16. La Carte (PR 14, 3/3)
 
+- Le bouton **Carte** (`#/aventure/carte`) montre tout le continent vu du ciel, le même nord, sans brume (`map` dans `WorldCanvas.tsx`, cadrage sur `worldBounds()`, en portrait comme en paysage). Un grand fanion jaune flotte au-dessus du bonhomme (« tu es ici ») ; les îles fermées restent pâles, les ouvrages construits en couleur.
+- **Toucher une île ouverte** ferme la Carte : le bonhomme y marche saut par saut, la caméra le suit, puis le panneau de l'île s'ouvre.
+- **Toucher une île fermée** garde la Carte et montre le chemin (`remainingPath()` dans `world/archipelago.ts`) : la liste des ouvrages qu'il reste à construire, des balises jaunes le long de leur tracé dans le monde, et un bouton « Voir le premier ouvrage » qui ouvre l'île d'où il part, sa proposition mise en avant.
+- En vue simple (sans 3D), `#/aventure/carte` renvoie à la liste des îles.
+
+## 17. À venir
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

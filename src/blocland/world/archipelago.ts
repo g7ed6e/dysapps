@@ -262,6 +262,11 @@ export function pathTo(island: BiomeId): BridgeDef[] {
   return path;
 }
 
+/** Les ouvrages qu'il reste à construire pour aller jusqu'à une île (le chemin le plus court depuis le départ). */
+export function remainingPath(island: BiomeId, bridges: string[]): BridgeDef[] {
+  return pathTo(island).filter((b) => bridgeState(b, bridges) !== 'built');
+}
+
 /**
  * Anciennes sauvegardes (avant les ponts) : les îles s'ouvraient en chaîne, quand une quête de l'île précédente
  * avait une étoile. On construit gratuitement les ponts qui mènent aux îles déjà ouvertes.

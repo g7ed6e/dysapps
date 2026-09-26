@@ -3381,6 +3381,20 @@ a.app-card:active {
   max-width: 34rem;
 }
 /* Barre du bas, par-dessus le monde : Carte, Chantier, jour/nuit, aide. */
+/* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
+.world-map-line {
+  display: block;
+}
+.world-map-line p {
+  margin: 0;
+}
+.world-map-path {
+  margin: 0.4rem 0 0.6rem;
+  padding-left: 1.4rem;
+}
+.world-map-path li + li {
+  margin-top: 0.2rem;
+}
 .world-bar {
   position: absolute;
   left: 0.6rem;

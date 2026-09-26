@@ -14,21 +14,23 @@ import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
-import { avatarHome, avatarRoute, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
-import { getBridge, isBiomeUnlocked } from './world/archipelago';
+import { avatarHome, avatarRoute, bridgePath, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
+import { KIND_NAME, getBridge, isBiomeUnlocked, remainingPath } from './world/archipelago';
 import { usePlanBuilder } from './usePlanBuilder';
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran. On touche une île : la caméra y vole et son panneau
  * glisse depuis le bas (créature, quêtes, plan, Gardien) sans quitter le monde. L'URL /aventure/:ile
- * garde le panneau ouvert, pour revenir au même endroit après un exercice.
+ * garde le panneau ouvert, pour revenir au même endroit après un exercice. /aventure/carte est la Carte :
+ * tout le continent vu du ciel, un fanion sur le bonhomme ; on touche une île pour y aller.
  */
 export function WorldPage() {
   const { biomeId } = useParams();
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
   const { state, moveTo } = useBlocland();
-  const island = biomeId ? getBiome(biomeId) : undefined;
+  const mapOpen = biomeId === 'carte';
+  const island = biomeId && !mapOpen ? getBiome(biomeId) : undefined;
   const cubes = useMemo(() => worldCubes(state.progress, state.village, false), [state.progress, state.village]);
   const creatures = useMemo(
     () => [...creaturePlacements(state.village.bridges), ...guardianPlacements(state.progress, state.village.bridges)],
@@ -47,6 +49,10 @@ export function WorldPage() {
     setHighlight(id);
     navigate(`/aventure/${from}`);
   };
+  // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
+  const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
+  const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
+  const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => bridgePath(b).map((c) => ({ x: c.x, y: c.y, z: c.z }))) : undefined), [remaining]);
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde.
@@ -62,6 +68,7 @@ export function WorldPage() {
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
     setSaid(null);
     if (!island) setHighlight(null);
+    if (!mapOpen) setMapTarget(null);
     if (island && island.id !== at && isBiomeUnlocked(island.id, state.village.bridges)) {
       const route = avatarRoute(at, island.id, state.village.bridges);
       if (route) {
@@ -70,12 +77,20 @@ export function WorldPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id]);
+  }, [island?.id, mapOpen]);
 
-  if (biomeId && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !island) return <NotFoundPage />;
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée.
   const marker = !island && Object.keys(state.progress).length === 0 ? 'foret' : null;
+
+  // Toucher une île : on y va (le bonhomme marche si un chemin y mène). Sur la Carte, une île fermée montre son chemin.
+  const onIsland = (id: BiomeId) => {
+    if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
+    navigate(`/aventure/${id}`);
+  };
+  const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
+    `${KIND_NAME[b.kind]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
 
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
@@ -102,7 +117,9 @@ export function WorldPage() {
             bridges={state.village.bridges}
             marker={marker}
             avatar={avatar}
-            onPickIsland={(id) => navigate(`/aventure/${id}`)}
+            map={mapOpen}
+            trail={trail}
+            onPickIsland={onIsland}
             onPickBridge={onPickBridge}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
             burst={builder.burst}
@@ -117,11 +134,34 @@ export function WorldPage() {
             replay={replay}
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
-              'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île.',
+              'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout le continent du ciel.',
               'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
               'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont ou un bac coûte des blocs, un escalier demande un plan terminé, un tunnel un Gardien vaincu. Choisis ta direction.',
             ]}
           />
+          {mapOpen && (
+            <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
+              {mapTarget && remaining.length ? (
+                <>
+                  <p>
+                    <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''} à construire.
+                  </p>
+                  <ol className="world-map-path">
+                    {remaining.map((b) => (
+                      <li key={b.id}>{ouvrageLabel(b)}</li>
+                    ))}
+                  </ol>
+                  <button type="button" className="button" onClick={() => onPickBridge(remaining[0].id)}>
+                    <Icon name="hammer" /> Voir le premier ouvrage
+                  </button>
+                </>
+              ) : (
+                <p>
+                  <strong>La Carte.</strong> Le fanion jaune, c’est toi. Touche une île pour y aller ; une île pâle est fermée : touche-la pour voir le chemin.
+                </p>
+              )}
+            </div>
+          )}
           {said && (
             <div className="creature-line world-line" role="status" aria-live="polite">
               <strong>{getBiome(said.id)?.creature.name} :</strong> <Syllabified text={said.text} />
@@ -130,7 +170,7 @@ export function WorldPage() {
           )}
         </div>
         <nav className="world-bar" aria-label="Village">
-          <button type="button" className="button" aria-pressed={focus.island === null} onClick={() => navigate('/aventure')}>
+          <button type="button" className="button" aria-pressed={mapOpen} onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}>
             <Icon name="map" /> Carte
           </button>
           {night && (

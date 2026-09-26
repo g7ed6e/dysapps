@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
@@ -56,5 +56,9 @@ function AventureEntry() {
   return useImmersive() ? <WorldPage /> : <BloclandPage />;
 }
 function IslandEntry() {
-  return useImmersive() ? <WorldPage /> : <BiomePage />;
+  const { biomeId } = useParams();
+  const immersive = useImmersive();
+  if (immersive) return <WorldPage />;
+  // La Carte n'existe qu'en 3D : en vue simple, c'est la liste des îles.
+  return biomeId === 'carte' ? <Navigate to="/aventure" replace /> : <BiomePage />;
 }
