@@ -1,0 +1,46 @@
+{
+  "appUrl": "https://dysapps.guillaume-delahaye.workers.dev/",
+  "repoUrl": "https://github.com/g7ed6e/dysapps",
+  "sections": [
+    {
+      "title": "Manuel",
+      "pages": [
+        "manuel/demarrer.md",
+        "manuel/quetes.md",
+        "manuel/blocland.md",
+        "manuel/progression.md",
+        "manuel/reglages.md",
+        "manuel/questions.md"
+      ]
+    },
+    {
+      "title": "Contenu pédagogique",
+      "pages": [
+        "pedagogie/principes.md",
+        "pedagogie/archipel.md",
+        { "dir": "pedagogie/iles", "title": "Les îles, une par une" },
+        "pedagogie/homophones.md",
+        "pedagogie/lecture.md",
+        "pedagogie/maths-portail.md",
+        "pedagogie/ouvrages.md",
+        "pedagogie/bareme.md"
+      ]
+    },
+    {
+      "title": "Conception",
+      "pages": [
+        "conception/architecture.md",
+        "conception/exercices.md",
+        "conception/deploiement.md",
+        "conception/contribuer.md",
+        "conception/cadrage-monde.md",
+        "conception/cadrage-village.md",
+        "conception/cadrage-college.md"
+      ]
+    },
+    {
+      "title": "Versions",
+      "pages": ["journal.md"]
+    }
+  ]
+}

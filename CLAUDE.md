@@ -11,3 +11,17 @@
 
 - Chaque pull request incrémente la version mineure (`npm run version:minor`, qui met à jour `package.json` et `package-lock.json`) : chaque build publié porte un numéro nouveau, affiché dans les réglages et le bandeau de mise à jour.
 - La CI le vérifie sur chaque pull request (`npm run version:check`) et échoue si la version n'a pas monté.
+
+## Documentation (systématique, dans la même pull request)
+
+Le site de documentation (`docs/`, publié sur https://g7ed6e.github.io/dysapps/ par `npm run docs:build`) est à la fois le manuel utilisateur et la description vivante du contenu pédagogique. Toute pull request le tient à jour :
+
+1. **Journal obligatoire** : ajouter en tête de `docs/journal.md` une entrée `## <nouvelle version> — <date en toutes lettres>` qui dit, pour l'élève ou pour le contenu, ce que change la pull request. La CI échoue sinon (`npm run docs:check`).
+2. **Manuel** (`docs/manuel/`) : mettre à jour la page concernée dès qu'un écran, un geste, un réglage, une règle du jeu (étoiles, blocs, ouvrages, plans, Gardiens, adaptation, répétition espacée) ou une adresse change. Décrire ce que l'application fait, en français, au présent, avec les mots de l'application.
+3. **Principes et conception** : `docs/pedagogie/principes.md` si une règle dys change ; `docs/conception/architecture.md`, `exercices.md`, `deploiement.md`, `contribuer.md` si l'arborescence, le format des exercices, les scripts, la CI ou le déploiement changent. Les cadrages (`docs/conception/cadrage-*.md`) reçoivent les décisions de game design.
+4. **Contenu pédagogique généré** : les pages archipel, îles, homophones, lecture, maths du portail, ouvrages, barème sont produites par `scripts/docs/generate.mjs` à partir des données du jeu ; ne jamais les écrire à la main. Si une pull request ajoute un champ de données à documenter (nouvelle aide visuelle, nouvelle forme d'item, nouvelle constante de barème), compléter le générateur.
+5. **Sommaire** : une page ajoutée est déclarée dans `docs/_theme/nav.json` (le build échoue si une page du sommaire manque).
+6. **README** cohérent avec la documentation (adresses, scripts, arborescence).
+7. Avant de livrer : `npm run docs:check` et `npm run docs:build` passent, et les pages modifiées ont été relues dans `dist-docs/` (ou `npm run docs:dev`).
+
+Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) pour la documentation : l'application est publiée par Cloudflare, la documentation par GitHub Pages.

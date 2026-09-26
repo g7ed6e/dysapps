@@ -1,4 +1,7 @@
-name: Tests et déploiement GitHub Pages
+name: Tests, builds et documentation GitHub Pages
+
+# L'application (PWA) est publiée par Cloudflare Workers à partir de main (npm run build, base « / »).
+# GitHub Pages (https://g7ed6e.github.io/dysapps/) publie le site de documentation (npm run docs:build).
 
 on:
   push:
@@ -25,7 +28,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # Tout l'historique : la vérification de version compare avec la branche de base.
+          # Tout l'historique : la vérification de version compare avec la branche de base,
+          # et la documentation date chaque page de son dernier commit.
           fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -42,16 +46,21 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: npm run version:check -- "origin/$BASE_REF"
+      # … et décrit sa version dans docs/journal.md.
+      - name: Vérifier le journal de la documentation
+        if: github.event_name == 'pull_request'
+        run: npm run docs:check
       - run: npm test
+      # L'application, telle que Cloudflare la construit (base « / ») : vérification seulement, rien n'est publié d'ici.
       - run: npm run build
+      # Le site de documentation, publié sur GitHub Pages dans /<nom du dépôt>/.
+      - run: npm run docs:build
         env:
-          # GitHub Pages sert le site dans /<nom du dépôt>/ (Cloudflare, lui, le sert à la racine).
-          DEPLOY_TARGET: github
           BASE_PATH: /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main'
         with:
-          path: dist
+          path: dist-docs
 
   deploy:
     if: github.ref == 'refs/heads/main'
