@@ -59,4 +59,4 @@ Ponts : verticaux depuis la rangée voisine (6 à 8 blocs), horizontaux dans la 
 4. ✅ Forge des puissances + Atelier du calcul littéral (maths 4e-3e).
 5. ✅ Falaise des accords + Cabinet des mots (français 4e-3e).
 6. ✅ Belvédère de Thalès + Observatoire des données + Phare des fonctions (maths 3e).
-7. ✅ Observatoire des textes (français 3e) et finitions (succès Collégien·ne et Archipel bâti).
+7. ✅ Observatoire des textes (français 3e) et finitions (succès Collégien et Archipel bâti).

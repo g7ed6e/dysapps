@@ -147,7 +147,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         ? { shout: 'PERFECT !', message: 'Zéro faute. Respect.', tone: 'bien' }
         : finalScore >= 60
           ? { shout: 'QUÊTE TERMINÉE', message: 'Belle partie, tu progresses.', tone: 'bien' }
-          : { shout: 'QUÊTE TERMINÉE', message: 'Tu es allé·e au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
+          : { shout: 'QUÊTE TERMINÉE', message: 'Tu es allé au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
     );
   };
 
