@@ -57,3 +57,15 @@ it('propose de reprendre les quêtes faibles d’une matière, avec un lien qui 
   expect(within(maths).getByRole('link', { name: /^Reprendre Tables/ })).toHaveAttribute('href', '/app/tables');
   expect(within(maths).getByText('Record : 40 %')).toBeInTheDocument();
 });
+
+it('montre les six rangs : Bronze en cours, les suivants grisés avec leur niveau', () => {
+  renderPage();
+  const ladder = screen.getByRole('list', { name: 'Rangs' });
+  const ranks = within(ladder).getAllByRole('listitem');
+  expect(ranks.map((r) => r.querySelector('strong')?.textContent)).toEqual(['Bronze', 'Argent', 'Or', 'Platine', 'Diamant', 'Légende']);
+  expect(ranks[0]).toHaveAttribute('aria-current', 'step');
+  expect(ranks[0]).toHaveTextContent('Bronze I');
+  expect(ranks[1]).not.toHaveAttribute('aria-current');
+  expect(ranks[1]).toHaveClass('locked');
+  expect(ranks[1]).toHaveTextContent('à partir du niveau 4');
+});

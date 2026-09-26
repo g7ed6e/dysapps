@@ -1,0 +1,1 @@
+**L’échelle des rangs.** La page Succès montre maintenant les six rangs, de Bronze à Légende, sous la jauge d’XP : les rangs atteints sont en couleur, le rang actuel est encadré avec sa division (« Or II »), et les rangs à venir restent grisés avec le niveau qui les ouvre. On voit ainsi d’un coup d’œil le chemin parcouru et ce qui reste à gagner.

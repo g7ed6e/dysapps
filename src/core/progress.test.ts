@@ -1,4 +1,4 @@
-import { EMPTY_PROGRESS, XP, firstLevelOf, levelFromXp, rankForLevel, recordAnswer, recordSession, sanitizeProgress, xpToNextLevel } from './progress';
+import { EMPTY_PROGRESS, XP, firstLevelOf, levelFromXp, rankForLevel, rankLadder, recordAnswer, recordSession, sanitizeProgress, xpToNextLevel } from './progress';
 
 describe('niveaux', () => {
   it('commence au niveau 1', () => {
@@ -96,6 +96,14 @@ describe('rangs', () => {
     expect(rankForLevel(3)).toEqual({ title: 'Bronze III', tier: 'bronze' });
     expect(rankForLevel(4)).toEqual({ title: 'Argent I', tier: 'argent' });
     expect(firstLevelOf('diamant')).toBe(13);
+  });
+
+  it('présente les six rangs : atteints, en cours, à venir', () => {
+    const at = (level: number) => rankLadder(level).map((r) => `${r.tier}${r.current ? '*' : r.reached ? '+' : '-'}${r.firstLevel}`);
+    expect(at(1)).toEqual(['bronze*1', 'argent-4', 'or-7', 'platine-10', 'diamant-13', 'legende-16']);
+    expect(at(8)).toEqual(['bronze+1', 'argent+4', 'or*7', 'platine-10', 'diamant-13', 'legende-16']);
+    expect(at(20)).toEqual(['bronze+1', 'argent+4', 'or+7', 'platine+10', 'diamant+13', 'legende*16']);
+    expect(rankLadder(1).map((r) => r.name)).toEqual(['Bronze', 'Argent', 'Or', 'Platine', 'Diamant', 'Légende']);
   });
 
   it('passe en Légende après Diamant III', () => {
