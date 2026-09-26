@@ -16,7 +16,7 @@ import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
-import { nextGoal } from './world/goals';
+import { lockedHint, nextGoal } from './world/goals';
 
 interface Props {
   biome: BiomeDef;
@@ -25,17 +25,19 @@ interface Props {
   onClose: () => void;
   /** Un ouvrage vient d'être construit depuis cette île : l'île d'en face s'ouvre. */
   onBuilt?: (to: BiomeDef['id']) => void;
+  /** L'ouvrage touché dans le monde : sa proposition est mise en avant. */
+  highlight?: string | null;
 }
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le plan en cours,
  * le Gardien et le plan à construire. Tout est en HTML (police dys), on ne quitte pas le monde.
  */
-export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: Props) {
+export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-  const greeting = unlocked ? biome.creature.greeting : `Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.`;
+  const greeting = unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked ? nextGoal(state, biome.id) : null;
@@ -84,7 +86,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
           <Icon name="flag" /> <strong>Prochain objectif :</strong> <Syllabified text={goal} />
         </p>
       )}
-      {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} />}
+      {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
 
       <h3 className="island-sheet-heading">
         <Icon name="hammer" /> Quêtes
@@ -160,7 +162,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt }: 
 
       {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} />}
 
-      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} />}
+      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
     </section>
   );
 }

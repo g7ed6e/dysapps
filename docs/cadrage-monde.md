@@ -95,7 +95,12 @@ Vingt îles identiques de 12 × 12, plates, alignées sur cinq rangées : rien n
 - Clavier : les flèches vont à l'île voisine dans cette direction. Le réglage « Sensibilité de la caméra » est retiré.
 - À venir : PR 2 (toucher pour aller et agir : îles fermées, ouvrages fantômes), PR 3 (la Carte, le continent vu de haut).
 
-## 15. À venir
+## 15. Toucher pour aller et agir (PR 13, 2/3)
+
+- **Toucher un ouvrage** (construit ou fantôme) dans le monde ouvre l'île ouverte qu'il touche, avec sa proposition mise en avant dans la liste des ouvrages (`onPickBridge`, `highlight`) : la ligne se surligne et vient sous les yeux. Avant, le tap ouvrait l'île d'en face, souvent fermée.
+- **Toucher une île fermée** approche la caméra et sa créature dit précisément ce qu'il faut (`lockedHint()` dans `world/goals.ts`) : l'ouvrage qui mène ici, depuis quelle île, combien de blocs, la condition ; ou, trop loin, l'île à ouvrir d'abord.
+
+## 16. À venir
 
 
 - Rien pour l'instant : jouer, écouter les retours des enfants.

@@ -3949,3 +3949,20 @@ a.island-quest:focus-visible {
   margin: 0.6rem 0 0;
   font-size: 0.95em;
 }
+
+/* L'ouvrage touché dans le monde : sa proposition est mise en avant un instant. */
+.bridge-highlight {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+  animation: bridge-pulse 1.2s ease-in-out 3;
+}
+@keyframes bridge-pulse {
+  50% {
+    outline-color: transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bridge-highlight {
+    animation: none;
+  }
+}

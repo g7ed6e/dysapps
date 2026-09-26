@@ -15,7 +15,7 @@ import { useAmbience } from './useAmbience';
 import { daylight } from './world/daylight';
 import { isPlanDone, plansFor } from './world/plans';
 import { avatarHome, avatarRoute, creaturePlacements, guardianPlacements, islandAt, islandCenter, worldCubes } from './world/terrain';
-import { isBiomeUnlocked } from './world/archipelago';
+import { getBridge, isBiomeUnlocked } from './world/archipelago';
 import { usePlanBuilder } from './usePlanBuilder';
 
 /**
@@ -38,6 +38,15 @@ export function WorldPage() {
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
   const [forceDay, setForceDay] = useState(() => !hasSeenTutorial('village-immersif'));
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
+  // L'ouvrage touché dans le monde : on ouvre l'île ouverte qu'il touche, sa proposition mise en avant.
+  const [highlight, setHighlight] = useState<string | null>(null);
+  const onPickBridge = (id: string) => {
+    const def = getBridge(id);
+    if (!def) return;
+    const from = isBiomeUnlocked(def.from, state.village.bridges) ? def.from : isBiomeUnlocked(def.to, state.village.bridges) ? def.to : def.from;
+    setHighlight(id);
+    navigate(`/aventure/${from}`);
+  };
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde.
@@ -52,6 +61,7 @@ export function WorldPage() {
   useEffect(() => {
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
     setSaid(null);
+    if (!island) setHighlight(null);
     if (island && island.id !== at && isBiomeUnlocked(island.id, state.village.bridges)) {
       const route = avatarRoute(at, island.id, state.village.bridges);
       if (route) {
@@ -93,6 +103,7 @@ export function WorldPage() {
             marker={marker}
             avatar={avatar}
             onPickIsland={(id) => navigate(`/aventure/${id}`)}
+            onPickBridge={onPickBridge}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || navigate(`/aventure/${islandAt(cell.x, cell.y)}`) } : undefined}
             burst={builder.burst}
             onPickCreature={onCreature}
@@ -143,6 +154,7 @@ export function WorldPage() {
           builder={builder}
           in3d
           onClose={() => navigate('/aventure')}
+          highlight={highlight}
           onBuilt={(to) => {
             // La fête : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille.
             const c = islandCenter(to);
