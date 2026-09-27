@@ -6,7 +6,7 @@ import { frenchTypography } from './math/RichText';
 export type FeedbackTone = 'info' | 'bien' | 'rate' | 'indice';
 
 interface Props {
-  /** Onomatopée affichée en grand (« BIEN VU ! »). Optionnelle. */
+  /** Mot court affiché en grand (« Bravo ! »), en minuscules. Optionnel. */
   shout?: string;
   message: string;
   tone?: FeedbackTone;

@@ -9,7 +9,8 @@ Chaque écran tient sans défiler :
 1. **La consigne ou l’énoncé** est lue à voix haute dès qu’elle apparaît (désactivable dans les réglages) et relançable avec le bouton 🔊. Les symboles sont lus en mots : « 7 fois 8 », « 3 quarts ».
 2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, mais la bonne n’a pas de place favorite : d’une question à l’autre, elle est la plus petite, la plus grande ou entre les deux. Les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
 3. **Le joker** donne un indice avant de répondre, ou après une erreur : une astuce (« remplace par *avait* ») et, en maths, une aide visuelle (grille de points, boîte de dix, droite par bonds, tableau de numération, barres de fractions).
-4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Une réponse fausse rapporte quand même un point d’effort, puis on peut réessayer.
+4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Après une première erreur, « Presque ! » s’affiche avec l’indice, la réponse tentée est barrée et l’on réessaie (avec deux choix seulement, la correction vient tout de suite, car le second essai donnerait la réponse). Après la deuxième, « Pas cette fois » donne la bonne réponse et un point d’effort. Les mots du résultat sont peu nombreux, courts et en minuscules : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois ».
+5. **Les succès** gagnés pendant la quête (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 
@@ -37,7 +38,8 @@ Cinq textes du domaine public : trois fables de La Fontaine en texte intégral (
 
 - Une ligne par vers ou par phrase, en couleurs alternées.
 - **Lecture à voix haute** qui surligne la ligne lue ; on peut aussi toucher une seule ligne pour l’entendre.
-- Les **mots difficiles** sont expliqués.
+- Les **mots difficiles** sont expliqués **avant le texte**, dans un encadré « Mots difficiles (9) » : ouvert sur tablette et ordinateur, replié sur téléphone (on l’ouvre d’un toucher).
+- Le bouton **« J’ai lu : aux questions ! »** reste en bas de l’écran pendant la lecture ; sur téléphone, il attend à la fin du texte pour ne pas en cacher une partie.
 - Puis **cinq questions de compréhension** ; le joker cite le passage à relire, et le texte reste consultable pendant les questions.
 
 Textes, glossaires et questions sont listés dans [Lecture](../pedagogie/lecture.md).
@@ -52,7 +54,7 @@ Six quêtes de dix calculs : tables faciles (× 2, 3, 4, 5, 10), tables costaude
 
 ### Fractions
 
-Cinq quêtes de huit questions : lire une fraction (barres et disques), comparer (même dénominateur, même numérateur, fractions égales), fractions égales, fraction d’une quantité, repérage sur la droite graduée. Les fractions sont écrites en colonne et lues en toutes lettres ; le joker les dessine.
+Cinq quêtes de huit questions : lire une fraction (barres et disques), comparer (même dénominateur, même numérateur, fractions égales : la question le dit, « Compare 1/2 et 2/4 : laquelle est la plus grande, ou sont-elles égales ? »), fractions égales, fraction d’une quantité, repérage sur la droite graduée. Les fractions sont écrites en colonne et lues en toutes lettres ; le joker les dessine.
 
 ### Nombres décimaux
 

@@ -4,7 +4,7 @@
   "type": "rimes",
   "level": 1,
   "target": "ballon",
-  "instruction": "Tape les mots qui riment avec ballon, comme dans la chanson. Puis valide.",
+  "instruction": "Tape les mots qui riment avec ballon. Puis valide.",
   "items": [
     {
       "key": "pantalon",

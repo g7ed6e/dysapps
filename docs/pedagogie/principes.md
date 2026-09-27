@@ -25,6 +25,10 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Aide visuelle toujours affichée** en maths (grille de points par cinq, boîte de dix, droite par bonds, tableau de numération, barres de fractions, droite des relatifs, tableau de proportionnalité, figure codée, série en barres, tableau de valeurs), pas seulement après une erreur.
 - **Rappel de règle** toujours visible pour la grammaire, la conjugaison et les règles de calcul du cycle 4 (règle des signes, puissances, distributivité, Pythagore…).
 - **Indice sur demande** (le joker) avant de répondre ou après une erreur : une astuce de substitution (« remplace par *avait* »), une explication phonétique (« le v vibre dans la gorge, comme dans vélo »), le passage à relire. Il compte pour un demi-point dans Blocland, jamais en négatif.
+- **Deuxième essai partout** (portail et Blocland, sauf au Gardien) : après une première erreur, « Presque ! » et l’indice, la réponse tentée barrée, puis un second essai qui vaut un demi-point. Pas de second essai quand il ne reste qu’une réponse possible : il la donnerait.
+- **Astuce du facteur le plus simple** : pour 4 × 10, l’indice parle du × 10, pas du « double du double ».
+- **Correction complète** : dans un tri de mots, la correction nomme tous les mots oubliés et chaque intrus touché, et les cartes le montrent (« oublié », « pas [an] »).
+- **Questions sans piège de formulation** : une question qui admet « elles sont égales » le dit (« laquelle est la plus grande, ou sont-elles égales ? »).
 - **Correction qui explique** : la bonne réponse et une phrase qui donne la règle, la lettre qui manque, le son entendu.
 - **Pièges plausibles** : les distracteurs sont des erreurs réelles (table voisine, oubli de retenue, écriture phonétiquement plausible, « 3,45 > 3,5 », « goed » pour *went*), jamais des réponses absurdes.
 
@@ -34,6 +38,10 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Pas de classement, pas de perte** : une erreur rapporte un point d’effort ; un bloc mal posé revient dans l’inventaire ; la série de régularité se fissure au lieu de casser.
 - **Sessions courtes** : dix questions au portail ; dans Blocland, pause proposée après trois exercices ou dix minutes, rappel de pause après dix minutes de construction.
 - **Feedback jamais punitif** : « Ce n’est rien : même le vent se trompe de feuille. Continue. »
+- **Des mots de résultat courts, connus et en minuscules** : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois », « Pas tout à fait ». Pas de « Raté », pas de mots d’argot (« Carton ! », « Propre ! ») ni de phrase en capitales : un élève dys ne doit pas déchiffrer un mot nouveau à chaque réponse.
+- **Rien ne tombe sur la question** : les succès gagnés pendant une partie s’affichent à la fin.
+- **Des étiquettes lisibles** : la police pixel ne sert qu’au décor ; toute étiquette qui porte un sens est dans la police de lecture, en casse normale.
+- **Un seul objectif à la fois** : l’île dit une seule chose à faire, avec une jauge, pas deux comptes mélangés (bois et blocs).
 - **Les baisses ne sont jamais montrées** : le niveau d’une quête redescend en silence si besoin.
 
 ## Apprendre vraiment

@@ -8,7 +8,7 @@ Chaque entrée dit **ce que vit l’élève**, **ce qu’il faudrait changer** e
 - **P1** : gêne réelle à chaque séance ;
 - **P2** : confort, finition.
 
-Les cinq **P0 sont faits** ; ce qui a été retenu est décrit sous chacun d’eux.
+Les cinq **P0** et les dix **P1 sont faits** (le n° 6 en partie) ; ce qui a été retenu est décrit sous chacun d’eux.
 
 ## P0 — À corriger d’abord
 
@@ -54,60 +54,70 @@ Les cinq **P0 sont faits** ; ce qui a été retenu est décrit sous chacun d’e
 - **Vécu** : « Rime avec chapeau, comme dans la chanson », gâteau, bateau, emojis de bonbon : j’ai 11 ans, j’ai l’impression d’être en CP. La première île est la seule ouverte : c’est la première chose que je vois.
 - **Changer** : garder la conscience phonologique (utile aux dys) mais avec un habillage et un vocabulaire de collège (mots plus longs, rimes riches, sons complexes : [ɛ̃]/[ɑ̃], [ʒ]/[ʃ], sons proches), ou permettre de **commencer par une autre île** de 6e après un court test de positionnement.
 - **Où** : données `foret-*`, `docs/conception/cadrage-archipels.md`.
+- **Fait en partie** : un niveau 3 « collège » pour les trois quêtes de la Forêt (Abattage de mots du collège, Chasse au son [in] où les lettres trompent, rimes en [oir] d’orthographes différentes), atteint vite par un élève à l’aise (une partie quasi parfaite fait monter d’un niveau) ; « comme dans la chanson » disparaît des consignes. **Reste ouvert** : commencer par une autre île, ou un test de positionnement (décision de game design).
 
 ### 7. Correction incomplète dans la Chasse au son
 
 - **Vécu** : j’oublie « vent » et « éléphant » ; la correction ne parle que de « gant ». Je ne sais pas que j’en ai raté d’autres.
 - **Changer** : montrer sur les cartes tous les bons mots (contour vert) et tous les pièges cochés à tort (contour rouge), et que la phrase de correction liste tous les mots manqués.
 - **Où** : `src/blocland/exercises/ChasseSonScreen.tsx`, `RimesScreen.tsx`, `ExerciseRunner.tsx` (`firstWrong`).
+- **Fait** : la correction nomme tous les mots oubliés et chaque intrus touché (Chasse au son, Rimes-échelle, au Gardien aussi) ; sur les cartes, « oublié » et « pas [an] » / « ne rime pas » ; un intrus bien laissé reste neutre au lieu d’être vert.
 
 ### 8. Pas de deuxième essai ni de joker dans Blocland
 
 - **Vécu** : dans le portail, après une erreur, le joker s’ouvre et je peux réessayer. Dans Blocland, une erreur et c’est fini. Les deux modes ne suivent pas la même règle, je ne comprends pas pourquoi.
 - **Changer** : aligner Blocland sur le portail (une erreur = aide + deuxième essai, étoile un peu moins bonne), ou dire clairement la règle au début de la quête.
 - **Où** : `src/blocland/ExerciseRunner.tsx`, `docs/manuel/blocland.md`, barème.
+- **Fait** : deuxième essai comme au portail (« Presque ! », indice de l’item, réponse tentée barrée, demi-point), sauf avec deux choix, au Filon et au Gardien. Pour un tri, tout l’écran se refait.
 
 ### 9. Mots de feedback durs ou flous
 
 - **Vécu** : « RATÉ… » en rouge et en capitales me décourage. « PROPRE ! », « CARTON ! », « IMPARABLE ! » changent à chaque fois : je dois relire un mot nouveau à chaque réponse.
 - **Changer** : remplacer « Raté… » par « Presque ! Regarde l’indice » ; limiter les félicitations à 2 ou 3 mots courts et connus (« Bravo ! », « Juste ! ») ; éviter les capitales pour les phrases (mots en capitales plus durs à lire pour un dys).
 - **Où** : `src/components/Feedback.tsx` et les listes de messages.
+- **Fait** : « Bravo ! », « Juste ! », « Presque ! » (avec l’indice), « Pas cette fois », « Pas tout à fait », « Quête terminée », « Sans faute ! », « 5 d’affilée ! », en minuscules ; « Level up ! » devient « Niveau supérieur ! ».
 
 ### 10. Police pixel pour les étiquettes
 
 - **Vécu** : « NOUVELLE PARTIE », « AVENTURE », « NIVEAU 6E », « MOUSSO », « 4/6 », le logo « DYSAPPS » : lettres pixel, capitales espacées, petites. Je ne les lis pas.
 - **Changer** : garder Silkscreen seulement pour du décor sans information ; toute étiquette qui porte un sens passe dans la police choisie en Réglages, en casse normale, 18 px mini.
 - **Où** : `src/styles/`, `docs/conception/style.md`.
+- **Fait** : Silkscreen ne sert plus qu’au logo « D » et au chiffre de l’écusson ; les étiquettes passent dans la police de lecture, en gras, en casse normale, à 18 px au moins ; « DysApps » dans la police des titres.
 
 ### 11. Les notifications de succès couvrent le titre
 
 - **Vécu** : « Succès débloqué — Échauffement » reste 5 secondes par-dessus le titre de la quête et le lien retour ; sur téléphone il pousse la question. Sur la Lecture il recouvre « Tous les textes ».
 - **Changer** : afficher les succès **à la fin** de la quête (écran de résultat), ou en bas, petit, sans recouvrir la question.
 - **Où** : `src/components/Celebrations.tsx`.
+- **Fait** : pendant une partie (portail et Blocland), les succès attendent l’écran de fin (`useHoldCelebrations`).
 
 ### 12. Lecture sur téléphone : le bouton « J’ai lu » chevauche les réglages
 
 - **Vécu** : le gros bouton vert « J’ai lu : aux questions » flotte par-dessus les cases « Lignes en couleurs » et « Syllabes en couleurs ». Les mots difficiles (alléché, ramage) sont tout en bas, après le texte : je les découvre trop tard.
 - **Changer** : bouton en bas du texte (ou barre fixe en bas d’écran qui ne recouvre rien) ; mots difficiles **avant** le texte, ou soulignés dans le texte avec leur sens au toucher.
 - **Où** : `src/apps/lecture/`.
+- **Fait** : sur téléphone, le bouton attend à la fin du texte ; les mots difficiles passent avant le texte, dans un encadré ouvert sur grand écran et replié sur téléphone. Souligner les mots dans le texte reste une idée pour plus tard.
 
 ### 13. Deux monnaies qui se mélangent : « bois » et « blocs »
 
 - **Vécu** : « Encore 16 bois pour La cabane de Mousso, ou 3 blocs pour le sentier vers Mine des lettres ». Mes blocs : « 36 bois, 1 pierre, 18 sable, 15 brique, 6 galet », puis « 3 blocs de n’importe quel type ». Trop de nombres, je ne sais pas quoi faire en premier.
 - **Changer** : **un seul** prochain objectif, avec une image et une jauge (« Cabane : ▰▰▱▱ encore 16 bois ») ; le panneau Mes blocs commence par « Tu peux construire : … » et masque les îles fermées.
 - **Où** : `src/blocland/IslandSheet.tsx`, `src/blocland/Inventory.tsx`.
+- **Fait** : un seul prochain objectif, avec une jauge ; « Mes blocs » commence par « Tu peux construire », ne liste que les trois prochains ouvrages et ne détaille plus les îles fermées.
 
 ### 14. Fractions : question piège
 
 - **Vécu** : « Quelle fraction est la plus grande : 1/2 ou 2/4 ? » La question dit qu’il y en a une plus grande ; la réponse était « Elles sont égales ». Je me sens piégé.
 - **Changer** : « Compare 1/2 et 2/4 : laquelle est la plus grande, ou sont-elles égales ? ».
 - **Où** : `src/apps/fractions/generators.tsx` (`compare`).
+- **Fait** : « Compare 1/2 et 2/4 : laquelle est la plus grande, ou sont-elles égales ? ».
 
 ### 15. Tables : la bonne astuce pour la bonne table
 
 - **Vécu** : pour 4 × 10, le joker dit « fais le double de 10, puis encore le double ». L’astuce du × 10 est plus simple et c’est celle que je connais.
 - **Changer** : quand un des facteurs est 10 (ou 1, ou 2), donner l’astuce de ce facteur-là.
 - **Où** : `src/apps/tables/`.
+- **Fait** : l’astuce vient du facteur le plus simple (1, 10, 2, 5, 4, 9, dans cet ordre).
 
 ## P2 — Confort et finition
 

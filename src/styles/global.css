@@ -15,6 +15,7 @@
   --word-spacing: 0.12em;
   --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
   --shout-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  /* Police pixel : décor seulement (logo, écusson du rang). Tout texte qui porte un sens est dans la police de lecture. */
   --pixel-font: "Silkscreen", "Archivo Black", monospace;
 
   /* Thème crème (par défaut) : fond crème, encre brune, blocs de bois et de sable */
@@ -403,9 +404,10 @@ svg {
     0 4px 0 var(--ink);
 }
 .brand-name {
-  font-family: var(--pixel-font);
+  /* Le nom de l'application, dans la police des titres (la police pixel ne garde que le logo « D »). */
+  font-family: var(--display-font);
   font-size: 0.95rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.02em
 }
 .topbar-xp {
   flex: 1;
@@ -551,8 +553,9 @@ svg {
   padding: 0 0.6rem;
   background: var(--ink);
   color: var(--surface);
-  font-family: var(--pixel-font);
-  font-size: 0.85rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 .hero-title {
   font-size: 2rem;
@@ -2057,12 +2060,18 @@ a.app-card:active {
   color: var(--on-accent);
 }
 .glossary {
-  margin-top: 1.2rem;
+  margin: 0 0 1.2rem;
 }
-.glossary h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.glossary summary {
+  min-height: 48px;
+  cursor: pointer;
+}
+.glossary[open] summary {
+  margin-bottom: 0.6rem;
+}
+.glossary summary {
+  /* list-item : garde le triangle qui montre qu'on peut ouvrir. */
+  display: list-item;
   font-family: var(--display-font);
   font-weight: 400;
   font-size: 1.1rem;
@@ -2227,7 +2236,8 @@ a.app-card:active {
     transform: translateY(100%);
   }
 }
-/* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte */
+/* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte (sur téléphone, il attend à la fin du
+   texte : collé, il cacherait un tiers de l'écran). */
 .sticky-actions {
   position: sticky;
   bottom: 0;
@@ -2237,6 +2247,11 @@ a.app-card:active {
   margin-top: 1.2rem;
   padding: 0.7rem 0 calc(0.7rem + env(safe-area-inset-bottom));
   background: linear-gradient(to bottom, transparent, var(--bg) 35%);
+}
+@media (max-width: 640px) {
+  .sticky-actions {
+    position: static;
+  }
 }
 .sticky-actions .button {
   width: 100%;
@@ -2374,8 +2389,9 @@ a.app-card:active {
   gap: 0.2rem;
 }
 .adventure-kicker {
-  font-family: var(--pixel-font);
-  font-size: 0.8rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 .adventure-title {
@@ -2654,7 +2670,8 @@ a.app-card:active {
   position: absolute;
   top: calc(var(--tex-size) + 0.6rem);
   right: 0.8rem;
-  font-family: var(--pixel-font);
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 1.1rem;
   color: var(--muted);
 }
@@ -2710,8 +2727,9 @@ a.app-card:active {
 }
 .creature-name {
   margin: 0 0 0.2rem;
-  font-family: var(--pixel-font);
-  font-size: 0.85rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 .creature-text {
@@ -2785,7 +2803,8 @@ a.app-card:active {
   background: var(--bg);
 }
 .reward-list strong {
-  font-family: var(--pixel-font);
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 1.1rem;
 }
 .reward-chest {
@@ -2895,6 +2914,15 @@ a.app-card:active {
     "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
     "Twemoji Mozilla", sans-serif;
   font-variant-emoji: emoji;
+}
+.word-card.ignored {
+  opacity: 0.75;
+}
+/* Sous le mot, après validation : « oublié », « pas [an] », « ne rime pas ». */
+.word-note {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 .word-mark {
   position: absolute;
@@ -3127,7 +3155,8 @@ a.app-card:active {
   font-weight: 700;
 }
 .palette-count {
-  font-family: var(--pixel-font);
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 1rem;
 }
 .build-modes {
@@ -3309,8 +3338,9 @@ a.app-card:active {
   gap: 0.2rem 0.8rem;
 }
 .journal-day {
-  font-family: var(--pixel-font);
-  font-size: 0.85rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
   color: var(--muted);
   min-width: 8rem;
 }
@@ -3333,7 +3363,8 @@ a.app-card:active {
 }
 .tutorial-count {
   flex-shrink: 0;
-  font-family: var(--pixel-font);
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 0.9rem;
   padding: 0.15rem 0.4rem;
   background: var(--ink);
@@ -3424,7 +3455,8 @@ a.app-card:active {
   align-items: center;
   gap: 0.4rem;
   margin: 0;
-  font-family: var(--pixel-font);
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 0.9rem;
   color: var(--muted);
 }
@@ -3523,8 +3555,9 @@ a.app-card:active {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  font-family: var(--pixel-font);
-  font-size: 0.85rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 .arena-gauge {
   height: 1.1rem;
@@ -3925,8 +3958,9 @@ a.island-quest:focus-visible {
   align-items: center;
   gap: 0.2rem;
   flex-shrink: 0;
-  font-family: var(--pixel-font);
-  font-size: 0.85rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 @media (max-width: 640px) {
   .world-bar {
@@ -4050,8 +4084,9 @@ a.island-quest:focus-visible {
   opacity: 0.85;
 }
 .tag-classe {
-  font-family: var(--pixel-font);
-  font-size: 0.8rem;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
 /* ===== Aides du collège ===== */
@@ -4215,14 +4250,34 @@ a.island-quest:focus-visible {
 
 /* Le prochain objectif d'une île : une phrase en tête du panneau. */
 .island-goal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3rem 0.5rem;
   margin: 0 0 0.8rem;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) dashed var(--ink);
   background: color-mix(in srgb, var(--yellow) 25%, var(--surface));
+}
+.island-goal p {
+  margin: 0;
+}
+/* Jauge de l'objectif : blocs gagnés sur blocs nécessaires. */
+.goal-gauge {
+  position: relative;
+  height: 1.6rem;
+  margin-top: 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--surface);
+}
+.goal-gauge-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--success-bg);
+  border-right: 2px solid var(--success);
+}
+.goal-gauge-count {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.5rem;
 }
 
 /* Un ouvrage pas encore possible : une ligne compacte, sans bouton. */

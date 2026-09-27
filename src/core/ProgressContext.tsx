@@ -35,6 +35,9 @@ interface ProgressContextValue {
   resetProgress: () => void;
   celebrations: Celebration[];
   dismissCelebration: (id: number) => void;
+  /** Vrai pendant une partie : les récompenses attendent la fin pour ne rien cacher (voir `useHoldCelebrations`). */
+  celebrationsHeld: boolean;
+  holdCelebrations: (hold: boolean) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -43,6 +46,9 @@ const STORAGE_KEY = 'progress';
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState<Progress>(() => sanitizeProgress(loadJSON(STORAGE_KEY, EMPTY_PROGRESS)));
   const [celebrations, setCelebrations] = useState<Celebration[]>([]);
+  // Nombre de parties en cours qui retiennent les récompenses (0 : on les montre).
+  const [holds, setHolds] = useState(0);
+  const holdCelebrations = useCallback((hold: boolean) => setHolds((n) => Math.max(0, n + (hold ? 1 : -1))), []);
   // Référence synchrone pour enchaîner plusieurs évènements dans le même rendu.
   const progressRef = useRef(progress);
   const nextId = useRef(1);
@@ -57,7 +63,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const items: Celebration[] = [];
     if (update.leveledUp) {
       const info = levelFromXp(update.progress.xp);
-      items.push({ id: nextId.current++, kind: 'levelup', icon: 'zap', title: 'Level up !', message: `Niveau ${info.level} · rang ${info.title}` });
+      items.push({ id: nextId.current++, kind: 'levelup', icon: 'zap', title: 'Niveau supérieur !', message: `Niveau ${info.level} · rang ${info.title}` });
     }
     for (const b of update.newBadges) {
       items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: b.title });
@@ -86,8 +92,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration }),
-    [progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration],
+    () => ({
+      progress,
+      answer,
+      completeSession,
+      completePlan,
+      beatBoss,
+      launchVoyage,
+      resetProgress,
+      celebrations,
+      dismissCelebration,
+      celebrationsHeld: holds > 0,
+      holdCelebrations,
+    }),
+    [progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration, holds, holdCelebrations],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

@@ -7,6 +7,7 @@ import { SpeakButton } from './SpeakButton';
 import { RichText } from './math/RichText';
 import { langAttr, type Lang } from '../core/speech';
 import { useSheetClearance } from './useSheetClearance';
+import { useHoldCelebrations } from './Celebrations';
 
 export interface Question {
   id: string;
@@ -54,7 +55,8 @@ interface FeedbackState {
   key: number;
 }
 
-const SHOUTS = ['BIEN VU !', 'PROPRE !', 'EXACT !', 'CARTON !', 'IMPARABLE !'];
+// Peu de mots, courts et connus, en minuscules : un élève dys ne doit pas déchiffrer un mot nouveau à chaque réponse.
+const SHOUTS = ['Bravo !', 'Juste !'];
 /** Un combo s'affiche à partir de cette série de bonnes réponses. */
 const COMBO_FROM = 3;
 
@@ -84,6 +86,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   }, [index, questions, phase === 'summary']);
   // Le bandeau de résultat ne cache ni la bonne réponse ni l'aide.
   useSheetClearance(sectionRef, phase === 'resolved');
+  // Les succès gagnés en route s'affichent au bilan, pas sur la question.
+  useHoldCelebrations(phase !== 'summary');
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -102,7 +106,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
       setPhase('resolved');
       const streak = update.progress.currentStreak;
       say({
-        shout: effectiveAttempt === 1 && streak >= COMBO_FROM ? `COMBO x${streak} !` : SHOUTS[index % SHOUTS.length],
+        shout: effectiveAttempt === 1 && streak >= COMBO_FROM ? `${streak} d’affilée !` : SHOUTS[index % SHOUTS.length],
         message: `+${update.xpGained} XP`,
         tone: 'bien',
       });
@@ -115,8 +119,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     if (attempt < attemptsAllowed) {
       setAttempt((a) => a + 1);
       say({
-        shout: 'RATÉ…',
-        message: question.hint ? `Joker : ${question.hint}` : question.aid ? 'Joker : regarde l’aide.' : 'Retente ta chance.',
+        shout: 'Presque !',
+        message: question.hint ? `Indice : ${question.hint}` : question.aid ? 'Regarde l’aide, puis réessaie.' : 'Réessaie.',
         tone: 'rate',
       });
       if (hasJoker) setHintUsed(true);
@@ -127,7 +131,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     setXpGained((x) => x + update.xpGained);
     setPhase('resolved');
     say({
-      shout: 'PAS CETTE FOIS',
+      shout: 'Pas cette fois',
       message: `La bonne réponse : « ${question.answer} ». +${update.xpGained} XP pour l’effort, tu l’auras la prochaine fois.`,
       tone: 'rate',
     });
@@ -136,7 +140,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   const takeJoker = () => {
     if (!hasJoker) return;
     setHintUsed(true);
-    say({ shout: 'JOKER', message: question.hint ?? 'Regarde l’aide.', tone: 'indice' });
+    say({ shout: 'Joker', message: question.hint ?? 'Regarde l’aide.', tone: 'indice' });
   };
 
   const next = () => {
@@ -154,10 +158,10 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     setPhase('summary');
     say(
       finalScore === 100
-        ? { shout: 'PERFECT !', message: 'Zéro faute. Respect.', tone: 'bien' }
+        ? { shout: 'Sans faute !', message: 'Zéro erreur, bravo.', tone: 'bien' }
         : finalScore >= 60
-          ? { shout: 'QUÊTE TERMINÉE', message: 'Belle partie, tu progresses.', tone: 'bien' }
-          : { shout: 'QUÊTE TERMINÉE', message: 'Tu es allé au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
+          ? { shout: 'Quête terminée', message: 'Belle partie, tu progresses.', tone: 'bien' }
+          : { shout: 'Quête terminée', message: 'Tu as tenu jusqu’au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
     );
   };
 

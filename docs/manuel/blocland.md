@@ -23,7 +23,7 @@ Aucun texte à lire n’est dessiné dans la 3D : tout ce qui se lit est dans de
 Toucher une île ouverte fait voler la caméra et ouvre son panneau (il glisse depuis le bas, ou depuis la droite sur grand écran). On y trouve, dans l’ordre :
 
 1. **La créature** et sa phrase d’accueil, lue à voix haute.
-2. **Le prochain objectif** : ce que l’application conseille de faire maintenant.
+2. **Le prochain objectif** : **un seul**, avec une jauge (« 0 / 3 ») : d’abord ce qu’on peut faire tout de suite (poser les blocs d’un plan, construire un ouvrage, poser les blocs du Bloc-Navire), sinon le plus proche, celui qui demande le moins de blocs (le plan en cas d’égalité). Sur un port, le Bloc-Navire prêt à partir passe avant tout.
 3. **Les quêtes**, avec les étoiles gagnées. Un losange jaune flotte dans le monde au-dessus d’une quête à faire ; des cubes d’or comptent les étoiles.
 4. **Le Gardien** : verrouillé tant qu’il manque des étoiles ; le toucher dit lesquelles.
 5. **Le plan** de l’île : avancement, blocs manquants et où les gagner (le nom de l’île est un lien : le toucher y emmène la caméra et le bonhomme), bouton « Poser le bloc suivant », lien « Mes blocs », bâtiments déjà terminés ici.
@@ -42,10 +42,12 @@ Chaque île propose deux ou trois **quêtes**. Une partie enchaîne les items d�
 
 - la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la partie ; le bouton 🔊 « Consigne » la relit. Une quête qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
 - l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ;
+- **un deuxième essai**, comme dans les quêtes du portail : après une erreur, « Presque ! » s’affiche avec l’indice de l’item s’il en a un, la réponse déjà tentée est barrée, et l’on réessaie une fois. Ce n’est pas proposé quand il ne reste qu’une réponse possible (deux choix, ou le Filon : piocher ou laisser passer), ni au Gardien, qui est l’épreuve. Pour un tri (Chasse au son, Rimes-échelle, Enclos), tout l’écran se refait, sans dire quelles cartes sont fausses ;
 - la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe en bas de l’écran. Le bandeau ne cache pas la question : l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou, si elles sont trop hautes (téléphone), au moins l’énoncé, la réponse touchée et la bonne réponse ;
-- l’écran de récompense donne le score, les étoiles, les blocs et l’XP.
+- dans un tri, la correction **nomme toutes les erreurs** : « Tu as oublié gant et éléphant : on y entend [an]. Dans pain, on entend [in], pas [an]. » Sur les cartes, un bon mot trouvé est vert avec une coche, un bon mot oublié est rouge avec « oublié », un intrus touché est rouge avec « pas [an] » (ou « ne rime pas »), un intrus bien laissé reste neutre ;
+- l’écran de récompense donne le score, les étoiles, les blocs et l’XP. Les succès gagnés pendant la partie (« Succès débloqué », « Niveau supérieur ! ») attendent cet écran : rien ne tombe sur la question pendant qu’on lit.
 
-Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite, trois à partir de 90 %. La meilleure est gardée. Le score compte un point par item trouvé du premier coup et un demi-point avec une aide ou après une erreur.
+Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite, trois à partir de 90 %. La meilleure est gardée. Le score compte un point par item trouvé du premier coup et un demi-point avec une aide ou au deuxième essai. Dans un tri refait, un mot déjà juste au premier essai garde son point entier.
 
 **Chaque partie change**, dès la première et même quand on recommence le jeu depuis le début : d’autres nombres en maths (école et collège), un autre tirage de mots en français, dans un autre ordre. La **place de la bonne réponse** change aussi : sur une partie, elle est autant de fois à gauche, au milieu ou à droite, et d’une partie à l’autre un même mot n’a pas sa réponse au même endroit. En maths, les nombres restent rangés dans l’ordre croissant ; ce sont les pièges proposés qui changent (1-2-3, 2-3-4 ou 3-4-5 syllabes, par exemple). Le **niveau** de chaque quête s’adapte à l’élève : il monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, sans jamais l’afficher comme une baisse. À niveau égal, l’exercice le moins joué est proposé.
 
@@ -61,9 +63,10 @@ Les blocs servent à deux choses : **construire les ouvrages** entre les îles (
 
 Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire à la place du panneau d’île. Il ne se contente pas de compter :
 
-- **Mes blocs** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
-- **Pour les ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les ouvrages possibles depuis les îles ouvertes, avec leur coût.
-- **À aller chercher** : les blocs que réclament les plans en cours et le Bloc-Navire et que l’on n’a pas, avec l’île où les gagner (un lien, et la mention « île fermée » s’il faut d’abord un ouvrage).
+- **Tu peux construire** : en premier, ce qu’on peut faire tout de suite, un lien par chantier (le plan d’une île dont on a tous les blocs, le Bloc-Navire, un ouvrage qu’on peut payer). Sinon : « Rien pour l’instant : fais une quête pour gagner des blocs », avec un lien vers l’île où l’on est.
+- **Dans ta poche** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
+- **Prochains ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les trois ouvrages les moins chers qu’on ne peut pas encore payer, avec leur coût.
+- **À aller chercher** : les blocs que réclament les plans en cours et le Bloc-Navire et que l’on n’a pas, avec l’île ouverte où les gagner (un lien). Les blocs qui se gagnent sur des îles encore fermées ne sont pas détaillés, seulement comptés (« Et 3 autres sortes de blocs, sur des îles que tu ouvriras plus tard »).
 
 La croix ramène sur l’île où se tient le bonhomme.
 

@@ -3,6 +3,7 @@ import { Icon } from '../../components/Icon';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import type { ScreenProps } from './registry';
+import { CARD_CLASS, cardState, sortSummary } from './sortCards';
 
 /**
  * Chasse au son : 4 mots avec pictogramme, l'élève tape ceux où il entend le son cible, puis valide.
@@ -24,9 +25,19 @@ export function ChasseSonScreen({ items, answered, onAnswer, target }: ScreenPro
   const validate = () => {
     const results = items.map((it) => ({ key: it.key, correct: picked.has(it.key) === Boolean(it.correct) }));
     const firstWrong = items.find((_, i) => !results[i].correct);
+    // La correction nomme toutes les erreurs : les bons mots oubliés et chaque intrus touché.
+    const summary = sortSummary(
+      items,
+      picked,
+      {
+        missed: (words) => `Tu as oublié ${words} : on y entend [${target}].`,
+        intruder: (word, heard) => `Dans ${word}, on entend ${heard}, pas [${target}].`,
+      },
+      (it) => String(it.heard),
+    );
     onAnswer({
       results,
-      detail: firstWrong ? { word: firstWrong.word, heard: firstWrong.heard, missed: !picked.has(firstWrong.key) } : {},
+      detail: firstWrong ? { word: firstWrong.word, heard: firstWrong.heard, missed: !picked.has(firstWrong.key), summary } : {},
     });
   };
 
@@ -39,12 +50,12 @@ export function ChasseSonScreen({ items, answered, onAnswer, target }: ScreenPro
         {items.map((it) => {
           const word = String(it.word);
           const on = picked.has(it.key);
-          const state = answered ? (Boolean(it.correct) === on ? 'right' : 'wrong') : '';
+          const state = answered ? cardState(it, on) : null;
           return (
             <li key={it.key}>
               <button
                 type="button"
-                className={`word-card${on ? ' picked' : ''}${state ? ` ${state}` : ''}`}
+                className={`word-card${on ? ' picked' : ''}${state ? CARD_CLASS[state] : ''}`}
                 aria-pressed={on}
                 disabled={Boolean(answered)}
                 onClick={() => toggle(it.key)}
@@ -55,7 +66,9 @@ export function ChasseSonScreen({ items, answered, onAnswer, target }: ScreenPro
                 <span className="word-text">
                   <Syllabified text={word} />
                 </span>
-                {answered && Boolean(it.correct) && <Icon name="check" className="word-mark" />}
+                {state === 'found' && <Icon name="check" className="word-mark" />}
+                {state === 'missed' && <span className="word-note">oublié</span>}
+                {state === 'intruder' && <span className="word-note">pas [{target}]</span>}
               </button>
               <SpeakButton text={word} label="Écouter" compact />
             </li>

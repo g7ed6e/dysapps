@@ -1,0 +1,107 @@
+{
+  "id": "foret-chasse-son-in-3",
+  "biome": "foret",
+  "type": "chasse-son",
+  "level": 3,
+  "instruction": "Tape les mots où tu entends le son [in]. Attention : les lettres i et n ne font pas toujours ce son, écoute bien. Puis valide.",
+  "target": "in",
+  "items": [
+    {
+      "key": "peinture",
+      "word": "peinture",
+      "image": "🎨",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "cinéma",
+      "word": "cinéma",
+      "image": "🎬",
+      "correct": false,
+      "heard": "[i]"
+    },
+    {
+      "key": "jardin",
+      "word": "jardin",
+      "image": "🌻",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "farine",
+      "word": "farine",
+      "image": "🌾",
+      "correct": false,
+      "heard": "[i]"
+    },
+    {
+      "key": "musicien",
+      "word": "musicien",
+      "image": "🎻",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "machine",
+      "word": "machine",
+      "image": "⚙️",
+      "correct": false,
+      "heard": "[i]"
+    },
+    {
+      "key": "invention",
+      "word": "invention",
+      "image": "💡",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "image",
+      "word": "image",
+      "image": "🖼️",
+      "correct": false,
+      "heard": "[i]"
+    },
+    {
+      "key": "bassin",
+      "word": "bassin",
+      "image": "🏊",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "usine",
+      "word": "usine",
+      "image": "🏭",
+      "correct": false,
+      "heard": "[i]"
+    },
+    {
+      "key": "matin",
+      "word": "matin",
+      "image": "🌅",
+      "correct": true,
+      "heard": "[in]"
+    },
+    {
+      "key": "plein",
+      "word": "plein",
+      "image": "⛽",
+      "correct": true,
+      "heard": "[in]"
+    }
+  ],
+  "feedback": {
+    "correct": "Bravo, tu entends bien [in], même caché !",
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

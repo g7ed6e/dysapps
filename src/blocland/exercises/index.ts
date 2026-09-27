@@ -72,11 +72,11 @@ const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...COLLEG
  * Un fichier de data/ absent de cette liste fait échouer les tests (data.test.ts).
  */
 const ORDER: (string | ExerciseDef[])[] = [
-  'foret-echauffement-001', 'foret-echauffement-002', 'foret-chasse-son-an', 'foret-chasse-son-on',
-  'foret-chasse-son-oi', 'foret-chasse-son-in', 'foret-chasse-son-ch', 'foret-chasse-son-s', 'mine-filon-b',
+  'foret-echauffement-001', 'foret-echauffement-002', 'foret-echauffement-003', 'foret-chasse-son-an', 'foret-chasse-son-on',
+  'foret-chasse-son-oi', 'foret-chasse-son-in', 'foret-chasse-son-ch', 'foret-chasse-son-s', 'foret-chasse-son-in-3', 'mine-filon-b',
   'mine-filon-d', 'mine-filon-p', 'mine-filon-q', 'mine-filon-mix-1', 'mine-filon-mix-2', 'carriere-mot-troue-1',
   'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont',
-  'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
+  'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'foret-rimes-oire', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
   'carriere-coffre-2', 'carriere-familles-1', 'carriere-familles-2', 'ferme-enclos-1', 'ferme-enclos-2',
   'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
   'carrefour-aiguillage-2', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',

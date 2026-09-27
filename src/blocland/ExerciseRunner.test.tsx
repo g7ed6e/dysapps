@@ -47,8 +47,13 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const choices = item.choices as string[];
-    const pick = wrongAt.includes(i) ? choices.find((c) => c !== item.answer)! : (item.answer as string);
-    await user.click(screen.getByRole('button', { name: pick }));
+    if (wrongAt.includes(i)) {
+      // Deux erreurs : le premier essai raté donne « Presque ! » et un deuxième essai, la réponse tentée barrée.
+      const [first, second] = choices.filter((c) => c !== item.answer);
+      await user.click(screen.getByRole('button', { name: first }));
+      expect(screen.getByText('Presque !')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: second }));
+    } else await user.click(screen.getByRole('button', { name: item.answer as string }));
     const sheet = screen.getByRole('region', { name: 'Résultat' });
     if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`On entend ${item.heard} : ${item.answer}, c’est le nombre de syllabes`))).toBeInTheDocument();
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
@@ -106,4 +111,26 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   await user.click(screen.getByRole('button', { name: /Encore un peu/ }));
   expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].attempts).toBe(3);
+});
+
+it('deuxième essai : juste au second coup, le point compte moitié', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/foret/abattage');
+  await loaded();
+  const items = runItems(DEF, runSeed(DEF));
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (i === 0) {
+      const wrong = (item.choices as string[]).find((c) => c !== item.answer)!;
+      await user.click(screen.getByRole('button', { name: wrong }));
+      expect(screen.getByText('Presque !')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: wrong })).toBeDisabled();
+    }
+    await user.click(screen.getByRole('button', { name: item.answer as string }));
+    const sheet = screen.getByRole('region', { name: 'Résultat' });
+    await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
+  }
+  // 5 points et demi sur 6, trois étoiles mais pas « sans faute ».
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].best).toBeCloseTo(5.5 / 6);
+  expect(screen.queryByRole('heading', { name: 'Sans faute !' })).not.toBeInTheDocument();
 });

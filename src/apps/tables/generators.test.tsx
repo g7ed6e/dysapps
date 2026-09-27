@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { QUESTS, QUESTIONS_PER_QUEST, TABLES, numericChoices, tableQuest } from './generators';
+import { QUESTS, QUESTIONS_PER_QUEST, TABLES, numericChoices, tableQuest, tableTip } from './generators';
 import { formatNumber } from './format';
 
 /** Générateur pseudo-aléatoire reproductible. */
@@ -75,4 +75,13 @@ it('affiche une aide visuelle cohérente', () => {
   const label = screen.getByRole('img').getAttribute('aria-label')!;
   const [rows, cols] = label.match(/\d+/g)!.map(Number);
   expect(rows * cols).toBe(a * b);
+});
+
+it('l’astuce vient du facteur le plus simple : 4 × 10 prend celle du × 10', () => {
+  expect(tableTip(4, 10)).toMatch(/^× 10/);
+  expect(tableTip(10, 4)).toMatch(/^× 10/);
+  expect(tableTip(7, 2)).toBe('× 2, c’est le double : 7 + 7.');
+  expect(tableTip(8, 1)).toMatch(/^× 1 /);
+  expect(tableTip(9, 5)).toMatch(/^× 5 : calcule 9 × 10/);
+  expect(tableTip(7, 8)).toBe('Pars de 7 × 7 et ajoute encore 7.');
 });

@@ -4,7 +4,7 @@
   "type": "rimes",
   "level": 1,
   "target": "chapeau",
-  "instruction": "Tape les mots qui riment avec chapeau, comme dans la chanson. Puis valide.",
+  "instruction": "Tape les mots qui riment avec chapeau. Puis valide.",
   "items": [
     {
       "key": "bateau",

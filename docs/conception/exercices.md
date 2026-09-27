@@ -64,11 +64,13 @@ Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en ga
 | `items` | Les items de référence, chacun avec une `key` stable (répétition espacée). Leur forme dépend du type. |
 | `generate` | Exercice généré : d’autres items pour une autre graine (une graine tirée au hasard par partie). Toutes les quêtes de maths, école et collège, en ont un. |
 | `perRun` | Nombre d’items joués par partie quand le lot est plus large. |
-| `feedback` | Messages de correction ; `{word}`, `{heard}`, `{answer}`, `{explanation}`, `{rule}`… sont remplacés. |
+| `feedback` | Messages de correction ; `{word}`, `{heard}`, `{answer}`, `{explanation}`, `{rule}`… sont remplacés. Un écran de tri (Chasse au son, Rimes-échelle) rédige lui-même une correction qui nomme toutes les erreurs (`detail.summary`, via `sortCards.ts`) ; elle remplace alors `wrong`, au Gardien aussi. |
 | `reward` | Bloc, quantité et XP de base (le moteur ajuste selon le score et les étoiles). |
 | `adaptive` | Seuils de montée et de descente du niveau (deux parties, ou une seule à 95 %). |
 
 Les formes d’items par type d’écran sont visibles sur la page de chaque île (section « Items ») et dans les JSON existants : `prompt / choices / answer / hint / explanation / aid` pour les QCM et les écrans de règle, `word / image / correct / heard` pour la Chasse au son, `letter / correct / tip` pour le Filon, `word / before / after / answer / choices` pour le Mot troué, `subject / singular / plural / answer / why` pour l’Enclos, `meaning / root / slot / choices / answer / word` pour Familles-craft, `word / sentence / choices / answer / hint` pour les dictées à choix, `text` pour les paragraphes d’Ascension.
+
+**Deuxième essai** (`retryAllowed` dans `registry.ts`) : après une première erreur, le lanceur affiche « Presque ! » (avec le `hint` de l'item s'il en a un) et remonte l'écran ; les écrans à choix reçoivent `ruledOut` (la réponse tentée, barrée). Il est permis pour un écran à choix d'au moins trois réponses et pour un tri (`sorting: true` : Chasse au son, Rimes-échelle, Enclos), jamais au Gardien. Un item juste au deuxième essai compte `attempts: 2` (un demi-point) ; dans un tri refait, un item déjà juste au premier essai garde `attempts: 1`.
 
 **Aides visuelles en données** : un item peut porter `aid: { kind, props }` ; l’écran `CalculScreen` redessine la figure (`dots`, `ten`, `jumps`, `compare-bars`, `dot-groups`, `decimal-table`, `number-line`, `ratio-table`, `bar-list`, `right-triangle`, `thales-figure`, `value-table`, `rule-card`). L’aide est toujours affichée, pas seulement après une erreur.
 

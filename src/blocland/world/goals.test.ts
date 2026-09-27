@@ -1,5 +1,5 @@
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { lockedHint, nextGoal } from './goals';
+import { lockedHint, nextGoal, nextGoalInfo } from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
@@ -8,28 +8,31 @@ import { VEHICLE_STAGES } from './vehicle';
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
 
-it('le prochain objectif dit ce qu’il manque pour le plan, ou pour l’ouvrage le moins cher', () => {
+it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de suite, sinon le plus proche', () => {
   const fresh = sanitizeState({});
-  expect(nextGoal(fresh, 'foret')).toBe('Encore 16 bois pour La cabane de Mousso, ou 3 blocs pour le sentier vers Mine des lettres.');
+  // 3 blocs pour le sentier, c'est plus proche que 16 bois pour la cabane.
+  expect(nextGoal(fresh, 'foret')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
+  expect(nextGoalInfo(fresh, 'foret')).toMatchObject({ have: 0, need: 3 });
   const some = sanitizeState({ inventory: { bois: 5 } });
-  expect(nextGoal(some, 'foret')).toBe('Encore 11 bois pour La cabane de Mousso, ou tu peux construire le sentier vers Mine des lettres.');
+  expect(nextGoal(some, 'foret')).toBe('Tu peux construire le sentier vers Mine des lettres.');
   const rich = sanitizeState({ inventory: { bois: 20 } });
-  expect(nextGoal(rich, 'foret')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs, ou tu peux construire le sentier vers Mine des lettres.');
+  expect(nextGoal(rich, 'foret')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs.');
+  expect(nextGoalInfo(rich, 'foret')).toMatchObject({ have: 16, need: 16 });
   // Tous les plans posés et tous les ouvrages construits : plus rien à dire.
   const plans = Object.fromEntries(plansFor('foret').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const done = sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme', 'foret-horloge'] } });
   expect(nextGoal(done, 'foret')).toBeNull();
-  expect(nextGoal(EMPTY_STATE, 'mine')).toContain('pour La forge de Tunel');
+  expect(nextGoal(EMPTY_STATE, 'mine')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
 });
 
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
-  // Au début, sur la Plaine : le plan et l'ouvrage le moins cher passent d'abord (deux parties au plus).
+  // Au début, sur la Plaine : l'ouvrage le moins cher (3 blocs) est plus proche que le plan.
   const fresh = sanitizeState({});
-  expect(nextGoal(fresh, 'plaine')).toMatch(/^Encore \d+ brique pour Le nid de Coco, ou 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
+  expect(nextGoal(fresh, 'plaine')).toMatch(/^Encore 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
   // Les plans de la Plaine finis et ses ouvrages construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['plaine-riviere', 'plaine-volcan'];
-  expect(nextGoal(sanitizeState({ village: { plans, bridges: built } }), 'plaine')).toMatch(/^Encore \d+ (sable|bois) pour le Bloc-Navire\.$/);
+  expect(nextGoal(sanitizeState({ village: { plans, bridges: built } }), 'plaine')).toMatch(/^Encore \d+ (sable|bois)( et \d+ \w+)? pour le Bloc-Navire\.$/);
   const stocked = sanitizeState({ village: { plans, bridges: built }, inventory: { sable: 30, bois: 30, galet: 10, pierre: 5 } });
   expect(nextGoal(stocked, 'plaine')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
   // Toutes ses cases posées : il manque des Gardiens.
