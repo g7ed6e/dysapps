@@ -25,6 +25,7 @@ import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBurner, playHorn, playReactor, playSail } from './sound';
 import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
 import { daylight } from './world/daylight';
+import { walkDuration } from './world/scene';
 import { isPlanDone, plansFor } from './world/plans';
 import {
   avatarHome,
@@ -150,12 +151,23 @@ export function WorldPage() {
   else if (builder.burst.seq !== seqs.current.plan) seqs.current = { plan: builder.burst.seq, ship: ship.burst.seq, last: builder.burst };
   const burst = useMemo(() => ({ ...seqs.current.last, seq: builder.burst.seq + ship.burst.seq }), [builder.burst, ship.burst]);
 
-  // Le voyage en cours (le Bloc-Navire). En 3D, une cinématique en deux temps : le départ dans cet archipel, puis, sous
-  // un voile, le changement d'archipel et l'arrivée dans le suivant. Avec « Réduire les animations » : un écran HTML
-  // fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
-  const [voyage, setVoyage] = useState<{ to: ArchipelagoId; back: boolean; mode: 'panel' | 'cinema'; leg: VoyageLeg; seq: number; stage: 1 | 2 | 3 } | null>(
-    null,
-  );
+  // Le voyage en cours (le Bloc-Navire). Tout changement d'archipel en est un, à l'aller comme au retour : le bouton du
+  // port, mais aussi « Aller au port » des quatre archipels, un lien ou un retour d'exercice vers une île d'un autre
+  // archipel. Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
+  // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
+  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Avec « Réduire les animations » : un écran
+  // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
+  const [voyage, setVoyage] = useState<{
+    to: ArchipelagoId;
+    from: ArchipelagoId;
+    back: boolean;
+    mode: 'panel' | 'cinema';
+    leg: VoyageLeg;
+    seq: number;
+    stage: 1 | 2 | 3;
+    dest: BiomeId;
+    approach: boolean;
+  } | null>(null);
   const [veil, setVeil] = useState(false);
   const timers = useRef<number[]>([]);
   const later = (f: () => void, ms: number) => timers.current.push(window.setTimeout(f, ms));
@@ -164,17 +176,43 @@ export function WorldPage() {
     timers.current = [];
   };
   useEffect(() => clearTimers, []);
-  const onBoard = (to: ArchipelagoId, back: boolean) => {
+  const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
+    clearTimers();
     // L'étape du navire qui voyage : celle qui mène là-bas ; pour un retour, la plus grande déjà partie.
     const stage = (back ? Math.max(1, launchedCount(state.village.bridges)) : (stageTo(to)?.stage ?? 1)) as 1 | 2 | 3;
-    if (settings.reduceMotion) return setVoyage({ to, back, mode: 'panel', leg: 'depart', seq: 0, stage });
-    const text = voyageSentence(to, back);
+    const trip = { to, from: a, back, dest, stage, leg: 'depart' as const, approach: false };
+    if (settings.reduceMotion) return setVoyage({ ...trip, mode: 'panel', seq: 0 });
+    const text = voyageSentence(to, back, a);
     if (settings.autoRead) speak(frenchTypography(text));
-    setVoyage((v) => ({ to, back, mode: 'cinema', leg: 'depart', seq: (v?.seq ?? 0) + 1, stage }));
-    if (settings.sounds) {
-      playHorn();
-      later(() => (stage === 1 ? playSail : stage === 2 ? playBurner : playReactor)(), legTiming('depart', back).walk);
+    // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
+    const port = archipelago.port;
+    const route = at === port ? null : avatarRoute(at, port, state.village.bridges);
+    if (route) {
+      setWalk((w) => ({ route, seq: w.seq + 1 }));
+      moveTo(port);
+      setFocus((f) => ({ island: port, seq: f.seq + 1 }));
+      setVoyage((v) => ({ ...trip, mode: 'cinema', seq: v?.seq ?? 0, approach: true }));
+      later(() => sail(stage, back), walkDuration(route));
+      return;
     }
+    if (at !== port) {
+      // Pas de chemin d'ouvrages jusqu'au port : il s'y trouve directement.
+      moveTo(port);
+      setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
+    }
+    setVoyage((v) => ({ ...trip, mode: 'cinema', seq: (v?.seq ?? 0) + 1 }));
+    horn(stage, back);
+  };
+  /** Le départ commence : le bonhomme est au port, il embarque. */
+  const sail = (stage: 1 | 2 | 3, back: boolean) => {
+    clearTimers();
+    setVoyage((v) => (v && v.approach ? { ...v, approach: false, seq: v.seq + 1 } : v));
+    horn(stage, back);
+  };
+  const horn = (stage: 1 | 2 | 3, back: boolean) => {
+    if (!settings.sounds) return;
+    playHorn();
+    later(() => (stage === 1 ? playSail : stage === 2 ? playBurner : playReactor)(), legTiming('depart', back).walk);
   };
   /** Le voyage est fait : l'état change (le voyage reste fait, le bonhomme est au port d'en face). */
   const applyArrival = (v: { to: ArchipelagoId; back: boolean }): BiomeId => {
@@ -187,22 +225,29 @@ export function WorldPage() {
     }
     return port;
   };
-  const finish = (port: BiomeId) => {
+  /** Au port d'en face : le bonhomme débarque, puis marche jusqu'à l'île demandée, dont le panneau s'ouvre. */
+  const finish = (port: BiomeId, dest: BiomeId) => {
     clearTimers();
     setVoyage(null);
     setVeil(false);
-    setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
-    openIsland(port);
+    const route = dest === port ? null : avatarRoute(port, dest, state.village.bridges);
+    setWalk((w) => ({ route: route ?? [avatarHome(dest)], seq: w.seq + 1 }));
+    if (dest !== port) moveTo(dest);
+    setSheetOpen(true);
+    setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
+    if (biomeId !== dest) navigate(`/aventure/${dest}`);
     if (settings.sounds) playArrival();
   };
   // L'écran fixe : « Arriver ».
   const arrive = () => {
     if (!voyage) return;
-    finish(applyArrival(voyage));
+    finish(applyArrival(voyage), voyage.dest);
   };
   // La cinématique : la fin d'un temps (ou un toucher, une touche : on arrive tout de suite).
   const onLegEnd = () => {
     if (!voyage || voyage.mode !== 'cinema') return;
+    // Encore en route vers le port : un toucher le fait embarquer tout de suite.
+    if (voyage.approach) return sail(voyage.stage, voyage.back);
     clearTimers();
     if (voyage.leg === 'depart') {
       // Sous le voile : l'archipel change (la scène est reconstruite), puis l'arrivée se joue dans le nouveau.
@@ -212,7 +257,7 @@ export function WorldPage() {
         setVoyage((v) => (v ? { ...v, leg: 'arrivee', seq: v.seq + 1 } : v));
         later(() => setVeil(false), VEIL_MS / 3);
       }, VEIL_MS / 2);
-    } else finish(getArchipelago(voyage.to).port);
+    } else finish(getArchipelago(voyage.to).port, voyage.dest);
   };
   // Entrée, Espace ou Échap pendant le voyage : on arrive tout de suite (le canvas fait pareil quand il a le focus).
   useEffect(() => {
@@ -226,22 +271,28 @@ export function WorldPage() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voyage?.seq, voyage?.leg, voyage?.mode]);
+  }, [voyage?.seq, voyage?.leg, voyage?.mode, voyage?.approach]);
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
   const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [avatarHome(at)], seq: 0 }));
   const avatar = useMemo(() => ({ route: walk.route, seq: walk.seq }), [walk]);
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
-  // Une île ouverte d'un autre archipel (lien, retour d'exercice) : on y est directement, la scène change sans voyage.
+  // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
   // Une île d'un archipel pas encore atteint : la scène reste, la caméra cadre le port (le chantier du navire).
   useEffect(() => {
+    // Pendant un voyage, rien ne change de cap : à l'arrivée, on va à l'île demandée au départ.
+    if (voyage) return;
     setSheetOpen(true);
     setSaid(null);
     if (!island) setHighlight(null);
     if (!mapOpen) setMapTarget(null);
     if (island && !isBiomeUnlocked(island.id, state.village.bridges) && archipelagoOf(island.id).classe !== a) {
       setFocus((f) => ({ island: archipelago.port, seq: f.seq + 1 }));
+      return;
+    }
+    if (island && archipelagoOf(island.id).classe !== a && isBiomeUnlocked(island.id, state.village.bridges)) {
+      onBoard(archipelagoOf(island.id).classe, true, island.id);
       return;
     }
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
@@ -313,7 +364,7 @@ export function WorldPage() {
             marker={marker}
             vehicle={vehicle}
             onPickVehicle={onPickVehicle}
-            voyage={voyage?.mode === 'cinema' ? { seq: voyage.seq, leg: voyage.leg, stage: voyage.stage, back: voyage.back } : null}
+            voyage={voyage?.mode === 'cinema' && !voyage.approach ? { seq: voyage.seq, leg: voyage.leg, stage: voyage.stage, back: voyage.back } : null}
             onVoyageLegEnd={onLegEnd}
             onVoyageSkip={onLegEnd}
             avatar={avatar}
@@ -338,8 +389,8 @@ export function WorldPage() {
         <div className="world-overlay-top">
           {voyage?.mode === 'cinema' && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
-              <Syllabified text={voyageSentence(voyage.to, voyage.back)} />
-              <SpeakButton text={voyageSentence(voyage.to, voyage.back)} compact />
+              <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
+              <SpeakButton text={voyageSentence(voyage.to, voyage.back, voyage.from)} compact />
               <button type="button" className="button" onClick={onLegEnd}>
                 <Icon name="flag" /> Arriver
               </button>

@@ -158,6 +158,60 @@ it('avec « Réduire les animations », le voyage est un écran fixe avec un bou
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche');
 });
 
+it('« Aller au port » d’un autre archipel : le bonhomme va au port, embarque, et le navire le mène au port d’en face', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['plaine-riviere', 'voyage-5e'], at: 'riviere' } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/monde');
+  expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
+  await user.click(screen.getByRole('button', { name: /Aller au port : Marché des proportions/ }));
+  // Le bonhomme marche d'abord jusqu'au port (un toucher le fait embarquer tout de suite), puis le départ se joue.
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large.');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('plaine');
+  expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
+  expect(screen.queryByRole('dialog', { name: 'Les quatre archipels' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  expect(screen.getByTestId('voyage')).toHaveTextContent('depart 1 retour');
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
+  await waitFor(() => expect(screen.getByTestId('voyage')).toHaveTextContent('arrivee 1 retour'));
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche');
+  expect(screen.getByRole('dialog', { name: /Marché des proportions/ })).toBeInTheDocument();
+});
+
+it('une île ouverte d’un autre archipel (lien, retour d’exercice) : le retour se fait aussi en Bloc-Navire', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/foret');
+  // La scène reste celle des Collines du Large le temps du départ ; aucun panneau pendant le voyage.
+  expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
+  expect(screen.getByTestId('voyage')).toHaveTextContent('depart 1 retour');
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Retour vers les Basses Terres.');
+  expect(sheet()).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 2000 });
+  await waitFor(() => expect(screen.getByTestId('voyage')).toHaveTextContent('arrivee 1 retour'));
+  await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
+  // Au port (la Plaine), il débarque puis marche jusqu'à la Forêt, dont le panneau s'ouvre.
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
+  expect(sheet()).toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('foret');
+});
+
+it('avec « Réduire les animations », changer d’archipel passe aussi par l’écran du voyage', async () => {
+  localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  const user = userEvent.setup();
+  renderAt('/aventure/foret');
+  const panel = screen.getByRole('dialog', { name: /Le voyage/ });
+  expect(panel.textContent).toContain('Retour vers les Basses Terres.');
+  await user.click(screen.getByRole('button', { name: /Arriver/ }));
+  expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
+  expect(sheet()).toBeInTheDocument();
+});
+
 it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il faut pour aller plus loin', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/monde');
