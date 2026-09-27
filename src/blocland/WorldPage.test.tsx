@@ -266,7 +266,7 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(sheet.textContent).toContain('4 bois');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('aucune');
   // Le bois sert au plan de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
-  await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 12 à gagner/ }));
+  await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
   expect(screen.getByRole('dialog', { name: /Forêt des sons/ })).toBeInTheDocument();

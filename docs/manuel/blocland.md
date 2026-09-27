@@ -107,11 +107,21 @@ Un ouvrage constructible est dessiné en fantôme dans le monde ; le toucher ouv
 
 ## Les plans : reconstruire le village
 
-Chaque île a **trois plans** enchaînés : le bâtiment de la créature (la cabane de Mousso, la forge de Tunel, le nid de Coco…), puis son toit avec porte et lanterne, puis sa cour avec barrières et escalier. Le bâtiment est dessiné en **fantômes bleutés** dans le monde.
+Chaque île a **trois plans** enchaînés, qui bâtissent la maison de la créature (la cabane de Mousso, la forge de Tunel, le nid de Coco…) : d’abord **les murs** (le bloc de l’île, avec l’emplacement de la porte et des fenêtres), puis **le toit** (les tuiles, la porte, des fenêtres éclairées par des lanternes, une cheminée ou un sommet), puis **la cour** (une barrière avec son portillon, une lanterne sur chaque poteau du bout, une marche devant la porte, une jardinière). Le bâtiment est dessiné en **fantômes bleutés** dans le monde.
 
-- En 3D, toucher un fantôme pose le bloc attendu ; en vue simple ou en 3D, le bouton **Poser le bloc suivant** fait la même chose. Les blocs se posent dans n’importe quel ordre.
+Chaque île a sa forme de bâtiment :
+
+- **une maison** à toit à deux pans et cheminée (Forêt, Mine, Ferme, Plaine, Baie, Carrefour, Manoir, Atelier, Forge, Théâtre, Studio) ;
+- **une tour** de trois étages, avec une lanterne au sommet (Tour du lecteur, à bandes de pierre et de verre ; Phare ; Observatoire des textes), un cadran (Horloge) ou des créneaux (Château) ;
+- **un dôme** à coupole en gradins et lanterne (Carrière, dont le four est en brique ; Glacier ; Cabinet ; Observatoire des données) ;
+- **une échoppe** à auvent rayé (Marché, Comptoir, Gare) ;
+- **une hutte** au toit en pointe (Rivière, Volcan, Marais, Falaise) ;
+- **un kiosque** à colonnes (Belvédère).
+
+- En 3D, toucher un fantôme pose le bloc attendu ; en vue simple ou en 3D, le bouton **Poser le bloc suivant** fait la même chose. **Poser tout ce que j’ai** pose d’un coup toutes les cases que l’inventaire permet (utile pour les grands bâtiments et le Bloc-Navire, qui a le même bouton). Les blocs se posent dans n’importe quel ordre.
 - S’il manque un type de bloc, le panneau dit lequel et sur quelle île le gagner.
-- Les blocs de **finition** (toit, porte, lanterne, barrière, escalier) ne se gagnent pas dans les exercices : le coffre de chaque plan terminé fournit le kit du plan suivant, et le dernier plan d’une île donne de l’or et du cristal, utiles pour les ouvrages.
+- Les blocs de **finition** (toit, porte, lanterne, barrière, escalier) ne se gagnent pas dans les exercices : le coffre de chaque plan terminé fournit exactement ceux du plan suivant, et le dernier plan d’une île donne de l’or et du cristal, utiles pour les ouvrages.
+- **Les bâtiments ont été redessinés** (plus grands, avec fenêtres, toits à deux pans, cheminées). Un bâtiment déjà construit avec l’ancien dessin est construit avec le nouveau, et son coffre, déjà ouvert, est complété de ce que le nouveau donne en plus ; les blocs posés dans un plan commencé qui ne servent plus reviennent dans l’inventaire.
 - Plan terminé : la créature parle (lue à voix haute), un coffre de blocs, de l’XP, un succès. Le **journal du village** date chaque bâtiment terminé, rappelé dans le panneau de son île ; la page Succès compte les bâtiments.
 
 Un rappel de pause s’affiche après dix minutes de construction, sans rien bloquer.

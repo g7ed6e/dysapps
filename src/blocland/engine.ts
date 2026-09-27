@@ -19,6 +19,7 @@ import {
   voyageId,
   type BuildBridgeResult,
 } from './world/archipelago';
+import { planV1 } from './world/plansV1';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
 export interface ExerciseProgress {
@@ -186,12 +187,32 @@ export function sanitizeState(input: unknown): BloclandState {
   // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
   const anyPlan = (id: string) => getPlan(id) ?? getStage(id);
   const plans: Record<string, string[]> = {};
+  // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
+  // nouveau dessin (aucun ancien plan n'y est tout entier). Un plan terminé avec l'ancien dessin reste terminé, et son
+  // coffre, déjà ouvert, donne ce que le nouveau donne en plus ; sinon, les blocs posés hors du nouveau dessin reviennent
+  // dans l'inventaire.
   if (isRecord(village.plans)) {
     for (const [id, keys] of Object.entries(village.plans)) {
       const plan = anyPlan(id);
       if (!plan || !Array.isArray(keys)) continue;
-      const valid = new Set(planCells(plan).map((c) => c.key));
-      const list = [...new Set(keys.filter((k): k is string => typeof k === 'string' && valid.has(k)))];
+      const cells = planCells(plan);
+      const valid = new Set(cells.map((c) => c.key));
+      const saved = [...new Set(keys.filter((k): k is string => typeof k === 'string'))];
+      const old = saved.some((k) => !valid.has(k)) ? planV1(id) : undefined;
+      if (old && [...old.blocks.keys()].every((k) => saved.includes(k))) {
+        plans[id] = cells.map((c) => c.key);
+        for (const [b, n] of Object.entries(plan.reward.chest)) {
+          const more = (n ?? 0) - (old.chest[b as BlockId] ?? 0);
+          if (more > 0) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + more;
+        }
+        continue;
+      }
+      if (old)
+        for (const k of saved) {
+          const b = old.blocks.get(k);
+          if (b && !valid.has(k)) inventory[b] = (inventory[b] ?? 0) + 1;
+        }
+      const list = saved.filter((k) => valid.has(k));
       if (list.length) plans[id] = list;
     }
   }

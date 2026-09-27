@@ -102,6 +102,9 @@ export function PlanSection({ biome, builder, in3d = false, fold }: Props) {
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>
+                <button type="button" className="button" disabled={!builder.canFill} onClick={builder.fillAll}>
+                  <Icon name="blocks" /> Poser tout ce que j’ai
+                </button>
               </>
             )}
           </>

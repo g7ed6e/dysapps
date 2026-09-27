@@ -102,3 +102,13 @@ Trois PR, dans cet ordre :
 1. ✅ **Plein écran + panneaux glissants** : le monde 3D occupe l'écran ; toucher une île fait voler la caméra et ouvre son panneau (créature, quêtes, plan, Gardien, chantier). Les exercices s'ouvrent par-dessus, on revient au même endroit.
 2. ✅ **Ponts à construire** : l'archipel remplace la chaîne. La Forêt est au centre et ouverte ; chaque pont coûte quelques blocs gagnés n'importe où ; deux directions dès le début (Mine ou Ferme). Rangée 1 (devant) réservée aux îles de maths. Anciennes sauvegardes migrées (ponts du chemin offerts).
 3. **Trois îles de maths** (une PR par île ; ✅ Plaine des nombres, ✅ Rivière des fractions, ✅ Volcan des décimaux) : Plaine des nombres (calcul mental), Rivière des fractions, Volcan des décimaux ; chacune avec sa créature, son bloc, ses plans et son Gardien, en réutilisant le contenu des quêtes de maths existantes. Règles dys : une opération par écran, nombres lus à voix haute, aides visuelles toujours affichées, pas de chrono, manipulables. La Plaine des nombres est ouverte dès le début (deuxième île de départ).
+
+## 10. Le nouveau dessin des bâtiments (décisions du 27 septembre 2026)
+
+Les bâtiments des îles étaient de petites cabanes (15 à 20 blocs de murs, un toit plat, une petite cour). Ils sont redessinés par un architecte (`world/architect.ts`) :
+
+- **Une forme par île** : maison (toit à deux pans, pignons, cheminée), tour (lanterne, cadran ou créneaux au sommet), dôme (coupole en gradins), échoppe (auvent rayé), hutte (toit en pointe), kiosque (colonnes). Toujours trois plans : les murs, le toit, la cour. La zone des plans ne change pas (6 × 5 cases, hauteur limitée à six blocs).
+- **Des fenêtres éclairées** : les ouvertures des murs reçoivent des lanternes au plan du toit ; elles brillent la nuit.
+- **Plus de blocs** (autour de 26 blocs de l’île pour les murs d’une maison, et une vingtaine de tuiles) : les bâtiments deviennent un vrai usage des blocs qui s’accumulent. Le bouton « Poser tout ce que j’ai » évite des dizaines de touchers.
+- **Les coffres** donnent exactement les blocs de finition du plan suivant, calculés à partir du dessin ; leurs blocs d’autres îles et leur or et cristal restent ceux des fiches.
+- **Les sauvegardes** (`world/plansV1.ts`, `sanitizeState`) : on reconnaît l’ancien dessin à une case posée hors du nouveau (aucun ancien plan n’y est tout entier). Un plan terminé avec l’ancien dessin est terminé avec le nouveau et son coffre, déjà ouvert, est complété ; les blocs posés hors du nouveau dessin d’un plan commencé reviennent dans l’inventaire.

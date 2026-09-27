@@ -3,10 +3,10 @@ import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
-import { currentPlan, nextFillable, planCellAt, planStatus, type PlanStatus } from './engine';
+import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
 import { islandOrigin, toIslandCell } from './world/terrain';
-import { plansFor, type PlanDef } from './world/plans';
+import { planCells, plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
 import type { Burst } from './world/view';
 import { useHaptics } from '../core/haptics';
@@ -32,11 +32,37 @@ export interface PlanBuilder {
   fillAt: (x: number, y: number, z: number) => void;
   /** Pose le prochain bloc possible. */
   fillNext: () => void;
+  /** Pose d'un coup tous les blocs du plan que l'inventaire permet (les grands bâtiments ont beaucoup de cases). */
+  fillAll: () => void;
   /** Une case du monde touchée : pose si c'est une cellule du plan de cette île. Renvoie vrai si c'était le cas. */
   tryFill: (cell: { x: number; y: number; z: number }) => boolean;
 }
 
 export { whereToEarn };
+
+/**
+ * Pose d'un coup toutes les cases d'un plan (île, Bloc-Navire) que l'inventaire permet, dans l'ordre du plan. Le contexte
+ * suit l'inventaire à chaque pose : une case dont le bloc manque est sautée.
+ */
+export function placeAll(
+  plan: PlanDef,
+  done: string[],
+  fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult,
+): { placed: number; last: { x: number; y: number; z: number; block: BlockId } | null; completed: boolean } {
+  const already = new Set(done);
+  let placed = 0;
+  let last: { x: number; y: number; z: number; block: BlockId } | null = null;
+  let completed = false;
+  for (const c of planCells(plan)) {
+    if (already.has(c.key)) continue;
+    const r = fillPlan(plan, c.x, c.y, c.z);
+    if (!r.ok) continue;
+    placed += 1;
+    last = { x: c.x, y: c.y, z: c.z, block: r.block };
+    if (r.completed) completed = true;
+  }
+  return { placed, last, completed };
+}
 
 /**
  * La construction guidée d'une île : le plan en cours, la pose d'un bloc (par le bouton ou en touchant un fantôme
@@ -66,22 +92,39 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       sound(playNope);
       return;
     }
-    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[r.block].top }));
-    if (r.completed) {
-      const chest = Object.entries(plan.reward.chest)
-        .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
-        .join(', ');
-      const msg = `${plan.name} : terminé ! ${plan.done} Coffre : ${chest}. +${plan.reward.xp} XP.`;
-      setNotice(msg);
-      completePlan(plan.reward.xp);
-      sound(playDone);
-      if (settings.autoRead) speak(msg);
-    } else {
+    burstAt(x, y, z, r.block);
+    if (r.completed) finished(plan);
+    else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
       sound(playPlace);
       haptics.place();
     }
+  };
+  const burstAt = (x: number, y: number, z: number, block: BlockId) => {
+    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
+    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[block].top }));
+  };
+  // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
+  const finished = (done: PlanDef) => {
+    const chest = Object.entries(done.reward.chest)
+      .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
+      .join(', ');
+    const msg = `${done.name} : terminé ! ${done.done} Coffre : ${chest}. +${done.reward.xp} XP.`;
+    setNotice(msg);
+    completePlan(done.reward.xp);
+    sound(playDone);
+    if (settings.autoRead) speak(msg);
+  };
+  const fillAll = () => {
+    if (!plan) return;
+    const { placed, last, completed } = placeAll(plan, state.village.plans[plan.id] ?? [], fillPlan);
+    if (!last) return;
+    burstAt(last.x, last.y, last.z, last.block);
+    if (completed) return finished(plan);
+    const left = (status?.total ?? 0) - (status?.done ?? 0) - placed;
+    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''}. ${left > 0 ? `Il en reste ${left} à poser : gagne les blocs qui manquent.` : ''}`.trim());
+    sound(playPlace);
+    haptics.place();
   };
   const fillNext = () => {
     if (!plan) return;
@@ -109,6 +152,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     celebrate: (cell, color) => setBurst((b) => ({ seq: b.seq + 1, cell, color })),
     fillAt,
     fillNext,
+    fillAll,
     tryFill,
   };
 }

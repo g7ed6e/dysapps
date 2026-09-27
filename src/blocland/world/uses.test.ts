@@ -3,6 +3,8 @@ import { planCells, plansFor } from './plans';
 import { blockUses, earnIsland, inventoryUses, missingNow, whereToEarn } from './uses';
 import { VEHICLE_STAGES } from './vehicle';
 
+/** Les blocs de bois du premier plan de la Forêt (la cabane de Mousso). */
+const CABANE = plansFor('foret')[0].cells.length;
 const donePlans = (island: string) => Object.fromEntries(plansFor(island as never).map((p) => [p.id, planCells(p).map((c) => c.key)]));
 
 it('sait où se gagne chaque bloc', () => {
@@ -16,11 +18,11 @@ it('un bloc sert au plan en cours de son île et au Bloc-Navire, avec ce qu’il
   const fresh = sanitizeState({});
   const uses = blockUses(fresh, 'bois');
   expect(uses.map((u) => u.kind)).toEqual(['plan', 'navire']);
-  // Cohérent avec le prochain objectif (« Encore 16 bois pour La cabane de Mousso »).
-  expect(uses[0]).toMatchObject({ island: 'foret', name: 'La cabane de Mousso', need: 16, enough: false });
+  // Cohérent avec le prochain objectif (« Encore 26 bois pour La cabane de Mousso »).
+  expect(uses[0]).toMatchObject({ island: 'foret', name: 'La cabane de Mousso', need: CABANE, enough: false });
   expect(uses[1]).toMatchObject({ island: 'plaine', need: 20 });
   // Avec assez de blocs, le plan est faisable.
-  const rich = sanitizeState({ inventory: { bois: 20 } });
+  const rich = sanitizeState({ inventory: { bois: CABANE } });
   expect(blockUses(rich, 'bois')[0].enough).toBe(true);
 });
 
@@ -53,8 +55,8 @@ it('les blocs à aller chercher : ceux qui manquent aux chantiers à portée, av
   const fresh = sanitizeState({ inventory: { bois: 10 } });
   const missing = missingNow(fresh);
   const bois = missing.find((m) => m.block === 'bois')!;
-  // 16 pour la cabane + 20 pour la coque, moins 10 en poche.
-  expect(bois).toMatchObject({ need: 26, island: 'foret', closed: false });
+  // La cabane + 20 pour la coque, moins 10 en poche.
+  expect(bois).toMatchObject({ need: CABANE + 20 - 10, island: 'foret', closed: false });
   expect(missing.find((m) => m.block === 'brique')).toMatchObject({ island: 'plaine' });
   // Le galet de la coque se gagne sur la Rivière, encore fermée.
   expect(missing.find((m) => m.block === 'galet')).toMatchObject({ island: 'riviere', closed: true });
@@ -72,9 +74,9 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.total).toBe(10);
   // Posable ici (Plaine : brique), puis ailleurs (bois : Forêt), puis à garder (toit), puis sans usage (or).
   expect(inv.rows.map((r) => r.block)).toEqual(['brique', 'bois', 'toit', 'or']);
-  expect(inv.rows[1].uses).toEqual([{ kind: 'plan', island: 'foret', name: 'La cabane de Mousso', need: 16, enough: false }]);
-  // Le toit (bloc de coffre) : attendu par le toit de la cabane, plan 2 de la Forêt.
-  expect(inv.rows[2].uses[0]).toMatchObject({ kind: 'garder', island: 'foret' });
+  expect(inv.rows[1].uses).toEqual([{ kind: 'plan', island: 'foret', name: 'La cabane de Mousso', need: CABANE, enough: false }]);
+  // Le toit (bloc de coffre) : attendu d'abord par le toit de la maison de la Plaine (l'île où l'on est), plan 2.
+  expect(inv.rows[2].uses[0]).toMatchObject({ kind: 'garder', island: 'plaine' });
   expect(inv.rows[3].uses).toEqual([]);
   // Les ouvrages : payables par 9 blocs (le toit ne compte pas), depuis une île ouverte, sans doublon.
   expect(inv.payable).toBe(9);
