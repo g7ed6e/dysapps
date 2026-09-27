@@ -16,6 +16,8 @@ src/
   styles/        thèmes, styles globaux, textures pixel générées
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
+design/          le dossier de game design et la planche d’Archipéo, la cible de la migration (voir cadrage-archipeo.md) ;
+                 référence de conception, ni publiée ni embarquée dans l’application
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
                  construction et vérification de la documentation (docs/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)

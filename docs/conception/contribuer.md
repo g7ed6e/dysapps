@@ -36,6 +36,10 @@ Une pull request qui ajoute une page au manuel ou à la conception la déclare d
 
 Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur-contenu-pedagogique.md` : le **Directeur contenu pédagogique**. Il connaît le référentiel des programmes, les règles dys et le format des exercices, et sert à cadrer un lot de contenu à partir de ce qui reste à couvrir, à relire des exercices (programme, pièges, corrections, typographie), à écrire ou corriger des exercices et à tenir les exclusions à jour. On le sollicite par son nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent directeur-contenu-pedagogique`. Toute personne qui clone le dépôt a le même Directeur ; ses consignes se modifient par pull request, comme le reste.
 
+## Le directeur artistique
+
+Un second agent partagé, `.claude/agents/directeur-artistique.md`, est le **directeur artistique et game designer**. Il conduit la migration de Blocland vers Archipéo, décrite par le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md) et le dossier `design/archipeo/`. Il sert à cadrer un lot de game design (boucle de jeu, progression, récompenses, village, Bloc-Navire, archipels, baleine, direction visuelle), à relire une proposition sous cet angle et à trancher une question d’univers. Il ne s’occupe ni du contenu pédagogique, qui revient au Directeur contenu pédagogique, ni des choix techniques. Il lit et propose, sans modifier de fichier. On le sollicite par son nom (« demande au directeur artistique de relire ce plan ») ou avec `claude --agent directeur-artistique`.
+
 ## Écrire pour la documentation
 
 - En français, au présent, en phrases courtes ; le lecteur est un élève, un parent, un enseignant ou un orthophoniste, pas un développeur (sauf dans la section Conception).
@@ -50,7 +54,7 @@ Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
 - Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
-- Les changements de style ou de game design (textures, polices, univers, cadrages) sont révisés par l’agent `directeur-artistique` avant fusion ; ses critères sont dans [`.claude/agents/directeur-artistique.md`](./../../../.claude/agents/directeur-artistique.md).
+- Les changements de style ou de game design (univers, progression, récompenses, textures, polices, cadrages) sont relus par l’agent `directeur-artistique` avant fusion (voir [Le directeur artistique](#le-directeur-artistique)).
 
 ## Signaler un problème
 
