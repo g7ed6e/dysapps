@@ -26,10 +26,10 @@ Le texte à lire reste toujours dans la police choisie. Les polices « affiche �
 
 | Thème | Rendu |
 | --- | --- |
-| **Crème** (par défaut) | Fond crème peu contrasté, style « monde en blocs » avec textures et biseaux ; le texte reste toujours sur un fond uni. |
-| **Nuit** | Fond sombre et texte clair, mêmes repères. |
-| **Clair** | Fond blanc, plat, sans texture ni biseau. |
-| **Contraste élevé** | Noir, blanc et jaune, plat, pour les basses visions. |
+| **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit, barre du haut bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
+| **Nuit** | Fond bleu nuit et texte crème ; boutons principaux couleur sable. |
+| **Clair** | Fond blanc, plat, sans ombre ; barre du haut blanche. |
+| **Contraste élevé** | Noir, blanc et jaune, plat, angles presque droits, pour les basses visions. |
 
 ## Espacements
 
@@ -73,7 +73,7 @@ La version installée est affichée, avec le bouton **Vérifier les mises à jou
 
 ## Effacer ma progression
 
-En bas de la page, loin des autres boutons, un encadré rouge **Effacer ma progression** efface XP, succès, étoiles, blocs et bâtiments (les réglages restent). Pour confirmer, il faut écrire le mot **effacer** : un doigt qui glisse n'efface rien. **Affichage par défaut**, plus haut, ne remet que les réglages d'affichage.
+En bas de la page, loin des autres boutons, un encadré orangé **Effacer ma progression** efface XP, succès, étoiles, blocs et bâtiments (les réglages restent). Pour confirmer, il faut écrire le mot **effacer** : un doigt qui glisse n'efface rien. **Affichage par défaut**, plus haut, ne remet que les réglages d'affichage.
 
 ## Ce qui est réglé une fois pour toutes
 

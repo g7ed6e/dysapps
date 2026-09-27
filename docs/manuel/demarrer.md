@@ -6,14 +6,14 @@ L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.
 
 L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’Archipéo, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Archipéo](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rang, **Continuer** (la dernière mission ouverte), **Archipéo** (l’aventure) et trois grosses tuiles : **Missions**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
+- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rôle, **Continuer** (la dernière mission ouverte), **Archipéo** (l’aventure) et trois grosses tuiles : **Missions**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
 - **Aventure** : Archipéo, le village à reconstruire. Son **école du village** ouvre aussi les missions du portail, qui y rapportent des blocs.
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
-- **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
+- **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
-Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
+Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, l’icône d’Archipéo sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : le rang, l'aventure Archipéo, et les trois tuiles Missions, Succès, Réglages.](/captures/menu.jpg)
+![Le menu en page sur tablette : le rôle, l'aventure Archipéo, et les trois tuiles Missions, Succès, Réglages.](/captures/menu.jpg)
 
 ![Sur téléphone : la barre du haut réduite (logo, menu, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
 
@@ -27,15 +27,15 @@ Archipéo est une application web installable (PWA). Une fois installée, elle s
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
 - **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer Archipéo ».
 
-L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (le bloc d’herbe sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
+L’icône est un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues, avec une étoile de sable. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (l’icône sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
 > L’application était aussi publiée sur GitHub Pages, à l’adresse de cette documentation. Si elle y avait été installée, le raccourci ouvre désormais cette documentation : il suffit de réinstaller l’application depuis l’adresse ci-dessus. La progression enregistrée sur l’appareil dépend de l’adresse d’origine et n’est pas transférée.
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le bloc d’herbe, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre l’icône, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
-![L'écran titre : le bloc d'herbe, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
+![L'écran titre : l'icône, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 

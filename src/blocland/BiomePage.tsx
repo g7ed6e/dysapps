@@ -121,7 +121,7 @@ export function BiomePage() {
                   <Icon name="trophy" size="1.8rem" />
                 </span>
                 <span className="app-title">{TROPHIES_TITLE}</span>
-                <span className="app-desc">Ton rang, tes succès, ce qui est à retravailler.</span>
+                <span className="app-desc">Ton rôle, tes succès, ce qui est à retravailler.</span>
               </Link>
             </li>
           </ul>

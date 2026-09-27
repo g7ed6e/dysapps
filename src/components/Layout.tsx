@@ -80,7 +80,7 @@ function Shell() {
             </span>
             <span className="brand-name">Archipéo</span>
           </Link>
-          <Link to="/succes" className="topbar-xp" aria-label="Voir mon rang et mes succès">
+          <Link to="/succes" className="topbar-xp" aria-label="Voir mon rôle et mes succès">
             <XpBar xp={progress.xp} />
           </Link>
           <nav className="topbar-nav" aria-label="Navigation principale">

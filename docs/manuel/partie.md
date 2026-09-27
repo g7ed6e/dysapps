@@ -6,7 +6,7 @@ Cette page suit une élève, de sa première séance à la fin des Premiers Riva
 
 L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce premier toucher débloque aussi la voix et les sons.
 
-![L'écran titre : le bloc d'herbe, « Archipéo » et le gros bouton vert Jouer.](/captures/titre.jpg)
+![L'écran titre : l'icône, « Archipéo » et le gros bouton bleu pétrole Jouer.](/captures/titre.jpg)
 
 Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de huit bulles, lues à voix haute, présente les lieux. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
@@ -22,9 +22,9 @@ L'élève touche la mission **Abattage syllabique**. L'écran se vide : il ne re
 
 ![Une question d'Abattage syllabique : « papillon », et trois grosses réponses 1, 2, 3.](/captures/quete-ile.jpg)
 
-Une erreur n'est jamais punie. La correction s'affiche en bas, sans cacher la question : la bonne réponse est cochée en vert, la réponse touchée barrée en rouge, et une ligne rappelle la règle. L'erreur rapporte quand même un point d'effort.
+Une erreur n'est jamais punie. La correction s'affiche en bas, sans cacher la question : la bonne réponse est cochée en vert, la réponse touchée marquée d'une croix, en orangé, et une ligne rappelle la règle. L'erreur rapporte quand même un point d'effort.
 
-![La correction du tutoriel : « Pas cette fois ». La bonne réponse « a » est en vert, « à » en rouge ; l'astuce dit « On peut dire Léa avait un chat ».](/captures/quete-correction.jpg)
+![La correction du tutoriel : « Pas cette fois ». La bonne réponse « a » est en vert, « à » en orangé ; l'astuce dit « On peut dire Léa avait un chat ».](/captures/quete-correction.jpg)
 
 Au **bilan**, pas de pourcentage : des étoiles, « 4 sur 4 du premier coup », l'XP, et les **blocs** gagnés pour le village. Un succès débloqué s'affiche en haut, une seule fois.
 

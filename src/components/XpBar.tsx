@@ -1,22 +1,21 @@
 import { levelFromXp } from "../core/progress";
+import { RoleBadge } from "./RoleBadge";
 
-/** Rang + barre d'XP, façon jeu vidéo. */
+/** L'insigne du rôle, le niveau et la barre d'XP. */
 export function XpBar({ xp, large = false }: { xp: number; large?: boolean }) {
   const info = levelFromXp(xp);
   const percent = Math.round((info.xpIntoLevel / info.xpForLevel) * 100);
   return (
     <div className={`xp${large ? " xp-large" : ""}`}>
-      <span className={`rank-shield tier-${info.tier}`} aria-hidden="true">
-        <b className="rank-level">{info.level}</b>
-      </span>
+      <RoleBadge tier={info.tier} />
       <div className="xp-info">
         <span className="xp-title">
-          <span className="xp-lvl">Niv. {info.level}</span> {info.title}
+          <span className="xp-lvl">Niv. {info.level}</span> · {info.title}
         </span>
         <div
           className="xp-track"
           role="progressbar"
-          aria-label={`Niveau ${info.level}, rang ${info.title}`}
+          aria-label={`Niveau ${info.level}, rôle ${info.title}`}
           aria-valuemin={0}
           aria-valuemax={info.xpForLevel}
           aria-valuenow={info.xpIntoLevel}

@@ -32,7 +32,7 @@ Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu d
 
 ![Le menu du village, en panneau à côté du monde : Reprendre, École du village, Monuments, Missions, Succès, Réglages.](/captures/menu-village.jpg)
 
-- **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
+- **Reprendre** (le gros bouton bleu, ou la croix) : on revient au village ;
 - **Continuer** : la dernière mission ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
 - **École du village**, **Monuments**, **Missions**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
 - **Revoir l’aide du village** (les huit bulles), **Tutoriel** ;
@@ -70,7 +70,7 @@ Chaque île propose deux ou trois **missions**. Une partie enchaîne les items d
 - l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ;
 - **un deuxième essai**, comme dans les missions du portail : après une erreur, « Presque ! » s’affiche avec l’indice de l’item s’il en a un, la réponse déjà tentée est barrée, et l’on réessaie une fois. Ce n’est pas proposé quand il ne reste qu’une réponse possible (deux choix, ou le Filon : piocher ou laisser passer), ni au Gardien, qui est l’épreuve. Pour un tri (Chasse au son, Rimes-échelle, Enclos), tout l’écran se refait, sans dire quelles cartes sont fausses ;
 - la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe en bas de l’écran. Le bandeau ne cache pas la question : l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou, si elles sont trop hautes (téléphone), au moins l’énoncé, la réponse touchée et la bonne réponse ;
-- dans un tri, la correction **nomme toutes les erreurs** : « Tu as oublié gant et éléphant : on y entend [an]. Dans pain, on entend [in], pas [an]. » Sur les cartes, un bon mot trouvé est vert avec une coche, un bon mot oublié est rouge avec « oublié », un intrus touché est rouge avec « pas [an] » (ou « ne rime pas »), un intrus bien laissé reste neutre ;
+- dans un tri, la correction **nomme toutes les erreurs** : « Tu as oublié gant et éléphant : on y entend [an]. Dans pain, on entend [in], pas [an]. » Sur les cartes, un bon mot trouvé est vert avec une coche, un bon mot oublié est orangé avec « oublié », un intrus touché est orangé avec « pas [an] » (ou « ne rime pas »), un intrus bien laissé reste neutre ;
 - pendant la partie, l’écran est en [mode concentration](quetes.md#le-mode-concentration) : un bouton Pause, un menu pour reprendre, régler le texte ou la voix, ou quitter vers le panneau de l’île ;
 - l’écran de récompense donne le score, les étoiles, les blocs et l’XP, l’un après l’autre. Les succès gagnés pendant la partie (« Succès débloqué », « Niveau supérieur ! ») attendent cet écran : rien ne tombe sur la question pendant qu’on lit.
 
@@ -210,11 +210,11 @@ L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une pag
 
 ## La salle des trophées
 
-À côté de l’école, sur la même île, se tient la **salle des trophées** : un pavillon ouvert devant, quatre colonnes de marbre, un fond de velours rouge, des socles de marbre et un toit au faîte d’or. **Chaque succès gagné y pose un trophée** : un bloc d’or pour les exploits (combos, missions, bâtiments), de cristal pour les rangs, de quartz pour les Gardiens, une lentille pour les voyages du Bloc-Navire. Les trophées remplissent d’abord les socles, puis le faîte, puis un second rang sur les socles, puis le bord du toit : la salle se remplit à mesure qu’on joue, et il y a une place pour chacun des succès.
+À côté de l’école, sur la même île, se tient la **salle des trophées** : un pavillon ouvert devant, quatre colonnes de marbre, un fond de velours rouge, des socles de marbre et un toit au faîte d’or. **Chaque succès gagné y pose un trophée** : un bloc d’or pour les exploits (combos, missions, bâtiments), de cristal pour les rôles, de quartz pour les Gardiens, une lentille pour les voyages du Bloc-Navire. Les trophées remplissent d’abord les socles, puis le faîte, puis un second rang sur les socles, puis le bord du toit : la salle se remplit à mesure qu’on joue, et il y a une place pour chacun des succès.
 
-![Le panneau de la salle des trophées : 9 trophées sur 24, le rang et l'échelle des rangs.](/captures/trophees.jpg)
+![Le panneau de la salle des trophées : 9 trophées sur 24, le rôle et l'échelle des rôles.](/captures/trophees.jpg)
 
-On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rang, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
+On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
 
 L’adresse de la salle est `#/aventure/trophees` ; en vue simple, elle mène à la page Succès.
 

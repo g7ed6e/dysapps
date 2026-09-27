@@ -1,0 +1,5 @@
+Archipéo, l’interface de l’explorateur : des panneaux sobres et opaques dans la palette de l’archipel (bleu nuit, bleu pétrole, vert d’eau, sable, crème), un bouton principal plein, plus de boutons de pierre ni de bandeaux en pixels. Les titres passent en Montserrat grasse ; tout texte à lire reste dans la police dys choisie. Les thèmes Crème, Nuit, Clair et Contraste élevé suivent la même palette.
+
+Les rangs deviennent cinq **rôles** gagnés avec l’XP, sans divisions : Explorateur, Cartographe (niveau 4), Bâtisseur (10), Navigateur (18) et Architecte de l’archipel (28). Chacun a son insigne, dessiné par le code, et la jauge d’XP est pleine et vert d’eau. Rien ne se perd : le rôle se recalcule depuis l’XP déjà gagnée. Les succès de rang prennent le nom des rôles ; « Bâtisseur » et « Architecte », qui récompensent les constructions, deviennent « Premier bâtiment » et « Maître d’œuvre ».
+
+Nouvelle icône d’application : un « A » ouvert sur deux vagues, avec une étoile de sable, aussi sur l’écran titre, l’écran de lancement et pendant les chargements.

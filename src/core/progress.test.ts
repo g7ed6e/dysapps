@@ -90,29 +90,29 @@ describe('sanitizeProgress', () => {
   });
 });
 
-describe('rangs', () => {
-  it('enchaîne Bronze I à III, puis Argent', () => {
-    expect(rankForLevel(1)).toEqual({ title: 'Bronze I', tier: 'bronze' });
-    expect(rankForLevel(3)).toEqual({ title: 'Bronze III', tier: 'bronze' });
-    expect(rankForLevel(4)).toEqual({ title: 'Argent I', tier: 'argent' });
-    expect(firstLevelOf('diamant')).toBe(13);
+describe('rôles', () => {
+  it('commence Explorateur, devient Cartographe au niveau 4', () => {
+    expect(rankForLevel(1)).toEqual({ title: 'Explorateur', tier: 'explorateur' });
+    expect(rankForLevel(3)).toEqual({ title: 'Explorateur', tier: 'explorateur' });
+    expect(rankForLevel(4)).toEqual({ title: 'Cartographe', tier: 'cartographe' });
+    expect(firstLevelOf('navigateur')).toBe(18);
   });
 
-  it('présente les six rangs : atteints, en cours, à venir', () => {
+  it('présente les cinq rôles : atteints, en cours, à venir', () => {
     const at = (level: number) => rankLadder(level).map((r) => `${r.tier}${r.current ? '*' : r.reached ? '+' : '-'}${r.firstLevel}`);
-    expect(at(1)).toEqual(['bronze*1', 'argent-4', 'or-7', 'platine-10', 'diamant-13', 'legende-16']);
-    expect(at(8)).toEqual(['bronze+1', 'argent+4', 'or*7', 'platine-10', 'diamant-13', 'legende-16']);
-    expect(at(20)).toEqual(['bronze+1', 'argent+4', 'or+7', 'platine+10', 'diamant+13', 'legende*16']);
-    expect(rankLadder(1).map((r) => r.name)).toEqual(['Bronze', 'Argent', 'Or', 'Platine', 'Diamant', 'Légende']);
+    expect(at(1)).toEqual(['explorateur*1', 'cartographe-4', 'batisseur-10', 'navigateur-18', 'architecte-28']);
+    expect(at(12)).toEqual(['explorateur+1', 'cartographe+4', 'batisseur*10', 'navigateur-18', 'architecte-28']);
+    expect(at(40)).toEqual(['explorateur+1', 'cartographe+4', 'batisseur+10', 'navigateur+18', 'architecte*28']);
+    expect(rankLadder(1).map((r) => r.name)).toEqual(['Explorateur', 'Cartographe', 'Bâtisseur', 'Navigateur', 'Architecte de l’archipel']);
   });
 
-  it('passe en Légende après Diamant III', () => {
-    expect(rankForLevel(15).title).toBe('Diamant III');
-    expect(rankForLevel(16)).toEqual({ title: 'Légende 1', tier: 'legende' });
-    expect(rankForLevel(18).title).toBe('Légende 3');
+  it('garde le dernier rôle quand le niveau continue de monter', () => {
+    expect(rankForLevel(27).title).toBe('Navigateur');
+    expect(rankForLevel(28)).toEqual({ title: 'Architecte de l’archipel', tier: 'architecte' });
+    expect(rankForLevel(60).title).toBe('Architecte de l’archipel');
   });
 
-  it('débloque le succès du rang Argent au niveau 4', () => {
+  it('débloque le succès Cartographe au niveau 4', () => {
     let xp = 0;
     for (let l = 1; l < 4; l++) xp += xpToNextLevel(l);
     const update = recordAnswer({ ...EMPTY_PROGRESS, xp: xp - 1, totalAnswers: 1, badges: { 'premier-pas': 'x' } }, true);

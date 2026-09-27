@@ -108,55 +108,51 @@ export interface LevelInfo {
   level: number;
   xpIntoLevel: number;
   xpForLevel: number;
-  /** Rang affiché, ex. « Argent II ». */
+  /** Rôle affiché, ex. « Cartographe ». */
   title: string;
   tier: Tier;
 }
 
-export type Tier = 'bronze' | 'argent' | 'or' | 'platine' | 'diamant' | 'legende';
+/** Les cinq rôles d'Archipéo, du premier au dernier : ils valorisent la progression, pas la performance. */
+export type Tier = 'explorateur' | 'cartographe' | 'batisseur' | 'navigateur' | 'architecte';
 
-const TIERS: { id: Tier; name: string }[] = [
-  { id: 'bronze', name: 'Bronze' },
-  { id: 'argent', name: 'Argent' },
-  { id: 'or', name: 'Or' },
-  { id: 'platine', name: 'Platine' },
-  { id: 'diamant', name: 'Diamant' },
+/**
+ * Le niveau où commence chaque rôle, étalé sur tout le collège : Cartographe après deux missions environ,
+ * Architecte de l'archipel vers la quatre-vingtième. Après, le niveau continue de monter, le rôle reste.
+ */
+export const ROLES: { id: Tier; name: string; firstLevel: number }[] = [
+  { id: 'explorateur', name: 'Explorateur', firstLevel: 1 },
+  { id: 'cartographe', name: 'Cartographe', firstLevel: 4 },
+  { id: 'batisseur', name: 'Bâtisseur', firstLevel: 10 },
+  { id: 'navigateur', name: 'Navigateur', firstLevel: 18 },
+  { id: 'architecte', name: 'Architecte de l’archipel', firstLevel: 28 },
 ];
-const DIVISIONS = ['I', 'II', 'III'];
-/** Premier niveau du rang Légende (après Diamant III). */
-export const LEGEND_LEVEL = TIERS.length * DIVISIONS.length + 1;
 
-/** Rang d'un niveau : 3 divisions par rang (Bronze I, II, III, puis Argent I…), puis Légende. */
+/** Rôle d'un niveau. */
 export function rankForLevel(level: number): { title: string; tier: Tier } {
-  if (level >= LEGEND_LEVEL) return { title: `Légende ${level - LEGEND_LEVEL + 1}`, tier: 'legende' };
-  const index = Math.max(0, level - 1);
-  const tier = TIERS[Math.floor(index / DIVISIONS.length)];
-  return { title: `${tier.name} ${DIVISIONS[index % DIVISIONS.length]}`, tier: tier.id };
+  const role = [...ROLES].reverse().find((r) => level >= r.firstLevel) ?? ROLES[0];
+  return { title: role.name, tier: role.id };
 }
 
-/** Niveau à partir duquel un rang est atteint (ex. Argent → 4). */
+/** Niveau à partir duquel un rôle est atteint (ex. Cartographe → 4). */
 export function firstLevelOf(tier: Tier): number {
-  if (tier === 'legende') return LEGEND_LEVEL;
-  return TIERS.findIndex((t) => t.id === tier) * DIVISIONS.length + 1;
+  return ROLES.find((r) => r.id === tier)!.firstLevel;
 }
 
 export interface RankStep {
   tier: Tier;
   name: string;
-  /** Niveau à partir duquel le rang est atteint. */
+  /** Niveau à partir duquel le rôle est atteint. */
   firstLevel: number;
   reached: boolean;
-  /** Le rang du niveau donné. */
+  /** Le rôle du niveau donné. */
   current: boolean;
 }
 
-/** Les six rangs, de Bronze à Légende, tels qu'ils se présentent au niveau donné. */
+/** Les cinq rôles, d'Explorateur à Architecte de l'archipel, tels qu'ils se présentent au niveau donné. */
 export function rankLadder(level: number): RankStep[] {
   const currentTier = rankForLevel(level).tier;
-  return [...TIERS, { id: 'legende' as const, name: 'Légende' }].map(({ id, name }) => {
-    const firstLevel = firstLevelOf(id);
-    return { tier: id, name, firstLevel, reached: level >= firstLevel, current: id === currentTier };
-  });
+  return ROLES.map(({ id, name, firstLevel }) => ({ tier: id, name, firstLevel, reached: level >= firstLevel, current: id === currentTier }));
 }
 
 export function levelFromXp(xp: number): LevelInfo {
@@ -210,12 +206,12 @@ export const BADGES: BadgeDef[] = [
   { id: 'perseverant', icon: 'dumbbell', title: 'Acharné', description: 'Terminer 10 missions.', earned: (p) => p.sessionsCompleted >= 10 },
   { id: 'cinquante', icon: 'target', title: 'Rodé', description: 'Répondre à 50 questions.', earned: (p) => p.totalAnswers >= 50 },
   { id: 'deux-cents', icon: 'mountain', title: 'Vétéran', description: 'Répondre à 200 questions.', earned: (p) => p.totalAnswers >= 200 },
-  { id: 'rang-argent', icon: 'medal', title: 'Rang Argent', description: 'Atteindre le rang Argent.', earned: (p) => reached(p, 'argent') },
-  { id: 'rang-or', icon: 'trophy', title: 'Rang Or', description: 'Atteindre le rang Or.', earned: (p) => reached(p, 'or') },
-  { id: 'rang-diamant', icon: 'gem', title: 'Rang Diamant', description: 'Atteindre le rang Diamant.', earned: (p) => reached(p, 'diamant') },
-  { id: 'rang-legende', icon: 'crown', title: 'Légende', description: 'Atteindre le rang Légende.', earned: (p) => reached(p, 'legende') },
-  { id: 'batisseur', icon: 'hammer', title: 'Bâtisseur', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
-  { id: 'architecte', icon: 'blocks', title: 'Architecte', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
+  { id: 'rang-argent', icon: 'medal', title: 'Cartographe', description: 'Devenir Cartographe.', earned: (p) => reached(p, 'cartographe') },
+  { id: 'rang-or', icon: 'trophy', title: 'Bâtisseur', description: 'Devenir Bâtisseur.', earned: (p) => reached(p, 'batisseur') },
+  { id: 'rang-diamant', icon: 'gem', title: 'Navigateur', description: 'Devenir Navigateur.', earned: (p) => reached(p, 'navigateur') },
+  { id: 'rang-legende', icon: 'crown', title: 'Architecte de l’archipel', description: 'Devenir Architecte de l’archipel.', earned: (p) => reached(p, 'architecte') },
+  { id: 'batisseur', icon: 'hammer', title: 'Premier bâtiment', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
+  { id: 'architecte', icon: 'blocks', title: 'Maître d’œuvre', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
   {
     id: 'village',
     icon: 'crown',

@@ -17,7 +17,7 @@ function seenThisSession(): boolean {
 }
 
 /**
- * L'écran titre, une fois par lancement : le bloc d'herbe, « Jouer » (le village, derrière, est déjà là), et
+ * L'écran titre, une fois par lancement : l'icône d'Archipéo, « Jouer » (le village, derrière, est déjà là), et
  * « Continuer » vers la dernière mission. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :

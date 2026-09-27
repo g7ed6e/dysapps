@@ -65,7 +65,7 @@ export function MenuSheet({ onClose, onHelp }: Props) {
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Des blocs en trop ? Construis l’observatoire des baleines et les autres" />
         <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes les missions, par matière" />
-        <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="La salle des trophées : ton rang, tes succès, ce qui est à retravailler" />
+        <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="La salle des trophées : ton rôle, tes succès, ce qui est à retravailler" />
         <Row to="/reglages" icon="settings" title="Réglages" desc="Police, couleurs, voix, vue du monde" />
         <li>
           <button type="button" className="island-quest" onClick={onHelp}>

@@ -1,5 +1,5 @@
-// Fabrique les écrans de lancement d'iPhone et d'iPad (public/splash/) : le bloc d'herbe de l'icône, agrandi sans
-// lissage (pixel art), au centre d'un fond crème, la couleur de fond du manifeste. Aucune dépendance : l'icône PNG est
+// Fabrique les écrans de lancement d'iPhone et d'iPad (public/splash/) : l'icône d'Archipéo, mise à l'échelle sans
+// lissage, au centre d'un fond crème, la couleur de fond du manifeste. Aucune dépendance : l'icône PNG est
 // décodée et les écrans encodés ici, avec zlib.
 // Usage : npm run splash (à relancer si l'icône public/pwa-512.png ou la liste des appareils change).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -9,7 +9,7 @@ import { deflateSync, inflateSync } from 'node:zlib';
 import { SPLASH_DEVICES, splashFile } from './splash-devices.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const BACKGROUND = [0xfb, 0xf6, 0xea]; // background_color du manifeste
+const BACKGROUND = [0xf3, 0xee, 0xe3]; // background_color du manifeste
 const ICON_SHARE = 0.34; // côté de l'icône : 34 % du petit côté de l'écran
 
 /** Décode un PNG 8 bits RGB ou RGBA, non entrelacé : { width, height, rgba }. */

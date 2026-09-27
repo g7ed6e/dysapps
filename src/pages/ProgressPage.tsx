@@ -107,7 +107,7 @@ export function ProgressPage() {
   );
 }
 
-/** Le profil : rang, chiffres, étoiles par matière, succès. La page Succès et la salle des trophées du village le montrent. */
+/** Le profil : rôle, chiffres, étoiles par matière, succès. La page Succès et la salle des trophées du village le montrent. */
 export function ProgressBody() {
   const { progress } = useProgress();
   const { state } = useBlocland();
