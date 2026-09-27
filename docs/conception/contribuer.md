@@ -32,6 +32,10 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 
 Une pull request qui ajoute une page au manuel ou à la conception la déclare dans `docs/_theme/nav.json` : le build échoue si une page du sommaire manque et signale une page hors sommaire.
 
+## Le Directeur contenu pédagogique
+
+Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur-contenu-pedagogique.md` : le **Directeur contenu pédagogique**. Il connaît le référentiel des programmes, les règles dys et le format des exercices, et sert à cadrer un lot de contenu à partir de ce qui reste à couvrir, à relire des exercices (programme, pièges, corrections, typographie), à écrire ou corriger des exercices et à tenir les exclusions à jour. On le sollicite par son nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent directeur-contenu-pedagogique`. Toute personne qui clone le dépôt a le même Directeur ; ses consignes se modifient par pull request, comme le reste.
+
 ## Écrire pour la documentation
 
 - En français, au présent, en phrases courtes ; le lecteur est un élève, un parent, un enseignant ou un orthophoniste, pas un développeur (sauf dans la section Conception).
