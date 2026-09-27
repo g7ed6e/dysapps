@@ -8,6 +8,7 @@ L’interface entière suit un style de monde en blocs, dessiné par le code et 
 - **Boutons de pierre** à biseau pixel, et d’herbe pour l’action principale ; panneaux à coins carrés et biseau ; bandeaux texturés (herbe, planches, pierre, sable, or) en tête des cartes.
 - **Jauge d’XP segmentée** et **écusson de rang** en pixels : contour crénelé, minerai du rang à l’intérieur (cuivre, fer, or, platine, diamant, légende).
 - **Icône de l’application** (écran d’accueil, PWA) : un bloc d’herbe isométrique en pixels sur fond de ciel, générée par un script comme les textures.
+- **Écran de lancement et écran titre** : le même bloc d’herbe, sur le fond crème de l’application ; à l’écran titre, il tombe et se pose (coupé par « Réduire les animations »), sous le nom « DysApps » dans la police des titres et une ligne dans la police de lecture.
 - **Icônes** Lucide.
 
 ## Polices

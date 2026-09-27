@@ -8,7 +8,7 @@ DysApps est une application web statique : React 19, TypeScript, Vite, Three.js 
 src/
   apps/          quêtes du portail (un dossier par quête) + registry.ts (catalogue)
   blocland/      l'aventure : biomes, moteur, exercices, monde 3D, plans, Gardiens
-  components/    Layout, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, useSheetClearance, useAnswerKeys…
+  components/    Layout, TitleScreen, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, useSheetClearance, useAnswerKeys…
   core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
   pages/         accueil, matière, quête, réglages, succès
   styles/        thèmes, styles globaux, textures pixel générées
@@ -29,7 +29,9 @@ public/          icônes, police Luciole
 ## Le socle commun (`src/core/`)
 
 - `settings.ts` : les réglages, leurs bornes (18 px et 1,5 d’interlignage au minimum) et leur application au document par variables CSS et attribut de thème.
-- `speech.ts` : la synthèse vocale du navigateur, vitesse réglable, sans serveur.
+- `speech.ts` : la synthèse vocale du navigateur, vitesse réglable, sans serveur ; `unlockSpeech` la débloque au toucher de l’écran titre (`components/TitleScreen.tsx`).
+- `lastPlace.ts` : la dernière quête ouverte, pour « Continuer » (écran titre et accueil).
+- `stars.ts` : les étoiles d’un score, communes au portail et à Blocland.
 - `syllables.ts` : le découpage syllabique par règles.
 - `progress.ts` : XP, niveaux, rangs, succès, et les évènements (`recordAnswer`, `recordSession`, `recordPlan`, `recordBoss`). Logique pure, testée.
 - `storage.ts` : lecture et écriture dans `localStorage`, avec correction des données lues (champs manquants, valeurs hors bornes).

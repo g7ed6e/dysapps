@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "version:show": "node scripts/version.mjs",
+    "splash": "node scripts/splash.mjs",
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs --port 4173",
     "docs:preview": "vitepress preview docs --port 4173",

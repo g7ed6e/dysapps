@@ -44,3 +44,19 @@ export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang =
 export function stopSpeaking(): void {
   if (isSpeechAvailable()) window.speechSynthesis.cancel();
 }
+
+/**
+ * Débloque la voix : sur iPhone, iPad et certains Android, la synthèse vocale reste muette tant qu'elle n'a pas parlé
+ * une première fois pendant un geste de l'élève. Une phrase vide et silencieuse, dite au toucher de l'écran titre,
+ * suffit : la consigne lue automatiquement ensuite s'entend.
+ */
+export function unlockSpeech(): void {
+  if (!isSpeechAvailable()) return;
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  } catch {
+    // Voix indisponible : rien à débloquer.
+  }
+}

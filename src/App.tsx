@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { TitleScreen } from './components/TitleScreen';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
 import { HomePage } from './pages/HomePage';
@@ -26,6 +27,7 @@ export function App() {
         <BloclandProvider>
           <HashRouter>
             <AppRoutes />
+            <TitleScreen />
           </HashRouter>
         </BloclandProvider>
       </ProgressProvider>

@@ -13,6 +13,7 @@ import {
   type ProgressUpdate,
 } from './progress';
 import { loadJSON, removeKey, saveJSON } from './storage';
+import { forgetPlace } from './lastPlace';
 
 export interface Celebration {
   id: number;
@@ -82,6 +83,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const resetProgress = useCallback(() => {
     removeKey(STORAGE_KEY);
+    forgetPlace();
     progressRef.current = EMPTY_PROGRESS;
     setProgress(EMPTY_PROGRESS);
     setCelebrations([]);

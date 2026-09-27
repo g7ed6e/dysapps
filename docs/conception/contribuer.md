@@ -14,6 +14,7 @@ npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
 npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/)
 npm run version:show # affiche la version calculée depuis git
+npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 ```
 
 ## Ce que contient chaque pull request

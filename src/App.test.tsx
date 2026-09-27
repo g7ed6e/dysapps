@@ -29,6 +29,14 @@ it('affiche les matières sur l’accueil', () => {
   expect(screen.getByRole('link', { name: /Commencer ici.*Tutoriel/ })).toHaveAttribute('href', '/app/demo');
 });
 
+it('une quête ouverte devient « Continuer » sur l’accueil', () => {
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
+  renderAt('/app/tables');
+  document.body.innerHTML = '';
+  renderAt('/');
+  expect(screen.getByRole('link', { name: /Continuer.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
+});
+
 it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à l’accueil', () => {
   renderAt('/matiere/francais');
   expect(screen.queryByRole('link', { name: /Tutoriel/ })).not.toBeInTheDocument();
@@ -94,6 +102,7 @@ it('applique et sauvegarde les réglages', async () => {
 
 it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
+  localStorage.setItem('dysapps:reprise', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
   const user = userEvent.setup();
   renderAt('/reglages');
   // Les espacements sont dits en mots.
@@ -106,6 +115,8 @@ it('effacer la progression demande d’écrire « effacer » : un toucher de tro
   await user.type(screen.getByRole('textbox'), 'cer');
   await user.click(erase);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
+  // « Continuer » est oublié aussi.
+  expect(localStorage.getItem('dysapps:reprise')).toBeNull();
 });
 
 it('redirige l’ancienne adresse de progression vers les succès', () => {
