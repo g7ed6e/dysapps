@@ -20,6 +20,9 @@ import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { SchoolPage } from './blocland/School';
+import { MonumentPage, MonumentsPage } from './blocland/Monuments';
+import { useMonumentBuilder } from './blocland/useMonumentBuilder';
+import { getMonument, type MonumentDef } from './blocland/world/monuments';
 import { MENU_PATH } from './core/paths';
 import { useImmersive } from './blocland/useImmersive';
 
@@ -87,8 +90,15 @@ function IslandEntry() {
   if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
   if (biomeId === 'ecole') return <SchoolPage />;
+  // Les monuments : des panneaux dans le monde, des pages en vue simple.
+  if (biomeId === 'monuments') return <MonumentsPage />;
+  const monument = biomeId ? getMonument(biomeId) : undefined;
+  if (monument) return <MonumentEntry monument={monument} />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
   return biomeId === 'blocs' ? <InventoryPage /> : <BiomePage />;
+}
+function MonumentEntry({ monument }: { monument: MonumentDef }) {
+  return <MonumentPage builder={useMonumentBuilder(monument)} />;
 }
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {

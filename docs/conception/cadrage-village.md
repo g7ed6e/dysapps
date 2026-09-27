@@ -112,3 +112,13 @@ Les bâtiments des îles étaient de petites cabanes (15 à 20 blocs de murs, un
 - **Plus de blocs** (autour de 26 blocs de l’île pour les murs d’une maison, et une vingtaine de tuiles) : les bâtiments deviennent un vrai usage des blocs qui s’accumulent. Le bouton « Poser tout ce que j’ai » évite des dizaines de touchers.
 - **Les coffres** donnent exactement les blocs de finition du plan suivant, calculés à partir du dessin ; leurs blocs d’autres îles et leur or et cristal restent ceux des fiches.
 - **Les sauvegardes** (`world/plansV1.ts`, `sanitizeState`) : on reconnaît l’ancien dessin à une case posée hors du nouveau (aucun ancien plan n’y est tout entier). Un plan terminé avec l’ancien dessin est terminé avec le nouveau et son coffre, déjà ouvert, est complété ; les blocs posés hors du nouveau dessin d’un plan commencé reviennent dans l’inventaire.
+
+## 11. Les monuments (décisions du 27 septembre 2026)
+
+Les joueurs finissent par avoir beaucoup de blocs sans usage. Réponse : des **monuments**, de grands ouvrages classés (`world/monuments.ts`).
+
+- **Deux par archipel**, chacun rattaché à une île (dont il porte la couleur du panneau) et posé sur son propre **îlot de 9 × 9 cases** au large, placé une fois pour toutes loin des terres, des ouvrages, du port, des îlots des Gardiens et des baleines, dans le cadre de l’archipel (`monumentBlocked`, `monumentIsletFree` le vérifient ; un test aussi). Dans les Îles du Ciel, l’îlot est de neige et s’amincit sous lui, comme les îles.
+- **Un plan comme les autres** (`zone: 'monument'`) : ses cases posées vont dans `village.plans`, la sauvegarde les valide, `fillPlanCell` les pose. Pas de coffre, pas de condition : seulement des blocs, de quatre à huit sortes, tous gagnés dans les îles de son archipel ; de 60 à 125 blocs.
+- **Récompense** : de l’XP (150, 180, 210, 240 selon l’archipel) et le succès **Patrimoine** au premier (`progress.monumentsCompleted`), qui prend la vingt-quatrième place de la salle des trophées (en marbre).
+- **Où les voir** : les cubes de l’îlot et du monument portent la place `monument:<id>` ; les toucher ouvre le panneau `#/aventure/<id>`, et la caméra cadre l’îlot (`WorldFocus.spot`). La construction passe par les boutons du panneau (pas par le toucher des fantômes, qui ouvre le panneau). Un monument d’un autre archipel n’est pas dans la scène : son panneau s’ouvre, la caméra reste sur le bonhomme.
+- **Mes blocs** : un bloc qu’aucun plan ni le navire n’attend, mais qu’un monument de l’archipel où l’on est demande, y renvoie (« tu peux en poser N »), avant « À garder ».

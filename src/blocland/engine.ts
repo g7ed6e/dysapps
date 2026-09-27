@@ -20,6 +20,7 @@ import {
   type BuildBridgeResult,
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
+import { getMonument } from './world/monuments';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
 export interface ExerciseProgress {
@@ -185,7 +186,7 @@ export function sanitizeState(input: unknown): BloclandState {
     }
   }
   // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
-  const anyPlan = (id: string) => getPlan(id) ?? getStage(id);
+  const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id);
   const plans: Record<string, string[]> = {};
   // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
   // nouveau dessin (aucun ancien plan n'y est tout entier). Un plan terminé avec l'ancien dessin reste terminé, et son

@@ -30,9 +30,10 @@ import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { isBossBeaten, isBossUnlocked } from '../boss';
-import type { PlaceId, VoxelCube } from '../Voxel';
+import type { PlaceId, VillagePlaceId, VoxelCube } from '../Voxel';
 import type { Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
+import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 
 /** Côté du cœur d'une île (en blocs). */
 export const ISLAND = CORE;
@@ -1448,6 +1449,8 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
     for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
+  // Les îlots des monuments.
+  for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${m.islet.x + x},${m.islet.y + y}`);
   const whales = whaleSpots(a);
   const b = worldBounds(a);
   const free = (x: number, y: number) => {
@@ -1588,11 +1591,11 @@ export const TROPHY_SIZE = { w: 4, d: 3 };
 export const TROPHY_AT = { x: 4, y: 8 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
-export const VILLAGE_PLACES: Record<PlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
+export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
   ecole: { at: SCHOOL_AT, size: SCHOOL_SIZE, door: 2 },
   trophees: { at: TROPHY_AT, size: TROPHY_SIZE, door: 2 },
 };
-const PLACE_IDS = Object.keys(VILLAGE_PLACES) as PlaceId[];
+const PLACE_IDS = Object.keys(VILLAGE_PLACES) as VillagePlaceId[];
 
 /** Un lieu posé sur une île : le coin de sa façade (coordonnées du monde) et son sol (z relatif au sol de l'île). */
 export interface PlaceSpot {
@@ -1604,7 +1607,7 @@ export interface PlaceSpot {
 const isSchoolIsland = (id: BiomeId) => ARCHIPELAGOS.some((a) => a.school === id);
 
 /** La place d'un lieu du village sur l'île de l'école de son archipel, `null` ailleurs. */
-export function placeSpot(place: PlaceId, id: BiomeId): PlaceSpot | null {
+export function placeSpot(place: VillagePlaceId, id: BiomeId): PlaceSpot | null {
   if (!isSchoolIsland(id)) return null;
   const { at, size } = VILLAGE_PLACES[place];
   const def = islandDef(id);
@@ -1626,7 +1629,7 @@ function placeCells(id: BiomeId): Set<string> {
 }
 
 /** La porte d'un lieu : la case devant elle, où le bonhomme s'arrête (coordonnées du monde, z : le sol sous ses pieds). */
-export function placeDoor(place: PlaceId, id: BiomeId): { x: number; y: number; z: number } | null {
+export function placeDoor(place: VillagePlaceId, id: BiomeId): { x: number; y: number; z: number } | null {
   const s = placeSpot(place, id);
   if (!s) return null;
   const { at, door } = VILLAGE_PLACES[place];
@@ -1712,6 +1715,82 @@ export function trophyModel(trophies: (keyof typeof BLOCKS)[] = []): ModelCube[]
   for (let x = 0; x < w; x++) out.push({ x, y: 1, z: 5, block: 'or' });
   trophies.slice(0, TROPHY_SLOTS.length).forEach((block, i) => out.push({ ...TROPHY_SLOTS[i], block }));
   return out;
+}
+
+// ---------- Les monuments, sur leur îlot au large ----------
+
+/**
+ * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa
+ * jetée, les ouvrages et leur abord, la place des baleines. Sert à placer les monuments (une fois) et à le vérifier.
+ */
+export function monumentBlocked(a: ArchipelagoId): (x: number, y: number) => boolean {
+  const solid = new Set<string>();
+  const near = (x: number, y: number, r: number) => {
+    for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) solid.add(`${x + dx},${y + dy}`);
+  };
+  for (const def of mapOf(a)) {
+    for (const c of landCells(def)) near(c.x, c.y, 3);
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) near(o.x + x, o.y + y, 2);
+  }
+  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a)) for (const c of bridgePath(def)) near(c.x, c.y, 3);
+  const dock = dockBox(getArchipelago(a).port);
+  for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);
+  const whales = whaleSpots(a);
+  return (x, y) => solid.has(`${x},${y}`) || whales.some((w) => Math.hypot(w.x - x, w.y - y) < w.r + 2);
+}
+
+/** L'îlot d'un monument est-il libre (toutes ses cases) ? */
+export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, blocked = monumentBlocked(a)): boolean {
+  for (let x = x0; x < x0 + MONUMENT_ISLET; x++) for (let y = y0; y < y0 + MONUMENT_ISLET; y++) if (blocked(x, y)) return false;
+  return true;
+}
+
+/** Le point du monde où se trouve la case (0, 0, 0) d'un monument (le dessus de son îlot). */
+export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: number } {
+  const def = islandDef(m.biome);
+  return { x: def.core.x, y: def.core.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 };
+}
+
+/** Le milieu de l'îlot d'un monument, à mi-hauteur du monument (pour y cadrer la caméra). */
+export function monumentCenter(m: MonumentDef): { x: number; y: number; z: number } {
+  return { x: m.islet.x + (MONUMENT_ISLET - 1) / 2, y: m.islet.y + (MONUMENT_ISLET - 1) / 2, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 3 };
+}
+
+/**
+ * Les îlots des monuments d'un archipel et leurs monuments : un îlot rond de sable (de neige dans les Îles du Ciel) au
+ * niveau du sol de l'archipel, sa roche jusqu'à la mer (ou qui s'amincit sous lui dans le ciel), puis les cases du
+ * monument, posées ou en fantôme. Tous leurs cubes se touchent pour ouvrir le panneau du monument.
+ */
+function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): void {
+  const alt = mapOf(a)[0]?.altitude ?? 0;
+  const sky = AMBIENCE[a].sky;
+  const top = sky ? SNOW : BLOCKS.sable.side;
+  for (const m of monumentsOf(a)) {
+    const place: PlaceId = `monument:${m.id}`;
+    const n = MONUMENT_ISLET;
+    const land: { x: number; y: number }[] = [];
+    for (let dx = 0; dx < n; dx++)
+      for (let dy = 0; dy < n; dy++) {
+        // Les coins arrondis.
+        const cx = Math.abs(dx - (n - 1) / 2);
+        const cy = Math.abs(dy - (n - 1) / 2);
+        if (cx + cy > n - 3) continue;
+        land.push({ x: m.islet.x + dx, y: m.islet.y + dy });
+      }
+    for (const c of land) {
+      cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place });
+      const bottom = sky ? alt - DEPTH : -DEPTH;
+      for (let z = alt - 1; z >= bottom; z--) cubes.push({ x: c.x, y: c.y, z, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place });
+    }
+    if (sky) for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place });
+    const done = new Set(village.plans[m.id] ?? []);
+    const o = monumentAnchor(m);
+    for (const c of planCells(m)) {
+      const bd = BLOCKS[c.block];
+      cubes.push({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: m.biome, ghost: !done.has(c.key), place });
+    }
+  }
 }
 
 export function worldCubes(
@@ -1869,7 +1948,9 @@ export function worldCubes(
   });
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
   harbour(a, cubes);
-  // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage).
+  // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
+  monumentIslets(a, village, cubes);
+  // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).
   for (const c of seaDecor(a)) cubes.push(c);
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));

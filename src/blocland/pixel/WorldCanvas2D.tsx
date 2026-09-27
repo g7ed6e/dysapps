@@ -127,7 +127,7 @@ export default function WorldCanvas2D({
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
+  const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -463,8 +463,8 @@ export default function WorldCanvas2D({
       // La caméra rejoint son cadrage en douceur (le bonhomme, pas à pas) ; le changement d'échelle aussi.
       // Le chantier du navire (la flèche posée sur lui) : la caméra va le montrer.
       // (La flèche flotte en haut du mât : on regarde plus bas, le milieu du navire.)
-      const spot = p.focus && p.marker && typeof p.marker !== 'string' ? { ...p.marker, z: p.marker.z - 9 } : null;
-      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: h.at, spot }, tm.map, scr);
+      const spot = p.focus && p.focusSpot ? p.focusSpot : p.focus && p.marker && typeof p.marker !== 'string' ? { ...p.marker, z: p.marker.z - 9 } : null;
+      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: h.at, spot, far: Boolean(p.focusSpot) }, tm.map, scr);
       if (sailing && shipAt) {
         // En mer (ou dans les airs) : la caméra suit le navire, et recule un peu à mesure qu'il s'éloigne.
         const c = project(shipAt.x + 2.5, shipAt.y + 5, shipAt.z + 2);

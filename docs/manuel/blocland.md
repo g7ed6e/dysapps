@@ -28,7 +28,7 @@ Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu d
 
 - **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
 - **Continuer** : la dernière quête ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
-- **École du village**, **Quêtes**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
+- **École du village**, **Monuments**, **Quêtes**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
 - **Revoir l’aide du village** (les huit bulles), **Tutoriel** ;
 - **Le menu en page** : le même menu hors du village (`#/menu`).
 
@@ -78,14 +78,14 @@ Une quête réussie donne des **blocs** du type de l’île (bois dans la Forêt
 
 Les quêtes du portail, jouées depuis l’[école du village](#lecole-du-village) ou depuis la page Quêtes, donnent elles aussi des blocs, ceux de l’île de l’école.
 
-Les blocs servent à deux choses : **construire les ouvrages** entre les îles (n’importe quel type gagné sur une île) et **poser les blocs des plans** (le type est imposé par le plan). Rien ne se perd : un bloc mal posé se retire et revient dans l’inventaire.
+Les blocs servent à trois choses : **construire les ouvrages** entre les îles (n’importe quel type gagné sur une île), **poser les blocs des plans** (le type est imposé par le plan) et, une fois les bâtiments finis, **construire les [monuments](#les-monuments)**. Rien ne se perd : un bloc mal posé se retire et revient dans l’inventaire.
 
 ### Mes blocs
 
 Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire à la place du panneau d’île. Il ne se contente pas de compter :
 
-- **Tu peux construire** : en premier, ce qu’on peut faire tout de suite, un lien par chantier (le plan d’une île dont on a tous les blocs, le Bloc-Navire, un ouvrage qu’on peut payer). Sinon : « Rien pour l’instant : fais une quête pour gagner des blocs », avec un lien vers l’île où l’on est.
-- **Dans ta poche** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
+- **Tu peux construire** : en premier, ce qu’on peut faire tout de suite, un lien par chantier (le plan d’une île dont on a tous les blocs, le Bloc-Navire, un monument où l’on peut poser des blocs, un ouvrage qu’on peut payer). Sinon : « Rien pour l’instant : fais une quête pour gagner des blocs », avec un lien vers l’île où l’on est.
+- **Dans ta poche** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », « L’observatoire des baleines : tu peux en poser 12 » quand aucun plan ni le navire n’en veut mais qu’un monument de l’archipel s’en sert, ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
 - **Prochains ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les trois ouvrages les moins chers qu’on ne peut pas encore payer, avec leur coût.
 - **À aller chercher** : les blocs que réclament les plans en cours et le Bloc-Navire et que l’on n’a pas, avec l’île ouverte où les gagner (un lien). Les blocs qui se gagnent sur des îles encore fermées ne sont pas détaillés, seulement comptés (« Et 3 autres sortes de blocs, sur des îles que tu ouvriras plus tard »).
 
@@ -125,6 +125,25 @@ Chaque île a sa forme de bâtiment :
 - Plan terminé : la créature parle (lue à voix haute), un coffre de blocs, de l’XP, un succès. Le **journal du village** date chaque bâtiment terminé, rappelé dans le panneau de son île ; la page Succès compte les bâtiments.
 
 Un rappel de pause s’affiche après dix minutes de construction, sans rien bloquer.
+
+## Les monuments
+
+Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les emploient : de grands ouvrages classés, **deux par archipel**, chacun sur son **îlot au large** d’une île, dessiné en fantômes bleutés dès qu’on arrive dans l’archipel.
+
+| Archipel | Monuments |
+| --- | --- |
+| Basses Terres | l’observatoire des baleines (au large de la Tour du lecteur), le grand moulin (au large de la Ferme) |
+| Collines du Large | le phare du large (Glacier), le kiosque à musique (Manoir) |
+| Monts de Feu | le viaduc (Gare), l’amphithéâtre (Théâtre) |
+| Îles du Ciel | l’observatoire des étoiles (Textes), le temple de marbre (Belvédère) |
+
+- **Toucher l’îlot** d’un monument dans le monde ouvre son panneau et la caméra y va. On l’ouvre aussi par **Monuments** dans le menu du village (la liste, par archipel, avec l’avancement), par les liens de **Mes blocs**, ou, en vue simple, par le bouton **Monuments** de la page Blocland.
+- Le panneau lit ce qu’est le monument (bouton **Écouter**), montre l’avancement, les blocs qu’il manque avec « tu les as » ou l’île où les gagner, et les boutons **Poser le bloc suivant** et **Poser tout ce que j’ai**.
+- Un monument demande **60 à 125 blocs** de plusieurs îles de son archipel ; on le construit à son rythme, il n’ouvre rien et ne bloque rien.
+- Fini : sa phrase (lue à voix haute), de l’XP (150 dans les Basses Terres, jusqu’à 240 dans les Îles du Ciel), et le premier monument donne le succès **Patrimoine**. Il reste construit dans le monde.
+- Le monument d’un archipel pas encore atteint est fermé : son panneau dit de le rejoindre d’abord avec le Bloc-Navire.
+
+Leurs adresses : `#/aventure/monuments` pour la liste, `#/aventure/monument-observatoire` (etc.) pour un monument. Le détail de leurs blocs est dans [Ouvrages et plans](../pedagogie/ouvrages.md#les-monuments).
 
 ## Le Bloc-Navire et les archipels
 

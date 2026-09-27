@@ -6,11 +6,12 @@ export const TROPHIES_TITLE = 'Salle des trophées';
 /** L'adresse de la salle (dans le monde : son panneau ; en vue simple : la page Succès). */
 export const TROPHIES_PATH = '/aventure/trophees';
 
-/** Le bloc du trophée d'un succès : cristal pour les rangs, quartz pour les Gardiens, lentille pour les voyages, or sinon. */
+/** Le bloc du trophée d'un succès : cristal pour les rangs, quartz pour les Gardiens, lentille pour les voyages, marbre pour les monuments, or sinon. */
 export function trophyBlock(badgeId: string): BlockId {
   if (badgeId.startsWith('rang-')) return 'cristal';
   if (['gardien', 'cinq-iles', 'dix-gardiens', 'archipel'].includes(badgeId)) return 'quartz';
   if (['capitaine', 'aeronaute', 'pilote-du-ciel'].includes(badgeId)) return 'lentille';
+  if (badgeId === 'patrimoine') return 'marbre';
   return 'or';
 }
 

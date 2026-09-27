@@ -19,6 +19,7 @@ import { planStatus } from './engine';
 import { Creature } from './Creatures';
 import { InventoryLink } from './Inventory';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
+import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 
@@ -53,6 +54,9 @@ export function BloclandPage() {
           <InventoryLink className="button" />
           <Link to={SCHOOL_PATH} className="button">
             <Icon name="school" /> {SCHOOL_TITLE}
+          </Link>
+          <Link to={MONUMENTS_PATH} className="button">
+            <Icon name="castle" /> {MONUMENTS_TITLE}
           </Link>
         </p>
       </section>

@@ -11,6 +11,8 @@ export interface WorldFocus {
   island: BiomeId | null;
   /** Change à chaque demande, pour pouvoir redemander la même île. */
   seq: number;
+  /** Un point à cadrer plutôt que le cœur de l'île (l'îlot d'un monument, au large de `island`). */
+  spot?: { x: number; y: number; z: number };
 }
 
 export interface Cell {

@@ -636,7 +636,7 @@ it('l’école et la salle des trophées : sur l’île de l’école de chaque 
   }
   // Ailleurs, rien.
   expect(placeSpot('ecole', 'mine')).toBeNull();
-  expect(allCubes({}, village(everything)).filter((c) => c.place).every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
+  expect(allCubes({}, village(everything)).filter((c) => c.place === 'ecole' || c.place === 'trophees').every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
 });
 
 it('la salle des trophées a une place par succès', () => {

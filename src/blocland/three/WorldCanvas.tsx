@@ -236,15 +236,22 @@ export default function WorldCanvas({
   // Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal.
   const width = Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
 
-  const focusRef = useRef(focus.island);
-  focusRef.current = focus.island;
+  const focusRef = useRef(focus);
+  focusRef.current = focus;
 
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
    * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
    * que tout tienne dans la largeur.
    */
-  const framing = (island: BiomeId | null, avatarAt: THREE.Vector3, aspect: number, onMap = false, zone: BiomeId | null = null) => {
+  const framing = (
+    island: BiomeId | null,
+    avatarAt: THREE.Vector3,
+    aspect: number,
+    onMap = false,
+    zone: BiomeId | null = null,
+    spot: { x: number; y: number; z: number } | null = null,
+  ) => {
     if (onMap) {
       // Tout le continent tient dans la vue, en largeur comme en profondeur (la vue est un peu inclinée).
       const ex = bounds.maxX - bounds.minX;
@@ -259,7 +266,7 @@ export default function WorldCanvas({
     }
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
-    let c = island ? islandCenter(island) : avatar;
+    let c = spot ?? (island ? islandCenter(island) : avatar);
     let d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
     const v = island ? ISLAND_VIEW : VIEW;
     // Bonhomme posé sur son île : on cadre la zone (son île et ses voisines), le bonhomme restant au premier tiers.
@@ -787,7 +794,14 @@ export default function WorldCanvas({
               const pos = new THREE.Vector3(target.x + (dist * VOYAGE_VIEW.dx) / len, target.y + (dist * VOYAGE_VIEW.up) / len, target.z + (dist * VOYAGE_VIEW.dy) / len);
               return { target, pos };
             })()
-          : framing(walking ? null : focusRef.current, w.avatar.position, camera.aspect, onMap, walking ? null : (homeRef.current ?? null));
+          : framing(
+                walking ? null : focusRef.current.island,
+                w.avatar.position,
+                camera.aspect,
+                onMap,
+                walking ? null : (homeRef.current ?? null),
+                walking ? null : (focusRef.current.spot ?? null),
+              );
         const { target, pos } = frame;
         w.beacon.visible = onMap && w.avatar.visible;
         // Sur la Carte, vue de très haut : pas de brume, tout le continent net.
@@ -1156,7 +1170,7 @@ export default function WorldCanvas({
   useEffect(() => {
     const w = world.current;
     if (!w || focus.seq !== 0) return;
-    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect, Boolean(map), home ?? null);
+    const { target, pos } = framing(focus.island, w.avatar.position, w.camera.aspect, Boolean(map), home ?? null, focus.spot ?? null);
     w.camTarget.copy(target);
     w.camPos.copy(pos);
     w.camera.position.copy(pos);

@@ -183,7 +183,16 @@ function clampAxis(c: number, half: number, lo: number, hi: number): number {
  * sortir de l'île (sa terre et un peu de mer autour).
  */
 export function frame2D(
-  target: { archipelago: ArchipelagoId; map: boolean; island: BiomeId | null; home: BiomeId | null; avatar?: Cell | null; spot?: Cell | null },
+  target: {
+    archipelago: ArchipelagoId;
+    map: boolean;
+    island: BiomeId | null;
+    home: BiomeId | null;
+    avatar?: Cell | null;
+    spot?: Cell | null;
+    /** Le point est au large de l'île (l'îlot d'un monument) : la salle s'étend jusqu'à lui. */
+    far?: boolean;
+  },
   map: TileMap,
   screen: { w: number; h: number },
 ): View2D {
@@ -210,9 +219,13 @@ export function frame2D(
   // La salle : la terre de l'île, et pour le port de l'archipel, sa jetée et son navire.
   const land = landBox(islandDef(room));
   const dock = getArchipelago(target.archipelago).port === room ? dockBox(room) : null;
-  const b = dock
+  const room0 = dock
     ? { x0: Math.min(land.x0, dock.x0), y0: Math.min(land.y0, dock.y0), x1: Math.max(land.x1, dock.x1), y1: Math.max(land.y1, dock.y1) }
     : land;
+  const far = target.far && target.spot ? target.spot : null;
+  const b = far
+    ? { x0: Math.min(room0.x0, far.x - 5), y0: Math.min(room0.y0, far.y - 5), x1: Math.max(room0.x1, far.x + 5), y1: Math.max(room0.y1, far.y + 5) }
+    : room0;
   const lo = project(0, b.y1 + ROOM_MARGIN, c.z + 4).by;
   const hi = project(0, b.y0 - ROOM_MARGIN, Math.min(c.z, 0) - 2).by;
   return {
