@@ -14,9 +14,17 @@ DysApps est une application web installable (PWA). Une fois installée, elle s�
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
 - **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
 
-L’icône est un bloc d’herbe isométrique sur fond de ciel.
+L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (le bloc d’herbe sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
 > L’application était aussi publiée sur GitHub Pages, à l’adresse de cette documentation. Si elle y avait été installée, le raccourci ouvre désormais cette documentation : il suffit de réinstaller l’application depuis l’adresse ci-dessus. La progression enregistrée sur l’appareil dépend de l’adresse d’origine et n’est pas transférée.
+
+## L’écran titre
+
+À chaque lancement, l’écran titre montre le bloc d’herbe, « DysApps » et un gros bouton **Jouer**. S’il y a une quête en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière quête ouverte), et **Accueil** à la place de Jouer. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+
+Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
+
+Sur l’accueil aussi, une carte **Continuer** ramène à la dernière quête ouverte (du portail ou de Blocland ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 

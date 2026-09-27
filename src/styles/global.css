@@ -240,6 +240,23 @@
 html {
   font-size: var(--font-size);
   -webkit-text-size-adjust: 100%;
+  /* Comme une appli : pas de rebond ni de « tirer pour recharger », pas de flash au toucher, pas de zoom par double
+     toucher (le zoom à deux doigts reste possible, pour l'accessibilité). */
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* Pas de sélection de texte ni de menu « copier » par appui long sur ce qu'on touche pour jouer ; le texte à lire,
+   lui, reste sélectionnable. */
+button,
+.button,
+.nav-button,
+a.panel,
+summary,
+.brand {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 body {
   margin: 0;
@@ -362,7 +379,8 @@ svg {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.8rem 1rem 0.5rem;
+  /* Les bords de l'écran (encoche, coins arrondis) : l'appli installée s'étend dessous (viewport-fit=cover). */
+  padding: calc(0.8rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) 0.5rem calc(1rem + env(safe-area-inset-left));
   /* Une rangée d'herbe, puis de la terre : la barre est le sol du monde. */
   background-color: var(--topbar-bg);
   background-image: var(--tex-grass), var(--tex-dirt);
@@ -454,7 +472,7 @@ svg {
 .content {
   max-width: 60rem;
   margin: 0 auto;
-  padding: 1.4rem 1rem 3rem;
+  padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
 }
 @media (max-width: 640px) {
   .brand-name,
@@ -4729,4 +4747,69 @@ a.tag:focus-visible {
 }
 .hero-actions {
   margin: 0.8rem 0 0;
+}
+
+/* ===== Écran titre (une fois par lancement) ===== */
+.title-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(1.5rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom))
+    calc(1rem + env(safe-area-inset-left));
+  background-color: var(--bg);
+  background-image: var(--tex-page);
+  background-size: var(--tex-size);
+  overflow: auto;
+}
+.title-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(30rem, 100%);
+  text-align: center;
+}
+.title-logo {
+  width: 10rem;
+  height: 10rem;
+  image-rendering: pixelated;
+  animation: title-drop 0.6s cubic-bezier(0.3, 1.4, 0.6, 1) both;
+}
+.title-name {
+  margin: 0;
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 2.4rem;
+}
+.title-tagline {
+  margin: 0 0 0.6rem;
+  max-width: none;
+}
+.title-actions {
+  display: grid;
+  gap: 0.8rem;
+  width: 100%;
+}
+.title-button {
+  width: 100%;
+  min-height: 64px;
+  font-size: 1.2rem;
+  justify-content: center;
+}
+/* Le bloc tombe et rebondit une fois (coupé par « Réduire les animations »). */
+@keyframes title-drop {
+  from {
+    transform: translateY(-40%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.resume-card {
+  border-color: var(--success);
 }

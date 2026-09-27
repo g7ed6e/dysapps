@@ -203,3 +203,11 @@ export function stopAmbience(): void {
   ambience?.stop();
   ambience = null;
 }
+
+/**
+ * Débloque les sons : les navigateurs n'autorisent l'audio qu'après un geste de l'élève. Appelé au toucher de l'écran
+ * titre, pour que le premier « toc » ne reste pas muet.
+ */
+export function unlockSounds(): void {
+  context();
+}

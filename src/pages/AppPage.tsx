@@ -3,10 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import { SUBJECTS, getApp } from '../apps/registry';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from './NotFoundPage';
+import { useRememberPlace } from '../core/lastPlace';
 
 export function AppPage() {
   const { appId } = useParams();
   const app = getApp(appId);
+  // « Continuer » (écran titre, accueil) ramène à la dernière quête du portail (pas au Tutoriel).
+  useRememberPlace(app && !app.onHome && app.status === 'disponible' ? { path: `/app/${app.id}`, label: app.title } : null);
   if (!app || app.status !== 'disponible' || !app.component) return <NotFoundPage />;
   const Component = app.component;
 

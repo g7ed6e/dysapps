@@ -36,6 +36,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 ## Sans stress
 
+- **Un écran titre qui attend l’élève** : pas de compte à rebours ni d’animation obligatoire ; son toucher débloque la voix, pour que la première consigne s’entende.
 - **Pas de chronomètre.** La seule exception mesure discrètement le temps de lecture d’Ascension pour l’élève lui-même, comparé à ses lectures précédentes, jamais à un barème.
 - **Pas de classement, pas de perte** : une erreur rapporte un point d’effort ; un bloc mal posé revient dans l’inventaire ; la série de régularité se fissure au lieu de casser.
 - **Sessions courtes** : dix questions au portail ; dans Blocland, pause proposée après trois exercices ou dix minutes, rappel de pause après dix minutes de construction.

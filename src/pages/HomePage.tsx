@@ -4,6 +4,7 @@ import { Creature } from '../blocland/Creatures';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useProgress } from '../core/ProgressContext';
+import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
 import { useBlocland } from '../blocland/BloclandContext';
 import { canLaunch, currentStage } from '../blocland/engine';
@@ -15,6 +16,7 @@ export function HomePage() {
   const firstTime = progress.totalAnswers === 0;
   const stage = currentStage(state);
   const shipReady = Boolean(stage && canLaunch(state, stage).ok);
+  const resume = lastPlace();
 
   return (
     <>
@@ -25,6 +27,22 @@ export function HomePage() {
           <Syllabified text="Choisis ton terrain. Pas de chrono, des jokers si tu bloques, et de l’XP à chaque réponse." />
         </p>
       </section>
+
+      {/* La dernière quête ouverte, pour reprendre en un toucher. */}
+      {!firstTime && resume && (
+        <Link to={resume.path} className="panel adventure-card resume-card">
+          <span className="subject-icon">
+            <Icon name="play" size="2.2rem" />
+          </span>
+          <span className="adventure-text">
+            <span className="adventure-kicker">Continuer</span>
+            <span className="adventure-title">{resume.label}</span>
+          </span>
+          <span className="subject-count">
+            Reprendre <Icon name="play" />
+          </span>
+        </Link>
+      )}
 
       {/* La première fois, le Tutoriel passe devant tout : quatre questions pour prendre les commandes en main. */}
       {firstTime && (

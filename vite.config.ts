@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { appVersion } from './scripts/version.mjs';
 import { exerciseMeta } from './scripts/exerciseMeta.mjs';
+import { splashLinks } from './scripts/splash-devices.mjs';
 
 // Deux cibles de déploiement :
 // - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
@@ -39,6 +40,15 @@ function securityHeaders(): Plugin {
   };
 }
 
+// Écrans de lancement d'iPhone et d'iPad : Safari ne les compose pas à partir du manifeste (Android, si). Une image par
+// appareil et par orientation, fabriquée par `npm run splash` dans public/splash/.
+function appleSplash(): Plugin {
+  return {
+    name: 'dysapps-apple-splash',
+    transformIndexHtml: () => splashLinks(base).map((attrs) => ({ tag: 'link', attrs, injectTo: 'head' as const })),
+  };
+}
+
 export default defineConfig({
   base,
   // La version se déduit de l'historique git (scripts/version.mjs) : aucune pull request ne l'écrit.
@@ -51,6 +61,7 @@ export default defineConfig({
     react(),
     exerciseMeta(),
     securityHeaders(),
+    appleSplash(),
     VitePWA({
       // La mise à jour est proposée (bande + bouton), jamais imposée en pleine partie.
       registerType: 'prompt',
@@ -76,6 +87,9 @@ export default defineConfig({
         // Tout ce qui sert hors ligne, y compris les fichiers chargés à la demande (3D, quêtes, exercices)
         // et les textures PNG de l'interface.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
+        // les précharger ferait télécharger 1 Mo d'images à tous les élèves.
+        globIgnores: ['splash/**'],
       },
     }),
   ],
