@@ -2,6 +2,8 @@
 
 La page **Quêtes** (barre du haut, menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Les mêmes quêtes se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans Blocland. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
+![La page Quêtes : trois cartes, Français, Maths et Anglais, avec le nombre de quêtes disponibles.](/captures/quetes.jpg)
+
 ## Comment se déroule une question
 
 Chaque écran tient sans défiler :
@@ -13,9 +15,15 @@ Chaque écran tient sans défiler :
 5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans Blocland, où les chiffres cochent les cartes d’un tri et Entrée valide.
 6. **Les succès** gagnés pendant la quête (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
 
+![Une correction : « Pas cette fois », la bonne réponse cochée en vert, la réponse touchée en rouge, et l'astuce en une ligne.](/captures/quete-correction.jpg)
+
 ## Le mode concentration
 
 Pendant une partie (quête du portail, quête ou défi du Gardien dans Blocland), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+
+![Le mode concentration : seulement la consigne, le mot « papillon », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
+
+![La même question sur téléphone.](/captures/telephone-quete.jpg)
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
@@ -26,6 +34,8 @@ Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu
 ## Le bilan
 
 Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Menu**.
+
+![Le bilan d'une quête sans faute : trois étoiles, « 4 sur 4 du premier coup », +75 XP, +6 blocs de bois pour le village.](/captures/quete-fin.jpg)
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 

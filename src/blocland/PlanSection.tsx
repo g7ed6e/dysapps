@@ -117,14 +117,15 @@ export function PlanSection({ biome, builder, in3d = false, fold }: Props) {
         </p>
         {built.length > 0 && (
           <p className="island-journal">
-            <Icon name="flag" /> Terminé ici :{' '}
-            {built.map((e, i) => (
-              <span key={`${e.day}-${e.plan}-${i}`}>
-                {i > 0 && ', '}
-                {getPlan(e.plan)?.name} ({new Date(e.day + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })})
-              </span>
-            ))}
-            .
+            <Icon name="flag" />
+            {/* Un seul bloc de texte : le paragraphe est en flex, le point ne doit pas se détacher de la liste. */}
+            <span>
+              Terminé ici :{' '}
+              {built
+                .map((e) => `${getPlan(e.plan)?.name} (${new Date(e.day + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })})`)
+                .join(', ')}
+              .
+            </span>
           </p>
         )}
       </section>

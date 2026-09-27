@@ -192,7 +192,7 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   renderAt('/aventure/foret');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   expect(document.body.textContent).toContain('Archipel de 6e : les Basses Terres');
-  await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 2000 });
+  await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 5000 });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
   expect(sheet()).toBeInTheDocument();

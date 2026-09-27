@@ -6,6 +6,8 @@ Blocland, ce sont **quatre archipels** de blocs, un par classe : les Basses Terr
 
 L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le menu, **Blocland** l’ouvre aussi. Le village est en 3D sur tout l’écran, sous la barre du haut. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il marche. Un toucher n’importe où pendant un trajet le fait arriver tout de suite. Au clavier, les flèches vont à l’île voisine.
 
+![Les Basses Terres en 3D, reconstruites : les îles reliées par des ponts, leurs maisons, les statues des Gardiens vaincus, les étiquettes des noms d'îles et la barre du bas (Carte, Blocs, École).](/captures/village-reconstruit.jpg)
+
 - **Quatre archipels**, un par classe. On voit un archipel à la fois : celui où se tient le bonhomme. Chacun a sa mer, son ciel et sa Carte : la mer tempérée des Basses Terres avec ses récifs et ses bancs de sable ; la mer turquoise des Collines du Large sous un ciel plus froid, avec des plaques de glace ; le bleu profond des Monts de Feu, la brume plus proche et des aiguilles d’ardoise qui sortent de l’eau ; et, dans les Îles du Ciel, plus de mer du tout : un plancher de nuages sous les îles, des nuages qui passent entre elles, aucune baleine. Les îles de 6e sont au niveau de la mer, celles de 5e sur les collines, celles de 4e sur les monts, celles de 3e sur les sommets, où elles flottent sur une roche qui s’amincit. Les régions ont leur paysage, leurs plantes et un repère (grand chêne, champignon géant, volcan qui fume, tour de guet, grand phare, aiguille de glace du Glacier, haut-fourneau de la Forge).
 - **L’île-port** de chaque archipel a un quai devant elle, avec le Bloc-Navire amarré : la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e.
 - **Le nom de chaque île ouverte** est écrit au-dessus d’elle, sur une étiquette claire, dans la police de lecture (en 3D comme en 2D) : on sait où l’on va avant de toucher.
@@ -20,11 +22,15 @@ L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le me
 - **Marche libre, en 2D** (réglage « Marche libre dans le monde en 2D », désactivé par défaut) : une croix de direction s’affiche en bas à droite. Tenir une flèche fait marcher le bonhomme case par case (les flèches du clavier aussi) ; il ne passe ni sur l’eau ni sur la lave, ni à travers un arbre, un rocher, un panneau ou une créature, et ne monte ou ne descend qu’un bloc à la fois. Devant un panneau, l’école ou une créature, le bouton **Entrer** s’allume (ou la touche Entrée) : il lance la quête, ouvre l’école, ou fait parler la créature. En passant sur une autre île ouverte par un pont, elle devient l’île du bonhomme et la caméra glisse vers elle. Rien n’est chronométré, et toucher une île pour y aller marche toujours.
 - **Sans monde** (réglage « La liste des îles », ou appareil qui ne sait rien dessiner ; sans WebGL, le monde en 3D laisse la place au monde en 2D), Blocland reste une **vue simple** en listes : la carte des îles (avec un bouton **École du village**), puis la page de chaque île avec les mêmes quêtes, plans, Gardien et ouvrages ; l’école y est une page. Tout ce qui se fait dans le monde se fait en vue simple.
 
+![Le monde en 2D : la Forêt des sons en pixels, vue de dessus en oblique, avec la cabane en fantômes pointillés.](/captures/vue-2d.jpg)
+
 Aucun texte à lire n’est dessiné dans la 3D : tout ce qui se lit est dans des panneaux HTML, dans la police et la taille choisies, et lu à voix haute.
 
 ## Le menu du village
 
 Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu du village** à la place du panneau d’île, le monde derrière. C’est le menu pause du jeu :
+
+![Le menu du village, en panneau à côté du monde : Reprendre, École du village, Monuments, Quêtes, Succès, Réglages.](/captures/menu-village.jpg)
 
 - **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
 - **Continuer** : la dernière quête ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
@@ -39,6 +45,8 @@ Son adresse est `#/aventure/menu` ; en vue simple, elle mène au menu en page.
 ## Le panneau d’une île
 
 Toucher une île ouverte fait voler la caméra et ouvre son panneau (il glisse depuis le bas, ou depuis la droite sur grand écran). On y trouve, dans l’ordre :
+
+![Le panneau de la Forêt des sons : Mousso accueille, le prochain objectif et sa jauge, puis les quêtes.](/captures/panneau-ile.jpg)
 
 1. **La créature** et sa phrase d’accueil, lue à voix haute.
 2. **Le prochain objectif** : **un seul**, avec une jauge (« 0 / 3 ») : d’abord ce qu’on peut faire tout de suite (poser les blocs d’un plan, construire un ouvrage, poser les blocs du Bloc-Navire), sinon le plus proche, celui qui demande le moins de blocs (le plan en cas d’égalité). Sur un port, le Bloc-Navire prêt à partir passe avant tout.
@@ -84,6 +92,8 @@ Les blocs servent à trois choses : **construire les ouvrages** entre les îles 
 
 Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire à la place du panneau d’île. Il ne se contente pas de compter :
 
+![Mes blocs : « Tu peux construire », un lien par chantier (plans, Bloc-Navire, monuments, ouvrages).](/captures/mes-blocs.jpg)
+
 - **Tu peux construire** : en premier, ce qu’on peut faire tout de suite, un lien par chantier (le plan d’une île dont on a tous les blocs, le Bloc-Navire, un monument où l’on peut poser des blocs, un ouvrage qu’on peut payer). Sinon : « Rien pour l’instant : fais une quête pour gagner des blocs », avec un lien vers l’île où l’on est.
 - **Dans ta poche** : chaque type de bloc en poche, et à côté ce qu’il construit maintenant : « Plan de Forêt des sons : encore 6 à gagner », « Plan de Plaine des nombres : tu as tout, pose-les », « Le Bloc-Navire : encore 4 à gagner », « L’observatoire des baleines : tu peux en poser 12 » quand aucun plan ni le navire n’en veut mais qu’un monument de l’archipel s’en sert, ou « À garder pour les plans suivants de … » quand rien ne l’attend aujourd’hui. Chaque mention est un lien : la toucher emmène la caméra et le bonhomme sur l’île, et ouvre son panneau. Les lignes sont rangées par utilité : ce qui se pose sur l’île où l’on est, puis ailleurs dans l’archipel, puis à garder, puis « Rien à construire pour l’instant ».
 - **Prochains ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les trois ouvrages les moins chers qu’on ne peut pas encore payer, avec leur coût.
@@ -94,6 +104,8 @@ La croix ramène sur l’île où se tient le bonhomme.
 ## Les ouvrages entre les îles
 
 Au départ, deux îles sont ouvertes : la **Forêt des sons** (français) et la **Plaine des nombres** (maths), reliées par un pont déjà construit. Les autres îles de l’archipel s’ouvrent en construisant un ouvrage depuis le panneau d’une île ouverte. Les ouvrages ne relient que les îles d’un même archipel ; pour changer d’archipel, voir le Bloc-Navire ci-dessous. Dans un archipel, rien n’est imposé : on choisit sa direction.
+
+![Le pli Ouvrages d'un panneau d'île : les blocs disponibles, et chaque ouvrage possible avec son coût et son bouton Construire.](/captures/ouvrages.jpg)
 
 Chaque archipel a deux **îles d’anglais**. Dans les Basses Terres, elles sont derrière : la **Baie des mots** s’ouvre par un pont depuis la Ferme, l’**Horloge des verbes** par un pont depuis la Forêt, et un sentier relie les deux. Dans les Collines du Large, elles forment une colonne à droite : le **Comptoir** s’ouvre par un pont depuis le Marché (le port), le **Manoir du passé** par un pont depuis le Marais, et un pont relie les deux. Dans les Monts de Feu, elles sont aux deux bouts de la crête : la **Gare du futur** s’ouvre par un pont depuis la Forge, le **Théâtre des voix** par un pont depuis le Cabinet des mots. Dans les Îles du Ciel, elles sont aux deux bouts de l’arc : le **Studio des ondes** s’ouvre par un pont depuis le Belvédère, le **Château des hypothèses** par un pont depuis l’Observatoire des données. Dans leurs quêtes, la consigne, l’indice et la correction sont en français ; les mots et les phrases en anglais sont lus avec une voix anglaise et ne sont pas découpés en syllabes. Dans une phrase anglaise, le trou se lit « blank ». Les quêtes d’écoute (**Ears** dans la Baie, **Listening** au Comptoir, **Dialogues** au Théâtre) lisent le mot ou la phrase anglaise dès qu’il apparaît : on l’écoute, puis on choisit son sens, ou, pour les Dialogues, la bonne réponse en anglais.
 
@@ -108,6 +120,10 @@ Un ouvrage constructible est dessiné en fantôme dans le monde ; le toucher ouv
 ## Les plans : reconstruire le village
 
 Chaque île a **trois plans** enchaînés, qui bâtissent la maison de la créature (la cabane de Mousso, la forge de Tunel, le nid de Coco…) : d’abord **les murs** (le bloc de l’île, avec l’emplacement de la porte et des fenêtres), puis **le toit** (les tuiles, la porte, des fenêtres éclairées par des lanternes, une cheminée ou un sommet), puis **la cour** (une barrière avec son portillon, une lanterne sur chaque poteau du bout, une marche devant la porte, une jardinière). Le bâtiment est dessiné en **fantômes bleutés** dans le monde.
+
+![La cabane de Mousso en cours : les murs posés en bois, le reste en fantômes bleutés.](/captures/plan-en-cours.jpg)
+
+![Un plan terminé : la phrase de la créature, le coffre (porte, lanternes, tuiles) et l'XP, le succès Bâtisseur.](/captures/plan-termine.jpg)
 
 Chaque île a sa forme de bâtiment :
 
@@ -130,6 +146,8 @@ Un rappel de pause s’affiche après dix minutes de construction, sans rien blo
 
 Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les emploient : de grands ouvrages classés, **deux par archipel**, chacun sur son **îlot au large** d’une île, dessiné en fantômes bleutés dès qu’on arrive dans l’archipel.
 
+![L'observatoire des baleines sur son îlot, à moitié construit, et son panneau : 60 sur 116 blocs posés.](/captures/monument.jpg)
+
 | Archipel | Monuments |
 | --- | --- |
 | Basses Terres | l’observatoire des baleines (au large de la Tour du lecteur), le grand moulin (au large de la Ferme) |
@@ -149,6 +167,10 @@ Leurs adresses : `#/aventure/monuments` pour la liste, `#/aventure/monument-obse
 
 Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se construit comme un plan, au quai de l’île-port, en trois étapes : la **coque et la voile** (sur la Plaine des nombres, pour rejoindre les Collines du Large par la mer), puis le **ballon** (sur le Marché des proportions, pour rejoindre les Monts de Feu par les airs), puis le **réacteur** (sur l’Atelier du calcul littéral, pour monter jusqu’aux Îles du Ciel). C’est le même navire qui grandit.
 
+![Le chantier du Bloc-Navire dans le panneau du port : l'étape, l'avancement, les blocs qui manquent et les Gardiens à vaincre.](/captures/navire-chantier.jpg)
+
+![Arrivé dans les Collines du Large : le Marché des proportions, port de l'archipel de 5e.](/captures/collines-du-large.jpg)
+
 - **Les blocs** de chaque étape se gagnent sur les îles de l’archipel (sable, bois, galet et pierre pour la coque ; glace, panneau et toile pour le ballon ; acier, calque et ardoise pour le réacteur). Ils se posent avec le bouton « Poser le bloc suivant » de la section Bloc-Navire, ou en touchant une case bleue du navire au quai. Le navire tangue doucement à quai (il plane dans les Îles du Ciel), son ballon se balance ; quand le panneau du port est ouvert et qu’il reste des cases à poser, la flèche jaune flotte au-dessus du chantier.
 - **Le kit arrive avec les Gardiens** : la voile, le haut du ballon et les feux du réacteur ne se gagnent pas. Ils apparaissent quand assez de Gardiens de l’archipel sont vaincus : trois dans les Basses Terres, deux dans les Collines du Large, deux dans les Monts de Feu. La section dit combien il en manque et lesquels sont les plus proches.
 - **Embarquer** : quand toutes les cases sont posées et le kit arrivé, le bouton « Embarquer vers l’archipel de 5e » apparaît. Le voyage se joue en 3D : le bonhomme marche jusqu’au pont par la jetée, le navire s’éloigne (la voile glisse vers le large et laisse son écume ; le ballon s’élève et l’archipel rétrécit ; le réacteur monte presque à la verticale, flamme allumée), un voile blanc passe, l’archipel change, le navire accoste et le bonhomme débarque. Huit secondes en tout. Un toucher n’importe où, Entrée, Espace, Échap ou le bouton « Arriver » terminent le voyage tout de suite. Puis la créature du port d’en face accueille. L’étape rapporte son XP et un succès (Capitaine, Aéronaute, Pilote du ciel).
@@ -166,6 +188,8 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 
 Chaque île a un **Gardien** (le Grand Chêne, le Golem de roche, le Hanneton de bronze…). Il accepte le défi quand **chaque quête de l’île a au moins deux étoiles** ; tant que ce n’est pas le cas, la page de l’île dit ce qui manque.
 
+![Le défi du Golem de roche : sa jauge de résistance, sa phrase, et l'épreuve Filon.](/captures/gardien.jpg)
+
 Le défi enchaîne **deux manches de chaque quête** de l’île, tirées au hasard d’exercices au niveau de l’élève (d’autres questions et d’autres places de réponse à chaque défi), avec leurs écrans et leurs corrections habituels, **sans chrono**. Dans l’arène, le Gardien est une grande créature en cubes qui respire ; sa **jauge de résistance** baisse à chaque épreuve réussie (il n’y a jamais de jauge pour l’élève). Il s’incline quand on réussit, gronde doucement quand on rate, dit une réplique à chaque épreuve, s’écroule quand il est vaincu. Tambour à l’entrée, fanfare à la victoire ; « Réduire les animations » neutralise le tout.
 
 **L’îlot du Gardien** apparaît devant l’île dès que le Gardien accepte le défi : une petite île ronde au sol de son île (herbe, neige, basalte…), bordée de sable au bord de la mer, avec quelques touches de son décor. Au milieu, le Gardien se dresse sur une **arène** pavée de pierre, bordée de galet. Des **pas japonais**, pierres posées dans l’eau, relient l’îlot à la côte de l’île. Dans les archipels en altitude, l’îlot flotte sur sa roche, comme les îles.
@@ -176,6 +200,8 @@ Le défi enchaîne **deux manches de chaque quête** de l’île, tirées au has
 
 Sur l’île de l’école de chaque archipel se tient **l’école du village**. On y entre en touchant le bâtiment dans le monde, avec le bouton **École** de la barre du bas, ou avec la ligne « École du village » du panneau de l’île. Le bonhomme marche jusqu’à sa porte et le panneau de l’école s’ouvre à la place de celui de l’île.
 
+![Le panneau de l'École du village : la créature accueille, les blocs gagnés par quête, puis les trois portes.](/captures/ecole.jpg)
+
 La créature de l’île accueille à voix haute. Puis **trois portes**, une par matière : **Français**, **Maths**, **Anglais**. Derrière chaque porte, les mêmes quêtes que dans la page Quêtes (Homophones, Lecture, Tables & calcul mental, Fractions, Nombres décimaux, Vocabulaire, Verbes irréguliers), avec leurs étoiles, et un lien vers les îles de la matière. Le bouton **Les trois portes** ramène au choix. Après une quête, son lien de retour **École** ramène à la même porte.
 
 Une quête du portail finie, d’où qu’on l’ait lancée, rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme** (du bois dans les Basses Terres, de la toile dans les Collines du Large, du calque dans les Monts de Feu, du prisme dans les Îles du Ciel), au même barème qu’une quête d’île : proportionnels au score, jamais zéro dès qu’une réponse est juste, un ou deux de plus avec deux ou trois étoiles, deux de plus la première fois. Le bilan de la quête les montre (« +8 blocs de bois pour le village »). Elle compte aussi pour la série de jours et ses coffres, mais ni pour les étoiles des îles ni pour les Gardiens.
@@ -185,6 +211,8 @@ L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une pag
 ## La salle des trophées
 
 À côté de l’école, sur la même île, se tient la **salle des trophées** : un pavillon ouvert devant, quatre colonnes de marbre, un fond de velours rouge, des socles de marbre et un toit au faîte d’or. **Chaque succès gagné y pose un trophée** : un bloc d’or pour les exploits (combos, quêtes, bâtiments), de cristal pour les rangs, de quartz pour les Gardiens, une lentille pour les voyages du Bloc-Navire. Les trophées remplissent d’abord les socles, puis le faîte, puis un second rang sur les socles, puis le bord du toit : la salle se remplit à mesure qu’on joue, et il y a une place pour chacun des succès.
+
+![Le panneau de la salle des trophées : 9 trophées sur 24, le rang et l'échelle des rangs.](/captures/trophees.jpg)
 
 On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rang, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
 

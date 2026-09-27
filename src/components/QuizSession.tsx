@@ -211,7 +211,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   if (phase === 'summary') {
     return (
       <section className="quiz" aria-labelledby="bilan-titre" ref={sectionRef}>
-        {feedback && <Feedback {...feedback} speakKey={feedback.key} />}
+        {feedback && <Feedback key={feedback.key} shout={feedback.shout} message={feedback.message} tone={feedback.tone} speakKey={feedback.key} />}
         {/* Les récompenses arrivent l'une après l'autre (étoiles, puis score, puis XP), comme à la fin d'un niveau. */}
         <div className="panel summary summary-reveal">
           <h2 id="bilan-titre">Résultat</h2>
@@ -323,7 +323,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         </div>
 
         {/* Raté ou joker : le message s'affiche juste sous les réponses, sans les repousser vers le bas. */}
-        {phase === 'question' && feedback && <Feedback {...feedback} speakKey={feedback.key} />}
+        {phase === 'question' && feedback && <Feedback key={feedback.key} shout={feedback.shout} message={feedback.message} tone={feedback.tone} speakKey={feedback.key} />}
 
         {question.aid && (hintUsed || phase === 'resolved') && <div className="aid">{question.aid}</div>}
 
@@ -341,7 +341,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         <div className={`result-sheet result-${feedback.tone}`} role="region" aria-label="Résultat de la question">
           <div className="result-sheet-inner">
             <div className="result-sheet-body">
-              <Feedback {...feedback} speakKey={feedback.key} compact />
+              <Feedback key={feedback.key} shout={feedback.shout} message={feedback.message} tone={feedback.tone} speakKey={feedback.key} compact />
               {question.explanation && (
                 <p className="explanation">
                   <Icon name="lightbulb" />{' '}

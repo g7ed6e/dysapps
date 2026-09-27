@@ -1,8 +1,9 @@
 // Prépare les sources du site de documentation pour VitePress (docs/.vitepress/config.mts) :
 // les pages Markdown de docs/ (sauf docs/_theme/, docs/_journal/ et docs/.vitepress/) plus les pages générées depuis
 // les données du jeu (scripts/docs/generate.mjs) et le journal des versions (scripts/docs/journal.mjs),
-// copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js). Aucune ressource externe.
-import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+// copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
+// Aucune ressource externe.
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, posix, relative } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { generatePages } from './generate.mjs';
@@ -12,6 +13,7 @@ const root = process.cwd();
 export const DOCS = join(root, 'docs');
 export const SRC = join(root, '.docs-src');
 const THEME = join(DOCS, '_theme');
+const CAPTURES = join(DOCS, '_captures');
 
 function walk(dir, list = []) {
   for (const name of readdirSync(dir)) {
@@ -78,6 +80,16 @@ export async function prepareDocs() {
   cpSync(join(root, 'public', 'icon.svg'), join(pub, 'icon.svg'));
   cpSync(join(root, 'public', 'fonts', 'luciole'), join(pub, 'fonts', 'luciole'), { recursive: true });
   cpSync(join(THEME, 'sw.js'), join(pub, 'sw.js'));
+  // Les captures d'écran du jeu (scripts/docs/captures.mjs) : servies sous /captures/. Une image citée par une page
+  // doit exister (une capture renommée ou oubliée casse le build, pas seulement l'image).
+  cpSync(CAPTURES, join(pub, 'captures'), { recursive: true });
+  for (const page of pages.filter((p) => !p.generated)) {
+    // Le code (blocs et `en ligne`) ne compte pas : un exemple de syntaxe n'est pas une image citée.
+    const text = page.body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
+    for (const [, name] of text.matchAll(/\]\(\/captures\/([^)\s]+)\)/g)) {
+      if (!existsSync(join(CAPTURES, name))) throw new Error(`Capture absente : docs/_captures/${name} (citée dans docs/${page.path}) — voir npm run docs:captures`);
+    }
+  }
   writeFileSync(join(pub, '.nojekyll'), '');
 
   return pages.map(({ path, title, generated: g, updated }) => ({ path, title, generated: g, updated }));

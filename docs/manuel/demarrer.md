@@ -13,6 +13,10 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** de B
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
 
+![Le menu en page sur tablette : le rang, l'aventure Blocland, et les trois tuiles Quêtes, Succès, Réglages.](/captures/menu.jpg)
+
+![Sur téléphone : la barre du haut réduite (logo, menu, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
+
 Pendant une partie, l’écran se vide pour laisser toute la place à la question : voir [le mode concentration](quetes.md#le-mode-concentration).
 
 ## Installer sur l’écran d’accueil
@@ -30,6 +34,8 @@ L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’
 ## L’écran titre
 
 À chaque lancement, l’écran titre montre le bloc d’herbe, « DysApps » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une quête en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière quête ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+
+![L'écran titre : le bloc d'herbe, « DysApps » et le bouton Jouer.](/captures/titre.jpg)
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
