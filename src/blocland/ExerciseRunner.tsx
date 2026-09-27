@@ -6,6 +6,7 @@ import { frenchTypography, RichText } from '../components/math/RichText';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { useSheetClearance } from '../components/useSheetClearance';
+import { useAnswerKeys } from '../components/useAnswerKeys';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
@@ -85,6 +86,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   useSheetClearance(sectionRef, Boolean(answered) && !done);
   // Les succès gagnés en route s'affichent sur l'écran de récompense, pas sur la question.
   useHoldCelebrations(!done);
+  // Touches 1 à 9 pour répondre ou cocher une carte, Entrée pour valider un tri puis passer à la suite.
+  useAnswerKeys(sectionRef);
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;

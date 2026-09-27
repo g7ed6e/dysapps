@@ -37,14 +37,14 @@
     {
       "key": "enfant",
       "word": "enfant",
-      "image": "👧",
+      "image": "🧒",
       "correct": false,
       "heard": "[an]"
     },
     {
       "key": "jardin",
       "word": "jardin",
-      "image": "🌷",
+      "image": "🏡",
       "correct": true,
       "heard": "[in]"
     },
@@ -65,7 +65,7 @@
     {
       "key": "chemin",
       "word": "chemin",
-      "image": "🚶",
+      "image": "🏞️",
       "correct": true,
       "heard": "[in]"
     },

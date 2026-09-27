@@ -1,4 +1,4 @@
-import { BIOMES, getBiome } from './biomes';
+import { BIOMES, getBiome, guardianTitle } from './biomes';
 import { EMPTY_STATE, type BloclandState, type ExerciseProgress } from './engine';
 import { exercisesOf, loadExercise } from './exercises';
 import { SCREEN_TYPES } from './exercises/registry';
@@ -32,7 +32,7 @@ it('construit un défi avec deux manches par type de quête, aux items de l’ex
     expect(def.id).toBe(bossId(biome.id));
     expect(def.type).toBe('boss');
     expect(def.reward.block).toBe('or');
-    expect(def.instruction).toContain(biome.guardian);
+    expect(def.instruction).toMatch(new RegExp(`^${guardianTitle(biome)} te lance`));
     const types = typesWithContent(biome);
     const expected = types.reduce((n, t) => n + (SCREEN_TYPES[t].batch === 'all' ? 1 : ROUNDS_PER_TYPE), 0);
     expect(def.items).toHaveLength(expected);

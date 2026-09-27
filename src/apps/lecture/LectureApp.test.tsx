@@ -79,7 +79,8 @@ it('enchaîne lecture, questions avec joker et résultat', async () => {
     await user.click(screen.getByRole('button', { name: i < 4 ? /Suivante/ : /Voir le résultat/ }));
   }
   // Joker à la première question : 4,5 points sur 5.
-  expect(screen.getByText('90 %')).toBeInTheDocument();
+  expect(screen.getByText('4 sur 5 du premier coup')).toBeInTheDocument();
+  expect(screen.getByText(/et 1 trouvée ensuite/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Autre texte/ }));
-  expect(screen.getByRole('button', { name: /La chèvre de monsieur Seguin.*Record : 90 %/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /La chèvre de monsieur Seguin.*Record : 3 étoiles sur 3/ })).toBeInTheDocument();
 });

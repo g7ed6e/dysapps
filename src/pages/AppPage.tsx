@@ -12,8 +12,9 @@ export function AppPage() {
 
   return (
     <>
-      <Link to={`/matiere/${app.subject}`} className="back-link">
-        <Icon name="back" /> {SUBJECTS[app.subject].title}
+      {/* Le Tutoriel est une quête de l'accueil : on y revient. */}
+      <Link to={app.onHome ? '/' : `/matiere/${app.subject}`} className="back-link">
+        <Icon name="back" /> {app.onHome ? 'Menu' : SUBJECTS[app.subject].title}
       </Link>
       <h1 className={`page-title title-${app.subject}`}>
         <Icon name={app.icon} /> {app.title}

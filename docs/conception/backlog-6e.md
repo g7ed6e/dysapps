@@ -8,7 +8,7 @@ Chaque entrée dit **ce que vit l’élève**, **ce qu’il faudrait changer** e
 - **P1** : gêne réelle à chaque séance ;
 - **P2** : confort, finition.
 
-Les cinq **P0** et les dix **P1 sont faits** (le n° 6 en partie) ; ce qui a été retenu est décrit sous chacun d’eux.
+Les cinq **P0**, les dix **P1** et les neuf **P2 sont faits** (le n° 6 en partie) ; ce qui a été retenu est décrit sous chacun d’eux.
 
 ## P0 — À corriger d’abord
 
@@ -126,46 +126,55 @@ Les cinq **P0** et les dix **P1 sont faits** (le n° 6 en partie) ; ce qui a ét
 - « Espace entre les lettres 0.03 », « Espace entre les mots 0.12 », « Vitesse × 0.9 » : unités inconnues et point anglais. Afficher « Normal / Plus large / Très large » ou une échelle 1 à 5, avec la virgule française.
 - Le bouton rouge « Effacer ma progression » est collé à « Affichage par défaut » : un doigt qui glisse et tout est perdu. L’éloigner, et demander de taper un mot ou de maintenir le bouton.
 - **Où** : `src/pages/SettingsPage.tsx`.
+- **Fait** : espacements et vitesse dits en mots (« Normal », « Plus large », « Lente »…), aussi pour les lecteurs d’écran ; « Effacer ma progression » est dans un encadré à part, en bas, et demande d’écrire le mot « effacer ».
 
 ### 17. « Le Grand Chêne » sans majuscule
 
 - Titre « le Grand Chêne » et phrase qui commence par « le Grand Chêne n’accepte… ». Mettre la majuscule en début de titre et de phrase pour tous les Gardiens.
 - **Où** : `src/blocland/biomes.ts` (`guardian`), `BossPage.tsx`.
+- **Fait** : `guardianTitle` met la majuscule dans les titres et en début de phrase (application et pages générées).
 
 ### 18. Page Français : trop d’îles d’un coup
 
 - Les îles de 5e, 4e, 3e sont toutes listées pour un élève de 6e, et le titre « Archipel de 5e » touche le bas des cartes. Replier les archipels pas encore atteints (« Plus tard : 3 archipels ») et corriger l’espacement.
 - **Où** : `src/pages/SubjectPage.tsx`.
+- **Fait** : les archipels pas encore atteints sont repliés sous « Plus tard : 3 archipels à rejoindre (5 îles) » ; le titre d’archipel a enfin de l’air au-dessus de lui.
 
 ### 19. Le Tutoriel est rangé en Français mais parle aussi de maths
 
 - Il pose 2 × 2 et une fraction. Le mettre sur l’accueil (« Commencer ici ») plutôt que dans Français.
 - **Où** : `src/apps/registry.ts`, `src/pages/HomePage.tsx`.
+- **Fait** : carte « Commencer ici » en tête de l’accueil tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » ; il n’est plus dans Français, et son retour mène à l’accueil.
 
 ### 20. Tutoriel de Blocland : la bulle cache ce qu’elle montre
 
 - La bulle de 6 étapes est posée sur la flèche jaune et l’île dont elle parle. La placer en bas, et faire clignoter ou zoomer sur l’élément expliqué à chaque étape.
 - **Où** : `src/blocland/Tutorial.tsx`.
+- **Fait** : les bulles sont en bas, au-dessus de la barre ; le bouton dont parle une bulle (Carte, Blocs) est entouré d’un contour jaune qui clignote.
 
 ### 21. Des îles sans nom sur la carte
 
 - Vue 3D : aucune île n’a d’étiquette. Afficher le nom (et une icône de matière) au-dessus des îles ouvertes.
 - **Où** : `src/blocland/three/`, `WorldPage.tsx`.
+- **Fait** : le nom des îles ouvertes est écrit au-dessus d’elles, en 3D (étiquettes de taille fixe) comme en 2D, dans la police de lecture. Pas encore d’icône de matière.
 
 ### 22. Résultat en pourcentage
 
 - « Résultat 88 % » est abstrait en 6e. Afficher « 7 sur 8 du premier coup » et des étoiles, comme dans Blocland.
 - **Où** : `src/components/QuizSession.tsx`.
+- **Fait** : bilan en étoiles et « 7 sur 8 du premier coup » (et « 1 trouvée ensuite ») ; les records des quêtes sont en étoiles partout.
 
 ### 23. Emojis ambigus
 
 - 😁 pour « dent », 🎤 pour « chanter », 💨 pour « vent » : je dois deviner. Le mot écrit est là, mais l’image doit aider, pas faire douter. Revoir les emojis des items de sons et de rimes.
 - **Où** : données `foret-chasse-son-*.json`, `foret-rimes-*.json`.
+- **Fait** : 🦷 dent, 🎶 chanter, 🌬️ vent, 🧒 enfant, 🏡 jardin, 🔥 cheminée, 🏞️ chemin, 🧳 valise ; « trottoir » devient « tiroir » 🗄️.
 
 ### 24. Répondre au clavier
 
 - Sur ordinateur, pas de touches 1, 2, 3, 4 pour répondre ni Entrée pour « Suivante ». Utile pour les élèves avec une dyspraxie associée.
 - **Où** : `src/components/QuizSession.tsx`, `src/blocland/ExerciseRunner.tsx`.
+- **Fait** : touches 1 à 9 pour répondre (ou cocher une carte), Entrée pour valider un tri et passer à la suite, au portail et dans Blocland.
 
 ## Ce qui marche bien (à garder)
 

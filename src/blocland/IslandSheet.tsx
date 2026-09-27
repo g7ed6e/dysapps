@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import type { BiomeDef } from './biomes';
+import { guardianTitle, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -144,7 +144,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
                 <Icon name="shield" />
               </span>
               <span className="island-quest-text">
-                <span className="island-quest-title">{biome.guardian}</span>
+                <span className="island-quest-title">{guardianTitle(biome)}</span>
                 <span className="island-quest-desc">{bossBeaten ? 'Déjà vaincu. Une revanche ?' : 'Le Gardien accepte ton défi !'}</span>
               </span>
               {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label="Gardien vaincu" />}
@@ -155,7 +155,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
                 <Icon name="lock" />
               </span>
               <span className="island-quest-text">
-                <span className="island-quest-title">{biome.guardian}</span>
+                <span className="island-quest-title">{guardianTitle(biome)}</span>
                 <span className="island-quest-desc">
                   {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque quête'}
                 </span>

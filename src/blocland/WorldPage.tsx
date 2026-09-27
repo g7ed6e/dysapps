@@ -110,6 +110,11 @@ export function WorldPage() {
       }),
     [a, state],
   );
+  // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde.
+  const islandLabels = useMemo(
+    () => islandsOf(a).filter((b) => isBiomeUnlocked(b.id, state.village.bridges)).map((b) => ({ id: b.id, text: b.name })),
+    [a, state.village.bridges],
+  );
   // Une borne touchée : sa quête si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
     const q = quests.find((m) => m.biome === id && m.typeId === typeId);
@@ -317,6 +322,7 @@ export function WorldPage() {
             trail={trail}
             quests={quests}
             onPickQuest={onPickQuest}
+            islandLabels={voyage ? undefined : islandLabels}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(islandAt(a, cell.x, cell.y)) } : undefined}
@@ -339,21 +345,6 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {a !== '6e' && !voyage && (
-            <Tutorial id={`archipel-${a}`} steps={ARRIVAL_STEPS[a]} />
-          )}
-          <Tutorial
-            id="village-immersif"
-            replay={replay}
-            steps={[
-              'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
-              'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout l’archipel du ciel.',
-              'Sur chaque île, les bornes à panneau sont les quêtes : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une quête à faire, des cubes d’or comptent tes étoiles.',
-              'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
-              'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont, un bac ou un sentier coûte des blocs ; un escalier demande un plan terminé, un col un Gardien vaincu. Choisis ta direction.',
-              'Au port, sur la Plaine des nombres, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : l’archipel de 5e t’attend, et tu peux toujours revenir.',
-            ]}
-          />
           {mapOpen && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               {mapTarget && remaining.length ? (
@@ -388,6 +379,25 @@ export function WorldPage() {
             </div>
           )}
         </div>
+        {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
+        <div className="world-overlay-bottom">
+          {a !== '6e' && !voyage && (
+            <Tutorial id={`archipel-${a}`} steps={ARRIVAL_STEPS[a]} />
+          )}
+          <Tutorial
+            id="village-immersif"
+            replay={replay}
+            targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', undefined, undefined]}
+            steps={[
+              'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
+              'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout l’archipel du ciel.',
+              'Sur chaque île, les bornes à panneau sont les quêtes : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une quête à faire, des cubes d’or comptent tes étoiles.',
+              'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
+              'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont, un bac ou un sentier coûte des blocs ; un escalier demande un plan terminé, un col un Gardien vaincu. Choisis ta direction.',
+              'Au port, sur la Plaine des nombres, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : l’archipel de 5e t’attend, et tu peux toujours revenir.',
+            ]}
+          />
+          </div>
         <nav className="world-bar" aria-label="Village">
           {island && !voyage && (
             <button
@@ -401,7 +411,13 @@ export function WorldPage() {
               <Icon name={island.icon} /> {island.name}
             </button>
           )}
-          <button type="button" className="button" aria-pressed={mapOpen} onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}>
+          <button
+            type="button"
+            className="button"
+            data-tuto="carte"
+            aria-pressed={mapOpen}
+            onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}
+          >
             <Icon name="map" /> Carte
           </button>
           {!voyage && (
@@ -410,6 +426,7 @@ export function WorldPage() {
               className="button"
               aria-pressed={blocsOpen}
               aria-label="Mes blocs"
+              data-tuto="blocs"
               aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
               onClick={() => (blocsOpen ? openIsland(at) : navigate('/aventure/blocs'))}
             >

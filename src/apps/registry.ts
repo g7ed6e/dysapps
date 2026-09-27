@@ -14,6 +14,8 @@ export interface AppDef {
   icon: AnyIconName;
   status: 'disponible' | 'bientot';
   component?: ComponentType;
+  /** Quête de l'accueil, pas d'une matière (le Tutoriel, qui mélange français et maths). */
+  onHome?: boolean;
 }
 
 export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string }> = {
@@ -30,6 +32,7 @@ export const APPS: AppDef[] = [
     description: 'Une quête d’entraînement pour prendre les commandes en main.',
     icon: 'compass',
     status: 'disponible',
+    onHome: true,
     component: lazy(() => import('./demo/DemoApp')),
   },
   {
@@ -109,6 +112,7 @@ export function bestScore(apps: Record<string, { bestScore: number }>, appId: st
   return scores.length ? Math.max(...scores) : undefined;
 }
 
+/** Les quêtes d'une matière (le Tutoriel est sur l'accueil, pas dans une matière). */
 export function appsBySubject(subject: Subject): AppDef[] {
-  return APPS.filter((a) => a.subject === subject);
+  return APPS.filter((a) => a.subject === subject && !a.onHome);
 }

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, ofBlock } from './biomes';
+import { BLOCKS, getBiome, guardianTitle, ofBlock } from './biomes';
 import { Bridges } from './Bridges';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
@@ -115,7 +115,7 @@ export function BiomePage() {
             <span className="app-icon boss-icon">
               <Icon name={ready ? 'shield' : 'lock'} size="1.8rem" />
             </span>
-            <span className="app-title">{biome.guardian}</span>
+            <span className="app-title">{guardianTitle(biome)}</span>
             <span className="app-desc">Une épreuve de chaque quête, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
             {beaten && boss ? (
               <Stars count={boss.stars} label={`Gardien vaincu : ${boss.stars} étoiles sur 3`} />

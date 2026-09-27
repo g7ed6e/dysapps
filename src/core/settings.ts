@@ -118,3 +118,20 @@ export function applySettings(settings: Settings, root: HTMLElement = document.d
   root.style.setProperty('--letter-spacing', `${settings.letterSpacing}em`);
   root.style.setProperty('--word-spacing', `${settings.wordSpacing}em`);
 }
+
+/**
+ * Un espacement en mots plutôt qu'en em (« 0.03 » ne dit rien à un élève) : plus serré, normal (la valeur par défaut),
+ * puis un peu plus large, plus large, très large jusqu'au maximum.
+ */
+export function spacingWord(value: number, normal: number, max: number): string {
+  const eps = 1e-6;
+  if (Math.abs(value - normal) < eps) return 'Normal';
+  if (value < normal) return 'Plus serré';
+  const t = (value - normal) / (max - normal);
+  return t <= 1 / 3 + eps ? 'Un peu plus large' : t <= 2 / 3 + eps ? 'Plus large' : 'Très large';
+}
+
+/** La vitesse de la voix en mots : lente, normale (0,8 à 1), rapide. */
+export function speedWord(rate: number): string {
+  return rate < 0.75 ? 'Lente' : rate <= 1.05 ? 'Normale' : 'Rapide';
+}

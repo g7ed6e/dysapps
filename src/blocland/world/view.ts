@@ -57,6 +57,12 @@ export interface Burst {
  * Ce que reçoit une vue du monde (la 3D de three/, la 2D à venir) et ce qu'elle renvoie. Les vues ne font que
  * dessiner et traduire les gestes : les règles du monde sont dans world/, la simulation dans world/scene.ts.
  */
+/** Le nom d'une île, écrit au-dessus d'elle dans le monde. */
+export interface IslandLabel {
+  id: BiomeId;
+  text: string;
+}
+
 export interface WorldViewProps {
   /** L'archipel affiché : la scène (mer, brume, baleines, cadrage) est la sienne. */
   archipelago: ArchipelagoId;
@@ -98,6 +104,8 @@ export interface WorldViewProps {
   trail?: Cell[];
   /** Les bornes de quête : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
+  /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
+  islandLabels?: IslandLabel[];
   /** Borne de quête touchée (le socle, le panneau ou son repère). */
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   burst?: Burst;

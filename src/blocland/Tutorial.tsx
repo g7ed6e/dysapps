@@ -27,10 +27,12 @@ interface Props {
   steps: string[];
   /** Forcer l'affichage (bouton « Revoir l'aide »). */
   replay?: number;
+  /** Pour chaque bulle, l'élément dont elle parle (sélecteur CSS), mis en évidence tant qu'elle est ouverte. */
+  targets?: (string | undefined)[];
 }
 
 /** Tutoriel d'entrée : quelques bulles courtes, une à la fois, lues à voix haute, à voir une seule fois. */
-export function Tutorial({ id, steps, replay = 0 }: Props) {
+export function Tutorial({ id, steps, replay = 0, targets }: Props) {
   const { settings, speak } = useSettings();
   const [open, setOpen] = useState(() => !hasSeenTutorial(id));
   const [step, setStep] = useState(0);
@@ -48,6 +50,15 @@ export function Tutorial({ id, steps, replay = 0 }: Props) {
     // Relu à chaque nouvelle bulle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, step]);
+
+  // L'élément dont parle la bulle clignote doucement (un contour jaune), pour qu'on le trouve sans chercher.
+  const target = open ? targets?.[step] : undefined;
+  useEffect(() => {
+    if (!target) return;
+    const el = document.querySelector(target);
+    el?.classList.add('tuto-target');
+    return () => el?.classList.remove('tuto-target');
+  }, [target]);
 
   if (!open || !text) return null;
   const last = step >= steps.length - 1;

@@ -1149,6 +1149,14 @@ export function biomesOf(subject: Subject): BiomeDef[] {
   return BIOMES.filter((b) => b.subject === subject).sort((a, b) => order.indexOf(a.classe) - order.indexOf(b.classe));
 }
 
+/**
+ * Le nom du Gardien avec sa majuscule, pour un titre ou un début de phrase (« Le Grand Chêne ») ; au milieu d'une
+ * phrase, `guardian` garde son article en minuscule (« bats le Grand Chêne »).
+ */
+export function guardianTitle(biome: Pick<BiomeDef, 'guardian'>): string {
+  return biome.guardian.charAt(0).toUpperCase() + biome.guardian.slice(1);
+}
+
 export function getBiome(id: string | undefined): BiomeDef | undefined {
   return BIOMES.find((b) => b.id === id);
 }

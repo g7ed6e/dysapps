@@ -8,7 +8,7 @@ DysApps est une application web statique : React 19, TypeScript, Vite, Three.js 
 src/
   apps/          quêtes du portail (un dossier par quête) + registry.ts (catalogue)
   blocland/      l'aventure : biomes, moteur, exercices, monde 3D, plans, Gardiens
-  components/    Layout, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, useSheetClearance…
+  components/    Layout, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, useSheetClearance, useAnswerKeys…
   core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
   pages/         accueil, matière, quête, réglages, succès
   styles/        thèmes, styles globaux, textures pixel générées

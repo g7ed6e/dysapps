@@ -35,9 +35,11 @@ Le texte à lire reste toujours dans la police choisie. Les polices « affiche �
 - **Espace entre les lignes** : de 1,5 à 2,4, jamais moins de 1,5.
 - **Espace entre les lettres** et **entre les mots** : réglables séparément.
 
+Les espacements sont dits en mots, pas en nombres : « Plus serré », « Normal » (la valeur par défaut), « Un peu plus large », « Plus large », « Très large ». La vitesse de la voix aussi : « Lente », « Normale », « Rapide ».
+
 ## Voix
 
-La lecture à voix haute utilise la **synthèse vocale du navigateur** (rien n’est envoyé à un serveur). La **vitesse de lecture** se règle de 0,5 à 1,3. Si le navigateur ne propose pas de voix française, la page l’indique ; installer une voix française dans le système (réglages d’accessibilité de l’appareil) suffit en général.
+La lecture à voix haute utilise la **synthèse vocale du navigateur** (rien n’est envoyé à un serveur). La **vitesse de lecture** se règle de « Lente » à « Rapide » (0,5 à 1,3 fois la vitesse normale). Si le navigateur ne propose pas de voix française, la page l’indique ; installer une voix française dans le système (réglages d’accessibilité de l’appareil) suffit en général.
 
 Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britannique si l’appareil en a une, sinon une autre voix anglaise. **Tester la voix anglaise** lit une phrase d’exemple ; si elle est lue avec l’accent français, installer une voix anglaise (Royaume-Uni) dans le système.
 
@@ -57,6 +59,10 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
 ## Application
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
+
+## Effacer ma progression
+
+En bas de la page, loin des autres boutons, un encadré rouge **Effacer ma progression** efface XP, succès, étoiles, blocs et bâtiments (les réglages restent). Pour confirmer, il faut écrire le mot **effacer** : un doigt qui glisse n'efface rien. **Affichage par défaut**, plus haut, ne remet que les réglages d'affichage.
 
 ## Ce qui est réglé une fois pour toutes
 

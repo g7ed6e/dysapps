@@ -10,15 +10,18 @@ Chaque écran tient sans défiler :
 2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, mais la bonne n’a pas de place favorite : d’une question à l’autre, elle est la plus petite, la plus grande ou entre les deux. Les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
 3. **Le joker** donne un indice avant de répondre, ou après une erreur : une astuce (« remplace par *avait* ») et, en maths, une aide visuelle (grille de points, boîte de dix, droite par bonds, tableau de numération, barres de fractions).
 4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Après une première erreur, « Presque ! » s’affiche avec l’indice, la réponse tentée est barrée et l’on réessaie (avec deux choix seulement, la correction vient tout de suite, car le second essai donnerait la réponse). Après la deuxième, « Pas cette fois » donne la bonne réponse et un point d’effort. Les mots du résultat sont peu nombreux, courts et en minuscules : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois ».
-5. **Les succès** gagnés pendant la quête (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
+5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans Blocland, où les chiffres cochent les cartes d’un tri et Entrée valide.
+6. **Les succès** gagnés pendant la quête (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
+
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles.
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 
+## Le Tutoriel
+
+Sur l’accueil, et non dans une matière, car il mélange français et maths : une quête d’entraînement de quatre questions pour prendre les commandes en main (consigne, réponses, joker, correction). La première fois, il est en tête de l’accueil sous « Commencer ici » ; ensuite, un lien « Revoir le tutoriel » reste en bas de l’accueil. Son retour mène à l’accueil.
+
 ## Français
-
-### Tutoriel
-
-Une quête d’entraînement pour prendre les commandes en main : consigne, réponses, joker, correction.
 
 ### Homophones
 

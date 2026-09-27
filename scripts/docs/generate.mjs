@@ -6,6 +6,9 @@ import { createServer } from 'vite';
 import { appVersion } from '../version.mjs';
 import { exerciseMeta } from '../exerciseMeta.mjs';
 
+/** Majuscule en tête de cellule (« Le Grand Chêne »). */
+const capFirst = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+
 const root = process.cwd();
 
 /** Charge les modules du jeu et renvoie les pages générées : { path, title, body } (chemin relatif à docs/). */
@@ -227,7 +230,7 @@ function archipelPage(d) {
             `[${b.name}](iles/${b.id}.md)`,
             b.module,
             `${b.creature.name}, ${b.creature.species}`,
-            b.guardian,
+            capFirst(b.guardian),
             d.BLOCKS[b.block].name,
             b.exercises.map((e) => e.title).join(', '),
           ]),
@@ -264,7 +267,7 @@ function islandPage(b, d) {
     `| Archipel | Les ${d.ARCHIPELAGOS.find((a) => a.classe === b.classe).name} (${b.classe}) |`,
     `| Île-port | ${d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'oui : le quai et le Bloc-Navire sont devant l’île' : 'non'} |`,
     `| Créature | ${b.creature.name}, ${b.creature.species} |`,
-    `| Gardien | ${b.guardian} |`,
+    `| Gardien | ${capFirst(b.guardian)} |`,
     `| Bloc gagné | ${BLOCKS[b.block].name} |`,
     `| Quêtes | ${b.exercises.length} |`,
     `| Exercices | ${EXERCISES.filter((e) => e.biome === b.id).length} |`,

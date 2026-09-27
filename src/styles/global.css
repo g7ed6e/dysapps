@@ -763,6 +763,29 @@ a.app-card:active {
   background-image: var(--tex-grass-top);
   color: var(--on-accent);
 }
+.danger-zone {
+  margin-top: 2.5rem;
+  border-color: var(--error);
+}
+.confirm-word {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.confirm-word input {
+  min-height: 48px;
+  max-width: 12rem;
+  padding: 0.3rem 0.6rem;
+  font: inherit;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+}
+.button.danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .button.danger {
   background-color: var(--surface);
   background-image: none;
@@ -1466,9 +1489,12 @@ a.app-card:active {
 }
 .summary-score {
   font-family: var(--display-font);
-  font-size: 3.4rem;
-  line-height: 1.1;
-  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.3;
+  margin: 0.4rem 0 0;
+}
+.summary-later {
+  margin: 0.2rem 0 0;
 }
 .summary-xp {
   display: inline-flex;
@@ -3716,6 +3742,36 @@ a.app-card:active {
   margin: 0 auto;
   max-width: 34rem;
 }
+/* Les bulles d'aide du monde : en bas, au-dessus de la barre, pour laisser voir l'île et la flèche. */
+.world-overlay-bottom {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 4.6rem;
+  display: grid;
+  gap: 0.5rem;
+  pointer-events: none;
+  max-height: 45%;
+  overflow: auto;
+}
+.world-overlay-bottom > * {
+  pointer-events: auto;
+}
+.world-overlay-bottom .tutorial {
+  margin: 0 auto;
+  max-width: 34rem;
+}
+/* L'élément dont parle une bulle d'aide : un contour jaune qui pulse. */
+.tuto-target {
+  outline: 4px solid var(--yellow);
+  outline-offset: 3px;
+  animation: tuto-pulse 1.2s ease-in-out infinite;
+}
+@keyframes tuto-pulse {
+  50% {
+    outline-color: transparent;
+  }
+}
 .world-line {
   margin: 0 auto;
   max-width: 34rem;
@@ -4107,6 +4163,31 @@ a.island-quest:focus-visible {
 .section-intro {
   margin: -0.4rem 0 0.8rem;
   color: var(--muted);
+}
+.start-card {
+  border-color: var(--success);
+}
+.home-tutorial {
+  margin-top: 1.6rem;
+}
+.home-tutorial a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  font-weight: 700;
+}
+.section-subtitle {
+  margin: 1.8rem 0 0.8rem;
+}
+/* Les archipels pas encore atteints, repliés sous « Plus tard ». */
+.later-archipelagos {
+  margin-top: 1.8rem;
+}
+.later-archipelagos > summary {
+  min-height: 48px;
+  cursor: pointer;
+  font-weight: 700;
 }
 .blocland-islands .app-card {
   padding-top: calc(var(--tex-size) + 0.9rem);

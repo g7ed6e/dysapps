@@ -8,7 +8,7 @@ import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { useLoaded } from '../core/useLoaded';
-import { getBiome } from './biomes';
+import { getBiome, guardianTitle } from './biomes';
 import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipelago';
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
@@ -86,7 +86,7 @@ export function BossPage() {
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>
-        <Icon name="shield" /> {biome.guardian}
+        <Icon name="shield" /> {guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
         <p className="loading">Chargement…</p>
@@ -94,7 +94,7 @@ export function BossPage() {
         <>
           <CreatureBubble
             biome={biome}
-            text={`${biome.guardian} n’accepte que les bâtisseurs entraînés. Obtiens ${STARS_TO_BEAT} étoiles dans chaque quête, puis reviens.`}
+            text={`${guardianTitle(biome)} n’accepte que les bâtisseurs entraînés. Obtiens ${STARS_TO_BEAT} étoiles dans chaque quête, puis reviens.`}
           />
           <p className="intro">
             <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
@@ -106,9 +106,9 @@ export function BossPage() {
       ) : (
         <>
           <section className={`arena${beatenNow ? ' arena-beaten' : ''}`} aria-label="L’arène du Gardien">
-            <Guardian3D biome={biome.id} label={`${biome.guardian}, le Gardien du biome`} mood={mood} seq={seq} />
+            <Guardian3D biome={biome.id} label={`${guardianTitle(biome)}, le Gardien du biome`} mood={mood} seq={seq} />
             <div className="arena-info">
-              <p className="arena-name">{biome.guardian}</p>
+              <p className="arena-name">{guardianTitle(biome)}</p>
               <div className="arena-gauge-label" aria-hidden="true">
                 <span>Résistance</span>
                 <span>
@@ -127,7 +127,7 @@ export function BossPage() {
                 <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
               </div>
               <p className="arena-line" role="status" aria-live="polite">
-                <Syllabified text={line ?? (alreadyBeaten ? `${biome.guardian} est déjà vaincu, mais il aime les revanches.` : biome.challenge)} />
+                <Syllabified text={line ?? (alreadyBeaten ? `${guardianTitle(biome)} est déjà vaincu, mais il aime les revanches.` : biome.challenge)} />
               </p>
               <SpeakButton text={line ?? biome.challenge} label="Écouter" />
             </div>

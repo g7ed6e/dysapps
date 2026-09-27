@@ -19,6 +19,8 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 - **Réponses en ordre stable** : en maths, rangées dans l’ordre croissant ; en français, mélangées à l’affichage mais jamais déplacées après un clic.
 - **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance.
 - **Cibles tactiles larges** (au moins 48 px), un geste par action ; l’appui long n’est jamais la seule façon de faire.
+- **Au clavier aussi** : touches 1 à 9 pour répondre, Entrée pour continuer (utile avec une dyspraxie associée).
+- **Des résultats en étoiles et en mots** (« 7 sur 8 du premier coup »), jamais en pourcentage ; **des réglages en mots** (« Plus large »), jamais en em.
 
 ## Aider sans pénaliser
 

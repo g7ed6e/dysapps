@@ -134,6 +134,21 @@ it('chasse au son : la correction nomme tous les mots oubliés et chaque intrus,
   expect(screen.getByText('pas [an]')).toBeInTheDocument();
 });
 
+it('chasse au son au clavier : les chiffres cochent les cartes, Entrée valide puis passe à la suite', async () => {
+  const user = userEvent.setup();
+  const def = getExercise('foret-chasse-son-an')!;
+  renderAt('/aventure/foret/chasse-son');
+  await loaded();
+  const first = def.items.slice(0, 4);
+  const keys = first.map((it, i) => (it.correct ? String(i + 1) : '')).join('');
+  await user.keyboard(keys);
+  for (const it of first) expect(screen.getByRole('button', { name: String(it.word) })).toHaveAttribute('aria-pressed', String(Boolean(it.correct)));
+  await user.keyboard('{Enter}');
+  expect(within(sheet()).getByText(def.feedback.correct)).toBeInTheDocument();
+  await user.keyboard('{Enter}');
+  expect(screen.queryByRole('region', { name: 'Résultat' })).not.toBeInTheDocument();
+});
+
 it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', async () => {
   unlockAll();
   localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
