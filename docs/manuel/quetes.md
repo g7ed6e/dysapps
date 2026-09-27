@@ -1,6 +1,6 @@
 # Les quêtes du portail
 
-L’onglet **Quêtes** mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Les mêmes quêtes se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans Blocland. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+La page **Quêtes** (barre du haut, menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Les mêmes quêtes se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans Blocland. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ## Comment se déroule une question
 
@@ -15,13 +15,13 @@ Chaque écran tient sans défiler :
 
 ## Le mode concentration
 
-Pendant une partie (quête du portail, quête ou défi du Gardien dans Blocland), la barre du haut, les onglets et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+Pendant une partie (quête du portail, quête ou défi du Gardien dans Blocland), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
 - **Quitter la partie** : retour au choix des quêtes (ou, dans Blocland, au panneau de l’île). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans Blocland, les blocs se gagnent en finissant la partie.
 
-Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la barre et les onglets reviennent, et le bouton retour ramène à la page d’avant.
+Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la barre du haut revient, et le bouton retour ramène à la page d’avant.
 
 ## Le bilan
 

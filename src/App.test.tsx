@@ -20,7 +20,7 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est un menu principal ; les matières sont dans l’onglet Quêtes', () => {
+it('l’accueil est un menu principal ; les matières sont dans Quêtes', () => {
   renderAt('/');
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
   expect(within(menu).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('href', '/quetes');
@@ -34,9 +34,12 @@ it('l’accueil est un menu principal ; les matières sont dans l’onglet Quêt
   expect(screen.getByRole('link', { name: /Français/ })).toHaveAttribute('href', '/matiere/francais');
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/anglais');
-  // Les onglets : les mêmes endroits, toujours au même endroit.
-  const tabs = screen.getByRole('navigation', { name: 'Onglets' });
-  expect(within(tabs).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('aria-current', 'page');
+  // Pas d'onglets : la barre du haut garde les grands endroits (Menu et Réglages sur téléphone).
+  expect(screen.queryByRole('navigation', { name: 'Onglets' })).not.toBeInTheDocument();
+  const bar = screen.getByRole('navigation', { name: 'Navigation principale' });
+  expect(within(bar).getByRole('link', { name: 'Quêtes' })).toHaveAttribute('aria-current', 'page');
+  expect(within(bar).getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
+  expect(within(bar).getByRole('link', { name: 'Réglages' })).toHaveAttribute('href', '/reglages');
 });
 
 it('les révisions du jour ont leur carte sur l’accueil, vers la quête', () => {
@@ -216,13 +219,12 @@ it('surligne les syllabes en couleurs alternées quand le réglage est actif', (
   expect(container.querySelectorAll('.syl-1').length).toBeGreaterThan(0);
 });
 
-it('pendant une quête, mode concentration : ni barre ni onglets, un bouton Pause qui permet de quitter', async () => {
+it('pendant une quête, mode concentration : plus de barre du haut, un bouton Pause qui permet de quitter', async () => {
   const user = userEvent.setup();
   renderAt('/app/fractions');
-  expect(screen.getByRole('navigation', { name: 'Onglets' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
   await user.click((await screen.findAllByRole('button', { name: /Lire une fraction/ }))[0]);
-  // La partie commence : plus de barre du haut ni d'onglets, seulement Pause.
-  expect(screen.queryByRole('navigation', { name: 'Onglets' })).not.toBeInTheDocument();
+  // La partie commence : plus de barre du haut, seulement Pause.
   expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   const pause = screen.getByRole('dialog', { name: 'Pause' });
@@ -233,11 +235,11 @@ it('pendant une quête, mode concentration : ni barre ni onglets, un bouton Paus
   await user.click(within(pause).getByRole('button', { name: /Reprendre/ }));
   expect(screen.queryByRole('dialog', { name: 'Pause' })).not.toBeInTheDocument();
   expect(screen.getByText(/Question 1 \/ 8/)).toBeInTheDocument();
-  // Quitter : retour au choix des quêtes, la barre et les onglets reviennent.
+  // Quitter : retour au choix des quêtes, la barre du haut revient.
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   await user.click(screen.getByRole('button', { name: /Quitter la partie/ }));
   expect(await screen.findByRole('heading', { name: 'Quêtes' })).toBeInTheDocument();
-  expect(screen.getByRole('navigation', { name: 'Onglets' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
 });
 
 it('l’école du village : trois portes, les quêtes de la matière, et le retour à la porte', async () => {

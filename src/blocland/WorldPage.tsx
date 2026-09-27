@@ -18,6 +18,7 @@ import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MenuSheet } from './MenuSheet';
+import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { TROPHIES_PATH, trophies } from './trophies';
@@ -180,9 +181,9 @@ export function WorldPage() {
   else if (builder.burst.seq !== seqs.current.plan) seqs.current = { plan: builder.burst.seq, ship: ship.burst.seq, last: builder.burst };
   const burst = useMemo(() => ({ ...seqs.current.last, seq: builder.burst.seq + ship.burst.seq }), [builder.burst, ship.burst]);
 
-  // Le voyage en cours (le Bloc-Navire). Tout changement d'archipel en est un, à l'aller comme au retour : le bouton du
-  // port, mais aussi « Aller au port » des quatre archipels, un lien ou un retour d'exercice vers une île d'un autre
-  // archipel. Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
+  // Le voyage en cours (le Bloc-Navire) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
+  // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
+  // d'archipel) sont un fondu court (`hop`, plus bas). Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
   // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
   // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Avec « Réduire les animations » : un écran
   // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
@@ -205,7 +206,29 @@ export function WorldPage() {
     timers.current = [];
   };
   useEffect(() => clearTimers, []);
+  // Un voyage déjà fait (retour, ou un archipel déjà atteint) : pas de cinématique, un fondu court vers l'île demandée,
+  // et une ligne qui dit où l'on arrive. La cinématique reste pour le premier voyage vers un archipel.
+  const [hopTo, setHopTo] = useState<ArchipelagoId | null>(null);
+  const hop = (to: ArchipelagoId, dest: BiomeId) => {
+    clearTimers();
+    const land = () => {
+      moveTo(dest);
+      setWalk((w) => ({ route: [avatarHome(dest)], seq: w.seq + 1 }));
+      setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
+      setSheetOpen(true);
+      if (biomeId !== dest) navigate(`/aventure/${dest}`);
+    };
+    setHopTo(to);
+    later(() => setHopTo(null), 3500);
+    if (settings.reduceMotion) return land();
+    setVeil(true);
+    later(() => {
+      land();
+      later(() => setVeil(false), VEIL_MS / 3);
+    }, VEIL_MS / 2);
+  };
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
+    if (back) return hop(to, dest);
     clearTimers();
     // L'étape du navire qui voyage : celle qui mène là-bas ; pour un retour, la plus grande déjà partie.
     const stage = (back ? Math.max(1, launchedCount(state.village.bridges)) : (stageTo(to)?.stage ?? 1)) as 1 | 2 | 3;
@@ -434,6 +457,15 @@ export function WorldPage() {
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
+        {/* Sous le bouton Menu : l'archipel où l'on est, et les autres déjà atteints, à un toucher. */}
+        {!voyage && (
+          <ArchipelSwitcher
+            current={a}
+            bridges={state.village.bridges}
+            onGo={(to) => hop(to, getArchipelago(to).port)}
+            onMore={() => navigate('/aventure/monde')}
+          />
+        )}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -483,6 +515,11 @@ export function WorldPage() {
                   </button>
                 </p>
               )}
+            </div>
+          )}
+          {hopTo && (
+            <div className="creature-line world-line hop-line" role="status" aria-live="polite">
+              <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
             </div>
           )}
           {said && (

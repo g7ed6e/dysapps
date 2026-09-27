@@ -1,6 +1,6 @@
 # Progression et récompenses
 
-DysApps motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (bouton ou onglet Succès, ou la jauge d’XP de la barre du haut) rassemble tout ; dans le village, c’est le panneau de la [salle des trophées](blocland.md#la-salle-des-trophees), où chaque succès gagné pose un trophée. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
+DysApps motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (bouton Succès de la barre du haut sur grand écran, menu, ou la jauge d’XP de la barre du haut) rassemble tout ; dans le village, c’est le panneau de la [salle des trophées](blocland.md#la-salle-des-trophees), où chaque succès gagné pose un trophée. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
 
 ## XP, niveaux et rangs
 
