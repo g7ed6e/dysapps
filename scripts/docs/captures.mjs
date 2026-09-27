@@ -2,7 +2,8 @@
 // (Playwright) avec des parties préparées, et enregistre les images dans docs/_captures/ (copiées par prepare.mjs
 // dans le site). À relancer quand un écran change : `npm run docs:captures` (ou `npm run docs:captures -- menu carte`
 // pour quelques-unes). Chromium : celui de Playwright (PLAYWRIGHT_BROWSERS_PATH), ou CHROMIUM_PATH.
-// Les images sont commitées : le build de la documentation ne lance pas le jeu.
+// Les images ne sont pas dans le dépôt (docs/_captures/ est ignoré) : la CI les refait dans un job à part (captures)
+// avant de construire la documentation, qui ne lance pas le jeu elle-même.
 import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';

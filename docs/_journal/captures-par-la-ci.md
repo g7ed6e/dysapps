@@ -1,0 +1,1 @@
+Documentation : les captures d’écran du manuel ne sont plus rangées dans le dépôt. La CI rejoue le jeu dans Chromium à chaque publication et refait toutes les captures avant de construire le site : elles montrent toujours l’application telle qu’elle est en ligne.

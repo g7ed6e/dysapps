@@ -12,3 +12,4 @@ docs/.vitepress/.temp
 .programme
 .claude/settings.local.json
 .claude/worktrees/
+docs/_captures

@@ -56,10 +56,62 @@ jobs:
       - run: npm test
       # L'application, telle que Cloudflare la construit (base « / ») : vérification seulement, rien n'est publié d'ici.
       - run: npm run build
-      # Le site de documentation, publié sur GitHub Pages dans /<nom du dépôt>/.
+
+  # Les captures d'écran du manuel ne sont pas dans le dépôt : ce job rejoue le jeu dans Chromium
+  # (scripts/docs/captures.mjs) à chaque exécution, en parallèle des tests, et passe les images au job docs.
+  captures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      # Le Chromium de la version de playwright-core du dépôt, avec ses bibliothèques système.
+      - name: Installer Chromium
+        run: npx playwright-core install --with-deps chromium
+      - name: Faire les captures d'écran
+        run: npm run docs:captures
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: captures
+          path: docs/_captures/*.jpg
+          if-no-files-found: error
+          retention-days: 7
+
+  # Le site de documentation, publié sur GitHub Pages dans /<nom du dépôt>/, avec les captures du job précédent.
+  docs:
+    needs: captures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # La documentation date chaque page de son dernier commit, et le journal numérote les versions depuis git.
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: captures
+          path: docs/_captures
+      # DOCS_CAPTURES=required : une capture citée par une page et absente fait échouer le build.
       - run: npm run docs:build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          DOCS_CAPTURES: required
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main'
         with:
@@ -92,7 +144,7 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, docs]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Seul ce job peut publier : il n'exécute aucun code du dépôt.
