@@ -6,7 +6,7 @@
 import type { VoxelCube } from '../Voxel';
 import { mixColor } from '../world/daylight';
 import type { ArchipelagoId, Ground } from '../world/map';
-import { MATIERES, PALETTES, cielDe, couleurDeMatiere, couleurDuSol, multiplie, type Ciel, type Couleur, type Faces } from '../world/palette';
+import { MATIERES, PALETTES, cielDe, couleurDeMatiere, couleurDuSol, luminance, multiplie, type Ciel, type Couleur, type Faces } from '../world/palette';
 import type { TextureKind } from '../world/pixels';
 import { FROID, FROID_SOUS, bruit } from '../world/style';
 import { CHUNK, type TileMap } from './oblique';
@@ -127,14 +127,35 @@ export function deNuit(a: ArchipelagoId, c: Couleur, light: number): Couleur {
 
 /**
  * Délave une couleur vers la Brume (une île verrouillée) : moins de couleur, plus de clair, moins de contraste. Jamais
- * vers le gris : la Brume est un blanc verdi. `brume` : la Brume au moment du jour.
+ * vers le gris : la Brume est un blanc verdi, sous un léger voile froid. Si le délavé tombe à la valeur de la couleur
+ * d'origine (neige, glace, marbre, le sable au crépuscule), il s'en écarte : plus clair vers la Brume, ou, pour ce qui
+ * est déjà aussi clair qu'elle, plus sombre vers le voile froid. L'île fermée se distingue ainsi de l'ouverte même en
+ * niveaux de gris (`ECART_FERMEE`). `brume` : la Brume au moment du jour.
  */
 export function delaver(c: Couleur, brume: Couleur): Couleur {
   const [r, g, b] = channels(c);
   const lum = r * 0.3 + g * 0.59 + b * 0.11;
   const terne = pack(r * 0.45 + lum * 0.55, g * 0.45 + lum * 0.55, b * 0.45 + lum * 0.55);
-  return mixColor(terne, brume, 0.55);
+  const froid = voileFroid(brume);
+  const lave = mixColor(mixColor(terne, brume, 0.6), froid, 0.08);
+  const ecart = (x: Couleur) => {
+    const [p, q] = [luminance(x), luminance(c)].sort((u, v) => v - u);
+    return (p + 0.05) / (q + 0.05);
+  };
+  if (ecart(lave) >= ECART_FERMEE) return lave;
+  const vers = luminance(c) >= luminance(brume) * 0.8 ? froid : brume;
+  for (let k = 0.1; k <= 1; k += 0.1) {
+    const x = mixColor(lave, vers, k);
+    if (ecart(x) >= ECART_FERMEE) return x;
+  }
+  return mixColor(lave, vers, 1);
 }
+
+/** L'écart de valeur (contraste WCAG) entre une surface d'une île fermée et la même, ouverte. */
+export const ECART_FERMEE = 1.2;
+
+/** Le voile froid d'une île fermée : la Brume assombrie vers la Nuit océan. */
+export const voileFroid = (brume: Couleur): Couleur => mixColor(brume, NUIT_OCEAN, 0.45);
 
 const peintures = new Map<string, Peinture>();
 
@@ -226,35 +247,54 @@ export const SURFACE_DE_TEXTURE: Record<string, Material> = {
 };
 
 /**
- * Les grands motifs, très peu contrastés, des matières de bâtiment qu'on ne reconnaîtrait plus en aplat (planches,
- * tuiles, briques) : des bandes de deux pixels au moins, jamais un grain.
+ * La matière des ouvrages, qu'on ne reconnaîtrait plus en aplat : les rangs de tuiles d'un toit, les planches d'un mur
+ * de bois, les joints larges des briques et des pierres taillées. Des bandes de deux pixels au moins, 11 % plus
+ * sombres, jamais un grain ; comptées en pixels de l'écran, elles courent d'une case à l'autre sans rupture.
  */
-export type Motif = 'lames' | 'rangs' | 'briques' | null;
+export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | null;
 
 export function motifDe(texture: string | undefined): Motif {
-  if (texture === 'planches' || texture === 'lambris' || texture === 'barriere' || texture === 'escalier') return 'lames';
+  if (texture === 'planches' || texture === 'lambris' || texture === 'barriere' || texture === 'escalier' || texture === 'porte') return 'lames';
   if (texture === 'tuile' || texture === 'toit') return 'rangs';
   if (texture === 'brique') return 'briques';
+  if (texture === 'taille' || texture === 'marbre') return 'pierres';
   return null;
 }
 
-/** Un motif : la nuance d'un pixel d'une face de 16 × 16 (1 : rien), des bandes de deux pixels à 5 % au plus. */
-export function nuanceDuMotif(motif: Motif, px: number, py: number): number {
-  if (motif === 'lames') return py % 8 >= 6 ? 0.95 : 1;
-  if (motif === 'rangs') return py % 6 >= 4 ? 0.95 : 1;
-  if (motif === 'briques') return py % 8 >= 6 || (px + (py >> 3) * 8) % 16 >= 14 ? 0.95 : 1;
+/** La nuance d'un joint (ou d'un bas de rang) : 11 % plus sombre que la face. */
+export const JOINT = 0.89;
+
+/**
+ * Un motif : la nuance du pixel (`gx`, `gy`) de l'écran, en pixels de base (1 : la face, `JOINT` : un joint). Les
+ * tuiles : deux rangs par case ; les planches : deux lames ; les briques : 8 × 16 en quinconce ; les pierres : 16 × 16.
+ */
+export function nuanceDuMotif(motif: Motif, gx: number, gy: number): number {
+  const mod = (v: number, n: number) => ((v % n) + n) % n;
+  if (motif === 'lames' || motif === 'rangs') return mod(gy, 8) >= 6 ? JOINT : 1;
+  if (motif === 'briques') return mod(gy, 8) >= 6 || mod(gx + (mod(Math.floor(gy / 8), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
+  if (motif === 'pierres') return mod(gy, 16) >= 14 || mod(gx + (mod(Math.floor(gy / 16), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   return 1;
 }
 
+/** Les fenêtres et les lanternes : un cadre de deux pixels, dans la teinte sombre de leur matière. */
+export const aCadre = (texture: string | undefined): boolean => texture === 'verre' || texture === 'lanterne';
+
+/** Le cadre d'une fenêtre ou d'une lanterne, et le contour d'un ouvrage : la teinte sombre de sa matière, pas un noir. */
+export const sombreDe = (cote: Couleur): Couleur => mixColor(cote, NUIT_OCEAN, 0.62);
+
 /**
  * Le dégradé d'une falaise : la part d'ombre bleutée (0 à 1) à `profondeur` blocs sous sa lèvre. Claire en haut, plus
- * sombre au pied ; sur un mur de bâtiment (`sol` faux), moitié moins.
+ * sombre au pied. Un mur d'ouvrage (`sol` faux) n'en a pas : une seule teinte par face.
  */
 export function ombreDeFalaise(profondeur: number, sol: boolean): number {
+  if (!sol) return 0;
   const t = Math.min(1, Math.max(0, profondeur / 3.5));
   const s = t * t * (3 - 2 * t);
-  return sol ? 0.2 + 0.7 * s : 0.1 + 0.35 * s;
+  return 0.2 + 0.7 * s;
 }
+
+/** Les rochers et les bancs de sable du large (`tag` « mer ») : ni rive claire autour, ni morceau peint pour eux. */
+export const auLarge = (cube: VoxelCube): boolean => cube.tag === 'mer';
 
 /**
  * Les strates d'une falaise : un bloc de haut chacune, au bord ondulé (jamais une ligne d'un pixel) ; renvoie la nuance
@@ -278,7 +318,7 @@ export function morceauxAPeindre(map: TileMap, mer: boolean): Set<string> {
   if (!mer) return out;
   const chunkOf = (v: number) => Math.floor(v / CHUNK);
   for (const t of map.tiles.values()) {
-    if (!t.solid) continue;
+    if (!t.solid || auLarge(t.solid.cube)) continue;
     // Seules les cases au bord de leur morceau débordent chez un voisin.
     const cx = chunkOf(t.col);
     const cy = chunkOf(t.row);

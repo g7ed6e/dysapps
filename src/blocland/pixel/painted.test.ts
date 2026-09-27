@@ -10,8 +10,12 @@ import {
   SOL_DE,
   SURFACE_DE_TEXTURE,
   TACHES,
+  ECART_FERMEE,
+  JOINT,
+  aCadre,
   delaver,
   feston,
+  sombreDe,
   morceauxAPeindre,
   motifDe,
   nuanceDuDessus,
@@ -105,27 +109,29 @@ it('la nuit peint en bleu de crépuscule, jamais en noir, et la mer reste plus s
   }
 });
 
-it('délave une île verrouillée vers la Brume, pas vers le gris : plus claire, moins colorée, distincte en gris', () => {
+it('délave une île verrouillée vers la Brume, pas vers le gris, et la distingue de l’ouverte en niveaux de gris', () => {
   for (const a of ARCHIPELAGO_IDS)
-    for (const p of [0, PALIERS]) {
+    for (const p of [0, 1, 2, 3, PALIERS]) {
       const P = peinture(a, p);
-      for (const m of ['herbe', 'sable', 'pierre', 'terre', 'mousse', 'basalte'] as Material[]) {
-        const ouverte = P.sol(m, false).dessus;
-        const fermee = P.sol(m, true).dessus;
+      const pairs: [string, number, number][] = [];
+      for (const m of MATERIALS) {
+        if (m === 'autre') continue;
+        const [o, f] = [P.sol(m, false), P.sol(m, true)];
+        pairs.push([m, o.dessus, f.dessus], [`${m} côté`, o.cote, f.cote]);
+      }
+      for (const t of ['planches', 'toit', 'brique', 'marbre', 'taille', 'verre', 'tuile'] as const) pairs.push([t, P.matiere(t, false).dessus, P.matiere(t, true).dessus]);
+      // Le sable la nuit et au crépuscule compris.
+      for (const [m, ouverte, fermee] of pairs) expect(contraste(fermee, ouverte), `${a} ${p} ${m}`).toBeGreaterThanOrEqual(ECART_FERMEE - 0.001);
+      if (p === PALIERS) {
+        // De jour, moins colorée que l'ouverte.
         const sat = (c: number) => Math.max(...rgb(c)) - Math.min(...rgb(c));
-        // (De jour : la nuit, la Brume elle-même prend le bleu du crépuscule.)
-        if (p === PALIERS) expect(sat(fermee), `${a} ${m}`).toBeLessThanOrEqual(sat(ouverte));
-        // En niveaux de gris, l'île fermée reste plus claire (sauf ce qui l'est déjà plus que la Brume).
-        if (luminance(ouverte) < luminance(P.ecume) * 0.8) {
-          expect(luminance(fermee), `${a} ${m}`).toBeGreaterThan(luminance(ouverte));
-          expect(contraste(fermee, ouverte), `${a} ${m}`).toBeGreaterThanOrEqual(1.1);
-        }
+        for (const m of ['herbe', 'sable', 'terre', 'mousse'] as Material[]) expect(sat(P.sol(m, true).dessus), `${a} ${m}`).toBeLessThan(sat(P.sol(m, false).dessus));
       }
     }
-  // Vers la Brume (un blanc verdi) : le vert l'emporte légèrement, jamais un gris neutre bleuté.
+  // Vers la Brume (un blanc verdi), sous un voile froid léger : jamais un gris neutre.
   const [r, g, b] = rgb(delaver(0x808080, BRUME));
   expect(g).toBeGreaterThanOrEqual(r);
-  expect(g).toBeGreaterThanOrEqual(b);
+  expect(Math.max(r, g, b) - Math.min(r, g, b)).toBeGreaterThan(2);
 });
 
 it('les fantômes se lisent sur chaque sol, de jour comme de nuit (l’un des deux points du pointillé contraste)', () => {
@@ -180,7 +186,8 @@ it('les falaises : plus sombres vers le pied, des strates larges (jamais une lig
     expect(k).toBeLessThanOrEqual(0.9);
     prev = k;
   }
-  expect(ombreDeFalaise(4, false)).toBeLessThan(ombreDeFalaise(4, true));
+  // Un mur d'ouvrage n'a pas de dégradé : une seule teinte par face, d'une case à l'autre.
+  for (let d = 0; d <= 6; d += 0.25) expect(ombreDeFalaise(d, false)).toBe(0);
   for (let px = 0; px < 64; px++) {
     const wx = px / 16;
     let run = 0;
@@ -199,22 +206,54 @@ it('les falaises : plus sombres vers le pied, des strates larges (jamais une lig
   }
 });
 
-it('les motifs des bâtiments : des bandes de deux pixels au moins, à peine plus sombres', () => {
+it('la matière des ouvrages : des bandes de deux pixels au moins, 10 à 12 % plus sombres, continues d’une case à l’autre', () => {
   expect(motifDe('planches')).toBe('lames');
   expect(motifDe('toit')).toBe('rangs');
+  expect(motifDe('tuile')).toBe('rangs');
   expect(motifDe('brique')).toBe('briques');
+  expect(motifDe('taille')).toBe('pierres');
   expect(motifDe('verre')).toBeNull();
-  for (const m of ['lames', 'rangs', 'briques'] as const)
-    for (let py = 0; py < 16; py++)
-      for (let px = 0; px < 16; px++) {
-        const v = nuanceDuMotif(m, px, py);
-        expect(v).toBeGreaterThanOrEqual(0.94);
+  expect(motifDe('herbe')).toBeNull();
+  expect(aCadre('verre') && aCadre('lanterne') && !aCadre('planches')).toBe(true);
+  expect(JOINT).toBeGreaterThanOrEqual(0.88);
+  expect(JOINT).toBeLessThanOrEqual(0.9);
+  for (const m of ['lames', 'rangs', 'briques', 'pierres'] as const) {
+    // Deux ou trois rangs (tuiles, planches) par case de 16 pixels.
+    if (m === 'rangs' || m === 'lames') {
+      let rows = 0;
+      for (let gy = 0; gy < 16; gy++) if (nuanceDuMotif(m, 0, gy) < 1 && nuanceDuMotif(m, 0, gy - 1) === 1) rows++;
+      expect(rows, m).toBeGreaterThanOrEqual(2);
+      expect(rows, m).toBeLessThanOrEqual(3);
+    }
+    for (let gy = -40; gy < 40; gy++)
+      for (let gx = -40; gx < 40; gx++) {
+        const v = nuanceDuMotif(m, gx, gy);
+        expect([1, JOINT]).toContain(v);
         if (v < 1) {
-          // Un pixel sombre a un voisin sombre (pas de grain).
-          const nb = [nuanceDuMotif(m, px + 1, py), nuanceDuMotif(m, px - 1, py), nuanceDuMotif(m, px, py + 1), nuanceDuMotif(m, px, py - 1)];
-          expect(nb.some((n) => n < 1), `${m} ${px},${py}`).toBe(true);
+          // Un joint fait deux pixels de large (dans un sens au moins) : jamais un grain.
+          const h = nuanceDuMotif(m, gx - 1, gy) < 1 || nuanceDuMotif(m, gx + 1, gy) < 1;
+          const vt = nuanceDuMotif(m, gx, gy - 1) < 1 || nuanceDuMotif(m, gx, gy + 1) < 1;
+          expect(h && vt, `${m} ${gx},${gy}`).toBe(true);
         }
       }
+  }
+});
+
+it('les fenêtres, les lanternes et les contours des ouvrages : la teinte sombre de la matière, pas un noir', () => {
+  for (const a of ARCHIPELAGO_IDS)
+    for (const p of [0, PALIERS])
+      for (const t of ['verre', 'lanterne', 'marbre', 'taille', 'planches'] as const) {
+        const cote = peinture(a, p).matiere(t, false).cote;
+        const s = sombreDe(cote);
+        expect(luminance(s), `${a} ${t}`).toBeLessThan(luminance(cote));
+        expect(Math.max(...rgb(s)), `${a} ${t}`).toBeGreaterThan(0x20);
+      }
+  // Un mur clair se détache d'un sol clair (marbre sur neige, pierre taillée sur roche).
+  for (const a of ARCHIPELAGO_IDS) {
+    const P = peinture(a, PALIERS);
+    for (const [mur, sol, min] of [['marbre', 'neige', 3], ['marbre', 'sable', 3], ['taille', 'pierre', 2]] as const)
+      expect(contraste(sombreDe(P.matiere(mur, false).cote), P.sol(sol, false).dessus), `${a} ${mur}/${sol}`).toBeGreaterThanOrEqual(min);
+  }
 });
 
 it('le décor peint garde la taille, le pied et l’ombre des sprites en pixels', () => {
@@ -263,4 +302,7 @@ it('ne peint que les morceaux du terrain et ceux où déborde la bande claire de
   expect(avec.size).toBeGreaterThan(coin.chunks.size);
   expect(avec.has(`1,${Math.floor(row / CHUNK)}`)).toBe(true);
   expect(avec.size).toBeLessThanOrEqual(9);
+  // Un rocher du large, au coin de son morceau : ni rive, ni morceau voisin.
+  const rocher = buildTiles([{ ...c, tag: 'mer' }]);
+  expect(morceauxAPeindre(rocher, true)).toEqual(new Set(rocher.chunks.keys()));
 });

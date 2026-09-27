@@ -8,7 +8,23 @@ import { mixColor } from '../world/daylight';
 import type { DrawEnv } from './draw';
 import { plateauBorder } from './draw';
 import { CHUNK, TILE, type Face, type Tile, type TileMap } from './oblique';
-import { FESTON, feston, motifDe, nuanceDuDessus, nuanceDuMotif, nuancer, ombreDeFalaise, ondeDesStrates, POINTILLE, rgba, strate, type Peinture } from './painted';
+import {
+  FESTON,
+  POINTILLE,
+  aCadre,
+  auLarge,
+  feston,
+  motifDe,
+  nuanceDuDessus,
+  nuanceDuMotif,
+  nuancer,
+  ombreDeFalaise,
+  ondeDesStrates,
+  rgba,
+  sombreDe,
+  strate,
+  type Peinture,
+} from './painted';
 import { PRIORITY, columnAt, materialOf, type Material } from './surface';
 
 type Dir = 'n' | 's' | 'e' | 'w';
@@ -34,7 +50,7 @@ const COLONNES = new Set<Material>(['basalte', 'lave', 'glace']);
 const LEVRE = new Set<Material>(['herbe', 'neige', 'mousse']);
 
 /** Le dessus d'une case : l'aplat de son sol, ses grandes taches, et les franges en festons du sol voisin qui mord. */
-function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: DrawEnv, P: Peinture) {
+function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: number, env: DrawEnv, P: Peinture) {
   const m = materialOf(cube);
   const ground = m !== 'autre';
   const muted = Boolean(cube.muted);
@@ -53,6 +69,17 @@ function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: DrawE
   const sw = nuanceDuDessus(cube.x, cube.y);
   const se = nuanceDuDessus(cube.x + 1, cube.y);
   const motif = motifDe(cube.texture);
+  const frame = aCadre(cube.texture) ? sombreDe(f.cote) : null;
+  // Le rebord d'un ouvrage (un mur, un toit), là où il domine son voisin : deux pixels dans la teinte sombre de sa
+  // matière, qui le détachent d'un sol aussi clair que lui (marbre sur marbre, pierre sur pierre, neige).
+  const lowerAt = (dx: number, dy: number) => {
+    const c = columnAt(env.surface, cube.x + dx, cube.y + dy);
+    return !c || c.z < cube.z;
+  };
+  const rim = ground || !env.style.edges ? null : sombreDe(f.cote);
+  const rimN = rim !== null && lowerAt(0, 1);
+  const rimE = rim !== null && lowerAt(1, 0);
+  const rimW = rim !== null && lowerAt(-1, 0);
   for (let py = 0; py < TILE; py++) {
     const v = (py + 0.5) / TILE;
     for (let px = 0; px < TILE; px++) {
@@ -66,18 +93,25 @@ function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: DrawE
       if (ground) {
         const u = (px + 0.5) / TILE;
         k = (nw * (1 - u) + ne * u) * (1 - v) + (sw * (1 - u) + se * u) * v;
-      } else k = nuanceDuMotif(motif, px, py);
+      } else k = nuanceDuMotif(motif, cube.x * TILE + px, gy0 + py);
+      if (frame !== null && (px < 2 || py < 2 || px >= TILE - 2 || py >= TILE - 2)) c = frame;
+      if (rim !== null && ((rimN && py < 2) || (rimW && px < 2) || (rimE && px >= TILE - 2))) {
+        put(b, x0 + px, y0 + py, rim);
+        continue;
+      }
       put(b, x0 + px, y0 + py, k === 1 ? c : nuancer(c, k));
     }
   }
 }
 
 /**
- * Une face avant : la falaise (ou le mur) sous un dessus. Dégradé vertical sur toute sa hauteur, clair sous la lèvre,
- * plus sombre et bleuté au pied ; des strates larges (des colonnes dans le basalte et la glace) ; au sommet, le gazon
- * (ou la neige) qui déborde en festons, sinon une lèvre claire ; au pied d'une rive, la bande d'écume.
+ * Une face avant : la falaise (ou le mur) sous un dessus. Une falaise : dégradé vertical sur toute sa hauteur, clair
+ * sous la lèvre, plus sombre et bleuté au pied ; des strates larges (des colonnes dans le basalte et la glace) ; au
+ * sommet, le gazon (ou la neige) qui déborde en festons, sinon une lèvre claire ; au pied d'une rive, la bande d'écume.
+ * Un mur d'ouvrage : une seule teinte (celle du côté de sa matière), sa matière (rangs, planches, joints), et un
+ * contour de deux pixels dans sa teinte sombre là où il tourne et à son pied, qui le détache d'un sol clair.
  */
-function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: DrawEnv, P: Peinture) {
+function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: number, env: DrawEnv, P: Peinture) {
   const m = materialOf(cube);
   const ground = m !== 'autre';
   const muted = Boolean(cube.muted);
@@ -90,6 +124,18 @@ function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: Dra
   const light = P.levre(f.cote);
   const dark = P.pied(f.cote);
   const motif = motifDe(cube.texture);
+  const at = (dx: number, dy: number) => columnAt(env.surface, cube.x + dx, cube.y + dy);
+  const lower = (dx: number) => {
+    const c = at(dx, 0);
+    return !c || c.z < cube.z;
+  };
+  const south = at(0, -1);
+  // Le contour d'un ouvrage (et le cadre d'une fenêtre ou d'une lanterne) : la teinte sombre de sa matière.
+  const edge = ground || !env.style.edges ? null : sombreDe(f.cote);
+  const edgeW = edge !== null && lower(-1);
+  const edgeE = edge !== null && lower(1);
+  const edgeS = edge !== null && Boolean(south) && south!.z === cube.z - 1;
+  const frame = aCadre(cube.texture) ? sombreDe(f.cote) : null;
   const ondes: number[] = [];
   for (let px = 0; px < TILE; px++) ondes.push(ondeDesStrates((cube.x * TILE + px) / TILE));
   for (let py = 0; py < TILE; py++) {
@@ -100,8 +146,13 @@ function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, env: Dra
       const gx = cube.x * TILE + px;
       let c = row;
       if (ground) c = nuancer(c, COLONNES.has(m) ? (Math.floor(gx / 5) % 2 ? 0.94 : 1) : strate(gx / TILE, wz, ondes[px]));
-      else if (motif) c = nuancer(c, nuanceDuMotif(motif, px, py));
-      if (summit) {
+      else {
+        c = f.cote;
+        if (motif) c = nuancer(c, nuanceDuMotif(motif, gx, gy0 + py));
+        if (frame !== null && (px < 2 || py < 2 || px >= TILE - 2 || py >= TILE - 2)) c = frame;
+        if (edge !== null && ((edgeW && px < 2) || (edgeE && px >= TILE - 2) || (edgeS && py >= TILE - 2))) c = edge;
+      }
+      if (summit && ground) {
         if (lip !== null) {
           const d = feston(gx, FESTON, 2, 4.5);
           if (py < d) c = lip;
@@ -123,7 +174,8 @@ function paintShore(b: Pixels, map: TileMap, col: number, row: number, x0: numbe
   for (let dr = -1; dr <= 1; dr++)
     for (let dc = -1; dc <= 1; dc++) {
       if (!dc && !dr) continue;
-      if (map.tiles.get(`${col + dc},${row + dr}`)?.solid) rects.push([dc * TILE, dr * TILE]);
+      const nb = map.tiles.get(`${col + dc},${row + dr}`)?.solid;
+      if (nb && !auLarge(nb.cube)) rects.push([dc * TILE, dr * TILE]);
     }
   if (!rects.length) return;
   // Des bords qui ondulent lentement (une onde de 20 à 35 pixels) : pas de marches d'un pixel. Les sinus d'une somme
@@ -160,13 +212,15 @@ function paintShore(b: Pixels, map: TileMap, col: number, row: number, x0: numbe
 }
 
 /** Une ombre douce (bleutée) : un dégradé de `n` bandes d'un pixel, de `alpha` à presque rien. */
-function softShadow(ctx: CanvasRenderingContext2D, color: number, alpha: number, n: number, band: (i: number) => [number, number, number, number]) {
-  for (let i = 0; i < n; i++) {
-    ctx.fillStyle = rgba(color, +(alpha * (1 - i / n)).toFixed(3));
-    const [x, y, w, h] = band(i);
-    ctx.fillRect(x, y, w, h);
-  }
+/** Une ombre portée : une bande bleutée, nette, de la couleur d'ombre du ciel. */
+function castShadow(ctx: CanvasRenderingContext2D, color: number, alpha: number, x: number, y: number, w: number, h: number) {
+  ctx.fillStyle = rgba(color, alpha);
+  ctx.fillRect(x, y, w, h);
 }
+
+/** Largeur (en pixels de base) et force des ombres portées. */
+const SHADOW = 3;
+const SHADOW_ALPHA = 0.24;
 
 /** Traits, reflets et ombres d'une face, par-dessus sa peinture (aux mêmes places que la 2D en pixels). */
 function decorate(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number, env: DrawEnv, P: Peinture) {
@@ -175,21 +229,26 @@ function decorate(ctx: CanvasRenderingContext2D, face: Face, x: number, y: numbe
   const outline = rgba(P.trait, 0.6);
   if (kind === 'top') {
     const south = at('s');
-    if (env.style.edges && (!south || south.z < cube.z)) {
-      // Le haut d'une falaise : un reflet clair.
+    if (env.style.edges && (!south || south.z < cube.z) && materialOf(cube) !== 'autre') {
+      // Le haut d'une falaise : un reflet clair (pas sur un ouvrage : un toit garde une seule teinte).
       ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
       ctx.fillRect(x, y + TILE - 1, TILE, 1);
     }
     if (env.style.shadows) {
-      // Le soleil vient d'en haut à gauche : le relief voisin à l'ouest ombre le bord gauche, au nord le haut.
-      const w = at('w');
-      const n = at('n');
-      if (w && w.z > cube.z) softShadow(ctx, P.ombre, 0.2, 6, (i) => [x + i, y, 1, TILE]);
-      if (n && n.z > cube.z) softShadow(ctx, P.ombre, 0.2, 4, (i) => [x, y + i, TILE, 1]);
+      // Le soleil vient d'en haut à gauche : le relief voisin à l'ouest ombre le bord gauche, au nord le haut (le pied
+      // du mur ou de la falaise). Une bande nette. Pas sur les marches d'un toit : un ouvrage ne reçoit que l'ombre
+      // d'un mur (deux blocs au moins), pour garder une seule teinte par face.
+      const ground = materialOf(cube) !== 'autre';
+      const casts = (nb: ReturnType<typeof at>) => Boolean(nb) && nb!.z > cube.z && (ground || nb!.z - cube.z >= 2);
+      if (casts(at('w'))) castShadow(ctx, P.ombre, SHADOW_ALPHA * 0.8, x, y, SHADOW, TILE);
+      if (casts(at('n'))) castShadow(ctx, P.ombre, SHADOW_ALPHA, x, y, TILE, SHADOW);
     }
-    if (env.style.edges) plateauBorder(ctx, cube, x, y, env, outline);
+    // Un ouvrage a déjà son rebord, peint dans sa teinte sombre (voir paintTop).
+    if (env.style.edges && materialOf(cube) !== 'autre') plateauBorder(ctx, cube, x, y, env, outline);
     return;
   }
+  // Un mur d'ouvrage a déjà son contour, peint dans sa teinte sombre (voir paintFront).
+  if (materialOf(cube) === 'autre') return;
   if (env.style.edges) {
     // Les arêtes d'une falaise, là où elle tourne.
     ctx.fillStyle = outline;
@@ -199,7 +258,7 @@ function decorate(ctx: CanvasRenderingContext2D, face: Face, x: number, y: numbe
     if (!west || west.z < cube.z) ctx.fillRect(x, y, 1, TILE);
   }
   const south = at('s');
-  if (env.style.shadows && south && south.z === cube.z - 1) softShadow(ctx, P.ombre, 0.26, 4, (i) => [x, y + TILE - 1 - i, TILE, 1]);
+  if (env.style.shadows && south && south.z === cube.z - 1) castShadow(ctx, P.ombre, SHADOW_ALPHA, x, y + TILE - 2, TILE, 2);
 }
 
 /** Transparence d'un fantôme et son voile bleuté : les mêmes qu'en pixels. */
@@ -247,8 +306,8 @@ function paint(tiles: Tile[], col0: number, row0: number, cols: number, rows: nu
     if (!t.solid) continue;
     const x = (t.col - col0) * TILE;
     const y = (t.row - row0) * TILE;
-    if (t.solid.kind === 'top') paintTop(b, t.solid.cube, x, y, env, P);
-    else paintFront(b, t.solid.cube, x, y, env, P);
+    if (t.solid.kind === 'top') paintTop(b, t.solid.cube, x, y, t.row * TILE, env, P);
+    else paintFront(b, t.solid.cube, x, y, t.row * TILE, env, P);
   }
   ctx.putImageData(img, 0, 0);
   for (const t of tiles) {
