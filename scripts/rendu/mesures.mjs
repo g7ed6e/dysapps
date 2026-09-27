@@ -4,7 +4,8 @@
 // build. Chromium en rendu logiciel (SwiftShader) : les appels et les triangles ne dépendent pas de la carte graphique,
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures de ces scènes (3D de jour et de nuit, 2D), pour comparer un lot
-// de rendu à l'état d'avant ; elles ne sont pas versionnées.
+// de rendu à l'état d'avant ; elles ne sont pas versionnées. `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel.
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -17,6 +18,19 @@ const TABLET = { width: 1024, height: 768 };
 const kilo = (n) => `${Math.round(n / 1024)} Ko`;
 const arg = process.argv.indexOf('--captures');
 const SHOTS = arg >= 0 ? process.argv[arg + 1] : null;
+const option = (name) => {
+  const i = process.argv.indexOf(name);
+  return i >= 0 ? process.argv[i + 1] : null;
+};
+/** Le drapeau de rendu et l'option de style, avant le `#` de l'adresse. */
+const QUERY = (() => {
+  const q = new URLSearchParams();
+  if (option('--rendu')) q.set('rendu', option('--rendu'));
+  if (option('--style')) q.set('style', option('--style'));
+  const s = q.toString();
+  return s ? `?${s}` : '';
+})();
+const ONLY = option('--archipel');
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
 const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
@@ -62,7 +76,7 @@ async function scenes() {
   });
   if (SHOTS) mkdirSync(SHOTS, { recursive: true });
   const rows = [];
-  for (const a of ARCHIPELAGO_IDS) {
+  for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
     const views = [
       { vue: 'île', go: `/aventure/${at}` },
@@ -70,6 +84,7 @@ async function scenes() {
       { vue: 'carte', go: '/aventure/carte' },
       ...(SHOTS
         ? [
+            { vue: 'île', go: `/aventure/${at}`, time: NIGHT, name: 'nuit' },
             { vue: 'archipel', go: '/aventure', time: NIGHT, name: 'nuit' },
             { vue: 'île', go: `/aventure/${at}`, view: '2d', name: '2d' },
           ]
@@ -90,7 +105,7 @@ async function scenes() {
         },
         { village: { ...built, at }, progress, view },
       );
-      await page.goto(`${base}/#${go}`);
+      await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${vue.replace('î', 'i')}${name ? `-${name}` : ''}.jpg`);
       if (name) {
         // Les captures de nuit et de la 2D : pas de mesure, seulement l'image.
