@@ -21,6 +21,8 @@ import { Creature } from './Creatures';
 import { Stars } from './Stars';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
+import { SchoolLink } from './School';
+import { archipelagoOf } from './world/archipelago';
 
 interface Props {
   biome: BiomeDef;
@@ -137,6 +139,11 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       </ul>
 
       <ul className="island-actions" aria-label="Sur cette île">
+        {unlocked && archipelagoOf(biome.id).school === biome.id && (
+          <li>
+            <SchoolLink />
+          </li>
+        )}
         <li>
           {bossReady ? (
             <Link to={`/aventure/${biome.id}/gardien`} className="island-quest island-boss">

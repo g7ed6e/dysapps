@@ -13,6 +13,10 @@ import { useHaptics } from '../core/haptics';
 import { Stars } from '../blocland/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
+import { useOptionalBlocland } from '../blocland/BloclandContext';
+import { BLOCKS, getBiome, ofBlock } from '../blocland/biomes';
+import { BlockIcon } from '../blocland/Voxel';
+import type { PortalCompletion } from '../blocland/engine';
 
 export interface Question {
   id: string;
@@ -73,6 +77,9 @@ const COMBO_FROM = 3;
  */
 export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', next: nextStep, after }: Props) {
   const { answer, completeSession } = useProgress();
+  // Les quêtes du portail se jouent à l'école du village : elles rapportent des blocs de son île.
+  const blocland = useOptionalBlocland();
+  const [earned, setEarned] = useState<PortalCompletion | null>(null);
   const [questions, setQuestions] = useState(makeQuestions);
   const [index, setIndex] = useState(0);
   const [attempt, setAttempt] = useState(1);
@@ -174,6 +181,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     }
     const update = completeSession(appId, finalScore);
     setXpGained((x) => x + update.xpGained);
+    setEarned(blocland?.completePortal(points / questions.length, update.progress.apps[appId]?.sessions === 1) ?? null);
     setPhase('summary');
     say(
       finalScore === 100
@@ -194,6 +202,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     setFirstTry(0);
     setLater(0);
     setXpGained(0);
+    setEarned(null);
     setPhase('question');
     say(null);
   };
@@ -218,6 +227,23 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <p className="summary-xp">
             <Icon name="zap" /> +{xpGained} XP
           </p>
+          {earned && earned.blocks > 0 && (
+            <p className="summary-blocks">
+              <BlockIcon top={BLOCKS[earned.block].top} side={BLOCKS[earned.block].side} size={32} />
+              <span>
+                <strong>+{earned.blocks}</strong> bloc{earned.blocks > 1 ? 's' : ''} {ofBlock(earned.block)} pour le village
+                <span className="summary-blocks-where"> (école de {getBiome(earned.school)?.name})</span>
+              </span>
+            </p>
+          )}
+          {earned?.chestBlock && (
+            <p className="summary-blocks">
+              <BlockIcon top={BLOCKS[earned.chestBlock].top} side={BLOCKS[earned.chestBlock].side} size={32} />
+              <span>
+                Coffre de régularité : <strong>+6</strong> blocs {ofBlock(earned.chestBlock)} !
+              </span>
+            </p>
+          )}
           {/* En premier, la suite logique : la quête suivante, sinon le choix des quêtes, sinon l'accueil. */}
           <div className="actions">
             {nextStep ? (

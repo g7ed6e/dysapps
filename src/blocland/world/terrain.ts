@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, voyageId, type BridgeDef } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, voyageId, type BridgeDef } from './archipelago';
 import { AVATAR_HOME } from '../Avatar';
 import { walkPath, type WalkGround } from './paths';
 import {
@@ -932,6 +932,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   for (const st of questStations(id)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${st.x + dx},${st.y + dy}`);
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
+  for (const k of schoolCells(id)) blocked.add(k);
   for (let x = 0; x < CORE; x++) for (let y = 0; y < CORE; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
   // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
   const scenery = new Map(landscape(def).map((c) => [`${c.x - def.core.x},${c.y - def.core.y}`, c]));
@@ -1576,6 +1577,76 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
   return { port, origin, cubes, afloat: !AMBIENCE[a].sky, building: building?.id ?? null };
 }
 
+// ---------- L'école du village ----------
+
+/** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
+export const SCHOOL_SIZE = { w: 5, d: 4 };
+
+/** Le coin de l'école dans le cœur de son île : devant à droite, entre les bornes de quête et le bord (la rangée de devant reste libre pour marcher jusqu'au port). */
+export const SCHOOL_AT = { x: 11, y: 1 };
+
+/** L'école posée sur une île : le coin de sa façade (coordonnées du monde) et son sol (z relatif au sol de l'île). */
+export interface SchoolSpot {
+  x: number;
+  y: number;
+  h: number;
+}
+
+/** La place de l'école sur l'île de l'école de son archipel, `null` ailleurs. */
+export function schoolSpot(id: BiomeId): SchoolSpot | null {
+  if (!ARCHIPELAGOS.some((a) => a.school === id)) return null;
+  const def = islandDef(id);
+  const index = BIOMES.findIndex((b) => b.id === id);
+  let h = 0;
+  for (let dx = 0; dx < SCHOOL_SIZE.w; dx++) for (let dy = 0; dy < SCHOOL_SIZE.d; dy++) h = Math.max(h, groundHeight(index, SCHOOL_AT.x + dx, SCHOOL_AT.y + dy));
+  return { x: def.core.x + SCHOOL_AT.x, y: def.core.y + SCHOOL_AT.y, h };
+}
+
+/** Les cases qu'occupe l'école (coordonnées relatives au cœur). */
+function schoolCells(id: BiomeId): Set<string> {
+  const out = new Set<string>();
+  if (!ARCHIPELAGOS.some((a) => a.school === id)) return out;
+  for (let dx = 0; dx < SCHOOL_SIZE.w; dx++) for (let dy = 0; dy < SCHOOL_SIZE.d; dy++) out.add(`${SCHOOL_AT.x + dx},${SCHOOL_AT.y + dy}`);
+  return out;
+}
+
+/** La porte de l'école : la case devant elle, où le bonhomme s'arrête (coordonnées du monde, z : le sol sous ses pieds). */
+export function schoolDoor(id: BiomeId): { x: number; y: number; z: number } | null {
+  const s = schoolSpot(id);
+  if (!s) return null;
+  const index = BIOMES.findIndex((b) => b.id === id);
+  return { x: s.x + 2, y: s.y - 1, z: islandDef(id).altitude + groundHeight(index, SCHOOL_AT.x + 2, SCHOOL_AT.y - 1) + 1 };
+}
+
+function schoolCube(x: number, y: number, z: number, block: keyof typeof BLOCKS, island: BiomeId, unlocked: boolean): VoxelCube {
+  const b = BLOCKS[block];
+  return { x, y, z, color: unlocked ? b.side : fade(b.side), top: b.top, texture: b.texture, tag: island, place: 'ecole', muted: unlocked ? undefined : true };
+}
+
+/**
+ * Les cubes de l'école (coordonnées relatives à son coin, z = 1 au-dessus du sol) : murs de brique aux coins de pierre de
+ * taille, une porte au milieu de la façade entre deux fenêtres, un toit à deux pans et un clocheton à cloche d'or.
+ */
+export function schoolModel(): { x: number; y: number; z: number; block: keyof typeof BLOCKS }[] {
+  const out: { x: number; y: number; z: number; block: keyof typeof BLOCKS }[] = [];
+  const { w, d } = SCHOOL_SIZE;
+  for (let x = 0; x < w; x++)
+    for (let y = 0; y < d; y++)
+      for (let z = 1; z <= 3; z++) {
+        const corner = (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
+        const front = y === 0;
+        const block = front && x === 2 && z <= 2 ? 'porte' : front && (x === 1 || x === 3) && z === 2 ? 'verre' : corner ? 'taille' : 'brique';
+        out.push({ x, y, z, block });
+      }
+  // Le toit : un rang débordant de tuiles rouges, puis le faîte au milieu.
+  for (let x = 0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: 'toit' });
+  for (let x = 0; x < w; x++) for (const y of [1, 2]) out.push({ x, y, z: 5, block: 'toit' });
+  // Le clocheton au-dessus de la porte, et sa cloche.
+  out.push({ x: 2, y: 1, z: 6, block: 'taille' });
+  out.push({ x: 2, y: 1, z: 7, block: 'or' });
+  return out;
+}
+
 export function worldCubes(
   a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
@@ -1614,7 +1685,10 @@ export function worldCubes(
     // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
     const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
     // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
-    const putDecor: Put = (x, y, z, color, decor) => put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
+    // … sauf sur les cases de l'école (un feuillage voisin ne traverse pas son toit).
+    const schoolAt = schoolCells(biome.id);
+    const putDecor: Put = (x, y, z, color, decor) =>
+      !schoolAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) && put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
     const land = landCells(def);
     for (const c of land) {
       if (!inCore(def, c.x, c.y)) continue;
@@ -1663,6 +1737,16 @@ export function worldCubes(
       });
       taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
       taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
+    }
+    // L'école du village (sur l'île de l'école de l'archipel) : on la touche pour entrer, comme une borne.
+    const school = schoolSpot(biome.id);
+    if (school) {
+      // Le soubassement rattrape une marche du sol.
+      for (let dx = 0; dx < SCHOOL_SIZE.w; dx++)
+        for (let dy = 0; dy < SCHOOL_SIZE.d; dy++)
+          for (let z = h(SCHOOL_AT.x + dx, SCHOOL_AT.y + dy) + 1; z <= school.h; z++)
+            cubes.push(schoolCube(school.x + dx, school.y + dy, oz + z, 'taille', biome.id, unlocked));
+      for (const m of schoolModel()) cubes.push(schoolCube(school.x + m.x, school.y + m.y, oz + school.h + m.z, m.block, biome.id, unlocked));
     }
     landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
     cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color));

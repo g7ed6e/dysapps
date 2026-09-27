@@ -1,5 +1,8 @@
 // Petit moteur de dessin en cubes (projection isométrique 2D) pour les blocs et les créatures.
 
+/** Les lieux du village où l'on entre : l'école (ses trois portes, une par matière). */
+export type PlaceId = 'ecole';
+
 export interface VoxelCube {
   x: number;
   y: number;
@@ -14,6 +17,8 @@ export interface VoxelCube {
   bridge?: string;
   /** Cube d'une borne de quête : « île:quête ». */
   quest?: string;
+  /** Cube d'un lieu du village qu'on touche pour y entrer (l'école). */
+  place?: PlaceId;
   /** Cellule de plan encore à poser : dessinée translucide. */
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */

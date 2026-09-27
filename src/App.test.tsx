@@ -238,3 +238,26 @@ it('pendant une quête, mode concentration : ni barre ni onglets, un bouton Paus
   expect(await screen.findByRole('heading', { name: 'Quêtes' })).toBeInTheDocument();
   expect(screen.getByRole('navigation', { name: 'Onglets' })).toBeInTheDocument();
 });
+
+it('l’école du village : trois portes, les quêtes de la matière, et le retour à la porte', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  document.body.innerHTML = '';
+  renderAt('/aventure/ecole');
+  expect(screen.getByRole('heading', { name: /École du village/, level: 1 })).toBeInTheDocument();
+  const doors = screen.getByRole('list', { name: 'Les trois portes de l’école' });
+  expect(within(doors).getAllByRole('button')).toHaveLength(3);
+  await user.click(within(doors).getByRole('button', { name: /Maths/ }));
+  const fractions = screen.getByRole('link', { name: /Fractions/ });
+  expect(fractions).toHaveAttribute('href', '/app/fractions');
+  await user.click(fractions);
+  expect(await screen.findByRole('link', { name: /École/ })).toHaveAttribute('href', '/aventure/ecole?porte=maths');
+  // La Forêt, île de l'école des Basses Terres, y mène aussi.
+  document.body.innerHTML = '';
+  renderAt('/aventure/foret');
+  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  document.body.innerHTML = '';
+  renderAt('/aventure/mine');
+  expect(screen.queryByRole('link', { name: /École du village/ })).not.toBeInTheDocument();
+});

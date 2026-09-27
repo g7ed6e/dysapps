@@ -6,6 +6,7 @@ import { starsFor } from '../core/stars';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
 import {
+  archipelagoOf,
   bridgesFromLegacyProgress,
   buildBridge as buildBridgePure,
   getArchipelago,
@@ -435,16 +436,7 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
   let spaced = state.spaced;
   for (const r of results) spaced = recordSpaced(spaced, `${def.id}:${r.key}`, r.correct && r.attempts <= 1, today);
 
-  const streak = updateStreak(state.streak, today);
-  const inventory = { ...state.inventory, [def.reward.block]: (state.inventory[def.reward.block] ?? 0) + blocks };
-  let chestBlock: BlockId | undefined;
-  let chests = state.chests;
-  if (streak.chest) {
-    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare);
-    chestBlock = common[Math.floor(rng() * common.length)];
-    inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
-    chests += 1;
-  }
+  const { streak, inventory, chests, chestBlock } = playedToday(state, def.reward.block, blocks, today, rng);
 
   const types = { ...state.types, [def.type]: adapt(state.types[def.type], score, def.adaptive) };
 
@@ -461,6 +453,61 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
     streak,
     chestBlock,
   };
+}
+
+/**
+ * Une quête jouée aujourd'hui : ses blocs dans l'inventaire, le streak du jour et, tous les CHEST_EVERY jours
+ * d'affilée, un coffre de blocs communs. Partagé par les quêtes d'île et celles de l'école du village.
+ */
+function playedToday(
+  state: BloclandState,
+  block: BlockId,
+  blocks: number,
+  today: string,
+  rng: () => number,
+): { streak: StreakUpdate; inventory: BloclandState['inventory']; chests: number; chestBlock?: BlockId } {
+  const streak = updateStreak(state.streak, today);
+  const inventory = { ...state.inventory, [block]: (state.inventory[block] ?? 0) + blocks };
+  let chestBlock: BlockId | undefined;
+  let chests = state.chests;
+  if (streak.chest) {
+    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare);
+    chestBlock = common[Math.floor(rng() * common.length)];
+    inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
+    chests += 1;
+  }
+  return { streak, inventory, chests, chestBlock };
+}
+
+// ---------- L'école du village (les quêtes du portail) ----------
+
+/** Blocs d'une quête du portail réussie en entier, avant les bonus (comme `reward.amount` d'une quête d'île). */
+export const PORTAL_BLOCKS = 4;
+
+export interface PortalCompletion {
+  state: BloclandState;
+  /** L'île de l'école de l'archipel où se tient le bonhomme : ses blocs sont gagnés. */
+  school: BiomeId;
+  block: BlockId;
+  blocks: number;
+  bonus: { stars: number; first: number };
+  streak: StreakUpdate;
+  chestBlock?: BlockId;
+}
+
+/**
+ * Une quête du portail terminée (score entre 0 et 1) : des blocs de l'île de l'école, au même barème qu'une quête
+ * d'île (proportionnels au score, +1 ou +2 selon les étoiles, +2 la première fois, rien sans bonne réponse), et le
+ * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des quêtes d'île.
+ */
+export function completePortalQuest(state: BloclandState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
+  const school = archipelagoOf(state.village.at ?? 'foret').school;
+  const block = getBiome(school)!.block;
+  const anyCorrect = score > 0;
+  const bonus = blocksBonus(starsFor(score), firstTime, anyCorrect);
+  const blocks = anyCorrect ? Math.max(1, Math.round(PORTAL_BLOCKS * score)) + bonus.stars + bonus.first : 0;
+  const { streak, inventory, chests, chestBlock } = playedToday(state, block, blocks, today, rng);
+  return { state: { ...state, inventory, streak: streak.streak, chests }, school, block, blocks, bonus, streak, chestBlock };
 }
 
 /** Construit un pont en payant avec les blocs de l'inventaire. */

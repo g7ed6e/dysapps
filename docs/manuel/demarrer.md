@@ -7,7 +7,7 @@ L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.
 L’application se parcourt comme un jeu, avec quatre grands endroits, toujours au même endroit et avec les mêmes mots :
 
 - **Accueil** : le menu principal. Il montre le rang, **Continuer** (la dernière quête ouverte), **Blocland** (l’aventure) et trois grosses tuiles : **Quêtes**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran.
-- **Aventure** : Blocland, le village à reconstruire.
+- **Aventure** : Blocland, le village à reconstruire. Son **école du village** ouvre aussi les quêtes du portail, qui y rapportent des blocs.
 - **Quêtes** : les quêtes du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
 

@@ -1,0 +1,157 @@
+// L'école du village : sur l'île de l'école de chaque archipel, un bâtiment à trois portes (Français, Maths, Anglais).
+// Derrière chaque porte, les quêtes du portail de la matière ; chacune finie rapporte des blocs de l'île de l'école.
+// Un panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
+import { useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { SUBJECTS, type Subject } from '../apps/registry';
+import { Icon } from '../components/Icon';
+import { SpeakButton } from '../components/SpeakButton';
+import { SubjectApps } from '../components/SubjectApps';
+import { Syllabified } from '../components/Syllabified';
+import { frenchTypography } from '../components/math/RichText';
+import { useSettings } from '../core/SettingsContext';
+import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
+import { useBlocland } from './BloclandContext';
+import { BlockIcon } from './Voxel';
+import { archipelagoOf } from './world/archipelago';
+
+export const SCHOOL_TITLE = 'École du village';
+/** L'adresse de l'école (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
+export const SCHOOL_PATH = '/aventure/ecole';
+const DOORS: Subject[] = ['francais', 'maths', 'anglais'];
+
+/** L'île de l'école de l'archipel où se tient le bonhomme. */
+export function useSchoolIsland(): BiomeDef {
+  const { state } = useBlocland();
+  return getBiome(archipelagoOf(state.village.at ?? 'foret').school)!;
+}
+
+function greetingOf(island: BiomeDef): string {
+  return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque quête finie ici te donne des blocs ${ofBlock(island.block)} pour le village.`;
+}
+
+/** Les trois portes, ou les quêtes de la porte choisie (`?porte=maths` : on y revient après une quête). */
+export function SchoolBody() {
+  const island = useSchoolIsland();
+  const { settings, speak } = useSettings();
+  const [params, setParams] = useSearchParams();
+  const asked = params.get('porte');
+  const door = DOORS.find((d) => d === asked) ?? null;
+  const greeting = greetingOf(island);
+  const block = BLOCKS[island.block];
+
+  // La créature de l'île accueille à voix haute, une fois à l'entrée.
+  useEffect(() => {
+    if (settings.autoRead && !door) speak(frenchTypography(greeting));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="school">
+      <p className="island-sheet-says" role="status" aria-live="polite">
+        <strong>{island.creature.name} :</strong> <Syllabified text={greeting} />
+        <SpeakButton text={greeting} label="Réécouter" compact />
+      </p>
+      <p className="school-reward">
+        <BlockIcon top={block.top} side={block.side} size={28} /> Une quête finie : des blocs {ofBlock(island.block)}, plus si tu as des étoiles.
+      </p>
+      {door ? (
+        <section aria-labelledby="ecole-porte">
+          <div className="school-door-head">
+            <h3 id="ecole-porte" className={`island-sheet-heading title-${door}`}>
+              <Icon name={SUBJECTS[door].icon} /> {SUBJECTS[door].title}
+            </h3>
+            <button type="button" className="button" onClick={() => setParams({})}>
+              <Icon name="back" /> Les trois portes
+            </button>
+          </div>
+          <SubjectApps subject={door} from={`${SCHOOL_PATH}?porte=${door}`} />
+          <p className="school-more">
+            <Link to={`/matiere/${door}`}>
+              <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans Blocland
+            </Link>
+          </p>
+        </section>
+      ) : (
+        <ul className="grid apps school-doors" aria-label="Les trois portes de l’école">
+          {DOORS.map((d) => (
+            <li key={d}>
+              <button type="button" className={`panel app-card school-door subject-${d}`} onClick={() => setParams({ porte: d })}>
+                <span className="app-icon">
+                  <Icon name={SUBJECTS[d].icon} size="1.8rem" />
+                </span>
+                <span className="app-title">{SUBJECTS[d].title}</span>
+                <span className="app-desc">{SUBJECTS[d].description}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Le panneau de l'école, qui glisse depuis le bas du monde (comme celui d'une île). */
+export function SchoolSheet({ onClose }: { onClose: () => void }) {
+  const island = useSchoolIsland();
+  return (
+    <section id="panneau-ecole" className={`island-sheet school-sheet biome-${island.id}`} role="dialog" aria-labelledby="ecole-titre" aria-modal="false">
+      <div className="island-sheet-head">
+        <div className="island-sheet-titles">
+          <h2 id="ecole-titre" className="island-sheet-title">
+            <Icon name="school" /> {SCHOOL_TITLE}
+          </h2>
+          <p className="island-sheet-module">Sur {island.name} · Français, maths, anglais</p>
+        </div>
+        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
+          <Icon name="close" />
+        </button>
+      </div>
+      <SchoolBody />
+    </section>
+  );
+}
+
+/** L'école en vue simple : une page. */
+export function SchoolPage() {
+  const island = useSchoolIsland();
+  return (
+    <>
+      <Link to="/aventure" className="back-link">
+        <Icon name="back" /> Blocland
+      </Link>
+      <h1 className="page-title">
+        <Icon name="school" /> {SCHOOL_TITLE}
+      </h1>
+      <p className="section-intro">Sur {island.name}.</p>
+      <SchoolBody />
+    </>
+  );
+}
+
+/** Le lien vers l'école, sur l'île qui l'accueille : une ligne du panneau de l'île, ou une carte en vue simple. */
+export function SchoolLink({ variant = 'sheet' }: { variant?: 'sheet' | 'card' }) {
+  const island = useSchoolIsland();
+  const desc = `Français, maths, anglais : des blocs ${ofBlock(island.block)} à chaque quête.`;
+  if (variant === 'card')
+    return (
+      <Link to={SCHOOL_PATH} className={`panel app-card school-link biome-${island.id}`}>
+        <span className="app-icon">
+          <Icon name="school" size="1.8rem" />
+        </span>
+        <span className="app-title">{SCHOOL_TITLE}</span>
+        <span className="app-desc">{desc}</span>
+      </Link>
+    );
+  return (
+    <Link to={SCHOOL_PATH} className="island-quest school-link">
+      <span className="island-quest-icon">
+        <Icon name="school" />
+      </span>
+      <span className="island-quest-text">
+        <span className="island-quest-title">{SCHOOL_TITLE}</span>
+        <span className="island-quest-desc">{desc}</span>
+      </span>
+    </Link>
+  );
+}

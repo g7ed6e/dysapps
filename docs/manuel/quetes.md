@@ -1,6 +1,6 @@
 # Les quêtes du portail
 
-L’onglet **Quêtes** mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+L’onglet **Quêtes** mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Les mêmes quêtes se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans Blocland. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ## Comment se déroule une question
 
@@ -25,7 +25,7 @@ Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu
 
 ## Le bilan
 
-Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Accueil**.
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Accueil**.
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 

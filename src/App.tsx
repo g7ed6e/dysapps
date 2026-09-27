@@ -19,6 +19,7 @@ import { BossPage } from './blocland/BossPage';
 import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
+import { SchoolPage } from './blocland/School';
 import { useImmersive } from './blocland/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
@@ -70,6 +71,8 @@ function IslandEntry() {
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
   if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
+  // L'école du village : un panneau dans le monde, une page en vue simple.
+  if (biomeId === 'ecole') return <SchoolPage />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
   return biomeId === 'blocs' ? <InventoryPage /> : <BiomePage />;
 }

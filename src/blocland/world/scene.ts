@@ -2,7 +2,7 @@
 // voyage, les touches du clavier et ce que fait un toucher sur le sol. Code pur : les vues ne font que dessiner ce que
 // ces fonctions calculent, à chaque image. Les temps sont en millisecondes (horloge de la page : `performance.now()`).
 import type { BiomeId } from '../biomes';
-import type { VoxelCube } from '../Voxel';
+import type { PlaceId, VoxelCube } from '../Voxel';
 import { islandsOf, type ArchipelagoId } from './archipelago';
 import { CREATURE_STEPS, boardingRoute, islandAt, islandCenter, routeAt, routeLengths } from './terrain';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
@@ -222,18 +222,21 @@ export function islandInDirection(a: ArchipelagoId, from: { x: number; y: number
 // ---- Toucher le sol
 
 /** Les cubes marqués du terrain, par case : pour savoir quel ouvrage ou quelle borne de quête on touche. */
-export function cubeTags(cubes: VoxelCube[]): { bridges: Map<string, string>; quests: Map<string, string> } {
+export function cubeTags(cubes: VoxelCube[]): { bridges: Map<string, string>; quests: Map<string, string>; places: Map<string, PlaceId> } {
   const bridges = new Map<string, string>();
   const quests = new Map<string, string>();
+  const places = new Map<string, PlaceId>();
   for (const c of cubes) {
     if (c.bridge) bridges.set(`${c.x},${c.y},${c.z}`, c.bridge);
     if (c.quest) quests.set(`${c.x},${c.y},${c.z}`, c.quest);
+    if (c.place) places.set(`${c.x},${c.y},${c.z}`, c.place);
   }
-  return { bridges, quests };
+  return { bridges, quests, places };
 }
 
 export type GroundTap =
   | { kind: 'quest'; biome: BiomeId; typeId: string }
+  | { kind: 'place'; place: PlaceId; island: BiomeId }
   | { kind: 'bridge'; id: string }
   | { kind: 'face'; cell: Cell; next: Cell }
   | { kind: 'island'; id: BiomeId };
@@ -246,8 +249,8 @@ export type GroundTap =
 export function groundTap(
   a: ArchipelagoId,
   hit: { cell: Cell; next: Cell; ground: { x: number; y: number } },
-  tags: { bridges: Map<string, string>; quests: Map<string, string> },
-  can: { quest: boolean; bridge: boolean; build: boolean },
+  tags: { bridges: Map<string, string>; quests: Map<string, string>; places?: Map<string, PlaceId> },
+  can: { quest: boolean; bridge: boolean; build: boolean; place?: boolean },
 ): GroundTap {
   const key = `${hit.cell.x},${hit.cell.y},${hit.cell.z}`;
   const quest = tags.quests.get(key);
@@ -255,6 +258,8 @@ export function groundTap(
     const [biome, typeId] = quest.split(':');
     return { kind: 'quest', biome: biome as BiomeId, typeId };
   }
+  const place = tags.places?.get(key);
+  if (place && can.place) return { kind: 'place', place, island: islandAt(a, Math.floor(hit.ground.x), Math.floor(hit.ground.y)) };
   const bridge = tags.bridges.get(key);
   if (bridge && can.bridge) return { kind: 'bridge', id: bridge };
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };

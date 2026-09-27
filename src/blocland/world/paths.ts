@@ -36,8 +36,8 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
     if (!cur || c.z > cur.z) top.set(k, { z: c.z, liquid: c.texture === 'eau' || c.texture === 'lave' });
   }
   const blocked = new Set<string>();
-  // Une borne de quête, même basse, ne se piétine pas.
-  for (const c of cubes) if (c.quest && !c.ghost) blocked.add(key(c.x, c.y));
+  // Une borne de quête, même basse, ne se piétine pas ; l'école non plus.
+  for (const c of cubes) if ((c.quest || c.place) && !c.ghost) blocked.add(key(c.x, c.y));
   for (const c of cubes) {
     if (c.ghost || !c.decor || LOW.has(decorKind(c.decor))) continue;
     const k = key(c.x, c.y);
