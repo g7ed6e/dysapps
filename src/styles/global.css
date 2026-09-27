@@ -3188,7 +3188,8 @@ button.app-card:active {
 .world-overlay-bottom > * {
   pointer-events: auto;
 }
-.world-overlay-bottom .tutorial {
+.world-overlay-bottom .tutorial,
+.world-overlay-bottom .whale-word {
   margin: 0 auto;
   max-width: 26rem;
 }
@@ -4658,4 +4659,49 @@ button.island-quest {
 }
 .archipelago-map-place.mist .archipelago-map-label {
   fill: var(--muted);
+}
+
+/* ===== Le mot de la baleine (Archipéo, lot 5) : rare, aux grandes étapes, opaque et uni comme les autres panneaux ===== */
+.whale-word {
+  margin-bottom: 1.2rem;
+  border-color: var(--primary-bg);
+}
+.whale-word-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+.whale-icon {
+  width: 2.2rem;
+  height: auto;
+  flex: none;
+  color: var(--primary-bg);
+}
+.whale-word-text {
+  margin: 0 0 0.8rem;
+  max-width: none;
+}
+.whale-word-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+/* Les points de page (deux pages à l'arrivée) : la page en cours est pleine, les autres creuses. */
+.whale-word-dots {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-right: auto;
+}
+.whale-word-dots span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+.whale-word-dots span.on {
+  background: var(--primary-bg);
+  border-color: var(--primary-bg);
 }

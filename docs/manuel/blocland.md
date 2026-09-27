@@ -12,7 +12,7 @@ L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le me
 - **L’île-port** de chaque archipel a un quai devant elle, avec le Bloc-Navire amarré : la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e.
 - **Le nom de chaque île ouverte** est écrit au-dessus d’elle, sur une étiquette claire, dans la police de lecture (en 3D comme en 2D) : on sait où l’on va avant de toucher.
 - **Les îles fermées** restent visibles, délavées comme dans la brume. Les toucher fait dire à leur créature précisément ce qu’il faut pour y arriver.
-- **Le monde vit** : jour et nuit selon l’heure réelle de l’appareil (aube à 7 h, crépuscule à 20 h, nuit toujours claire), nuages, eau qui ondule, cascades, lanternes la nuit, oiseaux, rochers et bancs de sable au large, quatre baleines qui soufflent. Le réglage « Réduire les animations » fige tout.
+- **Le monde vit** : jour et nuit selon l’heure réelle de l’appareil (aube à 7 h, crépuscule à 20 h, nuit toujours claire), nuages, eau qui ondule, cascades, lanternes la nuit, oiseaux, rochers et bancs de sable au large, quatre baleines qui soufflent (l’une d’elles passe au large de l’île concernée quand [la baleine parle](#le-mot-de-la-baleine)). Le réglage « Réduire les animations » fige tout.
 - **La Carte** (barre du bas) montre tout l’archipel vu du ciel, avec un fanion sur le bonhomme. Chaque île y porte son nom et son **état**, en icône et en mot, jamais par la couleur seule :
   - **Fermée** (un cadenas) : aucun chemin d’ouvrages n’y mène encore ;
   - **À explorer** (une boussole) : ouverte, aucune mission jouée ;
@@ -199,7 +199,7 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 - **Le sélecteur d’archipel** : dès que deux archipels sont atteints, un petit bouton sous le bouton Menu dit où l’on est (« 6e », avec le navire). Le toucher déroule les quatre archipels : ceux déjà atteints s’ouvrent d’un toucher (on arrive à leur port), les autres sont marqués « Fermé », et « Les quatre archipels » dit ce qu’il faut pour y aller. Un toucher ailleurs ou Échap le referme.
 - **Une île d’un autre archipel** est visible dans les listes et sur les pages Français et Maths avec la mention « Archipel à rejoindre » ; sa créature dit précisément ce qu’il faut : finir le Bloc-Navire sur tel port, vaincre tant de Gardiens, ou aller d’abord jusqu’à l’archipel d’avant.
 - **Les coups de pouce** : quand un Gardien vaincu fait arriver le kit, l’arène le dit avec un bouton « Aller au port » ; quand une mission donne le dernier bloc qui manquait, l’écran de récompense dit « Le Bloc-Navire a tous ses blocs ! » (ou, quand ce sont les blocs de la mission qui servent le navire, sa ligne « À quoi servent tes blocs ») ; quand il est prêt à partir, « Reprendre l’aventure » dans le menu mène au port, et la prochaine destination le dit.
-- **À la première arrivée** dans un archipel, sa créature-port dit deux bulles d’accueil, lues à voix haute, une seule fois par appareil (en 3D comme en vue simple).
+- **À la première arrivée** dans un archipel, c’est la baleine qui accueille : voir [Le mot de la baleine](#le-mot-de-la-baleine).
 - **Les sons du voyage** (réglage « Sons dans le village ») : la corne de brume au départ, le vent dans la voile, le brûleur du ballon ou le grondement du réacteur, puis le carillon d’arrivée. Jamais pendant la lecture à voix haute.
 - Sous « Réduire les animations », le premier voyage est un écran fixe : le navire dessiné, la phrase lue, le bouton « Arriver ». Aucun son de traversée.
 
@@ -236,6 +236,24 @@ L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une pag
 On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
 
 L’adresse de la salle est `#/aventure/trophees` ; en vue simple, elle mène à la page Succès.
+
+## Le mot de la baleine
+
+La baleine est la voix de l’archipel. Elle parle rarement, seulement aux **grandes étapes** de l’archipel où se tient le bonhomme, et une seule fois pour chacune :
+
+| Étape | Ce qu’elle dit (exemple) |
+| --- | --- |
+| La première fois, en 6e, après le tutoriel | « Je suis la baleine. Je passe au large quand tu fais quelque chose de grand. » |
+| L’arrivée dans un archipel par le Bloc-Navire | « Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles. », puis une seconde page sur le navire et le port |
+| Le dernier Gardien de l’archipel vaincu | « Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large. » |
+| L’île-port restaurée (ses plans terminés) | « Plaine des nombres est restaurée. Tu avances bien : chaque île restaurée rend l’archipel plus beau. » |
+| Le premier ouvrage construit dans l’archipel | « Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. » |
+
+Son mot s’ouvre dans le panneau **Le mot de la baleine**, en bas du monde, un instant après l’étape (jamais pendant une mission, un voyage ou le tutoriel). La caméra cadre l’île concernée, et la baleine passe au large de cette île : elle fait surface, souffle, puis replonge. Il n’y a pas de baleine dans les Îles du Ciel, ni en 2D, et avec « Réduire les animations », le panneau vient seul. Le texte est lu à voix haute si la lecture automatique est active, et le bouton Écouter le relit. L’arrivée a deux pages (**Suivant**, puis **J’ai compris**) ; les autres mots n’en ont qu’une. Échap ferme aussi le panneau. En vue simple, le mot s’affiche en tête de la page Archipéo et des pages d’île.
+
+![Le mot de la baleine en bas du monde : « Un chemin s'ouvre vers Mine des lettres. L'archipel s'agrandit. », avec les boutons Écouter et J'ai compris.](/captures/baleine.jpg)
+
+Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, dans l’ordre du tableau. La baleine ne répète jamais un mot : ce qui a été dit est noté sur l’appareil, comme les tutoriels, pas dans la partie. Après la mise à jour, les étapes déjà passées sont notées comme dites, sans parler. Le changement d’état du village (« Le village passe à l’état… ») attend que le panneau soit fermé. Les créatures restent les voix de leur île : accueil, répliques, indice d’île fermée.
 
 ## Les sons
 
