@@ -2,6 +2,8 @@
 
 L’interface entière suit un style de monde en blocs, dessiné par le code et jamais emprunté. Il habille l’application sans jamais gêner la lecture : le texte à lire reste sur un fond uni, dans la police dys choisie.
 
+Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo : la cible et les écarts sont dans le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md).
+
 ## Repères visuels
 
 - **Fond crème** `#FBF6EA` à grain pixel très discret ; barre du haut en terre et herbe ; sur téléphone, pas d’onglets : la barre du haut garde le Menu et les Réglages en icônes.
