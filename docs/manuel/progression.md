@@ -33,7 +33,7 @@ Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses qu�
 
 ## Succès
 
-Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première quête), les combos (x5, x10), la quête parfaite, la persévérance (10 quêtes, 50 puis 200 réponses), les rangs atteints (Argent, Or, Diamant, Légende), la construction (un bâtiment, cinq, les quinze plans des cinq premières îles, tous les plans des quatre archipels), les Gardiens (un, cinq, dix, tous) et les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
+Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première quête), les combos (x5, x10), la quête parfaite, la persévérance (10 quêtes, 50 puis 200 réponses), les rangs atteints (Argent, Or, Diamant, Légende), la construction (un bâtiment, cinq, les quinze plans des cinq premières îles, tous les plans des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
 
 ## Dans Blocland
 

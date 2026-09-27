@@ -5,6 +5,7 @@ import {
   recordAnswer,
   type IconName,
   recordBoss,
+  recordMonument,
   recordPlan,
   recordVoyage,
   recordSession,
@@ -29,6 +30,8 @@ interface ProgressContextValue {
   completeSession: (appId: string, score: number) => ProgressUpdate;
   /** Un bâtiment du village terminé : XP et succès. */
   completePlan: (xp: number) => ProgressUpdate;
+  /** Un monument terminé : XP et succès. */
+  completeMonument: (xp: number) => ProgressUpdate;
   /** Un Gardien de biome vaincu : succès. */
   beatBoss: () => ProgressUpdate;
   /** Un voyage du Bloc-Navire : l'XP de l'étape et les succès de voyage. */
@@ -79,6 +82,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const completePlan = useCallback((xp: number) => apply(recordPlan(progressRef.current, xp)), [apply]);
   const beatBoss = useCallback(() => apply(recordBoss(progressRef.current)), [apply]);
+  const completeMonument = useCallback((xp: number) => apply(recordMonument(progressRef.current, xp)), [apply]);
   const launchVoyage = useCallback((xp: number) => apply(recordVoyage(progressRef.current, xp)), [apply]);
 
   const resetProgress = useCallback(() => {
@@ -99,6 +103,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       answer,
       completeSession,
       completePlan,
+      completeMonument,
       beatBoss,
       launchVoyage,
       resetProgress,
@@ -107,7 +112,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       celebrationsHeld: holds > 0,
       holdCelebrations,
     }),
-    [progress, answer, completeSession, completePlan, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration, holds, holdCelebrations],
+    [progress, answer, completeSession, completePlan, completeMonument, beatBoss, launchVoyage, resetProgress, celebrations, dismissCelebration, holds, holdCelebrations],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

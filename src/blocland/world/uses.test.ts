@@ -1,5 +1,6 @@
 import { sanitizeState } from '../engine';
 import { planCells, plansFor } from './plans';
+import { monumentsOf } from './monuments';
 import { blockUses, earnIsland, inventoryUses, missingNow, whereToEarn } from './uses';
 import { VEHICLE_STAGES } from './vehicle';
 
@@ -33,9 +34,16 @@ it('un bloc de finition sans plan à l’attendre est à garder pour les plans s
   expect(blockUses(fresh, 'brique')[0]).toMatchObject({ kind: 'plan', island: 'plaine' });
 });
 
-it('un bloc dont l’île a fini ses plans et qui ne paie rien d’autre ne sert plus à rien', () => {
+it('un bloc dont l’île a fini ses plans sert aux monuments de l’archipel ; eux finis, il ne sert plus à rien', () => {
   const done = sanitizeState({ village: { plans: donePlans('plaine') }, inventory: { brique: 9 } });
-  expect(blockUses(done, 'brique')).toEqual([]);
+  const uses = blockUses(done, 'brique');
+  expect(uses.map((u) => [u.kind, u.to])).toEqual([
+    ['monument', '/aventure/monument-observatoire'],
+    ['monument', '/aventure/monument-moulin'],
+  ]);
+  expect(uses[0]).toMatchObject({ name: 'L’observatoire des baleines', need: 27, enough: false });
+  const all = { ...donePlans('plaine'), ...Object.fromEntries(monumentsOf('6e').map((m) => [m.id, planCells(m).map((c) => c.key)])) };
+  expect(blockUses(sanitizeState({ village: { plans: all }, inventory: { brique: 9 } }), 'brique')).toEqual([]);
 });
 
 it('ne regarde que les îles ouvertes de l’archipel où l’on est, et le navire seulement à portée', () => {

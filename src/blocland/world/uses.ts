@@ -1,9 +1,10 @@
 // À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le plan en cours de chaque île
-// ouverte de son archipel, le chantier du Bloc-Navire, les ouvrages. Code pur, partagé par l'inventaire (« Mes
+// ouverte de son archipel, le chantier du Bloc-Navire, les monuments de l'archipel, les ouvrages. Code pur, partagé par l'inventaire (« Mes
 // blocs ») et les listes de blocs manquants du panneau d'île. Un bloc qui ne sert à rien maintenant est dit tel quel.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { canLaunch, currentPlan, currentStage, planStatus, type BloclandState } from '../engine';
 import { BRIDGE_BLOCKS, archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
+import { monumentsOf } from './monuments';
 import { plansFor } from './plans';
 import type { VehicleStage } from './vehicle';
 
@@ -18,7 +19,7 @@ export function whereToEarn(block: BlockId): string {
 }
 
 export interface Use {
-  kind: 'plan' | 'navire' | 'garder';
+  kind: 'plan' | 'navire' | 'monument' | 'garder';
   /** L'île où poser (ou dont les plans suivants attendent le bloc). */
   island: BiomeId;
   /** Le nom du plan (ou de l'étape du navire). */
@@ -27,6 +28,8 @@ export interface Use {
   need: number;
   /** L'élève en a assez pour tout poser. */
   enough: boolean;
+  /** Où aller (un monument a sa propre adresse) ; sinon l'île. */
+  to?: string;
 }
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
@@ -77,6 +80,12 @@ export function blockUses(state: BloclandState, block: BlockId): Use[] {
       });
   }
   if (uses.length) return uses;
+  // Rien à poser dans un plan ni sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
+  // employer les blocs qui s'accumulent).
+  for (const m of monumentsOf(archipelagoOf(state.village.at ?? 'foret').classe)) {
+    const need = planStatus(state, m).missing[block] ?? 0;
+    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/aventure/${m.id}` });
+  }
   // Rien à poser aujourd'hui : les plans suivants de son île (ou, pour un bloc de coffre, des îles ouvertes) l'attendent peut-être.
   const home = earnIsland(block);
   for (const island of home ? [home.id] : openIslandsHere(state)) {

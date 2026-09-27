@@ -22,6 +22,8 @@ export interface Progress {
   bossesBeaten: number;
   /** Voyages du Bloc-Navire (un archipel de plus atteint). */
   voyages: number;
+  /** Monuments terminés (l'observatoire des baleines…). */
+  monumentsCompleted: number;
   badges: Record<string, string>; // id du badge -> date d'obtention (ISO)
   apps: Record<string, AppStats>;
 }
@@ -37,6 +39,7 @@ export const EMPTY_PROGRESS: Progress = {
   plansCompleted: 0,
   bossesBeaten: 0,
   voyages: 0,
+  monumentsCompleted: 0,
   badges: {},
   apps: {},
 };
@@ -78,6 +81,7 @@ export function sanitizeProgress(input: unknown): Progress {
     plansCompleted: nonNegativeInt(raw.plansCompleted),
     bossesBeaten: nonNegativeInt(raw.bossesBeaten),
     voyages: nonNegativeInt(raw.voyages),
+    monumentsCompleted: nonNegativeInt(raw.monumentsCompleted),
     perfectSessions: nonNegativeInt(raw.perfectSessions),
     badges,
     apps,
@@ -226,6 +230,7 @@ export const BADGES: BadgeDef[] = [
     description: `Terminer les ${PLANS.length} plans des quatre archipels.`,
     earned: (p) => p.plansCompleted >= PLANS.length,
   },
+  { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.monumentsCompleted >= 1 },
   { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.voyages >= 1 },
   { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.', earned: (p) => p.voyages >= 2 },
   { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.voyages >= 3 },
@@ -300,6 +305,11 @@ export function recordBoss(p: Progress, now = new Date().toISOString()): Progres
 /** Un voyage du Bloc-Navire : l'XP de l'étape et le compteur pour les succès. */
 export function recordVoyage(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
   return finish(p, { ...p, xp: p.xp + xp, voyages: p.voyages + 1 }, xp, now);
+}
+
+/** Un monument terminé : son XP et le compteur pour les succès. */
+export function recordMonument(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
+  return finish(p, { ...p, xp: p.xp + xp, monumentsCompleted: p.monumentsCompleted + 1 }, xp, now);
 }
 
 export function recordPlan(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {

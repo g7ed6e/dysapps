@@ -11,10 +11,15 @@ import { VEHICLE_NAME } from './world/vehicle';
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 const name = (block: keyof typeof BLOCKS) => BLOCKS[block].name.toLowerCase();
 
+const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : use.kind === 'garder' ? 'flag' : use.kind === 'monument' ? 'castle' : 'hammer');
+const useKey = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
+
 /** « Plan de Forêt des sons : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « À garder pour … ». */
 function useLabel(use: Use, count: number): string {
   const island = getBiome(use.island)?.name ?? use.island;
   if (use.kind === 'garder') return `À garder pour les plans suivants de ${island}`;
+  // Un monument prend ce qu'on a : on peut en poser dès le premier bloc.
+  if (use.kind === 'monument') return `${use.name} : ${use.enough ? 'tu as tout, pose-les' : `tu peux en poser ${Math.min(count, use.need)}`}`;
   const what = use.kind === 'navire' ? cap(VEHICLE_NAME) : `Plan de ${island}`;
   return `${what} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;
 }
@@ -32,8 +37,8 @@ export function InventoryBody() {
   // Ce qu'on peut faire maintenant : les plans et le navire dont on a tous les blocs, les ouvrages qu'on peut payer.
   const seen = new Set<string>();
   const readyUses = rows
-    .flatMap((row) => row.uses.filter((u) => u.enough && u.kind !== 'garder'))
-    .filter((u) => (seen.has(`${u.kind}-${u.island}`) ? false : (seen.add(`${u.kind}-${u.island}`), true)));
+    .flatMap((row) => row.uses.filter((u) => (u.enough || u.kind === 'monument') && u.kind !== 'garder'))
+    .filter((u) => (seen.has(useKey(u)) ? false : (seen.add(useKey(u)), true)));
   const readyOuvrages = ouvrages.filter((o) => o.enough);
   // Les ouvrages pas encore payables : les trois moins chers suffisent, une longue liste de coûts noierait l'essentiel.
   const laterOuvrages = ouvrages
@@ -58,10 +63,10 @@ export function InventoryBody() {
         ) : (
           <ul className="inventory-uses" aria-labelledby="inventaire-maintenant">
             {readyUses.map((use) => (
-              <li key={`${use.kind}-${use.island}`}>
-                <Link to={`/aventure/${use.island}`} className="tag tag-ok">
-                  <Icon name={use.kind === 'navire' ? 'ship' : 'hammer'} />{' '}
-                  {use.kind === 'navire' ? cap(VEHICLE_NAME) : `Plan de ${getBiome(use.island)?.name ?? use.island}`}
+              <li key={useKey(use)}>
+                <Link to={use.to ?? `/aventure/${use.island}`} className="tag tag-ok">
+                  <Icon name={useIcon(use)} />{' '}
+                  {use.kind === 'navire' ? cap(VEHICLE_NAME) : use.kind === 'monument' ? use.name : `Plan de ${getBiome(use.island)?.name ?? use.island}`}
                 </Link>
               </li>
             ))}
@@ -96,8 +101,8 @@ export function InventoryBody() {
                   <span className="inventory-none">Rien à construire pour l’instant</span>
                 ) : (
                   row.uses.map((use) => (
-                    <Link key={`${use.kind}-${use.island}`} to={`/aventure/${use.island}`} className={`tag${use.enough ? ' tag-ok' : ''}`}>
-                      <Icon name={use.kind === 'navire' ? 'ship' : use.kind === 'garder' ? 'flag' : 'hammer'} /> {useLabel(use, row.count)}
+                    <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
+                      <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
                     </Link>
                   ))
                 )}

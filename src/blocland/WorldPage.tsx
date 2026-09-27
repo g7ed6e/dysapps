@@ -17,6 +17,9 @@ import { ARRIVAL_STEPS } from './arrivals';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
+import { MonumentSheet, MonumentsSheet } from './Monuments';
+import { useMonumentBuilder } from './useMonumentBuilder';
+import { getMonument, monumentsOf } from './world/monuments';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
@@ -46,6 +49,7 @@ import {
   islandOrigin,
   questStations,
   placeDoor,
+  monumentCenter,
   vehiclePlacement,
   worldCubes,
 } from './world/terrain';
@@ -96,8 +100,11 @@ export function WorldPage() {
   const trophiesOpen = biomeId === 'trophees';
   // Le lieu du village ouvert (l'école ou la salle des trophées) : le bonhomme marche jusqu'à sa porte.
   const placeOpen = schoolOpen ? 'ecole' : trophiesOpen ? 'trophees' : null;
-  const island =
-    biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !trophiesOpen ? getBiome(biomeId) : undefined;
+  // Les monuments : leur liste, ou un monument (son îlot au large, où la caméra va).
+  const monumentsOpen = biomeId === 'monuments';
+  const monument = biomeId ? getMonument(biomeId) : undefined;
+  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || monumentsOpen || Boolean(monument);
+  const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
@@ -175,11 +182,17 @@ export function WorldPage() {
   // Bloc-Navire sur le port.
   const builder = usePlanBuilder(island?.id ?? archipelago.port);
   const ship = useVehicleBuilder(island?.id ?? archipelago.port);
-  // Les éclats : ceux du plan ou ceux du navire, le dernier qui a bougé.
-  const seqs = useRef({ plan: builder.burst.seq, ship: ship.burst.seq, last: builder.burst as Burst });
-  if (ship.burst.seq !== seqs.current.ship) seqs.current = { plan: builder.burst.seq, ship: ship.burst.seq, last: ship.burst };
-  else if (builder.burst.seq !== seqs.current.plan) seqs.current = { plan: builder.burst.seq, ship: ship.burst.seq, last: builder.burst };
-  const burst = useMemo(() => ({ ...seqs.current.last, seq: builder.burst.seq + ship.burst.seq }), [builder.burst, ship.burst]);
+  const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
+  // Les éclats : ceux du plan, du navire ou du monument, le dernier qui a bougé.
+  const seqs = useRef({ plan: builder.burst.seq, ship: ship.burst.seq, monument: monumentBuilder.burst.seq, last: builder.burst as Burst });
+  const now = { plan: builder.burst.seq, ship: ship.burst.seq, monument: monumentBuilder.burst.seq };
+  if (ship.burst.seq !== seqs.current.ship) seqs.current = { ...now, last: ship.burst };
+  else if (builder.burst.seq !== seqs.current.plan) seqs.current = { ...now, last: builder.burst };
+  else if (monumentBuilder.burst.seq !== seqs.current.monument) seqs.current = { ...now, last: monumentBuilder.burst };
+  const burst = useMemo(
+    () => ({ ...seqs.current.last, seq: builder.burst.seq + ship.burst.seq + monumentBuilder.burst.seq }),
+    [builder.burst, ship.burst, monumentBuilder.burst],
+  );
 
   // Le voyage en cours (le Bloc-Navire) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
   // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
@@ -350,6 +363,13 @@ export function WorldPage() {
       onBoard(archipelagoOf(island.id).classe, true, island.id);
       return;
     }
+    // Un monument : la caméra va sur son îlot, au large ; le bonhomme reste où il est. Celui d'un autre archipel n'est
+    // pas dans la scène : son panneau s'ouvre, la caméra revient au bonhomme.
+    if (monument) {
+      if (monument.archipelago === a) setFocus((f) => ({ island: monument.biome, spot: monumentCenter(monument), seq: f.seq + 1 }));
+      else setFocus((f) => ({ island: null, seq: f.seq + 1 }));
+      return;
+    }
     // L'école ou la salle des trophées : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
     if (placeOpen) {
       const school = archipelago.school;
@@ -370,12 +390,12 @@ export function WorldPage() {
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, mapOpen, placeOpen]);
+  }, [island?.id, mapOpen, placeOpen, monument?.id]);
 
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
 
-  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !trophiesOpen && !island) return <NotFoundPage />;
+  if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
@@ -420,7 +440,7 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
+    <div className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
@@ -443,7 +463,7 @@ export function WorldPage() {
             trail={trail}
             quests={quests}
             onPickQuest={onPickQuest}
-            onPickPlace={(place) => navigate(place === 'ecole' ? SCHOOL_PATH : TROPHIES_PATH)}
+            onPickPlace={(place) => navigate(place === 'ecole' ? SCHOOL_PATH : place === 'trophees' ? TROPHIES_PATH : `/aventure/${place.slice('monument:'.length)}`)}
             islandLabels={voyage ? undefined : islandLabels}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
@@ -626,6 +646,10 @@ export function WorldPage() {
         <SchoolSheet onClose={() => openIsland(at)} />
       ) : trophiesOpen ? (
         <TrophySheet onClose={() => openIsland(at)} />
+      ) : monumentsOpen ? (
+        <MonumentsSheet onClose={() => openIsland(at)} />
+      ) : monument ? (
+        <MonumentSheet builder={monumentBuilder} onClose={() => openIsland(at)} />
       ) : menuOpen ? (
         <MenuSheet
           onClose={() => navigate('/aventure')}

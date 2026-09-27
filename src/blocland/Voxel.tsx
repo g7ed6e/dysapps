@@ -1,7 +1,9 @@
 // Petit moteur de dessin en cubes (projection isométrique 2D) pour les blocs et les créatures.
 
 /** Les lieux du village où l'on entre : l'école (ses trois portes, une par matière) et la salle des trophées. */
-export type PlaceId = 'ecole' | 'trophees';
+export type VillagePlaceId = 'ecole' | 'trophees';
+/** Ce qu'on touche pour y entrer : un lieu du village, ou un monument (« monument:<identifiant du monument> »). */
+export type PlaceId = VillagePlaceId | `monument:${string}`;
 
 export interface VoxelCube {
   x: number;

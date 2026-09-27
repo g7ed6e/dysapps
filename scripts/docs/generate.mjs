@@ -1,5 +1,5 @@
 // Pages « vivantes » de la documentation : elles sont produites au build à partir des données du jeu
-// (biomes, exercices, plans, ouvrages, succès, quêtes du portail), jamais écrites à la main.
+// (biomes, exercices, plans, ouvrages, monuments, succès, quêtes du portail), jamais écrites à la main.
 // Le code source est chargé par Vite (TypeScript, JSON, JSX), comme le fait l'application.
 import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
@@ -44,6 +44,7 @@ export async function generatePages() {
         load('/src/apps/irreguliers/data.ts'),
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
+    const monumentsMod = await load('/src/blocland/world/monuments.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
@@ -58,6 +59,7 @@ export async function generatePages() {
       ARCHIPELAGOS: archMod.ARCHIPELAGOS,
       VOYAGES: archMod.VOYAGES,
       VEHICLE_STAGES: vehicleMod.VEHICLE_STAGES,
+      MONUMENTS: monumentsMod.MONUMENTS,
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -574,6 +576,21 @@ function ouvragesPage(d) {
           .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
           .join(', ');
         return [`[${name(p.biome)}](iles/${p.biome}.md)`, p.name, String(p.cells.length), String(p.reward.xp), chest || '—'];
+      }),
+    ),
+    '',
+    '## Les monuments',
+    '',
+    `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent comme un plan, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    '',
+    table(
+      ['Archipel', 'Monument', 'Au large de', 'Blocs', 'XP'],
+      d.MONUMENTS.map((m) => {
+        const need = Object.entries(m.cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
+          .sort((x, y) => y[1] - x[1])
+          .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+          .join(', ');
+        return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, `${m.cells.length} : ${need}`, String(m.reward.xp)];
       }),
     ),
     '',

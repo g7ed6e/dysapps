@@ -106,8 +106,11 @@ export interface PlanDef {
   reward: { xp: number; chest: Partial<Record<BlockId, number>> };
   /** Ce que dit la créature quand le plan est terminé. */
   done: string;
-  /** Où le plan se pose : dans la zone des plans de l'île (par défaut), ou sur le quai du port (le Bloc-Navire). */
-  zone?: 'plans' | 'port';
+  /**
+   * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (le Bloc-Navire), ou sur l'îlot
+   * d'un monument (`origin` est alors le coin du monument dans le monde).
+   */
+  zone?: 'plans' | 'port' | 'monument';
 }
 
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
@@ -252,6 +255,11 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
     const def = islandDef(plan.biome);
     const o = dockOrigin(plan.biome);
     return { x: o.x - def.core.x + plan.origin.x, y: o.y - def.core.y + plan.origin.y, z: o.z - def.altitude - 1 };
+  }
+  if (plan.zone === 'monument') {
+    // L'îlot d'un monument est au niveau du sol de son archipel : z = 0, le premier bloc sur l'îlot.
+    const def = islandDef(plan.biome);
+    return { x: plan.origin.x - def.core.x, y: plan.origin.y - def.core.y, z: 0 };
   }
   return { x: PLAN_ZONE.x + plan.origin.x, y: PLAN_ZONE.y + plan.origin.y, z: 0 };
 }

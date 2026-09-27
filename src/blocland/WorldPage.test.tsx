@@ -21,7 +21,7 @@ vi.mock('./three', () => ({
     onVoyageLegEnd,
     onPickPlace,
   }: {
-    focus: { island: string | null };
+    focus: { island: string | null; spot?: { x: number; y: number } };
     onPickIsland: (id: string) => void;
     onPickVehicle: (port: string) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
@@ -32,6 +32,7 @@ vi.mock('./three', () => ({
   }) => (
     <div>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
+      <p data-testid="point">{focus.spot ? `${focus.spot.x},${focus.spot.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
       <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
       <button type="button" onClick={onVoyageLegEnd}>
@@ -43,6 +44,9 @@ vi.mock('./three', () => ({
       </button>
       <button type="button" onClick={() => onPickPlace('ecole', 'foret')}>
         Toucher l’école dans le monde
+      </button>
+      <button type="button" onClick={() => onPickPlace('monument:monument-observatoire', 'tour')}>
+        Toucher l’observatoire dans le monde
       </button>
       <button type="button" onClick={() => onPickPlace('trophees', 'foret')}>
         Toucher la salle des trophées dans le monde
@@ -311,6 +315,23 @@ it('l’école du village : on la touche dans le monde (ou « École » dans la 
   expect(button).toHaveAttribute('aria-pressed', 'true');
   await user.click(button);
   expect(screen.queryByRole('dialog', { name: /École du village/ })).not.toBeInTheDocument();
+});
+
+it('un monument : on le touche dans le monde, la caméra va sur son îlot, son panneau le construit ; le menu les liste', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  await user.click(await screen.findByRole('button', { name: 'Toucher l’observatoire dans le monde' }));
+  const sheet = await screen.findByRole('dialog', { name: /L’observatoire des baleines/ });
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/monument-observatoire');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('tour');
+  expect(screen.getByTestId('point')).toHaveTextContent('4,82');
+  expect(within(sheet).getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
+  await user.click(within(sheet).getByRole('link', { name: 'Tous les monuments' }));
+  const list = await screen.findByRole('dialog', { name: /Monuments/ });
+  expect(within(list).getByRole('link', { name: /Le grand moulin/ })).toHaveAttribute('href', '/aventure/monument-moulin');
+  await user.click(within(list).getByRole('button', { name: 'Fermer le panneau' }));
+  await user.click(await screen.findByRole('button', { name: 'Menu' }));
+  expect(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('link', { name: /Monuments/ })).toHaveAttribute('href', '/aventure/monuments');
 });
 
 it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » le referme', async () => {
