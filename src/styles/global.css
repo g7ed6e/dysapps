@@ -606,7 +606,8 @@ svg {
     box-shadow 0.12s ease;
 }
 a.subject-card:hover,
-a.app-card:hover {
+a.app-card:hover,
+button.app-card:hover {
   transform: translateY(-2px);
   box-shadow:
     var(--bevel-shadow),
@@ -1524,6 +1525,20 @@ a.app-card:active {
 }
 .summary-later {
   margin: 0.2rem 0 0;
+}
+/* Les blocs gagnés à l'école du village (quêtes du portail). */
+.summary-blocks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+}
+.summary-blocks strong {
+  font-size: 1.3rem;
+}
+.summary-blocks-where {
+  color: var(--muted);
 }
 .summary-xp {
   display: inline-flex;
@@ -4107,8 +4122,28 @@ a.island-quest:focus-visible {
   font-size: 0.9rem;
 }
 @media (max-width: 640px) {
+  /* Sur téléphone, les boutons tiennent sur une ligne qui défile au besoin : aucun n'est coupé hors de l'écran. */
   .world-bar {
     flex-wrap: nowrap;
+    justify-content: safe center;
+    gap: 0.3rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .world-bar .button {
+    flex: 0 0 auto;
+    min-width: 48px;
+    white-space: nowrap;
+    padding: 0.2rem 0.4rem;
+  }
+  /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les six boutons tiennent sur la largeur. */
+  .world-bar-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .island-sheet {
     max-height: 58%;
@@ -5035,4 +5070,32 @@ a.tag:focus-visible {
   .brand-name {
     display: none;
   }
+}
+
+/* L'école du village : ses trois portes (des cartes-boutons), puis les quêtes de la porte choisie. */
+button.app-card {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.school-reward {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0 1rem;
+}
+.school-door-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.school-door-head .island-sheet-heading {
+  margin: 0;
+}
+.school-more {
+  margin: 1rem 0 0;
 }

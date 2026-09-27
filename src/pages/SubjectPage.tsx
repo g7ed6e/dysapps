@@ -1,8 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
-import { SUBJECTS, appsBySubject, bestScore, type Subject } from '../apps/registry';
+import { SUBJECTS, type Subject } from '../apps/registry';
 import { Icon } from '../components/Icon';
-import { RecordTag } from '../components/RecordTag';
-import { useProgress } from '../core/ProgressContext';
+import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
 import { biomesOf, type Classe } from '../blocland/biomes';
 import { useBlocland } from '../blocland/BloclandContext';
@@ -12,7 +11,6 @@ import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked }
 
 export function SubjectPage() {
   const { subject } = useParams();
-  const { progress } = useProgress();
   const { state } = useBlocland();
   if (!subject || !(subject in SUBJECTS)) return <NotFoundPage />;
   const info = SUBJECTS[subject as Subject];
@@ -29,40 +27,7 @@ export function SubjectPage() {
       <h1 className={`page-title title-${subject}`}>
         <Icon name={info.icon} /> {info.title}
       </h1>
-      <ul className="grid apps">
-        {appsBySubject(subject as Subject).map((app) => {
-          const record = bestScore(progress.apps, app.id);
-          const content = (
-            <>
-              <span className="app-icon">
-                <Icon name={app.status === 'bientot' ? 'lock' : app.icon} size="1.8rem" />
-              </span>
-              <span className="app-title">{app.title}</span>
-              <span className="app-desc">{app.description}</span>
-              {app.status === 'bientot' ? (
-                <span className="tag">Bientôt</span>
-              ) : record !== undefined ? (
-                <RecordTag record={record} />
-              ) : (
-                <span className="tag tag-new">Nouveau</span>
-              )}
-            </>
-          );
-          return (
-            <li key={app.id}>
-              {app.status === 'disponible' ? (
-                <Link to={`/app/${app.id}`} className={`panel app-card subject-${app.subject}`}>
-                  {content}
-                </Link>
-              ) : (
-                <div className="panel app-card locked" aria-disabled="true">
-                  {content}
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <SubjectApps subject={subject as Subject} />
 
       {/* Une matière sans île dans Blocland (pas encore) : pas de section vide. */}
       {biomesOf(subject as Subject).length > 0 && (

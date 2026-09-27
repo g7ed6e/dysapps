@@ -201,16 +201,17 @@ function archipelPage(d) {
     '',
     '## Les quatre archipels',
     '',
-    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire.',
+    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire, l’île de l’école accueille l’école du village (les quêtes du portail, qui y rapportent ses blocs).',
     '',
     table(
-      ['Archipel', 'Classe', 'Île-port', 'Îles', 'Pour y aller'],
+      ['Archipel', 'Classe', 'Île-port', 'École du village', 'Îles', 'Pour y aller'],
       d.ARCHIPELAGOS.map((a, i) => {
         const stage = d.VEHICLE_STAGES.find((s) => s.to === a.classe);
         return [
           `Les ${a.name}`,
           a.classe,
           `[${BIOMES.find((b) => b.id === a.port)?.name ?? a.port}](iles/${a.port}.md)`,
+          `[${BIOMES.find((b) => b.id === a.school)?.name ?? a.school}](iles/${a.school}.md) (${d.BLOCKS[BIOMES.find((b) => b.id === a.school).block].name.toLowerCase()})`,
           BIOMES.filter((b) => b.classe === a.classe).map((b) => `[${b.name}](iles/${b.id}.md)`).join(', '),
           i === 0 ? 'le départ : la Forêt et la Plaine sont ouvertes' : `le Bloc-Navire, étape ${stage.stage} (${stage.name.toLowerCase()}), construit au port des ${d.ARCHIPELAGOS[i - 1].name}`,
         ];
@@ -266,6 +267,7 @@ function islandPage(b, d) {
     '| --- | --- |',
     `| Archipel | Les ${d.ARCHIPELAGOS.find((a) => a.classe === b.classe).name} (${b.classe}) |`,
     `| Île-port | ${d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'oui : le quai et le Bloc-Navire sont devant l’île' : 'non'} |`,
+    `| École du village | ${d.ARCHIPELAGOS.some((a) => a.school === b.id) ? `oui : les quêtes du portail y rapportent des blocs ${BLOCKS[b.block].name.toLowerCase().match(/^[aeiouyéèêh]/) ? 'd’' : 'de '}${BLOCKS[b.block].name.toLowerCase()}` : 'non'} |`,
     `| Créature | ${b.creature.name}, ${b.creature.species} |`,
     `| Gardien | ${capFirst(b.guardian)} |`,
     `| Bloc gagné | ${BLOCKS[b.block].name} |`,
@@ -581,7 +583,7 @@ function ouvragesPage(d) {
 
 function baremePage(d) {
   const { XP, BADGES, xpToNextLevel, rankForLevel, LEGEND_LEVEL } = d.progress;
-  const { INTERVALS, GRADUATE_AT, CHEST_EVERY, CHEST_BLOCKS, PROMOTE_AT_ONCE, FIRST_TIME_BLOCKS } = d.engine;
+  const { INTERVALS, GRADUATE_AT, CHEST_EVERY, CHEST_BLOCKS, PROMOTE_AT_ONCE, FIRST_TIME_BLOCKS, PORTAL_BLOCKS } = d.engine;
   const { DEFAULT_SETTINGS, FONT_LABELS, THEME_LABELS, WORLD_VIEW_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT } = d.settings;
   const { APP_REWORK_BELOW, REWORK_SHOWN } = d.subjectProgress;
   const levels = [];
@@ -626,6 +628,10 @@ function baremePage(d) {
         ['Score d’un item', '1 point du premier coup, ½ avec aide ou après une erreur'],
         ['Étoiles', '1 = terminé, 2 = au moins 70 %, 3 = au moins 90 % (la meilleure est gardée)'],
         ['Blocs', `proportionnels au score, jamais 0 dès une bonne réponse ; +1 à deux étoiles, +2 à trois ; +${FIRST_TIME_BLOCKS} la première fois qu’une quête est jouée`],
+        [
+          'Blocs d’une quête du portail (école du village)',
+          `${PORTAL_BLOCKS} × le score, jamais 0 dès une bonne réponse, mêmes bonus d’étoiles et de première fois ; des blocs de l’île de l’école de l’archipel où se tient le bonhomme (${d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).name} en ${a.classe}`).join(', ')}) ; la quête compte pour la régularité, pas pour les étoiles ni les Gardiens`,
+        ],
         ['XP', '+50 % sans aide ni erreur'],
         ['Répétition espacée des items ratés', `J+${INTERVALS.join(', J+')} ; sortie après ${GRADUATE_AT} réussites d’affilée`],
         ['Régularité', `un coffre de ${CHEST_BLOCKS} blocs tous les ${CHEST_EVERY} jours de suite ; la série se fissure après un jour manqué, réparable le lendemain`],

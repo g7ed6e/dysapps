@@ -18,6 +18,7 @@ vi.mock('./three', () => ({
     archipelago,
     voyage,
     onVoyageLegEnd,
+    onPickPlace,
   }: {
     focus: { island: string | null };
     onPickIsland: (id: string) => void;
@@ -26,6 +27,7 @@ vi.mock('./three', () => ({
     archipelago: string;
     voyage: { leg: string; stage: number; back: boolean } | null;
     onVoyageLegEnd: () => void;
+    onPickPlace: (place: string, island: string) => void;
   }) => (
     <div>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
@@ -37,6 +39,9 @@ vi.mock('./three', () => ({
       <p data-testid="navire">{vehicle ? `${vehicle.port} ${vehicle.cubes.filter((c) => c.ghost).length}` : 'aucun'}</p>
       <button type="button" onClick={() => onPickIsland('foret')}>
         Toucher la Forêt dans le monde
+      </button>
+      <button type="button" onClick={() => onPickPlace('ecole', 'foret')}>
+        Toucher l’école dans le monde
       </button>
       <button type="button" onClick={() => vehicle && onPickVehicle(vehicle.port)}>
         Toucher le Bloc-Navire
@@ -282,4 +287,22 @@ it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {
   const { container } = renderAt('/aventure');
   expect(container.querySelector('.island-sheet')).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /panneau de/ })).not.toBeInTheDocument();
+});
+
+it('l’école du village : on la touche dans le monde (ou « École » dans la barre), son panneau montre les trois portes', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  await user.click(await screen.findByRole('button', { name: 'Toucher l’école dans le monde' }));
+  const sheet = await screen.findByRole('dialog', { name: /École du village/ });
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/ecole');
+  // La caméra cadre l'île de l'école (la Forêt dans les Basses Terres).
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
+  await user.click(within(sheet).getByRole('button', { name: /Français/ }));
+  expect(within(sheet).getByRole('link', { name: /Homophones/ })).toHaveAttribute('href', '/app/homophones');
+  // Le bouton de la barre referme l'école.
+  const bar = screen.getByRole('navigation', { name: 'Village' });
+  const button = within(bar).getByRole('button', { name: 'École du village' });
+  expect(button).toHaveAttribute('aria-pressed', 'true');
+  await user.click(button);
+  expect(screen.queryByRole('dialog', { name: /École du village/ })).not.toBeInTheDocument();
 });

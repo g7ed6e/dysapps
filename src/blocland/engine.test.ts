@@ -3,6 +3,7 @@ import {
   adapt,
   addDays,
   completeExercise,
+  completePortalQuest,
   daysBetween,
   dueItems,
   moveAvatar,
@@ -202,4 +203,20 @@ it('le bonhomme se souvient de son île, seulement si elle est ouverte', () => {
   expect(moved.village.at).toBe('plaine');
   expect(moveAvatar(moved, 'mine')).toBe(moved);
   expect(moveAvatar(moved, 'plaine')).toBe(moved);
+});
+
+it('une quête du portail (l’école du village) rapporte des blocs de l’île de l’école, au barème des quêtes d’île', () => {
+  // Toute juste la première fois : 4 blocs, +2 pour trois étoiles, +2 la première fois ; le streak démarre.
+  const first = completePortalQuest(EMPTY_STATE, 1, true, '2026-09-27');
+  expect(first).toMatchObject({ school: 'foret', block: 'bois', blocks: 8, bonus: { stars: 2, first: 2 } });
+  expect(first.state.inventory.bois).toBe(8);
+  expect(first.state.streak.current).toBe(1);
+  // À moitié : 2 blocs, rien en plus ; aucune bonne réponse : rien.
+  expect(completePortalQuest(EMPTY_STATE, 0.5, false, '2026-09-27').blocks).toBe(2);
+  expect(completePortalQuest(EMPTY_STATE, 0, true, '2026-09-27').blocks).toBe(0);
+  // Les étoiles et les Gardiens ne bougent pas.
+  expect(first.state.progress).toEqual({});
+  // Dans les Collines du Large, l'école est au Marché : des blocs de toile.
+  const away = { ...EMPTY_STATE, village: { ...EMPTY_STATE.village, bridges: ['voyage-5e'], at: 'marche' as const } };
+  expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'marche', block: 'toile', blocks: 6 });
 });

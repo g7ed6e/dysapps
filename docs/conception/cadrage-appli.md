@@ -1,6 +1,6 @@
 # Cadrage — « Blocland, l’appli entière »
 
-Document de travail, **proposé le 27 septembre 2026, à valider**. Rien de ce qui suit n’est encore construit. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points marqués **À décider** attendent un choix.
+Document de travail, **proposé et validé le 27 septembre 2026**. L’**étape 1 (l’école du village) est construite** : voir [§ 8](#8-etape-1-ce-qui-est-construit) ; les étapes 2 à 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
 
 ## 1. Le besoin en une phrase
 
@@ -38,7 +38,7 @@ Sur l’**île de départ de chaque archipel**, l’**école du village** avec t
 - Une quête du portail réussie rapporte **des blocs de l’île de l’école** (même barème que les quêtes d’île, proportionnel au score). Les deux boucles n’en font plus qu’une.
 - Les **étoiles** remplacent les records en pourcentage (déjà fait dans les bilans).
 
-**À décider :** les quêtes du portail comptent-elles pour les Gardiens ? Proposition : non. Le Gardien reste lié aux quêtes de son île.
+**Décidé (étape 1) :** les quêtes du portail ne comptent pas pour les Gardiens ni pour les étoiles des îles. Le Gardien reste lié aux quêtes de son île.
 
 ### 3.3 Succès et Réglages
 
@@ -89,3 +89,17 @@ Chaque étape est livrable seule et réversible.
 1. Le village au démarrage pour tous, ou en option dans les Réglages au début ?
 2. Les quêtes du portail rapportent-elles des blocs, et lesquels : ceux de l’île de l’école, ou un bloc « livre » propre à l’école ?
 3. Garder un onglet ou un bouton « Quêtes » toujours visible, pour les élèves qui ne veulent pas du village ?
+
+## 8. Étape 1 : ce qui est construit
+
+Livrée le 27 septembre 2026. L’accueil, les onglets et les adresses ne changent pas.
+
+- **Une école par archipel**, sur son **île de l’école** (`school` de chaque archipel dans `world/archipelago.ts`) : la Forêt des sons en 6e (des deux îles de départ, celle du français, où l’on commence), le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e (l’île de départ de chacun).
+- **Le bâtiment** est posé par le terrain, pas par un plan : l’élève ne le construit pas, il est là dès le début. La terre autour du cœur est trop étroite pour lui (trois à six cases) ; il tient dans le cœur, devant à droite (5 × 4 cases, coin en `SCHOOL_AT`), entre les bornes de quête et le bord, hors de la zone des plans. La rangée de devant reste libre : le bonhomme y passe pour aller au port. Murs de brique, coins de pierre de taille, porte entre deux fenêtres, toit rouge, clocheton à cloche d’or.
+- **On y entre** en le touchant (3D et 2D : cubes marqués `place: 'ecole'`, geste `onPickPlace` du contrat des vues ; en marche libre, le bouton « Entrer »), par le bouton **École** de la barre du monde (accès direct, sans explorer), par une ligne du panneau de l’île, ou en vue simple par un bouton de la carte des îles et une carte de la page de l’île. Le bonhomme marche jusqu’à la porte.
+- **Le panneau** (`School.tsx`) : l’accueil de la créature de l’île, lu à voix haute, puis les **trois portes** (Français, Maths, Anglais) ; derrière chacune, les cartes des quêtes du portail de la matière (les mêmes que la page matière) et un lien vers les îles de la matière. La porte est dans l’adresse (`#/aventure/ecole?porte=maths`) : le lien de retour d’une quête (« École ») y ramène.
+- **Les blocs** (question ouverte 2) : une quête du portail finie, lancée de l’école ou d’ailleurs, rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme**, au barème des quêtes d’île (`PORTAL_BLOCKS` × le score, bonus d’étoiles et de première fois) ; elle compte pour la série de régularité et ses coffres. Pas de bloc « livre » propre à l’école : le bloc de l’île sert tout de suite aux plans et aux ouvrages.
+- **Sur téléphone**, la barre du monde passe aux icônes seules (six boutons avec l’école) ; elle défile si la place manque.
+
+À observer avant l’étape 2 : combien d’élèves entrent à l’école depuis le monde plutôt que par l’onglet Quêtes.
+

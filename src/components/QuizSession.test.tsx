@@ -5,6 +5,7 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { QuizSession, type Question } from './QuizSession';
 import { Celebrations } from './Celebrations';
+import { BloclandProvider } from '../blocland/BloclandContext';
 
 const questions: Question[] = [
   { id: 'q1', prompt: 'Combien font 2 + 2 ?', choices: ['3', '4', '5'], answer: '4', hint: 'Compte sur tes doigts.' },
@@ -218,4 +219,26 @@ it('vibre brièvement à la bonne réponse, sauf si le réglage est coupé', asy
   await user.click(screen.getByRole('button', { name: '4' }));
   expect(vibrate).not.toHaveBeenCalled();
   delete (navigator as { vibrate?: unknown }).vibrate;
+});
+
+it('à l’école du village, une quête finie donne des blocs de son île pour le village', async () => {
+  const user = userEvent.setup();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter>
+            <QuizSession appId="test" makeQuestions={() => questions} />
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  await user.click(screen.getByRole('button', { name: '4' }));
+  await user.click(screen.getByRole('button', { name: /Suivante/ }));
+  await user.click(screen.getByRole('button', { name: 'a' }));
+  await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
+  // Sans faute la première fois : 4 blocs, +2 pour trois étoiles, +2 la première fois.
+  expect(screen.getByText(/pour le village/).closest('p')).toHaveTextContent('+8 blocs de bois pour le village (école de Forêt des sons)');
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory.bois).toBe(8);
 });

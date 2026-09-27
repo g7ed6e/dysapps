@@ -163,6 +163,7 @@ export default function WorldCanvas({
   trail,
   quests,
   onPickQuest,
+  onPickPlace,
   islandLabels,
   burst,
   className,
@@ -209,6 +210,8 @@ export default function WorldCanvas({
   pickBridgeRef.current = onPickBridge;
   const pickQuestRef = useRef(onPickQuest);
   pickQuestRef.current = onPickQuest;
+  const pickPlaceRef = useRef(onPickPlace);
+  pickPlaceRef.current = onPickPlace;
   // Les cubes des bornes de quête et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
   useEffect(() => {
@@ -626,9 +629,10 @@ export default function WorldCanvas({
         archRef.current,
         { ...cellsOf(hit), ground: { x: hit.point.x, y: hit.point.z } },
         tags.current,
-        { quest: Boolean(pickQuestRef.current), bridge: Boolean(pickBridgeRef.current), build: Boolean(buildRef.current) },
+        { quest: Boolean(pickQuestRef.current), bridge: Boolean(pickBridgeRef.current), build: Boolean(buildRef.current), place: Boolean(pickPlaceRef.current) },
       );
       if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
+      else if (tap.kind === 'place') pickPlaceRef.current?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
       else if (tap.kind === 'face') buildRef.current?.onPickFace(tap.cell, tap.next);
       else pickRef.current?.(tap.id);

@@ -17,6 +17,7 @@ import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { Creature } from './Creatures';
 import { InventoryLink } from './Inventory';
+import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 
@@ -49,6 +50,9 @@ export function BloclandPage() {
         </p>
         <p className="hero-actions">
           <InventoryLink className="button" />
+          <Link to={SCHOOL_PATH} className="button">
+            <Icon name="school" /> {SCHOOL_TITLE}
+          </Link>
         </p>
       </section>
 

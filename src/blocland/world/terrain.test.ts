@@ -4,6 +4,7 @@ import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
+import { walkGround, walkPath } from './paths';
 import { dockBox, dockCells, dockOrigin, VEHICLE_DECK, VEHICLE_SIZE } from './harbour';
 import { VEHICLE_STAGES } from './vehicle';
 import {
@@ -31,6 +32,10 @@ import {
   questStations,
   routeAt,
   routeLengths,
+  SCHOOL_AT,
+  SCHOOL_SIZE,
+  schoolDoor,
+  schoolSpot,
   seaDecor,
   vehiclePlacement,
   VIEW_YAW_MAX,
@@ -585,4 +590,37 @@ it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étap
   expect(back.cubes.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
   // Dans les Îles du Ciel, il plane à hauteur de quai.
   expect(vehiclePlacement('3e', {}, village(['voyage-5e', 'voyage-4e', 'voyage-3e'])).afloat).toBe(false);
+});
+
+it('l’école du village : une par archipel, sur son île de l’école, devant à droite, libre et sa porte accessible', () => {
+  for (const a of ARCHIPELAGOS) {
+    const island = a.school;
+    expect(a.starts).toContain(island);
+    const cubes = worldCubes(a.classe, {}, village(everything));
+    const school = cubes.filter((c) => c.place === 'ecole');
+    // Rien que sur l'île de l'école : les murs, la porte, le toit et la cloche.
+    expect(school.length).toBeGreaterThan(SCHOOL_SIZE.w * SCHOOL_SIZE.d * 3);
+    expect(new Set(school.map((c) => c.tag))).toEqual(new Set([island]));
+    expect(school.some((c) => c.texture === 'porte')).toBe(true);
+    const spot = schoolSpot(island)!;
+    const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
+    expect(spot).toMatchObject({ x: ox + SCHOOL_AT.x, y: oy + SCHOOL_AT.y });
+    for (const c of school) {
+      const lx = c.x - ox;
+      const ly = c.y - oy;
+      // Dans le cœur, hors de la zone des plans, loin des bornes (et de leur marge) et de la place du bonhomme.
+      expect(lx >= 0 && lx < CORE && ly >= 0 && ly < CORE).toBe(true);
+      expect(lx >= PLAN_ZONE.x && lx < PLAN_ZONE.x + PLAN_ZONE.w && ly >= PLAN_ZONE.y && ly < PLAN_ZONE.y + PLAN_ZONE.h).toBe(false);
+      for (const st of questStations(island)) expect(Math.abs(lx - st.x) <= 1 && Math.abs(ly - st.y) <= 1).toBe(false);
+      expect(ly).toBeGreaterThan(0);
+    }
+    // La rangée de devant reste libre : on y marche vers le port. Le bonhomme va de sa place à la porte de l'école.
+    const ground = walkGround(cubes, creaturePlacements(a.classe, everything));
+    const door = schoolDoor(island)!;
+    expect(ground.feet.get(`${door.x},${door.y}`)).toBe(door.z);
+    expect(walkPath(ground, avatarHome(island), door)).not.toBeNull();
+  }
+  // Ailleurs, pas d'école.
+  expect(schoolSpot('mine')).toBeNull();
+  expect(allCubes({}, village(everything)).filter((c) => c.place).every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
 });

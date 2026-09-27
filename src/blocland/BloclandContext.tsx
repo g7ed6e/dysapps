@@ -4,6 +4,7 @@ import {
   EMPTY_STATE,
   buildBridge as buildBridgePure,
   completeExercise,
+  completePortalQuest,
   dueItems,
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
@@ -15,6 +16,7 @@ import {
   type Completion,
   type FillResult,
   type LaunchResult,
+  type PortalCompletion,
 } from './engine';
 import type { BiomeId } from './biomes';
 import type { PlanDef } from './world/plans';
@@ -29,6 +31,8 @@ export const SESSION_MAX_MINUTES = 10;
 interface BloclandContextValue {
   state: BloclandState;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
+  /** Une quête du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
+  completePortal: (score: number, firstTime: boolean) => PortalCompletion;
   /** Items à revoir aujourd'hui. */
   dueCount: number;
   /** Exercices terminés dans cette session. */
@@ -68,6 +72,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
+    return completion;
+  }, []);
+
+  const completePortal = useCallback((score: number, firstTime: boolean) => {
+    const completion = completePortalQuest(stateRef.current, score, firstTime, todayISO());
+    stateRef.current = completion.state;
+    setState(completion.state);
     return completion;
   }, []);
 
@@ -124,6 +135,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       complete,
+      completePortal,
       dueCount,
       sessionCount,
       pauseAfterNext,
@@ -135,9 +147,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       launch,
       reset,
     }),
-    [state, complete, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset],
+    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
+}
+
+/** Le contexte s'il y en a un : une quête du portail se joue aussi hors de Blocland (tests, intégrations). */
+export function useOptionalBlocland(): BloclandContextValue | null {
+  return useContext(BloclandContext);
 }
 
 export function useBlocland(): BloclandContextValue {

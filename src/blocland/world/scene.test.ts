@@ -137,6 +137,15 @@ describe('toucher le sol', () => {
   ]);
   const all = { quest: true, bridge: true, build: true };
 
+  it('l’école se touche pour y entrer, même en chantier', () => {
+    const c = islandCenter('foret');
+    const school = cubeTags([{ x: c.x, y: c.y, z: 3, color: '#fff', place: 'ecole' }]);
+    const hit = { cell: { x: c.x, y: c.y, z: 3 }, next: { x: c.x, y: c.y, z: 4 }, ground: { x: c.x + 0.5, y: c.y + 0.5 } };
+    expect(groundTap('6e', hit, school, { ...all, place: true })).toEqual({ kind: 'place', place: 'ecole', island: 'foret' });
+    // Une vue qui ne sait pas y entrer : la face (chantier), comme avant.
+    expect(groundTap('6e', hit, school, all)).toEqual({ kind: 'face', cell: hit.cell, next: hit.next });
+  });
+
   it('la borne de quête d’abord, puis l’ouvrage, puis la face en chantier, sinon l’île', () => {
     expect(groundTap('6e', { cell, next, ground: cell }, tags, all)).toEqual({ kind: 'quest', biome: 'foret', typeId: 'rimes' });
     expect(groundTap('6e', { cell, next, ground: cell }, tags, { ...all, quest: false })).toEqual({ kind: 'bridge', id: 'foret-mine' });

@@ -16,6 +16,7 @@ import { ArchipelsSheet } from './ArchipelsSheet';
 import { ARRIVAL_STEPS } from './arrivals';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
+import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
@@ -26,7 +27,7 @@ import { playArrival, playBurner, playHorn, playReactor, playSail } from './soun
 import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
-import { walkGround } from './world/paths';
+import { walkGround, walkPath } from './world/paths';
 import { isPlanDone, plansFor } from './world/plans';
 import { Loading } from '../components/Loading';
 import {
@@ -39,6 +40,7 @@ import {
   islandCenter,
   islandOrigin,
   questStations,
+  schoolDoor,
   vehiclePlacement,
   worldCubes,
 } from './world/terrain';
@@ -57,6 +59,8 @@ import {
 import { stageTo } from './world/vehicle';
 import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
+
+const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran, un archipel à la fois (celui où se tient le bonhomme).
@@ -79,7 +83,9 @@ export function WorldPage() {
   const mondeOpen = biomeId === 'monde';
   // « Mes blocs » : l'inventaire commenté, un panneau à la place de celui d'une île.
   const blocsOpen = biomeId === 'blocs';
-  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen ? getBiome(biomeId) : undefined;
+  // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
+  const schoolOpen = biomeId === 'ecole';
+  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
@@ -91,6 +97,13 @@ export function WorldPage() {
   );
   // Le sol où le bonhomme marche : il suit les îles et contourne arbres, bornes, maisons et créatures.
   const ground = useMemo(() => walkGround(cubes, creatures), [cubes, creatures]);
+  /** Un nouveau trajet part d'où le bonhomme se tient (la porte de l'école), pas forcément de la place de son île. */
+  const fromHere = (prev: { x: number; y: number; z: number }[], route: { x: number; y: number; z: number }[]) => {
+    const here = prev[prev.length - 1];
+    if (!here || samePoint(here, route[0])) return route;
+    const path = walkPath(ground, here, route[0]);
+    return path ? [...path, ...route.slice(1)] : [here, ...route];
+  };
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.village), [a, state.progress, state.village]);
   // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande.
@@ -302,17 +315,29 @@ export function WorldPage() {
       onBoard(archipelagoOf(island.id).classe, true, island.id);
       return;
     }
+    // L'école : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
+    if (schoolOpen) {
+      const school = archipelago.school;
+      setFocus((f) => ({ island: school, seq: f.seq + 1 }));
+      const door = schoolDoor(school);
+      const route = avatarRoute(at, school, state.village.bridges, ground) ?? [avatarHome(school)];
+      const last = route[route.length - 1];
+      const toDoor = door ? (walkPath(ground, last, door) ?? [last, door]) : [last];
+      setWalk((w) => ({ route: fromHere(w.route, [...route, ...toDoor.slice(1)]), seq: w.seq + 1 }));
+      moveTo(school);
+      return;
+    }
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
-    if (island && island.id !== at && isBiomeUnlocked(island.id, state.village.bridges)) {
+    if (island && (island.id !== at || !samePoint(walk.route[walk.route.length - 1], avatarHome(at))) && isBiomeUnlocked(island.id, state.village.bridges)) {
       const route = avatarRoute(at, island.id, state.village.bridges, ground);
-      if (route) setWalk((w) => ({ route, seq: w.seq + 1 }));
+      if (route) setWalk((w) => ({ route: fromHere(w.route, route), seq: w.seq + 1 }));
       else setWalk((w) => ({ route: [avatarHome(island.id)], seq: w.seq + 1 }));
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, mapOpen]);
+  }, [island?.id, mapOpen, schoolOpen]);
 
-  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
@@ -357,7 +382,7 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
+    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
@@ -380,6 +405,7 @@ export function WorldPage() {
             trail={trail}
             quests={quests}
             onPickQuest={onPickQuest}
+            onPickPlace={(place) => place === 'ecole' && navigate(SCHOOL_PATH)}
             islandLabels={voyage ? undefined : islandLabels}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
@@ -466,7 +492,7 @@ export function WorldPage() {
               onClick={() => setSheetOpen((o) => !o)}
               aria-label={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
             >
-              <Icon name={island.icon} /> {island.name}
+              <Icon name={island.icon} /> <span className="world-bar-text">{island.name}</span>
             </button>
           )}
           <button
@@ -476,7 +502,7 @@ export function WorldPage() {
             aria-pressed={mapOpen}
             onClick={() => navigate(mapOpen ? '/aventure' : '/aventure/carte')}
           >
-            <Icon name="map" /> Carte
+            <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
           {!voyage && (
             <button
@@ -488,7 +514,20 @@ export function WorldPage() {
               aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
               onClick={() => (blocsOpen ? openIsland(at) : navigate('/aventure/blocs'))}
             >
-              <Icon name="blocks" /> Blocs ({blocksTotal})
+              <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
+              <span className="world-bar-count">({blocksTotal})</span>
+            </button>
+          )}
+          {!voyage && (
+            <button
+              type="button"
+              className="button"
+              aria-pressed={schoolOpen}
+              aria-label={SCHOOL_TITLE}
+              aria-controls={schoolOpen ? 'panneau-ecole' : undefined}
+              onClick={() => (schoolOpen ? openIsland(at) : navigate(SCHOOL_PATH))}
+            >
+              <Icon name="school" /> <span className="world-bar-text">École</span>
             </button>
           )}
           {night && (
@@ -514,6 +553,8 @@ export function WorldPage() {
         <ArchipelsSheet onClose={() => navigate('/aventure')} onGo={openIsland} />
       ) : blocsOpen ? (
         <InventorySheet onClose={() => openIsland(at)} />
+      ) : schoolOpen ? (
+        <SchoolSheet onClose={() => openIsland(at)} />
       ) : (
         island &&
         sheetOpen && (

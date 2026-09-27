@@ -1,7 +1,7 @@
 // Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx) et la 2D (à venir).
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { BiomeId } from '../biomes';
-import type { VoxelCube } from '../Voxel';
+import type { PlaceId, VoxelCube } from '../Voxel';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
@@ -108,6 +108,8 @@ export interface WorldViewProps {
   islandLabels?: IslandLabel[];
   /** Borne de quête touchée (le socle, le panneau ou son repère). */
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
+  /** Lieu du village touché (l'école) : on y entre. */
+  onPickPlace?: (place: PlaceId, island: BiomeId) => void;
   burst?: Burst;
   /** La marche libre (vue 2D, en option) : une croix de direction et un bouton « Entrer » ; toucher pour aller reste. */
   freeWalk?: boolean;

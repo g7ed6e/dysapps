@@ -24,13 +24,15 @@ export interface ArchipelagoDef {
   starts: BiomeId[];
   /** Comment on y arrive : par la mer, par les airs, par le ciel (rien pour le premier). */
   travel: 'mer' | 'airs' | 'ciel' | null;
+  /** L'île de l'école du village (une île de départ) : les quêtes du portail y rapportent ses blocs. */
+  school: BiomeId;
 }
 
 export const ARCHIPELAGOS: ArchipelagoDef[] = [
-  { classe: '6e', name: 'Basses Terres', port: 'plaine', starts: ['foret', 'plaine'], travel: null },
-  { classe: '5e', name: 'Collines du Large', port: 'marche', starts: ['marche'], travel: 'mer' },
-  { classe: '4e', name: 'Monts de Feu', port: 'atelier', starts: ['atelier'], travel: 'airs' },
-  { classe: '3e', name: 'Îles du Ciel', port: 'phare', starts: ['phare'], travel: 'ciel' },
+  { classe: '6e', name: 'Basses Terres', port: 'plaine', starts: ['foret', 'plaine'], travel: null, school: 'foret' },
+  { classe: '5e', name: 'Collines du Large', port: 'marche', starts: ['marche'], travel: 'mer', school: 'marche' },
+  { classe: '4e', name: 'Monts de Feu', port: 'atelier', starts: ['atelier'], travel: 'airs', school: 'atelier' },
+  { classe: '3e', name: 'Îles du Ciel', port: 'phare', starts: ['phare'], travel: 'ciel', school: 'phare' },
 ];
 
 export function getArchipelago(a: ArchipelagoId): ArchipelagoDef {

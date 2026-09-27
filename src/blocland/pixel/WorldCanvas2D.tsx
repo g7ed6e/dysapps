@@ -5,6 +5,7 @@
 // Étape 4 : le Bloc-Navire (à quai, en chantier, en voyage).
 import { useEffect, useRef, useState } from 'react';
 import type { BiomeId } from '../biomes';
+import type { PlaceId } from '../Voxel';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { faceCanvas } from '../world/pixels';
 import {
@@ -116,6 +117,7 @@ export default function WorldCanvas2D({
   trail,
   quests,
   onPickQuest,
+  onPickPlace,
   islandLabels,
   burst,
   freeWalk = false,
@@ -125,7 +127,7 @@ export default function WorldCanvas2D({
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
+  const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -137,6 +139,8 @@ export default function WorldCanvas2D({
     props: Prop[];
     /** Les bornes de quête, en panneaux. */
     stations: Station[];
+    /** Les cases (x, y) des lieux où l'on entre (l'école), avec leur île. */
+    places: Map<string, { place: PlaceId; island: BiomeId }>;
   } | null>(null);
   const view = useRef<View2D | null>(null);
   const voyageRef = useRef<VoyageRun | null>(null);
@@ -146,7 +150,7 @@ export default function WorldCanvas2D({
   const sparks = useRef<Spark[]>([]);
   // La marche libre : la direction tenue (croix ou flèche), ce qu'il y a devant le bonhomme, et le geste « Entrer ».
   const held = useRef<StepDir | null>(null);
-  const [ahead, setAhead] = useState<'quest' | 'creature' | null>(null);
+  const [ahead, setAhead] = useState<'quest' | 'place' | 'creature' | null>(null);
   const enter = useRef<() => void>(() => {});
   // Le Bloc-Navire : ses tuiles (pour le toucher) et son image, dessinée une fois à chaque changement.
   const ship = useRef<{ map: TileMap; image: ReturnType<typeof drawTileMap>; maxY: number } | null>(null);
@@ -163,6 +167,7 @@ export default function WorldCanvas2D({
       env: { surface: surfaceOf(cubes), style: STYLE, sea: !sky },
       props: split.props,
       stations: split.stations,
+      places: new Map(cubes.filter((c) => c.place).map((c) => [`${c.x},${c.y}`, { place: c.place!, island: c.tag as BiomeId }])),
     };
   }, [cubes, archipelago]);
 
@@ -308,8 +313,14 @@ export default function WorldCanvas2D({
       const ground = pickAt(e);
       const t = terrain.current;
       if (!ground || !t) return;
-      const tap = groundTap(p.archipelago, ground, t.tags, { quest: Boolean(p.onPickQuest), bridge: Boolean(p.onPickBridge), build: Boolean(p.build) });
+      const tap = groundTap(p.archipelago, ground, t.tags, {
+        quest: Boolean(p.onPickQuest),
+        bridge: Boolean(p.onPickBridge),
+        build: Boolean(p.build),
+        place: Boolean(p.onPickPlace),
+      });
       if (tap.kind === 'quest') p.onPickQuest?.(tap.biome, tap.typeId);
+      else if (tap.kind === 'place') p.onPickPlace?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') p.onPickBridge?.(tap.id);
       else if (tap.kind === 'face') p.build?.onPickFace(tap.cell, tap.next);
       else p.onPickIsland?.(tap.id);
@@ -376,7 +387,7 @@ export default function WorldCanvas2D({
 
     const t0 = performance.now();
     let last = t0;
-    let aheadRef: 'quest' | 'creature' | null = null;
+    let aheadRef: 'quest' | 'place' | 'creature' | null = null;
     const loop = () => {
       if (!visible || document.hidden) {
         running = false;
@@ -661,13 +672,15 @@ export default function WorldCanvas2D({
         const front = cellAhead(h.at, h.facing);
         const station = tm.stations.find((st) => st.x === front.x && st.y === front.y);
         const creature = creaturesAt.find((c) => Math.abs(c.x - (front.x + 0.5)) < 1.2 && Math.abs(c.y - (front.y + 0.5)) < 1.2);
-        const target = station ? 'quest' : creature ? 'creature' : null;
+        const place = tm.places.get(`${front.x},${front.y}`);
+        const target = station ? 'quest' : place && p.onPickPlace ? 'place' : creature ? 'creature' : null;
         enter.current = () => {
           const q = props.current;
           if (station) {
             const [biome, typeId] = station.quest.split(':');
             q.onPickQuest?.(biome as BiomeId, typeId);
-          } else if (creature) {
+          } else if (place && q.onPickPlace) q.onPickPlace(place.place, place.island);
+          else if (creature) {
             if (q.onPickCreature) q.onPickCreature(creature.id, creature.kind);
             else if (!q.build) q.onPickIsland?.(creature.id);
           }
