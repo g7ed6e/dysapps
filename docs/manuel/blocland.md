@@ -40,9 +40,9 @@ La **croix** du panneau le replie sans quitter l’île : la caméra reste cadr�
 
 Chaque île propose deux ou trois **quêtes**. Une partie enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
 
-- la créature lit la consigne ;
+- la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la partie ; le bouton 🔊 « Consigne » la relit. Une quête qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
 - l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ;
-- la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe ;
+- la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe en bas de l’écran. Le bandeau ne cache pas la question : l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou, si elles sont trop hautes (téléphone), au moins l’énoncé, la réponse touchée et la bonne réponse ;
 - l’écran de récompense donne le score, les étoiles, les blocs et l’XP.
 
 Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite, trois à partir de 90 %. La meilleure est gardée. Le score compte un point par item trouvé du premier coup et un demi-point avec une aide ou après une erreur.
@@ -129,7 +129,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher une borne de quête | Lance la quête (ou explique pourquoi elle ne l’est pas) |
 | Toucher un ouvrage (construit ou fantôme) | Ouvre l’île qu’il touche, avec sa proposition mise en avant |
 | Toucher un fantôme de bâtiment | Pose le bloc attendu |
-| Toucher une créature | Elle dit une phrase, lue à voix haute |
+| Toucher une créature | Ouvre le panneau de son île, où elle accueille ; si ce panneau est déjà ouvert, elle dit une phrase, lue à voix haute |
 | Toucher le Bloc-Navire au quai (île-port) | Ouvre le panneau du port sur sa section Bloc-Navire ; une case bleue pose le bloc attendu |
 | Bouton « Embarquer » ou « Revenir en … » (panneau du port) | Le voyage vers un autre archipel |
 | Toucher pendant le voyage, Entrée, Espace, Échap, bouton « Arriver » | Le Bloc-Navire arrive tout de suite |

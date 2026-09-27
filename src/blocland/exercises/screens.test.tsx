@@ -94,7 +94,7 @@ it('chasse au son : on choisit les mots, on valide, la correction nomme le son e
   const def = getExercise('foret-chasse-son-an')!;
   renderAt('/aventure/foret/chasse-son');
   await loaded();
-  expect(screen.getByText(def.instruction)).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: def.instruction })).toBeInTheDocument();
   const first = def.items.slice(0, 4);
   // Une erreur volontaire : le premier mauvais mot est coché aussi.
   const wrong = first.find((i) => !i.correct)!;

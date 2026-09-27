@@ -58,7 +58,7 @@ Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en ga
 | `biome` | L’île (`BiomeId` de `biomes.ts`). |
 | `type` | La quête, identique à l’identifiant d’exercice dans `biomes.ts` ; choisit l’écran dans `registry.ts`. |
 | `level` | Niveau de difficulté ; le moteur choisit l’exercice au niveau adapté de l’élève, le moins joué à niveau égal. |
-| `instruction` | Consigne unique, courte, lue à voix haute au démarrage. |
+| `instruction` | Consigne unique, courte, écrite au-dessus de chaque item et lue à voix haute au démarrage (sauf pour un écran qui lit lui-même son mot en s’ouvrant : `speaksOnOpen` dans `registry.ts`). Au Gardien, chaque manche affiche la consigne de sa quête. |
 | `target` | Paramètre de l’exercice (son cible, lettre, mot repère). |
 | `lang` | `"en"` pour l’anglais : `prompt`, `spoken`, `word`, `sentence` et `choices` sont affichés en anglais (`lang="en"`, sans syllabes colorées ni typographie française) et lus avec la voix anglaise. `instruction`, `hint`, `explanation` et `aid` restent en français. Un item dont les réponses sont en français porte `choicesLang: "fr"`. |
 | `items` | Les items de référence, chacun avec une `key` stable (répétition espacée). Leur forme dépend du type. |

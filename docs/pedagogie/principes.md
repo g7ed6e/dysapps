@@ -6,15 +6,16 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 - **Typographie** : police adaptée (Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial), taille jamais inférieure à 18 px, interlignage jamais inférieur à 1,5, espacement des lettres et des mots réglables. Le texte à lire est toujours dans la police dys choisie, jamais dans la police d’affiche ou la police pixel de l’interface.
 - **Fond uni sous le texte** : les textures du style « monde en blocs » ne passent jamais derrière un texte à lire. Les thèmes Clair et Contraste élevé sont entièrement plats.
-- **Syllabes en couleurs alternées** (activable) sur les textes de lecture, les consignes et les messages des créatures ; découpage par règles, vérifié par les tests.
+- **Syllabes en couleurs alternées** (activable) sur les textes de lecture, les consignes et les messages des créatures ; découpage par règles, vérifié par les tests. Jamais sur le mot d’un exercice qui demande de le découper (Abattage syllabique) : les couleurs donneraient la réponse.
+- **Syllabes entendues** : quand on compte les syllabes à l’oreille, on compte celles qu’on entend, sans le e muet final (« ca-bane » : 2 syllabes, « lan-terne » : 2). La consigne le dit (« que tu entends ») et la correction montre le découpage oral.
 - **Lecture vocale** : toute consigne est lue dès qu’elle apparaît (désactivable) et relançable ; les symboles sont dits en mots (« 7 fois 8 », « 3 quarts ») ; les fractions sont écrites en colonne. En lecture, la ligne lue est surlignée.
 - **Rien à lire dans la 3D** : tout texte est dans un panneau HTML, en police dys, lu à voix haute.
 - **Énoncés courts** ; en 4e et 3e ils peuvent être plus longs mais restent découpés (syllabes, lignes courtes).
 
 ## Une chose à la fois
 
-- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne fait rien bouger.
-- **Une consigne unique** par exercice, la même pour tous les items.
+- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne cache ni la question, ni la réponse touchée, ni la bonne réponse.
+- **Une consigne unique** par exercice, la même pour tous les items, **toujours écrite** à l’écran en plus d’être lue : en classe sans casque, ou la voix coupée, l’élève sait quoi faire.
 - **Réponses en ordre stable** : en maths, rangées dans l’ordre croissant ; en français, mélangées à l’affichage mais jamais déplacées après un clic.
 - **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance.
 - **Cibles tactiles larges** (au moins 48 px), un geste par action ; l’appui long n’est jamais la seule façon de faire.

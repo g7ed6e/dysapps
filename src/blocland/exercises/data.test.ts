@@ -58,6 +58,21 @@ it('chasse au son : 4 mots par écran, 2 à 3 bons par écran, pictogramme et so
   }
 });
 
+it('abattage : on compte les syllabes entendues, sans e muet final', () => {
+  const defs = EXERCISES.filter((e) => e.type === 'abattage');
+  expect(defs.length).toBeGreaterThanOrEqual(2);
+  for (const def of defs) {
+    expect(def.instruction).toMatch(/entends/);
+    for (const it of def.items) {
+      const syllables = String(it.heard).split('-');
+      expect(String(syllables.length), String(it.word)).toBe(it.answer);
+      expect(it.choices).toContain(it.answer);
+      // « ca-ba-ne » compterait le e muet, que l'oreille n'entend pas : on attend « ca-bane ».
+      for (const s of syllables) expect(s, `${it.word} : ${it.heard}`).not.toMatch(/^[^aeiouyàâéèêëîïôûù]+e$/);
+    }
+  }
+});
+
 it('filon : moitié de lettres cibles, lettres proches seulement', () => {
   for (const def of EXERCISES.filter((e) => e.type === 'filon')) {
     expect(def.items.filter((i) => i.correct).length).toBe(def.items.length / 2);

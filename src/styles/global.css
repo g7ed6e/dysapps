@@ -2115,7 +2115,23 @@ a.app-card:active {
 }
 /* Place pour faire défiler le contenu au-dessus du bandeau de résultat. */
 .quiz.has-sheet {
-  padding-bottom: 22rem;
+  /* Hauteur réelle du bandeau de résultat (mesurée), pour pouvoir faire défiler la question au-dessus. */
+  padding-bottom: calc(var(--sheet-h, 22rem) + 1.5rem);
+}
+/* Consigne d'une quête de Blocland : toujours écrite, en plus d'être lue. */
+.consigne {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin: 0 0 0.9rem;
+}
+.consigne-text {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: var(--line-height);
 }
 .question .feedback {
   margin: 1.4rem 0 0.4rem;
@@ -2148,6 +2164,12 @@ a.app-card:active {
   max-height: 65vh;
   margin: 0 auto;
 }
+/* Sur téléphone, le bandeau laisse au moins la moitié de l'écran à la question ; la correction défile. */
+@media (max-width: 640px) {
+  .result-sheet-inner {
+    max-height: 48vh;
+  }
+}
 /* Seule la correction défile si elle est longue ; le bouton reste visible. */
 .result-sheet-body {
   flex: 1 1 auto;
@@ -2164,6 +2186,12 @@ a.app-card:active {
 .feedback-compact .feedback-shout {
   margin: 0;
   font-size: 1.5rem;
+}
+/* Sur téléphone, le résultat tient sur une ligne : plus de place pour la question au-dessus. */
+@media (max-width: 640px) {
+  .feedback-compact .feedback-shout {
+    font-size: 1.1rem;
+  }
 }
 .feedback-compact .feedback-body {
   flex: 1 1 10rem;

@@ -1,4 +1,7 @@
 import { Icon } from '../../components/Icon';
+import { frenchTypography } from '../../components/math/RichText';
+import { SpeakButton } from '../../components/SpeakButton';
+import { Syllabified } from '../../components/Syllabified';
 import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';
 
@@ -30,6 +33,14 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
       <p className="boss-round-title">
         <Icon name="shield" /> Épreuve : {labelOf(String(round.screenType))}
       </p>
+      {typeof round.instruction === 'string' && round.instruction && (
+        <div className="consigne">
+          <p className="consigne-text">
+            <Syllabified text={frenchTypography(round.instruction)} />
+          </p>
+          <SpeakButton text={frenchTypography(round.instruction)} label="Consigne" compact />
+        </div>
+      )}
       <Sub
         items={subItems}
         answered={answered}
