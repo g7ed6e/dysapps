@@ -13,7 +13,7 @@ L’interface entière suit un style de monde en blocs, dessiné par le code et 
 ## Polices
 
 - La police **« affiche »** (Archivo Black) ne sert qu’aux titres courts.
-- La police **pixel** (Silkscreen) ne sert qu’au logo et aux compteurs.
+- La police **pixel** (Silkscreen) ne sert qu’au décor : le logo « D » et le chiffre de l’écusson de rang. Toute étiquette qui porte un sens (« Nouvelle partie », « Aventure », « Niveau 6e », le nom d’une créature, le compteur du tutoriel, l’épreuve du Gardien, les dates du journal) est dans la police de lecture choisie, en gras, en casse normale, à 18 px au moins ; le nom « DysApps » est dans la police des titres.
 - **Tout texte à lire** (consignes, phrases, corrections, panneaux) est dans la police dys choisie par l’élève : Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible ou Arial.
 
 ## Textures

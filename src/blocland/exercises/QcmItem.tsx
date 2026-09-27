@@ -11,7 +11,7 @@ import type { ScreenProps } from './registry';
  * syllabes (le découpage suit les règles du français) et il est lu en voix anglaise. Avec `plainWord` (abattage), le mot
  * n'est pas découpé non plus : les couleurs donneraient le nombre de syllabes.
  */
-export function QcmItem({ items, answered, onAnswer, lang = 'fr', plainWord = false }: ScreenProps & { plainWord?: boolean }) {
+export function QcmItem({ items, answered, onAnswer, ruledOut, lang = 'fr', plainWord = false }: ScreenProps & { plainWord?: boolean }) {
   const item = items[0];
   const prompt = String(item.prompt ?? item.word ?? '');
   const choices = Array.isArray(item.choices) ? item.choices.map(String) : [];
@@ -38,13 +38,14 @@ export function QcmItem({ items, answered, onAnswer, lang = 'fr', plainWord = fa
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
         {choices.map((choice) => {
           const isAnswer = answered && choice === answer;
-          const isWrong = answered && chosen === choice && choice !== answer;
+          // Au deuxième essai, la réponse déjà tentée reste barrée.
+          const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
           return (
             <button
               key={choice}
               type="button"
               className={`choice${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
-              disabled={Boolean(answered)}
+              disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
               <span lang={langAttr(choicesLang)}>

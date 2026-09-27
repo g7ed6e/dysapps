@@ -22,7 +22,7 @@ function expected(id: string, prompt: string, choices: string[]): string {
   if ((m = id.match(/^(lire|droite)-(\d+)-(\d+)$/))) return `${m[2]}/${m[3]}`;
   if ((m = prompt.match(/^(\d+)\/(\d+) = …\/(\d+)$/))) return String((Number(m[1]) * Number(m[3])) / Number(m[2]));
   if ((m = prompt.match(/^(\d+)\/(\d+) de (\d+) = …$/))) return String((Number(m[1]) * Number(m[3])) / Number(m[2]));
-  if ((m = prompt.match(/: (\d+\/\d+) ou (\d+\/\d+) \?$/))) {
+  if ((m = prompt.match(/^Compare (\d+\/\d+) et (\d+\/\d+) :/))) {
     const [a, b] = [val(m[1]), val(m[2])];
     return a === b ? choices.find((c) => !/\d/.test(c))! : a > b ? m[1] : m[2];
   }
@@ -55,4 +55,13 @@ it('affiche les fractions en colonne, lisibles par un lecteur d’écran', () =>
   render(<RichText text="2/3 = …/6" />);
   expect(screen.getByRole('img', { name: '2 tiers' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'combien sur 6' })).toBeInTheDocument();
+});
+
+it('comparer : la question annonce que les fractions peuvent être égales', () => {
+  const quest = QUESTS.find((q) => q.id === 'comparer')!;
+  for (let s = 1; s <= 20; s++)
+    for (const q of quest.makeWith(seeded(s))) {
+      expect(q.prompt).toMatch(/ou sont-elles égales \?$/);
+      expect(q.choices).toContain('Elles sont égales');
+    }
 });

@@ -11,7 +11,7 @@ import type { ScreenProps } from './registry';
  * Champs de l'item : word (lu), choices, answer (= word), hint (indice affiché après la réponse), sentence (contexte lu, facultatif).
  * En anglais (`lang: 'en'`), le mot est lu en voix anglaise.
  */
-export function DicteeItem({ items, answered, onAnswer, exerciseId, lang = 'fr' }: ScreenProps) {
+export function DicteeItem({ items, answered, onAnswer, ruledOut, exerciseId, lang = 'fr' }: ScreenProps) {
   const { settings, speak } = useSettings();
   const item = items[0];
   const word = String(item.word);
@@ -38,14 +38,15 @@ export function DicteeItem({ items, answered, onAnswer, exerciseId, lang = 'fr' 
       <div className="choices short" role="group" aria-label="Écritures possibles">
         {choices.map((choice) => {
           const isAnswer = answered && choice === answer;
-          const isWrong = answered && chosen === choice && choice !== answer;
+          // Au deuxième essai, la réponse déjà tentée reste barrée.
+          const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
           return (
             <button
               key={choice}
               type="button"
               className={`choice letter-block${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
               lang={langAttr(item.choicesLang === 'fr' ? 'fr' : lang)}
-              disabled={Boolean(answered)}
+              disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
               {choice}

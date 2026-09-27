@@ -19,7 +19,8 @@ import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
-import { lockedHint, nextGoal } from './world/goals';
+import { lockedHint, nextGoalInfo } from './world/goals';
+import { GoalLine } from './GoalLine';
 
 interface Props {
   biome: BiomeDef;
@@ -48,7 +49,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const greeting = unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
-  const goal = unlocked ? nextGoal(state, biome.id) : null;
+  const goal = unlocked ? nextGoalInfo(state, biome.id) : null;
   const [bossSaid, setBossSaid] = useState<string | null>(null);
   // En 3D, le plan, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
@@ -92,11 +93,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         <SpeakButton text={greeting} label="Réécouter" compact />
       </p>
 
-      {goal && (
-        <p className="island-goal">
-          <Icon name="flag" /> <strong>Prochain objectif :</strong> <Syllabified text={goal} />
-        </p>
-      )}
+      {goal && <GoalLine goal={goal} />}
       {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
 
       <h3 className="island-sheet-heading">

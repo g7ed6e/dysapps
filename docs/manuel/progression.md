@@ -12,7 +12,7 @@ Sous la jauge, la page Succès montre **l’échelle des six rangs**, de Bronze 
 
 ## Combos et messages
 
-Une suite de bonnes réponses du premier coup forme un **combo** (« COMBO x5 »). La page Succès garde le meilleur combo et la **précision** (part de bonnes réponses). Les messages sont ceux d’un jeu (« BIEN VU ! », « QUÊTE TERMINÉE »), jamais des reproches.
+Une suite de bonnes réponses du premier coup forme un **combo** (« 5 d’affilée ! »). La page Succès garde le meilleur combo et la **précision** (part de bonnes réponses). Les messages sont courts, en minuscules et toujours les mêmes, pour ne pas avoir à déchiffrer un mot nouveau à chaque réponse : « Bravo ! » ou « Juste ! » quand c’est trouvé, « Presque ! » avec l’indice quand on peut réessayer, « Pas cette fois » avec la bonne réponse, « Quête terminée » ou « Sans faute ! » à la fin. Jamais de reproche.
 
 ## Par matière : progresser et retravailler
 

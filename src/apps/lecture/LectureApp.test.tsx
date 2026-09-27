@@ -68,7 +68,7 @@ it('enchaîne lecture, questions avec joker et résultat', async () => {
   renderApp();
   const text = TEXTS.find((t) => t.id === 'chevre')!;
   await user.click(screen.getByRole('button', { name: /La chèvre de monsieur Seguin/ }));
-  expect(screen.getByText('Mots difficiles')).toBeInTheDocument();
+  expect(screen.getByText(/Mots difficiles/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /aux questions/ }));
 
   await user.click(screen.getByRole('button', { name: /Prendre un joker/ }));

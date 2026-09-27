@@ -1,0 +1,215 @@
+{
+  "id": "foret-echauffement-003",
+  "biome": "foret",
+  "type": "abattage",
+  "level": 3,
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends. Ce sont des mots du collège : dis-les à voix basse en tapant dans tes mains.",
+  "items": [
+    {
+      "key": "géographie",
+      "word": "géographie",
+      "prompt": "géographie",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4",
+      "heard": "gé-o-gra-phie"
+    },
+    {
+      "key": "orthographe",
+      "word": "orthographe",
+      "prompt": "orthographe",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "heard": "or-tho-graphe"
+    },
+    {
+      "key": "vocabulaire",
+      "word": "vocabulaire",
+      "prompt": "vocabulaire",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4",
+      "heard": "vo-ca-bu-laire"
+    },
+    {
+      "key": "conjugaison",
+      "word": "conjugaison",
+      "prompt": "conjugaison",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4",
+      "heard": "con-ju-gai-son"
+    },
+    {
+      "key": "électricité",
+      "word": "électricité",
+      "prompt": "électricité",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "5",
+      "heard": "é-lec-tri-ci-té"
+    },
+    {
+      "key": "multiplication",
+      "word": "multiplication",
+      "prompt": "multiplication",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "5",
+      "heard": "mul-ti-pli-ca-tion"
+    },
+    {
+      "key": "dictionnaire",
+      "word": "dictionnaire",
+      "prompt": "dictionnaire",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "heard": "dic-tion-naire"
+    },
+    {
+      "key": "Méditerranée",
+      "word": "Méditerranée",
+      "prompt": "Méditerranée",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "5",
+      "heard": "mé-di-ter-ra-née"
+    },
+    {
+      "key": "préhistoire",
+      "word": "préhistoire",
+      "prompt": "préhistoire",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "heard": "pré-his-toire"
+    },
+    {
+      "key": "encyclopédie",
+      "word": "encyclopédie",
+      "prompt": "encyclopédie",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "5",
+      "heard": "en-cy-clo-pé-die"
+    },
+    {
+      "key": "parallélogramme",
+      "word": "parallélogramme",
+      "prompt": "parallélogramme",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "5",
+      "heard": "pa-ral-lé-lo-gramme"
+    },
+    {
+      "key": "astronaute",
+      "word": "astronaute",
+      "prompt": "astronaute",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "heard": "as-tro-naute"
+    },
+    {
+      "key": "information",
+      "word": "information",
+      "prompt": "information",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4",
+      "heard": "in-for-ma-tion"
+    },
+    {
+      "key": "biodiversité",
+      "word": "biodiversité",
+      "prompt": "biodiversité",
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ],
+      "answer": "6",
+      "heard": "bi-o-di-ver-si-té"
+    },
+    {
+      "key": "mathématiques",
+      "word": "mathématiques",
+      "prompt": "mathématiques",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4",
+      "heard": "ma-thé-ma-tiques"
+    },
+    {
+      "key": "expérience",
+      "word": "expérience",
+      "prompt": "expérience",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "heard": "ex-pé-rience"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien entendu !",
+    "wrong": "On entend {heard} : {answer}, c’est le nombre de syllabes."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  },
+  "perRun": 8
+}

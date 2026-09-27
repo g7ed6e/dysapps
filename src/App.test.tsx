@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
@@ -119,6 +119,12 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 12 à gagner/ })).toHaveAttribute('href', '/aventure/foret');
   expect(screen.getByRole('link', { name: 'Plaine des nombres' })).toHaveAttribute('href', '/aventure/plaine');
+  // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
+  const now = screen.getByRole('list', { name: /Tu peux construire/ });
+  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/aventure/foret');
+  // Les îles fermées ne sont pas listées une par une, seulement comptées.
+  expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
+  expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });

@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { QuizSession, type Question } from './QuizSession';
+import { Celebrations } from './Celebrations';
 
 const questions: Question[] = [
   { id: 'q1', prompt: 'Combien font 2 + 2 ?', choices: ['3', '4', '5'], answer: '4', hint: 'Compte sur tes doigts.' },
@@ -124,7 +125,7 @@ it('relit un message identique quand la lecture automatique est active', async (
     await user.click(screen.getByRole('button', { name: 'non' }));
     await user.click(screen.getByRole('button', { name: /Suivante/ }));
   }
-  expect(spoken.filter((t) => t.startsWith('PAS CETTE FOIS'))).toHaveLength(2);
+  expect(spoken.filter((t) => t.startsWith('Pas cette fois'))).toHaveLength(2);
   vi.unstubAllGlobals();
 });
 
@@ -144,4 +145,27 @@ it('affiche le résultat et le bouton pour continuer dans le bandeau fixé en ba
   const sheet = screen.getByRole('region', { name: 'Résultat de la question' });
   expect(within(sheet).getByRole('button', { name: /Suivante/ })).toHaveFocus();
   expect(within(sheet).getByText(/\+10 XP/)).toBeInTheDocument();
+});
+
+it('garde les succès gagnés pendant la partie pour le bilan : rien ne tombe sur la question', async () => {
+  const user = userEvent.setup();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <MemoryRouter>
+          <Celebrations />
+          <QuizSession appId="test" makeQuestions={() => questions} />
+        </MemoryRouter>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  // Première réponse : le succès « Échauffement » est gagné, mais pas affiché.
+  await user.click(screen.getByRole('button', { name: '4' }));
+  expect(screen.queryByText('Succès débloqué')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Suivante/ }));
+  await user.click(screen.getByRole('button', { name: 'a' }));
+  await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
+  // Au bilan, il apparaît.
+  expect(screen.getAllByText('Succès débloqué').length).toBeGreaterThan(0);
+  expect(screen.getByText('Échauffement')).toBeInTheDocument();
 });

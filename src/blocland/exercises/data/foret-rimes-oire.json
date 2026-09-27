@@ -1,0 +1,79 @@
+{
+  "id": "foret-rimes-oire",
+  "biome": "foret",
+  "type": "rimes",
+  "level": 3,
+  "target": "histoire",
+  "instruction": "Tape les mots qui riment avec histoire : écoute la fin du mot, pas son orthographe. Puis valide.",
+  "items": [
+    {
+      "key": "mémoire",
+      "word": "mémoire",
+      "image": "🧠",
+      "correct": true,
+      "ending": "[oir]"
+    },
+    {
+      "key": "voiture",
+      "word": "voiture",
+      "image": "🚗",
+      "correct": false,
+      "ending": "[ure]"
+    },
+    {
+      "key": "trottoir",
+      "word": "trottoir",
+      "image": "🚶",
+      "correct": true,
+      "ending": "[oir]"
+    },
+    {
+      "key": "horaire",
+      "word": "horaire",
+      "image": "🕐",
+      "correct": false,
+      "ending": "[ère]"
+    },
+    {
+      "key": "victoire",
+      "word": "victoire",
+      "image": "🏆",
+      "correct": true,
+      "ending": "[oir]"
+    },
+    {
+      "key": "soirée",
+      "word": "soirée",
+      "image": "🌙",
+      "correct": false,
+      "ending": "[é]"
+    },
+    {
+      "key": "miroir",
+      "word": "miroir",
+      "image": "🪞",
+      "correct": true,
+      "ending": "[oir]"
+    },
+    {
+      "key": "devoir",
+      "word": "devoir",
+      "image": "📝",
+      "correct": true,
+      "ending": "[oir]"
+    }
+  ],
+  "feedback": {
+    "correct": "Ça rime, même avec une autre orthographe !",
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+  },
+  "reward": {
+    "block": "bois",
+    "amount": 5,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

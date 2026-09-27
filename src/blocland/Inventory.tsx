@@ -20,25 +20,68 @@ function useLabel(use: Use, count: number): string {
 }
 
 /**
- * L'inventaire commenté : chaque type de bloc en poche et ce qu'il construit maintenant (un lien par île), les ouvrages
- * que les blocs peuvent payer, et les blocs à aller chercher, avec l'île où les gagner. Même contenu dans le panneau
- * 3D et en vue simple ; les liens changent d'île (en 3D, la caméra y vole et son panneau s'ouvre).
+ * L'inventaire commenté. D'abord ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de
+ * bloc en poche et ce qu'il construit, les ouvrages, et les blocs à aller chercher sur les îles ouvertes (celles
+ * qu'on ne peut pas encore atteindre sont seulement comptées). Même contenu dans le panneau 3D et en vue simple ;
+ * les liens changent d'île (en 3D, la caméra y vole et son panneau s'ouvre).
  */
 export function InventoryBody() {
   const { state } = useBlocland();
   const at = state.village.at ?? 'foret';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
+  // Ce qu'on peut faire maintenant : les plans et le navire dont on a tous les blocs, les ouvrages qu'on peut payer.
+  const seen = new Set<string>();
+  const readyUses = rows
+    .flatMap((row) => row.uses.filter((u) => u.enough && u.kind !== 'garder'))
+    .filter((u) => (seen.has(`${u.kind}-${u.island}`) ? false : (seen.add(`${u.kind}-${u.island}`), true)));
+  const readyOuvrages = ouvrages.filter((o) => o.enough);
+  // Les ouvrages pas encore payables : les trois moins chers suffisent, une longue liste de coûts noierait l'essentiel.
+  const laterOuvrages = ouvrages
+    .filter((o) => !o.enough)
+    .sort((x, y) => x.bridge.cost - y.bridge.cost)
+    .slice(0, 3);
+  const openMissing = missing.filter((m) => !m.closed);
+  const closedMissing = missing.length - openMissing.length;
   return (
     <div className="inventory">
+      <section className="inventory-section inventory-now" aria-labelledby="inventaire-maintenant">
+        <h3 id="inventaire-maintenant" className="island-sheet-heading">
+          <Icon name="hammer" /> Tu peux construire
+        </h3>
+        {readyUses.length + readyOuvrages.length === 0 ? (
+          <p className="inventory-line">
+            <Syllabified text="Rien pour l’instant : fais une quête pour gagner des blocs." />{' '}
+            <Link to={`/aventure/${at}`} className="tag">
+              <Icon name="play" /> Aller sur {getBiome(at)?.name}
+            </Link>
+          </p>
+        ) : (
+          <ul className="inventory-uses" aria-labelledby="inventaire-maintenant">
+            {readyUses.map((use) => (
+              <li key={`${use.kind}-${use.island}`}>
+                <Link to={`/aventure/${use.island}`} className="tag tag-ok">
+                  <Icon name={use.kind === 'navire' ? 'ship' : 'hammer'} />{' '}
+                  {use.kind === 'navire' ? cap(VEHICLE_NAME) : `Plan de ${getBiome(use.island)?.name ?? use.island}`}
+                </Link>
+              </li>
+            ))}
+            {readyOuvrages.map((o) => (
+              <li key={o.bridge.id}>
+                <Link to={`/aventure/${o.from}`} className="tag tag-ok">
+                  <Icon name="map" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <h3 id="inventaire-blocs" className="island-sheet-heading">
-        <Icon name="blocks" /> Mes blocs
+        <Icon name="blocks" /> Dans ta poche
       </h3>
       {rows.length === 0 ? (
         <p className="inventory-empty">
-          <Syllabified text="Aucun bloc pour l’instant. Fais une quête pour en gagner." />{' '}
-          <Link to={`/aventure/${at}`} className="tag">
-            <Icon name="play" /> Aller sur {getBiome(at)?.name}
-          </Link>
+          <Syllabified text="Aucun bloc pour l’instant." />
         </p>
       ) : (
         <ul className="inventory-list" aria-labelledby="inventaire-blocs">
@@ -64,16 +107,16 @@ export function InventoryBody() {
         </ul>
       )}
 
-      {ouvrages.length > 0 && (
+      {laterOuvrages.length > 0 && (
         <section className="inventory-section" aria-labelledby="inventaire-ouvrages">
           <h3 id="inventaire-ouvrages" className="island-sheet-heading">
-            <Icon name="map" /> Pour les ouvrages
+            <Icon name="map" /> Prochains ouvrages
           </h3>
           <p className="inventory-line">
             Tu as <strong>{payable}</strong> bloc{payable > 1 ? 's' : ''} pour construire, de n’importe quel type.
           </p>
           <ul className="inventory-uses inventory-ouvrages" aria-label="Ouvrages possibles">
-            {ouvrages.map((o) => (
+            {laterOuvrages.map((o) => (
               <li key={o.bridge.id}>
                 <Link to={`/aventure/${o.from}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
                   <Icon name="hammer" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
@@ -88,22 +131,21 @@ export function InventoryBody() {
         <h3 id="inventaire-manque" className="island-sheet-heading">
           <Icon name="flag" /> À aller chercher
         </h3>
-        {missing.length === 0 ? (
-          <p className="inventory-line">
-            <Syllabified text="Tu as tout ce qu’il faut pour les plans en cours." />
-          </p>
+        {openMissing.length === 0 ? (
+          closedMissing === 0 && (
+            <p className="inventory-line">
+              <Syllabified text="Tu as tout ce qu’il faut pour les plans en cours." />
+            </p>
+          )
         ) : (
           <ul className="inventory-missing" aria-labelledby="inventaire-manque">
-            {missing.map((m) => (
+            {openMissing.map((m) => (
               <li key={m.block}>
                 <BlockIcon top={BLOCKS[m.block].top} side={BLOCKS[m.block].side} size={28} />
                 <span>
                   <strong>{m.need}</strong> {name(m.block)} · à gagner dans{' '}
                   {m.island ? (
-                    <>
-                      <Link to={`/aventure/${m.island}`}>{getBiome(m.island)?.name}</Link>
-                      {m.closed && ' (île fermée)'}
-                    </>
+                    <Link to={`/aventure/${m.island}`}>{getBiome(m.island)?.name}</Link>
                   ) : (
                     whereToEarn(m.block)
                   )}
@@ -111,6 +153,13 @@ export function InventoryBody() {
               </li>
             ))}
           </ul>
+        )}
+        {closedMissing > 0 && (
+          <p className="inventory-line inventory-later">
+            <Syllabified
+              text={`Et ${closedMissing} autre${closedMissing > 1 ? 's' : ''} sorte${closedMissing > 1 ? 's' : ''} de blocs, sur des îles que tu ouvriras plus tard.`}
+            />
+          </p>
         )}
       </section>
     </div>

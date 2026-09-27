@@ -6,6 +6,7 @@ import { frenchTypography, RichText } from '../components/math/RichText';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { useSheetClearance } from '../components/useSheetClearance';
+import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
@@ -16,7 +17,7 @@ import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
-import { SCREEN_TYPES, type ScreenAnswer } from './exercises/registry';
+import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { Stars } from './Stars';
@@ -51,6 +52,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
   const [answered, setAnswered] = useState<ScreenAnswer | null>(null);
+  // Premier essai raté d'un écran qui permet de réessayer : on le garde pour le score et pour barrer la réponse.
+  const [firstTry, setFirstTry] = useState<ScreenAnswer | null>(null);
   const [helpUsed, setHelpUsed] = useState(false);
   const [results, setResults] = useState<ItemResult[]>([]);
   const [done, setDone] = useState<Completion | null>(null);
@@ -80,6 +83,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
 
   // Le bandeau de résultat ne cache pas la réponse.
   useSheetClearance(sectionRef, Boolean(answered) && !done);
+  // Les succès gagnés en route s'affichent sur l'écran de récompense, pas sur la question.
+  useHoldCelebrations(!done);
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -88,19 +93,28 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
 
   const onAnswer = (a: ScreenAnswer) => {
     if (answered) return;
+    const correct = a.results.every((r) => r.correct);
+    // Une erreur au premier essai : un indice, et on réessaie (comme dans les quêtes du portail).
+    if (!correct && !firstTry && retryAllowed(def.type, items)) {
+      setFirstTry(a);
+      return;
+    }
     setAnswered(a);
-    onRound?.({ index, total: screens.length, correct: a.results.every((r) => r.correct) });
-    answer(
-      a.results.every((r) => r.correct),
-      helpUsed ? 2 : 1,
-    );
+    onRound?.({ index, total: screens.length, correct });
+    answer(correct, helpUsed || firstTry ? 2 : 1);
   };
 
   const next = () => {
     if (!answered) return;
-    const all = [...results, ...answered.results.map((r) => ({ key: r.key, correct: r.correct, attempts: 1, usedHelp: helpUsed }))];
+    // Un item juste dès le premier essai garde son point entier, même si l'écran a été refait.
+    const firstOk = new Set(firstTry?.results.filter((r) => r.correct).map((r) => r.key));
+    const all = [
+      ...results,
+      ...answered.results.map((r) => ({ key: r.key, correct: r.correct, attempts: firstTry && !firstOk.has(r.key) ? 2 : 1, usedHelp: helpUsed })),
+    ];
     setResults(all);
     setAnswered(null);
+    setFirstTry(null);
     setHelpUsed(false);
     if (index + 1 < screens.length) {
       setIndex(index + 1);
@@ -219,7 +233,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const message = answered
     ? allCorrect
       ? def.feedback.correct
-      : fillTemplate(def.feedback.wrong, { target: def.target, ...firstWrong, ...answered.detail })
+      : typeof answered.detail?.summary === 'string' && answered.detail.summary
+        ? answered.detail.summary
+        : fillTemplate(def.feedback.wrong, { target: def.target, ...firstWrong, ...answered.detail })
     : null;
 
   return (
@@ -242,8 +258,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
         ))}
       </ol>
 
+      {firstTry && !answered && (
+        <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />
+      )}
+
       <Screen
-        key={items[0].key}
+        key={`${items[0].key}${firstTry ? '-2' : ''}`}
         items={items}
         answered={answered}
         onAnswer={onAnswer}
@@ -252,6 +272,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
         target={def.target}
         exerciseId={def.id}
         lang={def.lang}
+        ruledOut={firstTry && typeof firstTry.detail?.chosen === 'string' ? [firstTry.detail.chosen] : undefined}
       />
 
       {answered && message && (
@@ -259,7 +280,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
           <div className="result-sheet-inner">
             <div className="result-sheet-body">
               <Feedback
-                shout={allCorrect ? 'BIEN VU !' : 'PAS TOUT À FAIT'}
+                shout={allCorrect ? 'Bravo !' : 'Pas tout à fait'}
                 message=""
                 tone={allCorrect ? 'bien' : 'rate'}
                 compact
@@ -289,4 +310,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
       )}
     </section>
   );
+}
+
+/** Le message du deuxième essai : l'indice de l'item s'il en a un, sinon ce qu'il faut refaire. */
+function retryMessage(type: string, items: ExerciseItem[]): string {
+  const hint = items.length === 1 && typeof items[0].hint === 'string' ? items[0].hint : '';
+  if (hint) return `Indice : ${hint} Réessaie.`;
+  if (SCREEN_TYPES[type]?.sorting) return 'Il y a au moins une erreur. Regarde et écoute encore chaque carte, puis valide.';
+  return 'Ce n’est pas cette réponse. Regarde encore, puis choisis-en une autre.';
 }

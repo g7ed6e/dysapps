@@ -24,7 +24,11 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
           a.results.findIndex((r) => !r.correct),
         )
       ];
-    const explain = a.results.every((r) => r.correct) ? '' : fillTemplate(String(round.wrong), { target: round.target, ...firstWrong, ...a.detail });
+    // Un écran qui rédige sa correction complète (tri de mots) la donne dans `summary` ; sinon, le message de la quête.
+    const summary = typeof a.detail?.summary === 'string' ? a.detail.summary : '';
+    const explain = a.results.every((r) => r.correct)
+      ? ''
+      : summary || fillTemplate(String(round.wrong), { target: round.target, ...firstWrong, ...a.detail });
     onAnswer({ results: a.results, detail: { ...a.detail, explain } });
   };
 

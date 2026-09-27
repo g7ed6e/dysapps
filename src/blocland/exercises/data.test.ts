@@ -209,7 +209,7 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
   expect(second.level).toBe(1);
   // Niveau 2 demandé : on reste au niveau 2 ; niveau 9 : le plus haut disponible.
   expect(pickExercise('foret', 'chasse-son', 2)!.level).toBe(2);
-  expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(2);
+  expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(3);
   expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
   expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
 });

@@ -4,7 +4,7 @@
   "type": "rimes",
   "level": 2,
   "target": "fourchette",
-  "instruction": "Tape les mots qui riment avec fourchette, comme dans la chanson. Puis valide.",
+  "instruction": "Tape les mots qui riment avec fourchette. Puis valide.",
   "items": [
     {
       "key": "bicyclette",
