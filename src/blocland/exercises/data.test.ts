@@ -4,6 +4,7 @@ import { SCREEN_TYPES } from './registry';
 import { CalculScreen } from './CalculScreen';
 import { DicteeItem } from './DicteeItem';
 import { fillTemplate } from './types';
+import { COFFRE_HORS_LISTE, motDictable, motsOutilsDictables } from '../../programme/motsOutils';
 
 const EXERCISES = await loadAllExercises();
 
@@ -150,6 +151,18 @@ it('dictées à choix (oreille, coffre) : le mot est parmi 2 ou 3 écritures dif
       expect(it.answer).toBe(it.word);
       expect(String(it.hint).length).toBeGreaterThan(5);
     }
+});
+
+it('coffre à mots : chaque mot dicté vient de la liste officielle des mots-outils (CP, CE1), ou des exceptions motivées', () => {
+  const official = motsOutilsDictables();
+  const used = new Set<string>();
+  for (const def of EXERCISES.filter((e) => e.type === 'coffre'))
+    for (const it of def.items) {
+      const w = motDictable(String(it.word));
+      used.add(w);
+      expect(official.has(w) || w in COFFRE_HORS_LISTE, `${def.id} : « ${w} » n’est ni dans la liste officielle ni dans COFFRE_HORS_LISTE`).toBe(true);
+    }
+  for (const w of Object.keys(COFFRE_HORS_LISTE)) expect(used.has(w), `« ${w} » n’est plus dicté par le Coffre : retirer l’exception`).toBe(true);
 });
 
 it('familles : le morceau choisi et la racine reconstituent le mot', () => {

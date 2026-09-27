@@ -18,6 +18,7 @@
       "title": "Contenu pédagogique",
       "pages": [
         "pedagogie/principes.md",
+        "pedagogie/programmes.md",
         "pedagogie/archipel.md",
         {
           "dir": "pedagogie/iles",
@@ -37,6 +38,7 @@
         "conception/architecture.md",
         "conception/style.md",
         "conception/exercices.md",
+        "conception/programmes.md",
         "conception/deploiement.md",
         "conception/contribuer.md",
         "conception/cadrage-archipels.md",

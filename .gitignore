@@ -9,3 +9,5 @@ dist-docs
 docs/.vitepress/cache
 docs/.vitepress/.temp
 .wrangler
+.programme
+.claude/settings.local.json

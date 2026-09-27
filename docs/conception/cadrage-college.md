@@ -60,3 +60,16 @@ Ponts : verticaux depuis la rangée voisine (6 à 8 blocs), horizontaux dans la 
 5. ✅ Falaise des accords + Cabinet des mots (français 4e-3e).
 6. ✅ Belvédère de Thalès + Observatoire des données + Phare des fonctions (maths 3e).
 7. ✅ Observatoire des textes (français 3e) et finitions (succès Collégien et Archipel bâti).
+
+## 6. Après les programmes officiels (27 septembre 2026)
+
+Le rattachement des quêtes aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Trois quêtes de ce cadrage n’ont jamais été livrées : les conversions des Balances, « mais / mes / met » à l’Aiguillage, et les quêtes **Lecture** (lire un diagramme, lire un graphique) de l’Observatoire des données et du Phare. L’aide `value-table` annoncée en § 4 n’existe pas : le Phare utilise `ratio-table`. La suite, une pull request par lot, chacune retirant ses exclusions « à couvrir » de `src/programme/exclusions.ts` :
+
+1. **Île « Grandeurs » (maths 6e, Basses Terres)** : durées et horaires (Horloges), conversions (Balances), périmètres, aires et angles (Clôtures), tableaux et diagrammes (Relevés). Les Basses Terres passent à quatre îles de maths.
+2. **Maths 6e, automatismes** : division et opérations posées (Plaine, quatrième quête), grands nombres (Volcan, quatrième quête), encadrer une fraction, ranger et intercaler des décimaux.
+3. **Français 6e** : les mots-outils manquants de la liste officielle (Coffre à mots), l’accord dans le groupe nominal et le sujet inversé (Ferme), la compréhension et la grammaire de base (Tour du lecteur : deux quêtes de plus), synonymes et polysémie (Carrière).
+4. **Français 5e-4e** : présent, impératif et plus-que-parfait (Marais, quatrième quête), futur antérieur et valeurs des temps, « mais / mes / met » et autres homophones, verbes pronominaux et apposition (Falaise), champ lexical et niveaux de langue (Cabinet).
+5. **Maths 5e-3e** : divisibilité et facteurs premiers (Forge), fractions du cycle 4 (Glacier, quatrième quête), priorités et tester une égalité (Atelier), factoriser et équations produits, ratio (Marché), effectifs et fréquences et lecture de diagramme (Données), lecture graphique d’une fonction (Phare, nouvelle aide `graph`), réciproques de Pythagore et de Thalès.
+6. **Français 3e** : subordonnées, pronom relatif, passif, énonciation et discours rapporté (Observatoire des textes, quatrième quête), document composite.
+
+Une île porte au plus quatre quêtes (bornes tous les trois blocs dans un cœur de seize) ; l’identifiant d’une quête reste unique dans tout le jeu.

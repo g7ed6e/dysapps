@@ -9,10 +9,11 @@ Applications d’entraînement pour les **élèves dys du collège** (dyslexie, 
 
 - **Les quêtes du portail** : Homophones, Lecture (textes du domaine public), Tables et calcul mental, Fractions, Nombres décimaux, et en anglais Vocabulaire et Verbes irréguliers (voix anglaise pour les mots anglais). Séances courtes, questions générées, joker avec aide visuelle, correction qui explique.
 - **L’aventure Blocland** : quatre archipels en 3D, un par classe de la 6e à la 3e, vingt-huit îles en tout, une par thème du programme. Chaque île a sa créature, ses quêtes, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant. L’école du village de chaque archipel ouvre les quêtes du portail, qui y rapportent des blocs.
+- **Le programme officiel comme colonne vertébrale** : chaque quête cite les compétences des programmes de français, de mathématiques et de langues vivantes qu’elle travaille ; la documentation montre ce qui est couvert et ce qui reste à faire.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais sous 18 px, consignes lues à voix haute, syllabes en couleurs, un item par écran, aide toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, rien ne se perd.
 - **Une motivation façon jeu**, sans stress : XP, rangs, succès, étoiles, blocs, bâtiments, répétition espacée et niveau adapté.
 
-Le détail est dans la documentation : [Démarrer](https://g7ed6e.github.io/dysapps/manuel/demarrer.html), [Les quêtes](https://g7ed6e.github.io/dysapps/manuel/quetes.html), [Blocland](https://g7ed6e.github.io/dysapps/manuel/blocland.html), [Réglages et accessibilité](https://g7ed6e.github.io/dysapps/manuel/reglages.html), [Principes dys](https://g7ed6e.github.io/dysapps/pedagogie/principes.html), [L’archipel île par île](https://g7ed6e.github.io/dysapps/pedagogie/archipel.html).
+Le détail est dans la documentation : [Démarrer](https://g7ed6e.github.io/dysapps/manuel/demarrer.html), [Les quêtes](https://g7ed6e.github.io/dysapps/manuel/quetes.html), [Blocland](https://g7ed6e.github.io/dysapps/manuel/blocland.html), [Réglages et accessibilité](https://g7ed6e.github.io/dysapps/manuel/reglages.html), [Principes dys](https://g7ed6e.github.io/dysapps/pedagogie/principes.html), [Programmes officiels](https://g7ed6e.github.io/dysapps/pedagogie/programmes.html), [L’archipel île par île](https://g7ed6e.github.io/dysapps/pedagogie/archipel.html).
 
 ## Développer
 
@@ -28,6 +29,7 @@ npm run docs:check # vérifie que la pull request ajoute un fragment au journal 
 npm run docs:captures # rejoue le jeu dans Chromium et refait les captures d’écran (docs/_captures/)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
+npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/
 ```
 
 React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](https://g7ed6e.github.io/dysapps/conception/architecture.html), [Format des exercices](https://g7ed6e.github.io/dysapps/conception/exercices.html) et [Déploiement et sécurité](https://g7ed6e.github.io/dysapps/conception/deploiement.html).
@@ -49,4 +51,4 @@ L’application est construite et publiée par Cloudflare Workers à partir de `
 
 ## Licence et crédits
 
-Code sous licence MIT (voir `LICENSE`). La police **Luciole** (`public/fonts/luciole/`, version 2.001, non modifiée) est © Laurent Bourcellier & Jonathan Fabreguettes (Perez), distribuée sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.fr) ; la licence MIT du dépôt ne couvre pas ces fichiers, et le crédit est affiché dans l’application. Les textes de lecture sont du domaine public (La Fontaine, Daudet, Jules Verne) ; univers, créatures, textures et sons sont originaux et générés par le code.
+Code sous licence MIT (voir `LICENSE`). La police **Luciole** (`public/fonts/luciole/`, version 2.001, non modifiée) est © Laurent Bourcellier & Jonathan Fabreguettes (Perez), distribuée sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.fr) ; la licence MIT du dépôt ne couvre pas ces fichiers, et le crédit est affiché dans l’application. Les textes de lecture sont du domaine public (La Fontaine, Daudet, Jules Verne) ; univers, créatures, textures et sons sont originaux et générés par le code. Les intitulés des programmes officiels (`src/programme/`) et la liste des mots-outils viennent de jeux de données du ministère de l’Éducation nationale publiés sur [data.gouv.fr](https://www.data.gouv.fr/datasets/programmes-denseignement-de-lecole-elementaire-et-du-college-cycles-2-3-et-4/), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/) avec mention de la source.

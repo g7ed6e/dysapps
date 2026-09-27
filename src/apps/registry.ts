@@ -3,12 +3,15 @@
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { AnyIconName } from '../components/Icon';
+import type { ProgrammeId } from '../programme';
 
 export type Subject = 'francais' | 'maths' | 'anglais';
 
 export interface AppDef {
   id: string;
   subject: Subject;
+  /** Compétences du programme officiel que la quête travaille (identifiants de src/programme/). */
+  programme?: readonly ProgrammeId[];
   title: string;
   description: string;
   icon: AnyIconName;
@@ -38,6 +41,7 @@ export const APPS: AppDef[] = [
   {
     id: 'homophones',
     subject: 'francais',
+    programme: ['c3.fr.langue.homophonie'],
     title: 'Homophones',
     description: 'a / à, et / est, son / sont, ces / ses… 3 niveaux et 13 paires à maîtriser.',
     icon: 'shuffle',
@@ -47,6 +51,7 @@ export const APPS: AppDef[] = [
   {
     id: 'lecture',
     subject: 'francais',
+    programme: ['c3.fr.lecture.explicite', 'c3.fr.lecture.implicite', 'c3.fr.lecture.lexique-contexte', 'c3.fr.lecture.genres'],
     title: 'Lecture',
     description: 'Fables de La Fontaine, Daudet, Jules Verne : écoute, lis à ton rythme, réponds aux questions.',
     icon: 'library',
@@ -56,6 +61,7 @@ export const APPS: AppDef[] = [
   {
     id: 'tables',
     subject: 'maths',
+    programme: ['c3.ma.nombres.faits-numeriques', 'c3.ma.nombres.calcul-mental', 'c3.ma.nombres.calcul-pose'],
     title: 'Tables & calcul mental',
     description: 'Tables, divisions, compléments, doubles, × 10… avec des aides visuelles.',
     icon: 'zap',
@@ -65,6 +71,7 @@ export const APPS: AppDef[] = [
   {
     id: 'fractions',
     subject: 'maths',
+    programme: ['c3.ma.nombres.fractions-designations', 'c3.ma.nombres.fractions-comparer'],
     title: 'Fractions',
     description: 'Lire, comparer, fractions égales, fraction d’une quantité, droite graduée.',
     icon: 'pizza',
@@ -74,6 +81,7 @@ export const APPS: AppDef[] = [
   {
     id: 'decimaux',
     subject: 'maths',
+    programme: ['c3.ma.nombres.decimaux-ecritures', 'c3.ma.nombres.decimaux-comparer', 'c3.ma.nombres.calcul-mental'],
     title: 'Nombres décimaux',
     description: 'Lire, comparer, droite graduée, fractions décimales, × et ÷ par 10, compléments.',
     icon: 'ruler',
@@ -83,6 +91,7 @@ export const APPS: AppDef[] = [
   {
     id: 'vocabulaire',
     subject: 'anglais',
+    programme: ['c3.en.culture.vie-quotidienne', 'c3.en.ecouter.mots-familiers', 'c3.en.lire.mots-isoles', 'c3.en.ecrire.dictee'],
     title: 'Vocabulaire',
     description: 'Couleurs, famille, école, maison… 12 thèmes : écoute, traduis, écris, avec une voix anglaise.',
     icon: 'languages',
@@ -92,6 +101,7 @@ export const APPS: AppDef[] = [
   {
     id: 'irreguliers',
     subject: 'anglais',
+    programme: ['c4.en.langue.temps-verbaux'],
     title: 'Verbes irréguliers',
     description: 'go – went – gone : 60 verbes du collège en 3 niveaux, au prétérit et au participe passé.',
     icon: 'history',

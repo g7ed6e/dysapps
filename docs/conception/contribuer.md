@@ -27,9 +27,14 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
    - le **manuel** (`docs/manuel/`) mis à jour si un écran, un geste, un réglage ou une règle du jeu change, et ses **captures** refaites si l’écran montré change (`npm run docs:captures`) ;
    - les **principes** et la **conception** (`docs/pedagogie/principes.md`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
    - le **README** cohérent avec le reste.
-4. **Le contenu pédagogique** (archipel, pages des îles, homophones, lecture, maths du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une quête ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/docs/generate.mjs`.
+4. **Le contenu pédagogique** (programmes officiels, archipel, pages des îles, homophones, lecture, maths et anglais du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une quête ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/docs/generate.mjs`.
+5. **Le programme officiel** : une quête cite dans `programme` les compétences qu’elle travaille (`src/programme/`) ; une compétence nouvellement couverte quitte `src/programme/exclusions.ts`, une compétence qui perd sa quête y entre avec un motif. Le test de couverture le rappelle. Voir [Le référentiel des programmes](programmes.md).
 
 Une pull request qui ajoute une page au manuel ou à la conception la déclare dans `docs/_theme/nav.json` : le build échoue si une page du sommaire manque et signale une page hors sommaire.
+
+## Le Directeur contenu pédagogique
+
+Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur-contenu-pedagogique.md` : le **Directeur contenu pédagogique**. Il connaît le référentiel des programmes, les règles dys et le format des exercices, et sert à cadrer un lot de contenu à partir de ce qui reste à couvrir, à relire des exercices (programme, pièges, corrections, typographie), à écrire ou corriger des exercices et à tenir les exclusions à jour. On le sollicite par son nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent directeur-contenu-pedagogique`. Toute personne qui clone le dépôt a le même Directeur ; ses consignes se modifient par pull request, comme le reste.
 
 ## Écrire pour la documentation
 

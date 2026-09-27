@@ -25,7 +25,7 @@ export async function generatePages() {
   });
   try {
     const load = (p) => server.ssrLoadModule(p);
-    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod, vocabulaireMod, irreguliersMod] =
+    const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod, vocabulaireMod, irreguliersMod, programmeMod, exclusionsMod, motsOutilsMod] =
       await Promise.all([
         load('/src/blocland/biomes.ts'),
         load('/src/blocland/exercises/index.ts'),
@@ -42,6 +42,9 @@ export async function generatePages() {
         load('/src/core/subjectProgress.ts'),
         load('/src/apps/vocabulaire/data.ts'),
         load('/src/apps/irreguliers/data.ts'),
+        load('/src/programme/index.ts'),
+        load('/src/programme/exclusions.ts'),
+        load('/src/programme/motsOutils.ts'),
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
@@ -73,8 +76,13 @@ export async function generatePages() {
       vocabulaire: vocabulaireMod,
       irreguliers: irreguliersMod,
       texts,
+      programme: programmeMod,
+      EXCLUSIONS: exclusionsMod.EXCLUSIONS,
+      motsOutils: motsOutilsMod,
     };
+    data.coverage = coverageOf(data);
     return [
+      programmesPage(data),
       archipelPage(data),
       ...data.BIOMES.map((b) => islandPage(b, data)),
       homophonesPage(data),
@@ -144,6 +152,123 @@ function aidOf(exercise) {
   return [...kinds].map((k) => AID_NAME[k] ?? k).join(', ');
 }
 
+// ---------- Programme officiel ----------
+
+/** Qui travaille chaque compétence : { id → [{ kind: 'ile' | 'portail', biome?, quest, title }] }. */
+function coverageOf(d) {
+  const map = new Map();
+  const add = (id, who) => map.set(id, [...(map.get(id) ?? []), who]);
+  for (const b of d.BIOMES) for (const q of b.exercises) for (const id of q.programme) add(id, { kind: 'ile', biome: b, quest: q.id, title: q.title });
+  for (const a of d.APPS) for (const id of a.programme ?? []) add(id, { kind: 'portail', app: a, quest: a.id, title: a.title });
+  for (const e of d.EXERCISES) for (const id of e.programme ?? []) {
+    const b = d.BIOMES.find((x) => x.id === e.biome);
+    const q = b.exercises.find((x) => x.id === e.type);
+    if (!map.get(id)?.some((w) => w.kind === 'ile' && w.biome === b && w.quest === q.id)) add(id, { kind: 'ile', biome: b, quest: q.id, title: q.title });
+  }
+  return map;
+}
+
+/** Page du portail qui décrit une quête (pour les liens de couverture). */
+const PORTAL_PAGE = { homophones: 'homophones.md', lecture: 'lecture.md', tables: 'maths-portail.md', fractions: 'maths-portail.md', decimaux: 'maths-portail.md', vocabulaire: 'anglais-portail.md', irreguliers: 'anglais-portail.md' };
+
+/** « Ferme des accords : Enclos », avec un lien vers la page de l'île ou du portail (depuis pedagogie/). */
+function coverageText(who, from = '') {
+  if (who.kind === 'ile') return `[${who.biome.name}](${from}iles/${who.biome.id}.md) : ${who.title}`;
+  const page = PORTAL_PAGE[who.app.id];
+  return page ? `[${who.title}](${from}${page}) (portail)` : `${who.title} (portail)`;
+}
+
+/** Ligne « Programme : … » sous une quête : ses compétences, avec le domaine, la page et un lien vers la page Programmes. */
+function programmeLine(ids, d, from) {
+  const parts = [...new Set(ids)].map((id) => {
+    const p = d.programme.byId(id);
+    if (!p) return id;
+    const dom = d.programme.domaineOf(p);
+    return `${p.competence} ([cycle ${p.cycle}, ${dom.title.replace(/^Langues vivantes : /, '')}, p. ${p.page}](${from}programmes.md#${p.domaine}))`;
+  });
+  return `Programme officiel : ${parts.join(' ; ')}.`;
+}
+
+function programmesPage(d) {
+  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES } = d.programme;
+  const { EXCLUSIONS, coverage } = d;
+  const disciplines = Object.keys(DISCIPLINES);
+  const status = (e) => (coverage.has(e.id) ? 'travaillee' : EXCLUSIONS[e.id]?.kind ?? 'sans');
+  const count = (list, s) => list.filter((e) => status(e) === s).length;
+  const lines = [
+    '# Programmes officiels',
+    '',
+    'Chaque quête de Blocland et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle quête), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/programme/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    '',
+    'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
+    '',
+    table(
+      ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
+      [3, 4].flatMap((cycle) =>
+        disciplines.map((disc) => {
+          const list = PROGRAMME.filter((e) => e.cycle === cycle && e.discipline === disc);
+          return [`Cycle ${cycle}`, DISCIPLINES[disc].label, String(list.length), String(count(list, 'travaillee')), String(count(list, 'a-couvrir')), String(count(list, 'hors-perimetre'))];
+        }),
+      ),
+    ),
+    '',
+  ];
+  for (const cycle of [3, 4]) {
+    for (const disc of disciplines) {
+      const domaines = DOMAINES.filter((x) => x.cycle === cycle && x.discipline === disc);
+      if (domaines.length === 0) continue;
+      lines.push(`## Cycle ${cycle} (${cycle === 3 ? '6e' : '5e, 4e, 3e'}) — ${DISCIPLINES[disc].label} {#c${cycle}-${DISCIPLINES[disc].short}}`, '');
+      for (const dom of domaines) {
+        const entries = PROGRAMME.filter((e) => e.domaine === dom.id);
+        lines.push(`### ${dom.title} {#${dom.id}}`, '');
+        const attendus = [...new Set(entries.map((e) => e.attendu))];
+        lines.push(`*Attendus de fin de cycle (p. ${dom.page}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
+        lines.push(
+          table(
+            ['Compétence', 'Page', 'Quêtes'],
+            entries.map((e) => {
+              const who = coverage.get(e.id);
+              const x = EXCLUSIONS[e.id];
+              const quests = who
+                ? [...new Set(who.map((w) => coverageText(w)))].join(' ; ')
+                : x
+                  ? `*${x.kind === 'a-couvrir' ? 'À couvrir' : 'Hors périmètre'} — ${x.motif}*`
+                  : '*aucune*';
+              return [e.competence, String(e.page), quests];
+            }),
+          ),
+          '',
+        );
+      }
+    }
+  }
+  const { MOTS_OUTILS_CP, MOTS_OUTILS_CE1, MOTS_OUTILS_SOURCE, COFFRE_HORS_LISTE, motsOutilsDictables, motDictable } = d.motsOutils;
+  const dictables = motsOutilsDictables();
+  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'coffre').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
+  const inList = [...coffre].filter((w) => dictables.has(w));
+  lines.push(
+    '## Mots-outils {#mots-outils}',
+    '',
+    `Le **Coffre à mots** de la Carrière des mots dicte des mots de la liste officielle des mots-outils (fin de CP) et des mots invariables les plus fréquents (fin de CE1), que le programme du cycle 3 demande de mémoriser. La liste vient du jeu de données [${MOTS_OUTILS_SOURCE.dataset}](${MOTS_OUTILS_SOURCE.datasetUrl}) de data.gouv.fr ([le document](${MOTS_OUTILS_SOURCE.pdfUrl}), ${MOTS_OUTILS_SOURCE.legal}), sous ${MOTS_OUTILS_SOURCE.licence.name}. Un test vérifie que chaque mot du Coffre en fait partie.`,
+    '',
+    `Le Coffre dicte aujourd’hui ${inList.length} mots de la liste sur ${dictables.size}${Object.keys(COFFRE_HORS_LISTE).length ? `, plus ${Object.entries(COFFRE_HORS_LISTE).map(([w, why]) => `« ${w} » (${why.replace(/\.$/, '').toLowerCase()})`).join(' et ')}` : ''}.`,
+    '',
+    `**Fin de CP** (${MOTS_OUTILS_CP.length}) : ${MOTS_OUTILS_CP.join(', ')}.`,
+    '',
+    `**Fin de CE1** (${MOTS_OUTILS_CE1.length}) : ${MOTS_OUTILS_CE1.join(', ')}.`,
+    '',
+    '## Sources et licence {#sources}',
+    '',
+    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date.`,
+    '',
+    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
+    '',
+    'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi. La procédure pour étendre le référentiel à une autre matière est dans [Le référentiel des programmes](../conception/programmes.md).',
+    '',
+  );
+  return { path: 'pedagogie/programmes.md', title: 'Programmes officiels', body: lines.join('\n') };
+}
+
 /** Rendu d'un item d'exercice en une ligne lisible, selon sa forme. */
 function describeItem(item) {
   if (item.prompt && Array.isArray(item.choices)) {
@@ -198,6 +323,7 @@ function archipelPage(d) {
     `| Items de référence | ${items} |`,
     `| Plans à construire | ${PLANS.length} |`,
     `| Ouvrages entre les îles | ${BRIDGES.length} |`,
+    `| Compétences du programme officiel travaillées | ${d.programme.PROGRAMME.filter((e) => d.coverage.has(e.id)).length} sur ${d.programme.PROGRAMME.length} (voir [Programmes officiels](programmes.md)) |`,
     '',
     'Chaque île est un thème du programme. Elle a sa créature qui donne les quêtes, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
     '',
@@ -303,6 +429,8 @@ function islandPage(b, d) {
   for (const q of b.exercises) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
+    lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
+    if (b.id === 'carriere' && q.id === 'coffre') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
       lines.push('Aucun exercice n’est encore écrit pour cette quête.', '');
       continue;
@@ -389,6 +517,8 @@ function homophonesPage(d) {
     '',
     'Les mêmes phrases servent dans Blocland : le **Tri des graines** (Ferme des accords) et les **Panneaux** (Carrefour des homophones).',
     '',
+    programmeLine(d.APPS.find((a) => a.id === 'homophones').programme, d, ''),
+    '',
   ];
   for (const lvl of LEVELS) {
     const sets = SETS.filter((s) => s.level === lvl.level);
@@ -409,6 +539,8 @@ function lecturePage(d) {
     '# Lecture (quête du portail)',
     '',
     `Quête **Français** du portail : ${d.texts.length} textes du domaine public, une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue, mots difficiles expliqués, puis des questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions sont dans \`src/apps/lecture/texts.json\`.`,
+    '',
+    programmeLine(d.APPS.find((a) => a.id === 'lecture').programme, d, ''),
     '',
     table(
       ['Texte', 'Auteur', 'Source', 'Forme', 'Lignes', 'Mots expliqués', 'Questions'],
@@ -469,7 +601,7 @@ function mathsPortailPage(d) {
     '',
   ];
   for (const { app, quests, per, make } of apps) {
-    lines.push(`## ${app.title}`, '', `${app.description} ${per} questions par quête.`, '');
+    lines.push(`## ${app.title}`, '', `${app.description} ${per} questions par quête.`, '', programmeLine(app.programme, d, ''), '');
     lines.push(table(['Quête', 'Détail'], quests.map((q) => [q.title, q.detail])), '');
     for (const q of quests) {
       lines.push(`### ${q.title}`, '', `*${q.detail}.* Exemples :`, '', ...sampleQuestions(make(q), 3), '');
@@ -493,6 +625,8 @@ function anglaisPortailPage(d) {
     '',
     `${THEMES.length} thèmes de ${THEMES[0].words.length} mots. Une quête de niveau tire ${VOCAB_PER} mots dans tous les thèmes ; « Un thème » révise tous les mots d’un seul thème, de l’anglais au français ou l’inverse. Les réponses sont les autres mots du même thème ; au niveau 3, deux écritures fautives vraisemblables. Les mots sont dans \`src/apps/vocabulaire/themes.json\`.`,
     '',
+    programmeLine(d.APPS.find((a) => a.id === 'vocabulaire').programme, d, ''),
+    '',
     table(
       ['Niveau', 'Nom', 'Ce qu’on fait'],
       VOCAB_LEVELS.map((l) => [String(l.level), l.title, l.description]),
@@ -507,6 +641,8 @@ function anglaisPortailPage(d) {
     '## Verbes irréguliers',
     '',
     `${VERBS.length} verbes du collège en ${VERB_LEVELS.length} niveaux. Une quête tire ${VERB_PER} verbes du niveau, chacun au prétérit ou au participe passé. Les réponses : la bonne forme, l’autre forme, la base, la fausse forme en -ed (« goed », l’erreur la plus fréquente) et, quand les formes se ressemblent, des erreurs d’élève écrites à la main. La correction redonne les trois formes et le sens. Les verbes sont dans \`src/apps/irreguliers/verbs.json\`.`,
+    '',
+    programmeLine(d.APPS.find((a) => a.id === 'irreguliers').programme, d, ''),
     '',
   );
   for (const lvl of VERB_LEVELS) {

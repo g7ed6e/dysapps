@@ -61,6 +61,7 @@ Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en ga
 | `instruction` | Consigne unique, courte, écrite au-dessus de chaque item et lue à voix haute au démarrage (sauf pour un écran qui lit lui-même son mot en s’ouvrant : `speaksOnOpen` dans `registry.ts`). Au Gardien, chaque manche affiche la consigne de sa quête. |
 | `target` | Paramètre de l’exercice (son cible, lettre, mot repère). |
 | `lang` | `"en"` pour l’anglais : `prompt`, `spoken`, `word`, `sentence` et `choices` sont affichés en anglais (`lang="en"`, sans syllabes colorées ni typographie française) et lus avec la voix anglaise. `instruction`, `hint`, `explanation` et `aid` restent en français. Un item dont les réponses sont en français porte `choicesLang: "fr"`. |
+| `programme` | Facultatif : les compétences du programme officiel que cet exercice travaille en plus de celles de sa quête (identifiants de `src/programme/`), quand les niveaux d’une quête ne travaillent pas la même chose. Vérifié par les tests, affiché sur la page de l’île. |
 | `items` | Les items de référence, chacun avec une `key` stable (répétition espacée). Leur forme dépend du type. |
 | `generate` | Exercice généré : d’autres items pour une autre graine (une graine tirée au hasard par partie). Toutes les quêtes de maths, école et collège, en ont un. |
 | `perRun` | Nombre d’items joués par partie quand le lot est plus large. |
@@ -72,7 +73,7 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 
 **Deuxième essai** (`retryAllowed` dans `registry.ts`) : après une première erreur, le lanceur affiche « Presque ! » (avec le `hint` de l'item s'il en a un) et remonte l'écran ; les écrans à choix reçoivent `ruledOut` (la réponse tentée, barrée). Il est permis pour un écran à choix d'au moins trois réponses et pour un tri (`sorting: true` : Chasse au son, Rimes-échelle, Enclos), jamais au Gardien. Un item juste au deuxième essai compte `attempts: 2` (un demi-point) ; dans un tri refait, un item déjà juste au premier essai garde `attempts: 1`.
 
-**Aides visuelles en données** : un item peut porter `aid: { kind, props }` ; l’écran `CalculScreen` redessine la figure (`dots`, `ten`, `jumps`, `compare-bars`, `dot-groups`, `decimal-table`, `number-line`, `ratio-table`, `bar-list`, `right-triangle`, `thales-figure`, `value-table`, `rule-card`). L’aide est toujours affichée, pas seulement après une erreur.
+**Aides visuelles en données** : un item peut porter `aid: { kind, props }` ; l’écran `CalculScreen` redessine la figure (`dots`, `ten`, `jumps`, `compare-bars`, `dot-groups`, `decimal-table`, `number-line`, `ratio-table`, `bar-list`, `right-triangle`, `thales-figure`, `rule-card` ; la liste qui fait foi est `AID_COMPONENTS` dans `maths.ts`). L’aide est toujours affichée, pas seulement après une erreur.
 
 ## Ajouter un exercice à une quête existante
 
@@ -83,8 +84,8 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 
 ## Ajouter une quête ou une île
 
-- **Une quête** : ajouter son entrée dans `exercises` de l’île (`biomes.ts`), écrire au moins un exercice, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`.
-- **Une île** : une entrée dans `BIOMES` (créature, Gardien, bloc, quêtes), un bloc et sa texture si nécessaire, sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans dans `world/plans/`, ses exercices. Les cadrages [du monde](cadrage-monde.md), [du collège](cadrage-college.md) et [de l’anglais](cadrage-anglais.md) donnent les décisions déjà prises.
+- **Une quête** : ajouter son entrée dans `exercises` de l’île (`biomes.ts`) avec, dans `programme`, au moins une compétence du programme officiel (`src/programme/`, voir [Le référentiel des programmes](programmes.md) ; le compilateur et le test de couverture le vérifient, et une compétence désormais couverte quitte `exclusions.ts`), écrire au moins un exercice, l’ajouter à `ORDER`, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`. L’identifiant d’une quête est unique dans tout le jeu (le niveau adapté est retenu par quête) ; une île porte au plus quatre quêtes (les bornes sont posées tous les trois blocs dans un cœur de seize).
+- **Une île** : une entrée dans `BIOMES` (créature, Gardien, bloc, quêtes et leur `programme`), un bloc et sa texture si nécessaire (`BLOCKS` dans `biomes.ts`, `world/pixels.ts`, `pixel/tiles.ts` pour un grain, l’image dans `styles/textures/`, les variables `--tex-*` et les classes `.biome-<id>` de `styles/global.css`), sa créature et son Gardien en cubes (`Creatures.tsx`, `Guardians.tsx`), son décor (`world/terrain.ts`), sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans dans `world/plans/`, ses exercices dans `ORDER`. Les tests qui comptent les îles, les ouvrages ou les îles atteignables (`archipelago.test.ts`, `screens.test.tsx`, `terrain.test.ts`, `mesher.test.ts`) sont à mettre à jour. Les cadrages [du monde](cadrage-monde.md), [du collège](cadrage-college.md) et [de l’anglais](cadrage-anglais.md) donnent les décisions déjà prises.
 
 Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvrages, barème) se met à jour toute seule au build ; le manuel et le fragment du journal des versions (`docs/_journal/`) s’écrivent à la main. Voir [Contribuer](contribuer.md).
 

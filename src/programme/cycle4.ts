@@ -1,0 +1,137 @@
+// Cycle 4 (5e, 4e, 3e) : le programme en vigueur à la rentrée 2020 (annexe 3), résumé au grain d'une quête.
+// Le texte ne répartit rien par année : une compétence du cycle 4 peut être travaillée en 5e, en 4e ou en 3e.
+// Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
+import type { ProgrammeDomaine, ProgrammeEntry } from './types';
+
+export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
+  { id: 'c4-fr-oral', cycle: 4, discipline: 'francais', title: 'Langage oral', page: 12 },
+  { id: 'c4-fr-lecture', cycle: 4, discipline: 'francais', title: 'Lecture et compréhension de l’écrit et de l’image', page: 14 },
+  { id: 'c4-fr-ecriture', cycle: 4, discipline: 'francais', title: 'Écriture', page: 17 },
+  { id: 'c4-fr-langue', cycle: 4, discipline: 'francais', title: 'Étude de la langue (grammaire, orthographe, lexique)', page: 20 },
+  { id: 'c4-fr-culture', cycle: 4, discipline: 'francais', title: 'Culture littéraire et artistique', page: 27 },
+  { id: 'c4-ma-a', cycle: 4, discipline: 'maths', title: 'Thème A – Nombres et calculs', page: 130 },
+  { id: 'c4-ma-b', cycle: 4, discipline: 'maths', title: 'Thème B – Organisation et gestion de données, fonctions', page: 132 },
+  { id: 'c4-ma-c', cycle: 4, discipline: 'maths', title: 'Thème C – Grandeurs et mesures', page: 134 },
+  { id: 'c4-ma-d', cycle: 4, discipline: 'maths', title: 'Thème D – Espace et géométrie', page: 135 },
+  { id: 'c4-ma-e', cycle: 4, discipline: 'maths', title: 'Thème E – Algorithmique et programmation', page: 136 },
+  { id: 'c4-en-ecouter', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : écouter et comprendre', page: 37 },
+  { id: 'c4-en-lire', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : lire', page: 38 },
+  { id: 'c4-en-dialoguer', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : réagir et dialoguer', page: 40 },
+  { id: 'c4-en-parler', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : parler en continu', page: 41 },
+  { id: 'c4-en-ecrire', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : écrire et réagir à l’écrit', page: 42 },
+  { id: 'c4-en-culture', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : connaissances culturelles', page: 43 },
+  { id: 'c4-en-langue', cycle: 4, discipline: 'anglais', title: 'Langues vivantes : grammaire, lexique et phonologie', page: 44 },
+];
+
+const FR_L1 = 'Lire et comprendre en autonomie des textes variés, des images et des documents composites, sur différents supports';
+const FR_L2 = 'Lire, comprendre et interpréter des textes littéraires en fondant l’interprétation sur quelques outils d’analyse simples';
+const FR_L3 = 'Situer les textes littéraires dans leur contexte historique et culturel';
+const FR_A1 = 'Mobiliser les connaissances orthographiques, syntaxiques et lexicales en expression écrite et orale ainsi qu’en révision de texte';
+const FR_A2 = 'Être capable d’analyser les principaux constituants d’une phrase simple et complexe';
+const FR_A3 = 'Être capable d’orthographier les mots d’usage courant, de conjuguer correctement les verbes, de pratiquer les accords dans le groupe nominal';
+const MA_A1 = 'Utiliser les nombres pour comparer, calculer et résoudre des problèmes';
+const MA_A2 = 'Comprendre et utiliser les notions de divisibilité et de nombres premiers';
+const MA_A3 = 'Utiliser le calcul littéral';
+const MA_B1 = 'Interpréter, représenter et traiter des données';
+const MA_B2 = 'Comprendre et utiliser des notions élémentaires de probabilités';
+const MA_B3 = 'Résoudre des problèmes de proportionnalité';
+const MA_B4 = 'Comprendre et utiliser la notion de fonction';
+const MA_C1 = 'Calculer avec des grandeurs mesurables ; exprimer les résultats dans les unités adaptées';
+const MA_C2 = 'Comprendre l’effet de quelques transformations sur les figures géométriques';
+const MA_D1 = 'Représenter l’espace';
+const MA_D2 = 'Utiliser les notions de géométrie plane pour démontrer';
+const EN_ECOUTER = 'A1 : comprendre des mots familiers et des expressions courantes sur soi, sa famille et son environnement ; A2 : comprendre une intervention brève si elle est claire et simple ; B1 : comprendre une information factuelle sur des sujets simples';
+const EN_LIRE = 'A1 : comprendre des textes très courts et très simples ; A2 : comprendre de courts textes simples sur des sujets concrets courants ; B1 : lire des textes factuels directs';
+const EN_DIALOGUER = 'A1 : interagir brièvement dans des situations déjà connues ; A2 : interagir avec une aisance raisonnable dans des situations bien structurées ; B1 : exprimer un avis, manifester un sentiment';
+const EN_PARLER = 'A1 : produire des expressions simples sur les gens et les choses ; A2 : décrire ou présenter simplement des gens, des activités, ce qu’on aime ; B1 : mener une description directe de sujets variés';
+const EN_ECRIRE = 'A1 : écrire des expressions et phrases simples isolées ; A2 : écrire une série de phrases simples reliées par des connecteurs (et, mais, parce que) ; B1 : écrire un énoncé simple sur des sujets familiers';
+const EN_CULTURE = 'Percevoir les spécificités culturelles des pays et des régions de la langue étudiée ; mobiliser des références culturelles pour interpréter un message, un texte, un document sonore';
+const EN_LANGUE = 'Mobiliser à bon escient ses connaissances lexicales, culturelles et grammaticales pour comprendre et produire';
+
+export const ENTRIES_C4 = [
+  // ---------- Français ----------
+  { id: 'c4.fr.oral.comprendre-s-exprimer', cycle: 4, discipline: 'francais', domaine: 'c4-fr-oral', attendu: 'Comprendre et interpréter des messages et des discours oraux complexes ; s’exprimer de façon maîtrisée en s’adressant à un auditoire', competence: 'Langage oral : écouter, présenter, débattre, lire à voix haute', page: 12 },
+  { id: 'c4.fr.lecture.controle', cycle: 4, discipline: 'francais', domaine: 'c4-fr-lecture', attendu: FR_L1, competence: 'Contrôler sa compréhension : repérer les substituts du nom, élucider le sens des mots en contexte, formuler des hypothèses de lecture et chercher des indices', page: 15 },
+  { id: 'c4.fr.lecture.documents', cycle: 4, discipline: 'francais', domaine: 'c4-fr-lecture', attendu: FR_L1, competence: 'Lire des textes non littéraires et des documents composites : article de presse, texte documentaire, schéma, graphique, tableau ; identifier leur nature et leur source', page: 15 },
+  { id: 'c4.fr.lecture.image', cycle: 4, discipline: 'francais', domaine: 'c4-fr-lecture', attendu: FR_L1, competence: 'Décrire et analyser une image fixe ou mobile (peinture, photographie, dessin de presse, cinéma)', page: 15 },
+  { id: 'c4.fr.lecture.genres-epoques', cycle: 4, discipline: 'francais', domaine: 'c4-fr-lecture', attendu: FR_L3, competence: 'Lire des œuvres de différents genres et de différentes époques ; situer une œuvre dans son contexte de création', page: 16 },
+  { id: 'c4.fr.lecture.procedes', cycle: 4, discipline: 'francais', domaine: 'c4-fr-lecture', attendu: FR_L2, competence: 'Percevoir les effets de la langue littéraire ; analyser les procédés stylistiques et l’énonciation d’un texte', page: 16 },
+  { id: 'c4.fr.ecriture.rediger', cycle: 4, discipline: 'francais', domaine: 'c4-fr-ecriture', attendu: 'Communiquer par écrit et sur des supports variés un texte cohérent ; adopter des stratégies d’écriture efficaces', competence: 'Écriture : rédiger des écrits variés, réviser et améliorer son texte', page: 17 },
+  { id: 'c4.fr.langue.oral-ecrit', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Connaître les différences entre l’oral et l’écrit : liaison, élision, écarts de niveau de langue', page: 21 },
+  { id: 'c4.fr.langue.discours-rapporte', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Insérer et reconnaître des paroles rapportées : discours direct, indirect, indirect libre', page: 21 },
+  { id: 'c4.fr.langue.sujet-complements', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Reconnaître le sujet même éloigné ; approfondir le COD et le COI ; identifier les compléments circonstanciels', page: 22 },
+  { id: 'c4.fr.langue.fonctions-etendues', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Identifier l’attribut du COD, les expansions du nom (épithète, complément du nom) et l’apposition ; analyser la phrase impersonnelle', page: 22 },
+  { id: 'c4.fr.langue.classes-de-mots', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Identifier les classes de mots : tous les déterminants et pronoms, l’adjectif et ses degrés, l’adverbe, la préposition, les conjonctions', page: 22 },
+  { id: 'c4.fr.langue.types-formes', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Identifier les types (déclaratif, interrogatif, impératif) et les formes de phrase (négative, passive, exclamative, impersonnelle)', page: 22 },
+  { id: 'c4.fr.langue.phrase-complexe', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Distinguer phrase simple et phrase complexe ; juxtaposition, coordination, subordination ; identifier les propositions', page: 23 },
+  { id: 'c4.fr.langue.subordonnees', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Analyser les subordonnées (conjonctive, interrogative indirecte, relative, infinitive, participiale) ; identifier la fonction du pronom relatif', page: 23 },
+  { id: 'c4.fr.langue.ponctuation', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A2, competence: 'Analyser le rôle syntaxique des signes de ponctuation et les utiliser à bon escient', page: 23 },
+  { id: 'c4.fr.langue.accord-gn-complexe', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Maîtriser l’accord dans le groupe nominal complexe (plusieurs noms, plusieurs adjectifs, une relative, des déterminants comme tout, chaque, leur)', page: 23 },
+  { id: 'c4.fr.langue.participe-passe', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Maîtriser l’accord du participe passé avec être et avec avoir (COD antéposé, cas simples), et de l’adjectif ou du participe mis en apposition', page: 23 },
+  { id: 'c4.fr.langue.accord-verbe-complexe', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Maîtriser l’accord du verbe dans les cas complexes : sujet éloigné, plusieurs sujets, plusieurs personnes, pronom relatif, collectif ou distributif', page: 23 },
+  { id: 'c4.fr.langue.morphologie-verbale', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Former les temps simples et composés à partir des bases verbales ; identifier temps et modes ; verbes pronominaux ; formes du participe passé (é, i, u, consonne finale)', page: 24 },
+  { id: 'c4.fr.langue.passif', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Construire le passif et analyser ses effets de sens', page: 24 },
+  { id: 'c4.fr.langue.temps-a-memoriser', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Mémoriser tous les temps de l’indicatif, le conditionnel présent et passé, l’impératif présent et le subjonctif pour être, avoir, les trois groupes et faire, aller, dire, venir, pouvoir, voir, vouloir, prendre, savoir, falloir, valoir', page: 24 },
+  { id: 'c4.fr.langue.valeurs-des-temps', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Mettre en évidence le lien entre le temps employé et le sens : accompli et non accompli, premier plan et arrière-plan ; principaux emplois des modes', page: 24 },
+  { id: 'c4.fr.langue.orthographe-lexicale', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A3, competence: 'Mémoriser l’orthographe des affixes et du lexique appris ; utiliser l’étymologie pour orthographier ; listes de fréquence', page: 24 },
+  { id: 'c4.fr.langue.formation-des-mots', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Observer la formation des mots : dérivation, composition, étymologie, néologie, locutions ; sens des préfixes, des suffixes et de racines latines et grecques', page: 25 },
+  { id: 'c4.fr.langue.reseaux-de-mots', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Mettre en réseau des mots : champ lexical, famille de mots, champ sémantique ; classer par degré d’intensité et de généralité', page: 25 },
+  { id: 'c4.fr.langue.sens-des-mots', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Analyser le sens des mots : polysémie, synonymie, antonymie, homonymie, nuances et glissements de sens, dénotation et connotation, niveaux de langue', page: 25 },
+  { id: 'c4.fr.langue.enonciation', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Identifier la situation d’énonciation (qui parle, à qui, où, quand) et les marques de personne, de lieu et de temps', page: 26 },
+  { id: 'c4.fr.langue.coherence-textuelle', cycle: 4, discipline: 'francais', domaine: 'c4-fr-langue', attendu: FR_A1, competence: 'Utiliser les marques d’organisation du texte (connecteurs, ponctuation), les reprises nominales et pronominales, les formes actives et passives', page: 26 },
+  { id: 'c4.fr.culture.entrees', cycle: 4, discipline: 'francais', domaine: 'c4-fr-culture', attendu: 'Lire au moins trois œuvres du patrimoine, trois œuvres en lecture cursive et trois groupements de textes par année', competence: 'Culture littéraire et artistique : se chercher, se construire ; vivre en société ; regarder le monde, inventer des mondes ; agir sur le monde', page: 27 },
+  // ---------- Mathématiques ----------
+  { id: 'c4.ma.a.relatifs', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Nombres décimaux relatifs, notion d’opposé ; comparer, ranger, encadrer ; repérer et placer sur une droite graduée', page: 130 },
+  { id: 'c4.ma.a.calcul-relatifs', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Somme, différence, produit, quotient de nombres relatifs', page: 130 },
+  { id: 'c4.ma.a.fractions', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Fractions et nombres rationnels ; égalité de fractions (ad = bc) ; comparer, ranger ; notion d’inverse', page: 130 },
+  { id: 'c4.ma.a.calcul-fractions', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Somme, différence, produit, quotient de fractions', page: 131 },
+  { id: 'c4.ma.a.ecritures-ordres-de-grandeur', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Passer d’une écriture d’un nombre à une autre (décimale, fractionnaire, scientifique) ; associer des ordres de grandeur à des objets', page: 130 },
+  { id: 'c4.ma.a.puissances', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Puissances d’un nombre à exposant entier positif ou négatif ; puissances de 10 et notation scientifique ; préfixes de nano à giga', page: 130 },
+  { id: 'c4.ma.a.carres-racine', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A1, competence: 'Carrés parfaits de 1 à 144 ; définition de la racine carrée, utilisée pour résoudre des problèmes, notamment géométriques', page: 130 },
+  { id: 'c4.ma.a.divisibilite-premiers', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A2, competence: 'Multiples et diviseurs ; critères de divisibilité ; division euclidienne ; nombres premiers ; décomposition en facteurs premiers ; fraction irréductible', page: 131 },
+  { id: 'c4.ma.a.reduire-developper', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A3, competence: 'Développer, factoriser, réduire des expressions littérales ; distributivité simple et double ; identité a² − b²', page: 131 },
+  { id: 'c4.ma.a.equations', cycle: 4, discipline: 'maths', domaine: 'c4-ma-a', attendu: MA_A3, competence: 'Mettre un problème en équation ; résoudre des équations du premier degré, des équations produits et du type x² = a', page: 131 },
+  { id: 'c4.ma.b.lire-donnees', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B1, competence: 'Lire et interpréter des données brutes, un tableau, un diagramme en bâtons, un diagramme circulaire ou un histogramme', page: 132 },
+  { id: 'c4.ma.b.effectifs-frequences', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B1, competence: 'Recueillir et organiser des données ; calculer des effectifs et des fréquences', page: 132 },
+  { id: 'c4.ma.b.indicateurs', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B1, competence: 'Calculer et interpréter la moyenne, la médiane et l’étendue d’une série statistique', page: 132 },
+  { id: 'c4.ma.b.probabilites', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B2, competence: 'Probabilité d’un événement, entre 0 et 1 ; événements certains, impossibles, contraires ; calculer dans des cas simples ; lien entre fréquence et probabilité', page: 132 },
+  { id: 'c4.ma.b.proportionnalite', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B3, competence: 'Reconnaître une situation de proportionnalité ou de non-proportionnalité ; coefficient ; calculer une quatrième proportionnelle', page: 133 },
+  { id: 'c4.ma.b.pourcentages-echelles', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B3, competence: 'Pourcentages, taux d’évolution, coefficient multiplicateur ; échelles, agrandissement et réduction ; formules liant deux grandeurs (vitesse)', page: 133 },
+  { id: 'c4.ma.b.ratio', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B3, competence: 'Notion de ratio ; partager une quantité en deux ou trois parts selon un ratio donné', page: 133 },
+  { id: 'c4.ma.b.image-antecedent', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B4, competence: 'Vocabulaire des fonctions ; déterminer l’image ou un antécédent d’un nombre à partir d’une expression, d’un tableau de valeurs ou d’un graphique', page: 133 },
+  { id: 'c4.ma.b.lineaire-affine', cycle: 4, discipline: 'maths', domaine: 'c4-ma-b', attendu: MA_B4, competence: 'Fonctions linéaire et affine : représentation graphique, coefficient directeur ; modéliser une situation de proportionnalité par une fonction linéaire', page: 133 },
+  { id: 'c4.ma.c.grandeurs-composees', cycle: 4, discipline: 'maths', domaine: 'c4-ma-c', attendu: MA_C1, competence: 'Grandeurs produit et grandeurs quotient (vitesse, débit, masse volumique) ; vérifier la cohérence des unités', page: 134 },
+  { id: 'c4.ma.c.aires-volumes', cycle: 4, discipline: 'maths', domaine: 'c4-ma-c', attendu: MA_C1, competence: 'Aire du parallélogramme ; volumes du prisme, de la pyramide, du cylindre, du cône et de la boule', page: 134 },
+  { id: 'c4.ma.c.conversions', cycle: 4, discipline: 'maths', domaine: 'c4-ma-c', attendu: MA_C1, competence: 'Effectuer des conversions d’unités ; correspondance entre unités de volume et de contenance', page: 134 },
+  { id: 'c4.ma.c.agrandissement', cycle: 4, discipline: 'maths', domaine: 'c4-ma-c', attendu: MA_C2, competence: 'Effet d’un agrandissement ou d’une réduction sur les longueurs, les angles, les aires et les volumes ; utiliser l’échelle d’une carte', page: 134 },
+  { id: 'c4.ma.d.reperage', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D1, competence: 'Se repérer sur une droite graduée, dans un repère orthogonal, dans un pavé droit, sur une sphère (latitude, longitude)', page: 135 },
+  { id: 'c4.ma.d.solides', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D1, competence: 'Reconnaître des solides et mettre en relation leurs représentations (perspective, vues, sections, patrons)', page: 135 },
+  { id: 'c4.ma.d.angles-triangles', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Angles alternes-internes et correspondants ; somme des angles d’un triangle ; inégalité triangulaire ; hauteurs et médiatrices', page: 135 },
+  { id: 'c4.ma.d.triangles-parallelogramme', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Cas d’égalité des triangles ; triangles semblables ; parallélogramme (définition et propriété caractéristique)', page: 135 },
+  { id: 'c4.ma.d.thales', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Le théorème de Thalès et sa réciproque (triangles emboîtés, papillon)', page: 135 },
+  { id: 'c4.ma.d.pythagore', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Le théorème de Pythagore et sa réciproque', page: 135 },
+  { id: 'c4.ma.d.trigonometrie', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente', page: 135 },
+  { id: 'c4.ma.d.transformations', cycle: 4, discipline: 'maths', domaine: 'c4-ma-d', attendu: MA_D2, competence: 'Comprendre l’effet d’une translation, d’une symétrie axiale ou centrale, d’une rotation, d’une homothétie sur une figure', page: 135 },
+  { id: 'c4.ma.e.programmation', cycle: 4, discipline: 'maths', domaine: 'c4-ma-e', attendu: 'Écrire, mettre au point et exécuter un programme simple', competence: 'Algorithmique et programmation : variable, séquence d’instructions, boucle, instruction conditionnelle, événement', page: 136 },
+  // ---------- Anglais (langues vivantes) ----------
+  { id: 'c4.en.ecouter.intervention-breve', cycle: 4, discipline: 'anglais', domaine: 'c4-en-ecouter', attendu: EN_ECOUTER, competence: 'Comprendre les points essentiels d’un message oral simple ou d’une brève conversation ; identifier le sujet d’une conversation', page: 38 },
+  { id: 'c4.en.ecouter.recit', cycle: 4, discipline: 'anglais', domaine: 'c4-en-ecouter', attendu: EN_ECOUTER, competence: 'Suivre le déroulement et l’intrigue d’un récit de fiction simple ; comprendre un message en continu sur un point d’intérêt personnel', page: 38 },
+  { id: 'c4.en.ecouter.indices', cycle: 4, discipline: 'anglais', domaine: 'c4-en-ecouter', attendu: EN_ECOUTER, competence: 'Repérer des indices extralinguistiques et linguistiques (mots, expressions, schémas prosodiques) ; identifier la situation d’énonciation', page: 38 },
+  { id: 'c4.en.lire.informations', cycle: 4, discipline: 'anglais', domaine: 'c4-en-lire', attendu: EN_LIRE, competence: 'Trouver des informations dans un texte sur une thématique connue ; repérer un renseignement dans un prospectus, un menu, une annonce, un horaire', page: 39 },
+  { id: 'c4.en.lire.consignes-panneaux', cycle: 4, discipline: 'anglais', domaine: 'c4-en-lire', attendu: EN_LIRE, competence: 'Comprendre des consignes écrites, les signes et les panneaux courants, une lettre personnelle simple et brève', page: 39 },
+  { id: 'c4.en.lire.recit', cycle: 4, discipline: 'anglais', domaine: 'c4-en-lire', attendu: EN_LIRE, competence: 'Saisir la trame narrative d’un récit clairement structuré ; mémoriser le lexique et les structures pour les reconnaître dans d’autres contextes', page: 39 },
+  { id: 'c4.en.dialoguer.echanges-sociaux', cycle: 4, discipline: 'anglais', domaine: 'c4-en-dialoguer', attendu: EN_DIALOGUER, competence: 'Établir un contact social ; demander et donner des informations sur des sujets familiers, les besoins, la possession, l’heure, le prix, le temps qu’il fait', page: 40 },
+  { id: 'c4.en.dialoguer.reagir', cycle: 4, discipline: 'anglais', domaine: 'c4-en-dialoguer', attendu: EN_DIALOGUER, competence: 'Réagir à des propositions et à des situations ; exprimer ses sentiments et réagir à des sentiments exprimés ; reformuler pour quelqu’un qui n’a pas compris', page: 40 },
+  { id: 'c4.en.parler.presenter-raconter', cycle: 4, discipline: 'anglais', domaine: 'c4-en-parler', attendu: EN_PARLER, competence: 'Présenter, décrire, raconter, expliquer ; lire à haute voix de manière expressive ; exprimer son opinion personnelle', page: 41 },
+  { id: 'c4.en.ecrire.dictee-fiche', cycle: 4, discipline: 'anglais', domaine: 'c4-en-ecrire', attendu: EN_ECRIRE, competence: 'Copier, écrire sous la dictée ; renseigner une fiche de renseignements ; écrire un message simple', page: 42 },
+  { id: 'c4.en.ecrire.recit', cycle: 4, discipline: 'anglais', domaine: 'c4-en-ecrire', attendu: EN_ECRIRE, competence: 'Écrire un court récit, une description d’événement ou d’activités passées, des phrases reliées par des connecteurs', page: 42 },
+  { id: 'c4.en.culture.langages', cycle: 4, discipline: 'anglais', domaine: 'c4-en-culture', attendu: EN_CULTURE, competence: 'Langages : codes socioculturels, médias et réseaux sociaux, langages artistiques (chansons, cinéma, littérature, bande dessinée)', page: 44 },
+  { id: 'c4.en.culture.ecole-societe', cycle: 4, discipline: 'anglais', domaine: 'c4-en-culture', attendu: EN_CULTURE, competence: 'École et société : comparaison des systèmes scolaires, environnement, activités scolaires et extrascolaires, découverte du monde du travail', page: 44 },
+  { id: 'c4.en.culture.voyages-rencontres', cycle: 4, discipline: 'anglais', domaine: 'c4-en-culture', attendu: EN_CULTURE, competence: 'Voyages et migrations ; rencontres avec d’autres cultures : repères historiques et géographiques, patrimoine', page: 44 },
+  { id: 'c4.en.langue.lexique', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Lexique en lien avec les thèmes culturels et la vie quotidienne : mots isolés, expressions, sens des mots en contexte', page: 44 },
+  { id: 'c4.en.langue.groupe-nominal', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Nom et groupe nominal : genre, pronoms personnels compléments et réfléchis ; détermination : articles, quantifieurs', page: 44 },
+  { id: 'c4.en.langue.temps-verbaux', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Groupe verbal : expression du présent, du passé et de l’avenir ; construction des verbes', page: 44 },
+  { id: 'c4.en.langue.modaux-passif', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Les modaux ; le passif', page: 44 },
+  { id: 'c4.en.langue.phrase-complexe', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Énoncés simples et complexes : coordination, subordination, relatifs, discours indirect, interrogation indirecte, connecteurs', page: 44 },
+  { id: 'c4.en.langue.phonologie', cycle: 4, discipline: 'anglais', domaine: 'c4-en-langue', attendu: EN_LANGUE, competence: 'Phonologie : régularités de la langue orale, variations ; viser la fluidité et l’intelligibilité, non l’accent natif', page: 44 },
+] as const satisfies readonly ProgrammeEntry[];
