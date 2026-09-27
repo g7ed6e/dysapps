@@ -56,7 +56,7 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 
 export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
-  '2d': 'Le monde en 2D (essai)',
+  '2d': 'Le monde en 2D (expérimental)',
   liste: 'La liste des îles',
 };
 
