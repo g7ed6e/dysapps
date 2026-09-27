@@ -1,0 +1,1 @@
+Outillage : un troisième agent partagé, l’**artiste technique 3D**, réalise dans le code le rendu du monde pour le faire passer au low-poly peint d’Archipéo. Le directeur artistique décide quoi, l’artiste technique 3D décide comment ; la page Contribuer dit qui tient quel document.
