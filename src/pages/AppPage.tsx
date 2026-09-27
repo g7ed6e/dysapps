@@ -13,14 +13,14 @@ export function AppPage() {
   // Venu de l'école du village : le retour ramène à sa porte.
   const from = (useLocation().state as { from?: string } | null)?.from;
   const fromSchool = typeof from === 'string' && from.startsWith('/aventure/ecole') ? from : null;
-  // « Continuer » (écran titre, menus) ramène à la dernière quête du portail (pas au Tutoriel).
+  // « Continuer » (écran titre, menus) ramène à la dernière mission du portail (pas au Tutoriel).
   useRememberPlace(app && !app.onHome && app.status === 'disponible' ? { path: `/app/${app.id}`, label: app.title } : null);
   if (!app || app.status !== 'disponible' || !app.component) return <NotFoundPage />;
   const Component = app.component;
 
   return (
     <>
-      {/* Le Tutoriel est une quête du menu : on y revient. */}
+      {/* Le Tutoriel est une mission du menu : on y revient. */}
       <Link to={fromSchool ?? (app.onHome ? MENU_PATH : `/matiere/${app.subject}`)} className="back-link">
         <Icon name="back" /> {fromSchool ? 'École' : app.onHome ? 'Menu' : SUBJECTS[app.subject].title}
       </Link>

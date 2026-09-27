@@ -72,7 +72,7 @@ export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
 };
 
 export const START_LABELS: Record<StartChoice, string> = {
-  village: 'Le village de Blocland',
+  village: 'Le village d’Archipéo',
   menu: 'Le menu',
 };
 

@@ -34,11 +34,11 @@ function renderSheet(biomeId: string, onClose = () => {}, highlight?: string, in
   );
 }
 
-it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé et son plan', () => {
+it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé et son plan', () => {
   renderSheet('foret');
   expect(screen.getByRole('dialog', { name: /Forêt/ })).toBeInTheDocument();
   expect(document.body.textContent).toContain('Mousso');
-  const quests = screen.getByRole('list', { name: 'Quêtes de l’île' });
+  const quests = screen.getByRole('list', { name: 'Missions de l’île' });
   expect(quests.querySelectorAll('a.island-quest').length).toBeGreaterThanOrEqual(3);
   expect(screen.getAllByText('Nouveau').length).toBeGreaterThanOrEqual(3);
   expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
@@ -50,7 +50,7 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
 });
 
 it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y faire, et les ouvre dès que c’est possible', async () => {
-  // Rien en poche : plan et ouvrages repliés, chacun avec sa ligne d'état ; les quêtes restent visibles.
+  // Rien en poche : plan et ouvrages repliés, chacun avec sa ligne d'état ; les missions restent visibles.
   renderSheet('foret', () => {}, undefined, true);
   const plan = () => document.querySelector<HTMLDetailsElement>('.island-fold-plan')!;
   const ouvrages = () => document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages')!;
@@ -59,7 +59,7 @@ it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y fair
   expect(plan().textContent).toContain(`0 / ${cabane} posés · il manque ${cabane} bois`);
   expect(ouvrages()).not.toHaveAttribute('open');
   expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
-  expect(screen.getByRole('list', { name: 'Quêtes de l’île' })).toBeInTheDocument();
+  expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
   await userEvent.click(plan().querySelector('summary')!);
   expect(plan()).toHaveAttribute('open');
@@ -80,10 +80,10 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
   expect(navire.textContent).toContain('0 / 45 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
   expect(links[0]).toHaveAttribute('href', '/aventure/foret');
-  expect(document.body.textContent).toContain('brique · à gagner ici, dans les quêtes');
+  expect(document.body.textContent).toContain('brique · à gagner ici, dans les missions');
 });
 
-it('une île fermée montre ses quêtes verrouillées et renvoie à l’île précédente', async () => {
+it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('mine', onClose);
   expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
@@ -91,7 +91,7 @@ it('une île fermée montre ses quêtes verrouillées et renvoie à l’île pr�
   expect(screen.queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
   expect(document.body.textContent).toContain('Sentier vers Forêt des sons');
   expect(document.body.textContent).toContain('Encore 3 blocs (3 en tout)');
-  expect(screen.getByRole('list', { name: 'Quêtes de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
+  expect(screen.getByRole('list', { name: 'Missions de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
   await userEvent.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(onClose).toHaveBeenCalled();
@@ -115,7 +115,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   renderSheet('plaine');
   expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3 : La coque et la voile/)).toBeInTheDocument();
   expect(screen.getByRole('progressbar', { name: 'Avancement du Bloc-Navire' })).toHaveAttribute('aria-valuenow', '0');
-  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Basses Terres pour la voile.');
+  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Premiers Rivages pour la voile.');
   expect(screen.queryByRole('button', { name: /Embarquer/ })).not.toBeInTheDocument();
   // Pas de section navire sur une île qui n'est pas un port.
   expect(screen.queryByText(/Le Bloc-Navire —/, { selector: 'h3' })).toBeInTheDocument();
@@ -126,14 +126,14 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   document.body.innerHTML = '';
   renderSheet('plaine');
   expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
-  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Collines du Large !');
-  await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Collines du Large/ }));
+  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
+  await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Îles Brumeuses/ }));
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
 it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
   renderSheet('marche');
-  expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
+  expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer.');
   expect(document.body.textContent).toContain('Finis le Bloc-Navire sur Plaine des nombres');
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });

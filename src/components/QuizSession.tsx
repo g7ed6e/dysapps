@@ -45,14 +45,14 @@ export interface Question {
 
 interface Props {
   appId: string;
-  /** Génère les questions d'une quête (appelé à chaque nouvelle partie). */
+  /** Génère les questions d'une mission (appelé à chaque nouvelle partie). */
   makeQuestions: () => Question[];
   /** Nombre d'essais par question (2 par défaut). */
   maxAttempts?: number;
   /** Action supplémentaire proposée à la fin (ex. revenir au choix du niveau). */
   onExit?: () => void;
   exitLabel?: string;
-  /** La suite logique, proposée en premier à la fin (ex. la quête suivante). */
+  /** La suite logique, proposée en premier à la fin (ex. la mission suivante). */
   next?: { label: string; go: () => void };
   /** Contenu affiché sous la question (ex. « Revoir le texte »). */
   after?: ReactNode;
@@ -73,12 +73,12 @@ const SHOUTS = ['Bravo !', 'Juste !'];
 const COMBO_FROM = 3;
 
 /**
- * Moteur de quête à choix, sans chrono.
+ * Moteur de mission à choix, sans chrono.
  * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
 export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', next: nextStep, after }: Props) {
   const { answer, completeSession } = useProgress();
-  // Les quêtes du portail se jouent à l'école du village : elles rapportent des blocs de son île.
+  // Les missions du portail se jouent à l'école du village : elles rapportent des blocs de son île.
   const blocland = useOptionalBlocland();
   const [earned, setEarned] = useState<PortalCompletion | null>(null);
   const [questions, setQuestions] = useState(makeQuestions);
@@ -108,7 +108,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useHoldCelebrations(phase !== 'summary');
   // Touches 1 à 9 pour répondre, Entrée pour la suite.
   useAnswerKeys(sectionRef);
-  // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou au menu).
+  // Mode concentration pendant la partie ; « Quitter » ramène au choix des missions (ou au menu).
   const navigate = useNavigate();
   const haptics = useHaptics();
   useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate(MENU_PATH)), 'L’XP des réponses déjà données est gardée.');
@@ -188,8 +188,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
       finalScore === 100
         ? { shout: 'Sans faute !', message: 'Zéro erreur, bravo.', tone: 'bien' }
         : finalScore >= 60
-          ? { shout: 'Quête terminée', message: 'Belle partie, tu progresses.', tone: 'bien' }
-          : { shout: 'Quête terminée', message: 'Tu as tenu jusqu’au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
+          ? { shout: 'Mission terminée', message: 'Belle partie, tu progresses.', tone: 'bien' }
+          : { shout: 'Mission terminée', message: 'Tu as tenu jusqu’au bout, c’est ça qui compte. Relance quand tu veux.', tone: 'info' },
     );
   };
 
@@ -245,7 +245,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               </span>
             </p>
           )}
-          {/* En premier, la suite logique : la quête suivante, sinon le choix des quêtes, sinon le menu. */}
+          {/* En premier, la suite logique : la mission suivante, sinon le choix des missions, sinon le menu. */}
           <div className="actions">
             {nextStep ? (
               <button type="button" className="button primary" onClick={nextStep.go} autoFocus>

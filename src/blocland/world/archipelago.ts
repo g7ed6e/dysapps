@@ -17,21 +17,21 @@ export type { ArchipelagoId };
 /** Un archipel : une classe, un nom, une île-port (le Bloc-Navire s'y construit et y accoste) et ses îles de départ. */
 export interface ArchipelagoDef {
   classe: ArchipelagoId;
-  /** Sans article ni majuscule initiale d'article : « Basses Terres » → « les Basses Terres ». */
+  /** Sans article ni majuscule initiale d'article : « Premiers Rivages » → « les Premiers Rivages ». */
   name: string;
   port: BiomeId;
   /** Les îles ouvertes dès qu'on est dans l'archipel. */
   starts: BiomeId[];
   /** Comment on y arrive : par la mer, par les airs, par le ciel (rien pour le premier). */
   travel: 'mer' | 'airs' | 'ciel' | null;
-  /** L'île de l'école du village (une île de départ) : les quêtes du portail y rapportent ses blocs. */
+  /** L'île de l'école du village (une île de départ) : les missions du portail y rapportent ses blocs. */
   school: BiomeId;
 }
 
 export const ARCHIPELAGOS: ArchipelagoDef[] = [
-  { classe: '6e', name: 'Basses Terres', port: 'plaine', starts: ['foret', 'plaine'], travel: null, school: 'foret' },
-  { classe: '5e', name: 'Collines du Large', port: 'marche', starts: ['marche'], travel: 'mer', school: 'marche' },
-  { classe: '4e', name: 'Monts de Feu', port: 'atelier', starts: ['atelier'], travel: 'airs', school: 'atelier' },
+  { classe: '6e', name: 'Premiers Rivages', port: 'plaine', starts: ['foret', 'plaine'], travel: null, school: 'foret' },
+  { classe: '5e', name: 'Îles Brumeuses', port: 'marche', starts: ['marche'], travel: 'mer', school: 'marche' },
+  { classe: '4e', name: 'Anciens Ateliers', port: 'atelier', starts: ['atelier'], travel: 'airs', school: 'atelier' },
   { classe: '3e', name: 'Îles du Ciel', port: 'phare', starts: ['phare'], travel: 'ciel', school: 'phare' },
 ];
 
@@ -49,7 +49,7 @@ export function islandsOf(a: ArchipelagoId): BiomeDef[] {
   return BIOMES.filter((b) => b.classe === a);
 }
 
-/** « Archipel de 5e — Les Collines du Large ». */
+/** « Archipel de 5e — Les Îles Brumeuses ». */
 export function archipelagoTitle(a: ArchipelagoId): string {
   return `Archipel de ${a} — Les ${getArchipelago(a).name}`;
 }
@@ -108,7 +108,7 @@ const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDe
 
 /** Les ouvrages possibles, entre îles voisines d'un même archipel. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
 export const BRIDGES: BridgeDef[] = [
-  // Basses Terres (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
+  // Premiers Rivages (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
   b('foret', 'mine', 'sentier', 3),
   b('foret', 'ferme', 'pont', 3),
   b('mine', 'carriere', 'pont', 5),
@@ -122,7 +122,7 @@ export const BRIDGES: BridgeDef[] = [
   b('ferme', 'baie', 'pont', 5),
   b('foret', 'horloge', 'pont', 5),
   b('baie', 'horloge', 'sentier', 4),
-  // Collines du Large (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
+  // Îles Brumeuses (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
   b('glacier', 'marche', 'sentier', 6),
   b('marche', 'marais', 'pont', 4),
   b('carrefour', 'marais', 'sentier', 6),
@@ -130,7 +130,7 @@ export const BRIDGES: BridgeDef[] = [
   b('marche', 'comptoir', 'pont', 6),
   b('marais', 'manoir', 'pont', 6),
   b('comptoir', 'manoir', 'pont', 5),
-  // Monts de Feu (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
+  // Anciens Ateliers (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
   b('atelier', 'forge', 'pont', 4),
   b('atelier', 'falaise', 'pont', 4),
   b('falaise', 'cabinet', 'escalier', 5),
@@ -438,7 +438,7 @@ export function legacyReachable(rawIds: string[]): Set<BiomeId> {
 }
 
 /**
- * Anciennes sauvegardes (avant les ponts) : les îles s'ouvraient en chaîne, quand une quête de l'île précédente
+ * Anciennes sauvegardes (avant les ponts) : les îles s'ouvraient en chaîne, quand une mission de l'île précédente
  * avait une étoile. On offre l'accès aux îles déjà ouvertes.
  */
 export function bridgesFromLegacyProgress(progress: Record<string, { stars: number }>): string[] {

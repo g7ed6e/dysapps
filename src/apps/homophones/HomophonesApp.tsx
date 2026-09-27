@@ -35,11 +35,11 @@ export default function HomophonesApp() {
   return (
     <section aria-labelledby="choix-niveau">
       <p className="intro">
-        Choisis ton niveau. Chaque quête : {QUESTIONS_PER_QUEST} phrases à compléter. Le joker te donne l’astuce pour trouver le bon mot.
+        Choisis ton niveau. Chaque mission : {QUESTIONS_PER_QUEST} phrases à compléter. Le joker te donne l’astuce pour trouver le bon mot.
       </p>
 
       <h2 id="choix-niveau" className="section-title">
-        Quêtes
+        Missions
       </h2>
       <ul className="grid levels">
         {LEVELS.map(({ level, title }) => {

@@ -138,7 +138,7 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
           ? [60, 44, 30]
           : grain('#e0b73f', '#f2d16b')(x, y, r),
   },
-  // Borne de quête : ardoise bleu nuit, une étoile d'or sur chaque face (un pictogramme, jamais de texte).
+  // Borne de mission : ardoise bleu nuit, une étoile d'or sur chaque face (un pictogramme, jamais de texte).
   borne: {
     top: (x, y, r) => grain('#2f3d5c', '#3a4a6a')(x, y, r),
     side: (x, y, r) => (STAR[y - 3]?.[x - 3] === '#' ? [242, 201, 68] : grain('#2f3d5c', '#3a4a6a')(x, y, r)),

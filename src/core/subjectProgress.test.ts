@@ -3,7 +3,7 @@ import { EMPTY_STATE, type BloclandState } from '../blocland/engine';
 import { exercisesOf } from '../blocland/exercises';
 import { REWORK_SHOWN, subjectProgress } from './subjectProgress';
 
-/** Une quête jouée : sa première variante, avec ses étoiles et son meilleur score. */
+/** Une mission jouée : sa première variante, avec ses étoiles et son meilleur score. */
 const played = (biome: BiomeId, type: string, stars: 0 | 1 | 2 | 3, best: number) => ({
   [exercisesOf(biome, type)[0].id]: { stars, attempts: 1, best },
 });
@@ -27,7 +27,7 @@ it('compte les étoiles sur toutes les îles de la matière, de la 6e à la 3e',
   expect(some.stars.earned).toBe(5);
 });
 
-it('propose de retravailler les quêtes jouées sous 3 étoiles, les plus faibles d’abord', () => {
+it('propose de retravailler les missions jouées sous 3 étoiles, les plus faibles d’abord', () => {
   const r = subjectProgress(
     'francais',
     {},
@@ -42,7 +42,7 @@ it('propose de retravailler les quêtes jouées sous 3 étoiles, les plus faible
   expect(r.reworkTotal).toBe(2);
 });
 
-it('ne propose pas une quête d’une île fermée, ni une quête jamais jouée', () => {
+it('ne propose pas une mission d’une île fermée, ni une mission jamais jouée', () => {
   const closed = subjectProgress('francais', {}, blocland(played('mine', 'filon', 1, 0.3)));
   expect(closed.rework).toEqual([]);
   // Le même résultat, une fois l'île ouverte par son sentier.
@@ -55,12 +55,12 @@ it('compte les records des applis, et propose celles sous 70 %', () => {
   expect(r.apps.find((a) => a.id === 'tables')?.record).toBe(90);
   expect(r.apps.find((a) => a.id === 'decimaux')?.record).toBeUndefined();
   expect(r.rework).toEqual([expect.objectContaining({ kind: 'appli', id: 'fractions', record: 55, href: '/app/fractions' })]);
-  // Une quête plus faible passe devant l'appli.
+  // Une mission plus faible passe devant l'appli.
   const mixed = subjectProgress('maths', { fractions: app(55) }, blocland(played('plaine', 'tables', 1, 0.3)));
   expect(mixed.rework.map((q) => q.id)).toEqual(['plaine:tables', 'fractions']);
 });
 
-it('ne mélange pas les matières, et montre au plus cinq quêtes à reprendre', () => {
+it('ne mélange pas les matières, et montre au plus cinq missions à reprendre', () => {
   const lots = blocland(
     {
       ...played('plaine', 'tables', 1, 0.3),

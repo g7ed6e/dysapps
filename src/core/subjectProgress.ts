@@ -1,5 +1,5 @@
 // La progression d'une matière, tous jeux confondus : les étoiles des îles de Blocland (de la 6e à la 3e), les
-// records des applis, et une courte liste de quêtes à retravailler (les plus faibles d'abord). Code pur.
+// records des applis, et une courte liste de missions à retravailler (les plus faibles d'abord). Code pur.
 import { appsBySubject, bestScore, type Subject } from '../apps/registry';
 import { biomesOf } from '../blocland/biomes';
 import { isBossBeaten } from '../blocland/bossCore';
@@ -8,9 +8,9 @@ import { pickExercise, questProgress } from '../blocland/exercises';
 import { isBiomeUnlocked } from '../blocland/world/archipelago';
 import type { AppStats } from './progress';
 
-/** Sous ce record, une appli est à retravailler (comme les 2 étoiles d'une quête : 70 %). */
+/** Sous ce record, une appli est à retravailler (comme les 2 étoiles d'une mission : 70 %). */
 export const APP_REWORK_BELOW = 70;
-/** Nombre de quêtes à retravailler montrées par matière. */
+/** Nombre de missions à retravailler montrées par matière. */
 export const REWORK_SHOWN = 5;
 
 export type ReworkItem =
@@ -25,7 +25,7 @@ export interface SubjectProgress {
   apps: { id: string; title: string; record: number | undefined }[];
   /** Les plus faibles d'abord, au plus REWORK_SHOWN. */
   rework: ReworkItem[];
-  /** Nombre total de quêtes à retravailler (au-delà de celles montrées). */
+  /** Nombre total de missions à retravailler (au-delà de celles montrées). */
   reworkTotal: number;
 }
 
@@ -46,7 +46,7 @@ export function subjectProgress(
       max += 3;
       const done = questProgress(biome.id, quest.id, progress);
       earned += done?.stars ?? 0;
-      // Une quête déjà jouée, pas encore à 3 étoiles, qu'on peut relancer tout de suite.
+      // Une mission déjà jouée, pas encore à 3 étoiles, qu'on peut relancer tout de suite.
       if (!done || done.stars >= 3 || !open) continue;
       if (!pickExercise(biome.id, quest.id, levelFor(blocland, quest.id), progress)) continue;
       rework.push({
@@ -67,7 +67,7 @@ export function subjectProgress(
     if (a.record === undefined || a.record >= APP_REWORK_BELOW) continue;
     rework.push({ kind: 'appli', id: a.id, title: a.title, record: a.record, score: a.record / 100, href: `/app/${a.id}` });
   }
-  // Le plus faible d'abord ; à score égal, la quête qui a le moins d'étoiles.
+  // Le plus faible d'abord ; à score égal, la mission qui a le moins d'étoiles.
   const starsOf = (r: ReworkItem) => (r.kind === 'quete' ? r.stars : 3);
   rework.sort((a, b) => a.score - b.score || starsOf(a) - starsOf(b));
   return {

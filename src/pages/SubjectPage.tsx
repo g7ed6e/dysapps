@@ -22,21 +22,22 @@ export function SubjectPage() {
   return (
     <>
       <Link to="/quetes" className="back-link">
-        <Icon name="back" /> Quêtes
+        <Icon name="back" /> Missions
       </Link>
       <h1 className={`page-title title-${subject}`}>
         <Icon name={info.icon} /> {info.title}
       </h1>
+      <p className="intro">Expédition {info.expedition}.</p>
       <SubjectApps subject={subject as Subject} />
 
       {/* Une matière sans île dans Blocland (pas encore) : pas de section vide. */}
       {biomesOf(subject as Subject).length > 0 && (
         <>
           <h2 className="section-title">
-            <Icon name="map" /> Dans Blocland
+            <Icon name="map" /> Dans Archipéo
           </h2>
           <p className="section-intro">
-            Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque quête réussie donne des blocs pour le village.
+            Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque mission réussie donne des blocs pour le village.
           </p>
         </>
       )}

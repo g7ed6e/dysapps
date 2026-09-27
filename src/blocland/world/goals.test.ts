@@ -39,10 +39,10 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   // Toutes ses cases posées : il manque des Gardiens.
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const posed = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret']) });
-  expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Basses Terres pour la voile.');
+  expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
   const ready = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret', 'plaine', 'mine']) });
-  expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Collines du Large !');
+  expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
   // Parti : plus un mot du navire sur ce port.
   const sailed = sanitizeState({ village: { plans: hull, bridges: [...built, 'voyage-5e'] }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(sailed, 'plaine')).toBeNull();
@@ -77,19 +77,19 @@ it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardien
   const fresh = sanitizeState({});
   const total = coque.cells.length;
   expect(lockedHint(fresh, 'carrefour')).toBe(
-    `Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer. Finis le Bloc-Navire sur Plaine des nombres : encore ${total} blocs.`,
+    `Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Finis le Bloc-Navire sur Plaine des nombres : encore ${total} blocs.`,
   );
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
   expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine']) }), 'marche')).toBe(
-    'Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : bats encore 1 Gardien des Basses Terres, puis embarque.',
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : bats encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
   expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine', 'mine']) }), 'marche')).toBe(
-    'Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer. Le Bloc-Navire est prêt sur Plaine des nombres : embarque !',
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire est prêt sur Plaine des nombres : embarque !',
   );
   // Deux archipels plus loin : d'abord le précédent.
-  expect(lockedHint(fresh, 'forge')).toBe('Pas si vite ! Mon île est dans les Monts de Feu. Va d’abord jusqu’aux Collines du Large avec le Bloc-Navire.');
+  expect(lockedHint(fresh, 'forge')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec le Bloc-Navire.');
   expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e'] } }), 'phare')).toBe(
-    'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Monts de Feu avec le Bloc-Navire.',
+    'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
   );
   expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
 });

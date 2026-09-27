@@ -138,7 +138,7 @@ export function SettingsPage() {
         </fieldset>
 
         <fieldset className="panel">
-          <legend>Vue de Blocland</legend>
+          <legend>Vue du monde</legend>
           <div className="option-row">
             {(Object.keys(WORLD_VIEW_LABELS) as WorldViewChoice[]).map((worldView) => (
               <label key={worldView} className={`option${settings.worldView === worldView ? ' selected' : ''}`}>
@@ -147,7 +147,7 @@ export function SettingsPage() {
               </label>
             ))}
           </div>
-          <p>Si l’appareil ne sait pas dessiner le monde en 3D, Blocland montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles.</p>
+          <p>Si l’appareil ne sait pas dessiner le monde en 3D, Archipéo montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles.</p>
           <label className="toggle">
             <input type="checkbox" checked={settings.freeWalk} onChange={(e) => update({ freeWalk: e.target.checked })} />
             Marche libre dans le monde en 2D (une croix de direction et un bouton « Entrer »)
@@ -193,7 +193,7 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Application</legend>
-          <p className="settings-version">Version {APP_VERSION}.</p>
+          <p className="settings-version">Archipéo, par DysApps. Version {APP_VERSION}.</p>
           {appUpdate.ready ? (
             <button type="button" className="button primary" onClick={() => void applyUpdate()}>
               Mettre à jour maintenant

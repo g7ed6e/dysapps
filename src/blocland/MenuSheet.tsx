@@ -1,5 +1,5 @@
 // Le menu du village (le menu pause de Blocland) : un panneau à la place de celui d'une île, le monde reste derrière.
-// Reprendre, la dernière quête, les révisions du jour, l'école, puis les grands endroits de l'appli.
+// Reprendre, la dernière mission, les révisions du jour, l'école, puis les grands endroits de l'appli.
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { lastPlace } from '../core/lastPlace';
@@ -64,7 +64,7 @@ export function MenuSheet({ onClose, onHelp }: Props) {
         )}
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Des blocs en trop ? Construis l’observatoire des baleines et les autres" />
-        <Row to="/quetes" icon="dumbbell" title="Quêtes" desc="Toutes les quêtes, par matière" />
+        <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes les missions, par matière" />
         <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="La salle des trophées : ton rang, tes succès, ce qui est à retravailler" />
         <Row to="/reglages" icon="settings" title="Réglages" desc="Police, couleurs, voix, vue du monde" />
         <li>

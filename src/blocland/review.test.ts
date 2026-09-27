@@ -7,7 +7,7 @@ const ALL = await loadAllExercises();
 const TODAY = '2026-09-27';
 const due = (itemId: string, when = TODAY): SpacedItem => ({ itemId, due: when, stage: 0, streak: 0 });
 
-it('les items ratés dus aujourd’hui désignent leurs exercices et leurs quêtes (îles ouvertes seulement)', () => {
+it('les items ratés dus aujourd’hui désignent leurs exercices et leurs missions (îles ouvertes seulement)', () => {
   const spaced = [due('foret-echauffement-002:parapluie'), due('foret-echauffement-002:chocolat'), due('mine-filon-b:b1'), due('foret-rimes-eau:bateau', '2026-10-01')];
   expect(exercisesToReview(spaced, TODAY)).toEqual(new Set(['foret-echauffement-002', 'mine-filon-b']));
   expect(reviewKeys(spaced, 'foret-echauffement-002', TODAY).sort()).toEqual(['chocolat', 'parapluie']);
@@ -17,7 +17,7 @@ it('les items ratés dus aujourd’hui désignent leurs exercices et leurs quêt
   ]);
 });
 
-it('la quête choisit la variante qui a des révisions, sans dépasser le niveau de l’élève', () => {
+it('la mission choisit la variante qui a des révisions, sans dépasser le niveau de l’élève', () => {
   const levels = exercisesOf('foret', 'abattage').map((e) => [e.id, e.level]);
   expect(levels).toContainEqual(['foret-echauffement-002', 2]);
   expect(pickExercise('foret', 'abattage', 3, {}, new Set(['foret-echauffement-002']))!.id).toBe('foret-echauffement-002');

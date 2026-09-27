@@ -29,7 +29,7 @@ export const LEVELS = [
 
 export type Level = (typeof LEVELS)[number]['level'];
 
-/** Nombre de questions d'une quête par niveau. */
+/** Nombre de questions d'une mission par niveau. */
 export const QUESTIONS_PER_QUEST = 10;
 
 /** Nombre de réponses proposées : le mot et trois autres du même thème. */
@@ -64,7 +64,7 @@ function question(theme: Theme, word: Word, level: Level, rng: Rng): Question {
   };
 }
 
-/** Quête d'un niveau : des mots tirés dans tous les thèmes, sans doublon, la bonne réponse à une place au hasard. */
+/** Mission d'un niveau : des mots tirés dans tous les thèmes, sans doublon, la bonne réponse à une place au hasard. */
 export function questionsForLevel(level: Level, count = QUESTIONS_PER_QUEST, rng: Rng = Math.random): Question[] {
   const pool = THEMES.flatMap((theme) => theme.words.map((word) => ({ theme, word })));
   const picked = shuffle(pool, rng)

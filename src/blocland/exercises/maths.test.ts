@@ -24,7 +24,7 @@ it('tire des items reproductibles et tous différents', () => {
   expect(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key))).toEqual(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key)));
 });
 
-it('les quêtes du Volcan : tableau ou droite sur chaque item, décimaux à virgule', () => {
+it('les missions du Volcan : tableau ou droite sur chaque item, décimaux à virgule', () => {
   const volcan = MATHS_EXERCISES.filter((e) => e.biome === 'volcan');
   expect(volcan.map((e) => e.id)).toEqual(['volcan-cratere-1', 'volcan-cratere-2', 'volcan-cratere-3', 'volcan-coulee-1', 'volcan-pente-1', 'volcan-pente-2']);
   for (const def of volcan) {
@@ -38,7 +38,7 @@ it('les quêtes du Volcan : tableau ou droite sur chaque item, décimaux à virg
   expect(volcan[3].items.every((it) => (it.aid as { kind: string }).kind === 'decimal-table')).toBe(true);
 });
 
-it('les quêtes de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
+it('les missions de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
   const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'riviere');
   expect(riviere.map((e) => e.id)).toEqual(['riviere-nenuphars-1', 'riviere-nenuphars-2', 'riviere-deux-rives-1', 'riviere-partage-1', 'riviere-partage-2']);
   for (const def of riviere) {
@@ -52,7 +52,7 @@ it('les quêtes de la Rivière : figure ou aide sur chaque item, fractions lisib
   }
 });
 
-it('les quêtes de la Plaine : une aide visuelle et une explication sur chaque item, réponses dans l’ordre croissant', () => {
+it('les missions de la Plaine : une aide visuelle et une explication sur chaque item, réponses dans l’ordre croissant', () => {
   const plaine = MATHS_EXERCISES.filter((e) => e.biome === 'plaine');
   expect(plaine.map((e) => e.id)).toEqual([
     'plaine-tables-1',

@@ -55,7 +55,7 @@ export function InventoryBody() {
         </h3>
         {readyUses.length + readyOuvrages.length === 0 ? (
           <p className="inventory-line">
-            <Syllabified text="Rien pour l’instant : fais une quête pour gagner des blocs." />{' '}
+            <Syllabified text="Rien pour l’instant : fais une mission pour gagner des blocs." />{' '}
             <Link to={`/aventure/${at}`} className="tag">
               <Icon name="play" /> Aller sur {getBiome(at)?.name}
             </Link>
@@ -206,7 +206,7 @@ export function InventoryPage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte de Blocland
+        <Icon name="back" /> Carte d’Archipéo
       </Link>
       <h1 className="page-title">
         <Icon name="blocks" /> Mes blocs

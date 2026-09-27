@@ -5,7 +5,7 @@ import { SettingsProvider } from '../../core/SettingsContext';
 import { ProgressProvider } from '../../core/ProgressContext';
 import IrreguliersApp from './IrreguliersApp';
 
-it('lance une quête de 10 verbes, les réponses marquées en anglais', async () => {
+it('lance une mission de 10 verbes, les réponses marquées en anglais', async () => {
   const user = userEvent.setup();
   render(
     <SettingsProvider>

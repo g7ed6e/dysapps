@@ -1,6 +1,6 @@
 // Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais) que les
-// quêtes citent (champ `programme` de biomes.ts et de apps/registry.ts). Provenance : data.gouv.fr, Licence Ouverte.
-// Ce module n'entre pas dans le bundle de l'application : les quêtes n'en importent que des types.
+// missions citent (champ `programme` de biomes.ts et de apps/registry.ts). Provenance : data.gouv.fr, Licence Ouverte.
+// Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../blocland/biomes';
 import { DOMAINES_C3, ENTRIES_C3 } from './cycle3';
 import { DOMAINES_C4, ENTRIES_C4 } from './cycle4';
@@ -19,7 +19,7 @@ export const DISCIPLINES: Record<Discipline, { label: string; short: string }> =
 export const DOMAINES: readonly ProgrammeDomaine[] = [...DOMAINES_C3, ...DOMAINES_C4];
 export const PROGRAMME = [...ENTRIES_C3, ...ENTRIES_C4] as const;
 
-/** Un identifiant du référentiel : le compilateur refuse un identifiant inconnu dans une quête. */
+/** Un identifiant du référentiel : le compilateur refuse un identifiant inconnu dans une mission. */
 export type ProgrammeId = (typeof PROGRAMME)[number]['id'];
 
 /** Le cycle d'une classe : la 6e termine le cycle 3, la 5e, la 4e et la 3e sont le cycle 4. */

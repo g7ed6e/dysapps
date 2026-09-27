@@ -61,7 +61,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
       if (settings.sounds) playDone();
       onBuilt?.(otherEnd(b, island));
     } else if (r.reason === 'blocs') {
-      text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une quête pour en gagner.`;
+      text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une mission pour en gagner.`;
       if (settings.sounds) playNope();
     } else if (r.reason === 'plan' || r.reason === 'gardien') {
       text = conditionText(b, state.village.bridges) ?? 'Il reste une étape avant de construire.';

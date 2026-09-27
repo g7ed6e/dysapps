@@ -29,7 +29,7 @@ export type BuildingStyle =
 
 /** La forme du bâtiment de chaque île (son nom et ses phrases sont dans plans/*.json). */
 export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
-  // Basses Terres (6e)
+  // Premiers Rivages (6e)
   foret: { kind: 'maison' },
   mine: { kind: 'maison', chimney: 2 },
   carriere: { kind: 'dome', cap: 'brique' },
@@ -40,14 +40,14 @@ export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   volcan: { kind: 'hutte' },
   baie: { kind: 'maison' },
   horloge: { kind: 'tour', top: 'horloge' },
-  // Collines du Large (5e)
+  // Îles Brumeuses (5e)
   glacier: { kind: 'dome' },
   marche: { kind: 'echoppe' },
   carrefour: { kind: 'maison' },
   marais: { kind: 'hutte' },
   comptoir: { kind: 'echoppe' },
   manoir: { kind: 'maison', w: 5, chimney: 2 },
-  // Monts de Feu (4e)
+  // Anciens Ateliers (4e)
   atelier: { kind: 'maison' },
   forge: { kind: 'maison', chimney: 2 },
   falaise: { kind: 'hutte' },

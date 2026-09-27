@@ -15,11 +15,11 @@ interface Props {
   appId: string;
   intro: ReactNode;
   quests: QuestDef[];
-  /** Section supplémentaire sous les quêtes (ex. réviser une table) ; reçoit de quoi lancer une quête libre. */
+  /** Section supplémentaire sous les missions (ex. réviser une table) ; reçoit de quoi lancer une mission libre. */
   extra?: (start: (quest: QuestDef) => void, best: (id: string) => number | undefined) => ReactNode;
 }
 
-/** Menu des quêtes d'une activité (cartes numérotées), puis la quête choisie. */
+/** Menu des missions d'une activité (cartes numérotées), puis la mission choisie. */
 export function QuestMenu({ appId, intro, quests, extra }: Props) {
   const { progress } = useProgress();
   const [current, setCurrent] = useState<QuestDef | null>(null);
@@ -27,7 +27,7 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
   const best = (id: string) => progress.apps[key(id)]?.bestScore;
 
   if (current) {
-    // La quête suivante de la liste, proposée en premier à la fin (la suite logique).
+    // La mission suivante de la liste, proposée en premier à la fin (la suite logique).
     const i = quests.findIndex((q) => q.id === current.id);
     const following = i >= 0 ? quests[i + 1] : undefined;
     return (
@@ -36,8 +36,8 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
         appId={key(current.id)}
         makeQuestions={current.make}
         onExit={() => setCurrent(null)}
-        exitLabel="Changer de quête"
-        next={following ? { label: `Quête suivante : ${following.title}`, go: () => setCurrent(following) } : undefined}
+        exitLabel="Changer de mission"
+        next={following ? { label: `Mission suivante : ${following.title}`, go: () => setCurrent(following) } : undefined}
       />
     );
   }
@@ -46,7 +46,7 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
     <section aria-labelledby="choix-quete">
       <p className="intro">{intro}</p>
       <h2 id="choix-quete" className="section-title">
-        Quêtes
+        Missions
       </h2>
       <ul className="grid levels">
         {quests.map((quest, i) => {

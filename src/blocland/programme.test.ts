@@ -1,5 +1,5 @@
-// Le rattachement des quêtes au programme officiel : chaque quête cite des compétences qui existent et sont de son
-// cycle ; chaque compétence est travaillée par une quête, ou exclue avec un motif (jamais les deux).
+// Le rattachement des missions au programme officiel : chaque mission cite des compétences qui existent et sont de son
+// cycle ; chaque compétence est travaillée par une mission, ou exclue avec un motif (jamais les deux).
 import { APPS } from '../apps/registry';
 import { CYCLE_OF, PROGRAMME, byId } from '../programme';
 import { EXCLUSIONS } from '../programme/exclusions';
@@ -8,7 +8,7 @@ import { loadAllExercises } from './exercises';
 
 const EXERCISES = await loadAllExercises();
 
-/** Qui travaille quoi : quêtes des îles, quêtes du portail, exercices qui précisent leur programme. */
+/** Qui travaille quoi : missions des îles, missions du portail, exercices qui précisent leur programme. */
 function coverage(): Map<string, string[]> {
   const map = new Map<string, string[]>();
   const add = (id: string, by: string) => map.set(id, [...(map.get(id) ?? []), by]);
@@ -18,7 +18,7 @@ function coverage(): Map<string, string[]> {
   return map;
 }
 
-it('chaque quête d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de son cycle', () => {
+it('chaque mission d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de son cycle', () => {
   for (const b of BIOMES) {
     const cycle = CYCLE_OF[b.classe];
     for (const q of b.exercises) {
@@ -40,7 +40,7 @@ it('chaque quête d’une île cite au moins une compétence, existante, sans do
   }
 });
 
-it('chaque quête du portail qui cite le programme cite des compétences existantes, de sa matière', () => {
+it('chaque mission du portail qui cite le programme cite des compétences existantes, de sa matière', () => {
   for (const a of APPS) {
     if (!a.programme) continue;
     expect(a.programme.length, a.id).toBeGreaterThanOrEqual(1);
@@ -51,7 +51,7 @@ it('chaque quête du portail qui cite le programme cite des compétences existan
       expect(e!.discipline, `portail/${a.id} cite ${id}, d’une autre matière`).toBe(a.subject);
     }
   }
-  // Les quêtes d'une matière (hors Tutoriel) sont toutes rattachées.
+  // Les missions d'une matière (hors Tutoriel) sont toutes rattachées.
   for (const a of APPS.filter((x) => !x.onHome)) expect(a.programme, `portail/${a.id} : aucune compétence du programme`).toBeTruthy();
 });
 
@@ -68,12 +68,12 @@ it('un exercice qui précise son programme cite des compétences existantes, de 
   }
 });
 
-it('couverture : chaque compétence a une quête, ou une exclusion motivée, jamais les deux', () => {
+it('couverture : chaque compétence a une mission, ou une exclusion motivée, jamais les deux', () => {
   const covered = coverage();
   for (const e of PROGRAMME) {
     const by = covered.get(e.id);
     const excluded = EXCLUSIONS[e.id];
-    expect(by || excluded, `${e.id} n’est travaillée par aucune quête : ajouter une quête ou une exclusion motivée dans src/programme/exclusions.ts`).toBeTruthy();
+    expect(by || excluded, `${e.id} n’est travaillée par aucune mission : ajouter une mission ou une exclusion motivée dans src/programme/exclusions.ts`).toBeTruthy();
     expect(by && excluded ? `${e.id} est couverte par ${by.join(', ')} : retirer son exclusion` : '', e.id).toBe('');
   }
 });

@@ -14,11 +14,11 @@ La progression est celle du navigateur. Le plus simple est un profil de navigate
 **Peut-on transférer la progression sur un autre appareil ?**
 Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre progression.
 
-**Par où commencer dans Blocland ?**
-Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une flèche jaune flotte au-dessus de la Forêt tant qu’aucune quête n’a été jouée. Le tutoriel de trois bulles se rejoue avec le bouton « Revoir l’aide ».
+**Par où commencer dans Archipéo ?**
+Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une flèche jaune flotte au-dessus de la Forêt tant qu’aucune mission n’a été jouée. Le tutoriel de trois bulles se rejoue avec le bouton « Revoir l’aide ».
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
-Un peu : le Bloc-Navire qui mène en 5e se construit dans les Basses Terres (une cinquantaine de blocs et trois Gardiens vaincus), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières quêtes servent à gagner les blocs du navire et des premiers ouvrages.
+Un peu : le Bloc-Navire qui mène en 5e se construit dans les Premiers Rivages (une cinquantaine de blocs et trois Gardiens vaincus), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
 
 **Comment passer en 5e (puis en 4e, en 3e) ?**
 Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « Le Bloc-Navire » : poser ses blocs comme un plan, vaincre les Gardiens demandés (la voile, le ballon ou les feux apparaissent alors), puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.
@@ -26,11 +26,11 @@ Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des p
 **Peut-on revenir en 6e ?**
 Oui, toujours. Sur le port de l’archipel où l’on est, la section Bloc-Navire a un bouton « Revenir en 6e » (et « Repartir vers 5e » pour repartir). Rien ne se perd, le Bloc-Navire reste construit.
 
-**Pourquoi la quête propose-t-elle d’autres mots ou d’autres nombres que la dernière fois ?**
-Chaque partie change (autres nombres en maths, autre tirage de mots en français) et le niveau s’adapte. Les étoiles et le meilleur score de la quête sont gardés quelle que soit la variante.
+**Pourquoi la mission propose-t-elle d’autres mots ou d’autres nombres que la dernière fois ?**
+Chaque partie change (autres nombres en maths, autre tirage de mots en français) et le niveau s’adapte. Les étoiles et le meilleur score de la mission sont gardés quelle que soit la variante.
 
 **Le Gardien refuse le défi.**
-Il faut au moins deux étoiles sur chaque quête de l’île. Toucher la ligne du Gardien dans le panneau dit quelles quêtes manquent.
+Il faut au moins deux étoiles sur chaque mission de l’île. Toucher la ligne du Gardien dans le panneau dit quelles missions manquent.
 
 **Comment ouvrir une île fermée ?**
 Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (premier plan terminé pour un escalier, Gardien vaincu pour un tunnel ou un col). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
@@ -44,7 +44,7 @@ Elle utilise la synthèse vocale du navigateur. Vérifier le volume et le mode s
 Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, espacement des lettres et des mots, thème. Voir [Réglages et accessibilité](reglages.md).
 
 **Les animations gênent ou l’appareil est lent.**
-Activer « Réduire les animations ». Si la 3D reste lourde, choisir dans « Vue de Blocland » le monde en 2D (plus léger) ou la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
+Activer « Réduire les animations ». Si la 3D reste lourde, choisir dans « Vue du monde » le monde en 2D (plus léger) ou la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.

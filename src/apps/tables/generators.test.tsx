@@ -26,7 +26,7 @@ function solve(prompt: string): number {
   throw new Error(`Énoncé inconnu : ${prompt}`);
 }
 
-describe.each(QUESTS.map((q) => [q.id, q] as const))('quête %s', (_, quest) => {
+describe.each(QUESTS.map((q) => [q.id, q] as const))('mission %s', (_, quest) => {
   it('produit des questions justes, sans doublon, avec 4 choix croissants', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const qs = quest.make(seeded(seed));

@@ -25,7 +25,7 @@ export interface ExerciseDef {
   lang?: Lang;
   /**
    * Précision facultative par exercice (niveau) : compétences du programme officiel travaillées, en plus de celles
-   * de la quête (identifiants de src/programme/). Vérifié par les tests, affiché dans la documentation.
+   * de la mission (identifiants de src/programme/). Vérifié par les tests, affiché dans la documentation.
    */
   programme?: string[];
   /** Les items de référence (Gardien, tests). Une partie en joue une variante : voir `run.ts`. */

@@ -46,7 +46,7 @@ export function BloclandPage() {
       </Link>
       <section className="hero hero-blocland">
         <p className="hero-kicker">Aventure</p>
-        <h1 className="hero-title">Blocland</h1>
+        <h1 className="hero-title">Archipéo</h1>
         <p className="hero-text">
           <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis le Bloc-Navire t’emmène d’archipel en archipel." />
         </p>

@@ -14,7 +14,7 @@ export interface Prop {
   muted: boolean;
 }
 
-/** Une borne de quête, dessinée en panneau : sa quête (« île:quête ») et sa case (z : le haut du sol dessous). */
+/** Une borne de mission, dessinée en panneau : sa mission (« île:mission ») et sa case (z : le haut du sol dessous). */
 export interface Station {
   quest: string;
   x: number;
@@ -30,7 +30,7 @@ export function kindOf(decor: string): string {
 }
 
 /**
- * Sépare le décor du terrain : chaque élément dont on sait dessiner le sprite devient un objet, chaque borne de quête
+ * Sépare le décor du terrain : chaque élément dont on sait dessiner le sprite devient un objet, chaque borne de mission
  * un panneau ; leurs cubes quittent le terrain. Les autres cubes (et le décor sans sprite) restent des cubes.
  */
 export function propsOf(cubes: VoxelCube[]): { props: Prop[]; stations: Station[]; terrain: VoxelCube[] } {

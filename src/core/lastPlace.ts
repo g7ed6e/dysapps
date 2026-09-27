@@ -1,4 +1,4 @@
-// La dernière quête ouverte, pour le bouton « Continuer » (écran titre et menus) : son adresse et son nom.
+// La dernière mission ouverte, pour le bouton « Continuer » (écran titre et menus) : son adresse et son nom.
 import { useEffect } from 'react';
 import { loadJSON, removeKey, saveJSON } from './storage';
 
@@ -24,7 +24,7 @@ export function forgetPlace(): void {
   removeKey(STORAGE_KEY);
 }
 
-/** Retient la quête ouverte (à l'ouverture de sa page). */
+/** Retient la mission ouverte (à l'ouverture de sa page). */
 export function useRememberPlace(place: Place | null) {
   const path = place?.path;
   const label = place?.label;

@@ -35,6 +35,6 @@ it('montre la grille de points avec le joker, puis joue la table de 7 jusqu’au
   // Première question avec joker : 0,5 point ; les 9 autres au premier essai.
   expect(screen.getByText('9 sur 10 du premier coup')).toBeInTheDocument();
   expect(screen.getByRole('img', { name: '3 étoiles sur 3' })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: /Changer de quête/ }));
+  await user.click(screen.getByRole('button', { name: /Changer de mission/ }));
   expect(screen.getByRole('button', { name: 'Table de 7, record : 3 étoiles sur 3' })).toBeInTheDocument();
 });

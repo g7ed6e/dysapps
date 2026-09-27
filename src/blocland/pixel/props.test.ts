@@ -47,7 +47,7 @@ it('chaque sol du paysage a sa matière dessinée ; les sols en grain deviennent
   expect(PRIORITY.herbe).toBeGreaterThan(PRIORITY.mousse);
 });
 
-it('chaque borne de quête devient un panneau, une seule fois, et ses cubes quittent le terrain', () => {
+it('chaque borne de mission devient un panneau, une seule fois, et ses cubes quittent le terrain', () => {
   const cubes = worldCubes('6e', {});
   const { stations, terrain } = propsOf(cubes);
   const quests = new Set(cubes.filter((c) => c.quest).map((c) => c.quest));

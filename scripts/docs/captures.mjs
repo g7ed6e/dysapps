@@ -34,7 +34,7 @@ const [{ BIOMES }, { plansFor, planCells }, { VEHICLE_STAGES }, { MONUMENTS }, {
 const keys = (plan, n = Infinity) => planCells(plan).slice(0, n).map((c) => c.key);
 const islandsOf = (classe) => BIOMES.filter((b) => b.classe === classe).map((b) => b.id);
 const bridgesOf = (classe) => BRIDGES.filter((b) => islandsOf(classe).includes(b.from)).map((b) => b.id);
-/** Des étoiles sur les quêtes des îles (le premier exercice de chaque type). */
+/** Des étoiles sur les missions des îles (le premier exercice de chaque type). */
 function stars(islands, n = 2) {
   const out = {};
   for (const id of islands) {
@@ -48,7 +48,7 @@ function stars(islands, n = 2) {
 const guardians = (islands) => Object.fromEntries(islands.map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 0.8 }]));
 const badges = (n) => Object.fromEntries(BADGES.slice(0, n).map((b, i) => [b.id, new Date(2026, 8, 1 + i).toISOString()]));
 
-/** Le début : deux quêtes jouées dans la Forêt, la cabane commencée. */
+/** Le début : deux missions jouées dans la Forêt, la cabane commencée. */
 const EARLY = {
   blocland: {
     inventory: { bois: 9, brique: 4 },
@@ -59,7 +59,7 @@ const EARLY = {
 };
 /** Assez de bois pour finir la cabane de Mousso. */
 const CABANE_READY = { ...EARLY, blocland: { ...EARLY.blocland, inventory: { bois: planCells(plansFor('foret')[0]).length } } };
-/** Au milieu des Basses Terres : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
+/** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
   blocland: {
@@ -80,7 +80,7 @@ const MID = {
   },
   progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, plansCompleted: 6, bossesBeaten: 2, bestStreak: 9, badges: badges(9) },
 };
-/** Les Basses Terres reconstruites : tout est ouvert et bâti, le navire a pris la mer. */
+/** Les Premiers Rivages reconstruites : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
   blocland: {
     inventory: { bois: 30, brique: 25, toile: 8 },
@@ -98,7 +98,7 @@ const DONE6 = {
   },
   progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, plansCompleted: 33, bossesBeaten: 11, voyages: 1, monumentsCompleted: 2, badges: badges(17) },
 };
-/** Arrivé dans les Collines du Large. */
+/** Arrivé dans les Îles Brumeuses. */
 const COLLINES = { ...DONE6, blocland: { ...DONE6.blocland, village: { ...DONE6.blocland.village, at: 'marche' } } };
 
 // ---------- Les captures ----------

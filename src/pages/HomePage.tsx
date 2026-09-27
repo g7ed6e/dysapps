@@ -32,7 +32,7 @@ export function HomePage() {
         )}
       </section>
 
-      {/* La dernière quête ouverte, pour reprendre en un toucher. */}
+      {/* La dernière mission ouverte, pour reprendre en un toucher. */}
       {!firstTime && resume && (
         <Link to={resume.path} className="panel adventure-card resume-card">
           <span className="subject-icon">
@@ -48,7 +48,7 @@ export function HomePage() {
         </Link>
       )}
 
-      {/* Les révisions du jour : les items ratés reviennent (J+1, J+3, J+7, J+15), en tête de leur quête. */}
+      {/* Les révisions du jour : les items ratés reviennent (J+1, J+3, J+7, J+15), en tête de leur mission. */}
       {reviews.length > 0 && (
         <Link to={reviews[0].path} className="panel adventure-card review-card">
           <span className="subject-icon">
@@ -59,7 +59,7 @@ export function HomePage() {
             <span className="adventure-title">{reviews[0].label}</span>
             {reviews.length > 1 && (
               <span className="adventure-desc">
-                Et {reviews.length - 1} autre{reviews.length > 2 ? 's' : ''} quête{reviews.length > 2 ? 's' : ''} ensuite.
+                Et {reviews.length - 1} autre{reviews.length > 2 ? 's' : ''} mission{reviews.length > 2 ? 's' : ''} ensuite.
               </span>
             )}
           </span>
@@ -92,7 +92,7 @@ export function HomePage() {
         <Creature biome="foret" className="creature-small" />
         <span className="adventure-text">
           <span className="adventure-kicker">{shipReady ? 'Le Bloc-Navire est prêt !' : 'Aventure'}</span>
-          <span className="adventure-title">Blocland</span>
+          <span className="adventure-title">Archipéo</span>
           <span className="adventure-desc">
             <Syllabified text="Reconstruis le village bloc par bloc, puis embarque sur le Bloc-Navire vers les autres archipels." />
           </span>
@@ -108,7 +108,7 @@ export function HomePage() {
           <span className="subject-icon">
             <Icon name="dumbbell" size="2.2rem" />
           </span>
-          <span className="subject-title">Quêtes</span>
+          <span className="subject-title">Missions</span>
         </Link>
         <Link to="/succes" className="panel menu-tile subject-card">
           <span className="subject-icon">

@@ -1,4 +1,4 @@
-// Catalogue des quêtes. Pour en ajouter une : créer son dossier dans src/apps/,
+// Catalogue des missions. Pour en ajouter une : créer son dossier dans src/apps/,
 // puis l'ajouter ici avec `status: 'disponible'` et son composant `component`.
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
@@ -10,21 +10,22 @@ export type Subject = 'francais' | 'maths' | 'anglais';
 export interface AppDef {
   id: string;
   subject: Subject;
-  /** Compétences du programme officiel que la quête travaille (identifiants de src/programme/). */
+  /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). */
   programme?: readonly ProgrammeId[];
   title: string;
   description: string;
   icon: AnyIconName;
   status: 'disponible' | 'bientot';
   component?: ComponentType;
-  /** Quête du menu, pas d'une matière (le Tutoriel, qui mélange français et maths). */
+  /** Mission du menu, pas d'une matière (le Tutoriel, qui mélange français et maths). */
   onHome?: boolean;
 }
 
-export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string }> = {
-  francais: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension' },
-  maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux' },
-  anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire' },
+/** Chaque matière est une expédition d’Archipéo : le français les archives, les maths les mécanismes, l’anglais les routes maritimes. */
+export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string; expedition: string }> = {
+  francais: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
+  maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux', expedition: 'Mécanismes et énigmes' },
+  anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
 };
 
 export const APPS: AppDef[] = [
@@ -32,7 +33,7 @@ export const APPS: AppDef[] = [
     id: 'demo',
     subject: 'francais',
     title: 'Tutoriel',
-    description: 'Une quête d’entraînement pour prendre les commandes en main.',
+    description: 'Une mission d’entraînement pour prendre les commandes en main.',
     icon: 'compass',
     status: 'disponible',
     onHome: true,
@@ -114,7 +115,7 @@ export function getApp(id: string | undefined): AppDef | undefined {
   return APPS.find((a) => a.id === id);
 }
 
-/** Meilleur score d'une quête, tous modes confondus (« homophones », « homophones:niveau-1 »…). */
+/** Meilleur score d'une mission, tous modes confondus (« homophones », « homophones:niveau-1 »…). */
 export function bestScore(apps: Record<string, { bestScore: number }>, appId: string): number | undefined {
   const scores = Object.entries(apps)
     .filter(([key]) => key === appId || key.startsWith(`${appId}:`))
@@ -122,7 +123,7 @@ export function bestScore(apps: Record<string, { bestScore: number }>, appId: st
   return scores.length ? Math.max(...scores) : undefined;
 }
 
-/** Les quêtes d'une matière (le Tutoriel est dans le menu, pas dans une matière). */
+/** Les missions d'une matière (le Tutoriel est dans le menu, pas dans une matière). */
 export function appsBySubject(subject: Subject): AppDef[] {
   return APPS.filter((a) => a.subject === subject && !a.onHome);
 }

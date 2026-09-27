@@ -35,11 +35,11 @@ export default function VocabulaireApp() {
   return (
     <section aria-labelledby="choix-niveau">
       <p className="intro">
-        Choisis ton niveau. Chaque quête : {QUESTIONS_PER_QUEST} mots. Le bouton Écouter lit le mot anglais avec une voix anglaise.
+        Choisis ton niveau. Chaque mission : {QUESTIONS_PER_QUEST} mots. Le bouton Écouter lit le mot anglais avec une voix anglaise.
       </p>
 
       <h2 id="choix-niveau" className="section-title">
-        Quêtes
+        Missions
       </h2>
       <ul className="grid levels">
         {LEVELS.map(({ level, title, description }) => {

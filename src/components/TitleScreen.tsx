@@ -18,7 +18,7 @@ function seenThisSession(): boolean {
 
 /**
  * L'écran titre, une fois par lancement : le bloc d'herbe, « Jouer » (le village, derrière, est déjà là), et
- * « Continuer » vers la dernière quête. Il a
+ * « Continuer » vers la dernière mission. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :
  * il attend l'élève.
@@ -49,10 +49,10 @@ export function TitleScreen() {
       <div className="title-card">
         <img className="title-logo" src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={160} height={160} />
         <h1 id="titre-appli" className="title-name">
-          DysApps
+          Archipéo
         </h1>
         <p className="title-tagline">
-          <Syllabified text="Français, maths et anglais, à ton rythme." />
+          <Syllabified text="Le savoir construit ton monde." />
         </p>
         <div className="title-actions">
           {resume && (

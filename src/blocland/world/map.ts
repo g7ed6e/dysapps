@@ -1,7 +1,7 @@
 // La carte de Blocland : quatre archipels, un par classe, dans un seul repère de coordonnées. Chaque île a un cœur de
-// 16 × 16 (bornes de quête, zone des plans, créature, décor) posé sur une terre bien plus large aux côtes irrégulières
+// 16 × 16 (bornes de mission, zone des plans, créature, décor) posé sur une terre bien plus large aux côtes irrégulières
 // (baies, caps), avec ses collines, ses pics, ses lacs, sa végétation. Les archipels occupent des bandes de y disjointes :
-// les Basses Terres (6e) au niveau de la mer, les Collines du Large (5e), les Monts de Feu (4e) et les Îles du Ciel (3e),
+// les Premiers Rivages (6e) au niveau de la mer, les Îles Brumeuses (5e), les Anciens Ateliers (4e) et les Îles du Ciel (3e),
 // chacun à son altitude, qui est une ambiance : les Îles du Ciel flottent au-dessus des nuages.
 import { BIOMES, type BiomeId, type Classe } from '../biomes';
 
@@ -32,12 +32,12 @@ export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les vingt-huit îles, placées à la main. Les Basses Terres (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les vingt-huit îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
 export const MAP: IslandDef[] = [
-  // Basses Terres (6e), au niveau de la mer. Port : la Plaine.
+  // Premiers Rivages (6e), au niveau de la mer. Port : la Plaine.
   { id: 'foret', region: 'basses-terres', core: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
   { id: 'ferme', region: 'basses-terres', core: { x: 27, y: 61 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
   { id: 'mine', region: 'montagne', core: { x: 96, y: 61 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
@@ -46,12 +46,12 @@ export const MAP: IslandDef[] = [
   { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 21 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
   { id: 'riviere', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
   { id: 'volcan', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
-  // Collines du Large (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché.
+  // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché.
   { id: 'glacier', region: 'montagne', core: { x: 40, y: 320 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
   { id: 'marche', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
   { id: 'carrefour', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
   { id: 'marais', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
-  // Monts de Feu (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier.
+  // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier.
   { id: 'forge', region: 'feu', core: { x: 30, y: 618 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
   { id: 'atelier', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
   { id: 'falaise', region: 'montagne', core: { x: 94, y: 618 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },

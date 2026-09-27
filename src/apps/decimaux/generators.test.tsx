@@ -49,7 +49,7 @@ it('formate et relit les décimaux sans erreur d’arrondi', () => {
   expect(parseDecimal('0,1') + parseDecimal('0,2')).toBe(parseDecimal('0,3'));
 });
 
-describe.each(QUESTS.map((q) => [q.id, q] as const))('quête %s', (_, quest) => {
+describe.each(QUESTS.map((q) => [q.id, q] as const))('mission %s', (_, quest) => {
   it('produit des questions justes, sans doublon, avec une seule bonne réponse', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const qs = quest.makeWith(seeded(seed));

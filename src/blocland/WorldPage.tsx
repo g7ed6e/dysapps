@@ -73,7 +73,7 @@ const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: n
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran, un archipel à la fois (celui où se tient le bonhomme).
- * On touche une île : la caméra y vole et son panneau glisse depuis le bas (créature, quêtes, plan, Gardien, et sur le
+ * On touche une île : la caméra y vole et son panneau glisse depuis le bas (créature, missions, plan, Gardien, et sur le
  * port le Bloc-Navire) sans quitter le monde. On peut replier le panneau pour regarder l'île, puis le rouvrir, sans la
  * quitter. L'URL /aventure/:ile ouvre le panneau, pour revenir au même endroit après un exercice. /aventure/carte est la
  * Carte : tout l'archipel vu du ciel, un fanion sur le bonhomme ; on touche une île pour y aller. Embarquer sur le
@@ -94,7 +94,7 @@ export function WorldPage() {
   const blocsOpen = biomeId === 'blocs';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
   const schoolOpen = biomeId === 'ecole';
-  // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Quêtes, Succès, Réglages, Aide.
+  // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Missions, Succès, Réglages, Aide.
   const menuOpen = biomeId === 'menu';
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophees';
@@ -133,7 +133,7 @@ export function WorldPage() {
     setSheetOpen(true);
     navigate(`/aventure/${id}`);
   };
-  // Les bornes de quête des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
+  // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   const quests = useMemo<QuestMark[]>(
     () =>
       islandsOf(a).flatMap((b) => {
@@ -153,7 +153,7 @@ export function WorldPage() {
     () => islandsOf(a).filter((b) => isBiomeUnlocked(b.id, state.village.bridges)).map((b) => ({ id: b.id, text: b.name })),
     [a, state.village.bridges],
   );
-  // Une borne touchée : sa quête si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
+  // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
     const q = quests.find((m) => m.biome === id && m.typeId === typeId);
     if (q && q.state !== 'locked') navigate(`/aventure/${id}/${typeId}`);
@@ -398,7 +398,7 @@ export function WorldPage() {
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
-  // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
+  // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
   const marker = shipyard
@@ -473,7 +473,7 @@ export function WorldPage() {
             freeWalk={settings.freeWalk}
             onWalkedInto={(id) => isBiomeUnlocked(id, state.village.bridges) && moveTo(id)}
             className="voxel-canvas-stage"
-            label={`Blocland en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`Archipéo en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
@@ -559,14 +559,14 @@ export function WorldPage() {
             replay={replay}
             targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', '[data-tuto="ecole"]', undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
+              'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
               'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout l’archipel du ciel.',
-              'Sur chaque île, les bornes à panneau sont les quêtes : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une quête à faire, des cubes d’or comptent tes étoiles.',
-              'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
-              'Sur la Forêt, l’école du village a trois portes : français, maths, anglais. Chaque quête finie là-bas donne aussi des blocs. À côté, la salle des trophées garde un trophée par succès.',
+              'Sur chaque île, les bornes à panneau sont les missions : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles.',
+              'Dans le panneau : les missions donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
+              'Sur la Forêt, l’école du village a trois portes : français, maths, anglais. Chaque mission finie là-bas donne aussi des blocs. À côté, la salle des trophées garde un trophée par succès.',
               'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont, un bac ou un sentier coûte des blocs ; un escalier demande un plan terminé, un col un Gardien vaincu. Choisis ta direction.',
               'Au port, sur la Plaine des nombres, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : l’archipel de 5e t’attend, et tu peux toujours revenir.',
-              'Le bouton pause, en haut à droite, ouvre le menu : reprendre, les quêtes, les succès, les réglages. Le bouton retour du téléphone l’ouvre aussi.',
+              'Le bouton pause, en haut à droite, ouvre le menu : reprendre, les missions, les succès, les réglages. Le bouton retour du téléphone l’ouvre aussi.',
             ]}
           />
           </div>

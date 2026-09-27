@@ -19,11 +19,11 @@ interface Props {
   fold?: string;
 }
 
-/** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les quêtes », ou le coffre d'un plan. */
+/** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou le coffre d'un plan. */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   const island = earnIsland(block);
   if (!island) return <>à gagner dans {whereToEarn(block)}</>;
-  if (island.id === here) return <>à gagner ici, dans les quêtes</>;
+  if (island.id === here) return <>à gagner ici, dans les missions</>;
   return (
     <>
       à gagner dans <Link to={`/aventure/${island.id}`}>{island.name}</Link>

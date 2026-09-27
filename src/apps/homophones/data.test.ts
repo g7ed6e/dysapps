@@ -32,7 +32,7 @@ describe('banque de phrases', () => {
 });
 
 describe('générateur', () => {
-  it('tire une quête de niveau sans doublon, uniquement dans ce niveau', () => {
+  it('tire une mission de niveau sans doublon, uniquement dans ce niveau', () => {
     const qs = questionsForLevel(2);
     expect(qs).toHaveLength(QUESTIONS_PER_QUEST);
     expect(new Set(qs.map((q) => q.id)).size).toBe(qs.length);

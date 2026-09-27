@@ -38,7 +38,7 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
     expect(ISLANDS.find((i) => i.id === b.from)).toBeDefined();
     expect(ISLANDS.find((i) => i.id === b.to)).toBeDefined();
   }
-  // Tous les ouvrages construits sans voyage : seules les Basses Terres ; avec les voyages : tout.
+  // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
   expect(BRIDGES).toHaveLength(28);
@@ -48,7 +48,7 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
   expect(ARCHIPELAGOS.map((a) => a.classe)).toEqual(['6e', '5e', '4e', '3e']);
-  expect(archipelagoTitle('5e')).toBe('Archipel de 5e — Les Collines du Large');
+  expect(archipelagoTitle('5e')).toBe('Archipel de 5e — Les Îles Brumeuses');
   for (const a of ARCHIPELAGOS) {
     const islands = islandsOf(a.classe).map((b) => b.id);
     expect(islands).toContain(a.port);
@@ -107,7 +107,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
   expect(isBiomeUnlocked('atelier', ['voyage-4e'])).toBe(false);
   expect(isBiomeUnlocked('atelier', ['voyage-5e', 'voyage-4e'])).toBe(true);
   expect(reachedArchipelagos(['voyage-5e', 'voyage-4e']).map((a) => a.classe)).toEqual(['6e', '5e', '4e']);
-  // Le retour est toujours possible : les Basses Terres restent ouvertes.
+  // Le retour est toujours possible : les Premiers Rivages restent ouvertes.
   expect(isBiomeUnlocked('foret', ['voyage-5e', 'voyage-4e', 'voyage-3e'])).toBe(true);
   expect(voyagesTo('cabinet').map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e']);
   expect(remainingVoyages('cabinet', ['voyage-5e']).map((v) => v.id)).toEqual(['voyage-4e']);

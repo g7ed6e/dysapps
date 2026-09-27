@@ -1,5 +1,5 @@
 // Les révisions du jour : les items ratés reviennent à J+1, J+3, J+7, J+15 (répétition espacée, `engine.ts`). Ici, ce
-// que l'appli en fait : quels exercices et quelles quêtes ont des items à revoir aujourd'hui.
+// que l'appli en fait : quels exercices et quelles missions ont des items à revoir aujourd'hui.
 import { getBiome, type BiomeId } from './biomes';
 import { dueItems, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
@@ -29,7 +29,7 @@ export interface ReviewQuest {
   path: string;
 }
 
-/** Les quêtes à reprendre aujourd'hui (une par île et par quête), sur les îles ouvertes, dans l'ordre du catalogue. */
+/** Les missions à reprendre aujourd'hui (une par île et par mission), sur les îles ouvertes, dans l'ordre du catalogue. */
 export function questsToReview(spaced: SpacedItem[], bridges: string[], today = todayISO()): ReviewQuest[] {
   const ids = exercisesToReview(spaced, today);
   const seen = new Set<string>();

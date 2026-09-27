@@ -31,7 +31,7 @@ export const SESSION_MAX_MINUTES = 10;
 interface BloclandContextValue {
   state: BloclandState;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
-  /** Une quête du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
+  /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
   /** Items à revoir aujourd'hui. */
   dueCount: number;
@@ -152,7 +152,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }
 
-/** Le contexte s'il y en a un : une quête du portail se joue aussi hors de Blocland (tests, intégrations). */
+/** Le contexte s'il y en a un : une mission du portail se joue aussi hors de Blocland (tests, intégrations). */
 export function useOptionalBlocland(): BloclandContextValue | null {
   return useContext(BloclandContext);
 }

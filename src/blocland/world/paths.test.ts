@@ -23,7 +23,7 @@ it('un chemin à pied contourne un arbre, ne marche pas sur l’eau et ne monte 
     { x: 0, y: 0, z: 1 },
     { x: 6, y: 0, z: 1 },
   ]);
-  // Une borne de quête, même d'un seul bloc : on passe à côté.
+  // Une borne de mission, même d'un seul bloc : on passe à côté.
   const borne = walkGround(flat(7, 3, [{ x: 3, y: 0, z: 1, color: '#ca3', quest: 'test:quete' }]));
   expect(borne.feet.has('3,0')).toBe(false);
   expect(walkPath(borne, { x: 0, y: 0, z: 1 }, { x: 6, y: 0, z: 1 })!.some((p) => p.y === 1)).toBe(true);

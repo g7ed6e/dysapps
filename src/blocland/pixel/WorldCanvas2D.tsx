@@ -137,7 +137,7 @@ export default function WorldCanvas2D({
     env: DrawEnv;
     /** Le décor en sprites. */
     props: Prop[];
-    /** Les bornes de quête, en panneaux. */
+    /** Les bornes de mission, en panneaux. */
     stations: Station[];
     /** Les cases (x, y) des lieux où l'on entre (l'école), avec leur île. */
     places: Map<string, { place: PlaceId; island: BiomeId }>;

@@ -24,7 +24,7 @@ import { stageAt } from './world/vehicle';
 import { Tutorial } from './Tutorial';
 import { ARRIVAL_STEPS } from './arrivals';
 
-/** Un biome : sa créature donne la quête, puis la liste des exercices. */
+/** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
   const { biomeId } = useParams();
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export function BiomePage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte de Blocland
+        <Icon name="back" /> Carte d’Archipéo
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>
         <Icon name={biome.icon} /> {biome.name}
@@ -62,7 +62,7 @@ export function BiomePage() {
       <Bridges island={biome.id} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
 
       <h2 className="section-title">
-        <Icon name="hammer" /> Quêtes
+        <Icon name="hammer" /> Missions
       </h2>
       <ul className="grid apps">
         {biome.exercises.map((exercise) => {
@@ -141,14 +141,14 @@ export function BiomePage() {
               <Icon name={ready ? 'shield' : 'lock'} size="1.8rem" />
             </span>
             <span className="app-title">{guardianTitle(biome)}</span>
-            <span className="app-desc">Une épreuve de chaque quête, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
+            <span className="app-desc">Une épreuve de chaque mission, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
             {beaten && boss ? (
               <Stars count={boss.stars} label={`Gardien vaincu : ${boss.stars} étoiles sur 3`} />
             ) : ready ? (
               <span className="tag tag-new">Prêt à t’affronter</span>
             ) : (
               <span className="tag">
-                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque quête'}
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
               </span>
             )}
           </>
@@ -188,7 +188,7 @@ export function BiomePage() {
 
       <p className="biome-reward">
         <BlockIcon top={block.top} side={block.side} size={32} />
-        Chaque quête réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}. <InventoryLink />
+        Chaque mission réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}. <InventoryLink />
       </p>
     </>
   );

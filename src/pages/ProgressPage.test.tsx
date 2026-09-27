@@ -35,7 +35,7 @@ it('montre la progression de chaque matière, et rien à reprendre au départ', 
   expect(screen.getByRole('heading', { name: /Succès \d+ \/ \d+/ })).toBeInTheDocument();
 });
 
-it('propose de reprendre les quêtes faibles d’une matière, avec un lien qui la relance', () => {
+it('propose de reprendre les missions faibles d’une matière, avec un lien qui la relance', () => {
   const rimes = exercisesOf('foret', 'rimes')[0].id;
   const chasse = exercisesOf('foret', 'chasse-son')[0].id;
   localStorage.setItem(
@@ -53,7 +53,7 @@ it('propose de reprendre les quêtes faibles d’une matière, avec un lien qui 
   expect(redo[0]).toHaveAttribute('href', '/aventure/foret/rimes');
 
   const maths = subject('Maths');
-  // Une quête jamais jouée n'est pas « à reprendre ».
+  // Une mission jamais jouée n'est pas « à reprendre ».
   expect(within(maths).queryByRole('link', { name: /Champ des tables/ })).not.toBeInTheDocument();
   expect(within(maths).getByRole('link', { name: /^Reprendre Tables/ })).toHaveAttribute('href', '/app/tables');
   expect(within(maths).getByRole('img', { name: 'Record : 1 étoile sur 3' })).toBeInTheDocument();

@@ -53,7 +53,7 @@ it('ne regarde que les îles ouvertes de l’archipel où l’on est, et le navi
   // Le sable sert à la coque (navire) même si la Carrière, son île, est fermée.
   expect(blockUses(fresh, 'sable').map((u) => u.kind)).toContain('navire');
   expect(blockUses(fresh, 'sable').some((u) => u.island === 'carriere')).toBe(false);
-  // Dans les Collines du Large, le ballon se construit sur le Marché ; la coque (voyage fait) n'est plus un chantier.
+  // Dans les Îles Brumeuses, le ballon se construit sur le Marché ; la coque (voyage fait) n'est plus un chantier.
   const away = sanitizeState({ village: { bridges: ['voyage-5e'], at: 'marche' } });
   expect(blockUses(away, 'sable').map((u) => u.kind)).toEqual(['garder']);
   expect(blockUses(away, 'toile').map((u) => u.kind)).toContain('navire');

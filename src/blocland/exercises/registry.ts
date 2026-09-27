@@ -54,7 +54,7 @@ export interface ScreenType {
 }
 
 /**
- * Deuxième essai, comme dans les quêtes du portail : après une erreur, on peut réessayer une fois (le point compte
+ * Deuxième essai, comme dans les missions du portail : après une erreur, on peut réessayer une fois (le point compte
  * moitié). Pour un écran à choix, seulement s'il reste au moins deux réponses (avec deux choix, le second essai
  * donnerait la réponse) ; pour un tri, toujours (l'écran ne dit pas quelles cartes sont fausses). Pas au Gardien : c'est l'épreuve.
  */

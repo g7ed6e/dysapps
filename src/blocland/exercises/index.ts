@@ -16,7 +16,7 @@ const JSON_LOADERS = import.meta.glob<ExerciseDef>('./data/*.json', { import: 'd
 /** Chargement du contenu d'un exercice JSON, par son id. */
 const LOADERS = new Map(Object.entries(JSON_META).map(([path, meta]) => [meta.id, JSON_LOADERS[path]]));
 
-/** Tri des graines : les phrases à trous viennent de la quête Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
+/** Tri des graines : les phrases à trous viennent de la mission Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
 const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).map((set) => ({
   id: `ferme-graines-${set.id}`,
@@ -39,7 +39,7 @@ const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).m
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
-/** Panneaux (Carrefour des homophones) : les autres jeux de la quête Homophones, avec la règle affichée. */
+/** Panneaux (Carrefour des homophones) : les autres jeux de la mission Homophones, avec la règle affichée. */
 const PANNEAUX_SETS: Record<string, number> = { ces: 1, ou: 1, la: 1, leur: 1, quand: 2, peu: 2, cest: 2 };
 const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((set) => ({
   id: `carrefour-panneaux-${set.id}`,
@@ -63,7 +63,7 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
-/** Les exercices écrits en code (générateurs, dérivés de la quête Homophones) : déjà là, rien à charger. */
+/** Les exercices écrits en code (générateurs, dérivés de la mission Homophones) : déjà là, rien à charger. */
 const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...panneaux];
 
 /**
@@ -147,8 +147,8 @@ export function pickExercise(
 }
 
 /**
- * Progression d'une quête, toutes variantes et tous niveaux confondus : meilleures étoiles, meilleur score,
- * parties cumulées. `undefined` si aucune n'a été jouée. (La liste des quêtes ne doit pas afficher « Nouveau »
+ * Progression d'une mission, toutes variantes et tous niveaux confondus : meilleures étoiles, meilleur score,
+ * parties cumulées. `undefined` si aucune n'a été jouée. (La liste des missions ne doit pas afficher « Nouveau »
  * parce que la prochaine partie tombe sur une variante ou un niveau pas encore joué.)
  */
 export function questProgress(

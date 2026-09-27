@@ -27,8 +27,8 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
    - le **manuel** (`docs/manuel/`) mis à jour si un écran, un geste, un réglage ou une règle du jeu change, et ses **captures** refaites si l’écran montré change (`npm run docs:captures`) ;
    - les **principes** et la **conception** (`docs/pedagogie/principes.md`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
    - le **README** cohérent avec le reste.
-4. **Le contenu pédagogique** (programmes officiels, archipel, pages des îles, homophones, lecture, maths et anglais du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une quête ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/docs/generate.mjs`.
-5. **Le programme officiel** : une quête cite dans `programme` les compétences qu’elle travaille (`src/programme/`) ; une compétence nouvellement couverte quitte `src/programme/exclusions.ts`, une compétence qui perd sa quête y entre avec un motif. Le test de couverture le rappelle. Voir [Le référentiel des programmes](programmes.md).
+4. **Le contenu pédagogique** (programmes officiels, archipel, pages des îles, homophones, lecture, maths et anglais du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une mission ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/docs/generate.mjs`.
+5. **Le programme officiel** : une mission cite dans `programme` les compétences qu’elle travaille (`src/programme/`) ; une compétence nouvellement couverte quitte `src/programme/exclusions.ts`, une compétence qui perd sa mission y entre avec un motif. Le test de couverture le rappelle. Voir [Le référentiel des programmes](programmes.md).
 
 Une pull request qui ajoute une page au manuel ou à la conception la déclare dans `docs/_theme/nav.json` : le build échoue si une page du sommaire manque et signale une page hors sommaire.
 
@@ -57,14 +57,14 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 | Le manuel (`docs/manuel/`) | Celui qui change l’écran | Ce que l’élève voit aujourd’hui |
 | Les pages du contenu pédagogique | Le générateur | Produites depuis les données du jeu, jamais écrites à la main |
 
-Une question qui touche aux deux (une quête qui doit produire une conséquence visible dans le monde, le nombre de blocs que rapporte un exercice) se partage ainsi : ce qu’un exercice enseigne, ses items et sa correction relèvent du contenu ; ce que la réussite rapporte et change dans le monde relève du game design. Une décision prise s’écrit dans le cadrage de celui qui la tient.
+Une question qui touche aux deux (une mission qui doit produire une conséquence visible dans le monde, le nombre de blocs que rapporte un exercice) se partage ainsi : ce qu’un exercice enseigne, ses items et sa correction relèvent du contenu ; ce que la réussite rapporte et change dans le monde relève du game design. Une décision prise s’écrit dans le cadrage de celui qui la tient.
 
 ## Écrire pour la documentation
 
 - En français, au présent, en phrases courtes ; le lecteur est un élève, un parent, un enseignant ou un orthophoniste, pas un développeur (sauf dans la section Conception).
 - Décrire ce que l’application **fait**, pas ce qu’elle fera ; les intentions vont dans les cadrages.
 - Nommer les choses comme l’application les nomme (« joker », « Gardien », « ouvrage », « plan », « borne »).
-- Les pages décrivent les écrans en mots ; les **captures d’écran** les illustrent, sans les remplacer. Elles ne se font pas à la main : `npm run docs:captures` lance le jeu dans Chromium (Playwright), le joue avec des parties préparées (`scripts/docs/captures.mjs` : le début, le milieu et la fin des Basses Terres, à 10 h 30, avec un hasard à graine fixe) et enregistre les images dans `docs/_captures/`, commitées. Une capture se cite `![ce que montre l’image](/captures/nom.jpg)`, avec un texte de remplacement qui décrit l’écran ; le build échoue si l’image n’existe pas. Quand un écran change, relancer le script (tout, ou quelques captures : `npm run docs:captures -- carte menu`) et relire les images.
+- Les pages décrivent les écrans en mots ; les **captures d’écran** les illustrent, sans les remplacer. Elles ne se font pas à la main : `npm run docs:captures` lance le jeu dans Chromium (Playwright), le joue avec des parties préparées (`scripts/docs/captures.mjs` : le début, le milieu et la fin des Premiers Rivages, à 10 h 30, avec un hasard à graine fixe) et enregistre les images dans `docs/_captures/`, commitées. Une capture se cite `![ce que montre l’image](/captures/nom.jpg)`, avec un texte de remplacement qui décrit l’écran ; le build échoue si l’image n’existe pas. Quand un écran change, relancer le script (tout, ou quelques captures : `npm run docs:captures -- carte menu`) et relire les images.
 - Les tableaux servent aux listes comparables ; les listes à puces aux étapes et aux règles.
 
 ## Conventions du dépôt
@@ -73,7 +73,7 @@ Une question qui touche aux deux (une quête qui doit produire une conséquence 
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
 - Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
-- Les changements de contenu (exercices, quêtes, exclusions du référentiel) sont relus par l’agent `directeur-contenu-pedagogique`, ceux de style ou de game design (univers, progression, récompenses, textures, polices) par l’agent `directeur-artistique`, ceux du rendu du monde (`src/blocland/three/`, `pixel/`, textures, maillage) aussi par l’agent `artiste-technique-3d`, avant fusion (voir [Les agents](#les-agents)).
+- Les changements de contenu (exercices, missions, exclusions du référentiel) sont relus par l’agent `directeur-contenu-pedagogique`, ceux de style ou de game design (univers, progression, récompenses, textures, polices) par l’agent `directeur-artistique`, ceux du rendu du monde (`src/blocland/three/`, `pixel/`, textures, maillage) aussi par l’agent `artiste-technique-3d`, avant fusion (voir [Les agents](#les-agents)).
 
 ## Signaler un problème
 

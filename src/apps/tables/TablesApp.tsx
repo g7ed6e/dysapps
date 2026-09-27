@@ -10,7 +10,7 @@ export default function TablesApp() {
       quests={QUESTS.map((q) => ({ ...q, make: () => q.make() }))}
       intro={
         <>
-          {QUESTIONS_PER_QUEST} calculs par quête, pas de chrono. Le joker montre une aide visuelle : grille de points, boîte de 10, droite graduée ou
+          {QUESTIONS_PER_QUEST} calculs par mission, pas de chrono. Le joker montre une aide visuelle : grille de points, boîte de 10, droite graduée ou
           tableau de numération.
         </>
       }

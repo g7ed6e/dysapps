@@ -12,7 +12,7 @@ import { XpBar } from '../components/XpBar';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
-/** Une matière : sa jauge d'étoiles, ses chiffres, et les quêtes à retravailler (un lien les relance). */
+/** Une matière : sa jauge d'étoiles, ses chiffres, et les missions à retravailler (un lien les relance). */
 function SubjectPanel({ data }: { data: SubjectProgress }) {
   const info = SUBJECTS[data.subject];
   const { earned, max } = data.stars;
@@ -39,7 +39,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
             <div className="xp-fill" style={{ width: `${percent}%` }} />
           </div>
           <p className="subject-progress-detail">
-            <Icon name="star" /> {earned} / {max} étoiles dans Blocland
+            <Icon name="star" /> {earned} / {max} étoiles dans Archipéo
           </p>
         </>
       )}
@@ -90,7 +90,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
       ) : (
         <p className="subject-progress-empty">Rien à reprendre pour l’instant.</p>
       )}
-      {more > 0 && <p className="subject-progress-more">Et {more > 1 ? `${more} autres quêtes` : 'une autre quête'} à reprendre.</p>}
+      {more > 0 && <p className="subject-progress-more">Et {more > 1 ? `${more} autres missions` : 'une autre mission'} à reprendre.</p>}
       <Link to={`/matiere/${data.subject}`} className="button subject-progress-link">
         <Icon name={info.icon} /> Voir la matière
       </Link>
@@ -126,7 +126,7 @@ export function ProgressBody() {
             <dd>{progress.xp}</dd>
           </div>
           <div>
-            <dt>Quêtes</dt>
+            <dt>Missions</dt>
             <dd>{progress.sessionsCompleted}</dd>
           </div>
           <div>
@@ -151,7 +151,7 @@ export function ProgressBody() {
       <h2 className="section-title">
         <Icon name="target" /> Par matière
       </h2>
-      <p className="section-intro">Tes étoiles matière par matière, et les quêtes à reprendre pour progresser : touche-en une pour la rejouer.</p>
+      <p className="section-intro">Tes étoiles matière par matière, et les missions à reprendre pour progresser : touche-en une pour la rejouer.</p>
       <div className="grid subject-progress-list">
         {subjects.map((data) => (
           <SubjectPanel key={data.subject} data={data} />

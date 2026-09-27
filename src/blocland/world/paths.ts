@@ -24,7 +24,7 @@ const key = (x: number, y: number) => `${x},${y}`;
 
 /**
  * La grille de marche d'un archipel : le haut de chaque colonne (sans le décor ni les fantômes), moins l'eau, la lave,
- * les bornes de quête, les cases où un décor haut occupe la place du corps (tronc, feuillage bas, rocher) et celles des
+ * les bornes de mission, les cases où un décor haut occupe la place du corps (tronc, feuillage bas, rocher) et celles des
  * créatures.
  */
 export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = []): WalkGround {
@@ -36,7 +36,7 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
     if (!cur || c.z > cur.z) top.set(k, { z: c.z, liquid: c.texture === 'eau' || c.texture === 'lave' });
   }
   const blocked = new Set<string>();
-  // Une borne de quête, même basse, ne se piétine pas ; l'école non plus.
+  // Une borne de mission, même basse, ne se piétine pas ; l'école non plus.
   for (const c of cubes) if ((c.quest || c.place) && !c.ghost) blocked.add(key(c.x, c.y));
   for (const c of cubes) {
     if (c.ghost || !c.decor || LOW.has(decorKind(c.decor))) continue;

@@ -7,7 +7,7 @@ export function AppUpdateBanner() {
   if (!ready) return null;
   return (
     <div className="update-banner" role="status" aria-live="polite">
-      <span>Une nouvelle version de DysApps est prête.</span>
+      <span>Une nouvelle version d’Archipéo est prête.</span>
       <button type="button" className="button primary" onClick={() => void applyUpdate()}>
         <Icon name="zap" /> Mettre à jour
       </button>

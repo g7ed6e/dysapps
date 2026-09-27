@@ -27,7 +27,7 @@ export const LEVELS = [
 
 export type Level = (typeof LEVELS)[number]['level'];
 
-/** Nombre de questions d'une quête par niveau. */
+/** Nombre de questions d'une mission par niveau. */
 export const QUESTIONS_PER_QUEST = 10;
 
 export function setsForLevel(level: Level): HomophoneSet[] {
@@ -46,7 +46,7 @@ function toQuestion(set: HomophoneSet, index: number): Question {
   };
 }
 
-/** Quête d'un niveau : phrases tirées au hasard dans toutes ses séries, sans doublon. */
+/** Mission d'un niveau : phrases tirées au hasard dans toutes ses séries, sans doublon. */
 export function questionsForLevel(level: Level, count = QUESTIONS_PER_QUEST, rng = Math.random): Question[] {
   const pool = setsForLevel(level).flatMap((set) => set.sentences.map((_, i) => toQuestion(set, i)));
   return shuffle(pool, rng).slice(0, count);

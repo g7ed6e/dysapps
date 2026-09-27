@@ -20,7 +20,7 @@ import { Guardian3D, type GuardianMood } from './Guardians';
 import { playDrum, playGrowl, playVictory } from './sound';
 import { Loading } from '../components/Loading';
 
-/** Le Gardien d'un biome : le défi de fin de biome, une manche de chaque quête, dans son arène. */
+/** Le Gardien d'un biome : le défi de fin de biome, une manche de chaque mission, dans son arène. */
 export function BossPage() {
   const { biomeId } = useParams();
   const { state } = useBlocland();
@@ -95,13 +95,13 @@ export function BossPage() {
         <>
           <CreatureBubble
             biome={biome}
-            text={`${guardianTitle(biome)} n’accepte que les bâtisseurs entraînés. Obtiens ${STARS_TO_BEAT} étoiles dans chaque quête, puis reviens.`}
+            text={`${guardianTitle(biome)} n’accepte que les bâtisseurs entraînés. Obtiens ${STARS_TO_BEAT} étoiles dans chaque mission, puis reviens.`}
           />
           <p className="intro">
             <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
           </p>
           <Link to={`/aventure/${biome.id}`} className="button primary">
-            <Icon name="back" /> Voir les quêtes
+            <Icon name="back" /> Voir les missions
           </Link>
         </>
       ) : (
