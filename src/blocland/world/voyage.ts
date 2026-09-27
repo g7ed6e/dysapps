@@ -1,6 +1,7 @@
 // Le voyage du Bloc-Navire, en deux temps séparés par le changement d'archipel (la scène 3D est reconstruite sous un
 // voile) : le départ (le bonhomme embarque, le navire s'éloigne) puis l'arrivée (le navire accoste, le bonhomme
-// débarque). Code pur : durées et trajectoire ; l'animation est dans WorldCanvas, l'enchaînement dans WorldPage.
+// débarque). Code pur : durées et trajectoire ; le temps qui passe est dans scene.ts, le dessin dans les vues, l'enchaînement
+// dans WorldPage.
 
 export type VoyageLeg = 'depart' | 'arrivee';
 

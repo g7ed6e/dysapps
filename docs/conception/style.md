@@ -18,7 +18,7 @@ L’interface entière suit un style de monde en blocs, dessiné par le code et 
 
 ## Textures
 
-Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/styles/textures/` pour l’interface, `src/blocland/three/textures.ts` pour la 3D), sans lissage : herbe sur terre, pierre mouchetée, planches, sable, verre, or, cristal, feuilles, tronc, puis les blocs des îles du collège (brique, galet, obsidienne, glace, toile, panneau, tourbe, acier, calque, ardoise, parchemin, marbre, quartz, prisme, lentille) et les blocs de finition (toit, porte, lanterne, barrière, escalier). Ciel bleu et nuages en cubes. Aucune image ni texture empruntée à un jeu existant.
+Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/styles/textures/` pour l’interface, `src/blocland/world/pixels.ts` pour le monde, les mêmes pixels dans toutes les vues), sans lissage : herbe sur terre, pierre mouchetée, planches, sable, verre, or, cristal, feuilles, tronc, puis les blocs des îles du collège (brique, galet, obsidienne, glace, toile, panneau, tourbe, acier, calque, ardoise, parchemin, marbre, quartz, prisme, lentille) et les blocs de finition (toit, porte, lanterne, barrière, escalier). Ciel bleu et nuages en cubes. Aucune image ni texture empruntée à un jeu existant.
 
 Les textures ne sont **jamais placées derrière du texte**. Les thèmes Clair et Contraste élevé restent plats, sans texture ni biseau.
 
