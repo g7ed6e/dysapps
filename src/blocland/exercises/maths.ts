@@ -7,6 +7,7 @@ import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
 import { BarList, NumberLineInt, RatioTable, RightTriangle, RuleCard, ThalesFigure } from './Aids';
+import { Scene } from './Scene';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
 import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
 import { compare as compareFractions, equivalent, ofQuantity, onLine as fractionOnLine, readFraction } from '../../apps/fractions/generators';
@@ -37,6 +38,7 @@ export const AID_COMPONENTS: Record<string, (props: never) => ReactNode> = {
   'right-triangle': RightTriangle,
   'thales-figure': ThalesFigure,
   'bar-list': BarList,
+  scene: Scene,
 };
 
 /** Un élément React (aide d'un générateur) → sa description en données. */
