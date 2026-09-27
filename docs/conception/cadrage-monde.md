@@ -177,9 +177,12 @@ Décisions :
    - **Tout ce qui se tient debout** (décor, panneaux, créatures, bonhomme) est trié chaque image du plus lointain au plus proche ; chacun a son ombre.
    - **Repères** : la flèche « Commence ici », les balises d'un chemin, le fanion de la Carte (jamais minuscules), les éclats d'un bloc posé. **Fantômes** du plan bleutés, entourés d'un pointillé blanc. **La nuit** : un voile bleu nuit selon l'heure réelle (la mer suit la palette de l'archipel) ; les repères jaunes restent par-dessus, vifs.
 4. **Construire et voyager** (faite) : le Bloc-Navire est une petite carte de tuiles à part (ses cubes locaux, `drawTileMap`), dessinée une fois, posée chaque image à sa place : il tangue à quai (ou plane, dans le ciel), suit `vehiclePath` en voyage (écume à la poupe à la voile, flamme au réacteur), le bonhomme sur le pont (`VEHICLE_DECK`) ; la caméra le suit et recule un peu à mesure qu'il s'éloigne. Le toucher d'une case fantôme la pose (`onPickFace`), ailleurs il ouvre le panneau du port (`onPickVehicle`). La « salle » du port comprend sa jetée et son navire (`dockBox`), et le chantier en cours attire la caméra (le point à montrer de `frame2D`) ; sa flèche se pose au-dessus de la coque. Les ouvrages et les plans étaient déjà touchables par le terrain (étape 2).
-5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
+5. **Marche libre en option, et la 2D par défaut sans WebGL** (faite) :
+   - **Réglage** `freeWalk` (désactivé par défaut) : la vue 2D affiche une croix de direction et un bouton « Entrer » (boutons de 3,5 rem, texte jamais sous 18 px). Tenir une flèche (ou une touche) fait un pas d'une case à la fois, six par seconde (`pixel/walk.ts`, calcul pur testé) : jamais sur l'eau ni la lave, pas plus d'un bloc de dénivelé, pas à travers le décor haut (arbres, sapins, buissons, rochers, souches, cristaux), les panneaux ni les créatures ; on enjambe fleurs, champignons et roseaux. « Entrer » s'allume devant un panneau ou une créature et fait comme les toucher. Aucun chronomètre ni réflexe ; toucher pour aller reste.
+   - **En salles** : en arrivant sur une autre île ouverte (un pont, un isthme), le bonhomme en fait son île (`onWalkedInto`, puis `moveTo`) ; la salle de la caméra change, elle glisse vers la nouvelle île.
+   - **Sans WebGL**, le réglage « Le monde en 3D » montre le monde en 2D (`resolveWorldView`) ; la liste ne reste que pour un appareil qui ne sait rien dessiner. La mention « essai » reste tant que la 2D n'a pas été essayée en classe.
 
 ## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
-- La vue 2D, étape 5 (voir 21).
+- La vue 2D : retirer la mention « essai » après un essai en classe (voir 21).

@@ -27,6 +27,11 @@ it('montre le monde en 3D par défaut et lit la vue enregistrée', () => {
   expect(sanitizeSettings({ worldView: 'iso' as never }).worldView).toBe('3d');
 });
 
+it('la marche libre est éteinte par défaut', () => {
+  expect(sanitizeSettings({}).freeWalk).toBe(false);
+  expect(sanitizeSettings({ freeWalk: true }).freeWalk).toBe(true);
+});
+
 it('convertit l’ancien interrupteur « vues en 3D »', () => {
   expect(sanitizeSettings({ view3d: false }).worldView).toBe('liste');
   expect(sanitizeSettings({ view3d: true }).worldView).toBe('3d');
