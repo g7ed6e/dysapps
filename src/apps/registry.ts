@@ -14,7 +14,7 @@ export interface AppDef {
   icon: AnyIconName;
   status: 'disponible' | 'bientot';
   component?: ComponentType;
-  /** Quête de l'accueil, pas d'une matière (le Tutoriel, qui mélange français et maths). */
+  /** Quête du menu, pas d'une matière (le Tutoriel, qui mélange français et maths). */
   onHome?: boolean;
 }
 
@@ -112,7 +112,7 @@ export function bestScore(apps: Record<string, { bestScore: number }>, appId: st
   return scores.length ? Math.max(...scores) : undefined;
 }
 
-/** Les quêtes d'une matière (le Tutoriel est sur l'accueil, pas dans une matière). */
+/** Les quêtes d'une matière (le Tutoriel est dans le menu, pas dans une matière). */
 export function appsBySubject(subject: Subject): AppDef[] {
   return APPS.filter((a) => a.subject === subject && !a.onHome);
 }

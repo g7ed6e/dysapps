@@ -25,13 +25,13 @@ Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu
 
 ## Le bilan
 
-Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Accueil**.
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Menu**.
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 
 ## Le Tutoriel
 
-Sur l’accueil, et non dans une matière, car il mélange français et maths : une quête d’entraînement de quatre questions pour prendre les commandes en main (consigne, réponses, joker, correction). La première fois, il est en tête de l’accueil sous « Commencer ici » ; ensuite, un lien « Revoir le tutoriel » reste en bas de l’accueil. Son retour mène à l’accueil.
+Dans le menu, et non dans une matière, car il mélange français et maths : une quête d’entraînement de quatre questions pour prendre les commandes en main (consigne, réponses, joker, correction). La première fois, il est en tête du menu en page sous « Commencer ici » ; ensuite, un lien « Revoir le tutoriel » reste en bas du menu. Le menu du village a aussi sa ligne « Tutoriel ». Son retour mène au menu.
 
 ## Français
 

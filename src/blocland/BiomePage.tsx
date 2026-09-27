@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, getBiome, guardianTitle, ofBlock } from './biomes';
 import { SchoolLink } from './School';
+import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
@@ -107,11 +108,21 @@ export function BiomePage() {
       {unlocked && archipelagoOf(biome.id).school === biome.id && (
         <>
           <h2 className="section-title">
-            <Icon name="school" /> L’école du village
+            <Icon name="school" /> L’école et la salle des trophées
           </h2>
           <ul className="grid apps">
             <li>
               <SchoolLink variant="card" />
+            </li>
+            <li>
+              {/* En vue simple, la salle des trophées est la page Succès. */}
+              <Link to="/succes" className={`panel app-card biome-${biome.id}`}>
+                <span className="app-icon">
+                  <Icon name="trophy" size="1.8rem" />
+                </span>
+                <span className="app-title">{TROPHIES_TITLE}</span>
+                <span className="app-desc">Ton rang, tes succès, ce qui est à retravailler.</span>
+              </Link>
             </li>
           </ul>
         </>

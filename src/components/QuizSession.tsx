@@ -108,7 +108,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useHoldCelebrations(phase !== 'summary');
   // Touches 1 à 9 pour répondre, Entrée pour la suite.
   useAnswerKeys(sectionRef);
-  // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou à l'accueil).
+  // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou au menu).
   const navigate = useNavigate();
   const haptics = useHaptics();
   useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate(MENU_PATH)), 'L’XP des réponses déjà données est gardée.');
@@ -245,7 +245,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               </span>
             </p>
           )}
-          {/* En premier, la suite logique : la quête suivante, sinon le choix des quêtes, sinon l'accueil. */}
+          {/* En premier, la suite logique : la quête suivante, sinon le choix des quêtes, sinon le menu. */}
           <div className="actions">
             {nextStep ? (
               <button type="button" className="button primary" onClick={nextStep.go} autoFocus>

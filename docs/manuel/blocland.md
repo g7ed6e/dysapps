@@ -4,7 +4,7 @@ Blocland, ce sont **quatre archipels** de blocs, un par classe : les Basses Terr
 
 ## Le monde
 
-Depuis l’accueil, **Blocland** ouvre le village en 3D sur tout l’écran, sous la barre du haut. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il marche. Un toucher n’importe où pendant un trajet le fait arriver tout de suite. Au clavier, les flèches vont à l’île voisine.
+L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le menu, **Blocland** l’ouvre aussi. Le village est en 3D sur tout l’écran, sous la barre du haut. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il marche. Un toucher n’importe où pendant un trajet le fait arriver tout de suite. Au clavier, les flèches vont à l’île voisine.
 
 - **Quatre archipels**, un par classe. On voit un archipel à la fois : celui où se tient le bonhomme. Chacun a sa mer, son ciel et sa Carte : la mer tempérée des Basses Terres avec ses récifs et ses bancs de sable ; la mer turquoise des Collines du Large sous un ciel plus froid, avec des plaques de glace ; le bleu profond des Monts de Feu, la brume plus proche et des aiguilles d’ardoise qui sortent de l’eau ; et, dans les Îles du Ciel, plus de mer du tout : un plancher de nuages sous les îles, des nuages qui passent entre elles, aucune baleine. Les îles de 6e sont au niveau de la mer, celles de 5e sur les collines, celles de 4e sur les monts, celles de 3e sur les sommets, où elles flottent sur une roche qui s’amincit. Les régions ont leur paysage, leurs plantes et un repère (grand chêne, champignon géant, volcan qui fume, tour de guet, grand phare, aiguille de glace du Glacier, haut-fourneau de la Forge).
 - **L’île-port** de chaque archipel a un quai devant elle, avec le Bloc-Navire amarré : la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e.
@@ -29,8 +29,10 @@ Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu d
 - **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
 - **Continuer** : la dernière quête ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
 - **École du village**, **Quêtes**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
-- **Revoir l’aide du village** (les six bulles), **Tutoriel** ;
+- **Revoir l’aide du village** (les huit bulles), **Tutoriel** ;
 - **Le menu en page** : le même menu hors du village (`#/menu`).
+
+On l’ouvre aussi avec le **bouton retour** du téléphone (ou du navigateur), quand aucun panneau n’est ouvert : le retour ne quitte plus l’appli sans prévenir. Depuis le menu, un second retour quitte l’appli, ou revient à la page d’avant.
 
 Son adresse est `#/aventure/menu` ; en vue simple, elle mène au menu en page.
 
@@ -68,7 +70,7 @@ Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite,
 
 **Chaque partie change**, dès la première et même quand on recommence le jeu depuis le début : d’autres nombres en maths (école et collège), un autre tirage de mots en français, dans un autre ordre. La **place de la bonne réponse** change aussi : sur une partie, elle est autant de fois à gauche, au milieu ou à droite, et d’une partie à l’autre un même mot n’a pas sa réponse au même endroit. En maths, les nombres restent rangés dans l’ordre croissant ; ce sont les pièges proposés qui changent (1-2-3, 2-3-4 ou 3-4-5 syllabes, par exemple). Le **niveau** de chaque quête s’adapte à l’élève : il monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, sans jamais l’afficher comme une baisse. À niveau égal, l’exercice le moins joué est proposé.
 
-Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) et sortent après trois réussites d’affilée. Le jour venu, ils passent **en tête de la partie** de leur quête (pour les quêtes d’un item à la fois ; un tri de quatre mots garde ses écrans), et la quête choisit la variante qui en a, sans dépasser le niveau de l’élève. L’accueil montre alors une carte **À revoir aujourd’hui**, qui mène à la première quête concernée et dit combien d’autres attendent.
+Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) et sortent après trois réussites d’affilée. Le jour venu, ils passent **en tête de la partie** de leur quête (pour les quêtes d’un item à la fois ; un tri de quatre mots garde ses écrans), et la quête choisit la variante qui en a, sans dépasser le niveau de l’élève. Le menu (en page et dans le village) montre alors **À revoir aujourd’hui**, qui mène à la première quête concernée et dit combien d’autres attendent.
 
 ## Les blocs
 
@@ -124,7 +126,7 @@ Le **Bloc-Navire** est le véhicule qui mène d’un archipel au suivant. Il se 
 - **On revient toujours.** Le voyage fait reste fait. Sur tout port, la section Bloc-Navire propose « Revenir en 6e » ou « Repartir vers 5e » pour chaque archipel déjà atteint. Rien ne se perd, rien ne coûte.
 - **Chaque changement d’archipel est un voyage**, à l’aller comme au retour : les boutons du port, mais aussi « Aller au port » sur la page des quatre archipels, un lien vers une île d’un autre archipel (« Mes blocs », pages Français et Maths) ou le retour d’un exercice joué ailleurs. Si le bonhomme n’est pas au port, il y marche d’abord (la caméra le suit), puis il embarque ; au port d’en face, il débarque et marche jusqu’à l’île demandée, dont le panneau s’ouvre. La phrase dit « Cap sur les … » vers un archipel plus loin, « Retour vers les … » vers un archipel d’avant.
 - **Une île d’un autre archipel** est visible dans les listes et sur les pages Français et Maths avec la mention « Archipel à rejoindre » ; sa créature dit précisément ce qu’il faut : finir le Bloc-Navire sur tel port, vaincre tant de Gardiens, ou aller d’abord jusqu’à l’archipel d’avant.
-- **Les coups de pouce** : quand un Gardien vaincu fait arriver le kit, l’arène le dit avec un bouton « Aller au port » ; quand une quête donne le dernier bloc qui manquait, l’écran de récompense dit « Le Bloc-Navire a tous ses blocs ! » ; quand il est prêt à partir, l’accueil annonce « Le Bloc-Navire est prêt ! ».
+- **Les coups de pouce** : quand un Gardien vaincu fait arriver le kit, l’arène le dit avec un bouton « Aller au port » ; quand une quête donne le dernier bloc qui manquait, l’écran de récompense dit « Le Bloc-Navire a tous ses blocs ! » ; quand il est prêt à partir, la carte Blocland du menu annonce « Le Bloc-Navire est prêt ! ».
 - **À la première arrivée** dans un archipel, sa créature-port dit deux bulles d’accueil, lues à voix haute, une seule fois par appareil (en 3D comme en vue simple).
 - **Les sons du voyage** (réglage « Sons dans le village ») : la corne de brume au départ, le vent dans la voile, le brûleur du ballon ou le grondement du réacteur, puis le carillon d’arrivée. Jamais pendant la lecture à voix haute.
 - Sous « Réduire les animations », le voyage est un écran fixe : le navire dessiné, la phrase lue, le bouton « Arriver ». Aucun son de traversée.
@@ -183,4 +185,5 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Bouton Carte | L’archipel vu du ciel, et le bouton « Les quatre archipels » |
 | Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |
-| Bouton Revoir l’aide | Rejoue le tutoriel de six bulles, affichées en bas de l’écran pour laisser voir l’île et la flèche ; le bouton dont parle une bulle (Carte, Blocs) est entouré d’un contour jaune qui clignote |
+| Bouton Revoir l’aide | Rejoue le tutoriel de huit bulles (le village, les îles, les quêtes, le panneau, l’école et la salle des trophées, les ouvrages, le Bloc-Navire, le menu), affichées en bas de l’écran pour laisser voir l’île et la flèche ; le bouton dont parle une bulle (Carte, Blocs, École, Menu) est entouré d’un contour jaune qui clignote |
+| Bouton retour du téléphone, dans le village | Ouvre le menu du village ; un second retour quitte (ou revient à la page d’avant) |

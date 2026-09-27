@@ -258,6 +258,11 @@ it('l’école du village : trois portes, les quêtes de la matière, et le reto
   document.body.innerHTML = '';
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  // La salle des trophées, en vue simple : la page Succès.
+  expect(screen.getByRole('link', { name: /Salle des trophées/ })).toHaveAttribute('href', '/succes');
+  document.body.innerHTML = '';
+  renderAt('/aventure/trophees');
+  expect(screen.getByRole('heading', { name: 'Profil' })).toBeInTheDocument();
   document.body.innerHTML = '';
   renderAt('/aventure/mine');
   expect(screen.queryByRole('link', { name: /École du village/ })).not.toBeInTheDocument();
