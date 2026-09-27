@@ -21,8 +21,8 @@ L’icône est un bloc d’herbe isométrique sur fond de ciel.
 ## La première séance
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
-2. **Le Tutoriel** (page Français) est une quête d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
-3. **Choisir** : une quête du portail (voir [Les quêtes](quetes.md)) ou l’aventure Blocland (voir [Blocland](blocland.md)). Dans Blocland, un tutoriel de six bulles, lues à voix haute, s’affiche à la première entrée ; une flèche jaune indique où commencer.
+2. **Le Tutoriel** (sur l’accueil, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas de l’accueil) est une quête d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
+3. **Choisir** : une quête du portail (voir [Les quêtes](quetes.md)) ou l’aventure Blocland (voir [Blocland](blocland.md)). Dans Blocland, un tutoriel de six bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
 
 Les séances sont pensées **courtes** : une quête du portail dure une dizaine de questions ; dans Blocland, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
 

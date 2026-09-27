@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import type { Question } from './QuizSession';
 import { QuizSession } from './QuizSession';
+import { RecordTag } from './RecordTag';
 
 export interface QuestDef {
   id: string;
@@ -54,7 +55,7 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
                 </span>
                 <span className="level-title">{quest.title}</span>
                 <span className="level-grade">{quest.detail}</span>
-                {record !== undefined ? <span className="tag tag-ok">Record : {record} %</span> : <span className="tag tag-new">Jouer</span>}
+                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
               </button>
             </li>
           );

@@ -56,7 +56,7 @@ it('propose de reprendre les quêtes faibles d’une matière, avec un lien qui 
   // Une quête jamais jouée n'est pas « à reprendre ».
   expect(within(maths).queryByRole('link', { name: /Champ des tables/ })).not.toBeInTheDocument();
   expect(within(maths).getByRole('link', { name: /^Reprendre Tables/ })).toHaveAttribute('href', '/app/tables');
-  expect(within(maths).getByText('Record : 40 %')).toBeInTheDocument();
+  expect(within(maths).getByRole('img', { name: 'Record : 1 étoile sur 3' })).toBeInTheDocument();
 });
 
 it('montre les six rangs : Bronze en cours, les suivants grisés avec leur niveau', () => {

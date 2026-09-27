@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, applySettings, sanitizeSettings } from './settings';
+import { DEFAULT_SETTINGS, applySettings, sanitizeSettings, spacingWord, speedWord } from './settings';
 
 describe('sanitizeSettings', () => {
   it('complète les réglages manquants', () => {
@@ -53,4 +53,15 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-size')).toBe('24px');
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
+});
+
+it('dit les espacements et la vitesse de la voix en mots, pas en nombres', () => {
+  expect(spacingWord(DEFAULT_SETTINGS.letterSpacing, DEFAULT_SETTINGS.letterSpacing, 0.2)).toBe('Normal');
+  expect(spacingWord(0, DEFAULT_SETTINGS.letterSpacing, 0.2)).toBe('Plus serré');
+  expect(spacingWord(0.08, 0.03, 0.2)).toBe('Un peu plus large');
+  expect(spacingWord(0.14, 0.03, 0.2)).toBe('Plus large');
+  expect(spacingWord(0.2, 0.03, 0.2)).toBe('Très large');
+  expect(speedWord(0.5)).toBe('Lente');
+  expect(speedWord(DEFAULT_SETTINGS.speechRate)).toBe('Normale');
+  expect(speedWord(1.3)).toBe('Rapide');
 });

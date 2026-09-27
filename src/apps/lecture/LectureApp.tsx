@@ -4,6 +4,7 @@ import { QuizSession } from '../../components/QuizSession';
 import { useProgress } from '../../core/ProgressContext';
 import { TEXTS, questionsFor, segmentsOf, type ReadingText } from './data';
 import { Reader } from './Reader';
+import { RecordTag } from '../../components/RecordTag';
 
 type Step = { text: ReadingText; phase: 'lecture' | 'questions' };
 
@@ -79,7 +80,7 @@ export default function LectureApp() {
                     {segmentsOf(text).length} {text.kind === 'vers' ? 'vers' : 'phrases'}
                   </span>
                 </span>
-                {record !== undefined ? <span className="tag tag-ok">Record : {record} %</span> : <span className="tag tag-new">Lire</span>}
+                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Lire</span>}
               </button>
             </li>
           );

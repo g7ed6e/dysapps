@@ -6,6 +6,7 @@ import { type BiomeId } from '../biomes';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
 import { islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
+import { drawIslandLabel, labelFont } from '../world/labelCanvas';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
@@ -162,6 +163,7 @@ export default function WorldCanvas({
   trail,
   quests,
   onPickQuest,
+  islandLabels,
   burst,
   className,
   label,
@@ -185,6 +187,7 @@ export default function WorldCanvas({
     beacon: THREE.Group;
     trail: THREE.Group;
     questMarks: THREE.Group;
+    labels: THREE.Group;
     avatar: THREE.Group;
     walk: Walk | null;
     /** Le Bloc-Navire : la coque (qui tangue) et le ballon (qui se balance au sommet du mât). */
@@ -468,6 +471,9 @@ export default function WorldCanvas({
     scene.add(trailGroup);
     const questMarksGroup = new THREE.Group();
     scene.add(questMarksGroup);
+    // Le nom des îles ouvertes : des étiquettes toujours face à l'écran, de taille fixe, par-dessus le relief.
+    const labelsGroup = new THREE.Group();
+    scene.add(labelsGroup);
 
     // Le bonhomme (ses cubes arrivent par la prop `avatar`). Le groupe extérieur est posé au centre de sa case, sous
     // ses pieds, et tourne sur lui-même ; le corps, recentré dedans, regarde vers -Z (la caméra) sans rotation.
@@ -530,6 +536,7 @@ export default function WorldCanvas({
       beacon: beaconGroup,
       trail: trailGroup,
       questMarks: questMarksGroup,
+      labels: labelsGroup,
       avatar: avatarGroup,
       walk: null,
       vehicle: { group: vehicleGroup, hull: hullGroup, balloon: balloonGroup },
@@ -1009,6 +1016,44 @@ export default function WorldCanvas({
     w.marker.position.set(c.x, base + 0.5, c.y);
     w.marker.visible = true;
   }, [marker]);
+
+  // ---- Le nom des îles ouvertes (une texture par étiquette, refaite quand la liste change)
+  const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}`).join('|');
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    const dispose = () => {
+      for (const s of [...w.labels.children] as THREE.Sprite[]) {
+        s.material.map?.dispose();
+        s.material.dispose();
+        w.labels.remove(s);
+      }
+    };
+    dispose();
+    for (const l of islandLabels ?? []) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) continue;
+      const px = 40;
+      ctx.font = labelFont(px);
+      canvas.width = Math.ceil(ctx.measureText(l.text).width + px * 1.8);
+      canvas.height = Math.ceil(px * 2.2);
+      drawIslandLabel(ctx, l.text, canvas.width / 2, canvas.height / 2, px);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true, sizeAttenuation: false }));
+      // Taille fixe à l'écran (environ 4 % de sa hauteur), quel que soit le zoom.
+      const h = 0.045;
+      sprite.scale.set((h * canvas.width) / canvas.height, h, 1);
+      sprite.renderOrder = 10;
+      sprite.raycast = () => {};
+      const c = islandCenter(l.id);
+      sprite.position.set(c.x + 0.5, c.z + 12, c.y + 0.5);
+      w.labels.add(sprite);
+    }
+    return dispose;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [labelsKey]);
 
   // ---- Mode chantier : pas de case visée en dehors
   useEffect(() => {

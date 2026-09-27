@@ -25,6 +25,16 @@ it('affiche les matières sur l’accueil', () => {
   expect(screen.getByRole('link', { name: /Français/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/anglais');
+  // La première fois, le Tutoriel passe devant : « Commencer ici ».
+  expect(screen.getByRole('link', { name: /Commencer ici.*Tutoriel/ })).toHaveAttribute('href', '/app/demo');
+});
+
+it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à l’accueil', () => {
+  renderAt('/matiere/francais');
+  expect(screen.queryByRole('link', { name: /Tutoriel/ })).not.toBeInTheDocument();
+  document.body.innerHTML = '';
+  renderAt('/app/demo');
+  expect(screen.getByRole('link', { name: /^Menu$/ })).toHaveAttribute('href', '/');
 });
 
 it('liste les quêtes d’anglais du portail', () => {
@@ -46,6 +56,10 @@ it('liste les activités d’une matière', () => {
   expect(screen.getByRole('link', { name: /Glacier des relatifs.*Archipel à rejoindre.*Niveau 5e/ })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' })).toBeInTheDocument();
   expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
+  // Les archipels pas encore atteints sont repliés sous « Plus tard ».
+  const later = screen.getByText(/^Plus tard : 3 archipels à rejoindre/).closest('details')!;
+  expect(later).not.toHaveAttribute('open');
+  expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' }));
 });
 
 it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
@@ -78,6 +92,22 @@ it('applique et sauvegarde les réglages', async () => {
   expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
 });
 
+it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
+  localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
+  const user = userEvent.setup();
+  renderAt('/reglages');
+  // Les espacements sont dits en mots.
+  expect(screen.getAllByRole('slider').map((s) => s.getAttribute('aria-valuetext'))).toEqual(['20 px', 'Normal', 'Normal', 'Normal']);
+  await user.click(screen.getByRole('button', { name: /Effacer ma progression/ }));
+  const erase = screen.getByRole('button', { name: 'Tout effacer' });
+  expect(erase).toBeDisabled();
+  await user.type(screen.getByRole('textbox'), 'effa');
+  expect(erase).toBeDisabled();
+  await user.type(screen.getByRole('textbox'), 'cer');
+  await user.click(erase);
+  expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
+});
+
 it('redirige l’ancienne adresse de progression vers les succès', () => {
   renderAt('/progression');
   expect(screen.getByRole('heading', { name: /Succès/ })).toBeInTheDocument();
@@ -96,7 +126,7 @@ it('affiche le record d’une quête tous modes confondus', () => {
     }),
   );
   renderAt('/matiere/francais');
-  expect(screen.getByText('Record : 90 %')).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: 'Record : 3 étoiles sur 3' })).toBeInTheDocument();
 });
 
 it('ouvre la carte de Blocland puis un biome, dont la créature donne la quête', async () => {

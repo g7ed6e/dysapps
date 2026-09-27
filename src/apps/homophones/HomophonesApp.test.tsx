@@ -28,7 +28,7 @@ it('joue une quête ciblée jusqu’au résultat puis revient au choix du niveau
     await user.click(screen.getByRole('button', { name: 'c’est' }));
     await user.click(screen.getByRole('button', { name: i < 7 ? /Suivante/ : /Voir le résultat/ }));
   }
-  expect(screen.getByText('50 %')).toBeInTheDocument();
+  expect(screen.getByText('4 sur 8 du premier coup')).toBeInTheDocument();
 
   await user.click(screen.getByRole('button', { name: /Changer de niveau/ }));
   expect(screen.getByRole('button', { name: /c’est \/ s’est.*50 %/ })).toBeInTheDocument();
