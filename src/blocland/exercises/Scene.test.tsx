@@ -33,7 +33,8 @@ describe('Scene', () => {
 
   it('écrit les nombres à la française', () => {
     expect(formatNombre(50000)).toBe('50\u00a0000');
-    expect(formatNombre(1500)).toBe('1500');
+    expect(formatNombre(2250)).toBe('2\u00a0250');
+    expect(formatNombre(850)).toBe('850');
     expect(formatNombre(1.5)).toBe('1,5');
   });
 
@@ -49,6 +50,14 @@ describe('Scene', () => {
       'Une cargaison de 40 caisses partagée entre 2 navires dans le ratio 2 pour 3. Navire A, 2 parts : inconnu. Navire B, 3 parts : 24 caisses.',
     );
     expect(container.querySelectorAll('.crate')).toHaveLength(5);
+  });
+
+  it('n’écrit pas une quantité ni donnée ni cherchée (null)', () => {
+    const { container } = render(<Scene scene="cargaison" unit="kg" ratio={[2, 3]} total={null} parts={[16, '?']} />);
+    expect(screen.getByRole('img')).toHaveAccessibleName(
+      'Une cargaison partagée entre 2 navires dans le ratio 2 pour 3. Navire A, 2 parts : 16 kilos. Navire B, 3 parts : inconnu.',
+    );
+    expect(container.textContent).not.toContain('en tout');
   });
 
   it('dit le mât et son câble', () => {

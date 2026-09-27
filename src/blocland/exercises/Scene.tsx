@@ -13,15 +13,18 @@ export type SceneProps =
   | { scene: 'traversee'; depart: Cote; arrivee: Cote; duree: Cote }
   /** Une carte à l'échelle : deux îles, la distance mesurée sur la carte (en cm), l'échelle, et la distance en vrai. */
   | { scene: 'carte'; echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Cote; reel: Cote; unitReel: 'm' | 'km' }
-  /** Une cargaison partagée entre navires selon un ratio : une rangée de cases égales par navire, le total sous l'accolade. */
-  | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Cote; parts: Cote[] }
+  /**
+   * Une cargaison partagée entre navires selon un ratio : une rangée de cases égales par navire, le total sous l'accolade.
+   * `null` : une quantité ni donnée ni cherchée, pas écrite (sinon on trouverait la réponse par une simple soustraction).
+   */
+  | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }
   /** Un mât vertical tenu par un câble jusqu'au sol : un triangle rectangle, l'angle droit codé au pied du mât. */
   | { scene: 'mat'; unit: 'm'; hauteur: Cote; pied: Cote; cable: Cote };
 
-/** 50000 → « 50 000 », 1.5 → « 1,5 » (écriture française). */
+/** 2250 → « 2 250 », 50000 → « 50 000 », 1.5 → « 1,5 » (écriture française, espace insécable entre les classes). */
 export function formatNombre(n: number): string {
   const [int, dec] = String(n).split('.');
-  const grouped = int.length > 4 ? int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') : int;
+  const grouped = int.length > 3 ? int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') : int;
   return dec ? `${grouped},${dec}` : grouped;
 }
 
@@ -209,7 +212,7 @@ function Carte({ echelle, carte, reel, unitReel }: { echelle: { reel: number; un
 
 const SHIPS = ['A', 'B', 'C'];
 
-function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[]; total: Cote; parts: Cote[] }) {
+function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }) {
   // Toutes les cases ont la même taille : c'est ce qui fait voir le partage en parts égales.
   const box = Math.min(36, 120 / Math.max(...ratio));
   const rowH = 44;
@@ -217,10 +220,10 @@ function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[
   const h = y0 + ratio.length * rowH;
   // Une largeur de texte estimée (police dys de 18 px) pour placer l'accolade après la plus longue cote ; le total s'écrit dessous.
   const textW = (t: string) => t.length * 10.5;
-  const bx = Math.max(...ratio.map((r, i) => x0 + r * box + 10 + textW(cote(parts[i], unit)))) + 12;
+  const bx = Math.max(...ratio.map((r, i) => x0 + r * box + 10 + textW(parts[i] === null ? '' : cote(parts[i], unit)))) + 12;
   const width = Math.max(380, bx + 24);
-  const label = `Une cargaison de ${spoken(total, unit)} partagée entre ${ratio.length} navires dans le ratio ${ratio.join(' pour ')}. ${ratio
-    .map((r, i) => `Navire ${SHIPS[i]}, ${r} part${r > 1 ? 's' : ''} : ${spoken(parts[i], unit)}`)
+  const label = `Une cargaison ${total === null ? '' : `de ${spoken(total, unit)} `}partagée entre ${ratio.length} navires dans le ratio ${ratio.length > 2 ? `${ratio.slice(0, -1).join(', ')} et ${ratio[ratio.length - 1]}` : ratio.join(' pour ')}. ${ratio
+    .map((r, i) => `Navire ${SHIPS[i]}, ${r} part${r > 1 ? 's' : ''}${parts[i] === null ? '' : ` : ${spoken(parts[i], unit)}`}`)
     .join('. ')}.`;
   return (
     <svg viewBox={`0 0 ${Math.round(width)} ${h + 44}`} role="img" aria-label={label}>
@@ -234,17 +237,23 @@ function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[
             {Array.from({ length: r }, (_, k) => (
               <rect key={k} x={x0 + k * box} y={y + 4} width={box} height={28} className="crate" />
             ))}
-            <text x={x0 + r * box + 10} y={y + 24} className={cls(parts[i])}>
-              {cote(parts[i], unit)}
-            </text>
+            {parts[i] !== null && (
+              <text x={x0 + r * box + 10} y={y + 24} className={cls(parts[i])}>
+                {cote(parts[i], unit)}
+              </text>
+            )}
           </g>
         );
       })}
-      {/* L'accolade du total, à droite de toutes les rangées. */}
-      <path d={`M ${bx} ${y0 + 4} q 10 0 10 10 V ${(y0 + h) / 2 - 8} q 0 8 8 8 q -8 0 -8 8 V ${h - 18} q 0 10 -10 10`} className="brace" />
-      <text x={width / 2} y={h + 30} textAnchor="middle" className={cls(total)}>
-        {`en tout : ${cote(total, unit)}`}
-      </text>
+      {/* L'accolade du total, à droite de toutes les rangées ; sans total écrit, ni accolade ni « en tout ». */}
+      {total !== null && (
+        <path d={`M ${bx} ${y0 + 4} q 10 0 10 10 V ${(y0 + h) / 2 - 8} q 0 8 8 8 q -8 0 -8 8 V ${h - 18} q 0 10 -10 10`} className="brace" />
+      )}
+      {total !== null && (
+        <text x={width / 2} y={h + 30} textAnchor="middle" className={cls(total)}>
+          {`en tout : ${cote(total, unit)}`}
+        </text>
+      )}
     </svg>
   );
 }
