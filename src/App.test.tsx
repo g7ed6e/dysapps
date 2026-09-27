@@ -126,6 +126,15 @@ it('applique et sauvegarde les réglages', async () => {
   expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
 });
 
+it('les réglages mènent à la documentation et au code, dans un nouvel onglet', () => {
+  renderAt('/reglages');
+  const docs = screen.getByRole('link', { name: 'La documentation' });
+  const code = screen.getByRole('link', { name: 'Le code sur GitHub' });
+  expect(docs).toHaveAttribute('href', 'https://g7ed6e.github.io/dysapps/');
+  expect(code).toHaveAttribute('href', 'https://github.com/g7ed6e/dysapps');
+  for (const link of [docs, code]) expect(link).toHaveAttribute('target', '_blank');
+});
+
 it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
   localStorage.setItem('dysapps:reprise', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
