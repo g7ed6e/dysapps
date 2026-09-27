@@ -8,7 +8,9 @@ import { Syllabified } from '../components/Syllabified';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../core/appUpdate';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
-const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
+const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
+const REPO_URL = 'https://github.com/g7ed6e/dysapps';
+const SAMPLE_EN ='Hello! My name is Robin. I have got three blue blocks.';
 
 export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
@@ -212,6 +214,15 @@ export function SettingsPage() {
                   ? 'Pas de connexion : réessaie plus tard.'
                   : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
           </p>
+          {/* Ouverts dans un nouvel onglet : l'appli reste où elle était. */}
+          <div className="settings-links">
+            <a className="button" href={DOCS_URL} target="_blank" rel="noopener noreferrer">
+              <Icon name="book" /> La documentation
+            </a>
+            <a className="button" href={REPO_URL} target="_blank" rel="noopener noreferrer">
+              <Icon name="globe" /> Le code sur GitHub
+            </a>
+          </div>
         </fieldset>
 
         <div className="actions">

@@ -1,4 +1,4 @@
-# Documentation DysApps
+# Documentation Archipéo
 
 <p class="lead"><strong>Archipéo</strong>, par DysApps, est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
 

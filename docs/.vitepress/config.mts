@@ -91,15 +91,15 @@ export default defineConfig({
   // « / » en local, « /dysapps/ » sur GitHub Pages (variable posée par la CI).
   base: process.env.BASE_PATH ?? '/',
   lang: 'fr-FR',
-  title: 'Documentation DysApps',
-  titleTemplate: ':title · Documentation DysApps',
-  description: 'Manuel et contenu pédagogique de DysApps, applications d’entraînement pour les élèves dys du collège.',
+  title: 'Documentation Archipéo',
+  titleTemplate: ':title · Documentation Archipéo',
+  description: 'Manuel et contenu pédagogique d’Archipéo, par DysApps : un jeu d’entraînement pour les élèves dys du collège.',
   cleanUrls: false,
   srcExclude: ['public/**'],
   lastUpdated: true,
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${process.env.BASE_PATH ?? '/'}icon.svg` }],
-    ['meta', { name: 'theme-color', content: '#6b4a2e' }],
+    ['meta', { name: 'theme-color', content: '#13283d' }],
     ['meta', { name: 'referrer', content: 'no-referrer' }],
   ],
   markdown: { anchor: { slugify } },
@@ -114,7 +114,7 @@ export default defineConfig({
   },
   themeConfig: {
     logo: '/icon.svg',
-    siteTitle: 'DysApps · Documentation',
+    siteTitle: 'Archipéo',
     nav: [{ text: 'Ouvrir l’application', link: nav.appUrl, target: '_blank', rel: 'noopener' }],
     sidebar,
     socialLinks: [{ icon: 'github', link: nav.repoUrl, ariaLabel: 'Code source sur GitHub' }],
@@ -135,7 +135,7 @@ export default defineConfig({
     },
     outline: { level: [2, 3], label: 'Sur cette page' },
     docFooter: { prev: 'Précédent', next: 'Suivant' },
-    lastUpdated: { text: 'Mise à jour le', formatOptions: { dateStyle: 'long' } },
+    lastUpdated: { text: 'Mis à jour le', formatOptions: { dateStyle: 'long', forceLocale: true } },
     // Chaîne et non fonction : une fonction serait évaluée dans le navigateur, ce que la CSP interdit.
     // Les pages générées n'ont pas ce lien (editLink: false, posé par scripts/docs/prepare.mjs).
     editLink: {
@@ -143,7 +143,7 @@ export default defineConfig({
       text: 'Voir la source de cette page',
     },
     footer: {
-      message: `DysApps ${version} · applications d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0.`,
+      message: `Archipéo, par DysApps · version ${version} · un jeu d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0 · police Montserrat © The Montserrat Project Authors, SIL Open Font License 1.1.`,
       copyright: 'Aucune donnée n’est collectée : ce site n’utilise ni cookie ni service externe.',
     },
     notFound: {
