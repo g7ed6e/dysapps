@@ -1,5 +1,6 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { Subject } from '../apps/registry';
+import type { ProgrammeId } from '../programme';
 import type { AnyIconName } from '../components/Icon';
 
 export type BiomeId =
@@ -169,6 +170,8 @@ export interface ExerciseTypeDef {
   id: string;
   title: string;
   description: string;
+  /** Compétences du programme officiel que la quête travaille (identifiants de src/programme/). Au moins une. */
+  programme: readonly ProgrammeId[];
 }
 
 export interface CreatureDef {
@@ -233,9 +236,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'J’habite ici maintenant ! Viens voir ma cabane quand tu veux.',
     },
     exercises: [
-      { id: 'abattage', title: 'Abattage syllabique', description: 'Tape autant de coups que de syllabes.' },
-      { id: 'chasse-son', title: 'Chasse au son', description: 'Tape les mots où tu entends le son demandé.' },
-      { id: 'rimes', title: 'Rimes-échelle', description: 'Empile les mots qui riment pour monter à la cabane.' },
+      { id: 'abattage', title: 'Abattage syllabique', description: 'Tape autant de coups que de syllabes.', programme: ['c3.fr.langue.phonemes-graphemes'] },
+      { id: 'chasse-son', title: 'Chasse au son', description: 'Tape les mots où tu entends le son demandé.', programme: ['c3.fr.langue.phonemes-graphemes'] },
+      { id: 'rimes', title: 'Rimes-échelle', description: 'Empile les mots qui riment pour monter à la cabane.', programme: ['c3.fr.langue.phonemes-graphemes'] },
     ],
   },
   {
@@ -266,8 +269,8 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma forge ronfle à nouveau. Écoute : tac, tac, comme des syllabes.',
     },
     exercises: [
-      { id: 'filon', title: 'Filon', description: 'Pioche seulement la lettre cible parmi b, d, p, q.' },
-      { id: 'oreille', title: 'Oreille du mineur', description: 'Écoute le mot, choisis le bon bloc : vin ou fin ?' },
+      { id: 'filon', title: 'Filon', description: 'Pioche seulement la lettre cible parmi b, d, p, q.', programme: ['c3.fr.langue.phonemes-graphemes'] },
+      { id: 'oreille', title: 'Oreille du mineur', description: 'Écoute le mot, choisis le bon bloc : vin ou fin ?', programme: ['c3.fr.langue.phonemes-graphemes'] },
     ],
   },
   {
@@ -298,9 +301,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Le four est chaud ! Tu sens ? Ça sent le pain et les mots bien cuits.',
     },
     exercises: [
-      { id: 'mot-troue', title: 'Mot troué', description: 'Glisse le bloc de lettres qui manque.' },
-      { id: 'familles', title: 'Familles-craft', description: 'Assemble préfixe, racine et suffixe.' },
-      { id: 'coffre', title: 'Coffre à mots', description: 'Les mots-outils à réviser, en dictée.' },
+      { id: 'mot-troue', title: 'Mot troué', description: 'Glisse le bloc de lettres qui manque.', programme: ['c3.fr.langue.regularites-orthographiques'] },
+      { id: 'familles', title: 'Familles-craft', description: 'Assemble préfixe, racine et suffixe.', programme: ['c3.fr.langue.derivation-composition', 'c3.fr.langue.racines', 'c3.fr.langue.familles-champ-lexical'] },
+      { id: 'coffre', title: 'Coffre à mots', description: 'Les mots-outils à réviser, en dictée.', programme: ['c3.fr.langue.mots-invariables'] },
     ],
   },
   {
@@ -331,9 +334,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur.',
     },
     exercises: [
-      { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.' },
-      { id: 'graines', title: 'Tri des graines', description: 'Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.' },
-      { id: 'recolte', title: 'Récolte -é / -er / -ez', description: 'Clique la bonne terminaison.' },
+      { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.', programme: ['c3.fr.langue.accord-sujet-verbe'] },
+      { id: 'graines', title: 'Tri des graines', description: 'Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.', programme: ['c3.fr.langue.homophonie'] },
+      { id: 'recolte', title: 'Récolte -é / -er / -ez', description: 'Clique la bonne terminaison.', programme: ['c3.fr.langue.finales-en-e'] },
     ],
   },
   {
@@ -359,7 +362,7 @@ export const BIOMES: BiomeDef[] = [
       lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
       home: 'Hou hou ! Mon phare est allumé. Regarde-le briller ce soir.',
     },
-    exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.' }],
+    exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.', programme: ['c3.fr.lecture.fluidite'] }],
   },
   {
     id: 'plaine',
@@ -390,9 +393,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
     },
     exercises: [
-      { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.' },
-      { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.' },
-      { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.' },
+      { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.', programme: ['c3.ma.nombres.faits-numeriques'] },
+      { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.', programme: ['c3.ma.nombres.calcul-mental'] },
+      { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.', programme: ['c3.ma.nombres.calcul-mental'] },
     ],
   },
   {
@@ -424,9 +427,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma hutte de galets est finie ! Une moitié pour dormir, une moitié pour chanter.',
     },
     exercises: [
-      { id: 'nenuphars', title: 'Nénuphars', description: 'Quelle fraction de la figure est coloriée ? Puis sur la droite.' },
-      { id: 'deux-rives', title: 'Deux rives', description: 'Compare deux fractions avec les barres sous les yeux.' },
-      { id: 'partage', title: 'Partage du gâteau', description: 'Une fraction d’une quantité, puis des fractions égales.' },
+      { id: 'nenuphars', title: 'Nénuphars', description: 'Quelle fraction de la figure est coloriée ? Puis sur la droite.', programme: ['c3.ma.nombres.fractions-designations'] },
+      { id: 'deux-rives', title: 'Deux rives', description: 'Compare deux fractions avec les barres sous les yeux.', programme: ['c3.ma.nombres.fractions-comparer'] },
+      { id: 'partage', title: 'Partage du gâteau', description: 'Une fraction d’une quantité, puis des fractions égales.', programme: ['c3.ma.nombres.fractions-designations', 'c3.ma.nombres.fractions-comparer'] },
     ],
   },
   {
@@ -458,9 +461,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon abri d’obsidienne est fini ! Il brille comme 1,0 : entier et sans un dixième qui manque.',
     },
     exercises: [
-      { id: 'cratere', title: 'Cratère des rangs', description: 'Quel est le chiffre des dixièmes ? Puis la fraction décimale.' },
-      { id: 'coulee', title: 'Coulée de lave', description: 'Compare deux décimaux, tableau sous les yeux.' },
-      { id: 'pente', title: 'Pente graduée', description: 'Repère un décimal sur la droite, puis complète jusqu’à 1.' },
+      { id: 'cratere', title: 'Cratère des rangs', description: 'Quel est le chiffre des dixièmes ? Puis la fraction décimale.', programme: ['c3.ma.nombres.decimaux-ecritures', 'c3.ma.nombres.calcul-mental'] },
+      { id: 'coulee', title: 'Coulée de lave', description: 'Compare deux décimaux, tableau sous les yeux.', programme: ['c3.ma.nombres.decimaux-comparer'] },
+      { id: 'pente', title: 'Pente graduée', description: 'Repère un décimal sur la droite, puis complète jusqu’à 1.', programme: ['c3.ma.nombres.decimaux-comparer', 'c3.ma.nombres.calcul-mental'] },
     ],
   },
   {
@@ -492,9 +495,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
     },
     exercises: [
-      { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.' },
-      { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.' },
-      { id: 'crevasses', title: 'Crevasses', description: 'Multiplie et divise avec la règle des signes affichée.' },
+      { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.', programme: ['c4.ma.a.relatifs', 'c4.ma.d.reperage'] },
+      { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.', programme: ['c4.ma.a.calcul-relatifs'] },
+      { id: 'crevasses', title: 'Crevasses', description: 'Multiplie et divise avec la règle des signes affichée.', programme: ['c4.ma.a.calcul-relatifs'] },
     ],
   },
   {
@@ -526,9 +529,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
     },
     exercises: [
-      { id: 'etals', title: 'Étals', description: 'Complète un tableau de proportionnalité.' },
-      { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.' },
-      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte.' },
+      { id: 'etals', title: 'Étals', description: 'Complète un tableau de proportionnalité.', programme: ['c4.ma.b.proportionnalite', 'c3.ma.nombres.proportionnalite'] },
+      { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.', programme: ['c4.ma.b.pourcentages-echelles', 'c3.ma.nombres.proportionnalite'] },
+      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle'] },
     ],
   },
   {
@@ -560,9 +563,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma cabane est finie ! Tous ses panneaux montrent la bonne direction.',
     },
     exercises: [
-      { id: 'panneaux', title: 'Panneaux', description: 'Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.' },
-      { id: 'aiguillage', title: 'Aiguillage', description: 'Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…' },
-      { id: 'bifurcation', title: 'Bifurcation', description: 'Deux trous dans la phrase : choisis la bonne paire de mots.' },
+      { id: 'panneaux', title: 'Panneaux', description: 'Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.', programme: ['c4.fr.langue.orthographe-lexicale', 'c3.fr.langue.homophonie'] },
+      { id: 'aiguillage', title: 'Aiguillage', description: 'Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…', programme: ['c4.fr.langue.orthographe-lexicale', 'c3.fr.langue.homophonie'] },
+      { id: 'bifurcation', title: 'Bifurcation', description: 'Deux trous dans la phrase : choisis la bonne paire de mots.', programme: ['c4.fr.langue.orthographe-lexicale', 'c3.fr.langue.homophonie'] },
     ],
   },
   {
@@ -594,9 +597,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
     },
     exercises: [
-      { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.' },
-      { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.' },
-      { id: 'roseaux', title: 'Roseaux du subjonctif', description: 'Le subjonctif présent, puis reconnaître le temps d’un verbe.' },
+      { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.', programme: ['c3.fr.langue.temps-a-memoriser', 'c4.fr.langue.valeurs-des-temps'] },
+      { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.', programme: ['c4.fr.langue.temps-a-memoriser', 'c3.fr.langue.temps-a-memoriser'] },
+      { id: 'roseaux', title: 'Roseaux du subjonctif', description: 'Le subjonctif présent, puis reconnaître le temps d’un verbe.', programme: ['c4.fr.langue.temps-a-memoriser', 'c4.fr.langue.morphologie-verbale', 'c3.fr.langue.reconnaitre-verbe'] },
     ],
   },
   {
@@ -628,9 +631,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon atelier d’acier est fini ! Solide comme 10 puissance 10.',
     },
     exercises: [
-      { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.' },
-      { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.' },
-      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers.' },
+      { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.', programme: ['c4.ma.a.puissances', 'c4.ma.a.ecritures-ordres-de-grandeur'] },
+      { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.', programme: ['c4.ma.a.puissances'] },
+      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers.', programme: ['c4.ma.a.carres-racine', 'c4.ma.a.divisibilite-premiers', 'c3.ma.nombres.divisibilite'] },
     ],
   },
   {
@@ -662,9 +665,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon bureau de calques est fini ! Plan développé, réduit, résolu.',
     },
     exercises: [
-      { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.' },
-      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.' },
-      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.' },
+      { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.', programme: ['c4.ma.a.reduire-developper'] },
+      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.', programme: ['c4.ma.a.reduire-developper'] },
+      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.', programme: ['c4.ma.a.equations'] },
     ],
   },
   {
@@ -696,9 +699,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma bergerie d’ardoise est finie ! Elle est solide, elles sont solides, tout est accordé.',
     },
     exercises: [
-      { id: 'corde', title: 'Corde du participe', description: 'Participe passé avec être, avec avoir, puis avec le COD placé avant.' },
-      { id: 'paroi', title: 'Paroi des adjectifs', description: 'Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.' },
-      { id: 'sommet', title: 'Sommet du sujet', description: 'Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.' },
+      { id: 'corde', title: 'Corde du participe', description: 'Participe passé avec être, avec avoir, puis avec le COD placé avant.', programme: ['c4.fr.langue.participe-passe', 'c3.fr.langue.attribut-participe-etre'] },
+      { id: 'paroi', title: 'Paroi des adjectifs', description: 'Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.', programme: ['c4.fr.langue.accord-gn-complexe', 'c3.fr.langue.accord-gn'] },
+      { id: 'sommet', title: 'Sommet du sujet', description: 'Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.', programme: ['c4.fr.langue.accord-verbe-complexe'] },
     ],
   },
   {
@@ -730,9 +733,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon nid de parchemins est fini ! Au sens propre : il tient. Au figuré : c’est un trésor.',
     },
     exercises: [
-      { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.' },
-      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.' },
-      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.' },
+      { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.', programme: ['c4.fr.langue.formation-des-mots'] },
+      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.', programme: ['c4.fr.langue.sens-des-mots'] },
+      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.oral-ecrit', 'c3.fr.langue.synonymie'] },
     ],
   },
   {
@@ -764,9 +767,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
     },
     exercises: [
-      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit.' },
-      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.' },
-      { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.' },
+      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.', programme: ['c4.ma.d.thales'] },
+      { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],
   },
   {
@@ -798,8 +801,8 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
     },
     exercises: [
-      { id: 'moyenne', title: 'Moyenne', description: 'La moyenne, puis la médiane et l’étendue d’une petite série.' },
-      { id: 'chances', title: 'Chances', description: 'Probabilités simples : sac de boules, dé.' },
+      { id: 'moyenne', title: 'Moyenne', description: 'La moyenne, puis la médiane et l’étendue d’une petite série.', programme: ['c4.ma.b.indicateurs'] },
+      { id: 'chances', title: 'Chances', description: 'Probabilités simples : sac de boules, dé.', programme: ['c4.ma.b.probabilites'] },
     ],
   },
   {
@@ -831,8 +834,8 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma lanterne de prismes est finie ! f(nuit) = lumière.',
     },
     exercises: [
-      { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.' },
-      { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.' },
+      { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.', programme: ['c4.ma.b.image-antecedent'] },
+      { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.', programme: ['c4.ma.b.lineaire-affine'] },
     ],
   },
   {
@@ -864,9 +867,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma lanterne de lentilles est finie ! Elle grossit les mots pour mieux les lire.',
     },
     exercises: [
-      { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.' },
-      { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…' },
-      { id: 'rouages', title: 'Rouages', description: 'Nature et fonction des mots, connecteurs logiques.' },
+      { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.', programme: ['c4.fr.lecture.controle', 'c3.fr.lecture.implicite'] },
+      { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…', programme: ['c4.fr.lecture.procedes'] },
+      { id: 'rouages', title: 'Rouages', description: 'Nature et fonction des mots, connecteurs logiques.', programme: ['c4.fr.langue.sujet-complements', 'c4.fr.langue.classes-de-mots', 'c4.fr.langue.coherence-textuelle', 'c3.fr.langue.nature-fonction', 'c3.fr.langue.classes-de-mots', 'c3.fr.langue.complements'] },
     ],
   },
   {
@@ -898,9 +901,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma cabine est finie ! On peut appeler jusqu’à Londres.',
     },
     exercises: [
-      { id: 'hello', title: 'Hello', description: 'Saluer, se présenter, les phrases de la classe.' },
-      { id: 'numbers', title: 'Numbers', description: 'Les nombres (-teen ou -ty ?), l’heure et la date.' },
-      { id: 'ears', title: 'Ears', description: 'Écouter un mot anglais et trouver son sens (house ou horse ?).' },
+      { id: 'hello', title: 'Hello', description: 'Saluer, se présenter, les phrases de la classe.', programme: ['c3.en.dialoguer.contact-social', 'c3.en.ecouter.consignes'] },
+      { id: 'numbers', title: 'Numbers', description: 'Les nombres (-teen ou -ty ?), l’heure et la date.', programme: ['c3.en.culture.vie-quotidienne', 'c3.en.langue.phonologie', 'c3.en.langue.phonie-graphie'] },
+      { id: 'ears', title: 'Ears', description: 'Écouter un mot anglais et trouver son sens (house ou horse ?).', programme: ['c3.en.ecouter.mots-familiers', 'c3.en.langue.phonie-graphie'] },
     ],
   },
   {
@@ -932,9 +935,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon horloge est finie ! Elle sonne à chaque verbe juste.',
     },
     exercises: [
-      { id: 'to-be', title: 'To be', description: 'Am, is, are ; la négation et la question.' },
-      { id: 'have-got', title: 'Have got', description: 'Have got ou has got, pour dire ce qu’on a.' },
-      { id: 'present-simple', title: 'Présent simple', description: 'Le s de he, she, it ; do et does pour la question et la négation.' },
+      { id: 'to-be', title: 'To be', description: 'Am, is, are ; la négation et la question.', programme: ['c3.en.langue.groupe-verbal', 'c3.en.langue.phrase'] },
+      { id: 'have-got', title: 'Have got', description: 'Have got ou has got, pour dire ce qu’on a.', programme: ['c3.en.langue.groupe-verbal'] },
+      { id: 'present-simple', title: 'Présent simple', description: 'Le s de he, she, it ; do et does pour la question et la négation.', programme: ['c3.en.langue.groupe-verbal', 'c3.en.langue.phrase'] },
     ],
   },
   {
@@ -966,9 +969,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma boutique est finie ! Open every day, même le dimanche.',
     },
     exercises: [
-      { id: 'shopping', title: 'Shopping', description: 'Au magasin : quantités, prix, repas.' },
-      { id: 'routine', title: 'Routine', description: 'La journée (get up, have breakfast…) et always, often, never.' },
-      { id: 'listening', title: 'Listening', description: 'Écouter une phrase et trouver son sens.' },
+      { id: 'shopping', title: 'Shopping', description: 'Au magasin : quantités, prix, repas.', programme: ['c4.en.dialoguer.echanges-sociaux', 'c3.en.dialoguer.renseignements', 'c4.en.langue.lexique'] },
+      { id: 'routine', title: 'Routine', description: 'La journée (get up, have breakfast…) et always, often, never.', programme: ['c4.en.langue.temps-verbaux', 'c3.en.culture.vie-quotidienne'] },
+      { id: 'listening', title: 'Listening', description: 'Écouter une phrase et trouver son sens.', programme: ['c4.en.ecouter.intervention-breve'] },
     ],
   },
   {
@@ -1000,9 +1003,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon salon est fini ! Il est bien plus beau qu’avant : more beautiful than before.',
     },
     exercises: [
-      { id: 'ing', title: '-ing', description: 'Be + -ing (maintenant) ou présent simple (d’habitude).' },
-      { id: 'preterit', title: 'Prétérit', description: 'Was, were, les verbes en -ed ; did pour la question et la négation.' },
-      { id: 'comparatifs', title: 'Comparatifs', description: 'Taller than, the tallest, more… than, better, the best.' },
+      { id: 'ing', title: '-ing', description: 'Be + -ing (maintenant) ou présent simple (d’habitude).', programme: ['c4.en.langue.temps-verbaux'] },
+      { id: 'preterit', title: 'Prétérit', description: 'Was, were, les verbes en -ed ; did pour la question et la négation.', programme: ['c4.en.langue.temps-verbaux'] },
+      { id: 'comparatifs', title: 'Comparatifs', description: 'Taller than, the tallest, more… than, better, the best.', programme: ['c4.en.langue.groupe-nominal', 'c3.en.langue.groupe-nominal'] },
     ],
   },
   {
@@ -1034,9 +1037,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma loge est finie ! The show must go on.',
     },
     exercises: [
-      { id: 'dialogues', title: 'Dialogues', description: 'Écouter une question et choisir la bonne réponse.' },
-      { id: 'quantites', title: 'Quantités', description: 'Some, any, much, many, a few, a little, enough.' },
-      { id: 'preterit-irregulier', title: 'Prétérit irrégulier', description: 'Went, saw, bought : les verbes irréguliers au passé.' },
+      { id: 'dialogues', title: 'Dialogues', description: 'Écouter une question et choisir la bonne réponse.', programme: ['c4.en.ecouter.intervention-breve', 'c4.en.dialoguer.reagir', 'c3.en.dialoguer.reagir'] },
+      { id: 'quantites', title: 'Quantités', description: 'Some, any, much, many, a few, a little, enough.', programme: ['c4.en.langue.groupe-nominal'] },
+      { id: 'preterit-irregulier', title: 'Prétérit irrégulier', description: 'Went, saw, bought : les verbes irréguliers au passé.', programme: ['c4.en.langue.temps-verbaux'] },
     ],
   },
   {
@@ -1068,9 +1071,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon abri est fini ! The next train will arrive on time.',
     },
     exercises: [
-      { id: 'futur', title: 'Futur', description: 'Will et be going to.' },
-      { id: 'modaux', title: 'Modaux', description: 'Can, must, should, have to.' },
-      { id: 'present-perfect', title: 'Present perfect', description: 'Have been, ever, never, already, yet, just.' },
+      { id: 'futur', title: 'Futur', description: 'Will et be going to.', programme: ['c4.en.langue.temps-verbaux'] },
+      { id: 'modaux', title: 'Modaux', description: 'Can, must, should, have to.', programme: ['c4.en.langue.modaux-passif'] },
+      { id: 'present-perfect', title: 'Present perfect', description: 'Have been, ever, never, already, yet, just.', programme: ['c4.en.langue.temps-verbaux'] },
     ],
   },
   {
@@ -1102,9 +1105,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma régie est finie ! On the air!',
     },
     exercises: [
-      { id: 'comprendre', title: 'Comprendre', description: 'Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.' },
-      { id: 'connecteurs', title: 'Connecteurs', description: 'Because, so, but, although, however, unless…' },
-      { id: 'faux-amis', title: 'Faux amis', description: 'Actually, library, sensible : des mots qui ressemblent au français, mais trompent.' },
+      { id: 'comprendre', title: 'Comprendre', description: 'Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.', programme: ['c4.en.lire.informations', 'c4.en.lire.recit'] },
+      { id: 'connecteurs', title: 'Connecteurs', description: 'Because, so, but, although, however, unless…', programme: ['c4.en.langue.phrase-complexe'] },
+      { id: 'faux-amis', title: 'Faux amis', description: 'Actually, library, sensible : des mots qui ressemblent au français, mais trompent.', programme: ['c4.en.langue.lexique'] },
     ],
   },
   {
@@ -1136,9 +1139,9 @@ export const BIOMES: BiomeDef[] = [
       home: 'Ma tour est finie ! If I were you, I would climb to the top.',
     },
     exercises: [
-      { id: 'for-since', title: 'For / since', description: 'For, since, ago ; present perfect ou prétérit.' },
-      { id: 'if', title: 'If', description: 'Si… : le réel (will) et l’imaginaire (would).' },
-      { id: 'passif', title: 'Passif', description: 'Is spoken, was built, will be shown : be + participe passé.' },
+      { id: 'for-since', title: 'For / since', description: 'For, since, ago ; present perfect ou prétérit.', programme: ['c4.en.langue.temps-verbaux'] },
+      { id: 'if', title: 'If', description: 'Si… : le réel (will) et l’imaginaire (would).', programme: ['c4.en.langue.phrase-complexe'] },
+      { id: 'passif', title: 'Passif', description: 'Is spoken, was built, will be shown : be + participe passé.', programme: ['c4.en.langue.modaux-passif'] },
     ],
   },
 ];

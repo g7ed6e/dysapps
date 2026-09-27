@@ -75,6 +75,8 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. Les deux quêtes d’anglais du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md) ; les îles d’anglais, deux par archipel, sont décrites dans [L’archipel](archipel.md) et dans le [cadrage de l’anglais](../conception/cadrage-anglais.md).
 
+**Chaque quête cite le programme officiel.** Sous chaque quête, la page de l’île indique la compétence des programmes de français, de mathématiques ou de langues vivantes qu’elle travaille (cycle 3 pour la 6e, cycle 4 pour la 5e, la 4e et la 3e). La page [Programmes officiels](programmes.md) met tout le programme en face des quêtes : ce qui est travaillé, ce qui reste à couvrir, ce qui est hors périmètre.
+
 ## Ce qui n’est pas emprunté
 
-Univers, créatures, noms, textures et sons sont originaux et dessinés ou générés par le code. Les textes de lecture sont du domaine public (La Fontaine en texte intégral, Daudet et Verne adaptés) ; les textes d’Ascension sont originaux. La police Luciole est distribuée sous licence CC BY 4.0 avec son crédit dans l’application.
+Univers, créatures, noms, textures et sons sont originaux et dessinés ou générés par le code. Les textes de lecture sont du domaine public (La Fontaine en texte intégral, Daudet et Verne adaptés) ; les textes d’Ascension sont originaux. La police Luciole est distribuée sous licence CC BY 4.0 avec son crédit dans l’application. Les intitulés des programmes cités sur la page [Programmes officiels](programmes.md) et sous chaque quête viennent des programmes d’enseignement publiés sur data.gouv.fr par le ministère de l’Éducation nationale (arrêté du 17 juillet 2020), sous Licence Ouverte 2.0, avec mention de la source ; la liste des mots-outils du Coffre à mots vient du même portail.

@@ -9,3 +9,4 @@ dist-docs
 docs/.vitepress/cache
 docs/.vitepress/.temp
 .wrangler
+.programme

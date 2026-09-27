@@ -11,11 +11,14 @@ src/
   components/    Layout (barre du haut, transitions ; pas d’onglets), FocusMode (mode concentration, menu pause), Loading, TitleScreen, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, useSheetClearance, useAnswerKeys…
   core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
   pages/         accueil, matière, quête, réglages, succès
+  programme/     le référentiel des programmes officiels (cycles 3 et 4 : français, maths, anglais), les exclusions
+                 motivées, la liste des mots-outils ; sert aux tests et à la documentation, pas à l'application
   styles/        thèmes, styles globaux, textures pixel générées
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
-                 construction et vérification de la documentation
+                 construction et vérification de la documentation (docs/), extraction du texte d'un programme
+                 officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)
 public/          icônes, police Luciole
 ```
 
@@ -42,7 +45,7 @@ public/          icônes, police Luciole
 
 ## Blocland (`src/blocland/`)
 
-- `biomes.ts` : les **vingt-huit îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, quêtes) et les **blocs**. La classe d’une île est aussi son **archipel**.
+- `biomes.ts` : les **vingt-huit îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, quêtes) et les **blocs**. La classe d’une île est aussi son **archipel**. Chaque quête cite dans `programme` les compétences du programme officiel qu’elle travaille (identifiants de `src/programme/`, vérifiés par le compilateur) ; les quêtes du portail font de même dans `src/apps/registry.ts`.
 - `exercises/` : le **moteur d’exercice** de Blocland. `types.ts` définit le format d’un exercice ; `index.ts` le catalogue (l’index de tous les exercices, et `loadExercise` qui charge à la demande le contenu d’un exercice JSON) ; `registry.ts` associe chaque type d’exercice à son écran (`QcmItem`, `ChasseSonScreen`, `FilonScreen`, `MotTroueScreen`, `AscensionScreen`, `RimesScreen`, `DicteeItem`, `FamillesScreen`, `EnclosScreen`, `CalculScreen`, `BossScreen`) ; `data/*.json` les exercices écrits à la main ; `maths.ts` et `college.ts` les exercices générés ; `run.ts` la graine de chaque partie. Voir [Format des exercices](exercices.md).
 - `engine.ts` : logique pure et testée du jeu : score, étoiles, blocs, XP, répétition espacée, série de régularité et coffres, adaptation du niveau, inventaire, lancement du Bloc-Navire et migration des sauvegardes. `completePortalQuest` : les blocs d’une quête du portail, gagnés à l’école du village.
 - `ExerciseRunner.tsx` : joue un exercice (consigne écrite et lue, écrans, correction, récompense). `boss.ts` et `BossPage.tsx` : le défi du Gardien, deux manches par quête. `review.ts` : les révisions du jour (items de la répétition espacée dus aujourd’hui) : quelles quêtes les proposent, quels items passent en tête de la partie ; `components/AppBadge.tsx` en fait la pastille de l’icône.
@@ -56,8 +59,8 @@ Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:bloclan
 
 ## Tests
 
-`npm test` lance Vitest (environnement jsdom). Les tests couvrent la logique pure (moteur, progression, réglages, syllabes, générateurs, carte, ouvrages, plans), les données (chaque JSON d’exercice, les phrases d’homophones, les textes de lecture) et les écrans principaux. Les tests de données sont ce qui garantit qu’un item ajouté respecte le format et les règles (un seul trou, réponse présente dans les choix, mot lu à voix haute…).
+`npm test` lance Vitest (environnement jsdom). Les tests couvrent la logique pure (moteur, progression, réglages, syllabes, générateurs, carte, ouvrages, plans), les données (chaque JSON d’exercice, les phrases d’homophones, les textes de lecture) et les écrans principaux. Les tests de données sont ce qui garantit qu’un item ajouté respecte le format et les règles (un seul trou, réponse présente dans les choix, mot lu à voix haute…). Les tests du programme (`src/programme/programme.test.ts`, `src/blocland/programme.test.ts`) vérifient le référentiel lui-même, puis que chaque quête cite des compétences existantes de sa matière et de son cycle, et que chaque compétence est travaillée par une quête ou exclue avec un motif, jamais les deux : la couverture du programme ne régresse pas sans qu’on le dise. Le Coffre à mots ne dicte que des mots de la liste officielle des mots-outils.
 
 ## Documentation
 
-Le site de documentation est construit par VitePress (`docs/.vitepress/config.mts`) à partir de `docs/`, que `scripts/docs/prepare.mjs` rassemble. Les pages du contenu pédagogique sont générées par `scripts/docs/generate.mjs`, qui charge les modules du jeu avec Vite et en tire les tableaux. Les captures d’écran du manuel (`docs/_captures/`) sont prises par `scripts/docs/captures.mjs` (`npm run docs:captures`), qui lance l’application et la joue dans Chromium avec Playwright. Voir [Contribuer](contribuer.md) et [Déploiement](deploiement.md).
+Le site de documentation est construit par VitePress à partir de `docs/` : `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui assemble les pages écrites à la main, les pages du contenu pédagogique générées par `scripts/docs/generate.mjs` (il charge les modules du jeu avec Vite et en tire les tableaux, dont la page Programmes officiels et la ligne « Programme officiel » sous chaque quête) et le journal des versions assemblé par `scripts/docs/journal.mjs` ; `scripts/docs/check.mjs` vérifie qu’une pull request ajoute un fragment de journal. Les captures d’écran du manuel (`docs/_captures/`) sont prises par `scripts/docs/captures.mjs` (`npm run docs:captures`), qui lance l’application et la joue dans Chromium avec Playwright. Voir [Contribuer](contribuer.md), [Le référentiel des programmes](programmes.md) et [Déploiement](deploiement.md).

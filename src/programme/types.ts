@@ -1,0 +1,64 @@
+// Le référentiel des programmes officiels (data.gouv.fr) : les compétences que les quêtes citent.
+// Rien de ce dossier n'est embarqué dans l'application : il sert aux tests et au générateur de documentation.
+import type { Subject } from '../apps/registry';
+
+/** Cycle 3 : CM1, CM2, 6e. Cycle 4 : 5e, 4e, 3e. */
+export type Cycle = 3 | 4;
+
+/** Les disciplines du référentiel sont les matières de l'application. */
+export type Discipline = Subject;
+
+export type SourceId = 'c3' | 'c4';
+
+/** D'où vient le texte : le jeu de données data.gouv.fr, son PDF, sa licence. */
+export interface ProgrammeSource {
+  id: SourceId;
+  /** Titre du jeu de données sur data.gouv.fr. */
+  dataset: string;
+  datasetUrl: string;
+  /** Le PDF de l'annexe (une par cycle). */
+  title: string;
+  pdfUrl: string;
+  pages: number;
+  licence: { name: string; url: string };
+  /** Le texte réglementaire qui fixe le programme. */
+  legal: string;
+  /** Date de consultation, AAAA-MM-JJ. */
+  consulted: string;
+}
+
+/** Un domaine du programme (« Étude de la langue », « Thème A – Nombres et calculs », « Écouter et comprendre »). */
+export interface ProgrammeDomaine {
+  /** Ancre stable, ex. « c3-fr-langue ». */
+  id: string;
+  cycle: Cycle;
+  discipline: Discipline;
+  /** Intitulé officiel. */
+  title: string;
+  /** Page du PDF où le domaine commence. */
+  page: number;
+}
+
+/** Une compétence du programme, au grain d'une quête : ce qu'une quête peut travailler. */
+export interface ProgrammeEntry {
+  /** Identifiant stable : c<cycle>.<fr|ma|en>.<domaine>.<compétence>. */
+  id: string;
+  cycle: Cycle;
+  discipline: Discipline;
+  /** Identifiant du domaine (ProgrammeDomaine.id). */
+  domaine: string;
+  /** Attendu de fin de cycle, libellé court fidèle au texte. */
+  attendu: string;
+  /** Connaissance ou compétence associée, libellé court fidèle au texte. */
+  competence: string;
+  /** Page du PDF source. */
+  page: number;
+}
+
+export type ExclusionKind = 'hors-perimetre' | 'a-couvrir';
+
+/** Pourquoi une compétence n'a pas de quête : durablement hors de portée, ou pas encore couverte. */
+export interface Exclusion {
+  kind: ExclusionKind;
+  motif: string;
+}

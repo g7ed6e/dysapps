@@ -51,3 +51,7 @@ Noms, créatures et Gardiens sont une proposition, à ajuster à la relecture de
 3. ✅ Îles de 5e : Comptoir, Manoir du passé.
 4. ✅ Îles de 4e : Théâtre des voix, Gare du futur.
 5. ✅ Îles de 3e : Studio des ondes, Château des hypothèses.
+
+## 6. Après les programmes officiels (27 septembre 2026)
+
+Les vingt-quatre quêtes d’anglais et les deux du portail citent désormais le programme de langues vivantes ([programmes officiels](programmes.md) : niveau A1 en fin de cycle 3, A2 en fin de cycle 4). Ce qui reste à couvrir, une pull request par lot : lire des mots isolés et des phrases très simples avec une image en 6e (Baie des mots, quatrième quête « Signs ») ; lire des consignes, des menus, des horaires et des panneaux en 5e (Comptoir, quatrième quête « Notices ») ; suivre une histoire courte à l’oral ; les repères culturels des pays anglophones (fêtes, lieux, héros de l’imaginaire), absents de toutes les quêtes. Parler en continu et l’écriture libre restent hors périmètre.

@@ -23,6 +23,11 @@ export interface ExerciseDef {
    * `choicesLang: 'fr'` quand ses réponses sont en français (traduire un mot anglais).
    */
   lang?: Lang;
+  /**
+   * Précision facultative par exercice (niveau) : compétences du programme officiel travaillées, en plus de celles
+   * de la quête (identifiants de src/programme/). Vérifié par les tests, affiché dans la documentation.
+   */
+  programme?: string[];
   /** Les items de référence (Gardien, tests). Une partie en joue une variante : voir `run.ts`. */
   items: ExerciseItem[];
   /** Exercice généré : d'autres items pour une autre graine (une par partie). */
