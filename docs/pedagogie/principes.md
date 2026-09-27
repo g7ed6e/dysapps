@@ -24,7 +24,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 
 ## Aider sans pénaliser
 
-- **Aide visuelle toujours affichée** en maths (grille de points par cinq, boîte de dix, droite par bonds, tableau de numération, barres de fractions, droite des relatifs, tableau de proportionnalité, figure codée, série en barres, tableau de valeurs), pas seulement après une erreur.
+- **Aide visuelle toujours affichée** en maths (grille de points par cinq, boîte de dix, droite par bonds, tableau de numération, barres de fractions, droite des relatifs, tableau de proportionnalité, figure codée, série en barres), pas seulement après une erreur.
 - **Rappel de règle** toujours visible pour la grammaire, la conjugaison et les règles de calcul du cycle 4 (règle des signes, puissances, distributivité, Pythagore…).
 - **Indice sur demande** (le joker) avant de répondre ou après une erreur : une astuce de substitution (« remplace par *avait* »), une explication phonétique (« le v vibre dans la gorge, comme dans vélo »), le passage à relire. Il compte pour un demi-point dans Blocland, jamais en négatif.
 - **Deuxième essai partout** (portail et Blocland, sauf au Gardien) : après une première erreur, « Presque ! » et l’indice, la réponse tentée barrée, puis un second essai qui vaut un demi-point. Pas de second essai quand il ne reste qu’une réponse possible : il la donnerait.
@@ -73,7 +73,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme de Blocland. Ell
 | 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | Répondre à une question entendue, some / any / much / many, prétérit irrégulier (Théâtre des voix), futur, modaux, present perfect (Gare du futur) |
 | 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | Comprendre un texte, connecteurs, faux amis (Studio des ondes), for / since, if, passif (Château des hypothèses) |
 
-Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. Les deux quêtes d’anglais du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md) ; les îles d’anglais, deux par archipel, sont décrites dans [L’archipel](archipel.md) et dans le [cadrage de l’anglais](../conception/cadrage-anglais.md).
+Le détail (créature, Gardien, quêtes, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. Les deux quêtes d’anglais du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md) ; les îles d’anglais, deux par archipel, sont décrites dans [L’archipel](archipel.md) et dans le [cadrage du contenu](../conception/cadrage-contenu.md).
 
 **Chaque quête cite le programme officiel.** Sous chaque quête, la page de l’île indique la compétence des programmes de français, de mathématiques ou de langues vivantes qu’elle travaille (cycle 3 pour la 6e, cycle 4 pour la 5e, la 4e et la 3e). La page [Programmes officiels](programmes.md) met tout le programme en face des quêtes : ce qui est travaillé, ce qui reste à couvrir, ce qui est hors périmètre.
 

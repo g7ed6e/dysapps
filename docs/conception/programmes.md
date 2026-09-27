@@ -46,4 +46,4 @@ Ce que data.gouv.fr **ne** fournit **pas** : un lexique scolaire, une liste de f
 
 ## Ce que l’analyse d’origine a établi
 
-Le référentiel a été écrit le 27 septembre 2026 à partir des PDF des cycles 3 et 4, pour le français, les mathématiques et les langues vivantes (portées par la matière Anglais). Les 79 quêtes des 28 îles et les 7 quêtes du portail ont été rattachées ; les compétences sans quête sont listées dans `exclusions.ts` avec ce qui est prévu pour chacune (nouvelles quêtes, nouvelle île de grandeurs et mesures en 6e). Le [cadrage du collège](cadrage-college.md) et le [cadrage de l’anglais](cadrage-anglais.md) reprennent ces suites.
+Le référentiel a été écrit le 27 septembre 2026 à partir des PDF des cycles 3 et 4, pour le français, les mathématiques et les langues vivantes (portées par la matière Anglais). Les 79 quêtes des 28 îles et les 7 quêtes du portail ont été rattachées ; les compétences sans quête sont listées dans `exclusions.ts` avec ce qui est prévu pour chacune (nouvelles quêtes, nouvelle île de grandeurs et mesures en 6e). Le [cadrage du contenu](cadrage-contenu.md) reprend ces suites.

@@ -32,13 +32,28 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 
 Une pull request qui ajoute une page au manuel ou à la conception la déclare dans `docs/_theme/nav.json` : le build échoue si une page du sommaire manque et signale une page hors sommaire.
 
-## Le Directeur contenu pédagogique
+## Les deux agents
 
-Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur-contenu-pedagogique.md` : le **Directeur contenu pédagogique**. Il connaît le référentiel des programmes, les règles dys et le format des exercices, et sert à cadrer un lot de contenu à partir de ce qui reste à couvrir, à relire des exercices (programme, pièges, corrections, typographie), à écrire ou corriger des exercices et à tenir les exclusions à jour. On le sollicite par son nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent directeur-contenu-pedagogique`. Toute personne qui clone le dépôt a le même Directeur ; ses consignes se modifient par pull request, comme le reste.
+Le dépôt fournit deux agents partagés pour Claude Code, dans `.claude/agents/`. Toute personne qui clone le dépôt a les mêmes ; leurs consignes se modifient par pull request, comme le reste. On les sollicite par leur nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent <nom>`.
 
-## Le directeur artistique
+- Le **Directeur contenu pédagogique** (`directeur-contenu-pedagogique`) garantit le programme officiel, les règles dys et la qualité des items. Il cadre un lot de contenu à partir de ce qui reste à couvrir, relit et écrit des exercices, et tient les exclusions du référentiel à jour. Il peut modifier des fichiers.
+- Le **directeur artistique** (`directeur-artistique`) est le game designer. Il conduit la migration de Blocland vers Archipéo : il cadre un lot de game design, relit une proposition sous cet angle et tranche une question d’univers. Il lit et propose, sans modifier de fichier.
 
-Un second agent partagé, `.claude/agents/directeur-artistique.md`, est le **directeur artistique et game designer**. Il conduit la migration de Blocland vers Archipéo, décrite par le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md) et le dossier `design/archipeo/`. Il sert à cadrer un lot de game design (boucle de jeu, progression, récompenses, village, Bloc-Navire, archipels, baleine, direction visuelle), à relire une proposition sous cet angle et à trancher une question d’univers. Il ne s’occupe ni du contenu pédagogique, qui revient au Directeur contenu pédagogique, ni des choix techniques. Il lit et propose, sans modifier de fichier. On le sollicite par son nom (« demande au directeur artistique de relire ce plan ») ou avec `claude --agent directeur-artistique`.
+Aucun des deux ne fait les choix techniques (code, rendu, données, tests, CI, déploiement) : ils reviennent à ceux qui écrivent le code, et sont décrits par [Architecture](architecture.md) et [Déploiement](deploiement.md).
+
+### Qui tient quel document
+
+| Document | Tenu par | Rôle |
+| --- | --- | --- |
+| [Principes dys](../pedagogie/principes.md) | Contenu | Les règles dys ; une contrainte pour les deux agents |
+| [Format des exercices](exercices.md), [Référentiel des programmes](programmes.md) | Contenu | Le format des items, la couverture du programme |
+| [Cadrage du contenu](cadrage-contenu.md) | Contenu | Les décisions de contenu et la suite à couvrir |
+| [Cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), `design/archipeo/` | Directeur artistique | La cible de la migration et ce qui reste à décider |
+| [Cadrage du game design de Blocland](cadrage-blocland.md), [Style](style.md) | Directeur artistique | L’existant à faire migrer |
+| Le manuel (`docs/manuel/`) | Celui qui change l’écran | Ce que l’élève voit aujourd’hui |
+| Les pages du contenu pédagogique | Le générateur | Produites depuis les données du jeu, jamais écrites à la main |
+
+Une question qui touche aux deux (une quête qui doit produire une conséquence visible dans le monde, le nombre de blocs que rapporte un exercice) se partage ainsi : ce qu’un exercice enseigne, ses items et sa correction relèvent du contenu ; ce que la réussite rapporte et change dans le monde relève du game design. Une décision prise s’écrit dans le cadrage de celui qui la tient.
 
 ## Écrire pour la documentation
 
@@ -54,7 +69,7 @@ Un second agent partagé, `.claude/agents/directeur-artistique.md`, est le **dir
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
 - Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
-- Les changements de style ou de game design (univers, progression, récompenses, textures, polices, cadrages) sont relus par l’agent `directeur-artistique` avant fusion (voir [Le directeur artistique](#le-directeur-artistique)).
+- Les changements de contenu (exercices, quêtes, exclusions du référentiel) sont relus par l’agent `directeur-contenu-pedagogique`, ceux de style ou de game design (univers, progression, récompenses, textures, polices) par l’agent `directeur-artistique`, avant fusion (voir [Les deux agents](#les-deux-agents)).
 
 ## Signaler un problème
 
