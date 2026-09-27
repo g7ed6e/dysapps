@@ -34,6 +34,9 @@ import { createMeter } from './meter';
 import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
 import { cielDe, SOLEIL_DIRECTION, teinteSur } from '../world/palette';
 import { creerDome } from './ciel';
+import { passPhase, passingWhale, whalePassRoute, type WhaleRoute } from '../world/whalePass';
+import { playWhaleBlow } from '../sound';
+import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe, type Surface } from './surface';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
@@ -183,6 +186,7 @@ export default function WorldCanvas({
   onPickQuest,
   onPickPlace,
   islandLabels,
+  whalePass = null,
   burst,
   className,
   label,
@@ -260,6 +264,13 @@ export default function WorldCanvas({
 
   const focusRef = useRef(focus);
   focusRef.current = focus;
+  // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
+  const whalePassRef = useRef(whalePass);
+  whalePassRef.current = whalePass;
+  const passSeqRef = useRef<number | null>(null);
+  const { settings } = useSettings();
+  const soundsRef = useRef(settings.sounds);
+  soundsRef.current = settings.sounds;
 
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
@@ -463,7 +474,7 @@ export default function WorldCanvas({
     const whaleMat = new THREE.MeshLambertMaterial({ color: 0x3f5d7a });
     const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
     const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
-    const whales: { group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; cx: number; cy: number; r: number; phase: number; speed: number }[] = [];
+    const whales: { group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; skin: THREE.Mesh[]; cx: number; cy: number; r: number; phase: number; speed: number }[] = [];
     whaleSpots(archipelago).forEach((spot, i) => {
       const group = new THREE.Group();
       const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
@@ -484,8 +495,29 @@ export default function WorldCanvas({
       spout.visible = false;
       group.add(body, head, belly, fin, fluke, spout);
       scene.add(group);
-      whales.push({ group, fluke, spout, cx: spot.x, cy: spot.y, r: spot.r, phase: i * 2.1, speed: 0.12 + i * 0.03 });
+      whales.push({ group, fluke, spout, skin: [body, head, fin, fluke], cx: spot.x, cy: spot.y, r: spot.r, phase: i * 2.1, speed: 0.12 + i * 0.03 });
     });
+    // Le passage au large (le mot de la baleine) : la baleine qui passe prend une peau qui garde sa silhouette la nuit
+    // (un reflet de lune, sans briller), et un liseré d'écume au ras de l'eau la détache de la mer sombre.
+    const passMat = new THREE.MeshLambertMaterial({ color: 0x3f5d7a });
+    const foamMat = new THREE.MeshLambertMaterial({ color: 0xeef4f8, transparent: true, opacity: 0.8, depthWrite: false });
+    const foam = new THREE.Group();
+    for (const [w, d, x, z] of [
+      [5.6, 0.35, -0.3, 1.05],
+      [5.6, 0.35, -0.3, -1.05],
+      [0.35, 1.8, 2.6, 0],
+      [0.35, 1.4, -3.1, 0],
+      [1.6, 0.3, -4.3, 0.55],
+      [1.6, 0.3, -4.3, -0.55],
+    ] as const) {
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(w, 0.06, d), foamMat);
+      strip.position.set(x, 0, z);
+      foam.add(strip);
+    }
+    foam.visible = false;
+    scene.add(foam);
+    /** Le passage en cours : la baleine, son trajet, son début (temps de l'horloge), son souffle déjà joué ou non. */
+    let pass: { whale: number; route: WhaleRoute; heading: number; start: number; blown: boolean } | null = null;
 
     // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
     const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
@@ -1012,7 +1044,23 @@ export default function WorldCanvas({
           b.wings[1].rotation.z = -flap;
         }
         for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
-        for (const wh of whales) {
+        // Le mot de la baleine : un nouveau `seq`, un passage (s'il y a une mer et de l'eau libre au large de l'île).
+        const wp = whalePassRef.current;
+        if (wp && wp.seq !== passSeqRef.current) {
+          passSeqRef.current = wp.seq;
+          if (!pass) {
+            // Vers la caméra de la vue de l'île (le même pivot que `framing`) : le passage se voit depuis cette vue.
+            const yaw = -viewYaw(wp.island);
+            const toCamera = { x: ISLAND_VIEW.dx * Math.cos(yaw) - ISLAND_VIEW.dy * Math.sin(yaw), y: ISLAND_VIEW.dx * Math.sin(yaw) + ISLAND_VIEW.dy * Math.cos(yaw) };
+            const route = whales.length > 0 ? whalePassRoute(wp.island, toCamera, camera.aspect < 0.9) : null;
+            const i = route ? passingWhale(whales.map((wh) => ({ x: wh.cx, y: wh.cy })), route) : -1;
+            if (route && i >= 0) {
+              pass = { whale: i, route, heading: Math.atan2(-(route.to.y - route.from.y), route.to.x - route.from.x), start: t, blown: false };
+              for (const m of whales[i].skin) m.material = passMat;
+            }
+          }
+        }
+        for (const [i, wh] of whales.entries()) {
           const a = t * wh.speed + wh.phase;
           // Elle monte et descend lentement ; en surface, elle souffle.
           const rise = Math.sin(t * 0.45 + wh.phase);
@@ -1023,6 +1071,47 @@ export default function WorldCanvas({
           const surfacing = rise > 0.7;
           wh.spout.visible = surfacing;
           if (surfacing) wh.spout.scale.setScalar(0.6 + (rise - 0.7) * 2.5);
+          if (!pass || pass.whale !== i) continue;
+          const ph = passPhase(t - pass.start);
+          if (ph.phase === 'done') {
+            // De retour à sa ronde : sa peau ordinaire, plus d'écume.
+            for (const m of wh.skin) m.material = whaleMat;
+            wh.group.scale.setScalar(1);
+            foam.visible = false;
+            pass = null;
+            continue;
+          }
+          if (ph.phase !== 'swim') {
+            // Elle s'enfonce à sa ronde, ou en remonte : sous l'eau, le trajet ne se voit pas.
+            wh.group.position.y -= ph.sink * 3.2;
+            wh.group.scale.setScalar(1);
+            wh.spout.visible = false;
+            foam.visible = false;
+            continue;
+          }
+          // Au large de l'île : elle glisse le long du trajet, fait surface, souffle une fois, replonge.
+          const { from, to } = pass.route;
+          const x = from.x + (to.x - from.x) * ph.u;
+          const z = from.y + (to.y - from.y) * ph.u;
+          wh.group.position.set(x, -0.15 - ph.depth * 3.05 + (1 - ph.depth) * Math.sin(t * 1.2) * 0.06, z);
+          wh.group.rotation.y = pass.heading;
+          wh.group.rotation.z = ph.pitch;
+          wh.group.scale.setScalar(1.2);
+          wh.fluke.rotation.z = Math.sin(t * 1.6) * 0.25;
+          wh.spout.visible = ph.spout > 0;
+          if (ph.spout > 0) wh.spout.scale.setScalar(0.7 + ph.spout * 0.9);
+          if (ph.spout > 0 && !pass.blown) {
+            pass.blown = true;
+            if (soundsRef.current) playWhaleBlow();
+          }
+          const night = 1 - light;
+          passMat.emissive.setRGB(0.05 * night, 0.09 * night, 0.14 * night);
+          foamMat.emissive.setRGB(0.3 * night, 0.34 * night, 0.38 * night);
+          foamMat.opacity = 0.8 * Math.max(0, 1 - ph.depth * 1.6);
+          foam.visible = foamMat.opacity > 0.02;
+          foam.position.set(x, WATER_LEVEL + 0.04, z);
+          foam.rotation.y = pass.heading;
+          foam.scale.setScalar(1.2);
         }
         if (markerGroup.visible) {
           markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
@@ -1088,6 +1177,12 @@ export default function WorldCanvas({
       });
       for (const s of world.current?.sparks ?? []) (s.mesh.material as THREE.Material).dispose();
       sparkGeo.dispose();
+      // Les baleines et l'écume du passage.
+      for (const g of [...whales.map((wh) => wh.group), foam])
+        g.traverse((o) => {
+          if (o instanceof THREE.Mesh) o.geometry.dispose();
+        });
+      for (const m of [whaleMat, bellyMat, spoutMat, passMat, foamMat]) m.dispose();
       water.geometry.dispose();
       waterMat.map?.dispose();
       waterMat.dispose();
