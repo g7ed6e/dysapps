@@ -289,7 +289,7 @@ const FICHES: Fiche[] = [
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
     islet: { x: 155, y: 641 },
     reward: { xp: 210, chest: {} },
-    done: 'L’amphithéâtre est prêt ! Tous les Anciens Ateliers viendront au spectacle.',
+    done: 'L’amphithéâtre est prêt ! Tout le monde des Anciens Ateliers viendra au spectacle.',
     draw: amphitheatre,
   },
   {

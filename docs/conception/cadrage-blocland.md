@@ -47,7 +47,7 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 **La Carte** montre l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée montre le chemin d’ouvrages qui reste à construire (`remainingPath()`), balisé en jaune dans le monde. On ne se perd jamais.
 
-**Trois vues au choix** (réglage « Vue de Blocland ») : le monde en 3D, le monde en 2D, la liste des îles. Sans WebGL, la 3D laisse la place à la 2D ; la liste ne reste que pour un appareil qui ne sait rien dessiner.
+**Trois vues au choix** (réglage « Vue du monde ») : le monde en 3D, le monde en 2D, la liste des îles. Sans WebGL, la 3D laisse la place à la 2D ; la liste ne reste que pour un appareil qui ne sait rien dessiner.
 
 ## La vue 2D oblique
 

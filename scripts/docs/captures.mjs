@@ -80,7 +80,7 @@ const MID = {
   },
   progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, plansCompleted: 6, bossesBeaten: 2, bestStreak: 9, badges: badges(9) },
 };
-/** Les Premiers Rivages reconstruites : tout est ouvert et bâti, le navire a pris la mer. */
+/** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
   blocland: {
     inventory: { bois: 30, brique: 25, toile: 8 },

@@ -74,11 +74,11 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ![L'observatoire des baleines, à moitié construit sur son îlot : la plateforme de galets, la tour de brique, et en fantômes le belvédère ; le panneau montre 60 sur 116 blocs posés.](/captures/monument.jpg)
 
-## Les Premiers Rivages reconstruites
+## Les Premiers Rivages reconstruits
 
 À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens vaincus devenus statues. Le Bloc-Navire emmène alors l'élève dans les **Îles Brumeuses**, l'archipel de 5e.
 
-![Les Premiers Rivages reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
+![Les Premiers Rivages reconstruits : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
 
 ![Le Marché des proportions, port des Îles Brumeuses : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
 

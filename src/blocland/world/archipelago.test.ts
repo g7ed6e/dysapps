@@ -107,7 +107,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
   expect(isBiomeUnlocked('atelier', ['voyage-4e'])).toBe(false);
   expect(isBiomeUnlocked('atelier', ['voyage-5e', 'voyage-4e'])).toBe(true);
   expect(reachedArchipelagos(['voyage-5e', 'voyage-4e']).map((a) => a.classe)).toEqual(['6e', '5e', '4e']);
-  // Le retour est toujours possible : les Premiers Rivages restent ouvertes.
+  // Le retour est toujours possible : les Premiers Rivages restent ouverts.
   expect(isBiomeUnlocked('foret', ['voyage-5e', 'voyage-4e', 'voyage-3e'])).toBe(true);
   expect(voyagesTo('cabinet').map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e']);
   expect(remainingVoyages('cabinet', ['voyage-5e']).map((v) => v.id)).toEqual(['voyage-4e']);
