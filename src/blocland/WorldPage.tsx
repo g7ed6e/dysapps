@@ -28,6 +28,7 @@ import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
 import { walkGround } from './world/paths';
 import { isPlanDone, plansFor } from './world/plans';
+import { Loading } from '../components/Loading';
 import {
   avatarHome,
   avatarRoute,
@@ -358,7 +359,7 @@ export function WorldPage() {
   return (
     <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
-        <Suspense fallback={<p className="loading world-loading">Chargement du village…</p>}>
+        <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
             archipelago={a}
             cubes={cubes}

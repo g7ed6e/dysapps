@@ -27,6 +27,9 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
   const best = (id: string) => progress.apps[key(id)]?.bestScore;
 
   if (current) {
+    // La quête suivante de la liste, proposée en premier à la fin (la suite logique).
+    const i = quests.findIndex((q) => q.id === current.id);
+    const following = i >= 0 ? quests[i + 1] : undefined;
     return (
       <QuizSession
         key={current.id}
@@ -34,6 +37,7 @@ export function QuestMenu({ appId, intro, quests, extra }: Props) {
         makeQuestions={current.make}
         onExit={() => setCurrent(null)}
         exitLabel="Changer de quête"
+        next={following ? { label: `Quête suivante : ${following.title}`, go: () => setCurrent(following) } : undefined}
       />
     );
   }

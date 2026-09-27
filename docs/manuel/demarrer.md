@@ -4,7 +4,16 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-La page d’accueil présente **Blocland** (l’aventure) et les **quêtes par matière** (Français, Maths, Anglais). La barre du haut donne accès partout aux **Succès** (rang, XP, progression) et aux **Réglages**.
+L’application se parcourt comme un jeu, avec quatre grands endroits, toujours au même endroit et avec les mêmes mots :
+
+- **Accueil** : le menu principal. Il montre le rang, **Continuer** (la dernière quête ouverte), **Blocland** (l’aventure) et trois grosses tuiles : **Quêtes**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran.
+- **Aventure** : Blocland, le village à reconstruire.
+- **Quêtes** : les quêtes du portail, par matière (Français, Maths, Anglais).
+- **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
+
+Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, ils sont des **onglets en bas de l’écran**, comme dans une appli, et les Réglages restent en haut (roue dentée). Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
+
+Pendant une partie, l’écran se vide pour laisser toute la place à la question : voir [le mode concentration](quetes.md#le-mode-concentration).
 
 ## Installer sur l’écran d’accueil
 

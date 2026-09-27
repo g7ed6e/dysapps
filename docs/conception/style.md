@@ -4,7 +4,8 @@ L’interface entière suit un style de monde en blocs, dessiné par le code et 
 
 ## Repères visuels
 
-- **Fond crème** `#FBF6EA` à grain pixel très discret ; barre du haut en terre et herbe.
+- **Fond crème** `#FBF6EA` à grain pixel très discret ; barre du haut en terre et herbe ; sur téléphone, onglets en bas sur fond de terre, l’onglet ouvert en herbe.
+- **Bouton retour** en pastille (flèche et nom de la page d’avant), toujours en haut à gauche ; **bouton Pause** carré en haut à droite pendant une partie ; menu pause sur un voile sombre.
 - **Boutons de pierre** à biseau pixel, et d’herbe pour l’action principale ; panneaux à coins carrés et biseau ; bandeaux texturés (herbe, planches, pierre, sable, or) en tête des cartes.
 - **Jauge d’XP segmentée** et **écusson de rang** en pixels : contour crénelé, minerai du rang à l’intérieur (cuivre, fer, or, platine, diamant, légende).
 - **Icône de l’application** (écran d’accueil, PWA) : un bloc d’herbe isométrique en pixels sur fond de ciel, générée par un script comme les textures.

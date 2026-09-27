@@ -1,6 +1,6 @@
 # Les quêtes du portail
 
-Les pages **Français**, **Maths** et **Anglais** de l’accueil listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+L’onglet **Quêtes** mène aux pages **Français**, **Maths** et **Anglais**, qui listent les quêtes du portail, puis les îles de Blocland de la même matière, de la 6e à la 3e. Une quête du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ## Comment se déroule une question
 
@@ -13,7 +13,19 @@ Chaque écran tient sans défiler :
 5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans Blocland, où les chiffres cochent les cartes d’un tri et Entrée valide.
 6. **Les succès** gagnés pendant la quête (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
 
-Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles.
+## Le mode concentration
+
+Pendant une partie (quête du portail, quête ou défi du Gardien dans Blocland), la barre du haut, les onglets et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+
+- **Reprendre** (ou la touche Échap) ;
+- des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
+- **Quitter la partie** : retour au choix des quêtes (ou, dans Blocland, au panneau de l’île). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans Blocland, les blocs se gagnent en finissant la partie.
+
+Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la barre et les onglets reviennent, et le bouton retour ramène à la page d’avant.
+
+## Le bilan
+
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Blocland (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une quête, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP). En premier vient **la suite logique** : **Quête suivante : Comparer** (la quête d’après dans la liste), sinon le retour au choix des quêtes ; puis **Rejouer** et **Accueil**.
 
 Il n’y a **pas de chronomètre**. Une quête terminée donne un bonus d’XP, un bonus de plus si elle est parfaite. Le détail des points est dans [Progression et récompenses](progression.md).
 

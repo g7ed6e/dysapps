@@ -4,6 +4,7 @@ import { SUBJECTS, getApp } from '../apps/registry';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from './NotFoundPage';
 import { useRememberPlace } from '../core/lastPlace';
+import { Loading } from '../components/Loading';
 
 export function AppPage() {
   const { appId } = useParams();
@@ -22,7 +23,7 @@ export function AppPage() {
       <h1 className={`page-title title-${app.subject}`}>
         <Icon name={app.icon} /> {app.title}
       </h1>
-      <Suspense fallback={<p className="loading">Chargement…</p>}>
+      <Suspense fallback={<Loading />}>
         <Component />
       </Suspense>
     </>

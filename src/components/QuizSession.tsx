@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProgress } from '../core/ProgressContext';
 import { Feedback, type FeedbackTone } from './Feedback';
 import { Icon } from './Icon';
@@ -8,6 +8,7 @@ import { RichText } from './math/RichText';
 import { langAttr, type Lang } from '../core/speech';
 import { useSheetClearance } from './useSheetClearance';
 import { useAnswerKeys } from './useAnswerKeys';
+import { useFocusMode } from './FocusMode';
 import { Stars } from '../blocland/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
@@ -45,6 +46,8 @@ interface Props {
   /** Action supplémentaire proposée à la fin (ex. revenir au choix du niveau). */
   onExit?: () => void;
   exitLabel?: string;
+  /** La suite logique, proposée en premier à la fin (ex. la quête suivante). */
+  next?: { label: string; go: () => void };
   /** Contenu affiché sous la question (ex. « Revoir le texte »). */
   after?: ReactNode;
 }
@@ -67,7 +70,7 @@ const COMBO_FROM = 3;
  * Moteur de quête à choix, sans chrono.
  * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
-export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', after }: Props) {
+export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', next: nextStep, after }: Props) {
   const { answer, completeSession } = useProgress();
   const [questions, setQuestions] = useState(makeQuestions);
   const [index, setIndex] = useState(0);
@@ -96,6 +99,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useHoldCelebrations(phase !== 'summary');
   // Touches 1 à 9 pour répondre, Entrée pour la suite.
   useAnswerKeys(sectionRef);
+  // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou à l'accueil).
+  const navigate = useNavigate();
+  useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate('/')), 'L’XP des réponses déjà données est gardée.');
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -193,7 +199,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     return (
       <section className="quiz" aria-labelledby="bilan-titre" ref={sectionRef}>
         {feedback && <Feedback {...feedback} speakKey={feedback.key} />}
-        <div className="panel summary">
+        {/* Les récompenses arrivent l'une après l'autre (étoiles, puis score, puis XP), comme à la fin d'un niveau. */}
+        <div className="panel summary summary-reveal">
           <h2 id="bilan-titre">Résultat</h2>
           {/* En étoiles et en mots, comme dans Blocland : « 88 % » ne parle pas à un élève de 6e. */}
           <Stars count={starsFor(points / questions.length)} size="2.4rem" />
@@ -208,18 +215,34 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <p className="summary-xp">
             <Icon name="zap" /> +{xpGained} XP
           </p>
+          {/* En premier, la suite logique : la quête suivante, sinon le choix des quêtes, sinon l'accueil. */}
           <div className="actions">
-            <button type="button" className="button primary" onClick={restart}>
+            {nextStep ? (
+              <button type="button" className="button primary" onClick={nextStep.go} autoFocus>
+                <Icon name="play" /> {nextStep.label}
+              </button>
+            ) : onExit ? (
+              <button type="button" className="button primary" onClick={onExit} autoFocus>
+                <Icon name="play" /> {exitLabel}
+              </button>
+            ) : (
+              <Link to="/" className="button primary" autoFocus>
+                <Icon name="play" /> Continuer
+              </Link>
+            )}
+            <button type="button" className="button" onClick={restart}>
               <Icon name="replay" /> Rejouer
             </button>
-            {onExit && (
+            {nextStep && onExit && (
               <button type="button" className="button" onClick={onExit}>
                 <Icon name="back" /> {exitLabel}
               </button>
             )}
-            <Link to="/" className="button">
-              <Icon name="home" /> Menu
-            </Link>
+            {(nextStep || onExit) && (
+              <Link to="/" className="button">
+                <Icon name="home" /> Accueil
+              </Link>
+            )}
           </div>
         </div>
       </section>
