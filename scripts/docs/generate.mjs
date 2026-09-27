@@ -201,7 +201,7 @@ function archipelPage(d) {
     '',
     '## Les quatre archipels',
     '',
-    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire, l’île de l’école accueille l’école du village (les quêtes du portail, qui y rapportent ses blocs).',
+    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire, l’île de l’école accueille l’école du village (les quêtes du portail, qui y rapportent ses blocs) et la salle des trophées (un trophée par succès).',
     '',
     table(
       ['Archipel', 'Classe', 'Île-port', 'École du village', 'Îles', 'Pour y aller'],

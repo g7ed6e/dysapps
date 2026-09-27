@@ -1,5 +1,6 @@
 import { BIOMES } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, isLand, islandDef, landBox, landCells, mapOf } from './map';
+import { BADGES } from '../../core/progress';
 import { PLAN_ZONE } from './plans';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
@@ -32,10 +33,11 @@ import {
   questStations,
   routeAt,
   routeLengths,
-  SCHOOL_AT,
-  SCHOOL_SIZE,
-  schoolDoor,
-  schoolSpot,
+  placeDoor,
+  placeSpot,
+  TROPHY_SLOTS,
+  trophyModel,
+  VILLAGE_PLACES,
   seaDecor,
   vehiclePlacement,
   VIEW_YAW_MAX,
@@ -592,35 +594,55 @@ it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étap
   expect(vehiclePlacement('3e', {}, village(['voyage-5e', 'voyage-4e', 'voyage-3e'])).afloat).toBe(false);
 });
 
-it('l’école du village : une par archipel, sur son île de l’école, devant à droite, libre et sa porte accessible', () => {
+it('l’école et la salle des trophées : sur l’île de l’école de chaque archipel, libres, leur porte accessible, les ouvrages aussi', () => {
   for (const a of ARCHIPELAGOS) {
     const island = a.school;
     expect(a.starts).toContain(island);
-    const cubes = worldCubes(a.classe, {}, village(everything));
-    const school = cubes.filter((c) => c.place === 'ecole');
-    // Rien que sur l'île de l'école : les murs, la porte, le toit et la cloche.
-    expect(school.length).toBeGreaterThan(SCHOOL_SIZE.w * SCHOOL_SIZE.d * 3);
-    expect(new Set(school.map((c) => c.tag))).toEqual(new Set([island]));
-    expect(school.some((c) => c.texture === 'porte')).toBe(true);
-    const spot = schoolSpot(island)!;
+    const cubes = worldCubes(a.classe, {}, village(everything), true, ['or', 'cristal', 'quartz']);
     const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    expect(spot).toMatchObject({ x: ox + SCHOOL_AT.x, y: oy + SCHOOL_AT.y });
-    for (const c of school) {
-      const lx = c.x - ox;
-      const ly = c.y - oy;
-      // Dans le cœur, hors de la zone des plans, loin des bornes (et de leur marge) et de la place du bonhomme.
-      expect(lx >= 0 && lx < CORE && ly >= 0 && ly < CORE).toBe(true);
-      expect(lx >= PLAN_ZONE.x && lx < PLAN_ZONE.x + PLAN_ZONE.w && ly >= PLAN_ZONE.y && ly < PLAN_ZONE.y + PLAN_ZONE.h).toBe(false);
-      for (const st of questStations(island)) expect(Math.abs(lx - st.x) <= 1 && Math.abs(ly - st.y) <= 1).toBe(false);
-      expect(ly).toBeGreaterThan(0);
-    }
-    // La rangée de devant reste libre : on y marche vers le port. Le bonhomme va de sa place à la porte de l'école.
     const ground = walkGround(cubes, creaturePlacements(a.classe, everything));
-    const door = schoolDoor(island)!;
-    expect(ground.feet.get(`${door.x},${door.y}`)).toBe(door.z);
-    expect(walkPath(ground, avatarHome(island), door)).not.toBeNull();
+    for (const place of ['ecole', 'trophees'] as const) {
+      const cells = cubes.filter((c) => c.place === place);
+      // Rien que sur l'île de l'école.
+      expect(new Set(cells.map((c) => c.tag))).toEqual(new Set([island]));
+      const spot = placeSpot(place, island)!;
+      expect(spot).toMatchObject({ x: ox + VILLAGE_PLACES[place].at.x, y: oy + VILLAGE_PLACES[place].at.y });
+      for (const c of cells) {
+        const lx = c.x - ox;
+        const ly = c.y - oy;
+        // Dans le cœur, hors de la zone des plans, loin des bornes (et de leur marge) ; la rangée de devant reste libre.
+        expect(lx >= 0 && lx < CORE && ly >= 0 && ly < CORE).toBe(true);
+        expect(lx >= PLAN_ZONE.x && lx < PLAN_ZONE.x + PLAN_ZONE.w && ly >= PLAN_ZONE.y && ly < PLAN_ZONE.y + PLAN_ZONE.h).toBe(false);
+        for (const st of questStations(island)) expect(Math.abs(lx - st.x) <= 1 && Math.abs(ly - st.y) <= 1).toBe(false);
+        expect(ly).toBeGreaterThan(0);
+      }
+      // Le bonhomme va de sa place à la porte.
+      const door = placeDoor(place, island)!;
+      expect(ground.feet.get(`${door.x},${door.y}`)).toBe(door.z);
+      expect(walkPath(ground, avatarHome(island), door)).not.toBeNull();
+    }
+    // L'école : murs, porte, toit et cloche. La salle : un trophée par succès, à sa place.
+    expect(cubes.filter((c) => c.place === 'ecole').some((c) => c.texture === 'porte')).toBe(true);
+    const hall = placeSpot('trophees', island)!;
+    const trophy = (i: number) => cubes.find((c) => c.place === 'trophees' && c.x === hall.x + TROPHY_SLOTS[i].x && c.y === hall.y + TROPHY_SLOTS[i].y && c.z === islandDef(island).altitude + hall.h + TROPHY_SLOTS[i].z);
+    expect([0, 1, 2].map((i) => trophy(i)?.texture)).toEqual(['or', 'cristal', 'quartz']);
+    expect(trophy(3)).toBeUndefined();
+    // Les ouvrages qui partent de l'île restent accessibles à pied depuis la place du bonhomme.
+    for (const b of BRIDGES.filter((x) => x.kind !== 'sentier' && (x.from === island || x.to === island))) {
+      const path = bridgePath(b);
+      const end = b.from === island ? path[0] : path[path.length - 1];
+      expect(walkPath(ground, avatarHome(island), { x: end.x, y: end.y, z: end.z + 1 }), b.id).not.toBeNull();
+    }
   }
-  // Ailleurs, pas d'école.
-  expect(schoolSpot('mine')).toBeNull();
+  // Ailleurs, rien.
+  expect(placeSpot('ecole', 'mine')).toBeNull();
   expect(allCubes({}, village(everything)).filter((c) => c.place).every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
+});
+
+it('la salle des trophées a une place par succès', () => {
+  expect(TROPHY_SLOTS.length).toBeGreaterThanOrEqual(BADGES.length);
+  expect(new Set(TROPHY_SLOTS.map((t) => `${t.x},${t.y},${t.z}`)).size).toBe(TROPHY_SLOTS.length);
+  // Un trophée ne remplace jamais un cube de la salle.
+  const hall = new Set(trophyModel().map((c) => `${c.x},${c.y},${c.z}`));
+  for (const t of TROPHY_SLOTS) expect(hall.has(`${t.x},${t.y},${t.z}`)).toBe(false);
 });

@@ -13,7 +13,7 @@ Depuis l’accueil, **Blocland** ouvre le village en 3D sur tout l’écran, sou
 - **Le monde vit** : jour et nuit selon l’heure réelle de l’appareil (aube à 7 h, crépuscule à 20 h, nuit toujours claire), nuages, eau qui ondule, cascades, lanternes la nuit, oiseaux, rochers et bancs de sable au large, quatre baleines qui soufflent. Le réglage « Réduire les animations » fige tout.
 - **La Carte** (barre du bas) montre tout l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée affiche le chemin d’ouvrages à construire, balisé en jaune dans le monde. Son bouton **« Les quatre archipels »** ouvre la page des archipels : où l’on est, les îles ouvertes et les Gardiens vaincus de chacun, ce qu’il faut pour aller plus loin, le navire tel qu’il est, et des boutons « Aller au port » ou « Voir le chantier ».
 - **Les blocs** (bouton « Blocs » de la barre du bas) : l’inventaire, et pour chaque bloc ce qu’il peut construire, voir [Mes blocs](#mes-blocs).
-- **L’école du village** se tient sur l’île de l’école de chaque archipel (la Forêt des sons en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e) : une maison de brique au toit rouge, avec une porte, deux fenêtres et une cloche d’or, voir [L’école du village](#lecole-du-village).
+- **L’école du village** se tient sur l’île de l’école de chaque archipel (la Forêt des sons en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e, le Phare des fonctions en 3e) : une maison de brique au toit rouge, avec une porte, deux fenêtres et une cloche d’or, voir [L’école du village](#lecole-du-village). À côté, au milieu de l’île, la **salle des trophées** : un pavillon de marbre ouvert devant, avec un trophée par succès gagné, voir [La salle des trophées](#la-salle-des-trophees).
 - **Sur téléphone**, les boutons de la barre du bas n’ont que leur icône (leur nom est lu par les lecteurs d’écran) : tous tiennent sur la largeur ; s’il en manque, la barre défile.
 - **Le bonhomme** est l’avatar de l’élève. Il se tient sur l’île où l’on est et marche d’île en île le long des ouvrages construits. Sur une île qu’il traverse, il va d’un ouvrage au suivant sans repasser par le milieu ; partout, il suit le sol, contourne les arbres, les rochers, les bornes, les maisons et les créatures, et ne monte ou ne descend qu’un bloc à la fois.
 - **En 2D (expérimental)** (réglage « Vue de Blocland » : « Le monde en 2D »), le même monde est dessiné en pixels, vu de dessus en oblique : on voit le dessus des cases et, sous chaque dénivelé, la face avant, comme une falaise. La caméra reste de près, comme dans un jeu d’aventure : autour du bonhomme, sans sortir de son île (ou sur l’île ouverte), et la Carte montre tout l’archipel. Herbe, sable et falaises ont leurs propres dessins, et le décor (arbres, buissons, fleurs, champignons…) est dessiné en sprites, avec leurs ombres. Le bonhomme marche d’une île à l’autre (on le voit de face, de dos ou de profil, qui fait ses pas), les créatures et les Gardiens se promènent à leur place, et chaque borne de quête est un panneau en bois à l’étoile d’or, avec au-dessus un losange jaune (quête à faire) ou les étoiles gagnées. Les cases d’un plan encore à poser sont bleutées et entourées de pointillés blancs. La flèche jaune « Commence ici », les balises d’un chemin à construire et le fanion « tu es ici » de la Carte sont là aussi, et le monde s’assombrit la nuit (les repères jaunes restent vifs). Les gestes sont les mêmes : toucher une île, une créature, un panneau ou un ouvrage, les flèches du clavier ; un toucher pendant un trajet fait arriver le bonhomme. Le Bloc-Navire tangue à quai, au bout de la jetée ; quand le panneau du port est ouvert pendant son chantier, la caméra le montre, la flèche jaune au-dessus, et toucher une case pointillée y pose le bloc (toucher le navire ailleurs ouvre le panneau du port). Au départ d’un voyage, le bonhomme marche jusqu’au pont, puis le navire s’éloigne avec lui à bord (l’écume derrière la voile, la flamme sous le réacteur), et la caméra le suit ; à l’arrivée, il accoste et le bonhomme débarque. C’est encore une vue expérimentale.
@@ -28,7 +28,7 @@ Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu d
 
 - **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
 - **Continuer** : la dernière quête ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
-- **École du village**, **Quêtes**, **Succès**, **Réglages** ;
+- **École du village**, **Quêtes**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
 - **Revoir l’aide du village** (les six bulles), **Tutoriel** ;
 - **Le menu en page** : le même menu hors du village (`#/menu`).
 
@@ -149,6 +149,14 @@ Une quête du portail finie, d’où qu’on l’ait lancée, rapporte des **blo
 
 L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une page) ; `#/aventure/ecole?porte=maths` l’ouvre directement sur une porte.
 
+## La salle des trophées
+
+À côté de l’école, sur la même île, se tient la **salle des trophées** : un pavillon ouvert devant, quatre colonnes de marbre, un fond de velours rouge, des socles de marbre et un toit au faîte d’or. **Chaque succès gagné y pose un trophée** : un bloc d’or pour les exploits (combos, quêtes, bâtiments), de cristal pour les rangs, de quartz pour les Gardiens, une lentille pour les voyages du Bloc-Navire. Les trophées remplissent d’abord les socles, puis le faîte, puis un second rang sur les socles, puis le bord du toit : la salle se remplit à mesure qu’on joue, et il y a une place pour chacun des succès.
+
+On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rang, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (onglet, barre du haut, lien en bas du panneau).
+
+L’adresse de la salle est `#/aventure/trophees` ; en vue simple, elle mène à la page Succès.
+
 ## Les sons
 
 Les sons sont générés par le code, sans aucun fichier : un « toc » à la pose, un « pop » au retrait, un refus doux, jamais pendant la lecture à voix haute. Le réglage « Sons dans le village » les coupe. L’**ambiance** (vent, oiseaux le jour, grillons la nuit) est désactivée par défaut et s’active dans les réglages.
@@ -171,6 +179,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |
 | Bouton Menu (⏸, en haut à droite) | Le menu du village ; « Reprendre » le referme |
+| Toucher la salle des trophées (ou un trophée) | Le bonhomme y marche, le panneau de la salle (le profil et les succès) s’ouvre |
 | Bouton Carte | L’archipel vu du ciel, et le bouton « Les quatre archipels » |
 | Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |
