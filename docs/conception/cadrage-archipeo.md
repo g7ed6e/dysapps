@@ -80,7 +80,7 @@ Les douze principes de `design/archipeo/design-principles.md` (DP-01 à DP-12) e
 | Gardiens | Restaurer, jamais combattre (DP-01, DP-02) | Un Gardien « vaincu » devient une statue |
 | Célébrations | Lumière, son court, transformation du décor (DA-05) | Éclats d’or et caméra qui vole jusqu’à l’île |
 
-La planche fixe l’ambiance, la palette et la hiérarchie de l’interface. Elle ne fixe ni le rendu exact ni la mise en page d’un exercice : son écran d’exercice écrit dans le décor 3D, ce que la règle « rien à lire dans le monde » interdit.
+La planche est **la cible visuelle du rendu** : le jeu doit lui ressembler (silhouettes, palette, lumière, eau, profondeur, densité, hiérarchie de l’interface), et chaque lot visuel se relit à côté de la vignette qui lui correspond. Elle ne fixe pas le rendu au pixel près, puisque le monde est dessiné par le code, ni ce que le cadrage a décidé autrement : son écran d’exercice écrit dans le décor 3D, ce que la règle « rien à lire dans le monde » interdit, et ses quatre insignes cèdent aux cinq rôles retenus au §5. La lecture de la planche vignette par vignette est dans les consignes du directeur artistique (`.claude/agents/directeur-artistique.md`).
 
 ## 5. Les décisions
 

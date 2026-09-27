@@ -1,0 +1,1 @@
+Conception : la planche d’Archipéo devient la cible visuelle du rendu. Le directeur artistique la décrit vignette par vignette (affiche, carte, archipels, village, exercice, baleine, palette) et compare chaque lot visuel à la vignette qui lui correspond, pour que le jeu finisse par lui ressembler.
