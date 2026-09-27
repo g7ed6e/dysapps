@@ -4,6 +4,7 @@ import { Syllabified } from '../components/Syllabified';
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, planStatus } from './engine';
+import { ArchipelagoMap } from './ArchipelagoMap';
 import { VillageStageLine } from './VillageStageLine';
 import { VoxelScene } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, archipelagoTitle, isArchipelagoReached, islandsOf, launchedCount, reachableIslands, remainingVoyages } from './world/archipelago';
@@ -38,6 +39,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
           <Icon name="close" />
         </button>
       </div>
+      <ArchipelagoMap bridges={bridges} here={here} />
       <ol className="archipels-list">
         {ARCHIPELAGOS.map((a) => {
           const reached = isArchipelagoReached(a.classe, bridges);
@@ -58,7 +60,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
               need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} a tous ses blocs sur ${shipyard} : encore ${launch.missing} Gardien${launch.missing > 1 ? 's' : ''} à vaincre.`;
             else need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} se construit sur ${shipyard} : ${status.done} blocs posés sur ${status.total}.`;
           }
-          const state3 = a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Fermé';
+          const state3 = a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Dans la brume';
           return (
             <li key={a.classe} className={`panel archipel-card${reached ? '' : ' locked'}${a.classe === here ? ' archipel-here' : ''}`}>
               <div className="archipel-card-head">

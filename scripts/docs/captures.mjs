@@ -121,6 +121,7 @@ const SHOTS = [
   { name: 'quete-fin', go: '/app/demo', act: playWell, wait: 1500 },
   { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
   { name: 'carte', state: MID, go: '/aventure/carte' },
+  { name: 'archipels', state: MID, go: '/aventure/monde' },
   { name: 'ouvrages', state: MID, go: '/aventure/ferme', act: openFold('ouvrages') },
   { name: 'navire-chantier', state: MID, go: '/aventure/plaine', act: openFold('navire') },
   { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
