@@ -5,7 +5,7 @@ import { PAINTERS, SIZE, faceCanvas, type TextureKind } from '../world/pixels';
 import { CHUNK, TILE, type Face, type FaceKind, type Tile, type TileMap } from './oblique';
 import type { STYLE } from './style';
 import { PRIORITY, columnAt, materialOf, type Surface } from './surface';
-import { designedTile, fringeColors, hash } from './tiles';
+import { designedTile, fringeColors, hash, isGrainy, pavedTile } from './tiles';
 
 const images = new Map<string, HTMLCanvasElement | null>();
 
@@ -69,9 +69,11 @@ function tileImage(face: Face, env: DrawEnv): HTMLCanvasElement | null {
   if (env.style.designed && m !== 'autre') {
     const variant = Math.floor(hash(cube.x, cube.y, cube.z) * 4);
     const top = columnAt(env.surface, cube.x, cube.y);
-    const lip = kind === 'front' && (m === 'herbe' || m === 'neige') && top?.z === cube.z;
+    const lip = kind === 'front' && (m === 'herbe' || m === 'neige' || m === 'mousse') && top?.z === cube.z;
     return designedTile(m, kind, variant, Boolean(cube.muted), lip);
   }
+  // Le sol en grain du cœur d'une île (obsidienne, marbre, ardoise…) : un dallage à ses couleurs.
+  if (env.style.designed && kind === 'top' && isGrainy(cube.texture)) return pavedTile(cube.texture, Math.floor(hash(cube.x, cube.y, 3) * 4), Boolean(cube.muted));
   return faceImage(cube, kind);
 }
 
@@ -90,6 +92,51 @@ function fringe(ctx: CanvasRenderingContext2D, x: number, y: number, dir: Dir, c
   }
 }
 
+/** Le contour des plateaux et des falaises. */
+const OUTLINE = 'rgba(28, 36, 24, 0.6)';
+const INNER_LIGHT = 'rgba(255, 255, 255, 0.22)';
+
+/**
+ * Le rebord d'un plateau, là où le sol descend au nord, à l'est ou à l'ouest (au sud, c'est la falaise) : un trait
+ * sombre dehors, un reflet clair dedans, les coins saillants arrondis ; un coin rentrant (le sol ne descend qu'en
+ * diagonale) marqué d'un point sombre.
+ */
+function plateauBorder(ctx: CanvasRenderingContext2D, cube: VoxelCube, x: number, y: number, env: DrawEnv) {
+  const lower = (dx: number, dy: number) => {
+    const c = columnAt(env.surface, cube.x + dx, cube.y + dy);
+    return !c || c.z < cube.z;
+  };
+  const n = lower(0, 1);
+  const e = lower(1, 0);
+  const w = lower(-1, 0);
+  const s = lower(0, -1);
+  const px = (px: number, py: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(x + px, y + py, 1, 1);
+  };
+  ctx.fillStyle = OUTLINE;
+  if (n) ctx.fillRect(x, y, TILE, 1);
+  if (e) ctx.fillRect(x + TILE - 1, y, 1, TILE);
+  if (w) ctx.fillRect(x, y, 1, TILE);
+  ctx.fillStyle = INNER_LIGHT;
+  if (n) ctx.fillRect(x + (w ? 1 : 0), y + 1, TILE - (w ? 1 : 0) - (e ? 1 : 0), 1);
+  if (w) ctx.fillRect(x + 1, y + (n ? 2 : 0), 1, TILE - (n ? 2 : 0));
+  // Coins saillants : on arrondit (le pixel du coin s'efface dans le contour, le suivant marque la courbe).
+  const corner = (cx: number, cy: number, ix: number, iy: number) => {
+    px(cx, cy, OUTLINE);
+    px(ix, cy, OUTLINE);
+    px(cx, iy, OUTLINE);
+    px(ix, iy, OUTLINE);
+  };
+  if (n && e) corner(TILE - 1, 0, TILE - 2, 1);
+  if (n && w) corner(0, 0, 1, 1);
+  if (s && e) corner(TILE - 1, TILE - 1, TILE - 2, TILE - 2);
+  if (s && w) corner(0, TILE - 1, 1, TILE - 2);
+  // Coins rentrants.
+  if (!n && !e && lower(1, 1)) px(TILE - 1, 0, OUTLINE);
+  if (!n && !w && lower(-1, 1)) px(0, 0, OUTLINE);
+}
+
 /** Bords (B) et ombres (E) d'une face pleine, par-dessus son image. */
 function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number, env: DrawEnv) {
   const { cube, kind } = face;
@@ -102,14 +149,8 @@ function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: n
         // L'herbe voisine mord sur le sable, le sable sur l'eau… (seulement à la même hauteur).
         if (nb && nb.z === cube.z && nb.material !== m && m !== 'autre' && nb.material !== 'autre' && PRIORITY[nb.material] > PRIORITY[m])
           fringe(ctx, x, y, d, fringeColors(nb.material, Boolean(cube.muted)), cube.x * 31 + cube.y * 17 + d.charCodeAt(0));
-        // Le rebord d'un plateau : un trait sombre là où le sol descend (au nord, à l'est, à l'ouest ; au sud, la falaise).
-        if (d !== 's' && (!nb || nb.z < cube.z)) {
-          ctx.fillStyle = 'rgba(28, 36, 24, 0.55)';
-          if (d === 'n') ctx.fillRect(x, y, TILE, 1);
-          else if (d === 'e') ctx.fillRect(x + TILE - 1, y, 1, TILE);
-          else ctx.fillRect(x, y, 1, TILE);
-        }
         if (d === 's' && (!nb || nb.z < cube.z)) {
+          // Le haut d'une falaise : un reflet clair.
           ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
           ctx.fillRect(x, y + TILE - 1, TILE, 1);
         }
@@ -126,6 +167,7 @@ function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: n
         }
       }
     }
+    if (env.style.edges) plateauBorder(ctx, cube, x, y, env);
     return;
   }
   // Face avant.
@@ -137,6 +179,14 @@ function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: n
       ctx.fillStyle = '#f4fbff';
       ctx.fillRect(x + i, y + TILE - h, 1, h);
     }
+  }
+  if (env.style.edges) {
+    // Les arêtes d'une falaise : un trait sombre là où elle tourne (la colonne voisine est plus basse).
+    ctx.fillStyle = OUTLINE;
+    const east = at('e');
+    const west = at('w');
+    if (!east || east.z < cube.z) ctx.fillRect(x + TILE - 1, y, 1, TILE);
+    if (!west || west.z < cube.z) ctx.fillRect(x, y, 1, TILE);
   }
   if (env.style.shadows && south && south.z < cube.z && south.z === cube.z - 1) {
     // Le pied de la falaise, où elle rejoint le sol plus bas.

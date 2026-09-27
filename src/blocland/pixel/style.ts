@@ -1,4 +1,4 @@
-// Ce que la 2D dessine en plus des faces de cubes (prototype : chaque étape s'allume à part, pour les comparer).
+// Ce que la 2D dessine en plus des faces de cubes ; chaque étape s'allume à part, pour les comparer (cadrage du monde, 21).
 export const STYLE = {
   /** B. Bords entre deux sols (l'herbe qui mord sur le sable), rebords et contours des falaises, écume des rives. */
   edges: true,

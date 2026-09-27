@@ -34,3 +34,15 @@ it('le sol vu de dessus : le bloc le plus haut de chaque colonne, sans décor ni
   expect(materialOf({ x: 0, y: 0, z: 0, color: '#000', texture: 'planches' })).toBe('autre');
   expect(PRIORITY.herbe).toBeGreaterThan(PRIORITY.sable);
 });
+
+it('chaque sol du paysage a sa matière dessinée ; les sols en grain deviennent un dallage, les motifs restent', async () => {
+  const { isGrainy } = await import('./tiles');
+  for (const t of ['herbe', 'sable', 'terre', 'pierre', 'eau', 'nuage', 'mousse', 'basalte', 'lave', 'glace'])
+    expect(materialOf({ x: 0, y: 0, z: 0, color: '#000', texture: t }), t).not.toBe('autre');
+  expect(isGrainy('obsidienne')).toBe(true);
+  expect(isGrainy('planches')).toBe(false);
+  expect(isGrainy(undefined)).toBe(false);
+  // La lave, liquide, ne déborde sur rien ; l'herbe déborde sur la mousse.
+  expect(PRIORITY.lave).toBeLessThan(PRIORITY.sable);
+  expect(PRIORITY.herbe).toBeGreaterThan(PRIORITY.mousse);
+});

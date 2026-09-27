@@ -3,7 +3,7 @@
 import type { VoxelCube } from '../Voxel';
 
 /** Les matières dessinées exprès pour la 2D ; `autre` garde la texture du bloc (planches, briques…). */
-export type Material = 'herbe' | 'sable' | 'terre' | 'pierre' | 'eau' | 'neige' | 'autre';
+export type Material = 'herbe' | 'mousse' | 'sable' | 'terre' | 'pierre' | 'basalte' | 'eau' | 'lave' | 'glace' | 'neige' | 'autre';
 
 const BY_TEXTURE: Record<string, Material> = {
   herbe: 'herbe',
@@ -13,6 +13,10 @@ const BY_TEXTURE: Record<string, Material> = {
   galet: 'pierre',
   eau: 'eau',
   nuage: 'neige',
+  mousse: 'mousse',
+  basalte: 'basalte',
+  lave: 'lave',
+  glace: 'glace',
 };
 
 export function materialOf(cube: VoxelCube): Material {
@@ -21,9 +25,10 @@ export function materialOf(cube: VoxelCube): Material {
 
 /**
  * Qui déborde sur qui, entre deux sols voisins à la même hauteur : l'herbe mord sur la terre, la terre sur le sable,
- * le sable sur l'eau (le sol le plus haut placé dessine sa frange chez l'autre). `autre` ne déborde ni ne reçoit.
+ * le sable sur l'eau (le sol le plus haut placé dessine sa frange chez l'autre ; la lave, liquide, ne déborde sur
+ * rien). `autre` ne déborde ni ne reçoit.
  */
-export const PRIORITY: Record<Material, number> = { herbe: 5, neige: 4, terre: 3, pierre: 2, sable: 1, eau: 0, autre: -1 };
+export const PRIORITY: Record<Material, number> = { herbe: 6, mousse: 5, neige: 5, terre: 4, basalte: 4, pierre: 3, glace: 2, sable: 1, eau: 0, lave: 0, autre: -1 };
 
 export interface Column {
   z: number;
