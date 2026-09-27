@@ -5,7 +5,7 @@ import type { ScreenProps } from './registry';
  * Mot troué : le mot a un trou, on tape le bloc de lettres qui le comble (3 blocs, dont 1 piège plausible).
  * Champs de l'item : word, before, after, answer, choices.
  */
-export function MotTroueScreen({ items, answered, onAnswer }: ScreenProps) {
+export function MotTroueScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
   const item = items[0];
   const word = String(item.word);
   const before = String(item.before ?? '');
@@ -28,13 +28,14 @@ export function MotTroueScreen({ items, answered, onAnswer }: ScreenProps) {
       <div className="choices short letter-blocks" role="group" aria-label="Blocs de lettres">
         {choices.map((c) => {
           const isAnswer = answered && c === answer;
-          const isWrong = answered && chosen === c && c !== answer;
+          // Au deuxième essai, la réponse déjà tentée reste barrée.
+          const isWrong = Boolean(answered && chosen === c && c !== answer) || Boolean(ruledOut?.includes(c));
           return (
             <button
               key={c}
               type="button"
               className={`choice letter-block${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
-              disabled={Boolean(answered)}
+              disabled={Boolean(answered) || Boolean(ruledOut?.includes(c))}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: c === answer }], detail: { chosen: c } })}
             >
               {c}

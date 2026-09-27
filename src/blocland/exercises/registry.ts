@@ -37,6 +37,8 @@ export interface ScreenProps {
   exerciseId: string;
   /** Langue du contenu de l'exercice (voir `ExerciseDef.lang`) ; français par défaut. */
   lang?: Lang;
+  /** Deuxième essai : les réponses déjà tentées, barrées (écrans à choix). */
+  ruledOut?: string[];
 }
 
 export interface ScreenType {
@@ -47,6 +49,21 @@ export interface ScreenType {
   ordered?: boolean;
   /** L'écran lit lui-même son item en s'ouvrant (dictée) : la consigne n'est alors pas lue automatiquement. */
   speaksOnOpen?: boolean;
+  /** Un tri (mots, sujets) : après une erreur, on peut refaire l'écran une fois (voir `retryAllowed`). */
+  sorting?: boolean;
+}
+
+/**
+ * Deuxième essai, comme dans les quêtes du portail : après une erreur, on peut réessayer une fois (le point compte
+ * moitié). Pour un écran à choix, seulement s'il reste au moins deux réponses (avec deux choix, le second essai
+ * donnerait la réponse) ; pour un tri, toujours (l'écran ne dit pas quelles cartes sont fausses). Pas au Gardien : c'est l'épreuve.
+ */
+export function retryAllowed(type: string, items: ExerciseItem[]): boolean {
+  const screen = SCREEN_TYPES[type];
+  if (!screen || type === 'boss') return false;
+  if (screen.sorting) return true;
+  const choices = items.length === 1 ? items[0].choices : undefined;
+  return Array.isArray(choices) && choices.length >= 3;
 }
 
 /** Abattage : le mot est affiché sans syllabes en couleurs, qui donneraient la réponse. */
@@ -59,15 +76,15 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   qcm: { component: QcmItem, batch: 1 },
   abattage: { component: AbattageItem, batch: 1 },
   graines: { component: QcmItem, batch: 1 },
-  'chasse-son': { component: ChasseSonScreen, batch: 4 },
+  'chasse-son': { component: ChasseSonScreen, batch: 4, sorting: true },
   filon: { component: FilonScreen, batch: 1 },
   'mot-troue': { component: MotTroueScreen, batch: 1 },
   ascension: { component: AscensionScreen, batch: 'all', ordered: true },
-  rimes: { component: RimesScreen, batch: 4 },
+  rimes: { component: RimesScreen, batch: 4, sorting: true },
   oreille: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   coffre: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   familles: { component: FamillesScreen, batch: 1 },
-  enclos: { component: EnclosScreen, batch: 4 },
+  enclos: { component: EnclosScreen, batch: 4, sorting: true },
   recolte: { component: QcmItem, batch: 1 },
   boss: { component: BossScreen, batch: 1, ordered: true },
   // Maths : une opération par écran, aide visuelle toujours affichée.

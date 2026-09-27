@@ -1,10 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
-import { Syllabified } from '../components/Syllabified';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, getBiome, ofBlock } from './biomes';
 import { Bridges } from './Bridges';
-import { lockedHint, nextGoal } from './world/goals';
+import { lockedHint, nextGoalInfo } from './world/goals';
+import { GoalLine } from './GoalLine';
 import { archipelagoOf, archipelagoTitle, isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
@@ -35,7 +35,7 @@ export function BiomePage() {
   const owned = state.inventory[biome.block] ?? 0;
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const port = archipelagoOf(biome.id).port === biome.id;
-  const goal = unlocked ? nextGoal(state, biome.id) : null;
+  const goal = unlocked ? nextGoalInfo(state, biome.id) : null;
 
   return (
     <>
@@ -54,11 +54,7 @@ export function BiomePage() {
 
       <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
-      {goal && (
-        <p className="island-goal panel">
-          <Icon name="flag" /> <strong>Prochain objectif :</strong> <Syllabified text={goal} />
-        </p>
-      )}
+      {goal && <GoalLine goal={goal} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
       <Bridges island={biome.id} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />

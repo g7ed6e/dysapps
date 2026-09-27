@@ -18,7 +18,7 @@ export function Aid({ aid }: { aid: AidData }) {
  * un indice sur demande. Champs de l'item : prompt, spoken, choices, answer, hint, explanation, aid, figure.
  * En anglais (`lang: 'en'`), l'énoncé et les réponses sont lus en voix anglaise ; l'indice et l'aide restent en français.
  */
-export function CalculScreen({ items, answered, onAnswer, onHelp, lang = 'fr' }: ScreenProps) {
+export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
   const prompt = String(item.prompt ?? '');
   const spoken = String(item.spoken ?? prompt);
@@ -48,13 +48,14 @@ export function CalculScreen({ items, answered, onAnswer, onHelp, lang = 'fr' }:
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
         {choices.map((choice) => {
           const isAnswer = answered && choice === answer;
-          const isWrong = answered && chosen === choice && choice !== answer;
+          // Au deuxième essai, la réponse déjà tentée reste barrée.
+          const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
           return (
             <button
               key={choice}
               type="button"
               className={`choice${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
-              disabled={Boolean(answered)}
+              disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
               <span lang={langAttr(choicesLang)}>

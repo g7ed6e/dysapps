@@ -26,10 +26,19 @@ export function numericChoices(answer: number, traps: number[], rng: Rng): strin
 
 // ---------- Tables de multiplication ----------
 
-/** Astuce propre à chaque table, sans donner le résultat. */
-function tableTip(t: number, b: number): string {
-  if (b === 1) return '× 1 : le nombre ne change pas.';
+/** Les tables dont l'astuce est la plus simple, de la plus simple à la moins simple. */
+const EASY_TABLES = [1, 10, 2, 5, 4, 9];
+const ease = (n: number) => (EASY_TABLES.includes(n) ? EASY_TABLES.indexOf(n) : EASY_TABLES.length);
+
+/**
+ * Astuce pour t × b, sans donner le résultat. a × b = b × a : on donne l'astuce du facteur le plus simple
+ * (pour 4 × 10, celle du × 10, pas « le double du double »).
+ */
+export function tableTip(table: number, other: number): string {
+  const [t, b] = ease(other) < ease(table) ? [other, table] : [table, other];
   switch (t) {
+    case 1:
+      return '× 1 : le nombre ne change pas.';
     case 2:
       return `× 2, c’est le double : ${b} + ${b}.`;
     case 4:

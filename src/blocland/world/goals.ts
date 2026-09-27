@@ -1,5 +1,5 @@
-// Le prochain objectif d'une île, en une phrase : ce qu'il manque pour le plan en cours, ou pour l'ouvrage le
-// moins cher que l'on peut payer. Code pur, partagé par le panneau d'île.
+// Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour le plan en cours, pour l'ouvrage le
+// moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île.
 import { BLOCKS, getBiome, type BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { canLaunch, currentPlan, planStatus } from '../engine';
@@ -25,26 +25,49 @@ function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
   return `${/^[aeiouy]/.test(name) ? 'l’' : 'le '}${name}${to ? ` vers ${to}` : ' '}`;
 }
 
+/** Le prochain objectif d'une île : une phrase, et une jauge (`have` sur `need`) quand il se compte. */
+export interface Goal {
+  text: string;
+  have: number;
+  need: number;
+}
+
+/** Ce qu'il manque d'un plan, en blocs : « 16 bois », « 10 brique et 3 verre ». */
+function missingBlocks(state: BloclandState, missing: [keyof typeof BLOCKS, number][]) {
+  const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.inventory[b] ?? 0))] as const).filter(([, n]) => n > 0);
+  const need = missing.reduce((sum, [, n]) => sum + n, 0);
+  const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.inventory[b] ?? 0), 0);
+  const words = left
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([b, n]) => `${n} ${BLOCKS[b].name.toLowerCase()}`);
+  return { text: words.join(' et '), have, need, ready: left.length === 0 };
+}
+
 /**
- * La phrase du prochain objectif, ou `null` s'il n'y a rien à dire (île fermée, tout construit).
- * Exemples : « Encore 13 bois pour la cabane de Mousso, ou 3 blocs pour le pont vers Mine des lettres. »
+ * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (du bois pour la cabane, des blocs pour un
+ * pont) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite (poser les
+ * blocs d'un plan, construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de
+ * blocs à gagner), le plan en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
  */
-export function nextGoal(state: BloclandState, island: BiomeId): string | null {
-  // Sur un port, le Bloc-Navire prêt à partir passe avant tout le reste.
+export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
-  if (stage && launch?.ok) return `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`;
-  const parts: string[] = [];
+  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`, have: 1, need: 1 };
+  type Candidate = Goal & { ready: boolean };
+  const candidates: Candidate[] = [];
   const current = currentPlan(state, island);
   if (current && !current.allDone) {
     const status = planStatus(state, current.plan);
     const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
-    const have = missing.filter(([b, n]) => (state.inventory[b] ?? 0) >= n);
-    if (missing.length && have.length === missing.length) parts.push(`Tu as tout pour finir ${current.plan.name} : pose tes blocs`);
-    else if (missing.length) {
-      const [block, n] = missing.reduce((a, b) => (b[1] - (state.inventory[b[0]] ?? 0) > a[1] - (state.inventory[a[0]] ?? 0) ? b : a));
-      const left = n - (state.inventory[block] ?? 0);
-      parts.push(`Encore ${left} ${BLOCKS[block].name.toLowerCase()} pour ${current.plan.name}`);
+    if (missing.length) {
+      const m = missingBlocks(state, missing);
+      candidates.push({
+        text: m.ready ? `Tu as tout pour finir ${current.plan.name} : pose tes blocs` : `Encore ${m.text} pour ${current.plan.name}`,
+        have: m.have,
+        need: m.need,
+        ready: m.ready,
+      });
     }
   }
   const world = { progress: state.progress, plans: state.village.plans };
@@ -52,26 +75,46 @@ export function nextGoal(state: BloclandState, island: BiomeId): string | null {
   if (bridges.length) {
     const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
     const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
-    const left = cheapest.cost - payableBlocks(state.inventory);
+    const have = Math.min(cheapest.cost, payableBlocks(state.inventory));
+    const left = cheapest.cost - have;
     const what = ouvrageName(cheapest.kind, to);
-    parts.push(left > 0 ? `${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `tu peux construire ${what}`);
+    candidates.push({
+      text: left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux construire ${what}`,
+      have,
+      need: cheapest.cost,
+      ready: left === 0,
+    });
   }
-  // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait), après le plan et l'ouvrage.
-  if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin' && parts.length < 2) {
-    const status = planStatus(state, stage);
-    const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
+  // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
+  if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin') {
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
-      parts.push(`bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${getArchipelago(stage.from).name} pour ${stage.short}`);
-    } else if (missing.every(([b, n]) => (state.inventory[b] ?? 0) >= n)) parts.push(`tu as tout pour ${VEHICLE_NAME} : pose tes blocs`);
-    else {
-      const [block, n] = missing.reduce((a, b) => (b[1] - (state.inventory[b[0]] ?? 0) > a[1] - (state.inventory[a[0]] ?? 0) ? b : a));
-      parts.push(`encore ${n - (state.inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()} pour ${VEHICLE_NAME}`);
+      candidates.push({
+        text: `Bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${getArchipelago(stage.from).name} pour ${stage.short}`,
+        have: Math.max(0, stage.guardians - left),
+        need: stage.guardians,
+        ready: false,
+      });
+    } else {
+      const status = planStatus(state, stage);
+      const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
+      const m = missingBlocks(state, missing);
+      candidates.push({
+        text: m.ready ? `Tu as tout pour ${VEHICLE_NAME} : pose tes blocs` : `Encore ${m.text} pour ${VEHICLE_NAME}`,
+        have: m.have,
+        need: m.need,
+        ready: m.ready,
+      });
     }
   }
-  if (!parts.length) return null;
-  const text = parts.length === 2 ? `${parts[0]}, ou ${parts[1]}` : parts[0];
-  return `${cap(text)}.`;
+  if (!candidates.length) return null;
+  const pick = candidates.find((c) => c.ready) ?? candidates.reduce((a, b) => (b.need - b.have < a.need - a.have ? b : a));
+  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need };
+}
+
+/** La phrase du prochain objectif seule (voir `nextGoalInfo`). */
+export function nextGoal(state: BloclandState, island: BiomeId): string | null {
+  return nextGoalInfo(state, island)?.text ?? null;
 }
 
 /**

@@ -6,7 +6,7 @@ import type { ScreenProps } from './registry';
  * Familles-craft : on assemble un mot à partir d'une racine et d'un préfixe ou d'un suffixe.
  * Champs de l'item : meaning (ce que le mot veut dire), root, slot ('prefix' | 'suffix'), choices, answer, word (le mot assemblé).
  */
-export function FamillesScreen({ items, answered, onAnswer }: ScreenProps) {
+export function FamillesScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
   const item = items[0];
   const root = String(item.root);
   const slot = item.slot === 'suffix' ? 'suffix' : 'prefix';
@@ -37,13 +37,14 @@ export function FamillesScreen({ items, answered, onAnswer }: ScreenProps) {
       <div className="choices short letter-blocks" role="group" aria-label={slot === 'prefix' ? 'Préfixes' : 'Suffixes'}>
         {choices.map((c) => {
           const isAnswer = answered && c === answer;
-          const isWrong = answered && chosen === c && c !== answer;
+          // Au deuxième essai, la réponse déjà tentée reste barrée.
+          const isWrong = Boolean(answered && chosen === c && c !== answer) || Boolean(ruledOut?.includes(c));
           return (
             <button
               key={c}
               type="button"
               className={`choice letter-block${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
-              disabled={Boolean(answered)}
+              disabled={Boolean(answered) || Boolean(ruledOut?.includes(c))}
               onClick={() => onAnswer({ results: [{ key: item.key, correct: c === answer }], detail: { chosen: c, word } })}
             >
               {slot === 'prefix' ? `${c}-` : `-${c}`}

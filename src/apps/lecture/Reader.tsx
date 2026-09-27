@@ -15,7 +15,7 @@ interface Props {
 
 /**
  * Texte adapté : une ligne par vers ou par phrase, couleurs alternées,
- * lecture à voix haute qui surligne la ligne lue, mots difficiles expliqués.
+ * lecture à voix haute qui surligne la ligne lue, mots difficiles expliqués avant le texte.
  */
 export function Reader({ text, compact = false }: Props) {
   const segments = segmentsOf(text);
@@ -60,6 +60,23 @@ export function Reader({ text, compact = false }: Props) {
       </div>
       {speech && <p className="reader-tip">Touche une ligne pour l’écouter seule.</p>}
 
+      {/* Les mots difficiles avant le texte : on les connaît avant de les rencontrer. Repliables ; ouverts sur grand écran. */}
+      {!compact && text.glossary.length > 0 && (
+        <details className="glossary panel" open={wideScreen()}>
+          <summary id={`mots-${text.id}`}>
+            <Icon name="book" /> Mots difficiles ({text.glossary.length})
+          </summary>
+          <dl>
+            {text.glossary.map((g) => (
+              <div key={g.word}>
+                <dt>{g.word}</dt>
+                <dd>{g.definition}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      )}
+
       <div className="reader-text panel">
         {compact && (
           <h3 id={`titre-${text.id}-c`} className="visually-hidden">
@@ -102,21 +119,11 @@ export function Reader({ text, compact = false }: Props) {
         ))}
       </div>
 
-      {!compact && text.glossary.length > 0 && (
-        <section className="glossary panel" aria-labelledby={`mots-${text.id}`}>
-          <h3 id={`mots-${text.id}`}>
-            <Icon name="book" /> Mots difficiles
-          </h3>
-          <dl>
-            {text.glossary.map((g) => (
-              <div key={g.word}>
-                <dt>{g.word}</dt>
-                <dd>{g.definition}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      )}
     </article>
   );
+}
+
+/** Grand écran (tablette, ordinateur) : assez de place pour ouvrir d'emblée les mots difficiles. */
+function wideScreen(): boolean {
+  return typeof window !== 'undefined' && Boolean(window.matchMedia?.('(min-width: 641px)').matches);
 }

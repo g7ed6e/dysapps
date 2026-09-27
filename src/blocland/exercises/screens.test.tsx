@@ -101,6 +101,10 @@ it('chasse au son : on choisit les mots, on valide, la correction nomme le son e
   for (const it of first) if (it.correct || it.key === wrong.key) await user.click(screen.getByRole('button', { name: String(it.word) }));
   expect(screen.getByRole('button', { name: String(wrong.word) })).toHaveAttribute('aria-pressed', 'true');
   await user.click(screen.getByRole('button', { name: /Valider/ }));
+  // Premier essai : « Presque ! » et l'écran se refait ; on refait la même erreur.
+  expect(screen.getByText('Presque !')).toBeInTheDocument();
+  for (const it of first) if (it.correct || it.key === wrong.key) await user.click(screen.getByRole('button', { name: String(it.word) }));
+  await user.click(screen.getByRole('button', { name: /Valider/ }));
   expect(within(sheet()).getByText(new RegExp(`Dans ${wrong.word}, on entend \\${wrong.heard}`))).toBeInTheDocument();
   await user.click(within(sheet()).getByRole('button', { name: /Suivant/ }));
   // Écran 2 sans faute
@@ -108,6 +112,26 @@ it('chasse au son : on choisit les mots, on valide, la correction nomme le son e
   for (const it of second) if (it.correct) await user.click(screen.getByRole('button', { name: String(it.word) }));
   await user.click(screen.getByRole('button', { name: /Valider/ }));
   expect(within(sheet()).getByText(def.feedback.correct)).toBeInTheDocument();
+});
+
+it('chasse au son : la correction nomme tous les mots oubliés et chaque intrus, et les cartes le montrent', async () => {
+  const user = userEvent.setup();
+  const def = getExercise('foret-chasse-son-an')!;
+  renderAt('/aventure/foret/chasse-son');
+  await loaded();
+  const first = def.items.slice(0, 4);
+  const good = first.filter((i) => i.correct).map((i) => String(i.word));
+  const intruder = first.find((i) => !i.correct)!;
+  // Aucun bon mot, un intrus : tout est faux, deux fois.
+  for (let essai = 0; essai < 2; essai++) {
+    await user.click(screen.getByRole('button', { name: String(intruder.word) }));
+    await user.click(screen.getByRole('button', { name: /Valider/ }));
+  }
+  const text = within(sheet()).getByText(/Tu as oublié/).textContent!;
+  for (const w of good) expect(text).toContain(w);
+  expect(text).toMatch(new RegExp(`Dans ${intruder.word}, on entend \\${intruder.heard}, pas \\[an\\]`));
+  expect(screen.getAllByText('oublié')).toHaveLength(good.length);
+  expect(screen.getByText('pas [an]')).toBeInTheDocument();
 });
 
 it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', async () => {
@@ -129,7 +153,7 @@ it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', 
   const it = def.items[3];
   if (it.correct) await user.click(screen.getByRole('button', { name: /Laisser passer/ }));
   else await user.click(screen.getByRole('button', { name: `Bloc avec la lettre ${it.letter}. Piocher` }));
-  expect(within(sheet()).getByText(/PAS TOUT À FAIT/)).toBeInTheDocument();
+  expect(within(sheet()).getByText(/Pas tout à fait/)).toBeInTheDocument();
 });
 
 it('filon : sans « réduire les animations », le bloc qui sort de la galerie compte comme laissé passer', async () => {
@@ -145,7 +169,7 @@ it('filon : sans « réduire les animations », le bloc qui sort de la galerie c
     vi.advanceTimersByTime(9000);
   });
   const text = sheet().textContent!;
-  expect(text).toMatch(it.correct ? /PAS TOUT À FAIT/ : /Bien piochée/);
+  expect(text).toMatch(it.correct ? /Pas tout à fait/ : /Bien piochée/);
   vi.useRealTimers();
 });
 
@@ -156,8 +180,12 @@ it('mot troué : le bon bloc remplit le trou, la correction montre la bonne écr
   renderAt('/aventure/carriere/mot-troue');
   await loaded();
   const it = def.items[0];
-  const wrong = (it.choices as string[]).find((c) => c !== it.answer)!;
+  const [wrong, other] = (it.choices as string[]).filter((c) => c !== it.answer);
   await user.click(screen.getByRole('button', { name: wrong }));
+  // Premier essai raté : « Presque ! », la réponse tentée est barrée, on réessaie.
+  expect(screen.getByText('Presque !')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: wrong })).toBeDisabled();
+  await user.click(screen.getByRole('button', { name: other }));
   expect(within(sheet()).getByText(new RegExp(`${it.word} s’écrit avec « ${it.answer} »`))).toBeInTheDocument();
   expect(screen.getByLabelText(/Mot à compléter/)).toHaveTextContent(`${it.before}${it.answer}${it.after}`);
 });

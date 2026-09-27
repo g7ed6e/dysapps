@@ -101,8 +101,9 @@ export const compare: Generator = (rng) => {
   return {
     key: [fa, fb].sort().join('|'),
     id: `cmp-${fa}-${fb}`,
-    prompt: `Quelle fraction est la plus grande : ${fa} ou ${fb} ?`,
-    spokenPrompt: `Quelle fraction est la plus grande : ${fractionWords(...a)} ou ${fractionWords(...b)} ?`,
+    // Les deux fractions peuvent être égales : la question le dit, pour ne pas piéger.
+    prompt: `Compare ${fa} et ${fb} : laquelle est la plus grande, ou sont-elles égales ?`,
+    spokenPrompt: `Compare ${fractionWords(...a)} et ${fractionWords(...b)} : laquelle est la plus grande, ou sont-elles égales ?`,
     choices: [fa, fb, EQUAL],
     answer,
     hint,
