@@ -662,6 +662,7 @@ function baremePage(d) {
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
         ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
         ['Vue de Blocland', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
+        ['Marche libre (monde en 2D)', DEFAULT_SETTINGS.freeWalk ? 'oui' : 'non', ''],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],
       ],

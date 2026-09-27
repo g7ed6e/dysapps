@@ -328,6 +328,8 @@ export function WorldPage() {
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(islandAt(a, cell.x, cell.y)) } : undefined}
             burst={burst}
             onPickCreature={onCreature}
+            freeWalk={settings.freeWalk}
+            onWalkedInto={(id) => isBiomeUnlocked(id, state.village.bridges) && moveTo(id)}
             className="voxel-canvas-stage"
             label={`Blocland en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
