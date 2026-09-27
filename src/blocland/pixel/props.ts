@@ -14,6 +14,15 @@ export interface Prop {
   muted: boolean;
 }
 
+/** Une borne de quête, dessinée en panneau : sa quête (« île:quête ») et sa case (z : le haut du sol dessous). */
+export interface Station {
+  quest: string;
+  x: number;
+  y: number;
+  z: number;
+  muted: boolean;
+}
+
 /** Le genre d'un élément de décor d'après son nom (« foret/cœur:arbre@8,2 » : un arbre). */
 export function kindOf(decor: string): string {
   const name = decor.slice(decor.lastIndexOf('/') + 1).replace(/^cœur:/, '');
@@ -21,14 +30,19 @@ export function kindOf(decor: string): string {
 }
 
 /**
- * Sépare le décor du terrain : chaque élément dont on sait dessiner le sprite devient un objet ; ses cubes quittent le
- * terrain. Les autres cubes (et le décor sans sprite) restent des cubes.
+ * Sépare le décor du terrain : chaque élément dont on sait dessiner le sprite devient un objet, chaque borne de quête
+ * un panneau ; leurs cubes quittent le terrain. Les autres cubes (et le décor sans sprite) restent des cubes.
  */
-export function propsOf(cubes: VoxelCube[]): { props: Prop[]; terrain: VoxelCube[] } {
+export function propsOf(cubes: VoxelCube[]): { props: Prop[]; stations: Station[]; terrain: VoxelCube[] } {
   const groups = new Map<string, VoxelCube[]>();
+  const quests = new Map<string, VoxelCube[]>();
   const terrain: VoxelCube[] = [];
   for (const c of cubes) {
-    if (c.decor && (SPRITE_KINDS as readonly string[]).includes(kindOf(c.decor))) {
+    if (c.quest) {
+      const list = quests.get(c.quest);
+      if (list) list.push(c);
+      else quests.set(c.quest, [c]);
+    } else if (c.decor && (SPRITE_KINDS as readonly string[]).includes(kindOf(c.decor))) {
       const list = groups.get(c.decor);
       if (list) list.push(c);
       else groups.set(c.decor, [c]);
@@ -42,5 +56,9 @@ export function propsOf(cubes: VoxelCube[]): { props: Prop[]; terrain: VoxelCube
     const foot = (trunk.length ? trunk : list).reduce((a, b) => (b.z < a.z ? b : a));
     props.push({ id, kind, x: foot.x, y: foot.y, z: foot.z, muted: Boolean(foot.muted) });
   }
-  return { props, terrain };
+  const stations: Station[] = [...quests].map(([quest, list]) => {
+    const foot = list.reduce((a, b) => (b.z < a.z ? b : a));
+    return { quest, x: foot.x, y: foot.y, z: foot.z, muted: Boolean(foot.muted) };
+  });
+  return { props, stations, terrain };
 }

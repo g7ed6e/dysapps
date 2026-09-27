@@ -222,6 +222,14 @@ export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): H
       ctx.fillStyle = 'rgba(120, 190, 255, 0.35)';
       ctx.fillRect(x, y, TILE, TILE);
       ctx.globalAlpha = 1;
+      // Un pointillé blanc autour : la case « à poser » se lit d'un coup d'œil.
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      for (let i = 0; i < TILE; i += 2) {
+        ctx.fillRect(x + i, y, 1, 1);
+        ctx.fillRect(x + i + 1, y + TILE - 1, 1, 1);
+        ctx.fillRect(x, y + i + 1, 1, 1);
+        ctx.fillRect(x + TILE - 1, y + i, 1, 1);
+      }
     }
   }
   return canvas;

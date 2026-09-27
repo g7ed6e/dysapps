@@ -46,3 +46,20 @@ it('chaque sol du paysage a sa matière dessinée ; les sols en grain deviennent
   expect(PRIORITY.lave).toBeLessThan(PRIORITY.sable);
   expect(PRIORITY.herbe).toBeGreaterThan(PRIORITY.mousse);
 });
+
+it('chaque borne de quête devient un panneau, une seule fois, et ses cubes quittent le terrain', () => {
+  const cubes = worldCubes('6e', {});
+  const { stations, terrain } = propsOf(cubes);
+  const quests = new Set(cubes.filter((c) => c.quest).map((c) => c.quest));
+  expect(stations.map((s) => s.quest).sort()).toEqual([...quests].sort());
+  expect(terrain.some((c) => c.quest)).toBe(false);
+  for (const s of stations) expect(Math.min(...cubes.filter((c) => c.quest === s.quest).map((c) => c.z))).toBe(s.z);
+});
+
+it('le bonhomme regarde là où il va : vers le nord, il montre son dos', async () => {
+  const { facingOf } = await import('./characters');
+  expect(facingOf({ dx: 0, dy: 1 })).toBe('up');
+  expect(facingOf({ dx: 0, dy: -1 })).toBe('down');
+  expect(facingOf({ dx: 2, dy: 1 })).toBe('right');
+  expect(facingOf({ dx: -2, dy: -1 })).toBe('left');
+});
