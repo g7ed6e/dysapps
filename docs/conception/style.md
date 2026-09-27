@@ -13,6 +13,7 @@ Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo 
 - **Icône de l’application** (écran d’accueil, PWA) : un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues vert d’eau, avec une étoile de sable (`public/icon.svg`, et sa version à marge `icon-maskable.svg`).
 - **Écran de lancement et écran titre** : la même icône, sur le fond crème de l’application ; à l’écran titre, elle tombe et se pose (coupé par « Réduire les animations »), sous le nom « Archipéo » dans la police des titres et une ligne dans la police de lecture.
 - **Icônes** Lucide.
+- **Site de documentation** : la même charte, dans `docs/.vitepress/theme/custom.css` : barre du haut bleu nuit avec l’icône et le nom « Archipéo », liens bleu pétrole (vert d’eau en sombre), page courante du sommaire sur un liseré de sable, titres de page et de partie en Montserrat grasse, texte en Luciole ; le thème sombre reprend le thème Nuit.
 
 ## Thèmes
 

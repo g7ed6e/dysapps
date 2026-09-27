@@ -15,7 +15,7 @@ Quatre polices au choix :
 | **Atkinson Hyperlegible** | Formes de lettres très différenciées (b, d, p, q, I, l, 1). |
 | **Arial** | La police système, si l’élève y est habitué. |
 
-Le texte à lire reste toujours dans la police choisie. Les polices « affiche » et « pixel » de l’interface ne servent qu’aux titres courts, au logo et aux compteurs.
+Le texte à lire reste toujours dans la police choisie. La police des titres de l’interface, Montserrat grasse, ne sert qu’aux titres courts et au nom « Archipéo ».
 
 ## Lecture
 
@@ -70,6 +70,8 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 ## Application
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
+
+Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 
 ## Effacer ma progression
 

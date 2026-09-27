@@ -2,9 +2,9 @@
 // l'aventure » au menu et la Carte. Code pur, déduit de la sauvegarde à chaque rendu, sans rien y ajouter.
 import { getBiome, type BiomeId } from '../biomes';
 import { canLaunch, type BloclandState } from '../engine';
-import { CATALOG } from '../exercises';
 import { archipelagoOf, islandsOf, reachableIslands } from './archipelago';
 import { nextGoalInfo } from './goals';
+import { isUnexplored } from './islandState';
 import { villageStage } from './villageStage';
 import { stageAt } from './vehicle';
 
@@ -17,11 +17,6 @@ export interface Destination {
   /** La jauge (0 sur 0 quand rien ne se compte). */
   have: number;
   need: number;
-}
-
-/** Aucune mission de l'île n'a encore été jouée. */
-function unexplored(state: BloclandState, island: BiomeId): boolean {
-  return !CATALOG.some((e) => e.biome === island && state.progress[e.id] !== undefined);
 }
 
 /**
@@ -49,7 +44,7 @@ export function nextDestination(state: BloclandState): Destination {
   const goals = ordered.map((island) => ({ island, goal: nextGoalInfo(state, island) }));
   const ready = goals.find(({ goal }) => goal && goal.need > 0 && goal.have >= goal.need);
   if (ready?.goal) return make(ready.island, ready.goal.text, ready.goal.have, ready.goal.need);
-  const fresh = ordered.find((island) => unexplored(state, island));
+  const fresh = ordered.find((island) => isUnexplored(state, island));
   if (fresh) return make(fresh, 'Une île à explorer : ses missions t’attendent.');
   const counted = goals.filter((g): g is { island: BiomeId; goal: NonNullable<typeof g.goal> } => g.goal !== null);
   if (counted.length) {

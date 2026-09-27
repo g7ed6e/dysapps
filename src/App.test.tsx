@@ -126,6 +126,15 @@ it('applique et sauvegarde les réglages', async () => {
   expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
 });
 
+it('les réglages mènent à la documentation et au code, dans un nouvel onglet', () => {
+  renderAt('/reglages');
+  const docs = screen.getByRole('link', { name: 'La documentation' });
+  const code = screen.getByRole('link', { name: 'Le code sur GitHub' });
+  expect(docs).toHaveAttribute('href', 'https://g7ed6e.github.io/dysapps/');
+  expect(code).toHaveAttribute('href', 'https://github.com/g7ed6e/dysapps');
+  for (const link of [docs, code]) expect(link).toHaveAttribute('target', '_blank');
+});
+
 it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
   localStorage.setItem('dysapps:reprise', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
@@ -200,6 +209,11 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   renderAt('/aventure/carte');
   expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Forêt des sons/ })).toBeInTheDocument();
+  // Comme la Carte : la prochaine destination, l'état de chaque île en mot, les archipels non atteints dans la brume.
+  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(screen.getByRole('link', { name: /^Forêt des sons.*À explorer/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^Carrière des mots.*Fermée/ })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Îles Brumeuses : dans la brume/ })).toBeInTheDocument();
   document.body.innerHTML = '';
   renderAt('/aventure/monde');
   expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
