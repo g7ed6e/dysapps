@@ -30,7 +30,10 @@ import {
 import type { WorldViewProps } from '../world/view';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 import { createMeter } from './meter';
-import { mesuresDemandees, renduDuMonde } from '../rendu';
+import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
+import { cielDe, SOLEIL_DIRECTION, teinteSur } from '../world/palette';
+import { creerDome } from './ciel';
+import { surfaceDe, type Surface } from './surface';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
@@ -49,6 +52,8 @@ const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
 /** Le voyage : vue de côté, depuis l'ouest, la caméra qui s'écarte à mesure que le navire s'éloigne. */
 const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
+/** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
+const EAU_MOYENNE = 0x54a2e4;
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
   [0.05, 0.1, 4],
@@ -116,13 +121,15 @@ function materialFor(texture: string | undefined, face: FaceSide, color: string 
   return m[face === 'top' ? 2 : face === 'bottom' ? 3 : 0];
 }
 
-function meshOf(g: MeshGroup): THREE.Mesh {
+/** Un groupe de faces en maillage ; `surface` : une option de style du lot R1 (`?rendu=archipeo&style=…`), sinon les textures. */
+function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(g.positions, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
   geo.setIndex(g.indices);
-  const mesh = new THREE.Mesh(geo, materialFor(g.texture, g.face, g.color, g.ghost, g.muted));
+  surface?.geometry(g, geo);
+  const mesh = new THREE.Mesh(geo, surface?.material(g) ?? materialFor(g.texture, g.face, g.color, g.ghost, g.muted));
   if (g.ghost) mesh.renderOrder = 1;
   // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
   mesh.frustumCulled = false;
@@ -197,6 +204,8 @@ export default function WorldCanvas({
     walk: Walk | null;
     /** Le Bloc-Navire : la coque (qui tangue) et le ballon (qui se balance au sommet du mât). */
     vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
+    /** L'option de style de surface (lot R1), ou `null` : les textures des blocs. */
+    surface: Surface | null;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
@@ -312,10 +321,18 @@ export default function WorldCanvas({
     // L'ambiance de l'archipel : ciel, mer (ou nuages), brouillard, sol.
     const ambience = AMBIENCE[archipelago];
     const day = palette(1, archipelago);
-    scene.background = new THREE.Color(day.sky);
-    const fog = new THREE.Fog(day.sky, width * ambience.fog[0], width * ambience.fog[1]);
+    // Archipéo (lot R1) : un dôme dégradé, une brume de profondeur couleur d'horizon, un soleil chaud et une ambiance froide.
+    const archipeo = rendu === 'archipeo';
+    const ciel = cielDe(archipelago, 1);
+    // L'option de style `?style=a|b|c` (seulement avec le drapeau), sinon les textures des blocs.
+    const style = archipeo ? styleDuMonde() : null;
+    const surface = style ? surfaceDe(style, archipelago) : null;
+    scene.background = new THREE.Color(archipeo ? ciel.horizon : day.sky);
+    const fog = archipeo ? new THREE.Fog(ciel.horizon, ciel.brumeProche, ciel.brumeLoin) : new THREE.Fog(day.sky, width * ambience.fog[0], width * ambience.fog[1]);
     scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, width * 10);
+    const dome = archipeo ? creerDome(ciel, width * 4) : null;
+    if (dome) scene.add(dome.mesh);
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
     const onKey = (e: KeyboardEvent) => {
@@ -337,10 +354,11 @@ export default function WorldCanvas({
     };
     el.addEventListener('keydown', onKey);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, day.ground, day.ambient);
+    const hemi = archipeo ? new THREE.HemisphereLight(ciel.ambianceCiel, ciel.ambianceSol, ciel.ambianceForce) : new THREE.HemisphereLight(0xffffff, day.ground, day.ambient);
     scene.add(hemi);
-    const sun = new THREE.DirectionalLight(day.sun, day.sunIntensity);
-    sun.position.set(40, 60, 20);
+    const sun = archipeo ? new THREE.DirectionalLight(ciel.soleil, ciel.soleilForce) : new THREE.DirectionalLight(day.sun, day.sunIntensity);
+    if (archipeo) sun.position.set(...SOLEIL_DIRECTION);
+    else sun.position.set(40, 60, 20);
     scene.add(sun);
 
     // L'eau : un grand plan sous le niveau du sol, avec des crêtes pixel qui défilent.
@@ -506,7 +524,7 @@ export default function WorldCanvas({
       pivot.position.set(part.pivot.x, part.pivot.z, part.pivot.y);
       const inner = new THREE.Group();
       inner.position.set(-part.pivot.x, -part.pivot.z, -part.pivot.y);
-      for (const g of buildMesh(part.cubes)) inner.add(meshOf(g));
+      for (const g of buildMesh(part.cubes)) inner.add(meshOf(g, surface));
       pivot.add(inner);
       avatarBody.add(pivot);
       if (part.name.startsWith('bras')) limbs.arms.push(pivot);
@@ -556,6 +574,7 @@ export default function WorldCanvas({
       avatar: avatarGroup,
       walk: null,
       vehicle: { group: vehicleGroup, hull: hullGroup, balloon: balloonGroup },
+      surface,
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -687,6 +706,21 @@ export default function WorldCanvas({
       const target = forceDayRef.current ? 1 : daylight().light;
       if (target === light) return;
       light = target;
+      if (archipeo) {
+        // Le ciel, la brume (couleur d'horizon), la lumière et la mer (ou le plancher de nuages) suivent le jour.
+        const c = cielDe(archipelago, light);
+        (scene.background as THREE.Color).setHex(c.horizon);
+        fog.color.setHex(c.horizon);
+        dome?.peindre(c);
+        hemi.color.setHex(c.ambianceCiel);
+        hemi.groundColor.setHex(c.ambianceSol);
+        hemi.intensity = c.ambianceForce;
+        sun.color.setHex(c.soleil);
+        sun.intensity = c.soleilForce;
+        waterMat.color.setHex(teinteSur(c.mer, EAU_MOYENNE));
+        if (ambience.sky) cloudFloorMat.color.setHex(c.mer);
+        return;
+      }
       const p = palette(light, archipelago);
       (scene.background as THREE.Color).setHex(p.sky);
       fog.color.setHex(p.sky);
@@ -810,9 +844,9 @@ export default function WorldCanvas({
               );
         const { target, pos } = frame;
         w.beacon.visible = onMap && w.avatar.visible;
-        // Sur la Carte, vue de très haut : pas de brume, tout le continent net.
-        fog.near = onMap ? width * 8 : width * 1.2;
-        fog.far = onMap ? width * 16 : width * 3;
+        // Sur la Carte, vue de très haut : pas de brume, tout le continent net. Archipéo : la brume de profondeur.
+        fog.near = onMap ? width * 8 : archipeo ? ciel.brumeProche : width * 1.2;
+        fog.far = onMap ? width * 16 : archipeo ? ciel.brumeLoin : width * 3;
         if (w.beacon.visible) {
           w.beacon.position.set(w.avatar.position.x, w.avatar.position.y + 8 + Math.abs(Math.sin(t * 2.2)) * 1.5, w.avatar.position.z);
           w.beacon.rotation.y = t * 0.8;
@@ -901,6 +935,8 @@ export default function WorldCanvas({
           }
         }
       } else if (forceDayRef.current ? light !== 1 : false) applyDaylight();
+      // Le dôme du ciel suit la caméra : l'horizon ne s'approche jamais.
+      dome?.mesh.position.copy(camera.position);
       renderer.render(scene, camera);
       meter?.tick(renderer.info, nowMs);
     };
@@ -935,6 +971,7 @@ export default function WorldCanvas({
       cloudFloorMat.dispose();
       floorTex?.dispose();
       cloudGeo.dispose();
+      dome?.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
@@ -953,7 +990,7 @@ export default function WorldCanvas({
       w.terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
-    for (const g of buildMesh(cubes)) w.terrain.add(meshOf(g));
+    for (const g of buildMesh(cubes)) w.terrain.add(meshOf(g, w.surface));
   }, [cubes]);
 
   // ---- Créatures : un groupe chacune, positionné sur son île, animé dans la boucle
@@ -970,7 +1007,7 @@ export default function WorldCanvas({
     w.walkers = creatures.map((c, i) => {
       const group = new THREE.Group();
       group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
-      for (const g of buildMesh(c.cubes)) group.add(meshOf(g));
+      for (const g of buildMesh(c.cubes)) group.add(meshOf(g, w.surface));
       group.position.set(c.origin.x, c.origin.z, c.origin.y);
       w.creatures.add(group);
       return { group, stroll: strolls[i] };
@@ -995,8 +1032,8 @@ export default function WorldCanvas({
     const MAST_TOP = 7;
     const hull = vehicle.cubes.filter((c) => c.z < MAST_TOP);
     const balloon = vehicle.cubes.filter((c) => c.z >= MAST_TOP).map((c) => ({ ...c, x: c.x - 2, y: c.y - 3, z: c.z - MAST_TOP }));
-    for (const g of buildMesh(hull)) w.vehicle.hull.add(meshOf(g));
-    for (const g of buildMesh(balloon)) w.vehicle.balloon.add(meshOf(g));
+    for (const g of buildMesh(hull)) w.vehicle.hull.add(meshOf(g, w.surface));
+    for (const g of buildMesh(balloon)) w.vehicle.balloon.add(meshOf(g, w.surface));
     w.vehicle.balloon.position.set(2, MAST_TOP, 3);
     w.vehicle.group.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
     w.vehicle.group.rotation.set(0, 0, 0);
@@ -1067,7 +1104,8 @@ export default function WorldCanvas({
       drawIslandLabel(ctx, l.text, canvas.width / 2, canvas.height / 2, px);
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
-      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true, sizeAttenuation: false }));
+      // Archipéo : la brume de profondeur ne voile jamais un nom d'île (DA-02).
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true, sizeAttenuation: false, fog: rendu !== 'archipeo' }));
       // Taille fixe à l'écran (environ 4 % de sa hauteur), quel que soit le zoom.
       const h = 0.045;
       sprite.scale.set((h * canvas.width) / canvas.height, h, 1);
