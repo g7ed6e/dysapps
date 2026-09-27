@@ -3,6 +3,9 @@
 import { shade, type VoxelCube } from '../Voxel';
 import { PAINTERS, SIZE, faceCanvas, type TextureKind } from '../world/pixels';
 import { CHUNK, TILE, type Face, type FaceKind, type Tile, type TileMap } from './oblique';
+import type { STYLE } from './style';
+import { PRIORITY, columnAt, materialOf, type Surface } from './surface';
+import { designedTile, fringeColors, hash } from './tiles';
 
 const images = new Map<string, HTMLCanvasElement | null>();
 
@@ -51,13 +54,104 @@ export function faceImage(cube: VoxelCube, kind: FaceKind): HTMLCanvasElement | 
 /** Transparence d'un fantôme (un bloc du plan encore à poser), bleuté comme en 3D. */
 const GHOST_ALPHA = 0.55;
 
-function drawFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number) {
-  const img = faceImage(face.cube, face.kind);
+/** Ce que le dessin d'un morceau doit savoir en plus des tuiles : le sol voisin, le style, la mer. */
+export interface DrawEnv {
+  surface: Surface;
+  style: typeof STYLE;
+  /** Une mer autour (pas dans les Îles du Ciel) : l'écume au pied des rives. */
+  sea: boolean;
+}
+
+/** L'image d'une face : dessinée pour la 2D si le style le veut et si son sol en a une, sinon la texture du bloc. */
+function tileImage(face: Face, env: DrawEnv): HTMLCanvasElement | null {
+  const { cube, kind } = face;
+  const m = materialOf(cube);
+  if (env.style.designed && m !== 'autre') {
+    const variant = Math.floor(hash(cube.x, cube.y, cube.z) * 4);
+    const top = columnAt(env.surface, cube.x, cube.y);
+    const lip = kind === 'front' && (m === 'herbe' || m === 'neige') && top?.z === cube.z;
+    return designedTile(m, kind, variant, Boolean(cube.muted), lip);
+  }
+  return faceImage(cube, kind);
+}
+
+type Dir = 'n' | 's' | 'e' | 'w';
+const STEP: Record<Dir, [number, number]> = { n: [0, 1], s: [0, -1], e: [1, 0], w: [-1, 0] };
+
+/** Une frange irrégulière d'un sol voisin, le long d'un bord de la case (dessinée chez le sol le moins prioritaire). */
+function fringe(ctx: CanvasRenderingContext2D, x: number, y: number, dir: Dir, colors: { base: string; dark: string }, seed: number) {
+  for (let i = 0; i < TILE; i++) {
+    const d = 1 + Math.floor(hash(i >> 1, seed, 13) * 3);
+    for (let k = 0; k < d; k++) {
+      ctx.fillStyle = k === d - 1 ? colors.dark : colors.base;
+      const [px, py] = dir === 'n' ? [i, k] : dir === 's' ? [i, TILE - 1 - k] : dir === 'w' ? [k, i] : [TILE - 1 - k, i];
+      ctx.fillRect(x + px, y + py, 1, 1);
+    }
+  }
+}
+
+/** Bords (B) et ombres (E) d'une face pleine, par-dessus son image. */
+function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number, env: DrawEnv) {
+  const { cube, kind } = face;
+  const m = materialOf(cube);
+  const at = (d: Dir) => columnAt(env.surface, cube.x + STEP[d][0], cube.y + STEP[d][1]);
+  if (kind === 'top') {
+    for (const d of ['n', 's', 'e', 'w'] as Dir[]) {
+      const nb = at(d);
+      if (env.style.edges) {
+        // L'herbe voisine mord sur le sable, le sable sur l'eau… (seulement à la même hauteur).
+        if (nb && nb.z === cube.z && nb.material !== m && m !== 'autre' && nb.material !== 'autre' && PRIORITY[nb.material] > PRIORITY[m])
+          fringe(ctx, x, y, d, fringeColors(nb.material, Boolean(cube.muted)), cube.x * 31 + cube.y * 17 + d.charCodeAt(0));
+        // Le rebord d'un plateau : un trait sombre là où le sol descend (au nord, à l'est, à l'ouest ; au sud, la falaise).
+        if (d !== 's' && (!nb || nb.z < cube.z)) {
+          ctx.fillStyle = 'rgba(28, 36, 24, 0.55)';
+          if (d === 'n') ctx.fillRect(x, y, TILE, 1);
+          else if (d === 'e') ctx.fillRect(x + TILE - 1, y, 1, TILE);
+          else ctx.fillRect(x, y, 1, TILE);
+        }
+        if (d === 's' && (!nb || nb.z < cube.z)) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.fillRect(x, y + TILE - 1, TILE, 1);
+        }
+      }
+      if (env.style.shadows && nb && nb.z > cube.z) {
+        // Le relief voisin fait de l'ombre : à l'ouest, il assombrit le bord gauche ; au nord, le pied de sa falaise.
+        ctx.fillStyle = 'rgba(20, 24, 40, 0.22)';
+        if (d === 'w') {
+          ctx.fillRect(x, y, 3, TILE);
+          ctx.fillRect(x + 3, y, 2, TILE);
+        } else if (d === 'n') {
+          ctx.fillRect(x, y, TILE, 2);
+          ctx.fillRect(x, y + 2, TILE, 1);
+        }
+      }
+    }
+    return;
+  }
+  // Face avant.
+  const south = at('s');
+  if (env.style.edges && env.sea && !south && cube.z <= -1) {
+    // L'écume au pied d'une rive, sur la mer.
+    for (let i = 0; i < TILE; i++) {
+      const h = 1 + Math.floor(hash(cube.x, i, 21) * 2);
+      ctx.fillStyle = '#f4fbff';
+      ctx.fillRect(x + i, y + TILE - h, 1, h);
+    }
+  }
+  if (env.style.shadows && south && south.z < cube.z && south.z === cube.z - 1) {
+    // Le pied de la falaise, où elle rejoint le sol plus bas.
+    ctx.fillStyle = 'rgba(20, 16, 30, 0.3)';
+    ctx.fillRect(x, y + TILE - 2, TILE, 2);
+  }
+}
+
+function drawFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number, env: DrawEnv) {
+  const img = tileImage(face, env);
   if (img) ctx.drawImage(img, x, y);
 }
 
 /** Dessine un morceau de terrain (CHUNK × CHUNK cases) dans son canvas, à l'échelle des textures. */
-export function drawChunk(map: TileMap, cx: number, cy: number): HTMLCanvasElement | null {
+export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): HTMLCanvasElement | null {
   const canvas = document.createElement('canvas');
   canvas.width = CHUNK * TILE;
   canvas.height = CHUNK * TILE;
@@ -68,10 +162,13 @@ export function drawChunk(map: TileMap, cx: number, cy: number): HTMLCanvasEleme
   for (const t of tiles) {
     const x = (t.col - cx * CHUNK) * TILE;
     const y = (t.row - cy * CHUNK) * TILE;
-    if (t.solid) drawFace(ctx, t.solid, x, y);
+    if (t.solid) {
+      drawFace(ctx, t.solid, x, y, env);
+      if (env.style.edges || env.style.shadows) decorateFace(ctx, t.solid, x, y, env);
+    }
     if (t.ghost) {
       ctx.globalAlpha = GHOST_ALPHA;
-      drawFace(ctx, t.ghost, x, y);
+      drawFace(ctx, t.ghost, x, y, env);
       ctx.fillStyle = 'rgba(120, 190, 255, 0.35)';
       ctx.fillRect(x, y, TILE, TILE);
       ctx.globalAlpha = 1;

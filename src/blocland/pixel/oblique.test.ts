@@ -1,6 +1,6 @@
 import type { VoxelCube } from '../Voxel';
 import { islandCenter, worldCubes } from '../world/terrain';
-import { CHUNK, TILE, buildTiles, crisp, faceCell, fitCells, frame2D, pickTile, project, toBase, toScreen } from './oblique';
+import { CHUNK, CLOSE_TILES, TILE, buildTiles, crisp, faceCell, fitCells, frame2D, pickTile, project, toBase, toScreen } from './oblique';
 
 const cube = (x: number, y: number, z: number, extra: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', ...extra });
 
@@ -113,15 +113,20 @@ describe('le cadrage', () => {
     expect(v).toEqual({ cx: 80, cy: 40, s: 200 / 160 });
   });
 
-  it('l’île ouverte au centre, en gros plan ; la Carte en entier ; sinon l’île du bonhomme et ses voisines', () => {
-    const island = frame2D({ archipelago: '6e', map: false, island: 'foret', home: 'foret' }, map, screen);
+  it('de près, comme une salle : sur le bonhomme, ou l’île ouverte, sans sortir de l’île ; la Carte en entier', () => {
     const c = islandCenter('foret');
-    expect(island.cx).toBe(project(c.x, c.y, c.z + 1).bx);
-    expect(Number.isInteger(island.s)).toBe(true);
+    const island = frame2D({ archipelago: '6e', map: false, island: 'foret', home: 'foret' }, map, screen);
+    expect(island.cx).toBe(project(c.x + 0.5, c.y + 0.5, c.z + 1).bx);
+    expect(island.s).toBe(Math.round(700 / (CLOSE_TILES * TILE)));
+    // Le bonhomme au milieu de l'île : la vue le suit.
+    const avatar = { x: c.x + 2, y: c.y - 1, z: c.z + 1 };
+    const near = frame2D({ archipelago: '6e', map: false, island: null, home: 'foret', avatar }, map, screen);
+    expect(near.cx).toBe(project(avatar.x + 0.5, avatar.y + 0.5, avatar.z).bx);
+    // Au bord de l'île : la vue s'arrête avant de montrer trop de mer.
+    const far = frame2D({ archipelago: '6e', map: false, island: null, home: 'foret', avatar: { ...avatar, x: avatar.x - 60 } }, map, screen);
+    expect(far.cx).toBeGreaterThan(project(avatar.x - 60, 0, 0).bx);
     const carte = frame2D({ archipelago: '6e', map: true, island: null, home: 'foret' }, map, screen);
-    const zone = frame2D({ archipelago: '6e', map: false, island: null, home: 'foret' }, map, screen);
-    expect(carte.s).toBeLessThan(zone.s);
-    expect(zone.s).toBeLessThanOrEqual(island.s);
+    expect(carte.s).toBeLessThan(near.s);
   });
 });
 

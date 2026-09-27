@@ -10,8 +10,12 @@ import { ARROW_DIRS, cubeTags, groundTap, islandInDirection, startVoyage, voyage
 import { islandCenter } from '../world/terrain';
 import { islandsOf } from '../world/archipelago';
 import type { WorldViewProps } from '../world/view';
-import { drawChunk } from './draw';
-import { CHUNK, TILE, buildTiles, frame2D, pickTile, toBase, type TileMap, type View2D } from './oblique';
+import { drawChunk, type DrawEnv } from './draw';
+import { propsOf, type Prop } from './props';
+import { drawSprite } from './sprites';
+import { STYLE } from './style';
+import { surfaceOf } from './surface';
+import { CHUNK, TILE, buildTiles, frame2D, pickTile, project, toBase, toScreen, type TileMap, type View2D } from './oblique';
 
 /** Sous ce niveau, les cubes sont sous la mer : on ne les dessine pas (la mer est un fond animé). */
 const SEA_HIDES_BELOW = -1;
@@ -34,24 +38,37 @@ export default function WorldCanvas2D({
   build,
   map = false,
   home,
+  avatar,
   onPickQuest,
   className,
   label,
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   // Les gestes et ce qu'ils visent, lus au moment du geste (sans reconstruire la vue).
-  const props = useRef({ onPickIsland, onPickBridge, onPickQuest, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle });
-  props.current = { onPickIsland, onPickBridge, onPickQuest, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle };
-  const terrain = useRef<{ map: TileMap; chunks: Map<string, HTMLCanvasElement | null>; tags: ReturnType<typeof cubeTags> } | null>(null);
+  const props = useRef({ onPickIsland, onPickBridge, onPickQuest, build, onVoyageLegEnd, onVoyageSkip, map, home, avatar, focus: focus.island, archipelago, vehicle });
+  props.current = { onPickIsland, onPickBridge, onPickQuest, build, onVoyageLegEnd, onVoyageSkip, map, home, avatar, focus: focus.island, archipelago, vehicle };
+  const terrain = useRef<{
+    map: TileMap;
+    chunks: Map<string, HTMLCanvasElement | null>;
+    tags: ReturnType<typeof cubeTags>;
+    env: DrawEnv;
+    /** Le décor en sprites, du plus lointain au plus proche. */
+    props: Prop[];
+  } | null>(null);
   const view = useRef<View2D | null>(null);
   const voyageRef = useRef<VoyageRun | null>(null);
 
   // ---- Le terrain : la carte des tuiles, et ses morceaux redessinés à la demande
   useEffect(() => {
+    const sky = AMBIENCE[archipelago].sky;
+    // Le décor en sprites (arbres, buissons…) : ses cubes quittent le terrain.
+    const split = STYLE.sprites ? propsOf(cubes) : { props: [], terrain: cubes };
     terrain.current = {
-      map: buildTiles(cubes, AMBIENCE[archipelago].sky ? -Infinity : SEA_HIDES_BELOW),
+      map: buildTiles(split.terrain, sky ? -Infinity : SEA_HIDES_BELOW),
       chunks: new Map(),
       tags: cubeTags(cubes),
+      env: { surface: surfaceOf(cubes), style: STYLE, sea: !sky },
+      props: [...split.props].sort((a, b) => b.y - b.z - (a.y - a.z)),
     };
   }, [cubes, archipelago]);
 
@@ -196,7 +213,7 @@ export default function WorldCanvas2D({
       if (vy && p.vehicle && voyageFrame(vy, p.vehicle.port, now).end) p.onVoyageLegEnd?.();
 
       // La caméra rejoint son cadrage en douceur ; le changement d'échelle aussi.
-      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null }, tm.map, scr);
+      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: p.avatar?.route.at(-1) ?? null }, tm.map, scr);
       const v = view.current;
       if (!v || reduceMotion) view.current = target;
       else {
@@ -237,7 +254,7 @@ export default function WorldCanvas2D({
           if (!tm.map.chunks.has(k)) continue;
           if (!tm.chunks.has(k)) {
             if (drawn >= CHUNKS_PER_FRAME) continue;
-            tm.chunks.set(k, drawChunk(tm.map, cx, cy));
+            tm.chunks.set(k, drawChunk(tm.map, cx, cy, tm.env));
             drawn++;
           }
           const img = tm.chunks.get(k);
@@ -248,6 +265,14 @@ export default function WorldCanvas2D({
           const y1 = Math.round(((cy + 1) * size - cam.cy) * cam.s + scr.h / 2);
           ctx.drawImage(img, x0, y0, x1 - x0, y1 - y0);
         }
+      }
+
+      // Le décor en sprites, du plus lointain au plus proche, le pied au milieu de sa case.
+      for (const pr of tm.props) {
+        const { bx, by } = project(pr.x + 0.5, pr.y + 0.5, pr.z);
+        if (bx < tl.bx - 3 * TILE || bx > br.bx + 3 * TILE || by < tl.by - TILE || by > br.by + 4 * TILE) continue;
+        const { sx, sy } = toScreen(cam, scr, bx, by);
+        drawSprite(ctx, pr.kind, pr.muted, sx, sy, cam.s, STYLE.shadows);
       }
     };
     const start = () => {

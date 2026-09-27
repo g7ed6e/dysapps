@@ -3,8 +3,8 @@
 // avant tombent tous sur une grille de cases de 16 pixels. Chaque case de l'écran ne montre donc qu'une face, celle du
 // cube le plus proche : le terrain devient une carte de tuiles, qu'on dessine et qu'on touche case par case.
 import type { VoxelCube } from '../Voxel';
-import { islandCenter, viewZone, worldBounds } from '../world/terrain';
-import { ALTITUDE, type ArchipelagoId } from '../world/map';
+import { islandCenter, worldBounds } from '../world/terrain';
+import { ALTITUDE, islandDef, landBox, type ArchipelagoId } from '../world/map';
 import type { BiomeId } from '../biomes';
 import type { Cell } from '../world/view';
 
@@ -164,19 +164,29 @@ export function fitCells(box: { minCol: number; maxCol: number; minRow: number; 
   };
 }
 
-/** Cases d'île visibles de part et d'autre, en vue rapprochée (le cœur fait 16 cases). */
-const ISLAND_SPAN = 26;
+/** Vue rapprochée : cases visibles dans la plus petite dimension de l'écran (comme une salle de jeu d'aventure). */
+export const CLOSE_TILES = 13;
+/** Marge autour de l'île (en cases) jusqu'où la caméra rapprochée peut aller : un peu de mer, pas plus. */
+const ROOM_MARGIN = 3;
+
+/** Garde un centre de vue dans un intervalle ; si la vue est plus large que l'intervalle, elle le centre. */
+function clampAxis(c: number, half: number, lo: number, hi: number): number {
+  if (hi - lo <= 2 * half) return (lo + hi) / 2;
+  return Math.min(hi - half, Math.max(lo + half, c));
+}
 
 /**
- * Où regarde la 2D : toute la carte (la Carte), l'île ouverte en vue rapprochée, sinon l'île du bonhomme et ses
- * voisines, sinon tout le terrain.
+ * Où regarde la 2D. La Carte : tout l'archipel. Sinon, de près, comme une salle de jeu d'aventure : environ
+ * 13 cases dans la plus petite dimension de l'écran, centré sur le bonhomme (`avatar`), ou sur l'île ouverte, sans
+ * sortir de l'île (sa terre et un peu de mer autour).
  */
 export function frame2D(
-  target: { archipelago: ArchipelagoId; map: boolean; island: BiomeId | null; home: BiomeId | null },
+  target: { archipelago: ArchipelagoId; map: boolean; island: BiomeId | null; home: BiomeId | null; avatar?: Cell | null },
   map: TileMap,
   screen: { w: number; h: number },
 ): View2D {
-  if (target.map || (!target.island && !target.home)) {
+  const room = target.island ?? target.home;
+  if (target.map || !room) {
     // L'archipel (ses terres, ses îlots, son port), pas les rochers semés au large.
     const b = worldBounds(target.archipelago);
     const alt = ALTITUDE[target.archipelago];
@@ -189,20 +199,17 @@ export function frame2D(
     const v = fitCells(box, screen, 1);
     return { ...v, s: crisp(v.s, true) };
   }
-  if (target.island) {
-    const c = islandCenter(target.island);
-    // Le milieu de l'île à hauteur du sol (le cœur est un peu au-dessus de l'altitude de base).
-    const { bx, by } = project(c.x, c.y, c.z + 1);
-    return { cx: bx, cy: by, s: crisp(Math.min(screen.w, screen.h) / (ISLAND_SPAN * TILE)) };
-  }
-  const z = viewZone(target.home!);
-  const alt = islandCenter(target.home!).z + 1;
-  const box = {
-    minCol: z.minX,
-    maxCol: z.maxX,
-    minRow: Math.floor(project(0, z.maxY, alt + 2).by / TILE),
-    maxRow: Math.ceil(project(0, z.minY, alt).by / TILE),
+  const s = crisp(Math.min(screen.w, screen.h) / (CLOSE_TILES * TILE));
+  const c = islandCenter(room);
+  // Le bonhomme s'il se tient sur l'île regardée (au sol : un bloc au-dessus du cube où il se tient), sinon le cœur.
+  const at = !target.island && target.avatar ? target.avatar : { x: c.x, y: c.y, z: c.z + 1 };
+  const { bx, by } = project(at.x + 0.5, at.y + 0.5, at.z);
+  const b = landBox(islandDef(room));
+  const lo = project(0, b.y1 + ROOM_MARGIN, c.z + 4).by;
+  const hi = project(0, b.y0 - ROOM_MARGIN, c.z - 2).by;
+  return {
+    cx: clampAxis(bx, screen.w / s / 2, (b.x0 - ROOM_MARGIN) * TILE, (b.x1 + ROOM_MARGIN) * TILE),
+    cy: clampAxis(by, screen.h / s / 2, lo, hi),
+    s,
   };
-  const v = fitCells(box, screen, 2);
-  return { ...v, s: crisp(v.s) };
 }

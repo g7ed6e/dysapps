@@ -163,6 +163,12 @@ Décisions :
    - **Rendu** : textures de `world/pixels.ts`, faces avant assombries avec une arête claire (les falaises se lisent), mer en couleur de l'archipel avec sa texture qui dérive (nuages dans les Îles du Ciel), échelle entière pour des pixels nets. Rien sous la mer n'est dessiné.
    - **Cadrage** : l'île ouverte en gros plan, sinon l'île du bonhomme et ses voisines, la Carte en entier (l'archipel, pas les rochers au large) ; la caméra glisse et zoome en douceur, d'un coup avec « réduire les animations ».
    - **Gestes** : ceux de la 3D, par `world/scene.ts` (toucher une île, une borne, un ouvrage, un fantôme en chantier ; les flèches ; Entrée, Espace ou Échap pendant un voyage). Le voyage n'est pas encore dessiné : la 2D en tient seulement le temps.
+2 bis. **Direction artistique de la 2D** (prototype sur la Forêt, à valider) : de premiers essais ressemblaient à une carte de cubes vue du ciel. Cinq changements, qu'un style (`pixel/style.ts`) allume un par un pour les comparer :
+   - **A. Caméra rapprochée** : environ 13 cases dans la plus petite dimension de l'écran, centrée sur le bonhomme (ou l'île ouverte), sans sortir de l'île ni montrer trop de mer (`frame2D`).
+   - **B. Bords** : le sol le plus « fort » déborde en frange irrégulière chez son voisin à la même hauteur (herbe > neige > terre > pierre > sable > eau, `pixel/surface.ts`) ; un trait sombre marque le rebord d'un plateau, un trait clair le haut d'une falaise ; l'écume borde les rives.
+   - **C. Tuiles dessinées** en code pour la 2D (`pixel/tiles.ts`) : touffes d'herbe, sable pointillé, terre caillouteuse, pavés, vaguelettes, neige ; falaises à strates avec la frange de gazon qui déborde ; quatre variantes par sol ; délavées sur une île fermée.
+   - **D. Décor en sprites** (`pixel/sprites.ts`, `pixel/props.ts`) : le terrain marque les cubes de chaque élément de décor (`decor` : « foret/arbre@8,2 ») ; la 2D les remplace par un sprite (arbre rond, sapin, buisson, fleurs, champignon, rocher, souche, roseaux, cristal), la 3D les dessine comme avant.
+   - **E. Ombres** : au pied des falaises, sur le bord ouest d'un sol plus bas qu'à l'ouest, ovale sous le décor.
 3. **Personnages et repères** : le bonhomme qui marche, les créatures, les Gardiens, les bornes, la flèche « Commence ici », le jour et la nuit.
 4. **Construire et voyager** : les chantiers, les ouvrages, le Bloc-Navire et son voyage, la Carte.
 5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
