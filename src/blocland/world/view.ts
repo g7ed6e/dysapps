@@ -111,6 +111,11 @@ export interface WorldViewProps {
   quests?: QuestMark[];
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
   islandLabels?: IslandLabel[];
+  /**
+   * Le mot de la baleine est ouvert : une baleine quitte sa ronde et passe au large de cette île (une fois par `seq`).
+   * Jamais avec « Réduire les animations » (WorldPage ne le passe pas) ; la 2D n'a pas de baleine.
+   */
+  whalePass?: { island: BiomeId; seq: number } | null;
   /** Borne de mission touchée (le socle, le panneau ou son repère). */
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   /** Lieu du village touché (l'école) : on y entre. */

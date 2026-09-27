@@ -22,8 +22,7 @@ import { ShipSection } from './ShipSection';
 import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
-import { Tutorial } from './Tutorial';
-import { ARRIVAL_STEPS } from './arrivals';
+import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -34,6 +33,7 @@ export function BiomePage() {
   const { state } = useBlocland();
   const biome = getBiome(biomeId);
   const builder = usePlanBuilder(biome?.id ?? 'foret');
+  const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe);
   const ship = useVehicleBuilder(biome?.id ?? 'foret');
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
@@ -55,7 +55,8 @@ export function BiomePage() {
         {port && ' · Port'}
       </p>
 
-      {port && unlocked && ARRIVAL_STEPS[biome.classe].length > 0 && <Tutorial id={`archipel-${biome.classe}`} steps={ARRIVAL_STEPS[biome.classe]} />}
+      {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
+      {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
 
       <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 

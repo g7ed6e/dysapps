@@ -151,6 +151,15 @@ export function playArrival(): void {
   setTimeout(() => tone(1047, 0.6, 'triangle', 0.08), 380);
 }
 
+/**
+ * Le souffle de la baleine (le mot de la baleine) : une expiration grave et courte, du bruit sourd et une note très
+ * basse qui descend. Jamais un cri.
+ */
+export function playWhaleBlow(): void {
+  whoosh(1.3, 320, 0.05);
+  tone(82, 1.1, 'sine', 0.06, 62, 0.15, 0.6);
+}
+
 // ---------- Ambiance (en option) : vent continu, oiseaux le jour, grillons la nuit ----------
 
 let ambience: { gain: GainNode; stop: () => void } | null = null;

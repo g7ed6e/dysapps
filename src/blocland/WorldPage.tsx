@@ -13,7 +13,6 @@ import { pickExercise, questProgress } from './exercises';
 import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
-import { ARRIVAL_STEPS } from './arrivals';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
@@ -29,6 +28,7 @@ import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
+import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
@@ -178,6 +178,12 @@ export function WorldPage() {
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
   const [forceDay, setForceDay] = useState(() => !hasSeenTutorial('village-immersif'));
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
+  // Le mot de la baleine : aux grandes étapes de l'archipel, une fois le tutoriel fermé et hors voyage. Il attend un
+  // instant (la fin d'une pose, d'une arrivée), puis la caméra cadre l'île concernée et la baleine passe au large.
+  const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
+  const whale = useWhaleWord(state, a, tutoDone);
+  const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
+  const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
   // voix haute, et une cloche. Rien n'est enregistré : l'état se déduit de la progression.
   const stageHere = archipelagoOf(state.village.at ?? 'foret').classe;
@@ -431,6 +437,23 @@ export function WorldPage() {
     if (island && chantier) setHighlight(chantier);
   }, [island?.id, chantier]);
 
+  const whaleNext = voyage ? null : whale.word;
+  useEffect(() => {
+    if (!whaleNext) return setWhaleOpen(null);
+    if (whaleOpen === whaleNext.id) return;
+    const timer = window.setTimeout(() => {
+      setWhaleOpen(whaleNext.id);
+      setWhaleSeq((n) => n + 1);
+      if (!island && !panelOpen) setFocus((f) => ({ island: whaleNext.island, seq: f.seq + 1 }));
+    }, 1200);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [whaleNext?.id]);
+  const whaleWord = whaleNext && whaleOpen === whaleNext.id ? whaleNext : null;
+  const closeWhale = () => {
+    whale.close();
+    setWhaleOpen(null);
+  };
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
 
@@ -507,6 +530,7 @@ export function WorldPage() {
             onPickQuest={onPickQuest}
             onPickPlace={(place) => navigate(place === 'ecole' ? SCHOOL_PATH : place === 'trophees' ? TROPHIES_PATH : `/aventure/${place.slice('monument:'.length)}`)}
             islandLabels={voyage ? undefined : islandLabels}
+            whalePass={whaleWord && !settings.reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
             build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(islandAt(a, cell.x, cell.y)) } : undefined}
@@ -617,7 +641,7 @@ export function WorldPage() {
               <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
             </div>
           )}
-          {villageSaid && (
+          {villageSaid && !whaleWord && (
             <div className="creature-line world-line" role="status" aria-live="polite">
               <Icon name="flag" /> <Syllabified text={villageSaid} />
               <SpeakButton text={villageSaid} compact />
@@ -635,12 +659,11 @@ export function WorldPage() {
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
         <div className="world-overlay-bottom">
-          {a !== '6e' && !voyage && (
-            <Tutorial id={`archipel-${a}`} steps={ARRIVAL_STEPS[a]} />
-          )}
+          {whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} />}
           <Tutorial
             id="village-immersif"
             replay={replay}
+            onClose={() => setTutoDone(true)}
             targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', '[data-tuto="ecole"]', undefined, undefined, '[data-tuto="menu"]']}
             steps={[
               'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',

@@ -29,10 +29,12 @@ interface Props {
   replay?: number;
   /** Pour chaque bulle, l'élément dont elle parle (sélecteur CSS), mis en évidence tant qu'elle est ouverte. */
   targets?: (string | undefined)[];
+  /** À la fermeture (« J'ai compris » ou « Passer »). */
+  onClose?: () => void;
 }
 
 /** Tutoriel d'entrée : quelques bulles courtes, une à la fois, lues à voix haute, à voir une seule fois. */
-export function Tutorial({ id, steps, replay = 0, targets }: Props) {
+export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
   const { settings, speak } = useSettings();
   const [open, setOpen] = useState(() => !hasSeenTutorial(id));
   const [step, setStep] = useState(0);
@@ -65,6 +67,7 @@ export function Tutorial({ id, steps, replay = 0, targets }: Props) {
   const close = () => {
     markTutorialSeen(id);
     setOpen(false);
+    onClose?.();
   };
   return (
     <section className="panel tutorial" role="dialog" aria-labelledby={`tuto-${id}`} aria-live="polite">
