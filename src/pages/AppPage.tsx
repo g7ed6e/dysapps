@@ -5,6 +5,7 @@ import { Icon } from '../components/Icon';
 import { NotFoundPage } from './NotFoundPage';
 import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
+import { MENU_PATH } from '../core/paths';
 
 export function AppPage() {
   const { appId } = useParams();
@@ -20,7 +21,7 @@ export function AppPage() {
   return (
     <>
       {/* Le Tutoriel est une quête de l'accueil : on y revient. */}
-      <Link to={fromSchool ?? (app.onHome ? '/' : `/matiere/${app.subject}`)} className="back-link">
+      <Link to={fromSchool ?? (app.onHome ? MENU_PATH : `/matiere/${app.subject}`)} className="back-link">
         <Icon name="back" /> {fromSchool ? 'École' : app.onHome ? 'Menu' : SUBJECTS[app.subject].title}
       </Link>
       <h1 className={`page-title title-${app.subject}`}>

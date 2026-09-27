@@ -306,3 +306,18 @@ it('l’école du village : on la touche dans le monde (ou « École » dans la 
   await user.click(button);
   expect(screen.queryByRole('dialog', { name: /École du village/ })).not.toBeInTheDocument();
 });
+
+it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » le referme', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  await user.click(await screen.findByRole('button', { name: 'Menu' }));
+  const menu = await screen.findByRole('dialog', { name: 'Menu' });
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
+  expect(within(menu).getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  expect(within(menu).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('href', '/quetes');
+  expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/succes');
+  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
+  await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
+  expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
+  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/aventure$/);
+});

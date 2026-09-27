@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
+import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type StartChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -152,6 +152,19 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.freeWalk} onChange={(e) => update({ freeWalk: e.target.checked })} />
             Marche libre dans le monde en 2D (une croix de direction et un bouton « Entrer »)
           </label>
+        </fieldset>
+
+        <fieldset className="panel">
+          <legend>Au démarrage</legend>
+          <div className="option-row">
+            {(Object.keys(START_LABELS) as StartChoice[]).map((startIn) => (
+              <label key={startIn} className={`option${settings.startIn === startIn ? ' selected' : ''}`}>
+                <input type="radio" name="startIn" value={startIn} checked={settings.startIn === startIn} onChange={() => update({ startIn })} />
+                {START_LABELS[startIn]}
+              </label>
+            ))}
+          </div>
+          <p>L’appli s’ouvre sur ce choix, après l’écran titre. Avec « La liste des îles », elle s’ouvre toujours sur le menu.</p>
         </fieldset>
 
         <fieldset className="panel">

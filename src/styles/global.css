@@ -5099,3 +5099,34 @@ button.app-card {
 .school-more {
   margin: 1rem 0 0;
 }
+
+/* Le menu du village : un bouton Pause en haut à droite du monde, et son panneau. */
+.world-menu-button {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  justify-content: center;
+}
+.world-menu-button[aria-pressed="true"] {
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.world-page .world-overlay-top {
+  right: calc(0.6rem + 52px + 0.5rem);
+}
+.menu-resume {
+  width: 100%;
+  justify-content: center;
+  margin: 0.4rem 0 0.8rem;
+}
+button.island-quest {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

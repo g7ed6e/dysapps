@@ -2,6 +2,8 @@ export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
 /** La vue de Blocland : le monde en 3D, le monde en 2D (pixels, vue de dessus en oblique), ou la liste des îles. */
 export type WorldViewChoice = '3d' | '2d' | 'liste';
+/** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
+export type StartChoice = 'village' | 'menu';
 
 export interface Settings {
   font: FontChoice;
@@ -28,6 +30,8 @@ export interface Settings {
   haptics: boolean;
   /** Une pastille sur l'icône de l'appli installée quand des révisions attendent. */
   appBadge: boolean;
+  /** Au démarrage (et à l'adresse d'accueil) : le village, ou le menu. */
+  startIn: StartChoice;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -51,6 +55,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ambience: false,
   haptics: true,
   appBadge: true,
+  startIn: 'village',
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -64,6 +69,11 @@ export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
   '2d': 'Le monde en 2D (expérimental)',
   liste: 'La liste des îles',
+};
+
+export const START_LABELS: Record<StartChoice, string> = {
+  village: 'Le village de Blocland',
+  menu: 'Le menu',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -112,6 +122,7 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
+    startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
   };
 }
 

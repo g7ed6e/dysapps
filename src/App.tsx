@@ -2,7 +2,7 @@ import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom
 import { Layout } from './components/Layout';
 import { TitleScreen } from './components/TitleScreen';
 import { AppBadge } from './components/AppBadge';
-import { SettingsProvider } from './core/SettingsContext';
+import { SettingsProvider, useSettings } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
 import { HomePage } from './pages/HomePage';
 import { SubjectPage } from './pages/SubjectPage';
@@ -20,6 +20,7 @@ import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { SchoolPage } from './blocland/School';
+import { MENU_PATH } from './core/paths';
 import { useImmersive } from './blocland/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
@@ -43,7 +44,8 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<HomePage />} />
+        <Route index element={<StartEntry />} />
+        <Route path="menu" element={<HomePage />} />
         <Route path="quetes" element={<QuestsPage />} />
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
@@ -61,6 +63,14 @@ export function AppRoutes() {
   );
 }
 
+// L'accueil : le village (en 3D ou en 2D), sur l'île où se tient le bonhomme ; le menu si le réglage « Au démarrage »
+// le demande, ou si l'appareil ne sait pas dessiner le monde (la vue simple commence par le menu).
+function StartEntry() {
+  const { settings } = useSettings();
+  const immersive = useImmersive();
+  return settings.startIn === 'village' && immersive ? <Navigate to="/aventure" replace /> : <HomePage />;
+}
+
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).
 function AventureEntry() {
   return useImmersive() ? <WorldPage /> : <BloclandPage />;
@@ -71,6 +81,8 @@ function IslandEntry() {
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
   if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
+  // Le menu du village : en vue simple, c'est le menu en page.
+  if (biomeId === 'menu') return <Navigate to={MENU_PATH} replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
   if (biomeId === 'ecole') return <SchoolPage />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.

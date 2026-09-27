@@ -65,3 +65,9 @@ it('dit les espacements et la vitesse de la voix en mots, pas en nombres', () =>
   expect(speedWord(DEFAULT_SETTINGS.speechRate)).toBe('Normale');
   expect(speedWord(1.3)).toBe('Rapide');
 });
+
+it('s’ouvre sur le village par défaut, et lit le choix « Au démarrage »', () => {
+  expect(sanitizeSettings({}).startIn).toBe('village');
+  expect(sanitizeSettings({ startIn: 'menu' }).startIn).toBe('menu');
+  expect(sanitizeSettings({ startIn: 'plage' as never }).startIn).toBe('village');
+});

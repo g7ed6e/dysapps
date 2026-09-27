@@ -4,9 +4,9 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-L’application se parcourt comme un jeu, avec quatre grands endroits, toujours au même endroit et avec les mêmes mots :
+L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** de Blocland, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Blocland](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Accueil** : le menu principal. Il montre le rang, **Continuer** (la dernière quête ouverte), **Blocland** (l’aventure) et trois grosses tuiles : **Quêtes**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran.
+- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rang, **Continuer** (la dernière quête ouverte), **Blocland** (l’aventure) et trois grosses tuiles : **Quêtes**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
 - **Aventure** : Blocland, le village à reconstruire. Son **école du village** ouvre aussi les quêtes du portail, qui y rapportent des blocs.
 - **Quêtes** : les quêtes du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
@@ -29,18 +29,18 @@ L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le bloc d’herbe, « DysApps » et un gros bouton **Jouer**. S’il y a une quête en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière quête ouverte), et **Accueil** à la place de Jouer. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le bloc d’herbe, « DysApps » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une quête en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière quête ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
-Quand des items ratés reviennent (répétition espacée), l’accueil montre aussi une carte **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
+Quand des items ratés reviennent (répétition espacée), le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-Sur l’accueil aussi, une carte **Continuer** ramène à la dernière quête ouverte (du portail ou de Blocland ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+Dans le menu aussi, **Continuer** ramène à la dernière quête ouverte (du portail ou de Blocland ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
-2. **Le Tutoriel** (sur l’accueil, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas de l’accueil) est une quête d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
+2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; dans le menu du village, ligne « Tutoriel ») est une quête d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
 3. **Choisir** : une quête du portail (voir [Les quêtes](quetes.md)) ou l’aventure Blocland (voir [Blocland](blocland.md)). Dans Blocland, un tutoriel de six bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
 
 Les séances sont pensées **courtes** : une quête du portail dure une dizaine de questions ; dans Blocland, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.

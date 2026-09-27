@@ -13,6 +13,7 @@ import { useHaptics } from '../core/haptics';
 import { Stars } from '../blocland/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
+import { MENU_PATH } from '../core/paths';
 import { useOptionalBlocland } from '../blocland/BloclandContext';
 import { BLOCKS, getBiome, ofBlock } from '../blocland/biomes';
 import { BlockIcon } from '../blocland/Voxel';
@@ -110,7 +111,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou à l'accueil).
   const navigate = useNavigate();
   const haptics = useHaptics();
-  useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate('/')), 'L’XP des réponses déjà données est gardée.');
+  useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate(MENU_PATH)), 'L’XP des réponses déjà données est gardée.');
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -255,7 +256,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
                 <Icon name="play" /> {exitLabel}
               </button>
             ) : (
-              <Link to="/" className="button primary" autoFocus>
+              <Link to={MENU_PATH} className="button primary" autoFocus>
                 <Icon name="play" /> Continuer
               </Link>
             )}
@@ -268,8 +269,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               </button>
             )}
             {(nextStep || onExit) && (
-              <Link to="/" className="button">
-                <Icon name="home" /> Accueil
+              <Link to={MENU_PATH} className="button">
+                <Icon name="home" /> Menu
               </Link>
             )}
           </div>

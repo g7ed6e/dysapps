@@ -1,6 +1,6 @@
 # Cadrage — « Blocland, l’appli entière »
 
-Document de travail, **proposé et validé le 27 septembre 2026**. L’**étape 1 (l’école du village) est construite** : voir [§ 8](#8-etape-1-ce-qui-est-construit) ; les étapes 2 à 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
+Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village) et 2 (le village au démarrage) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit) et [§ 9](#9-etape-2-ce-qui-est-construit) ; les étapes 3 et 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
 
 ## 1. Le besoin en une phrase
 
@@ -29,7 +29,7 @@ Aujourd’hui, l’élève voit **deux applis collées** : un portail de quêtes
 
 L’écran titre propose **Jouer** (vers le village, sur l’île où se tient le bonhomme) et **Continuer**. Le menu principal actuel (Accueil) devient le **menu pause** du village. On l’ouvre avec le bouton ⏸ ou le bouton retour, et il contient Reprendre, Quêtes, Succès, Réglages, Aide.
 
-**À décider :** garder l’onglet Accueil sur téléphone, ou n’avoir que le village et le menu pause.
+**Décidé (étape 2) :** l’onglet Accueil devient l’onglet **Menu** (le menu en page) ; son retrait éventuel est pour l’étape 3, avec celui des onglets.
 
 ### 3.2 Les quêtes du portail dans le village
 
@@ -102,4 +102,17 @@ Livrée le 27 septembre 2026. L’accueil, les onglets et les adresses ne change
 - **Sur téléphone**, la barre du monde passe aux icônes seules (six boutons avec l’école) ; elle défile si la place manque.
 
 À observer avant l’étape 2 : combien d’élèves entrent à l’école depuis le monde plutôt que par l’onglet Quêtes.
+
+## 9. Étape 2 : ce qui est construit
+
+Livrée le 27 septembre 2026. Les deux choix ouverts n’ayant pas été tranchés, l’étape suit les propositions du cadrage, en réversible :
+
+- **Le village au démarrage, en option** (question ouverte 1) : un réglage **« Au démarrage »**, « Le village de Blocland » par défaut, ou « Le menu ». L’accueil (`/`) mène au village (`/aventure`, sur l’île où se tient le bonhomme) ; sans dessin du monde (vue simple, ni WebGL ni Canvas), il reste le menu.
+- **Le menu garde son adresse** : `#/menu` (l’ancien accueil, `pages/HomePage.tsx`), pour la vue simple et l’accès direct. Les liens « Menu » (retour du Tutoriel, de la carte des îles, bouton du bilan d’une quête du portail) y mènent. Les autres adresses ne changent pas.
+- **L’écran titre** propose toujours **Jouer** (le village, déjà chargé derrière lui) et, s’il y a une quête en cours, **Continuer** d’abord. Il retient l’adresse d’ouverture : l’accueil qui mène au village ne fait pas perdre « Continuer ».
+- **Le menu pause du village** (`MenuSheet.tsx`, `#/aventure/menu`) : un bouton ⏸ en haut à droite du monde ouvre un panneau, le monde reste chargé derrière. On y trouve Reprendre, Continuer, À revoir aujourd’hui, École du village, Quêtes, Succès, Réglages, Revoir l’aide du village, Tutoriel, et le menu en page.
+- **Les onglets** (téléphone) : l’onglet Accueil devient **Menu**. Dans le monde, ils restent masqués comme avant ; le menu du village les remplace.
+- **Pas encore fait** : le bouton retour du téléphone n’ouvre pas le menu du village (il revient à l’île précédente, comme avant). À reprendre à l’étape 3 si l’on retire les onglets.
+
+À observer : combien d’élèves repassent le réglage sur « Le menu ».
 

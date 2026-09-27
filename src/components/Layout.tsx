@@ -11,13 +11,14 @@ import { Icon, type AnyIconName } from './Icon';
 import { ErrorBoundary } from './ErrorBoundary';
 import { FocusProvider, useFocusActive } from './FocusMode';
 import { useImmersive } from '../blocland/useImmersive';
+import { MENU_PATH } from '../core/paths';
 
 /**
  * Les grands endroits de l'appli, toujours au même endroit et avec les mêmes mots : en haut sur tablette et
  * ordinateur ; sur téléphone, les quatre premiers en onglets en bas (Réglages reste en haut, en roue dentée).
  */
 const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; tab: boolean }[] = [
-  { to: '/', icon: 'home', label: 'Accueil', end: true, tab: true },
+  { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, tab: true },
   { to: '/aventure', icon: 'map', label: 'Aventure', tab: true },
   { to: '/quetes', icon: 'dumbbell', label: 'Quêtes', tab: true },
   { to: '/succes', icon: 'trophy', label: 'Succès', tab: true },
@@ -105,7 +106,8 @@ function Shell() {
       {!focus && !immersive && (
         <nav className="tabbar" aria-label="Onglets">
           {PLACES.filter((p) => p.tab).map((p) => (
-            <NavLink key={p.to} to={p.to} end={p.end} className="tab">
+            // Le menu est aussi l'accueil quand l'appli s'ouvre sur lui (réglage « Au démarrage », vue simple).
+            <NavLink key={p.to} to={p.to} end={p.end} className={({ isActive }) => `tab${isActive || (p.to === MENU_PATH && pathname === '/') ? ' active' : ''}`}>
               <Icon name={p.icon} size="1.5rem" />
               <span>{p.label}</span>
             </NavLink>
