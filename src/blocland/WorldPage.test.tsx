@@ -5,6 +5,7 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
 import { WorldPage } from './WorldPage';
+import { BADGES } from '../core/progress';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île.
 vi.mock('./three', () => ({
@@ -42,6 +43,9 @@ vi.mock('./three', () => ({
       </button>
       <button type="button" onClick={() => onPickPlace('ecole', 'foret')}>
         Toucher l’école dans le monde
+      </button>
+      <button type="button" onClick={() => onPickPlace('trophees', 'foret')}>
+        Toucher la salle des trophées dans le monde
       </button>
       <button type="button" onClick={() => vehicle && onPickVehicle(vehicle.port)}>
         Toucher le Bloc-Navire
@@ -315,9 +319,23 @@ it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » l
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
   expect(within(menu).getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
   expect(within(menu).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('href', '/quetes');
-  expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/succes');
+  expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/aventure/trophees');
   expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
   await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/aventure$/);
+});
+
+it('la salle des trophées : on la touche dans le monde, son panneau montre les succès', async () => {
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 1, badges: { 'premier-pas': '2026-09-27T10:00:00Z' } }));
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  await user.click(await screen.findByRole('button', { name: 'Toucher la salle des trophées dans le monde' }));
+  const sheet = await screen.findByRole('dialog', { name: /Salle des trophées/ });
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/trophees');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
+  expect(within(sheet).getByText(`1 / ${BADGES.length} trophées`)).toBeInTheDocument();
+  expect(within(sheet).getByRole('heading', { name: `Succès 1 / ${BADGES.length}` })).toBeInTheDocument();
+  await user.click(within(sheet).getByRole('button', { name: 'Fermer le panneau' }));
+  expect(screen.queryByRole('dialog', { name: /Salle des trophées/ })).not.toBeInTheDocument();
 });

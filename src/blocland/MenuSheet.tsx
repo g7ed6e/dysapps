@@ -7,6 +7,7 @@ import { MENU_PATH } from '../core/paths';
 import { useBlocland } from './BloclandContext';
 import { questsToReview } from './review';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
+import { TROPHIES_PATH } from './trophies';
 
 interface Props {
   /** Reprendre : le panneau se ferme, on est dans le village. */
@@ -62,7 +63,7 @@ export function MenuSheet({ onClose, onHelp }: Props) {
         )}
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to="/quetes" icon="dumbbell" title="Quêtes" desc="Toutes les quêtes, par matière" />
-        <Row to="/succes" icon="trophy" title="Succès" desc="Ton rang, tes succès, ce qui est à retravailler" />
+        <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="La salle des trophées : ton rang, tes succès, ce qui est à retravailler" />
         <Row to="/reglages" icon="settings" title="Réglages" desc="Police, couleurs, voix, vue du monde" />
         <li>
           <button type="button" className="island-quest" onClick={onHelp}>

@@ -1,6 +1,6 @@
 # Cadrage — « Blocland, l’appli entière »
 
-Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village) et 2 (le village au démarrage) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit) et [§ 9](#9-etape-2-ce-qui-est-construit) ; les étapes 3 et 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
+Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village), 2 (le village au démarrage) et 3 (la salle des trophées) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit), [§ 9](#9-etape-2-ce-qui-est-construit) et [§ 10](#10-etape-3-ce-qui-est-construit) ; le retrait des onglets et l’étape 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
 
 ## 1. Le besoin en une phrase
 
@@ -115,4 +115,13 @@ Livrée le 27 septembre 2026. Les deux choix ouverts n’ayant pas été tranch�
 - **Pas encore fait** : le bouton retour du téléphone n’ouvre pas le menu du village (il revient à l’île précédente, comme avant). À reprendre à l’étape 3 si l’on retire les onglets.
 
 À observer : combien d’élèves repassent le réglage sur « Le menu ».
+
+## 10. Étape 3 : ce qui est construit
+
+Livrée le 27 septembre 2026 : la salle des trophées. Le retrait des onglets, prévu ensuite « si l’étape 2 est adoptée », n’est pas fait : l’étape 2 vient d’être livrée, il faut d’abord voir si elle est adoptée.
+
+- **Le bâtiment** : un lieu du village de plus (`trophees`, à côté de `ecole` dans `VILLAGE_PLACES`), sur la même île de l’école de chaque archipel, au milieu du cœur (4 × 3 cases, coin en `TROPHY_AT`), derrière les bornes et devant la zone des plans. L’arrière gauche, d’abord choisi, était caché par la créature dans la vue 3D. Un pavillon ouvert devant : colonnes de marbre, fond de velours, socles de marbre, toit de pierre de taille au faîte d’or.
+- **Les succès sont des objets posés** : un trophée par succès gagné (`trophies.ts`), dans l’ordre des succès, à des places fixes (`TROPHY_SLOTS` : socles, faîte, second rang, bord du toit ; une place par succès, un test le vérifie). Le bloc dit la famille : or (exploits), cristal (rangs), quartz (Gardiens), lentille (voyages). Le monde se redessine quand un succès tombe.
+- **Le panneau** (`TrophySheet.tsx`) : une phrase lue à voix haute, puis le profil de la page Succès (`ProgressBody`, partagé). La ligne « Succès » du menu du village y mène ; la page Succès reste là (onglet, barre du haut, `#/succes`). En vue simple, `#/aventure/trophees` mène à la page Succès.
+- **On y entre** en touchant le pavillon ou un trophée (3D, 2D, « Entrer » en marche libre), ou par une ligne du panneau de l’île. Le bonhomme marche jusqu’à la salle.
 

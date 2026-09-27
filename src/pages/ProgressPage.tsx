@@ -99,6 +99,16 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
 }
 
 export function ProgressPage() {
+  return (
+    <>
+      <h1 className="page-title">Profil</h1>
+      <ProgressBody />
+    </>
+  );
+}
+
+/** Le profil : rang, chiffres, étoiles par matière, succès. La page Succès et la salle des trophées du village le montrent. */
+export function ProgressBody() {
   const { progress } = useProgress();
   const { state } = useBlocland();
   const subjects = (Object.keys(SUBJECTS) as Subject[]).map((s) => subjectProgress(s, progress.apps, state));
@@ -107,7 +117,6 @@ export function ProgressPage() {
 
   return (
     <>
-      <h1 className="page-title">Profil</h1>
       <div className="panel">
         <XpBar xp={progress.xp} large />
         <RankLadder level={levelFromXp(progress.xp).level} />

@@ -18,6 +18,8 @@ import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MenuSheet } from './MenuSheet';
+import { TrophySheet } from './TrophySheet';
+import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
@@ -41,7 +43,7 @@ import {
   islandCenter,
   islandOrigin,
   questStations,
-  schoolDoor,
+  placeDoor,
   vehiclePlacement,
   worldCubes,
 } from './world/terrain';
@@ -78,7 +80,7 @@ export function WorldPage() {
   // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
   const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
-  const { launchVoyage } = useProgress();
+  const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'carte';
   // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
   const mondeOpen = biomeId === 'monde';
@@ -88,12 +90,18 @@ export function WorldPage() {
   const schoolOpen = biomeId === 'ecole';
   // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Quêtes, Succès, Réglages, Aide.
   const menuOpen = biomeId === 'menu';
-  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen ? getBiome(biomeId) : undefined;
+  // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
+  const trophiesOpen = biomeId === 'trophees';
+  // Le lieu du village ouvert (l'école ou la salle des trophées) : le bonhomme marche jusqu'à sa porte.
+  const placeOpen = schoolOpen ? 'ecole' : trophiesOpen ? 'trophees' : null;
+  const island =
+    biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !trophiesOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
   const a: ArchipelagoId = archipelago.classe;
-  const cubes = useMemo(() => worldCubes(a, state.progress, state.village, false), [a, state.progress, state.village]);
+  const trophyBlocks = useMemo(() => trophies(progress.badges), [progress.badges]);
+  const cubes = useMemo(() => worldCubes(a, state.progress, state.village, false, trophyBlocks), [a, state.progress, state.village, trophyBlocks]);
   const creatures = useMemo(
     () => [...creaturePlacements(a, state.village.bridges), ...guardianPlacements(a, state.progress, state.village.bridges)],
     [a, state.progress, state.village.bridges],
@@ -318,11 +326,11 @@ export function WorldPage() {
       onBoard(archipelagoOf(island.id).classe, true, island.id);
       return;
     }
-    // L'école : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
-    if (schoolOpen) {
+    // L'école ou la salle des trophées : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
+    if (placeOpen) {
       const school = archipelago.school;
       setFocus((f) => ({ island: school, seq: f.seq + 1 }));
-      const door = schoolDoor(school);
+      const door = placeDoor(placeOpen, school);
       const route = avatarRoute(at, school, state.village.bridges, ground) ?? [avatarHome(school)];
       const last = route[route.length - 1];
       const toDoor = door ? (walkPath(ground, last, door) ?? [last, door]) : [last];
@@ -338,9 +346,9 @@ export function WorldPage() {
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, mapOpen, schoolOpen]);
+  }, [island?.id, mapOpen, placeOpen]);
 
-  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !trophiesOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
@@ -385,7 +393,7 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || menuOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
+    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
@@ -408,7 +416,7 @@ export function WorldPage() {
             trail={trail}
             quests={quests}
             onPickQuest={onPickQuest}
-            onPickPlace={(place) => place === 'ecole' && navigate(SCHOOL_PATH)}
+            onPickPlace={(place) => navigate(place === 'ecole' ? SCHOOL_PATH : TROPHIES_PATH)}
             islandLabels={voyage ? undefined : islandLabels}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
@@ -571,6 +579,8 @@ export function WorldPage() {
         <InventorySheet onClose={() => openIsland(at)} />
       ) : schoolOpen ? (
         <SchoolSheet onClose={() => openIsland(at)} />
+      ) : trophiesOpen ? (
+        <TrophySheet onClose={() => openIsland(at)} />
       ) : menuOpen ? (
         <MenuSheet
           onClose={() => navigate('/aventure')}

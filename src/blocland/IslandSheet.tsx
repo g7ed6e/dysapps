@@ -22,6 +22,7 @@ import { Stars } from './Stars';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
 import { SchoolLink } from './School';
+import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 
 interface Props {
@@ -140,9 +141,22 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
 
       <ul className="island-actions" aria-label="Sur cette île">
         {unlocked && archipelagoOf(biome.id).school === biome.id && (
-          <li>
-            <SchoolLink />
-          </li>
+          <>
+            <li>
+              <SchoolLink />
+            </li>
+            <li>
+              <Link to={TROPHIES_PATH} className="island-quest">
+                <span className="island-quest-icon">
+                  <Icon name="trophy" />
+                </span>
+                <span className="island-quest-text">
+                  <span className="island-quest-title">{TROPHIES_TITLE}</span>
+                  <span className="island-quest-desc">Un trophée par succès gagné.</span>
+                </span>
+              </Link>
+            </li>
+          </>
         )}
         <li>
           {bossReady ? (

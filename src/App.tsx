@@ -83,6 +83,8 @@ function IslandEntry() {
   if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
   // Le menu du village : en vue simple, c'est le menu en page.
   if (biomeId === 'menu') return <Navigate to={MENU_PATH} replace />;
+  // La salle des trophées : en vue simple, c'est la page Succès.
+  if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
   if (biomeId === 'ecole') return <SchoolPage />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
