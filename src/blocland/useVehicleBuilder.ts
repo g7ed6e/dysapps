@@ -8,6 +8,7 @@ import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { islandOrigin, toIslandCell } from './world/terrain';
 import { whereToEarn, type Burst } from './usePlanBuilder';
+import { useHaptics } from '../core/haptics';
 
 export interface VehicleBuilder {
   /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
@@ -44,6 +45,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const launch = stage ? canLaunch(state, stage) : null;
   const kit = stage ? kitReady(stage, state.progress) : false;
   const sound = (f: () => void) => settings.sounds && f();
+  const haptics = useHaptics();
 
   const fillAt = (x: number, y: number, z: number) => {
     if (!stage) return;
@@ -66,6 +68,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     } else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
       sound(playPlace);
+      haptics.place();
     }
   };
   const fillNext = () => {

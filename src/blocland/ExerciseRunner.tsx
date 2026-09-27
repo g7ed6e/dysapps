@@ -11,6 +11,7 @@ import { useFocusMode } from '../components/FocusMode';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
+import { useHaptics } from '../core/haptics';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
@@ -19,6 +20,7 @@ import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
+import { reviewKeys } from './review';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
@@ -36,9 +38,9 @@ interface Props {
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
-export function screensOf(def: ExerciseDef, seed = def.id): ExerciseItem[][] {
+export function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
-  const items = runItems(def, seed);
+  const items = runItems(def, seed, review);
   if (batch === 'all') return [items];
   const out: ExerciseItem[][] = [];
   for (let i = 0; i < items.length; i += batch) out.push(items.slice(i, i + batch));
@@ -62,11 +64,14 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const [paused, setPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
+  const haptics = useHaptics();
 
   const type = SCREEN_TYPES[def.type];
   // La graine est tirée au hasard au démarrage de la partie, puis fixée : les items ne changent pas en cours de partie.
   const [seed] = useState(() => runSeed(def));
-  const screens = screensOf(def, seed);
+  // Les items à revoir aujourd'hui (répétition espacée) passent en tête ; fixés au démarrage de la partie.
+  const [review] = useState(() => reviewKeys(state.spaced, def.id));
+  const screens = screensOf(def, seed, review);
   const items = screens[index];
 
   // Chaque écran suivant (et l'écran de fin) s'affiche en haut ; pas de saut au premier.
@@ -107,6 +112,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
       return;
     }
     setAnswered(a);
+    if (correct) haptics.success();
     onRound?.({ index, total: screens.length, correct });
     answer(correct, helpUsed || firstTry ? 2 : 1);
   };

@@ -4845,6 +4845,9 @@ a.tag:focus-visible {
 .resume-card {
   border-color: var(--success);
 }
+.review-card {
+  border-color: var(--cyan);
+}
 
 /* ===== Navigation d'appli ===== */
 /* Onglets en bas de l'écran, sur téléphone seulement. */

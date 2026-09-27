@@ -55,6 +55,8 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
 - **Marche libre dans le monde en 2D** (désactivé par défaut) : une croix de direction s’affiche en bas à droite du monde, avec un bouton **Entrer** au milieu. Voir [Blocland](blocland.md).
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
+- **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
+- **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
 
 ## Application
 

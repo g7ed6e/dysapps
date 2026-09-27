@@ -54,7 +54,7 @@ Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite,
 
 **Chaque partie change**, dès la première et même quand on recommence le jeu depuis le début : d’autres nombres en maths (école et collège), un autre tirage de mots en français, dans un autre ordre. La **place de la bonne réponse** change aussi : sur une partie, elle est autant de fois à gauche, au milieu ou à droite, et d’une partie à l’autre un même mot n’a pas sa réponse au même endroit. En maths, les nombres restent rangés dans l’ordre croissant ; ce sont les pièges proposés qui changent (1-2-3, 2-3-4 ou 3-4-5 syllabes, par exemple). Le **niveau** de chaque quête s’adapte à l’élève : il monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, sans jamais l’afficher comme une baisse. À niveau égal, l’exercice le moins joué est proposé.
 
-Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) et sortent après trois réussites d’affilée.
+Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) et sortent après trois réussites d’affilée. Le jour venu, ils passent **en tête de la partie** de leur quête (pour les quêtes d’un item à la fois ; un tri de quatre mots garde ses écrans), et la quête choisit la variante qui en a, sans dépasser le niveau de l’élève. L’accueil montre alors une carte **À revoir aujourd’hui**, qui mène à la première quête concernée et dit combien d’autres attendent.
 
 ## Les blocs
 

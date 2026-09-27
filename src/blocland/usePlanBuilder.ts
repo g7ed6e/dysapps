@@ -9,6 +9,7 @@ import { islandOrigin, toIslandCell } from './world/terrain';
 import { plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
 import type { Burst } from './world/view';
+import { useHaptics } from '../core/haptics';
 
 export type { Burst } from './world/view';
 
@@ -54,6 +55,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
   const plan = current?.plan ?? null;
   const status = plan ? planStatus(state, plan) : null;
   const sound = (f: () => void) => settings.sounds && f();
+  const haptics = useHaptics();
 
   const fillAt = (x: number, y: number, z: number) => {
     if (!plan) return;
@@ -78,6 +80,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     } else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
       sound(playPlace);
+      haptics.place();
     }
   };
   const fillNext = () => {

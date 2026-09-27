@@ -4,6 +4,7 @@ import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
+import { questsToReview } from '../blocland/review';
 import { levelFromXp } from '../core/progress';
 import { useBlocland } from '../blocland/BloclandContext';
 import { canLaunch, currentStage } from '../blocland/engine';
@@ -16,6 +17,7 @@ export function HomePage() {
   const stage = currentStage(state);
   const shipReady = Boolean(stage && canLaunch(state, stage).ok);
   const resume = lastPlace();
+  const reviews = questsToReview(state.spaced, state.village.bridges);
 
   return (
     <>
@@ -42,6 +44,27 @@ export function HomePage() {
           </span>
           <span className="subject-count">
             Reprendre <Icon name="play" />
+          </span>
+        </Link>
+      )}
+
+      {/* Les révisions du jour : les items ratés reviennent (J+1, J+3, J+7, J+15), en tête de leur quête. */}
+      {reviews.length > 0 && (
+        <Link to={reviews[0].path} className="panel adventure-card review-card">
+          <span className="subject-icon">
+            <Icon name="history" size="2.2rem" />
+          </span>
+          <span className="adventure-text">
+            <span className="adventure-kicker">À revoir aujourd’hui</span>
+            <span className="adventure-title">{reviews[0].label}</span>
+            {reviews.length > 1 && (
+              <span className="adventure-desc">
+                Et {reviews.length - 1} autre{reviews.length > 2 ? 's' : ''} quête{reviews.length > 2 ? 's' : ''} ensuite.
+              </span>
+            )}
+          </span>
+          <span className="subject-count">
+            Réviser <Icon name="play" />
           </span>
         </Link>
       )}

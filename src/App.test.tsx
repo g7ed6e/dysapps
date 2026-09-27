@@ -39,6 +39,13 @@ it('l’accueil est un menu principal ; les matières sont dans l’onglet Quêt
   expect(within(tabs).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('aria-current', 'page');
 });
 
+it('les révisions du jour ont leur carte sur l’accueil, vers la quête', () => {
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ spaced: [{ itemId: 'foret-echauffement-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
+  renderAt('/');
+  expect(screen.getByRole('link', { name: /À revoir aujourd’hui.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/aventure/foret/abattage');
+});
+
 it('une quête ouverte devient « Continuer » sur l’accueil', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/app/tables');

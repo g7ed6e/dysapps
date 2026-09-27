@@ -128,9 +128,18 @@ export function exercisesOf(biome: BiomeId, type: string): ExerciseMeta[] {
  * L'exercice à jouer : au niveau demandé (ou le plus proche en dessous), et parmi ceux-là
  * le moins joué, pour varier les contenus.
  */
-export function pickExercise(biome: BiomeId, type: string, level: number, progress: Record<string, { attempts: number }> = {}): ExerciseMeta | undefined {
+export function pickExercise(
+  biome: BiomeId,
+  type: string,
+  level: number,
+  progress: Record<string, { attempts: number }> = {},
+  toReview: Set<string> = new Set(),
+): ExerciseMeta | undefined {
   const all = exercisesOf(biome, type);
   if (all.length === 0) return undefined;
+  // Une variante qui a des items à revoir aujourd'hui passe en premier (la plus haute, sans dépasser le niveau).
+  const review = all.filter((e) => toReview.has(e.id) && e.level <= level);
+  if (review.length) return review[review.length - 1];
   const below = all.filter((e) => e.level <= level);
   const target = below.length ? below[below.length - 1].level : all[0].level;
   const candidates = all.filter((e) => e.level === target);

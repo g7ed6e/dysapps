@@ -9,6 +9,7 @@ import { langAttr, type Lang } from '../core/speech';
 import { useSheetClearance } from './useSheetClearance';
 import { useAnswerKeys } from './useAnswerKeys';
 import { useFocusMode } from './FocusMode';
+import { useHaptics } from '../core/haptics';
 import { Stars } from '../blocland/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
@@ -101,6 +102,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au choix des quêtes (ou à l'accueil).
   const navigate = useNavigate();
+  const haptics = useHaptics();
   useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate('/')), 'L’XP des réponses déjà données est gardée.');
 
   const question = questions[index];
@@ -114,6 +116,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     const effectiveAttempt = hintUsed ? Math.max(attempt, 2) : attempt;
 
     if (correct) {
+      haptics.success();
       const update = answer(true, effectiveAttempt);
       setXpGained((x) => x + update.xpGained);
       setPoints((p) => p + (effectiveAttempt === 1 ? 1 : 0.5));
