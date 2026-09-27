@@ -50,7 +50,7 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
     const pick = wrongAt.includes(i) ? choices.find((c) => c !== item.answer)! : (item.answer as string);
     await user.click(screen.getByRole('button', { name: pick }));
     const sheet = screen.getByRole('region', { name: 'Résultat' });
-    if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`${item.heard} : ${item.answer} syllabes`))).toBeInTheDocument();
+    if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`On entend ${item.heard} : ${item.answer}, c’est le nombre de syllabes`))).toBeInTheDocument();
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
     await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
@@ -62,7 +62,9 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /Abattage syllabique.*Nouveau/ })).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
-  expect(screen.getByText(DEF.instruction)).toBeInTheDocument();
+  // La consigne est écrite (pas seulement lue), et le mot n'est pas découpé en syllabes (ce serait la réponse).
+  expect(screen.getByRole('heading', { name: DEF.instruction })).toBeInTheDocument();
+  expect(document.querySelector('.item-word .syllables')).toBeNull();
 
   const items = await play(user, [1]);
   expect(screen.getByRole('heading', { name: 'Bien joué !' })).toBeInTheDocument();

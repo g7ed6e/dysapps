@@ -3,15 +3,15 @@
   "biome": "foret",
   "type": "abattage",
   "level": 1,
-  "instruction": "Écoute le mot, puis tape le nombre de syllabes.",
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends.",
   "items": [
     {
       "key": "cabane",
       "word": "cabane",
       "prompt": "cabane",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "ca-ba-ne"
+      "choices": ["1", "2", "3"],
+      "answer": "2",
+      "heard": "ca-bane"
     },
     {
       "key": "bois",
@@ -25,9 +25,9 @@
       "key": "village",
       "word": "village",
       "prompt": "village",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "vil-la-ge"
+      "choices": ["1", "2", "3"],
+      "answer": "2",
+      "heard": "vil-lage"
     },
     {
       "key": "pont",
@@ -41,9 +41,9 @@
       "key": "lanterne",
       "word": "lanterne",
       "prompt": "lanterne",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "lan-ter-ne"
+      "choices": ["1", "2", "3"],
+      "answer": "2",
+      "heard": "lan-terne"
     },
     {
       "key": "tour",
@@ -104,7 +104,7 @@
   ],
   "feedback": {
     "correct": "Bien entendu !",
-    "wrong": "{word} se coupe en {heard} : {answer} syllabes."
+    "wrong": "On entend {heard} : {answer}, c’est le nombre de syllabes."
   },
   "reward": {
     "block": "bois",

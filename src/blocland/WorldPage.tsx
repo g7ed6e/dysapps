@@ -274,6 +274,12 @@ export function WorldPage() {
     const biome = getBiome(id);
     if (!biome) return;
     if (kind === 'guardian') return navigate(`/aventure/${id}/gardien`);
+    // La créature est ce qu'on touche d'abord sur une île : on ouvre son panneau (elle y accueille, à voix haute).
+    // Une fois dans le panneau de son île, la toucher la fait parler.
+    if (island?.id !== id || !sheetOpen) {
+      setSaid(null);
+      return openIsland(id);
+    }
     const first = plansFor(id)[0];
     const home = first && isPlanDone(first, state.village.plans);
     const lines = home && Math.random() < 0.5 ? [biome.creature.home] : biome.creature.lines;

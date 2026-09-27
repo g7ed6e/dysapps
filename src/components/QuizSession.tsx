@@ -6,6 +6,7 @@ import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
 import { RichText } from './math/RichText';
 import { langAttr, type Lang } from '../core/speech';
+import { useSheetClearance } from './useSheetClearance';
 
 export interface Question {
   id: string;
@@ -81,6 +82,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useEffect(() => {
     sectionRef.current?.scrollIntoView?.({ block: 'start' });
   }, [index, questions, phase === 'summary']);
+  // Le bandeau de résultat ne cache ni la bonne réponse ni l'aide.
+  useSheetClearance(sectionRef, phase === 'resolved');
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);

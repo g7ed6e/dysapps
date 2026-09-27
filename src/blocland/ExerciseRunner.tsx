@@ -2,8 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
-import { RichText } from '../components/math/RichText';
+import { frenchTypography, RichText } from '../components/math/RichText';
+import { SpeakButton } from '../components/SpeakButton';
+import { Syllabified } from '../components/Syllabified';
+import { useSheetClearance } from '../components/useSheetClearance';
 import { useProgress } from '../core/ProgressContext';
+import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
@@ -39,7 +43,7 @@ export function screensOf(def: ExerciseDef, seed = def.id): ExerciseItem[][] {
 }
 
 /**
- * Lanceur d'exercice générique : la créature a donné la consigne (lue à voix haute),
+ * Lanceur d'exercice générique : la consigne reste écrite au-dessus de l'item (et lue à voix haute au début),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
 export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Props) {
@@ -52,6 +56,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const [done, setDone] = useState<Completion | null>(null);
   const [paused, setPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const { settings, speak } = useSettings();
 
   const type = SCREEN_TYPES[def.type];
   // La graine est tirée au hasard au démarrage de la partie, puis fixée : les items ne changent pas en cours de partie.
@@ -63,6 +68,18 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   useEffect(() => {
     if (index > 0 || done) sectionRef.current?.scrollIntoView?.({ block: 'start' });
   }, [index, done]);
+
+  // La consigne est lue au début de la partie, sauf si l'écran lit déjà son mot (dictée) : les deux se couperaient.
+  // Le Gardien a son propre texte d'accueil, et chaque manche affiche sa consigne.
+  const ownConsigne = def.type !== 'boss';
+  useEffect(() => {
+    if (ownConsigne && settings.autoRead && !type?.speaksOnOpen) speak(frenchTypography(def.instruction));
+    // Une lecture par partie.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [def.id]);
+
+  // Le bandeau de résultat ne cache pas la réponse.
+  useSheetClearance(sectionRef, Boolean(answered) && !done);
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -207,9 +224,18 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
 
   return (
     <section className={`quiz${answered ? ' has-sheet' : ''}`} ref={sectionRef} aria-labelledby="consigne">
-      <h2 id="consigne" className="visually-hidden">
-        {def.instruction}
-      </h2>
+      {ownConsigne ? (
+        <div className="consigne">
+          <h2 id="consigne" className="consigne-text">
+            <Syllabified text={frenchTypography(def.instruction)} />
+          </h2>
+          <SpeakButton text={frenchTypography(def.instruction)} label="Consigne" compact />
+        </div>
+      ) : (
+        <h2 id="consigne" className="visually-hidden">
+          {def.instruction}
+        </h2>
+      )}
       <ol className="quiz-steps" aria-label={`Écran ${index + 1} sur ${screens.length}`}>
         {screens.map((s, i) => (
           <li key={s[0].key} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />

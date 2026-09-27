@@ -3,7 +3,7 @@
   "biome": "foret",
   "type": "abattage",
   "level": 2,
-  "instruction": "Écoute le mot, puis tape le nombre de syllabes. Les mots sont longs : compte sur tes doigts.",
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends. Les mots sont longs : compte sur tes doigts.",
   "items": [
     {
       "key": "parapluie",
@@ -137,7 +137,7 @@
   "perRun": 8,
   "feedback": {
     "correct": "Bien entendu !",
-    "wrong": "{word} se coupe en {heard} : {answer} syllabes."
+    "wrong": "On entend {heard} : {answer}, c’est le nombre de syllabes."
   },
   "reward": {
     "block": "bois",
