@@ -4,8 +4,8 @@
 // les facettes tirées de la grille de hauteurs viennent au lot R2, les biseaux ne viendraient qu'avec un autre maillage.
 //
 // - (a) aplat : une couleur de la palette par face, sans texture ; seule la lumière distingue les faces.
-// - (b) facettes et dégradés doux : la couleur de la palette, nuancée par sommet (plus sombre vers la mer, de larges
-//   taches claires et sombres sur les dessus), fondue d'un sommet à l'autre.
+// - (b) facettes et dégradés doux : la couleur de la palette, nuancée par sommet (plus sombre et plus froide vers la
+//   mer, de larges taches claires et sombres sur les dessus), fondue d'un sommet à l'autre.
 // - (c) cubes adoucis : la couleur de la palette, et des normales penchées vers les coins, qui arrondissent la lumière
 //   de chaque cube comme un biseau, sans ajouter un triangle.
 
@@ -45,9 +45,22 @@ export const NUANCE: [number, number] = [0.78, 1.08];
 export function nuanceSommet(x: number, y: number, z: number, dessus: boolean): number {
   // Plus sombre et plus froid vers la mer, plus clair vers les sommets (les falaises prennent des strates douces).
   const hauteur = 0.82 + 0.2 * smooth(clamp((y + 1) / 12, 0, 1));
-  // Sur les dessus, de larges taches (7 blocs environ) plus claires ou plus sombres.
-  const taches = dessus ? 1 + 0.08 * (bruit(x / 7, z / 7) * 2 - 1) : 1;
+  // Sur les dessus, de larges taches (9 blocs environ) un peu plus claires ou plus sombres.
+  const taches = dessus ? 1 + 0.06 * (bruit(x / 9, z / 9) * 2 - 1) : 1;
   return clamp(hauteur * taches, NUANCE[0], NUANCE[1]);
+}
+
+/** Près de la mer (sous `FROID_SOUS`), la couleur se mêle de `FROID` à l'ambiance renvoyée par le sol de l'archipel. */
+export const FROID = 0.1;
+export const FROID_SOUS = 2;
+
+/**
+ * La part d'ambiance froide d'un sommet (option b), de 0 à `FROID` : ce qui est près de la mer tire vers la couleur
+ * renvoyée par le sol et l'eau (`ambianceSol` de la palette). Les sommets sont à hauteur entière : d'un sommet à
+ * l'autre, le passage se fond sur la hauteur d'un bloc.
+ */
+export function froidSommet(y: number): number {
+  return y < FROID_SOUS ? FROID : 0;
 }
 
 /** De combien les normales penchent vers les coins (option c) : 0,5 donne un biseau d'environ 35° au coin. */

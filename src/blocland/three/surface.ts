@@ -6,9 +6,9 @@ import * as THREE from 'three';
 import { mixColor } from '../world/daylight';
 import type { ArchipelagoId } from '../world/map';
 import type { MeshGroup } from '../world/mesher';
-import { couleurDeMatiere, MATIERES } from '../world/palette';
+import { cielDe, couleurDeMatiere, MATIERES } from '../world/palette';
 import type { TextureKind } from '../world/pixels';
-import { normalesAdoucies, nuanceSommet, type StyleSurface } from '../world/style';
+import { FROID, froidSommet, normalesAdoucies, nuanceSommet, type StyleSurface } from '../world/style';
 
 export interface Surface {
   /** Le matériau d'un groupe, ou `null` pour garder celui du monde en blocs. */
@@ -34,7 +34,12 @@ function couleurDe(g: MeshGroup, a: ArchipelagoId): number {
   return g.muted ? mixColor(c, MUTED, 0.55) : c;
 }
 
+/** Une couleur sRGB (0xRRGGBB) dans l'espace de travail de Three.js (linéaire). */
+const lineaire = (c: number) => new THREE.Color().setHex(c);
+
 export function surfaceDe(style: StyleSurface, a: ArchipelagoId): Surface {
+  // L'ambiance renvoyée par le sol et la mer, de jour : les surfaces près de l'eau s'y mêlent (option b).
+  const sol = cielDe(a, 1).ambianceSol;
   return {
     material(g) {
       if (g.ghost) return null;
@@ -58,14 +63,19 @@ export function surfaceDe(style: StyleSurface, a: ArchipelagoId): Surface {
     geometry(g, geo) {
       if (g.ghost) return;
       if (style === 'b') {
-        // Une nuance par sommet, qui multiplie la couleur du matériau.
+        // Une nuance par sommet, qui multiplie la couleur du matériau ; près de la mer, le mélange vers l'ambiance du sol
+        // s'écrit aussi en multiplicateur (la couleur froide divisée par celle du matériau, canal par canal).
         const p = g.positions;
+        const base = lineaire(couleurDe(g, a));
+        const froid = lineaire(mixColor(couleurDe(g, a), sol, FROID));
+        const ratio = [froid.r / Math.max(1e-4, base.r), froid.g / Math.max(1e-4, base.g), froid.b / Math.max(1e-4, base.b)];
         const colors = new Float32Array(p.length);
         for (let i = 0; i < p.length; i += 3) {
           const v = nuanceSommet(p[i], p[i + 1], p[i + 2], g.normals[i + 1] > 0.5);
-          colors[i] = v;
-          colors[i + 1] = v;
-          colors[i + 2] = v;
+          const cold = froidSommet(p[i + 1]) > 0;
+          colors[i] = v * (cold ? ratio[0] : 1);
+          colors[i + 1] = v * (cold ? ratio[1] : 1);
+          colors[i + 2] = v * (cold ? ratio[2] : 1);
         }
         geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
       } else if (style === 'c') {

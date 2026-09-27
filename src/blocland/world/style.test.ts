@@ -1,4 +1,4 @@
-import { ADOUCI, NUANCE, STYLES, bruit, normalesAdoucies, nuanceSommet } from './style';
+import { ADOUCI, FROID, FROID_SOUS, NUANCE, STYLES, bruit, froidSommet, normalesAdoucies, nuanceSommet } from './style';
 
 it('propose les trois options du cadrage', () => {
   expect(STYLES).toEqual(['a', 'b', 'c']);
@@ -47,4 +47,19 @@ it('les normales adoucies (c) penchent vers les coins, restent unitaires et du c
   expect(ADOUCI).toBe(0.5);
   expect(tilt).toBeGreaterThan(30);
   expect(tilt).toBeLessThan(40);
+});
+
+it('près de la mer, la couleur tire de 10 % vers l’ambiance du sol ; au-dessus, pas du tout', () => {
+  expect(FROID).toBe(0.1);
+  expect(froidSommet(FROID_SOUS - 1)).toBe(FROID);
+  expect(froidSommet(-1)).toBe(FROID);
+  expect(froidSommet(FROID_SOUS)).toBe(0);
+  expect(froidSommet(9)).toBe(0);
+});
+
+it('les taches des dessus restent discrètes (±6 %)', () => {
+  for (let x = 0; x < 60; x += 1.3) {
+    const r = nuanceSommet(x, 11, x * 1.7, true) / nuanceSommet(x, 11, x * 1.7, false);
+    expect(Math.abs(r - 1)).toBeLessThanOrEqual(0.06 + 1e-9);
+  }
 });

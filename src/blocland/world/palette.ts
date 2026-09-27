@@ -77,27 +77,27 @@ export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
   },
   // Les Îles Brumeuses : plus froid, plus pâle, la brume plus proche ; l'herbe tire vers le vert d'eau.
   '5e': {
-    jour: { zenith: 0x6a9dc8, horizon: 0xd4e1e7, lueur: 0xeef1ec, soleil: 0xfff0d8, soleilForce: 2.1, ambianceCiel: 0xc8d9e6, ambianceSol: 0x60808a, ambianceForce: 1.15, mer: 0x3aa2b0 },
+    jour: { zenith: 0x5b8cb8, horizon: 0xbccfd6, lueur: 0xdde6e4, soleil: 0xfff0d8, soleilForce: 2.1, ambianceCiel: 0xc8d9e6, ambianceSol: 0x60808a, ambianceForce: 1.15, mer: 0x2e7f94 },
     nuit: { zenith: 0x203764, horizon: 0x47648f, lueur: 0x5f79a1, soleil: 0xa9c0e6, soleilForce: 1.05, ambianceCiel: 0x7a93c4, ambianceSol: 0x2f4366, ambianceForce: 1.25, mer: 0x2a5684 },
     brume: [70, 260],
-    voile: [0xa4bcc4, 0.12],
+    voile: [0xa4bcc4, 0.1],
     sols: { herbe: { dessus: 0x6f9f6a, cote: 0x7a6a56 } },
     nuages: AMBIENCE['5e'].sky,
   },
   // Les Anciens Ateliers : un ciel profond et une brume chaude, couleur de poussière et de forge.
   '4e': {
-    jour: { zenith: 0x3e76b4, horizon: 0xe2d3bd, lueur: 0xf6dbb2, soleil: 0xffd8a6, soleilForce: 2.4, ambianceCiel: 0xb9cce2, ambianceSol: 0x6a6460, ambianceForce: 1.0, mer: 0x2b78a4 },
-    nuit: { zenith: 0x1c2d5a, horizon: 0x4a5788, lueur: 0x6a6893, soleil: 0xaab8e4, soleilForce: 1.1, ambianceCiel: 0x7a88c0, ambianceSol: 0x33385c, ambianceForce: 1.2, mer: 0x254878 },
-    brume: [100, 330],
+    jour: { zenith: 0x355f98, horizon: 0xd8b088, lueur: 0xf2b878, soleil: 0xffd8a6, soleilForce: 2.4, ambianceCiel: 0xb9cce2, ambianceSol: 0x6a6460, ambianceForce: 1.0, mer: 0x285f80 },
+    nuit: { zenith: 0x1c2d5a, horizon: 0x4a5788, lueur: 0x7a6a84, soleil: 0xaab8e4, soleilForce: 1.1, ambianceCiel: 0x7a88c0, ambianceSol: 0x33385c, ambianceForce: 1.2, mer: 0x254878 },
+    brume: [90, 300],
     voile: [0xc48c5c, 0.1],
     nuages: AMBIENCE['4e'].sky,
   },
   // Les Îles du Ciel : un ciel haut et pâle, lavande à l'horizon, un plancher de nuages sous les îles.
   '3e': {
-    jour: { zenith: 0x5a88d6, horizon: 0xe3e5f4, lueur: 0xfbf2e4, soleil: 0xfff0d4, soleilForce: 2.2, ambianceCiel: 0xd0dcf2, ambianceSol: 0x8e98b8, ambianceForce: 1.1, mer: 0xf3f7fb },
+    jour: { zenith: 0x4f7cc8, horizon: 0xc3c9e8, lueur: 0xf6e4d2, soleil: 0xfff0d4, soleilForce: 2.2, ambianceCiel: 0xd0dcf2, ambianceSol: 0x8e98b8, ambianceForce: 0.95, mer: 0xe0e6f2 },
     nuit: { zenith: 0x243a72, horizon: 0x56689d, lueur: 0x7381b0, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
     brume: [110, 350],
-    voile: [0xe6e2f4, 0.12],
+    voile: [0xd8d4ee, 0.06],
     nuages: AMBIENCE['3e'].sky,
   },
 };
