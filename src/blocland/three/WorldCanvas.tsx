@@ -29,6 +29,8 @@ import {
 } from '../world/scene';
 import type { WorldViewProps } from '../world/view';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
+import { createMeter } from './meter';
+import { mesuresDemandees, renduDuMonde } from '../rendu';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
@@ -170,6 +172,8 @@ export default function WorldCanvas({
   label,
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
+  // Le rendu du monde (drapeau `?rendu=archipeo`), lu une fois pour la vie du composant.
+  const rendu = useRef(renduDuMonde()).current;
   const world = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -301,6 +305,8 @@ export default function WorldCanvas({
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.touchAction = 'none';
+    // Le compteur de mesures (lot R0) : visible avec `?mesures`, lisible par les scripts en développement.
+    const meter = createMeter(el, rendu, mesuresDemandees(), import.meta.env.DEV || mesuresDemandees());
 
     const scene = new THREE.Scene();
     // L'ambiance de l'archipel : ciel, mer (ou nuages), brouillard, sol.
@@ -896,6 +902,7 @@ export default function WorldCanvas({
         }
       } else if (forceDayRef.current ? light !== 1 : false) applyDaylight();
       renderer.render(scene, camera);
+      meter?.tick(renderer.info, nowMs);
     };
     const start = () => {
       lastFrame = performance.now();
@@ -928,6 +935,7 @@ export default function WorldCanvas({
       cloudFloorMat.dispose();
       floorTex?.dispose();
       cloudGeo.dispose();
+      meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
@@ -1178,6 +1186,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} role="img" aria-label={`${label}. Au clavier : les flèches vont à l'île voisine.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. Au clavier : les flèches vont à l'île voisine.`} />
   );
 }

@@ -15,7 +15,7 @@ Ce document rassemble les décisions de game design en vigueur dans Blocland, pr
 - **Pas de physique** : rien ne tombe, rien ne casse.
 - **Cibles larges** (48 px au moins dans la barre du monde), et chaque geste du monde a un équivalent en bouton dans un panneau.
 - **Rien d’emprunté** : formes, textures, sons et noms sont les nôtres, dessinés ou générés par le code ([Style](style.md)).
-- **Tablette d’entrée de gamme** : un archipel à la fois, sous 30 000 faces tout construit (un test le vérifie).
+- **Tablette d’entrée de gamme** : un archipel à la fois. Tout construit, le monde en blocs dessine jusqu’à 79 000 triangles et 250 à 480 appels de dessin (Premiers Rivages), au-dessus du budget d’Archipéo ; un test l’empêche de grossir (voir les [mesures du lot R0](cadrage-archipeo.md#les-mesures-du-lot-r0)).
 
 ## L’appli entière
 
@@ -34,7 +34,7 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 ## Le monde et les archipels
 
-**Quatre archipels, une scène par classe** : les Premiers Rivages (6e), les Îles Brumeuses (5e), les Anciens Ateliers (4e), les Îles du Ciel (3e). Chacun a sa mer, son ciel, sa Carte et son budget de faces ; on voit celui où se tient le bonhomme (`village.at`).
+**Quatre archipels, une scène par classe** : les Premiers Rivages (6e), les Îles Brumeuses (5e), les Anciens Ateliers (4e), les Îles du Ciel (3e). Chacun a sa mer, son ciel, sa Carte et son budget de triangles ; on voit celui où se tient le bonhomme (`village.at`).
 
 - **Pourquoi on a quitté le continent qui monte.** Un seul continent, où l’altitude montait avec la classe, reliait la 6e à la 5e par un escalier ou un tunnel comme deux îles voisines : rien ne marquait le changement de niveau. Le passage d’une classe à la suivante doit être un moment marquant, un « truc un peu waouh » : c’est le Bloc-Navire. Du continent, on garde l’altitude par classe (0, 3, 6, 9 : mer, collines, monts, sommets), devenue une ambiance uniforme de l’archipel, et les régions thématiques.
 - **Des îles qui se distinguent.** Vingt îles identiques, plates et alignées ne permettaient pas de se repérer. Chaque île a un cœur de 16 × 16 (les bornes de mission, la zone des plans, la créature) sur une terre plus large aux contours irréguliers, une région et un relief (plat, collines, montagne enneigée, volcan et sa lave), des lacs, du décor, et un repère visible de loin (grand chêne, champignon géant, volcan qui fume, tour de guet, phare, aiguille de glace, haut-fourneau). Les îles en altitude flottent sur une roche qui s’amincit. Quelques paires d’îles se touchent par un isthme : le monde n’est pas qu’un semis d’îles.

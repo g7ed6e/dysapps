@@ -1,0 +1,135 @@
+// Les mesures du rendu du monde (lot R0 de la migration vers Archipéo) : pour chaque archipel tout construit, les appels
+// de dessin et les triangles de la vue 3D (lus sur `renderer.info` par le compteur `three/meter.ts`), et le poids de
+// Three.js dans le paquet de l'application. `npm run rendu:mesures` ; `npm run rendu:mesures -- --sans-poids` saute le
+// build. Chromium en rendu logiciel (SwiftShader) : les appels et les triangles ne dépendent pas de la carte graphique,
+// les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
+// `--captures <dossier>` enregistre en plus les captures de ces scènes (3D de jour et de nuit, 2D), pour comparer un lot
+// de rendu à l'état d'avant ; elles ne sont pas versionnées.
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
+import { build, createServer } from 'vite';
+import { chromium } from 'playwright-core';
+
+const root = process.cwd();
+const TABLET = { width: 1024, height: 768 };
+const kilo = (n) => `${Math.round(n / 1024)} Ko`;
+const arg = process.argv.indexOf('--captures');
+const SHOTS = arg >= 0 ? process.argv[arg + 1] : null;
+/** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
+const DAY = new Date('2026-09-28T10:30:00');
+const NIGHT = new Date('2026-09-28T22:30:00');
+
+// ---------- Le poids de Three.js dans le paquet ----------
+
+async function weights() {
+  const out = mkdtempSync(join(tmpdir(), 'dysapps-mesures-'));
+  try {
+    await build({ root, logLevel: 'error', build: { outDir: out, emptyOutDir: true } });
+    const dir = join(out, 'assets');
+    const js = readdirSync(dir).filter((f) => f.endsWith('.js'));
+    const size = (f) => {
+      const buf = readFileSync(join(dir, f));
+      return { file: f, raw: statSync(join(dir, f)).size, gzip: gzipSync(buf).length, three: /REVISION\s*=\s*"\d+"|WebGLRenderer/.test(buf.toString()) };
+    };
+    return js.map(size).sort((a, b) => b.raw - a.raw);
+  } finally {
+    rmSync(out, { recursive: true, force: true });
+  }
+}
+
+// ---------- Les appels de dessin et les triangles ----------
+
+async function scenes() {
+  // Le build a passé le processus en production : le compteur ne s'exposerait pas (import.meta.env.DEV).
+  process.env.NODE_ENV = 'development';
+  const server = await createServer({ root, logLevel: 'error', server: { port: 5288, strictPort: false, hmr: false } });
+  await server.listen();
+  const base = server.resolvedUrls.local[0].replace(/\/$/, '');
+  const load = (p) => server.ssrLoadModule(p);
+  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }] = await Promise.all([
+    load('/src/blocland/biomes.ts'),
+    load('/src/blocland/world/map.ts'),
+    load('/src/blocland/world/budget.ts'),
+  ]);
+  // La même partie tout construite que le test du budget (world/budget.test.ts).
+  const { progress, village: built } = toutConstruit();
+
+  const browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH || undefined,
+    args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+  });
+  if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+  const rows = [];
+  for (const a of ARCHIPELAGO_IDS) {
+    const at = BIOMES.find((b) => b.classe === a).id;
+    const views = [
+      { vue: 'île', go: `/aventure/${at}` },
+      { vue: 'archipel', go: '/aventure' },
+      { vue: 'carte', go: '/aventure/carte' },
+      ...(SHOTS
+        ? [
+            { vue: 'archipel', go: '/aventure', time: NIGHT, name: 'nuit' },
+            { vue: 'île', go: `/aventure/${at}`, view: '2d', name: '2d' },
+          ]
+        : []),
+    ];
+    for (const { vue, go, time = DAY, view = '3d', name } of views) {
+      const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
+      await page.clock.setFixedTime(time);
+      await page.goto(`${base}/icon.svg`);
+      await page.evaluate(
+        ({ village, progress, view }) => {
+          localStorage.clear();
+          sessionStorage.setItem('dysapps:titre-vu', '1');
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
+          localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+          localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
+          localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
+        },
+        { village: { ...built, at }, progress, view },
+      );
+      await page.goto(`${base}/#${go}`);
+      const file = SHOTS && join(SHOTS, `${a}-${vue.replace('î', 'i')}${name ? `-${name}` : ''}.jpg`);
+      if (name) {
+        // Les captures de nuit et de la 2D : pas de mesure, seulement l'image.
+        await page.waitForTimeout(8000);
+        await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        await page.close();
+        continue;
+      }
+      try {
+        // Le monde se construit en quelques secondes (rendu logiciel), puis la caméra rejoint son cadrage en douceur.
+        // (Pas de waitForFunction : l'horloge figée de la page l'empêche de sonder.)
+        await page.waitForTimeout(10000);
+        const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
+        if (!s.calls) throw new Error('aucune image dessinée');
+        rows.push({ archipel: a, vue, ...s });
+        if (file) await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+      } catch (e) {
+        rows.push({ archipel: a, vue, erreur: e.message.split('\n')[0] });
+      }
+      await page.close();
+    }
+  }
+  await browser.close();
+  await server.close();
+  return rows;
+}
+
+// Le build d'abord : le serveur de développement le passerait en mode développement.
+const js = process.argv.includes('--sans-poids') ? null : await weights();
+const rows = await scenes();
+console.log('\n| Archipel | Vue | Appels de dessin | Triangles | Géométries | Textures |');
+console.log('| --- | --- | ---: | ---: | ---: | ---: |');
+for (const r of rows) {
+  if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | |`);
+  else console.log(`| ${r.archipel} | ${r.vue} | ${r.calls} | ${r.triangles.toLocaleString('fr-FR')} | ${r.geometries} | ${r.textures} |`);
+}
+if (js) {
+  console.log('\n| Fichier | Poids | Compressé (gzip) | Three.js |');
+  console.log('| --- | ---: | ---: | --- |');
+  for (const f of js.slice(0, 6)) console.log(`| ${f.file} | ${kilo(f.raw)} | ${kilo(f.gzip)} | ${f.three ? 'oui' : ''} |`);
+}
+process.exit(rows.some((r) => r.erreur) ? 1 : 0);

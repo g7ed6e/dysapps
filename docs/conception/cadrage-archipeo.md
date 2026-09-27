@@ -166,5 +166,22 @@ La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plu
 - **Le décor qui rattrape la consigne** : le panneau d’exercice reste opaque et uni ; rien ne s’écrit dans la scène.
 - **Des couleurs qui se confondent** : sur la planche, le violet sert au français et au 3e, l’orange à l’anglais et au 4e. Des teintes distinctes ou des libellés, jamais la couleur seule.
 - **Le toucher sur un terrain en pente** (R2) : c’est le risque technique principal ; la conversion du point touché en case est pure et testée avant tout le reste.
-- **Le budget sur tablette** : non mesuré à ce jour ; R0 le mesure avant tout lot de rendu.
+- **Le budget sur tablette** : le monde en blocs le dépasse déjà (voir les mesures du lot R0 ci-dessous) ; le rendu Archipéo doit donc dessiner moins que le monde d’aujourd’hui, pas seulement autrement.
 - **La documentation** : le lot 1 touche presque toutes les pages du manuel, le lot 6 toutes les captures du monde ; `cadrage-blocland.md` se met à jour à chaque lot construit.
+
+### Les mesures du lot R0
+
+Mesuré le 27 septembre 2026 sur le monde en blocs, chaque archipel tout construit (trois étoiles partout, Gardiens vaincus, tous les plans, ouvrages, étapes du navire et ponts), par `npm run rendu:mesures` : Chromium en rendu logiciel, écran de tablette 1024 × 768. Les appels de dessin et les triangles ne dépendent pas de la carte graphique ; ils dépendent de ce que montre la caméra (la Carte montre tout l’archipel).
+
+| Archipel | Vue d’une île | Vue de l’archipel | Carte |
+| --- | --- | --- | --- |
+| Premiers Rivages (6e) | 247 appels, 77 400 triangles | 362 appels, 78 000 triangles | 481 appels, 78 900 triangles |
+| Îles Brumeuses (5e) | 212 appels, 52 300 triangles | 347 appels, 52 900 triangles | 396 appels, 53 200 triangles |
+| Anciens Ateliers (4e) | 232 appels, 52 600 triangles | 305 appels, 52 900 triangles | 442 appels, 53 800 triangles |
+| Îles du Ciel (3e) | 214 appels, 46 700 triangles | 307 appels, 47 000 triangles | 451 appels, 47 700 triangles |
+
+- **Le budget (60 000 triangles, 40 appels) n’est pas tenu aujourd’hui** : les Premiers Rivages dépassent les triangles d’environ 30 %, et tous les archipels dessinent six à douze fois trop d’appels. Le test `world/budget.test.ts` empêche le monde en blocs de grossir (80 000 triangles et 240 appels pour ses modèles) ; le budget d’Archipéo s’appliquera au nouveau rendu dès le lot R2.
+- **D’où viennent les appels** (Premiers Rivages, vue d’une île ; relevé de l’artiste technique 3D) : le terrain, 62 800 triangles en 87 groupes (un par matériau et par face) ; les créatures et les Gardiens, 8 900 triangles en 92 appels (les dix Gardiens : 6 000 et 47) ; le bonhomme, 4 800 triangles en 21 appels ; les repères d’or des bornes, 81 appels pour moins de 1 000 triangles ; le Bloc-Navire, 34 appels ; les nuages, les oiseaux, les baleines et les étiquettes d’île, une soixantaine d’appels à eux tous. Pour tenir 40 appels : un maillage par famille (créatures, Gardiens, bonhomme, navire, nuages, oiseaux, baleines) avec la couleur portée par les sommets, les repères dessinés en une seule fois (instanciation), le terrain regroupé par matériau, et un bonhomme de quelques centaines de triangles.
+- **Le poids de Three.js** : le morceau chargé à la demande avec la vue 3D pèse 534 Ko (132 Ko compressé), le monde 3D lui-même 24 Ko (9 Ko).
+- **Les images par seconde** se mesurent sur la tablette de référence, dans l’application publiée, avec `?mesures` dans l’adresse (`/?mesures#/aventure`) : la vue 3D affiche alors ses appels, ses triangles et ses images par seconde. Relevé à faire par le mainteneur.
+- **Les captures « avant »** (3D de jour et de nuit, 2D, Carte, par archipel) se refont avec `npm run rendu:mesures -- --captures <dossier>` ; elles ne sont pas versionnées.
