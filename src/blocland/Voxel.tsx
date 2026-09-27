@@ -20,6 +20,8 @@ export interface VoxelCube {
   texture?: string;
   /** Île verrouillée : couleurs délavées (la texture est gardée, effacée vers le gris). */
   muted?: boolean;
+  /** Élément de décor dont le cube fait partie (« foret/arbre@12,4 ») : la vue 2D en fait un seul dessin. */
+  decor?: string;
 }
 
 /** Motif de grain pixel à déclarer une fois par SVG (<defs>). */

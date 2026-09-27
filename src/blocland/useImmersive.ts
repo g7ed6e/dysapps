@@ -1,8 +1,22 @@
 import { useSettings } from '../core/SettingsContext';
+import type { WorldViewChoice } from '../core/settings';
+import { hasCanvas2D } from './pixel/canvas2d';
 import { hasWebGL } from './three';
 
-/** Blocland en 3D est-il actif ? (réglage « vue 3D » et WebGL disponible) */
-export function useImmersive(): boolean {
+/** La vue du monde affichée : celle du réglage si l'appareil sait la dessiner, sinon la liste (`null`). */
+export function resolveWorldView(choice: WorldViewChoice, can: { webgl: boolean; canvas2d: boolean }): '3d' | '2d' | null {
+  if (choice === '3d') return can.webgl ? '3d' : null;
+  if (choice === '2d') return can.canvas2d ? '2d' : null;
+  return null;
+}
+
+/** Blocland en monde (3D ou 2D) ou en liste (`null`). */
+export function useWorldView(): '3d' | '2d' | null {
   const { settings } = useSettings();
-  return settings.view3d && hasWebGL();
+  return resolveWorldView(settings.worldView, { webgl: settings.worldView === '3d' && hasWebGL(), canvas2d: settings.worldView === '2d' && hasCanvas2D() });
+}
+
+/** Blocland en monde plein écran (3D ou 2D) plutôt qu'en liste d'îles. */
+export function useImmersive(): boolean {
+  return useWorldView() !== null;
 }

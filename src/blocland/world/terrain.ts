@@ -128,10 +128,12 @@ const GROUND_COLOR: Record<Ground, string> = {
 };
 
 /** Un élément de décor posé sur une case, au-dessus de son sol (z = 1 juste au-dessus). `r` : grain 0..1 pour varier. */
-function decorate(put: Put, kind: Decor, x: number, y: number, r: number): void {
+function decorate(place: Put, kind: Decor, x: number, y: number, r: number): void {
+  const id = `${kind}@${x},${y}`;
+  const put: Put = (px, py, pz, color) => place(px, py, pz, color, id);
   switch (kind) {
     case 'arbre':
-      tree(put, x, y, 0, r > 0.5 ? 3 : 2);
+      tree(place, x, y, 0, r > 0.5 ? 3 : 2);
       break;
     case 'sapin': {
       const tall = r > 0.5 ? 2 : 1;
@@ -325,12 +327,14 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
   return biome.exercises.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
-type Put = (x: number, y: number, z: number, color: string) => void;
+/** Pose un cube ; `decor` nomme l'élément de décor dont il fait partie (un arbre, un buisson…), pour la vue 2D. */
+type Put = (x: number, y: number, z: number, color: string, decor?: string) => void;
 
 function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
-  for (let z = 1; z <= tall; z++) put(x, y, base + z, TRUNK);
-  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, base + tall + 1, LEAF);
-  put(x, y, base + tall + 2, LEAF);
+  const id = `arbre@${x},${y}`;
+  for (let z = 1; z <= tall; z++) put(x, y, base + z, TRUNK, id);
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, base + tall + 1, LEAF, id);
+  put(x, y, base + tall + 2, LEAF, id);
 }
 
 /** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
@@ -1582,14 +1586,24 @@ export function worldCubes(
     // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
     // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
     const taken = new Set<string>();
-    const putWorld = (x: number, y: number, z: number, color: string) => {
+    const putWorld = (x: number, y: number, z: number, color: string, decor?: string) => {
       taken.add(`${x},${y},${z}`);
       placed.add(`${x},${y},${oz + z}`);
-      cubes.push({ x, y, z: oz + z, color: unlocked ? color : fade(color), texture: TEXTURES[color], tag: biome.id, muted: unlocked ? undefined : true });
+      cubes.push({
+        x,
+        y,
+        z: oz + z,
+        color: unlocked ? color : fade(color),
+        texture: TEXTURES[color],
+        tag: biome.id,
+        muted: unlocked ? undefined : true,
+        decor: decor ? `${biome.id}/${decor}` : undefined,
+      });
     };
-    const put: Put = (x, y, z, color) => putWorld(ox + x, oy + y, z, color);
+    // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
+    const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
     // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
-    const putDecor: Put = (x, y, z, color) => put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color);
+    const putDecor: Put = (x, y, z, color, decor) => put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
     const land = landCells(def);
     for (const c of land) {
       if (!inCore(def, c.x, c.y)) continue;
@@ -1646,7 +1660,13 @@ export function worldCubes(
       const r = noise(def.seed + 5, c.x, c.y);
       // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
       // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-      decorate((x, y, z, color) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color), c.decor, c.x, c.y, r);
+      decorate(
+        (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor),
+        c.decor,
+        c.x,
+        c.y,
+        r,
+      );
     }
     // Une île en altitude flotte : sa roche s'amincit dessous.
     if (def.altitude > 0)
