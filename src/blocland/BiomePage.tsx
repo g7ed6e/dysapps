@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, getBiome, guardianTitle, ofBlock } from './biomes';
@@ -7,6 +7,7 @@ import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
+import { VillageStageLine } from './VillageStageLine';
 import { archipelagoOf, archipelagoTitle, isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
@@ -27,6 +28,8 @@ import { ARRIVAL_STEPS } from './arrivals';
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
   const { biomeId } = useParams();
+  // « Voir le chantier » (bilan d'une mission) : la section à mettre en avant, comme dans le panneau d'île.
+  const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
   const { state } = useBlocland();
   const biome = getBiome(biomeId);
@@ -57,9 +60,10 @@ export function BiomePage() {
       <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
+      {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
-      <Bridges island={biome.id} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
+      <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
 
       <h2 className="section-title">
         <Icon name="hammer" /> Missions
@@ -170,7 +174,7 @@ export function BiomePage() {
             <Icon name="map" /> Le plan
           </h2>
           <div className="panel plan-panel">
-            <PlanSection biome={biome} builder={builder} />
+            <PlanSection biome={biome} builder={builder} highlight={chantier === 'plan'} />
           </div>
         </>
       )}
@@ -181,7 +185,7 @@ export function BiomePage() {
             <Icon name="ship" /> Le Bloc-Navire
           </h2>
           <div className="panel plan-panel">
-            <ShipSection biome={biome} builder={ship} onBoard={(to) => navigate(`/aventure/voyage/${to}`)} />
+            <ShipSection biome={biome} builder={ship} highlight={chantier === 'navire'} onBoard={(to) => navigate(`/aventure/voyage/${to}`)} />
           </div>
         </>
       )}

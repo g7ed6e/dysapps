@@ -70,7 +70,7 @@ Le pont était la seule liaison et les blocs le seul verrou. Décision : chaque 
 - Tout bloc d’île paie tout ouvrage : les blocs gagnés n’importe où servent.
 - Les ouvrages ne relient que des îles d’un même archipel ; chaque archipel est connexe depuis son port, et au moins deux ouvrages sans condition partent du port : l’arrivée n’est jamais bloquée. Dans un archipel, rien n’est imposé.
 - Une condition qui manque s’affiche avec ce qu’il faut faire, sans pénalité ; un ouvrage possible est dessiné en fantôme, et le toucher ouvre sa proposition sur l’île ouverte qu’il touche (pas sur l’île d’en face, souvent fermée).
-- **La fête** : des éclats d’or, la caméra vole jusqu’à l’île qui s’ouvre, sa créature accueille. Ouvrir une île doit se sentir.
+- **La fête** : la caméra vole jusqu’à l’île qui s’ouvre, sa créature accueille. Ouvrir une île doit se sentir, par la transformation, sans pluie d’éclats (lot 3 d’Archipéo).
 
 ## Le village, les plans et les coffres
 
@@ -81,6 +81,8 @@ Le village est en ruine et l’élève est le bâtisseur. **La construction est 
 - **Les coffres** donnent exactement les blocs de finition (toit, porte, lanterne, barrière, escalier) du plan suivant, calculés à partir du dessin : ces blocs ne se gagnent pas dans les exercices, et l’élève n’en manque jamais. Le dernier plan d’une île donne de l’or et du cristal, utiles aux ouvrages.
 - **Le nouveau dessin des bâtiments** (`world/architect.ts`) : les petites cabanes de 15 à 20 blocs à toit plat ne ressemblaient à rien et n’employaient pas les blocs. Chaque île a une forme (maison, tour, dôme, échoppe, hutte, kiosque) choisie selon son thème, avec des fenêtres éclairées la nuit, dans une zone de 6 × 5 cases et six blocs de haut. Plus de blocs par bâtiment : un vrai usage des blocs qui s’accumulent.
 - **Blocs selon les étoiles** : +1 bloc à deux étoiles, +2 à trois, +2 la première fois qu’une mission est jouée, et au moins un bloc dès une bonne réponse. Une première mission rapporte cinq à sept blocs : de quoi construire un pont et commencer un bâtiment. Le barème complet est une page générée.
+
+- **Le village en cinq états** (lot 3b d’Archipéo) : abandonné, réactivation, reconstruction, développement, port, déduits à chaque rendu de la progression (`world/villageStage.ts`), jamais enregistrés. Ils se voient au port en cubes statiques (lanternes, barques, fumée, caisses, fanions, feu de port) et se lisent en HTML. La montée d’un état se dit une fois, avec une cloche.
 
 ## Les monuments
 

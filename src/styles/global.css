@@ -1027,7 +1027,7 @@ button.app-card:active {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow-float);
-  animation: slam 0.35s ease-out;
+  animation: celebration-in 0.4s ease-out;
 }
 .celebration-levelup {
   background: var(--cyan);
@@ -1059,9 +1059,8 @@ button.app-card:active {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-control);
 }
-@keyframes slam {
+@keyframes celebration-in {
   from {
-    transform: translateX(-50%) scale(1.2);
     opacity: 0;
   }
 }
@@ -3967,6 +3966,13 @@ button.island-quest:active {
   align-items: center;
   gap: 0.5rem 0.8rem;
 }
+/* Le chantier que servent les blocs gagnés : sa phrase et sa jauge, sur toute la largeur. */
+.reward-site > span {
+  flex: 1;
+}
+.reward-site .goal-gauge {
+  display: block;
+}
 
 /* ===== Les plis du panneau d'île : plan, Bloc-Navire, ouvrages ===== */
 /* Ouverts quand il y a quelque chose à faire, repliés sinon : une ligne d'état tient lieu de section. */
@@ -4425,4 +4431,28 @@ button.island-quest {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* ===== L'état du village (Archipéo, lot 3b) : cinq crans et un libellé ===== */
+.village-stage p {
+  margin: 0;
+}
+.village-stage .village-next {
+  margin-top: 0.3rem;
+}
+.village-notches {
+  display: inline-flex;
+  gap: 0.2rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.village-notches span {
+  width: 0.7rem;
+  height: 1.1rem;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--surface);
+}
+.village-notches span.on {
+  background: var(--accent);
 }

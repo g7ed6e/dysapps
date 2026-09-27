@@ -16,6 +16,7 @@ import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
+import { worksiteFor } from './world/worksite';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -153,6 +154,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
             return !status.complete && missing.every(([b, n]) => (done.state.inventory[b as keyof typeof BLOCKS] ?? 0) >= (n ?? 0)) ? stage : null;
           })()
         : null;
+    // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
+    const site = worksiteFor(done.state, biome.id, done.block);
     return (
       <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
@@ -181,7 +184,21 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
                 Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
               </li>
             )}
-            {shipReady && (
+            <li className="reward-site">
+              <Icon name="hammer" size="1.6rem" />
+              <span>
+                <strong>À quoi servent tes blocs.</strong> <Syllabified text={site.text} />
+                {site.need > 1 && !site.ready && (
+                  <span className="goal-gauge" role="img" aria-label={`${site.have} sur ${site.need}`}>
+                    <span className="goal-gauge-fill" style={{ width: `${(100 * site.have) / site.need}%` }} />
+                    <span className="goal-gauge-count" aria-hidden="true">
+                      {site.have} / {site.need}
+                    </span>
+                  </span>
+                )}
+              </span>
+            </li>
+            {shipReady && site.kind !== 'navire' && (
               <li className="reward-ship">
                 <Icon name="ship" size="1.6rem" />
                 <span>
@@ -220,9 +237,15 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
             </div>
           ) : (
             <div className="actions">
-              <Link to={`/aventure/${biome.id}`} className="button primary">
-                <Icon name="hammer" /> Construire sur {biome.name}
-              </Link>
+              {site.kind === 'aucun' || site.kind === 'garder' ? (
+                <Link to={`/aventure/${biome.id}`} className="button primary">
+                  <Icon name="map" /> Revenir sur {biome.name}
+                </Link>
+              ) : (
+                <Link to={site.to} className="button primary">
+                  <Icon name="hammer" /> Voir le chantier
+                </Link>
+              )}
               <button type="button" className="button" onClick={onReplay}>
                 <Icon name="replay" /> Rejouer
               </button>
