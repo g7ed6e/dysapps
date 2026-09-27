@@ -518,7 +518,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
   const svg = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;
   return (
     <div key={`${mood}-${seq}`} className={`guardian guardian-${mood}`} aria-live="off">
-      {!settings.view3d || !hasWebGL() ? (
+      {settings.worldView !== '3d' || !hasWebGL() ? (
         svg
       ) : (
         <ErrorBoundary fallback={svg}>

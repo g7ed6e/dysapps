@@ -579,7 +579,7 @@ function ouvragesPage(d) {
 function baremePage(d) {
   const { XP, BADGES, xpToNextLevel, rankForLevel, LEGEND_LEVEL } = d.progress;
   const { INTERVALS, GRADUATE_AT, CHEST_EVERY, CHEST_BLOCKS, PROMOTE_AT_ONCE, FIRST_TIME_BLOCKS } = d.engine;
-  const { DEFAULT_SETTINGS, FONT_LABELS, THEME_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT } = d.settings;
+  const { DEFAULT_SETTINGS, FONT_LABELS, THEME_LABELS, WORLD_VIEW_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT } = d.settings;
   const { APP_REWORK_BELOW, REWORK_SHOWN } = d.subjectProgress;
   const levels = [];
   let total = 0;
@@ -658,7 +658,7 @@ function baremePage(d) {
         ['Lire les consignes à voix haute', DEFAULT_SETTINGS.autoRead ? 'oui' : 'non', ''],
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
         ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
-        ['Vues en 3D', DEFAULT_SETTINGS.view3d ? 'oui' : 'non', ''],
+        ['Vue de Blocland', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],
       ],

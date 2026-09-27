@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, type FontChoice, type ThemeChoice } from '../core/settings';
+import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, WORLD_VIEW_LABELS, type FontChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -137,14 +137,23 @@ export function SettingsPage() {
         </fieldset>
 
         <fieldset className="panel">
+          <legend>Vue de Blocland</legend>
+          <div className="option-row">
+            {(Object.keys(WORLD_VIEW_LABELS) as WorldViewChoice[]).map((worldView) => (
+              <label key={worldView} className={`option${settings.worldView === worldView ? ' selected' : ''}`}>
+                <input type="radio" name="worldView" value={worldView} checked={settings.worldView === worldView} onChange={() => update({ worldView })} />
+                {WORLD_VIEW_LABELS[worldView]}
+              </label>
+            ))}
+          </div>
+          <p>Si l’appareil ne sait pas dessiner le monde choisi, Blocland montre la liste des îles.</p>
+        </fieldset>
+
+        <fieldset className="panel">
           <legend>Animations</legend>
           <label className="toggle">
             <input type="checkbox" checked={settings.reduceMotion} onChange={(e) => update({ reduceMotion: e.target.checked })} />
             Réduire les animations
-          </label>
-          <label className="toggle">
-            <input type="checkbox" checked={settings.view3d} onChange={(e) => update({ view3d: e.target.checked })} />
-            Vues en 3D dans Blocland (sinon, vue simple)
           </label>
           <label className="toggle">
             <input type="checkbox" checked={settings.sounds} onChange={(e) => update({ sounds: e.target.checked })} />
