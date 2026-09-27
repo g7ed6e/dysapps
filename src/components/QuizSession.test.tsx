@@ -201,3 +201,21 @@ it('à la fin, la suite logique vient en premier : « Quête suivante », puis R
   await user.click(screen.getByRole('button', { name: /Quête suivante/ }));
   expect(go).toHaveBeenCalled();
 });
+
+it('vibre brièvement à la bonne réponse, sauf si le réglage est coupé', async () => {
+  const vibrate = vi.fn();
+  Object.defineProperty(navigator, 'vibrate', { configurable: true, value: vibrate });
+  const user = userEvent.setup();
+  const { unmount } = renderQuiz();
+  await user.click(screen.getByRole('button', { name: '3' }));
+  expect(vibrate).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: '4' }));
+  expect(vibrate).toHaveBeenCalledWith(25);
+  unmount();
+  vibrate.mockClear();
+  localStorage.setItem('dysapps:settings', JSON.stringify({ haptics: false }));
+  renderQuiz();
+  await user.click(screen.getByRole('button', { name: '4' }));
+  expect(vibrate).not.toHaveBeenCalled();
+  delete (navigator as { vibrate?: unknown }).vibrate;
+});

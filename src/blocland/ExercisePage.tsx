@@ -8,6 +8,7 @@ import { levelFor } from './engine';
 import { ExerciseRunner } from './ExerciseRunner';
 import { loadExercise, pickExercise } from './exercises';
 import { useLoaded } from '../core/useLoaded';
+import { exercisesToReview } from './review';
 import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
 
@@ -23,7 +24,7 @@ export function ExercisePage() {
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
   // sinon la fin de partie relancerait un autre exercice au lieu d'afficher la récompense.
   const picked = useMemo(
-    () => (biome && typeId ? pickExercise(biome.id, typeId, levelFor(state, typeId), state.progress) : undefined),
+    () => (biome && typeId ? pickExercise(biome.id, typeId, levelFor(state, typeId), state.progress, exercisesToReview(state.spaced)) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, typeId, run],
   );

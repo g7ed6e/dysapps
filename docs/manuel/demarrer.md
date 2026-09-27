@@ -33,6 +33,8 @@ L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
+Quand des items ratés reviennent (répétition espacée), l’accueil montre aussi une carte **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
+
 Sur l’accueil aussi, une carte **Continuer** ramène à la dernière quête ouverte (du portail ou de Blocland ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance

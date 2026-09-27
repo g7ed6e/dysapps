@@ -168,6 +168,14 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.ambience} onChange={(e) => update({ ambience: e.target.checked })} />
             Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit)
           </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.haptics} onChange={(e) => update({ haptics: e.target.checked })} />
+            Vibrer à la bonne réponse et à la pose d’un bloc (téléphones Android)
+          </label>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.appBadge} onChange={(e) => update({ appBadge: e.target.checked })} />
+            Pastille sur l’icône de l’appli quand des révisions attendent
+          </label>
         </fieldset>
 
         <fieldset className="panel">

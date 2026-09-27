@@ -24,6 +24,10 @@ export interface Settings {
   sounds: boolean;
   /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
   ambience: boolean;
+  /** Une vibration courte à la bonne réponse et à la pose d'un bloc (téléphones Android). */
+  haptics: boolean;
+  /** Une pastille sur l'icône de l'appli installée quand des révisions attendent. */
+  appBadge: boolean;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -45,6 +49,8 @@ export const DEFAULT_SETTINGS: Settings = {
   freeWalk: false,
   sounds: true,
   ambience: false,
+  haptics: true,
+  appBadge: true,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -104,6 +110,8 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     freeWalk: Boolean(s.freeWalk),
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
+    haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
+    appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
   };
 }
 
