@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { formatDuree, formatHeure, Scene } from './Scene';
+import { formatDuree, formatHeure, formatNombre, Scene } from './Scene';
 
 describe('Scene', () => {
   it('écrit les heures et les durées comme à l’école', () => {
@@ -29,5 +29,32 @@ describe('Scene', () => {
     render(<Scene scene="traversee" depart={580} arrivee="?" duree={35} />);
     expect(screen.getByRole('img')).toHaveAccessibleName("Une traversée en bateau d'une île à l'autre. Départ : 9 h 40. Durée : 35 min. Arrivée : inconnue.");
     expect(screen.getByText('durée : 35 min')).toBeInTheDocument();
+  });
+
+  it('écrit les nombres à la française', () => {
+    expect(formatNombre(50000)).toBe('50\u00a0000');
+    expect(formatNombre(1500)).toBe('1500');
+    expect(formatNombre(1.5)).toBe('1,5');
+  });
+
+  it('dit la carte et son échelle', () => {
+    render(<Scene scene="carte" echelle={{ fraction: 50000 }} carte={4} reel="?" unitReel="km" />);
+    expect(screen.getByRole('img')).toHaveAccessibleName('Une carte avec deux îles. Échelle : 1 sur 50\u00a0000. Sur la carte, entre les deux îles : 4 centimètres. En vrai : inconnu.');
+    expect(screen.getByText('1/50 000')).toBeInTheDocument();
+  });
+
+  it('dit la cargaison et son ratio sans deux-points', () => {
+    const { container } = render(<Scene scene="cargaison" unit="caisses" ratio={[2, 3]} total={40} parts={['?', 24]} />);
+    expect(screen.getByRole('img')).toHaveAccessibleName(
+      'Une cargaison de 40 caisses partagée entre 2 navires dans le ratio 2 pour 3. Navire A, 2 parts : inconnu. Navire B, 3 parts : 24 caisses.',
+    );
+    expect(container.querySelectorAll('.crate')).toHaveLength(5);
+  });
+
+  it('dit le mât et son câble', () => {
+    render(<Scene scene="mat" unit="m" hauteur={8} pied={6} cable="?" />);
+    expect(screen.getByRole('img')).toHaveAccessibleName(
+      "Un mât vertical tenu par un câble tendu jusqu'au sol, un triangle rectangle au pied du mât. Hauteur du mât : 8 mètres. Du pied du mât au câble, au sol : 6 mètres. Longueur du câble : inconnu.",
+    );
   });
 });

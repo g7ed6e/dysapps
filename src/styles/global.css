@@ -3739,11 +3739,44 @@ button.island-quest:active {
 .scene-figure .boat {
   fill: var(--ink);
 }
+.scene-figure .map {
+  fill: color-mix(in srgb, var(--cyan) 22%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .cartouche,
+.scene-figure .crate {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .crate {
+  fill: color-mix(in srgb, var(--sand) 55%, var(--surface));
+}
+.scene-figure .brace,
+.scene-figure .right-mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.scene-figure .ground {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.scene-figure .mast {
+  fill: var(--ink);
+}
+.scene-figure .cable {
+  stroke: var(--violet);
+  stroke-width: 3;
+}
 :root[data-theme="contraste"] .scene-figure .cliff,
 :root[data-theme="contraste"] .scene-figure .island,
 :root[data-theme="contraste"] .scene-figure .water,
 :root[data-theme="contraste"] .scene-figure .deck,
-:root[data-theme="contraste"] .scene-figure .quay {
+:root[data-theme="contraste"] .scene-figure .quay,
+:root[data-theme="contraste"] .scene-figure .map,
+:root[data-theme="contraste"] .scene-figure .crate {
   fill: var(--surface);
 }
 

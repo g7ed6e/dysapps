@@ -28,7 +28,7 @@ function cotes(s: SceneProps): { shown: string[]; asked: number } {
     add(s.largeur, m, () => num(s.perimetre) / 2 - num(s.longueur));
     add(s.perimetre, m, () => 2 * (num(s.longueur) + num(s.largeur)));
     if (s.entree !== undefined) shown.push(m(s.entree));
-  } else {
+  } else if (s.scene === 'traversee') {
     add(s.depart, formatHeure, () => num(s.arrivee) - num(s.duree));
     add(s.duree, formatDuree, () => num(s.arrivee) - num(s.depart));
     add(s.arrivee, formatHeure, () => num(s.depart) + num(s.duree));
