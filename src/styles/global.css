@@ -4432,3 +4432,27 @@ button.island-quest {
   align-items: center;
   gap: 0.5rem;
 }
+
+/* ===== L'état du village (Archipéo, lot 3b) : cinq crans et un libellé ===== */
+.village-stage p {
+  margin: 0;
+}
+.village-stage .village-next {
+  margin-top: 0.3rem;
+}
+.village-notches {
+  display: inline-flex;
+  gap: 0.2rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.village-notches span {
+  width: 0.7rem;
+  height: 1.1rem;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--surface);
+}
+.village-notches span.on {
+  background: var(--accent);
+}

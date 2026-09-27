@@ -22,6 +22,7 @@ import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
+import { VillageStageLine } from './VillageStageLine';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -71,6 +72,7 @@ export function BloclandPage() {
               <Icon name="map" /> {archipelagoTitle(a.classe)}{' '}
               <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Fermé'}</span>
             </h2>
+            {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="section-intro" />}
             {!reached && (
               <p className="section-intro">
                 <Syllabified text={lockedArchipelagoText(state, a.classe)} />

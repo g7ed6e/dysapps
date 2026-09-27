@@ -91,6 +91,12 @@ export function playDone(): void {
   [659, 988].forEach((f, i) => setTimeout(() => blip(f, f, 0.45, 0.12, 'triangle'), i * 160));
 }
 
+/** Une cloche grave et longue : le village d'un archipel passe à l'état suivant. */
+export function playBell(): void {
+  tone(196, 1.4, 'triangle', 0.12, 196, 0.01, 1.2);
+  setTimeout(() => tone(294, 1.2, 'sine', 0.06, 294, 0.01, 1), 60);
+}
+
 /** Refus doux (pas de bloc, hors zone) : deux notes descendantes courtes. */
 export function playNope(): void {
   blip(200, 160, 0.14, 0.1, 'sine');

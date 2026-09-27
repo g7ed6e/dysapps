@@ -21,6 +21,7 @@ import { Creature } from './Creatures';
 import { Stars } from './Stars';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
+import { VillageStageLine } from './VillageStageLine';
 import { SchoolLink } from './School';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
@@ -97,6 +98,8 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       </p>
 
       {goal && <GoalLine goal={goal} />}
+      {/* Sur l'île-port : l'état du village de l'archipel, qui se voit aussi au port en cubes. */}
+      {unlocked && archipelagoOf(biome.id).port === biome.id && <VillageStageLine village={state.village} archipelago={biome.classe} />}
       {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
 
       <h3 className="island-sheet-heading">

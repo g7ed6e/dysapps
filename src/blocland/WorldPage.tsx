@@ -31,7 +31,8 @@ import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
-import { playArrival, playBurner, playHorn, playReactor, playSail } from './sound';
+import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
+import { VILLAGE_STAGES, villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
@@ -164,6 +165,26 @@ export function WorldPage() {
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h.
   const [forceDay, setForceDay] = useState(() => !hasSeenTutorial('village-immersif'));
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
+  // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
+  // voix haute, et une cloche. Rien n'est enregistré : l'état se déduit de la progression.
+  const stageHere = archipelagoOf(state.village.at ?? 'foret').classe;
+  const stageRank = villageStage(state.village, stageHere).rank;
+  const lastStage = useRef({ a: stageHere, rank: stageRank });
+  const [villageSaid, setVillageSaid] = useState<string | null>(null);
+  useEffect(() => {
+    const before = lastStage.current;
+    lastStage.current = { a: stageHere, rank: stageRank };
+    if (before.a !== stageHere || stageRank <= before.rank) return;
+    const text = `Le village passe à l’état ${VILLAGE_STAGES[stageRank - 1].name} (${stageRank} sur 5). ${VILLAGE_STAGES[stageRank - 1].sight}`;
+    // Après la phrase du plan ou de l'ouvrage qui vient de le faire monter.
+    const timer = window.setTimeout(() => {
+      setVillageSaid(text);
+      if (settings.sounds) playBell();
+      if (settings.autoRead) speak(frenchTypography(text));
+    }, 2500);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageRank, stageHere]);
   // L'ouvrage touché dans le monde : on ouvre l'île ouverte qu'il touche, sa proposition mise en avant.
   const [highlight, setHighlight] = useState<string | null>(null);
   const onPickBridge = (id: string) => {
@@ -545,6 +566,15 @@ export function WorldPage() {
           {hopTo && (
             <div className="creature-line world-line hop-line" role="status" aria-live="polite">
               <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
+            </div>
+          )}
+          {villageSaid && (
+            <div className="creature-line world-line" role="status" aria-live="polite">
+              <Icon name="flag" /> <Syllabified text={villageSaid} />
+              <SpeakButton text={villageSaid} compact />
+              <button type="button" className="icon-button" aria-label="Fermer" onClick={() => setVillageSaid(null)}>
+                <Icon name="close" />
+              </button>
             </div>
           )}
           {said && (

@@ -82,6 +82,8 @@ Le village est en ruine et l’élève est le bâtisseur. **La construction est 
 - **Le nouveau dessin des bâtiments** (`world/architect.ts`) : les petites cabanes de 15 à 20 blocs à toit plat ne ressemblaient à rien et n’employaient pas les blocs. Chaque île a une forme (maison, tour, dôme, échoppe, hutte, kiosque) choisie selon son thème, avec des fenêtres éclairées la nuit, dans une zone de 6 × 5 cases et six blocs de haut. Plus de blocs par bâtiment : un vrai usage des blocs qui s’accumulent.
 - **Blocs selon les étoiles** : +1 bloc à deux étoiles, +2 à trois, +2 la première fois qu’une mission est jouée, et au moins un bloc dès une bonne réponse. Une première mission rapporte cinq à sept blocs : de quoi construire un pont et commencer un bâtiment. Le barème complet est une page générée.
 
+- **Le village en cinq états** (lot 3b d’Archipéo) : abandonné, réactivation, reconstruction, développement, port, déduits à chaque rendu de la progression (`world/villageStage.ts`), jamais enregistrés. Ils se voient au port en cubes statiques (lanternes, barques, fumée, caisses, fanions, feu de port) et se lisent en HTML. La montée d’un état se dit une fois, avec une cloche.
+
 ## Les monuments
 
 Une fois les bâtiments et les ouvrages faits, les blocs s’accumulaient sans usage. Réponse : les **monuments**, deux par archipel (`world/monuments.ts`), chacun sur son îlot au large d’une île.
