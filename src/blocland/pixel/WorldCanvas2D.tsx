@@ -25,6 +25,7 @@ import {
   type Walk,
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
+import { drawIslandLabel } from '../world/labelCanvas';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
@@ -108,13 +109,14 @@ export default function WorldCanvas2D({
   trail,
   quests,
   onPickQuest,
+  islandLabels,
   burst,
   className,
   label,
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay };
+  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -631,6 +633,15 @@ export default function WorldCanvas2D({
         const z = typeof mk === 'string' ? c.z + 2 : Math.min(c.z, top);
         const { sx, sy } = at(c.x + 0.5, c.y + 0.5, z);
         drawChevron(ctx, sx, sy - 18 * cam.s - Math.abs(Math.sin(t * 2.2)) * 3 * mark, mark);
+      }
+      // Le nom des îles ouvertes, sur l'île, en police de lecture (18 px à l'écran au moins).
+      if (p.islandLabels?.length) {
+        const dpr = Math.min(window.devicePixelRatio || 1, 3);
+        for (const l of p.islandLabels) {
+          const c = islandCenter(l.id);
+          const { sx, sy } = at(c.x + 0.5, c.y + 0.5, c.z + 2);
+          drawIslandLabel(ctx, l.text, sx, sy + 14 * dpr, 18 * dpr);
+        }
       }
       if (p.trail?.length) {
         const pulse = 0.85 + Math.sin(t * 3) * 0.15;

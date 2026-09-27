@@ -22,7 +22,7 @@ Sur la page Succès, la section **Par matière** montre un panneau par matière 
 - le nombre d’**îles ouvertes** et de **Gardiens vaincus** de la matière, et le **record** des quêtes du portail déjà jouées ;
 - la liste **À retravailler** : les quêtes à reprendre, la plus faible en premier. Toucher une ligne relance directement la quête.
   - Pour Blocland : les quêtes déjà jouées qui n’ont pas encore trois étoiles, sur une île ouverte. La ligne donne l’île et les étoiles.
-  - Pour le portail : les quêtes dont le record est sous 70 %. La ligne donne le record.
+  - Pour le portail : les quêtes dont le record est sous 70 %. La ligne donne le record, en étoiles.
   - Cinq quêtes au plus sont affichées. S’il y en a d’autres, le panneau dit combien il en reste.
   - Une quête jamais jouée n’y figure pas : elle reste « Nouveau » sur la page de la matière.
   - Quand tout est à trois étoiles, le panneau dit « Rien à reprendre pour l’instant. »

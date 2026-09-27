@@ -9,7 +9,7 @@
     {
       "key": "enfant",
       "word": "enfant",
-      "image": "👧",
+      "image": "🧒",
       "correct": true,
       "heard": "[an]"
     },
@@ -23,7 +23,7 @@
     {
       "key": "chanter",
       "word": "chanter",
-      "image": "🎤",
+      "image": "🎶",
       "correct": true,
       "heard": "[an]"
     },
@@ -37,14 +37,14 @@
     {
       "key": "dent",
       "word": "dent",
-      "image": "😁",
+      "image": "🦷",
       "correct": true,
       "heard": "[an]"
     },
     {
       "key": "vent",
       "word": "vent",
-      "image": "💨",
+      "image": "🌬️",
       "correct": true,
       "heard": "[an]"
     },

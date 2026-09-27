@@ -2,6 +2,7 @@
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 import type { BiomeId, BlockId } from './biomes';
 import { BLOCKS, getBiome } from './biomes';
+import { starsFor } from '../core/stars';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
 import {
@@ -320,10 +321,8 @@ export function scoreOf(results: ItemResult[]): number {
   return points / results.length;
 }
 
-/** 1 étoile = terminé, 2 = ≥ 70 %, 3 = ≥ 90 %. */
-export function starsFor(score: number): 1 | 2 | 3 {
-  return score >= 0.9 ? 3 : score >= 0.7 ? 2 : 1;
-}
+/** 1 étoile = terminé, 2 = ≥ 70 %, 3 = ≥ 90 % (règle commune au portail, dans `core/stars.ts`). */
+export { starsFor };
 
 // ---------- Streak quotidien ----------
 

@@ -26,6 +26,25 @@ export function HomePage() {
         </p>
       </section>
 
+      {/* La première fois, le Tutoriel passe devant tout : quatre questions pour prendre les commandes en main. */}
+      {firstTime && (
+        <Link to="/app/demo" className="panel adventure-card start-card">
+          <span className="subject-icon">
+            <Icon name="compass" size="2.2rem" />
+          </span>
+          <span className="adventure-text">
+            <span className="adventure-kicker">Commencer ici</span>
+            <span className="adventure-title">Tutoriel</span>
+            <span className="adventure-desc">
+              <Syllabified text="Quatre questions pour apprendre les boutons : écouter, répondre, prendre un joker." />
+            </span>
+          </span>
+          <span className="subject-count">
+            Essayer <Icon name="play" />
+          </span>
+        </Link>
+      )}
+
       <Link to="/aventure" className="panel adventure-card">
         <Creature biome="foret" className="creature-small" />
         <span className="adventure-text">
@@ -59,6 +78,14 @@ export function HomePage() {
           );
         })}
       </div>
+
+      {!firstTime && (
+        <p className="home-tutorial">
+          <Link to="/app/demo">
+            <Icon name="compass" /> Revoir le tutoriel
+          </Link>
+        </p>
+      )}
     </>
   );
 }

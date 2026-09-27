@@ -3,6 +3,7 @@ import { QuizSession } from '../../components/QuizSession';
 import { Icon } from '../../components/Icon';
 import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, THEMES, questionsForLevel, questionsForTheme, type Level } from './data';
+import { RecordTag } from '../../components/RecordTag';
 
 type Mode = { kind: 'niveau'; level: Level } | { kind: 'theme'; themeId: string };
 
@@ -55,7 +56,7 @@ export default function VocabulaireApp() {
                 <span className="level-sets">
                   <span>{description}</span>
                 </span>
-                {record !== undefined ? <span className="tag tag-ok">Record : {record} %</span> : <span className="tag tag-new">Jouer</span>}
+                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
               </button>
             </li>
           );

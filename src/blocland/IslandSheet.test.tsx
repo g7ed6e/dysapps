@@ -41,8 +41,8 @@ it('le panneau d’une île ouverte liste ses quêtes, son Gardien verrouillé e
   const quests = screen.getByRole('list', { name: 'Quêtes de l’île' });
   expect(quests.querySelectorAll('a.island-quest').length).toBeGreaterThanOrEqual(3);
   expect(screen.getAllByText('Nouveau').length).toBeGreaterThanOrEqual(3);
-  expect(screen.getByText('le Grand Chêne')).toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: /le Grand Chêne/ })).not.toBeInTheDocument();
+  expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
   expect(screen.getByText(/Plan 1 \/ 3 : La cabane de Mousso/)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   // L'inventaire est une page à part : le plan y renvoie.

@@ -6,6 +6,7 @@ import { BADGES, levelFromXp } from '../core/progress';
 import { useProgress } from '../core/ProgressContext';
 import { subjectProgress, type SubjectProgress } from '../core/subjectProgress';
 import { Icon } from '../components/Icon';
+import { RecordTag } from '../components/RecordTag';
 import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
 
@@ -80,7 +81,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
                 {r.kind === 'quete' ? (
                   <Stars count={r.stars} label={`${plural(r.stars, 'étoile')} sur 3`} />
                 ) : (
-                  <span className="tag subject-progress-record">Record : {r.record}{' '}%</span>
+                  <RecordTag record={r.record} className="tag subject-progress-record" />
                 )}
               </Link>
             </li>

@@ -7,6 +7,9 @@ import { SpeakButton } from './SpeakButton';
 import { RichText } from './math/RichText';
 import { langAttr, type Lang } from '../core/speech';
 import { useSheetClearance } from './useSheetClearance';
+import { useAnswerKeys } from './useAnswerKeys';
+import { Stars } from '../blocland/Stars';
+import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
 
 export interface Question {
@@ -73,6 +76,9 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   const [hintUsed, setHintUsed] = useState(false);
   const [phase, setPhase] = useState<Phase>('question');
   const [points, setPoints] = useState(0); // 1 au premier essai, 0,5 avec joker ou second essai
+  // Pour le bilan en mots : trouvées du premier coup, trouvées ensuite (joker ou deuxième essai).
+  const [firstTry, setFirstTry] = useState(0);
+  const [later, setLater] = useState(0);
   const [xpGained, setXpGained] = useState(0);
   const [feedback, setFeedbackState] = useState<FeedbackState | null>(null);
   // La clé change à chaque message : un texte identique est donc relu.
@@ -88,6 +94,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   useSheetClearance(sectionRef, phase === 'resolved');
   // Les succès gagnés en route s'affichent au bilan, pas sur la question.
   useHoldCelebrations(phase !== 'summary');
+  // Touches 1 à 9 pour répondre, Entrée pour la suite.
+  useAnswerKeys(sectionRef);
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -103,6 +111,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
       const update = answer(true, effectiveAttempt);
       setXpGained((x) => x + update.xpGained);
       setPoints((p) => p + (effectiveAttempt === 1 ? 1 : 0.5));
+      if (effectiveAttempt === 1) setFirstTry((n) => n + 1);
+      else setLater((n) => n + 1);
       setPhase('resolved');
       const streak = update.progress.currentStreak;
       say({
@@ -172,6 +182,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
     setWrongChoices([]);
     setHintUsed(false);
     setPoints(0);
+    setFirstTry(0);
+    setLater(0);
     setXpGained(0);
     setPhase('question');
     say(null);
@@ -183,7 +195,16 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
         {feedback && <Feedback {...feedback} speakKey={feedback.key} />}
         <div className="panel summary">
           <h2 id="bilan-titre">Résultat</h2>
-          <p className="summary-score">{finalScore} %</p>
+          {/* En étoiles et en mots, comme dans Blocland : « 88 % » ne parle pas à un élève de 6e. */}
+          <Stars count={starsFor(points / questions.length)} size="2.4rem" />
+          <p className="summary-score">
+            {firstTry} sur {questions.length} du premier coup
+          </p>
+          {later > 0 && (
+            <p className="summary-later">
+              et {later} trouvée{later > 1 ? 's' : ''} ensuite, avec le joker ou au deuxième essai
+            </p>
+          )}
           <p className="summary-xp">
             <Icon name="zap" /> +{xpGained} XP
           </p>

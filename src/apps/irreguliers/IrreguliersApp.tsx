@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { QuizSession } from '../../components/QuizSession';
 import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, questionsForLevel, verbsForLevel, type Level } from './data';
+import { RecordTag } from '../../components/RecordTag';
 
 export const APP_ID = 'irreguliers';
 
@@ -48,7 +49,7 @@ export default function IrreguliersApp() {
                   ))}
                   <span>…</span>
                 </span>
-                {record !== undefined ? <span className="tag tag-ok">Record : {record} %</span> : <span className="tag tag-new">Jouer</span>}
+                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
               </button>
             </li>
           );

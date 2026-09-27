@@ -1,6 +1,6 @@
 // Le Gardien d'un biome : un défi qui enchaîne des manches de chaque quête du biome, au niveau de l'élève.
 // Logique pure : déblocage, construction du défi, état « vaincu ».
-import { BIOMES, type BiomeDef, type BiomeId } from './biomes';
+import { BIOMES, guardianTitle, type BiomeDef, type BiomeId } from './biomes';
 import { levelFor, type BloclandState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, loadExercise, pickExercise } from './exercises';
@@ -91,9 +91,9 @@ export async function bossDef(biome: BiomeDef, state: BloclandState, rng: () => 
     biome: biome.id,
     type: 'boss',
     level: 1,
-    instruction: `${biome.guardian} te lance ${rounds.length} épreuves, une de chaque quête. Prends ton temps : il ne compte pas les secondes.`,
+    instruction: `${guardianTitle(biome)} te lance ${rounds.length} épreuves, une de chaque quête. Prends ton temps : il ne compte pas les secondes.`,
     items: rounds,
-    feedback: { correct: `${biome.guardian} hoche la tête.`, wrong: '{explain}' },
+    feedback: { correct: `${guardianTitle(biome)} hoche la tête.`, wrong: '{explain}' },
     reward: { block: 'or', amount: 3, xp: 60 },
     adaptive: { promoteAt: 1.1, demoteAt: -1 },
   };

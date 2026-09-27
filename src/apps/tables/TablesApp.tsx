@@ -1,6 +1,7 @@
 import { Icon } from '../../components/Icon';
 import { QuestMenu } from '../../components/QuestMenu';
 import { QUESTIONS_PER_QUEST, QUESTS, TABLES, tableQuest } from './generators';
+import { starsFor } from '../../core/stars';
 
 export default function TablesApp() {
   return (
@@ -28,11 +29,11 @@ export default function TablesApp() {
                   key={table}
                   type="button"
                   className="set-chip table-chip"
-                  aria-label={`Table de ${table}${record !== undefined ? `, record ${record} %` : ''}`}
+                  aria-label={`Table de ${table}${record !== undefined ? `, record : ${starsFor(record / 100)} étoiles sur 3` : ''}`}
                   onClick={() => start({ id, title: `Table de ${table}`, detail: '', make: () => tableQuest(table) })}
                 >
                   × {table}
-                  {record !== undefined && <span className="set-record">{record} %</span>}
+                  {record !== undefined && <span className="set-record">{'★'.repeat(starsFor(record / 100))}</span>}
                 </button>
               );
             })}

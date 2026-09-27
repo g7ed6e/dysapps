@@ -79,14 +79,14 @@
     {
       "key": "jardin",
       "word": "jardin",
-      "image": "🌷",
+      "image": "🏡",
       "correct": false,
       "heard": "[j]"
     },
     {
       "key": "cheminée",
       "word": "cheminée",
-      "image": "🏠",
+      "image": "🔥",
       "correct": true,
       "heard": "[ch]"
     }

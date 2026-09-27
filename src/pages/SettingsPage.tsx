@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, WORLD_VIEW_LABELS, type FontChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
+import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -14,6 +14,7 @@ export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
   const { resetProgress } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [typed, setTyped] = useState('');
   const appUpdate = useAppUpdate();
 
   return (
@@ -87,7 +88,7 @@ export function SettingsPage() {
             min={MIN_LINE_HEIGHT}
             max={2.4}
             step={0.1}
-            display={settings.lineHeight.toFixed(1)}
+            display={spacingWord(settings.lineHeight, DEFAULT_SETTINGS.lineHeight, 2.4)}
             onChange={(lineHeight) => update({ lineHeight })}
           />
           <Slider
@@ -96,7 +97,7 @@ export function SettingsPage() {
             min={0}
             max={0.2}
             step={0.01}
-            display={settings.letterSpacing.toFixed(2)}
+            display={spacingWord(settings.letterSpacing, DEFAULT_SETTINGS.letterSpacing, 0.2)}
             onChange={(letterSpacing) => update({ letterSpacing })}
           />
           <Slider
@@ -105,7 +106,7 @@ export function SettingsPage() {
             min={0}
             max={0.5}
             step={0.02}
-            display={settings.wordSpacing.toFixed(2)}
+            display={spacingWord(settings.wordSpacing, DEFAULT_SETTINGS.wordSpacing, 0.5)}
             onChange={(wordSpacing) => update({ wordSpacing })}
           />
         </fieldset>
@@ -120,7 +121,7 @@ export function SettingsPage() {
                 min={0.5}
                 max={1.3}
                 step={0.1}
-                display={`× ${settings.speechRate.toFixed(1)}`}
+                display={speedWord(settings.speechRate)}
                 onChange={(speechRate) => update({ speechRate })}
               />
               <button type="button" className="button" onClick={() => speak(SAMPLE)}>
@@ -192,28 +193,49 @@ export function SettingsPage() {
           <button type="button" className="button" onClick={reset}>
             Affichage par défaut
           </button>
+        </div>
+
+        {/* Loin des autres boutons, et il faut écrire un mot : un doigt qui glisse n'efface rien. */}
+        <fieldset className="panel danger-zone">
+          <legend>Effacer ma progression</legend>
+          <p>XP, succès, étoiles, blocs et bâtiments seront perdus. Les réglages restent.</p>
           {confirmReset ? (
             <>
-              <button
-                type="button"
-                className="button danger"
-                onClick={() => {
-                  resetProgress();
-                  setConfirmReset(false);
-                }}
-              >
-                Oui, tout effacer
-              </button>
-              <button type="button" className="button" onClick={() => setConfirmReset(false)}>
-                Annuler
-              </button>
+              <label className="confirm-word">
+                Pour confirmer, écris <strong>effacer</strong> :
+                <input type="text" autoComplete="off" autoCapitalize="none" spellCheck={false} value={typed} onChange={(e) => setTyped(e.target.value)} />
+              </label>
+              <div className="actions">
+                <button
+                  type="button"
+                  className="button danger"
+                  disabled={typed.trim().toLowerCase() !== 'effacer'}
+                  onClick={() => {
+                    resetProgress();
+                    setConfirmReset(false);
+                    setTyped('');
+                  }}
+                >
+                  Tout effacer
+                </button>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => {
+                    setConfirmReset(false);
+                    setTyped('');
+                  }}
+                >
+                  Annuler
+                </button>
+              </div>
             </>
           ) : (
             <button type="button" className="button danger" onClick={() => setConfirmReset(true)}>
-              Effacer ma progression
+              Effacer ma progression…
             </button>
           )}
-        </div>
+        </fieldset>
       </form>
     </>
   );
@@ -235,7 +257,15 @@ function Slider({ label, value, min, max, step, display, onChange }: SliderProps
       <span className="slider-label">
         {label} <output>{display}</output>
       </span>
-      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        aria-valuetext={display}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </label>
   );
 }

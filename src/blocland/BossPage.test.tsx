@@ -34,15 +34,15 @@ function ready(biomeId: string) {
 
 it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque quête a deux étoiles', () => {
   renderAt('/aventure/foret');
-  expect(screen.getByText('le Grand Chêne')).toBeInTheDocument();
+  expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
   expect(screen.getByText(/2 étoiles dans : Abattage syllabique, Chasse au son, Rimes-échelle/)).toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: /le Grand Chêne/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
 });
 
 it('sans les étoiles, le Gardien refuse et renvoie aux quêtes', async () => {
   renderAt('/aventure/foret/gardien');
   await loaded();
-  expect(screen.getByRole('heading', { name: /le Grand Chêne/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Le Grand Chêne/ })).toBeInTheDocument();
   expect(document.body.textContent).toMatch(/Il te manque encore des étoiles/);
   expect(screen.getByRole('link', { name: /Voir les quêtes/ })).toBeInTheDocument();
 });
@@ -50,7 +50,7 @@ it('sans les étoiles, le Gardien refuse et renvoie aux quêtes', async () => {
 it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa quête', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret');
-  expect(screen.getByRole('link', { name: /le Grand Chêne/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
   expect(screen.getByText(/Prêt à t’affronter/)).toBeInTheDocument();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret/gardien');
@@ -58,7 +58,7 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   expect(screen.getAllByText(/Épreuve : Abattage syllabique/).length).toBeGreaterThan(0);
   // L'arène : le Gardien et sa jauge de résistance, pleine au départ.
   expect(screen.getByRole('region', { name: /L’arène du Gardien/ })).toBeInTheDocument();
-  expect(screen.getByRole('img', { name: /le Grand Chêne, le Gardien/ })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /Le Grand Chêne, le Gardien/ })).toBeInTheDocument();
   const gauge = screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
   expect(gauge).toHaveAttribute('aria-valuenow', gauge.getAttribute('aria-valuemax'));
   // L'écran de la manche est celui de la quête : un QCM de syllabes.

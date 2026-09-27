@@ -46,7 +46,9 @@ it('donne un indice, puis corrige, puis affiche le bilan', async () => {
 
   await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
   expect(screen.getByRole('heading', { name: 'Résultat' })).toBeInTheDocument();
-  expect(screen.getByText('25 %')).toBeInTheDocument();
+  // 0,5 point sur 2 : une étoile ; aucune du premier coup, une trouvée au deuxième essai.
+  expect(screen.getByText('0 sur 2 du premier coup')).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: '1 étoile sur 3' })).toBeInTheDocument();
 
   const saved = JSON.parse(localStorage.getItem('dysapps:progress')!);
   expect(saved.apps.test.bestScore).toBe(25);
@@ -168,4 +170,14 @@ it('garde les succès gagnés pendant la partie pour le bilan : rien ne tombe su
   // Au bilan, il apparaît.
   expect(screen.getAllByText('Succès débloqué').length).toBeGreaterThan(0);
   expect(screen.getByText('Échauffement')).toBeInTheDocument();
+});
+
+it('se joue au clavier : 1 à 9 pour répondre, Entrée pour la suite', async () => {
+  const user = userEvent.setup();
+  renderQuiz();
+  // « 2 » : la deuxième réponse (4), juste.
+  await user.keyboard('2');
+  expect(screen.getByText(/\+10 XP/)).toBeInTheDocument();
+  await user.keyboard('{Enter}');
+  expect(screen.getByText('Question 2 / 2')).toBeInTheDocument();
 });
