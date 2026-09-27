@@ -1,6 +1,6 @@
 # Cadrage — « De Blocland à Archipéo » (direction artistique et game design)
 
-Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Rien n’est encore construit : le [style actuel](style.md) et les cadrages existants décrivent toujours l’application en ligne.
+Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp` ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Rien n’est encore construit : le [style actuel](style.md) et les cadrages existants décrivent toujours l’application en ligne.
 
 L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#le-directeur-artistique)) conduit cette migration côté game design et direction artistique. Le contenu pédagogique reste au Directeur contenu pédagogique, et les choix techniques à ceux qui écrivent le code.
 
