@@ -189,7 +189,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         {bossSaid ? <Syllabified text={bossSaid} /> : ''}
       </p>
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} />}
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'plan'} />}
 
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} fold={fold} />}
 

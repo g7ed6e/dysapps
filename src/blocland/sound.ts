@@ -83,11 +83,12 @@ export function playRemove(): void {
   blip(330, 660, 0.1, 0.12, 'triangle');
 }
 
-/** Petite fanfare de trois notes : un plan est terminé. */
+/** Un carillon de deux notes : un plan est terminé. */
 export function playDone(): void {
   const ac = context();
   if (!ac || speaking()) return;
-  [523, 659, 784].forEach((f, i) => setTimeout(() => blip(f, f, 0.18, 0.15, 'square'), i * 140));
+  // Un carillon de deux notes, court et doux.
+  [659, 988].forEach((f, i) => setTimeout(() => blip(f, f, 0.45, 0.12, 'triangle'), i * 160));
 }
 
 /** Refus doux (pas de bloc, hors zone) : deux notes descendantes courtes. */
@@ -105,10 +106,10 @@ export function playGrowl(): void {
   blip(120, 70, 0.35, 0.09, 'triangle');
 }
 
-/** Victoire : la fanfare, puis une note tenue. */
+/** Victoire : deux notes de carillon, puis une note tenue. */
 export function playVictory(): void {
-  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, f, 0.2, 0.14, 'square'), i * 130));
-  setTimeout(() => blip(1047, 1047, 0.8, 0.1, 'triangle'), 560);
+  [523, 784].forEach((f, i) => setTimeout(() => blip(f, f, 0.4, 0.12, 'triangle'), i * 160));
+  setTimeout(() => blip(1047, 1047, 0.8, 0.1, 'triangle'), 320);
 }
 
 // ---------- Le voyage du Bloc-Navire ----------

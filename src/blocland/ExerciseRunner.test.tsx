@@ -78,6 +78,9 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(screen.getByText(/\+2 première fois, \+1 pour 2 étoiles/)).toBeInTheDocument();
   expect(screen.getByText('+10')).toBeInTheDocument();
   expect(screen.getByText(/1 jour d’affilée/)).toBeInTheDocument();
+  // À quoi servent les blocs : le plan de l'île, avec sa jauge, et « Voir le chantier » qui l'ouvre.
+  expect(document.querySelector('.reward-site')).toHaveTextContent(/La cabane de Mousso, sur Forêt des sons : 6 blocs sur les \d+ qui manquent\./);
+  expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/aventure/foret?chantier=plan');
 
   const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
   expect(saved.inventory.bois).toBe(6);

@@ -1027,7 +1027,7 @@ button.app-card:active {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow-float);
-  animation: slam 0.35s ease-out;
+  animation: celebration-in 0.4s ease-out;
 }
 .celebration-levelup {
   background: var(--cyan);
@@ -1059,9 +1059,8 @@ button.app-card:active {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-control);
 }
-@keyframes slam {
+@keyframes celebration-in {
   from {
-    transform: translateX(-50%) scale(1.2);
     opacity: 0;
   }
 }
@@ -3966,6 +3965,13 @@ button.island-quest:active {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 0.8rem;
+}
+/* Le chantier que servent les blocs gagnés : sa phrase et sa jauge, sur toute la largeur. */
+.reward-site > span {
+  flex: 1;
+}
+.reward-site .goal-gauge {
+  display: block;
 }
 
 /* ===== Les plis du panneau d'île : plan, Bloc-Navire, ouvrages ===== */

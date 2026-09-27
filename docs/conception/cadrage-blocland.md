@@ -70,7 +70,7 @@ Le pont était la seule liaison et les blocs le seul verrou. Décision : chaque 
 - Tout bloc d’île paie tout ouvrage : les blocs gagnés n’importe où servent.
 - Les ouvrages ne relient que des îles d’un même archipel ; chaque archipel est connexe depuis son port, et au moins deux ouvrages sans condition partent du port : l’arrivée n’est jamais bloquée. Dans un archipel, rien n’est imposé.
 - Une condition qui manque s’affiche avec ce qu’il faut faire, sans pénalité ; un ouvrage possible est dessiné en fantôme, et le toucher ouvre sa proposition sur l’île ouverte qu’il touche (pas sur l’île d’en face, souvent fermée).
-- **La fête** : des éclats d’or, la caméra vole jusqu’à l’île qui s’ouvre, sa créature accueille. Ouvrir une île doit se sentir.
+- **La fête** : la caméra vole jusqu’à l’île qui s’ouvre, sa créature accueille. Ouvrir une île doit se sentir, par la transformation, sans pluie d’éclats (lot 3 d’Archipéo).
 
 ## Le village, les plans et les coffres
 

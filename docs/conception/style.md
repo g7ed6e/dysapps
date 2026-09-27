@@ -41,7 +41,11 @@ Univers, créatures et Gardiens sont dessinés en cubes (`src/blocland/Voxel.tsx
 
 ## Sons
 
-Les sons sont générés par le code avec Web Audio, sans aucun fichier : un « toc » à la pose, un « pop » au retrait, un refus doux, le tambour du Gardien et sa fanfare, l’ambiance en option (vent, oiseaux le jour, grillons la nuit). Jamais de son pendant la lecture à voix haute ; réglages « Sons dans le village » et « Ambiance sonore du village ».
+Les sons sont générés par le code avec Web Audio, sans aucun fichier : un « toc » à la pose, un « pop » au retrait, un refus doux, un carillon de deux notes (en onde triangle, jamais carrée) quand un plan est terminé ou un Gardien vaincu, le tambour du Gardien, l’ambiance en option (vent, oiseaux le jour, grillons la nuit). Jamais de son pendant la lecture à voix haute ; réglages « Sons dans le village » et « Ambiance sonore du village ».
+
+## Célébrations
+
+Pas de pluie d’éclats ni de confettis : une réussite se voit à ce qu’elle transforme. Un bloc posé fait monter trois poussières claires de sa case ; une île qui s’ouvre, c’est la caméra qui y vole et sa créature qui accueille ; un plan terminé, c’est le bâtiment, son coffre et un carillon court. Le bandeau d’un succès ou d’un niveau apparaît en fondu, sans zoom. « Réduire les animations » coupe les poussières, les vols de caméra et les fondus, jamais ce qui a changé dans le monde.
 
 ## Ce que le style ne fait jamais
 
