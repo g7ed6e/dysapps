@@ -4,6 +4,7 @@
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
 import { BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, voyageId, type BridgeDef } from './archipelago';
 import { AVATAR_HOME } from '../Avatar';
+import { walkPath, type WalkGround } from './paths';
 import {
   CORE,
   archipelagoOfIsland,
@@ -793,9 +794,11 @@ export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
 
 /**
  * L'itinéraire du bonhomme d'une île à une autre, en marchant sur les ouvrages construits (le plus court chemin en
- * nombre d'ouvrages), ou `null` s'il n'y en a pas. Une suite de points (x, y, z du sol sous ses pieds).
+ * nombre d'ouvrages), ou `null` s'il n'y en a pas. Une suite de points (x, y, z du sol sous ses pieds). Une île
+ * traversée n'est pas un détour par sa place : il va d'un ouvrage au suivant. Avec la grille de marche (`ground`), il
+ * suit le sol et contourne arbres, bornes, maisons et créatures ; sans elle, il va en ligne droite.
  */
-export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x: number; y: number; z: number }[] | null {
+export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[], ground?: WalkGround): { x: number; y: number; z: number }[] | null {
   if (from === to) return [avatarHome(from)];
   const built = (b: BridgeDef) => bridgeState(b, bridges) === 'built';
   const prev = new Map<BiomeId, BridgeDef | null>([[from, null]]);
@@ -820,20 +823,28 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[]): { x:
     at = before;
   }
   const route: { x: number; y: number; z: number }[] = [avatarHome(from)];
+  // Sur une île : de là où il est jusqu'au point suivant, à pied (ou tout droit, sans grille).
+  const walkTo = (next: { x: number; y: number; z: number }) => {
+    const here = route[route.length - 1];
+    const path = ground ? walkPath(ground, here, next) : null;
+    route.push(...(path ? path.slice(1) : [next]));
+  };
   for (const hop of hops) {
-    let cells = bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z }));
-    if (hop.def.from !== hop.from) cells = cells.reverse();
     // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre
     // est posée sur le sol en z + 1, on marche dessus : z + 2).
-    if (hop.def.kind === 'sentier') {
-      const stones = bridgePath(hop.def)
-        .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
-        .filter((c) => c.stone);
-      if (hop.def.from !== hop.from) stones.reverse();
-      for (const c of stones) route.push({ x: c.x, y: c.y, z: c.z });
-    } else for (const c of cells) route.push({ x: c.x, y: c.y, z: c.z + 1 });
-    route.push(avatarHome(hop.to));
+    const deck =
+      hop.def.kind === 'sentier'
+        ? bridgePath(hop.def)
+            .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
+            .filter((c) => c.stone)
+            .map(({ x, y, z }) => ({ x, y, z }))
+        : bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z + 1 }));
+    if (hop.def.from !== hop.from) deck.reverse();
+    if (!deck.length) continue;
+    walkTo(deck[0]);
+    route.push(...deck.slice(1));
   }
+  walkTo(avatarHome(to));
   return route;
 }
 

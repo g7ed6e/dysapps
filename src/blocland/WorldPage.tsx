@@ -26,6 +26,7 @@ import { playArrival, playBurner, playHorn, playReactor, playSail } from './soun
 import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
+import { walkGround } from './world/paths';
 import { isPlanDone, plansFor } from './world/plans';
 import {
   avatarHome,
@@ -87,6 +88,8 @@ export function WorldPage() {
     () => [...creaturePlacements(a, state.village.bridges), ...guardianPlacements(a, state.progress, state.village.bridges)],
     [a, state.progress, state.village.bridges],
   );
+  // Le sol où le bonhomme marche : il suit les îles et contourne arbres, bornes, maisons et créatures.
+  const ground = useMemo(() => walkGround(cubes, creatures), [cubes, creatures]);
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.village), [a, state.progress, state.village]);
   // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande.
@@ -186,7 +189,7 @@ export function WorldPage() {
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
     const port = archipelago.port;
-    const route = at === port ? null : avatarRoute(at, port, state.village.bridges);
+    const route = at === port ? null : avatarRoute(at, port, state.village.bridges, ground);
     if (route) {
       setWalk((w) => ({ route, seq: w.seq + 1 }));
       moveTo(port);
@@ -230,7 +233,7 @@ export function WorldPage() {
     clearTimers();
     setVoyage(null);
     setVeil(false);
-    const route = dest === port ? null : avatarRoute(port, dest, state.village.bridges);
+    const route = dest === port ? null : avatarRoute(port, dest, state.village.bridges, ground);
     setWalk((w) => ({ route: route ?? [avatarHome(dest)], seq: w.seq + 1 }));
     if (dest !== port) moveTo(dest);
     setSheetOpen(true);
@@ -300,7 +303,7 @@ export function WorldPage() {
     }
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
     if (island && island.id !== at && isBiomeUnlocked(island.id, state.village.bridges)) {
-      const route = avatarRoute(at, island.id, state.village.bridges);
+      const route = avatarRoute(at, island.id, state.village.bridges, ground);
       if (route) setWalk((w) => ({ route, seq: w.seq + 1 }));
       else setWalk((w) => ({ route: [avatarHome(island.id)], seq: w.seq + 1 }));
       moveTo(island.id);
