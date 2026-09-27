@@ -55,7 +55,8 @@ it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y fair
   const plan = () => document.querySelector<HTMLDetailsElement>('.island-fold-plan')!;
   const ouvrages = () => document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages')!;
   expect(plan()).not.toHaveAttribute('open');
-  expect(plan().textContent).toContain('0 / 16 posés · il manque 16 bois');
+  const cabane = plansFor('foret')[0].cells.length;
+  expect(plan().textContent).toContain(`0 / ${cabane} posés · il manque ${cabane} bois`);
   expect(ouvrages()).not.toHaveAttribute('open');
   expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
   expect(screen.getByRole('list', { name: 'Quêtes de l’île' })).toBeInTheDocument();
@@ -151,4 +152,20 @@ it('le navire touché dans le monde ouvre son pli', () => {
   renderSheet('plaine', () => {}, 'navire', true);
   expect(document.querySelector('.island-fold-navire')).toHaveAttribute('open');
   expect(document.querySelector('.ship-section')!.className).toContain('bridge-highlight');
+});
+
+it('« Poser tout ce que j’ai » pose d’un coup les blocs que l’inventaire permet, jusqu’au coffre si tout y est', async () => {
+  const user = userEvent.setup();
+  const cabane = plansFor('foret')[0];
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 10 } }));
+  renderSheet('foret');
+  await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
+  expect(screen.getByText(`10 blocs posés. Il en reste ${cabane.cells.length - 10} à poser : gagne les blocs qui manquent.`)).toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.plans[cabane.id]).toHaveLength(10);
+  document.body.innerHTML = '';
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: cabane.cells.length } }));
+  renderSheet('foret');
+  await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
+  expect(screen.getByText(/La cabane de Mousso : terminé !/)).toBeInTheDocument();
+  expect(screen.getByText(/Plan 2 \/ 3/)).toBeInTheDocument();
 });

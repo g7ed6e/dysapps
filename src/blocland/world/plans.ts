@@ -1,6 +1,7 @@
-// Les plans du village : un bâtiment en ruine par île, à reconstruire bloc par bloc.
-// Chaque plan est un fichier JSON (cellules relatives à la zone des plans de l'île).
-import type { BiomeId, BlockId } from '../biomes';
+// Les plans du village : un bâtiment en ruine par île, à reconstruire bloc par bloc, en trois plans (les murs, le toit, la
+// cour). Chaque plan a sa fiche JSON (nom, phrase de fin, XP, coffre) ; son dessin vient de l'architecte (architect.ts).
+import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { FINISH_BLOCKS, buildingStages, finishNeeds } from './architect';
 import { dockOrigin } from './harbour';
 import { islandDef } from './map';
 import carriereAbri from './plans/carriere-abri.json';
@@ -112,8 +113,8 @@ export interface PlanDef {
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
 export const PLAN_ZONE = { x: 8, y: 10, w: 6, h: 5 };
 
-/** Dans l'ordre : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
-export const PLANS: PlanDef[] = [
+/** Les fiches des plans (nom, phrases, XP, coffre) dans l'ordre : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
+const PLAN_FILES = [
   foretCabane,
   foretToit,
   foretCour,
@@ -198,7 +199,28 @@ export const PLANS: PlanDef[] = [
   chateauTour,
   chateauToit,
   chateauRempart,
-] as PlanDef[];
+] as Omit<PlanDef, 'cells' | 'origin'>[];
+
+/**
+ * Les plans des îles : la fiche de chaque plan, et son dessin par l'architecte (world/architect.ts) selon la forme du
+ * bâtiment de l'île et son rang (les murs, le toit, la cour). Le coffre d'un plan garde ses blocs d'îles et ses blocs rares,
+ * et donne exactement les blocs de finition de l'étape suivante.
+ */
+export const PLANS: PlanDef[] = (() => {
+  const out: PlanDef[] = [];
+  for (const island of [...new Set(PLAN_FILES.map((p) => p.biome))]) {
+    const files = PLAN_FILES.filter((p) => p.biome === island);
+    const block = BIOMES.find((b) => b.id === island)!.block;
+    const stages = buildingStages(island, block);
+    files.forEach((file, i) => {
+      const keep = Object.fromEntries(Object.entries(file.reward.chest).filter(([b]) => !FINISH_BLOCKS.includes(b as BlockId)));
+      const chest = { ...keep, ...(i + 1 < stages.length ? finishNeeds(stages[i + 1]) : {}) };
+      out.push({ ...file, origin: { x: 0, y: 0 }, cells: stages[i] ?? [], reward: { ...file.reward, chest } });
+    });
+  }
+  // L'ordre des fichiers est gardé (îles dans l'ordre de la liste).
+  return PLAN_FILES.map((f) => out.find((p) => p.id === f.id)!);
+})();
 
 export function plansFor(biome: BiomeId): PlanDef[] {
   return PLANS.filter((p) => p.biome === biome);

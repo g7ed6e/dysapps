@@ -120,7 +120,7 @@ it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant'
 
 it('écrit une ligne de journal quand un plan est terminé', () => {
   const plan = plansFor('foret')[0];
-  let state: BloclandState = { ...EMPTY_STATE, inventory: { bois: 20 } };
+  let state: BloclandState = { ...EMPTY_STATE, inventory: { bois: planCells(plan).length } };
   for (const c of planCells(plan)) {
     const r = fillPlanCell(state, plan, c.x, c.y, c.z, '2026-09-25');
     if (r.ok) state = r.state;

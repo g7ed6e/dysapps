@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, BLOCKS, ofBlock, type BiomeId } from './biomes';
+import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { islandOrigin, toIslandCell } from './world/terrain';
-import { whereToEarn, type Burst } from './usePlanBuilder';
+import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
 
 export interface VehicleBuilder {
@@ -22,6 +22,8 @@ export interface VehicleBuilder {
   notice: string | null;
   burst: Burst;
   fillNext: () => void;
+  /** Pose d'un coup toutes les cases que l'inventaire permet. */
+  fillAll: () => void;
   /** Une case du monde touchée : pose si c'est une case du navire à construire ici. */
   tryFill: (cell: { x: number; y: number; z: number }) => boolean;
 }
@@ -56,20 +58,35 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
       sound(playNope);
       return;
     }
-    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[r.block].top }));
-    if (r.completed) {
-      const msg = kit
-        ? `Le Bloc-Navire a tous ses blocs ! ${stage.done}`
-        : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${stage.guardians} Gardien${stage.guardians > 1 ? 's' : ''} vaincu${stage.guardians > 1 ? 's' : ''} pour ${stage.short}.`;
-      setNotice(msg);
-      sound(playDone);
-      if (settings.autoRead) speak(msg);
-    } else {
+    burstAt(x, y, z, r.block);
+    if (r.completed) finished(stage);
+    else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
       sound(playPlace);
       haptics.place();
     }
+  };
+  const burstAt = (x: number, y: number, z: number, block: BlockId) => {
+    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
+    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[block].top }));
+  };
+  const finished = (done: VehicleStage) => {
+    const msg = kit
+      ? `Le Bloc-Navire a tous ses blocs ! ${done.done}`
+      : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
+    setNotice(msg);
+    sound(playDone);
+    if (settings.autoRead) speak(msg);
+  };
+  const fillAll = () => {
+    if (!stage) return;
+    const { placed, last, completed } = placeAll(stage, state.village.plans[stage.id] ?? [], fillPlan);
+    if (!last) return;
+    burstAt(last.x, last.y, last.z, last.block);
+    if (completed) return finished(stage);
+    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur le Bloc-Navire.`);
+    sound(playPlace);
+    haptics.place();
   };
   const fillNext = () => {
     if (!stage) return;
@@ -93,6 +110,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     notice,
     burst,
     fillNext,
+    fillAll,
     tryFill,
   };
 }

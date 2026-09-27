@@ -2,108 +2,10 @@
   "id": "plaine-nid",
   "biome": "plaine",
   "name": "Le nid de Coco",
-  "origin": {
-    "x": 1,
-    "y": 1
-  },
-  "cells": [
-    {
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 0,
-      "y": 1,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 0,
-      "y": 2,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 1,
-      "y": 2,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 0,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 1,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 2,
-      "z": 0,
-      "block": "brique"
-    },
-    {
-      "x": 0,
-      "y": 0,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 0,
-      "y": 1,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 0,
-      "y": 2,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 1,
-      "y": 0,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 1,
-      "y": 2,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 0,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 1,
-      "z": 1,
-      "block": "brique"
-    },
-    {
-      "x": 2,
-      "y": 2,
-      "z": 1,
-      "block": "brique"
-    }
-  ],
   "reward": {
     "xp": 40,
     "chest": {
-      "bois": 3,
-      "porte": 1,
-      "lanterne": 2
+      "bois": 3
     }
   },
   "done": "Mon nid ! Merci, bâtisseur. Dix fenêtres, dix points : je m’y retrouve enfin."

@@ -179,7 +179,7 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   renderAt('/aventure');
   await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
   expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 12 à gagner/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ })).toHaveAttribute('href', '/aventure/foret');
   expect(screen.getByRole('link', { name: 'Plaine des nombres' })).toHaveAttribute('href', '/aventure/plaine');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
   const now = screen.getByRole('list', { name: /Tu peux construire/ });

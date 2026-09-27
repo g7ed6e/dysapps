@@ -220,3 +220,39 @@ it('une quête du portail (l’école du village) rapporte des blocs de l’île
   const away = { ...EMPTY_STATE, village: { ...EMPTY_STATE.village, bridges: ['voyage-5e'], at: 'marche' as const } };
   expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'marche', block: 'toile', blocks: 6 });
 });
+
+describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
+  it('un plan terminé avec l’ancien dessin reste terminé, et son coffre donne ce que le nouveau donne en plus', async () => {
+    const { planV1 } = await import('./world/plansV1');
+    const { getPlan, planCells } = await import('./world/plans');
+    const old = planV1('foret-cabane')!;
+    const state = sanitizeState({ village: { plans: { 'foret-cabane': [...old.blocks.keys()] } }, inventory: { toit: 9, lanterne: 1, porte: 1 } });
+    const cabane = getPlan('foret-cabane')!;
+    expect(state.village.plans['foret-cabane']).toEqual(planCells(cabane).map((c) => c.key));
+    // Le coffre d'avant donnait 9 toits et 1 lanterne ; le nouveau en donne 18 et 3 : la différence arrive.
+    expect(state.inventory.toit).toBe(9 + (cabane.reward.chest.toit ?? 0) - 9);
+    expect(state.inventory.lanterne).toBe(1 + (cabane.reward.chest.lanterne ?? 0) - 1);
+    expect(state.inventory.porte).toBe(1);
+  });
+
+  it('un plan commencé avec l’ancien dessin garde ses cases encore valables et rend les autres blocs', async () => {
+    const { planV1 } = await import('./world/plansV1');
+    const { getPlan, planCells } = await import('./world/plans');
+    const oldKeys = [...planV1('foret-cabane')!.blocks.keys()].slice(0, 6);
+    const valid = new Set(planCells(getPlan('foret-cabane')!).map((c) => c.key));
+    const state = sanitizeState({ village: { plans: { 'foret-cabane': oldKeys } } });
+    const kept = oldKeys.filter((k) => valid.has(k));
+    expect(state.village.plans['foret-cabane'] ?? []).toEqual(kept);
+    expect(state.inventory.bois ?? 0).toBe(oldKeys.length - kept.length);
+  });
+
+  it('une sauvegarde du nouveau dessin ne change pas', async () => {
+    const { getPlan, planCells } = await import('./world/plans');
+    const keys = planCells(getPlan('foret-cabane')!).map((c) => c.key);
+    const partial = sanitizeState({ village: { plans: { 'foret-cabane': keys.slice(0, 20) } }, inventory: { bois: 3 } });
+    expect(partial.village.plans['foret-cabane']).toEqual(keys.slice(0, 20));
+    expect(partial.inventory).toEqual({ bois: 3 });
+    const done = sanitizeState({ village: { plans: { 'foret-cabane': keys } } });
+    expect(done.inventory).toEqual({});
+  });
+});

@@ -2,66 +2,6 @@
   "id": "gare-quai",
   "biome": "gare",
   "name": "Le quai de la gare",
-  "origin": {
-    "x": 1,
-    "y": 1
-  },
-  "cells": [
-    {
-      "x": -1,
-      "y": -1,
-      "z": 0,
-      "block": "barriere"
-    },
-    {
-      "x": 0,
-      "y": -1,
-      "z": 0,
-      "block": "barriere"
-    },
-    {
-      "x": 2,
-      "y": -1,
-      "z": 0,
-      "block": "barriere"
-    },
-    {
-      "x": 3,
-      "y": -1,
-      "z": 0,
-      "block": "barriere"
-    },
-    {
-      "x": 1,
-      "y": -1,
-      "z": 0,
-      "block": "escalier"
-    },
-    {
-      "x": -1,
-      "y": -1,
-      "z": 1,
-      "block": "lanterne"
-    },
-    {
-      "x": 3,
-      "y": -1,
-      "z": 1,
-      "block": "lanterne"
-    },
-    {
-      "x": -1,
-      "y": 1,
-      "z": 0,
-      "block": "rail"
-    },
-    {
-      "x": 3,
-      "y": 1,
-      "z": 0,
-      "block": "rail"
-    }
-  ],
   "reward": {
     "xp": 60,
     "chest": {
