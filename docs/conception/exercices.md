@@ -73,7 +73,17 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 
 **Deuxième essai** (`retryAllowed` dans `registry.ts`) : après une première erreur, le lanceur affiche « Presque ! » (avec le `hint` de l'item s'il en a un) et remonte l'écran ; les écrans à choix reçoivent `ruledOut` (la réponse tentée, barrée). Il est permis pour un écran à choix d'au moins trois réponses et pour un tri (`sorting: true` : Chasse au son, Rimes-échelle, Enclos), jamais au Gardien. Un item juste au deuxième essai compte `attempts: 2` (un demi-point) ; dans un tri refait, un item déjà juste au premier essai garde `attempts: 1`.
 
-**Aides visuelles en données** : un item peut porter `aid: { kind, props }` ; l’écran `CalculScreen` redessine la figure (`dots`, `ten`, `jumps`, `compare-bars`, `dot-groups`, `decimal-table`, `number-line`, `ratio-table`, `bar-list`, `right-triangle`, `thales-figure`, `rule-card` ; la liste qui fait foi est `AID_COMPONENTS` dans `maths.ts`). L’aide est toujours affichée, pas seulement après une erreur.
+**Aides visuelles en données** : un item peut porter `aid: { kind, props }` ; l’écran `CalculScreen` redessine la figure (`dots`, `ten`, `jumps`, `compare-bars`, `dot-groups`, `decimal-table`, `number-line`, `ratio-table`, `bar-list`, `right-triangle`, `thales-figure`, `rule-card`, `scene` ; la liste qui fait foi est `AID_COMPONENTS` dans `maths.ts`). L’aide est toujours affichée, pas seulement après une erreur. Un item peut aussi porter `figure: { kind, props }`, la figure de l’énoncé, dessinée au-dessus de l’aide (triangle rectangle, Thalès, schéma de la situation).
+
+**Schéma de la situation** (`scene`, `Scene.tsx`) : la figure des problèmes situés dans l’archipel, dessinée à plat. Une cote est un nombre ou `"?"`, et chaque schéma porte un seul `"?"`, la grandeur cherchée, écrite en couleur. Les heures sont en minutes depuis minuit (580 s’affiche « 9 h 40 »), les durées en minutes (75 s’affiche « 1 h 15 min »).
+
+| `scene` | Propriétés | Ce qui est dessiné |
+| --- | --- | --- |
+| `pont` | `unit: "m"`, `parts` (une cote par travée), `total` | Deux falaises, le pont en travées, une cote sous chaque travée, l’écart total au-dessus. |
+| `quai` | `unit: "m"`, `longueur`, `largeur`, `entree` (facultatif), `perimetre` (facultatif), `ask: "perimetre"` | Un rectangle vu du dessus, sa clôture, les côtés égaux codés ; l’entrée reste sans clôture et porte sa cote ; le tour, s’il est donné, au centre. |
+| `traversee` | `depart`, `arrivee`, `duree` | Deux îles, la route en pointillés et le bateau, l’heure de départ, l’heure d’arrivée et la durée. |
+
+La phrase lue par un lecteur d’écran (`aria-label`) est composée à partir des propriétés ; le « ? » s’y dit « inconnu ».
 
 ## Ajouter un exercice à une mission existante
 

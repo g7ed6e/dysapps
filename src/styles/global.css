@@ -3678,6 +3678,75 @@ button.island-quest:active {
   background: transparent;
 }
 
+/* ===== Schémas des problèmes situés (pont, quai, traversée) ===== */
+.scene-figure svg {
+  width: 100%;
+  max-width: 26rem;
+  display: block;
+  margin: 0 auto;
+}
+.scene-figure text {
+  font-family: var(--dys-font, inherit);
+  font-size: 18px;
+  fill: currentColor;
+}
+.scene-figure .pt {
+  font-weight: 700;
+}
+.scene-figure .ask {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.scene-figure .dim,
+.scene-figure .tick {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.scene-figure .dim-head {
+  fill: currentColor;
+}
+.scene-figure .cliff,
+.scene-figure .island {
+  fill: color-mix(in srgb, var(--green) 35%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .water {
+  fill: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+.scene-figure .deck,
+.scene-figure .quay {
+  fill: color-mix(in srgb, var(--sand) 55%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .pile {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.scene-figure .fence {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.scene-figure .route {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-dasharray: 8 7;
+}
+.scene-figure .boat {
+  fill: var(--ink);
+}
+:root[data-theme="contraste"] .scene-figure .cliff,
+:root[data-theme="contraste"] .scene-figure .island,
+:root[data-theme="contraste"] .scene-figure .water,
+:root[data-theme="contraste"] .scene-figure .deck,
+:root[data-theme="contraste"] .scene-figure .quay {
+  fill: var(--surface);
+}
+
 /* ===== Aides de 3e : figures et barres ===== */
 .right-triangle svg,
 .thales-figure svg {
