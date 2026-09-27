@@ -58,8 +58,10 @@ jobs:
       - run: npm run build
 
   # Les captures d'écran du manuel ne sont pas dans le dépôt : ce job rejoue le jeu dans Chromium
-  # (scripts/docs/captures.mjs) à chaque exécution, en parallèle des tests, et passe les images au job docs.
+  # (scripts/docs/captures.mjs), en parallèle des tests, et passe les images au job docs.
+  # Sur main seulement : une pull request n'attend pas les captures (npm run docs:captures en local pour les relire).
   captures:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -86,8 +88,10 @@ jobs:
           retention-days: 7
 
   # Le site de documentation, publié sur GitHub Pages dans /<nom du dépôt>/, avec les captures du job précédent.
+  # Sur une pull request, le job captures est sauté : le site se construit avec des images vides à la place.
   docs:
     needs: captures
+    if: ${{ !cancelled() && needs.captures.result != 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -104,14 +108,15 @@ jobs:
           package-manager-cache: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: needs.captures.result == 'success'
         with:
           name: captures
           path: docs/_captures
-      # DOCS_CAPTURES=required : une capture citée par une page et absente fait échouer le build.
+      # DOCS_CAPTURES=required (sur main) : une capture citée par une page et absente fait échouer le build.
       - run: npm run docs:build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
-          DOCS_CAPTURES: required
+          DOCS_CAPTURES: ${{ needs.captures.result == 'success' && 'required' || '' }}
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main'
         with:
