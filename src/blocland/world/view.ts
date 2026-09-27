@@ -101,6 +101,10 @@ export interface WorldViewProps {
   /** Borne de quête touchée (le socle, le panneau ou son repère). */
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   burst?: Burst;
+  /** La marche libre (vue 2D, en option) : une croix de direction et un bouton « Entrer » ; toucher pour aller reste. */
+  freeWalk?: boolean;
+  /** En marche libre, le bonhomme vient d'arriver sur une autre île (ouverte) : elle devient la sienne. */
+  onWalkedInto?: (id: BiomeId) => void;
   className?: string;
   label: string;
 }

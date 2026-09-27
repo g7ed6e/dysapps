@@ -49,7 +49,8 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
   - **Le monde en 2D (essai)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Blocland](blocland.md)).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
-  Si l’appareil ne sait pas dessiner le monde choisi (pas de WebGL pour la 3D), Blocland montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
+  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Blocland montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
+- **Marche libre dans le monde en 2D** (désactivé par défaut) : une croix de direction s’affiche en bas à droite du monde, avec un bouton **Entrer** au milieu. Voir [Blocland](blocland.md).
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 

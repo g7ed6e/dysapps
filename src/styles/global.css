@@ -3634,6 +3634,44 @@ a.app-card:active {
   flex-direction: column;
   background: var(--surface);
 }
+/* Monde en 2D, marche libre : la croix de direction et le bouton « Entrer », en bas à droite, au-dessus de la barre. */
+.pixel-pad {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 6rem;
+  z-index: 3;
+  display: grid;
+  /* La colonne du milieu s'élargit pour « Entrer », à la taille normale du texte (jamais sous 18 px). */
+  grid-template-columns: 3.5rem minmax(3.5rem, auto) 3.5rem;
+  grid-template-rows: repeat(3, 3.5rem);
+  gap: 0.3rem;
+  touch-action: none;
+  user-select: none;
+}
+.pixel-pad .button {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  font-size: 1.9rem;
+  justify-content: center;
+}
+.pixel-pad-up {
+  grid-area: 1 / 2;
+}
+.pixel-pad-left {
+  grid-area: 2 / 1;
+}
+.pixel-pad-enter {
+  grid-area: 2 / 2;
+  padding: 0 0.6rem !important;
+  font-size: 1rem !important;
+}
+.pixel-pad-right {
+  grid-area: 2 / 3;
+}
+.pixel-pad-down {
+  grid-area: 3 / 2;
+}
 .world-stage {
   position: relative;
   flex: 1 1 auto;
