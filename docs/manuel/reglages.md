@@ -15,7 +15,7 @@ Quatre polices au choix :
 | **Atkinson Hyperlegible** | Formes de lettres très différenciées (b, d, p, q, I, l, 1). |
 | **Arial** | La police système, si l’élève y est habitué. |
 
-Le texte à lire reste toujours dans la police choisie. Les polices « affiche » et « pixel » de l’interface ne servent qu’aux titres courts, au logo et aux compteurs.
+Le texte à lire reste toujours dans la police choisie. La police des titres de l’interface, Montserrat grasse, ne sert qu’aux titres courts et au nom « Archipéo ».
 
 ## Lecture
 
