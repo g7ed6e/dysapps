@@ -10,6 +10,7 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 
 <ul class="cards">
 <li><a href="manuel/demarrer.html"><strong>Démarrer</strong>Installer l’application, la première séance, les mises à jour.</a></li>
+<li><a href="manuel/partie.html"><strong>Une partie commentée</strong>Le jeu en images : de la première quête aux Basses Terres reconstruites.</a></li>
 <li><a href="manuel/blocland.html"><strong>L’aventure Blocland</strong>Vingt îles à ouvrir, des quêtes, des blocs, des plans et des Gardiens.</a></li>
 <li><a href="manuel/reglages.html"><strong>Réglages et accessibilité</strong>Police, taille, thèmes, lecture à voix haute, syllabes, animations.</a></li>
 <li><a href="pedagogie/archipel.html"><strong>Le contenu, île par île</strong>Ce que travaille chaque quête, avec ses consignes et ses items.</a></li>

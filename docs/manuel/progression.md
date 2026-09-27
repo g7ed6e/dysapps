@@ -6,6 +6,8 @@ DysApps motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd*
 
 Chaque réponse rapporte des points d’expérience : plus du premier coup, un peu moins après une erreur ou avec le joker, et un point d’effort si la réponse est fausse. Terminer une quête donne un bonus, une quête parfaite un bonus de plus. Dans Blocland, chaque exercice terminé rapporte aussi son XP, majorée de moitié sans aide ni erreur, et chaque bâtiment terminé rapporte l’XP du plan.
 
+![La page Succès : le niveau et sa jauge, l'échelle des rangs de Bronze à Légende, et les chiffres (XP, quêtes, réponses, précision, meilleur combo, bâtiments).](/captures/succes.jpg)
+
 L’XP fait monter de **niveau**. Les niveaux sont regroupés en **rangs** de trois divisions : Bronze I, II, III, puis Argent, Or, Platine, Diamant, et enfin **Légende**. L’écusson de rang, en pixels, est affiché dans la barre du haut et sur la page Succès, avec la jauge segmentée vers le niveau suivant.
 
 Sous la jauge, la page Succès montre **l’échelle des six rangs**, de Bronze à Légende. Les rangs atteints sont en couleur, avec une coche. Le rang actuel est encadré, avec sa division (par exemple « Or II »). Les rangs à venir restent grisés, avec le niveau qui les ouvre (« niv. 10 »).

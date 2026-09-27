@@ -60,4 +60,4 @@ Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:bloclan
 
 ## Documentation
 
-Le site de documentation est construit par `scripts/docs/build.mjs` à partir de `docs/`. Les pages du contenu pédagogique sont générées par `scripts/docs/generate.mjs`, qui charge les modules du jeu avec Vite et en tire les tableaux. Voir [Contribuer](contribuer.md) et [Déploiement](deploiement.md).
+Le site de documentation est construit par VitePress (`docs/.vitepress/config.mts`) à partir de `docs/`, que `scripts/docs/prepare.mjs` rassemble. Les pages du contenu pédagogique sont générées par `scripts/docs/generate.mjs`, qui charge les modules du jeu avec Vite et en tire les tableaux. Les captures d’écran du manuel (`docs/_captures/`) sont prises par `scripts/docs/captures.mjs` (`npm run docs:captures`), qui lance l’application et la joue dans Chromium avec Playwright. Voir [Contribuer](contribuer.md) et [Déploiement](deploiement.md).

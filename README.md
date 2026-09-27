@@ -25,6 +25,7 @@ npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
 npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/)
+npm run docs:captures # rejoue le jeu dans Chromium et refait les captures d’écran (docs/_captures/)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 ```

@@ -1158,6 +1158,10 @@ a.app-card:active {
   filter: none;
   opacity: 1;
 }
+/* Dans le panneau de la salle des trophées (étroit, même sur grand écran) : trois rangs par ligne, comme sur téléphone. */
+.island-sheet .rank-ladder {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 @media (max-width: 30rem) {
   .rank-ladder {
     grid-template-columns: repeat(3, minmax(0, 1fr));

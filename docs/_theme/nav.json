@@ -6,6 +6,7 @@
       "title": "Manuel",
       "pages": [
         "manuel/demarrer.md",
+        "manuel/partie.md",
         "manuel/quetes.md",
         "manuel/blocland.md",
         "manuel/progression.md",
