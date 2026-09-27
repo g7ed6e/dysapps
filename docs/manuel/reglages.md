@@ -71,6 +71,8 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
 
+Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
+
 ## Effacer ma progression
 
 En bas de la page, loin des autres boutons, un encadré orangé **Effacer ma progression** efface XP, succès, étoiles, blocs et bâtiments (les réglages restent). Pour confirmer, il faut écrire le mot **effacer** : un doigt qui glisse n'efface rien. **Affichage par défaut**, plus haut, ne remet que les réglages d'affichage.
