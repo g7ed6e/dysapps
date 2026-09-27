@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
 import { frenchTypography, RichText } from '../components/math/RichText';
@@ -7,6 +7,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { useSheetClearance } from '../components/useSheetClearance';
 import { useAnswerKeys } from '../components/useAnswerKeys';
+import { useFocusMode } from '../components/FocusMode';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
@@ -88,6 +89,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   useHoldCelebrations(!done);
   // Touches 1 à 9 pour répondre ou cocher une carte, Entrée pour valider un tri puis passer à la suite.
   useAnswerKeys(sectionRef);
+  // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
+  const navigate = useNavigate();
+  useFocusMode(!done, () => navigate(`/aventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la partie.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;

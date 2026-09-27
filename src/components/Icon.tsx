@@ -25,6 +25,7 @@ import {
   Lightbulb,
   Lock,
   Map,
+  Pause,
   Medal,
   Mountain,
   Pickaxe,
@@ -102,6 +103,7 @@ const ICONS = {
   volume: Volume2,
   volumeOff: VolumeX,
   zap: Zap,
+  pause: Pause,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

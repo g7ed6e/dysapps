@@ -9,6 +9,7 @@ import { ExerciseRunner } from './ExerciseRunner';
 import { loadExercise, pickExercise } from './exercises';
 import { useLoaded } from '../core/useLoaded';
 import { useRememberPlace } from '../core/lastPlace';
+import { Loading } from '../components/Loading';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
 export function ExercisePage() {
@@ -41,7 +42,7 @@ export function ExercisePage() {
       {loaded ? (
         <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} />
       ) : (
-        <p className="loading">Chargement…</p>
+        <Loading />
       )}
     </>
   );

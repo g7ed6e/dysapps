@@ -181,3 +181,23 @@ it('se joue au clavier : 1 à 9 pour répondre, Entrée pour la suite', async ()
   await user.keyboard('{Enter}');
   expect(screen.getByText('Question 2 / 2')).toBeInTheDocument();
 });
+
+it('à la fin, la suite logique vient en premier : « Quête suivante », puis Rejouer', async () => {
+  const user = userEvent.setup();
+  const go = vi.fn();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <MemoryRouter>
+          <QuizSession appId="test" makeQuestions={() => [questions[1]]} next={{ label: 'Quête suivante : Comparer', go }} onExit={() => {}} exitLabel="Changer de quête" />
+        </MemoryRouter>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  await user.click(screen.getByRole('button', { name: 'a' }));
+  await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
+  const actions = screen.getAllByRole('button').map((b) => b.textContent?.trim());
+  expect(actions.slice(0, 3)).toEqual(['Quête suivante : Comparer', 'Rejouer', 'Changer de quête']);
+  await user.click(screen.getByRole('button', { name: /Quête suivante/ }));
+  expect(go).toHaveBeenCalled();
+});

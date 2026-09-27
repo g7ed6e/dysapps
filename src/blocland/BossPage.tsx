@@ -18,6 +18,7 @@ import { CreatureBubble } from './CreatureBubble';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { playDrum, playGrowl, playVictory } from './sound';
+import { Loading } from '../components/Loading';
 
 /** Le Gardien d'un biome : le défi de fin de biome, une manche de chaque quête, dans son arène. */
 export function BossPage() {
@@ -89,7 +90,7 @@ export function BossPage() {
         <Icon name="shield" /> {guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
-        <p className="loading">Chargement…</p>
+        <Loading />
       ) : !unlocked || !def ? (
         <>
           <CreatureBubble

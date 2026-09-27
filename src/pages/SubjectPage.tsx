@@ -23,8 +23,8 @@ export function SubjectPage() {
 
   return (
     <>
-      <Link to="/" className="back-link">
-        <Icon name="back" /> Menu
+      <Link to="/quetes" className="back-link">
+        <Icon name="back" /> Quêtes
       </Link>
       <h1 className={`page-title title-${subject}`}>
         <Icon name={info.icon} /> {info.title}

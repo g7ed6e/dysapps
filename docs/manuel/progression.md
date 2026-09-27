@@ -1,6 +1,6 @@
 # Progression et récompenses
 
-DysApps motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (icône de rang dans la barre du haut) rassemble tout. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
+DysApps motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (bouton ou onglet Succès, ou la jauge d’XP de la barre du haut) rassemble tout. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
 
 ## XP, niveaux et rangs
 

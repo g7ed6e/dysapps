@@ -523,12 +523,23 @@ svg {
   color: var(--violet);
 }
 .back-link {
+  /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   min-height: 48px;
+  padding: 0.2rem 1rem 0.2rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--ink);
+  color: inherit;
   font-weight: 700;
   text-decoration: none;
+}
+.back-link:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
 }
 
 /* ===== Accueil ===== */
@@ -1529,7 +1540,28 @@ a.app-card:active {
   font-weight: 700;
 }
 .loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2rem 1rem;
   color: var(--muted);
+  font-weight: 700;
+}
+.loading p {
+  margin: 0;
+}
+/* Le bloc d'herbe sautille pendant l'attente (immobile avec « Réduire les animations »). */
+.loading-block {
+  width: 4.5rem;
+  height: 4.5rem;
+  image-rendering: pixelated;
+  animation: loading-hop 0.8s ease-in-out infinite;
+}
+@keyframes loading-hop {
+  50% {
+    transform: translateY(-0.6rem);
+  }
 }
 
 /* ===== Réglages ===== */
@@ -4812,4 +4844,192 @@ a.tag:focus-visible {
 }
 .resume-card {
   border-color: var(--success);
+}
+
+/* ===== Navigation d'appli ===== */
+/* Onglets en bas de l'écran, sur téléphone seulement. */
+.tabbar {
+  display: none;
+}
+@media (max-width: 640px) {
+  .topbar-nav .nav-tabbed {
+    display: none;
+  }
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 12;
+    display: flex;
+    padding: 0.3rem calc(0.3rem + env(safe-area-inset-right)) calc(0.3rem + env(safe-area-inset-bottom)) calc(0.3rem + env(safe-area-inset-left));
+    background-color: var(--topbar-bg);
+    background-image: var(--tex-dirt);
+    background-size: var(--tex-size);
+    image-rendering: pixelated;
+    border-top: var(--border-width) solid var(--ink);
+  }
+  .tab {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    min-height: 56px;
+    border-radius: var(--radius);
+    color: var(--topbar-text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: normal;
+    line-height: 1.2;
+  }
+  .tab.active {
+    background-color: var(--green);
+    background-image: var(--tex-grass-top);
+    background-size: var(--tex-size);
+    color: var(--on-accent);
+    border: 2px solid var(--ink);
+  }
+  /* La place des onglets, sous le contenu. */
+  .app-shell:not(.focus):not(.immersive) .content {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  /* Le bandeau de résultat et le bouton d'une lecture restent au-dessus des onglets. */
+  .app-shell:not(.focus) .result-sheet {
+    bottom: calc(4.2rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Mode concentration : pendant une partie, seul le bouton Pause reste, en haut à droite. */
+.app-shell.focus .content {
+  padding-top: calc(1rem + env(safe-area-inset-top));
+}
+.focus-pause {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top));
+  right: calc(0.6rem + env(safe-area-inset-right));
+  z-index: 14;
+  width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+  justify-content: center;
+}
+.pause-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(1rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  overflow: auto;
+}
+.pause-card {
+  display: grid;
+  gap: 0.9rem;
+  width: min(26rem, 100%);
+}
+.pause-card h2 {
+  margin: 0;
+  text-align: center;
+  font-family: var(--display-font);
+  font-weight: 400;
+}
+.pause-resume,
+.pause-quit {
+  width: 100%;
+  min-height: 56px;
+  justify-content: center;
+}
+.pause-settings {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius);
+}
+.pause-size {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pause-size span {
+  flex: 1;
+}
+.pause-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+/* Pendant une partie, on sort par le menu Pause (qui dit ce qui est gardé), pas par le lien retour. */
+.app-shell.focus .back-link {
+  display: none;
+}
+
+/* Fin de partie : les récompenses arrivent l'une après l'autre (coupé par « Réduire les animations »). */
+.summary-reveal > *,
+.reward-panel > *,
+.reward-list > li {
+  animation: reveal-in 0.35s ease-out both;
+}
+.summary-reveal > :nth-child(2),
+.reward-panel > :nth-child(2) {
+  animation-delay: 0.25s;
+}
+.summary-reveal > :nth-child(3),
+.reward-panel > :nth-child(3) {
+  animation-delay: 0.5s;
+}
+.summary-reveal > :nth-child(n + 4),
+.reward-panel > :nth-child(n + 4) {
+  animation-delay: 0.75s;
+}
+.reward-list > li:nth-child(2) {
+  animation-delay: 0.9s;
+}
+.reward-list > li:nth-child(n + 3) {
+  animation-delay: 1.1s;
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Le menu principal de l'accueil. */
+.home-menu {
+  margin-top: 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+/* Tuiles du menu : une icône et un mot, côte à côte (l'accueil tient sur un écran). */
+.home-menu .menu-tile {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.9rem;
+  padding-top: calc(var(--tex-size) + 0.8rem);
+}
+.home-menu .menu-tile .subject-title {
+  margin: 0;
+}
+.hero-compact {
+  padding-top: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.hero-compact .hero-title {
+  margin: 0;
+}
+/* Tablette : le nom « DysApps » laisse sa place à la jauge d'XP et aux quatre boutons. */
+@media (max-width: 1100px) {
+  .brand-name {
+    display: none;
+  }
 }

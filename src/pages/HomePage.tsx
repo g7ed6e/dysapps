@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { SUBJECTS, appsBySubject, type Subject } from '../apps/registry';
 import { Creature } from '../blocland/Creatures';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
@@ -20,12 +19,15 @@ export function HomePage() {
 
   return (
     <>
-      <section className="hero">
+      {/* L'accueil tient sur un écran : au retour, le bandeau d'accueil se réduit à son titre. */}
+      <section className={`hero${firstTime ? '' : ' hero-compact'}`}>
         <p className="hero-kicker">{firstTime ? 'Nouvelle partie' : `Rang ${rank.title}`}</p>
-        <h1 className="hero-title">{firstTime ? 'Prêt à jouer ?' : 'On reprend ?'}</h1>
-        <p className="hero-text">
-          <Syllabified text="Choisis ton terrain. Pas de chrono, des jokers si tu bloques, et de l’XP à chaque réponse." />
-        </p>
+        <h1 className="hero-title">{firstTime ? 'Prêt à jouer\u00a0?' : 'On reprend\u00a0?'}</h1>
+        {firstTime && (
+          <p className="hero-text">
+            <Syllabified text="Choisis ton terrain. Pas de chrono, des jokers si tu bloques, et de l’XP à chaque réponse." />
+          </p>
+        )}
       </section>
 
       {/* La dernière quête ouverte, pour reprendre en un toucher. */}
@@ -77,25 +79,27 @@ export function HomePage() {
         </span>
       </Link>
 
-      <h2 className="section-title">Quêtes par matière</h2>
-      <div className="grid subjects">
-        {(Object.keys(SUBJECTS) as Subject[]).map((key) => {
-          const subject = SUBJECTS[key];
-          const available = appsBySubject(key).filter((a) => a.status === 'disponible').length;
-          return (
-            <Link key={key} to={`/matiere/${key}`} className={`panel subject-card subject-${key}`}>
-              <span className="subject-icon">
-                <Icon name={subject.icon} size="2.2rem" />
-              </span>
-              <span className="subject-title">{subject.title}</span>
-              <span className="subject-desc">{subject.description}</span>
-              <span className="subject-count">
-                {available} quête{available > 1 ? 's' : ''} dispo <Icon name="play" />
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+      {/* Le menu principal : trois grosses tuiles, toujours les mêmes, comme l'écran d'accueil d'un jeu. */}
+      <nav className="grid home-menu" aria-label="Menu principal">
+        <Link to="/quetes" className="panel menu-tile subject-card">
+          <span className="subject-icon">
+            <Icon name="dumbbell" size="2.2rem" />
+          </span>
+          <span className="subject-title">Quêtes</span>
+        </Link>
+        <Link to="/succes" className="panel menu-tile subject-card">
+          <span className="subject-icon">
+            <Icon name="trophy" size="2.2rem" />
+          </span>
+          <span className="subject-title">Succès</span>
+        </Link>
+        <Link to="/reglages" className="panel menu-tile subject-card">
+          <span className="subject-icon">
+            <Icon name="settings" size="2.2rem" />
+          </span>
+          <span className="subject-title">Réglages</span>
+        </Link>
+      </nav>
 
       {!firstTime && (
         <p className="home-tutorial">

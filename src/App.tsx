@@ -5,6 +5,7 @@ import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
 import { HomePage } from './pages/HomePage';
 import { SubjectPage } from './pages/SubjectPage';
+import { QuestsPage } from './pages/QuestsPage';
 import { AppPage } from './pages/AppPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ProgressPage } from './pages/ProgressPage';
@@ -40,6 +41,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="quetes" element={<QuestsPage />} />
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
         <Route path="aventure" element={<AventureEntry />} />
