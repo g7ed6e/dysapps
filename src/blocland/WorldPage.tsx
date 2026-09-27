@@ -17,6 +17,8 @@ import { ARRIVAL_STEPS } from './arrivals';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { WorldCanvas } from './three';
+import { WorldCanvas2D } from './pixel';
+import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
@@ -65,6 +67,8 @@ export function WorldPage() {
   const { biomeId } = useParams();
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
+  // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
+  const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
   const { launchVoyage } = useProgress();
   const mapOpen = biomeId === 'carte';
@@ -287,7 +291,7 @@ export function WorldPage() {
     <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<p className="loading world-loading">Chargement du village…</p>}>
-          <WorldCanvas
+          <View
             archipelago={a}
             cubes={cubes}
             creatures={creatures}
@@ -313,7 +317,7 @@ export function WorldPage() {
             burst={burst}
             onPickCreature={onCreature}
             className="voxel-canvas-stage"
-            label={`Blocland en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`Blocland en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />

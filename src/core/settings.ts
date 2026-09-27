@@ -1,5 +1,7 @@
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
+/** La vue de Blocland : le monde en 3D, le monde en 2D (pixels, vue de dessus en oblique), ou la liste des îles. */
+export type WorldViewChoice = '3d' | '2d' | 'liste';
 
 export interface Settings {
   font: FontChoice;
@@ -14,8 +16,8 @@ export interface Settings {
   /** Surligner les syllabes en couleurs alternées. */
   syllables: boolean;
   reduceMotion: boolean;
-  /** Vues 3D (Three.js) quand WebGL est disponible ; sinon la vue simple, accessible. */
-  view3d: boolean;
+  /** La vue de Blocland ; sans WebGL, le monde en 3D laisse la place à la liste, accessible. */
+  worldView: WorldViewChoice;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
   sounds: boolean;
   /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
@@ -37,7 +39,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoRead: true,
   syllables: true,
   reduceMotion: false,
-  view3d: true,
+  worldView: '3d',
   sounds: true,
   ambience: false,
 };
@@ -47,6 +49,12 @@ export const FONT_LABELS: Record<FontChoice, string> = {
   opendyslexic: 'OpenDyslexic',
   atkinson: 'Atkinson Hyperlegible',
   arial: 'Arial',
+};
+
+export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
+  '3d': 'Le monde en 3D',
+  '2d': 'Le monde en 2D (essai)',
+  liste: 'La liste des îles',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -72,8 +80,10 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /** Corrige des réglages lus depuis le stockage (valeurs manquantes ou hors bornes). */
-export function sanitizeSettings(input: Partial<Settings>): Settings {
+export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }): Settings {
   const s = { ...DEFAULT_SETTINGS, ...input };
+  // Avant les trois vues : un interrupteur « vues en 3D » (éteint : la liste des îles).
+  if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'liste';
   if (typeof s.theme === 'string' && s.theme in LEGACY_THEMES) s.theme = LEGACY_THEMES[s.theme];
   if (typeof s.font === 'string' && s.font in LEGACY_FONTS) s.font = LEGACY_FONTS[s.font];
   return {
@@ -87,7 +97,7 @@ export function sanitizeSettings(input: Partial<Settings>): Settings {
     autoRead: s.autoRead === undefined ? DEFAULT_SETTINGS.autoRead : Boolean(s.autoRead),
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
     reduceMotion: Boolean(s.reduceMotion),
-    view3d: s.view3d === undefined ? DEFAULT_SETTINGS.view3d : Boolean(s.view3d),
+    worldView: s.worldView in WORLD_VIEW_LABELS ? s.worldView : DEFAULT_SETTINGS.worldView,
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
   };

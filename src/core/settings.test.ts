@@ -20,9 +20,18 @@ it('convertit les anciens thèmes et polices', () => {
   expect(sanitizeSettings({ font: 'systeme' as never }).font).toBe('arial');
 });
 
-it('active la vue 3D par défaut et lit la préférence enregistrée', () => {
-  expect(sanitizeSettings({}).view3d).toBe(true);
-  expect(sanitizeSettings({ view3d: false }).view3d).toBe(false);
+it('montre le monde en 3D par défaut et lit la vue enregistrée', () => {
+  expect(sanitizeSettings({}).worldView).toBe('3d');
+  expect(sanitizeSettings({ worldView: '2d' }).worldView).toBe('2d');
+  expect(sanitizeSettings({ worldView: 'liste' }).worldView).toBe('liste');
+  expect(sanitizeSettings({ worldView: 'iso' as never }).worldView).toBe('3d');
+});
+
+it('convertit l’ancien interrupteur « vues en 3D »', () => {
+  expect(sanitizeSettings({ view3d: false }).worldView).toBe('liste');
+  expect(sanitizeSettings({ view3d: true }).worldView).toBe('3d');
+  expect(sanitizeSettings({ view3d: false, worldView: '2d' }).worldView).toBe('2d');
+  expect('view3d' in sanitizeSettings({ view3d: false })).toBe(false);
 });
 
 it('respecte les minimums orthophoniques', () => {

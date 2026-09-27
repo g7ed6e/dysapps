@@ -44,7 +44,12 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
 ## Animations et Blocland
 
 - **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
-- **Vues en 3D dans Blocland** : désactivé, Blocland passe en **vue simple** (listes et pages), qui offre exactement les mêmes actions. C’est aussi la vue utilisée quand l’appareil n’a pas WebGL.
+- **Vue de Blocland** : trois choix.
+  - **Le monde en 3D** (par défaut).
+  - **Le monde en 2D (essai)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Blocland](blocland.md)).
+  - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
+
+  Si l’appareil ne sait pas dessiner le monde choisi (pas de WebGL pour la 3D), Blocland montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 

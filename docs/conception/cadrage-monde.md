@@ -157,7 +157,12 @@ Décisions :
 Étapes (une pull request chacune) :
 
 1. **Préparer, sans rien changer à l'écran** (faite) : le contrat commun des vues (`world/view.ts`), la simulation commune (`world/scene.ts` : marche du bonhomme, promenade des créatures, temps du voyage, flèches, toucher du sol) et les textures sans Three.js (`world/pixels.ts`) sortent de la vue 3D. La 3D les utilise ; son image et ses gestes sont inchangés.
-2. **Première vue 2D**, derrière un réglage « Monde 2D (essai) » : terrain, eau, toucher une île, cadrage, clavier.
+2. **Première vue 2D**, derrière le réglage « Le monde en 2D (essai) » (faite) :
+   - **Réglage** : `worldView` (`'3d' | '2d' | 'liste'`) remplace l'interrupteur `view3d` (éteint : la liste). `useWorldView()` montre la vue choisie si l'appareil sait la dessiner (WebGL pour la 3D, Canvas 2D pour la 2D), sinon la liste.
+   - **Tuiles** (`pixel/oblique.ts`) : un bloc de haut monte d'une case à l'écran, donc dessus et faces avant tombent sur une grille de cases de 16 pixels ; chaque case ne montre que la face du cube le plus proche (profondeur y − z). Le terrain devient une carte de tuiles : on la dessine par morceaux de 32 × 32 cases, d'avance (`pixel/draw.ts`), et on touche case par case (le bloc touché et la case devant sa face, comme en 3D). Les fantômes du plan sont une couche translucide.
+   - **Rendu** : textures de `world/pixels.ts`, faces avant assombries avec une arête claire (les falaises se lisent), mer en couleur de l'archipel avec sa texture qui dérive (nuages dans les Îles du Ciel), échelle entière pour des pixels nets. Rien sous la mer n'est dessiné.
+   - **Cadrage** : l'île ouverte en gros plan, sinon l'île du bonhomme et ses voisines, la Carte en entier (l'archipel, pas les rochers au large) ; la caméra glisse et zoome en douceur, d'un coup avec « réduire les animations ».
+   - **Gestes** : ceux de la 3D, par `world/scene.ts` (toucher une île, une borne, un ouvrage, un fantôme en chantier ; les flèches ; Entrée, Espace ou Échap pendant un voyage). Le voyage n'est pas encore dessiné : la 2D en tient seulement le temps.
 3. **Personnages et repères** : le bonhomme qui marche, les créatures, les Gardiens, les bornes, la flèche « Commence ici », le jour et la nuit.
 4. **Construire et voyager** : les chantiers, les ouvrages, le Bloc-Navire et son voyage, la Carte.
 5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
@@ -165,4 +170,4 @@ Décisions :
 ## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
-- La vue 2D, étapes 2 à 5 (voir 21).
+- La vue 2D, étapes 3 à 5 (voir 21).
