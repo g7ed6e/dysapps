@@ -1,21 +1,19 @@
-import { rankForLevel, rankLadder } from '../core/progress';
+import { rankLadder } from '../core/progress';
 import { Icon } from './Icon';
+import { RoleBadge } from './RoleBadge';
 
-/** Les six rangs, de Bronze à Légende : atteints en couleur, à venir grisés avec leur niveau, le rang actuel encadré. */
+/** Les cinq rôles, d'Explorateur à Architecte de l'archipel : atteints en couleur, à venir en pointillés avec leur niveau, le rôle actuel encadré. */
 export function RankLadder({ level }: { level: number }) {
-  const title = rankForLevel(level).title;
   return (
-    <ol className="rank-ladder" aria-label="Rangs">
+    <ol className="rank-ladder" aria-label="Rôles">
       {rankLadder(level).map((r) => (
         <li key={r.tier} className={r.reached ? 'reached' : 'locked'} aria-current={r.current ? 'step' : undefined}>
-          <span className={`rank-shield tier-${r.tier}${r.reached ? '' : ' locked'}`} aria-hidden="true">
-            <b className="rank-level">{r.firstLevel}</b>
-          </span>
+          <RoleBadge tier={r.tier} locked={!r.reached} />
           <strong>{r.name}</strong>
           {r.current ? (
             <span className="rank-ladder-note">
-              {title}
-              <span className="visually-hidden"> : ton rang actuel</span>
+              <span aria-hidden="true">niv. {level}</span>
+              <span className="visually-hidden">ton rôle actuel, niveau {level}</span>
             </span>
           ) : r.reached ? (
             <span className="rank-ladder-note">

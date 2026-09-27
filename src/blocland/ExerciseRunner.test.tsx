@@ -84,7 +84,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
   expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${items[1].key}`);
-  // L'XP alimente aussi les rangs communs.
+  // L'XP alimente aussi les rôles communs.
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).sessionsCompleted).toBe(1);
 
   // Le lien de retour (en haut) et le bouton de fin mènent au même endroit.

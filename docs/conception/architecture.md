@@ -13,7 +13,7 @@ src/
   pages/         accueil, matière, mission, réglages, succès
   programme/     le référentiel des programmes officiels (cycles 3 et 4 : français, maths, anglais), les exclusions
                  motivées, la liste des mots-outils ; sert aux tests et à la documentation, pas à l'application
-  styles/        thèmes, styles globaux, textures pixel générées
+  styles/        thèmes (jetons de couleur et de forme), styles globaux
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
 design/          le dossier de game design et la planche d’Archipéo, la cible de la migration (voir cadrage-archipeo.md) ;
@@ -42,7 +42,7 @@ public/          icônes, police Luciole
 - `stars.ts` : les étoiles d’un score, communes au portail et à Blocland.
 - `haptics.ts` : la vibration courte (bonne réponse, bloc posé), selon le réglage.
 - `syllables.ts` : le découpage syllabique par règles.
-- `progress.ts` : XP, niveaux, rangs, succès, et les évènements (`recordAnswer`, `recordSession`, `recordPlan`, `recordBoss`). Logique pure, testée.
+- `progress.ts` : XP, niveaux, rôles, succès, et les évènements (`recordAnswer`, `recordSession`, `recordPlan`, `recordBoss`). Logique pure, testée.
 - `storage.ts` : lecture et écriture dans `localStorage`, avec correction des données lues (champs manquants, valeurs hors bornes).
 - `appUpdate.ts` : la mise à jour de la PWA (bande « Mettre à jour », bouton dans les réglages).
 - `useLoaded.ts` : attend un contenu chargé à la demande (un exercice, un défi de Gardien) ; un échec remonte à la limite d’erreur de la page (`components/ErrorBoundary.tsx`, message et bouton « Recharger »).
@@ -61,7 +61,7 @@ Blocland est le nom du module ; à l’écran, le jeu s’appelle Archipéo.
 - `Voxel.tsx`, `Creatures.tsx`, `Guardians.tsx`, `Avatar.ts` : créatures, Gardiens et bonhomme en cubes.
 - `sound.ts`, `useAmbience.ts` : sons Web Audio générés par le code.
 
-Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:blocland` ; l’XP alimente aussi les rangs et succès communs.
+Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:blocland` ; l’XP alimente aussi les rôles et succès communs.
 
 ## Tests
 

@@ -4,9 +4,9 @@ import '@fontsource/atkinson-hyperlegible/400.css';
 import '@fontsource/atkinson-hyperlegible/700.css';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
-import '@fontsource/archivo-black/400.css';
-import '@fontsource/silkscreen/400.css';
+import '@fontsource/montserrat/700.css';
 import './styles/global.css';
+import './styles/roles.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(

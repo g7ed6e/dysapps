@@ -23,7 +23,7 @@ export function HomePage() {
     <>
       {/* Le menu tient sur un écran : au retour, le bandeau d'accueil se réduit à son titre. */}
       <section className={`hero${firstTime ? '' : ' hero-compact'}`}>
-        <p className="hero-kicker">{firstTime ? 'Nouvelle partie' : `Rang ${rank.title}`}</p>
+        <p className="hero-kicker">{firstTime ? 'Nouvelle partie' : `${rank.title} · niv. ${rank.level}`}</p>
         <h1 className="hero-title">{firstTime ? 'Prêt à jouer\u00a0?' : 'On reprend\u00a0?'}</h1>
         {firstTime && (
           <p className="hero-text">

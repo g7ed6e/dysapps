@@ -735,16 +735,13 @@ function ouvragesPage(d) {
 }
 
 function baremePage(d) {
-  const { XP, BADGES, xpToNextLevel, rankForLevel, LEGEND_LEVEL } = d.progress;
+  const { XP, BADGES, xpToNextLevel, ROLES } = d.progress;
   const { INTERVALS, GRADUATE_AT, CHEST_EVERY, CHEST_BLOCKS, PROMOTE_AT_ONCE, FIRST_TIME_BLOCKS, PORTAL_BLOCKS } = d.engine;
   const { DEFAULT_SETTINGS, FONT_LABELS, THEME_LABELS, WORLD_VIEW_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT } = d.settings;
   const { APP_REWORK_BELOW, REWORK_SHOWN } = d.subjectProgress;
-  const levels = [];
-  let total = 0;
-  for (let l = 1; l <= LEGEND_LEVEL; l++) {
-    levels.push([String(l), rankForLevel(l).title, String(total), String(xpToNextLevel(l))]);
-    total += xpToNextLevel(l);
-  }
+  // Les rôles et l'XP cumulée pour atteindre le niveau où chacun commence.
+  const xpAt = (level) => Array.from({ length: level - 1 }, (_, i) => xpToNextLevel(i + 1)).reduce((a, b) => a + b, 0);
+  const roles = ROLES.map((r) => [r.name, String(r.firstLevel), String(xpAt(r.firstLevel))]);
   const lines = [
     '# Barème, succès et valeurs par défaut',
     '',
@@ -763,11 +760,11 @@ function baremePage(d) {
       ],
     ),
     '',
-    '## Niveaux et rangs',
+    '## Niveaux et rôles',
     '',
-    `Trois divisions par rang, puis Légende à partir du niveau ${LEGEND_LEVEL}. L’XP gagnée dans Archipéo compte aussi.`,
+    `Passer d’un niveau au suivant demande ${xpToNextLevel(1)} XP au niveau 1, puis ${xpToNextLevel(2) - xpToNextLevel(1)} de plus à chaque niveau. Le rôle change à certains niveaux ; après le dernier, le niveau continue de monter et le rôle reste. L’XP gagnée dans Archipéo compte aussi.`,
     '',
-    table(['Niveau', 'Rang', 'XP cumulée pour y arriver', 'XP jusqu’au suivant'], levels),
+    table(['Rôle', 'À partir du niveau', 'XP cumulée pour y arriver'], roles),
     '',
     '## Succès',
     '',

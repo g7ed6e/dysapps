@@ -1,0 +1,80 @@
+/* Les insignes des rôles (components/RoleBadge.tsx) : un hexagone et un pictogramme, dessinés en SVG.
+   Chaque insigne a son nom écrit à côté : la couleur n'est jamais le seul repère. */
+.role-badge {
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  --role-bg: #d9b26a;
+  --role-ink: #13283d;
+  --role-edge: #13283d;
+}
+.role-badge .role-frame {
+  fill: var(--role-bg);
+  stroke: var(--role-edge);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.role-badge .role-picto {
+  stroke: var(--role-ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.role-badge .role-fill {
+  fill: var(--role-ink);
+}
+.role-cartographe {
+  --role-bg: #237a70;
+  --role-ink: #f3eee3;
+}
+.role-batisseur {
+  --role-bg: #b07a3a;
+  --role-ink: #13283d;
+}
+.role-navigateur {
+  --role-bg: #0e5a6e;
+  --role-ink: #f3eee3;
+}
+.role-architecte {
+  --role-bg: #13283d;
+  --role-ink: #f3eee3;
+  --role-edge: #d9b26a;
+}
+.role-architecte .role-fill {
+  fill: #d9b26a;
+}
+/* Un rôle pas encore atteint : contour en pointillés, pictogramme estompé ; le niveau est écrit à côté. */
+.role-badge.locked {
+  --role-bg: transparent;
+  --role-ink: var(--muted, #3f5566);
+  --role-edge: var(--muted, #3f5566);
+}
+.role-badge.locked .role-frame {
+  stroke-dasharray: 4 3;
+}
+.role-badge.locked .role-picto {
+  opacity: 0.45;
+}
+.role-badge.locked .role-fill,
+.role-architecte.locked .role-fill {
+  fill: var(--role-ink);
+}
+.xp-large .role-badge {
+  width: 3.6rem;
+  height: 3.6rem;
+}
+.rank-ladder .role-badge {
+  width: 3rem;
+  height: 3rem;
+}
+:root[data-theme="contraste"] .role-badge {
+  --role-bg: #000000;
+  --role-ink: #ffe600;
+  --role-edge: #ffffff;
+}
+:root[data-theme="contraste"] .role-badge .role-fill {
+  fill: #ffe600;
+}
+:root[data-theme="contraste"] .role-badge.locked {
+  --role-ink: #ffffff;
+}

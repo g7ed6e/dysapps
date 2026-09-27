@@ -62,12 +62,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, [progress]);
 
   const apply = useCallback((update: ProgressUpdate) => {
+    const previous = progressRef.current;
     progressRef.current = update.progress;
     setProgress(update.progress);
     const items: Celebration[] = [];
     if (update.leveledUp) {
       const info = levelFromXp(update.progress.xp);
-      items.push({ id: nextId.current++, kind: 'levelup', icon: 'zap', title: 'Niveau supérieur !', message: `Niveau ${info.level} · rang ${info.title}` });
+      const before = levelFromXp(previous.xp);
+      const newRole = info.tier !== before.tier;
+      items.push({
+        id: nextId.current++,
+        kind: 'levelup',
+        icon: 'zap',
+        title: newRole ? `Nouveau rôle : ${info.title}` : 'Niveau supérieur !',
+        message: `Niveau ${info.level} · ${info.title}`,
+      });
     }
     for (const b of update.newBadges) {
       items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: b.title });

@@ -15,7 +15,7 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
   const { progress } = useProgress();
   const earned = BADGES.filter((b) => progress.badges[b.id]).length;
   const says = earned
-    ? `Chaque succès gagné pose un trophée dans la salle : ${earned} sur ${BADGES.length}. L’or pour tes exploits, le cristal pour tes rangs, le quartz pour les Gardiens, les lentilles pour les voyages.`
+    ? `Chaque succès gagné pose un trophée dans la salle : ${earned} sur ${BADGES.length}. L’or pour tes exploits, le cristal pour tes rôles, le quartz pour les Gardiens, les lentilles pour les voyages.`
     : `La salle est vide pour l’instant. Chaque succès gagné y posera un trophée : il y en a ${BADGES.length} à gagner.`;
   const { settings, speak } = useSettings();
   // Lu à voix haute une fois, à l'entrée.

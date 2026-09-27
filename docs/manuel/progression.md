@@ -2,15 +2,15 @@
 
 Archipéo motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (bouton Succès de la barre du haut sur grand écran, menu, ou la jauge d’XP de la barre du haut) rassemble tout ; dans le village, c’est le panneau de la [salle des trophées](blocland.md#la-salle-des-trophees), où chaque succès gagné pose un trophée. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
 
-## XP, niveaux et rangs
+## XP, niveaux et rôles
 
 Chaque réponse rapporte des points d’expérience : plus du premier coup, un peu moins après une erreur ou avec le joker, et un point d’effort si la réponse est fausse. Terminer une mission donne un bonus, une mission parfaite un bonus de plus. Dans Archipéo, chaque exercice terminé rapporte aussi son XP, majorée de moitié sans aide ni erreur, et chaque bâtiment terminé rapporte l’XP du plan.
 
-![La page Succès : le niveau et sa jauge, l'échelle des rangs de Bronze à Légende, et les chiffres (XP, missions, réponses, précision, meilleur combo, bâtiments).](/captures/succes.jpg)
+![La page Succès : le niveau et sa jauge, l'échelle des cinq rôles d'Explorateur à Architecte de l'archipel, et les chiffres (XP, missions, réponses, précision, meilleur combo, bâtiments).](/captures/succes.jpg)
 
-L’XP fait monter de **niveau**. Les niveaux sont regroupés en **rangs** de trois divisions : Bronze I, II, III, puis Argent, Or, Platine, Diamant, et enfin **Légende**. L’écusson de rang, en pixels, est affiché dans la barre du haut et sur la page Succès, avec la jauge segmentée vers le niveau suivant.
+L’XP fait monter de **niveau**. À certains niveaux, on change de **rôle** : **Explorateur** au départ, **Cartographe** au niveau 4, **Bâtisseur** au niveau 10, **Navigateur** au niveau 18, **Architecte de l’archipel** au niveau 28, vers la fin du collège. Après, le niveau continue de monter et le rôle reste. Le rôle et son insigne (un hexagone avec une rose des vents, une carte, une arche, un voilier ou un phare) sont affichés dans la barre du haut (« Niv. 12 · Bâtisseur ») et sur la page Succès, avec la jauge vers le niveau suivant. Quand le rôle change, l’annonce du niveau le dit : « Nouveau rôle : Bâtisseur ».
 
-Sous la jauge, la page Succès montre **l’échelle des six rangs**, de Bronze à Légende. Les rangs atteints sont en couleur, avec une coche. Le rang actuel est encadré, avec sa division (par exemple « Or II »). Les rangs à venir restent grisés, avec le niveau qui les ouvre (« niv. 10 »).
+Sous la jauge, la page Succès montre **l’échelle des cinq rôles**. Les rôles atteints sont en couleur, avec une coche. Le rôle actuel est encadré, avec le niveau. Les rôles à venir ont un insigne en pointillés et le niveau qui les ouvre (« niv. 18 »).
 
 ## Combos et messages
 
@@ -35,7 +35,7 @@ Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses mis
 
 ## Succès
 
-Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rangs atteints (Argent, Or, Diamant, Légende), la construction (un bâtiment, cinq, les quinze plans des cinq premières îles, tous les plans des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
+Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rôles atteints (Cartographe, Bâtisseur, Navigateur, Architecte de l’archipel), la construction (Premier bâtiment, Maître d’œuvre pour cinq, les quinze plans des cinq premières îles, tous les plans des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
 
 ## Dans Archipéo
 

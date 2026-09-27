@@ -15,7 +15,7 @@ Chaque écran tient sans défiler :
 5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans Archipéo, où les chiffres cochent les cartes d’un tri et Entrée valide.
 6. **Les succès** gagnés pendant la mission (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
 
-![Une correction : « Pas cette fois », la bonne réponse cochée en vert, la réponse touchée en rouge, et l'astuce en une ligne.](/captures/quete-correction.jpg)
+![Une correction : « Pas cette fois », la bonne réponse cochée en vert, la réponse touchée en orangé, et l'astuce en une ligne.](/captures/quete-correction.jpg)
 
 ## Le mode concentration
 
@@ -105,4 +105,4 @@ Soixante verbes du collège en trois niveaux de vingt : **Les indispensables** (
 
 ## Le bilan et les scores
 
-À la fin d’une mission, le bilan donne le score en pourcentage, l’XP gagnée, les succès débloqués et le changement de rang éventuel. Le **meilleur score** de chaque mission et de chaque niveau est gardé et affiché sur sa carte. Aucune note n’est envoyée à qui que ce soit.
+À la fin d’une mission, le bilan donne le score en pourcentage, l’XP gagnée, les succès débloqués et le changement de niveau ou de rôle éventuel. Le **meilleur score** de chaque mission et de chaque niveau est gardé et affiché sur sa carte. Aucune note n’est envoyée à qui que ce soit.

@@ -1,9 +1,11 @@
 /* =====================================================================
-   DysApps — style « monde en blocs » (pixel, cubes, biseaux)
-   Règles dys conservées : texte courant en police lisible (≥ 18 px, interlignage ≥ 1,5),
-   aligné à gauche, jamais en italique ni en capitales, toujours sur un fond uni (crème) ;
-   les textures pixel ne servent qu'aux bordures, bandeaux, boutons et fonds de page.
-   La police « affiche » ne sert qu'aux titres courts, la police pixel qu'au logo et aux compteurs.
+   Archipéo — l'interface de l'explorateur
+   Des panneaux sobres, opaques et géométriques, dans la palette de la planche : bleu nuit, bleu pétrole,
+   vert d'eau, sable et crème. Le monde (3D ou 2D, dessiné dans un canvas) garde son propre style.
+   Règles dys conservées : texte courant en police lisible (≥ 18 px, interlignage ≥ 1,5), aligné à gauche,
+   jamais en italique ni en capitales, toujours sur un fond uni. La police des titres (Montserrat grasse)
+   ne sert qu'aux titres courts et au logotype ; tout texte à lire reste dans la police dys choisie.
+   Une couleur ne porte jamais seule un sens : un libellé ou une icône l'accompagne toujours.
    ===================================================================== */
 
 /* ===== Thèmes ===== */
@@ -13,169 +15,112 @@
   --line-height: 1.7;
   --letter-spacing: 0.03em;
   --word-spacing: 0.12em;
-  --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
-  --shout-font: "Archivo Black", "Arial Black", Arial, sans-serif;
-  /* Police pixel : décor seulement (logo, écusson du rang). Tout texte qui porte un sens est dans la police de lecture. */
-  --pixel-font: "Silkscreen", "Archivo Black", monospace;
+  /* Titres courts et logotype : Montserrat grasse, embarquée (@fontsource, aucune ressource externe). */
+  --display-font: "Montserrat", "Arial Black", Arial, sans-serif;
+  --display-weight: 700;
+  /* L'écusson du rang garde ce nom le temps d'être redessiné ; il n'y a plus de police pixel. */
 
-  /* Thème crème (par défaut) : fond crème, encre brune, blocs de bois et de sable */
-  --bg: #fbf6ea;
-  --grid: rgba(59, 45, 32, 0.07);
-  --surface: #fffdf7;
-  --text: #2b2118;
-  --muted: #5a4636;
-  --ink: #3b2d20;
-  --shadow-color: #cdbf9f;
-  --border-width: 3px;
-  --shadow-offset: 5px;
-  --yellow: #f0d27a; /* sable */
+  /* Thème Crème (par défaut) : crème froid, texte bleu nuit. */
+  --bg: #f3eee3;
+  --surface: #fffcf5;
+  --text: #13283d;
+  --muted: #3f5566;
+  /* Couleur des bordures (et des traits des figures). */
+  --ink: #566e7d;
+  /* Action principale : bouton plein bleu pétrole. */
+  --primary-bg: #0e5a6e;
+  --primary-text: #ffffff;
+  /* Action secondaire : fond d'eau claire, texte pétrole, bordure pleine. */
+  --secondary-bg: #dcebea;
+  --secondary-text: #0e4a5b;
+  /* Accent de progression (vert d'eau) : en texte seulement sur un panneau, sinon en remplissage. */
+  --accent: #237a70;
+  /* Sable : jamais en texte sur un fond clair ; seulement en remplissage (étoile, liseré), bleu nuit dessus. */
+  --sand: #d9b26a;
+  --on-sand: #13283d;
+  --success: #1d6b45;
+  --success-bg: #dcefe3;
+  /* « Attention » : une réponse à revoir, une action à confirmer (jamais de rouge vif). */
+  --error: #8a4a10;
+  --error-bg: #f8e8d2;
+  --focus: #1e6fd9;
+  --topbar-bg: #13283d;
+  --topbar-text: #f3eee3;
+  /* Couleurs des matières et des biomes (hors palette : elles ne bougent pas avec l'interface). */
+  --yellow: var(--sand);
   --pink: #d9772e; /* brique */
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
   --green: #6cb33f; /* herbe */
-  --on-accent: #2b2118;
-  --success: #2f7d3a;
-  --success-bg: #dff3d8;
-  --error: #b23a3a;
-  --error-bg: #f7dcd6;
-  --focus: #1e6fd9;
-  --topbar-bg: #6b4a2e;
-  --topbar-text: #fbf6ea;
-  --radius: 0px;
+  /* Texte posé sur une couleur de remplissage (sable, matière). */
+  --on-accent: #13283d;
+  --star-off: #aab8c1;
   --syl-0: #2b2118;
   --syl-1: #1d5fa8;
   color-scheme: light;
 
-  /* Biseau pixel : clair en haut à gauche, sombre en bas à droite, comme une case d'inventaire. */
-  --bevel: 4px;
-  --bevel-light: rgba(255, 255, 255, 0.65);
-  --bevel-dark: rgba(59, 45, 32, 0.22);
-  --bevel-shadow:
-    inset var(--bevel) var(--bevel) 0 var(--bevel-light),
-    inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-dark);
-  --bevel-shadow-small:
-    inset 3px 3px 0 var(--bevel-light), inset -3px -3px 0 var(--bevel-dark);
-  --stone: #c8c8c8;
-  --stone-text: #2b2118;
-  /* Textures pixel 16 × 16 générées par le code (src/styles/textures), affichées en 2 px par pixel. */
-  --tex-size: 32px;
-  --tex-page: url("./textures/creme.png");
-  --tex-dirt: url("./textures/terre.png");
-  --tex-grass: url("./textures/herbe-cote.png");
-  --tex-grass-top: url("./textures/herbe-dessus.png");
-  --tex-stone: url("./textures/pierre-claire.png");
-  --tex-rock: url("./textures/pierre.png");
-  --tex-planks: url("./textures/planches.png");
-  --tex-sand: url("./textures/sable.png");
-  --tex-gold: url("./textures/or.png");
-  --tex-brick: url("./textures/brique.png");
-  --tex-pebble: url("./textures/galet.png");
-  --tex-obsidian: url("./textures/obsidienne.png");
-  --tex-ice: url("./textures/glace.png");
-  --tex-canvas: url("./textures/toile.png");
-  --tex-sign: url("./textures/panneau.png");
-  --tex-peat: url("./textures/tourbe.png");
-  --tex-steel: url("./textures/acier.png");
-  --tex-paper: url("./textures/calque.png");
-  --tex-slate: url("./textures/ardoise.png");
-  --tex-scroll: url("./textures/parchemin.png");
-  --tex-marble: url("./textures/marbre.png");
-  --tex-quartz: url("./textures/quartz.png");
-  --tex-prism: url("./textures/prisme.png");
-  --tex-lens: url("./textures/lentille.png");
-  --tex-phonebox: url("./textures/cabine.png");
-  --tex-dial: url("./textures/cadran.png");
-  --tex-antenna: url("./textures/antenne.png");
-  --tex-ashlar: url("./textures/taille.png");
-  --tex-velvet: url("./textures/velours.png");
-  --tex-rail: url("./textures/rail.png");
-  --tex-tile: url("./textures/tuile.png");
-  --tex-panel: url("./textures/lambris.png");
+  /* Formes : angles adoucis, bordures pleines, aucune texture ni biseau. */
+  --border-width: 2px;
+  --radius: 12px; /* panneaux et cartes */
+  --radius-control: 8px; /* boutons, champs, réponses */
+  --radius-pill: 999px; /* étiquettes courtes */
+  /* Une seule ombre, douce, pour un panneau posé sur le monde. */
+  --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
 }
 :root[data-theme="nuit"] {
-  --bg: #1f1a16;
-  --grid: rgba(255, 255, 255, 0.05);
-  --surface: #2b241e;
-  --text: #f3ede2;
-  --muted: #cbbfae;
-  --ink: #d9c8b0;
-  --shadow-color: #14100d;
-  --success: #7fd19b;
-  --success-bg: #1f3a2a;
-  --error: #f19a92;
-  --error-bg: #472523;
+  --bg: #0e1f2e;
+  --surface: #16304a;
+  --text: #f3eee3;
+  --muted: #b8c7d2;
+  --ink: #7f9bb0;
+  --primary-bg: #e2b865;
+  --primary-text: #13283d;
+  --secondary-bg: #1d4a5e;
+  --secondary-text: #f3eee3;
+  --accent: #4fb3a4;
+  --sand: #e2b865;
+  --success: #7fd6a8;
+  --success-bg: #163a2d;
+  --error: #f2b27a;
+  --error-bg: #3d2a18;
   --focus: #ffd54a;
-  --topbar-bg: #4a3320;
+  --topbar-bg: #0a1824;
+  --topbar-text: #f3eee3;
+  --star-off: #4d6a80;
   --syl-0: #f3ede2;
   --syl-1: #9cc9ff;
+  --shadow-float: 0 2px 8px rgba(0, 0, 0, 0.4);
   color-scheme: dark;
-  --bevel-light: rgba(255, 255, 255, 0.14);
-  --bevel-dark: rgba(0, 0, 0, 0.45);
-  --stone: #4a4239;
-  --stone-text: #f3ede2;
-  --tex-page: url("./textures/nuit.png");
-  --tex-stone: url("./textures/pierre-sombre.png");
 }
+/* Thème Clair : le Crème sans teinte, plat (aucune ombre). */
 :root[data-theme="clair"] {
-  --bg: #f5f6f8;
-  --grid: transparent;
+  --bg: #f4f6f7;
   --surface: #ffffff;
-  --shadow-color: #d5d9e0;
-  --border-width: 2px;
-  --shadow-offset: 3px;
-  --topbar-bg: var(--surface);
-  --topbar-text: #2b2118;
-  /* Thème clair : plat, sans textures ni biseaux. */
-  --bevel: 0px;
-  --bevel-shadow-small: none;
-  --stone: #e4e7ec;
-  --tex-page: none;
-  --tex-dirt: none;
-  --tex-grass: none;
-  --tex-grass-top: none;
-  --tex-stone: none;
-  --tex-rock: none;
-  --tex-planks: none;
-  --tex-sand: none;
-  --tex-brick: none;
-  --tex-pebble: none;
-  --tex-obsidian: none;
-  --tex-ice: none;
-  --tex-canvas: none;
-  --tex-sign: none;
-  --tex-peat: none;
-  --tex-steel: none;
-  --tex-paper: none;
-  --tex-slate: none;
-  --tex-scroll: none;
-  --tex-marble: none;
-  --tex-quartz: none;
-  --tex-prism: none;
-  --tex-lens: none;
-  --tex-phonebox: none;
-  --tex-dial: none;
-  --tex-antenna: none;
-  --tex-ashlar: none;
-  --tex-velvet: none;
-  --tex-rail: none;
-  --tex-tile: none;
-  --tex-panel: none;
-  --tex-gold: none;
+  --topbar-bg: #ffffff;
+  --topbar-text: #13283d;
+  --shadow-float: none;
 }
+/* Contraste élevé : ses couleurs d'origine (noir, blanc, jaune), des angles de 4 px partout, aucune ombre. */
 :root[data-theme="contraste"] {
   --bg: #000000;
-  --grid: transparent;
   --surface: #000000;
   --text: #ffffff;
   --muted: #ffffff;
   --ink: #ffffff;
-  --shadow-color: #ffe600;
+  --primary-bg: #ffe600;
+  --primary-text: #000000;
+  --secondary-bg: #000000;
+  --secondary-text: #ffffff;
+  --accent: #ffe600;
+  --sand: #ffe600;
+  --on-sand: #000000;
   --yellow: #ffe600;
   --pink: #ffe600;
   --cyan: #ffe600;
   --violet: #ffe600;
   --green: #ffe600;
   --on-accent: #000000;
+  --star-off: #ffffff;
   --success: #6dff8e;
   --success-bg: #000000;
   --error: #ff8a80;
@@ -186,19 +131,10 @@
   --syl-0: #ffffff;
   --syl-1: #ffe600;
   color-scheme: dark;
-  --bevel: 0px;
-  --bevel-shadow-small: none;
-  --stone: #000000;
-  --stone-text: #ffffff;
-  --tex-page: none;
-  --tex-dirt: none;
-  --tex-grass: none;
-  --tex-grass-top: none;
-  --tex-stone: none;
-  --tex-rock: none;
-  --tex-planks: none;
-  --tex-sand: none;
-  --tex-gold: none;
+  --radius: 4px;
+  --radius-control: 4px;
+  --radius-pill: 4px;
+  --shadow-float: none;
 }
 
 /* Luciole © Laurent Bourcellier & Jonathan Fabreguettes (Perez), CC BY 4.0 : voir public/fonts/luciole/README.md. */
@@ -261,10 +197,6 @@ summary,
 body {
   margin: 0;
   background-color: var(--bg);
-  /* Grain pixel très discret (deux tons de crème) : uniquement en fond, le texte reste sur des panneaux unis. */
-  background-image: var(--tex-page);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
   color: var(--text);
   font-family: var(--font-family);
   line-height: var(--line-height);
@@ -298,8 +230,8 @@ svg {
   flex-shrink: 0;
 }
 :focus-visible {
-  outline: 4px solid var(--focus);
-  outline-offset: 3px;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 :root[data-reduce-motion="true"] *,
 :root[data-reduce-motion="true"] *::before,
@@ -331,36 +263,27 @@ svg {
   color: var(--on-accent);
   padding: 0.5rem 1rem;
   border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
   z-index: 10;
 }
 .skip-link:focus {
   top: 1rem;
 }
 
-/* ===== Panneaux (blocs) : biseau pixel et ombre droite vers le bas, comme la face d'un cube ===== */
+/* ===== Panneaux : opaques, angles de 12 px, bordure pleine, sans ombre sur la page ===== */
 .panel {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 1.2rem;
 }
-/* Bandeau texturé (herbe, planches, pierre…) en haut ou en bas d'un panneau : une rangée de blocs. */
-.band-top,
-.band-bottom {
-  background-repeat: repeat-x;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-}
-.band-top {
-  background-position: left top;
-  padding-top: calc(var(--tex-size) + 0.9rem);
-}
-.band-bottom {
-  background-position: left bottom;
-  padding-bottom: calc(var(--tex-size) + 0.9rem);
+/* Un panneau posé sur le monde (panneau d'île, bulles d'aide, paroles, liste des archipels) : la seule ombre
+   de l'interface, douce ; aucune en Clair ni en Contraste élevé. */
+.world-overlay-top .panel,
+.world-overlay-bottom .panel,
+.world-archipel-list,
+.island-sheet {
+  box-shadow: var(--shadow-float);
 }
 .grid {
   display: grid;
@@ -381,14 +304,9 @@ svg {
   gap: 1rem;
   /* Les bords de l'écran (encoche, coins arrondis) : l'appli installée s'étend dessous (viewport-fit=cover). */
   padding: calc(0.8rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) 0.5rem calc(1rem + env(safe-area-inset-left));
-  /* Une rangée d'herbe, puis de la terre : la barre est le sol du monde. */
-  background-color: var(--topbar-bg);
-  background-image: var(--tex-grass), var(--tex-dirt);
-  background-repeat: repeat-x, repeat;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
+  /* Un aplat bleu nuit (blanc en Clair). */
+  background: var(--topbar-bg);
   color: var(--topbar-text);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
   border-bottom: var(--border-width) solid var(--ink);
   position: sticky;
   top: 0;
@@ -401,31 +319,27 @@ svg {
   text-decoration: none;
   color: inherit;
 }
+/* Le logotype : l'initiale en Montserrat grasse, bleu nuit sur une pastille de sable. */
 .brand-mark {
   display: grid;
   place-items: center;
   width: 2.3rem;
   height: 2.3rem;
-  background-color: var(--green);
-  background-image: var(--tex-grass-top);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  color: var(--on-accent);
-  text-shadow: none;
-  border: 3px solid var(--ink);
-  font-family: var(--pixel-font);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--sand);
+  border-radius: var(--radius-control);
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.3rem;
   line-height: 1;
-  border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow-small),
-    0 4px 0 var(--ink);
 }
 .brand-name {
-  /* Le nom de l'application, dans la police des titres (la police pixel ne garde que le logo « D »). */
+  /* Le nom de l'application, dans la police des titres. */
   font-family: var(--display-font);
-  font-size: 0.95rem;
-  letter-spacing: 0.02em
+  font-weight: var(--display-weight);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
 }
 .topbar-xp {
   flex: 1;
@@ -439,35 +353,27 @@ svg {
   gap: 0.5rem;
   margin-left: auto;
 }
+/* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
 .nav-button {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   min-height: 48px;
   padding: 0.25rem 0.8rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background-color: var(--stone);
-  background-image: var(--tex-stone);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  box-shadow:
-    var(--bevel-shadow-small),
-    0 3px 0 var(--ink);
-  color: var(--stone-text);
-  text-shadow: none;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
   text-decoration: none;
   font-weight: 700;
 }
-.nav-button.active {
-  background-color: var(--green);
-  background-image: var(--tex-grass-top);
-  color: var(--on-accent);
+.nav-button:active {
+  background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
 }
-
-:root[data-theme="contraste"] .nav-button.active {
-  background-color: var(--yellow);
-  border-color: var(--yellow);
+.nav-button.active {
+  background: var(--sand);
+  border-color: var(--sand);
+  color: var(--on-sand);
 }
 .content {
   max-width: 60rem;
@@ -500,7 +406,7 @@ svg {
 .section-title,
 .hero-title {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -529,59 +435,35 @@ svg {
   gap: 0.4rem;
   min-height: 48px;
   padding: 0.2rem 1rem 0.2rem 0.6rem;
-  border: 2px solid var(--ink);
-  border-radius: 999px;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-pill);
   background: var(--surface);
-  box-shadow: 0 3px 0 var(--ink);
   color: inherit;
   font-weight: 700;
   text-decoration: none;
 }
 .back-link:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--ink);
+  background: var(--secondary-bg);
 }
 
 /* ===== Accueil ===== */
+/* Le bandeau d'accueil : un panneau uni, avec un liseré d'eau en tête. */
 .hero {
-  background-color: var(--surface);
-  /* Le ciel en haut, une rangée d'herbe et de terre en bas : le texte reste sur fond uni. */
-  background-image:
-    var(--tex-grass),
-    linear-gradient(
-      180deg,
-      var(--cyan) 0,
-      var(--cyan) 1.1rem,
-      var(--surface) 1.1rem
-    );
-  background-repeat: repeat-x, no-repeat;
-  background-position:
-    left bottom,
-    left top;
-  background-size:
-    var(--tex-size),
-    100% 100%;
-  image-rendering: pixelated;
+  background: var(--surface);
   color: var(--text);
   border: var(--border-width) solid var(--ink);
+  border-top: 8px solid var(--accent);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
-  padding: 1.6rem 1.4rem calc(var(--tex-size) + 0.9rem);
-  margin-bottom: 1.6rem;
-}
-:root[data-theme="clair"] .hero,
-:root[data-theme="contraste"] .hero {
-  background-image: none;
   padding: 1.2rem 1.4rem;
+  margin-bottom: 1.6rem;
 }
 .hero-kicker {
   display: inline-block;
   margin: 0 0 0.4rem;
-  padding: 0 0.6rem;
-  background: var(--ink);
-  color: var(--surface);
+  padding: 0 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
   font-family: var(--font-family);
   font-weight: 700;
   font-size: 0.9rem;
@@ -601,77 +483,39 @@ svg {
   height: 100%;
   text-decoration: none;
   color: var(--text);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
+  transition: border-color 0.12s ease;
 }
+/* Une carte qu'on touche : sa bordure prend la couleur de l'action, sans saut. */
 a.subject-card:hover,
 a.app-card:hover,
 button.app-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  border-color: var(--primary-bg);
 }
 a.subject-card:active,
-a.app-card:active {
-  transform: translateY(3px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 0 0 var(--shadow-color);
+a.app-card:active,
+button.app-card:active {
+  background: var(--secondary-bg);
 }
-.subject-card {
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
-  border-top-width: var(--border-width);
-}
-.subject-francais {
-  background-image: var(--tex-planks);
-}
-.subject-maths {
-  background-image: var(--tex-rock);
-}
-.subject-anglais {
-  background-image: var(--tex-brick);
-}
-/* Cartes de mission d'une matière : la texture reste un bandeau en tête, jamais derrière le texte. */
+/* Cartes d'une matière ou d'une île : un liseré de sa couleur en tête, jamais derrière le texte. */
+.subject-card,
+.subject-progress,
 .app-card.subject-francais,
 .app-card.subject-maths,
 .app-card.subject-anglais {
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
+  border-top-width: 8px;
 }
-.app-card.locked.subject-francais,
-.app-card.locked.subject-maths,
-.app-card.locked.subject-anglais,
-:root[data-theme="clair"] .app-card.subject-francais,
-:root[data-theme="clair"] .app-card.subject-maths,
-:root[data-theme="clair"] .app-card.subject-anglais,
-:root[data-theme="contraste"] .app-card.subject-francais,
-:root[data-theme="contraste"] .app-card.subject-maths,
-:root[data-theme="contraste"] .app-card.subject-anglais {
-  background-image: none;
-  padding-top: 1.2rem;
-}
-:root[data-theme="clair"] .subject-card,
-:root[data-theme="contraste"] .subject-card {
-  border-top-width: 12px;
-  padding-top: 1.2rem;
-}
-:root[data-theme="clair"] .subject-francais {
+.subject-francais {
   border-top-color: var(--pink);
 }
-:root[data-theme="clair"] .subject-maths {
+.subject-maths {
   border-top-color: var(--cyan);
 }
-:root[data-theme="clair"] .subject-anglais {
+.subject-anglais {
   border-top-color: var(--violet);
+}
+.app-card.locked {
+  border-top-width: var(--border-width);
+  border-top-color: var(--ink);
 }
 .subject-icon,
 .app-icon {
@@ -680,9 +524,18 @@ a.app-card:active {
   width: 3.4rem;
   height: 3.4rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: var(--bevel-shadow-small);
+  border-radius: var(--radius-control);
   margin-bottom: 0.4rem;
+  color: var(--text);
+}
+/* Sur un aplat de couleur (matière, sable), l'icône est bleu nuit. */
+.subject-francais .subject-icon,
+.subject-francais .app-icon,
+.subject-maths .subject-icon,
+.subject-maths .app-icon,
+.subject-anglais .subject-icon,
+.subject-anglais .app-icon,
+.app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
 .subject-francais .subject-icon,
@@ -697,12 +550,9 @@ a.app-card:active {
 .subject-anglais .app-icon {
   background: var(--violet);
 }
-/* Cartes de mission d'un biome : l'icône sur un fond de sable, lisible dans tous les thèmes (Nuit compris). */
+/* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {
-  background-color: var(--yellow);
-  background-image: var(--tex-sand);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
+  background: var(--sand);
 }
 .locked .app-icon,
 .app-card.locked[class*="biome-"] .app-icon {
@@ -712,7 +562,8 @@ a.app-card:active {
 .subject-title,
 .app-title {
   font-family: var(--display-font);
-  font-size: 1.25rem;
+  font-weight: var(--display-weight);
+  font-size: 1.2rem;
 }
 .subject-desc,
 .app-desc {
@@ -726,14 +577,15 @@ a.app-card:active {
   font-weight: 700;
 }
 .app-card.locked {
-  box-shadow: none;
   border-style: dashed;
 }
+/* Étiquette courte : une pastille. */
 .tag {
   align-self: flex-start;
   margin-top: auto;
   padding: 0 0.7rem;
-  border: 2px solid var(--ink);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-pill);
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -743,12 +595,16 @@ a.app-card:active {
   border-color: var(--success);
 }
 .tag-new {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--sand);
+  color: var(--on-sand);
 }
 
 /* ===== Boutons ===== */
+/* Secondaire par défaut (fond d'eau claire, bordure pleine) ; « primary » : l'action principale, pleine.
+   Appuyé, le fond fonce, sans saut. */
 .button {
+  --button-bg: var(--secondary-bg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -756,42 +612,29 @@ a.app-card:active {
   min-height: 52px;
   padding: 0.4rem 1.3rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
-  /* Bouton de pierre : texture pixel, biseau, et une face sombre en dessous. */
-  background-color: var(--stone);
-  background-image: var(--tex-stone);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  color: var(--stone-text);
-  box-shadow:
-    var(--bevel-shadow),
-    0 4px 0 var(--ink);
+  border-radius: var(--radius-control);
+  background: var(--button-bg);
+  color: var(--secondary-text);
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    transform 0.1s ease,
-    box-shadow 0.1s ease,
-    filter 0.1s ease;
+  transition: background-color 0.1s ease;
 }
 .button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.08);
-  box-shadow:
-    var(--bevel-shadow),
-    0 5px 0 var(--ink);
+  background: color-mix(in srgb, var(--button-bg) 92%, #000);
 }
 .button:active {
-  transform: translateY(3px);
-  box-shadow:
-    inset var(--bevel) var(--bevel) 0 var(--bevel-dark),
-    inset calc(-1 * var(--bevel)) calc(-1 * var(--bevel)) 0 var(--bevel-light),
-    0 1px 0 var(--ink);
+  background: color-mix(in srgb, var(--button-bg) 80%, #000);
 }
 .button.primary {
-  background-color: var(--green);
-  background-image: var(--tex-grass-top);
-  color: var(--on-accent);
+  --button-bg: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+/* En Contraste élevé, le noir ne fonce pas : le bouton appuyé s'éclaircit un peu. */
+:root[data-theme="contraste"] .button:not(.primary):hover,
+:root[data-theme="contraste"] .button:not(.primary):active {
+  background: #333333;
 }
 .danger-zone {
   margin-top: 2.5rem;
@@ -810,24 +653,16 @@ a.app-card:active {
   padding: 0.3rem 0.6rem;
   font: inherit;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
 }
 .button.danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .button.danger {
-  background-color: var(--surface);
-  background-image: none;
+  --button-bg: var(--surface);
   border-color: var(--error);
   color: var(--error);
-}
-:root[data-theme="contraste"] .button {
-  box-shadow: 0 4px 0 var(--ink);
-}
-:root[data-theme="contraste"] .button.primary {
-  background-color: var(--yellow);
-  border-color: var(--yellow);
 }
 .actions {
   display: flex;
@@ -853,21 +688,24 @@ a.app-card:active {
   min-height: 48px;
   min-width: 48px;
   padding: 0.2rem 0.9rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--bevel-shadow-small);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
+}
+.speak-button:active {
+  background: color-mix(in srgb, var(--secondary-bg) 80%, #000);
 }
 .speak-button.compact {
   padding: 0.2rem;
 }
 .speak-button[aria-pressed="true"] {
-  background: var(--cyan);
-  color: var(--on-accent);
+  background: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-text);
 }
 
 /* ===== Bulle de feedback ===== */
@@ -881,23 +719,26 @@ a.app-card:active {
   padding: 0.1rem 0.9rem;
   position: relative;
   z-index: 1;
-  font-family: var(--shout-font);
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.2rem;
   letter-spacing: 0.04em;
   line-height: 1.45;
-  color: var(--on-accent);
-  background: var(--yellow);
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 0 var(--shadow-color);
+  color: var(--on-sand);
+  background: var(--sand);
+  border: var(--border-width) solid var(--sand);
+  border-radius: var(--radius-pill);
   animation: pop 0.3s ease-out;
 }
 .feedback-rate .feedback-shout {
   background: var(--error-bg);
+  border-color: var(--error);
   color: var(--error);
 }
 .feedback-indice .feedback-shout {
-  background: var(--cyan);
+  background: var(--secondary-bg);
+  border-color: var(--ink);
+  color: var(--secondary-text);
 }
 @keyframes pop {
   0% {
@@ -916,9 +757,6 @@ a.app-card:active {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 0.9rem 0.8rem 0.7rem 1rem;
 }
 /* Queue de la bulle */
@@ -939,108 +777,11 @@ a.app-card:active {
   margin: 0;
 }
 
-/* ===== Rang et XP ===== */
+/* ===== Rôle et XP (l'insigne du rôle : styles/roles.css) ===== */
 .xp {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-}
-/* Écusson pixel : contour crénelé en escalier, bord sombre, minerai du rang à l'intérieur. */
-.rank-shield {
-  --shield: polygon(
-    0 0,
-    100% 0,
-    100% 55%,
-    87.5% 55%,
-    87.5% 67%,
-    75% 67%,
-    75% 78%,
-    62.5% 78%,
-    62.5% 89%,
-    56.25% 89%,
-    56.25% 100%,
-    43.75% 100%,
-    43.75% 89%,
-    37.5% 89%,
-    37.5% 78%,
-    25% 78%,
-    25% 67%,
-    12.5% 67%,
-    12.5% 55%,
-    0 55%
-  );
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 2.3rem;
-  height: 2.6rem;
-  flex-shrink: 0;
-  clip-path: var(--shield);
-  background: var(--ink);
-  color: var(--on-accent);
-  font-family: var(--pixel-font);
-  font-size: 0.9rem;
-  padding-bottom: 0.5rem;
-}
-/* Le numéro de niveau sur une plaque sombre, lisible sur le minerai. */
-.rank-level {
-  font-weight: 400;
-  line-height: 1;
-  padding: 0.15rem 0.2rem 0.05rem;
-  background: var(--ink);
-  color: #fbf6ea;
-}
-.rank-shield::before {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  z-index: -1;
-  clip-path: var(--shield);
-  background-color: var(--tier-color);
-  background-image: var(--tier-tex);
-  background-size: 24px;
-  image-rendering: pixelated;
-}
-.rank-shield {
-  isolation: isolate;
-}
-.tier-bronze {
-  --tier-color: #d08a52;
-  --tier-tex: url("./textures/minerai-cuivre.png");
-}
-.tier-argent {
-  --tier-color: #d5d9e0;
-  --tier-tex: url("./textures/minerai-fer.png");
-}
-.tier-or {
-  --tier-color: #f2c944;
-  --tier-tex: url("./textures/minerai-or.png");
-}
-.tier-platine {
-  --tier-color: #7fe8d6;
-  --tier-tex: url("./textures/minerai-platine.png");
-}
-.tier-diamant {
-  --tier-color: #8fc3ff;
-  --tier-tex: url("./textures/minerai-diamant.png");
-}
-.tier-legende {
-  --tier-color: #7b3fe4;
-  --tier-tex: url("./textures/minerai-legende.png");
-}
-:root[data-theme="clair"] .rank-shield::before,
-:root[data-theme="contraste"] .rank-shield::before {
-  background-image: none;
-}
-:root[data-theme="contraste"] .rank-shield {
-  background: var(--yellow);
-}
-:root[data-theme="contraste"] .rank-shield::before {
-  background-color: #000000;
-}
-:root[data-theme="contraste"] .rank-level {
-  background: #000000;
-  color: var(--yellow);
 }
 .xp-info {
   flex: 1;
@@ -1058,17 +799,17 @@ a.app-card:active {
   opacity: 0.75;
 }
 .xp-track {
-  height: 0.85rem;
+  height: 0.75rem;
   border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
   overflow: hidden;
 }
-/* Barre segmentée, comme une jauge de jeu en blocs. */
+/* La jauge en aplat vert d'eau. */
 .xp-fill {
   height: 100%;
-  background: repeating-linear-gradient(90deg, #7cc24a 0 8px, #5fa233 8px 10px);
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
   transition: width 0.4s ease;
 }
 :root[data-theme="contraste"] .xp-track {
@@ -1077,37 +818,23 @@ a.app-card:active {
 :root[data-theme="contraste"] .xp-fill {
   background: var(--yellow);
 }
-.xp-large .rank-shield {
-  width: 4rem;
-  height: 4.5rem;
-  font-size: 1.5rem;
-  padding-bottom: 0.8rem;
-}
-.xp-large .rank-level {
-  padding: 0.2rem 0.3rem 0.1rem;
-}
-.xp-large .rank-shield::before {
-  inset: 5px;
-  background-size: 32px;
-}
 .xp-large .xp-title {
   font-family: var(--display-font);
   font-weight: 400;
   font-size: 1.3rem;
 }
 .xp-large .xp-track {
-  height: 1.1rem;
-  border-width: 3px;
+  height: 1rem;
 }
 .xp-detail {
   font-size: 0.85rem;
   color: var(--muted);
 }
 
-/* Échelle des rangs (page Succès) : atteints en couleur, à venir grisés, le rang actuel encadré. */
+/* Échelle des rôles (page Succès) : atteints en couleur, à venir en pointillés, le rôle actuel encadré. */
 .rank-ladder {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.5rem;
   list-style: none;
   margin: 1.2rem 0 0;
@@ -1133,30 +860,9 @@ a.app-card:active {
 }
 .rank-ladder li[aria-current] {
   border: var(--border-width) solid var(--ink);
-  box-shadow: var(--bevel-shadow-small);
 }
 .rank-ladder-note {
   font-size: 0.9rem;
-}
-.rank-ladder .rank-shield {
-  width: 3rem;
-  height: 3.4rem;
-  font-size: 1rem;
-  padding-bottom: 0.6rem;
-}
-.rank-shield.locked::before {
-  filter: grayscale(1);
-  opacity: 0.45;
-}
-.rank-shield.locked .rank-level {
-  opacity: 0.7;
-}
-:root[data-theme="contraste"] .rank-shield.locked {
-  background: var(--muted);
-}
-:root[data-theme="contraste"] .rank-shield.locked::before {
-  filter: none;
-  opacity: 1;
 }
 /* Dans le panneau de la salle des trophées (étroit, même sur grand écran) : trois rangs par ligne, comme sur téléphone. */
 .island-sheet .rank-ladder {
@@ -1182,9 +888,8 @@ a.app-card:active {
   margin: 1.2rem 0 0;
 }
 .stats > div {
-  border: 2px solid var(--ink);
+  border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow: var(--bevel-shadow-small);
   padding: 0.4rem 0.7rem;
 }
 .stats dt {
@@ -1194,6 +899,7 @@ a.app-card:active {
 .stats dd {
   margin: 0;
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.4rem;
 }
 
@@ -1202,21 +908,11 @@ a.app-card:active {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   margin-bottom: 1.6rem;
 }
-/* La texture de la matière en bandeau, comme sur ses cartes de mission ; jamais derrière le texte. */
+/* Le liseré de la matière en tête, comme sur ses cartes de mission. */
 .subject-progress {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
-}
-:root[data-theme="clair"] .subject-progress,
-:root[data-theme="contraste"] .subject-progress {
-  background-image: none;
-  padding-top: 1.2rem;
 }
 /* Les enfants d'une colonne flex peuvent rétrécir : la liste ne déborde pas du panneau sur un téléphone. */
 .subject-progress > *,
@@ -1249,7 +945,7 @@ a.app-card:active {
 }
 .subject-progress-title {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
   font-size: 1.4rem;
 }
 .subject-progress-heading {
@@ -1292,33 +988,26 @@ a.app-card:active {
 }
 .badges .badge strong {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
 }
 .badges .badge.earned {
   border-style: solid;
   color: var(--text);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
 }
 .badge-icon {
   display: grid;
   place-items: center;
   width: 3.2rem;
   height: 3.2rem;
-  border: 2px dashed currentColor;
-  border-radius: var(--radius);
+  border: var(--border-width) dashed currentColor;
+  border-radius: var(--radius-control);
   margin-bottom: 0.4rem;
 }
+/* Un succès obtenu : son insigne sur un aplat de sable, bleu nuit dessus. */
 .badge.earned .badge-icon {
-  background-color: var(--yellow);
-  background-image: var(--tex-gold);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  color: var(--on-accent);
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: var(--bevel-shadow-small);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--sand);
 }
 
 /* ===== Notification de succès ===== */
@@ -1333,13 +1022,11 @@ a.app-card:active {
   gap: 0.8rem;
   width: min(30rem, calc(100% - 2rem));
   padding: 0.7rem 0.6rem 0.7rem 0.9rem;
-  background: var(--yellow);
-  color: var(--on-accent);
-  border: 3px solid var(--ink);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 6px 0 var(--ink);
+  box-shadow: var(--shadow-float);
   animation: slam 0.35s ease-out;
 }
 .celebration-levelup {
@@ -1350,13 +1037,14 @@ a.app-card:active {
   line-height: 1.35;
 }
 .celebration-kicker {
-  font-family: var(--shout-font);
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.15rem;
   letter-spacing: 0.06em;
 }
 .celebration-text strong {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
 }
 .celebration p {
   margin: 0;
@@ -1367,8 +1055,9 @@ a.app-card:active {
   width: 3rem;
   height: 3rem;
   background: var(--surface);
-  border: 3px solid var(--ink);
-  border-radius: var(--radius);
+  color: var(--text);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
 }
 @keyframes slam {
   from {
@@ -1388,18 +1077,20 @@ a.app-card:active {
 .quiz-steps li {
   flex: 1;
   height: 0.8rem;
-  border: 2px solid var(--ink);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-pill);
 }
 .quiz-steps li.done {
   background: var(--success);
   border-color: var(--success);
 }
 .quiz-steps li.current {
-  background: var(--yellow);
+  background: var(--sand);
 }
 .question-count {
   display: inline-block;
-  padding: 0 0.6rem;
+  padding: 0 0.7rem;
+  border-radius: var(--radius-pill);
   background: var(--text);
   color: var(--surface);
   font-weight: 700;
@@ -1428,8 +1119,8 @@ a.app-card:active {
   margin: 0 0.1em;
   padding: 0 0.3em;
   border-bottom: 4px solid var(--violet);
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  color: var(--on-sand);
   text-align: center;
 }
 .choices {
@@ -1445,32 +1136,23 @@ a.app-card:active {
   min-height: 76px;
   padding: 0.6rem 1rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
-  box-shadow:
-    var(--bevel-shadow),
-    0 4px 0 var(--ink);
   font-size: 1.35rem;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    transform 0.1s ease,
-    box-shadow 0.1s ease;
+  transition: border-color 0.1s ease, background-color 0.1s ease;
 }
+/* Une réponse qu'on touche : la bordure prend la couleur de l'action, puis le fond se teinte, sans saut. */
 .choice:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 6px 0 var(--ink);
+  border-color: var(--primary-bg);
 }
 .choice:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 0 0 var(--shadow-color);
+  background: var(--secondary-bg);
 }
 .choice:disabled {
   cursor: default;
-  box-shadow: none;
 }
 .choice.wrong {
   border-color: var(--error);
@@ -1481,17 +1163,9 @@ a.app-card:active {
   border-color: var(--success);
   background: var(--success-bg);
   color: var(--success);
-  box-shadow: 0 4px 0 var(--success);
 }
 .joker-button {
   margin-top: 1.2rem;
-  background-color: var(--cyan);
-  background-image: none;
-  color: var(--on-accent);
-}
-:root[data-theme="clair"] .joker-button {
-  background-color: var(--surface);
-  color: var(--text);
 }
 .resolution {
   margin-top: 1.4rem;
@@ -1501,7 +1175,7 @@ a.app-card:active {
   gap: 0.6rem;
   align-items: flex-start;
   padding: 0.8rem 1rem;
-  border: 2px dashed var(--ink);
+  border: var(--border-width) dashed var(--ink);
   border-radius: var(--radius);
 }
 .explanation svg {
@@ -1512,7 +1186,7 @@ a.app-card:active {
 }
 .summary h2 {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
 }
 .summary p {
   margin-left: auto;
@@ -1523,6 +1197,7 @@ a.app-card:active {
 }
 .summary-score {
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.6rem;
   line-height: 1.3;
   margin: 0.4rem 0 0;
@@ -1549,13 +1224,10 @@ a.app-card:active {
   align-items: center;
   gap: 0.3rem;
   padding: 0.1rem 0.9rem;
-  background-color: var(--yellow);
-  background-image: var(--tex-gold);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  color: var(--on-accent);
-  border: 2px solid var(--ink);
-  box-shadow: var(--bevel-shadow-small);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--sand);
+  border-radius: var(--radius-pill);
   font-weight: 700;
 }
 .loading {
@@ -1570,11 +1242,10 @@ a.app-card:active {
 .loading p {
   margin: 0;
 }
-/* Le bloc d'herbe sautille pendant l'attente (immobile avec « Réduire les animations »). */
+/* L'icône d'Archipéo sautille pendant l'attente (immobile avec « Réduire les animations »). */
 .loading-block {
   width: 4.5rem;
   height: 4.5rem;
-  image-rendering: pixelated;
   animation: loading-hop 0.8s ease-in-out infinite;
 }
 @keyframes loading-hop {
@@ -1601,6 +1272,7 @@ a.app-card:active {
 }
 .settings legend {
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.05rem;
   padding: 0 0.5rem;
   background: var(--surface);
@@ -1616,22 +1288,14 @@ a.app-card:active {
   gap: 0.5rem;
   min-height: 52px;
   padding: 0.3rem 1rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
-.option {
-  box-shadow: var(--bevel-shadow-small);
-}
 .option.selected {
-  background-color: var(--green);
-  background-image: var(--tex-grass-top);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  color: var(--on-accent);
-  box-shadow:
-    var(--bevel-shadow-small),
-    0 4px 0 var(--ink);
+  background: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-text);
   font-weight: 700;
 }
 /* Contraste élevé : la sélection est un cadre jaune épais, sans changer la couleur des pastilles de thème. */
@@ -1640,12 +1304,11 @@ a.app-card:active {
   color: var(--text);
   outline: 4px solid var(--yellow);
   outline-offset: -4px;
-  box-shadow: none;
 }
 .option input {
   width: 1.2rem;
   height: 1.2rem;
-  accent-color: var(--violet);
+  accent-color: var(--primary-bg);
 }
 .font-atkinson {
   font-family: "Atkinson Hyperlegible", sans-serif;
@@ -1656,20 +1319,21 @@ a.app-card:active {
 .font-systeme {
   font-family: Verdana, Arial, sans-serif;
 }
+/* Chaque pastille de thème montre les couleurs de son thème, quel que soit le thème en cours. */
 .theme-swatch.theme-creme {
-  background: #fff6d8;
-  color: var(--on-accent);
-  border-color: var(--on-accent);
+  background: #f3eee3;
+  color: #13283d;
+  border-color: #566e7d;
 }
 .theme-swatch.theme-nuit {
-  background: #2b241e;
-  color: #f3ede2;
-  border-color: #d9c8b0;
+  background: #16304a;
+  color: #f3eee3;
+  border-color: #7f9bb0;
 }
 .theme-swatch.theme-clair {
   background: #ffffff;
-  color: var(--on-accent);
-  border-color: #c7cfdb;
+  color: #13283d;
+  border-color: #566e7d;
 }
 .theme-swatch.theme-contraste {
   background: #000000;
@@ -1691,7 +1355,7 @@ a.app-card:active {
 .slider input[type="range"] {
   width: 100%;
   min-height: 44px;
-  accent-color: var(--violet);
+  accent-color: var(--primary-bg);
 }
 .toggle {
   display: flex;
@@ -1703,7 +1367,7 @@ a.app-card:active {
 .toggle input {
   width: 1.5rem;
   height: 1.5rem;
-  accent-color: var(--violet);
+  accent-color: var(--primary-bg);
 }
 
 /* ===== Mission Homophones ===== */
@@ -1720,21 +1384,13 @@ a.app-card:active {
   text-align: left;
   color: var(--text);
   cursor: pointer;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
+  transition: border-color 0.12s ease;
 }
 .level-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  border-color: var(--primary-bg);
 }
 .level-card:active {
-  transform: translateY(3px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 0 0 var(--shadow-color);
+  background: var(--secondary-bg);
 }
 .level-number {
   display: grid;
@@ -1742,12 +1398,14 @@ a.app-card:active {
   width: 3rem;
   height: 3rem;
   border: var(--border-width) solid var(--ink);
-  font-family: var(--shout-font);
+  border-radius: var(--radius-control);
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.9rem;
   color: var(--on-accent);
 }
 .level-1 .level-number {
-  background: var(--yellow);
+  background: var(--sand);
 }
 .level-2 .level-number {
   background: var(--cyan);
@@ -1757,6 +1415,7 @@ a.app-card:active {
 }
 .level-title {
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.15rem;
 }
 .level-grade {
@@ -1784,19 +1443,19 @@ a.app-card:active {
   gap: 0.5rem;
   min-height: 52px;
   padding: 0.3rem 1rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
   font-weight: 700;
   cursor: pointer;
 }
 .set-chip:hover {
-  box-shadow: 0 3px 0 var(--shadow-color);
+  border-color: var(--primary-bg);
 }
 .set-record {
-  padding: 0 0.5rem;
-  border-radius: var(--radius);
+  padding: 0 0.6rem;
+  border-radius: var(--radius-pill);
   background: var(--success-bg);
   color: var(--success);
   font-size: 0.8rem;
@@ -2088,7 +1747,7 @@ a.app-card:active {
 }
 .reader-title {
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
   font-size: 1.4rem;
   margin: 0;
 }
@@ -2119,8 +1778,8 @@ a.app-card:active {
   width: 100%;
   margin: 0;
   padding: 0.25rem 0.5rem;
-  border: 2px solid transparent;
-  border-radius: var(--radius);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--text);
   text-align: left;
@@ -2168,7 +1827,7 @@ a.app-card:active {
   /* list-item : garde le triangle qui montre qu'on peut ouvrir. */
   display: list-item;
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
   font-size: 1.1rem;
 }
 .glossary dl {
@@ -2249,9 +1908,7 @@ a.app-card:active {
   z-index: 15;
   background: var(--surface);
   border-top: var(--border-width) solid var(--ink);
-  box-shadow:
-    inset 0 var(--bevel) 0 var(--bevel-light),
-    0 -6px 0 var(--shadow-color);
+  border-radius: var(--radius) var(--radius) 0 0;
   padding: 0.6rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
   animation: sheet-up 0.2s ease-out;
 }
@@ -2461,21 +2118,13 @@ a.app-card:active {
   margin-bottom: 1.6rem;
   text-decoration: none;
   color: var(--text);
-  background-image: var(--tex-grass);
-  background-repeat: repeat-x;
-  background-position: left bottom;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-bottom: calc(var(--tex-size) + 0.9rem);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
+  transition: border-color 0.12s ease;
 }
 .adventure-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  border-color: var(--primary-bg);
+}
+.adventure-card:active {
+  background: var(--secondary-bg);
 }
 .adventure-text {
   flex: 1 1 14rem;
@@ -2491,21 +2140,11 @@ a.app-card:active {
 }
 .adventure-title {
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.6rem;
 }
 .adventure-desc {
   color: var(--muted);
-}
-.hero-blocland {
-  background-image:
-    var(--tex-grass),
-    linear-gradient(
-      180deg,
-      var(--cyan) 0,
-      var(--cyan) 2.2rem,
-      var(--surface) 2.2rem
-    );
-  padding-top: 2.6rem;
 }
 .biome-map {
   display: grid;
@@ -2525,257 +2164,114 @@ a.app-card:active {
   height: 100%;
   text-decoration: none;
   color: var(--text);
-  /* Une rangée du bloc du biome en haut de la carte. */
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
+  border-top: 8px solid var(--biome-color, var(--ink));
+  transition: border-color 0.12s ease;
 }
 .biome-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
+  border-color: var(--primary-bg);
+  border-top-color: var(--biome-color, var(--ink));
 }
-.biome-card.biome-foret,
-.app-card.biome-foret {
-  background-image: var(--tex-grass);
-}
-.biome-card.biome-mine,
-.app-card.biome-mine {
-  background-image: var(--tex-rock);
-}
-.biome-card.biome-carriere,
-.app-card.biome-carriere {
-  background-image: var(--tex-sand);
-}
-.biome-card.biome-ferme,
-.app-card.biome-ferme {
-  background-image: var(--tex-planks);
-}
-.biome-card.biome-tour,
-.app-card.biome-tour {
-  background-image: var(--tex-gold);
-}
-.biome-card.biome-plaine,
-.app-card.biome-plaine {
-  background-image: var(--tex-brick);
-}
-.biome-card.biome-riviere,
-.app-card.biome-riviere {
-  background-image: var(--tex-pebble);
-}
-.biome-card.biome-volcan,
-.app-card.biome-volcan {
-  background-image: var(--tex-obsidian);
-}
-.biome-card.biome-glacier,
-.app-card.biome-glacier {
-  background-image: var(--tex-ice);
-}
-.biome-card.biome-marche,
-.app-card.biome-marche {
-  background-image: var(--tex-canvas);
-}
-.biome-card.biome-carrefour,
-.app-card.biome-carrefour {
-  background-image: var(--tex-sign);
-}
-.biome-card.biome-marais,
-.app-card.biome-marais {
-  background-image: var(--tex-peat);
-}
-.biome-card.biome-forge,
-.app-card.biome-forge {
-  background-image: var(--tex-steel);
-}
-.biome-card.biome-atelier,
-.app-card.biome-atelier {
-  background-image: var(--tex-paper);
-}
-.biome-card.biome-falaise,
-.app-card.biome-falaise {
-  background-image: var(--tex-slate);
-}
-.biome-card.biome-cabinet,
-.app-card.biome-cabinet {
-  background-image: var(--tex-scroll);
-}
-.biome-card.biome-belvedere,
-.app-card.biome-belvedere {
-  background-image: var(--tex-marble);
-}
-.biome-card.biome-donnees,
-.app-card.biome-donnees {
-  background-image: var(--tex-quartz);
-}
-.biome-card.biome-phare,
-.app-card.biome-phare {
-  background-image: var(--tex-prism);
-}
-.biome-card.biome-textes,
-.app-card.biome-textes {
-  background-image: var(--tex-lens);
-}
-.biome-card.biome-baie,
-.app-card.biome-baie {
-  background-image: var(--tex-phonebox);
-}
-.biome-card.biome-horloge,
-.app-card.biome-horloge {
-  background-image: var(--tex-dial);
-}
-.biome-card.biome-studio,
-.app-card.biome-studio {
-  background-image: var(--tex-antenna);
-}
-.biome-card.biome-chateau,
-.app-card.biome-chateau {
-  background-image: var(--tex-ashlar);
-}
-.biome-card.biome-theatre,
-.app-card.biome-theatre {
-  background-image: var(--tex-velvet);
-}
-.biome-card.biome-gare,
-.app-card.biome-gare {
-  background-image: var(--tex-rail);
-}
-.biome-card.biome-comptoir,
-.app-card.biome-comptoir {
-  background-image: var(--tex-tile);
-}
-.biome-card.biome-manoir,
-.app-card.biome-manoir {
-  background-image: var(--tex-panel);
-}
-.biome-card.locked {
-  background-image: var(--tex-rock);
+.biome-card:active {
+  background: var(--secondary-bg);
 }
 .app-card[class*="biome-"] {
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
+  border-top: 8px solid var(--biome-color, var(--ink));
 }
-.app-card.locked[class*="biome-"] {
-  background-image: none;
-  padding-top: 1.2rem;
+.app-card.locked[class*="biome-"],
+.biome-card.locked {
+  border-top: var(--border-width) dashed var(--ink);
 }
-:root[data-theme="clair"] .app-card[class*="biome-"],
-:root[data-theme="contraste"] .app-card[class*="biome-"] {
-  background-image: none;
-  padding-top: 1.2rem;
+/* La couleur de chaque île, pour son liseré (cartes, panneau d'île) ; toujours doublée de son nom. */
+.biome-foret {
+  --biome-color: var(--green);
 }
-:root[data-theme="clair"] .biome-card,
-:root[data-theme="contraste"] .biome-card {
-  border-top-width: 12px;
-  padding-top: 1.2rem;
+.biome-mine {
+  --biome-color: #8c93a0;
 }
-:root[data-theme="clair"] .biome-foret {
-  border-top-color: var(--green);
+.biome-carriere {
+  --biome-color: var(--yellow);
 }
-:root[data-theme="clair"] .biome-mine {
-  border-top-color: #8c93a0;
+.biome-ferme {
+  --biome-color: #a2694a;
 }
-:root[data-theme="clair"] .biome-carriere {
-  border-top-color: var(--yellow);
+.biome-tour {
+  --biome-color: var(--cyan);
 }
-:root[data-theme="clair"] .biome-ferme {
-  border-top-color: #a2694a;
+.biome-plaine {
+  --biome-color: var(--pink);
 }
-:root[data-theme="clair"] .biome-tour {
-  border-top-color: var(--cyan);
+.biome-riviere {
+  --biome-color: #7f96ad;
 }
-:root[data-theme="clair"] .biome-plaine {
-  border-top-color: var(--pink);
+.biome-volcan {
+  --biome-color: #4a3d5c;
 }
-:root[data-theme="clair"] .biome-riviere {
-  border-top-color: #7f96ad;
+.biome-glacier {
+  --biome-color: #b6e0ee;
 }
-:root[data-theme="clair"] .biome-volcan {
-  border-top-color: #4a3d5c;
+.biome-marche {
+  --biome-color: #c9463f;
 }
-:root[data-theme="clair"] .biome-glacier {
-  border-top-color: #b6e0ee;
+.biome-carrefour {
+  --biome-color: #e0b73f;
 }
-:root[data-theme="clair"] .biome-marche {
-  border-top-color: #c9463f;
+.biome-marais {
+  --biome-color: #5a4a2a;
 }
-:root[data-theme="clair"] .biome-carrefour {
-  border-top-color: #e0b73f;
+.biome-forge {
+  --biome-color: #8f9aa6;
 }
-:root[data-theme="clair"] .biome-marais {
-  border-top-color: #5a4a2a;
+.biome-atelier {
+  --biome-color: #96b4dc;
 }
-:root[data-theme="clair"] .biome-forge {
-  border-top-color: #8f9aa6;
+.biome-falaise {
+  --biome-color: #5c6470;
 }
-:root[data-theme="clair"] .biome-atelier {
-  border-top-color: #96b4dc;
+.biome-cabinet {
+  --biome-color: #cdb97f;
 }
-:root[data-theme="clair"] .biome-falaise {
-  border-top-color: #5c6470;
+.biome-belvedere {
+  --biome-color: #d6d1c8;
 }
-:root[data-theme="clair"] .biome-cabinet {
-  border-top-color: #cdb97f;
+.biome-donnees {
+  --biome-color: #b9a8d6;
 }
-:root[data-theme="clair"] .biome-belvedere {
-  border-top-color: #d6d1c8;
+.biome-phare {
+  --biome-color: #f0c95a;
 }
-:root[data-theme="clair"] .biome-donnees {
-  border-top-color: #b9a8d6;
+.biome-textes {
+  --biome-color: #7fb2cc;
 }
-:root[data-theme="clair"] .biome-phare {
-  border-top-color: #f0c95a;
+.biome-baie {
+  --biome-color: #b02a24;
 }
-:root[data-theme="clair"] .biome-textes {
-  border-top-color: #7fb2cc;
+.biome-horloge {
+  --biome-color: #c9a24a;
 }
-:root[data-theme="clair"] .biome-baie {
-  border-top-color: #b02a24;
+.biome-studio {
+  --biome-color: #9aa4ae;
 }
-:root[data-theme="clair"] .biome-horloge {
-  border-top-color: #c9a24a;
+.biome-chateau {
+  --biome-color: #d8ccb0;
 }
-:root[data-theme="clair"] .biome-studio {
-  border-top-color: #9aa4ae;
+.biome-theatre {
+  --biome-color: #7a1f3a;
 }
-:root[data-theme="clair"] .biome-chateau {
-  border-top-color: #d8ccb0;
+.biome-gare {
+  --biome-color: #4a4a50;
 }
-:root[data-theme="clair"] .biome-theatre {
-  border-top-color: #7a1f3a;
+.biome-comptoir {
+  --biome-color: #b85a30;
 }
-:root[data-theme="clair"] .biome-gare {
-  border-top-color: #4a4a50;
+.biome-manoir {
+  --biome-color: #5a3a22;
 }
-:root[data-theme="clair"] .biome-comptoir {
-  border-top-color: #b85a30;
-}
-:root[data-theme="clair"] .biome-manoir {
-  border-top-color: #5a3a22;
-}
-.biome-step {
-  position: absolute;
-  top: calc(var(--tex-size) + 0.6rem);
-  right: 0.8rem;
-  font-family: var(--font-family);
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--muted);
-}
-:root[data-theme="clair"] .biome-step,
-:root[data-theme="contraste"] .biome-step {
-  top: 0.6rem;
+:root[data-theme="contraste"] [class*="biome-"] {
+  --biome-color: var(--ink);
 }
 .biome-name {
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.2rem;
 }
 .biome-module {
@@ -2803,9 +2299,6 @@ a.app-card:active {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
   padding: 0.7rem 1rem 0.8rem;
 }
 .creature-says::after {
@@ -2858,14 +2351,15 @@ a.app-card:active {
   display: inline-flex;
   gap: 0.15rem;
 }
+/* Étoile gagnée : un remplissage de sable, cernée de la couleur du texte ; à gagner : un contour gris-bleu. */
 .star {
-  color: var(--shadow-color);
+  color: var(--star-off);
 }
 .star.lit {
-  color: #f2b705;
+  color: var(--text);
 }
 .star.lit svg {
-  fill: #ffd54a;
+  fill: var(--sand);
 }
 :root[data-theme="contraste"] .star.lit,
 :root[data-theme="contraste"] .star.lit svg {
@@ -2893,8 +2387,8 @@ a.app-card:active {
   align-items: center;
   gap: 0.6rem;
   padding: 0.5rem 0.8rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--bg);
 }
 .reward-list strong {
@@ -2903,8 +2397,8 @@ a.app-card:active {
   font-size: 1.1rem;
 }
 .reward-chest {
-  background: var(--yellow) !important;
-  color: var(--on-accent);
+  background: var(--sand) !important;
+  color: var(--on-sand);
 }
 .reward-streak {
   display: inline-flex;
@@ -2915,7 +2409,7 @@ a.app-card:active {
 .pause-panel {
   margin-top: 1rem;
   padding: 1rem;
-  border: 2px dashed var(--ink);
+  border: var(--border-width) dashed var(--ink);
   border-radius: var(--radius);
   text-align: left;
 }
@@ -2926,7 +2420,6 @@ a.app-card:active {
 /* ===== Blocland : écrans d'exercices ===== */
 .biome-card.locked {
   border-style: dashed;
-  box-shadow: none;
 }
 .biome-card.locked .creature {
   opacity: 0.45;
@@ -2940,10 +2433,10 @@ a.app-card:active {
 .sound-target strong {
   display: inline-block;
   padding: 0 0.5rem;
-  background: var(--yellow);
-  color: var(--on-accent);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--sand);
+  border-radius: var(--radius-control);
 }
 .word-cards {
   display: grid;
@@ -2969,19 +2462,18 @@ a.app-card:active {
   min-height: 6rem;
   padding: 0.6rem 0.5rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 4px 0 var(--shadow-color);
   font-weight: 700;
   font-size: 1.15rem;
   cursor: pointer;
 }
+/* Un mot choisi : un aplat de sable et une bordure bleu nuit, sans saut. */
 .word-card.picked {
-  background: var(--yellow);
-  color: var(--on-accent);
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 var(--shadow-color);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 .word-card.right {
   border-color: var(--success);
@@ -3033,10 +2525,10 @@ a.app-card:active {
   min-width: 2.2rem;
   padding: 0 0.5rem;
   text-align: center;
-  background: var(--yellow);
-  color: var(--on-accent);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  background: var(--sand);
+  color: var(--on-sand);
+  border: var(--border-width) solid var(--sand);
+  border-radius: var(--radius-control);
   font-size: 1.4em;
 }
 .filon-lane {
@@ -3062,9 +2554,8 @@ a.app-card:active {
   width: 5rem;
   height: 5rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   background: #a7aeb8;
-  box-shadow: 0 5px 0 #4c535e;
   color: #1f1a16;
   font-size: 2.6rem;
   font-weight: 700;
@@ -3112,8 +2603,8 @@ a.app-card:active {
   padding: 0 0.3em;
   text-align: center;
   border-bottom: 4px solid var(--violet);
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  color: var(--on-sand);
 }
 .gap.filled {
   background: var(--success-bg);
@@ -3123,8 +2614,8 @@ a.app-card:active {
 .letter-block {
   font-size: 1.5rem;
   letter-spacing: 0.06em;
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  color: var(--on-sand);
 }
 .letter-block:disabled {
   background: var(--surface);
@@ -3164,111 +2655,11 @@ a.app-card:active {
 }
 
 /* ===== Chantier : inventaire et grille de construction ===== */
-.chantier-card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.2rem;
-  margin-bottom: 1.6rem;
-  text-decoration: none;
-  color: var(--text);
-  background-image: var(--tex-planks);
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.9rem);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
-}
-.chantier-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 3px) 0 var(--shadow-color);
-}
-.chantier-icon {
-  display: grid;
-  place-items: center;
-  width: 3.4rem;
-  height: 3.4rem;
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius);
-  background-color: var(--yellow);
-  background-image: var(--tex-sand);
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  box-shadow: var(--bevel-shadow-small);
-  color: var(--on-accent);
-}
 .inventory {
   margin-bottom: 1.2rem;
 }
 .inventory-title {
   margin-top: 0;
-}
-.palette {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-}
-.palette-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  min-width: 5.2rem;
-  padding: 0.5rem 0.6rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-}
-.palette-block .block-icon {
-  width: 2.4rem;
-  height: 2.4rem;
-  margin: 0;
-}
-.palette-block {
-  box-shadow: var(--bevel-shadow-small);
-}
-.palette-block.selected {
-  background: var(--yellow);
-  color: var(--on-accent);
-  box-shadow:
-    var(--bevel-shadow-small),
-    0 4px 0 var(--ink);
-}
-.palette-block.empty {
-  opacity: 0.5;
-}
-.palette-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-.palette-count {
-  font-family: var(--font-family);
-  font-weight: 700;
-  font-size: 1rem;
-}
-.build-modes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-.build-panel {
-  padding: 0.6rem;
-  overflow: hidden;
-}
-:root[data-theme="contraste"] .build-grid .tile polygon {
-  fill: #222;
-  stroke: #ffe600;
-}
-:root[data-theme="contraste"] .build-grid .tile.alt polygon {
-  fill: #333;
 }
 .build-status {
   margin: 0.6rem 0 0;
@@ -3291,10 +2682,6 @@ a.app-card:active {
 }
 .voxel-canvas canvas {
   display: block;
-}
-.voxel-canvas-build {
-  aspect-ratio: 4 / 3;
-  max-height: 34rem;
 }
 .view-toggle {
   display: flex;
@@ -3324,30 +2711,9 @@ a.app-card:active {
 .world {
   margin-bottom: 1.4rem;
 }
-.voxel-canvas-world {
-  aspect-ratio: 16 / 9;
-  max-height: 32rem;
-  border: var(--border-width) solid var(--ink);
-  box-shadow: 0 var(--shadow-offset) 0 var(--shadow-color);
-}
-.world-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
-}
-.world-nav .button {
-  min-height: 48px;
-  padding: 0.2rem 0.9rem;
-}
 .world .view-note {
   display: block;
   margin-top: 0.5rem;
-}
-@media (max-width: 640px) {
-  .voxel-canvas-world {
-    aspect-ratio: 4 / 3;
-  }
 }
 
 /* ===== Village : plans (construction guidée) ===== */
@@ -3357,17 +2723,17 @@ a.app-card:active {
 .plan-title {
   margin-top: 0;
 }
+/* Jauge d'un plan : un remplissage plein, vert d'eau, dans une piste arrondie. */
 .plan-track {
   height: 1rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.12);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--ink) 15%, var(--surface));
   overflow: hidden;
 }
 .plan-fill {
   height: 100%;
-  background: repeating-linear-gradient(90deg, #7cc24a 0 8px, #5fa233 8px 10px);
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  background: var(--accent);
   transition: width 0.4s ease;
 }
 :root[data-theme="contraste"] .plan-fill {
@@ -3412,9 +2778,7 @@ a.app-card:active {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
+  box-shadow: var(--shadow-float);
 }
 
 /* ===== Village : journal de construction ===== */
@@ -3443,7 +2807,7 @@ a.app-card:active {
 /* ===== Village : tutoriel d'entrée ===== */
 .tutorial {
   margin-bottom: 1.2rem;
-  background: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+  background: color-mix(in srgb, var(--secondary-bg) 60%, var(--surface));
 }
 :root[data-theme="contraste"] .tutorial {
   background: var(--surface);
@@ -3461,9 +2825,10 @@ a.app-card:active {
   font-family: var(--font-family);
   font-weight: 700;
   font-size: 0.9rem;
-  padding: 0.15rem 0.4rem;
-  background: var(--ink);
-  color: #fbf6ea;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--secondary-text);
+  color: var(--surface);
 }
 .tutorial-actions {
   display: flex;
@@ -3503,8 +2868,8 @@ a.app-card:active {
   justify-content: space-between;
   gap: 0.5rem 1rem;
   padding: 0.5rem 0.7rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
 }
 .enclos-row.right {
   border-color: var(--success);
@@ -3530,8 +2895,9 @@ a.app-card:active {
   font-size: 1.15rem;
 }
 .enclos-pen.picked {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 
 /* ===== Blocland : le Gardien (boss de biome) ===== */
@@ -3569,9 +2935,6 @@ a.app-card:active {
   border-radius: var(--radius);
   color: #fbf6ea;
   background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
 }
 .arena-beaten {
   background: linear-gradient(180deg, #4a7bb5 0%, #8fd0f5 70%, #6cb33f 100%);
@@ -3644,6 +3007,7 @@ a.app-card:active {
 .arena-name {
   margin: 0;
   font-family: var(--display-font);
+  font-weight: var(--display-weight);
   font-size: 1.4rem;
 }
 .arena-gauge-label {
@@ -3666,8 +3030,7 @@ a.app-card:active {
 }
 .arena-gauge-fill {
   height: 100%;
-  background: repeating-linear-gradient(90deg, #d9772e 0 8px, #b85e1c 8px 10px);
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  background: var(--sand);
   transition: width 0.6s ease;
 }
 .arena-line {
@@ -3878,8 +3241,9 @@ a.app-card:active {
   max-height: 45%;
 }
 .world-bar .button[aria-pressed="true"] {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 /* Le panneau d'une île glisse depuis le bas ; le monde garde le haut de l'écran, l'île reste visible. */
 .island-sheet {
@@ -3889,14 +3253,8 @@ a.app-card:active {
   overscroll-behavior: contain;
   padding: 0.8rem 1rem 1.2rem;
   background: var(--surface);
-  border-top: var(--border-width) solid var(--ink);
-  box-shadow: 0 calc(-1 * var(--shadow-offset)) 0 var(--shadow-color);
-  /* Une rangée du bloc de l'île en haut du panneau. */
-  background-repeat: repeat-x;
-  background-position: left top;
-  background-size: var(--tex-size);
-  image-rendering: pixelated;
-  padding-top: calc(var(--tex-size) + 0.6rem);
+  /* Le liseré de l'île en haut du panneau (à gauche sur grand écran). */
+  border-top: 8px solid var(--biome-color, var(--ink));
   animation: sheet-in 0.3s ease;
 }
 @keyframes sheet-in {
@@ -3911,96 +3269,6 @@ a.app-card:active {
   .island-sheet {
     animation: none;
   }
-}
-.island-sheet.biome-foret {
-  background-image: var(--tex-grass);
-}
-.island-sheet.biome-mine {
-  background-image: var(--tex-rock);
-}
-.island-sheet.biome-carriere {
-  background-image: var(--tex-sand);
-}
-.island-sheet.biome-ferme {
-  background-image: var(--tex-planks);
-}
-.island-sheet.biome-tour {
-  background-image: var(--tex-gold);
-}
-.island-sheet.biome-plaine {
-  background-image: var(--tex-brick);
-}
-.island-sheet.biome-riviere {
-  background-image: var(--tex-pebble);
-}
-.island-sheet.biome-volcan {
-  background-image: var(--tex-obsidian);
-}
-.island-sheet.biome-glacier {
-  background-image: var(--tex-ice);
-}
-.island-sheet.biome-marche {
-  background-image: var(--tex-canvas);
-}
-.island-sheet.biome-carrefour {
-  background-image: var(--tex-sign);
-}
-.island-sheet.biome-marais {
-  background-image: var(--tex-peat);
-}
-.island-sheet.biome-forge {
-  background-image: var(--tex-steel);
-}
-.island-sheet.biome-atelier {
-  background-image: var(--tex-paper);
-}
-.island-sheet.biome-falaise {
-  background-image: var(--tex-slate);
-}
-.island-sheet.biome-cabinet {
-  background-image: var(--tex-scroll);
-}
-.island-sheet.biome-belvedere {
-  background-image: var(--tex-marble);
-}
-.island-sheet.biome-donnees {
-  background-image: var(--tex-quartz);
-}
-.island-sheet.biome-phare {
-  background-image: var(--tex-prism);
-}
-.island-sheet.biome-textes {
-  background-image: var(--tex-lens);
-}
-.island-sheet.biome-baie {
-  background-image: var(--tex-phonebox);
-}
-.island-sheet.biome-horloge {
-  background-image: var(--tex-dial);
-}
-.island-sheet.biome-studio {
-  background-image: var(--tex-antenna);
-}
-.island-sheet.biome-chateau {
-  background-image: var(--tex-ashlar);
-}
-.island-sheet.biome-theatre {
-  background-image: var(--tex-velvet);
-}
-.island-sheet.biome-gare {
-  background-image: var(--tex-rail);
-}
-.island-sheet.biome-comptoir {
-  background-image: var(--tex-tile);
-}
-.island-sheet.biome-manoir {
-  background-image: var(--tex-panel);
-}
-:root[data-theme="clair"] .island-sheet,
-:root[data-theme="contraste"] .island-sheet {
-  background-image: none;
-  border-top-width: 12px;
-  padding-top: 0.8rem;
 }
 .island-sheet-head {
   display: flex;
@@ -4034,7 +3302,8 @@ a.app-card:active {
   margin: 0.6rem 0 0.8rem;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) solid var(--ink);
-  background: color-mix(in srgb, var(--cyan) 20%, var(--surface));
+  border-radius: var(--radius-control);
+  background: var(--secondary-bg);
 }
 :root[data-theme="contraste"] .island-sheet-says {
   background: var(--surface);
@@ -4057,7 +3326,7 @@ a.app-card:active {
 .island-actions {
   margin-top: 0.8rem;
   padding-top: 0.8rem;
-  border-top: 2px dashed var(--muted);
+  border-top: var(--border-width) dashed var(--muted);
 }
 .island-quest {
   display: flex;
@@ -4069,20 +3338,18 @@ a.app-card:active {
   color: var(--text);
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  box-shadow:
-    var(--bevel-shadow),
-    0 var(--shadow-offset) 0 var(--shadow-color);
+  border-radius: var(--radius-control);
 }
 a.island-quest:hover,
-a.island-quest:focus-visible {
-  transform: translateY(-2px);
-  box-shadow:
-    var(--bevel-shadow),
-    0 calc(var(--shadow-offset) + 2px) 0 var(--shadow-color);
+button.island-quest:hover {
+  border-color: var(--primary-bg);
+}
+a.island-quest:active,
+button.island-quest:active {
+  background: var(--secondary-bg);
 }
 .island-quest.locked {
   color: var(--muted);
-  box-shadow: none;
   border-style: dashed;
 }
 .island-quest-icon {
@@ -4091,9 +3358,10 @@ a.island-quest:focus-visible {
   flex-shrink: 0;
   width: 2.6rem;
   height: 2.6rem;
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  color: var(--on-sand);
   border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
 }
 .island-quest.locked .island-quest-icon {
   background: var(--surface-2, var(--surface));
@@ -4169,7 +3437,7 @@ a.island-quest:focus-visible {
     flex: 0 0 26rem;
     max-height: none;
     border-top: none;
-    border-left: var(--border-width) solid var(--ink);
+    border-left: 8px solid var(--biome-color, var(--ink));
     box-shadow: none;
     animation-name: sheet-in-right;
   }
@@ -4180,11 +3448,6 @@ a.island-quest:focus-visible {
     to {
       transform: translateX(0);
     }
-  }
-  :root[data-theme="clair"] .island-sheet,
-  :root[data-theme="contraste"] .island-sheet {
-    border-top: none;
-    border-left-width: 12px;
   }
 }
 
@@ -4214,8 +3477,9 @@ a.island-quest:focus-visible {
 .bridges-said {
   margin: 0.6rem 0 0;
   padding: 0.5rem 0.8rem;
-  border: var(--border-width) solid var(--ink);
-  background: color-mix(in srgb, var(--green) 25%, var(--surface));
+  border: var(--border-width) solid var(--success);
+  border-radius: var(--radius-control);
+  background: var(--success-bg);
 }
 :root[data-theme="contraste"] .bridges-said {
   background: var(--surface);
@@ -4242,7 +3506,8 @@ a.island-quest:focus-visible {
   margin: 0;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) solid var(--ink);
-  background: color-mix(in srgb, var(--yellow) 30%, var(--surface));
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--sand) 30%, var(--surface));
 }
 :root[data-theme="contraste"] .calcul-hint {
   background: var(--surface);
@@ -4277,9 +3542,6 @@ a.island-quest:focus-visible {
   min-height: 48px;
   cursor: pointer;
   font-weight: 700;
-}
-.blocland-islands .app-card {
-  padding-top: calc(var(--tex-size) + 0.9rem);
 }
 .blocland-islands .app-icon {
   width: auto;
@@ -4331,7 +3593,8 @@ a.island-quest:focus-visible {
   margin: 0;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) dashed var(--ink);
-  background: color-mix(in srgb, var(--yellow) 20%, var(--surface));
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--sand) 20%, var(--surface));
 }
 .rule-card figcaption {
   font-weight: 700;
@@ -4461,7 +3724,8 @@ a.island-quest:focus-visible {
   margin: 0 0 0.8rem;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) dashed var(--ink);
-  background: color-mix(in srgb, var(--yellow) 25%, var(--surface));
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--sand) 25%, var(--surface));
 }
 .island-goal p {
   margin: 0;
@@ -4471,8 +3735,10 @@ a.island-quest:focus-visible {
   position: relative;
   height: 1.6rem;
   margin-top: 0.5rem;
-  border: 2px solid var(--ink);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-pill);
   background: var(--surface);
+  overflow: hidden;
 }
 .goal-gauge-fill {
   position: absolute;
@@ -4766,7 +4032,6 @@ a.island-quest:focus-visible {
   padding: 0.4rem 0.7rem;
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  box-shadow: var(--bevel-shadow);
 }
 .inventory-block {
   display: inline-flex;
@@ -4792,10 +4057,6 @@ a.island-quest:focus-visible {
 }
 .inventory-uses .tag-ok {
   color: var(--success);
-}
-a.tag:hover,
-a.tag:focus-visible {
-  box-shadow: 0 3px 0 var(--shadow-color);
 }
 .inventory-none {
   color: var(--muted);
@@ -4831,8 +4092,6 @@ a.tag:focus-visible {
   padding: calc(1.5rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom))
     calc(1rem + env(safe-area-inset-left));
   background-color: var(--bg);
-  background-image: var(--tex-page);
-  background-size: var(--tex-size);
   overflow: auto;
 }
 .title-card {
@@ -4846,13 +4105,12 @@ a.tag:focus-visible {
 .title-logo {
   width: 10rem;
   height: 10rem;
-  image-rendering: pixelated;
   animation: title-drop 0.6s cubic-bezier(0.3, 1.4, 0.6, 1) both;
 }
 .title-name {
   margin: 0;
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
   font-size: 2.4rem;
 }
 .title-tagline {
@@ -4937,7 +4195,7 @@ a.tag:focus-visible {
   margin: 0;
   text-align: center;
   font-family: var(--display-font);
-  font-weight: 400;
+  font-weight: var(--display-weight);
 }
 .pause-resume,
 .pause-quit {
@@ -4949,7 +4207,7 @@ a.tag:focus-visible {
   display: grid;
   gap: 0.4rem;
   margin: 0;
-  border: 2px dashed var(--ink);
+  border: var(--border-width) dashed var(--ink);
   border-radius: var(--radius);
 }
 .pause-size {
@@ -5015,7 +4273,8 @@ a.tag:focus-visible {
   flex-direction: row;
   align-items: center;
   gap: 0.9rem;
-  padding-top: calc(var(--tex-size) + 0.8rem);
+  /* Pas de matière : pas de liseré. */
+  border-top-width: var(--border-width);
 }
 .home-menu .menu-tile .subject-title {
   margin: 0;
@@ -5027,7 +4286,7 @@ a.tag:focus-visible {
 .hero-compact .hero-title {
   margin: 0;
 }
-/* Tablette : le nom « DysApps » laisse sa place à la jauge d'XP et aux quatre boutons. */
+/* Tablette : le nom « Archipéo » laisse sa place à la jauge d'XP et aux quatre boutons. */
 @media (max-width: 1100px) {
   .brand-name {
     display: none;
@@ -5075,8 +4334,9 @@ button.app-card {
   justify-content: center;
 }
 .world-menu-button[aria-pressed="true"] {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 .world-page .world-overlay-top {
   right: calc(0.6rem + 52px + 0.5rem);
@@ -5112,8 +4372,9 @@ button.island-quest {
   gap: 0.25rem;
 }
 .world-archipel-button[aria-expanded="true"] {
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 .world-archipel-list {
   width: min(19rem, calc(100vw - 2rem));
@@ -5138,8 +4399,8 @@ button.island-quest {
   text-align: left;
   color: var(--text);
   background: var(--surface);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
 .world-archipel-item:disabled {
@@ -5148,8 +4409,9 @@ button.island-quest {
 }
 .world-archipel-item.here {
   opacity: 1;
-  background: var(--yellow);
-  color: var(--on-accent);
+  background: var(--sand);
+  border-color: var(--on-sand);
+  color: var(--on-sand);
 }
 .world-archipel-state {
   margin-left: auto;
