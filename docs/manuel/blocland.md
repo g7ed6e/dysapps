@@ -142,6 +142,18 @@ Chaque île a sa forme de bâtiment :
 
 Un rappel de pause s’affiche après dix minutes de construction, sans rien bloquer.
 
+### Le village en cinq états
+
+Le village de chaque archipel passe par **cinq états**, déduits de ce que l’élève a construit (rien de plus n’est enregistré) :
+
+1. **Abandonné** : aucun plan d’île n’est terminé. Au port, les lanternes de la jetée sont éteintes et une barque grise est retournée sur la rive.
+2. **Réactivation** : un premier plan d’île est terminé. Les lanternes s’allument, la barque est redressée.
+3. **Reconstruction** : les trois plans de l’île-port sont terminés et un ouvrage payé en part. Une barque est amarrée à la jetée, un foyer fume.
+4. **Développement** : en plus, un monument de l’archipel est terminé. Une seconde barque, des caisses et des fanions sur le quai.
+5. **Port** : le Bloc-Navire est parti vers l’archipel suivant. Une lanterne sur chaque poteau et un feu au bout de la jetée. Dans les Îles du Ciel, qui n’ont pas encore de voyage suivant, le village s’arrête à Développement, et le port n’a pas de barques.
+
+L’état se lit aussi en mots, jamais par la couleur seule : « Le village : Reconstruction, 3 sur 5 », avec cinq crans et « Pour la suite : … », dans le panneau de l’île-port, dans la liste des archipels et sur la page de l’archipel en vue simple. Quand il monte pendant une partie, une phrase le dit (« Le village passe à l’état Réactivation (2 sur 5). Le village se réveille : les lanternes du port s’allument. »), lue à voix haute si la lecture automatique est active, avec une cloche.
+
 ## Les monuments
 
 Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les emploient : de grands ouvrages classés, **deux par archipel**, chacun sur son **îlot au large** d’une île, dessiné en fantômes bleutés dès qu’on arrive dans l’archipel.

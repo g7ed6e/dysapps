@@ -4,6 +4,7 @@ import { Syllabified } from '../components/Syllabified';
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, planStatus } from './engine';
+import { VillageStageLine } from './VillageStageLine';
 import { VoxelScene } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, archipelagoTitle, isArchipelagoReached, islandsOf, launchedCount, reachableIslands, remainingVoyages } from './world/archipelago';
 import { VEHICLE_NAME, beatenGuardians, stageTo, vehicleModel } from './world/vehicle';
@@ -67,6 +68,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
               <p className="archipel-card-line">
                 {islands.length} îles · {opened} ouverte{opened > 1 ? 's' : ''} · {guardians} Gardien{guardians > 1 ? 's' : ''} vaincu{guardians > 1 ? 's' : ''} sur {islands.length}
               </p>
+              {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="archipel-card-line" />}
               {a.classe === here && <VoxelScene cubes={vehicleModel(level)} s={5} pad={4} className="archipel-ship" label={`${VEHICLE_NAME}, amarré ici`} />}
               {need && (
                 <p className="archipel-card-need">

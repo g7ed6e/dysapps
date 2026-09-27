@@ -7,6 +7,7 @@ import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
+import { VillageStageLine } from './VillageStageLine';
 import { archipelagoOf, archipelagoTitle, isBiomeUnlocked } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { levelFor } from './engine';
@@ -59,6 +60,7 @@ export function BiomePage() {
       <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
+      {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
       <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
