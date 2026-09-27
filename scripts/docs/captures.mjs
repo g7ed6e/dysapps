@@ -110,6 +110,7 @@ const FOREST_QUEST = BIOMES.find((b) => b.id === 'foret').exercises[0].id;
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
   { name: 'menu', state: MID, go: '/menu' },
+  { name: 'telephone-menu', state: MID, go: '/menu', size: PHONE },
   { name: 'menu-village', state: MID, go: '/aventure/menu' },
   { name: 'village-premiere-visite', go: '/aventure', tutorial: true },
   { name: 'panneau-ile', state: EARLY, go: '/aventure/foret' },

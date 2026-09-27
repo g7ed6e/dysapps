@@ -20,13 +20,18 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est un menu principal ; les matières sont dans Missions', () => {
+it('l’accueil est le menu d’Archipéo : le village, les trois Expéditions, puis Missions et Réglages', () => {
   renderAt('/');
+  expect(screen.getByRole('heading', { name: 'Archipéo', level: 1 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
-  expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/succes');
-  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
-  expect(screen.getByRole('link', { name: /^Aventure.*Archipéo/ })).toHaveAttribute('href', '/aventure');
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais']);
+  expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
+  const links = screen.getByRole('link', { name: /Toutes les missions/ }).closest('p')!;
+  expect(within(links).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
+  // La première fois, pas encore de « Reprendre l’aventure ».
+  expect(screen.queryByRole('link', { name: /Reprendre l’aventure/ })).not.toBeInTheDocument();
   // La première fois, le Tutoriel passe devant : « Commencer ici ».
   expect(screen.getByRole('link', { name: /Commencer ici.*Tutoriel/ })).toHaveAttribute('href', '/app/demo');
   document.body.innerHTML = '';
@@ -206,8 +211,10 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/');
-  expect(screen.getByText('Le Bloc-Navire est prêt !')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', '/aventure/plaine');
+  expect(document.querySelector('.home-destination')).toHaveTextContent(/^Prochaine destination : Plaine.*Bloc-Navire/);
 });
 
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {
