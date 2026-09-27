@@ -367,10 +367,10 @@ export const BIOMES: BiomeDef[] = [
   {
     id: 'plaine',
     name: 'Plaine des nombres',
-    module: 'Calcul mental',
+    module: 'Calcul et problèmes',
     subject: 'maths',
     classe: '6e',
-    description: 'Tables, compléments, doubles et moitiés, avec des aides visuelles toujours affichées.',
+    description: 'Tables, compléments, doubles et moitiés, puis les problèmes du port, avec des aides visuelles toujours affichées.',
     block: 'brique',
     guardian: 'le Hanneton de bronze',
     guardianSays: {
@@ -389,6 +389,8 @@ export const BIOMES: BiomeDef[] = [
         'Compte mes points par cinq : deux rangées de cinq, ça fait dix.',
         'Un nombre et son complément font toujours dix. Comme mes deux ailes.',
         'Ma maison est en brique. Chaque calcul en pose une.',
+        'Depuis mon brin d’herbe, je vois le port : un pont, un quai, un bateau. Tout ça se mesure.',
+        'Le tour du quai, je l’ai fait à pied : tous les côtés, un par un, sans raccourci.',
       ],
       home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
     },
@@ -396,6 +398,12 @@ export const BIOMES: BiomeDef[] = [
       { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.', programme: ['c3.ma.nombres.faits-numeriques'] },
       { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.', programme: ['c3.ma.nombres.calcul-mental'] },
       { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.', programme: ['c3.ma.nombres.calcul-mental'] },
+      {
+        id: 'passeur',
+        title: 'Carnet du passeur',
+        description: 'Un pont, un quai, une traversée : lis le schéma, puis calcule la longueur, le tour ou l’heure.',
+        programme: ['c3.ma.nombres.problemes', 'c3.ma.grandeurs.perimetre', 'c3.ma.grandeurs.durees'],
+      },
     ],
   },
   {

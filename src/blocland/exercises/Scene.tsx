@@ -1,4 +1,4 @@
-// Les schémas des problèmes situés dans l'archipel (mission « Chantiers du rivage ») : un pont, un quai, une traversée,
+// Les schémas des problèmes situés dans l'archipel (mission « Carnet du passeur ») : un pont, un quai, une traversée,
 // dessinés à plat à partir de données. Chaque schéma porte au plus un « ? », la grandeur cherchée, en couleur.
 
 /** Une cote : un nombre connu, ou « ? » pour la grandeur cherchée. */
@@ -58,11 +58,16 @@ function Pont({ unit, parts, total }: { unit: string; parts: Cote[]; total: Cote
   const known = parts.reduce<number>((s, p) => s + (p === '?' ? 0 : p), 0);
   const missing = typeof total === 'number' ? Math.max(total - known, 1) : 0;
   const sizes = parts.map((p) => (p === '?' ? missing : p));
-  const sum = sizes.reduce((s, v) => s + v, 0) || 1;
   const [x0, x1] = [48, 332];
+  // Une travée garde au moins la place d'écrire sa cote, même courte ; les autres se partagent le reste.
+  const min = 72;
+  const sum = sizes.reduce((s, v) => s + v, 0) || 1;
+  const small = sizes.map((v) => ((x1 - x0) * v) / sum < min);
+  const rest = sizes.reduce((s, v, i) => s + (small[i] ? 0 : v), 0) || 1;
+  const free = x1 - x0 - min * small.filter(Boolean).length;
   let x = x0;
-  const spans = sizes.map((v) => {
-    const w = ((x1 - x0) * v) / sum;
+  const spans = sizes.map((v, i) => {
+    const w = small[i] ? min : (free * v) / rest;
     const s = { a: x, b: x + w };
     x += w;
     return s;
