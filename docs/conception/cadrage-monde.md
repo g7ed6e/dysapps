@@ -169,11 +169,16 @@ Décisions :
    - **C. Tuiles dessinées** en code pour la 2D (`pixel/tiles.ts`) : touffes d'herbe, mousse et ses flaques, sable pointillé, terre caillouteuse, pavés, dalles de basalte, croûte de lave, reflets de glace, vaguelettes, neige ; falaises à strates avec la frange de gazon (ou de mousse, de neige) qui déborde, orgues de basalte et colonnes de glace ; quatre variantes par sol ; délavées sur une île fermée. Le sol en grain du cœur d'une île (obsidienne, marbre, ardoise, parchemin…) devient un dallage aux couleurs moyennes de son bloc ; les textures à motif (planches, briques, tuiles, rails) restent.
    - **D. Décor en sprites** (`pixel/sprites.ts`, `pixel/props.ts`) : le terrain marque les cubes de chaque élément de décor (`decor` : « foret/arbre@8,2 ») ; la 2D les remplace par un sprite (arbre rond, sapin, buisson, fleurs, champignon, rocher, souche, roseaux, cristal), la 3D les dessine comme avant.
    - **E. Ombres** : au pied des falaises, sur le bord ouest d'un sol plus bas qu'à l'ouest, ovale sous le décor.
-3. **Personnages et repères** : le bonhomme qui marche, les créatures, les Gardiens, les bornes, la flèche « Commence ici », le jour et la nuit.
+3. **Personnages et repères** (faite, `pixel/characters.ts`) :
+   - **Le bonhomme** : un sprite de 16 × 23 pixels dessiné en code aux couleurs de l'avatar (cheveux châtains, chemise verte, pantalon bleu), dans quatre directions (de face, de dos, de profil), deux pas qui alternent quand il marche. Il suit son itinéraire par `world/scene.ts` (`walkPose`) ; la caméra le suit pas à pas ; il marche jusqu'au pont au départ d'un voyage et n'est plus dessiné à bord.
+   - **Les créatures et les Gardiens** : un sprite tiré de leurs propres cubes, vus en oblique comme le monde, chaque cube en un carré de 2 à 4 pixels (environ trois cases de haut) : ils gardent leur silhouette. Leur promenade vient de `strollAt`. Les toucher fait comme en 3D.
+   - **Les bornes de quête** : les cubes de borne deviennent un panneau (poteau de bois, ardoise bleue, étoile d'or) ; au-dessus, un losange jaune qui flotte (à faire) ou les étoiles gagnées. Le toucher lance la quête.
+   - **Tout ce qui se tient debout** (décor, panneaux, créatures, bonhomme) est trié chaque image du plus lointain au plus proche ; chacun a son ombre.
+   - **Repères** : la flèche « Commence ici », les balises d'un chemin, le fanion de la Carte (jamais minuscules), les éclats d'un bloc posé. **Fantômes** du plan bleutés, entourés d'un pointillé blanc. **La nuit** : un voile bleu nuit selon l'heure réelle (la mer suit la palette de l'archipel) ; les repères jaunes restent par-dessus, vifs.
 4. **Construire et voyager** : les chantiers, les ouvrages, le Bloc-Navire et son voyage, la Carte.
 5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
 
 ## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
-- La vue 2D, étapes 3 à 5 (voir 21).
+- La vue 2D, étapes 4 et 5 (voir 21).
