@@ -29,6 +29,11 @@ export interface VoxelCube {
   muted?: boolean;
   /** Élément de décor dont le cube fait partie (« foret/arbre@12,4 ») : la vue 2D en fait un seul dessin. */
   decor?: string;
+  /**
+   * Cube du sol ou de la roche d'une île (lot R2) : le rendu Archipéo le dessine en facettes (world/landMesh.ts) au
+   * lieu d'un cube. Les autres vues l'ignorent.
+   */
+  sol?: true;
 }
 
 /** Motif de grain pixel à déclarer une fois par SVG (<defs>). */

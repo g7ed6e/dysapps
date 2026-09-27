@@ -1,4 +1,4 @@
-import { RENDER_BUDGET, sceneCost, toutConstruit } from './budget';
+import { RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit } from './budget';
 import { ARCHIPELAGO_IDS } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -20,6 +20,21 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
 });
 
-// Dès que le rendu Archipéo dessine le monde (lot R2), ce test vérifie sur ses modèles, archipel par archipel :
-// triangles ≤ RENDER_BUDGET.triangles et appels de dessin ≤ RENDER_BUDGET.drawCalls.
+it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {
+  // Lot R2 : le sol et la roche de chaque archipel, tout construit, en un maillage à facettes (world/landMesh.ts) ;
+  // 16 100 à 18 100 triangles aujourd'hui (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
+  // pour la lave du volcan).
+  for (const a of ARCHIPELAGO_IDS) {
+    const { sol, triangles, drawCalls } = sceneCostArchipeo(a);
+    expect(sol.drawCalls, a).toBeLessThanOrEqual(2);
+    expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
+    // Et la scène entière ne dessine pas plus que le monde en blocs.
+    const blocs = sceneCost(a);
+    expect(triangles, a).toBeLessThanOrEqual(blocs.triangles);
+    expect(drawCalls, a).toBeLessThan(blocs.drawCalls);
+  }
+});
+
+// Quand le rendu Archipéo dessine aussi la mer, le décor, la construction et les personnages (lots R3 à R6), ce test
+// vérifie sur ses modèles, archipel par archipel : triangles ≤ RENDER_BUDGET.triangles et appels ≤ RENDER_BUDGET.drawCalls.
 it.todo('le rendu Archipéo tient le budget des tablettes : 60 000 triangles et 40 appels de dessin par archipel');
