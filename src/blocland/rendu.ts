@@ -1,0 +1,28 @@
+// Le drapeau de développement de la migration vers Archipéo : `?rendu=archipeo` dans l'adresse, avant le `#`
+// (`/?rendu=archipeo#/aventure`), choisit le rendu en construction (lots R0 à R7), invisible des élèves ; sans lui, le
+// monde reste en blocs. Il devient le rendu de tous au lot 6, et le drapeau disparaît avec lui. `?mesures` affiche en
+// plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer sur une tablette.
+// Avant le `#` seulement : la navigation ne change que la route, le drapeau tient donc toute la session.
+
+export type Rendu = 'blocs' | 'archipeo';
+
+const params = (href: string) => new URL(href, 'http://localhost/').searchParams;
+
+/** Le rendu du monde demandé par l'adresse : `archipeo` seulement avec `?rendu=archipeo`. */
+export function renduDepuis(href: string): Rendu {
+  return params(href).get('rendu') === 'archipeo' ? 'archipeo' : 'blocs';
+}
+
+/** Vrai si l'adresse demande le compteur de mesures (`?mesures`). */
+export function mesuresDepuis(href: string): boolean {
+  const p = params(href);
+  return p.has('mesures') && p.get('mesures') !== '0';
+}
+
+const here = () => (typeof window === 'undefined' ? '' : window.location.href);
+
+/** Le rendu du monde de cette page. */
+export const renduDuMonde = (): Rendu => renduDepuis(here());
+
+/** Le compteur de mesures est-il demandé sur cette page ? */
+export const mesuresDemandees = (): boolean => mesuresDepuis(here());

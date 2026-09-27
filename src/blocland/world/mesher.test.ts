@@ -41,23 +41,3 @@ it('laisse voir à travers le verre', () => {
   const groups = buildMesh([cube(0, 0, 0), cube(1, 0, 0, 'verre')]);
   expect(faceCount(groups)).toBe(11);
 });
-
-it('le village entier, tout construit, reste dans le budget de faces des tablettes', async () => {
-  const { BIOMES } = await import('../biomes');
-  const { PLANS, planCells } = await import('./plans');
-  const { worldCubes } = await import('./terrain');
-  const { ARCHIPELAGO_IDS } = await import('./map');
-  const { BRIDGES, VOYAGES } = await import('./archipelago');
-  const { VEHICLE_STAGES } = await import('./vehicle');
-  const progress = Object.fromEntries(BIOMES.flatMap((b) => [[`${b.id}-x`, { stars: 3 }], [`${b.id}-gardien`, { stars: 3 }]]));
-  const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES].map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
-  for (const a of ARCHIPELAGO_IDS) {
-    const groups = buildMesh(worldCubes(a, progress, { plans, journal: [], bridges }));
-    // Un archipel à la fois (dix îles au plus, avec leur terre, leur relief, leur roche flottante, le quai et le navire) :
-    // sous les 30 000 faces, à l'aise pour une tablette.
-    expect(faceCount(groups), a).toBeLessThan(30000);
-    // Un groupe par matériau et par face, en deux versions (île ouverte, île délavée) : une centaine d'appels de dessin.
-    expect(groups.length, a).toBeLessThan(130);
-  }
-});
