@@ -135,7 +135,7 @@ export default defineConfig({
     },
     outline: { level: [2, 3], label: 'Sur cette page' },
     docFooter: { prev: 'Précédent', next: 'Suivant' },
-    lastUpdated: { text: 'Mise à jour le', formatOptions: { dateStyle: 'long' } },
+    lastUpdated: { text: 'Mis à jour le', formatOptions: { dateStyle: 'long', forceLocale: true } },
     // Chaîne et non fonction : une fonction serait évaluée dans le navigateur, ce que la CSP interdit.
     // Les pages générées n'ont pas ce lien (editLink: false, posé par scripts/docs/prepare.mjs).
     editLink: {
