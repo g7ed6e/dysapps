@@ -5,8 +5,8 @@ import { Icon } from './Icon';
 import { RecordTag } from './RecordTag';
 
 /**
- * Les quêtes du portail d'une matière, en cartes : la page matière et les portes de l'école du village montrent les
- * mêmes. `from` : d'où l'on vient (la quête y ramène par son lien de retour).
+ * Les missions du portail d'une matière, en cartes : la page matière et les portes de l'école du village montrent les
+ * mêmes. `from` : d'où l'on vient (la mission y ramène par son lien de retour).
  */
 export function SubjectApps({ subject, from }: { subject: Subject; from?: string }) {
   const { progress } = useProgress();

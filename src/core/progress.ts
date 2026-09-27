@@ -203,11 +203,11 @@ const reached = (p: Progress, tier: Tier) => levelFromXp(p.xp).level >= firstLev
 
 export const BADGES: BadgeDef[] = [
   { id: 'premier-pas', icon: 'footprints', title: 'Échauffement', description: 'Répondre à ta première question.', earned: (p) => p.totalAnswers >= 1 },
-  { id: 'premiere-seance', icon: 'flag', title: 'Première quête', description: 'Terminer une quête.', earned: (p) => p.sessionsCompleted >= 1 },
+  { id: 'premiere-seance', icon: 'flag', title: 'Première mission', description: 'Terminer une mission.', earned: (p) => p.sessionsCompleted >= 1 },
   { id: 'serie-5', icon: 'flame', title: 'Combo x5', description: '5 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 5 },
   { id: 'serie-10', icon: 'zap', title: 'Combo x10', description: '10 bonnes réponses d’affilée.', earned: (p) => p.bestStreak >= 10 },
-  { id: 'sans-faute', icon: 'star', title: 'Perfect', description: 'Finir une quête à 100 %.', earned: (p) => p.perfectSessions >= 1 },
-  { id: 'perseverant', icon: 'dumbbell', title: 'Acharné', description: 'Terminer 10 quêtes.', earned: (p) => p.sessionsCompleted >= 10 },
+  { id: 'sans-faute', icon: 'star', title: 'Perfect', description: 'Finir une mission à 100 %.', earned: (p) => p.perfectSessions >= 1 },
+  { id: 'perseverant', icon: 'dumbbell', title: 'Acharné', description: 'Terminer 10 missions.', earned: (p) => p.sessionsCompleted >= 10 },
   { id: 'cinquante', icon: 'target', title: 'Rodé', description: 'Répondre à 50 questions.', earned: (p) => p.totalAnswers >= 50 },
   { id: 'deux-cents', icon: 'mountain', title: 'Vétéran', description: 'Répondre à 200 questions.', earned: (p) => p.totalAnswers >= 200 },
   { id: 'rang-argent', icon: 'medal', title: 'Rang Argent', description: 'Atteindre le rang Argent.', earned: (p) => reached(p, 'argent') },
@@ -232,7 +232,7 @@ export const BADGES: BadgeDef[] = [
   },
   { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.monumentsCompleted >= 1 },
   { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.voyages >= 1 },
-  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.', earned: (p) => p.voyages >= 2 },
+  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Anciens Ateliers.', earned: (p) => p.voyages >= 2 },
   { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.voyages >= 3 },
   { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
   { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },

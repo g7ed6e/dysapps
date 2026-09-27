@@ -138,7 +138,7 @@ it('embarquer joue le voyage en deux temps : le départ, le changement d’archi
   await user.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e/ }));
   // Le départ : la phrase du voyage, le bouton « Arriver », le panneau replié.
   expect(screen.getByTestId('voyage')).toHaveTextContent('depart 1 aller');
-  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Îles Brumeuses !');
   expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
   // Fin du départ : sous le voile, l'archipel change, puis l'arrivée se joue.
   await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
@@ -179,7 +179,7 @@ it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans ci
   await user.click(screen.getByRole('button', { name: /Aller au port : Marché des proportions/ }));
   // Pas de voyage joué : le voile, puis l'arrivée au port d'en face, son panneau ouvert.
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).toContain('Archipel de 5e : les Collines du Large');
+  expect(document.body.textContent).toContain('Archipel de 5e : les Îles Brumeuses');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche'));
@@ -191,7 +191,7 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
   renderAt('/aventure/foret');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).toContain('Archipel de 6e : les Basses Terres');
+  expect(document.body.textContent).toContain('Archipel de 6e : les Premiers Rivages');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 5000 });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
@@ -216,12 +216,12 @@ it('le sélecteur d’archipel : l’archipel où l’on est, et les autres déj
   document.body.innerHTML = '';
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'foret' } }));
   renderAt('/aventure');
-  const button = screen.getByRole('button', { name: /Archipel de 6e, les Basses Terres : changer d’archipel/ });
+  const button = screen.getByRole('button', { name: /Archipel de 6e, les Premiers Rivages : changer d’archipel/ });
   await user.click(button);
   const list = screen.getByRole('group', { name: 'Changer d’archipel' });
-  expect(within(list).getByRole('button', { name: /6e Les Basses Terres Tu es ici/ })).toBeDisabled();
-  expect(within(list).getByRole('button', { name: /4e Les Monts de Feu Fermé/ })).toBeDisabled();
-  await user.click(within(list).getByRole('button', { name: /5e Les Collines du Large/ }));
+  expect(within(list).getByRole('button', { name: /6e Les Premiers Rivages Tu es ici/ })).toBeDisabled();
+  expect(within(list).getByRole('button', { name: /4e Les Anciens Ateliers Fermé/ })).toBeDisabled();
+  await user.click(within(list).getByRole('button', { name: /5e Les Îles Brumeuses/ }));
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche'));
@@ -232,9 +232,9 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
   renderAt('/aventure/monde');
   const sheet = screen.getByRole('dialog', { name: 'Les quatre archipels' });
   expect(sheet).toBeInTheDocument();
-  expect(sheet.textContent).toContain('Archipel de 6e — Les Basses Terres');
+  expect(sheet.textContent).toContain('Archipel de 6e — Les Premiers Rivages');
   expect(sheet.textContent).toContain('Tu es ici');
-  expect(sheet.textContent).toContain('Archipel de 5e — Les Collines du Large');
+  expect(sheet.textContent).toContain('Archipel de 5e — Les Îles Brumeuses');
   expect(sheet.textContent).toContain('Le Bloc-Navire se construit sur Plaine des nombres : 0 blocs posés sur');
   expect(sheet.textContent).toContain('Il faut d’abord le Bloc-Navire avec la voile, puis le ballon.');
   // « Voir le chantier » mène au port ; « Aller au port » aussi, pour l'archipel où l'on est.
@@ -247,12 +247,12 @@ it('à la première arrivée dans un archipel, deux bulles d’accueil, une seul
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
   renderAt('/aventure');
   expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
-  expect(document.body.textContent).toContain('Bienvenue dans les Collines du Large, l’archipel de 5e !');
+  expect(document.body.textContent).toContain('Bienvenue dans les Îles Brumeuses, l’archipel de 5e !');
   // Déjà vu : plus de bulles.
   localStorage.setItem('dysapps:tutos', JSON.stringify({ 'archipel-5e': true, 'village-immersif': true }));
   document.body.innerHTML = '';
   renderAt('/aventure');
-  expect(document.body.textContent).not.toContain('Bienvenue dans les Collines du Large');
+  expect(document.body.textContent).not.toContain('Bienvenue dans les Îles Brumeuses');
 });
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et panneau) ; la croix ramène sur l’île du bonhomme', async () => {
@@ -305,7 +305,7 @@ it('l’école du village : on la touche dans le monde (ou « École » dans la 
   await user.click(await screen.findByRole('button', { name: 'Toucher l’école dans le monde' }));
   const sheet = await screen.findByRole('dialog', { name: /École du village/ });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/ecole');
-  // La caméra cadre l'île de l'école (la Forêt dans les Basses Terres).
+  // La caméra cadre l'île de l'école (la Forêt dans les Premiers Rivages).
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
   await user.click(within(sheet).getByRole('button', { name: /Français/ }));
   expect(within(sheet).getByRole('link', { name: /Homophones/ })).toHaveAttribute('href', '/app/homophones');
@@ -341,7 +341,7 @@ it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » l
   const menu = await screen.findByRole('dialog', { name: 'Menu' });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
   expect(within(menu).getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
-  expect(within(menu).getByRole('link', { name: /Quêtes/ })).toHaveAttribute('href', '/quetes');
+  expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/aventure/trophees');
   expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
   await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));

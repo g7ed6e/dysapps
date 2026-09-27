@@ -34,7 +34,7 @@ export function VoyagePage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte de Blocland
+        <Icon name="back" /> Carte d’Archipéo
       </Link>
       <VoyagePanel to={to} back={back} onArrive={arrive} />
     </>

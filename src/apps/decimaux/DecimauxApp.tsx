@@ -8,7 +8,7 @@ export default function DecimauxApp() {
       quests={QUESTS}
       intro={
         <>
-          {QUESTIONS_PER_QUEST} questions par quête. Le joker ouvre le tableau de numération, avec la virgule bien marquée, ou la droite graduée.
+          {QUESTIONS_PER_QUEST} questions par mission. Le joker ouvre le tableau de numération, avec la virgule bien marquée, ou la droite graduée.
         </>
       }
     />

@@ -4,7 +4,7 @@ import { MIN_FONT_SIZE } from '../core/settings';
 import { Icon } from './Icon';
 
 /**
- * Le mode concentration : pendant une partie (quête du portail, quête ou défi de Blocland), la barre du haut et les
+ * Le mode concentration : pendant une partie (mission du portail, mission ou défi de Blocland), la barre du haut et les
  * onglets disparaissent ; il ne reste qu'un bouton Pause. Le menu pause propose de reprendre, trois réglages rapides
  * (taille du texte, syllabes en couleurs, lecture automatique) et de quitter la partie. Le bouton retour du téléphone
  * (ou du navigateur) ouvre le menu pause au lieu de quitter sans prévenir.

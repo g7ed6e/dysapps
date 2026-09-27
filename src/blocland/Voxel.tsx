@@ -17,7 +17,7 @@ export interface VoxelCube {
   tag?: string;
   /** Cube d'un pont : l'identifiant du pont. */
   bridge?: string;
-  /** Cube d'une borne de quête : « île:quête ». */
+  /** Cube d'une borne de mission : « île:mission ». */
   quest?: string;
   /** Cube d'un lieu du village qu'on touche pour y entrer (l'école, la salle des trophées). */
   place?: PlaceId;

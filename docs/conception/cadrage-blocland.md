@@ -1,5 +1,7 @@
 # Cadrage — Le game design de Blocland (l’existant)
 
+Blocland est le nom de travail du jeu, et reste celui de son module dans le code. Depuis le lot 1 de la migration, le jeu s’appelle **Archipéo** à l’écran, ses archipels de 6e, 5e et 4e portent leur nom d’Archipéo et les quêtes s’appellent des **missions**.
+
 Ce document rassemble les décisions de game design en vigueur dans Blocland, prises du 25 au 27 septembre 2026, avec leur raison. Il remplace les anciens cadrages du monde, du village, des archipels et de « l’appli entière » : l’historique pull request par pull request reste dans git et dans le [journal](../journal.md). Ce que l’application fait, écran par écran, est dans le manuel ([L’aventure Blocland](../manuel/blocland.md)) ; le contenu île par île est dans [L’archipel](../pedagogie/archipel.md) et [Ouvrages et plans](../pedagogie/ouvrages.md). Le jeu migre vers Archipéo ([cadrage « De Blocland à Archipéo »](cadrage-archipeo.md)) : une décision qui change l’existant s’écrit là-bas, et ce document est mis à jour quand le lot est construit.
 
 ## Ce qu’on garde absolument
@@ -17,12 +19,12 @@ Ce document rassemble les décisions de game design en vigueur dans Blocland, pr
 
 ## L’appli entière
 
-L’élève voyait deux applis collées : un portail de quêtes par matière et un jeu. Décision : **un seul jeu**, où chaque chose de l’appli a sa place dans le village. Une seule boucle : jouer, gagner des blocs, construire, ouvrir des îles.
+L’élève voyait deux applis collées : un portail de missions par matière et un jeu. Décision : **un seul jeu**, où chaque chose de l’appli a sa place dans le village. Une seule boucle : jouer, gagner des blocs, construire, ouvrir des îles.
 
-- **Écran titre** : « Jouer » ouvre le village sur l’île du bonhomme ; « Continuer » (s’il y a une quête en cours) passe d’abord. L’écran titre retient l’adresse d’ouverture, pour ne pas faire perdre « Continuer ».
+- **Écran titre** : « Jouer » ouvre le village sur l’île du bonhomme ; « Continuer » (s’il y a une mission en cours) passe d’abord. L’écran titre retient l’adresse d’ouverture, pour ne pas faire perdre « Continuer ».
 - **Le village au démarrage**, par défaut, avec un réglage « Au démarrage » (le village ou le menu) : une option réversible, pour qui ne veut pas du village. Sans dessin du monde possible, l’accueil reste le menu.
-- **Un accès direct aux quêtes** est indispensable en classe et chez l’orthophoniste : un adulte ouvre « Homophones, niveau 2 » en deux touchers, sans traverser le village. D’où le menu en page (`#/menu`), les adresses des quêtes et des matières qui restent valides, et le bouton École de la barre du monde.
-- **L’école du village**, sur l’île de l’école de chaque archipel (Forêt des sons, Marché des proportions, Atelier du calcul littéral, Phare des fonctions) : trois portes, une par matière, derrière elles les quêtes du portail. Elle est posée par le terrain, pas par un plan : on ne la construit pas, elle est là dès le début. Une quête du portail rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme**, au barème des quêtes d’île : pas de bloc « livre » à part, parce que le bloc de l’île sert tout de suite aux plans et aux ouvrages. Les quêtes du portail **ne comptent pas** pour les Gardiens ni pour les étoiles des îles : le Gardien reste lié aux quêtes de son île.
+- **Un accès direct aux missions** est indispensable en classe et chez l’orthophoniste : un adulte ouvre « Homophones, niveau 2 » en deux touchers, sans traverser le village. D’où le menu en page (`#/menu`), les adresses des missions et des matières qui restent valides, et le bouton École de la barre du monde.
+- **L’école du village**, sur l’île de l’école de chaque archipel (Forêt des sons, Marché des proportions, Atelier du calcul littéral, Phare des fonctions) : trois portes, une par matière, derrière elles les missions du portail. Elle est posée par le terrain, pas par un plan : on ne la construit pas, elle est là dès le début. Une mission du portail rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme**, au barème des missions d’île : pas de bloc « livre » à part, parce que le bloc de l’île sert tout de suite aux plans et aux ouvrages. Les missions du portail **ne comptent pas** pour les Gardiens ni pour les étoiles des îles : le Gardien reste lié aux missions de son île.
 - **La salle des trophées**, au milieu du cœur de la même île : les succès y sont des objets posés (un trophée par succès, à une place fixe, le bloc dit la famille : or, cristal, quartz, lentille), ce qui donne une raison d’y revenir. Elle est au milieu parce que l’arrière gauche était caché par la créature en 3D.
 - **Le menu du village** (bouton ⏸, ou bouton retour quand aucun panneau n’est ouvert) remplace l’ancien accueil et les onglets. Un second retour quitte l’appli ou revient à la page d’avant : le retour n’enferme jamais l’élève.
 - **Sans onglets** sur téléphone : le village et son menu les remplacent, les pages gagnent leur place. La barre du haut garde le logo (l’accueil), Menu et Réglages.
@@ -32,20 +34,20 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 ## Le monde et les archipels
 
-**Quatre archipels, une scène par classe** : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e). Chacun a sa mer, son ciel, sa Carte et son budget de faces ; on voit celui où se tient le bonhomme (`village.at`).
+**Quatre archipels, une scène par classe** : les Premiers Rivages (6e), les Îles Brumeuses (5e), les Anciens Ateliers (4e), les Îles du Ciel (3e). Chacun a sa mer, son ciel, sa Carte et son budget de faces ; on voit celui où se tient le bonhomme (`village.at`).
 
 - **Pourquoi on a quitté le continent qui monte.** Un seul continent, où l’altitude montait avec la classe, reliait la 6e à la 5e par un escalier ou un tunnel comme deux îles voisines : rien ne marquait le changement de niveau. Le passage d’une classe à la suivante doit être un moment marquant, un « truc un peu waouh » : c’est le Bloc-Navire. Du continent, on garde l’altitude par classe (0, 3, 6, 9 : mer, collines, monts, sommets), devenue une ambiance uniforme de l’archipel, et les régions thématiques.
-- **Des îles qui se distinguent.** Vingt îles identiques, plates et alignées ne permettaient pas de se repérer. Chaque île a un cœur de 16 × 16 (les bornes de quête, la zone des plans, la créature) sur une terre plus large aux contours irréguliers, une région et un relief (plat, collines, montagne enneigée, volcan et sa lave), des lacs, du décor, et un repère visible de loin (grand chêne, champignon géant, volcan qui fume, tour de guet, phare, aiguille de glace, haut-fourneau). Les îles en altitude flottent sur une roche qui s’amincit. Quelques paires d’îles se touchent par un isthme : le monde n’est pas qu’un semis d’îles.
+- **Des îles qui se distinguent.** Vingt îles identiques, plates et alignées ne permettaient pas de se repérer. Chaque île a un cœur de 16 × 16 (les bornes de mission, la zone des plans, la créature) sur une terre plus large aux contours irréguliers, une région et un relief (plat, collines, montagne enneigée, volcan et sa lave), des lacs, du décor, et un repère visible de loin (grand chêne, champignon géant, volcan qui fume, tour de guet, phare, aiguille de glace, haut-fourneau). Les îles en altitude flottent sur une roche qui s’amincit. Quelques paires d’îles se touchent par un isthme : le monde n’est pas qu’un semis d’îles.
 - **Les îles fermées** restent visibles, délavées comme dans la brume : on devine ce qui attend. Les toucher fait dire à leur créature précisément ce qu’il faut (`lockedHint()`).
-- **La première minute** : deux îles ouvertes (la Forêt et la Plaine en 6e ; ailleurs, le port seul), jour forcé tant que le tutoriel n’est pas vu, une flèche jaune « Commence ici » au-dessus de la Forêt tant qu’aucune quête n’a été jouée. Un élève doit voir deux îles vertes, pas vingt taches grises.
+- **La première minute** : deux îles ouvertes (la Forêt et la Plaine en 6e ; ailleurs, le port seul), jour forcé tant que le tutoriel n’est pas vu, une flèche jaune « Commence ici » au-dessus de la Forêt tant qu’aucune mission n’a été jouée. Un élève doit voir deux îles vertes, pas vingt taches grises.
 - **Un prochain objectif, un seul** (`nextGoal()`), en tête du panneau d’île : ce qu’on peut faire tout de suite, sinon le plus proche. Les sections Plan, Bloc-Navire et Ouvrages se replient quand il n’y a rien à y faire : le panneau reste court.
-- **Une borne par quête** sur la rangée de devant de l’île, avec au-dessus un losange jaune (à faire) ou les étoiles gagnées : la progression se voit dans le monde, et toucher la borne lance la quête.
+- **Une borne par mission** sur la rangée de devant de l’île, avec au-dessus un losange jaune (à faire) ou les étoiles gagnées : la progression se voit dans le monde, et toucher la borne lance la mission.
 
 **La caméra est gérée par l’application.** Pas de zoom, de rotation ni de déplacement au doigt : un élève dys sur tablette ne doit pas gérer une caméra, et le nord reste toujours le même pour se repérer. Elle cadre l’île du bonhomme et ses voisines, tirée vers le centre de l’archipel et légèrement pivotée vers lui (`viewZone()`, `viewYaw()`), pour qu’une île du bord ne remplisse pas l’écran de mer ; au large, des rochers et des bancs de sable habillent la mer pour la même raison. Un toucher pendant un trajet fait arriver tout de suite ; au clavier, les flèches vont à l’île voisine.
 
 **La Carte** montre l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée montre le chemin d’ouvrages qui reste à construire (`remainingPath()`), balisé en jaune dans le monde. On ne se perd jamais.
 
-**Trois vues au choix** (réglage « Vue de Blocland ») : le monde en 3D, le monde en 2D, la liste des îles. Sans WebGL, la 3D laisse la place à la 2D ; la liste ne reste que pour un appareil qui ne sait rien dessiner.
+**Trois vues au choix** (réglage « Vue du monde ») : le monde en 3D, le monde en 2D, la liste des îles. Sans WebGL, la 3D laisse la place à la 2D ; la liste ne reste que pour un appareil qui ne sait rien dessiner.
 
 ## La vue 2D oblique
 
@@ -78,7 +80,7 @@ Le village est en ruine et l’élève est le bâtisseur. **La construction est 
 - **Un plan terminé récompense** : la créature parle, un coffre, de l’XP, un succès, une ligne datée dans le journal du village.
 - **Les coffres** donnent exactement les blocs de finition (toit, porte, lanterne, barrière, escalier) du plan suivant, calculés à partir du dessin : ces blocs ne se gagnent pas dans les exercices, et l’élève n’en manque jamais. Le dernier plan d’une île donne de l’or et du cristal, utiles aux ouvrages.
 - **Le nouveau dessin des bâtiments** (`world/architect.ts`) : les petites cabanes de 15 à 20 blocs à toit plat ne ressemblaient à rien et n’employaient pas les blocs. Chaque île a une forme (maison, tour, dôme, échoppe, hutte, kiosque) choisie selon son thème, avec des fenêtres éclairées la nuit, dans une zone de 6 × 5 cases et six blocs de haut. Plus de blocs par bâtiment : un vrai usage des blocs qui s’accumulent.
-- **Blocs selon les étoiles** : +1 bloc à deux étoiles, +2 à trois, +2 la première fois qu’une quête est jouée, et au moins un bloc dès une bonne réponse. Une première quête rapporte cinq à sept blocs : de quoi construire un pont et commencer un bâtiment. Le barème complet est une page générée.
+- **Blocs selon les étoiles** : +1 bloc à deux étoiles, +2 à trois, +2 la première fois qu’une mission est jouée, et au moins un bloc dès une bonne réponse. Une première mission rapporte cinq à sept blocs : de quoi construire un pont et commencer un bâtiment. Le barème complet est une page générée.
 
 ## Les monuments
 
@@ -120,7 +122,7 @@ Au départ, la caméra libre était un choix assumé, sans avatar. Le bonhomme e
 - La caméra le suit ; avec « réduire les animations », il apparaît à l’arrivée.
 - La marche libre n’existe qu’en 2D, en option ([La vue 2D oblique](#la-vue-2d-oblique)).
 
-Les règles des quêtes jouées depuis le monde (graine tirée au hasard, place de la réponse, montée de niveau sur une partie quasi parfaite) relèvent du moteur d’exercices : voir [Exercices](exercices.md).
+Les règles des missions jouées depuis le monde (graine tirée au hasard, place de la réponse, montée de niveau sur une partie quasi parfaite) relèvent du moteur d’exercices : voir [Exercices](exercices.md).
 
 ## À venir
 

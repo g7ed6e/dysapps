@@ -190,7 +190,7 @@ export const complementToOne: Generator = (rng) => {
   };
 };
 
-// ---------- Quêtes ----------
+// ---------- Missions ----------
 
 export function buildQuest(generators: Generator[], rng: Rng = Math.random, count = QUESTIONS_PER_QUEST): Question[] {
   const seen = new Set<string>();

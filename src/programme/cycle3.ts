@@ -1,4 +1,4 @@
-// Cycle 3 (CM1, CM2, 6e) : le programme en vigueur à la rentrée 2020 (annexe 2), résumé au grain d'une quête.
+// Cycle 3 (CM1, CM2, 6e) : le programme en vigueur à la rentrée 2020 (annexe 2), résumé au grain d'une mission.
 // Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
 import type { ProgrammeDomaine, ProgrammeEntry } from './types';
 

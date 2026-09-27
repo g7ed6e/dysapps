@@ -1,4 +1,4 @@
-// Le référentiel des programmes officiels (data.gouv.fr) : les compétences que les quêtes citent.
+// Le référentiel des programmes officiels (data.gouv.fr) : les compétences que les missions citent.
 // Rien de ce dossier n'est embarqué dans l'application : il sert aux tests et au générateur de documentation.
 import type { Subject } from '../apps/registry';
 
@@ -39,7 +39,7 @@ export interface ProgrammeDomaine {
   page: number;
 }
 
-/** Une compétence du programme, au grain d'une quête : ce qu'une quête peut travailler. */
+/** Une compétence du programme, au grain d'une mission : ce qu'une mission peut travailler. */
 export interface ProgrammeEntry {
   /** Identifiant stable : c<cycle>.<fr|ma|en>.<domaine>.<compétence>. */
   id: string;
@@ -57,7 +57,7 @@ export interface ProgrammeEntry {
 
 export type ExclusionKind = 'hors-perimetre' | 'a-couvrir';
 
-/** Pourquoi une compétence n'a pas de quête : durablement hors de portée, ou pas encore couverte. */
+/** Pourquoi une compétence n'a pas de mission : durablement hors de portée, ou pas encore couverte. */
 export interface Exclusion {
   kind: ExclusionKind;
   motif: string;

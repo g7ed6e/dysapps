@@ -213,7 +213,7 @@ export function MonumentsPage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Blocland
+        <Icon name="back" /> Archipéo
       </Link>
       <h1 className="page-title">
         <Icon name="castle" /> {MONUMENTS_TITLE}

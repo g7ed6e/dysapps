@@ -17,7 +17,7 @@ function renderApp() {
   );
 }
 
-it('joue une quête ciblée jusqu’au résultat puis revient au choix du niveau', async () => {
+it('joue une mission ciblée jusqu’au résultat puis revient au choix du niveau', async () => {
   const user = userEvent.setup();
   renderApp();
 
@@ -35,7 +35,7 @@ it('joue une quête ciblée jusqu’au résultat puis revient au choix du niveau
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).apps['homophones:serie-cest'].bestScore).toBe(50);
 });
 
-it('lance une quête de niveau de 10 questions', async () => {
+it('lance une mission de niveau de 10 questions', async () => {
   const user = userEvent.setup();
   renderApp();
   await user.click(screen.getByRole('button', { name: /Niveau 1 · Les bases/ }));

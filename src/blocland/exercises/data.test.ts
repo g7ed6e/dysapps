@@ -227,7 +227,7 @@ it('pickExercise varie entre les exercices d’un même niveau (le moins joué d
   expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
 });
 
-it('questProgress garde la progression d’une quête quand la partie suivante tombe sur une autre variante', () => {
+it('questProgress garde la progression d’une mission quand la partie suivante tombe sur une autre variante', () => {
   expect(questProgress('foret', 'chasse-son', {})).toBeUndefined();
   const first = pickExercise('foret', 'chasse-son', 1)!;
   const progress = { [first.id]: { stars: 2, attempts: 1, best: 0.8 } };
@@ -235,13 +235,13 @@ it('questProgress garde la progression d’une quête quand la partie suivante t
   const next = pickExercise('foret', 'chasse-son', 1, progress)!;
   expect(next.id).not.toBe(first.id);
   expect(progress[next.id]).toBeUndefined();
-  // … mais la quête affiche toujours ses étoiles.
+  // … mais la mission affiche toujours ses étoiles.
   expect(questProgress('foret', 'chasse-son', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
   // Toutes variantes et niveaux confondus : meilleures étoiles, meilleur score, parties cumulées.
   const level2 = exercisesOf('foret', 'chasse-son').find((e) => e.level === 2)!;
   const more = { ...progress, [next.id]: { stars: 1, attempts: 2, best: 0.5 }, [level2.id]: { stars: 3, attempts: 1, best: 0.95 } };
   expect(questProgress('foret', 'chasse-son', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
-  // Les exercices d’autres quêtes ne comptent pas.
+  // Les exercices d’autres missions ne comptent pas.
   expect(questProgress('foret', 'rimes', more)).toBeUndefined();
 });
 

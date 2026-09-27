@@ -5,7 +5,7 @@ import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from './aids';
 import { formatNumber as f } from './format';
 
 type Rng = () => number;
-/** Un générateur produit une question ; `key` sert à éviter les doublons dans une quête. */
+/** Un générateur produit une question ; `key` sert à éviter les doublons dans une mission. */
 export type Generator = (rng: Rng) => Question & { key: string };
 
 export const QUESTIONS_PER_QUEST = 10;
@@ -207,7 +207,7 @@ export const dividePower: Generator = (rng) => {
 };
 
 
-// ---------- Quêtes ----------
+// ---------- Missions ----------
 
 /** Tire `count` questions sans doublon en alternant les générateurs. */
 export function buildQuest(generators: Generator[], count = QUESTIONS_PER_QUEST, rng: Rng = Math.random): Question[] {

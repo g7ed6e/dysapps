@@ -1,4 +1,4 @@
-// Les quêtes de maths de Blocland : construites à partir des générateurs des quêtes existantes (tables, fractions,
+// Les missions de maths de Blocland : construites à partir des générateurs des missions existantes (tables, fractions,
 // décimaux), avec un tirage reproductible par graine (une graine au hasard par partie). Les aides visuelles (grille de points, boîte de dix, droite…)
 // sont décrites en données (type + propriétés) pour rester sérialisables ; l'écran « calcul » les redessine.
 import { isValidElement, type ReactNode } from 'react';
@@ -61,7 +61,7 @@ export function seeded(seed: string): () => number {
 
 type Generator = (rng: () => number) => Question & { key: string };
 
-/** Un item Blocland à partir d'une question de quête. */
+/** Un item Blocland à partir d'une question de mission. */
 export function toItem(q: Question & { key: string }): ExerciseItem {
   const item: ExerciseItem = {
     key: q.key,

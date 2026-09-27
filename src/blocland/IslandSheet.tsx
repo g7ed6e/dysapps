@@ -41,7 +41,7 @@ interface Props {
 }
 
 /**
- * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses quêtes, le Gardien, puis le plan en cours,
+ * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses missions, le Gardien, puis le plan en cours,
  * le Bloc-Navire (sur un port) et les ouvrages, repliés quand il n'y a rien à y faire. Tout est en HTML (police dys),
  * on ne quitte pas le monde.
  */
@@ -61,7 +61,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const explainBoss = () => {
     const missing = missingForBoss(biome, state.progress);
     const text = unlocked
-      ? `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque quête'}. Fais ces quêtes, puis reviens le défier.`
+      ? `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}. Fais ces missions, puis reviens le défier.`
       : `Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.`;
     setBossSaid(text);
     if (settings.autoRead) speak(frenchTypography(text));
@@ -100,9 +100,9 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
 
       <h3 className="island-sheet-heading">
-        <Icon name="hammer" /> Quêtes
+        <Icon name="hammer" /> Missions
       </h3>
-      <ul className="island-quests" aria-label="Quêtes de l’île">
+      <ul className="island-quests" aria-label="Missions de l’île">
         {biome.exercises.map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
@@ -178,7 +178,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
               <span className="island-quest-text">
                 <span className="island-quest-title">{guardianTitle(biome)}</span>
                 <span className="island-quest-desc">
-                  {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque quête'}
+                  {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
                 </span>
               </span>
             </button>

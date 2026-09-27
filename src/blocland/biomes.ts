@@ -170,7 +170,7 @@ export interface ExerciseTypeDef {
   id: string;
   title: string;
   description: string;
-  /** Compétences du programme officiel que la quête travaille (identifiants de src/programme/). Au moins une. */
+  /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). Au moins une. */
   programme: readonly ProgrammeId[];
 }
 

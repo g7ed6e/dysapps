@@ -637,7 +637,7 @@ a.app-card:active {
 .subject-anglais {
   background-image: var(--tex-brick);
 }
-/* Cartes de quête d'une matière : la texture reste un bandeau en tête, jamais derrière le texte. */
+/* Cartes de mission d'une matière : la texture reste un bandeau en tête, jamais derrière le texte. */
 .app-card.subject-francais,
 .app-card.subject-maths,
 .app-card.subject-anglais {
@@ -697,7 +697,7 @@ a.app-card:active {
 .subject-anglais .app-icon {
   background: var(--violet);
 }
-/* Cartes de quête d'un biome : l'icône sur un fond de sable, lisible dans tous les thèmes (Nuit compris). */
+/* Cartes de mission d'un biome : l'icône sur un fond de sable, lisible dans tous les thèmes (Nuit compris). */
 .app-card[class*="biome-"] .app-icon {
   background-color: var(--yellow);
   background-image: var(--tex-sand);
@@ -1202,7 +1202,7 @@ a.app-card:active {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   margin-bottom: 1.6rem;
 }
-/* La texture de la matière en bandeau, comme sur ses cartes de quête ; jamais derrière le texte. */
+/* La texture de la matière en bandeau, comme sur ses cartes de mission ; jamais derrière le texte. */
 .subject-progress {
   display: flex;
   flex-direction: column;
@@ -1377,7 +1377,7 @@ a.app-card:active {
   }
 }
 
-/* ===== Quête ===== */
+/* ===== Mission ===== */
 .quiz-steps {
   display: flex;
   gap: 0.4rem;
@@ -1530,7 +1530,7 @@ a.app-card:active {
 .summary-later {
   margin: 0.2rem 0 0;
 }
-/* Les blocs gagnés à l'école du village (quêtes du portail). */
+/* Les blocs gagnés à l'école du village (missions du portail). */
 .summary-blocks {
   display: flex;
   align-items: center;
@@ -1706,7 +1706,7 @@ a.app-card:active {
   accent-color: var(--violet);
 }
 
-/* ===== Quête Homophones ===== */
+/* ===== Mission Homophones ===== */
 .intro {
   color: var(--muted);
 }
@@ -1802,7 +1802,7 @@ a.app-card:active {
   font-size: 0.8rem;
 }
 
-/* ===== Quête Tables & calcul mental ===== */
+/* ===== Mission Tables & calcul mental ===== */
 .choice,
 .question-prompt,
 .summary-score {
@@ -2222,7 +2222,7 @@ a.app-card:active {
   /* Hauteur réelle du bandeau de résultat (mesurée), pour pouvoir faire défiler la question au-dessus. */
   padding-bottom: calc(var(--sheet-h, 22rem) + 1.5rem);
 }
-/* Consigne d'une quête de Blocland : toujours écrite, en plus d'être lue. */
+/* Consigne d'une mission de Blocland : toujours écrite, en plus d'être lue. */
 .consigne {
   display: flex;
   align-items: flex-start;
@@ -5034,7 +5034,7 @@ a.tag:focus-visible {
   }
 }
 
-/* L'école du village : ses trois portes (des cartes-boutons), puis les quêtes de la porte choisie. */
+/* L'école du village : ses trois portes (des cartes-boutons), puis les missions de la porte choisie. */
 button.app-card {
   width: 100%;
   font: inherit;

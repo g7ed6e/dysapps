@@ -98,7 +98,7 @@ it('le kit arrive avec les Gardiens ; on embarque quand toutes les cases sont po
   expect(gone.state.village.at).toBe('marche');
   expect(vehicleAt(gone.state.village.bridges)).toBe('marche');
   expect(currentStage(gone.state)).toBe(VEHICLE_STAGES[1]);
-  // Une deuxième fois : déjà fait. Le ballon depuis les Basses Terres seulement : trop loin.
+  // Une deuxième fois : déjà fait. Le ballon depuis les Premiers Rivages seulement : trop loin.
   expect(launchVehicle(gone.state, coque).result).toEqual({ ok: false, reason: 'construit', missing: 0 });
   expect(canLaunch(EMPTY_STATE, VEHICLE_STAGES[1])).toEqual({ ok: false, reason: 'loin', missing: 0 });
   // Relu depuis la sauvegarde : rien ne bouge.

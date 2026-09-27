@@ -1,5 +1,5 @@
 // L'école du village : sur l'île de l'école de chaque archipel, un bâtiment à trois portes (Français, Maths, Anglais).
-// Derrière chaque porte, les quêtes du portail de la matière ; chacune finie rapporte des blocs de l'île de l'école.
+// Derrière chaque porte, les missions du portail de la matière ; chacune finie rapporte des blocs de l'île de l'école.
 // Un panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -27,10 +27,10 @@ export function useSchoolIsland(): BiomeDef {
 }
 
 function greetingOf(island: BiomeDef): string {
-  return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque quête finie ici te donne des blocs ${ofBlock(island.block)} pour le village.`;
+  return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque mission finie ici te donne des blocs ${ofBlock(island.block)} pour le village.`;
 }
 
-/** Les trois portes, ou les quêtes de la porte choisie (`?porte=maths` : on y revient après une quête). */
+/** Les trois portes, ou les missions de la porte choisie (`?porte=maths` : on y revient après une mission). */
 export function SchoolBody() {
   const island = useSchoolIsland();
   const { settings, speak } = useSettings();
@@ -53,7 +53,7 @@ export function SchoolBody() {
         <SpeakButton text={greeting} label="Réécouter" compact />
       </p>
       <p className="school-reward">
-        <BlockIcon top={block.top} side={block.side} size={28} /> Une quête finie : des blocs {ofBlock(island.block)}, plus si tu as des étoiles.
+        <BlockIcon top={block.top} side={block.side} size={28} /> Une mission finie : des blocs {ofBlock(island.block)}, plus si tu as des étoiles.
       </p>
       {door ? (
         <section aria-labelledby="ecole-porte">
@@ -68,7 +68,7 @@ export function SchoolBody() {
           <SubjectApps subject={door} from={`${SCHOOL_PATH}?porte=${door}`} />
           <p className="school-more">
             <Link to={`/matiere/${door}`}>
-              <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans Blocland
+              <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans Archipéo
             </Link>
           </p>
         </section>
@@ -81,7 +81,9 @@ export function SchoolBody() {
                   <Icon name={SUBJECTS[d].icon} size="1.8rem" />
                 </span>
                 <span className="app-title">{SUBJECTS[d].title}</span>
-                <span className="app-desc">{SUBJECTS[d].description}</span>
+                <span className="app-desc">
+                  Expédition {SUBJECTS[d].expedition} : {SUBJECTS[d].description.toLowerCase()}
+                </span>
               </button>
             </li>
           ))}
@@ -118,7 +120,7 @@ export function SchoolPage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Blocland
+        <Icon name="back" /> Archipéo
       </Link>
       <h1 className="page-title">
         <Icon name="school" /> {SCHOOL_TITLE}
@@ -132,7 +134,7 @@ export function SchoolPage() {
 /** Le lien vers l'école, sur l'île qui l'accueille : une ligne du panneau de l'île, ou une carte en vue simple. */
 export function SchoolLink({ variant = 'sheet' }: { variant?: 'sheet' | 'card' }) {
   const island = useSchoolIsland();
-  const desc = `Français, maths, anglais : des blocs ${ofBlock(island.block)} à chaque quête.`;
+  const desc = `Français, maths, anglais : des blocs ${ofBlock(island.block)} à chaque mission.`;
   if (variant === 'card')
     return (
       <Link to={SCHOOL_PATH} className={`panel app-card school-link biome-${island.id}`}>

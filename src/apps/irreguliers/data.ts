@@ -32,7 +32,7 @@ export type Level = (typeof LEVELS)[number]['level'];
 
 export type Form = 'preterit' | 'participle';
 
-/** Nombre de questions d'une quête par niveau. */
+/** Nombre de questions d'une mission par niveau. */
 export const QUESTIONS_PER_QUEST = 10;
 
 /** Nombre de réponses proposées (moins quand il n'y a pas assez de pièges différents). */
@@ -75,7 +75,7 @@ export function verbsForLevel(level: Level): Verb[] {
   return VERBS.filter((v) => v.level === level);
 }
 
-/** Quête d'un niveau : des verbes tirés au hasard, au prétérit ou au participe passé, sans doublon. */
+/** Mission d'un niveau : des verbes tirés au hasard, au prétérit ou au participe passé, sans doublon. */
 export function questionsForLevel(level: Level, count = QUESTIONS_PER_QUEST, rng: Rng = Math.random): Question[] {
   const picked = shuffle(verbsForLevel(level), rng)
     .slice(0, count)

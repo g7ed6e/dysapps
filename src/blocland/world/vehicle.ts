@@ -1,5 +1,5 @@
 // Le Bloc-Navire : un seul véhicule qui grandit en trois étapes, chacune un plan à construire sur le quai de l'île-port
-// d'un archipel. La coque et la voile mènent aux Collines du Large (par la mer), le ballon aux Monts de Feu (par les
+// d'un archipel. La coque et la voile mènent aux Îles Brumeuses (par la mer), le ballon aux Anciens Ateliers (par les
 // airs), le réacteur aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent pas : elles
 // arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
 import { BLOCKS, type BiomeId, type BlockId } from '../biomes';
@@ -100,8 +100,8 @@ function stage(
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
 export const VEHICLE_STAGES: VehicleStage[] = [
-  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { lanterne: 2, barriere: 4 } }, 'La voile est hissée ! Pose les derniers blocs et embarque : les Collines du Large t’attendent.'),
-  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { lanterne: 2, escalier: 2 } }, 'Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les Monts de Feu t’attendent.'),
+  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { lanterne: 2, barriere: 4 } }, 'La voile est hissée ! Pose les derniers blocs et embarque : les Îles Brumeuses t’attendent.'),
+  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { lanterne: 2, escalier: 2 } }, 'Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les Anciens Ateliers t’attendent.'),
   stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { lanterne: 3 } }, 'Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les Îles du Ciel t’attendent.'),
 ];
 

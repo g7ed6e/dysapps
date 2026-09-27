@@ -106,7 +106,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
   const onAnswer = (a: ScreenAnswer) => {
     if (answered) return;
     const correct = a.results.every((r) => r.correct);
-    // Une erreur au premier essai : un indice, et on réessaie (comme dans les quêtes du portail).
+    // Une erreur au premier essai : un indice, et on réessaie (comme dans les missions du portail).
     if (!correct && !firstTry && retryAllowed(def.type, items)) {
       setFirstTry(a);
       return;

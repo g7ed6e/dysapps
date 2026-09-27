@@ -429,7 +429,7 @@ export interface Completion {
   chestBlock?: BlockId;
 }
 
-/** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une quête est jouée. Rien sans bonne réponse. */
+/** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une mission est jouée. Rien sans bonne réponse. */
 export const FIRST_TIME_BLOCKS = 2;
 export function blocksBonus(stars: number, firstTime: boolean, anyCorrect = true): { stars: number; first: number } {
   if (!anyCorrect) return { stars: 0, first: 0 };
@@ -478,8 +478,8 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
 }
 
 /**
- * Une quête jouée aujourd'hui : ses blocs dans l'inventaire, le streak du jour et, tous les CHEST_EVERY jours
- * d'affilée, un coffre de blocs communs. Partagé par les quêtes d'île et celles de l'école du village.
+ * Une mission jouée aujourd'hui : ses blocs dans l'inventaire, le streak du jour et, tous les CHEST_EVERY jours
+ * d'affilée, un coffre de blocs communs. Partagé par les missions d'île et celles de l'école du village.
  */
 function playedToday(
   state: BloclandState,
@@ -501,9 +501,9 @@ function playedToday(
   return { streak, inventory, chests, chestBlock };
 }
 
-// ---------- L'école du village (les quêtes du portail) ----------
+// ---------- L'école du village (les missions du portail) ----------
 
-/** Blocs d'une quête du portail réussie en entier, avant les bonus (comme `reward.amount` d'une quête d'île). */
+/** Blocs d'une mission du portail réussie en entier, avant les bonus (comme `reward.amount` d'une mission d'île). */
 export const PORTAL_BLOCKS = 4;
 
 export interface PortalCompletion {
@@ -518,9 +518,9 @@ export interface PortalCompletion {
 }
 
 /**
- * Une quête du portail terminée (score entre 0 et 1) : des blocs de l'île de l'école, au même barème qu'une quête
+ * Une mission du portail terminée (score entre 0 et 1) : des blocs de l'île de l'école, au même barème qu'une mission
  * d'île (proportionnels au score, +1 ou +2 selon les étoiles, +2 la première fois, rien sans bonne réponse), et le
- * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des quêtes d'île.
+ * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des missions d'île.
  */
 export function completePortalQuest(state: BloclandState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
   const school = archipelagoOf(state.village.at ?? 'foret').school;

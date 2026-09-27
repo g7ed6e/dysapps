@@ -12,7 +12,7 @@ function starsEverywhere(biomeId: string, stars: 0 | 1 | 2 | 3 = 2): Record<stri
   return progress;
 }
 
-it('le Gardien se débloque avec deux étoiles dans chaque quête du biome, et dit ce qui manque', () => {
+it('le Gardien se débloque avec deux étoiles dans chaque mission du biome, et dit ce qui manque', () => {
   const foret = getBiome('foret')!;
   expect(isBossUnlocked(foret, {})).toBe(false);
   expect(missingForBoss(foret, {})).toEqual(['Abattage syllabique', 'Chasse au son', 'Rimes-échelle']);
@@ -25,7 +25,7 @@ it('le Gardien se débloque avec deux étoiles dans chaque quête du biome, et d
   expect(missingForBoss(foret, starsEverywhere('foret'))).toEqual([]);
 });
 
-it('construit un défi avec deux manches par type de quête, aux items de l’exercice, sans doublon', async () => {
+it('construit un défi avec deux manches par type de mission, aux items de l’exercice, sans doublon', async () => {
   for (const biome of BIOMES) {
     const state: BloclandState = { ...EMPTY_STATE, progress: starsEverywhere(biome.id) };
     const def = await bossDef(biome, state, () => 0.5);

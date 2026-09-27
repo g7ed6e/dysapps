@@ -6,8 +6,8 @@ import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';
 
 /**
- * Écran du Gardien : une manche = l'écran d'un type de quête (chasse au son, filon, enclos…) avec ses items.
- * Le message de correction de la quête d'origine est calculé ici et remonté dans `detail.explain`.
+ * Écran du Gardien : une manche = l'écran d'un type de mission (chasse au son, filon, enclos…) avec ses items.
+ * Le message de correction de la mission d'origine est calculé ici et remonté dans `detail.explain`.
  */
 export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenProps) {
   const round = items[0];
@@ -24,7 +24,7 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
           a.results.findIndex((r) => !r.correct),
         )
       ];
-    // Un écran qui rédige sa correction complète (tri de mots) la donne dans `summary` ; sinon, le message de la quête.
+    // Un écran qui rédige sa correction complète (tri de mots) la donne dans `summary` ; sinon, le message de la mission.
     const summary = typeof a.detail?.summary === 'string' ? a.detail.summary : '';
     const explain = a.results.every((r) => r.correct)
       ? ''

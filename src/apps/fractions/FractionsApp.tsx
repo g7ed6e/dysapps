@@ -8,7 +8,7 @@ export default function FractionsApp() {
       quests={QUESTS}
       intro={
         <>
-          {QUESTIONS_PER_QUEST} questions par quête. Les fractions sont écrites en colonne, et le joker les dessine : barres, disques, groupes de points.
+          {QUESTIONS_PER_QUEST} questions par mission. Les fractions sont écrites en colonne, et le joker les dessine : barres, disques, groupes de points.
         </>
       }
     />

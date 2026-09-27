@@ -17,7 +17,7 @@ function renderApp() {
   );
 }
 
-it('lance une quête de niveau de 10 mots, le mot anglais marqué comme tel', async () => {
+it('lance une mission de niveau de 10 mots, le mot anglais marqué comme tel', async () => {
   const user = userEvent.setup();
   renderApp();
   await user.click(screen.getByRole('button', { name: /Niveau 1 · J’écoute/ }));

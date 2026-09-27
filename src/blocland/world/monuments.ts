@@ -245,7 +245,7 @@ const FICHES: Fiche[] = [
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
     islet: { x: 27, y: 84 },
     reward: { xp: 150, chest: {} },
-    done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.',
+    done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,
   },
   {
@@ -289,7 +289,7 @@ const FICHES: Fiche[] = [
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
     islet: { x: 155, y: 641 },
     reward: { xp: 210, chest: {} },
-    done: 'L’amphithéâtre est prêt ! Tous les Monts de Feu viendront au spectacle.',
+    done: 'L’amphithéâtre est prêt ! Tout le monde des Anciens Ateliers viendra au spectacle.',
     draw: amphitheatre,
   },
   {

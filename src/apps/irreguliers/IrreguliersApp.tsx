@@ -24,11 +24,11 @@ export default function IrreguliersApp() {
   return (
     <section aria-labelledby="choix-niveau">
       <p className="intro">
-        Choisis ton niveau. Chaque quête : {QUESTIONS_PER_QUEST} verbes, au prétérit ou au participe passé. La correction redonne les trois formes (go – went – gone).
+        Choisis ton niveau. Chaque mission : {QUESTIONS_PER_QUEST} verbes, au prétérit ou au participe passé. La correction redonne les trois formes (go – went – gone).
       </p>
 
       <h2 id="choix-niveau" className="section-title">
-        Quêtes
+        Missions
       </h2>
       <ul className="grid levels">
         {LEVELS.map(({ level: l, title }) => {

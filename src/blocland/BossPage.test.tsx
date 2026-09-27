@@ -32,22 +32,22 @@ function ready(biomeId: string) {
   return progress;
 }
 
-it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque quête a deux étoiles', () => {
+it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque mission a deux étoiles', () => {
   renderAt('/aventure/foret');
   expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
   expect(screen.getByText(/2 étoiles dans : Abattage syllabique, Chasse au son, Rimes-échelle/)).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
 });
 
-it('sans les étoiles, le Gardien refuse et renvoie aux quêtes', async () => {
+it('sans les étoiles, le Gardien refuse et renvoie aux missions', async () => {
   renderAt('/aventure/foret/gardien');
   await loaded();
   expect(screen.getByRole('heading', { name: /Le Grand Chêne/ })).toBeInTheDocument();
   expect(document.body.textContent).toMatch(/Il te manque encore des étoiles/);
-  expect(screen.getByRole('link', { name: /Voir les quêtes/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Voir les missions/ })).toBeInTheDocument();
 });
 
-it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa quête', async () => {
+it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa mission', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
@@ -61,7 +61,7 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   expect(screen.getByRole('img', { name: /Le Grand Chêne, le Gardien/ })).toBeInTheDocument();
   const gauge = screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
   expect(gauge).toHaveAttribute('aria-valuenow', gauge.getAttribute('aria-valuemax'));
-  // L'écran de la manche est celui de la quête : un QCM de syllabes.
+  // L'écran de la manche est celui de la mission : un QCM de syllabes.
   expect(screen.getByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
 });
 

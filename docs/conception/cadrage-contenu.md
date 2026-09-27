@@ -15,14 +15,14 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 
 ### Une île, un thème
 
-- **Une île = un thème du programme**, avec une classe indicative (6e à 3e). En général trois quêtes par île ; la Mine des lettres en a deux, la Tour du lecteur une, l’Observatoire des données et le Phare des fonctions deux chacun.
-- **Deux ou trois niveaux par quête** (deux en anglais), **huit items par exercice** (dix pour une dictée, avec `perRun`).
+- **Une île = un thème du programme**, avec une classe indicative (6e à 3e). En général trois missions par île ; la Mine des lettres en a deux, la Tour du lecteur une, l’Observatoire des données et le Phare des fonctions deux chacun.
+- **Deux ou trois niveaux par mission** (deux en anglais), **huit items par exercice** (dix pour une dictée, avec `perRun`).
 - **Le contenu monte, les règles ne changent pas** : de la 6e à la 3e, les mêmes principes dys ; en 4e et 3e, l’énoncé peut s’allonger mais reste découpé.
-- **Chaque quête cite le programme** (`programme` dans `src/blocland/biomes.ts` et `src/apps/registry.ts`). Une île de 6e ne cite que le cycle 3 ; une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3.
+- **Chaque mission cite le programme** (`programme` dans `src/blocland/biomes.ts` et `src/apps/registry.ts`). Une île de 6e ne cite que le cycle 3 ; une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3.
 
 ### Maths générées, français et anglais écrits à la main
 
-- **Maths** : chaque quête est un générateur reproductible (`exercises/maths.ts`, `exercises/college.ts`), avec une aide en données toujours affichée. La liste des aides qui fait foi est `AID_COMPONENTS` dans `maths.ts`.
+- **Maths** : chaque mission est un générateur reproductible (`exercises/maths.ts`, `exercises/college.ts`), avec une aide en données toujours affichée. La liste des aides qui fait foi est `AID_COMPONENTS` dans `maths.ts`.
 - **Français et anglais** : fichiers JSON écrits à la main (`src/blocland/exercises/data/`), sur les écrans existants (QCM, dictée à choix, écran à règle `CalculScreen` avec un rappel `rule-card` pour les accords, la conjugaison et la grammaire anglaise). Un nouvel écran est une décision de cadrage.
 
 ### La classe affichée
@@ -36,19 +36,19 @@ Un archipel par classe. En français et en maths, une île par grand thème ; en
 
 | Archipel | Français | Maths | Anglais |
 | --- | --- | --- | --- |
-| 6e, Basses Terres | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes |
-| 5e, Collines du Large | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé |
-| 4e, Monts de Feu | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur |
+| 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes |
+| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé |
+| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur |
 | 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses |
 
-Soit 28 îles et 79 quêtes, plus 7 quêtes au portail.
+Soit 28 îles et 79 missions, plus 7 missions au portail.
 
 ### L’anglais
 
 Ce qui s’ajoute aux principes dys :
 
 - **Niveaux visés** : A1 en fin de 6e (cycle 3), A2 en fin de 3e (cycle 4), au programme de langues vivantes.
-- **Au portail**, deux quêtes. Vocabulaire : douze thèmes de huit mots (couleurs, nombres, famille, école, animaux, corps, vêtements, maison, nourriture, météo, jours et mois, loisirs), en trois niveaux (J’écoute, Je traduis, J’écris) plus « Un thème » pour réviser un seul thème. Verbes irréguliers : soixante verbes du collège, vingt par niveau, prétérit ou participe passé, correction « go – went – gone : aller ».
+- **Au portail**, deux missions. Vocabulaire : douze thèmes de huit mots (couleurs, nombres, famille, école, animaux, corps, vêtements, maison, nourriture, météo, jours et mois, loisirs), en trois niveaux (J’écoute, Je traduis, J’écris) plus « Un thème » pour réviser un seul thème. Verbes irréguliers : soixante verbes du collège, vingt par niveau, prétérit ou participe passé, correction « go – went – gone : aller ».
 - **Les écrans** : les phrases à trou et les nombres passent par l’écran à règle (`CalculScreen`, `rule-card` toujours affiché) ; l’écoute (Ears, Listening) par la dictée, qui lit le mot dès l’affichage, avec des réponses en français (`choicesLang: "fr"`).
 - **Les réponses** : les heures et les dates se répondent en écriture française (« 3 h 30 », « 3 mai ») ; les Faux amis se répondent en français ; les Dialogues du Théâtre sont une écoute dont la réponse est une réplique en anglais (sans `choicesLang`).
 - **Lire en anglais** : Comprendre et Faux amis (Studio des ondes) se lisent en entier en anglais, texte et question, sans trou.
@@ -69,18 +69,18 @@ Le test a aussi confirmé ce qu’il faut garder : les séances courtes, la corr
 
 ## La suite à couvrir
 
-Le rattachement des quêtes aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Une pull request par lot ; chacune retire de `src/programme/exclusions.ts` les exclusions « à couvrir » qu’elle couvre. Certains manques n’ont pas d’exclusion : la compétence est déjà citée par une quête, mais une partie n’est pas travaillée.
+Le rattachement des missions aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Une pull request par lot ; chacune retire de `src/programme/exclusions.ts` les exclusions « à couvrir » qu’elle couvre. Certains manques n’ont pas d’exclusion : la compétence est déjà citée par une mission, mais une partie n’est pas travaillée.
 
-Trois quêtes des anciens cadrages n’ont jamais été livrées : les conversions des Balances (la quête ne fait que vitesses et échelles), « mais / mes / met » à l’Aiguillage, et les quêtes **Lecture** (lire un diagramme, lire un graphique) de l’Observatoire des données et du Phare. L’aide `value-table` (tableau de valeurs) n’existe pas : le Phare utilise `ratio-table`.
+Trois missions des anciens cadrages n’ont jamais été livrées : les conversions des Balances (la mission ne fait que vitesses et échelles), « mais / mes / met » à l’Aiguillage, et les missions **Lecture** (lire un diagramme, lire un graphique) de l’Observatoire des données et du Phare. L’aide `value-table` (tableau de valeurs) n’existe pas : le Phare utilise `ratio-table`.
 
-1. **Île « Grandeurs » (maths 6e, Basses Terres)** : durées et horaires (Horloges), conversions (Balances), périmètres, aires et angles (Clôtures), tableaux et diagrammes (Relevés), volumes et contenances, problèmes à étapes. Les Basses Terres passent à quatre îles de maths. Exclusions : `c3.ma.grandeurs.*`, `c3.ma.nombres.donnees`, `c3.ma.nombres.problemes`, en partie `c3.fr.lecture.documents` et `c4.ma.c.conversions`.
-2. **Maths 6e, automatismes** : division et opérations posées (Plaine, quatrième quête), grands nombres (Volcan, quatrième quête « Nombres géants »), encadrer une fraction, ranger et intercaler des décimaux. Exclusion : `c3.ma.nombres.grands-entiers`.
+1. **Île « Grandeurs » (maths 6e, Premiers Rivages)** : durées et horaires (Horloges), conversions (Balances), périmètres, aires et angles (Clôtures), tableaux et diagrammes (Relevés), volumes et contenances, problèmes à étapes. Les Premiers Rivages passent à quatre îles de maths. Exclusions : `c3.ma.grandeurs.*`, `c3.ma.nombres.donnees`, `c3.ma.nombres.problemes`, en partie `c3.fr.lecture.documents` et `c4.ma.c.conversions`.
+2. **Maths 6e, automatismes** : division et opérations posées (Plaine, quatrième mission), grands nombres (Volcan, quatrième mission « Nombres géants »), encadrer une fraction, ranger et intercaler des décimaux. Exclusion : `c3.ma.nombres.grands-entiers`.
 3. **Français 6e** : les mots-outils manquants de la liste officielle (Coffre à mots) ; l’accord dans le groupe nominal et le sujet inversé (Ferme) ; la compréhension (Tour, « Étages du sens ») et la grammaire de base, attribut, épithète, complément du nom, types et formes de phrases, phrase simple et complexe (Tour, « Vitraux des phrases ») ; synonymes et polysémie (Carrière). Exclusions : `c3.fr.langue.genre-nombre`, `sujet`, `attribut-gn`, `types-formes`, `phrase-complexe`, `c3.fr.lecture.reprises`.
-4. **Français 5e-4e** : présent, impératif et plus-que-parfait (Marais, quatrième quête), futur antérieur et valeurs des temps, « mais / mes / met » et autres homophones, verbes pronominaux et apposition (Falaise), champ lexical et niveaux de langue (Cabinet). Exclusion : `c4.fr.langue.reseaux-de-mots`.
-5. **Maths 5e-3e** : divisibilité et facteurs premiers (Forge), fractions du cycle 4 (Glacier, quatrième quête « Icebergs des fractions »), priorités et tester une égalité (Atelier), factoriser et équations produits, ratio et conversions (Marché), effectifs, fréquences et lecture de diagramme (Données, « Relevés »), lecture graphique d’une fonction (Phare, nouvelle aide `graph`), réciproques de Pythagore et de Thalès (Belvédère). Exclusions : `c4.ma.a.fractions`, `c4.ma.a.calcul-fractions`, `c4.ma.b.ratio`, `c4.ma.b.lire-donnees`, `c4.ma.b.effectifs-frequences`, `c4.ma.c.conversions`.
-6. **Français 3e** : subordonnées et pronom relatif, passif et forme impersonnelle, attribut du COD et apposition, énonciation et discours rapporté (Observatoire des textes, quatrième quête « Voix des textes »), document composite. Exclusions : `c4.fr.langue.subordonnees`, `phrase-complexe`, `passif`, `types-formes`, `fonctions-etendues`, `enonciation`, `discours-rapporte`, `c4.fr.lecture.documents`, `c3.fr.lecture.documents`.
-7. **Anglais** : lire des mots et des phrases très simples avec une image en 6e (Baie des mots, quatrième quête « Signs ») ; lire des consignes, des menus, des horaires et des panneaux en 5e (Comptoir, quatrième quête « Notices ») ; suivre une histoire courte à l’oral ; les repères culturels des pays anglophones (fêtes, lieux, héros de l’imaginaire, école, médias), absents de toutes les quêtes. Exclusions : `c3.en.lire.textes-courts`, `c4.en.lire.consignes-panneaux`, `c3.en.ecouter.histoire`, `c4.en.ecouter.recit`, `c3.en.culture.*` (repères, imaginaire), `c4.en.culture.*`.
+4. **Français 5e-4e** : présent, impératif et plus-que-parfait (Marais, quatrième mission), futur antérieur et valeurs des temps, « mais / mes / met » et autres homophones, verbes pronominaux et apposition (Falaise), champ lexical et niveaux de langue (Cabinet). Exclusion : `c4.fr.langue.reseaux-de-mots`.
+5. **Maths 5e-3e** : divisibilité et facteurs premiers (Forge), fractions du cycle 4 (Glacier, quatrième mission « Icebergs des fractions »), priorités et tester une égalité (Atelier), factoriser et équations produits, ratio et conversions (Marché), effectifs, fréquences et lecture de diagramme (Données, « Relevés »), lecture graphique d’une fonction (Phare, nouvelle aide `graph`), réciproques de Pythagore et de Thalès (Belvédère). Exclusions : `c4.ma.a.fractions`, `c4.ma.a.calcul-fractions`, `c4.ma.b.ratio`, `c4.ma.b.lire-donnees`, `c4.ma.b.effectifs-frequences`, `c4.ma.c.conversions`.
+6. **Français 3e** : subordonnées et pronom relatif, passif et forme impersonnelle, attribut du COD et apposition, énonciation et discours rapporté (Observatoire des textes, quatrième mission « Voix des textes »), document composite. Exclusions : `c4.fr.langue.subordonnees`, `phrase-complexe`, `passif`, `types-formes`, `fonctions-etendues`, `enonciation`, `discours-rapporte`, `c4.fr.lecture.documents`, `c3.fr.lecture.documents`.
+7. **Anglais** : lire des mots et des phrases très simples avec une image en 6e (Baie des mots, quatrième mission « Signs ») ; lire des consignes, des menus, des horaires et des panneaux en 5e (Comptoir, quatrième mission « Notices ») ; suivre une histoire courte à l’oral ; les repères culturels des pays anglophones (fêtes, lieux, héros de l’imaginaire, école, médias), absents de toutes les missions. Exclusions : `c3.en.lire.textes-courts`, `c4.en.lire.consignes-panneaux`, `c3.en.ecouter.histoire`, `c4.en.ecouter.recit`, `c3.en.culture.*` (repères, imaginaire), `c4.en.culture.*`.
 
 Sans lot prévu à ce jour : la géométrie qui demande des figures que l’application ne dessine pas encore (figures et solides, parallélisme et symétrie en 6e ; aires et volumes, agrandissement, angles et triangles, triangles semblables, transformations au cycle 4), la ponctuation et le contexte des œuvres en français de cycle 4, l’énonciation à l’oral et la dictée de cycle 4 en anglais.
 
-**Deux contraintes pour chaque lot.** Une île porte au plus quatre quêtes (une borne tous les trois blocs dans un cœur de seize) : à la Ferme, à la Falaise et à l’Atelier, qui en ont déjà trois, les ajouts d’un lot tiennent dans une seule quête. L’identifiant d’une quête reste unique dans tout le jeu : le niveau adapté est retenu par quête.
+**Deux contraintes pour chaque lot.** Une île porte au plus quatre missions (une borne tous les trois blocs dans un cœur de seize) : à la Ferme, à la Falaise et à l’Atelier, qui en ont déjà trois, les ajouts d’un lot tiennent dans une seule mission. L’identifiant d’une mission reste unique dans tout le jeu : le niveau adapté est retenu par mission.

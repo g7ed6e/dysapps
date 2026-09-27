@@ -38,7 +38,7 @@ export interface CreaturePlacement {
 }
 
 export interface QuestMark {
-  /** « île:quête ». */
+  /** « île:mission ». */
   id: string;
   biome: BiomeId;
   typeId: string;
@@ -104,11 +104,11 @@ export interface WorldViewProps {
   home?: BiomeId;
   /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
   trail?: Cell[];
-  /** Les bornes de quête : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
+  /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
   islandLabels?: IslandLabel[];
-  /** Borne de quête touchée (le socle, le panneau ou son repère). */
+  /** Borne de mission touchée (le socle, le panneau ou son repère). */
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   /** Lieu du village touché (l'école) : on y entre. */
   onPickPlace?: (place: PlaceId, island: BiomeId) => void;

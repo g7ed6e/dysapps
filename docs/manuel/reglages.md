@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux de Blocland, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux d’Archipéo, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -47,21 +47,21 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
 
 ## Au démarrage
 
-- **Le village de Blocland** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
+- **Le village d’Archipéo** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
 - **Le menu** : l’appli s’ouvre sur le menu principal, comme avant le village au démarrage.
 
 Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre toujours sur le menu.
 
-## Animations et Blocland
+## Animations et vue du monde
 
 - **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
-- **Vue de Blocland** : trois choix.
+- **Vue du monde** : trois choix.
   - **Le monde en 3D** (par défaut).
-  - **Le monde en 2D (expérimental)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Blocland](blocland.md)).
+  - **Le monde en 2D (expérimental)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Archipéo](blocland.md)).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
-  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Blocland montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
-- **Marche libre dans le monde en 2D** (désactivé par défaut) : une croix de direction s’affiche en bas à droite du monde, avec un bouton **Entrer** au milieu. Voir [Blocland](blocland.md).
+  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Archipéo montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
+- **Marche libre dans le monde en 2D** (désactivé par défaut) : une croix de direction s’affiche en bas à droite du monde, avec un bouton **Entrer** au milieu. Voir [Archipéo](blocland.md).
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
@@ -82,7 +82,7 @@ Certaines règles ne sont pas des options, parce qu’elles font partie de la m�
 - pas de chronomètre, nulle part ;
 - une seule tâche par écran, et l’écran tient sans défiler ;
 - la consigne peut toujours être réécoutée ;
-- l’indice ne pénalise jamais (il compte pour un demi-point dans Blocland, jamais en négatif) ;
+- l’indice ne pénalise jamais (il compte pour un demi-point dans Archipéo, jamais en négatif) ;
 - une réponse fausse rapporte un point d’effort et la correction explique ;
 - les cibles tactiles sont larges (au moins 48 px) ;
 - aucun texte à lire n’est dessiné dans la 3D ;

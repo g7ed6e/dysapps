@@ -67,9 +67,9 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'DysApps – Entraînement collège',
-        short_name: 'DysApps',
-        description: 'Exercices adaptés aux élèves dys du collège (français et maths)',
+        name: 'Archipéo – Entraînement collège',
+        short_name: 'Archipéo',
+        description: 'Le savoir construit ton monde : français, maths et anglais pour les élèves dys du collège, par DysApps',
         lang: 'fr',
         theme_color: '#6b4a2e',
         background_color: '#fbf6ea',

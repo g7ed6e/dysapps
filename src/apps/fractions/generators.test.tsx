@@ -29,7 +29,7 @@ function expected(id: string, prompt: string, choices: string[]): string {
   throw new Error(`Question inconnue : ${id}`);
 }
 
-describe.each(QUESTS.map((q) => [q.id, q] as const))('quête %s', (_, quest) => {
+describe.each(QUESTS.map((q) => [q.id, q] as const))('mission %s', (_, quest) => {
   it('produit des questions justes, sans doublon, avec une seule bonne réponse', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const qs = quest.makeWith(seeded(seed));

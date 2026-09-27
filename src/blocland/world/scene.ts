@@ -221,7 +221,7 @@ export function islandInDirection(a: ArchipelagoId, from: { x: number; y: number
 
 // ---- Toucher le sol
 
-/** Les cubes marqués du terrain, par case : pour savoir quel ouvrage ou quelle borne de quête on touche. */
+/** Les cubes marqués du terrain, par case : pour savoir quel ouvrage ou quelle borne de mission on touche. */
 export function cubeTags(cubes: VoxelCube[]): { bridges: Map<string, string>; quests: Map<string, string>; places: Map<string, PlaceId> } {
   const bridges = new Map<string, string>();
   const quests = new Map<string, string>();
@@ -242,7 +242,7 @@ export type GroundTap =
   | { kind: 'island'; id: BiomeId };
 
 /**
- * Ce que fait un toucher sur le terrain : la borne de quête touchée, sinon l'ouvrage (plutôt que l'île la plus proche),
+ * Ce que fait un toucher sur le terrain : la borne de mission touchée, sinon l'ouvrage (plutôt que l'île la plus proche),
  * sinon en chantier la face (le bloc et la case devant), sinon l'île sous le doigt. `cell` : le bloc touché, `next` :
  * la case devant la face, `ground` : le point touché sur la grille ; `can` : ce que la page sait faire.
  */

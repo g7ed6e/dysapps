@@ -20,7 +20,7 @@ import { MENU_PATH } from '../core/paths';
 const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; phone: boolean; desktop: boolean }[] = [
   { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, phone: true, desktop: false },
   { to: '/aventure', icon: 'map', label: 'Aventure', phone: false, desktop: true },
-  { to: '/quetes', icon: 'dumbbell', label: 'Quêtes', phone: false, desktop: true },
+  { to: '/quetes', icon: 'dumbbell', label: 'Missions', phone: false, desktop: true },
   { to: '/succes', icon: 'trophy', label: 'Succès', phone: false, desktop: true },
   { to: '/reglages', icon: 'settings', label: 'Réglages', phone: true, desktop: true },
 ];
@@ -74,11 +74,11 @@ function Shell() {
       </a>
       {!focus && (
         <header className="topbar">
-          <Link to="/" className="brand" aria-label="Accueil DysApps">
+          <Link to="/" className="brand" aria-label="Accueil Archipéo">
             <span className="brand-mark" aria-hidden="true">
-              D
+              A
             </span>
-            <span className="brand-name">DysApps</span>
+            <span className="brand-name">Archipéo</span>
           </Link>
           <Link to="/succes" className="topbar-xp" aria-label="Voir mon rang et mes succès">
             <XpBar xp={progress.xp} />

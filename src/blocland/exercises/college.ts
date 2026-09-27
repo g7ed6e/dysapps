@@ -1,4 +1,4 @@
-// Quêtes de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
+// Missions de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';

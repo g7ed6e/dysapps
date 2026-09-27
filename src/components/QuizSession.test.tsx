@@ -183,14 +183,14 @@ it('se joue au clavier : 1 à 9 pour répondre, Entrée pour la suite', async ()
   expect(screen.getByText('Question 2 / 2')).toBeInTheDocument();
 });
 
-it('à la fin, la suite logique vient en premier : « Quête suivante », puis Rejouer', async () => {
+it('à la fin, la suite logique vient en premier : « Mission suivante », puis Rejouer', async () => {
   const user = userEvent.setup();
   const go = vi.fn();
   render(
     <SettingsProvider>
       <ProgressProvider>
         <MemoryRouter>
-          <QuizSession appId="test" makeQuestions={() => [questions[1]]} next={{ label: 'Quête suivante : Comparer', go }} onExit={() => {}} exitLabel="Changer de quête" />
+          <QuizSession appId="test" makeQuestions={() => [questions[1]]} next={{ label: 'Mission suivante : Comparer', go }} onExit={() => {}} exitLabel="Changer de mission" />
         </MemoryRouter>
       </ProgressProvider>
     </SettingsProvider>,
@@ -198,8 +198,8 @@ it('à la fin, la suite logique vient en premier : « Quête suivante », puis R
   await user.click(screen.getByRole('button', { name: 'a' }));
   await user.click(screen.getByRole('button', { name: /Voir le résultat/ }));
   const actions = screen.getAllByRole('button').map((b) => b.textContent?.trim());
-  expect(actions.slice(0, 3)).toEqual(['Quête suivante : Comparer', 'Rejouer', 'Changer de quête']);
-  await user.click(screen.getByRole('button', { name: /Quête suivante/ }));
+  expect(actions.slice(0, 3)).toEqual(['Mission suivante : Comparer', 'Rejouer', 'Changer de mission']);
+  await user.click(screen.getByRole('button', { name: /Mission suivante/ }));
   expect(go).toHaveBeenCalled();
 });
 
@@ -221,7 +221,7 @@ it('vibre brièvement à la bonne réponse, sauf si le réglage est coupé', asy
   delete (navigator as { vibrate?: unknown }).vibrate;
 });
 
-it('à l’école du village, une quête finie donne des blocs de son île pour le village', async () => {
+it('à l’école du village, une mission finie donne des blocs de son île pour le village', async () => {
   const user = userEvent.setup();
   render(
     <SettingsProvider>

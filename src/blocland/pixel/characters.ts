@@ -1,5 +1,5 @@
 // Les personnages et les repères de la 2D, dessinés en code : le bonhomme (4 directions, 2 pas), les créatures et les
-// Gardiens (tirés de leurs propres cubes, en petits pixels), les panneaux des bornes de quête, et les repères jaunes.
+// Gardiens (tirés de leurs propres cubes, en petits pixels), les panneaux des bornes de mission, et les repères jaunes.
 // Chaque sprite a un contour sombre d'un pixel, comme le décor. Rien d'emprunté.
 import { shade, type VoxelCube } from '../Voxel';
 import { buildTiles } from './oblique';
@@ -159,11 +159,11 @@ export function voxelSprite(key: string, cubes: VoxelCube[], muted = false): Spr
   return out;
 }
 
-// ---- Les panneaux des bornes de quête
+// ---- Les panneaux des bornes de mission
 
 const signCache = new Map<string, Sprite | null>();
 
-/** Le panneau d'une borne de quête : un poteau de bois, une ardoise bleue et son étoile d'or. */
+/** Le panneau d'une borne de mission : un poteau de bois, une ardoise bleue et son étoile d'or. */
 export function signpostSprite(muted = false): Sprite | null {
   const k = muted ? 'muted' : 'open';
   if (signCache.has(k)) return signCache.get(k)!;
@@ -195,7 +195,7 @@ export function signpostSprite(muted = false): Sprite | null {
 export const GOLD = '#ffc83c';
 export const GOLD_DARK = '#a8741a';
 
-/** Un losange jaune (quête à faire), centré en (cx, cy), de demi-diagonale `r` pixels d'écran. */
+/** Un losange jaune (mission à faire), centré en (cx, cy), de demi-diagonale `r` pixels d'écran. */
 export function drawDiamond(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
   ctx.fillStyle = GOLD_DARK;
   ctx.beginPath();

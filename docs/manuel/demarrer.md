@@ -4,16 +4,16 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** de Blocland, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Blocland](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
+L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’Archipéo, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Archipéo](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rang, **Continuer** (la dernière quête ouverte), **Blocland** (l’aventure) et trois grosses tuiles : **Quêtes**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
-- **Aventure** : Blocland, le village à reconstruire. Son **école du village** ouvre aussi les quêtes du portail, qui y rapportent des blocs.
-- **Quêtes** : les quêtes du portail, par matière (Français, Maths, Anglais).
+- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rang, **Continuer** (la dernière mission ouverte), **Archipéo** (l’aventure) et trois grosses tuiles : **Missions**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
+- **Aventure** : Archipéo, le village à reconstruire. Son **école du village** ouvre aussi les missions du portail, qui y rapportent des blocs.
+- **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : le rang, l'aventure Blocland, et les trois tuiles Quêtes, Succès, Réglages.](/captures/menu.jpg)
+![Le menu en page sur tablette : le rang, l'aventure Archipéo, et les trois tuiles Missions, Succès, Réglages.](/captures/menu.jpg)
 
 ![Sur téléphone : la barre du haut réduite (logo, menu, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
 
@@ -21,11 +21,11 @@ Pendant une partie, l’écran se vide pour laisser toute la place à la questio
 
 ## Installer sur l’écran d’accueil
 
-DysApps est une application web installable (PWA). Une fois installée, elle s’ouvre en plein écran, sans la barre d’adresse, et **fonctionne hors ligne** après la première visite.
+Archipéo est une application web installable (PWA). Une fois installée, elle s’ouvre en plein écran, sans la barre d’adresse, et **fonctionne hors ligne** après la première visite.
 
 - **Android (Chrome)** : menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
-- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
+- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer Archipéo ».
 
 L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (le bloc d’herbe sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
@@ -33,23 +33,23 @@ L’icône est un bloc d’herbe isométrique sur fond de ciel. Installée, l’
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le bloc d’herbe, « DysApps » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une quête en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière quête ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le bloc d’herbe, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
-![L'écran titre : le bloc d'herbe, « DysApps » et le bouton Jouer.](/captures/titre.jpg)
+![L'écran titre : le bloc d'herbe, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
 Quand des items ratés reviennent (répétition espacée), le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-Dans le menu aussi, **Continuer** ramène à la dernière quête ouverte (du portail ou de Blocland ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+Dans le menu aussi, **Continuer** ramène à la dernière mission ouverte (du portail ou d’Archipéo ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
-2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; dans le menu du village, ligne « Tutoriel ») est une quête d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
-3. **Choisir** : une quête du portail (voir [Les quêtes](quetes.md)) ou l’aventure Blocland (voir [Blocland](blocland.md)). Dans Blocland, un tutoriel de huit bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
+2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; dans le menu du village, ligne « Tutoriel ») est une mission d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
+3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure Archipéo (voir [Archipéo](blocland.md)). Dans Archipéo, un tutoriel de huit bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
 
-Les séances sont pensées **courtes** : une quête du portail dure une dizaine de questions ; dans Blocland, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
+Les séances sont pensées **courtes** : une mission du portail dure une dizaine de questions ; dans Archipéo, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
 
 ## Les mises à jour
 

@@ -1,4 +1,4 @@
-// Le terrain du village : une île par biome (cœur 16 × 16 avec bornes de quête, relief léger, décor et créature, posé sur une terre
+// Le terrain du village : une île par biome (cœur 16 × 16 avec bornes de mission, relief léger, décor et créature, posé sur une terre
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
@@ -299,7 +299,7 @@ export function islandAt(a: ArchipelagoId, x: number, y: number): BiomeId {
  */
 /**
  * Le décor et le relief du cœur sont dessinés sur une grille de 12 × 12 (LAYOUT), posée dans le cœur de 16 × 16
- * avec une marge : les trois rangées de devant accueillent les bornes de quête, les colonnes de côté restent libres.
+ * avec une marge : les trois rangées de devant accueillent les bornes de mission, les colonnes de côté restent libres.
  */
 const LAYOUT = 12;
 export const LAYOUT_PAD = { x: 2, y: 3 };
@@ -319,8 +319,8 @@ export function groundHeight(index: number, x: number, y: number): number {
 }
 
 /**
- * Les bornes de quête d'une île : une par quête, alignées sur la rangée de devant (côté caméra), en cases relatives
- * au cœur. On touche une borne pour lancer sa quête.
+ * Les bornes de mission d'une île : une par mission, alignées sur la rangée de devant (côté caméra), en cases relatives
+ * au cœur. On touche une borne pour lancer sa mission.
  */
 export const QUEST_ROW = 1;
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
@@ -1480,7 +1480,7 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
       if (pick < rockAt) {
         const n = noise(74, gx, gy);
         if (a === '4e') {
-          // Les Monts de Feu : des aiguilles d'ardoise qui sortent de l'eau, une pierre au pied.
+          // Les Anciens Ateliers : des aiguilles d'ardoise qui sortent de l'eau, une pierre au pied.
           put(x, y, -1, BLOCKS.pierre);
           const tall = 1 + Math.floor(n * 4);
           for (let z = 0; z < tall; z++) put(x, y, z, BLOCKS.ardoise);
@@ -1494,7 +1494,7 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
           if (n > 0.9) put(x, y, 1, BLOCKS.pierre);
         }
       } else {
-        // Un banc de sable (une plaque de glace dans les Collines du Large) : une petite tache de trois à sept cases au ras de l'eau.
+        // Un banc de sable (une plaque de glace dans les Îles Brumeuses) : une petite tache de trois à sept cases au ras de l'eau.
         const cells: [number, number][] = [
           [0, 0],
           [1, 0],
@@ -1584,7 +1584,7 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
 
 /** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
 export const SCHOOL_SIZE = { w: 5, d: 4 };
-/** Le coin de l'école dans le cœur de son île : devant à droite, entre les bornes de quête et le bord (la rangée de devant reste libre pour marcher jusqu'au port). */
+/** Le coin de l'école dans le cœur de son île : devant à droite, entre les bornes de mission et le bord (la rangée de devant reste libre pour marcher jusqu'au port). */
 export const SCHOOL_AT = { x: 11, y: 1 };
 /** La salle des trophées : 4 × 3 cases, ouverte devant, au milieu du cœur (derrière les bornes, à côté de la place de la créature, devant la zone des plans). */
 export const TROPHY_SIZE = { w: 4, d: 3 };
@@ -1855,7 +1855,7 @@ export function worldCubes(
       putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
     }
     DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
-    // Les bornes de quête : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
+    // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
     for (const st of questStations(biome.id)) {
       const quest = `${biome.id}:${st.typeId}`;
       const base = h(st.x, st.y);

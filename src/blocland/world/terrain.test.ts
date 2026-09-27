@@ -384,7 +384,7 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
   for (const a of ARCHIPELAGO_IDS) {
     if (a === '3e') continue;
     const spots = whaleSpots(a);
-    // Quatre dans les Basses Terres ; au moins deux dans les petits archipels, où l'eau libre est plus rare.
+    // Quatre dans les Premiers Rivages ; au moins deux dans les petits archipels, où l'eau libre est plus rare.
     expect(spots.length, a).toBeGreaterThanOrEqual(a === '6e' ? 4 : 2);
     expect(spots.length, a).toBeLessThanOrEqual(4);
     const land = new Set<string>();
@@ -408,7 +408,7 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
   }
 });
 
-it('chaque quête a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {
+it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {
   for (const b of BIOMES) {
     const stations = questStations(b.id);
     expect(stations.map((s) => s.typeId)).toEqual(b.exercises.map((e) => e.id));
@@ -422,7 +422,7 @@ it('chaque quête a sa borne sur la rangée de devant, dans le cœur, hors de la
       expect(creature.has(`${st.x},${st.y}`), `${b.id} ${st.typeId}`).toBe(false);
     }
   }
-  // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:quête », délavés sur une île fermée.
+  // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:mission », délavés sur une île fermée.
   const cubes = worldCubes('6e', {}, { plans: {}, journal: [], bridges: [] });
   const foret = cubes.filter((c) => c.quest?.startsWith('foret:'));
   expect(foret).toHaveLength(2 * 3);
@@ -585,7 +585,7 @@ it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étap
   expect(sailed.building).toBe(ballon.id);
   expect(sailed.cubes.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
   expect(sailed.cubes.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
-  // Revenu dans les Basses Terres après le deuxième voyage : le navire porte son ballon, rien en fantôme, rien à construire ici.
+  // Revenu dans les Premiers Rivages après le deuxième voyage : le navire porte son ballon, rien en fantôme, rien à construire ici.
   const back = vehiclePlacement('6e', {}, village(['voyage-5e', 'voyage-4e']));
   expect(back.cubes.some((c) => c.ghost)).toBe(false);
   expect(back.building).toBeNull();

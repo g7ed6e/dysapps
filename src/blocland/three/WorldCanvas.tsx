@@ -212,7 +212,7 @@ export default function WorldCanvas({
   pickQuestRef.current = onPickQuest;
   const pickPlaceRef = useRef(onPickPlace);
   pickPlaceRef.current = onPickPlace;
-  // Les cubes des bornes de quête et des ouvrages, par case : pour savoir ce qu'on touche.
+  // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
   useEffect(() => {
     tags.current = cubeTags(cubes);
@@ -403,7 +403,7 @@ export default function WorldCanvas({
     const birdMat = new THREE.MeshLambertMaterial({ color: 0x3a2f2a });
     const wingGeo = new THREE.BoxGeometry(0.5, 0.08, 0.16);
     const birds: { group: THREE.Group; wings: THREE.Mesh[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
-    // Plus d'oiseaux et plus haut dans les Monts de Feu ; tout en haut dans les Îles du Ciel.
+    // Plus d'oiseaux et plus haut dans les Anciens Ateliers ; tout en haut dans les Îles du Ciel.
     const birdCount = archipelago === '4e' ? 8 : 6;
     const birdAlt = archipelago === '4e' ? 17 : ambience.sky ? 18 : 13;
     for (let i = 0; i < birdCount; i++) {
@@ -1109,7 +1109,7 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
-  // ---- Les repères des bornes de quête : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits
+  // ---- Les repères des bornes de mission : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits
   // cubes d'or empilés. Rien sur une île fermée.
   useEffect(() => {
     const w = world.current;

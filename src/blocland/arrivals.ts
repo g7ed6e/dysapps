@@ -5,11 +5,11 @@ import type { ArchipelagoId } from './world/archipelago';
 export const ARRIVAL_STEPS: Record<ArchipelagoId, string[]> = {
   '6e': [],
   '5e': [
-    'Bienvenue dans les Collines du Large, l’archipel de 5e ! Six îles, plus hautes et plus fraîches. Les règles ne changent pas : quêtes, blocs, plans, Gardiens.',
+    'Bienvenue dans les Îles Brumeuses, l’archipel de 5e ! Six îles, plus hautes et plus fraîches. Les règles ne changent pas : missions, blocs, plans, Gardiens.',
     'Le Bloc-Navire reste au port, sur le Marché des proportions. Pour revenir en 6e, ouvre le panneau du Marché et touche Revenir. Pour aller en 4e, il lui faut un ballon : ses blocs se posent ici.',
   ],
   '4e': [
-    'Bienvenue dans les Monts de Feu, l’archipel de 4e ! Ici, le haut-fourneau de la Forge chauffe jour et nuit.',
+    'Bienvenue dans les Anciens Ateliers, l’archipel de 4e ! Ici, les vieux ateliers attendent qu’on les rallume ; le haut-fourneau de la Forge chauffe jour et nuit.',
     'Le Bloc-Navire est amarré à l’Atelier du calcul littéral. Son réacteur se construit ici : quand il est prêt, tu monteras jusqu’aux Îles du Ciel.',
   ],
   '3e': [

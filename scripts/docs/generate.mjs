@@ -1,5 +1,5 @@
 // Pages « vivantes » de la documentation : elles sont produites au build à partir des données du jeu
-// (biomes, exercices, plans, ouvrages, monuments, succès, quêtes du portail), jamais écrites à la main.
+// (biomes, exercices, plans, ouvrages, monuments, succès, missions du portail), jamais écrites à la main.
 // Le code source est chargé par Vite (TypeScript, JSON, JSX), comme le fait l'application.
 import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
@@ -168,7 +168,7 @@ function coverageOf(d) {
   return map;
 }
 
-/** Page du portail qui décrit une quête (pour les liens de couverture). */
+/** Page du portail qui décrit une mission (pour les liens de couverture). */
 const PORTAL_PAGE = { homophones: 'homophones.md', lecture: 'lecture.md', tables: 'maths-portail.md', fractions: 'maths-portail.md', decimaux: 'maths-portail.md', vocabulaire: 'anglais-portail.md', irreguliers: 'anglais-portail.md' };
 
 /** « Ferme des accords : Enclos », avec un lien vers la page de l'île ou du portail (depuis pedagogie/). */
@@ -178,7 +178,7 @@ function coverageText(who, from = '') {
   return page ? `[${who.title}](${from}${page}) (portail)` : `${who.title} (portail)`;
 }
 
-/** Ligne « Programme : … » sous une quête : ses compétences, avec le domaine, la page et un lien vers la page Programmes. */
+/** Ligne « Programme : … » sous une mission : ses compétences, avec le domaine, la page et un lien vers la page Programmes. */
 function programmeLine(ids, d, from) {
   const parts = [...new Set(ids)].map((id) => {
     const p = d.programme.byId(id);
@@ -198,7 +198,7 @@ function programmesPage(d) {
   const lines = [
     '# Programmes officiels',
     '',
-    'Chaque quête de Blocland et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle quête), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/programme/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/programme/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
     '',
     'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
     '',
@@ -225,7 +225,7 @@ function programmesPage(d) {
         lines.push(`*Attendus de fin de cycle (p. ${dom.page}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(
-            ['Compétence', 'Page', 'Quêtes'],
+            ['Compétence', 'Page', 'Missions'],
             entries.map((e) => {
               const who = coverage.get(e.id);
               const x = EXCLUSIONS[e.id];
@@ -307,7 +307,7 @@ function archipelPage(d) {
   const items = EXERCISES.reduce((n, e) => n + e.items.length, 0);
   const quests = BIOMES.reduce((n, b) => n + b.exercises.length, 0);
   const lines = [
-    '# L’archipel Blocland',
+    '# L’archipel',
     '',
     'Cette page est produite à chaque build à partir des données du jeu (`src/blocland/biomes.ts`, `src/blocland/exercises/`). Elle décrit exactement ce que contient la version publiée.',
     '',
@@ -318,18 +318,18 @@ function archipelPage(d) {
       .filter(([, n]) => n > 0)
       .map(([s, n]) => `${n} ${s === 'anglais' ? 'd’anglais' : `de ${SUBJECT_NAME[s].toLowerCase()}`}`)
       .join(', ')}) |`,
-    `| Quêtes | ${quests} |`,
+    `| Missions | ${quests} |`,
     `| Exercices (variantes et niveaux) | ${EXERCISES.length}, dont ${EXERCISES.filter((e) => e.generate).length} générés |`,
     `| Items de référence | ${items} |`,
     `| Plans à construire | ${PLANS.length} |`,
     `| Ouvrages entre les îles | ${BRIDGES.length} |`,
     `| Compétences du programme officiel travaillées | ${d.programme.PROGRAMME.filter((e) => d.coverage.has(e.id)).length} sur ${d.programme.PROGRAMME.length} (voir [Programmes officiels](programmes.md)) |`,
     '',
-    'Chaque île est un thème du programme. Elle a sa créature qui donne les quêtes, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
+    'Chaque île est un thème du programme. Elle a sa créature qui donne les missions, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
     '',
     '## Les quatre archipels',
     '',
-    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire, l’île de l’école accueille l’école du village (les quêtes du portail, qui y rapportent ses blocs) et la salle des trophées (un trophée par succès).',
+    'Un archipel par classe. On en voit un à la fois ; l’île-port accueille le quai et le Bloc-Navire, l’île de l’école accueille l’école du village (les missions du portail, qui y rapportent ses blocs) et la salle des trophées (un trophée par succès).',
     '',
     table(
       ['Archipel', 'Classe', 'Île-port', 'École du village', 'Îles', 'Pour y aller'],
@@ -354,7 +354,7 @@ function archipelPage(d) {
       lines.push(`## ${SUBJECT_NAME[subject]} — ${classe}`, '');
       lines.push(
         table(
-          ['Île', 'Module', 'Créature', 'Gardien', 'Bloc', 'Quêtes'],
+          ['Île', 'Module', 'Créature', 'Gardien', 'Bloc', 'Missions'],
           list.map((b) => [
             `[${b.name}](iles/${b.id}.md)`,
             b.module,
@@ -368,17 +368,17 @@ function archipelPage(d) {
       );
     }
   }
-  lines.push('## Types d’écrans', '', 'Chaque quête utilise un type d’écran (champ `type` de l’exercice). Les mêmes règles s’appliquent partout : consigne lue à voix haute, un seul geste par item, correction qui explique, indice jamais pénalisant, pas de chrono.', '');
+  lines.push('## Types d’écrans', '', 'Chaque mission utilise un type d’écran (champ `type` de l’exercice). Les mêmes règles s’appliquent partout : consigne lue à voix haute, un seul geste par item, correction qui explique, indice jamais pénalisant, pas de chrono.', '');
   const types = new Map();
   for (const b of BIOMES) for (const e of b.exercises) types.set(e.id, { ...e, islands: [...(types.get(e.id)?.islands ?? []), b.name] });
   lines.push(
     table(
-      ['Type', 'Quête', 'Ce que fait l’élève', 'Exercices'],
+      ['Type', 'Mission', 'Ce que fait l’élève', 'Exercices'],
       [...types.values()].map((t) => [t.id, t.title, t.description, String(EXERCISES.filter((e) => e.type === t.id).length)]),
     ),
     '',
   );
-  return { path: 'pedagogie/archipel.md', title: 'L’archipel Blocland', body: lines.join('\n') };
+  return { path: 'pedagogie/archipel.md', title: 'L’archipel', body: lines.join('\n') };
 }
 
 function islandPage(b, d) {
@@ -395,11 +395,11 @@ function islandPage(b, d) {
     '| --- | --- |',
     `| Archipel | Les ${d.ARCHIPELAGOS.find((a) => a.classe === b.classe).name} (${b.classe}) |`,
     `| Île-port | ${d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'oui : le quai et le Bloc-Navire sont devant l’île' : 'non'} |`,
-    `| École du village | ${d.ARCHIPELAGOS.some((a) => a.school === b.id) ? `oui : les quêtes du portail y rapportent des blocs ${BLOCKS[b.block].name.toLowerCase().match(/^[aeiouyéèêh]/) ? 'd’' : 'de '}${BLOCKS[b.block].name.toLowerCase()}` : 'non'} |`,
+    `| École du village | ${d.ARCHIPELAGOS.some((a) => a.school === b.id) ? `oui : les missions du portail y rapportent des blocs ${BLOCKS[b.block].name.toLowerCase().match(/^[aeiouyéèêh]/) ? 'd’' : 'de '}${BLOCKS[b.block].name.toLowerCase()}` : 'non'} |`,
     `| Créature | ${b.creature.name}, ${b.creature.species} |`,
     `| Gardien | ${capFirst(b.guardian)} |`,
     `| Bloc gagné | ${BLOCKS[b.block].name} |`,
-    `| Quêtes | ${b.exercises.length} |`,
+    `| Missions | ${b.exercises.length} |`,
     `| Exercices | ${EXERCISES.filter((e) => e.biome === b.id).length} |`,
     `| Départ | ${d.START_ISLANDS.includes(b.id) ? 'île ouverte dès le début' : d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'île-port, ouverte à l’arrivée du Bloc-Navire' : 'à ouvrir par un ouvrage'} |`,
     '',
@@ -417,13 +417,13 @@ function islandPage(b, d) {
     '',
     `${b.challenge}`,
     '',
-    'Le défi enchaîne deux manches de chaque quête de l’île, au niveau de l’élève, sans chrono. Deux étoiles le font tomber.',
+    'Le défi enchaîne deux manches de chaque mission de l’île, au niveau de l’élève, sans chrono. Deux étoiles le font tomber.',
     '',
     `- Épreuve réussie : « ${b.guardianSays.hit} »`,
     `- Épreuve ratée : « ${b.guardianSays.miss} »`,
     `- Vaincu : « ${b.guardianSays.beaten} »`,
     '',
-    '## Les quêtes',
+    '## Les missions',
     '',
   ];
   for (const q of b.exercises) {
@@ -432,7 +432,7 @@ function islandPage(b, d) {
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
     if (b.id === 'carriere' && q.id === 'coffre') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
-      lines.push('Aucun exercice n’est encore écrit pour cette quête.', '');
+      lines.push('Aucun exercice n’est encore écrit pour cette mission.', '');
       continue;
     }
     lines.push(
@@ -511,11 +511,11 @@ function islandPage(b, d) {
 function homophonesPage(d) {
   const { SETS, LEVELS, QUESTIONS_PER_QUEST } = d.homophones;
   const lines = [
-    '# Homophones (quête du portail)',
+    '# Homophones (mission du portail)',
     '',
-    `Quête **Français** du portail. ${SETS.length} jeux d’homophones répartis en ${LEVELS.length} niveaux ; une quête de niveau tire ${QUESTIONS_PER_QUEST} phrases parmi les jeux du niveau, l’entraînement ciblé travaille un seul jeu. Le joker donne l’astuce de remplacement, la correction rappelle la règle. Les phrases sont dans \`src/apps/homophones/sets.json\` et vérifiées par les tests : un seul trou, jamais en début de phrase, chaque réponse travaillée.`,
+    `Mission **Français** du portail. ${SETS.length} jeux d’homophones répartis en ${LEVELS.length} niveaux ; une mission de niveau tire ${QUESTIONS_PER_QUEST} phrases parmi les jeux du niveau, l’entraînement ciblé travaille un seul jeu. Le joker donne l’astuce de remplacement, la correction rappelle la règle. Les phrases sont dans \`src/apps/homophones/sets.json\` et vérifiées par les tests : un seul trou, jamais en début de phrase, chaque réponse travaillée.`,
     '',
-    'Les mêmes phrases servent dans Blocland : le **Tri des graines** (Ferme des accords) et les **Panneaux** (Carrefour des homophones).',
+    'Les mêmes phrases servent dans Archipéo : le **Tri des graines** (Ferme des accords) et les **Panneaux** (Carrefour des homophones).',
     '',
     programmeLine(d.APPS.find((a) => a.id === 'homophones').programme, d, ''),
     '',
@@ -536,9 +536,9 @@ function homophonesPage(d) {
 
 function lecturePage(d) {
   const lines = [
-    '# Lecture (quête du portail)',
+    '# Lecture (mission du portail)',
     '',
-    `Quête **Français** du portail : ${d.texts.length} textes du domaine public, une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue, mots difficiles expliqués, puis des questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions sont dans \`src/apps/lecture/texts.json\`.`,
+    `Mission **Français** du portail : ${d.texts.length} textes du domaine public, une ligne par vers ou par phrase, couleurs alternées, lecture à voix haute qui surligne la ligne lue, mots difficiles expliqués, puis des questions de compréhension. Le joker cite le passage à relire ; le texte reste consultable pendant les questions. Textes et questions sont dans \`src/apps/lecture/texts.json\`.`,
     '',
     programmeLine(d.APPS.find((a) => a.id === 'lecture').programme, d, ''),
     '',
@@ -593,21 +593,21 @@ function mathsPortailPage(d) {
     { app: d.APPS.find((a) => a.id === 'decimaux'), quests: d.decimaux.QUESTS, per: d.decimaux.QUESTIONS_PER_QUEST, make: (q) => (rng) => q.makeWith(rng) },
   ];
   const lines = [
-    '# Maths (quêtes du portail)',
+    '# Maths (missions du portail)',
     '',
-    'Les trois quêtes de maths du portail génèrent leurs questions au hasard à chaque séance : quatre réponses rangées dans l’ordre croissant, des pièges tirés des erreurs fréquentes, un joker qui donne une astuce et une aide visuelle. Les mêmes générateurs alimentent les îles de maths 6e de Blocland (Plaine des nombres, Rivière des fractions, Volcan des décimaux).',
+    'Les trois missions de maths du portail génèrent leurs questions au hasard à chaque séance : quatre réponses rangées dans l’ordre croissant, des pièges tirés des erreurs fréquentes, un joker qui donne une astuce et une aide visuelle. Les mêmes générateurs alimentent les îles de maths 6e d’Archipéo (Plaine des nombres, Rivière des fractions, Volcan des décimaux).',
     '',
     'Les exemples ci-dessous sont tirés avec une graine fixe : ils changent quand les générateurs changent, pas d’un build à l’autre.',
     '',
   ];
   for (const { app, quests, per, make } of apps) {
-    lines.push(`## ${app.title}`, '', `${app.description} ${per} questions par quête.`, '', programmeLine(app.programme, d, ''), '');
-    lines.push(table(['Quête', 'Détail'], quests.map((q) => [q.title, q.detail])), '');
+    lines.push(`## ${app.title}`, '', `${app.description} ${per} questions par mission.`, '', programmeLine(app.programme, d, ''), '');
+    lines.push(table(['Mission', 'Détail'], quests.map((q) => [q.title, q.detail])), '');
     for (const q of quests) {
       lines.push(`### ${q.title}`, '', `*${q.detail}.* Exemples :`, '', ...sampleQuestions(make(q), 3), '');
     }
     if (app.id === 'tables') {
-      lines.push(`### Réviser une table`, '', `Une quête libre par table : ${d.tables.TABLES.map((t) => `× ${t}`).join(', ')}.`, '');
+      lines.push(`### Réviser une table`, '', `Une mission libre par table : ${d.tables.TABLES.map((t) => `× ${t}`).join(', ')}.`, '');
     }
   }
   return { path: 'pedagogie/maths-portail.md', title: 'Maths du portail', body: lines.join('\n') };
@@ -617,13 +617,13 @@ function anglaisPortailPage(d) {
   const { THEMES, LEVELS: VOCAB_LEVELS, QUESTIONS_PER_QUEST: VOCAB_PER } = d.vocabulaire;
   const { VERBS, LEVELS: VERB_LEVELS, QUESTIONS_PER_QUEST: VERB_PER, choicesFor } = d.irreguliers;
   const lines = [
-    '# Anglais (quêtes du portail)',
+    '# Anglais (missions du portail)',
     '',
-    'Les quêtes d’anglais gardent les règles des autres matières. La consigne, le joker et la correction sont en français, lus avec la voix française. Les mots et les phrases à travailler sont en anglais : ils sont lus avec une voix anglaise britannique et ne sont pas découpés en syllabes (le découpage suit les règles du français).',
+    'Les missions d’anglais gardent les règles des autres matières. La consigne, le joker et la correction sont en français, lus avec la voix française. Les mots et les phrases à travailler sont en anglais : ils sont lus avec une voix anglaise britannique et ne sont pas découpés en syllabes (le découpage suit les règles du français).',
     '',
     '## Vocabulaire',
     '',
-    `${THEMES.length} thèmes de ${THEMES[0].words.length} mots. Une quête de niveau tire ${VOCAB_PER} mots dans tous les thèmes ; « Un thème » révise tous les mots d’un seul thème, de l’anglais au français ou l’inverse. Les réponses sont les autres mots du même thème ; au niveau 3, deux écritures fautives vraisemblables. Les mots sont dans \`src/apps/vocabulaire/themes.json\`.`,
+    `${THEMES.length} thèmes de ${THEMES[0].words.length} mots. Une mission de niveau tire ${VOCAB_PER} mots dans tous les thèmes ; « Un thème » révise tous les mots d’un seul thème, de l’anglais au français ou l’inverse. Les réponses sont les autres mots du même thème ; au niveau 3, deux écritures fautives vraisemblables. Les mots sont dans \`src/apps/vocabulaire/themes.json\`.`,
     '',
     programmeLine(d.APPS.find((a) => a.id === 'vocabulaire').programme, d, ''),
     '',
@@ -640,7 +640,7 @@ function anglaisPortailPage(d) {
   lines.push(
     '## Verbes irréguliers',
     '',
-    `${VERBS.length} verbes du collège en ${VERB_LEVELS.length} niveaux. Une quête tire ${VERB_PER} verbes du niveau, chacun au prétérit ou au participe passé. Les réponses : la bonne forme, l’autre forme, la base, la fausse forme en -ed (« goed », l’erreur la plus fréquente) et, quand les formes se ressemblent, des erreurs d’élève écrites à la main. La correction redonne les trois formes et le sens. Les verbes sont dans \`src/apps/irreguliers/verbs.json\`.`,
+    `${VERBS.length} verbes du collège en ${VERB_LEVELS.length} niveaux. Une mission tire ${VERB_PER} verbes du niveau, chacun au prétérit ou au participe passé. Les réponses : la bonne forme, l’autre forme, la base, la fausse forme en -ed (« goed », l’erreur la plus fréquente) et, quand les formes se ressemblent, des erreurs d’élève écrites à la main. La correction redonne les trois formes et le sens. Les verbes sont dans \`src/apps/irreguliers/verbs.json\`.`,
     '',
     programmeLine(d.APPS.find((a) => a.id === 'irreguliers').programme, d, ''),
     '',
@@ -750,7 +750,7 @@ function baremePage(d) {
     '',
     'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/blocland/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
     '',
-    '## Points d’expérience (quêtes du portail)',
+    '## Points d’expérience (missions du portail)',
     '',
     table(
       ['Évènement', 'XP'],
@@ -758,14 +758,14 @@ function baremePage(d) {
         ['Bonne réponse du premier coup', String(XP.firstTry)],
         ['Bonne réponse après une erreur ou avec le joker', String(XP.afterRetry)],
         ['Réponse fausse (point d’effort)', String(XP.effort)],
-        ['Quête terminée', String(XP.sessionBonus)],
-        ['Bonus quête parfaite (100 %)', String(XP.perfectBonus)],
+        ['Mission terminée', String(XP.sessionBonus)],
+        ['Bonus mission parfaite (100 %)', String(XP.perfectBonus)],
       ],
     ),
     '',
     '## Niveaux et rangs',
     '',
-    `Trois divisions par rang, puis Légende à partir du niveau ${LEGEND_LEVEL}. L’XP gagnée dans Blocland compte aussi.`,
+    `Trois divisions par rang, puis Légende à partir du niveau ${LEGEND_LEVEL}. L’XP gagnée dans Archipéo compte aussi.`,
     '',
     table(['Niveau', 'Rang', 'XP cumulée pour y arriver', 'XP jusqu’au suivant'], levels),
     '',
@@ -773,22 +773,22 @@ function baremePage(d) {
     '',
     table(['Succès', 'Condition'], BADGES.map((b) => [b.title, b.description])),
     '',
-    '## Moteur Blocland',
+    '## Moteur de l’aventure',
     '',
     table(
       ['Règle', 'Valeur'],
       [
         ['Score d’un item', '1 point du premier coup, ½ avec aide ou après une erreur'],
         ['Étoiles', '1 = terminé, 2 = au moins 70 %, 3 = au moins 90 % (la meilleure est gardée)'],
-        ['Blocs', `proportionnels au score, jamais 0 dès une bonne réponse ; +1 à deux étoiles, +2 à trois ; +${FIRST_TIME_BLOCKS} la première fois qu’une quête est jouée`],
+        ['Blocs', `proportionnels au score, jamais 0 dès une bonne réponse ; +1 à deux étoiles, +2 à trois ; +${FIRST_TIME_BLOCKS} la première fois qu’une mission est jouée`],
         [
-          'Blocs d’une quête du portail (école du village)',
-          `${PORTAL_BLOCKS} × le score, jamais 0 dès une bonne réponse, mêmes bonus d’étoiles et de première fois ; des blocs de l’île de l’école de l’archipel où se tient le bonhomme (${d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).name} en ${a.classe}`).join(', ')}) ; la quête compte pour la régularité, pas pour les étoiles ni les Gardiens`,
+          'Blocs d’une mission du portail (école du village)',
+          `${PORTAL_BLOCKS} × le score, jamais 0 dès une bonne réponse, mêmes bonus d’étoiles et de première fois ; des blocs de l’île de l’école de l’archipel où se tient le bonhomme (${d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).name} en ${a.classe}`).join(', ')}) ; la mission compte pour la régularité, pas pour les étoiles ni les Gardiens`,
         ],
         ['XP', '+50 % sans aide ni erreur'],
         ['Répétition espacée des items ratés', `J+${INTERVALS.join(', J+')} ; sortie après ${GRADUATE_AT} réussites d’affilée`],
         ['Régularité', `un coffre de ${CHEST_BLOCKS} blocs tous les ${CHEST_EVERY} jours de suite ; la série se fissure après un jour manqué, réparable le lendemain`],
-        ['Adaptation du niveau', `monte après deux parties au-dessus du seuil de la quête, ou une seule à ${percent(PROMOTE_AT_ONCE)} ; descend après deux parties sous le seuil bas, sans jamais l’afficher comme une baisse`],
+        ['Adaptation du niveau', `monte après deux parties au-dessus du seuil de la mission, ou une seule à ${percent(PROMOTE_AT_ONCE)} ; descend après deux parties sous le seuil bas, sans jamais l’afficher comme une baisse`],
         ['Pause', 'proposée après 3 exercices ou 10 minutes'],
       ],
     ),
@@ -798,8 +798,8 @@ function baremePage(d) {
     table(
       ['Règle', 'Valeur'],
       [
-        ['Quête de Blocland proposée', 'déjà jouée, moins de 3 étoiles, sur une île ouverte'],
-        ['Quête du portail proposée', `record sous ${APP_REWORK_BELOW} %`],
+        ['Mission d’Archipéo proposée', 'déjà jouée, moins de 3 étoiles, sur une île ouverte'],
+        ['Mission du portail proposée', `record sous ${APP_REWORK_BELOW} %`],
         ['Ordre', 'du score le plus faible au plus fort ; à score égal, le moins d’étoiles d’abord'],
         ['Nombre affiché par matière', `${REWORK_SHOWN} au plus (les autres sont comptées)`],
       ],
@@ -821,7 +821,7 @@ function baremePage(d) {
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
         ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
         ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
-        ['Vue de Blocland', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
+        ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Marche libre (monde en 2D)', DEFAULT_SETTINGS.freeWalk ? 'oui' : 'non', ''],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],

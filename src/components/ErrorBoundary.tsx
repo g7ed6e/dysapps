@@ -13,7 +13,7 @@ interface Props {
 
 /**
  * Limite d'erreur : une page qui n'a pas pu s'ouvrir affiche un message et un bouton « Recharger » au lieu d'un
- * écran blanc. Le cas attendu : un fichier chargé à la demande (3D, quête, exercice) qui n'existe plus parce que
+ * écran blanc. Le cas attendu : un fichier chargé à la demande (3D, mission, exercice) qui n'existe plus parce que
  * l'application a été mise à jour pendant la séance, avant que le service worker ne la garde hors ligne.
  * Rien n'est perdu : la progression est enregistrée sur l'appareil.
  */

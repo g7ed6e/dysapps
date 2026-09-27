@@ -146,7 +146,7 @@ describe('toucher le sol', () => {
     expect(groundTap('6e', hit, school, all)).toEqual({ kind: 'face', cell: hit.cell, next: hit.next });
   });
 
-  it('la borne de quête d’abord, puis l’ouvrage, puis la face en chantier, sinon l’île', () => {
+  it('la borne de mission d’abord, puis l’ouvrage, puis la face en chantier, sinon l’île', () => {
     expect(groundTap('6e', { cell, next, ground: cell }, tags, all)).toEqual({ kind: 'quest', biome: 'foret', typeId: 'rimes' });
     expect(groundTap('6e', { cell, next, ground: cell }, tags, { ...all, quest: false })).toEqual({ kind: 'bridge', id: 'foret-mine' });
     expect(groundTap('6e', { cell, next, ground: cell }, tags, { quest: false, bridge: false, build: true })).toEqual({ kind: 'face', cell, next });
