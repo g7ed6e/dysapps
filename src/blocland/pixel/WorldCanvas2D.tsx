@@ -69,6 +69,8 @@ const KEY_STEPS: Record<string, StepDir> = { ArrowUp: 'up', ArrowDown: 'down', A
 const CHUNKS_PER_FRAME = 8;
 /** La 2D peinte (lot R7) peint ses morceaux pixel par pixel : au plus ce temps par image, au moins un morceau. */
 const PAINT_MS_PER_FRAME = 12;
+/** Sous cette échelle (pixels d'écran par pixel de base), la 2D peinte efface les joints des ouvrages. */
+const LOIN_SOUS = 1.5;
 
 const hex = (n: number) => `#${n.toString(16).padStart(6, '0')}`;
 
@@ -527,6 +529,13 @@ export default function WorldCanvas2D({
         if (Math.abs(target.s - v.s) < 0.01) v.s = target.s;
       }
       const cam = view.current!;
+      // La 2D peinte vue de loin (la Carte, où l'on arrive) : les joints des ouvrages s'effacent ; en passant le seuil,
+      // le terrain se repeint (morceau par morceau, comme à un changement de lumière).
+      if (tm.env.painted && target.s < LOIN_SOUS !== Boolean(tm.env.loin)) {
+        tm.env = { ...tm.env, loin: target.s < LOIN_SOUS };
+        for (const [k, img] of tm.chunks) tm.stale.set(k, img);
+        tm.chunks.clear();
+      }
       // La taille des repères : celle de la vue, mais jamais minuscules (sur la Carte, vue de loin).
       const mark = Math.max(1.5 * cam.s, 3 * (window.devicePixelRatio || 1));
       const at = (x: number, y: number, z: number) => {

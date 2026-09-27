@@ -64,6 +64,8 @@ export interface DrawEnv {
   sea: boolean;
   /** La 2D peinte (`?rendu=archipeo`, lot R7) : l'archipel et le palier de lumière ; sans elle, la 2D en pixels. */
   painted?: Peinture;
+  /** La 2D peinte vue de loin (la Carte) : sans les joints ni les cadres des ouvrages, qui y feraient une grille serrée. */
+  loin?: boolean;
 }
 
 /** L'image d'une face : dessinée pour la 2D si le style le veut et si son sol en a une, sinon la texture du bloc. */

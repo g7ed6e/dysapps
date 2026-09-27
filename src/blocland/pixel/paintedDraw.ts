@@ -68,8 +68,9 @@ function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: numbe
   const ne = nuanceDuDessus(cube.x + 1, cube.y + 1);
   const sw = nuanceDuDessus(cube.x, cube.y);
   const se = nuanceDuDessus(cube.x + 1, cube.y);
-  const motif = motifDe(cube.texture);
-  const frame = aCadre(cube.texture) ? sombreDe(f.cote) : null;
+  const motif = env.loin ? null : motifDe(cube.texture);
+  // Un cadre sur le dessus d'une lanterne ; pas sur un sol de verre (il ferait une grille), ni de loin.
+  const frame = !env.loin && cube.texture === 'lanterne' ? sombreDe(f.cote) : null;
   // Le rebord d'un ouvrage (un mur, un toit), là où il domine son voisin : deux pixels dans la teinte sombre de sa
   // matière, qui le détachent d'un sol aussi clair que lui (marbre sur marbre, pierre sur pierre, neige).
   const lowerAt = (dx: number, dy: number) => {
@@ -123,7 +124,7 @@ function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: num
   const foam = env.style.edges && env.sea && !columnAt(env.surface, cube.x, cube.y - 1) && cube.z <= -1;
   const light = P.levre(f.cote);
   const dark = P.pied(f.cote);
-  const motif = motifDe(cube.texture);
+  const motif = env.loin ? null : motifDe(cube.texture);
   const at = (dx: number, dy: number) => columnAt(env.surface, cube.x + dx, cube.y + dy);
   const lower = (dx: number) => {
     const c = at(dx, 0);
@@ -135,7 +136,7 @@ function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: num
   const edgeW = edge !== null && lower(-1);
   const edgeE = edge !== null && lower(1);
   const edgeS = edge !== null && Boolean(south) && south!.z === cube.z - 1;
-  const frame = aCadre(cube.texture) ? sombreDe(f.cote) : null;
+  const frame = !env.loin && aCadre(cube.texture) ? sombreDe(f.cote) : null;
   const ondes: number[] = [];
   for (let px = 0; px < TILE; px++) ondes.push(ondeDesStrates((cube.x * TILE + px) / TILE));
   for (let py = 0; py < TILE; py++) {
@@ -236,10 +237,10 @@ function decorate(ctx: CanvasRenderingContext2D, face: Face, x: number, y: numbe
     }
     if (env.style.shadows) {
       // Le soleil vient d'en haut à gauche : le relief voisin à l'ouest ombre le bord gauche, au nord le haut (le pied
-      // du mur ou de la falaise). Une bande nette. Pas sur les marches d'un toit : un ouvrage ne reçoit que l'ombre
-      // d'un mur (deux blocs au moins), pour garder une seule teinte par face.
+      // du mur ou de la falaise). Une bande nette, sur un sol naturel seulement : un ouvrage (toit, dallage) garde une
+      // seule teinte par face, et son contour sombre suffit à détacher un mur de lui.
       const ground = materialOf(cube) !== 'autre';
-      const casts = (nb: ReturnType<typeof at>) => Boolean(nb) && nb!.z > cube.z && (ground || nb!.z - cube.z >= 2);
+      const casts = (nb: ReturnType<typeof at>) => ground && Boolean(nb) && nb!.z > cube.z;
       if (casts(at('w'))) castShadow(ctx, P.ombre, SHADOW_ALPHA * 0.8, x, y, SHADOW, TILE);
       if (casts(at('n'))) castShadow(ctx, P.ombre, SHADOW_ALPHA, x, y, TILE, SHADOW);
     }
