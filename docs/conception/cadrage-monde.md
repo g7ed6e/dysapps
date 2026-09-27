@@ -176,10 +176,10 @@ Décisions :
    - **Les bornes de quête** : les cubes de borne deviennent un panneau (poteau de bois, ardoise bleue, étoile d'or) ; au-dessus, un losange jaune qui flotte (à faire) ou les étoiles gagnées. Le toucher lance la quête.
    - **Tout ce qui se tient debout** (décor, panneaux, créatures, bonhomme) est trié chaque image du plus lointain au plus proche ; chacun a son ombre.
    - **Repères** : la flèche « Commence ici », les balises d'un chemin, le fanion de la Carte (jamais minuscules), les éclats d'un bloc posé. **Fantômes** du plan bleutés, entourés d'un pointillé blanc. **La nuit** : un voile bleu nuit selon l'heure réelle (la mer suit la palette de l'archipel) ; les repères jaunes restent par-dessus, vifs.
-4. **Construire et voyager** : les chantiers, les ouvrages, le Bloc-Navire et son voyage, la Carte.
+4. **Construire et voyager** (faite) : le Bloc-Navire est une petite carte de tuiles à part (ses cubes locaux, `drawTileMap`), dessinée une fois, posée chaque image à sa place : il tangue à quai (ou plane, dans le ciel), suit `vehiclePath` en voyage (écume à la poupe à la voile, flamme au réacteur), le bonhomme sur le pont (`VEHICLE_DECK`) ; la caméra le suit et recule un peu à mesure qu'il s'éloigne. Le toucher d'une case fantôme la pose (`onPickFace`), ailleurs il ouvre le panneau du port (`onPickVehicle`). La « salle » du port comprend sa jetée et son navire (`dockBox`), et le chantier en cours attire la caméra (le point à montrer de `frame2D`) ; sa flèche se pose au-dessus de la coque. Les ouvrages et les plans étaient déjà touchables par le terrain (étape 2).
 5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
 
 ## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
-- La vue 2D, étapes 4 et 5 (voir 21).
+- La vue 2D, étape 5 (voir 21).

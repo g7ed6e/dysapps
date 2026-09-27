@@ -200,6 +200,22 @@ function drawFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: numbe
   if (img) ctx.drawImage(img, x, y);
 }
 
+/** Un fantôme : la face du bloc à poser, bleutée, entourée d'un pointillé blanc (on lit « à poser » d'un coup d'œil). */
+function drawGhost(ctx: CanvasRenderingContext2D, face: Face, x: number, y: number, env: DrawEnv) {
+  ctx.globalAlpha = GHOST_ALPHA;
+  drawFace(ctx, face, x, y, env);
+  ctx.fillStyle = 'rgba(120, 190, 255, 0.35)';
+  ctx.fillRect(x, y, TILE, TILE);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+  for (let i = 0; i < TILE; i += 2) {
+    ctx.fillRect(x + i, y, 1, 1);
+    ctx.fillRect(x + i + 1, y + TILE - 1, 1, 1);
+    ctx.fillRect(x, y + i + 1, 1, 1);
+    ctx.fillRect(x + TILE - 1, y + i, 1, 1);
+  }
+}
+
 /** Dessine un morceau de terrain (CHUNK × CHUNK cases) dans son canvas, à l'échelle des textures. */
 export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): HTMLCanvasElement | null {
   const canvas = document.createElement('canvas');
@@ -216,21 +232,31 @@ export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): H
       drawFace(ctx, t.solid, x, y, env);
       if (env.style.edges || env.style.shadows) decorateFace(ctx, t.solid, x, y, env);
     }
-    if (t.ghost) {
-      ctx.globalAlpha = GHOST_ALPHA;
-      drawFace(ctx, t.ghost, x, y, env);
-      ctx.fillStyle = 'rgba(120, 190, 255, 0.35)';
-      ctx.fillRect(x, y, TILE, TILE);
-      ctx.globalAlpha = 1;
-      // Un pointillé blanc autour : la case « à poser » se lit d'un coup d'œil.
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      for (let i = 0; i < TILE; i += 2) {
-        ctx.fillRect(x + i, y, 1, 1);
-        ctx.fillRect(x + i + 1, y + TILE - 1, 1, 1);
-        ctx.fillRect(x, y + i + 1, 1, 1);
-        ctx.fillRect(x + TILE - 1, y + i, 1, 1);
-      }
-    }
+    if (t.ghost) drawGhost(ctx, t.ghost, x, y, env);
   }
   return canvas;
+}
+
+/**
+ * Dessine toute une petite carte de tuiles (un objet à part, comme le Bloc-Navire) dans son canvas ; `col0` et `row0`
+ * disent où tombe son coin haut-gauche, en cases de l'objet.
+ */
+export function drawTileMap(map: TileMap, env: DrawEnv): { canvas: HTMLCanvasElement; col0: number; row0: number } | null {
+  if (!map.tiles.size) return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = (map.maxCol - map.minCol + 1) * TILE;
+  canvas.height = (map.maxRow - map.minRow + 1) * TILE;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.imageSmoothingEnabled = false;
+  for (const t of map.tiles.values()) {
+    const x = (t.col - map.minCol) * TILE;
+    const y = (t.row - map.minRow) * TILE;
+    if (t.solid) {
+      drawFace(ctx, t.solid, x, y, env);
+      if (env.style.edges || env.style.shadows) decorateFace(ctx, t.solid, x, y, env);
+    }
+    if (t.ghost) drawGhost(ctx, t.ghost, x, y, env);
+  }
+  return { canvas, col0: map.minCol, row0: map.minRow };
 }

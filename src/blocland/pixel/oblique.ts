@@ -5,6 +5,8 @@
 import type { VoxelCube } from '../Voxel';
 import { islandCenter, worldBounds } from '../world/terrain';
 import { ALTITUDE, islandDef, landBox, type ArchipelagoId } from '../world/map';
+import { getArchipelago } from '../world/archipelago';
+import { dockBox } from '../world/harbour';
 import type { BiomeId } from '../biomes';
 import type { Cell } from '../world/view';
 
@@ -181,7 +183,7 @@ function clampAxis(c: number, half: number, lo: number, hi: number): number {
  * sortir de l'île (sa terre et un peu de mer autour).
  */
 export function frame2D(
-  target: { archipelago: ArchipelagoId; map: boolean; island: BiomeId | null; home: BiomeId | null; avatar?: Cell | null },
+  target: { archipelago: ArchipelagoId; map: boolean; island: BiomeId | null; home: BiomeId | null; avatar?: Cell | null; spot?: Cell | null },
   map: TileMap,
   screen: { w: number; h: number },
 ): View2D {
@@ -201,12 +203,18 @@ export function frame2D(
   }
   const s = crisp(Math.min(screen.w, screen.h) / (CLOSE_TILES * TILE));
   const c = islandCenter(room);
-  // Le bonhomme s'il se tient sur l'île regardée (au sol : un bloc au-dessus du cube où il se tient), sinon le cœur.
-  const at = !target.island && target.avatar ? target.avatar : { x: c.x, y: c.y, z: c.z + 1 };
+  // Un point à montrer (le chantier du navire), sinon le bonhomme s'il se tient sur l'île regardée (au sol : un bloc
+  // au-dessus du cube où il se tient), sinon le cœur de l'île.
+  const at = target.spot ?? (!target.island && target.avatar ? target.avatar : { x: c.x, y: c.y, z: c.z + 1 });
   const { bx, by } = project(at.x + 0.5, at.y + 0.5, at.z);
-  const b = landBox(islandDef(room));
+  // La salle : la terre de l'île, et pour le port de l'archipel, sa jetée et son navire.
+  const land = landBox(islandDef(room));
+  const dock = getArchipelago(target.archipelago).port === room ? dockBox(room) : null;
+  const b = dock
+    ? { x0: Math.min(land.x0, dock.x0), y0: Math.min(land.y0, dock.y0), x1: Math.max(land.x1, dock.x1), y1: Math.max(land.y1, dock.y1) }
+    : land;
   const lo = project(0, b.y1 + ROOM_MARGIN, c.z + 4).by;
-  const hi = project(0, b.y0 - ROOM_MARGIN, c.z - 2).by;
+  const hi = project(0, b.y0 - ROOM_MARGIN, Math.min(c.z, 0) - 2).by;
   return {
     cx: clampAxis(bx, screen.w / s / 2, (b.x0 - ROOM_MARGIN) * TILE, (b.x1 + ROOM_MARGIN) * TILE),
     cy: clampAxis(by, screen.h / s / 2, lo, hi),

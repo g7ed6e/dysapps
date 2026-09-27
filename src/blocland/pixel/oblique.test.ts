@@ -100,6 +100,17 @@ describe('le cadrage', () => {
   const map = buildTiles(worldCubes('6e', {}), -1);
   const screen = { w: 1000, h: 700 };
 
+  it('au port, la vue peut aller jusqu’au navire ; un point à montrer (le chantier du navire) passe avant le bonhomme', async () => {
+    const { dockOrigin } = await import('../world/harbour');
+    const o = dockOrigin('plaine');
+    const spot = { x: o.x + 2, y: o.y + 5, z: o.z + 3 };
+    const v = frame2D({ archipelago: '6e', map: false, island: 'plaine', home: 'plaine', spot }, map, screen);
+    const want = project(spot.x + 0.5, spot.y + 0.5, spot.z);
+    // La salle du port comprend la jetée et le navire : la vue s'en approche bien plus que du cœur de l'île.
+    const heart = frame2D({ archipelago: '6e', map: false, island: 'plaine', home: 'plaine' }, map, screen);
+    expect(Math.abs(v.cy - want.by)).toBeLessThan(Math.abs(heart.cy - want.by));
+  });
+
   it('une échelle nette : un nombre entier de pixels, ou l’échelle exacte sous un pixel', () => {
     expect(crisp(2.4)).toBe(2);
     expect(crisp(2.6)).toBe(3);

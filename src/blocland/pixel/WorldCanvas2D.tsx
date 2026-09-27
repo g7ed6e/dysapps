@@ -2,6 +2,7 @@
 // vue 3D (world/view.ts), même simulation (world/scene.ts) ; le terrain est une carte de tuiles (oblique.ts) dessinée
 // par morceaux, d'avance (draw.ts). Chargé à la demande, sans Three.js (voir ./index.ts).
 // Étape 3 : le bonhomme, les créatures et les Gardiens, les panneaux des bornes et leurs repères, le jour et la nuit.
+// Étape 4 : le Bloc-Navire (à quai, en chantier, en voyage).
 import { useEffect, useRef } from 'react';
 import type { BiomeId } from '../biomes';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
@@ -24,9 +25,11 @@ import {
   type Walk,
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
+import { VEHICLE_DECK } from '../world/harbour';
+import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import type { Cell, WorldViewProps } from '../world/view';
-import { drawChunk, type DrawEnv } from './draw';
+import { drawChunk, drawTileMap, type DrawEnv } from './draw';
 import { propsOf, type Prop, type Station } from './props';
 import {
   avatarSprite,
@@ -59,7 +62,8 @@ interface Hit {
   y: number;
   w: number;
   h: number;
-  act: () => void;
+  /** Ce que fait le toucher (au point touché, en pixels de l'écran) ; faux : le toucher passe au sol dessous. */
+  act: (sx: number, sy: number) => boolean | void;
 }
 
 /** Une créature ou un Gardien qui se promène, son sprite, et le milieu de la place qu'occupent ses cubes. */
@@ -87,6 +91,7 @@ export default function WorldCanvas2D({
   focus,
   reduceMotion = false,
   vehicle = null,
+  onPickVehicle,
   voyage = null,
   onVoyageLegEnd,
   onVoyageSkip,
@@ -109,7 +114,7 @@ export default function WorldCanvas2D({
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { avatar: Boolean(avatar), onPickIsland, onPickBridge, onPickQuest, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay };
+  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, archipelago, vehicle, marker, trail, quests, forceDay };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -128,6 +133,8 @@ export default function WorldCanvas2D({
   const hero = useRef<{ walk: Walk | null; at: Cell | null; facing: Facing }>({ walk: null, at: null, facing: 'down' });
   const walkers = useRef<Walker[]>([]);
   const sparks = useRef<Spark[]>([]);
+  // Le Bloc-Navire : ses tuiles (pour le toucher) et son image, dessinée une fois à chaque changement.
+  const ship = useRef<{ map: TileMap; image: ReturnType<typeof drawTileMap>; maxY: number } | null>(null);
 
   // ---- Le terrain : la carte des tuiles, et ses morceaux redessinés à la demande
   useEffect(() => {
@@ -162,6 +169,17 @@ export default function WorldCanvas2D({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
+  // ---- Le Bloc-Navire : ses cubes (locaux) dessinés comme le terrain, dans une image à part qui tangue
+  useEffect(() => {
+    if (!vehicle) {
+      ship.current = null;
+      return;
+    }
+    const map = buildTiles(vehicle.cubes);
+    const image = drawTileMap(map, { surface: surfaceOf(vehicle.cubes), style: STYLE, sea: false });
+    ship.current = { map, image, maxY: Math.max(0, ...vehicle.cubes.map((c) => c.y)) };
+  }, [vehicle]);
+
   // ---- Les éclats à la pose d'un bloc
   useEffect(() => {
     if (!burst || burst.seq === 0 || reduceMotion) return;
@@ -179,8 +197,7 @@ export default function WorldCanvas2D({
     if (focus.seq === 0) view.current = null;
   }, [focus.island, focus.seq]);
 
-  // ---- Le voyage : le bonhomme marche jusqu'au pont, monte à bord (on ne le voit plus), puis débarque à l'arrivée.
-  // (Le Bloc-Navire lui-même viendra à l'étape suivante.)
+  // ---- Le voyage : le bonhomme marche jusqu'au pont et monte à bord ; le navire s'éloigne (ou accoste, et il débarque)
   useEffect(() => {
     const now = performance.now();
     voyageRef.current = voyage && voyage.seq !== 0 && vehicle ? startVoyage(voyage, now) : null;
@@ -265,7 +282,10 @@ export default function WorldCanvas2D({
       if (voyageRef.current) return p.onVoyageSkip?.();
       if (finishWalk(hero.current.walk, performance.now())) return;
       const hit = hitAt(e);
-      if (hit) return hit.act();
+      if (hit) {
+        const { sx, sy } = toCanvas(e);
+        if (hit.act(sx, sy) !== false) return;
+      }
       const ground = pickAt(e);
       const t = terrain.current;
       if (!ground || !t) return;
@@ -336,14 +356,32 @@ export default function WorldCanvas2D({
       const scr = screen();
       if (p.forceDay && light !== 1) light = 1;
 
-      // Le voyage : le bonhomme débarque à l'arrivée ; à bord, on ne le voit pas.
+      // Le Bloc-Navire : à quai, il tangue (ou plane, dans le ciel) ; en voyage, il suit sa trajectoire.
       let aboard = false;
+      let sailing: { k: number; stage: 1 | 2 | 3 } | null = null;
+      let shipAt: Cell | null = null;
       const vy = voyageRef.current;
-      if (vy && p.vehicle) {
-        const f = voyageFrame(vy, p.vehicle.port, now);
-        if (f.disembark) hero.current.walk = f.disembark;
-        aboard = f.aboard;
-        if (f.end) p.onVoyageLegEnd?.();
+      if (p.vehicle) {
+        const o = p.vehicle.origin;
+        const rest = p.vehicle.afloat ? Math.sin(t * 1.8) * 0.08 : 0.3 + Math.sin(t * 0.9) * 0.15;
+        shipAt = { x: o.x, y: o.y, z: o.z + rest };
+        if (vy) {
+          const f = voyageFrame(vy, p.vehicle.port, now);
+          // Accosté : le bonhomme débarque (le chemin d'embarquement à rebours).
+          if (f.disembark) hero.current.walk = f.disembark;
+          aboard = f.aboard;
+          const path = vehiclePath(vy.stage, f.k);
+          shipAt = { x: o.x + path.dx, y: o.y + path.dy, z: o.z + path.dz };
+          if (f.underway && !reduceMotion) {
+            sailing = { k: f.progress, stage: vy.stage };
+            // L'écume à la poupe, à la voile.
+            if (vy.stage === 1 && now - vy.lastFoam > 100) {
+              vy.lastFoam = now;
+              sparks.current.push({ x: shipAt.x + 2.5 + (Math.random() - 0.5) * 3, y: shipAt.y + 8, z: shipAt.z + 0.2, vx: (Math.random() - 0.5) * 1.5, vy: 1.5, vz: 1.2, born: now, color: '#f4f8fb' });
+            }
+          }
+          if (f.end) p.onVoyageLegEnd?.();
+        }
       }
 
       // Le bonhomme sur son trajet : où il est, où il regarde, s'il marche.
@@ -358,7 +396,17 @@ export default function WorldCanvas2D({
       }
 
       // La caméra rejoint son cadrage en douceur (le bonhomme, pas à pas) ; le changement d'échelle aussi.
-      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: h.at }, tm.map, scr);
+      // Le chantier du navire (la flèche posée sur lui) : la caméra va le montrer.
+      // (La flèche flotte en haut du mât : on regarde plus bas, le milieu du navire.)
+      const spot = p.focus && p.marker && typeof p.marker !== 'string' ? { ...p.marker, z: p.marker.z - 9 } : null;
+      const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: h.at, spot }, tm.map, scr);
+      if (sailing && shipAt) {
+        // En mer (ou dans les airs) : la caméra suit le navire, et recule un peu à mesure qu'il s'éloigne.
+        const c = project(shipAt.x + 2.5, shipAt.y + 5, shipAt.z + 2);
+        target.cx = c.bx;
+        target.cy = c.by;
+        target.s = Math.max(1, target.s * (1 - 0.35 * sailing.k));
+      }
       const v = view.current;
       if (!v || reduceMotion) view.current = target;
       else {
@@ -487,6 +535,53 @@ export default function WorldCanvas2D({
           },
         });
       }
+      const sh = ship.current;
+      if (sh?.image && shipAt) {
+        const pos = shipAt;
+        standing.push({
+          // Le navire se range par son bord le plus lointain : ce qui est sur le quai devant lui passe devant.
+          depth: pos.y + sh.maxY - pos.z,
+          draw: () => {
+            const img = sh.image!;
+            const o = project(pos.x, pos.y, pos.z);
+            const tlS = toScreen(cam, scr, o.bx + img.col0 * TILE, o.by + img.row0 * TILE);
+            const brS = toScreen(cam, scr, o.bx + (img.col0 + img.canvas.width / TILE) * TILE, o.by + (img.row0 + img.canvas.height / TILE) * TILE);
+            const r = { x: Math.round(tlS.sx), y: Math.round(tlS.sy), w: Math.round(brS.sx) - Math.round(tlS.sx), h: Math.round(brS.sy) - Math.round(tlS.sy) };
+            ctx.drawImage(img.canvas, r.x, r.y, r.w, r.h);
+            // La flamme du réacteur, qui vacille, en vol.
+            if (sailing?.stage === 3) {
+              const fl = at(pos.x + 2.5, pos.y + 11.6, pos.z + 1.5);
+              const hgt = (5 + 3 * Math.abs(Math.sin(t * 37)) + 2 * Math.random()) * cam.s;
+              ctx.fillStyle = '#ff7a1a';
+              ctx.fillRect(Math.round(fl.sx - 5 * cam.s), Math.round(fl.sy), Math.round(10 * cam.s), Math.round(hgt));
+              ctx.fillStyle = '#ffd24a';
+              ctx.fillRect(Math.round(fl.sx - 2 * cam.s), Math.round(fl.sy), Math.round(4 * cam.s), Math.round(hgt * 0.6));
+            }
+            // Le bonhomme sur le pont, pendant le voyage.
+            if (aboard && p.avatar) {
+              const d = at(pos.x + VEHICLE_DECK.x + 0.5, pos.y + VEHICLE_DECK.y + 0.5, pos.z + 1);
+              const sprite = avatarSprite('down', 0);
+              if (sprite) placeSprite(ctx, sprite, d.sx, d.sy, cam.s);
+            }
+            // Le toucher : une case à poser se pose ; ailleurs sur le navire, le panneau du port s'ouvre.
+            newHits.push({
+              ...r,
+              act: (sx, sy) => {
+                const b = toBase(cam, scr, sx, sy);
+                const hit = pickTile(sh.map, Math.floor((b.bx - o.bx) / TILE), Math.floor((b.by - o.by) / TILE));
+                if (!hit) return false;
+                const q = props.current;
+                if (!q.vehicle) return false;
+                const vo = q.vehicle.origin;
+                const cell = { x: vo.x + hit.cell.x, y: vo.y + hit.cell.y, z: vo.z + hit.cell.z };
+                const ghost = q.vehicle.cubes.some((c) => c.ghost && c.x === hit.cell.x && c.y === hit.cell.y && c.z === hit.cell.z);
+                if (ghost && q.build) q.build.onPickFace(cell, cell);
+                else q.onPickVehicle?.(q.vehicle.port);
+              },
+            });
+          },
+        });
+      }
       if (h.at && p.avatar && !aboard) {
         const { x, y, z } = h.at;
         standing.push({
@@ -530,7 +625,10 @@ export default function WorldCanvas2D({
       const mk = p.marker;
       if (mk) {
         const c = typeof mk === 'string' ? islandCenter(mk) : mk;
-        const z = typeof mk === 'string' ? c.z + 2 : c.z;
+        // Une île : au-dessus de son cœur. Une case (le chantier du navire, calée sur le haut du mât en 3D) : juste
+        // au-dessus de la coque, qui se voit de dessus.
+        const top = p.vehicle ? p.vehicle.origin.z + 4 : c.z;
+        const z = typeof mk === 'string' ? c.z + 2 : Math.min(c.z, top);
         const { sx, sy } = at(c.x + 0.5, c.y + 0.5, z);
         drawChevron(ctx, sx, sy - 18 * cam.s - Math.abs(Math.sin(t * 2.2)) * 3 * mark, mark);
       }
