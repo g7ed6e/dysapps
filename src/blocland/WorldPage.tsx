@@ -253,7 +253,10 @@ export function WorldPage() {
       // Sous le voile : l'archipel change (la scène est reconstruite), puis l'arrivée se joue dans le nouveau.
       setVeil(true);
       later(() => {
-        applyArrival(voyage);
+        const port = applyArrival(voyage);
+        // La caméra et le bonhomme passent au port d'en face : la scène nouvelle s'ouvre sur lui, pas sur la mer.
+        setFocus((f) => ({ island: port, seq: f.seq + 1 }));
+        setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
         setVoyage((v) => (v ? { ...v, leg: 'arrivee', seq: v.seq + 1 } : v));
         later(() => setVeil(false), VEIL_MS / 3);
       }, VEIL_MS / 2);

@@ -211,6 +211,10 @@ export default function WorldCanvas2D({
   useEffect(() => {
     if (focus.seq === 0) view.current = null;
   }, [focus.island, focus.seq]);
+  // Un autre archipel (sous le voile du voyage) : une autre scène, la caméra y est d'emblée, sans traverser la mer.
+  useEffect(() => {
+    view.current = null;
+  }, [archipelago]);
 
   // ---- Le voyage : le bonhomme marche jusqu'au pont et monte à bord ; le navire s'éloigne (ou accoste, et il débarque)
   useEffect(() => {
