@@ -1,13 +1,8 @@
 # Consignes pour les agents
 
-Les consignes du dépôt (attribution, version, documentation à tenir à jour à chaque pull request) sont dans [CLAUDE.md](CLAUDE.md) et s'appliquent à tout agent ou assistant, quel que soit l'outil.
+Les consignes du dépôt (attribution, version, documentation à tenir à jour à chaque pull request) sont dans [CLAUDE.md](CLAUDE.md) et s’appliquent à tout agent ou assistant, quel que soit l’outil. Elles ne sont pas recopiées ici, pour ne pas diverger.
 
-En résumé, chaque pull request :
+Le dépôt fournit deux agents spécialisés, décrits dans [Contribuer](docs/conception/contribuer.md#les-deux-agents) :
 
-1. ne touche pas à la version : elle se calcule depuis git à la fusion (`scripts/version.mjs`) ;
-2. ajoute un fragment de journal `docs/_journal/<nom-de-la-branche>.md`, sans titre ;
-3. met à jour le manuel (`docs/manuel/`), les principes ou la conception (`docs/pedagogie/principes.md`, `docs/conception/`) quand ce qu'ils décrivent change ;
-4. laisse les pages générées du contenu pédagogique au générateur (`scripts/docs/generate.mjs`), à compléter seulement pour un nouveau type de donnée ;
-5. fait citer à toute quête nouvelle les compétences du programme officiel qu'elle travaille (`programme` dans `src/blocland/biomes.ts` ou `src/apps/registry.ts`, identifiants de `src/programme/`) et tient `src/programme/exclusions.ts` à jour (voir `docs/conception/programmes.md`) ;
-6. passe `npm test`, `npm run build`, `npm run docs:check` et `npm run docs:build` ;
-7. ne porte aucune signature d'outil ni mention d'assistant.
+- `.claude/agents/directeur-contenu-pedagogique.md` : le contenu pédagogique (programme officiel, exercices, règles dys) ;
+- `.claude/agents/directeur-artistique.md` : le game design et la direction artistique, et la migration de Blocland vers Archipéo.

@@ -1,8 +1,8 @@
 # Cadrage — « De Blocland à Archipéo » (direction artistique et game design)
 
-Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp` ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Rien n’est encore construit : le [style actuel](style.md) et les cadrages existants décrivent toujours l’application en ligne.
+Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp` ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Rien n’est encore construit : le [style actuel](style.md) et le [cadrage du game design de Blocland](cadrage-blocland.md) décrivent toujours l’application en ligne.
 
-L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#le-directeur-artistique)) conduit cette migration côté game design et direction artistique. Le contenu pédagogique reste au Directeur contenu pédagogique, et les choix techniques à ceux qui écrivent le code.
+L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#les-deux-agents)) conduit cette migration côté game design et direction artistique. Le contenu pédagogique reste au Directeur contenu pédagogique, et les choix techniques à ceux qui écrivent le code.
 
 ## 1. Le besoin en une phrase
 
@@ -71,10 +71,10 @@ Les douze principes de `design/archipeo/design-principles.md` (DP-01 à DP-12) e
 | Nom | Archipéo | DysApps, Blocland |
 | Style | Low-poly stylisé, lumière atmosphérique | Monde en blocs, textures 16 × 16 en pixels générées par le code ([Style](style.md)) |
 | Polices de titre | Montserrat ou Poppins ; textes en Luciole | Archivo Black (affiche), Silkscreen (décor pixel) ; textes dans la police dys choisie |
-| Archipels | Premiers Rivages, Brumes, Anciens Ateliers, Horizon | Basses Terres, Collines du Large, Monts de Feu, Îles du Ciel ([Archipels](cadrage-archipels.md)) |
+| Archipels | Premiers Rivages, Brumes, Anciens Ateliers, Horizon | Basses Terres, Collines du Large, Monts de Feu, Îles du Ciel ([Blocland](cadrage-blocland.md)) |
 | Rangs | Rôles : Explorateur, Navigateur, Bâtisseur, Architecte | Minerais : cuivre, fer, or, platine, diamant, légende |
 | Guide | La baleine, voix de l’univers | Une créature par île-port (Coco, Bazar, Ixe, Fi) ; les baleines sont un décor |
-| Village | Cinq états, jusqu’au port | Plans et ouvrages, monuments ([Village](cadrage-village.md)) |
+| Village | Cinq états, jusqu’au port | Plans et ouvrages, monuments ([Blocland](cadrage-blocland.md)) |
 | Vocabulaire | Missions | Quêtes, bornes, ouvrages, plans, Gardiens |
 
 ## 5. À décider
