@@ -19,7 +19,7 @@ export function ExercisePage() {
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
   const type = biome?.exercises.find((e) => e.id === typeId);
-  // « Continuer » (écran titre, accueil) ramène ici.
+  // « Continuer » (écran titre, menus) ramène ici.
   useRememberPlace(biome && type ? { path: `/aventure/${biome.id}/${type.id}`, label: `${type.title} · ${biome.name}` } : null);
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
   // sinon la fin de partie relancerait un autre exercice au lieu d'afficher la récompense.

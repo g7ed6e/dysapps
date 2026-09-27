@@ -1,6 +1,6 @@
 # Cadrage — « Blocland, l’appli entière »
 
-Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village), 2 (le village au démarrage) et 3 (la salle des trophées) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit), [§ 9](#9-etape-2-ce-qui-est-construit) et [§ 10](#10-etape-3-ce-qui-est-construit) ; le retrait des onglets et l’étape 4 restent à faire. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
+Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village), 2 (le village au démarrage) et 3 (la salle des trophées) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit), [§ 9](#9-etape-2-ce-qui-est-construit) et [§ 10](#10-etape-3-ce-qui-est-construit) , ainsi que le nettoyage de l’étape 4 ([§ 11](#11-etape-4-le-nettoyage)) ; seul le retrait des onglets reste à décider. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
 
 ## 1. Le besoin en une phrase
 
@@ -124,4 +124,16 @@ Livrée le 27 septembre 2026 : la salle des trophées. Le retrait des onglets, p
 - **Les succès sont des objets posés** : un trophée par succès gagné (`trophies.ts`), dans l’ordre des succès, à des places fixes (`TROPHY_SLOTS` : socles, faîte, second rang, bord du toit ; une place par succès, un test le vérifie). Le bloc dit la famille : or (exploits), cristal (rangs), quartz (Gardiens), lentille (voyages). Le monde se redessine quand un succès tombe.
 - **Le panneau** (`TrophySheet.tsx`) : une phrase lue à voix haute, puis le profil de la page Succès (`ProgressBody`, partagé). La ligne « Succès » du menu du village y mène ; la page Succès reste là (onglet, barre du haut, `#/succes`). En vue simple, `#/aventure/trophees` mène à la page Succès.
 - **On y entre** en touchant le pavillon ou un trophée (3D, 2D, « Entrer » en marche libre), ou par une ligne du panneau de l’île. Le bonhomme marche jusqu’à la salle.
+
+## 11. Étape 4 : le nettoyage
+
+Livrée le 27 septembre 2026.
+
+- **Le bouton retour** du téléphone (ou du navigateur) ouvre le menu du village quand aucun panneau n’est ouvert (`useBackOpensMenu.ts` : une entrée d’historique de plus à la même adresse, remplacée par le menu au retour). Depuis le menu, un second retour quitte l’appli ou revient à la page d’avant : le retour n’enferme jamais l’élève.
+- **Le tutoriel du village** passe de six à huit bulles : l’école et la salle des trophées (le bouton École entouré), puis le menu (le bouton ⏸ entouré, et le bouton retour).
+- **La vue simple** : la page de l’île de l’école a les deux lieux (l’école, et la salle des trophées qui y est la page Succès) ; `#/aventure/trophees` mène à la page Succès.
+- **Les mots** : « l’accueil » désignait l’ancien menu ; le manuel, les principes (« toujours au même endroit, avec les mêmes mots ») et les commentaires du code disent maintenant « le menu » (en page ou dans le village). L’accueil est l’adresse `/`, qui mène au village ou au menu selon le réglage.
+- **Pages en double** : il n’en reste pas. La page matière et les portes de l’école partagent `SubjectApps`, la page Succès et la salle des trophées partagent `ProgressBody`. Le menu en page et le menu du village restent deux vues, l’une en page, l’autre en panneau sur le monde, avec les mêmes entrées.
+
+**Reste à décider** : le retrait des onglets du téléphone (§ 3.4). Proposition : l’observer d’abord ; le menu du village et le bouton retour couvrent déjà ce que les onglets offraient dans le monde, où ils étaient masqués.
 

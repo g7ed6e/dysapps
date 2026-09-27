@@ -1,4 +1,4 @@
-// La dernière quête ouverte, pour le bouton « Continuer » (écran titre et accueil) : son adresse et son nom.
+// La dernière quête ouverte, pour le bouton « Continuer » (écran titre et menus) : son adresse et son nom.
 import { useEffect } from 'react';
 import { loadJSON, removeKey, saveJSON } from './storage';
 

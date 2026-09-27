@@ -18,6 +18,7 @@ import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MenuSheet } from './MenuSheet';
+import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
@@ -348,6 +349,9 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, mapOpen, placeOpen]);
 
+  // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
+  useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
+
   if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !trophiesOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
@@ -435,6 +439,7 @@ export function WorldPage() {
           <button
             type="button"
             className="button world-menu-button"
+            data-tuto="menu"
             aria-label="Menu"
             aria-pressed={menuOpen}
             aria-controls={menuOpen ? 'panneau-menu' : undefined}
@@ -495,14 +500,16 @@ export function WorldPage() {
           <Tutorial
             id="village-immersif"
             replay={replay}
-            targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', undefined, undefined]}
+            targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', '[data-tuto="ecole"]', undefined, undefined, '[data-tuto="menu"]']}
             steps={[
               'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
               'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout l’archipel du ciel.',
               'Sur chaque île, les bornes à panneau sont les quêtes : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une quête à faire, des cubes d’or comptent tes étoiles.',
               'Dans le panneau : les quêtes donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',
+              'Sur la Forêt, l’école du village a trois portes : français, maths, anglais. Chaque quête finie là-bas donne aussi des blocs. À côté, la salle des trophées garde un trophée par succès.',
               'Les îles pâles sont fermées. Pour y aller, construis un ouvrage : un pont, un bac ou un sentier coûte des blocs ; un escalier demande un plan terminé, un col un Gardien vaincu. Choisis ta direction.',
               'Au port, sur la Plaine des nombres, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : l’archipel de 5e t’attend, et tu peux toujours revenir.',
+              'Le bouton pause, en haut à droite, ouvre le menu : reprendre, les quêtes, les succès, les réglages. Le bouton retour du téléphone l’ouvre aussi.',
             ]}
           />
           </div>
@@ -548,6 +555,7 @@ export function WorldPage() {
               className="button"
               aria-pressed={schoolOpen}
               aria-label={SCHOOL_TITLE}
+              data-tuto="ecole"
               aria-controls={schoolOpen ? 'panneau-ecole' : undefined}
               onClick={() => (schoolOpen ? openIsland(at) : navigate(SCHOOL_PATH))}
             >

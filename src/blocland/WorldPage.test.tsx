@@ -339,3 +339,11 @@ it('la salle des trophées : on la touche dans le monde, son panneau montre les 
   await user.click(within(sheet).getByRole('button', { name: 'Fermer le panneau' }));
   expect(screen.queryByRole('dialog', { name: /Salle des trophées/ })).not.toBeInTheDocument();
 });
+
+it('le bouton retour, dans le village, ouvre le menu du village au lieu de quitter', async () => {
+  renderAt('/aventure');
+  await screen.findByRole('button', { name: 'Menu' });
+  window.history.back();
+  expect(await screen.findByRole('dialog', { name: 'Menu' })).toBeInTheDocument();
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
+});
