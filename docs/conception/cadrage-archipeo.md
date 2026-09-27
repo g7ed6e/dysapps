@@ -2,7 +2,7 @@
 
 Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp` ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Rien n’est encore construit : le [style actuel](style.md) et le [cadrage du game design de Blocland](cadrage-blocland.md) décrivent toujours l’application en ligne.
 
-L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#les-deux-agents)) conduit cette migration côté game design et direction artistique. Le contenu pédagogique reste au Directeur contenu pédagogique, et les choix techniques à ceux qui écrivent le code.
+L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#les-agents)) conduit cette migration côté game design et direction artistique. L’agent `artiste-technique-3d` la réalise dans le rendu : le directeur artistique décide quoi, l’artiste technique 3D décide comment. Le contenu pédagogique reste au Directeur contenu pédagogique, et les autres choix techniques à ceux qui écrivent le code.
 
 ## 1. Le besoin en une phrase
 
@@ -81,7 +81,7 @@ Les douze principes de `design/archipeo/design-principles.md` (DP-01 à DP-12) e
 
 Chaque point se tranche dans ce cadrage avant d’être construit, lot par lot :
 
-- **Le style en code** : comment un rendu low-poly reste « dessiné par le code », sans image ni texture importée.
+- **Le style en code** : comment un rendu low-poly reste « dessiné par le code », sans image ni texture importée (l’artiste technique 3D propose les approches et leur coût, le directeur artistique choisit le rendu).
 - **Les rangs** : la planche en montre quatre, un par classe ; le dossier en propose cinq (avec Cartographe) ; l’échelle de minerais actuelle a six marches.
 - **Le nom du 5e** : « L’Archipel des Brumes » dans le dossier, « Les Îles Brumeuses » sur la planche.
 - **Le vocabulaire** : « mission » remplace-t-il « quête » à l’écran ?
