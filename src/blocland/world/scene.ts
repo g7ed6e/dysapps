@@ -36,9 +36,13 @@ export function startWalk(route: Cell[], start: number, duration: number): Walk 
 export function avatarWalk(avatar: { route: Cell[]; seq: number }, now: number): Walk | null {
   if (!avatar.route.length) return null;
   const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
-  const length = routeLengths(route)[route.length - 1];
-  const duration = avatar.seq === 0 ? 0 : Math.min(WALK_MAX_MS, (length / WALK_SPEED) * 1000);
-  return startWalk(route, now, duration);
+  return startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
+}
+
+/** Le temps d'un trajet du bonhomme : six cases par seconde, jamais plus de six secondes. */
+export function walkDuration(route: Cell[]): number {
+  if (route.length < 2) return 0;
+  return Math.min(WALK_MAX_MS, (routeLengths(route)[route.length - 1] / WALK_SPEED) * 1000);
 }
 
 export interface WalkPose extends Cell {

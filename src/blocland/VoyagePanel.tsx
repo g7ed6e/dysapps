@@ -6,7 +6,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useBlocland } from './BloclandContext';
 import { VoxelScene } from './Voxel';
-import { ARCHIPELAGOS, getArchipelago, launchedCount, type ArchipelagoId } from './world/archipelago';
+import { ARCHIPELAGOS, archipelagoOf, getArchipelago, launchedCount, type ArchipelagoId } from './world/archipelago';
 import { VEHICLE_NAME, vehicleModel } from './world/vehicle';
 
 interface Props {
@@ -17,9 +17,14 @@ interface Props {
   onArrive: () => void;
 }
 
-/** La phrase du voyage, lue à voix haute. */
-export function voyageSentence(to: ArchipelagoId, back: boolean): string {
+/**
+ * La phrase du voyage, lue à voix haute. Vers un archipel déjà atteint : « Retour vers… » si l'on revient en arrière
+ * (depuis `from`), « Cap sur… » si l'on repart vers un archipel plus loin.
+ */
+export function voyageSentence(to: ArchipelagoId, back: boolean, from?: ArchipelagoId): string {
   const a = getArchipelago(to);
+  const forward = from !== undefined && ARCHIPELAGOS.findIndex((x) => x.classe === to) > ARCHIPELAGOS.findIndex((x) => x.classe === from);
+  if (back && forward) return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name}.`;
   if (back) return `Tu embarques sur ${VEHICLE_NAME}. Retour vers les ${a.name}.`;
   if (to === '5e') return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name} !`;
   if (to === '4e') return `Le ballon se gonfle. ${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} s’envole vers les ${a.name} !`;
@@ -33,7 +38,7 @@ export function voyageSentence(to: ArchipelagoId, back: boolean): string {
 export function VoyagePanel({ to, back, onArrive }: Props) {
   const { settings, speak } = useSettings();
   const { state } = useBlocland();
-  const text = voyageSentence(to, back);
+  const text = voyageSentence(to, back, archipelagoOf(state.village.at ?? 'foret').classe);
   useEffect(() => {
     if (settings.autoRead) speak(frenchTypography(text));
     // Une lecture par voyage.

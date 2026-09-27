@@ -54,6 +54,7 @@ Ce qui ne change pas : rien à lire dans la 3D, panneaux HTML lus à voix haute,
 - PR 1 : un écran HTML (`VoyagePanel`) par-dessus le monde ou en page (vue simple) : le navire dessiné, la phrase du voyage lue à voix haute, un seul bouton « Arriver ». À l'arrivée, la scène change d'un coup et le panneau du port s'ouvre.
 - PR 4 : la cinématique dans la 3D, en deux temps parce que la scène change d'archipel : le départ (le bonhomme marche jusqu'au pont, le navire s'éloigne, vue de côté), le voile et le changement d'archipel, puis l'arrivée (le navire accoste, le bonhomme débarque) ; huit secondes au plus, cinq pour un retour ; un toucher, Entrée, Espace, Échap ou le bouton « Arriver » font arriver tout de suite ; les sons (corne de brume, voile, brûleur, réacteur, carillon). Sous « Réduire les animations », c'est l'écran HTML de la PR 1 qui reste.
 - Le retour joue une version courte.
+- Tout changement d'archipel dans le monde passe par le voyage, à l'aller comme au retour : les boutons du port, « Aller au port » et « Voir le chantier » de la page des quatre archipels, un lien ou un retour d'exercice vers une île ouverte d'un autre archipel. Le bonhomme marche d'abord jusqu'au port s'il n'y est pas (un toucher le fait embarquer tout de suite), et, au port d'en face, jusqu'à l'île demandée. La phrase distingue « Cap sur les … » (vers un archipel plus loin) et « Retour vers les … ». La vue simple garde son écran de voyage et ses pages.
 
 ## 7. Vue simple
 
