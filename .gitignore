@@ -11,3 +11,4 @@ docs/.vitepress/.temp
 .wrangler
 .programme
 .claude/settings.local.json
+.claude/worktrees/

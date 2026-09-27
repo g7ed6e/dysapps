@@ -50,6 +50,7 @@ Le dépôt fournit un agent partagé pour Claude Code, `.claude/agents/directeur
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
 - Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
+- Les changements de style ou de game design (textures, polices, univers, cadrages) sont révisés par l’agent `directeur-artistique` avant fusion ; ses critères sont dans [`.claude/agents/directeur-artistique.md`](./../../../.claude/agents/directeur-artistique.md).
 
 ## Signaler un problème
 
