@@ -158,7 +158,7 @@ Décisions :
 Étapes (une pull request chacune) :
 
 1. **Préparer, sans rien changer à l'écran** (faite) : le contrat commun des vues (`world/view.ts`), la simulation commune (`world/scene.ts` : marche du bonhomme, promenade des créatures, temps du voyage, flèches, toucher du sol) et les textures sans Three.js (`world/pixels.ts`) sortent de la vue 3D. La 3D les utilise ; son image et ses gestes sont inchangés.
-2. **Première vue 2D**, derrière le réglage « Le monde en 2D (essai) » (faite) :
+2. **Première vue 2D**, derrière le réglage « Le monde en 2D (essai) », devenu « (expérimental) » (faite) :
    - **Réglage** : `worldView` (`'3d' | '2d' | 'liste'`) remplace l'interrupteur `view3d` (éteint : la liste). `useWorldView()` montre la vue choisie si l'appareil sait la dessiner (WebGL pour la 3D, Canvas 2D pour la 2D), sinon la liste.
    - **Tuiles** (`pixel/oblique.ts`) : un bloc de haut monte d'une case à l'écran, donc dessus et faces avant tombent sur une grille de cases de 16 pixels ; chaque case ne montre que la face du cube le plus proche (profondeur y − z). Le terrain devient une carte de tuiles : on la dessine par morceaux de 32 × 32 cases, d'avance (`pixel/draw.ts`), et on touche case par case (le bloc touché et la case devant sa face, comme en 3D). Les fantômes du plan sont une couche translucide.
    - **Rendu** : textures de `world/pixels.ts`, faces avant assombries avec une arête claire (les falaises se lisent), mer en couleur de l'archipel avec sa texture qui dérive (nuages dans les Îles du Ciel), échelle entière pour des pixels nets. Rien sous la mer n'est dessiné.
@@ -180,9 +180,9 @@ Décisions :
 5. **Marche libre en option, et la 2D par défaut sans WebGL** (faite) :
    - **Réglage** `freeWalk` (désactivé par défaut) : la vue 2D affiche une croix de direction et un bouton « Entrer » (boutons de 3,5 rem, texte jamais sous 18 px). Tenir une flèche (ou une touche) fait un pas d'une case à la fois, six par seconde (`pixel/walk.ts`, calcul pur testé) : jamais sur l'eau ni la lave, pas plus d'un bloc de dénivelé, pas à travers le décor haut (arbres, sapins, buissons, rochers, souches, cristaux), les panneaux ni les créatures ; on enjambe fleurs, champignons et roseaux. « Entrer » s'allume devant un panneau ou une créature et fait comme les toucher. Aucun chronomètre ni réflexe ; toucher pour aller reste.
    - **En salles** : en arrivant sur une autre île ouverte (un pont, un isthme), le bonhomme en fait son île (`onWalkedInto`, puis `moveTo`) ; la salle de la caméra change, elle glisse vers la nouvelle île.
-   - **Sans WebGL**, le réglage « Le monde en 3D » montre le monde en 2D (`resolveWorldView`) ; la liste ne reste que pour un appareil qui ne sait rien dessiner. La mention « essai » reste tant que la 2D n'a pas été essayée en classe.
+   - **Sans WebGL**, le réglage « Le monde en 3D » montre le monde en 2D (`resolveWorldView`) ; la liste ne reste que pour un appareil qui ne sait rien dessiner. La vue reste marquée « expérimental » (d'abord « essai ») tant que la 2D n'a pas été essayée en classe.
 
 ## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
-- La vue 2D : retirer la mention « essai » après un essai en classe (voir 21).
+- La vue 2D : retirer la mention « expérimental » après un essai en classe (voir 21).
