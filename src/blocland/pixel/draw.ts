@@ -6,6 +6,8 @@ import { CHUNK, TILE, type Face, type FaceKind, type Tile, type TileMap } from '
 import type { STYLE } from './style';
 import { PRIORITY, columnAt, materialOf, type Surface } from './surface';
 import { designedTile, fringeColors, hash, isGrainy, pavedTile } from './tiles';
+import type { Peinture } from './painted';
+import { drawPaintedChunk, drawPaintedTileMap } from './paintedDraw';
 
 const images = new Map<string, HTMLCanvasElement | null>();
 
@@ -60,6 +62,8 @@ export interface DrawEnv {
   style: typeof STYLE;
   /** Une mer autour (pas dans les Îles du Ciel) : l'écume au pied des rives. */
   sea: boolean;
+  /** La 2D peinte (`?rendu=archipeo`, lot R7) : l'archipel et le palier de lumière ; sans elle, la 2D en pixels. */
+  painted?: Peinture;
 }
 
 /** L'image d'une face : dessinée pour la 2D si le style le veut et si son sol en a une, sinon la texture du bloc. */
@@ -99,9 +103,9 @@ const INNER_LIGHT = 'rgba(255, 255, 255, 0.22)';
 /**
  * Le rebord d'un plateau, là où le sol descend au nord, à l'est ou à l'ouest (au sud, c'est la falaise) : un trait
  * sombre dehors, un reflet clair dedans, les coins saillants arrondis ; un coin rentrant (le sol ne descend qu'en
- * diagonale) marqué d'un point sombre.
+ * diagonale) marqué d'un point sombre. La 2D peinte y passe la couleur de son trait (`outline`).
  */
-function plateauBorder(ctx: CanvasRenderingContext2D, cube: VoxelCube, x: number, y: number, env: DrawEnv) {
+export function plateauBorder(ctx: CanvasRenderingContext2D, cube: VoxelCube, x: number, y: number, env: DrawEnv, outline = OUTLINE) {
   const lower = (dx: number, dy: number) => {
     const c = columnAt(env.surface, cube.x + dx, cube.y + dy);
     return !c || c.z < cube.z;
@@ -114,7 +118,7 @@ function plateauBorder(ctx: CanvasRenderingContext2D, cube: VoxelCube, x: number
     ctx.fillStyle = color;
     ctx.fillRect(x + px, y + py, 1, 1);
   };
-  ctx.fillStyle = OUTLINE;
+  ctx.fillStyle = outline;
   if (n) ctx.fillRect(x, y, TILE, 1);
   if (e) ctx.fillRect(x + TILE - 1, y, 1, TILE);
   if (w) ctx.fillRect(x, y, 1, TILE);
@@ -123,18 +127,18 @@ function plateauBorder(ctx: CanvasRenderingContext2D, cube: VoxelCube, x: number
   if (w) ctx.fillRect(x + 1, y + (n ? 2 : 0), 1, TILE - (n ? 2 : 0));
   // Coins saillants : on arrondit (le pixel du coin s'efface dans le contour, le suivant marque la courbe).
   const corner = (cx: number, cy: number, ix: number, iy: number) => {
-    px(cx, cy, OUTLINE);
-    px(ix, cy, OUTLINE);
-    px(cx, iy, OUTLINE);
-    px(ix, iy, OUTLINE);
+    px(cx, cy, outline);
+    px(ix, cy, outline);
+    px(cx, iy, outline);
+    px(ix, iy, outline);
   };
   if (n && e) corner(TILE - 1, 0, TILE - 2, 1);
   if (n && w) corner(0, 0, 1, 1);
   if (s && e) corner(TILE - 1, TILE - 1, TILE - 2, TILE - 2);
   if (s && w) corner(0, TILE - 1, 1, TILE - 2);
   // Coins rentrants.
-  if (!n && !e && lower(1, 1)) px(TILE - 1, 0, OUTLINE);
-  if (!n && !w && lower(-1, 1)) px(0, 0, OUTLINE);
+  if (!n && !e && lower(1, 1)) px(TILE - 1, 0, outline);
+  if (!n && !w && lower(-1, 1)) px(0, 0, outline);
 }
 
 /** Bords (B) et ombres (E) d'une face pleine, par-dessus son image. */
@@ -218,6 +222,7 @@ function drawGhost(ctx: CanvasRenderingContext2D, face: Face, x: number, y: numb
 
 /** Dessine un morceau de terrain (CHUNK × CHUNK cases) dans son canvas, à l'échelle des textures. */
 export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): HTMLCanvasElement | null {
+  if (env.painted) return drawPaintedChunk(map, cx, cy, env, env.painted);
   const canvas = document.createElement('canvas');
   canvas.width = CHUNK * TILE;
   canvas.height = CHUNK * TILE;
@@ -242,6 +247,7 @@ export function drawChunk(map: TileMap, cx: number, cy: number, env: DrawEnv): H
  * disent où tombe son coin haut-gauche, en cases de l'objet.
  */
 export function drawTileMap(map: TileMap, env: DrawEnv): { canvas: HTMLCanvasElement; col0: number; row0: number } | null {
+  if (env.painted) return drawPaintedTileMap(map, env, env.painted);
   if (!map.tiles.size) return null;
   const canvas = document.createElement('canvas');
   canvas.width = (map.maxCol - map.minCol + 1) * TILE;
