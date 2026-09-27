@@ -1,6 +1,6 @@
 # Cadrage — « De Blocland à Archipéo » (direction artistique et game design)
 
-Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers et `planche-archipeo.webp` ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Les lots 1 (les mots), 2 (l’interface) et 3 (mission réussie, le monde change) sont construits ; les décisions sont au §5 et le plan en lots au §6 : le [style actuel](style.md) et le [cadrage du game design de Blocland](cadrage-blocland.md) décrivent toujours l’application en ligne.
+Document de travail, **décidé le 27 septembre 2026** : le jeu migre de Blocland vers **Archipéo**. La cible est décrite par le dossier de game design et la planche visuelle rangés dans `design/archipeo/` (onze fichiers, `planche-archipeo.webp` et le pack visuel `pack-visuel/`, dont la planche maître `reference/archipeo-visual-identity-board.png` fait foi quand elle diffère de la première planche ; leur provenance est dans `design/archipeo/PROVENANCE.md`). Ce cadrage en tire les grandes lignes, liste les écarts avec le jeu actuel et dit qui tranche. Les lots 1 (les mots), 2 (l’interface) et 3 (mission réussie, le monde change) sont construits ; les décisions sont au §5 et le plan en lots au §6 : le [style actuel](style.md) et le [cadrage du game design de Blocland](cadrage-blocland.md) décrivent toujours l’application en ligne.
 
 L’agent `directeur-artistique` (voir [Contribuer](contribuer.md#les-agents)) conduit cette migration côté game design et direction artistique. L’agent `artiste-technique-3d` la réalise dans le rendu : le directeur artistique décide quoi, l’artiste technique 3D décide comment. Le contenu pédagogique reste au Directeur contenu pédagogique, et les autres choix techniques à ceux qui écrivent le code.
 
@@ -49,7 +49,8 @@ Trois échelles d’objectifs :
 ### 3.4 La direction artistique
 
 - Aventure maritime stylisée, mystérieuse et chaleureuse : volumes simples, silhouettes fortes, architecture modulaire (bois, pierre, métal, quais, tours, phares), lumière atmosphérique, brume légère, horizon profond.
-- Palette de la planche : bleu nuit, bleu pétrole, vert d’eau, sable, crème.
+- Palette de la planche : bleu nuit, bleu pétrole, vert d’eau, sable, crème. La planche maître du pack visuel la donne en valeurs : Nuit océan `#142B38`, Bleu lagon `#178078`, Vert île `#438B82`, Sable `#DAA66A`, Brume `#E5EBE3`.
+- Construction (pack visuel, `construction/`) : maisons à colombages aux toits d’ardoise bleue, pontons et quais de bois, grue de bois, phare blanc à toit rouge.
 - Interface sobre, contrastée, géométrique, en panneaux opaques derrière l’information ; chaque destination a une icône, un libellé et un état.
 - Célébrations élégantes : transformation du décor, son court, lumière ; pas de pluie de confettis.
 - À éviter : esthétique préscolaire, mascottes aux gros yeux, pastel partout, boutons-jouets, effets agressifs, écrans chargés.

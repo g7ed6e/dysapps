@@ -1,0 +1,1 @@
+Direction artistique : le pack visuel d’Archipéo (planche maître, palette en valeurs, éléments de construction, archipels, personnages) rejoint le dossier de référence, et le directeur artistique s’appuie dessus. Rien ne change encore à l’écran.

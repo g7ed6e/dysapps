@@ -1,0 +1,18 @@
+{
+  "project": "Archipéo",
+  "tagline": "Le savoir construit ton monde.",
+  "version": "0.1",
+  "assets": [
+    "brand/logo-identite.png",
+    "brand/ecran-accueil.png",
+    "world/carte-archipels.png",
+    "world/quatre-archipels.png",
+    "world/village-reconstruction.png",
+    "characters/baleine-et-oiseaux.png",
+    "ui/exercice-mathematiques.png",
+    "ui/exercice-francais.png",
+    "construction/batiments-et-elements.png",
+    "characters/explorateur.png"
+  ],
+  "note": "Concept art / visual direction; not production-ready sprites or UI exports."
+}
