@@ -23,6 +23,10 @@ import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
+import { ArchipelagoMap } from './ArchipelagoMap';
+import { nextDestination } from './world/destination';
+import { islandState } from './world/islandState';
+import { SpeakButton } from '../components/SpeakButton';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -40,6 +44,8 @@ export function BloclandPage() {
   const { state } = useBlocland();
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
+  const destination = nextDestination(state);
+  const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
@@ -62,6 +68,20 @@ export function BloclandPage() {
         </p>
       </section>
 
+      {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
+      <section className="panel home-resume" aria-label="Prochaine destination">
+        <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+          <Icon name="play" /> Y aller
+        </Link>
+        <p className="home-destination">
+          <SpeakButton text={destinationText} label="Écouter" compact />
+          <span>
+            <Syllabified text={destinationText} />
+          </span>
+        </p>
+      </section>
+      <ArchipelagoMap bridges={state.village.bridges} here={here} />
+
       {ARCHIPELAGOS.map((a) => {
         const reached = isArchipelagoReached(a.classe, state.village.bridges);
         const stage = stageAt(a.port);
@@ -70,7 +90,7 @@ export function BloclandPage() {
           <section key={a.classe} className={`archipel${reached ? '' : ' archipel-locked'}`} aria-labelledby={`archipel-${a.classe}`}>
             <h2 id={`archipel-${a.classe}`} className="section-title">
               <Icon name="map" /> {archipelagoTitle(a.classe)}{' '}
-              <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Fermé'}</span>
+              <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Dans la brume'}</span>
             </h2>
             {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="section-intro" />}
             {!reached && (
@@ -84,6 +104,7 @@ export function BloclandPage() {
                 const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
                 const bridge = unlocked || !reached ? undefined : buildableBridges(state.village.bridges, biome.id)[0];
                 const owned = state.inventory[biome.block] ?? 0;
+                const st = islandState(state, biome.id);
                 return (
                   <li key={biome.id}>
                     <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
@@ -95,6 +116,9 @@ export function BloclandPage() {
                       <span className="biome-block">
                         <BlockIcon top={block.top} side={block.side} size={28} />
                         {owned} bloc{owned > 1 ? 's' : ''} {ofBlock(biome.block)}
+                      </span>
+                      <span className={`island-state island-state-${st.id}`}>
+                        <Icon name={st.icon} /> {st.name}
                       </span>
                       {biome.id === a.port && (
                         <span className="tag">

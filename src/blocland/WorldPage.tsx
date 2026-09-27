@@ -32,6 +32,8 @@ import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
+import { nextDestination } from './world/destination';
+import { islandState } from './world/islandState';
 import { VILLAGE_STAGES, villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
 import { daylight } from './world/daylight';
@@ -150,10 +152,21 @@ export function WorldPage() {
       }),
     [a, state],
   );
-  // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde.
+  // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
+  const destination = useMemo(() => nextDestination(state), [state]);
+  const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
+  // avec leur état en icône et en mot.
   const islandLabels = useMemo(
-    () => islandsOf(a).filter((b) => isBiomeUnlocked(b.id, state.village.bridges)).map((b) => ({ id: b.id, text: b.name })),
-    [a, state.village.bridges],
+    () =>
+      islandsOf(a)
+        .filter((b) => mapOpen || isBiomeUnlocked(b.id, state.village.bridges))
+        .map((b) => {
+          const st = islandState(state, b.id);
+          return { id: b.id, text: b.name, ...(mapOpen ? { state: { id: st.id, name: st.name } } : {}) };
+        }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, mapOpen, state.village.bridges, state.village.plans, state.progress],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
@@ -427,11 +440,14 @@ export function WorldPage() {
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
+  // Sur la Carte, elle marque la prochaine destination.
   const marker = shipyard
     ? { x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }
-    : !island && a === '6e' && Object.keys(state.progress).length === 0
-      ? 'foret'
-      : null;
+    : mapOpen
+      ? destination.island
+      : !island && a === '6e' && Object.keys(state.progress).length === 0
+        ? 'foret'
+        : null;
   // Le navire touché : le panneau du port, sa section Bloc-Navire mise en avant.
   const onPickVehicle = (port: BiomeId) => {
     setHighlight('navire');
@@ -553,13 +569,46 @@ export function WorldPage() {
                   </button>
                 </>
               ) : (
-                <p>
-                  <strong>La Carte : les {archipelago.name}.</strong> Le fanion jaune, c’est toi. Touche une île pour y aller ; une île pâle est fermée :
-                  touche-la pour voir le chemin.{reachedNext || a !== '6e' ? ' Pour changer d’archipel, va au port : le Bloc-Navire t’y attend.' : ''}{' '}
-                  <button type="button" className="button" onClick={() => navigate('/aventure/monde')}>
-                    <Icon name="ship" /> Les quatre archipels
-                  </button>
-                </p>
+                <>
+                  <p className="world-map-destination">
+                    <SpeakButton text={destinationText} compact />
+                    <span>
+                      <Syllabified text={destinationText} />
+                    </span>
+                  </p>
+                  <p className="world-map-actions">
+                    <button type="button" className="button primary" onClick={() => openIsland(destination.island)}>
+                      <Icon name="play" /> Y aller
+                    </button>
+                    <button type="button" className="button" onClick={() => navigate('/aventure/monde')}>
+                      <Icon name="ship" /> Les quatre archipels
+                    </button>
+                  </p>
+                  {/* Les îles et leur état, en mots : ce que la Carte dessine sur chaque île, lisible sans la voir. */}
+                  <details className="world-map-islands">
+                    <summary>Les îles et leur état</summary>
+                    <ul>
+                      {islandsOf(a).map((b) => {
+                        const st = islandState(state, b.id);
+                        return (
+                          <li key={b.id}>
+                            <button type="button" className="world-map-island" onClick={() => onIsland(b.id)}>
+                              <span className="world-map-island-name">{b.name}</span>
+                              <span className={`island-state island-state-${st.id}`}>
+                                <Icon name={st.icon} /> {st.name}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <p>
+                      La Carte des {archipelago.name} : le fanion jaune, c’est toi ; la flèche jaune, ta prochaine destination. Touche une île pour y
+                      aller ; une île fermée montre le chemin d’ouvrages qui y mène.
+                      {reachedNext || a !== '6e' ? ' Pour changer d’archipel, va au port : le Bloc-Navire t’y attend.' : ''}
+                    </p>
+                  </details>
+                </>
               )}
             </div>
           )}

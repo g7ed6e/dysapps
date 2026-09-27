@@ -1,0 +1,120 @@
+// Écarter les étiquettes des îles pour qu'aucune n'en cache une autre (la Carte en montre une dizaine, sur deux lignes).
+// Calcul pur, en pixels d'écran, partagé par la vue 3D et la vue 2D : chaque étiquette essaie sa place, puis des places
+// voisines de plus en plus loin (dessous, dessus, de côté), et garde la première libre ; sinon la moins recouverte.
+
+export interface LabelBox {
+  /** Centre voulu de l'étiquette (au-dessus de son île). */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface LabelOffset {
+  dx: number;
+  dy: number;
+}
+
+/** Les décalages essayés, en fractions de la hauteur (dy) et de la largeur (dx) de l'étiquette, du plus proche au plus loin. */
+const TRIES: [number, number][] = (() => {
+  const out: [number, number][] = [];
+  for (const fy of [0, 0.55, -0.55, 1.1, -1.1, 1.65, -1.65, 2.2, -2.2, 2.75, -2.75]) for (const fx of [0, 0.3, -0.3, 0.6, -0.6]) out.push([fx, fy]);
+  return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
+})();
+
+function overlap(a: LabelBox, b: LabelBox, gap: number): number {
+  const ox = Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2) + gap;
+  const oy = Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2) + gap;
+  return ox > 0 && oy > 0 ? ox * oy : 0;
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v));
+}
+
+/** L'aire de l'étiquette qui sortirait du cadre. */
+function outside(a: LabelBox, bounds: { w: number; h: number }): number {
+  const inX = Math.max(0, Math.min(a.x + a.w / 2, bounds.w) - Math.max(a.x - a.w / 2, 0));
+  const inY = Math.max(0, Math.min(a.y + a.h / 2, bounds.h) - Math.max(a.y - a.h / 2, 0));
+  return a.w * a.h - inX * inY;
+}
+
+/** Un placement glouton, dans l'ordre donné : chaque étiquette prend la place libre la plus proche. */
+function greedy(boxes: LabelBox[], order: number[], gap: number, bounds: { w: number; h: number } | undefined, obstacles: LabelBox[]): { out: LabelOffset[]; residue: number } {
+  const placed: LabelBox[] = [...obstacles];
+  const out: LabelOffset[] = new Array(boxes.length);
+  let residue = 0;
+  for (const i of order) {
+    const given = boxes[i];
+    // Au bord de l'écran, l'étiquette rentre d'abord tout entière dans le cadre (le décalage rendu inclut ce retrait).
+    const b = bounds ? { ...given, x: clamp(given.x, given.w / 2 + gap, bounds.w - given.w / 2 - gap), y: clamp(given.y, given.h / 2 + gap, bounds.h - given.h / 2 - gap) } : given;
+    let best: LabelOffset = { dx: 0, dy: 0 };
+    let bestCost = Infinity;
+    for (const [fx, fy] of TRIES) {
+      const t = { dx: fx * b.w, dy: fy * b.h };
+      const at = { x: b.x + t.dx, y: b.y + t.dy, w: b.w, h: b.h };
+      let cost = 0;
+      for (const p of placed) cost += overlap(at, p, gap);
+      if (bounds) cost += outside(at, bounds) * 3;
+      if (cost < bestCost) {
+        best = t;
+        bestCost = cost;
+        if (cost === 0) break;
+      }
+    }
+    residue += bestCost;
+    placed.push({ x: b.x + best.dx, y: b.y + best.dy, w: b.w, h: b.h });
+    out[i] = { dx: b.x - given.x + best.dx, dy: b.y - given.y + best.dy };
+  }
+  return { out, residue };
+}
+
+/**
+ * Le décalage de chaque étiquette (même ordre que `boxes`). Plusieurs ordres de placement sont essayés (tel quel, de
+ * haut en bas, de bas en haut, de gauche à droite, de droite à gauche, et les mêmes les plus lourdes d'abord) ; on garde celui qui laisse le moins de
+ * recouvrement, puis qui éloigne le moins les étiquettes de leur île. `weights` : ce que coûte d'écarter chacune (une
+ * île fermée pèse moins : c'est elle qui s'écarte). Le calcul est fait pour le cadrage où la caméra arrive, pas image
+ * par image : les étiquettes ne sautent pas pendant qu'elle glisse. `gap` : l'écart minimal. `bounds` : le cadre de
+ * l'écran (moins la barre du bas), dont aucune étiquette ne sort si elle peut l'éviter. `obstacles` : ce qu'aucune
+ * étiquette ne doit cacher (sur la Carte, la flèche de la destination et le fanion du bonhomme).
+ */
+export function layoutLabels(boxes: LabelBox[], gap = 4, bounds?: { w: number; h: number }, weights?: number[], obstacles: LabelBox[] = []): LabelOffset[] {
+  const ids = boxes.map((_, i) => i);
+  const byWeight = (o: number[]) => (weights ? [...o].sort((a, b) => weights[b] - weights[a]) : o);
+  const base = [
+    ids,
+    [...ids].sort((a, b) => boxes[a].y - boxes[b].y),
+    [...ids].sort((a, b) => boxes[b].y - boxes[a].y),
+    [...ids].sort((a, b) => boxes[a].x - boxes[b].x),
+    [...ids].sort((a, b) => boxes[b].x - boxes[a].x),
+  ];
+  const orders = weights ? [...base, ...base.map(byWeight)] : base;
+  let best: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
+  let bestCost = Infinity;
+  for (const order of orders) {
+    const { out, residue } = greedy(boxes, order, gap, bounds, obstacles);
+    const moved = out.reduce((sum, o, i) => sum + (weights?.[i] ?? 1) * Math.hypot(o.dx, o.dy), 0);
+    const cost = residue * 100 + moved;
+    if (cost < bestCost) {
+      best = out;
+      bestCost = cost;
+    }
+  }
+  return best;
+}
+
+/**
+ * Deux repères de la Carte trop proches (la flèche de la destination et le fanion du bonhomme, sur la même île) : le
+ * décalage à donner au premier pour qu'il s'écarte du second, toujours de côté (les deux pointent vers le bas, l'un
+ * au-dessus de l'autre ils se confondraient). L'écart vertical compte triple ; en deçà de `min`, la flèche glisse
+ * juste assez à gauche ou à droite (du côté où elle est déjà) : pas de saut quand le bonhomme bouge.
+ */
+export function separateMark(mark: { x: number; y: number }, from: { x: number; y: number }, min: number): LabelOffset {
+  const dx = mark.x - from.x;
+  const dy = (mark.y - from.y) * 3;
+  if (Math.abs(dy) >= min) return { dx: 0, dy: 0 };
+  const need = Math.sqrt(min * min - dy * dy);
+  if (Math.abs(dx) >= need) return { dx: 0, dy: 0 };
+  const side = dx < 0 ? -1 : 1;
+  return { dx: from.x + side * need - mark.x, dy: 0 };
+}

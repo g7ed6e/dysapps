@@ -200,6 +200,11 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   renderAt('/aventure/carte');
   expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Forêt des sons/ })).toBeInTheDocument();
+  // Comme la Carte : la prochaine destination, l'état de chaque île en mot, les archipels non atteints dans la brume.
+  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(screen.getByRole('link', { name: /^Forêt des sons.*À explorer/ })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^Carrière des mots.*Fermée/ })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Îles Brumeuses : dans la brume/ })).toBeInTheDocument();
   document.body.innerHTML = '';
   renderAt('/aventure/monde');
   expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();

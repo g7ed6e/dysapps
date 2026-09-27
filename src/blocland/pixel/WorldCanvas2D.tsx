@@ -27,7 +27,8 @@ import {
   type Walk,
 } from '../world/scene';
 import { islandAt, islandCenter } from '../world/terrain';
-import { drawIslandLabel } from '../world/labelCanvas';
+import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
+import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
@@ -385,6 +386,8 @@ export default function WorldCanvas2D({
 
     const t0 = performance.now();
     let last = t0;
+    // Sur la Carte, l'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
+    let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
     let aheadRef: 'quest' | 'place' | 'creature' | null = null;
     const loop = () => {
       if (!visible || document.hidden) {
@@ -713,7 +716,9 @@ export default function WorldCanvas2D({
       // Les repères jaunes : au-dessus des bornes, la flèche « Commence ici », les balises d'un chemin à construire.
       for (const o of overlays) o();
       const mk = p.marker;
-      if (mk) {
+      // Sur la Carte, la flèche d'une île (la prochaine destination) se dessine plus bas, par-dessus les étiquettes.
+      const mapArrowIsland = p.map && typeof mk === 'string' ? mk : null;
+      if (mk && !mapArrowIsland) {
         const c = typeof mk === 'string' ? islandCenter(mk) : mk;
         // Une île : au-dessus de son cœur. Une case (le chantier du navire, calée sur le haut du mât en 3D) : juste
         // au-dessus de la coque, qui se voit de dessus.
@@ -722,14 +727,66 @@ export default function WorldCanvas2D({
         const { sx, sy } = at(c.x + 0.5, c.y + 0.5, z);
         drawChevron(ctx, sx, sy - 18 * cam.s - Math.abs(Math.sin(t * 2.2)) * 3 * mark, mark);
       }
-      // Le nom des îles ouvertes, sur l'île, en police de lecture (18 px à l'écran au moins).
+      // Le nom des îles ouvertes, sur l'île, en police de lecture (18 px à l'écran au moins) ; sur la Carte, toutes les
+      // îles avec leur état (icône et mot, 16 px), écartées pour qu'aucune étiquette n'en cache une autre (celles des îles
+      // fermées s'écartent d'abord), et hors de la bande des boutons du bas (72 px).
+      // Sur la Carte, le fanion du bonhomme et la grande flèche de la destination, vus d'une vue (`c`) : la flèche pose
+      // sa pointe sur l'île et s'écarte de côté si le fanion est tout près (le bonhomme sur la même île).
+      const dprMarks = Math.min(window.devicePixelRatio || 1, 3);
+      const arrowH = 48 * dprMarks;
+      const mapMarks = (c: typeof cam) => {
+        const out: { arrow: LabelBox | null; tip: { x: number; y: number } | null; beacon: LabelBox | null } = { arrow: null, tip: null, beacon: null };
+        if (h.at && p.avatar && p.map) {
+          const b = project(h.at.x + 0.5, h.at.y + 0.5, h.at.z);
+          const feet = toScreen(c, scr, b.bx, b.by);
+          const s = 1.6 * Math.max(1.5 * c.s, 3 * (window.devicePixelRatio || 1));
+          const cy = feet.sy - 24 * c.s;
+          out.beacon = { x: feet.sx, y: cy - 3.5 * s, w: 14 * s + 4, h: 13 * s + 3 };
+        }
+        if (mapArrowIsland) {
+          const i = islandCenter(mapArrowIsland);
+          const b = project(i.x + 0.5, i.y + 0.5, i.z + 2);
+          const tip = toScreen(c, scr, b.bx, b.by);
+          const shift = out.beacon ? separateMark({ x: tip.sx, y: tip.sy }, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, 56 * dprMarks) : { dx: 0, dy: 0 };
+          out.tip = { x: tip.sx + shift.dx, y: tip.sy + shift.dy };
+          out.arrow = { x: out.tip.x, y: out.tip.y - arrowH / 2, w: arrowH * 0.8, h: arrowH };
+        }
+        return out;
+      };
       if (p.islandLabels?.length) {
         const dpr = Math.min(window.devicePixelRatio || 1, 3);
-        for (const l of p.islandLabels) {
-          const c = islandCenter(l.id);
-          const { sx, sy } = at(c.x + 0.5, c.y + 0.5, c.z + 2);
-          drawIslandLabel(ctx, l.text, sx, sy + 14 * dpr, 18 * dpr);
+        const px = 18 * dpr;
+        const list = p.islandLabels;
+        const anchor = (l: (typeof list)[number], c: typeof cam) => {
+          const i = islandCenter(l.id);
+          const b = project(i.x + 0.5, i.y + 0.5, i.z + 2);
+          const { sx, sy } = toScreen(c, scr, b.bx, b.by);
+          return { x: sx, y: sy + 14 * dpr };
+        };
+        // L'écart se calcule pour le cadrage où la vue arrive (une fois, gardé tant qu'il ne change pas) : pendant
+        // qu'elle glisse, les étiquettes suivent leur île sans sauter d'une place à l'autre.
+        let offsets: LabelOffset[] | null = null;
+        if (p.map) {
+          const marks = `${mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}`;
+          const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}`;
+          if (labelLayout?.key !== key) {
+            const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state) }));
+            // La flèche de la destination et le fanion du bonhomme restent visibles : aucune étiquette ne se pose dessus.
+            const { arrow, beacon } = mapMarks(target);
+            const obstacles = [arrow, beacon].filter((b): b is LabelBox => b !== null);
+            labelLayout = { key, offsets: layoutLabels(boxes, 6 * dpr, { w: scr.w, h: scr.h - 72 * dpr }, list.map((l) => (l.state?.id === 'fermee' ? 0.5 : 1)), obstacles) };
+          }
+          offsets = labelLayout.offsets;
         }
+        list.forEach((l, i) => {
+          const a = anchor(l, cam);
+          const o = offsets?.[i];
+          drawIslandLabel(ctx, l.text, a.x + (o?.dx ?? 0), a.y + (o?.dy ?? 0), px, l.state);
+        });
+      }
+      if (mapArrowIsland) {
+        const { tip } = mapMarks(cam);
+        if (tip) drawMapArrow(ctx, tip.x, tip.y - Math.abs(Math.sin(t * 2.2)) * 6 * dprMarks, arrowH);
       }
       if (p.trail?.length) {
         const pulse = 0.85 + Math.sin(t * 3) * 0.15;

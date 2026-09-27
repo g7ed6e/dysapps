@@ -1,5 +1,6 @@
 // Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx) et la 2D (à venir).
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
+import type { IslandStateId } from './islandState';
 import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from '../Voxel';
 import type { ArchipelagoId } from './archipelago';
@@ -63,6 +64,8 @@ export interface Burst {
 export interface IslandLabel {
   id: BiomeId;
   text: string;
+  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée), dessiné en icône et en mot sous le nom. */
+  state?: { id: IslandStateId; name: string };
 }
 
 export interface WorldViewProps {

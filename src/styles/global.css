@@ -1535,7 +1535,7 @@ button.app-card:active {
 /* Droite graduée */
 .number-line svg {
   width: 100%;
-  max-width: 34rem;
+  max-width: 26rem;
   color: var(--text);
   overflow: visible;
 }
@@ -2901,7 +2901,7 @@ button.app-card:active {
 
 /* ===== Blocland : le Gardien (boss de biome) ===== */
 .boss-card {
-  max-width: 34rem;
+  max-width: 26rem;
 }
 .boss-icon {
   background: var(--yellow);
@@ -3171,7 +3171,7 @@ button.app-card:active {
 }
 .world-overlay-top .tutorial {
   margin: 0 auto;
-  max-width: 34rem;
+  max-width: 26rem;
 }
 /* Les bulles d'aide du monde : en bas, au-dessus de la barre, pour laisser voir l'île et la flèche. */
 .world-overlay-bottom {
@@ -3190,7 +3190,7 @@ button.app-card:active {
 }
 .world-overlay-bottom .tutorial {
   margin: 0 auto;
-  max-width: 34rem;
+  max-width: 26rem;
 }
 /* L'élément dont parle une bulle d'aide : un contour jaune qui pulse. */
 .tuto-target {
@@ -3205,15 +3205,87 @@ button.app-card:active {
 }
 .world-line {
   margin: 0 auto;
-  max-width: 34rem;
+  max-width: 26rem;
 }
 /* Barre du bas, par-dessus le monde : Carte, Chantier, jour/nuit, aide. */
 /* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
 .world-map-line {
   display: block;
+  max-width: 34rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.world-map-actions .button {
+  min-height: 48px;
 }
 .world-map-line p {
   margin: 0;
+}
+.world-map-line p + p,
+.world-map-islands {
+  margin-top: 0.5rem;
+}
+.world-map-destination {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.world-map-destination > button {
+  flex: none;
+}
+.world-map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.world-map-islands summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+.world-map-islands ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.3rem 1rem;
+  margin: 0 0 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+.world-map-island {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.2rem 0.6rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.world-map-island:hover {
+  border-color: var(--primary-bg);
+}
+/* L'état d'une île : une icône et un mot, la couleur ne fait que doubler (DP-08). */
+.island-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.island-state-fermee {
+  color: var(--muted);
+}
+.island-state-restauree {
+  color: var(--success);
 }
 .world-map-path {
   margin: 0.4rem 0 0.6rem;
@@ -4539,4 +4611,51 @@ button.island-quest {
 }
 .village-notches span.on {
   background: var(--accent);
+}
+
+/* ===== La carte des quatre archipels (Archipéo, lot 4b) : dessinée en code, ceux non atteints dans la brume ===== */
+.archipelago-map {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  margin: 0 auto 1rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--secondary-bg);
+}
+.archipelago-map-route {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 7 6;
+}
+.archipelago-map-islet {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.archipelago-map-place.reached .archipelago-map-islet {
+  fill: var(--sand);
+}
+.archipelago-map-place.mist .archipelago-map-islet {
+  fill: var(--bg);
+  stroke-dasharray: 4 4;
+}
+.archipelago-map-cloud ellipse {
+  fill: var(--surface);
+  opacity: 0.85;
+}
+.archipelago-map-here {
+  fill: none;
+  stroke: var(--primary-bg);
+  stroke-width: 4;
+}
+.archipelago-map-label {
+  fill: var(--text);
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
+  font-size: 22px;
+}
+.archipelago-map-place.mist .archipelago-map-label {
+  fill: var(--muted);
 }
