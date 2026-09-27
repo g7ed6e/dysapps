@@ -1087,16 +1087,15 @@ export default function WorldCanvas({
     if (w) w.hover.visible = false;
   }, [Boolean(build)]);
 
-  // ---- Éclats à la pose d'un bloc
+  // ---- À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens
   useEffect(() => {
     const w = world.current;
     if (!w || !burst || burst.seq === 0 || reduceMotion) return;
-    const color = new THREE.Color(burst.color);
-    for (let i = 0; i < 10; i++) {
+    const color = new THREE.Color(burst.color).lerp(new THREE.Color('#ffffff'), 0.6);
+    for (let i = 0; i < 3; i++) {
       const mesh = new THREE.Mesh(w.sparkGeo, new THREE.MeshBasicMaterial({ color }));
-      mesh.position.set(burst.cell.x + 0.5, burst.cell.z + 0.5, burst.cell.y + 0.5);
-      const a = Math.random() * Math.PI * 2;
-      const velocity = new THREE.Vector3(Math.cos(a) * (1 + Math.random() * 2), 3 + Math.random() * 3, Math.sin(a) * (1 + Math.random() * 2));
+      mesh.position.set(burst.cell.x + 0.3 + i * 0.2, burst.cell.z + 0.8, burst.cell.y + 0.5);
+      const velocity = new THREE.Vector3(0, 3.6 + i * 0.3, 0);
       w.scene.add(mesh);
       w.sparks.push({ mesh, velocity, born: performance.now() });
     }

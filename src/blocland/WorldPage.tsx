@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -45,7 +45,6 @@ import {
   creaturePlacements,
   guardianPlacements,
   islandAt,
-  islandCenter,
   islandOrigin,
   questStations,
   placeDoor,
@@ -81,6 +80,8 @@ const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: n
  */
 export function WorldPage() {
   const { biomeId } = useParams();
+  // « Voir le chantier » (bilan d'une mission) : la section du panneau à mettre en avant (plan, navire ou un ouvrage).
+  const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
   // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
@@ -392,6 +393,10 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, mapOpen, placeOpen, monument?.id]);
 
+  useEffect(() => {
+    if (island && chantier) setHighlight(chantier);
+  }, [island?.id, chantier]);
+
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
 
@@ -670,9 +675,7 @@ export function WorldPage() {
             onClose={() => setSheetOpen(false)}
             highlight={highlight}
             onBuilt={(to) => {
-              // La fête : des éclats d'or sur l'île qui s'ouvre, puis la caméra y vole et sa créature accueille.
-              const c = islandCenter(to);
-              builder.celebrate({ x: c.x, y: c.y, z: c.z + 2 }, '#f2c944');
+              // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/aventure/${to}`), 900);
             }}
           />

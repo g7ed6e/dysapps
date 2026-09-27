@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
@@ -17,6 +18,8 @@ interface Props {
   in3d?: boolean;
   /** Dans le panneau 3D : la section se replie quand il n'y a rien à poser (la clé change avec l'île). */
   fold?: string;
+  /** Le plan mis en avant (« Voir le chantier » du bilan) : section ouverte, centrée. */
+  highlight?: boolean;
 }
 
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou le coffre d'un plan. */
@@ -48,8 +51,12 @@ export function planSummary(builder: PlanBuilder, inventory: Partial<Record<Bloc
  * Le plan de l'île : avancement, blocs qu'il manque et où les gagner (un lien vers l'île), bouton « Poser le bloc
  * suivant », le lien vers « Mes blocs » et les bâtiments déjà terminés ici. Même contenu dans le panneau 3D et en vue simple.
  */
-export function PlanSection({ biome, builder, in3d = false, fold }: Props) {
+export function PlanSection({ biome, builder, in3d = false, fold, highlight = false }: Props) {
   const { state } = useBlocland();
+  const section = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (highlight) section.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }, [highlight, biome.id]);
   const { plan, status } = builder;
   const missing = status ? (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0) : [];
   const built = state.village.journal.filter((e) => getPlan(e.plan)?.biome === biome.id);
@@ -59,10 +66,10 @@ export function PlanSection({ biome, builder, in3d = false, fold }: Props) {
     </h3>
   );
   // Ouvert quand on peut poser un bloc, ou qu'un plan vient d'être fini (sa phrase et son coffre) ; replié sinon.
-  const defaultOpen = builder.canFill || Boolean(status?.complete && !builder.allDone) || builder.notice !== null;
+  const defaultOpen = builder.canFill || highlight || Boolean(status?.complete && !builder.allDone) || builder.notice !== null;
   return (
     <Foldable fold={fold} name="plan" heading={heading} status={planSummary(builder, state.inventory)} defaultOpen={defaultOpen}>
-      <section className="plan-section" aria-labelledby={`plan-${biome.id}`}>
+      <section ref={section} className={`plan-section${highlight ? ' bridge-highlight' : ''}`} aria-labelledby={`plan-${biome.id}`}>
         {plan && status && (
           <>
             <div

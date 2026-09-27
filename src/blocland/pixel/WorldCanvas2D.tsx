@@ -200,14 +200,12 @@ export default function WorldCanvas2D({
     ship.current = { map, image, maxY: Math.max(0, ...vehicle.cubes.map((c) => c.y)) };
   }, [vehicle]);
 
-  // ---- Les éclats à la pose d'un bloc
+  // ---- À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens
   useEffect(() => {
     if (!burst || burst.seq === 0 || reduceMotion) return;
     const now = performance.now();
-    for (let i = 0; i < 10; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const v = 1 + Math.random() * 2;
-      sparks.current.push({ x: burst.cell.x + 0.5, y: burst.cell.y + 0.5, z: burst.cell.z + 0.5, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vz: 3 + Math.random() * 3, born: now, color: burst.color });
+    for (let i = 0; i < 3; i++) {
+      sparks.current.push({ x: burst.cell.x + 0.3 + i * 0.2, y: burst.cell.y + 0.5, z: burst.cell.z + 0.8, vx: 0, vy: 0, vz: 3.6 + i * 0.3, born: now, color: '#f3eee3' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
