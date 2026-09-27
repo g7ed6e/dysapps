@@ -214,6 +214,8 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   expect(screen.getByRole('link', { name: /^Forêt des sons.*À explorer/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Carrière des mots.*Fermée/ })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Îles Brumeuses : dans la brume/ })).toBeInTheDocument();
+  // Un élève qui n'a rien joué : la baleine se présente, une fois.
+  expect(screen.getByRole('dialog', { name: 'Le mot de la baleine' })).toHaveTextContent('Je suis la baleine');
   document.body.innerHTML = '';
   renderAt('/aventure/monde');
   expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
