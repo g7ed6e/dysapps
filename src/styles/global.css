@@ -3520,16 +3520,6 @@ button.island-quest:active {
 .start-card {
   border-color: var(--success);
 }
-.home-tutorial {
-  margin-top: 1.6rem;
-}
-.home-tutorial a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 48px;
-  font-weight: 700;
-}
 .section-subtitle {
   margin: 1.8rem 0 0.8rem;
 }
@@ -4269,25 +4259,119 @@ button.island-quest:active {
     transform: none;
   }
 }
-/* Le menu principal de l'accueil. */
+/* ===== Le menu d'Archipéo (lot 4a) : le village, « Reprendre l'aventure », la progression, les Expéditions ===== */
+.home-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+.home-village,
+.home-resume,
+.home-progress {
+  margin: 0 0 0.8rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+.home-resume {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-color: var(--primary-bg);
+}
+/* L'action principale du menu : large, en tête, jamais sous le pli sur téléphone. */
+.home-resume-button {
+  align-self: flex-start;
+  min-height: 56px;
+  font-size: 1.15rem;
+}
+.home-destination {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  max-width: none;
+  margin: 0;
+}
+.home-destination > button {
+  flex: none;
+}
+.home-resume-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home-resume-links a,
+.home-links a,
+.home-progress a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  font-weight: 700;
+}
+.home-progress {
+  max-width: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+.home-progress a {
+  margin-left: auto;
+}
+.home-role {
+  flex: none;
+}
+/* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
-  margin-top: 1.4rem;
+  margin-top: 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
-/* Tuiles du menu : une icône et un mot, côte à côte (l'accueil tient sur un écran). */
 .home-menu .menu-tile {
   flex-direction: row;
   align-items: center;
   gap: 0.9rem;
-  /* Pas de matière : pas de liseré. */
-  border-top-width: var(--border-width);
 }
-.home-menu .menu-tile .subject-title {
-  margin: 0;
+.home-menu .menu-tile .subject-icon {
+  margin-bottom: 0;
+}
+.menu-tile-text {
+  display: flex;
+  flex-direction: column;
+}
+.subject-expedition {
+  color: var(--muted);
+}
+/* Téléphone : « Reprendre l'aventure » prend toute la largeur, au-dessus du pli. */
+@media (max-width: 640px) {
+  .home-identity .hero-title {
+    font-size: 1.6rem;
+  }
+  .home-heading {
+    font-size: 1rem;
+  }
+  .home-resume-button {
+    align-self: stretch;
+    justify-content: center;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    font-size: 1.05rem;
+  }
+}
+.home-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.4rem;
+  margin: 1.2rem 0 0;
 }
 .hero-compact {
-  padding-top: 1.2rem;
-  margin-bottom: 1.2rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
 }
 .hero-compact .hero-title {
   margin: 0;

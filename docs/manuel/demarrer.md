@@ -6,14 +6,24 @@ L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.
 
 L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’Archipéo, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Archipéo](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Menu** (adresse `#/menu`) : le menu principal, en page. Il montre le rôle, **Continuer** (la dernière mission ouverte), **Archipéo** (l’aventure) et trois grosses tuiles : **Missions**, **Succès**, **Réglages**. Sur tablette, il tient sur un écran. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple).
+- **Menu** (adresse `#/menu`) : le menu principal, en page. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple). De haut en bas :
+  - **Archipéo** et « Le savoir construit ton monde. » ;
+  - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
+  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Forêt des sons. Tu as tout pour finir La cabane de Mousso : pose tes blocs. ») ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
+  - la **progression** : le rôle et le niveau, le nombre d’archipels atteints sur quatre, et le lien **Succès** ;
+  - les trois **Expéditions** : Maths, Français et Anglais, chacune avec le nom de son expédition, qui mènent aux missions de la matière ;
+  - en bas, les liens **Toutes les missions**, **Réglages** et **Revoir le tutoriel**.
+
+  La première fois, à la place de « Reprendre l’aventure », la carte **Commencer ici** lance le Tutoriel. Sur téléphone, le bouton « Reprendre l’aventure » se voit sans faire défiler ; sur tablette, tout le menu tient presque sur un écran.
 - **Aventure** : Archipéo, le village à reconstruire. Son **école du village** ouvre aussi les missions du portail, qui y rapportent des blocs.
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, l’icône d’Archipéo sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : le rôle, l'aventure Archipéo, et les trois tuiles Missions, Succès, Réglages.](/captures/menu.jpg)
+![Le menu en page sur tablette : Archipéo, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
+
+![Le menu sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
 ![Sur téléphone : la barre du haut réduite (logo, menu, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
 
