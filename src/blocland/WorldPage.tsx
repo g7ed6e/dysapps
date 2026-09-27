@@ -10,7 +10,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { BIOMES, getBiome, type BiomeId } from './biomes';
 import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
-import type { QuestMark } from './three/WorldCanvas';
+import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
 import { ARRIVAL_STEPS } from './arrivals';
