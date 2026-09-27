@@ -8,12 +8,9 @@ import { playDone, playNope, playPlace } from './sound';
 import { islandOrigin, toIslandCell } from './world/terrain';
 import { plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
+import type { Burst } from './world/view';
 
-export interface Burst {
-  seq: number;
-  cell: { x: number; y: number; z: number };
-  color: string;
-}
+export type { Burst } from './world/view';
 
 export interface PlanBuilder {
   island: BiomeId;

@@ -3,110 +3,31 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
-import type { VoxelCube } from '../Voxel';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { buildMesh, type FaceSide, type MeshGroup } from '../world/mesher';
-import { CREATURE_STEPS, boardingRoute, islandAt, routeAt, routeLengths, islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds, type VehiclePlacement } from '../world/terrain';
+import { islandCenter, mistPatches, viewYaw, viewZone, whaleSpots, worldBounds } from '../world/terrain';
 import { VEHICLE_DECK } from '../world/harbour';
-import { legTiming, vehiclePath, type LegTiming, type VoyageLeg } from '../world/voyage';
-import { islandsOf, type ArchipelagoId } from '../world/archipelago';
+import { vehiclePath } from '../world/voyage';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
+import {
+  ARROW_DIRS,
+  avatarWalk,
+  boardingWalk,
+  cubeTags,
+  finishWalk,
+  groundTap,
+  islandInDirection,
+  startStrolls,
+  startVoyage,
+  strollAt,
+  voyageFrame,
+  walkPose,
+  type Stroll,
+  type VoyageRun,
+  type Walk,
+} from '../world/scene';
+import type { WorldViewProps } from '../world/view';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
-
-export interface WorldFocus {
-  /** Île à cadrer, ou `null` pour la vue d'ensemble. */
-  island: BiomeId | null;
-  /** Change à chaque demande, pour pouvoir redemander la même île. */
-  seq: number;
-}
-
-export interface Cell {
-  x: number;
-  y: number;
-  z: number;
-}
-
-export interface BuildProps {
-  /** Face touchée : le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
-  onPickFace: (cell: Cell, next: Cell) => void;
-}
-
-export interface CreaturePlacement {
-  id: BiomeId;
-  cubes: VoxelCube[];
-  origin: Cell;
-  /** Une créature se promène ; un Gardien reste sur son îlot. */
-  kind?: 'creature' | 'guardian';
-  still?: boolean;
-  /** Les pas possibles depuis sa place (sinon ceux par défaut). */
-  steps?: [number, number][];
-}
-
-export interface QuestMark {
-  /** « île:quête ». */
-  id: string;
-  biome: BiomeId;
-  typeId: string;
-  /** La case du socle (z : le sol sous le socle). */
-  cell: Cell;
-  /** `'new'` : à faire (repère jaune) ; un nombre : les étoiles gagnées ; `'locked'` : rien. */
-  state: 'new' | 'locked' | number;
-}
-
-/** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
-export interface Burst {
-  seq: number;
-  cell: Cell;
-  color: string;
-}
-
-export interface WorldCanvasProps {
-  /** L'archipel affiché : la scène (mer, brume, baleines, cadrage) est la sienne. */
-  archipelago: ArchipelagoId;
-  cubes: VoxelCube[];
-  focus: WorldFocus;
-  reduceMotion?: boolean;
-  /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
-  vehicle?: VehiclePlacement | null;
-  /** Le navire touché (hors d'une case à poser) : on ouvre le panneau du port sur sa section. */
-  onPickVehicle?: (port: BiomeId) => void;
-  /** Le voyage en cours : le départ (le bonhomme embarque, le navire s'éloigne) ou l'arrivée (il accoste, le bonhomme débarque). */
-  voyage?: { seq: number; leg: VoyageLeg; stage: 1 | 2 | 3; back: boolean } | null;
-  /** Le temps du voyage est joué jusqu'au bout. */
-  onVoyageLegEnd?: () => void;
-  /** Un toucher ou une touche pendant le voyage : on arrive tout de suite. */
-  onVoyageSkip?: () => void;
-  /** Île touchée (un tap, pas un glissé), sur l'île elle-même. */
-  onPickIsland?: (id: BiomeId) => void;
-  /** Ouvrage touché (construit ou fantôme) : son identifiant. */
-  onPickBridge?: (id: string) => void;
-  /** Mode chantier : on touche une face (un fantôme du plan) au lieu d'entrer dans l'île. */
-  build?: BuildProps;
-  /** Les créatures, animées à part du terrain. */
-  creatures?: CreaturePlacement[];
-  onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
-  /** Ignorer l'heure réelle : toujours en plein jour. */
-  forceDay?: boolean;
-  /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
-  bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'une case du monde (le chantier du navire). */
-  marker?: BiomeId | Cell | null;
-  /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
-  avatar?: { route: Cell[]; seq: number };
-  /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
-  map?: boolean;
-  /** L'île où le bonhomme se tient (ou se rend) : la caméra cadre cette île et ses voisines, tournée vers le continent. */
-  home?: BiomeId;
-  /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
-  trail?: Cell[];
-  /** Les bornes de quête : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
-  quests?: QuestMark[];
-  /** Borne de quête touchée (le socle, le panneau ou son repère). */
-  onPickQuest?: (biome: BiomeId, typeId: string) => void;
-  burst?: Burst;
-  className?: string;
-  label: string;
-}
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
@@ -125,15 +46,6 @@ const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
 /** Le voyage : vue de côté, depuis l'ouest, la caméra qui s'écarte à mesure que le navire s'éloigne. */
 const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
-/** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
-const WALK_SPEED = 6;
-const WALK_MAX_MS = 6000;
-
-/** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
-function startWalk(route: Cell[], start: number, duration: number) {
-  return { route, cum: routeLengths(route), start, duration: Math.max(1, duration) };
-}
-
 /** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
 const CLOUDS: [number, number, number][] = [
   [0.05, 0.1, 4],
@@ -214,21 +126,10 @@ function meshOf(g: MeshGroup): THREE.Mesh {
   return mesh;
 }
 
-const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-
+/** Une créature : son groupe dans la scène et sa promenade (world/scene.ts). */
 interface Walker {
   group: THREE.Group;
-  id: BiomeId;
-  still: boolean;
-  steps: [number, number][];
-  origin: Cell;
-  from: [number, number];
-  to: [number, number];
-  start: number;
-  duration: number;
-  /** Prochain départ (ms). */
-  next: number;
-  phase: number;
+  stroll: Stroll;
 }
 
 interface Spark {
@@ -264,7 +165,7 @@ export default function WorldCanvas({
   burst,
   className,
   label,
-}: WorldCanvasProps) {
+}: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<{
     scene: THREE.Scene;
@@ -285,7 +186,7 @@ export default function WorldCanvas({
     trail: THREE.Group;
     questMarks: THREE.Group;
     avatar: THREE.Group;
-    walk: { route: Cell[]; cum: number[]; start: number; duration: number } | null;
+    walk: Walk | null;
     /** Le Bloc-Navire : la coque (qui tangue) et le ballon (qui se balance au sommet du mât). */
     vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
   } | null>(null);
@@ -298,26 +199,17 @@ export default function WorldCanvas({
   const voyageSkipRef = useRef(onVoyageSkip);
   voyageSkipRef.current = onVoyageSkip;
   /** Le voyage en cours dans la scène : son temps (départ ou arrivée), son début, où l'on en est. */
-  const voyageRef = useRef<{ leg: VoyageLeg; stage: 1 | 2 | 3; timing: LegTiming; start: number; ended: boolean; disembarked: boolean; lastFoam: number } | null>(null);
+  const voyageRef = useRef<VoyageRun | null>(null);
   /** Le navire : son groupe, son origine dans le monde et les cases fantômes que l'on peut poser. */
   const vehicleRef = useRef<{ origin: { x: number; y: number; z: number }; ghosts: Set<string>; afloat: boolean; port: BiomeId } | null>(null);
   const pickBridgeRef = useRef(onPickBridge);
   pickBridgeRef.current = onPickBridge;
   const pickQuestRef = useRef(onPickQuest);
   pickQuestRef.current = onPickQuest;
-  // Les cubes des bornes de quête, par case : pour savoir quelle quête on touche.
-  const questCells = useRef(new Map<string, string>());
-  // Les cubes des ouvrages, par case : pour savoir quel ouvrage on touche.
-  const bridgeCells = useRef(new Map<string, string>());
+  // Les cubes des bornes de quête et des ouvrages, par case : pour savoir ce qu'on touche.
+  const tags = useRef(cubeTags([]));
   useEffect(() => {
-    const m = new Map<string, string>();
-    const q = new Map<string, string>();
-    for (const c of cubes) {
-      if (c.bridge) m.set(`${c.x},${c.y},${c.z}`, c.bridge);
-      if (c.quest) q.set(`${c.x},${c.y},${c.z}`, c.quest);
-    }
-    bridgeCells.current = m;
-    questCells.current = q;
+    tags.current = cubeTags(cubes);
   }, [cubes]);
   const buildRef = useRef(build);
   buildRef.current = build;
@@ -416,25 +308,13 @@ export default function WorldCanvas({
         }
         return;
       }
-      const dirs: Record<string, [number, number]> = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
-      const dir = dirs[e.key];
+      const dir = ARROW_DIRS[e.key];
       if (!dir || !pickRef.current) return;
       e.preventDefault();
       const w = world.current;
       const from = w ? { x: w.camTarget.x, y: w.camTarget.z } : center;
-      let best: { id: BiomeId; score: number } | null = null;
-      for (const b of islandsOf(archRef.current)) {
-        const c = islandCenter(b.id);
-        const dx = c.x - from.x;
-        const dy = c.y - from.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 4) continue;
-        const along = (dx * dir[0] + dy * dir[1]) / dist;
-        if (along < 0.5) continue;
-        const score = dist / along;
-        if (!best || score < best.score) best = { id: b.id, score };
-      }
-      if (best) pickRef.current(best.id);
+      const next = islandInDirection(archRef.current, from, dir);
+      if (next) pickRef.current(next);
     };
     el.addEventListener('keydown', onKey);
 
@@ -716,11 +596,7 @@ export default function WorldCanvas({
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
       // Pendant un trajet, un tap n'importe où fait arriver le bonhomme tout de suite.
-      const walking = world.current?.walk;
-      if (walking && performance.now() - walking.start < walking.duration) {
-        walking.start = performance.now() - walking.duration;
-        return;
-      }
+      if (finishWalk(world.current?.walk ?? null, performance.now())) return;
       const { creature, hit } = aim(e);
       if (creature && vehicleRef.current && isInside(creature.object, vehicleGroup)) {
         // Une case du navire : en coordonnées locales (le navire tangue), puis dans le monde ; un fantôme se pose.
@@ -739,18 +615,16 @@ export default function WorldCanvas({
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!hit) return;
-      const { cell, next } = cellsOf(hit);
-      // Une borne de quête : sa quête.
-      const questId = questCells.current.get(`${cell.x},${cell.y},${cell.z}`);
-      if (questId && pickQuestRef.current) {
-        const [biome, typeId] = questId.split(':');
-        return pickQuestRef.current(biome as BiomeId, typeId);
-      }
-      // Un ouvrage (construit ou fantôme) : sa proposition, plutôt que l'île la plus proche.
-      const bridgeId = bridgeCells.current.get(`${cell.x},${cell.y},${cell.z}`);
-      if (bridgeId && pickBridgeRef.current) return pickBridgeRef.current(bridgeId);
-      if (buildRef.current) buildRef.current.onPickFace(cell, next);
-      else pickRef.current?.(islandAt(archRef.current, Math.floor(hit.point.x), Math.floor(hit.point.z)));
+      const tap = groundTap(
+        archRef.current,
+        { ...cellsOf(hit), ground: { x: hit.point.x, y: hit.point.z } },
+        tags.current,
+        { quest: Boolean(pickQuestRef.current), bridge: Boolean(pickBridgeRef.current), build: Boolean(buildRef.current) },
+      );
+      if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
+      else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
+      else if (tap.kind === 'face') buildRef.current?.onPickFace(tap.cell, tap.next);
+      else pickRef.current?.(tap.id);
     };
     const onHover = (e: PointerEvent) => {
       if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current && !creatureRef.current)) return;
@@ -840,25 +714,17 @@ export default function WorldCanvas({
       // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
       let walking = false;
       if (w.walk) {
-        const { route, cum, start, duration } = w.walk;
-        const k = reduceMotion ? 1 : Math.min(1, (now - start) / duration);
-        // Au prorata de la distance, pas du nombre de points : même pas sur l'île (un long segment) que sur un pont.
-        const d = k * cum[cum.length - 1];
-        const { x, y, z } = routeAt(route, cum, d);
-        const swing = k < 1 ? Math.sin(t * 11) * 0.8 : 0;
+        const pose = walkPose(w.walk, now, reduceMotion);
+        const swing = pose.moving ? Math.sin(t * 11) * 0.8 : 0;
         limbs.arms[0].rotation.x = swing;
         limbs.arms[1].rotation.x = -swing;
         limbs.legs[0].rotation.x = -swing;
         limbs.legs[1].rotation.x = swing;
-        w.avatar.position.set(x + 0.5, z, y + 0.5);
-        // Il regarde là où il va : un point un peu plus loin sur l'itinéraire (les tracés en escalier alternent pas
-        // droits et pas en diagonale, on ne veut pas qu'il se tortille à chaque case).
-        const ahead = routeAt(route, cum, d + 1.5);
-        const dx = ahead.x - x;
-        const dy = ahead.y - y;
-        // Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on tourne de atan2(-dx, -dy).
-        if (Math.hypot(dx, dy) > 0.05) heading = Math.atan2(-dx, -dy);
-        if (k >= 1) w.walk = null;
+        w.avatar.position.set(pose.x + 0.5, pose.z, pose.y + 0.5);
+        // Il regarde là où il va. Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on
+        // tourne de atan2(-dx, -dy).
+        if (pose.facing) heading = Math.atan2(-pose.facing.dx, -pose.facing.dy);
+        if (!pose.moving) w.walk = null;
         else walking = true;
       }
       // Le voyage : le navire s'éloigne (départ) ou accoste (arrivée), le bonhomme à bord entre les deux marches.
@@ -866,30 +732,19 @@ export default function WorldCanvas({
       const vy = voyageRef.current;
       if (vy && vehicleRef.current) {
         const v = vehicleRef.current;
-        const elapsed = now - vy.start;
-        const { walk: walkMs, sail: sailMs } = vy.timing;
-        let k: number;
-        if (vy.leg === 'depart') k = Math.max(0, Math.min(1, (elapsed - walkMs) / sailMs));
-        else {
-          k = 1 - Math.max(0, Math.min(1, elapsed / sailMs));
-          // Accosté : le bonhomme débarque (le chemin d'embarquement à rebours).
-          if (elapsed >= sailMs && !vy.disembarked) {
-            vy.disembarked = true;
-            w.walk = startWalk([...boardingRoute(v.port)].reverse(), now, walkMs);
-          }
-        }
-        const p = vehiclePath(vy.stage, k);
+        const f = voyageFrame(vy, v.port, now);
+        // Accosté : le bonhomme débarque (le chemin d'embarquement à rebours).
+        if (f.disembark) w.walk = f.disembark;
+        const p = vehiclePath(vy.stage, f.k);
         vehicleGroup.position.set(v.origin.x + p.dx, v.origin.z + p.dz, v.origin.y + p.dy);
         vehicleGroup.rotation.x = -p.pitch;
         vehicleGroup.rotation.z = 0;
-        const aboard = vy.leg === 'depart' ? elapsed >= walkMs : !vy.disembarked;
-        if (aboard) {
+        if (f.aboard) {
           w.avatar.position.set(vehicleGroup.position.x + VEHICLE_DECK.x + 0.5, vehicleGroup.position.y + 1, vehicleGroup.position.z + VEHICLE_DECK.y + 0.5);
           heading = 0;
         }
-        const underway = k > 0 && k < 1;
-        if (underway && !reduceMotion) {
-          sailing = { at: vehicleGroup.position.clone(), k: vy.leg === 'depart' ? k : 1 - k, stage: vy.stage };
+        if (f.underway && !reduceMotion) {
+          sailing = { at: vehicleGroup.position.clone(), k: f.progress, stage: vy.stage };
           // L'écume à la poupe (à la voile), la flamme qui vacille (au réacteur).
           if (vy.stage === 1 && now - vy.lastFoam > 100) {
             vy.lastFoam = now;
@@ -901,10 +756,7 @@ export default function WorldCanvas({
           flame.visible = vy.stage === 3;
           if (flame.visible) flame.scale.set(1, 1, 1 + 0.4 * Math.sin(t * 37) + 0.3 * Math.random());
         } else flame.visible = false;
-        if (elapsed >= walkMs + sailMs && !vy.ended) {
-          vy.ended = true;
-          voyageEndRef.current?.();
-        }
+        if (f.end) voyageEndRef.current?.();
       }
       // Il se tourne vers son cap en douceur, par le plus court.
       {
@@ -1000,27 +852,9 @@ export default function WorldCanvas({
           balloonGroup.rotation.x = Math.sin(t * 0.9) * 0.03;
         }
         // Créatures : petit balancement, et un pas de temps en temps.
-        for (const wk of w.walkers) {
-          if (!wk.still && now >= wk.next && wk.start === 0) {
-            const step = wk.steps[Math.floor(Math.random() * wk.steps.length)];
-            wk.from = wk.to;
-            wk.to = step;
-            wk.start = now;
-            wk.duration = 1800;
-          }
-          let dx = wk.to[0];
-          let dy = wk.to[1];
-          if (wk.start) {
-            const k = ease(Math.min(1, (now - wk.start) / wk.duration));
-            dx = wk.from[0] + (wk.to[0] - wk.from[0]) * k;
-            dy = wk.from[1] + (wk.to[1] - wk.from[1]) * k;
-            if (k >= 1) {
-              wk.start = 0;
-              wk.next = now + 3000 + Math.random() * 5000;
-            }
-          }
-          const bob = wk.start ? Math.abs(Math.sin(t * 8)) * 0.12 : Math.sin(t * 1.6 + wk.phase) * 0.04;
-          wk.group.position.set(wk.origin.x + dx, wk.origin.z + bob, wk.origin.y + dy);
+        for (const { group, stroll } of w.walkers) {
+          const { dx, dy, bob } = strollAt(stroll, now, t);
+          group.position.set(stroll.origin.x + dx, stroll.origin.z + bob, stroll.origin.y + dy);
         }
         // Éclats : petits cubes qui retombent et disparaissent.
         for (const s of [...w.sparks]) {
@@ -1099,25 +933,14 @@ export default function WorldCanvas({
         if (o instanceof THREE.Mesh) o.geometry.dispose();
       });
     }
+    const strolls = startStrolls(creatures, performance.now());
     w.walkers = creatures.map((c, i) => {
       const group = new THREE.Group();
       group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
       for (const g of buildMesh(c.cubes)) group.add(meshOf(g));
       group.position.set(c.origin.x, c.origin.z, c.origin.y);
       w.creatures.add(group);
-      return {
-        group,
-        id: c.id,
-        still: Boolean(c.still) || (c.steps?.length ?? 2) < 2,
-        steps: c.steps ?? CREATURE_STEPS,
-        origin: c.origin,
-        from: [0, 0],
-        to: [0, 0],
-        start: 0,
-        duration: 0,
-        next: performance.now() + 2000 + i * 1500,
-        phase: i * 1.3,
-      };
+      return { group, stroll: strolls[i] };
     });
   }, [creatures]);
 
@@ -1166,11 +989,9 @@ export default function WorldCanvas({
       }
       return;
     }
-    const timing = legTiming(voyage.leg, voyage.back);
     const now = performance.now();
-    voyageRef.current = { leg: voyage.leg, stage: voyage.stage, timing, start: now, ended: false, disembarked: false, lastFoam: 0 };
-    if (voyage.leg === 'depart') w.walk = startWalk(boardingRoute(vehicleRef.current.port), now, timing.walk);
-    else w.walk = null;
+    voyageRef.current = startVoyage(voyage, now);
+    w.walk = boardingWalk(vehicleRef.current.port, voyageRef.current, now);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voyage?.seq, voyage?.leg]);
 
@@ -1220,11 +1041,8 @@ export default function WorldCanvas({
   useEffect(() => {
     const w = world.current;
     if (!w || !avatar || !avatar.route.length) return;
-    const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
-    const length = routeLengths(route)[route.length - 1];
     // Six cases par seconde, mais jamais plus de six secondes de marche (un tap fait arriver tout de suite).
-    const duration = avatar.seq === 0 ? 0 : Math.min(WALK_MAX_MS, (length / WALK_SPEED) * 1000);
-    w.walk = startWalk(route, performance.now(), duration);
+    w.walk = avatarWalk(avatar, performance.now());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 

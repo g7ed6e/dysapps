@@ -142,6 +142,27 @@ Retour des joueurs : « trop de blocs qui s'accumulent, on ne sait pas quoi en f
 - **Panneau d'île plus court** (`IslandFold.tsx`) : Plan, Bloc-Navire et Ouvrages sont des `<details>` ouverts d'eux-mêmes quand il y a quelque chose à faire (un bloc à poser, un ouvrage constructible, le navire prêt, un élément mis en avant, une action qui vient d'aboutir), repliés sinon avec une ligne d'état. L'état est calculé au rendu (jamais dans un effet, pour que le défilement vers l'élément mis en avant trouve sa section ouverte) ; le choix de l'élève tient tant que l'île et la mise en avant ne changent pas. La ligne « Mes blocs : … » et le paragraphe « Tes N briques ne se posent pas ici » quittent la section Plan, remplacés par le lien « Mes blocs (N) ». En vue simple, la page d'île garde ses sections dépliées.
 - **Surplus** : une fois les trois plans d'une île et les ouvrages faits, son bloc ne sert plus qu'au navire (13 types) ; brique, obsidienne, verre, terre, quartz, lentille, marbre, parchemin et prisme n'ont pas d'autre débouché, et les rejouées paient sans fin. L'inventaire le dit honnêtement (« Rien à construire pour l'instant »). Un débouché (troc, décoration) reste **à cadrer** ; décision : pas dans cette PR.
 
-## 21. À venir
+## 21. Une vue 2D oblique
+
+Constat : sans WebGL (appareil ancien, navigateur bridé) ou sur une tablette qui peine, Blocland retombe sur la vue simple, une liste d'îles. Il manque une vue du monde légère, qui garde l'aventure (les îles, le bonhomme, les bornes, les chantiers).
+
+Décisions :
+
+- **Perspective oblique**, en pixel art : on voit le dessus des cases, et chaque dénivelé montre une face avant (les falaises), comme dans les jeux d'aventure vus de dessus. C'est une inspiration de point de vue : formes, textures et personnages restent les nôtres (voir le [cadrage du village](cadrage-village.md)).
+- **Trois vues au choix** dans les réglages : le monde en 3D, le monde en 2D, la liste. Sans WebGL, la 2D devient la vue par défaut.
+- **Toucher d'abord** : on touche une île ou une borne pour y aller, comme en 3D ; les flèches du clavier gardent leur rôle. Une marche libre (croix directionnelle, bouton « Entrer ») viendra en option, jamais obligatoire, sans réflexe ni chronomètre.
+- **Sprites générés par le code**, comme tout le reste : le bonhomme, les créatures et les Gardiens sont dessinés à partir de leurs cubes.
+- **Dessin en Canvas 2D, sans bibliothèque** : pas de WebGL ni de moteur de jeu à télécharger ; la vue 2D ne charge pas Three.js.
+
+Étapes (une pull request chacune) :
+
+1. **Préparer, sans rien changer à l'écran** (faite) : le contrat commun des vues (`world/view.ts`), la simulation commune (`world/scene.ts` : marche du bonhomme, promenade des créatures, temps du voyage, flèches, toucher du sol) et les textures sans Three.js (`world/pixels.ts`) sortent de la vue 3D. La 3D les utilise ; son image et ses gestes sont inchangés.
+2. **Première vue 2D**, derrière un réglage « Monde 2D (essai) » : terrain, eau, toucher une île, cadrage, clavier.
+3. **Personnages et repères** : le bonhomme qui marche, les créatures, les Gardiens, les bornes, la flèche « Commence ici », le jour et la nuit.
+4. **Construire et voyager** : les chantiers, les ouvrages, le Bloc-Navire et son voyage, la Carte.
+5. **Marche libre en option**, caméra « en salles » (une île à la fois), et la 2D par défaut sans WebGL.
+
+## 22. À venir
 
 - Un débouché pour les blocs en surplus (voir 20).
+- La vue 2D, étapes 2 à 5 (voir 21).
