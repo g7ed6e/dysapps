@@ -14,6 +14,9 @@ export const DOCS = join(root, 'docs');
 export const SRC = join(root, '.docs-src');
 const THEME = join(DOCS, '_theme');
 const CAPTURES = join(DOCS, '_captures');
+/** Une image JPEG d'un pixel, à la place d'une capture absente en local. */
+const PLACEHOLDER_JPEG =
+  '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
 
 function walk(dir, list = []) {
   for (const name of readdirSync(dir)) {
@@ -80,16 +83,29 @@ export async function prepareDocs() {
   cpSync(join(root, 'public', 'icon.svg'), join(pub, 'icon.svg'));
   cpSync(join(root, 'public', 'fonts', 'luciole'), join(pub, 'fonts', 'luciole'), { recursive: true });
   cpSync(join(THEME, 'sw.js'), join(pub, 'sw.js'));
-  // Les captures d'écran du jeu (scripts/docs/captures.mjs) : servies sous /captures/. Une image citée par une page
-  // doit exister (une capture renommée ou oubliée casse le build, pas seulement l'image).
-  cpSync(CAPTURES, join(pub, 'captures'), { recursive: true });
+  // Les captures d'écran du jeu : servies sous /captures/. Elles ne sont pas dans le dépôt ; la CI les fait
+  // (npm run docs:captures) avant ce build. Une image citée par une page doit être une capture déclarée dans
+  // scripts/docs/captures.mjs : une capture renommée ou oubliée casse le build, pas seulement l'image.
+  const declared = new Set(
+    [...readFileSync(join(root, 'scripts', 'docs', 'captures.mjs'), 'utf8').matchAll(/name: '([a-z0-9-]+)'/g)].map((m) => `${m[1]}.jpg`),
+  );
+  const required = process.env.DOCS_CAPTURES === 'required';
+  mkdirSync(join(pub, 'captures'), { recursive: true });
+  if (existsSync(CAPTURES)) cpSync(CAPTURES, join(pub, 'captures'), { recursive: true });
+  const missing = new Set();
   for (const page of pages.filter((p) => !p.generated)) {
     // Le code (blocs et `en ligne`) ne compte pas : un exemple de syntaxe n'est pas une image citée.
     const text = page.body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
     for (const [, name] of text.matchAll(/\]\(\/captures\/([^)\s]+)\)/g)) {
-      if (!existsSync(join(CAPTURES, name))) throw new Error(`Capture absente : docs/_captures/${name} (citée dans docs/${page.path}) — voir npm run docs:captures`);
+      if (!declared.has(name)) throw new Error(`Capture inconnue : ${name} (citée dans docs/${page.path}) — la déclarer dans scripts/docs/captures.mjs`);
+      if (existsSync(join(CAPTURES, name))) continue;
+      if (required) throw new Error(`Capture absente : docs/_captures/${name} (citée dans docs/${page.path}) — voir npm run docs:captures`);
+      missing.add(name);
     }
   }
+  // En local, sans captures : une image d'un pixel à la place, pour relire les pages sans rejouer le jeu.
+  for (const name of missing) writeFileSync(join(pub, 'captures', name), Buffer.from(PLACEHOLDER_JPEG, 'base64'));
+  if (missing.size) console.warn(`${missing.size} captures absentes de docs/_captures/, remplacées par une image vide : npm run docs:captures pour les faire.`);
   writeFileSync(join(pub, '.nojekyll'), '');
 
   return pages.map(({ path, title, generated: g, updated }) => ({ path, title, generated: g, updated }));

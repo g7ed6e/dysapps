@@ -2,7 +2,8 @@
 // (Playwright) avec des parties préparées, et enregistre les images dans docs/_captures/ (copiées par prepare.mjs
 // dans le site). À relancer quand un écran change : `npm run docs:captures` (ou `npm run docs:captures -- menu carte`
 // pour quelques-unes). Chromium : celui de Playwright (PLAYWRIGHT_BROWSERS_PATH), ou CHROMIUM_PATH.
-// Les images sont commitées : le build de la documentation ne lance pas le jeu.
+// Les images ne sont pas dans le dépôt (docs/_captures/ est ignoré) : la CI les refait dans un job à part (captures)
+// avant de construire la documentation, qui ne lance pas le jeu elle-même.
 import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';
@@ -221,6 +222,22 @@ const browser = await chromium.launch({
 mkdirSync(OUT, { recursive: true });
 let failed = 0;
 for (const shot of SHOTS.filter((s) => only.length === 0 || only.includes(s.name))) {
+  // Sur une machine lente (la CI, sans carte graphique), une capture du monde 3D peut dépasser le délai : on la
+  // reprend une fois avant de la compter en échec.
+  let error = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    error = await take(shot);
+    if (!error) break;
+    console.error(`  ${shot.name} : essai ${attempt} manqué (${error})`);
+  }
+  if (error) {
+    failed += 1;
+    console.error(`✗ ${shot.name} : ${error}`);
+  }
+}
+
+/** Prend une capture ; rend le message d'erreur, ou null si elle est prise. */
+async function take(shot) {
   const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1 });
   await page.clock.setFixedTime(DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
@@ -255,16 +272,18 @@ for (const shot of SHOTS.filter((s) => only.length === 0 || only.includes(s.name
     await page.waitForTimeout(shot.wait ?? 6000);
     if (shot.act) await shot.act(page);
     const file = join(OUT, `${shot.name}.jpg`);
-    await page.screenshot({ path: file, type: 'jpeg', quality: 82 });
+    // Le rendu logiciel de la 3D peut prendre plus de 30 s par image sur la CI.
+    await page.screenshot({ path: file, type: 'jpeg', quality: 82, timeout: 120_000 });
     console.log(`✓ ${shot.name} (${Math.round(statSync(file).size / 1024)} Ko)`);
+    return null;
   } catch (e) {
-    failed += 1;
-    console.error(`✗ ${shot.name} : ${e.message.split('\n')[0]}`);
-    if (process.env.CAPTURES_DEBUG) await page.screenshot({ path: join(process.env.CAPTURES_DEBUG, `${shot.name}.png`) });
+    if (process.env.CAPTURES_DEBUG) await page.screenshot({ path: join(process.env.CAPTURES_DEBUG, `${shot.name}.png`) }).catch(() => {});
+    return e.message.split('\n')[0];
   } finally {
     await page.close();
   }
 }
+
 await browser.close();
 await server.close();
 process.exit(failed ? 1 : 0);

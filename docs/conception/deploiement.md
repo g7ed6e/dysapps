@@ -36,9 +36,11 @@ Le thème (`docs/.vitepress/theme/`) reprend les couleurs de l’application et 
 
 `.github/workflows/deploy.yml` s’exécute à chaque push et à chaque pull request :
 
-1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis sur une pull request `npm run docs:check`, puis `npm test`, `npm run build` (l’application, comme Cloudflare la construit) et `npm run docs:build` ; sur `main`, l’artefact `dist-docs` est téléversé pour Pages.
-2. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
-3. **deploy** (sur `main` seulement) : publie l’artefact sur GitHub Pages. Ce job n’exécute aucun code du dépôt et il est le seul à avoir les permissions Pages.
+1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis sur une pull request `npm run docs:check`, puis `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
+2. **captures**, en parallèle, sur `main` seulement : installe le Chromium de `playwright-core` (`npx playwright-core install --with-deps chromium`), rejoue le jeu avec `npm run docs:captures` et téléverse les images en artefact `captures`. Les captures ne sont pas dans le dépôt (`docs/_captures/` est ignoré par git) : elles sont refaites à chaque publication, donc toujours à jour. Une pull request ne les attend pas, pour rester rapide.
+3. **docs**, après **captures** : sur `main`, récupère l’artefact dans `docs/_captures/` et lance `npm run docs:build` avec `DOCS_CAPTURES=required` (une capture citée et absente fait échouer le build) ; sur une pull request, construit le site avec des images vides à la place des captures, ce qui vérifie quand même les pages et les noms de captures ; sur `main`, l’artefact `dist-docs` est téléversé pour Pages.
+4. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
+5. **deploy** (sur `main` seulement, après **build** et **docs**) : publie l’artefact sur GitHub Pages. Ce job n’exécute aucun code du dépôt et il est le seul à avoir les permissions Pages.
 
 Aucune permission par défaut, actions épinglées par SHA et mises à jour par Dependabot, `persist-credentials: false`, pas de cache partagé.
 
