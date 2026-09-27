@@ -17,7 +17,8 @@ function seenThisSession(): boolean {
 }
 
 /**
- * L'écran titre, une fois par lancement : le bloc d'herbe, « Jouer », et « Continuer » vers la dernière quête. Il a
+ * L'écran titre, une fois par lancement : le bloc d'herbe, « Jouer » (le village, derrière, est déjà là), et
+ * « Continuer » vers la dernière quête. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :
  * il attend l'élève.
@@ -25,10 +26,11 @@ function seenThisSession(): boolean {
 export function TitleScreen() {
   const [open, setOpen] = useState(() => !seenThisSession());
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  // L'adresse d'ouverture (l'accueil mène ensuite au village : on la garde telle qu'elle était au lancement).
+  const [launchedAt] = useState(useLocation().pathname);
   if (!open) return null;
   // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
-  const resume = pathname === '/' ? lastPlace() : null;
+  const resume = launchedAt === '/' ? lastPlace() : null;
 
   const start = (to?: string) => {
     unlockSpeech();
@@ -58,16 +60,9 @@ export function TitleScreen() {
               <Icon name="play" /> Continuer : {resume.label}
             </button>
           )}
+          {/* « Jouer » : l'accueil, c'est-à-dire le village (ou le menu, selon le réglage « Au démarrage »). */}
           <button type="button" className={`button title-button${resume ? '' : ' primary'}`} onClick={() => start()} autoFocus={!resume}>
-            {resume ? (
-              <>
-                <Icon name="home" /> Accueil
-              </>
-            ) : (
-              <>
-                <Icon name="play" /> Jouer
-              </>
-            )}
+            <Icon name={resume ? 'map' : 'play'} /> Jouer
           </button>
         </div>
       </div>

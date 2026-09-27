@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { MENU_PATH } from '../core/paths';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { BLOCKS, getBiome, ofBlock } from './biomes';
@@ -39,7 +40,7 @@ export function BloclandPage() {
   const here = archipelagoOf(at).classe;
   return (
     <>
-      <Link to="/" className="back-link">
+      <Link to={MENU_PATH} className="back-link">
         <Icon name="back" /> Menu
       </Link>
       <section className="hero hero-blocland">

@@ -22,6 +22,18 @@ Depuis l’accueil, **Blocland** ouvre le village en 3D sur tout l’écran, sou
 
 Aucun texte à lire n’est dessiné dans la 3D : tout ce qui se lit est dans des panneaux HTML, dans la police et la taille choisies, et lu à voix haute.
 
+## Le menu du village
+
+Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu du village** à la place du panneau d’île, le monde derrière. C’est le menu pause du jeu :
+
+- **Reprendre** (le gros bouton vert, ou la croix) : on revient au village ;
+- **Continuer** : la dernière quête ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
+- **École du village**, **Quêtes**, **Succès**, **Réglages** ;
+- **Revoir l’aide du village** (les six bulles), **Tutoriel** ;
+- **Le menu en page** : le même menu hors du village (`#/menu`).
+
+Son adresse est `#/aventure/menu` ; en vue simple, elle mène au menu en page.
+
 ## Le panneau d’une île
 
 Toucher une île ouverte fait voler la caméra et ouvre son panneau (il glisse depuis le bas, ou depuis la droite sur grand écran). On y trouve, dans l’ordre :
@@ -158,6 +170,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher l’école, ou bouton École | Le bonhomme marche jusqu’à sa porte, le panneau de l’école s’ouvre (le bouton le referme) |
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |
+| Bouton Menu (⏸, en haut à droite) | Le menu du village ; « Reprendre » le referme |
 | Bouton Carte | L’archipel vu du ciel, et le bouton « Les quatre archipels » |
 | Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |

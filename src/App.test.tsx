@@ -59,7 +59,8 @@ it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à 
   expect(screen.queryByRole('link', { name: /Tutoriel/ })).not.toBeInTheDocument();
   document.body.innerHTML = '';
   renderAt('/app/demo');
-  expect(screen.getByRole('link', { name: /^Menu$/ })).toHaveAttribute('href', '/');
+  // Le lien retour et l'onglet Menu mènent au menu.
+  for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
 });
 
 it('liste les quêtes d’anglais du portail', () => {

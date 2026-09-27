@@ -667,6 +667,7 @@ function baremePage(d) {
         ['Lire les consignes à voix haute', DEFAULT_SETTINGS.autoRead ? 'oui' : 'non', ''],
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
         ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
+        ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
         ['Vue de Blocland', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Marche libre (monde en 2D)', DEFAULT_SETTINGS.freeWalk ? 'oui' : 'non', ''],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],

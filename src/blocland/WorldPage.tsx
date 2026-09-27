@@ -17,6 +17,7 @@ import { ARRIVAL_STEPS } from './arrivals';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
+import { MenuSheet } from './MenuSheet';
 import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
@@ -85,7 +86,9 @@ export function WorldPage() {
   const blocsOpen = biomeId === 'blocs';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
   const schoolOpen = biomeId === 'ecole';
-  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen ? getBiome(biomeId) : undefined;
+  // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Quêtes, Succès, Réglages, Aide.
+  const menuOpen = biomeId === 'menu';
+  const island = biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
@@ -337,7 +340,7 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, mapOpen, schoolOpen]);
 
-  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !island) return <NotFoundPage />;
+  if (biomeId && !mapOpen && !mondeOpen && !blocsOpen && !schoolOpen && !menuOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
   const night = !forceDay && daylight().light < 0.5;
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune quête n'a été jouée ; sur le chantier du navire quand
@@ -382,7 +385,7 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
+    <div className={`world-page${(island && sheetOpen) || mondeOpen || blocsOpen || schoolOpen || menuOpen || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
       <div className="world-stage">
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
@@ -419,6 +422,19 @@ export function WorldPage() {
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
+        {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
+        {!voyage && (
+          <button
+            type="button"
+            className="button world-menu-button"
+            aria-label="Menu"
+            aria-pressed={menuOpen}
+            aria-controls={menuOpen ? 'panneau-menu' : undefined}
+            onClick={() => navigate(menuOpen ? '/aventure' : '/aventure/menu')}
+          >
+            <Icon name="pause" />
+          </button>
+        )}
         <div className="world-overlay-top">
           {voyage?.mode === 'cinema' && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
@@ -555,6 +571,14 @@ export function WorldPage() {
         <InventorySheet onClose={() => openIsland(at)} />
       ) : schoolOpen ? (
         <SchoolSheet onClose={() => openIsland(at)} />
+      ) : menuOpen ? (
+        <MenuSheet
+          onClose={() => navigate('/aventure')}
+          onHelp={() => {
+            navigate('/aventure');
+            setReplay((n) => n + 1);
+          }}
+        />
       ) : (
         island &&
         sheetOpen && (
