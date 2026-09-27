@@ -8,6 +8,8 @@ Chaque entrée dit **ce que vit l’élève**, **ce qu’il faudrait changer** e
 - **P1** : gêne réelle à chaque séance ;
 - **P2** : confort, finition.
 
+Les cinq **P0 sont faits** ; ce qui a été retenu est décrit sous chacun d’eux.
+
 ## P0 — À corriger d’abord
 
 ### 1. Abattage syllabique : « écoute » mais compte les syllabes écrites
@@ -15,30 +17,35 @@ Chaque entrée dit **ce que vit l’élève**, **ce qu’il faudrait changer** e
 - **Vécu** : la consigne dit « Écoute le mot, puis tape le nombre de syllabes ». La voix dit « ca-bane », « lan-terne », « vi-llage » : j’entends 2 syllabes, je tape 2, on me répond « Pas tout à fait : lan-ter-ne, 3 syllabes ». Je ne comprends plus ce qu’est une syllabe.
 - **Changer** : choisir un seul critère. Soit syllabes **orales** (réponse 2 pour cabane, lanterne, village), soit consigne « **Lis** le mot et compte les syllabes **écrites** » avec le e muet signalé (grisé). Revoir toutes les données `foret-echauffement-*.json` et les autres données d’abattage.
 - **Où** : `src/blocland/exercises/data/foret-echauffement-*.json`, `docs/pedagogie/principes.md`.
+- **Fait** : on compte les syllabes **entendues**. Cabane, village, lanterne valent 2 (« ca-bane », « vil-lage », « lan-terne »), la consigne dit « que tu entends », la correction montre le découpage oral. Un test de données interdit une syllabe faite d’un e muet seul.
 
 ### 2. Abattage : les syllabes en couleurs donnent la réponse
 
 - **Vécu** : « lan**ter**ne » s’affiche avec « ter » en bleu. Je compte les couleurs, pas les sons : l’exercice ne m’entraîne à rien.
 - **Changer** : ne jamais colorer le mot-cible d’un exercice qui porte sur le découpage (abattage, et tout item où la réponse est un découpage). Colorer seulement dans la correction.
 - **Où** : `src/blocland/exercises/QcmItem.tsx` (ou un drapeau `noSyllables` dans le format d’item), `docs/conception/exercices.md`.
+- **Fait** : le mot de l’Abattage s’affiche sans couleurs (écran `AbattageItem`), dans la quête comme au Gardien ; le découpage n’apparaît que dans la correction.
 
 ### 3. Blocland : la consigne n’est pas écrite à l’écran
 
 - **Vécu** : dans les quêtes de Blocland, je vois « Le son [an] » et quatre images, ou juste « lanterne » et trois nombres. La consigne n’est que lue à voix haute. En classe sans casque, ou si j’ai coupé la voix, je ne sais pas quoi faire, ni qu’il faut « Valider ».
 - **Changer** : afficher la consigne (courte, syllabée) au-dessus de l’item, avec le bouton Écouter, comme dans les quêtes du portail.
 - **Où** : `src/blocland/ExerciseRunner.tsx` (le `<h2 id="consigne" className="visually-hidden">`).
+- **Fait** : la consigne est écrite au-dessus de l’item, syllabée, avec un bouton 🔊 « Consigne », et lue au début de la partie (sauf dictées, qui lisent déjà leur mot). Au Gardien, chaque manche affiche la consigne de sa quête.
 
 ### 4. La correction cache la question
 
 - **Vécu** : quand je réponds, le panneau du bas (« Bien vu ! », « Pas cette fois ») recouvre les réponses du bas et l’aide visuelle du joker (grille de points, barres de fractions). Sur téléphone il recouvre presque tout : je ne vois plus ce que j’ai choisi ni la bonne réponse.
 - **Changer** : réserver la place du panneau (padding bas de la zone de question égal à sa hauteur) ou faire défiler automatiquement pour garder visibles la bonne réponse et l’aide ; sur petit écran, panneau repliable.
 - **Où** : `src/components/Feedback.tsx`, `src/components/QuizSession.tsx`, `src/blocland/ExerciseRunner.tsx`, styles `.has-sheet`.
+- **Fait** : quand le bandeau s’ouvre, sa hauteur est réservée sous la question et l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou au moins l’énoncé, la réponse touchée et la bonne réponse (`useSheetClearance`, portail et Blocland). Sur téléphone, le bandeau prend au plus la moitié de l’écran et son titre est plus petit.
 
 ### 5. Clic sur une île : il ne se passe (presque) rien
 
 - **Vécu** : la flèche jaune me montre la Forêt. Je touche l’île : Mousso parle dans une bulle, mais le panneau de l’île ne s’ouvre pas. Je ne sais pas qu’il faut toucher encore.
 - **Changer** : au premier toucher, ouvrir directement le panneau de l’île (la bulle peut s’y afficher), ou ajouter dans la bulle un bouton « Entrer dans l’île ».
 - **Où** : `src/blocland/WorldPage.tsx`, `src/blocland/CreatureBubble.tsx`.
+- **Fait** : toucher une créature ouvre le panneau de son île (elle y accueille) ; une fois dans ce panneau, la toucher la fait parler.
 
 ## P1 — Gêne à chaque séance
 

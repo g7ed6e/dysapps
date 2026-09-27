@@ -1,5 +1,5 @@
 // Types d'exercices : chaque type fournit un composant d'écran et le nombre d'items par écran.
-import type { ComponentType } from 'react';
+import { createElement, type ComponentType } from 'react';
 import type { ExerciseItem } from './types';
 import type { Lang } from '../../core/speech';
 import { AscensionScreen } from './AscensionScreen';
@@ -45,20 +45,27 @@ export interface ScreenType {
   batch: number | 'all';
   /** Les items forment une suite (paragraphes d'un texte) : on ne les mélange pas. */
   ordered?: boolean;
+  /** L'écran lit lui-même son item en s'ouvrant (dictée) : la consigne n'est alors pas lue automatiquement. */
+  speaksOnOpen?: boolean;
+}
+
+/** Abattage : le mot est affiché sans syllabes en couleurs, qui donneraient la réponse. */
+function AbattageItem(props: ScreenProps) {
+  return createElement(QcmItem, { ...props, plainWord: true });
 }
 
 /** Type d'exercice (champ `type` du JSON, identique à l'id dans biomes.ts) → écran. */
 export const SCREEN_TYPES: Record<string, ScreenType> = {
   qcm: { component: QcmItem, batch: 1 },
-  abattage: { component: QcmItem, batch: 1 },
+  abattage: { component: AbattageItem, batch: 1 },
   graines: { component: QcmItem, batch: 1 },
   'chasse-son': { component: ChasseSonScreen, batch: 4 },
   filon: { component: FilonScreen, batch: 1 },
   'mot-troue': { component: MotTroueScreen, batch: 1 },
   ascension: { component: AscensionScreen, batch: 'all', ordered: true },
   rimes: { component: RimesScreen, batch: 4 },
-  oreille: { component: DicteeItem, batch: 1 },
-  coffre: { component: DicteeItem, batch: 1 },
+  oreille: { component: DicteeItem, batch: 1, speaksOnOpen: true },
+  coffre: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   familles: { component: FamillesScreen, batch: 1 },
   enclos: { component: EnclosScreen, batch: 4 },
   recolte: { component: QcmItem, batch: 1 },
@@ -111,17 +118,17 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   // Anglais (lang: 'en') : les phrases à trou et les nombres sur l'écran à règle, l'écoute sur la dictée.
   hello: { component: CalculScreen, batch: 1 },
   numbers: { component: CalculScreen, batch: 1 },
-  ears: { component: DicteeItem, batch: 1 },
+  ears: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   'to-be': { component: CalculScreen, batch: 1 },
   'have-got': { component: CalculScreen, batch: 1 },
   'present-simple': { component: CalculScreen, batch: 1 },
   shopping: { component: CalculScreen, batch: 1 },
   routine: { component: CalculScreen, batch: 1 },
-  listening: { component: DicteeItem, batch: 1 },
+  listening: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   ing: { component: CalculScreen, batch: 1 },
   preterit: { component: CalculScreen, batch: 1 },
   comparatifs: { component: CalculScreen, batch: 1 },
-  dialogues: { component: DicteeItem, batch: 1 },
+  dialogues: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   quantites: { component: CalculScreen, batch: 1 },
   'preterit-irregulier': { component: CalculScreen, batch: 1 },
   futur: { component: CalculScreen, batch: 1 },

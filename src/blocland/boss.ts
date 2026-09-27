@@ -19,6 +19,8 @@ export { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten };
 export interface BossRound extends ExerciseItem {
   screenType: string;
   exerciseId: string;
+  /** Consigne de la quête d'origine, affichée au-dessus de la manche. */
+  instruction: string;
   target?: string;
   /** Langue du contenu de la quête d'origine. */
   lang?: Lang;
@@ -70,7 +72,7 @@ export async function bossDef(biome: BiomeDef, state: BloclandState, rng: () => 
     const batch = SCREEN_TYPES[type]?.batch ?? 1;
     const items = runItems(def, `${def.id}#gardien${Math.floor(rng() * 2 ** 32).toString(36)}`);
     if (batch === 'all') {
-      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
+      rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, instruction: def.instruction, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
       return;
     }
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
@@ -81,7 +83,7 @@ export async function bossDef(biome: BiomeDef, state: BloclandState, rng: () => 
       [screens[i], screens[j]] = [screens[j], screens[i]];
     }
     screens.slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
-      rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
+      rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, instruction: def.instruction, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
     });
   });
   return {
