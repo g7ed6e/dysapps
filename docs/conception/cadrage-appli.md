@@ -1,6 +1,6 @@
 # Cadrage — « Blocland, l’appli entière »
 
-Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village), 2 (le village au démarrage) et 3 (la salle des trophées) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit), [§ 9](#9-etape-2-ce-qui-est-construit) et [§ 10](#10-etape-3-ce-qui-est-construit) , ainsi que le nettoyage de l’étape 4 ([§ 11](#11-etape-4-le-nettoyage)) ; seul le retrait des onglets reste à décider. Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
+Document de travail, **proposé et validé le 27 septembre 2026**. Les **étapes 1 (l’école du village), 2 (le village au démarrage) et 3 (la salle des trophées) sont construites** : voir [§ 8](#8-etape-1-ce-qui-est-construit), [§ 9](#9-etape-2-ce-qui-est-construit) et [§ 10](#10-etape-3-ce-qui-est-construit) , ainsi que le nettoyage de l’étape 4 ([§ 11](#11-etape-4-le-nettoyage)) ; les onglets sont retirés et le changement d’archipel est discret ([§ 12](#12-sans-onglets-et-des-archipels-a-un-toucher)). Il répond au point 15 des propositions « une appli plus classique » (lot 3). Les lots 1 et 2 sont faits : écran de lancement, écran titre, « Continuer », menu principal, onglets, mode concentration, fin de partie qui enchaîne. Les points encore marqués **À décider** concernent les étapes 2 et 3.
 
 ## 1. Le besoin en une phrase
 
@@ -51,7 +51,7 @@ Sur l’**île de départ de chaque archipel**, l’**école du village** avec t
 - **Dans un bâtiment ou une quête** : le panneau et le bouton retour en pastille ; en partie, le mode concentration.
 - **Les onglets** du téléphone disparaissent : le village et le menu pause les remplacent.
 
-**À décider :** avec le 1, les onglets tombent. Sinon, ils deviennent Village, Quêtes, Trophées.
+**Décidé :** les onglets tombent (voir § 12).
 
 ## 4. Ce qui change dans le code (estimation)
 
@@ -135,5 +135,13 @@ Livrée le 27 septembre 2026.
 - **Les mots** : « l’accueil » désignait l’ancien menu ; le manuel, les principes (« toujours au même endroit, avec les mêmes mots ») et les commentaires du code disent maintenant « le menu » (en page ou dans le village). L’accueil est l’adresse `/`, qui mène au village ou au menu selon le réglage.
 - **Pages en double** : il n’en reste pas. La page matière et les portes de l’école partagent `SubjectApps`, la page Succès et la salle des trophées partagent `ProgressBody`. Le menu en page et le menu du village restent deux vues, l’une en page, l’autre en panneau sur le monde, avec les mêmes entrées.
 
-**Reste à décider** : le retrait des onglets du téléphone (§ 3.4). Proposition : l’observer d’abord ; le menu du village et le bouton retour couvrent déjà ce que les onglets offraient dans le monde, où ils étaient masqués.
+**Décidé ensuite** : le retrait des onglets du téléphone (§ 12).
+
+## 12. Sans onglets, et des archipels à un toucher
+
+Livré le 27 septembre 2026, à la demande.
+
+- **Les onglets du téléphone sont retirés.** La barre du haut garde, sur téléphone, le logo (l’accueil : le village), un bouton **Menu** (`#/menu`) et les **Réglages**, en icônes ; sur grand écran, elle ne change pas (Aventure, Quêtes, Succès, Réglages). Dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village ; dans une page, le bouton retour en pastille reste en haut à gauche. Les pages gagnent la place des onglets.
+- **Changer d’archipel est discret.** Avant, chaque changement d’archipel rejouait toute la cinématique du Bloc-Navire (marche au port, départ, voile, arrivée, marche), même pour un voyage déjà fait. Maintenant, seul le **premier voyage** vers un archipel se joue en entier (la récompense du chantier). Les suivants (retours, « Repartir vers », « Aller au port », liens et retours d’exercice vers une île d’un autre archipel) sont un **fondu blanc d’une demi-seconde** vers l’île demandée, avec une ligne qui dit où l’on arrive, puis s’efface. Sans fondu avec « Réduire les animations ».
+- **Le sélecteur d’archipel** (`ArchipelSwitcher.tsx`), sous le bouton Menu, dès que deux archipels sont atteints : il dit où l’on est (« 6e ») et déroule les quatre archipels ; un archipel atteint s’ouvre d’un toucher (au port), les autres sont « Fermé », et « Les quatre archipels » dit ce qu’il faut pour y aller.
 

@@ -11,7 +11,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** de B
 - **Quêtes** : les quêtes du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rang, l’XP, les étoiles et ce qu’il reste à gagner.
 
-Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, ils sont des **onglets en bas de l’écran**, comme dans une appli, et les Réglages restent en haut (roue dentée). Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
+Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf avec « Réduire les animations ». Pendant un chargement, le bloc d’herbe sautille au-dessus de « Chargement… ».
 
 Pendant une partie, l’écran se vide pour laisser toute la place à la question : voir [le mode concentration](quetes.md#le-mode-concentration).
 

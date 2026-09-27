@@ -14,15 +14,15 @@ import { useImmersive } from '../blocland/useImmersive';
 import { MENU_PATH } from '../core/paths';
 
 /**
- * Les grands endroits de l'appli, toujours au même endroit et avec les mêmes mots : en haut sur tablette et
- * ordinateur ; sur téléphone, les quatre premiers en onglets en bas (Réglages reste en haut, en roue dentée).
+ * Les grands endroits de l'appli, toujours au même endroit et avec les mêmes mots, dans la barre du haut. Sur
+ * téléphone, pas d'onglets : la barre du haut garde le Menu et les Réglages (en icônes) ; le village a son menu (⏸).
  */
-const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; tab: boolean }[] = [
-  { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, tab: true },
-  { to: '/aventure', icon: 'map', label: 'Aventure', tab: true },
-  { to: '/quetes', icon: 'dumbbell', label: 'Quêtes', tab: true },
-  { to: '/succes', icon: 'trophy', label: 'Succès', tab: true },
-  { to: '/reglages', icon: 'settings', label: 'Réglages', tab: false },
+const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; phone: boolean; desktop: boolean }[] = [
+  { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, phone: true, desktop: false },
+  { to: '/aventure', icon: 'map', label: 'Aventure', phone: false, desktop: true },
+  { to: '/quetes', icon: 'dumbbell', label: 'Quêtes', phone: false, desktop: true },
+  { to: '/succes', icon: 'trophy', label: 'Succès', phone: false, desktop: true },
+  { to: '/reglages', icon: 'settings', label: 'Réglages', phone: true, desktop: true },
 ];
 
 export function Layout() {
@@ -84,8 +84,17 @@ function Shell() {
             <XpBar xp={progress.xp} />
           </Link>
           <nav className="topbar-nav" aria-label="Navigation principale">
-            {PLACES.slice(1).map((p) => (
-              <NavLink key={p.to} to={p.to} end={p.end} className={`nav-button${p.tab ? ' nav-tabbed' : ''}`}>
+            {PLACES.map((p) => (
+              <NavLink
+                key={p.to}
+                to={p.to}
+                end={p.end}
+                // Le menu est aussi l'accueil quand l'appli s'ouvre sur lui (réglage « Au démarrage », vue simple).
+                className={({ isActive }) =>
+                  `nav-button${p.phone ? '' : ' nav-desktop'}${p.desktop ? '' : ' nav-phone'}${isActive || (p.to === MENU_PATH && pathname === '/') ? ' active' : ''}`
+                }
+                aria-label={p.label}
+              >
                 <Icon name={p.icon} />
                 <span className="nav-label">{p.label}</span>
               </NavLink>
@@ -102,18 +111,6 @@ function Shell() {
           <Outlet />
         </ErrorBoundary>
       </main>
-      {/* Sur téléphone : les onglets en bas, comme dans une appli (pas dans le monde, qui a sa propre barre). */}
-      {!focus && !immersive && (
-        <nav className="tabbar" aria-label="Onglets">
-          {PLACES.filter((p) => p.tab).map((p) => (
-            // Le menu est aussi l'accueil quand l'appli s'ouvre sur lui (réglage « Au démarrage », vue simple).
-            <NavLink key={p.to} to={p.to} end={p.end} className={({ isActive }) => `tab${isActive || (p.to === MENU_PATH && pathname === '/') ? ' active' : ''}`}>
-              <Icon name={p.icon} size="1.5rem" />
-              <span>{p.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-      )}
     </div>
   );
 }

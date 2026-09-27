@@ -4885,58 +4885,16 @@ a.tag:focus-visible {
 }
 
 /* ===== Navigation d'appli ===== */
-/* Onglets en bas de l'écran, sur téléphone seulement. */
-.tabbar {
+/* Pas d'onglets : sur téléphone, la barre du haut garde le Menu et les Réglages ; sur grand écran, les grands endroits. */
+.nav-phone {
   display: none;
 }
 @media (max-width: 640px) {
-  .topbar-nav .nav-tabbed {
+  .topbar-nav .nav-desktop {
     display: none;
   }
-  .tabbar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 12;
-    display: flex;
-    padding: 0.3rem calc(0.3rem + env(safe-area-inset-right)) calc(0.3rem + env(safe-area-inset-bottom)) calc(0.3rem + env(safe-area-inset-left));
-    background-color: var(--topbar-bg);
-    background-image: var(--tex-dirt);
-    background-size: var(--tex-size);
-    image-rendering: pixelated;
-    border-top: var(--border-width) solid var(--ink);
-  }
-  .tab {
-    flex: 1 1 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.1rem;
-    min-height: 56px;
-    border-radius: var(--radius);
-    color: var(--topbar-text);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: normal;
-    line-height: 1.2;
-  }
-  .tab.active {
-    background-color: var(--green);
-    background-image: var(--tex-grass-top);
-    background-size: var(--tex-size);
-    color: var(--on-accent);
-    border: 2px solid var(--ink);
-  }
-  /* La place des onglets, sous le contenu. */
-  .app-shell:not(.focus):not(.immersive) .content {
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
-  }
-  /* Le bandeau de résultat et le bouton d'une lecture restent au-dessus des onglets. */
-  .app-shell:not(.focus) .result-sheet {
-    bottom: calc(4.2rem + env(safe-area-inset-bottom));
+  .topbar-nav .nav-phone {
+    display: inline-flex;
   }
 }
 
@@ -5129,4 +5087,76 @@ button.island-quest {
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+/* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
+.world-archipel {
+  position: absolute;
+  top: calc(0.6rem + 52px + 0.5rem);
+  right: 0.6rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+.world-archipel-button {
+  min-width: 52px;
+  min-height: 48px;
+  padding: 0.2rem 0.5rem;
+  justify-content: center;
+  gap: 0.25rem;
+}
+.world-archipel-button[aria-expanded="true"] {
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.world-archipel-list {
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+}
+.world-archipel-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+.world-archipel-item,
+.world-archipel-more {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.3rem 0.6rem;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.world-archipel-item:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+.world-archipel-item.here {
+  opacity: 1;
+  background: var(--yellow);
+  color: var(--on-accent);
+}
+.world-archipel-state {
+  margin-left: auto;
+  font-size: 0.85rem;
+}
+.world-archipel-more {
+  margin-top: 0.4rem;
+  border-style: dashed;
+}
+.hop-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
