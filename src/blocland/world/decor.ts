@@ -342,52 +342,49 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
   },
 };
 
+/** La forme en blocs d'un élément de décor du paysage : `put` pose un cube relatif au sol de sa case (z = 1 juste au-dessus). */
+type BlocsDuDecor = (put: Put, x: number, y: number, r: number) => void;
+
+/** Les formes en blocs du décor du paysage, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). */
+export const BLOCS_DU_DECOR: Record<Decor, BlocsDuDecor> = {
+  arbre: (put, x, y, r) => tree(put, x, y, 0, r > 0.5 ? 3 : 2),
+  sapin: (put, x, y, r) => {
+    const tall = r > 0.5 ? 2 : 1;
+    for (let z = 1; z <= tall; z++) put(x, y, z, TRUNK);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, tall + 1, PINE);
+    put(x + 1, y, tall + 2, PINE);
+    put(x - 1, y, tall + 2, PINE);
+    put(x, y + 1, tall + 2, PINE);
+    put(x, y - 1, tall + 2, PINE);
+    put(x, y, tall + 2, PINE);
+    put(x, y, tall + 3, PINE);
+  },
+  buisson: (put, x, y, r) => {
+    put(x, y, 1, LEAF);
+    if (r > 0.7) put(x + 1, y, 1, LEAF);
+  },
+  fleur: (put, x, y, r) => put(x, y, 1, FLOWERS[Math.floor(r * FLOWERS.length) % FLOWERS.length]),
+  rocher: (put, x, y, r) => {
+    put(x, y, 1, BLOCKS.pierre.side);
+    if (r > 0.8) put(x, y, 2, BLOCKS.pierre.side);
+  },
+  roseau: (put, x, y) => {
+    put(x, y, 1, REED);
+    put(x, y, 2, REED);
+  },
+  cristal: (put, x, y, r) => {
+    put(x, y, 1, CRYSTAL);
+    if (r > 0.6) put(x, y, 2, CRYSTAL);
+  },
+  souche: (put, x, y) => put(x, y, 1, TRUNK),
+  champignon: (put, x, y) => put(x, y, 1, MUSHROOM),
+};
+
 /** Un élément de décor posé sur une case, au-dessus de son sol (z = 1 juste au-dessus). `r` : grain 0..1 pour varier. */
 export function decorate(place: Put, kind: Decor, x: number, y: number, r: number): void {
   const id = `${kind}@${x},${y}`;
   const put: Put = (px, py, pz, color) => place(px, py, pz, color, id);
-  switch (kind) {
-    case 'arbre':
-      tree(place, x, y, 0, r > 0.5 ? 3 : 2);
-      break;
-    case 'sapin': {
-      const tall = r > 0.5 ? 2 : 1;
-      for (let z = 1; z <= tall; z++) put(x, y, z, TRUNK);
-      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, tall + 1, PINE);
-      put(x + 1, y, tall + 2, PINE);
-      put(x - 1, y, tall + 2, PINE);
-      put(x, y + 1, tall + 2, PINE);
-      put(x, y - 1, tall + 2, PINE);
-      put(x, y, tall + 2, PINE);
-      put(x, y, tall + 3, PINE);
-      break;
-    }
-    case 'buisson':
-      put(x, y, 1, LEAF);
-      if (r > 0.7) put(x + 1, y, 1, LEAF);
-      break;
-    case 'fleur':
-      put(x, y, 1, FLOWERS[Math.floor(r * FLOWERS.length) % FLOWERS.length]);
-      break;
-    case 'rocher':
-      put(x, y, 1, BLOCKS.pierre.side);
-      if (r > 0.8) put(x, y, 2, BLOCKS.pierre.side);
-      break;
-    case 'roseau':
-      put(x, y, 1, REED);
-      put(x, y, 2, REED);
-      break;
-    case 'cristal':
-      put(x, y, 1, CRYSTAL);
-      if (r > 0.6) put(x, y, 2, CRYSTAL);
-      break;
-    case 'souche':
-      put(x, y, 1, TRUNK);
-      break;
-    case 'champignon':
-      put(x, y, 1, MUSHROOM);
-      break;
-  }
+  BLOCS_DU_DECOR[kind]?.(put, x, y, r);
 }
 
 export const SMOKE = '#a9a4a0';
@@ -395,7 +392,7 @@ export const SMOKE = '#a9a4a0';
 /** Les repères : un grand ouvrage par région, visible de loin, posé sur la terre autour du cœur. */
 export const REPERES = ['grand-arbre', 'champignon-geant', 'fumee', 'tour-de-guet', 'grand-phare', 'aiguille-de-glace', 'haut-fourneau'] as const;
 export type Repere = (typeof REPERES)[number];
-const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
+export const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
   foret: 'grand-arbre',
   marais: 'champignon-geant',
   volcan: 'fumee',
@@ -463,6 +460,94 @@ function findSpot(def: IslandDef, scenery: LandCell[], wantX: number, wantY: num
   return best;
 }
 
+/** Ce que reçoit la forme en blocs d'un repère : son île, son paysage, et `put`, qui pose un cube du repère. */
+interface OutilsDuRepereEnBlocs {
+  def: IslandDef;
+  scenery: LandCell[];
+  /** Le rang juste derrière le cœur, où se posent la plupart des repères. */
+  backY: number;
+  /** Nomme le repère d'après sa première case, « genre@x,y » (avant de poser ses cubes). */
+  named: (x: number, y: number) => void;
+  put: (x: number, y: number, z: number, color: string) => void;
+}
+
+/**
+ * Les formes en blocs des repères, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). `put`
+ * travaille en coordonnées du monde, z relatif au sol de l'île.
+ */
+export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
+  'grand-arbre': ({ def, scenery, backY, named, put }) => {
+    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages.
+    const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+    if (!s) return;
+    named(s.x, s.y);
+    for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
+    for (let dx = -2; dx <= 3; dx++)
+      for (let dy = -2; dy <= 3; dy++) if (Math.abs(dx - 0.5) + Math.abs(dy - 0.5) <= 4) put(s.x + dx, s.y + dy, s.h + 7, LEAF);
+    for (let dx = -1; dx <= 2; dx++) for (let dy = -1; dy <= 2; dy++) put(s.x + dx, s.y + dy, s.h + 8, LEAF);
+    for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 9, LEAF);
+  },
+  'champignon-geant': ({ def, scenery, backY, named, put }) => {
+    // Un champignon géant : pied clair de trois blocs, chapeau rouge à points blancs.
+    const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 1);
+    if (!s) return;
+    named(s.x, s.y);
+    for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS.sable.side);
+    for (let dx = -2; dx <= 2; dx++)
+      for (let dy = -2; dy <= 2; dy++)
+        if (Math.abs(dx) + Math.abs(dy) <= 3) put(s.x + dx, s.y + dy, s.h + 4, (dx + dy) % 2 === 0 && Math.abs(dx) + Math.abs(dy) === 2 ? SNOW : MUSHROOM);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(s.x + dx, s.y + dy, s.h + 5, MUSHROOM);
+    put(s.x, s.y, s.h + 6, SNOW);
+  },
+  fumee: ({ scenery, named, put }) => {
+    // Le cône fume : des volutes grises qui montent au-dessus du cratère, décalées comme au vent.
+    const lava = scenery.filter((c) => c.ground === 'lave');
+    if (!lava.length) return;
+    const cx = Math.round(lava.reduce((a, c) => a + c.x, 0) / lava.length);
+    const cy = Math.round(lava.reduce((a, c) => a + c.y, 0) / lava.length);
+    const top = Math.max(...lava.map((c) => c.h)) + 2;
+    named(cx, cy);
+    for (const [dx, dy, dz] of PUFFS) put(cx + dx, cy + dy, top + dz, SMOKE);
+  },
+  'aiguille-de-glace': ({ def, scenery, backY, named, put }) => {
+    // Une aiguille de glace : un pilier 2 × 2 de cinq blocs, une pointe de trois, un cristal qui brille au sommet.
+    const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+    if (!s) return;
+    named(s.x, s.y);
+    for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS.glace.side);
+    for (let z = 6; z <= 8; z++) put(s.x, s.y, s.h + z, BLOCKS.glace.side);
+    put(s.x, s.y, s.h + 9, CRYSTAL);
+  },
+  'haut-fourneau': ({ def, scenery, backY, named, put }) => {
+    // Le haut-fourneau de la Forge : une cheminée de basalte 2 × 2 de neuf blocs, la lave qui rougeoie au sommet, la fumée au vent.
+    const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 2);
+    if (!s) return;
+    named(s.x, s.y);
+    for (let z = 1; z <= 9; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BASALT);
+    for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 10, LAVA);
+    for (const [dx, dy, dz] of PUFFS) put(s.x + dx, s.y + dy, s.h + 9 + dz, SMOKE);
+  },
+  'tour-de-guet': ({ scenery, named, put }) => {
+    // Une tour de guet de pierre au sommet du pic, sa bannière de toile en haut.
+    const peak = scenery.reduce((a, c) => (c.h > a.h && c.ground !== 'lave' ? c : a), scenery[0]);
+    named(peak.x, peak.y);
+    for (let z = 1; z <= 4; z++) put(peak.x, peak.y, peak.h + z, BLOCKS.pierre.side);
+    put(peak.x, peak.y, peak.h + 5, BLOCKS.lanterne.side);
+    put(peak.x + 1, peak.y, peak.h + 5, BLOCKS.toile.side);
+    put(peak.x + 1, peak.y, peak.h + 4, BLOCKS.toile.side);
+  },
+  'grand-phare': ({ def, scenery, backY, named, put }) => {
+    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
+    const s = findSpot(def, scenery, def.core.x + CORE + 1, backY, 2);
+    if (!s) return;
+    named(s.x, s.y);
+    for (let z = 1; z <= 10; z++)
+      for (let dx = 0; dx < 2; dx++)
+        for (let dy = 0; dy < 2; dy++)
+          put(s.x + dx, s.y + dy, s.h + z, z === 9 ? BLOCKS.lanterne.side : z === 10 ? BLOCKS.prisme.side : z % 4 === 0 ? SNOW : BLOCKS.pierre.side);
+  },
+};
+
 /**
  * Pose le repère d'une île (s'il en a un). `place` travaille en coordonnées du monde, z relatif au sol de l'île ; le
  * repère porte un nom de décor, « genre@x,y » (sa première case).
@@ -471,88 +556,13 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
   const kind = LANDMARK_OF[def.id];
   if (!kind) return;
   let id: string = kind;
-  const named = (x: number, y: number) => (id = `${kind}@${x},${y}`);
-  const put = (x: number, y: number, z: number, color: string) => place(x, y, z, color, id);
-  const backY = def.core.y + CORE + 1;
-  switch (kind) {
-    case 'grand-arbre': {
-      // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages.
-      const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
-      if (!s) return;
-      named(s.x, s.y);
-      for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
-      for (let dx = -2; dx <= 3; dx++)
-        for (let dy = -2; dy <= 3; dy++) if (Math.abs(dx - 0.5) + Math.abs(dy - 0.5) <= 4) put(s.x + dx, s.y + dy, s.h + 7, LEAF);
-      for (let dx = -1; dx <= 2; dx++) for (let dy = -1; dy <= 2; dy++) put(s.x + dx, s.y + dy, s.h + 8, LEAF);
-      for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 9, LEAF);
-      return;
-    }
-    case 'champignon-geant': {
-      // Un champignon géant : pied clair de trois blocs, chapeau rouge à points blancs.
-      const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 1);
-      if (!s) return;
-      named(s.x, s.y);
-      for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS.sable.side);
-      for (let dx = -2; dx <= 2; dx++)
-        for (let dy = -2; dy <= 2; dy++)
-          if (Math.abs(dx) + Math.abs(dy) <= 3) put(s.x + dx, s.y + dy, s.h + 4, (dx + dy) % 2 === 0 && Math.abs(dx) + Math.abs(dy) === 2 ? SNOW : MUSHROOM);
-      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(s.x + dx, s.y + dy, s.h + 5, MUSHROOM);
-      put(s.x, s.y, s.h + 6, SNOW);
-      return;
-    }
-    case 'fumee': {
-      // Le cône fume : des volutes grises qui montent au-dessus du cratère, décalées comme au vent.
-      const lava = scenery.filter((c) => c.ground === 'lave');
-      if (!lava.length) return;
-      const cx = Math.round(lava.reduce((a, c) => a + c.x, 0) / lava.length);
-      const cy = Math.round(lava.reduce((a, c) => a + c.y, 0) / lava.length);
-      const top = Math.max(...lava.map((c) => c.h)) + 2;
-      named(cx, cy);
-      for (const [dx, dy, dz] of PUFFS) put(cx + dx, cy + dy, top + dz, SMOKE);
-      return;
-    }
-    case 'aiguille-de-glace': {
-      // Une aiguille de glace : un pilier 2 × 2 de cinq blocs, une pointe de trois, un cristal qui brille au sommet.
-      const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
-      if (!s) return;
-      named(s.x, s.y);
-      for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS.glace.side);
-      for (let z = 6; z <= 8; z++) put(s.x, s.y, s.h + z, BLOCKS.glace.side);
-      put(s.x, s.y, s.h + 9, CRYSTAL);
-      return;
-    }
-    case 'haut-fourneau': {
-      // Le haut-fourneau de la Forge : une cheminée de basalte 2 × 2 de neuf blocs, la lave qui rougeoie au sommet, la fumée au vent.
-      const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 2);
-      if (!s) return;
-      named(s.x, s.y);
-      for (let z = 1; z <= 9; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BASALT);
-      for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 10, LAVA);
-      for (const [dx, dy, dz] of PUFFS) put(s.x + dx, s.y + dy, s.h + 9 + dz, SMOKE);
-      return;
-    }
-    case 'tour-de-guet': {
-      // Une tour de guet de pierre au sommet du pic, sa bannière de toile en haut.
-      const peak = scenery.reduce((a, c) => (c.h > a.h && c.ground !== 'lave' ? c : a), scenery[0]);
-      named(peak.x, peak.y);
-      for (let z = 1; z <= 4; z++) put(peak.x, peak.y, peak.h + z, BLOCKS.pierre.side);
-      put(peak.x, peak.y, peak.h + 5, BLOCKS.lanterne.side);
-      put(peak.x + 1, peak.y, peak.h + 5, BLOCKS.toile.side);
-      put(peak.x + 1, peak.y, peak.h + 4, BLOCKS.toile.side);
-      return;
-    }
-    case 'grand-phare': {
-      // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
-      const s = findSpot(def, scenery, def.core.x + CORE + 1, backY, 2);
-      if (!s) return;
-      named(s.x, s.y);
-      for (let z = 1; z <= 10; z++)
-        for (let dx = 0; dx < 2; dx++)
-          for (let dy = 0; dy < 2; dy++)
-            put(s.x + dx, s.y + dy, s.h + z, z === 9 ? BLOCKS.lanterne.side : z === 10 ? BLOCKS.prisme.side : z % 4 === 0 ? SNOW : BLOCKS.pierre.side);
-      return;
-    }
-  }
+  REPERES_EN_BLOCS[kind]({
+    def,
+    scenery,
+    backY: def.core.y + CORE + 1,
+    named: (x, y) => (id = `${kind}@${x},${y}`),
+    put: (x, y, z, color) => place(x, y, z, color, id),
+  });
 }
 
 /**
