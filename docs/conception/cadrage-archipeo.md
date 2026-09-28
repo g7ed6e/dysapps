@@ -201,9 +201,9 @@ Jusqu’à R4, un seul fil enchaînait les lots sur une seule branche : quand il
 | Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris) | R5 | 6 500 / 3 | 6 500 / 3 |
 | Bornes (instanciées) | R5 | 1 000 / 1 | 1 000 / 1 |
 | Navire | R5 | 1 000 / 3 | 1 000 / 3 |
-| Bonhomme | R6 | 800 / 2 | 800 / 2 |
+| Bonhomme | R6 | 500 / 2 | 500 / 2 |
 | Créatures | R6 | 2 500 / 1 | 2 500 / 1 |
-| Gardiens en sentinelles | R6 | 1 500 / 1 | 1 500 / 1 |
+| Gardiens en sentinelles | R6 | 1 800 / 1 | 1 800 / 1 |
 | Dans la scène : étiquettes, flèche, fanion, balises | socle | 500 / 5 | 500 / 5 |
 
 Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de la baleine) : la marge est mince, et leur phare existe déjà. Les trois autres tiennent en 52 300 triangles et 24 appels ; leur enveloppe de décor laisse 4 000 à 6 500 triangles aux silhouettes. Un test du socle vérifie que la somme des enveloppes reste sous 60 000 et 40 ; chaque lot change son `it.todo` en plafond ; le test du budget complet devient vrai quand R4b, R5 et R6 sont fusionnés. Les appels comptés par le navigateur (`npm run rendu:mesures`) se vérifient dans chaque pull request.
