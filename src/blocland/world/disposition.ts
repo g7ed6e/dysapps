@@ -82,7 +82,5 @@ export type Intention =
    * les donnera en cases du plan (celles de la sauvegarde).
    */
   | { genre: 'face'; case: Point; voisine: Point }
-  /** En marche libre, le bonhomme est entré dans une autre île. */
-  | { genre: 'entree'; ile: BiomeId }
   | { genre: 'fin-du-voyage' }
   | { genre: 'voyage-saute' };

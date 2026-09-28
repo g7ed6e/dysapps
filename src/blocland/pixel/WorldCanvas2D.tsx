@@ -17,7 +17,6 @@ import {
   groundTap,
   islandInDirection,
   startStrolls,
-  startWalk,
   startVoyage,
   strollAt,
   voyageFrame,
@@ -26,7 +25,7 @@ import {
   type VoyageRun,
   type Walk,
 } from '../world/scene';
-import { islandAt, islandCenter } from '../world/terrain';
+import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
 import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { VEHICLE_DECK } from '../world/harbour';
@@ -55,15 +54,10 @@ import { seaPattern } from './paintedDraw';
 import { drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
-import { blockedCells, cellAhead, stepFrom, type StepDir } from './walk';
 import { CHUNK, TILE, buildTiles, frame2D, pickTile, project, toBase, toScreen, type TileMap, type View2D } from './oblique';
 
 /** Sous ce niveau, les cubes sont sous la mer : on ne les dessine pas (la mer est un fond animé). */
 const SEA_HIDES_BELOW = -1;
-/** Marche libre : la durée d'un pas d'une case (six par seconde, comme la marche vers une île). */
-const STEP_MS = 170;
-/** Marche libre : les flèches du clavier et leur direction. */
-const KEY_STEPS: Record<string, StepDir> = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
 
 /** Morceaux de terrain dessinés au plus par image : le premier affichage reste fluide. */
 const CHUNKS_PER_FRAME = 8;
@@ -120,14 +114,13 @@ export default function WorldCanvas2D({
   quests,
   islandLabels,
   burst,
-  freeWalk = false,
   className,
   label,
   onIntent,
   chantier = false,
 }: WorldViewProps) {
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
-  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip, onWalkedInto } = rappelsDeLaVue(
+  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,
     chantier,
   );
@@ -137,7 +130,7 @@ export default function WorldCanvas2D({
   // Le palier de lumière de la 2D peinte (la boucle le relit chaque image ; un changement repeint le terrain).
   const palier = useRef(palierDe(forceDay ? 1 : daylight().light));
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
+  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -162,10 +155,6 @@ export default function WorldCanvas2D({
   const hero = useRef<{ walk: Walk | null; at: Cell | null; facing: Facing }>({ walk: null, at: null, facing: 'down' });
   const walkers = useRef<Walker[]>([]);
   const sparks = useRef<Spark[]>([]);
-  // La marche libre : la direction tenue (croix ou flèche), ce qu'il y a devant le bonhomme, et le geste « Entrer ».
-  const held = useRef<StepDir | null>(null);
-  const [ahead, setAhead] = useState<'quest' | 'place' | 'creature' | null>(null);
-  const enter = useRef<() => void>(() => {});
   // Le Bloc-Navire : ses tuiles (pour le toucher) et son image, dessinée une fois à chaque changement.
   const ship = useRef<{ map: TileMap; image: ReturnType<typeof drawTileMap>; maxY: number; cubes: VoxelCube[]; paint?: Peinture } | null>(null);
 
@@ -372,20 +361,6 @@ export default function WorldCanvas2D({
         }
         return;
       }
-      // Marche libre : les flèches font marcher (tant qu'elles sont tenues), Entrée ou Espace entre.
-      if (p.freeWalk) {
-        const step = KEY_STEPS[e.key];
-        if (step) {
-          e.preventDefault();
-          held.current = step;
-          return;
-        }
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          enter.current();
-          return;
-        }
-      }
       const dir = ARROW_DIRS[e.key];
       if (!dir || !p.onPickIsland) return;
       e.preventDefault();
@@ -394,10 +369,6 @@ export default function WorldCanvas2D({
       if (next) p.onPickIsland(next);
     };
     el.addEventListener('keydown', onKey);
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (KEY_STEPS[e.key] === held.current) held.current = null;
-    };
-    el.addEventListener('keyup', onKeyUp);
 
     // Économie de batterie : on ne dessine que si le cadre est visible et l'onglet actif.
     let visible = true;
@@ -417,7 +388,6 @@ export default function WorldCanvas2D({
     let last = t0;
     // Sur la Carte, l'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
     let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
-    let aheadRef: 'quest' | 'place' | 'creature' | null = null;
     const loop = () => {
       if (!visible || document.hidden) {
         running = false;
@@ -478,23 +448,7 @@ export default function WorldCanvas2D({
         }
       }
 
-      // La marche libre : tant qu'une direction est tenue, un pas d'une case à la fois (six par seconde).
       const h = hero.current;
-      const creaturesAt = walkers.current.map((wk) => {
-        const o = wk.stroll.origin;
-        return { id: wk.stroll.id, kind: wk.stroll.kind, x: o.x + wk.mid.x, y: o.y + wk.mid.y };
-      });
-      if (p.freeWalk && held.current && !h.walk && h.at && !vy) {
-        const dir = held.current;
-        h.facing = dir;
-        const next = stepFrom(tm.env.surface, blockedCells(tm.props, tm.stations, creaturesAt), h.at, dir);
-        if (next) {
-          h.walk = startWalk([h.at, next], now, STEP_MS);
-          // Sur une autre île (ouverte) : elle devient la sienne, la caméra glisse vers elle.
-          const there = islandAt(p.archipelago, next.x, next.y);
-          if (p.home && there !== p.home) p.onWalkedInto?.(there);
-        }
-      }
 
       let moving = false;
       if (h.walk) {
@@ -749,33 +703,6 @@ export default function WorldCanvas2D({
       for (const d of standing) d.draw();
       hits = newHits;
 
-      // Marche libre : ce qu'il y a juste devant le bonhomme (une borne, une créature), pour le bouton « Entrer ».
-      if (p.freeWalk && h.at && !h.walk) {
-        const front = cellAhead(h.at, h.facing);
-        const station = tm.stations.find((st) => st.x === front.x && st.y === front.y);
-        const creature = creaturesAt.find((c) => Math.abs(c.x - (front.x + 0.5)) < 1.2 && Math.abs(c.y - (front.y + 0.5)) < 1.2);
-        const place = tm.places.get(`${front.x},${front.y}`);
-        const target = station ? 'quest' : place && p.onPickPlace ? 'place' : creature ? 'creature' : null;
-        enter.current = () => {
-          const q = props.current;
-          if (station) {
-            const [biome, typeId] = station.quest.split(':');
-            q.onPickQuest?.(biome as BiomeId, typeId);
-          } else if (place && q.onPickPlace) q.onPickPlace(place.place, place.island);
-          else if (creature) {
-            if (q.onPickCreature) q.onPickCreature(creature.id, creature.kind);
-            else if (!q.build) q.onPickIsland?.(creature.id);
-          }
-        };
-        if (target !== aheadRef) {
-          aheadRef = target;
-          setAhead(target);
-        }
-      } else if (aheadRef !== null) {
-        aheadRef = null;
-        setAhead(null);
-      }
-
       // Les éclats d'un bloc posé : de petits carrés qui retombent.
       sparks.current = sparks.current.filter((sp) => now - sp.born < 700);
       for (const sp of sparks.current) {
@@ -892,7 +819,6 @@ export default function WorldCanvas2D({
       if (dayTimer) window.clearInterval(dayTimer);
       document.removeEventListener('visibilitychange', onVisibility);
       el.removeEventListener('keydown', onKey);
-      el.removeEventListener('keyup', onKeyUp);
       canvas.removeEventListener('pointerdown', onDown);
       canvas.removeEventListener('pointerup', onUp);
       canvas.removeEventListener('pointermove', onHover);
@@ -901,45 +827,12 @@ export default function WorldCanvas2D({
     };
   }, [archipelago, reduceMotion]);
 
-  // La croix de direction : tenir une flèche fait marcher, case par case ; la relâcher arrête.
-  const pad = (dir: StepDir, text: string, name: string) => (
-    <button
-      type="button"
-      className={`button pixel-pad-${dir}`}
-      aria-label={name}
-      onPointerDown={(e) => {
-        e.currentTarget.setPointerCapture(e.pointerId);
-        held.current = dir;
-      }}
-      onPointerUp={() => (held.current = null)}
-      onPointerCancel={() => (held.current = null)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') held.current = dir;
-      }}
-      onKeyUp={() => (held.current = null)}
-    >
-      <span aria-hidden="true">{text}</span>
-    </button>
-  );
   return (
-    <>
-      <div
-        ref={host}
-        className={`voxel-canvas pixel-canvas ${className ?? ''}`.trim()}
-        role="img"
-        aria-label={`${label}. Au clavier : ${freeWalk ? 'les flèches font marcher, Entrée entre' : "les flèches vont à l'île voisine"}.`}
-      />
-      {freeWalk && (
-        <div className="pixel-pad" role="group" aria-label="Marcher">
-          {pad('up', '▲', 'Marcher vers le haut')}
-          {pad('left', '◀', 'Marcher vers la gauche')}
-          <button type="button" className={`button pixel-pad-enter${ahead ? ' primary' : ''}`} disabled={!ahead} onClick={() => enter.current()}>
-            Entrer
-          </button>
-          {pad('right', '▶', 'Marcher vers la droite')}
-          {pad('down', '▼', 'Marcher vers le bas')}
-        </div>
-      )}
-    </>
+    <div
+      ref={host}
+      className={`voxel-canvas pixel-canvas ${className ?? ''}`.trim()}
+      role="img"
+      aria-label={`${label}. Au clavier : les flèches vont à l'île voisine.`}
+    />
   );
 }
