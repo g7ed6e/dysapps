@@ -319,6 +319,7 @@ svg {
 }
 /* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
 .nav-button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -333,6 +334,16 @@ svg {
 }
 .nav-button:active {
   background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
+}
+/* Le trait sous l'icône du bouton actif, quand le bouton n'a plus son mot (voir la barre plus bas). */
+.nav-button.active::after {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
 }
 .nav-button.active {
   background: var(--sand);
@@ -357,8 +368,21 @@ svg {
     display: none;
   }
 }
+/* Jamais de mot coupé dans la jauge : le numéro de niveau part d'abord (il est dans l'écusson), puis le rôle ; la
+   jauge reste, et tout est sur la page Succès. */
 @container barre (max-width: 48rem) {
-  .nav-label {
+  .nav-label,
+  .topbar .xp-lvl,
+  .topbar .xp-sep {
+    display: none;
+  }
+  /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
+  .nav-button.active::after {
+    content: '';
+  }
+}
+@container barre (max-width: 40rem) {
+  .topbar .xp-title {
     display: none;
   }
 }
@@ -372,17 +396,18 @@ svg {
     display: none;
   }
 }
+/* Les mots des boutons et le nom de l'univers suivent la place de la barre (plus haut) ; ici, ce qui tient à l'écran. */
 @media (max-width: 640px) {
-  .brand-name,
-  .nav-label {
-    display: none;
-  }
   .topbar {
     gap: 0.6rem;
   }
   /* Le numéro de niveau est déjà dans l'écusson. */
-  .topbar .xp-lvl {
+  .topbar .xp-lvl,
+  .topbar .xp-sep {
     display: none;
+  }
+  .nav-button.active::after {
+    content: '';
   }
   .celebration {
     padding: 0.4rem 0.4rem 0.4rem 0.7rem;
