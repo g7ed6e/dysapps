@@ -6,11 +6,11 @@ Cette page suit une élève, de sa première séance à la fin des Premiers Riva
 
 L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce premier toucher débloque aussi la voix et les sons.
 
-![L'écran titre : le « A » d'Archipéo, « Archipéo » et le gros bouton bleu pétrole Jouer.](/captures/titre.jpg)
+![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
 Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de huit bulles, lues à voix haute, présente les lieux. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
-![Première visite du village en 3D : la Forêt des sons au centre, Mousso, les bornes de mission, et la première bulle du tutoriel « Bienvenue dans Archipéo ! ».](/captures/village-premiere-visite.jpg)
+![Première visite du village en 3D : la Forêt des sons au centre, Mousso, les bornes de mission, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
 Toucher l'île ouvre son **panneau** : Mousso se présente (sa phrase est lue, syllabes en couleurs), puis le **prochain objectif** et la liste des missions de l'île.
 
@@ -90,4 +90,4 @@ Le même jeu tient sur un téléphone en portrait : le monde en haut, le panneau
 
 La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
 
-![La vue simple : la page Archipéo, ses boutons Mes blocs, École du village, Monuments, et les îles en cartes.](/captures/vue-simple.jpg)
+![La vue simple : la page Blocland, ses boutons Mes blocs, École du village, Monuments, et les îles en cartes.](/captures/vue-simple.jpg)

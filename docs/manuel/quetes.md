@@ -1,6 +1,6 @@
 # Les missions du portail
 
-La page **Missions** (barre du haut, menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis les îles d’Archipéo de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans Archipéo. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+La page **Missions** (barre du haut, menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ![La page Missions : trois cartes, Français, Maths et Anglais, avec le nombre de missions disponibles.](/captures/quetes.jpg)
 
@@ -12,14 +12,14 @@ Chaque écran tient sans défiler :
 2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, mais la bonne n’a pas de place favorite : d’une question à l’autre, elle est la plus petite, la plus grande ou entre les deux. Les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
 3. **Le joker** donne un indice avant de répondre, ou après une erreur : une astuce (« remplace par *avait* ») et, en maths, une aide visuelle (grille de points, boîte de dix, droite par bonds, tableau de numération, barres de fractions).
 4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Après une première erreur, « Presque ! » s’affiche avec l’indice, la réponse tentée est barrée et l’on réessaie (avec deux choix seulement, la correction vient tout de suite, car le second essai donnerait la réponse). Après la deuxième, « Pas cette fois » donne la bonne réponse et un point d’effort. Les mots du résultat sont peu nombreux, courts et en minuscules : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois ».
-5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans Archipéo, où les chiffres cochent les cartes d’un tri et Entrée valide.
+5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans l’aventure, où les chiffres cochent les cartes d’un tri et Entrée valide.
 6. **Les succès** gagnés pendant la mission (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
 
 ![Une correction : « Pas cette fois », la bonne réponse cochée en vert, la réponse touchée en orangé, et l'astuce en une ligne.](/captures/quete-correction.jpg)
 
 ## Le mode concentration
 
-Pendant une partie (mission du portail, mission ou défi du Gardien dans Archipéo), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
 ![Le mode concentration : seulement la consigne, le mot « papillon », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
 
@@ -27,13 +27,13 @@ Pendant une partie (mission du portail, mission ou défi du Gardien dans Archip�
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
-- **Quitter la partie** : retour au choix des missions (ou, dans Archipéo, au panneau de l’île). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans Archipéo, les blocs se gagnent en finissant la partie.
+- **Quitter la partie** : retour au choix des missions (ou, dans l’aventure, au panneau de l’île). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans l’aventure, les blocs se gagnent en finissant la partie.
 
 Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la barre du haut revient, et le bouton retour ramène à la page d’avant.
 
 ## Le bilan
 
-Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans Archipéo (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une mission, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Mission suivante : Comparer** (la mission d’après dans la liste), sinon le retour au choix des missions ; puis **Rejouer** et **Menu**.
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans l’aventure (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une mission, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Mission suivante : Comparer** (la mission d’après dans la liste), sinon le retour au choix des missions ; puis **Rejouer** et **Menu**.
 
 ![Le bilan d'une mission sans faute : trois étoiles, « 4 sur 4 du premier coup », +75 XP, +6 blocs de bois pour le village.](/captures/quete-fin.jpg)
 

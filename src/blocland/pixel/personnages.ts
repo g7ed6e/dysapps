@@ -1,4 +1,4 @@
-// Les personnages de la 2D peinte (lot R6), derrière `?rendu=archipeo` : le bonhomme, les créatures et les Gardiens en
+// Les personnages de la 2D peinte (lot R6), dans l’univers Archipéo (voir rendu.ts) : le bonhomme, les créatures et les Gardiens en
 // sentinelles, rastérisés depuis leurs modèles en facettes (world/personnages/), dans la projection oblique de la vue 2D
 // (./oblique.ts : un bloc vers le nord ou vers le haut monte d'une case à l'écran). Calcul pur, testé sans canvas ; le
 // canvas est fait par ./paintedSprites.ts.

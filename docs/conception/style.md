@@ -1,6 +1,6 @@
 # Style « monde en blocs »
 
-Le monde (3D et 2D) suit un style de monde en blocs, dessiné par le code et jamais emprunté. L’interface qui l’entoure est déjà celle d’Archipéo : des panneaux sobres, opaques et géométriques, dans la palette de la planche. Rien ne gêne la lecture : le texte à lire reste sur un fond uni, dans la police dys choisie.
+Le monde (3D et 2D) suit un style de monde en blocs, dessiné par le code et jamais emprunté. Par défaut, l’interface qui l’entoure prend l’habillage de Blocland (plus bas, « L’habillage de Blocland ») ; celle d’Archipéo, choisie dans les Réglages, est faite de panneaux sobres, opaques et géométriques, dans la palette de la planche. Rien ne gêne la lecture : le texte à lire reste sur un fond uni, dans la police dys choisie.
 
 Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo : la cible et les écarts sont dans le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md).
 
@@ -11,7 +11,7 @@ Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo 
 - **Formes** : panneaux et cartes à angles de 12 px, boutons, champs et réponses à 8 px, étiquettes courtes en pastille ; bordures pleines de 2 px ; action principale en **bouton plein bleu pétrole** `#0E5A6E`, actions secondaires sur fond d’eau claire `#DCEBEA` ; appuyé, un bouton fonce, sans saut. Aucune ombre sur la page ; une seule ombre douce sous un panneau posé sur le monde (panneau d’île, bulles d’aide, liste des archipels). Les cartes d’une matière ou d’une île portent un **liseré** de sa couleur en tête ; l’endroit où l’on est, dans la barre du haut, est sur un aplat de sable.
 - **Jauge d’XP** pleine et arrondie, remplie de vert d’eau, et **insigne de rôle** : un hexagone à la couleur du rôle, avec un pictogramme dessiné par le code (rose des vents, carte, arche, voilier, phare) ; un rôle pas encore gagné est en pointillé.
 - **Icône de l’application** (écran d’accueil, PWA) : un « D » crème sur fond bleu nuit, pour DysApps, commun aux univers (`public/icon.svg`, et sa version à marge `icon-maskable.svg`), choisi par le mainteneur le 28 septembre 2026. Le logo d’Archipéo, sur l’écran titre, reste le « A » ouvert crème sur fond bleu nuit, posé sur deux vagues vert d’eau, avec une étoile de sable (`public/archipeo.svg`).
-- **Écran de lancement et écran titre** : la même icône, sur le fond crème de l’application ; à l’écran titre, elle tombe et se pose (coupé quand l’appareil demande de réduire les animations), sous le nom « Archipéo » dans la police des titres et une ligne dans la police de lecture.
+- **Écran de lancement et écran titre** : la même icône, sur le fond crème de l’application ; à l’écran titre, elle tombe et se pose (coupé quand l’appareil demande de réduire les animations), sous le nom de l’univers (« Blocland » par défaut) dans la police des titres et une ligne dans la police de lecture.
 - **Icônes** Lucide.
 - **Site de documentation** : la même charte, dans `docs/.vitepress/theme/custom.css` : barre du haut bleu nuit avec l’icône et le nom « Archipéo », liens bleu pétrole (vert d’eau en sombre), page courante du sommaire sur un liseré de sable, titres de page et de partie en Montserrat grasse, texte en Luciole ; le thème sombre reprend le thème Nuit.
 
@@ -32,7 +32,7 @@ Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent 
 
 ## L’habillage de Blocland
 
-Blocland reste l’univers par défaut, et son interface a un habillage à lui ([Plusieurs univers](univers.md), décision 7). Il est construit dans `src/styles/blocland.css` et s’applique quand l’univers affiché est Blocland (attribut `data-univers` de la page, posé avec les réglages) : avant la bascule du lot 6, l’univers affiché reste Archipéo et l’interface reste celle décrite plus haut. Direction proposée par le consultant de Blocland et validée par le directeur artistique le 28 septembre 2026.
+Blocland reste l’univers par défaut, et son interface a un habillage à lui ([Plusieurs univers](univers.md), décision 7). Il est construit dans `src/styles/blocland.css` et s’applique quand l’univers affiché est Blocland (attribut `data-univers` de la page, posé avec les réglages), c’est-à-dire par défaut ; l’interface décrite plus haut est celle d’Archipéo, quand l’élève l’a choisi dans les Réglages. Direction proposée par le consultant de Blocland et validée par le directeur artistique le 28 septembre 2026.
 
 - **Des blocs vus de face** : aplats chauds (herbe, bois, terre, or), coins de 4 px partout, bordures pleines de 2 px, aucune texture ni biseau, rien derrière le texte.
 - **Ce qui se touche a une face de côté** (une bande pleine de 4 px sous le bouton ou la carte, 3 px en Clair, toujours visible sur le fond : 3:1 au moins ; la face est plus sombre que le dessus, sauf en Nuit, où elle est plus claire pour se voir, exception validée par le directeur artistique) **et s’enfonce** de 3 px quand on appuie, sans transition et sans décaler la page. Un panneau n’en a pas ; un bouton fermé non plus.
@@ -50,7 +50,7 @@ Les textures ne servent plus qu’à dessiner le monde ; dans l’interface, un 
 
 ## En construction : le rendu Archipéo
 
-Les élèves voient le monde en blocs décrit ici. Le rendu d’Archipéo se construit derrière un drapeau de développement (`?rendu=archipeo`, voir le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), piste Rendu) et ne s’ouvre qu’au lot 6. Depuis le lot R1, il a en 3D :
+Les élèves voient le monde en blocs décrit ici. Les élèves qui choisissent Archipéo dans les Réglages voient son rendu (voir le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), piste Rendu). Depuis le lot R1, il a en 3D :
 
 - **une palette commune** (`src/blocland/world/palette.ts`) : par archipel, le ciel, la mer, la lumière, et une couleur de dessus et de côté pour chaque sol et chaque matière, de jour et de nuit ; les nuits restent un bleu de crépuscule, jamais un noir ;
 - **un ciel en dôme dégradé**, du zénith à l’horizon, avec une lueur claire sur la ligne d’horizon ; **une brume de profondeur** de la couleur de l’horizon, qui fond les îles lointaines dans le ciel, jamais les noms d’îles ;

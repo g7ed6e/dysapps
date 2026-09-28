@@ -25,6 +25,8 @@ import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useTextes } from '../univers';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -35,6 +37,7 @@ export function BiomePage() {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const textes = useTextes();
+  const univers = useUnivers();
   const biome = getBiome(biomeId);
   const builder = usePlanBuilder(biome?.id ?? 'foret');
   const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe);
@@ -50,7 +53,7 @@ export function BiomePage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte d’Archipéo
+        <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>
         <Icon name={biome.icon} /> {biome.name}

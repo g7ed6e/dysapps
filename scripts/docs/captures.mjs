@@ -139,14 +139,13 @@ const SHOTS = [
   { name: 'quetes', state: MID, go: '/quetes' },
   { name: 'succes', state: MID, go: '/succes' },
   { name: 'reglages', state: MID, go: '/reglages' },
-  { name: 'reglages-experimental', state: MID, go: '/reglages', act: showExperimental },
+  { name: 'reglages-univers', state: MID, go: '/reglages', act: showUnivers },
 ];
 
-/** La section Expérimental des Réglages, le nouveau dessin coché : les choix de surface apparaissent. */
-async function showExperimental(page) {
-  await page.getByRole('checkbox', { name: 'Essayer le nouveau dessin du monde' }).check();
+/** La section Univers des Réglages : Blocland, coché, puis Archipéo. */
+async function showUnivers(page) {
   // Sous la barre du haut, qui reste en place.
-  await page.getByRole('group', { name: 'Expérimental' }).evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 110));
+  await page.getByRole('group', { name: 'Univers' }).evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 110));
   await page.waitForTimeout(300);
 }
 

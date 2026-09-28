@@ -8,7 +8,7 @@ import { renduDuMonde } from './rendu';
 import { CREATURE_CUBES } from './world/personnages/creatures';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 
-/** La créature d'Archipéo en SVG (lot R6, derrière `?rendu=archipeo`), chargée à la demande. */
+/** La créature d'Archipéo en SVG (lot R6, dans l’univers Archipéo (voir rendu.ts)), chargée à la demande. */
 const PersonnageSvg = lazy(() => import('./PersonnageSvg'));
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 export function Creature3D({ biome, label, className }: Props) {
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
-  // Le rendu d'Archipéo (drapeau `?rendu=archipeo`) : la créature en facettes ; sans lui, en cubes, inchangée.
+  // Le rendu d'Archipéo (univers Archipéo, voir rendu.ts) : la créature en facettes ; sans lui, en cubes, inchangée.
   const [archipeo] = useState(() => renduDuMonde() === 'archipeo');
   const cubes = <Creature biome={biome} label={label} className={className} />;
   // Le temps que la créature en facettes arrive : sa place, vide, à sa taille (pas la créature en cubes, qui sauterait).
