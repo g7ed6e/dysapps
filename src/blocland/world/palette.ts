@@ -58,6 +58,8 @@ export interface PaletteArchipel {
   voile: [Couleur, number];
   /** Les sols propres à l'archipel, avant le voile. */
   sols?: Partial<Record<Ground, Faces>>;
+  /** Le cratère est éteint : la lave ne brille pas, elle prend sa couleur de `sols.lave` (le 6e). */
+  laveEteinte?: boolean;
   /** Un monde du ciel : un plancher de nuages à la place de la mer (le 3e, repris de `AMBIENCE`). */
   nuages: boolean;
   /** La teinte de mer de la fiche, entre le lagon et le large (le plancher de nuages aux Îles du Ciel) : voir `eauxDe`. */
@@ -86,6 +88,7 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // Le cratère du Volcan est éteint (R4b-6e) : ni lueur ni lave, un fond de basalte refroidi, un rien plus chaud.
     // Le volcan qui fume et rougeoie est la signature du 4e (fiche de famille, recommandation du directeur artistique).
     sols: { lave: { dessus: 0x5e5550, cote: 0x48413e } },
+    laveEteinte: true,
     nuages: AMBIENCE['6e'].sky,
     // La mer : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
     teinteDeMer: 0x1a7486,
@@ -348,12 +351,12 @@ export function couleurDuSol(a: ArchipelagoId, g: Ground, light = 1): Faces {
 /** Les couleurs d'une matière (bloc, décor) dans un archipel, entre la nuit (0) et le jour (1). */
 export function couleurDeMatiere(a: ArchipelagoId, m: TextureKind, light = 1): Faces {
   const sol = (m === 'herbe' || m === 'sable' || m === 'glace' || m === 'mousse' || m === 'basalte' || m === 'lave' || m === 'eau') && ambianceDe(a).sols?.[m];
-  return surface(a, sol || MATIERES[m], light, LUMINEUSES.has(m) && !sol);
+  return surface(a, sol || MATIERES[m], light, LUMINEUSES.has(m) && !(m === 'lave' && !laveQuiBrille(a)));
 }
 
-/** La lave brille-t-elle dans cet archipel ? Non quand son ambiance lui donne un sol propre (le cratère éteint du 6e). */
+/** La lave brille-t-elle dans cet archipel ? Non quand son ambiance dit le cratère éteint (le 6e). */
 export function laveQuiBrille(a: ArchipelagoId): boolean {
-  return !ambianceDe(a).sols?.lave;
+  return !ambianceDe(a).laveEteinte;
 }
 
 /** Luminance relative (WCAG) d'une couleur, de 0 (noir) à 1 (blanc). */

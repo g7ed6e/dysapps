@@ -13,7 +13,10 @@ export type RGB = [number, number, number];
 export interface FacettesDuDecor {
   positions: Float32Array;
   normals: Float32Array;
-  /** Couleurs par sommet, dans l'espace linéaire de Three.js. */
+  /**
+   * Couleurs par sommet, dans l'espace linéaire de Three.js : entre 0 et 1, sauf le fût du phare, peint plus clair que
+   * blanc (./phare.ts, `ECLAT_DU_FUT`), que l'éclairage ramène à un crème à l'écran.
+   */
   colors: Float32Array;
   /** Pour chaque triangle, l'indice de son élément dans `elements` (le toucher y retrouve la case). */
   elements: Int32Array;
@@ -29,8 +32,8 @@ export class Pinceau {
   private nor: number[] = [];
   private col: number[] = [];
   private own: number[] = [];
-  private nuit: number[] = [];
-  private aUneNuit = false;
+  /** Les couleurs de nuit, créées au premier triangle qui en a de propres (avant lui, les mêmes que de jour). */
+  private nuit: number[] | null = null;
   element = 0;
   /** Tant qu'il est posé, les facettes tracées ont aussi leurs couleurs de nuit (sinon, les mêmes que de jour). */
   deNuit: Peindre | null = null;
@@ -52,10 +55,12 @@ export class Pinceau {
       this.nor.push(n[0], n[1], n[2]);
       const k = peindre(p, n);
       this.col.push(k[0], k[1], k[2]);
-      const kn = this.deNuit ? this.deNuit(p, n) : k;
-      this.nuit.push(kn[0], kn[1], kn[2]);
+      if (this.deNuit && !this.nuit) this.nuit = this.col.slice(0, -3);
+      if (this.nuit) {
+        const kn = this.deNuit ? this.deNuit(p, n) : k;
+        this.nuit.push(kn[0], kn[1], kn[2]);
+      }
     }
-    if (this.deNuit) this.aUneNuit = true;
     this.own.push(this.element);
   }
   quad(a: V3, b: V3, c: V3, d: V3, dedans: V3, peindre: Peindre): void {
@@ -64,7 +69,7 @@ export class Pinceau {
   }
   fin(): FacettesDuDecor {
     const f: FacettesDuDecor = { positions: Float32Array.from(this.pos), normals: Float32Array.from(this.nor), colors: Float32Array.from(this.col), elements: Int32Array.from(this.own) };
-    if (this.aUneNuit) f.colorsNuit = Float32Array.from(this.nuit);
+    if (this.nuit) f.colorsNuit = Float32Array.from(this.nuit);
     return f;
   }
 }

@@ -1,6 +1,6 @@
 import { lineaire } from '../landMesh';
 import { MATIERES } from '../palette';
-import { COULEURS_DU_PHARE, dessinerPhare, PHARE, PHARES, rayonDuFut, type PieceDuPhare, type PoseDuPhare } from './phare';
+import { COULEURS_DU_PHARE, dessinerPhare, ECLAT_DU_FUT, OMBRE_DU_FUT, PHARE, PHARES, rayonDuFut, type PieceDuPhare, type PoseDuPhare } from './phare';
 import { Pinceau, rgb, type FacettesDuDecor } from './pinceau';
 
 const pose = (o: Partial<PoseDuPhare> = {}): PoseDuPhare => ({
@@ -112,4 +112,12 @@ it('se dessine pièce par pièce (R5 : les plans du phare), sans changer ce qu�
   }
   // Le fût seul (sans galerie) a son haut fermé : un chapeau de plus.
   expect(n).toBe(tout.P.elements.length + tout.L.elements.length + PHARE.pans - 2);
+});
+
+it('le fût est peint plus clair que blanc, dans une borne connue (crème lu à l’écran, relecture du DA)', () => {
+  const { P } = trace();
+  const max = Math.max(...P.colors);
+  expect(max).toBeGreaterThan(1);
+  expect(max).toBeLessThanOrEqual(ECLAT_DU_FUT * (1 + OMBRE_DU_FUT.eclat) * (1 + OMBRE_DU_FUT.chaleur));
+  expect(Math.min(...P.colors)).toBeGreaterThanOrEqual(0);
 });

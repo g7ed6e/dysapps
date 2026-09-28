@@ -43,6 +43,8 @@ export interface Forme {
   colors: Float32Array;
   /** Pour chaque sommet, des poids nommés (la queue, le souffle d'une baleine) : 0 s'il n'y participe pas. */
   poids: Record<string, Float32Array>;
+  /** Les sommets du ventre (la baleine) : la nuit les assombrit. */
+  ventre?: Uint32Array;
 }
 
 /** Nombre de triangles d'une forme. */
@@ -63,7 +65,12 @@ class Atelier {
   private pos: number[] = [];
   private col: number[] = [];
   private w = new Map<string, number[]>();
-  constructor(noms: string[] = []) {
+  private marques: number[] = [];
+  /** `marque` : une couleur dont on retient les sommets (le ventre de la baleine). */
+  constructor(
+    noms: string[] = [],
+    private marque?: Couleur,
+  ) {
     for (const n of noms) this.w.set(n, []);
   }
   /**
@@ -80,6 +87,7 @@ class Atelier {
     const retourne = n[0] * d[0] + n[1] * d[1] + n[2] * d[2] < 0;
     const pts = retourne ? [a, c, b] : [a, b, c];
     const rgb = rgbLineaire(couleur);
+    if (couleur === this.marque) for (let k = 0; k < 3; k++) this.marques.push(this.pos.length / 3 + k);
     for (const p of pts) this.pos.push(p[0], p[1], p[2]);
     for (let k = 0; k < 3; k++) this.col.push(rgb[0], rgb[1], rgb[2]);
     for (const [nom, list] of this.w) {
@@ -96,7 +104,9 @@ class Atelier {
   fin(): Forme {
     const poids: Record<string, Float32Array> = {};
     for (const [nom, list] of this.w) poids[nom] = Float32Array.from(list);
-    return { positions: Float32Array.from(this.pos), colors: Float32Array.from(this.col), poids };
+    const f: Forme = { positions: Float32Array.from(this.pos), colors: Float32Array.from(this.col), poids };
+    if (this.marque !== undefined) f.ventre = Uint32Array.from(this.marques);
+    return f;
   }
 }
 
@@ -112,14 +122,11 @@ export const VENTRE_DE_NUIT = mixColor(BALEINE.flanc, BALEINE.ventre, 0.4);
 
 /** Les couleurs de la baleine à un moment de la nuit : celles de `f`, le ventre fondu vers `VENTRE_DE_NUIT`. */
 export function couleursDeLaBaleine(f: Forme, nuit: number, out: Float32Array): Float32Array {
-  // Les couleurs de la forme sont en simple précision.
-  const jour = rgbLineaire(BALEINE.ventre).map(Math.fround);
+  out.set(f.colors);
+  const jour = rgbLineaire(BALEINE.ventre);
   const soir = rgbLineaire(VENTRE_DE_NUIT);
   const k = Math.min(1, Math.max(0, nuit));
-  for (let i = 0; i < f.colors.length; i += 3) {
-    const ventre = f.colors[i] === jour[0] && f.colors[i + 1] === jour[1] && f.colors[i + 2] === jour[2];
-    for (let j = 0; j < 3; j++) out[i + j] = ventre ? jour[j] + (soir[j] - jour[j]) * k : f.colors[i + j];
-  }
+  for (const i of f.ventre ?? []) for (let j = 0; j < 3; j++) out[3 * i + j] = jour[j] + (soir[j] - jour[j]) * k;
   return out;
 }
 
@@ -134,7 +141,7 @@ export const EVENT: V3 = [2.3, 0.55, 0];
  * l'évent quand elle ne souffle pas).
  */
 export function formeDeBaleine(): Forme {
-  const f = new Atelier(['queue', 'souffle']);
+  const f = new Atelier(['queue', 'souffle'], BALEINE.ventre);
   // x, demi-hauteur, demi-largeur, hauteur du centre, poids de la queue.
   const sections: [number, number, number, number, number][] = [
     [-2.55, 0.15, 0.13, 0.05, 1],

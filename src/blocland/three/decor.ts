@@ -25,13 +25,13 @@ export function creerDecor(): DecorEn3D {
   const group = new THREE.Group();
   const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
   const brille = new THREE.MeshBasicMaterial({ vertexColors: true });
-  // Les fumées : sans lumière (leur couleur de jour et de nuit est calculée par la règle de la fumée), sans écrire la
-  // profondeur, derrière rien de ce qu'on lit ; elles ne se touchent pas (le toucher passe au travers).
+  // Les fumées : sans lumière (leur couleur de jour et de nuit est calculée par la règle de la fumée), opaques comme le
+  // reste du décor ; elles ne se touchent pas (le toucher passe au travers).
   const vapeur = new THREE.MeshBasicMaterial({ vertexColors: true });
   let fumee: { mesh: THREE.Mesh; position: THREE.BufferAttribute; color: THREE.BufferAttribute } | null = null;
   let lanterne: { color: THREE.BufferAttribute; jour: Float32Array; nuit: Float32Array; light: number } | null = null;
   /** Le dernier état posé des fumées : immobiles, on ne les repose que si le jour ou le réglage change. */
-  let pose = { light: -1, reduit: false };
+  const pose = { light: -1, reduit: false };
   const vider = () => {
     for (const child of [...group.children]) {
       group.remove(child);
@@ -86,7 +86,8 @@ export function creerDecor(): DecorEn3D {
         mesh.raycast = () => {};
         group.add(mesh);
         fumee = { mesh, position, color };
-        pose = { light: -1, reduit: false };
+        pose.light = -1;
+        pose.reduit = false;
       }
       d.maillage = m;
     },
@@ -104,7 +105,8 @@ export function creerDecor(): DecorEn3D {
       poserLesFumees(m.fumees, t, light, reduit, fumee.position.array as Float32Array, fumee.color.array as Float32Array);
       fumee.position.needsUpdate = true;
       fumee.color.needsUpdate = true;
-      pose = { light, reduit };
+      pose.light = light;
+      pose.reduit = reduit;
     },
     dispose() {
       vider();

@@ -72,11 +72,17 @@ export interface FumeeDuDecor {
   /** Pour chaque volute : son panache et son rang. */
   volutes: { panache: number; k: number }[];
   panaches: Panache[];
-  /** Pour chaque sommet : son écart au centre de sa volute, en rayons ; sa couleur de jour avant fondu (0..255). */
+  /** Pour chaque sommet : son écart au centre de sa volute, en rayons. */
   unites: Float32Array;
-  jour: Float32Array;
+  /** Pour chaque triangle : sa couleur de jour avant fondu (une couleur 0xRRGGBB). */
+  jour: Int32Array;
   /** L'archipel : son horizon et sa nuit. */
   archipel: ArchipelagoId;
+  /**
+   * Les tampons de la pose, faits une fois (rien ne s'alloue à chaque image) : par volute, son centre, son rayon et son
+   * fondu ; par triangle, ses couleurs sans fondu et au fondu plein, au moment du jour `teintes.light`.
+   */
+  tampons: { cx: Float32Array; cy: Float32Array; cz: Float32Array; r: Float32Array; fondu: Float32Array; c0: Float32Array; c1: Float32Array; light: number };
 }
 
 /** Ce que les formes remplissent : le pinceau des fumées et leurs panaches. */
@@ -89,24 +95,32 @@ export class Fumees {
   fin(archipel: ArchipelagoId): FumeeDuDecor {
     const facettes = this.P.fin();
     const nv = facettes.positions.length / 3;
+    const nt = facettes.elements.length;
     const unites = new Float32Array(nv * 3);
-    const jour = new Float32Array(nv * 3);
-    for (let t = 0; t < facettes.elements.length; t++) {
+    const jour = new Int32Array(nt);
+    for (let t = 0; t < nt; t++) {
       const v = this.volutes[facettes.elements[t]];
       const n: V3 = [facettes.normals[9 * t], facettes.normals[9 * t + 1], facettes.normals[9 * t + 2]];
-      const c = ombreDeFumee(n);
-      for (let s = 3 * t; s < 3 * t + 3; s++) {
-        for (let j = 0; j < 3; j++) {
-          unites[3 * s + j] = (facettes.positions[3 * s + j] - v.centre[j]) / v.r;
-          jour[3 * s + j] = c[j];
-        }
-      }
+      const c = ombreDeFumee(n).map(Math.round);
+      jour[t] = (c[0] << 16) | (c[1] << 8) | c[2];
+      for (let s = 3 * t; s < 3 * t + 3; s++) for (let j = 0; j < 3; j++) unites[3 * s + j] = (facettes.positions[3 * s + j] - v.centre[j]) / v.r;
     }
-    return { facettes, volutes: this.volutes.map(({ panache, k }) => ({ panache, k })), panaches: this.panaches, unites, jour, archipel };
+    const nv2 = this.volutes.length;
+    const tampons = {
+      cx: new Float32Array(nv2),
+      cy: new Float32Array(nv2),
+      cz: new Float32Array(nv2),
+      r: new Float32Array(nv2),
+      fondu: new Float32Array(nv2),
+      c0: new Float32Array(nt * 3),
+      c1: new Float32Array(nt * 3),
+      light: -1,
+    };
+    return { facettes, volutes: this.volutes.map(({ panache, k }) => ({ panache, k })), panaches: this.panaches, unites, jour, archipel, tampons };
   }
 }
 
-/** Les options d'une fumée : le rayon de sa première volute, combien de volutes, le haut du pied (`bas`). */
+/** Les options d'une fumée : le rayon de sa première volute, combien de volutes (deux au moins), le haut du pied (`bas`). */
 export interface OptionsDeFumee {
   rayon?: number;
   volutes?: number;
@@ -120,7 +134,8 @@ export interface OptionsDeFumee {
 export function bouffees(F: Fumees, list: VoxelCube[], hasard: () => number, rot: number, horizon: RGB, o: OptionsDeFumee = {}): void {
   if (!list.length) return;
   const tri = [...list].sort((p, q) => p.z - q.z);
-  const n = Math.min(tri.length, o.volutes ?? tri.length);
+  // Deux volutes au moins : une volute seule ne grandirait jamais jusqu'à sa taille (elle naît et se dissout à la fois).
+  const n = Math.max(2, Math.min(tri.length, o.volutes ?? tri.length));
   const [d, f] = [tri[0], tri[tri.length - 1]];
   const k2 = Math.max(1, (tri.length - 1) * (tri.length - 1));
   const vx = (f.x - d.x) / k2;
@@ -191,34 +206,48 @@ export function couleurDeFumee(a: ArchipelagoId, jour: Couleur, fondu: number, l
  * d'un coup, sans fondu de sortie ; seule la nuit change encore leur couleur, comme pour tout le décor.
  */
 export function poserLesFumees(f: FumeeDuDecor, t: number, light: number, reduit: boolean, positions: Float32Array, colors: Float32Array): void {
-  const places = f.volutes.map(({ panache, k }) => {
+  const T = f.tampons;
+  // Les couleurs sans fondu et au fondu plein ne changent qu'avec le moment du jour (une fois par minute au plus).
+  if (T.light !== light) {
+    const c = [0, 0, 0];
+    for (let i = 0; i < f.jour.length; i++) {
+      couleurDeFumee(f.archipel, f.jour[i], 0, light, c);
+      T.c0[3 * i] = c[0];
+      T.c0[3 * i + 1] = c[1];
+      T.c0[3 * i + 2] = c[2];
+      couleurDeFumee(f.archipel, f.jour[i], FUMEE.fondu, light, c);
+      T.c1[3 * i] = c[0];
+      T.c1[3 * i + 1] = c[1];
+      T.c1[3 * i + 2] = c[2];
+    }
+    T.light = light;
+  }
+  for (let v = 0; v < f.volutes.length; v++) {
+    const { panache, k } = f.volutes[v];
     const p = f.panaches[panache];
     const { s, taille } = placeDeLaVolute(k, p.n, p.phase, t, reduit);
     const i = Math.min(Math.floor(s), p.n - 1);
     const w = s - i;
     const [a, b] = [p.chemin[i], p.chemin[i + 1]];
-    const centre: V3 = [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w, a[2] + (b[2] - a[2]) * w];
-    const r = (p.rayons[i] + (p.rayons[i + 1] - p.rayons[i]) * w) * taille;
-    return { centre, r, fondu: fonduALaPlace(s, p.n) };
-  });
-  const tmp = [0, 0, 0];
-  const vues = new Map<string, number[]>();
+    T.cx[v] = a[0] + (b[0] - a[0]) * w;
+    T.cy[v] = a[1] + (b[1] - a[1]) * w;
+    T.cz[v] = a[2] + (b[2] - a[2]) * w;
+    T.r[v] = (p.rayons[i] + (p.rayons[i + 1] - p.rayons[i]) * w) * taille;
+    T.fondu[v] = fonduALaPlace(s, p.n) / FUMEE.fondu;
+  }
   const els = f.facettes.elements;
-  for (let tIdx = 0; tIdx < els.length; tIdx++) {
-    const v = places[els[tIdx]];
-    for (let s = 3 * tIdx; s < 3 * tIdx + 3; s++) {
+  for (let tr = 0; tr < els.length; tr++) {
+    const v = els[tr];
+    const w = T.fondu[v];
+    for (let s = 3 * tr; s < 3 * tr + 3; s++) {
       if (reduit) for (let j = 0; j < 3; j++) positions[3 * s + j] = f.facettes.positions[3 * s + j];
-      else for (let j = 0; j < 3; j++) positions[3 * s + j] = v.centre[j] + f.unites[3 * s + j] * v.r;
-      const jour = (Math.round(f.jour[3 * s]) << 16) | (Math.round(f.jour[3 * s + 1]) << 8) | Math.round(f.jour[3 * s + 2]);
-      const cle = `${jour}|${v.fondu.toFixed(3)}`;
-      let c = vues.get(cle);
-      if (!c) {
-        c = couleurDeFumee(f.archipel, jour, v.fondu, light, [...tmp]);
-        vues.set(cle, c);
+      else {
+        positions[3 * s] = T.cx[v] + f.unites[3 * s] * T.r[v];
+        positions[3 * s + 1] = T.cy[v] + f.unites[3 * s + 1] * T.r[v];
+        positions[3 * s + 2] = T.cz[v] + f.unites[3 * s + 2] * T.r[v];
       }
-      colors[3 * s] = c[0];
-      colors[3 * s + 1] = c[1];
-      colors[3 * s + 2] = c[2];
+      // Le fondu se mélange en linéaire entre les deux couleurs du triangle (à 0,01 près du mélange de `couleurDeFumee`).
+      for (let j = 0; j < 3; j++) colors[3 * s + j] = T.c0[3 * tr + j] + (T.c1[3 * tr + j] - T.c0[3 * tr + j]) * w;
     }
   }
 }

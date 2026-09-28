@@ -6,6 +6,7 @@ import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
+import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/phare';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
 
@@ -144,7 +145,8 @@ it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses f
     // Des couleurs finies, dans l'espace linéaire.
     for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {
       expect(f.positions.length).toBe(f.elements.length * 9);
-      for (const v of f.colors) expect(v >= 0 && v <= 1).toBe(true);
+      // (Seul le fût du phare dépasse 1, peint plus clair que blanc ; il n'est pas encore posé dans le décor.)
+      for (const v of f.colors) expect(v >= 0 && v <= ECLAT_DU_FUT * (1 + OMBRE_DU_FUT.eclat) * (1 + OMBRE_DU_FUT.chaleur)).toBe(true);
       for (const v of f.positions) expect(Number.isFinite(v)).toBe(true);
     }
   }
