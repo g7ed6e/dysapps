@@ -1,11 +1,10 @@
 import { toutConstruit } from '../budget';
-import { rangerLeDecor, maillageDuDecor, type ElementDeDecor } from '../decorMesh';
+import { caseDuDecor, rangerLeDecor, maillageDuDecor, type ElementDeDecor } from '../decorMesh';
 import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
-import { ALTITUDE } from '../map';
-import { luminance } from '../palette';
+import { ALTITUDE, inCore, islandDef } from '../map';
+import { ambianceDe, luminance } from '../palette';
 import { merLibre, worldCubes } from '../terrain';
 import { bancsDeBrume, COUCHES_5E } from './brume';
-import { SANS_ELEMENT } from './lointain';
 import { COULEURS_5E } from './5e';
 import { respirationDeLaBrume } from './fumee';
 
@@ -16,7 +15,7 @@ const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
 const champ = champDuSol('5e', sol, reste);
 const m = maillageDuDecor('5e', champ, elements);
 
-/** Les triangles d'un élément (ou de `SANS_ELEMENT`), projetés sur le sol : trois sommets (x, z) chacun. */
+/** Les triangles d'un élément, projetés sur le sol : trois sommets (x, z) chacun. */
 function triangles(i: number): [number, number][][] {
   const out: [number, number][][] = [];
   const f = m.decor;
@@ -71,15 +70,26 @@ it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives d
   expect(h).toBeLessThan(5.5);
 });
 
-it('les ornements (tour en ruine, calotte) et le lointain ne se touchent pas ; la calotte est la seule glace blanche, au plus haut pic du Glacier', () => {
-  const sans = triangles(SANS_ELEMENT);
-  expect(sans.length).toBeGreaterThan(m.decor.elements.length - m.debutDuLointain);
+it('la tour en ruine et la calotte sont hors de la grille : sans cubes, on ne les touche pas ; la calotte coiffe le plus haut pic du Glacier', () => {
+  const hors = m.elements.filter((e) => e.horsGrille);
+  expect(hors.map((e) => e.genre).sort()).toEqual(['calotte', 'tour-en-ruine']);
+  for (const e of hors) {
+    expect(e.cubes).toEqual([]);
+    const i = m.elements.indexOf(e);
+    const t = Array.from(m.decor.elements).indexOf(i);
+    expect(t, e.genre).toBeGreaterThanOrEqual(0);
+    expect(caseDuDecor(champ, m, false, t), e.genre).toBeNull();
+  }
   // La calotte : le point le plus haut du Glacier en est couvert.
   let pic = champ.colonnes[0];
   for (const c of champ.colonnes) if (c.ile === 'glacier' && (pic.ile !== 'glacier' || c.haut > pic.haut)) pic = c;
-  expect(couvert(sans, pic.x + 0.5, pic.y + 0.5)).toBe(true);
+  expect(couvert(triangles(m.elements.findIndex((e) => e.genre === 'calotte')), pic.x + 0.5, pic.y + 0.5)).toBe(true);
+  // La tour en ruine, derrière le cœur du Carrefour, jamais dedans.
+  const tour = hors.find((e) => e.genre === 'tour-en-ruine')!;
+  expect(colonneEn(champ, tour.x, tour.y)?.ile).toBe('carrefour');
+  expect(inCore(islandDef('carrefour'), tour.x, tour.y)).toBe(false);
   // La neige du sol se peint en roche claire : jamais aussi claire que la glace de la calotte.
-  expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(0xb9c4c4));
+  expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(ambianceDe('5e').sols!.neige!.dessus));
 });
 
 it('les bancs de brume : sur la mer libre seulement, jamais sur une île ni le quai, toujours sous le sol des îles', () => {

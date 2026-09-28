@@ -3,12 +3,13 @@
 // artistique dans design/archipeo/intentions/5e-iles-brumeuses.md). Rien n'y change le monde en blocs : les cubes des
 // repères restent ceux de Blocland, seule leur forme dans Archipéo change.
 import { mixColor } from '../daylight';
-import { inCore, islandDef } from '../map';
-import { NIVEAU_EAU } from '../landMesh';
+import type { ElementDeDecor } from '../decorMesh';
+import { CORE, inCore, islandDef } from '../map';
+import { NIVEAU_EAU, type ChampDuSol, type Colonne } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
-import { enRepere, type Forme, type Ornement } from './outils';
-import { DELAVE, eclaircir, hasardDe, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { enRepere, type Forme } from './outils';
+import { DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de la fiche : la pierre des tours, l'ardoise, la mousse des roches, la glace de la calotte. */
 export const COULEURS_5E = { pierre: 0x7d8a86, ardoise: 0x224c5f, mousse: 0x5a7e50, roche: 0x6a7f86, glace: 0xe5ebe3, glaceCote: 0xc9d8dc, ecume: 0xe8eeec, roseau: 0x8a8a5a } as const;
@@ -108,7 +109,7 @@ const rocheMoussue: Forme = ({ P, e, hasard, rot, vari }) => {
   }
 };
 
-export const VARIANTES_5E: Record<string, Forme> = { banc: rocheMoussue };
+export const RETOUCHES_5E: Record<string, Forme> = { banc: rocheMoussue };
 
 /** La tour en ruine du Carrefour : 3 cases de haut, un mur plus haut que l'autre, son toit d'ardoise tombé au pied. */
 function tourEnRuine(P: Pinceau, cx: number, cz: number, base: number, rot: number, muted: boolean, hasard: () => number): void {
@@ -133,32 +134,38 @@ function calotte(P: Pinceau, x: number, y: number, z: number, muted: boolean, ha
   icosaedre(P, [x, y + 0.25, z], 1.25, 0.62, 0.2, hasard, peintre(f, y - 0.4, 1.3), hasard() * Math.PI);
 }
 
+/** La tour en ruine et la calotte : des formes hors de la grille (./horsGrille.ts), sans cubes, qu'on ne touche pas. */
+export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
+  'tour-en-ruine': ({ P, e, cx, cz, base, hasard }) => tourEnRuine(P, cx, cz, base, 0.35, e.muted, hasard),
+  calotte: ({ P, e, cx, cz, base, hasard }) => calotte(P, cx, base, cz, e.muted, hasard),
+};
+
 /**
- * Les ornements du 5e, hors de la grille : la tour en ruine du Carrefour, derrière son cœur, sur une case de terre où
- * rien n'est posé ; la calotte de sérac sur le plus haut pic du Glacier.
+ * Le décor du 5e hors de la grille : la tour en ruine du Carrefour, derrière son cœur, sur une case de terre où rien
+ * n'est posé ; la calotte de sérac sur le plus haut pic du Glacier.
  */
-export const ORNEMENTS_5E: Ornement = ({ P, champ, elements, sol }) => {
+export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDecor[]): ElementDeDecor[] {
+  const out: ElementDeDecor[] = [];
   const occupees = new Set<string>();
   for (const e of elements) for (const c of e.cubes) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) occupees.add(`${c.x + dx},${c.y + dy}`);
   // Le Carrefour : la case libre la plus au fond (au nord), au plus près de l'axe du cœur, jamais dans le cœur.
   const carrefour = islandDef('carrefour');
-  const axe = carrefour.core.x + 8;
-  let tour: { x: number; y: number; muted: boolean; score: number } | null = null;
+  const axe = carrefour.core.x + CORE / 2;
+  let tour: Colonne | null = null;
+  let meilleur = -Infinity;
   for (const c of champ.colonnes) {
-    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + 16) continue;
+    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + CORE) continue;
     if (occupees.has(`${c.x},${c.y}`)) continue;
     const score = c.y * 2 - Math.abs(c.x - axe);
-    if (!tour || score > tour.score) tour = { x: c.x, y: c.y, muted: c.muted, score };
+    if (score > meilleur) [tour, meilleur] = [c, score];
   }
-  if (tour) {
-    const hasard = hasardDe(`ruine@${tour.x},${tour.y}`);
-    tourEnRuine(P, tour.x + 0.5, tour.y + 0.5, sol(tour.x + 0.5, tour.y + 0.5, 3), 0.35, tour.muted, hasard);
-  }
+  if (tour) out.push({ id: `hors-grille/tour-en-ruine@${tour.x},${tour.y}`, genre: 'tour-en-ruine', cubes: [], x: tour.x, y: tour.y, z: tour.haut + 1, emprise: 1, muted: tour.muted, horsGrille: true });
   // Le Glacier : la colonne la plus haute.
-  let pic: (typeof champ.colonnes)[number] | null = null;
+  let pic: Colonne | null = null;
   for (const c of champ.colonnes) if (c.ile === 'glacier' && !c.liquide && (!pic || c.haut > pic.haut)) pic = c;
-  if (pic) calotte(P, pic.x + 0.5, sol(pic.x + 0.5, pic.y + 0.5, pic.haut + 1), pic.y + 0.5, pic.muted, hasardDe(`calotte@${pic.x},${pic.y}`));
-};
+  if (pic) out.push({ id: `hors-grille/calotte@${pic.x},${pic.y}`, genre: 'calotte', cubes: [], x: pic.x, y: pic.y, z: pic.haut + 1, emprise: 1, muted: pic.muted, horsGrille: true });
+  return out;
+}
 
 /**
  * Le lointain des Îles Brumeuses (intention, §2) : des masses de roche en gradins, plus hautes que larges, au sommet

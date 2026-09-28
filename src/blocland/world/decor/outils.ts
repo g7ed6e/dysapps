@@ -48,24 +48,6 @@ export interface OutilsDeForme {
 /** Une forme du décor : elle peint son élément avec les pinceaux. */
 export type Forme = (o: OutilsDeForme) => void;
 
-/**
- * Ce que reçoit un ornement : un décor d'Archipéo sans cube dans le monde en blocs (une tour, une calotte de glace),
- * posé hors de la grille (design/archipeo/intentions/commun.md, règle 2). Ses triangles n'ont pas d'élément : le
- * toucher les traverse. Il ne change ni la marche, ni les empreintes du monde, ni Blocland.
- */
-export interface OutilsDOrnement {
-  P: Pinceau;
-  a: ArchipelagoId;
-  champ: ChampDuSol;
-  /** Les éléments du décor déjà posés : un ornement ne se pose pas sur leurs cases. */
-  elements: readonly ElementDeDecor[];
-  /** La hauteur du sol en un point, sinon `repli`. */
-  sol: (x: number, y: number, repli: number) => number;
-  style: 'a' | 'b';
-}
-
-/** Les ornements d'un archipel : ils se dessinent après les éléments du décor, dans le même appel de dessin. */
-export type Ornement = (o: OutilsDOrnement) => void;
 
 /** Ce que reçoit un repère, en plus : il est posé au plus bas de son emprise (il s'y enfonce, jamais ne flotte). */
 export interface OutilsDuRepere extends OutilsDeForme {

@@ -3,9 +3,9 @@
 // sans lumière, pour les fumées qui bougent, R4b-6e). Les matériaux sont faits une fois par scène et libérés avec elle ;
 // les géométries, à chaque nouveau décor. `animer` fait bouger les fumées ; `jour` passe la lanterne du phare et les
 // fumées à la nuit. Ils ne recopient que ce que calcule le code pur (world/decor/fumee.ts). Le lointain (R4b-5e,
-// world/decor/lointain.ts) est au bout du maillage du décor : caché sur la Carte, jamais touché.
+// world/decor/lointain.ts) est au bout du maillage du décor : caché sur la Carte, jamais touché ; le décor hors de la
+// grille (R4b-4e, world/decor/horsGrille.ts) ne se touche pas non plus.
 import * as THREE from 'three';
-import { SANS_ELEMENT } from '../world/decor/lointain';
 import { poserLesFumees, type FacettesDuDecor, type MaillageDuDecor } from '../world/decorMesh';
 
 export interface DecorEn3D {
@@ -39,8 +39,12 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
   const vapeur = new THREE.MeshBasicMaterial({ vertexColors: true });
   let fumee: { mesh: THREE.Mesh; position: THREE.BufferAttribute; color: THREE.BufferAttribute } | null = null;
   let lanterne: { color: THREE.BufferAttribute; jour: Float32Array; nuit: Float32Array; light: number } | null = null;
-  /** Le maillage du décor et son lointain (ses derniers triangles), s'il en a un ; `cache` : caché en ce moment. */
-  let lointain: { geo: THREE.BufferGeometry; debut: number; cache: boolean } | null = null;
+  /**
+   * Ce qui se cache sur la Carte : le lointain au bout du maillage du décor, les fumées au loin au bout de celui des
+   * fumées (leurs premiers triangles, `debut`) ; `cache` : caché en ce moment.
+   */
+  let auLoin: { geo: THREE.BufferGeometry; debut: number }[] = [];
+  let cache = false;
   /** Le dernier état posé des fumées : immobiles, on ne les repose que si le jour ou le réglage change. */
   const pose = { light: -1, reduit: false };
   /** Le moment du jour courant (`jour`). */
@@ -52,7 +56,8 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
     }
     fumee = null;
     lanterne = null;
-    lointain = null;
+    auLoin = [];
+    cache = false;
   };
   const geometrie = (f: FacettesDuDecor) => {
     const geo = new THREE.BufferGeometry();
@@ -62,11 +67,25 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
     geo.computeBoundingSphere();
     return geo;
   };
-  const ajouter = (f: FacettesDuDecor, material: THREE.Material, lueur: boolean) => {
+  /** `debut` : le premier triangle du lointain (R4b-5e), s'il est dans ce maillage. */
+  const ajouter = (m: MaillageDuDecor, f: FacettesDuDecor, material: THREE.Material, lueur: boolean, debut = Infinity) => {
     if (!f.elements.length) return null;
     const geo = geometrie(f);
     const mesh = new THREE.Mesh(geo, material);
     mesh.userData = { decor: true, lueur };
+    // Le lointain et le décor hors de la grille (la grue du 4e, R4b-4e) ne se touchent pas : un toucher qui les
+    // traverse va à ce qu'il y a derrière (le sol, la mer, rien).
+    if (debut < f.elements.length || m.elements.some((e) => e.horsGrille)) {
+      const lancer = mesh.raycast.bind(mesh);
+      mesh.raycast = (raycaster, intersects) => {
+        const avant = intersects.length;
+        lancer(raycaster, intersects);
+        for (let i = intersects.length - 1; i >= avant; i--) {
+          const t = intersects[i].faceIndex ?? 0;
+          if (t >= debut || m.elements[f.elements[t]]?.horsGrille) intersects.splice(i, 1);
+        }
+      };
+    }
     // Un seul maillage pour tout l'archipel : le tri par la vue ne ferait rien gagner.
     mesh.frustumCulled = false;
     group.add(mesh);
@@ -77,21 +96,9 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
     maillage: null,
     peindre(m) {
       vider();
-      const decor = ajouter(m.decor, mat, false);
-      if (decor && m.debutDuLointain < m.decor.elements.length) {
-        lointain = { geo: decor.geometry, debut: m.debutDuLointain, cache: false };
-      }
-      if (decor && m.decor.elements.includes(SANS_ELEMENT)) {
-        // Le lointain et les ornements ne se touchent pas : un toucher qui les traverse va à ce qu'il y a derrière.
-        const sans = m.decor.elements;
-        const lancer = decor.raycast.bind(decor);
-        decor.raycast = (raycaster, intersects) => {
-          const avant = intersects.length;
-          lancer(raycaster, intersects);
-          for (let i = intersects.length - 1; i >= avant; i--) if (sans[intersects[i].faceIndex ?? 0] === SANS_ELEMENT) intersects.splice(i, 1);
-        };
-      }
-      const l = ajouter(m.lueurs, brille, true);
+      const decor = ajouter(m, m.decor, mat, false, m.debutDuLointain);
+      if (decor && m.debutDuLointain < m.decor.elements.length) auLoin.push({ geo: decor.geometry, debut: m.debutDuLointain });
+      const l = ajouter(m, m.lueurs, brille, true);
       if (l && m.lueurs.colorsNuit) {
         // Une copie : la géométrie garde les couleurs de jour du maillage pour les rendre au lever du jour.
         const color = new THREE.BufferAttribute(Float32Array.from(m.lueurs.colors), 3);
@@ -113,6 +120,7 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
         mesh.raycast = () => {};
         group.add(mesh);
         fumee = { mesh, position, color };
+        if (m.debutDesFumeesAuLoin < f.elements.length) auLoin.push({ geo, debut: m.debutDesFumeesAuLoin });
         pose.light = -1;
         pose.reduit = false;
       }
@@ -132,9 +140,9 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
     animer(t, _dt, reduit) {
       // Sur la Carte, le lointain se cache : on ne dessine que les triangles d'avant lui.
       const carte = Boolean(instant?.carte);
-      if (lointain && lointain.cache !== carte) {
-        lointain.geo.setDrawRange(0, carte ? lointain.debut * 3 : Infinity);
-        lointain.cache = carte;
+      if (auLoin.length && cache !== carte) {
+        for (const l of auLoin) l.geo.setDrawRange(0, carte ? l.debut * 3 : Infinity);
+        cache = carte;
       }
       const light = lumiere;
       const m = d.maillage;
