@@ -48,7 +48,6 @@ export interface OutilsDeForme {
 /** Une forme du décor : elle peint son élément avec les pinceaux. */
 export type Forme = (o: OutilsDeForme) => void;
 
-
 /** Ce que reçoit un repère, en plus : il est posé au plus bas de son emprise (il s'y enfonce, jamais ne flotte). */
 export interface OutilsDuRepere extends OutilsDeForme {
   /** Le côté de son emprise, son centre, le bas de son pied et le niveau du sol dans le monde en blocs. */

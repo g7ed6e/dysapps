@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier, ponts, brumeuses). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -95,6 +95,12 @@ const CAPTURES = [
   { nom: 'ponts-avant-contraste', vue: 'île', famille: 'ponts', ile: 'comptoir', sansPonts: ['marche-comptoir', 'marche-marais'], theme: 'contraste' },
   { nom: 'ponts-apres', vue: 'île', famille: 'ponts', ile: 'comptoir' },
   { nom: 'ponts-nuit', vue: 'île', famille: 'ponts', ile: 'manoir', nuit: true },
+  // Les repères des Îles Brumeuses (R4b-5e) : la tour d'archives du Marais, de jour et de nuit, la tour en ruine du
+  // Carrefour, les crêtes et la calotte du Glacier.
+  { nom: 'marais', vue: 'île', famille: 'brumeuses', ile: 'marais' },
+  { nom: 'marais-nuit', vue: 'île', famille: 'brumeuses', ile: 'marais', nuit: true },
+  { nom: 'carrefour', vue: 'île', famille: 'brumeuses', ile: 'carrefour' },
+  { nom: 'glacier', vue: 'île', famille: 'brumeuses', ile: 'glacier' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

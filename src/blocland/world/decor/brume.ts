@@ -32,10 +32,10 @@ export interface CoucheDeBrume {
 
 /**
  * Les couches du 5e, du bas vers le haut : `#C5D9EB` en bas, `#E5EBE3` en haut, la couche du bas à 0,6 d'opacité au
- * plus. Toutes sous le sol des îles (à 3 blocs dans les Îles Brumeuses).
+ * plus, respiration comprise (±10 %). Toutes sous le sol des îles (à 3 blocs dans les Îles Brumeuses).
  */
 export const COUCHES_5E: readonly CoucheDeBrume[] = [
-  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.55, couvre: 0.7 },
+  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.54, couvre: 0.7 },
   { hauteur: 0.95, couleur: 0xd5e2e7, opacite: 0.45, couvre: 0.45 },
   { hauteur: 1.6, couleur: 0xe5ebe3, opacite: 0.4, couvre: 0.25 },
 ];
@@ -110,7 +110,8 @@ const cache = new Map<ArchipelagoId, BancsDeBrume | null>();
 
 /** Les bancs de brume d'un archipel (calculés une fois), ou `null` s'il n'en a pas. */
 export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
-  if (cache.has(a)) return cache.get(a)!;
+  const connu = cache.get(a);
+  if (connu !== undefined) return connu;
   const couches = BANCS_DE_BRUME[a];
   if (!couches) {
     cache.set(a, null);

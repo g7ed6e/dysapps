@@ -111,18 +111,18 @@ const rocheMoussue: Forme = ({ P, e, hasard, rot, vari }) => {
 
 export const RETOUCHES_5E: Record<string, Forme> = { banc: rocheMoussue };
 
-/** La tour en ruine du Carrefour : environ 3,5 cases de haut, un mur rompu plus haut que l'autre, son toit d'ardoise tombé au pied. */
+/** La tour en ruine du Carrefour : environ 4,5 cases de haut, un mur rompu plus haut que l'autre, son toit d'ardoise tombé au pied. */
 function tourEnRuine(P: Pinceau, cx: number, cz: number, base: number, rot: number, muted: boolean, hasard: () => number): void {
   const pierre = peintre(faces(COULEURS_5E.pierre, muted), base, 3, 0.96 + 0.08 * hasard());
-  const cote = 2;
-  pave(P, cx, base - 0.3, cz, cote, cote, 2.2, rot, 0, pierre);
+  const cote = 2.4;
+  pave(P, cx, base - 0.3, cz, cote, cote, 3, rot, 0, pierre);
   // Ce qui reste du haut : un pan de mur, et un coin plus haut encore.
   const u = (d: number): [number, number] => [cx + d * Math.cos(rot), cz + d * Math.sin(rot)];
   const [mx, mz] = u(cote / 2 - 0.18);
-  pave(P, mx, base + 1.9, mz, 0.4, cote, 0.9, rot, 0, pierre);
+  pave(P, mx, base + 2.7, mz, 0.45, cote, 1, rot, 0, pierre);
   const v = (du: number, dv: number): [number, number] => [cx + du * Math.cos(rot) - dv * Math.sin(rot), cz + du * Math.sin(rot) + dv * Math.cos(rot)];
   const [kx, kz] = v(cote / 2 - 0.18, cote / 2 - 0.18);
-  pave(P, kx, base + 2.8, kz, 0.4, 0.5, 0.9, rot, 0, pierre);
+  pave(P, kx, base + 3.7, kz, 0.45, 0.6, 1, rot, 0, pierre);
   // Le toit effondré : une dalle d'ardoise tombée contre le pied, penchée.
   const [tx, tz] = v(-cote / 2 - 0.35, 0.1);
   pave(P, tx, base - 0.2, tz, 0.2, cote * 1.15, 1.5, rot, -0.55, peintre(faces(COULEURS_5E.ardoise, muted), base, 1.2), true);
@@ -147,16 +147,19 @@ export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
 export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDecor[]): ElementDeDecor[] {
   const out: ElementDeDecor[] = [];
   const occupees = new Set<string>();
-  for (const e of elements) for (const c of e.cubes) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) occupees.add(`${c.x + dx},${c.y + dy}`);
-  // Le Carrefour : la case libre la plus au fond (au nord), au plus près de l'axe du cœur, jamais dans le cœur.
+  for (const e of elements) for (const c of e.cubes) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 3; dy++) occupees.add(`${c.x + dx},${c.y + dy}`);
+  // Le Carrefour : une case libre juste derrière le cœur, au plus près de son axe, sans décor devant elle (la caméra
+  // regarde vers le nord), jamais dans le cœur.
   const carrefour = islandDef('carrefour');
   const axe = carrefour.core.x + CORE / 2;
   let tour: Colonne | null = null;
   let meilleur = -Infinity;
   for (const c of champ.colonnes) {
-    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + CORE) continue;
+    // Juste derrière le cœur, avant les crêtes du fond : vue de l'île, elle se lit au-dessus des toits.
+    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + CORE || c.y > carrefour.core.y + CORE + 2) continue;
     if (occupees.has(`${c.x},${c.y}`)) continue;
-    const score = c.y * 2 - Math.abs(c.x - axe);
+    // Au plus près de l'axe ; à égalité, la plus au fond.
+    const score = -Math.abs(c.x - axe) * 4 + (c.y - carrefour.core.y);
     if (score > meilleur) [tour, meilleur] = [c, score];
   }
   if (tour) out.push({ id: `hors-grille/tour-en-ruine@${tour.x},${tour.y}`, genre: 'tour-en-ruine', cubes: [], x: tour.x, y: tour.y, z: tour.haut + 1, emprise: 1, muted: tour.muted, horsGrille: true });

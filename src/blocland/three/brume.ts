@@ -3,8 +3,7 @@
 // les bancs de brume des Îles Brumeuses sur la mer libre (R4b-5e, world/decor/brume.ts), en un appel de dessin, qui
 // respirent selon la règle commune, à moitié sur la Carte, figés avec « Réduire les animations ».
 import * as THREE from 'three';
-import { AMBIENCE, palette } from '../world/daylight';
-import { mixColor } from '../world/daylight';
+import { AMBIENCE, mixColor, palette } from '../world/daylight';
 import { bancsDeBrume } from '../world/decor/brume';
 import { respirationDeLaBrume } from '../world/decor/fumee';
 import { cielDe } from '../world/palette';
@@ -41,7 +40,7 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
   // Les bancs de brume (Archipéo, 5e) : sans lumière ; la nuit les assombrit vers le bleu de crépuscule.
   const bancs = archipeo ? bancsDeBrume(archipel) : null;
   let banc: THREE.Mesh | null = null;
-  const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false });
+  const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, fog: false });
   if (bancs) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(bancs.positions, 3));

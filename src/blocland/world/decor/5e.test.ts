@@ -6,7 +6,7 @@ import { ambianceDe, luminance } from '../palette';
 import { worldCubes } from '../terrain';
 import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './brume';
 import { COULEURS_5E } from './5e';
-import { respirationDeLaBrume } from './fumee';
+import { MOUVEMENT_DE_LA_BRUME, respirationDeLaBrume } from './fumee';
 
 const { progress, village } = toutConstruit();
 const cubes = worldCubes('5e', progress, village, false);
@@ -106,8 +106,8 @@ it('les bancs de brume : jamais sur un ouvrage, le quai ni la route du navire ; 
       if (col) expect(y + 0.5, `${x},${z}`).toBeLessThan(col.haut);
     }
   }
-  // La couche du bas à 0,6 d'opacité au plus ; de `#C5D9EB` en bas à `#E5EBE3` en haut.
-  expect(COUCHES_5E[0].opacite).toBeLessThanOrEqual(0.6);
+  // La couche du bas à 0,6 d'opacité au plus, respiration comprise ; de `#C5D9EB` en bas à `#E5EBE3` en haut.
+  expect(COUCHES_5E[0].opacite * (1 + MOUVEMENT_DE_LA_BRUME.opacite)).toBeLessThanOrEqual(0.6);
   expect(COUCHES_5E.map((c) => c.hauteur)).toEqual([...COUCHES_5E.map((c) => c.hauteur)].sort((p, q) => p - q));
   expect([COUCHES_5E[0].couleur, COUCHES_5E.at(-1)!.couleur]).toEqual([0xc5d9eb, 0xe5ebe3]);
 });
