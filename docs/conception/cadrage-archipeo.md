@@ -449,7 +449,7 @@ Construit le 28 septembre 2026 derrière `?rendu=archipeo` ; sans le drapeau, ri
 
 **Mesures** (`npm run rendu:mesures -- --rendu archipeo`, vue d’une île, tout construit) : bonhomme 472 triangles en 1 appel (4 768 et 21 avant) ; créatures 2 488, 1 605, 1 528 et 1 667 triangles, 1 appel par archipel (45, 23, 29 et 25 avant) ; Gardiens 1 726, 1 453, 1 258 et 1 331 triangles, 1 appel (47, 31, 31 et 33 avant). La scène entière passe de 231 à 121 appels dans les Premiers Rivages, et d’environ 195 à 115-129 ailleurs. Les enveloppes du bonhomme (500) et des Gardiens (1 800) ont été ajustées par le mainteneur, somme inchangée : au 6e, dix Gardiens se partagent l’enveloppe. Les créatures des Premiers Rivages sont à 12 triangles de la leur.
 
-**Le directeur artistique** : RELECTURE_DA
+**Le directeur artistique** : validé le 28 septembre 2026, après quatre relectures du bonhomme et des créatures, deux des sentinelles et une de la 2D (captures sur la branche `captures`, dossier `r6/`). Au défi, la sentinelle part toujours éteinte, même si le Gardien est déjà vaincu (revanche) ; elle s’allume quand l’humeur devient « beaten », sans transition ; le fondu, ou son absence avec « Réduire les animations », se décide au lot 6. La miniature du panneau d’île reste en cubes : elle passera au rendu Archipéo avec la reprise de l’interface. L’échelle et les couleurs se jugent à la revue d’ensemble.
 
 **Le référent dys** : AVIS_DYS
 
