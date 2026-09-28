@@ -66,7 +66,7 @@ export interface WorldViewProps {
   vehicle?: VehiclePlacement | null;
   /**
    * Les gestes, traduits en intentions (world/disposition.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
-   * navire, une face en chantier, l'entrée dans une île en marche libre, la fin d'un temps du voyage ou le voyage sauté.
+   * navire, une face en chantier, la fin d'un temps du voyage ou le voyage sauté.
    * La vue ne décide rien : la page reçoit l'intention et décide. Sans `onIntent`, la vue se regarde sans se toucher.
    */
   onIntent?: (i: Intention) => void;
@@ -100,8 +100,6 @@ export interface WorldViewProps {
    */
   whalePass?: { island: BiomeId; seq: number } | null;
   burst?: Burst;
-  /** La marche libre (vue 2D, en option) : une croix de direction et un bouton « Entrer » ; toucher pour aller reste. */
-  freeWalk?: boolean;
   className?: string;
   label: string;
 }
@@ -118,7 +116,6 @@ export interface RappelsDeLaVue {
   onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
   onPickVehicle?: (port: BiomeId) => void;
   build?: BuildProps;
-  onWalkedInto?: (id: BiomeId) => void;
   onVoyageLegEnd?: () => void;
   onVoyageSkip?: () => void;
 }
@@ -133,7 +130,6 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, c
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
     onPickVehicle: (port) => onIntent({ genre: 'navire', port }),
     build: chantier ? { onPickFace: (cell, next) => onIntent({ genre: 'face', case: cell, voisine: next }) } : undefined,
-    onWalkedInto: (ile) => onIntent({ genre: 'entree', ile }),
     onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
   };

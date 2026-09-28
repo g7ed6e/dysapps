@@ -150,10 +150,6 @@ export function SettingsPage() {
             ))}
           </div>
           <p>Si l’appareil ne sait pas dessiner le monde en 3D, Archipéo montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles.</p>
-          <label className="toggle">
-            <input type="checkbox" checked={settings.freeWalk} onChange={(e) => update({ freeWalk: e.target.checked })} />
-            Marche libre dans le monde en 2D (une croix de direction et un bouton « Entrer »)
-          </label>
         </fieldset>
 
         <fieldset className="panel">
