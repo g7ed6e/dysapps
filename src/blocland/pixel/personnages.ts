@@ -10,7 +10,7 @@
 import { mixColor } from '../world/daylight';
 import type { ArchipelagoId } from '../world/map';
 import { deNuit, type Couleur } from '../world/palette';
-import type { FacettesDePersonnage, PieceDuModele, Role } from '../world/personnages/peint';
+import { rolesDesTriangles, type FacettesDePersonnage, type PieceDuModele, type Role } from '../world/personnages/peint';
 import { allumage } from '../world/personnages/sentinelle';
 import { NUIT_OCEAN, nuancer, sombreDe } from './painted';
 import { TILE } from './oblique';
@@ -78,17 +78,6 @@ function tourneX(p: V, o: V, a: number): V {
 function tourneY(p: V, a: number): V {
   const [c, s] = [Math.cos(a), Math.sin(a)];
   return [p[0] * c + p[2] * s, p[1], -p[0] * s + p[2] * c];
-}
-
-/** Le rôle de chaque triangle (celui de sa couleur de base, dans sa pièce). */
-function rolesDe(f: FacettesDePersonnage): Role[] {
-  const roles = new Map<Couleur, Role[]>();
-  for (const p of f.palette) roles.set(p.couleur, [...(roles.get(p.couleur) ?? []), p.role]);
-  return Array.from(f.teintes, (c, t) => {
-    const r = roles.get(c) ?? ['dominante'];
-    if (r.includes('lueur') && f.table[f.pieces[t]].lueur) return 'lueur';
-    return r.find((x) => x !== 'lueur') ?? r[0];
-  });
 }
 
 /** La couleur d'un triangle à ce palier : l'aplat de sa facette, la nuit, et ce qui brille. */
@@ -188,7 +177,7 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
   }
 
   // Les couleurs : une par triangle (calculée une fois).
-  const roles = rolesDe(f);
+  const roles = rolesDesTriangles(f);
   const couleurs = new Map<number, Couleur>();
   const couleurDe = (t: number) => {
     let c = couleurs.get(t);

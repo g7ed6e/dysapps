@@ -11,7 +11,10 @@ import type { BiomeId } from '../../biomes';
 import type { VoxelCube } from '../../Voxel';
 import { bonhommePeint } from './bonhomme';
 import { creaturePeinte } from './creaturesPeintes';
-import type { FacettesDePersonnage, V3 } from './peint';
+import { lineaire } from '../landMesh';
+import { rgb } from '../decor/pinceau';
+import { LUEUR } from './couleurs';
+import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './peint';
 import { couleursAllumees } from './sentinelle';
 import { sentinellePeinte } from './sentinellesPeintes';
 
@@ -53,6 +56,11 @@ export interface FusionDesCreatures extends Fusion {
   squelette: Os[];
   /** La boîte de chaque créature (le toucher), dans la scène : [x0, y0, z0, x1, y1, z1]. */
   boites: { id: BiomeId; boite: [number, number, number, number, number, number] }[];
+  /**
+   * Pour chaque sommet, ce qu'il devient la nuit (quatre nombres) : la couleur de sa lueur, dans l'espace linéaire, et
+   * son poids (1 : il brille la nuit ; 0 : il suit la lumière de la scène).
+   */
+  lueur: Float32Array;
 }
 
 /** Les Gardiens d'un archipel en sentinelles : leurs couleurs à un degré d'allumage, et ce qui s'allume. */
@@ -116,6 +124,7 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
   const os = new Uint16Array(total * 3);
   const squelette: Os[] = [];
   const boites: FusionDesCreatures['boites'] = [];
+  const lueur = new Float32Array(total * 12);
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
@@ -125,6 +134,11 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
     squelette.push({ id: p.id, nom: 'corps', parent: -1, pivot: o });
     squelette.push({ id: p.id, nom: 'bras', parent: 2 * i, pivot: ajoute(o, bras?.pivot ?? [0, 0, 0]) });
     const surLeBras = f.table.map((q) => PIECES_DU_BRAS.has(q.nom));
+    lueursDeNuit(f).forEach((c, t) => {
+      if (c === null) return;
+      const k = rgb(c).map((v) => lineaire(v / 255));
+      for (let s = 0; s < 3; s++) lueur.set([k[0], k[1], k[2], 1], ((t0 + t) * 3 + s) * 4);
+    });
     const b: [number, number, number, number, number, number] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
     for (let t = 0; t < f.pieces.length; t++) {
       os.fill(2 * i + (surLeBras[f.pieces[t]] ? 1 : 0), (t0 + t) * 3, (t0 + t + 1) * 3);
@@ -138,7 +152,7 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
     t0 += f.pieces.length;
   });
-  return { ...base, os, squelette, boites };
+  return { ...base, os, squelette, boites, lueur };
 }
 
 /** Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés). */
@@ -160,11 +174,35 @@ export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens 
 }
 
 /**
+ * Le degré d'allumage d'un Gardien posé dans le monde : 1 s'il est vaincu (son défi réussi), 0 sinon. Les Gardiens
+ * vaincus arrivent de la grille avec `beaten` (../terrain.ts, `guardianPlacements`) ; le rallumage progressif, et son
+ * mot, viennent au lot 6.
+ */
+export function allumageDuGardien(c: object): 0 | 1 {
+  return 'beaten' in c && c.beaten === true ? 1 : 0;
+}
+
+/**
  * Les couleurs des Gardiens d'une fusion, chacun à son degré d'allumage (0 : éteint, 1 : rallumé ; 0 s'il n'est pas
  * donné), écrites dans `dans` s'il est donné (l'attribut de couleur de la vue, sans allocation à chaque image).
  */
 export function couleursDesGardiens(f: FusionDesGardiens, degres: Partial<Record<BiomeId, number>>, dans = new Float32Array(f.colors.length)): Float32Array {
   for (const p of f.plages) couleursAllumees(sentinellePeinte(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+  return dans;
+}
+
+/**
+ * Ce qui brille chez les Gardiens d'une fusion (quatre nombres par sommet, comme `FusionDesCreatures.lueur`) : la
+ * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; le reste suit la lumière.
+ */
+export function lueursDesGardiens(f: FusionDesGardiens, degres: Partial<Record<BiomeId, number>>, dans = new Float32Array((f.colors.length / 3) * 4)): Float32Array {
+  dans.fill(0);
+  const k = rgb(LUEUR).map((v) => lineaire(v / 255));
+  for (const p of f.plages) {
+    const d = Math.min(1, Math.max(0, degres[p.id] ?? 0));
+    if (!d) continue;
+    for (let v = p.debut * 3; v < p.fin * 3; v++) if (f.lueur[v]) dans.set([k[0], k[1], k[2], d], v * 4);
+  }
   return dans;
 }
 

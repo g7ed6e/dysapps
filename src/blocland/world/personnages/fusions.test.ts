@@ -3,7 +3,7 @@ import { ARCHIPELAGO_IDS } from '../map';
 import { creaturePlacements, guardianPlacements } from '../terrain';
 import { bonhommePeint } from './bonhomme';
 import { creaturePeinte } from './creaturesPeintes';
-import { couleursDesGardiens, fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, pointDePose, trianglesDeLaFusion } from './fusions';
+import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, lueursDesGardiens, fusionDesGardiens, fusionDuBonhomme, pointDePose, trianglesDeLaFusion } from './fusions';
 import { couleursAllumees } from './sentinelle';
 import { sentinellePeinte } from './sentinellesPeintes';
 
@@ -58,6 +58,40 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
       });
     });
   }
+
+  it('ce qui brille la nuit : la lanterne de Fi (verre ambre le jour, lueur la nuit), l’abdomen d’Astra, la braise de Braise', () => {
+    const brillent = (a: '3e' | '4e') => {
+      const f = fusionDesCreatures(creaturePlacements(a, village.bridges));
+      const ids = new Set<string>();
+      f.plages.forEach((p) => {
+        for (let v = p.debut * 3; v < p.fin * 3; v++) {
+          expect([0, 1]).toContain(f.lueur[v * 4 + 3]);
+          if (f.lueur[v * 4 + 3]) ids.add(p.id);
+        }
+      });
+      return { f, ids: [...ids].sort() };
+    };
+    expect(brillent('3e').ids).toEqual(['phare', 'textes']);
+    expect(brillent('4e').ids).toEqual(['forge']);
+    // Le verre de Fi est ambre le jour (sa couleur de sommet) et prend la lueur la nuit (#FFD866 : rouge linéaire 1).
+    const { f } = brillent('3e');
+    const fi = f.plages.find((p) => p.id === 'phare')!;
+    let lueur = false;
+    for (let v = fi.debut * 3; v < fi.fin * 3; v++) if (f.lueur[v * 4 + 3] && Math.abs(f.lueur[v * 4] - 1) < 1e-6) lueur = true;
+    expect(lueur).toBe(true);
+  });
+
+  it('les Gardiens vaincus s’allument (1), les autres restent éteints (0) ; seules la flamme et les veines brillent', () => {
+    expect(allumageDuGardien({ beaten: true })).toBe(1);
+    expect(allumageDuGardien({ beaten: false })).toBe(0);
+    expect(allumageDuGardien({})).toBe(0);
+    const places = guardianPlacements('6e', progress, village.bridges);
+    const f = fusionDesGardiens(places);
+    expect(lueursDesGardiens(f, {}).every((x) => x === 0)).toBe(true);
+    const l = lueursDesGardiens(f, { [places[0].id]: 1 });
+    const { debut, fin } = f.plages[0];
+    for (let v = 0; v < f.lueur.length; v++) expect(l[v * 4 + 3], `${v}`).toBe(v >= debut * 3 && v < fin * 3 && f.lueur[v] ? 1 : 0);
+  });
 
   it('le bonhomme : un os par pièce, les mêmes que ses pièces', () => {
     const f = fusionDuBonhomme();

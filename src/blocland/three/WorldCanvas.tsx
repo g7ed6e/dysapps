@@ -155,7 +155,7 @@ export default function WorldCanvas({
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
     const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, () => personnages.avatar, instant);
-    const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant);
+    const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant);

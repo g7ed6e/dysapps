@@ -118,6 +118,32 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
   };
 }
 
+/**
+ * Le rôle de chaque triangle : celui de sa couleur de base. Une couleur peinte sous deux rôles (la lueur et une
+ * autre) n'est une lueur que dans une pièce qui brille.
+ */
+export function rolesDesTriangles(f: FacettesDePersonnage): Role[] {
+  const roles = new Map<Couleur, Role[]>();
+  for (const p of f.palette) roles.set(p.couleur, [...(roles.get(p.couleur) ?? []), p.role]);
+  return Array.from(f.teintes, (c, t) => {
+    const r = roles.get(c) ?? ['dominante'];
+    if (r.includes('lueur') && f.table[f.pieces[t]].lueur) return 'lueur';
+    return r.find((x) => x !== 'lueur') ?? r[0];
+  });
+}
+
+/**
+ * La couleur de nuit de chaque triangle qui brille la nuit (la lanterne de Fi, l'abdomen d'Astra, la braise de
+ * Braise), ou `null` : sa propre couleur, ou celle que sa pièce prend la nuit (le verre de Fi).
+ */
+export function lueursDeNuit(f: FacettesDePersonnage): (Couleur | null)[] {
+  const roles = rolesDesTriangles(f);
+  return roles.map((r, t) => {
+    const piece = f.table[f.pieces[t]];
+    return r === 'lueur' && piece.lueur === 'nuit' ? (piece.nuit ?? f.teintes[t]) : null;
+  });
+}
+
 // ---------- Les poses : tracer ailleurs, tourné ----------
 
 /** Trace ce qu'on lui donne après l'avoir déplacé par `f`. */

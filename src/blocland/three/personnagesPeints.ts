@@ -1,0 +1,247 @@
+// Les personnages d'Archipéo dans la scène 3D (lot R6), derrière `?rendu=archipeo` : le bonhomme (un maillage à six
+// os), les créatures d'un archipel (un maillage à deux os par créature : le corps, le bras et son outil) et les
+// Gardiens en sentinelles de pierre (un maillage fixe), un appel de dessin chacun. Les modèles sont ceux de
+// world/personnages/ (fusions.ts), placés depuis la grille d'aujourd'hui : l'emprise au sol, la marche, les
+// promenades et le toucher ne changent pas. Ce qui brille (la lanterne de Fi, l'abdomen d'Astra, la braise de Braise la
+// nuit ; la flamme et les veines d'un Gardien vaincu) passe par un attribut `lueur` que lit le matériau.
+import * as THREE from 'three';
+import { piedsSur, type ChampDuSol } from '../world/landMesh';
+import {
+  allumageDuGardien,
+  couleursDesGardiens,
+  fusionDesCreatures,
+  fusionDesGardiens,
+  fusionDuBonhomme,
+  lueursDesGardiens,
+  pointDePose,
+  type Fusion,
+  type Os,
+} from '../world/personnages/fusions';
+import { startStrolls, strollAt, type Stroll } from '../world/scene';
+import type { Lumiere } from './lumiere';
+import type { Instant, Monde } from './partie';
+import type { Habits } from './personnages';
+
+/** Le balancement du pas du bonhomme, os par os (le même que celui du bonhomme en blocs). */
+const PAS: Record<string, number> = {
+  'bras-gauche': 1,
+  'bras-droit': -1,
+  'jambe-gauche': -1,
+  'jambe-droite': 1,
+};
+
+/** Le geste lent d'une créature : son bras et son outil se lèvent un peu, une fois toutes les cinq secondes. */
+export const GESTE = { periode: 5, angle: 0.12 } as const;
+
+/** Un matériau de personnage : ses couleurs de sommet, éclairées ; et ce qui brille, selon `force` (0 à 1). */
+export interface MateriauALueur {
+  materiau: THREE.MeshLambertMaterial;
+  force: { value: number };
+}
+
+/**
+ * Le matériau des personnages : un Lambert à couleurs de sommet, qui mêle à la lumière de la scène la couleur de
+ * l'attribut `lueur` (rgb, et son poids en a), à `force` : ce qui brille ne s'assombrit pas la nuit.
+ */
+export function materiauALueur(): MateriauALueur {
+  const force = { value: 0 };
+  const materiau = new THREE.MeshLambertMaterial({ vertexColors: true });
+  materiau.onBeforeCompile = (shader) => {
+    shader.uniforms.forceDeLueur = force;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute vec4 lueur;\nvarying vec4 vLueur;')
+      .replace('#include <color_vertex>', '#include <color_vertex>\nvLueur = lueur;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float forceDeLueur;\nvarying vec4 vLueur;')
+      .replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);\n#include <opaque_fragment>');
+  };
+  materiau.customProgramCacheKey = () => 'personnage-lueur';
+  return { materiau, force };
+}
+
+/** La géométrie d'une fusion : ses positions, normales, couleurs, et ce qui brille (sans lueur : rien). */
+function geometrieDe(f: Fusion, lueur?: Float32Array): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(f.positions, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(f.normals, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(f.colors), 3));
+  g.setAttribute('lueur', new THREE.BufferAttribute(lueur ?? new Float32Array((f.positions.length / 3) * 4), 4));
+  return g;
+}
+
+/** Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. */
+function squelette(g: THREE.BufferGeometry, os: Uint16Array, table: Os[], materiau: THREE.Material): { mesh: THREE.SkinnedMesh; bones: THREE.Bone[] } {
+  const n = os.length;
+  const index = new Uint16Array(n * 4);
+  const poids = new Float32Array(n * 4);
+  for (let v = 0; v < n; v++) {
+    index[v * 4] = os[v];
+    poids[v * 4] = 1;
+  }
+  g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(index, 4));
+  g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(poids, 4));
+  const mesh = new THREE.SkinnedMesh(g, materiau);
+  const bones = table.map(() => new THREE.Bone());
+  table.forEach((o, i) => {
+    const b = bones[i];
+    const p = o.parent >= 0 ? table[o.parent].pivot : [0, 0, 0];
+    b.position.set(o.pivot[0] - p[0], o.pivot[1] - p[1], o.pivot[2] - p[2]);
+    if (o.parent >= 0) bones[o.parent].add(b);
+    else mesh.add(b);
+  });
+  mesh.updateMatrixWorld(true);
+  mesh.bind(new THREE.Skeleton(bones));
+  // Le maillage couvre l'archipel et ses os bougent : il est toujours dessiné (un appel), jamais écarté.
+  mesh.frustumCulled = false;
+  return { mesh, bones };
+}
+
+/** Une créature qui se promène : son os, sa promenade, sa boîte de toucher et leur place de repos. */
+interface Promeneur {
+  corps: THREE.Bone;
+  bras: THREE.Bone;
+  stroll: Stroll;
+  boite: THREE.Mesh;
+  /** Le centre de la boîte moins le point de pose, et le milieu de l'emprise moins l'origine de la case. */
+  decalage: THREE.Vector3;
+  milieu: { x: number; y: number };
+  phase: number;
+}
+
+/**
+ * Les personnages d'Archipéo dans les groupes de la scène (./personnages.ts, qui fait marcher le bonhomme) : le
+ * bonhomme dans `avatar`, les boîtes de toucher des créatures et des Gardiens dans `creatures`, leurs maillages dans la
+ * scène.
+ */
+export function habiller(
+  monde: Monde,
+  champ: () => ChampDuSol | null,
+  instant: Instant,
+  lumiere: Pick<Lumiere, 'nuit'> | null,
+  avatar: THREE.Group,
+  creatures: THREE.Group,
+): Habits {
+  const { scene } = monde;
+
+  // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z.
+  const bonhomme = fusionDuBonhomme();
+  const matBonhomme = materiauALueur();
+  const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau);
+  avatar.add(corpsDuBonhomme.mesh);
+
+  // Les créatures et les Gardiens : leurs maillages dans la scène, leurs boîtes de toucher (invisibles) dans `creatures`.
+  const boite = new THREE.BoxGeometry(1, 1, 1);
+  const invisible = new THREE.MeshBasicMaterial({ visible: false });
+  const matCreatures = materiauALueur();
+  const matGardiens = materiauALueur();
+  // Un Gardien vaincu brille pleinement, de jour comme de nuit.
+  matGardiens.force.value = 1;
+  let maillages: THREE.Mesh[] = [];
+  let promeneurs: Promeneur[] = [];
+
+  const vider = () => {
+    for (const m of maillages) {
+      scene.remove(m);
+      m.geometry.dispose();
+      if (m instanceof THREE.SkinnedMesh) m.skeleton.dispose();
+    }
+    maillages = [];
+    promeneurs = [];
+    for (const c of [...creatures.children]) creatures.remove(c);
+  };
+
+  const boiteDe = (b: [number, number, number, number, number, number], userData: Record<string, string>): THREE.Mesh => {
+    const m = new THREE.Mesh(boite, invisible);
+    m.scale.set(b[3] - b[0], b[4] - b[1], b[5] - b[2]);
+    m.position.set((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2);
+    m.userData = userData;
+    creatures.add(m);
+    return m;
+  };
+
+  /** Pose un os de corps sur le sol à facettes : au milieu de son emprise, décalé de la promenade, plus le balancement. */
+  const poser = (p: Promeneur, dx: number, dy: number, bob: number) => {
+    const o = p.stroll.origin;
+    const x = o.x + dx + p.milieu.x;
+    const y = o.y + dy + p.milieu.y;
+    p.corps.position.set(x, piedsSur(champ(), x, y, o.z) + bob, y);
+    p.boite.position.copy(p.corps.position).add(p.decalage);
+  };
+
+  return {
+    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: PAS[o.nom] ?? 0 })).filter((m) => m.sens),
+    poserLesCreatures: (placements) => {
+      vider();
+      const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');
+      const gardiens = placements.filter((c) => c.kind === 'guardian');
+      if (lesCreatures.length) {
+        const f = fusionDesCreatures(lesCreatures);
+        const { mesh, bones } = squelette(geometrieDe(f, f.lueur), f.os, f.squelette, matCreatures.materiau);
+        scene.add(mesh);
+        maillages.push(mesh);
+        const strolls = startStrolls(lesCreatures, performance.now());
+        promeneurs = lesCreatures.map((c, i) => {
+          const b = f.boites[i].boite;
+          const pivot = f.squelette[2 * i].pivot;
+          const promeneur: Promeneur = {
+            corps: bones[2 * i],
+            bras: bones[2 * i + 1],
+            stroll: strolls[i],
+            boite: boiteDe(b, { creature: c.id, kind: 'creature' }),
+            decalage: new THREE.Vector3((b[0] + b[3]) / 2 - pivot[0], (b[1] + b[4]) / 2 - pivot[1], (b[2] + b[5]) / 2 - pivot[2]),
+            milieu: { x: pivot[0] - c.origin.x, y: pivot[2] - c.origin.y },
+            phase: (i * 1.7) % GESTE.periode,
+          };
+          poser(promeneur, 0, 0, 0);
+          return promeneur;
+        });
+      }
+      if (gardiens.length) {
+        const f = fusionDesGardiens(gardiens);
+        // Chaque sentinelle se pose sur le sol à facettes, comme ses cubes (jamais dedans) : on descend ses sommets.
+        gardiens.forEach((c, i) => {
+          const o = pointDePose(c);
+          const dy = piedsSur(champ(), o[0], o[2], o[1]) - o[1];
+          if (dy) for (let k = f.plages[i].debut * 9 + 1; k < f.plages[i].fin * 9; k += 3) f.positions[k] += dy;
+        });
+        const degres = Object.fromEntries(gardiens.map((c) => [c.id, allumageDuGardien(c)]));
+        const g = geometrieDe(f, lueursDesGardiens(f, degres));
+        couleursDesGardiens(f, degres, g.getAttribute('color').array as Float32Array<ArrayBuffer>);
+        const mesh = new THREE.Mesh(g, matGardiens.materiau);
+        scene.add(mesh);
+        maillages.push(mesh);
+        // Les sentinelles ne bougent pas : leurs boîtes non plus.
+        gardiens.forEach((c, i) => {
+          const { debut, fin } = f.plages[i];
+          const b: [number, number, number, number, number, number] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+          for (let k = debut * 9; k < fin * 9; k++) {
+            const v = f.positions[k];
+            b[k % 3] = Math.min(b[k % 3], v);
+            b[(k % 3) + 3] = Math.max(b[(k % 3) + 3], v);
+          }
+          boiteDe(b, { creature: c.id, kind: 'guardian' });
+        });
+      }
+    },
+    animer: (t, reduit) => {
+      // Ce qui brille la nuit suit le degré de nuit (figé avec « Réduire les animations », comme la lumière).
+      matCreatures.force.value = lumiere?.nuit() ?? 0;
+      if (reduit) return;
+      for (const q of promeneurs) {
+        const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);
+        poser(q, dx, dy, bob);
+        // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
+        q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
+      }
+    },
+    dispose: () => {
+      vider();
+      avatar.remove(corpsDuBonhomme.mesh);
+      corpsDuBonhomme.mesh.geometry.dispose();
+      corpsDuBonhomme.mesh.skeleton.dispose();
+      boite.dispose();
+      invisible.dispose();
+      for (const m of [matBonhomme, matCreatures, matGardiens]) m.materiau.dispose();
+    },
+  };
+}
