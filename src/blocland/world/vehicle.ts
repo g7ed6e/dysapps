@@ -134,6 +134,13 @@ export function kitReady(stage: VehicleStage, progress: Record<string, { stars: 
   return beatenGuardians(stage.from, progress) >= stage.guardians;
 }
 
+/** L'étape qui se construit sur le quai d'un port : pas encore partie, et l'étape d'avant déjà partie (ou la première). */
+export function stageBuildingAt(port: BiomeId, bridges: string[]): VehicleStage | undefined {
+  return VEHICLE_STAGES.find(
+    (st) => st.biome === port && !bridges.includes(voyageId(st.to)) && (st.stage === 1 || bridges.includes(voyageId(VEHICLE_STAGES[st.stage - 2].to))),
+  );
+}
+
 /** Les étapes déjà parties (leur voyage est fait) : elles sont dessinées complètes, kit compris. */
 export function launchedStages(bridges: string[]): VehicleStage[] {
   return VEHICLE_STAGES.filter((s) => bridges.includes(voyageId(s.to)));

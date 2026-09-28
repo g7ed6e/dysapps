@@ -5,6 +5,7 @@ import { levelFor, type BloclandState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, loadExercise, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
+import { isBiomeUnlocked } from './world/archipelago';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
 import type { Lang } from '../core/speech';
 
@@ -37,6 +38,14 @@ export function typesWithContent(biome: BiomeDef): string[] {
 /** Le Gardien accepte le défi quand chaque mission du biome a au moins deux étoiles. */
 export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
   return typesWithContent(biome).every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
+}
+
+export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
+
+/** Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. */
+export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[]): GuardianStatus {
+  if (!isBiomeUnlocked(biome.id, bridges) || !isBossUnlocked(biome, progress)) return 'hidden';
+  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
 }
 
 /** Les missions du biome où il manque encore des étoiles (pour l'expliquer à l'élève). */

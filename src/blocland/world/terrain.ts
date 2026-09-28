@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
-import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, voyageId, type BridgeDef } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { AVATAR_HOME } from '../Avatar';
 import { walkPath, type WalkGround } from './paths';
 import {
@@ -26,11 +26,11 @@ import {
 import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ } from './harbour';
 import { villageStage } from './villageStage';
 import { AMBIENCE } from './daylight';
-import { VEHICLE_STAGES, kitReady, launchedStages } from './vehicle';
+import { kitReady, launchedStages, stageBuildingAt } from './vehicle';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
-import { isBossBeaten, isBossUnlocked } from '../boss';
+import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from '../Voxel';
 import type { Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
@@ -1165,14 +1165,6 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
   }
 }
 
-export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
-
-/** Le Gardien n'apparaît que lorsqu'il accepte le défi ; vaincu, il devient une statue. */
-export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[]): GuardianStatus {
-  if (!isBiomeUnlocked(biome.id, bridges) || !isBossUnlocked(biome, progress)) return 'hidden';
-  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
-}
-
 /** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
 function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
@@ -1758,9 +1750,7 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
   const bridges = village.bridges;
   for (const stage of launchedStages(bridges)) for (const c of [...stage.cells, ...stage.kit]) put(c, false);
   // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
-  const building = VEHICLE_STAGES.find(
-    (st) => st.biome === port && !bridges.includes(voyageId(st.to)) && (st.stage === 1 || bridges.includes(voyageId(VEHICLE_STAGES[st.stage - 2].to))),
-  );
+  const building = stageBuildingAt(port, bridges);
   if (building) {
     const done = new Set(village.plans[building.id] ?? []);
     const placed = planCells(building);

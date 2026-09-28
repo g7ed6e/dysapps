@@ -2,8 +2,6 @@
 // cour). Chaque plan a sa fiche JSON (nom, phrase de fin, XP, coffre) ; son dessin vient de l'architecte (architect.ts).
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 import { FINISH_BLOCKS, buildingStages, finishNeeds } from './architect';
-import { dockOrigin } from './harbour';
-import { islandDef } from './map';
 import carriereAbri from './plans/carriere-abri.json';
 import carriereCour from './plans/carriere-cour.json';
 import carriereFour from './plans/carriere-four.json';
@@ -249,17 +247,41 @@ export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanC
   });
 }
 
+/**
+ * L'origine figée des chantiers hors de la zone des plans, relative au cœur de leur île (z relatif au sol). Les clés
+ * des cases posées sont enregistrées dans les sauvegardes : elles ne dépendent donc ni de la place du quai ni de celle
+ * de l'îlot, que la disposition du monde peut changer. Ce sont les valeurs calculées jusqu'ici depuis le quai
+ * (world/harbour.ts) et l'îlot de chaque monument (world/monuments.ts) ; plans.test.ts vérifie qu'elles y sont égales.
+ */
+export const ORIGINE_DU_QUAI: Partial<Record<BiomeId, { x: number; y: number; z: number }>> = {
+  plaine: { x: 15, y: -14, z: -1 },
+  marche: { x: 15, y: -12, z: -4 },
+  atelier: { x: 15, y: -14, z: -7 },
+};
+
+/** L'origine figée de chaque monument (son plan), relative au cœur de son île : voir `ORIGINE_DU_QUAI`. */
+export const ORIGINE_DES_MONUMENTS: Record<string, { x: number; y: number; z: number }> = {
+  'monument-observatoire': { x: 4, y: 23, z: 0 },
+  'monument-moulin': { x: 1, y: 24, z: 0 },
+  'monument-phare-large': { x: 23, y: 20, z: 0 },
+  'monument-kiosque': { x: -11, y: -12, z: 0 },
+  'monument-viaduc': { x: 16, y: -13, z: 0 },
+  'monument-amphitheatre': { x: -2, y: 24, z: 0 },
+  'monument-etoiles': { x: -14, y: 4, z: 0 },
+  'monument-temple': { x: -14, y: 6, z: 0 },
+};
+
 /** Le coin d'un plan en coordonnées relatives à l'île (x, y, et z relatif au sol : 0 = premier bloc sur le sol). */
 export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
   if (plan.zone === 'port') {
-    const def = islandDef(plan.biome);
-    const o = dockOrigin(plan.biome);
-    return { x: o.x - def.core.x + plan.origin.x, y: o.y - def.core.y + plan.origin.y, z: o.z - def.altitude - 1 };
+    const o = ORIGINE_DU_QUAI[plan.biome];
+    if (!o) throw new Error(`Pas de quai sur ${plan.biome}`);
+    return { x: o.x + plan.origin.x, y: o.y + plan.origin.y, z: o.z };
   }
   if (plan.zone === 'monument') {
-    // L'îlot d'un monument est au niveau du sol de son archipel : z = 0, le premier bloc sur l'îlot.
-    const def = islandDef(plan.biome);
-    return { x: plan.origin.x - def.core.x, y: plan.origin.y - def.core.y, z: 0 };
+    const o = ORIGINE_DES_MONUMENTS[plan.id];
+    if (!o) throw new Error(`Monument sans origine : ${plan.id}`);
+    return o;
   }
   return { x: PLAN_ZONE.x + plan.origin.x, y: PLAN_ZONE.y + plan.origin.y, z: 0 };
 }

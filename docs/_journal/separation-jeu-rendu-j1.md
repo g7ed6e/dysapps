@@ -1,0 +1,1 @@
+Conception : deuxième étape de la séparation du jeu et du rendu. Les règles du jeu (le moteur, les ouvrages, les plans, les monuments) ne dépendent plus de la place des îles sur la grille : la position des chantiers du Bloc-Navire et des monuments est figée, et les cases déjà posées des sauvegardes restent exactement les mêmes. Rien ne change dans l’application.
