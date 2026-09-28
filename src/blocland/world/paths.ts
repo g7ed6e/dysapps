@@ -2,7 +2,7 @@
 // ouvrage à sa place. Il marche sur le sol (jamais sur l'eau ni la lave), ne monte ou ne descend qu'un bloc à la fois,
 // contourne les arbres, les rochers, les bornes, les maisons et les créatures. Code pur : la grille vient des cubes du
 // monde, le chemin est un plus court chemin (huit directions), redressé en lignes droites là où le sol est plat et libre.
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { decorPose } from './decor';
 import type { BiomeId } from '../biomes';
 

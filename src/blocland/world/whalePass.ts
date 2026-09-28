@@ -3,10 +3,10 @@
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
 import { BIOMES, type BiomeId } from "../biomes";
 import { BRIDGES, getArchipelago } from "./archipelago";
-import { AMBIENCE } from "./daylight";
 import { dockBox } from "./harbour";
 import {
   archipelagoOfIsland,
+  DANS_LE_CIEL,
   landCells,
   mapOf,
   type ArchipelagoId,
@@ -112,7 +112,7 @@ export function routeIsClear(
   route: WhaleRoute,
   clear = PASS_CLEARANCE,
 ): boolean {
-  if (AMBIENCE[a].sky) return false;
+  if (DANS_LE_CIEL[a]) return false;
   const g = obstacles(a);
   const len = Math.hypot(route.to.x - route.from.x, route.to.y - route.from.y);
   const n = Math.max(1, Math.ceil(len * 2));
@@ -172,7 +172,7 @@ export function whalePassRoute(
     { clear: 2, length: 10, depth: [-34, 40], side: [0, 34] },
   ];
   const a = archipelagoOfIsland(island);
-  if (AMBIENCE[a].sky) return null;
+  if (DANS_LE_CIEL[a]) return null;
   const c = islandCenter(island);
   const n = Math.hypot(toCamera.x, toCamera.y) || 1;
   // L'axe « derrière l'île » (vers le haut de l'écran) et l'axe en travers (vers la droite de l'écran : la grille a

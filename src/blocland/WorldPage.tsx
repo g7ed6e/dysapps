@@ -154,7 +154,7 @@ export function WorldPage() {
         id: b.id,
         biome: b.ile,
         typeId: b.mission,
-        cell: grille.versMonde(grille.placeDe({ genre: 'borne', id: b.id })!),
+        place: grille.placeDe({ genre: 'borne', id: b.id })!,
         state: b.etat,
       })),
     [modele, grille],
@@ -218,7 +218,7 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
-  const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id)) : undefined), [remaining, grille]);
+  const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
@@ -376,7 +376,10 @@ export function WorldPage() {
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
   const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [seTenir(at)], seq: 0 }));
-  const avatar = useMemo(() => ({ route: walk.route, seq: walk.seq }), [walk]);
+  // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche. Une disposition
+  // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
+  const repere = useMemo(() => dispositionEnGrille(a), [a]);
+  const avatar = useMemo(() => ({ route: walk.route.map((p) => repere.versIle(p)), seq: walk.seq }), [walk, repere]);
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
@@ -400,7 +403,7 @@ export function WorldPage() {
     // Un monument : la caméra va sur son îlot, au large ; le bonhomme reste où il est. Celui d'un autre archipel n'est
     // pas dans la scène : son panneau s'ouvre, la caméra revient au bonhomme.
     if (monument) {
-      if (monument.archipelago === a) setFocus((f) => ({ island: monument.biome, spot: grille.versMonde(grille.placeDe({ genre: 'plan', id: monument.id })!), seq: f.seq + 1 }));
+      if (monument.archipelago === a) setFocus((f) => ({ island: monument.biome, spot: grille.placeDe({ genre: 'plan', id: monument.id })!, seq: f.seq + 1 }));
       else setFocus((f) => ({ island: null, seq: f.seq + 1 }));
       return;
     }
@@ -455,8 +458,12 @@ export function WorldPage() {
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
   // Sur la Carte, elle marque la prochaine destination.
+  const flecheDuNavire = useMemo(
+    () => repere.versIle({ x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }, vehicle.port),
+    [repere, vehicle.origin.x, vehicle.origin.y, vehicle.origin.z, vehicle.port],
+  );
   const marker = shipyard
-    ? { x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }
+    ? flecheDuNavire
     : mapOpen
       ? destination.island
       : !island && a === '6e' && Object.keys(state.progress).length === 0
@@ -490,7 +497,7 @@ export function WorldPage() {
         return onPickVehicle(i.port);
       case 'face':
         // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
-        if (island) builder.tryFill(i.case) || ship.tryFill(i.case) || openIsland(grille.ileEn(i.case));
+        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || openIsland(i.ile);
         return;
       case 'fin-du-voyage':
       case 'voyage-saute':

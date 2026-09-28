@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { buildMesh, faceCount } from './mesher';
 
 const cube = (x: number, y: number, z: number, texture = 'terre'): VoxelCube => ({ x, y, z, color: '#94694a', texture });

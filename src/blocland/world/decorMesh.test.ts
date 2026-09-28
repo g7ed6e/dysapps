@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { toutConstruit } from './budget';
 import { DECOR_BATI } from './decor';
 import { caseDuDecor, coutDuDecor, ENFONCE, enPrimitives, FAMILLES, FEUILLAGE, FUMEE, maillageDuDecor, rangerLeDecor, TAILLES, valeur, type ElementDeDecor } from './decorMesh';

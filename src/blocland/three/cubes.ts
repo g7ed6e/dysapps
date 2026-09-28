@@ -6,7 +6,7 @@ import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
-import type { WorldViewProps } from '../world/view';
+import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerDecor } from './decor';
 import type { Large } from './large';
@@ -28,7 +28,7 @@ export interface Cubes extends PartieDeLaScene {
   /** La case visée en chantier (son contour), ou aucune. */
   viser(next: Case | null): void;
   /** À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens. */
-  eclater(burst: NonNullable<WorldViewProps['burst']>): void;
+  eclater(burst: NonNullable<EnCasesDuMonde['burst']>): void;
   /** Un éclat de plus (petit cube qui retombe et disparaît) ; `material` lui appartient. */
   eclat(mesh: THREE.Mesh, velocity: THREE.Vector3, born: number): void;
   /** La forme d'un éclat, partagée. */

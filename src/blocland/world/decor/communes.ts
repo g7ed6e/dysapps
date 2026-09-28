@@ -1,6 +1,6 @@
 // Les formes du décor communes aux quatre archipels (lot R4) : la végétation, les rochers, les cristaux, les cascades et
 // l'habillage de la mer. Chaque archipel les peint de sa palette ; ses formes propres sont dans son fichier (./6e.ts…).
-import type { VoxelCube } from '../../Voxel';
+import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, hauteurDuSol, NIVEAU_EAU, type ChampDuSol } from '../landMesh';

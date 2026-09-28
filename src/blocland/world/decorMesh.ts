@@ -15,7 +15,7 @@
 // - Seules les fumées bougent (./decor/fumee.ts, un maillage à part) ; « Réduire les animations » les fige dans la pose
 //   du lot R4. La nuit vient de la lumière de la scène, comme pour le sol ; ce qui brille (lanternes, lave) est à part,
 //   sans ombre ni lumière ; la lanterne du phare a en plus ses couleurs de nuit (claire de jour, elle brille la nuit).
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
 import { formeDe } from './decor/formes';

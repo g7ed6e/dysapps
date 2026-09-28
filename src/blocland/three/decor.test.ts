@@ -1,7 +1,7 @@
 import { Pinceau } from '../world/decor/pinceau';
 import { Fumees, bouffees } from '../world/decor/fumee';
 import type { MaillageDuDecor } from '../world/decorMesh';
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from '../world/cube';
 import { creerDecor } from './decor';
 
 /** Un décor minimal : un triangle de décor, un triangle de lueur qui a sa couleur de nuit, une petite fumée. */

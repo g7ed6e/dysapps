@@ -1,7 +1,7 @@
 // Ce qu'une forme du décor reçoit pour se dessiner (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) :
 // l'élément, sa place sur le sol, son hasard, ses couleurs et les deux pinceaux. Une forme est une fonction pure,
 // rangée dans le registre `FORMES` (./formes.ts) sous son genre ; chaque sous-lot écrit les siennes dans son fichier.
-import type { VoxelCube } from '../../Voxel';
+import type { VoxelCube } from '../cube';
 import type { ElementDeDecor } from '../decorMesh';
 import type { ChampDuSol } from '../landMesh';
 import type { ArchipelagoId } from '../map';

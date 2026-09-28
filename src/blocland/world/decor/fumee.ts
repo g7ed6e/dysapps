@@ -3,7 +3,7 @@
 // cadrage-archipeo.md §6, règle 4), construite par le sous-lot R4b-6e. La forme reste celle du lot R4 ; le mouvement,
 // la nuit et « Réduire les animations » sont réglés ici, en code pur : la vue 3D (three/decor.ts) ne fait que recopier
 // les positions et les couleurs que ces fonctions calculent.
-import type { VoxelCube } from '../../Voxel';
+import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import { SMOKE } from '../decor';
 import { cielDe, deNuit, luminance, type Couleur, type Faces } from '../palette';

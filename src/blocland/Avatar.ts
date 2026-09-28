@@ -75,6 +75,3 @@ export const AVATAR_PARTS: AvatarPart[] = [
 
 /** Tous les cubes, pour la vue simple et les tests. 16 de large, 8 de profond, 32 de haut. */
 export const AVATAR_CUBES: VoxelCube[] = AVATAR_PARTS.flatMap((p) => p.cubes);
-
-/** Où le bonhomme se tient sur une île, en coordonnées relatives au cœur (à côté de la créature, loin des plans). */
-export const AVATAR_HOME = { x: 1, y: 1 };

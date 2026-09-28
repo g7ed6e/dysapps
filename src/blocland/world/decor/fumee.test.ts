@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../../Voxel';
+import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
 import { rangerLeDecor, maillageDuDecor } from '../decorMesh';
 import { champDuSol, hauteurDuSol } from '../landMesh';

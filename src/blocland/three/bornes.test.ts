@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { QuestMark } from '../world/view';
+import type { EnCasesDuMonde } from '../world/view';
 import { creerBornes } from './bornes';
 import type { Instant, Monde } from './partie';
 
@@ -9,7 +9,8 @@ function bornes() {
   const bonhomme = new THREE.Object3D();
   bonhomme.position.set(4, 2, 6);
   const b = creerBornes({ scene } as Monde, () => bonhomme, { carte: true } as Instant);
-  const mission = (id: string, x: number, state: QuestMark['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as QuestMark;
+  type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
+  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2)]);
   b.poserLeChemin([0, 1, 2, 3].map((x) => ({ x, y: 5, z: 1 })));
   b.poserLaFleche({ x: 2, y: 2, z: 1 });

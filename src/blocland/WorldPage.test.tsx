@@ -18,7 +18,7 @@ vi.mock('./three', () => ({
     archipelago,
     voyage,
   }: {
-    focus: { island: string | null; spot?: { x: number; y: number } };
+    focus: { island: string | null; spot?: { ile: string; local: { x: number; y: number } } };
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
@@ -26,7 +26,7 @@ vi.mock('./three', () => ({
   }) => (
     <div>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
-      <p data-testid="point">{focus.spot ? `${focus.spot.x},${focus.spot.y}` : 'aucun'}</p>
+      <p data-testid="point">{focus.spot ? `${focus.spot.ile} ${focus.spot.local.x},${focus.spot.local.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
       <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
       <button type="button" onClick={() => onIntent({ genre: 'fin-du-voyage' })}>
@@ -326,7 +326,8 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   const sheet = await screen.findByRole('dialog', { name: /L’observatoire des baleines/ });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/monument-observatoire');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('tour');
-  expect(screen.getByTestId('point')).toHaveTextContent('4,82');
+  // L'îlot du monument, dans le repère de son île (la case 4, 82 du monde).
+  expect(screen.getByTestId('point')).toHaveTextContent('tour 7,26');
   expect(within(sheet).getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   await user.click(within(sheet).getByRole('link', { name: 'Tous les monuments' }));
   const list = await screen.findByRole('dialog', { name: /Monuments/ });

@@ -1,6 +1,6 @@
 import { BIOMES } from '../biomes';
 import { EMPTY_STATE } from '../engine';
-import type { VillagePlaceId } from '../Voxel';
+import type { VillagePlaceId } from './cube';
 import { BRIDGES, getArchipelago, islandsOf } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipels';
 import { toutConstruit } from './budget';
