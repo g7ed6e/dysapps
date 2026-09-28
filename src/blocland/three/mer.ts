@@ -29,6 +29,11 @@ export function creerMer(a: ArchipelagoId, etendue: Etendue, loin: number): MerE
   const cadre = cadreDeLaMer(etendue);
   const pixels = new Uint8Array(cadre.largeur * PAR_CASE * cadre.hauteur * PAR_CASE * 4);
   const texture = new THREE.DataTexture(pixels, cadre.largeur * PAR_CASE, cadre.hauteur * PAR_CASE, THREE.RGBAFormat);
+  // Où la seconde ligne d'écume a sa place (un canal, filtré : elle s'efface en douceur à l'entrée d'un passage étroit).
+  const passes = new Uint8Array(cadre.largeur * PAR_CASE * cadre.hauteur * PAR_CASE);
+  const seconde = new THREE.DataTexture(passes, cadre.largeur * PAR_CASE, cadre.hauteur * PAR_CASE, THREE.RedFormat);
+  seconde.magFilter = THREE.LinearFilter;
+  seconde.minFilter = THREE.LinearFilter;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.magFilter = THREE.LinearFilter;
   texture.minFilter = THREE.LinearMipmapLinearFilter;
@@ -40,9 +45,10 @@ export function creerMer(a: ArchipelagoId, etendue: Etendue, loin: number): MerE
     uTemps: { value: 0 },
     uCarte: { value: texture },
     uHoule: { value: new THREE.Vector4(h.large, h.rivage, h.vitesse, h.echelle) },
-    // Largeur, souffle et bord de l'écume (en cases), et la force de la seconde ligne ; largeur négative : pas d'écume.
-    uEcume: { value: new THREE.Vector4(ECUME.largeur, ECUME.souffle, ECUME.bord, 1) },
+    // Largeur, souffle et bord du liseré (en cases) ; largeur négative : pas d'écume.
+    uEcume: { value: new THREE.Vector4(ECUME.largeur, ECUME.souffle, ECUME.bord, 0) },
     uCouleurEcume: { value: new THREE.Color(0xffffff) },
+    uSeconde: { value: seconde },
   };
   const material = new THREE.MeshLambertMaterial({ map: texture, flatShading: true });
   material.onBeforeCompile = (shader) => {
@@ -77,6 +83,7 @@ varying vec2 vMerXZ;`,
 uniform float uTemps;
 uniform vec4 uEcume;
 uniform vec3 uCouleurEcume;
+uniform sampler2D uSeconde;
 varying vec2 vMerXZ;`,
       )
       .replace(
@@ -88,8 +95,9 @@ varying vec2 vMerXZ;`,
   // L'écume : une bande claire au ras de la côte, qui respire doucement ; plus loin, une ligne plus pâle.
   float w = uEcume.x + uEcume.y * sin(uTemps * 0.8 + vMerXZ.x * 0.7 + vMerXZ.y * 0.5);
   float e1 = 1.0 - smoothstep(w - uEcume.z, w + uEcume.z, d);
-  float w2 = w + ${ECUME.ligne.toFixed(2)} + uEcume.y * sin(uTemps * 0.6 + vMerXZ.x * 0.4 - vMerXZ.y * 0.6);
-  float e2 = (1.0 - smoothstep(0.03, 0.08, abs(d - w2))) * 0.3 * uEcume.w;
+  // La seconde ligne : fixe, à ${ECUME.force} de l'opacité du liseré, là où le passage est assez large.
+  float w2 = uEcume.x + ${ECUME.ligne.toFixed(2)};
+  float e2 = (1.0 - smoothstep(0.03, 0.08, abs(d - w2))) * ${ECUME.force.toFixed(2)} * texture2D(uSeconde, vMapUv).r;
   float e = uEcume.x < 0.0 ? 0.0 : max(e1, e2);
   diffuseColor.rgb *= mix(carte.rgb, uCouleurEcume, e * 0.92);
 }
@@ -106,6 +114,8 @@ varying vec2 vMerXZ;`,
     peindre(terres) {
       const c = carteDeLaMer(a, terres, etendue);
       pixels.set(c.data);
+      passes.set(c.seconde);
+      seconde.needsUpdate = true;
       texture.needsUpdate = true;
       uniforms.uCouleurEcume.value.setHex(c.ecume);
       if (c.nuages) uniforms.uEcume.value.set(-1, 0, 0, 0);
@@ -117,6 +127,7 @@ varying vec2 vMerXZ;`,
       geo.dispose();
       material.dispose();
       texture.dispose();
+      seconde.dispose();
     },
   };
 }

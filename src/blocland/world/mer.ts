@@ -30,7 +30,12 @@ export const BORD = 6;
 /** Le pas de la grille de la mer, en cases. */
 export const PAS = 4;
 /** L'écume du rivage : sa largeur (en cases), son souffle (± en cases), son bord (fondu, en cases). */
-export const ECUME = { largeur: 0.26, souffle: 0.07, bord: 0.05, ligne: 0.42 } as const;
+/**
+ * L'écume du rivage : le liseré (sa largeur et son bord, en cases, et son souffle, ± en cases) ; plus loin, à `ligne`
+ * case du liseré, une seconde ligne fixe à `force` de son opacité, seulement là où l'eau fait au moins `passe` cases
+ * entre deux terres (ailleurs, le liseré seul).
+ */
+export const ECUME = { largeur: 0.26, souffle: 0.07, bord: 0.05, ligne: 0.42, force: 0.4, passe: 1.5 } as const;
 
 /** La houle d'un archipel : amplitude au large et au rivage (en blocs), vitesse, et échelle des vagues (1 : 13 cases). */
 export interface Houle {
@@ -147,6 +152,8 @@ export interface CarteDeLaMer {
   h: number;
   /** Les points, ligne par ligne depuis `y0` : couleur sRGB (à montrer telle quelle de jour) et distance à la terre. */
   data: Uint8Array;
+  /** Un point par point de la carte : 255 là où l'eau laisse la place à la seconde ligne d'écume (voir `ECUME.passe`), 0 sinon. */
+  seconde: Uint8Array;
   /** L'écume, sRGB, compensée comme la mer. */
   ecume: Couleur;
   /** Vrai aux Îles du Ciel : pas d'écume. */
@@ -314,7 +321,18 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
       data[o + 3] = Math.round((Math.min(vue, PORTEE) / PORTEE) * 255);
     }
   const nuages = AMBIENCE[a].sky;
-  return { x0, y0, largeur, hauteur, l, h, data, ecume: compense(eauxDe(a).ecume, e), nuages };
+  // La seconde ligne d'écume : là où l'eau d'un passage fait au moins `ECUME.passe` cases, le point le plus éloigné des
+  // deux rives est à `passe / 2` au moins ; on le cherche à une case autour de chaque point.
+  const seconde = new Uint8Array(l * h);
+  const R = PAR_CASE;
+  for (let j = 0; j < h; j++)
+    for (let i = 0; i < l; i++) {
+      let max = 0;
+      for (let v = Math.max(0, j - R); v <= Math.min(h - 1, j + R) && max < ECUME.passe / 2; v++)
+        for (let u = Math.max(0, i - R); u <= Math.min(l - 1, i + R); u++) max = Math.max(max, (data[(v * l + u) * 4 + 3] / 255) * PORTEE);
+      seconde[j * l + i] = max >= ECUME.passe / 2 - 1e-3 ? 255 : 0;
+    }
+  return { x0, y0, largeur, hauteur, l, h, data, seconde, ecume: compense(eauxDe(a).ecume, e), nuages };
 }
 
 /** La distance à la terre (en cases) lue dans la carte, au point le plus proche de (x, y) : pour les tests. */

@@ -167,6 +167,23 @@ describe('la carte de la mer', () => {
   });
 });
 
+describe('la seconde ligne d’écume', () => {
+  it('fixe, à 40 % du liseré, seulement là où l’eau fait au moins 1,5 case entre deux terres', () => {
+    expect(ECUME.force).toBe(0.4);
+    expect(ECUME.passe).toBe(1.5);
+    expect(ECUME.ligne).toBe(0.42);
+    // Deux îles de terre (x ≤ 0 et x ≥ 2) séparées d'un passage d'une case, et la mer libre au sud.
+    const terres = [];
+    for (let y = 0; y < 20; y++) for (const x of [-4, -3, -2, -1, 0, 2, 3, 4, 5, 6]) terres.push({ x, y });
+    const carte = carteDeLaMer('6e', terres, { minX: -4, maxX: 7, minY: 0, maxY: 20 });
+    const a = (x: number, y: number) => carte.seconde[Math.floor((y - carte.y0) * PAR_CASE) * carte.l + Math.floor((x - carte.x0) * PAR_CASE)];
+    // Dans le passage (une case d'eau) : le liseré seul.
+    for (let y = 2; y < 18; y++) expect(a(1.5, y + 0.5), `y = ${y}`).toBe(0);
+    // En mer libre, au large de la côte ouest : la seconde ligne a sa place.
+    for (let y = 2; y < 18; y++) expect(a(-4.7, y + 0.5), `y = ${y}`).toBe(255);
+  });
+});
+
 describe('la houle et la grille', () => {
   it('la houle reste sous le rivage et se calme près des côtes ; plus ample et lente sur le plancher de nuages', () => {
     for (const a of ARCHIPELAGO_IDS) {
