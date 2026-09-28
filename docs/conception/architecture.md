@@ -18,8 +18,8 @@ docs/            cette documentation (Markdown) ; docs/.vitepress/ : configurati
                  docs/_journal/ : fragments du journal des versions
 design/          le dossier de game design et la planche d’Archipéo, la cible de la migration (voir cadrage-archipeo.md) ;
                  référence de conception, ni publiée ni embarquée dans l’application
-.claude/agents/  les quatre agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d
-                 et referent-dys (voir contribuer.md)
+.claude/agents/  les cinq agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
+                 referent-dys et expert-frontend (voir contribuer.md)
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
                  construction et vérification de la documentation (docs/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)
