@@ -27,3 +27,8 @@ Le site de documentation (`docs/`, publié sur https://g7ed6e.github.io/dysapps/
 7. Avant de livrer : `npm run docs:check` et `npm run docs:build` passent, et les pages modifiées ont été relues dans `dist-docs/` (ou `npm run docs:dev`).
 
 Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) pour la documentation : l'application est publiée par Cloudflare, la documentation par GitHub Pages.
+
+## Relecture dys (systématique)
+
+- Toute pull request qui touche l'interface, les textes affichés, le contenu, le monde (3D ou 2D), les sons, les animations ou les réglages passe par l'agent `referent-dys` avant d'être ouverte. Sa description donne son verdict (Adapté, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
+- Il rend un avis sans trancher : le game design reste au `directeur-artistique`, le contenu au `directeur-contenu-pedagogique`, le rendu à l'`artiste-technique-3d`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-dys.md`.
