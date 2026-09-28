@@ -18,8 +18,9 @@ import { worldBounds } from '../terrain';
 import { dessinerRocher, FORMES_COMMUNES } from './communes';
 import type { Cone, Etendue, Lointain } from './lointain';
 import { bouffees } from './fumee';
+import { dessinerPonton } from './5e';
 import { enRepere, type Forme } from './outils';
-import { DELAVE, eclaircir, hex, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { boite, DELAVE, eclaircir, hex, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de l'intention du directeur artistique. */
 export const COULEURS_4E = {
@@ -305,6 +306,50 @@ const grue: Forme = ({ P, e, cx, cz, sol }) => {
   tronconique(P, ch[0], ch[2], yC, yC + 0.4, 0.05, 0.22, 4, 0, peintre(faces('#5A5550', e.muted), yC, 0.5));
 };
 
+// ---------- Le ponton du Jardin des heures et sa barque ----------
+
+/**
+ * La barque du Jardin (DA, LV2-4) : amarrée au ponton, le long de la falaise (vers +y, comme ses cubes), basse sur l'eau,
+ * sans mât ni voile (aucune verticale : la grue reste la seule du 4e). Une coque à six pans en plan, du bois de la grue,
+ * pointue aux deux bouts, son dedans de planches et un banc.
+ */
+export const BARQUE = { long: 2.2, large: 0.36, bord: 0.3, fond: 0.12, depuis: 0.75 } as const;
+
+function barque(P: Pinceau, xc: number, cz: number, muted: boolean): void {
+  const B = BARQUE;
+  const [z0, z1] = [cz + B.depuis, cz + B.depuis + B.long];
+  const [y0, y1] = [NIVEAU_EAU - B.fond, NIVEAU_EAU + B.bord];
+  // Le plan de la coque (x, z) : la proue et la poupe en pointe, les flancs droits ; le fond, plus étroit.
+  const plan = (k: number): [number, number][] => [
+    [xc, z0],
+    [xc + B.large * k, z0 + 0.45],
+    [xc + B.large * k, z1 - 0.5],
+    [xc, z1],
+    [xc - B.large * k, z1 - 0.5],
+    [xc - B.large * k, z0 + 0.45],
+  ];
+  const haut = plan(1);
+  const bas = plan(0.62);
+  const zm = (z0 + z1) / 2;
+  const dedans: V3 = [xc, (y0 + y1) / 2, zm];
+  const coque = peintre(faces(COULEURS_4E.mat, muted), y0, y1 - y0);
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    P.quad([bas[i][0], y0, bas[i][1]], [bas[j][0], y0, bas[j][1]], [haut[j][0], y1, haut[j][1]], [haut[i][0], y1, haut[i][1]], dedans, coque);
+  }
+  // Le dedans, un peu sous le plat-bord, et le banc.
+  const planche = peintre(faces(COULEURS_4E.fleche, muted), y0, y1 - y0);
+  const y = y1 - 0.06;
+  for (let i = 1; i + 1 < 6; i++) P.triangle([haut[0][0], y, haut[0][1]], [haut[i][0], y, haut[i][1]], [haut[i + 1][0], y, haut[i + 1][1]], [xc, y - 1, zm], planche);
+  boite(P, xc - B.large + 0.04, y, zm - 0.12, xc + B.large - 0.04, y1 + 0.02, zm + 0.12, planche);
+}
+
+/** Le ponton du Jardin : celui du Relais (./5e.ts), et sa barque amarrée à deux cases du rivage, comme ses cubes. */
+const pontonDuJardin: Forme = ({ P, e, cx, cz, base }) => {
+  dessinerPonton(P, cx, cz, base, e.muted);
+  barque(P, cx + 2, cz, e.muted);
+};
+
 // ---------- Le lointain : le volcan du fond et deux rangs de crêtes ----------
 
 /**
@@ -373,5 +418,5 @@ export const FORMES_HORS_GRILLE_4E: Record<string, Forme> = { grue, panache };
 /** Les repères du 4e. */
 export const FORMES_4E: Record<string, Forme> = { 'haut-fourneau': fourneau };
 
-/** Les genres communs que le 4e redessine. */
-export const RETOUCHES_4E: Record<string, Forme> = { ecueil, rocher };
+/** Les genres communs que le 4e redessine (le ponton : celui du Jardin des heures, avec sa barque). */
+export const RETOUCHES_4E: Record<string, Forme> = { ecueil, rocher, ponton: pontonDuJardin };

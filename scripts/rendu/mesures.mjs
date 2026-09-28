@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -103,6 +103,22 @@ const CAPTURES = [
   { nom: 'relais-nuit', vue: 'île', famille: 'relais', ile: 'relais', nuit: true },
   { nom: 'relais-chantier', vue: 'île', famille: 'relais', ile: 'relais', partie: 'chantier' },
   { nom: 'relais-pont-avant', vue: 'île', famille: 'relais', ile: 'comptoir', sansPonts: ['comptoir-relais'] },
+  // Le Jardin des heures (LV2, 4e) : l'archipel élargi, avec une LV2 et avec « Pas de LV2 » (le Jardin fermé, sans
+  // pont), le bonhomme sur le Théâtre, son voisin, en tablette paysage, en 1280 × 800 et en portrait (`taille`, `lv2`) ;
+  // l'île de jour et de nuit ; son Gardien au défi (le Soleil de cuivre).
+  { nom: 'jardin-archipel', vue: 'archipel', famille: 'jardin', ile: 'theatre' },
+  { nom: 'jardin-archipel-sans-lv2', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'] },
+  { nom: 'jardin-archipel-1280x800', vue: 'archipel', famille: 'jardin', ile: 'theatre', taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-sans-lv2-1280x800', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-800x1280', vue: 'archipel', famille: 'jardin', ile: 'theatre', taille: { width: 800, height: 1280 } },
+  { nom: 'jardin-archipel-sans-lv2-800x1280', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], taille: { width: 800, height: 1280 } },
+  // (Depuis le Jardin, le bonhomme sur son île : son étiquette et celle du Théâtre, côte à côte.)
+  { nom: 'jardin-archipel-depuis-le-jardin', vue: 'archipel', famille: 'jardin', ile: 'jardin' },
+  { nom: 'jardin-archipel-depuis-le-jardin-1280x800', vue: 'archipel', famille: 'jardin', ile: 'jardin', taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-depuis-le-jardin-800x1280', vue: 'archipel', famille: 'jardin', ile: 'jardin', taille: { width: 800, height: 1280 } },
+  { nom: 'jardin', vue: 'île', famille: 'jardin', ile: 'jardin' },
+  { nom: 'jardin-nuit', vue: 'île', famille: 'jardin', ile: 'jardin', nuit: true },
+  { nom: 'jardin-defi', vue: 'défi', famille: 'jardin', ile: 'jardin' },
   // La revue d'ensemble du directeur artistique (28/09) : le phare du large du 5e, de jour et de nuit (`lieu` : la vue
   // d'un monument, dans l'archipel `archipel`, le bonhomme sur l'île `ile`) ; une sentinelle de près, à côté du phare de
   // la Tour (6e, la Plaine et l'arbre voisin de son îlot) et de la grue de l'Atelier (4e), de jour et de nuit.
@@ -232,33 +248,43 @@ async function scenes() {
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({
               vue: c.vue,
-              go: parIle ? `/aventure/${parIle}/gardien` : c.lieu ? `/aventure/${c.lieu}` : c.ile && c.vue === 'île' ? `/aventure/${c.ile}` : routes[c.vue],
+              go: parIle
+                ? `/aventure/${parIle}/gardien`
+                : c.lieu
+                  ? `/aventure/${c.lieu}`
+                  : c.ile && c.vue === 'île'
+                    ? `/aventure/${c.ile}`
+                    : c.ile && c.vue === 'défi'
+                      ? `/aventure/${c.ile}/gardien`
+                      : routes[c.vue],
               ile: c.ile,
               plans: c.partie ? plansDe(c.partie, c.ile) : null,
               bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
               time: c.nuit ? NIGHT : DAY,
               view: c.view,
               sansEtoiles: c.sansEtoiles,
+              lv2: c.lv2,
+              taille: c.taille,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges } of views) {
-      const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille } of views) {
+      const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers }) => {
+        ({ village, progress, view, univers, lv2 }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}) }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view, univers: UNIVERS_DES_TEXTES },
+        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view, univers: UNIVERS_DES_TEXTES, lv2 },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);

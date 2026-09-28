@@ -142,3 +142,27 @@ it('le volcan du fond : un cône du lointain derrière le bout droit de la crêt
   // Pas de lueur au cratère : le lointain n'est que dans le décor.
   expect(monde.maillage.lueurs.elements.every((e) => e >= 0)).toBe(true);
 });
+
+it('le ponton du Jardin des heures (LV2) : sur son rivage est, au ras de l’eau, sa barque amarrée ; aucune verticale au-dessus du sol', () => {
+  const i = indice('ponton');
+  expect(i).toBeGreaterThanOrEqual(0);
+  const e = monde.maillage.elements[i];
+  const jardin = MAP.find((d) => d.id === 'jardin')!;
+  // Sur une case de terre du Jardin, à l'est du cœur ; de l'eau devant.
+  expect(colonneEn(monde.champ, e.x, e.y)?.ile).toBe('jardin');
+  expect(e.x).toBeGreaterThanOrEqual(jardin.core.x + CORE);
+  const devant = colonneEn(monde.champ, e.x + 1, e.y);
+  expect(devant === undefined || devant.ile !== 'jardin' || devant.liquide).toBe(true);
+  // Ses cubes de Blocland : l'échelle, le tablier et la barque, dans l'archipel.
+  const b = worldBounds('4e');
+  for (const c of e.cubes) expect(c.x).toBeLessThan(b.maxX);
+  // En Archipéo : du bord de l'eau au haut de la falaise, rien plus haut qu'un demi-bloc au-dessus du sol (ni mât, ni
+  // girouette : la grue reste la seule verticale du 4e) ; la barque, sous le tablier, sur l'eau.
+  const pts = sommets(monde.maillage, i);
+  const sol = colonneEn(monde.champ, e.x, e.y)!.haut + 1;
+  expect(Math.max(...pts.map((p) => p[1]))).toBeLessThanOrEqual(sol + 0.5);
+  expect(Math.min(...pts.map((p) => p[1]))).toBeLessThan(NIVEAU_EAU);
+  const barque = pts.filter((p) => p[2] > e.y + 0.5 + 0.7);
+  expect(barque.length).toBeGreaterThan(0);
+  for (const p of barque) expect(p[1]).toBeLessThanOrEqual(NIVEAU_EAU + 0.35);
+});

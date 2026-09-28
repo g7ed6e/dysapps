@@ -137,10 +137,10 @@ function calotte(P: Pinceau, x: number, y: number, z: number, muted: boolean, ha
   icosaedre(P, [x, y + 0.25, z], 1.25, 0.62, 0.2, hasard, peintre(f, y - 0.4, 1.3), hasard() * Math.PI);
 }
 
-/** Le ponton du Relais : un tablier de planches au ras de l'eau, vers le large (+x), sur quatre pieux, une échelle au rivage. */
+/** Le ponton du Relais (et celui du Jardin des heures, ./4e.ts) : un tablier de planches au ras de l'eau, vers le large (+x), sur quatre pieux, une échelle au rivage. */
 export const PONTON = { long: 3.2, large: 1.1, dessus: NIVEAU_EAU + 0.5, planche: 0.14, pieu: 0.09 } as const;
 
-function ponton(P: Pinceau, cx: number, cz: number, base: number, muted: boolean): void {
+export function dessinerPonton(P: Pinceau, cx: number, cz: number, base: number, muted: boolean): void {
   const planche = peintre(faces(COULEURS_DU_RELAIS.planche, muted), PONTON.dessus - 0.2, 0.3);
   const bois = peintre(faces(COULEURS_DU_RELAIS.poteau, muted), NIVEAU_EAU - 0.3, base - NIVEAU_EAU);
   const x0 = cx + 0.5;
@@ -181,7 +181,7 @@ function girouette(P: Pinceau, cx: number, cz: number, base: number, muted: bool
 export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
   'tour-en-ruine': ({ P, e, cx, cz, base, hasard }) => tourEnRuine(P, cx, cz, base, 0.35, e.muted, hasard),
   calotte: ({ P, e, cx, cz, base, hasard }) => calotte(P, cx, base, cz, e.muted, hasard),
-  ponton: ({ P, e, cx, cz, base }) => ponton(P, cx, cz, base, e.muted),
+  ponton: ({ P, e, cx, cz, base }) => dessinerPonton(P, cx, cz, base, e.muted),
   girouette: ({ P, e, cx, cz, base }) => girouette(P, cx, cz, base, e.muted),
 };
 

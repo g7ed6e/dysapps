@@ -55,6 +55,7 @@ import {
   cascades,
   decorate,
   landmark,
+  pontonEtBarque,
   semerLaMer,
   type Put,
 } from './decor';
@@ -113,6 +114,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.antenne.side]: 'antenne',
   [BLOCKS.taille.side]: 'taille',
   [BLOCKS.dalle.side]: 'dalle',
+  [BLOCKS.osier.side]: 'osier',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -1607,6 +1609,7 @@ function poserLIle(
   }
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
   for (const c of scenery) {
     if (!c.decor || nearSentier(c.x, c.y)) continue;
     const r = noise(def.seed + 5, c.x, c.y);

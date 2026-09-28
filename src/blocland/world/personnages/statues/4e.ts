@@ -1,9 +1,23 @@
 // Les Gardiens des Anciens Ateliers (4e) en sentinelles de pierre (lot R6), d'après l'intention du directeur
-// artistique : la statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
+// artistique : la statue et ce qui s'allume. Sept îles (le Jardin des heures, LV2, en plus) pour 1 800 triangles,
+// socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../gabarit';
 import { devant, facette, fuseau, pave, pose, type Anneau, type Trace, type V3 } from '../peint';
-import { bandeauDuSocle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
+import { bandeauDuSocle, dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinelle';
+
+/**
+ * Le Soleil de cuivre (DA, LV2-4) : un disque de cuivre patiné, debout face à l'élève, et ses huit rayons droits, un par
+ * épreuve du défi. Sans mât : il repose sur son rayon du bas, calé dans un berceau de pierre sur le socle ; toute la
+ * sentinelle tient dans les cinq cases, et sous 5,2 blocs dans le monde (environ 4). `centre` : le milieu du disque.
+ */
+export const SOLEIL_DE_CUIVRE = { rayon: 1.45, bout: 2.4, base: 0.24, pointe: 0.14, berceau: 1.3, epaisseur: 0.25, rayons: 8 } as const;
+const CENTRE_DU_SOLEIL = SOLEIL_DE_CUIVRE.berceau + SOLEIL_DE_CUIVRE.bout;
+/** Les directions des rayons : le haut, puis de 45° en 45°. */
+const DIRECTIONS_DES_RAYONS = Array.from({ length: SOLEIL_DE_CUIVRE.rayons }, (_, k): [number, number] => {
+  const a = Math.PI / 2 + (k / SOLEIL_DE_CUIVRE.rayons) * Math.PI * 2;
+  return [Math.cos(a), Math.sin(a)];
+});
 
 const TORSE_DU_TITAN: Anneau[] = [
   [2.8, 1.25, 0.8],
@@ -311,6 +325,57 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     },
     // La rampe, allumée sur tout l'avant du socle (la face du devant et ses deux voisines).
     veines: (T, a) => bandeauDuSocle(T, [6, 7, 0], 0.64, 0.82, a.lueur),
+  },
+  jardin: {
+    // Le Soleil de cuivre (DA, LV2-4) : un disque de cuivre patiné, sans visage ni lueur orange, ses huit rayons droits ;
+    // le fil de chaque rayon et le bord du disque se rallument. Sans mât.
+    nom: 'le Soleil de cuivre',
+    allume: 'ses rayons',
+    sculpture: (T, a) => {
+      const S = SOLEIL_DE_CUIVRE;
+      const c = CENTRE_DU_SOLEIL;
+      // Le berceau de pierre, sur le socle, où repose le rayon du bas.
+      pave(T, -0.55, 1, -0.4, 0.55, S.berceau, 0.4, a.pierre);
+      // Le disque : douze pans, patiné au milieu (le vert-de-gris, en lichen), le bord de cuivre en pierre.
+      const disque = Array.from({ length: 12 }, (_, i): [number, number] => {
+        const t = Math.PI / 2 + (i / 12) * Math.PI * 2;
+        return [S.rayon * Math.cos(t), c + S.rayon * Math.sin(t)];
+      });
+      dalle(T, disque, -S.epaisseur, S.epaisseur, a.pierre);
+      plaque(T, 0, c, S.rayon * 0.72, S.rayon * 0.72, 12, a.lichen, () => -S.epaisseur);
+      // Les rayons : des trapèzes droits, du bord du disque (un peu dedans) jusqu'au bout, le bout carré.
+      for (const [dx, dy] of DIRECTIONS_DES_RAYONS) {
+        const [px, py] = [-dy, dx];
+        const pt = (r: number, w: number): [number, number] => [r * dx + w * px, c + r * dy + w * py];
+        const r0 = S.rayon - 0.15;
+        dalle(T, [pt(r0, -S.base), pt(S.bout, -S.pointe), pt(S.bout, S.pointe), pt(r0, S.base)], -S.epaisseur * 0.8, S.epaisseur * 0.8, a.pierre);
+      }
+    },
+    veines: (T, a) => {
+      const S = SOLEIL_DE_CUIVRE;
+      const c = CENTRE_DU_SOLEIL;
+      // Le fil de chaque rayon, du bord du disque au bout, sur sa face avant.
+      for (const [dx, dy] of DIRECTIONS_DES_RAYONS)
+        veine(
+          T,
+          [
+            [S.rayon * dx, c + S.rayon * dy],
+            [(S.bout - 0.12) * dx, c + (S.bout - 0.12) * dy],
+          ],
+          0.1 * a.veines,
+          a.lueur,
+          () => -S.epaisseur * 0.8,
+        );
+      // Le bord du disque, un anneau mince qui relie les rayons : une seule lueur.
+      const n = 12;
+      const [r0, r1] = [S.rayon - 0.03 - 0.11 * a.veines, S.rayon - 0.03];
+      const z = -S.epaisseur - 0.014;
+      for (let i = 0; i < n; i++) {
+        const [t0, t1] = [Math.PI / 2 + (i / n) * Math.PI * 2, Math.PI / 2 + ((i + 1) / n) * Math.PI * 2];
+        const p = (r: number, t: number): V3 => [r * Math.cos(t), c + r * Math.sin(t), z];
+        facette(T, [p(r0, t0), p(r1, t0), p(r1, t1), p(r0, t1)], [0, c, z + 1], a.lueur);
+      }
+    },
   },
   gare: {
     nom: 'la Locomotive',

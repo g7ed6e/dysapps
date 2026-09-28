@@ -218,4 +218,53 @@ export const ESPECES_4E = {
       },
     },
   },
+  jardin: {
+    // L'écureuil cuisinier du Jardin des heures (DA, LV2-4) : pelage châtain (pas le roux de Rouxel), une queue en
+    // panache haute qui dépasse de la tête, un tablier crème uni, une louche de bois ; pas de toque.
+    nom: 'Muscade',
+    metier: 'cuisinier',
+    dominante: 0x8a4a26,
+    marque: { couleur: 0xb07a52, ou: ['museau'] },
+    tenue: { couleur: 0xe2d6b8, vetements: ['tablier'] },
+    silhouette: { largeur: 0.29, profondeur: 0.24 },
+    museau: { forme: 'museau', long: 0.1, r: 0.08 },
+    coiffe: (T, k) => {
+      // Deux oreilles droites et pointues (les pinceaux de l'écureuil).
+      for (const c of [-1, 1]) pointe(T, [c * 0.15, 2.4, 0.04], 0.07, 0.24, k.dom, [0, 0, -c * 0.18], 4);
+    },
+    corps: (T, k) =>
+      // La queue en panache : elle part du bas du dos, s'épaissit et monte derrière l'épaule gauche jusqu'au-dessus de
+      // la tête, son bout recourbé vers l'avant ; décalée sur le côté, elle se voit de face.
+      fuseau(
+        T,
+        [
+          [0.7, 0.07, 0.07, 0.3, -0.08],
+          [1.05, 0.15, 0.13, 0.44, -0.14],
+          [1.55, 0.2, 0.16, 0.5, -0.2],
+          [2.05, 0.2, 0.16, 0.48, -0.24],
+          [2.42, 0.15, 0.12, 0.38, -0.26],
+          [2.64, 0, 0, 0.22, -0.26],
+        ],
+        6,
+        k.dom,
+      ),
+    outil: {
+      // La louche de bois, le cuilleron vers le haut.
+      pose: [-0.2, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.08, 0.46, 0.022, k.bois);
+        fuseau(
+          T,
+          [
+            [0.44, 0.03],
+            [0.49, 0.1],
+            [0.56, 0.11],
+          ],
+          6,
+          k.bois,
+          { haut: false },
+        );
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

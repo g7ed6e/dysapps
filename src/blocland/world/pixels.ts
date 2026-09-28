@@ -31,6 +31,7 @@ export type TextureKind =
   | 'antenne'
   | 'taille'
   | 'dalle'
+  | 'osier'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -102,6 +103,38 @@ function dalle(fond: string, clair: [number, number, number]): Painter {
     const n = 3 + (d % 2);
     for (let k = 0; k < n; k++) if (px === (d * 17 + k * 13 + 5) % 49) return clair;
     return base;
+  };
+}
+
+/** Les tons de l'osier : le haut du brin (clair), le brin, son bas (ombré), le joint entre deux brins. */
+type TonsDOsier = { clair: string; brin: string; ombre: string; joint: string };
+
+/**
+ * De l'osier tressé : des brins horizontaux de deux pixels (le haut clair, le bas ombré), un joint sombre d'un pixel entre
+ * deux rangs, et des montants de deux pixels tous les quatre pixels, qui passent devant le brin un rang sur deux, en
+ * quinconce (dessus-dessous). Le montant a son ombre à droite, le brin la sienne en bas : une seule teinte, le relief
+ * seul fait le motif (pas un damier de deux teintes ; il se lit aussi en gris). `bord` : les trois rangs du haut sont le
+ * bord du panier, un brin tordu (des diagonales), sur le côté du bloc. Sans hasard : la même texture sur chaque face.
+ */
+function osier(t: TonsDOsier, bord = false): Painter {
+  const [clair, brin, ombre, joint] = [hex(t.clair), hex(t.brin), hex(t.ombre), hex(t.joint)];
+  return (x, y) => {
+    if (bord && y < 3) {
+      // Le bord : un brin tordu, en diagonales de trois pixels, souligné d'un joint.
+      if (y === 2) return joint;
+      return (x + y) % 3 === 0 ? ombre : y === 0 ? clair : brin;
+    }
+    const v = bord ? y - 3 : y;
+    const rang = Math.floor(v / 3);
+    const dans = v % 3;
+    const colonne = Math.floor(x / 4);
+    const montant = x % 4 < 2;
+    // Le montant passe devant le brin un rang sur deux, en quinconce ; ailleurs, le brin passe devant.
+    if (montant && (colonne + rang) % 2 === 0) return x % 4 === 0 ? brin : ombre;
+    if (dans === 2) return joint;
+    // Le brin s'enfonce contre le montant qui le couvre (un pixel plus sombre à ses deux bouts).
+    const contre = (x % 4 === 2 && (colonne + rang) % 2 === 0) || (x % 4 === 3 && (colonne + rang) % 2 === 1);
+    return dans === 0 && !contre ? clair : contre ? ombre : brin;
   };
 }
 
@@ -268,6 +301,13 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   // joints d'un pixel, trois ou quatre pixels plus clairs par dalle, sans grain ni dégradé. Elle se distingue de la
   // pierre de taille (joints droits, grain), du galet (ronds) et de la pierre (grise) par le motif.
   dalle: { top: dalle('#b8a07a', [208, 190, 156]), side: dalle('#9a8462', [184, 164, 128]) },
+  // Osier (le Jardin des heures, LV2 4e) : des brins tressés dessus-dessous, joints sombres, et sur le côté le bord
+  // tordu d'un panier en haut. Un miel d'olive, plus vert que les planches, plus sombre que le foin et que la dalle : le
+  // motif porte la différence (brins horizontaux et montants en quinconce, sans grain).
+  osier: {
+    top: osier({ clair: '#c2ad6c', brin: '#a8955a', ombre: '#8c7a44', joint: '#5c4e2a' }),
+    side: osier({ clair: '#a2905a', brin: '#86743f', ombre: '#6e5e32', joint: '#463b1e' }, true),
+  },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),
     side: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#d4a820', '#eac03c')(x, y, r)),

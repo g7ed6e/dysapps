@@ -73,10 +73,15 @@ function lueurs(f: FacettesDePersonnage): number {
   return new Set(ts.map((_, i) => racine(i))).size;
 }
 
-/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne. */
-const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio'];
-/** Les sentinelles basses, plus longues que hautes (la Diligence, retouche du directeur artistique) : leur haut, en blocs. */
-const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5] };
+/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil de cuivre. */
+const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin'];
+/**
+ * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
+ * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
+ */
+const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5], jardin: [5.8, 6.3] };
+/** Les sentinelles basses plus longues que hautes. */
+const LONGUES: BiomeId[] = ['relais'];
 
 describe('L’allumage des sentinelles', () => {
   it('éteinte (0) et rallumée (1), exactement les couleurs du directeur artistique', () => {
@@ -167,7 +172,8 @@ describe('Les Gardiens en sentinelles', () => {
       const nom = (t: number) => f.table[f.pieces[t]].nom;
 
       const basse = BASSES[b.id];
-      it(basse ? 'basse et plus longue que haute, les pieds en 0 ; cinq cases de large au plus' : 'huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
+      const longue = LONGUES.includes(b.id);
+      it(basse ? `basse${longue ? ' et plus longue que haute' : ''}, les pieds en 0 ; cinq cases de large au plus` : 'huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
         let [bas, haut] = [Infinity, -Infinity];
         for (let i = 0; i < f.positions.length; i += 3) {
           bas = Math.min(bas, f.positions[i + 1]);
@@ -179,6 +185,7 @@ describe('Les Gardiens en sentinelles', () => {
         if (!basse) return expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
         expect(haut).toBeGreaterThanOrEqual(basse[0]);
         expect(haut).toBeLessThanOrEqual(basse[1]);
+        if (!longue) return;
         // Sa longueur, le long de son grand axe (tourné de son `tour` dans le monde).
         const tour = STATUES[b.id].tour?.monde ?? 0;
         let [gauche, droite] = [Infinity, -Infinity];

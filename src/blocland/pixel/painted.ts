@@ -244,7 +244,7 @@ export const SURFACE_DE_TEXTURE: Record<string, Material> = {
  * de bois, les joints larges des briques et des pierres taillées. Des bandes de deux pixels au moins, 11 % plus
  * sombres, jamais un grain ; comptées en pixels de l'écran, elles courent d'une case à l'autre sans rupture.
  */
-export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | 'dalles' | null;
+export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | 'dalles' | 'tresse' | null;
 
 export function motifDe(texture: string | undefined): Motif {
   if (texture === 'planches' || texture === 'lambris' || texture === 'barriere' || texture === 'escalier' || texture === 'porte') return 'lames';
@@ -252,6 +252,7 @@ export function motifDe(texture: string | undefined): Motif {
   if (texture === 'brique') return 'briques';
   if (texture === 'taille' || texture === 'marbre') return 'pierres';
   if (texture === 'dalle') return 'dalles';
+  if (texture === 'osier') return 'tresse';
   return null;
 }
 
@@ -268,6 +269,9 @@ export function nuanceDuMotif(motif: Motif, gx: number, gy: number): number {
   if (motif === 'briques') return mod(gy, 8) >= 6 || mod(gx + (mod(Math.floor(gy / 8), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   // Les dalles du Relais : 8 × 8 en quinconce, d'une demi-dalle d'une rangée à l'autre (deux par case).
   if (motif === 'dalles') return mod(gy, 8) >= 6 || mod(gx + (mod(Math.floor(gy / 8), 2) ? 4 : 0), 8) >= 6 ? JOINT : 1;
+  // L'osier du Jardin : des brins de deux pixels, un joint de deux, et un montant de deux pixels tous les huit, qui passe
+  // devant un rang sur deux, en quinconce (dessus-dessous).
+  if (motif === 'tresse') return mod(gy, 4) >= 2 || mod(gx + (mod(Math.floor(gy / 4), 2) ? 4 : 0), 8) >= 6 ? JOINT : 1;
   if (motif === 'pierres') return mod(gy, 16) >= 14 || mod(gx + (mod(Math.floor(gy / 16), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   return 1;
 }
