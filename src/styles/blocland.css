@@ -168,3 +168,48 @@
   color: #2b2118;
   border-color: #7a5a3c;
 }
+
+/* Les insignes de rôle (components/RoleBadge.tsx) : un bloc vu de face, un seul aplat de matériau par rôle, du plus
+   modeste au plus précieux (terre, bois, pierre, herbe, or). Ni face de côté (l'insigne ne se touche pas), ni texture.
+   Le pictogramme reste celui du rôle ; la bordure suit le thème pour que le bloc se détache de ce qui l'entoure. */
+:root[data-univers="blocland"] .role-badge .role-frame-hexagone {
+  display: none;
+}
+:root[data-univers="blocland"] .role-badge .role-frame-bloc {
+  display: revert;
+}
+:root[data-univers="blocland"] .role-badge {
+  --role-edge: var(--text);
+}
+:root[data-univers="blocland"] .topbar .role-badge {
+  --role-edge: var(--topbar-text);
+}
+:root[data-univers="blocland"] .role-explorateur {
+  --role-bg: #8b5e34;
+  --role-ink: #f7f0e2;
+}
+:root[data-univers="blocland"] .role-cartographe {
+  --role-bg: #ead9b8;
+  --role-ink: #4a3320;
+}
+:root[data-univers="blocland"] .role-batisseur {
+  --role-bg: #9a968c;
+  --role-ink: #2b2118;
+}
+:root[data-univers="blocland"] .role-navigateur {
+  --role-bg: #3b7524;
+  --role-ink: #ffffff;
+}
+:root[data-univers="blocland"] .role-architecte {
+  --role-bg: #e0b73f;
+  --role-ink: #2b2118;
+}
+:root[data-univers="blocland"] .role-architecte .role-fill {
+  fill: var(--role-ink);
+}
+/* Un rôle pas encore atteint garde son contour en pointillés estompé, comme dans Archipéo. */
+:root[data-univers="blocland"] .role-badge.locked {
+  --role-bg: transparent;
+  --role-ink: var(--muted);
+  --role-edge: var(--muted);
+}

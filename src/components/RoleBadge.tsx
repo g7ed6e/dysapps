@@ -2,8 +2,10 @@ import type { ReactElement } from 'react';
 import type { Tier } from '../core/progress';
 
 /**
- * L'insigne d'un rôle, dessiné par le code : un hexagone (l'architecture de l'archipel) et un pictogramme par rôle.
- * Le nom du rôle est toujours écrit à côté : l'insigne ne se lit jamais à sa seule couleur.
+ * L'insigne d'un rôle, dessiné par le code : un cadre et un pictogramme par rôle. Le cadre suit l'univers
+ * (styles/roles.css, styles/blocland.css) : un hexagone dans Archipéo (l'architecture de l'archipel), un bloc vu de face
+ * dans Blocland. Le pictogramme distingue le rôle sans la couleur ; le nom est écrit à côté sur la page Succès (dans la
+ * barre du haut étroite, il est dit par le lecteur d'écran).
  */
 const PICTOS: Record<Tier, ReactElement> = {
   // Une rose des vents : la branche nord pleine.
@@ -51,7 +53,8 @@ const PICTOS: Record<Tier, ReactElement> = {
 export function RoleBadge({ tier, locked = false, className = '' }: { tier: Tier; locked?: boolean; className?: string }) {
   return (
     <svg className={`role-badge role-${tier}${locked ? ' locked' : ''} ${className}`.trim()} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <path className="role-frame" d="M32 3 L57 17.5 L57 46.5 L32 61 L7 46.5 L7 17.5 Z" />
+      <path className="role-frame role-frame-hexagone" d="M32 3 L57 17.5 L57 46.5 L32 61 L7 46.5 L7 17.5 Z" />
+      <rect className="role-frame role-frame-bloc" x="4" y="4" width="56" height="56" rx="4.5" />
       {PICTOS[tier]}
     </svg>
   );
