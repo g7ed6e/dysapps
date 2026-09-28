@@ -35,7 +35,7 @@ import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
 import { cielDe, SOLEIL_DIRECTION, teinteSur } from '../world/palette';
 import { creerDome } from './ciel';
 import { surfaceDe, type Surface } from './surface';
-import { champDuSol, landMesh, pickCell, piedsSur, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
+import { champDuSol, landMesh, pickCell, piedsSur, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { creerSol, type SolEn3D } from './sol';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
@@ -1144,8 +1144,9 @@ export default function WorldCanvas({
     const sol: typeof cubes = [];
     const autres: typeof cubes = [];
     for (const c of cubes) (c.sol ? sol : autres).push(c);
-    for (const g of buildMesh(autres, sol)) w.terrain.add(meshOf(g, w.surface));
     const champ = champDuSol(archipelago, sol, autres);
+    // Le décor d'une case descendue au bas de sa pente descend avec elle (world/landMesh.ts).
+    for (const g of buildMesh(poseDuDecor(champ, autres), sol)) w.terrain.add(meshOf(g, w.surface));
     const signature = signatureDuChamp(champ);
     if (signature !== w.sol.signature) {
       w.sol.en3D.peindre(landMesh(champ, { style: styleDuMonde() === 'a' ? 'a' : 'b' }));

@@ -7,18 +7,23 @@
 //   coins : ils suivent la moyenne des voisines d'au plus un bloc d'écart, ce qui change une marche d'un bloc en pente
 //   douce ; un écart de deux blocs ou plus reste une falaise. Chaque case est coupée en deux triangles, le long de sa
 //   diagonale la plus plate (au hasard si les deux se valent) : pas de motif qui répète la grille.
-// - Une case où quelque chose est posé (borne, maison, plan, décor, pont, monument) reste plate à sa hauteur : ce qui
-//   est construit case par case ne flotte jamais au-dessus d'une pente. Les lacs et la lave restent plats aussi.
-// - La côte descend jusqu'à l'eau (`RIVAGE`) et se teinte de sable au bord de la mer ; sous une île en altitude, la
-//   roche s'amincit en facettes.
+// - Une case où quelque chose est posé (borne, maison, plan, pont, monument), ou contre laquelle s'appuie ce qui est
+//   au-dessus de l'eau (un pont, une cascade), reste plate à sa hauteur : rien ne flotte au-dessus d'une pente. Les lacs
+//   et la lave restent plats aussi. Une case où seul un décor est posé descend au bas de la pente si son socle en
+//   dépasserait de plus d'un quart de bloc, et son décor avec elle (`poseDuDecor`).
+// - La côte descend jusqu'à l'eau (`RIVAGE`), en sable pur sur la moitié côté mer ; sous une île en altitude, la
+//   roche s'amincit en facettes ; au pied d'une haute colonne de roche qui plonge dans la mer, un liseré d'éboulis.
 // - Les couleurs viennent de la palette (./palette.ts), nuancées selon l'option (b) retenue au lot R1 : plus sombres
-//   vers la mer, de larges taches sur les dessus, des strates de deux blocs sur les falaises.
+//   vers la mer, de larges taches sur les dessus, des strates sur les falaises ; une pente à l'ombre n'est jamais
+//   beaucoup plus sombre que le dessus voisin.
+// Le code reste générique : il ne connaît ni les îles ni les archipels, seulement les cubes du sol et ce qui est posé
+// dessus (une silhouette propre à chaque archipel viendra des cubes, pas d'ici).
 // - Le toucher (`pickCell`) et la marche (`hauteurDuSol`, `piedsSur`) lisent le même champ : un point touché redevient
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 import type { VoxelCube } from '../Voxel';
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
-import { cielDe, couleurDeMatiere, MATIERES, type Couleur } from './palette';
+import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
 import { bruit, FROID, FROID_SOUS } from './style';
 import type { Cell } from './view';
@@ -31,10 +36,27 @@ export const RIVAGE = -0.25;
 export const PLANCHER = -1;
 /** Les taches sur les dessus (option b, redosée sur les facettes) : ± 8 %, sur 9 blocs environ. */
 export const TACHES = 0.08;
-/** Les strates des falaises : ± 5 %, par tranche de deux blocs, sur les côtés seulement. */
+/** Les strates des falaises : ± 5 %, sur les côtés seulement ; ± 3 % sur une paroi de plus de 4 blocs de haut. */
 export const STRATES = 0.05;
-/** La part de sable sur la frange de la côte, au bord de la mer. */
+export const STRATES_HAUTES = 0.03;
+/** Au-delà de cette hauteur (en blocs), une paroi prend les strates discrètes. */
+export const PAROI_HAUTE = 4;
+/**
+ * La frange de sable, au bord de la mer : la part de la case côté mer en sable pur (0,55 : un peu plus que la dernière
+ * demi-case), puis le fondu vers le dessus, sur au plus `FONDU` de case.
+ */
 export const FRANGE = 0.55;
+export const FONDU = 0.3;
+/** Les bornes de la nuance des pentes et des parois (option b). */
+export const NUANCE_SOL: [number, number] = [0.82, 1.08];
+/** Une pente à l'ombre reste au moins à cette part de la lumière d'un dessus plat. */
+export const PENTE_OMBRE = 0.85;
+/** Une case où seul un décor est posé descend si son socle dépasserait la pente de plus que ça. */
+export const SOCLE_MAX = 0.25;
+/** Une colonne dont la paroi plonge dans la mer de plus haut que ça (en blocs) prend un pied d'éboulis. */
+export const COLONNE_HAUTE = 3;
+/** La hauteur des éboulis du pied, au-dessus de `RIVAGE`. */
+export const EBOULIS = 0.45;
 /** Une île fermée : les couleurs délavées vers le gris clair (comme three/surface.ts). */
 const DELAVE: [Couleur, number] = [0xb8bcc0, 0.55];
 
@@ -60,8 +82,12 @@ export interface Colonne {
   muted: boolean;
   /** Eau ou lave : reste plate. */
   liquide: boolean;
-  /** Quelque chose est posé dessus : reste plate à sa hauteur. */
+  /** Quelque chose est posé dessus (ou s'appuie contre) : reste plate. */
   fixe: boolean;
+  /** Une case où seul un décor est posé, descendue au bas de la pente : de combien (0 sinon). */
+  abaissement: number;
+  /** L'île de la colonne (l'étiquette de ses cubes) : l'épaisseur des strates en dépend. */
+  ile: string;
   /** La hauteur du dessus aux quatre coins (voir `COINS`). */
   coins: [number, number, number, number];
   /** La diagonale qui coupe le dessus : 0 du coin 0 au coin 2, 1 du coin 1 au coin 3. */
@@ -73,6 +99,16 @@ export interface Colonne {
   rivage: [boolean, boolean, boolean, boolean];
 }
 
+/** Une case d'éboulis au pied d'une haute colonne de roche, dans l'eau. */
+export interface Pied {
+  x: number;
+  y: number;
+  /** La colonne à laquelle il appartient (le toucher y renvoie). */
+  colonne: number;
+  coins: [number, number, number, number];
+  milieu: number;
+}
+
 export interface ChampDuSol {
   archipel: ArchipelagoId;
   colonnes: Colonne[];
@@ -80,6 +116,11 @@ export interface ChampDuSol {
   index: Map<number, number>;
   /** Le plus bas où l'on dessine une falaise (−∞ dans le ciel). */
   plancher: number;
+  /** Les éboulis au pied des hautes colonnes, et leur index par case. */
+  pieds: Pied[];
+  indexPieds: Map<number, number>;
+  /** Les décors descendus avec leur case : identifiant du décor → de combien. */
+  decorsAbaisses: Map<string, number>;
 }
 
 /** La clé d'une case (les coordonnées tiennent largement dans ± 16 000). */
@@ -125,6 +166,8 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
       muted: Boolean(top.muted),
       liquide: top.texture === 'eau' || top.texture === 'lave',
       fixe: false,
+      abaissement: 0,
+      ile: top.tag ?? '',
       coins: [0, 0, 0, 0],
       diagonale: 0,
       coinsBas: [0, 0, 0, 0],
@@ -132,39 +175,68 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
       rivage: [false, false, false, false],
     });
   }
-  const champ: ChampDuSol = { archipel: a, colonnes, index, plancher: AMBIENCE[a].sky ? -Infinity : PLANCHER };
-  // Ce qui est posé juste sur le sol fige la case (fantômes compris : le plan à construire reste sur du plat).
+  const champ: ChampDuSol = {
+    archipel: a,
+    colonnes,
+    index,
+    plancher: AMBIENCE[a].sky ? -Infinity : PLANCHER,
+    pieds: [],
+    indexPieds: new Map(),
+    decorsAbaisses: new Map(),
+  };
+  // Ce qui est posé juste sur le sol fige la case (fantômes compris : le plan à construire reste sur du plat). Ce qui,
+  // au-dessus de l'eau, s'appuie contre une colonne à la hauteur de son dessus (le bout d'un pont, le haut d'une
+  // cascade) la fige aussi : la côte ne se dérobe pas sous lui.
+  const decors = new Map<Colonne, Set<string>>();
+  const autreChose = new Set<Colonne>();
+  const adossees = new Set<Colonne>();
+  const occupees = new Set<number>();
   for (const c of autres) {
     const col = colonneEn(champ, c.x, c.y);
-    if (col && c.z === col.haut + 1) col.fixe = true;
+    if (!col) {
+      occupees.add(cle(c.x, c.y));
+      for (const [dx, dy] of COTES4) {
+        const v = colonneEn(champ, c.x + dx, c.y + dy);
+        if (v && c.z === v.haut) {
+          v.fixe = true;
+          adossees.add(v);
+        }
+      }
+      continue;
+    }
+    if (c.z !== col.haut + 1) continue;
+    col.fixe = true;
+    if (c.decor && !c.ghost) {
+      const set = decors.get(col) ?? new Set<string>();
+      set.add(c.decor);
+      decors.set(col, set);
+    } else autreChose.add(col);
   }
   const auNiveauDeLaMer = !AMBIENCE[a].sky;
-  for (const col of colonnes) {
+  /** La hauteur d'un coin du dessus, la case figée ou non. */
+  const coinDuDessus = (col: Colonne, k: number, libre: boolean): number => {
     const L = col.haut + 1;
+    if (!libre || col.liquide) return L;
+    const voisines = autourDuCoin(champ, col, k);
+    // La côte basse d'une île au niveau de la mer descend jusqu'à l'eau ; plus haute, elle s'arrondit d'un bloc.
+    if (voisines.some((v) => !v)) return auNiveauDeLaMer && L <= 2 ? RIVAGE : L - 1;
+    let s = 0;
+    let n = 0;
+    for (const v of voisines) {
+      const lv = v!.haut + 1;
+      if (Math.abs(lv - L) > 1) continue;
+      s += lv;
+      n++;
+    }
+    return s / n;
+  };
+  for (const col of colonnes) {
     const B = col.bas;
-    COINS.forEach(([ox, oy], k) => {
-      const px = col.x + ox;
-      const py = col.y + oy;
-      // Les quatre cases autour du coin.
-      const voisines = [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)];
+    COINS.forEach((_, k) => {
+      const voisines = autourDuCoin(champ, col, k);
       const mer = voisines.some((v) => !v);
       col.rivage[k] = mer;
-      // Le dessus.
-      let h: number;
-      if (col.fixe || col.liquide) h = L;
-      // La côte basse d'une île au niveau de la mer descend jusqu'à l'eau ; plus haute, elle s'arrondit d'un bloc.
-      else if (mer) h = auNiveauDeLaMer && L <= 2 ? RIVAGE : L - 1;
-      else {
-        let s = 0;
-        let n = 0;
-        for (const v of voisines) {
-          const lv = v!.haut + 1;
-          if (Math.abs(lv - L) > 1) continue;
-          s += lv;
-          n++;
-        }
-        h = s / n;
-      }
+      const h = coinDuDessus(col, k, !col.fixe);
       // Le dessous : il remonte vers le bord et vers les voisines moins profondes, d'un bloc au plus.
       let b: number;
       if (mer) b = B + 1;
@@ -181,10 +253,93 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
       col.coins[k] = h;
       col.coinsBas[k] = Math.min(b, h);
     });
+  }
+  // Une case où seul un décor est posé : si son socle plat dépasserait la pente de plus de `SOCLE_MAX`, elle descend au
+  // bas de la pente, avec tout son décor (un décor sur plusieurs cases ne descend que si toutes peuvent le suivre).
+  const bases = new Map<string, Colonne[]>();
+  for (const [col, ids] of decors) for (const id of ids) bases.set(id, [...(bases.get(id) ?? []), col]);
+  for (const [id, cols] of bases) {
+    let drop = Infinity;
+    for (const col of cols) {
+      if (autreChose.has(col) || adossees.has(col) || decors.get(col)!.size > 1 || col.liquide) drop = 0;
+      else {
+        const bas = Math.min(...COINS.map((_, k) => coinDuDessus(col, k, true)));
+        const exces = col.haut + 1 - bas;
+        drop = exces > SOCLE_MAX ? Math.min(drop, exces) : 0;
+      }
+      if (drop === 0) break;
+    }
+    if (!(drop > 0 && Number.isFinite(drop))) continue;
+    champ.decorsAbaisses.set(id, drop);
+    for (const col of cols) {
+      col.abaissement = drop;
+      col.coins = col.coins.map((h) => h - drop) as Colonne['coins'];
+      col.coinsBas = col.coinsBas.map((h, k) => Math.min(h, col.coins[k])) as Colonne['coinsBas'];
+    }
+  }
+  for (const col of colonnes) {
     col.diagonale = diagonaleDe(col.coins, col.x, col.y);
     col.diagonaleBas = diagonaleDe(col.coinsBas, col.x, col.y + 7919);
   }
+  // Au pied d'une haute colonne de roche qui plonge dans la mer : un liseré d'éboulis, d'une case de large.
+  if (auNiveauDeLaMer) {
+    const proprio = new Map<number, { i: number; d: number }>();
+    colonnes.forEach((col, i) => {
+      if (col.bas > NIVEAU_EAU || !col.rivage.some((r, k) => r && col.coins[k] - RIVAGE >= COLONNE_HAUTE)) return;
+      for (let dx = -1; dx <= 1; dx++)
+        for (let dy = -1; dy <= 1; dy++) {
+          const x = col.x + dx;
+          const y = col.y + dy;
+          const k = cle(x, y);
+          if (colonneEn(champ, x, y) || occupees.has(k)) continue;
+          const d = Math.hypot(dx, dy);
+          const cur = proprio.get(k);
+          if (!cur || d < cur.d) proprio.set(k, { i, d });
+        }
+    });
+    for (const [k, { i }] of proprio) {
+      const x = Math.floor(k / 32768) - 16384;
+      const y = (k % 32768) - 16384;
+      const coins = COINS.map(([ox, oy]) => {
+        const px = x + ox;
+        const py = y + oy;
+        const contre = [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)].some(Boolean);
+        return contre ? RIVAGE + EBOULIS * (0.35 + 0.65 * hasard(px * 3 + 1, py * 5 + 2)) : NIVEAU_EAU - 0.35;
+      }) as Pied['coins'];
+      const milieu = (coins[0] + coins[1] + coins[2] + coins[3]) / 4 + 0.18 * (hasard(x * 7 + 3, y * 11 + 5) - 0.35);
+      champ.indexPieds.set(k, champ.pieds.length);
+      champ.pieds.push({ x, y, colonne: i, coins, milieu });
+    }
+  }
   return champ;
+}
+
+/** Les quatre côtés d'une case. */
+const COTES4: [number, number][] = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+
+/** Les quatre cases autour d'un coin d'une colonne (`undefined` : la mer). */
+function autourDuCoin(champ: ChampDuSol, col: Colonne, k: number): (Colonne | undefined)[] {
+  const px = col.x + COINS[k][0];
+  const py = col.y + COINS[k][1];
+  return [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)];
+}
+
+/**
+ * Les cubes posés sur le sol, tels que la vue 3D les dessine sur le sol à facettes : le décor d'une case descendue au bas
+ * de sa pente descend avec elle (voir `champDuSol`). Les autres cubes ne bougent pas. La 2D et la vue simple gardent
+ * les cubes d'origine.
+ */
+export function poseDuDecor(champ: ChampDuSol, cubes: VoxelCube[]): VoxelCube[] {
+  if (!champ.decorsAbaisses.size) return cubes;
+  return cubes.map((c) => {
+    const d = c.decor ? champ.decorsAbaisses.get(c.decor) : undefined;
+    return d ? { ...c, z: c.z - d } : c;
+  });
 }
 
 function matiereDe(c: VoxelCube): string {
@@ -196,7 +351,11 @@ function matiereDe(c: VoxelCube): string {
  * case est déjà figée par le fantôme) ne refait pas le maillage.
  */
 export function signatureDuChamp(champ: ChampDuSol): string {
-  return champ.archipel + champ.colonnes.map((c) => `|${c.x},${c.y},${c.haut},${c.bas},${c.fixe ? 1 : 0}${c.muted ? 1 : 0}${c.matieres.join(',')}`).join('');
+  return (
+    champ.archipel +
+    champ.colonnes.map((c) => `|${c.x},${c.y},${c.haut},${c.bas},${c.fixe ? 1 : 0}${c.muted ? 1 : 0}${c.abaissement},${c.matieres.join(',')}`).join('') +
+    champ.pieds.map((p) => `|p${p.x},${p.y}`).join('')
+  );
 }
 
 // ---------- La surface : hauteur en un point ----------
@@ -289,12 +448,16 @@ export function pickCell(
       const u = clamp(point.x - c.x, 0, 1);
       const v = clamp(point.z - c.y, 0, 1);
       const h = dessus ? dansLaCase(c.coins, c.diagonale, u, v) : dansLaCase(c.coinsBas, c.diagonaleBas, u, v);
-      const d = Math.abs(h - point.y);
+      // À égalité (sur une arête, la surface est continue), la case sous le point l'emporte.
+      const d = Math.abs(h - point.y) + (c.x === Math.floor(point.x) && c.y === Math.floor(point.z) ? 0 : 1e-4);
       if (d < bestD) {
         bestD = d;
         best = c;
       }
     }
+    // Un éboulis au pied d'une haute colonne : la colonne.
+    const pied = champ.indexPieds.get(cle(Math.floor(point.x), Math.floor(point.z)));
+    if (!best && pied !== undefined && dessus) best = champ.colonnes[champ.pieds[pied].colonne];
     if (!best) return null;
     const z = dessus ? best.haut : best.bas;
     return { cell: { x: best.x, y: best.y, z }, next: { x: best.x, y: best.y, z: dessus ? z + 1 : z - 1 } };
@@ -319,7 +482,10 @@ export function pickCell(
 export interface Facettes {
   /** Positions, repère Three (X = x, Y = hauteur, Z = y). */
   positions: Float32Array;
-  /** Normales, une par facette, répétée sur ses trois sommets. */
+  /**
+   * Normales d'éclairage, une par facette, répétée sur ses trois sommets : la vraie normale, sauf pour une pente à
+   * l'ombre, redressée vers le ciel (`normaleOmbree`). La vraie normale se tire des positions (ce que fait le toucher).
+   */
   normals: Float32Array;
   /** Couleurs par sommet, dans l'espace linéaire de Three.js. */
   colors: Float32Array;
@@ -366,7 +532,7 @@ class Tampon {
     this.own = up(this.own);
   }
   /** Un triangle (a, b, c), ses couleurs, et la direction vers laquelle il doit regarder. */
-  triangle(a: V3, b: V3, c: V3, ca: RGB, cb: RGB, cc: RGB, attendue: V3, colonne: number): void {
+  triangle(a: V3, b: V3, c: V3, ca: RGB, cb: RGB, cc: RGB, attendue: V3, colonne: number, eclairage?: (n: V3) => V3): void {
     const ux = b[0] - a[0];
     const uy = b[1] - a[1];
     const uz = b[2] - a[2];
@@ -388,6 +554,13 @@ class Tampon {
     }
     if ((this.n + 1) * 9 > this.pos.length) this.grow();
     const o = this.n * 9;
+    // La normale d'éclairage (une pente à l'ombre, redressée), sinon la vraie.
+    if (eclairage) {
+      const e = eclairage([nx / len, ny / len, nz / len]);
+      nx = e[0] * len;
+      ny = e[1] * len;
+      nz = e[2] * len;
+    }
     const pts = [a, b, c];
     const cols = [ca, cb, cc];
     for (let k = 0; k < 3; k++) {
@@ -425,12 +598,61 @@ const lineaire = (v: number) => LINEAIRE[Math.round(clamp(v, 0, 1) * 4096)];
 export function nuanceDuSol(x: number, y: number, z: number, dessus: boolean, altitude: number): number {
   const hauteur = 0.82 + 0.2 * smooth(clamp((y - altitude + 1) / 12, 0, 1));
   const taches = dessus ? 1 + TACHES * (bruit(x / 9, z / 9) * 2 - 1) : 1;
-  return clamp(hauteur * taches, 0.74, 1.1);
+  return clamp(hauteur * taches, NUANCE_SOL[0], NUANCE_SOL[1]);
 }
 
-/** La strate d'un cube de falaise (z entier) : une tranche de deux blocs sur deux plus claire. */
-export function strate(z: number): number {
-  return Math.floor(z / 2) % 2 === 0 ? 1 + STRATES : 1 - STRATES;
+/** L'épaisseur des strates d'une île : 2 ou 3 blocs, tirée une fois par île. */
+export function epaisseurDesStrates(ile: string): 2 | 3 {
+  let h = 2166136261;
+  for (let i = 0; i < ile.length; i++) h = Math.imul(h ^ ile.charCodeAt(i), 16777619);
+  return (h >>> 0) % 2 === 0 ? 2 : 3;
+}
+
+/** La strate d'un cube de falaise (z entier) : une tranche sur deux plus claire, de `epaisseur` blocs. */
+export function strate(z: number, epaisseur = 2, amplitude = STRATES): number {
+  return Math.floor(z / epaisseur) % 2 === 0 ? 1 + amplitude : 1 - amplitude;
+}
+
+const luminanceLineaire = (c: Couleur) =>
+  0.2126 * lineaire(((c >> 16) & 255) / 255) + 0.7152 * lineaire(((c >> 8) & 255) / 255) + 0.0722 * lineaire((c & 255) / 255);
+
+/**
+ * La lumière que reçoit une facette de normale `n` (unitaire), de jour, telle que la vue 3D l'éclaire : l'ambiance du
+ * ciel et du sol (selon qu'elle regarde en haut ou en bas) et le soleil (`SOLEIL_DIRECTION`). Pour comparer, pas pour
+ * peindre.
+ */
+export function eclairement(a: ArchipelagoId, n: V3): number {
+  const c = cielDe(a, 1);
+  const w = 0.5 * n[1] + 0.5;
+  const len = Math.hypot(...SOLEIL_DIRECTION);
+  const dot = (n[0] * SOLEIL_DIRECTION[0] + n[1] * SOLEIL_DIRECTION[1] + n[2] * SOLEIL_DIRECTION[2]) / len;
+  return luminanceLineaire(mixColor(c.ambianceSol, c.ambianceCiel, w)) * c.ambianceForce + luminanceLineaire(c.soleil) * c.soleilForce * Math.max(0, dot);
+}
+
+/**
+ * La normale d'éclairage d'une pente : sa vraie normale si elle reçoit au moins `PENTE_OMBRE` de la lumière d'un dessus
+ * plat, sinon redressée vers le ciel juste ce qu'il faut. La facette garde sa forme (le toucher lit la vraie normale) et
+ * reste une facette, seulement moins sombre à l'ombre. (Éclaircir sa couleur ne suffirait pas : le soleil de la palette
+ * compte trois fois plus que l'ambiance, une pente raide à l'ombre saturerait avant d'y arriver.)
+ */
+export function normaleOmbree(a: ArchipelagoId, n: V3): V3 {
+  const cible = PENTE_OMBRE * eclairement(a, [0, 1, 0]);
+  if (eclairement(a, n) >= cible) return n;
+  // (Un rien au-dessus : la normale est ensuite rangée en nombres à virgule simple précision.)
+  const vise = cible * 1.003;
+  const vers = (w: number): V3 => {
+    const v: V3 = [n[0] * (1 - w), n[1] * (1 - w) + w, n[2] * (1 - w)];
+    const l = Math.hypot(...v);
+    return [v[0] / l, v[1] / l, v[2] / l];
+  };
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 24; i++) {
+    const mid = (lo + hi) / 2;
+    if (eclairement(a, vers(mid)) >= vise) hi = mid;
+    else lo = mid;
+  }
+  return vers(hi);
 }
 
 /** Les options du maillage : le style de surface (`a` : aplats, sans nuance ; `b` : la nuance retenue). */
@@ -465,21 +687,40 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     return f;
   };
   const dessusDe = (c: Colonne) => faces(c.matieres[c.matieres.length - 1], c.muted).dessus;
-  /** La couleur finale d'un sommet (linéaire) : la couleur de la palette, nuancée, refroidie près de l'eau. */
-  const peint = (c: Couleur, p: V3, dessus: boolean, facteur = 1): RGB => {
+  const froidRGB = rgb(froid);
+  /**
+   * La couleur finale d'un sommet (linéaire) : la couleur de la palette (canaux 0..255), nuancée, refroidie près de
+   * l'eau, puis relevée (`releve`) si la facette est une pente à l'ombre.
+   */
+  const peintRGB = (c: RGB, p: V3, dessus: boolean, facteur = 1): RGB => {
     let k = 1;
     let f = 0;
     if (style === 'b') {
       k = nuanceDuSol(p[0], p[1], p[2], dessus, altitude) * facteur;
       f = FROID * clamp((FROID_SOUS - p[1]) / 1.5, 0, 1);
     }
-    const base = f > 0 ? mixColor(c, froid, f) : c;
-    return [lineaire((((base >> 16) & 255) / 255) * k), lineaire((((base >> 8) & 255) / 255) * k), lineaire(((base & 255) / 255) * k)];
+    return [0, 1, 2].map((j) => lineaire(((c[j] + (froidRGB[j] - c[j]) * f) / 255) * k)) as RGB;
   };
+  const peint = (c: Couleur, p: V3, dessus: boolean, facteur = 1): RGB => peintRGB(rgb(c), p, dessus, facteur);
+  // Les pentes à l'ombre : leur normale d'éclairage, calculée une fois par direction.
+  const ombrees = new Map<string, V3>();
+  const ombree = (n: V3): V3 => {
+    if (n[1] > 0.9999) return n;
+    const k = n.map((v) => v.toFixed(4)).join(',');
+    let v = ombrees.get(k);
+    if (!v) {
+      v = normaleOmbree(a, n);
+      ombrees.set(k, v);
+    }
+    return v;
+  };
+  const sableDe = (col: Colonne): RGB => rgb(col.muted ? mixColor(sable, DELAVE[0], DELAVE[1]) : sable);
   /** La couleur d'un coin : celle des cases qui s'y touchent (au plus un bloc d'écart), mêlées ; pas de damier. */
   const coinVu = new Map<number, Couleur>();
+  const estSable = (c: Colonne) => c.matieres[c.matieres.length - 1] === 'sable';
   const couleurCoin = (col: Colonne, k: number): Couleur => {
-    if (col.liquide) return dessusDe(col);
+    // Le sable reste du sable pur, et ne se fond pas dans ses voisines : le passage au sable est net (voir `FONDU`).
+    if (col.liquide || estSable(col)) return dessusDe(col);
     const px = col.x + COINS[k][0];
     const py = col.y + COINS[k][1];
     const key = cle(px, py) * 16 + (col.haut & 15) * 2 + (col.muted ? 1 : 0);
@@ -490,16 +731,14 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     let b = 0;
     let n = 0;
     for (const v of [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)]) {
-      if (!v || v.liquide || Math.abs(v.haut - col.haut) > 1) continue;
+      if (!v || v.liquide || estSable(v) || Math.abs(v.haut - col.haut) > 1) continue;
       const c = dessusDe(v);
       r += (c >> 16) & 255;
       g += (c >> 8) & 255;
       b += c & 255;
       n++;
     }
-    let c = n ? (Math.round(r / n) << 16) | (Math.round(g / n) << 8) | Math.round(b / n) : dessusDe(col);
-    // La frange de sable, au bord de la mer.
-    if (auNiveauDeLaMer && col.rivage[k] && col.coins[k] <= 0) c = mixColor(c, col.muted ? mixColor(sable, DELAVE[0], DELAVE[1]) : sable, FRANGE);
+    const c = n ? (Math.round(r / n) << 16) | (Math.round(g / n) << 8) | Math.round(b / n) : dessusDe(col);
     coinVu.set(key, c);
     return c;
   };
@@ -516,14 +755,42 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
   champ.colonnes.forEach((col, i) => {
     const top = col.matieres[col.matieres.length - 1];
     const t = tampon(top);
-    // ---- Le dessus : deux triangles, le long de la diagonale de la case.
+    // ---- Le dessus : deux triangles, le long de la diagonale de la case. Au bord de la mer, le sable : pur sur la
+    // part de la case côté mer (`FRANGE`), fondu vers le dessus sur `FONDU` de case ; les facettes sont coupées le
+    // long de ces lignes (des courbes de niveau de la pente de la côte), pour que le sable ne bave pas plus loin.
     const P = (k: number): V3 => [col.x + COINS[k][0], col.coins[k], col.y + COINS[k][1]];
     const p = [P(0), P(1), P(2), P(3)];
-    const c = p.map((q, k) => peint(couleurCoin(col, k), q, true));
-    for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonale)) t.triangle(p[i0], p[i1], p[i2], c[i0], c[i1], c[i2], HAUT, i);
+    const base = [0, 1, 2, 3].map((k) => rgb(couleurCoin(col, k)));
+    const plage = auNiveauDeLaMer && !col.liquide && !estSable(col) && col.rivage.some((r, k) => r && col.coins[k] <= 0);
+    const sommet = Math.max(...col.coins);
+    const etendue = sommet - RIVAGE;
+    // La part de sable à une hauteur : 1 jusqu'à `FRANGE` de la case (depuis la mer), 0 après le fondu.
+    const partDeSable = (y: number) => (!plage ? 0 : etendue < 1e-6 ? 1 : clamp((FRANGE + FONDU - (y - RIVAGE) / etendue) / FONDU, 0, 1));
+    const sab = sableDe(col);
+    for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonale)) {
+      let morceaux: Sommet[][] = [
+        [
+          { p: p[i0], c: base[i0] },
+          { p: p[i1], c: base[i1] },
+          { p: p[i2], c: base[i2] },
+        ],
+      ];
+      if (plage && etendue > 1e-6)
+        for (const h of [RIVAGE + FRANGE * etendue, RIVAGE + (FRANGE + FONDU) * etendue])
+          // (Un éclat plus fin qu'un centième de case ne se verrait pas : on ne le garde pas.)
+          morceaux = morceaux.flatMap((m) => [couper(m, h, true), couper(m, h, false)].filter((q) => q.length >= 3 && aireAuSol(q) > 1e-3));
+      for (const m of morceaux) {
+        const cs = m.map(({ p: q, c }) => {
+          const f = partDeSable(q[1]);
+          return peintRGB([0, 1, 2].map((j) => c[j] + (sab[j] - c[j]) * f) as RGB, q, true);
+        });
+        for (let j = 1; j + 1 < m.length; j++) t.triangle(m[0].p, m[j].p, m[j + 1].p, cs[0], cs[j], cs[j + 1], HAUT, i, ombree);
+      }
+    }
 
     // ---- Les falaises, sur les quatre côtés : ce que la voisine ne couvre pas, coupé en strates.
     const matiere = (zz: number) => col.matieres[clamp(zz - col.bas, 0, col.matieres.length - 1)];
+    const ep = epaisseurDesStrates(col.ile);
     for (const [dx, dy, k0, k1] of COTES) {
       const e0: [number, number] = [col.x + COINS[k0][0], col.y + COINS[k0][1]];
       const e1: [number, number] = [col.x + COINS[k1][0], col.y + COINS[k1][1]];
@@ -546,6 +813,8 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
         const d0 = hi0 - lo0;
         const d1 = hi1 - lo1;
         if (d0 <= 1e-6 && d1 <= 1e-6) continue;
+        // Les strates : discrètes sur une haute paroi ; leur épaisseur est celle de l'île.
+        const amplitude = Math.max(d0, d1) > PAROI_HAUTE ? STRATES_HAUTES : STRATES;
         // Le polygone dans le plan de la paroi (s de 0 à 1 le long du côté, y la hauteur) ; si le haut et le bas se
         // croisent, un triangle jusqu'au croisement.
         let poly: [number, number][];
@@ -571,12 +840,12 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
         let z = zs;
         while (z <= ze) {
           let z1 = z;
-          while (z1 + 1 <= ze && matiere(z1 + 1) === matiere(z) && Math.floor((z1 + 1) / 2) === Math.floor(z / 2)) z1++;
+          while (z1 + 1 <= ze && matiere(z1 + 1) === matiere(z) && Math.floor((z1 + 1) / ep) === Math.floor(z / ep)) z1++;
           const tranche = zs === ze ? poly : clip(poly, z === zs ? -Infinity : z, z1 === ze ? Infinity : z1 + 1);
           if (tranche.length >= 3) {
             const m = matiere(z);
             const cote = faces(m, col.muted).cote;
-            const f = style === 'a' ? 1 : strate(z);
+            const f = style === 'a' ? 1 : strate(z, ep, amplitude);
             const pts = tranche.map(([s, y]): V3 => [e0[0] + (e1[0] - e0[0]) * s, y, e0[1] + (e1[1] - e0[1]) * s]);
             const cs = pts.map((q) => peint(cote, q, false, f));
             for (let j = 1; j + 1 < pts.length; j++) tampon(m).triangle(pts[0], pts[j], pts[j + 1], cs[0], cs[j], cs[j + 1], [dx, 0, dy], i);
@@ -590,7 +859,7 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     if (Math.max(...col.coinsBas) > champ.plancher) {
       const m = col.matieres[0];
       const cote = faces(m, col.muted).cote;
-      const f = style === 'a' ? 1 : strate(col.bas);
+      const f = style === 'a' ? 1 : strate(col.bas, ep);
       const q = [0, 1, 2, 3].map((k): V3 => [col.x + COINS[k][0], col.coinsBas[k], col.y + COINS[k][1]]);
       const cq = q.map((pt) => peint(cote, pt, false, f));
       for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonaleBas)) {
@@ -601,8 +870,59 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
       }
     }
   });
+  // ---- Les éboulis au pied des hautes colonnes : la roche de la colonne, en quatre facettes bosselées.
+  for (const pied of champ.pieds) {
+    const col = champ.colonnes[pied.colonne];
+    const cote = rgb(faces(col.matieres[0], col.muted).cote);
+    const q = [0, 1, 2, 3].map((k): V3 => [pied.x + COINS[k][0], pied.coins[k], pied.y + COINS[k][1]]);
+    const m: V3 = [pied.x + 0.5, pied.milieu, pied.y + 0.5];
+    for (let k = 0; k < 4; k++) {
+      const pts: V3[] = [m, q[k], q[(k + 1) % 4]];
+      // Chaque caillou un peu plus clair ou plus sombre que son voisin.
+      const f = 1 + 0.06 * (hasard(pied.x * 4 + k, pied.y * 9 + 1) * 2 - 1);
+      const cs = pts.map((pt) => peintRGB(cote, pt, true, f));
+      sol.triangle(pts[0], pts[1], pts[2], cs[0], cs[1], cs[2], HAUT, pied.colonne, ombree);
+    }
+  }
   return { sol: sol.fin(), lumineux: lumineux.fin() };
 }
+
+/** Un sommet en cours de découpe : sa position et sa couleur de base (canaux 0..255). */
+interface Sommet {
+  p: V3;
+  c: RGB;
+}
+
+/** Garde d'un polygone convexe la part sous (ou sur) la hauteur `h`, en coupant ses arêtes. */
+function couper(poly: Sommet[], h: number, dessous: boolean): Sommet[] {
+  const out: Sommet[] = [];
+  const f = (v: Sommet) => (dessous ? h - v.p[1] : v.p[1] - h);
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i];
+    const b = poly[(i + 1) % poly.length];
+    const fa = f(a);
+    const fb = f(b);
+    if (fa >= 0) out.push(a);
+    if (fa >= 0 !== fb >= 0) {
+      const k = fa / (fa - fb);
+      out.push({ p: [0, 1, 2].map((j) => a.p[j] + (b.p[j] - a.p[j]) * k) as V3, c: [0, 1, 2].map((j) => a.c[j] + (b.c[j] - a.c[j]) * k) as RGB });
+    }
+  }
+  return out;
+}
+
+/** L'aire d'un polygone vu de dessus. */
+function aireAuSol(poly: Sommet[]): number {
+  let a = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i].p;
+    const q = poly[(i + 1) % poly.length].p;
+    a += p[0] * q[2] - q[0] * p[2];
+  }
+  return Math.abs(a) / 2;
+}
+
+const rgb = (c: Couleur): RGB => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
 
 /** Au-delà de ce cosinus (moins de 14° de la verticale), une facette du dessous regarde trop bas pour être vue. */
 export const DESSOUS_CACHE = 0.97;

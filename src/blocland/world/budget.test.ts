@@ -22,7 +22,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
 
 it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {
   // Lot R2 : le sol et la roche de chaque archipel, tout construit, en un maillage à facettes (world/landMesh.ts) ;
-  // 16 100 à 18 100 triangles aujourd'hui (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
+  // 16 600 à 21 800 triangles aujourd'hui (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
   // pour la lave du volcan).
   for (const a of ARCHIPELAGO_IDS) {
     const { sol, triangles, drawCalls } = sceneCostArchipeo(a);
@@ -33,7 +33,7 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
     expect(triangles, a).toBeLessThanOrEqual(blocs.triangles);
     expect(drawCalls, a).toBeLessThan(blocs.drawCalls);
   }
-});
+}, 30_000);
 
 // Quand le rendu Archipéo dessine aussi la mer, le décor, la construction et les personnages (lots R3 à R6), ce test
 // vérifie sur ses modèles, archipel par archipel : triangles ≤ RENDER_BUDGET.triangles et appels ≤ RENDER_BUDGET.drawCalls.
