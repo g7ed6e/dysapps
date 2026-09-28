@@ -5,11 +5,6 @@ import type { Lang } from '../../core/speech';
 export interface ExerciseItem {
   /** Identifiant stable de l'item (répétition espacée). */
   key: string;
-  /**
-   * Choix à ne pas remplacer quand la partie place la bonne réponse (`core/choices.ts`) : les nombres viennent de
-   * l'énoncé (« −7 ou 5 ? »), ou une seule valeur est juste (le diviseur, le nombre premier).
-   */
-  keepChoices?: boolean;
   [field: string]: unknown;
 }
 

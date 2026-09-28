@@ -2,7 +2,7 @@ import type { Question } from '../../components/QuizSession';
 import type { QuestDef } from '../../components/QuestMenu';
 import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from '../../components/math/FractionFigures';
 import { fractionWords } from '../../core/fractions';
-import { placeChoices } from '../../core/choices';
+import { drawChoices, placeChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 
 type Rng = () => number;
@@ -17,19 +17,35 @@ const value = (s: string) => {
   return n / d;
 };
 
-/** Réponses-fractions : sans doublon, rangées de la plus petite à la plus grande. */
+/**
+ * Réponses-fractions : sans doublon, rangées de la plus petite à la plus grande. La place de la bonne réponse est
+ * tirée ici, parmi celles que les pièges permettent : autant de pièges plus petits qu'elle le demande, les autres plus
+ * grands. Aucune fraction n'est inventée.
+ */
 function fractionChoices(answer: string, traps: string[], rng: Rng): string[] {
   const valid = [...new Set(traps)].filter((t) => t !== answer && /^\d+\/[1-9]\d*$/.test(t) && !t.startsWith('0/'));
   // Deux écritures de même valeur seraient toutes deux justes : on écarte les pièges équivalents.
   const distinct = valid.filter((t, i) => value(t) !== value(answer) && valid.findIndex((u) => value(u) === value(t)) === i);
-  return [answer, ...shuffle(distinct, rng).slice(0, 3)].sort((a, b) => value(a) - value(b));
+  const below = shuffle(
+    distinct.filter((t) => value(t) < value(answer)),
+    rng,
+  );
+  const above = shuffle(
+    distinct.filter((t) => value(t) > value(answer)),
+    rng,
+  );
+  // Une place que les pièges permettent d'atteindre (une réponse très petite n'a qu'un piège plus petit), tirée au hasard.
+  const lo = Math.max(0, 3 - above.length);
+  const hi = Math.min(3, below.length);
+  const wanted = lo <= hi ? randomInt(lo, hi, rng) : hi;
+  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
+  for (const t of [...below.slice(wanted), ...above.slice(3 - wanted)]) if (picked.length < 3) picked.push(t);
+  return [answer, ...picked].sort((a, b) => value(a) - value(b));
 }
 
+/** Réponses entières, rangées ; la place de la bonne réponse est tirée ici (voir `drawChoices`). */
 function numberChoices(answer: number, traps: number[], rng: Rng): string[] {
-  const pool = [...new Set(traps)].filter((t) => Number.isInteger(t) && t > 0 && t !== answer);
-  const picked = shuffle(pool, rng).slice(0, 3);
-  for (let d = 1; picked.length < 3; d++) for (const t of [answer + d, answer - d]) if (t > 0 && !picked.includes(t) && picked.length < 3) picked.push(t);
-  return [answer, ...picked].sort((a, b) => a - b).map(String);
+  return drawChoices(answer, traps, rng, { ok: (t) => Number.isInteger(t) && t > 0 }).map(String);
 }
 
 // ---------- Lire une fraction ----------
@@ -44,7 +60,9 @@ export const readFraction: Generator = (rng) => {
     id: `lire-${n}-${d}`,
     prompt: 'Quelle fraction de la figure est coloriée ?',
     figure: disc ? <FractionDisc n={n} d={d} /> : <FractionBar n={n} d={d} />,
-    choices: fractionChoices(answer, [frac(d, n), frac(d - n, d), frac(n, d - n), frac(n, d + 1), frac(n + 1, d)], rng),
+    // Pièges : fraction renversée, parts non coloriées, une part de plus ou de moins, les traits comptés au lieu des
+    // parts, une seule part lue.
+    choices: fractionChoices(answer, [frac(d, n), frac(d - n, d), frac(n, d - n), frac(n, d + 1), frac(n + 1, d), frac(n - 1, d), frac(1, d)], rng),
     answer,
     hint: 'En bas : le nombre total de parts égales. En haut : le nombre de parts coloriées.',
     explanation: `${n} part${n > 1 ? 's' : ''} coloriée${n > 1 ? 's' : ''} sur ${d} parts égales : ${answer}.`,
@@ -176,7 +194,8 @@ export const onLine: Generator = (rng) => {
     id: `droite-${n}-${d}`,
     prompt: 'Quelle fraction repère le point ?',
     figure: <GraduatedLine start={0} units={2} perUnit={d} point={n} />,
-    choices: fractionChoices(answer, [frac(n, 2 * d), frac(n + 1, d), frac(n - 1, d), frac(d, n), frac(n, d + 1)], rng),
+    // Pièges : toute la droite prise pour l’unité, une graduation de plus ou de moins, fraction renversée, graduations mal comptées.
+    choices: fractionChoices(answer, [frac(n, 2 * d), frac(n + 1, d), frac(n - 1, d), frac(d, n), frac(n, d + 1), ...(d > 2 ? [frac(n, d - 1)] : [])], rng),
     answer,
     hint: 'Compte en combien de parts égales est partagée l’unité (de 0 à 1), puis compte les parts jusqu’au point.',
     explanation: `L’unité est partagée en ${d} parts égales et le point est à ${n} part${n > 1 ? 's' : ''} de 0 : ${answer}.`,

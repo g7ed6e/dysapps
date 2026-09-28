@@ -139,7 +139,7 @@ it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données'
   }
 });
 
-it('Glacier et Forge : les choix qui viennent de l’énoncé ou d’une propriété ne sont pas replacés pendant la partie', () => {
+it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombres de l’énoncé', () => {
   const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
   const num = (c: string) => Number(c.replace('−', '-').replace(/\s/g, ''));
   const isPrime = (n: number) => n > 1 && Array.from({ length: n - 2 }, (_, i) => i + 2).every((d) => n % d !== 0);
@@ -189,3 +189,34 @@ it('maths générées : les accords au singulier (« 1 caisse », « une pomme �
     }
   }
 });
+
+it('maths générées : la partie garde les choix tirés, et la bonne réponse prend chaque place (aucune au-delà de 40 %)', () => {
+  const report: string[] = [];
+  for (const def of [...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+    const byPlace = new Map<number, number[]>();
+    for (let s = 0; s < 300; s++) {
+      const seed = `${def.id}#places${s}`;
+      const raw = def.generate!(seed);
+      const run = runItems(def, seed);
+      // Aucun piège inventé ni déplacé pendant la partie : les choix sont ceux des générateurs, dans leur ordre.
+      expect(run.map((it) => it.choices)).toEqual(raw.map((it) => it.choices));
+      for (const item of run) {
+        const list = (item.choices as unknown[]).map(String);
+        const place = list.indexOf(String(item.answer));
+        expect(place, `${def.id} ${item.key}`).toBeGreaterThanOrEqual(0);
+        expect(new Set(list).size, `${def.id} ${item.key}`).toBe(list.length);
+        if (def.id === 'donnees-chances-1' && String(item.prompt).startsWith('Un sac')) expect(list, String(item.prompt)).toHaveLength(4);
+        if (def.id === 'marche-balances-2') expect(list).not.toContain(`${/représente (\d+) km/.exec(String(item.prompt))![1]} km`);
+        if (!byPlace.has(list.length)) byPlace.set(list.length, Array(list.length).fill(0));
+        byPlace.get(list.length)![place]++;
+      }
+    }
+    for (const [n, counts] of byPlace) {
+      const total = counts.reduce((a, b) => a + b, 0);
+      // Quatre réponses : aucune place au-delà de 40 % ; deux ou trois réponses (comparer, oui ou non) : 1/n + 20 points.
+      const limit = n === 4 ? 0.4 : 1 / n + 0.2;
+      if (Math.max(...counts) / total > limit) report.push(`${def.id} (${n} choix) : ${counts.join('/')}`);
+    }
+  }
+  expect(report).toEqual([]);
+}, 60_000);

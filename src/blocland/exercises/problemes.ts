@@ -6,7 +6,8 @@
 // l’énoncé sont sur le schéma, sans donnée parasite ; aucune cote affichée n’est proposée comme réponse, sauf si c’est
 // la réponse (et le tirage évite qu’elle le soit).
 import { randomInt } from '../../core/random';
-import { buildDataItems, choices, type ItemGenerator } from './college';
+import { drawChoices } from '../../core/choices';
+import { buildDataItems, type ItemGenerator } from './college';
 import { formatDuree, formatHeure, formatNombre, type SceneProps } from './Scene';
 import type { ExerciseDef, ExerciseItem } from './types';
 
@@ -33,14 +34,14 @@ const pile = (t: number): string => `${Math.floor(t / 60)} h`;
 const five = (min: number, max: number, rng: Rng): number => 5 * randomInt(Math.ceil(min / 5), Math.floor(max / 5), rng);
 
 /**
- * Les quatre réponses : la bonne et trois pièges, rangés du plus petit au plus grand. Un piège n’est jamais une cote
- * affichée (`shown`), ni nul ; s’il en manque, on ajoute des voisins de dix en dix.
+ * Les quatre réponses : la bonne et trois pièges, rangés du plus petit au plus grand, la place de la réponse tirée au
+ * hasard (voir `drawChoices`). Un piège n’est jamais une cote affichée (`shown`), ni nul ; s’il en manque d’un côté,
+ * on y ajoute des voisins, de `step` en `step` (dix mètres, cinq minutes, une part…).
  */
-function options(answer: number, traps: number[], shown: number[], rng: Rng, format: (n: number) => string): string[] {
-  const ok = (t: number) => Number.isFinite(t) && t > 0 && t !== answer && !shown.includes(t);
-  const pool = [...new Set(traps.map(round).filter(ok))];
-  for (let d = 10; pool.length < 3; d += 10) for (const t of [answer + d, answer - d]) if (ok(t) && !pool.includes(t)) pool.push(t);
-  return choices(answer, pool, rng, format);
+function options(answer: number, traps: number[], shown: number[], rng: Rng, format: (n: number) => string, step: number | null = 10): string[] {
+  const ok = (t: number) => Number.isFinite(t) && t > 0 && !shown.includes(t);
+  // `step` nul : pas de voisin (une erreur de conversion n’a pas de « voisin » plausible).
+  return drawChoices(answer, traps.map(round), rng, { step: step ?? 1, ok, neighbourOk: step === null ? () => false : ok }).map(format);
 }
 
 const scene = (props: SceneProps) => ({ kind: 'scene', props });
@@ -110,7 +111,7 @@ export const dureeHeure: ItemGenerator = (rng) => {
     prompt: `Le bateau part à ${formatHeure(dep)} et arrive à ${formatHeure(arr)}. Combien de temps dure la traversée ?`,
     spoken: `Le bateau part à ${sayHeure(dep)} et arrive à ${sayHeure(arr)}. Combien de temps dure la traversée ?`,
     // Pièges : les minutes de l’arrivée lues comme la durée, dix ou cinq minutes de trop ou de moins.
-    choices: options(d, [m2, d + 10, d - 10, d + 5, d - 5], [], rng, minutes),
+    choices: options(d, [m2, d + 10, d - 10, d + 5, d - 5], [], rng, minutes, 5),
     answer: minutes(d),
     hint: `Même heure au départ et à l’arrivée : compte les minutes de ${m1} à ${m2}.`,
     explanation: `De ${formatHeure(dep)} à ${formatHeure(arr)} : ${m2} − ${m1} = ${d}. La traversée dure ${d} minutes.`,
@@ -154,7 +155,7 @@ export const dureePassage: ItemGenerator = (rng) => {
     prompt: `Le bateau part à ${formatHeure(dep)} et arrive à ${formatHeure(arr)}. Combien de temps dure la traversée ?`,
     spoken: `Le bateau part à ${sayHeure(dep)} et arrive à ${sayHeure(arr)}. Combien de temps dure la traversée ?`,
     // Pièges : le calcul comme si une heure faisait 100 minutes, une seule des deux étapes, dix minutes d’écart.
-    choices: options(d, [d + 40, avant, apres, d + 10, d - 10], [], rng, minutes),
+    choices: options(d, [d + 40, avant, apres, d + 10, d - 10], [], rng, minutes, 5),
     answer: minutes(d),
     hint: `Compte de ${formatHeure(dep)} à ${pile(arr)}, puis de ${pile(arr)} à ${formatHeure(arr)}.`,
     explanation: `De ${formatHeure(dep)} à ${pile(arr)} : ${avant} minutes. De ${pile(arr)} à ${formatHeure(arr)} : ${apres} minutes. ${avant} + ${apres} = ${d} : la traversée dure ${d} minutes.`,
@@ -227,7 +228,7 @@ export const arrivee: ItemGenerator = (rng) => {
     prompt: `Le bateau part à ${formatHeure(dep)} et la traversée dure ${formatDuree(d)}. À quelle heure arrive-t-il ?`,
     spoken: `Le bateau part à ${sayHeure(dep)} et la traversée dure ${d} minutes. À quelle heure arrive-t-il ?`,
     // Pièges : l’heure pas changée, dix minutes d’écart, la durée enlevée au lieu d’être ajoutée.
-    choices: options(arr, [arr - 60, arr + 10, arr - 10, dep - d], [dep], rng, formatHeure),
+    choices: options(arr, [arr - 60, arr + 10, arr - 10, dep - d], [dep], rng, formatHeure, 5),
     answer: formatHeure(arr),
     hint: `De ${formatHeure(dep)} à ${pile(arr)}, il y a ${avant} minutes. Ajoute le reste.`,
     explanation: `De ${formatHeure(dep)} à ${pile(arr)} : ${avant} minutes. Il reste ${d} − ${avant} = ${d - avant} minutes : le bateau arrive à ${formatHeure(arr)}.`,
@@ -293,7 +294,7 @@ export const carteVersReel: ItemGenerator = (rng) => {
     prompt: `Sur la carte, 1 cm représente ${m(r)}. Les deux îles y sont à ${c} cm : quelle distance les sépare en vrai ?`,
     spoken: `Sur la carte, 1 centimètre représente ${say(r, 'm')}. Les deux îles y sont à ${c} centimètres : quelle distance les sépare en vrai ?`,
     // Pièges : l’addition à la place de la multiplication, un zéro de trop ou de moins, un centimètre de trop ou de moins.
-    choices: options(D, [c + r, D / 10, D * 10, D + r, D - r], [r], rng, m),
+    choices: options(D, [c + r, D / 10, D * 10, D + r, D - r], [r], rng, m, r),
     answer: m(D),
     hint: `1 cm, c’est ${m(r)} : ${c} cm, c’est ${c} fois plus.`,
     explanation: `${c} × ${formatNombre(r)} = ${formatNombre(D)} : les îles sont à ${m(D)} l’une de l’autre.`,
@@ -313,7 +314,7 @@ export const reelVersCarte: ItemGenerator = (rng) => {
     prompt: `Les deux îles sont à ${m(D)} l’une de l’autre. Sur la carte, 1 cm représente ${m(r)} : combien de centimètres les séparent ?`,
     spoken: `Les deux îles sont à ${say(D, 'm')} l’une de l’autre. Sur la carte, 1 centimètre représente ${say(r, 'm')} : combien de centimètres les séparent ?`,
     // Pièges : les mètres changés en centimètres par erreur, un zéro de trop, un centimètre d’écart.
-    choices: options(c, [D / 100, c * 10, c + 1, c - 1], [r, D], rng, cm),
+    choices: options(c, [D / 100, c * 10, c + 1, c - 1], [r, D], rng, cm, 1),
     answer: cm(c),
     hint: `Combien de fois ${m(r)} dans ${m(D)} ? Divise.`,
     explanation: `${formatNombre(D)} ÷ ${formatNombre(r)} = ${c} : sur la carte, les îles sont à ${cm(c)}.`,
@@ -334,8 +335,8 @@ export const carteFraction: ItemGenerator = (rng) => {
     // Espaces insécables autour de la barre : « 1/10 000 » collé serait lu par RichText comme la fraction 1/10 suivie de « 000 ».
     prompt: `La carte est à l’échelle 1\u00a0/\u00a0${formatNombre(f)}. Les deux îles y sont à ${c} cm : quelle distance les sépare en vrai, en kilomètres ?`,
     spoken: `La carte est à l’échelle 1 sur ${formatNombre(f)}. Les deux îles y sont à ${c} centimètres : quelle distance les sépare en vrai, en kilomètres ?`,
-    // Pièges : la conversion ratée d’un, deux ou trois rangs.
-    choices: options(km, [km * 10, km / 10, km * 100, km * 1000], [c], rng, kmU),
+    // Pièges : la conversion ratée d’un, deux ou trois rangs, dans un sens ou dans l’autre (au millième près, sans arrondi).
+    choices: options(km, [km * 10, km * 100, km * 1000, ...[km / 10, km / 100].filter((t) => Math.abs(round(t) - t) < 1e-9)], [c], rng, kmU, null),
     answer: kmU(km),
     hint: `D’abord ${c} × ${formatNombre(f)}, en centimètres. Puis en kilomètres : 1 km, c’est 100 000 cm.`,
     explanation: `${c} × ${formatNombre(f)} = ${formatNombre(cmReel)} cm en vrai. 1 km = 100 000 cm, donc ${formatNombre(cmReel)} cm = ${kmU(km)}.`,
@@ -362,7 +363,7 @@ export const partageDeux: ItemGenerator = (rng) => {
     prompt: `On partage ${cargo.what(total)} entre les navires A et B dans le ratio ${p} : ${q}. ${cargo.ask} reçoit le navire ${SHIPS[k]} ?`,
     spoken: `On partage ${cargo.said(total)} entre les navires A et B dans le ratio ${sayRatio([p, q])}. ${cargo.ask} reçoit le navire ${SHIPS[k]} ?`,
     // Pièges : le partage en deux moitiés, la part de l’autre navire, une seule part, le total divisé par le terme du ratio.
-    choices: options(ans, integers([total / 2, other * u, u, total / mine, ans + u]), [total, p, q], rng, out),
+    choices: options(ans, integers([total / 2, other * u, u, total / mine, ans + u]), [total, p, q], rng, out, u),
     answer: out(ans),
     hint: `${p} + ${q} = ${p + q} parts en tout. Une part, c’est ${formatNombre(total)} ÷ ${p + q}.`,
     explanation: `${p} + ${q} = ${p + q} parts. Une part : ${formatNombre(total)} ÷ ${p + q} = ${u}. Navire ${SHIPS[k]} : ${mine} × ${u} = ${out(ans)}.`,
@@ -386,7 +387,7 @@ export const partDepuisPart: ItemGenerator = (rng) => {
     prompt: `Dans le ratio ${p} : ${q}, le navire A reçoit ${cargo.what(a)}. ${cargo.ask} reçoit le navire B ?`,
     spoken: `Dans le ratio ${sayRatio([p, q])}, le navire A reçoit ${cargo.said(a)}. ${cargo.ask} reçoit le navire B ?`,
     // Pièges : l’écart ajouté au lieu du rapport (modèle additif), la division oubliée, une seule part, le total.
-    choices: options(ans, [a + (q - p), a * q, u, a + ans, ans + u], [a, p, q], rng, out),
+    choices: options(ans, [a + (q - p), a * q, u, a + ans, ans + u], [a, p, q], rng, out, u),
     answer: out(ans),
     hint: `Une part, c’est ${a} ÷ ${p}. Le navire B a ${q} parts.`,
     explanation: `${one} Le navire B a ${q} parts : ${q} × ${u} = ${out(ans)}.`,
@@ -413,7 +414,7 @@ export const partageTrois: ItemGenerator = (rng) => {
     prompt: `On partage ${cargo.what(total)} entre les navires ${shipList(3)} dans le ratio ${ratio.join(' : ')}. ${cargo.ask} reçoit le navire ${SHIPS[k]} ?`,
     spoken: `On partage ${cargo.said(total)} entre les navires ${shipList(3)} dans le ratio ${sayRatio(ratio)}. ${cargo.ask} reçoit le navire ${SHIPS[k]} ?`,
     // Pièges : le partage en trois parts égales, une seule part, la part d’un autre navire, le total divisé par le terme du ratio.
-    choices: options(ans, integers([total / 3, u, ...others, total / mine, ans + u]), [total, ...ratio], rng, out),
+    choices: options(ans, integers([total / 3, u, ...others, total / mine, ans + u]), [total, ...ratio], rng, out, u),
     answer: out(ans),
     hint: `${ratio.join(' + ')} = ${n} parts en tout. Une part, c’est ${formatNombre(total)} ÷ ${n}.`,
     explanation: `${ratio.join(' + ')} = ${n} parts. Une part : ${formatNombre(total)} ÷ ${n} = ${u}. Navire ${SHIPS[k]} : ${mine} × ${u} = ${out(ans)}.`,
@@ -454,7 +455,7 @@ export const matCable: ItemGenerator = (rng) => {
     prompt: `Un câble tendu va du haut d’un mât de ${m(h)} jusqu’au sol, à ${m(p)} du pied du mât. Quelle est la longueur du câble ?`,
     spoken: `Un câble tendu va du haut d’un mât de ${say(h, 'm')} jusqu’au sol, à ${say(p, 'm')} du pied du mât. Quelle est la longueur du câble ?`,
     // Pièges : les longueurs additionnées sans les carrés, la racine oubliée, un mètre d’écart.
-    choices: options(c, [h + p, h * h + p * p, c + 1, c - 1], [h, p], rng, m),
+    choices: options(c, [h + p, h * h + p * p, c + 1, c - 1], [h, p], rng, m, 1),
     answer: m(c),
     hint: `Le câble est l’hypoténuse : ${h}² + ${p}², puis la racine carrée.`,
     explanation: `câble² = ${h}² + ${p}² = ${h * h} + ${p * p} = ${c * c}, donc le câble mesure √${c * c} = ${m(c)}.`,
@@ -471,7 +472,7 @@ export const matHauteur: ItemGenerator = (rng) => {
     prompt: `Un câble de ${m(c)} va du haut du mât jusqu’au sol, à ${m(p)} du pied du mât. Quelle est la hauteur du mât ?`,
     spoken: `Un câble de ${say(c, 'm')} va du haut du mât jusqu’au sol, à ${say(p, 'm')} du pied du mât. Quelle est la hauteur du mât ?`,
     // Pièges : la soustraction sans les carrés, l’addition des carrés au lieu de la soustraction, la racine oubliée.
-    choices: options(h, [c - p, c * c - p * p, h + 1, h - 1], [c, p], rng, m),
+    choices: options(h, [c - p, c * c - p * p, h + 1, h - 1], [c, p], rng, m, 1),
     answer: m(h),
     hint: `Le câble est l’hypoténuse : ${c}² − ${p}², puis la racine carrée.`,
     explanation: `hauteur² = ${c}² − ${p}² = ${c * c} − ${p * p} = ${h * h}, donc le mât mesure √${h * h} = ${m(h)}.`,

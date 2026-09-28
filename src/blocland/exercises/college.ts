@@ -1,5 +1,6 @@
 // Missions de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
+import { drawChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
 import { seeded } from './maths';
@@ -19,29 +20,11 @@ export const say = (n: number): string => (n < 0 ? `moins ${-n}` : String(n));
 
 /**
  * 4 réponses (la bonne + 3 pièges), sans doublon, rangées de la plus petite à la plus grande. La place de la bonne
- * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut.
+ * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut,
+ * et des voisins proches s'il en manque d'un côté (positifs si la réponse l'est). Voir `drawChoices`.
  */
-export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt): string[] {
-  const pool = [...new Set(traps)].filter((t) => Number.isFinite(t) && t !== answer);
-  const below = shuffle(
-    pool.filter((t) => t < answer),
-    rng,
-  );
-  const above = shuffle(
-    pool.filter((t) => t > answer),
-    rng,
-  );
-  const wanted = randomInt(0, 3, rng);
-  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
-  // Pas assez de pièges du côté voulu : ceux de l'autre côté, puis des voisins (positifs si la réponse l'est).
-  for (const t of [...below.slice(wanted), ...above.slice(3 - wanted)]) if (picked.length < 3) picked.push(t);
-  const sides = wanted > 0 ? [-1, 1] : [1, -1];
-  for (let d = 1; picked.length < 3; d++)
-    for (const side of sides) {
-      const t = answer + side * d;
-      if (!picked.includes(t) && picked.length < 3 && (t > 0 || answer <= 0)) picked.push(t);
-    }
-  return [answer, ...picked].sort((a, b) => a - b).map(format);
+export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt, neighbours = true): string[] {
+  return drawChoices(answer, traps, rng, { neighbourOk: (t) => t > 0 || answer <= 0, neighbours }).map(format);
 }
 
 /** `count` items différents (par clé), en alternant les générateurs, tirés de façon reproductible. */
@@ -109,8 +92,6 @@ export const compareRelatifs: ItemGenerator = (rng) => {
     hint: 'Sur la droite, le plus petit est toujours à gauche. Un nombre négatif est plus petit que zéro.',
     explanation: `${fmt(answer)} est plus ${small ? 'à gauche' : 'à droite'} sur la droite : c’est le plus ${small ? 'petit' : 'grand'}.`,
     aid: { kind: 'number-line', props: { min: -10, max: 10, points: [a, b] } },
-    // Les deux nombres de l'énoncé : on ne les remplace pas au moment de placer la réponse.
-    keepChoices: true,
   };
 };
 
@@ -381,7 +362,10 @@ export const mapScale: ItemGenerator = (rng) => {
     key: `scale-${kmPerCm}-${cm}`,
     prompt: `Sur la carte, 1 cm représente ${kmPerCm} km. Que représentent ${cm} cm ?`,
     spoken: `Sur la carte, 1 centimètre représente ${kmPerCm} kilomètres. Que représentent ${cm} centimètres ?`,
-    choices: choices(answer, [cm + kmPerCm, answer + kmPerCm, answer - kmPerCm, cm * 10], rng, (n) => `${fmt(n)} km`),
+    // La distance de 1 cm, déjà écrite dans l'énoncé, n'est jamais un piège (ni un voisin).
+    choices: drawChoices(answer, [cm + kmPerCm, answer + kmPerCm, answer - kmPerCm, cm * 10], rng, { ok: (t) => t > 0 && t !== kmPerCm }).map(
+      (n) => `${fmt(n)} km`,
+    ),
     answer: `${fmt(answer)} km`,
     hint: `Chaque centimètre vaut ${kmPerCm} km : multiplie ${cm} par ${kmPerCm}.`,
     explanation: `${cm} × ${kmPerCm} = ${answer} km.`,
@@ -427,7 +411,9 @@ export const powerOfTen: ItemGenerator = (rng) => {
     key: `p10-${n}`,
     prompt: `${pow(10, n)} = …`,
     spoken: `10 puissance ${n}, combien ?`,
-    choices: choices(v, [10 * n, 10 ** (n + 1), 10 ** (n - 1), n * 100], rng),
+    // Pièges : l'exposant pris comme facteur (10 × n, 100 × n), un ou deux zéros de trop ou de moins ; jamais de
+    // voisin (100 001 n'est pas une erreur d'élève).
+    choices: choices(v, [10 * n, n * 100, 10 ** (n + 1), 10 ** (n - 1), 10 ** (n + 2), ...(n >= 2 ? [10 ** (n - 2)] : [])], rng, fmt, false),
     answer: fmt(v),
     hint: `Écris 1, puis ${n} zéro${n > 1 ? 's' : ''}.`,
     explanation: `${pow(10, n)} = 1 suivi de ${n} zéro${n > 1 ? 's' : ''} = ${fmt(v)}.`,
@@ -553,6 +539,19 @@ export const squareRoot: ItemGenerator = (rng) => {
 const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 const isPrime = (n: number) => n > 1 && PRIMES.includes(n);
 
+/** Les questions de diviseurs possibles : n, un diviseur d (ni 1 ni n), et les non-diviseurs de part et d'autre de d. */
+const DIVISOR_PAIRS = [12, 18, 20, 24, 30, 36, 42, 45, 48].flatMap((n) => {
+  const divs = Array.from({ length: n }, (_, i) => i + 1).filter((x) => n % x === 0);
+  const notDivs = Array.from({ length: n }, (_, i) => i + 2).filter((x) => n % x !== 0);
+  return divs.slice(1, -1).map((d) => ({
+    n,
+    d,
+    divs,
+    below: notDivs.filter((x) => x < d).reverse(),
+    above: notDivs.filter((x) => x > d),
+  }));
+});
+
 export const primeOrDivisor: ItemGenerator = (rng) => {
   if (rng() < 0.5) {
     const p = PRIMES[randomInt(2, PRIMES.length - 1, rng)];
@@ -562,7 +561,8 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
       key: `prime-${p}`,
       prompt: 'Lequel est un nombre premier ?',
       spoken: 'Lequel de ces nombres est un nombre premier ?',
-      choices: choices(p, traps, rng),
+      // Un voisin ajouté n'est jamais premier : une seule bonne réponse.
+      choices: drawChoices(p, traps, rng, { neighbourOk: (t) => t > 1 && !isPrime(t) }).map(fmt),
       answer: fmt(p),
       hint: 'Un nombre premier a exactement deux diviseurs : 1 et lui-même. Élimine les pairs (sauf 2) et les multiples de 3 et de 5.',
       explanation: `${p} n’est divisible que par 1 et par ${p} : c’est un nombre premier.`,
@@ -573,23 +573,20 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
           lines: ['Exactement deux diviseurs : 1 et lui-même.', '2, 3, 5, 7, 11, 13, 17, 19, 23, 29…', 'Un nombre pair (sauf 2) n’est jamais premier.'],
         },
       },
-      // Un seul nombre premier parmi les choix : on ne les remplace pas au moment de placer la réponse.
-      keepChoices: true,
     };
   }
-  const n = [12, 18, 20, 24, 30, 36, 42, 45, 48][randomInt(0, 8, rng)];
-  const divs = Array.from({ length: n }, (_, i) => i + 1).filter((d) => n % d === 0);
-  const d = divs[randomInt(1, divs.length - 2, rng)];
-  // Les six non-diviseurs les plus proches de d : toujours quatre choix, la place de la réponse tirée ici.
-  const notDivs = Array.from({ length: n }, (_, i) => i + 2)
-    .filter((x) => n % x !== 0)
-    .sort((x, y) => Math.abs(x - d) - Math.abs(y - d) || x - y)
-    .slice(0, 6);
+  // La place de d (1re à 4e) est tirée d'abord, puis un couple (n, d) qui la permet : assez de non-diviseurs plus
+  // petits et plus grands que d (un petit diviseur n'en a souvent aucun plus petit que lui). Pièges : les non-diviseurs
+  // les plus proches de d, de part et d'autre ; jamais un voisin inventé, qui pourrait être un autre diviseur.
+  const wanted = randomInt(0, 3, rng);
+  const pairs = DIVISOR_PAIRS.filter((q) => q.below.length >= wanted && q.above.length >= 3 - wanted);
+  const { n, d, divs, below, above } = pairs[randomInt(0, pairs.length - 1, rng)];
+  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
   return {
     key: `div-${n}-${d}`,
     prompt: `Lequel est un diviseur de ${n} ?`,
     spoken: `Lequel de ces nombres est un diviseur de ${n} ?`,
-    choices: choices(d, notDivs, rng),
+    choices: [d, ...picked].sort((a, b) => a - b).map(fmt),
     answer: fmt(d),
     hint: `Un diviseur de ${n} : la division ${n} ÷ d tombe juste, sans reste.`,
     explanation: `${n} ÷ ${d} = ${n / d}, sans reste : ${d} est un diviseur de ${n}.`,
@@ -604,8 +601,6 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
         ],
       },
     },
-    // Un seul diviseur parmi les choix : on ne les remplace pas au moment de placer la réponse.
-    keepChoices: true,
   };
 };
 
@@ -926,7 +921,8 @@ export const probability: ItemGenerator = (rng) => {
   const kind = randomInt(0, 2, rng);
   if (kind === 0) {
     const red = randomInt(1, 5, rng);
-    const blue = randomInt(1, 5, rng);
+    // Pas 1 rouge et 1 bleue : les pièges 1/2 et 1/2 seraient la réponse, il ne resterait que trois choix.
+    const blue = randomInt(red === 1 ? 2 : 1, 5, rng);
     const total = red + blue;
     const answer = `${red}/${total}`;
     const s = (k: number) => (k > 1 ? 's' : '');
