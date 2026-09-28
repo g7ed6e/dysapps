@@ -16,8 +16,8 @@ export interface Bornes extends PartieDeLaScene {
 }
 
 /**
- * Les repères ; `bonhomme` rend le bonhomme, que le fanion surmonte (il est créé après les repères, dans l'ordre où la
- * scène l'a toujours été).
+ * Les repères ; `bonhomme` rend le bonhomme, que le fanion surmonte (il est créé après les repères ; la fonction n'est
+ * appelée qu'à l'animation).
  */
 export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instant: Instant): Bornes {
   const { scene } = monde;

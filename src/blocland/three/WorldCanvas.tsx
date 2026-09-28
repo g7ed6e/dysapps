@@ -134,7 +134,10 @@ export default function WorldCanvas({
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, monde.largeur * 10);
     const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
 
-    // Les parties, créées dans l'ordre où la scène l'a toujours été.
+    // Les parties, créées dans l'ordre d'avant la découpe, à quelques objets près (les nappes de brume avant l'eau, la
+    // flèche de la Carte après les balises, les créatures avant le terrain, la case visée avant le navire) : sans effet
+    // sur l'image, le rendu trie les objets par matériau et profondeur. `bornes`, `etiquettes` et `personnages` lisent le
+    // bonhomme et le sol par des fonctions, appelées seulement une fois toutes les parties créées.
     const lumiere = creerLumiere(monde, camera, derniers);
     const brume = creerBrume(monde, lumiere, instant);
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
