@@ -6,7 +6,7 @@
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
 // `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
-// `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
+// `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
@@ -29,6 +29,9 @@ const option = (name) => {
   const i = process.argv.indexOf(name);
   return i >= 0 ? process.argv[i + 1] : null;
 };
+/** Avec `--rendu archipeo`, l'univers d'Archipéo est aussi choisi dans les Réglages : sans lui, les textes (défi, bulle, panneaux) restent ceux de Blocland, l'univers par défaut. */
+const UNIVERS_DES_TEXTES = option('--rendu') === 'archipeo' ? 'archipeo' : undefined;
+
 /** Le drapeau de rendu et l'option de style, avant le `#` de l'adresse. */
 const QUERY = (() => {
   const q = new URLSearchParams();
@@ -247,15 +250,15 @@ async function scenes() {
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view }) => {
+        ({ village, progress, view, univers }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view },
+        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view, univers: UNIVERS_DES_TEXTES },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
