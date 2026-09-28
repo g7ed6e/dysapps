@@ -524,7 +524,18 @@ Construit le 28 septembre 2026, derrière le drapeau, d’après la fiche d’in
 
 ### Les silhouettes des Îles du Ciel (R4b-3e)
 
-À écrire par le sous-lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+Construit le 28 septembre 2026, derrière le drapeau, d’après la fiche `design/archipeo/intentions/3e-iles-du-ciel.md`. Cases, identifiants et sauvegardes inchangés ; le monde en blocs (Blocland) ne bouge pas.
+
+- **L’ambiance** (`ambianceDe('3e')`) : le bleu franc de la fiche (zénith `#3A86CC`, horizon `#B4D2EC`, voile `#DCE8F2`), le plancher de nuages `#DDE3E8`, un blanc bleuté ; la neige, la roche et l’herbe froides. La nuit perd aussi son lavande : horizon `#4C709E`, lueur `#6E8BB2` (directeur artistique).
+- **Le grand phare** (`world/decor/3e.ts`) : le phare de référence (`PHARES['3e']` : H = 11, r = 1,2, emprise 3) sur un socle de salles en pierre de taille `#DBDADD` : 3 × 3 cases sur 2 de haut, puis 2 × 2 sur 1, des baies cintrées sombres, de la neige sur les terrasses. Il garde le site du phare de Blocland (coin arrière de l’île du Phare) et s’étend d’une rangée et d’une colonne du côté opposé au cœur (`empriseDuSocle`) : il couvre les cases du phare de Blocland, jamais une case du cœur, d’un pont ou de ce qui est posé (test `decor/3e.test.ts`). C’est la plus haute construction de l’archipel.
+- **Le massif enneigé** (`LOINTAIN_3E`, par le lointain commun) : deux rangs de crêtes, 1,2 fois plus larges que l’arc des îles, 14 blocs à 80 cases et 18 blocs à 110 cases, roche `#7E8AA8` ombrée vers `#47598C`, neige franche au-dessus de 55 % de la hauteur, des cols hauts qui font une bande de neige continue. Le lointain commun gagne trois options, sans rien changer au 5e ni au 4e : `neigeFranche` (les versants coupés à la limite de la neige), `ombre` et `cols`.
+- **Les nappes des sommets** (`nappesDesSommets`, `world/decor/brume.ts`) : une seule couche plate sous les îles, qui s’efface vers ses bords et se fond dans le plancher, en un appel de dessin (288 triangles) au lieu de six plans ; elles respirent selon la règle commune et se figent quand l’appareil demande moins d’animations. Blocland garde ses six plans.
+- **L’oiseau planeur** (`PLANEUR`, `world/faune.ts`) : un seul, trois cases d’envergure, ailes fixes, aux couleurs des oiseaux communs ; il tourne en 32 s, à vitesse constante, au-dessus du massif, loin du phare et de toute île, plus haut que les autres oiseaux. C’est une instance de plus des oiseaux : aucun appel de dessin de plus. Figé quand l’appareil demande moins d’animations.
+- **Le relief** (`world/modeleDessine/3e.ts`) : trois gradins de 2 blocs derrière le cœur de l’Observatoire des textes, en retrait de 1,5 case, neige sur le plus haut ; au Belvédère, les deux pics deviennent un dôme bas en gradins de 6 blocs. Ni le cœur, ni la première rangée du fond, ni les abords d’un pont, ni ce qui est posé ne bougent (test `modeleDessine/3e.test.ts`).
+- **Mesures** (tout construit) : sol 19 578 triangles et 1 appel, mer 4 104 / 1, faune 1 274 / 2, décor, lointain et nappes 3 434 / 3 (enveloppe 9 000 / 3), vérifiés par `world/budget.test.ts`. Lueurs de nuit : 0,26 % de l’image au plus.
+- **Empreintes régénérées, voulues** : grille du 3e, « sol (facettes) » ; rendu du 3e, « ambiance », « décor » et « modelé dessiné ».
+- **Écarts** : le site du phare et son socle de 3 × 3 (directeur artistique, confirmés) ; le critère « la crête du massif reste sous la galerie » est remplacé (voir la fiche, §2). La vue d’arrivée de l’archipel ne cadre pas le grand phare (déjà le cas avant) : question de caméra, portée à la revue d’ensemble.
+- **Décision du directeur artistique et avis du référent dys** : voir la pull request.
 
 ### La construction du lot R5
 

@@ -78,14 +78,14 @@ it('le grand phare : le modèle de référence à H = 11 sur un socle de 3 cases
   expect(ailleurs).toBeLessThan(haut);
 });
 
-it('le massif enneigé : continu, 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 20 à 30 blocs, neige franche au-dessus de 55 %', () => {
+it('le massif enneigé : continu, 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 14 à 30 blocs, neige franche au-dessus de 55 %', () => {
   const rangs = LOINTAIN_3E.pieces.filter((p): p is RangDeCretes => p.genre === 'cretes');
   expect(rangs.length).toBe(LOINTAIN_3E.pieces.length);
   expect(Math.max(...rangs.map((r) => r.a - r.u))).toBeGreaterThanOrEqual(1.2);
   for (const r of rangs) {
     expect(r.recul).toBeGreaterThanOrEqual(80);
     expect(r.recul).toBeLessThanOrEqual(150);
-    expect(r.haut).toBeGreaterThanOrEqual(20);
+    expect(r.haut).toBeGreaterThanOrEqual(14);
     expect(r.haut).toBeLessThanOrEqual(30);
     expect(r.neige).toBe(0.55);
     expect(r.neigeFranche).toBe(true);
@@ -153,8 +153,8 @@ it('l’ambiance du 3e : un bleu franc, le plancher de nuages d’un blanc bleut
     const h = max === r ? ((g - bl) / d) % 6 : max === g ? (bl - r) / d + 2 : (r - g) / d + 4;
     return (h * 60 + 360) % 360;
   };
-  // L'horizon et le voile entre 195° et 215° (plus de lavande).
-  for (const c of [a.jour.horizon, a.voile[0]]) {
+  // L'horizon et le voile entre 195° et 215° (plus de lavande), et l'horizon de nuit non plus.
+  for (const c of [a.jour.horizon, a.voile[0], a.nuit.horizon, a.nuit.lueur]) {
     expect(teinte(c)).toBeGreaterThanOrEqual(195);
     expect(teinte(c)).toBeLessThanOrEqual(215);
   }

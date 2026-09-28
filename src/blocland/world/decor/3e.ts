@@ -107,13 +107,15 @@ export const FORMES_3E: Record<string, Forme> = { 'grand-phare': grandPhare };
 
 /**
  * Le massif enneigé des Îles du Ciel (fiche, §2) : une crête continue et irrégulière, 1,2 fois plus large que l'arc des
- * îles, de roche froide, la neige franche au-dessus de 55 % de sa hauteur ; un second rang plus haut et plus pâle derrière
- * lui fait l'épaisseur de la chaîne.
+ * îles, de roche froide, la neige franche au-dessus de 55 % de sa hauteur, ses cols hauts (0,55 à 0,75 de la hauteur)
+ * pour que la neige fasse une bande continue ; un second rang plus haut et plus pâle derrière lui fait l'épaisseur de la
+ * chaîne. Bas (14 et 18 blocs), pour que toute la crête tienne dans la vue de l'archipel, sous la barre du haut, et que la
+ * lanterne du phare se détache sur la bande claire de l'horizon (directeur artistique, 28 septembre 2026).
  */
 export const LOINTAIN_3E: Lointain = {
   graine: 'lointain-3e',
   pieces: [
-    { genre: 'cretes', u: -0.1, a: 1.1, recul: 95, haut: 22, cimes: 11, epaisseur: 30, couleur: 0x7e8aa8, ombre: 0x47598c, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true },
-    { genre: 'cretes', u: 0.05, a: 0.95, recul: 130, haut: 27, cimes: 8, epaisseur: 30, couleur: 0x8b96b2, ombre: 0x56679a, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true },
+    { genre: 'cretes', u: -0.1, a: 1.1, recul: 80, haut: 14, cimes: 11, epaisseur: 30, couleur: 0x7e8aa8, ombre: 0x47598c, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75] },
+    { genre: 'cretes', u: 0.05, a: 0.95, recul: 110, haut: 18, cimes: 8, epaisseur: 30, couleur: 0x8b96b2, ombre: 0x56679a, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75] },
   ],
 };

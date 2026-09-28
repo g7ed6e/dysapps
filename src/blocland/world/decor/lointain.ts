@@ -46,6 +46,8 @@ export interface RangDeCretes extends Place {
   neigeFranche?: boolean;
   /** L'ombre de la roche : les versants tournés à l'opposé du soleil tirent vers cette couleur. */
   ombre?: Couleur;
+  /** La hauteur des cols entre les cimes, en part de `haut` (de 0,35 à 0,55 par défaut) : plus haut, une crête continue. */
+  cols?: [number, number];
 }
 
 /** Une masse en gradins : des marches de `marche` blocs, en retrait de `retrait` cases, un sommet plat. */
@@ -167,12 +169,13 @@ function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): 
   const x1 = e.minX + r.a * (e.maxX - e.minX);
   // Le profil : des cimes et des cols, de hauteurs irrégulières ; le rang descend dans la mer à ses deux bouts.
   const n = r.cimes * 2 + 1;
+  const cols = r.cols ?? [0.35, 0.55];
   const profil: { x: number; y: number; dz: number }[] = [];
   for (let i = 0; i <= n; i++) {
     const t = i / n;
     const bout = i === 0 || i === n;
     const cime = i % 2 === 1;
-    const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (0.35 + 0.2 * hasard());
+    const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (cols[0] + (cols[1] - cols[0]) * hasard());
     profil.push({ x: x0 + (x1 - x0) * (t + (bout ? 0 : (hasard() - 0.5) * 0.4 / n)), y: h, dz: (hasard() - 0.5) * r.epaisseur * 0.3 });
   }
   const seuil = r.haut * (r.neige ?? 1.01);

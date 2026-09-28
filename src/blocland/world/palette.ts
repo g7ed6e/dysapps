@@ -129,11 +129,12 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // La mer : un bleu pétrole plus sombre, sous la brume chaude.
     teinteDeMer: 0x21606e,
   },
-  // Les Îles du Ciel (R4b-3e) : un bleu franc, plus de lavande ; la neige et la roche froides du massif, le plancher de
+  // Les Îles du Ciel (R4b-3e) : un bleu franc, plus de lavande, de jour comme de nuit (horizon et lueur de nuit du
+  // directeur artistique) ; la neige et la roche froides du massif, le plancher de
   // nuages d'un blanc bleuté, jamais sable (design/archipeo/intentions/3e-iles-du-ciel.md §5).
   '3e': {
     jour: { zenith: 0x3a86cc, horizon: 0xb4d2ec, lueur: 0xeef3f4, soleil: 0xfff4e2, soleilForce: 2.3, ambianceCiel: 0xd4e4f6, ambianceSol: 0x8c9cbe, ambianceForce: 1.05, mer: 0xdde3e8 },
-    nuit: { zenith: 0x243a72, horizon: 0x56689d, lueur: 0x7381b0, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
+    nuit: { zenith: 0x243a72, horizon: 0x4c709e, lueur: 0x6e8bb2, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
     brume: [110, 350],
     voile: [0xdce8f2, 0.05],
     sols: {
