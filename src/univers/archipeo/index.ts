@@ -102,7 +102,7 @@ export const ARCHIPEO = {
       },
     },
     marais: {
-      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du passé, du futur et du doute. »',
+      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. »',
       guardianSays: {
         hit: 'Une écaille de mes cous s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche l’indice de temps dans la phrase, et reprends.',

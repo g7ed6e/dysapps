@@ -18,9 +18,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -39,9 +39,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -53,16 +53,16 @@
       "spoken": "Vous (mot manquant) vos devoirs avant le dîner.",
       "choices": ["faites", "faisez", "font"],
       "answer": "faites",
-      "hint": "Faire est irrégulier avec vous : sa forme ne finit pas par -ez.",
+      "hint": "Faire se conjugue comme dire avec vous : vous dites.",
       "explanation": "Faire est irrégulier : vous faites, comme vous dites et vous êtes. « Font » va avec ils.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -81,9 +81,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -102,9 +102,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -116,16 +116,16 @@
       "spoken": "Inès, (mot manquant) chercher le pain, s’il te plaît.",
       "choices": ["va", "vas", "vais"],
       "answer": "va",
-      "hint": "C’est un ordre donné à Inès. Relis la dernière ligne de la règle.",
+      "hint": "Relis la règle de l’impératif, pour aller.",
       "explanation": "Impératif avec tu : aller n’a pas de s, comme les verbes en -er. Va chercher le pain ! « Vais » s’emploie avec je.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -144,9 +144,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }
@@ -165,9 +165,9 @@
         "props": {
           "title": "Le présent et l’impératif",
           "lines": [
-            "Présent, verbes en -er : -e, -es, -e, -ons, -ez, -ent (tu joues).",
-            "Présent, autres verbes : souvent -s, -s, -t (je finis, il finit).",
-            "Impératif : un ordre, sans sujet, avec tu, nous ou vous (Finis ! Finissons !).",
+            "Présent, verbes en -er : je -e, tu -es, il -e, nous -ons, vous -ez, ils -ent (tu joues).",
+            "Présent, autres verbes : souvent je -s, tu -s, il -t (je finis, il finit).",
+            "Impératif : un ordre, sans sujet écrit ; la forme du présent de tu, nous ou vous (Finis !).",
             "À l’impératif, verbes en -er et aller : pas de s avec tu (Joue !)."
           ]
         }

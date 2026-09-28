@@ -129,7 +129,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
       'Demain je nagerai. Si j’avais des ailes, je volerais.',
       'Il faut que tu viennes voir ma hutte de tourbe.',
-      'Quand la pluie aura cessé, je sortirai de l’eau.',
+      'Quand l’eau aura baissé, je passerai le gué.',
     ],
     home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
   },

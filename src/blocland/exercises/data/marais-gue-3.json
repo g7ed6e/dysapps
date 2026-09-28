@@ -3,7 +3,7 @@
   "biome": "marais",
   "type": "gue",
   "level": 3,
-  "instruction": "Lis la phrase : que dit le temps du verbe ? La règle est affichée.",
+  "instruction": "Lis la phrase : que dit le temps du verbe, ou quelle action a lieu en premier ? La règle est affichée.",
   "items": [
     {
       "key": "marais-gue-3-0",
@@ -19,9 +19,9 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
@@ -40,9 +40,9 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
@@ -61,9 +61,9 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
@@ -82,9 +82,9 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
@@ -103,9 +103,9 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
@@ -124,19 +124,19 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
     },
     {
       "key": "marais-gue-3-6",
-      "prompt": "« Tom souriait : il avait gagné le match. » Quelle action vient avant l’autre ?",
-      "spoken": "Tom souriait : il avait gagné le match. Quelle action vient avant l’autre ?",
-      "choices": ["gagner le match", "sourire"],
-      "answer": "gagner le match",
+      "prompt": "« Tom souriait : il avait gagné le match. » Quelle action a lieu en premier ?",
+      "spoken": "Tom souriait : il avait gagné le match. Quelle action a lieu en premier ?",
+      "choices": ["il avait gagné le match", "Tom souriait"],
+      "answer": "il avait gagné le match",
       "hint": "Lequel des deux verbes est au plus-que-parfait ?",
       "explanation": "« Avait gagné » est au plus-que-parfait : Tom a d’abord gagné, puis il souriait. L’ordre des mots n’est pas l’ordre des actions.",
       "aid": {
@@ -145,30 +145,30 @@
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
     },
     {
       "key": "marais-gue-3-7",
-      "prompt": "« Je sortirai quand j’aurai fini mes devoirs. » Quelle action vient avant l’autre ?",
-      "spoken": "Je sortirai quand j’aurai fini mes devoirs. Quelle action vient avant l’autre ?",
-      "choices": ["finir mes devoirs", "sortir"],
-      "answer": "finir mes devoirs",
+      "prompt": "« Je sortirai quand j’aurai fini mes devoirs. » Quelle action a lieu en premier ?",
+      "spoken": "Je sortirai quand j’aurai fini mes devoirs. Quelle action a lieu en premier ?",
+      "choices": ["j’aurai fini mes devoirs", "je sortirai"],
+      "answer": "j’aurai fini mes devoirs",
       "hint": "Lequel des deux verbes est au futur antérieur ?",
-      "explanation": "« Aurai fini » est au futur antérieur : les devoirs seront finis avant la sortie. La phrase dit « sortirai » en premier, mais cette action vient après.",
+      "explanation": "« Aurai fini » est au futur antérieur : les devoirs seront finis avant la sortie. La phrase dit « je sortirai » en premier, mais cette action a lieu après.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Ce que dit le temps",
           "lines": [
             "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
-            "Imparfait : le décor, ou une habitude du passé.",
+            "Imparfait : le décor (ce qu’on décrit), ou une habitude du passé.",
             "Passé simple : une action du récit, qui fait avancer l’histoire.",
-            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+            "Plus-que-parfait et futur antérieur : l’action a lieu avant une autre."
           ]
         }
       }
