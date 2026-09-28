@@ -21,6 +21,7 @@
     "rendu:mesures": "node scripts/rendu/mesures.mjs"
   },
   "dependencies": {
+    "@fontsource/archivo-black": "^5.3.0",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/montserrat": "^5.3.0",
     "@fontsource/opendyslexic": "^5.3.0",
