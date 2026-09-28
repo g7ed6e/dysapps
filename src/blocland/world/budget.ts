@@ -20,7 +20,7 @@ import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/brume';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
-import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
+import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './faune';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
 
@@ -161,7 +161,8 @@ export function merCost(a: ArchipelagoId): { triangles: number; drawCalls: numbe
 export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const familles = [
     { n: whaleSpots(a).length, t: trianglesDe(formeDeBaleine()) },
-    { n: oiseauxDe(a).nombre, t: trianglesDe(formeDOiseau()) },
+    // Les oiseaux, et le planeur des Îles du Ciel (une instance de plus).
+    { n: oiseauxDe(a).nombre + (planeurDe(a, worldBounds(a)) ? 1 : 0), t: trianglesDe(formeDOiseau()) },
     { n: nuagesDe(a).length, t: trianglesDe(formeDeNuage()) },
   ];
   return {

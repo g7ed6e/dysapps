@@ -35,6 +35,36 @@ export function oiseauxDe(a: ArchipelagoId): { nombre: number; altitude: number 
   return { nombre: a === '4e' ? 8 : 6, altitude: a === '4e' ? 17 : AMBIENCE[a].sky ? 18 : 13 };
 }
 
+/**
+ * L'oiseau planeur des Îles du Ciel (sous-lot R4b-3e ; fiche du 3e, §2) : un seul, de 3 cases d'envergure, ailes fixes,
+ * aux couleurs des oiseaux communs (la même forme, plus grande). Il tourne au-dessus du massif enneigé, derrière l'arc
+ * des îles, plus haut que tous les autres oiseaux, à vitesse constante, sans battre des ailes : jamais au-dessus d'une
+ * île (le lot 9 y fera signaler la zone active par des oiseaux), jamais devant la lanterne du phare.
+ *
+ * - `u` : le centre de sa ronde le long de la largeur de l'archipel (0 à l'ouest, 1 à l'est), loin du phare (vers 0,5) ;
+ * - `recul` : en cases au-delà du bord nord de l'archipel, au-dessus du premier rang du massif (world/decor/3e.ts) ;
+ * - `hauteur` : à la hauteur de la galerie du grand phare, au-dessus des cimes du premier rang et des autres oiseaux.
+ */
+export const PLANEUR = { u: 0.2, recul: 95, rayon: 14, hauteur: 24, periode: 32, envergure: 3, ailes: 0.35 } as const;
+
+/** L'envergure de la forme de l'oiseau commun (`formeDOiseau`), en blocs. */
+export const ENVERGURE_DE_L_OISEAU = 1.6;
+
+/** L'oiseau planeur d'un archipel (seulement les Îles du Ciel) : sa ronde. */
+export function planeurDe(a: ArchipelagoId, b: { minX: number; maxX: number; maxY: number }): { cx: number; cz: number; rayon: number; y: number } | null {
+  if (!AMBIENCE[a].sky) return null;
+  return { cx: b.minX + PLANEUR.u * (b.maxX - b.minX), cz: b.maxY + PLANEUR.recul, rayon: PLANEUR.rayon, y: PLANEUR.hauteur };
+}
+
+/**
+ * Le planeur à l'instant `t` : sur sa ronde, à vitesse constante (un tour en `PLANEUR.periode` secondes), tourné le long
+ * de son cercle ; figé dans sa pose de départ quand l'appareil demande moins d'animations (`reduit`).
+ */
+export function poseDuPlaneur(r: { cx: number; cz: number; rayon: number; y: number }, t: number, reduit: boolean): { x: number; y: number; z: number; cap: number; echelle: number } {
+  const a = reduit ? 0 : (2 * Math.PI * t) / PLANEUR.periode;
+  return { x: r.cx + Math.cos(a) * r.rayon, y: r.y, z: r.cz + Math.sin(a) * r.rayon, cap: -a, echelle: PLANEUR.envergure / ENVERGURE_DE_L_OISEAU };
+}
+
 type V3 = [number, number, number];
 
 /** Une forme facettée : trois sommets par triangle, une couleur (linéaire) par sommet, et ses poids d'animation. */

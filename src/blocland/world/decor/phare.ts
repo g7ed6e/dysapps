@@ -62,7 +62,7 @@ export const OMBRE_DU_FUT = { eclat: 0.55, chaleur: 0.1 } as const;
  */
 export const PHARES = {
   '6e': { H: 6, r: 1.2, socle: 0, emprise: 3 },
-  '3e': { H: 11, r: 1.2, socle: 3, emprise: 4 },
+  '3e': { H: 11, r: 1.2, socle: 3, emprise: 3 },
 } as const;
 
 /** Les pièces du phare, du bas vers le haut : R5 en dessine une partie pendant la restauration d'un plan. */

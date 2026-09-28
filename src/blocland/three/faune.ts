@@ -9,8 +9,11 @@ import { couleursDeLaBaleine, EVENT, formeDeBaleine, formeDEcume, formeDeNuage, 
 export interface FauneEn3D {
   group: THREE.Group;
   poserBaleine(i: number, p: PoseDeBaleine): void;
-  /** Un oiseau : sa place, son cap (autour de la verticale) et ses ailes (1 : relevées en V, −0,5 : baissées). */
-  poserOiseau(i: number, x: number, y: number, z: number, cap: number, ailes: number): void;
+  /**
+   * Un oiseau : sa place, son cap (autour de la verticale), ses ailes (1 : relevées en V, −0,5 : baissées) et sa taille
+   * (1 par défaut ; le planeur des Îles du Ciel est plus grand).
+   */
+  poserOiseau(i: number, x: number, y: number, z: number, cap: number, ailes: number, echelle?: number): void;
   /** Un nuage : sa place (le milieu du dessous), sa longueur (en blocs, comme les nuages en cubes) et son cap. */
   poserNuage(i: number, x: number, y: number, z: number, longueur: number, cap: number): void;
   /** Le liseré d'écume du passage, sous la baleine qui passe (`null` : caché). */
@@ -102,10 +105,10 @@ export function creerFaune(n: { baleines: number; oiseaux: number; nuages: numbe
       poser(baleines, i);
       anim.setXY(i, p.queue, p.souffle);
     },
-    poserOiseau(i, x, y, z, cap, ailes) {
+    poserOiseau(i, x, y, z, cap, ailes, echelle = 1) {
       tmp.position.set(x, y, z);
       tmp.rotation.set(0, cap, 0);
-      tmp.scale.set(1, ailes, 1);
+      tmp.scale.set(echelle, ailes * echelle, echelle);
       poser(oiseaux, i);
     },
     poserNuage(i, x, y, z, longueur, cap) {
