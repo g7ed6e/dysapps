@@ -74,7 +74,7 @@ export function aUneProgression(progress: unknown, blocland: unknown): boolean {
  * L'univers qui se voit : celui des réglages une fois ouvert ; avant la bascule, les textes restent ceux d'aujourd'hui,
  * c'est-à-dire ceux d'Archipéo.
  */
-export function universAffiche(univers: UniversChoice | undefined, ouvert: boolean): UniversChoice {
+export function titreAffiche(univers: UniversChoice | undefined, ouvert: boolean): UniversChoice {
   return ouvert ? (univers ?? 'archipeo') : 'archipeo';
 }
 

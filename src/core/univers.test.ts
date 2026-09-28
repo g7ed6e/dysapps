@@ -1,4 +1,4 @@
-import { aUneProgression, premierUnivers, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, universAffiche } from './univers';
+import { aUneProgression, premierUnivers, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, titreAffiche } from './univers';
 
 it('reste fermé jusqu’à la bascule du lot 6', () => {
   expect(UNIVERS_OUVERT).toBe(false);
@@ -25,10 +25,10 @@ it('reconnaît une progression enregistrée, sans planter sur une sauvegarde ab�
 });
 
 it('garde les textes d’aujourd’hui tant que l’univers est fermé', () => {
-  expect(universAffiche('blocland', false)).toBe('archipeo');
-  expect(universAffiche(undefined, false)).toBe('archipeo');
-  expect(universAffiche('blocland', true)).toBe('blocland');
-  expect(universAffiche(undefined, true)).toBe('archipeo');
+  expect(titreAffiche('blocland', false)).toBe('archipeo');
+  expect(titreAffiche(undefined, false)).toBe('archipeo');
+  expect(titreAffiche('blocland', true)).toBe('blocland');
+  expect(titreAffiche(undefined, true)).toBe('archipeo');
 });
 
 it('donne à chaque univers un nom, une phrase, une icône distincte et ses textes', () => {

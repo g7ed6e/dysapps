@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { applySettings, DEFAULT_SETTINGS, sanitizeSettings, SETTINGS_KEY, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
 import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
-import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, UNIVERS_OUVERT, universAffiche, type UniversChoice } from './univers';
+import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, UNIVERS_OUVERT, titreAffiche, type UniversChoice } from './univers';
 import { retenirReglages } from '../blocland/rendu';
 
 interface SettingsContextValue {
@@ -66,5 +66,5 @@ export function useSettings(): SettingsContextValue {
 
 /** L'univers qui se voit (titre, retour vers la Carte) : celui des réglages une fois ouvert, Archipéo avant. */
 export function useUnivers(): UniversChoice {
-  return universAffiche(useSettings().settings.univers, UNIVERS_OUVERT);
+  return titreAffiche(useSettings().settings.univers, UNIVERS_OUVERT);
 }

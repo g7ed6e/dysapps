@@ -37,11 +37,11 @@ Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocl
 | Étapes du Bloc-Navire | « … les Collines du Large t’attendent. » ; « … les Monts de Feu t’attendent. » | « … les Îles Brumeuses t’attendent. » ; « … les Anciens Ateliers t’attendent. » | `src/blocland/world/vehicle.ts` |
 | Monuments de 6e et de 4e | « … toutes les îles des Basses Terres. » (grand moulin) ; « Tous les Monts de Feu viendront au spectacle. » (amphithéâtre) | « … toutes les îles des Premiers Rivages. » ; « Tout le monde des Anciens Ateliers viendra au spectacle. » | `src/blocland/world/monuments.ts` |
 
-**Au lot 6** (fil A, derrière `UNIVERS_OUVERT`, donc visibles à la bascule seulement), quatre de ces textes reviennent dans Blocland, avec les mots validés par le directeur artistique (`src/core/univers.ts`) : le titre « Blocland » et sa phrase « Chaque bloc construit ton monde. » (écran titre et menu), le nom de l’aventure (titre de la vue simple, retours de l’école et des monuments), « Carte de Blocland » et « Bienvenue à Blocland ! ». L’écran titre garde l’icône de l’application. Le reste de ce tableau attend U4.
+**Au lot 6** (fil A, derrière `UNIVERS_OUVERT`, donc visibles à la bascule seulement), quatre de ces textes reviennent dans Blocland, avec les mots validés par le directeur artistique (`src/core/univers.ts`) : le titre « Blocland » et sa phrase « Chaque bloc construit ton monde. » (écran titre et menu), le nom de l’aventure (titre de la vue simple, retours de l’école et des monuments ; avis du directeur artistique, à confirmer par le mainteneur), « Carte de Blocland » et « Bienvenue à Blocland ! ». L’écran titre garde l’icône de l’application. Le reste de ce tableau attend U4, dont « Le village d’Archipéo » du réglage « Au démarrage ». L’en-tête des pages (`src/components/Layout.tsx`) et le bandeau de mise à jour nomment l’application, « Archipéo, par DysApps » (décision 6) : ils ne changent pas.
 
 Les autres « Blocland » remplacés par « Archipéo » au lot 1 :
 
-- le retour « Blocland » de la page des monuments et de l’école (`src/blocland/Monuments.tsx`, `School.tsx`) ;
+- le retour « Blocland » de la page des monuments et de l’école (`src/blocland/Monuments.tsx`, `School.tsx`), fait au lot 6, fil A : il suit le titre de l’univers ;
 - « Les îles de … dans Blocland » (`src/blocland/School.tsx`) et « Dans Blocland » (`src/pages/SubjectPage.tsx`) ;
 - « … étoiles dans Blocland » (`src/pages/ProgressPage.tsx`) ;
 - « Blocland montre le monde en 2D » (`src/pages/SettingsPage.tsx`) ;
