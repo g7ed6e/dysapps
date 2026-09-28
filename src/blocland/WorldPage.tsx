@@ -8,8 +8,6 @@ import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { BIOMES, getBiome, type BiomeId } from './biomes';
-import { levelFor } from './engine';
-import { pickExercise, questProgress } from './exercises';
 import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
@@ -32,10 +30,22 @@ import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
-import { nextDestination } from './world/destination';
-import { islandState } from './world/islandState';
+import {
+  borneTouchee,
+  capVers,
+  embarquer,
+  etapeDuVoyage,
+  finDuTemps,
+  ileDeLOuvrage,
+  ilesDuModele,
+  modeleDuMonde,
+  nouveauVoyage,
+  versLArrivee,
+  voyageAJouer,
+  type Voyage,
+} from './world/modele';
 import { VILLAGE_STAGES, villageStage } from './world/villageStage';
-import { VEIL_MS, legTiming, type VoyageLeg } from './world/voyage';
+import { VEIL_MS, legTiming } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
 import { walkGround, walkPath } from './world/paths';
@@ -59,11 +69,8 @@ import {
   KIND_NAME,
   archipelagoOf,
   getArchipelago,
-  getBridge,
   isArchipelagoReached,
   isBiomeUnlocked,
-  islandsOf,
-  launchedCount,
   remainingPath,
   type ArchipelagoId,
 } from './world/archipelago';
@@ -138,40 +145,33 @@ export function WorldPage() {
     navigate(`/aventure/${id}`);
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
+  // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
+  const modele = useMemo(() => modeleDuMonde(state, a), [a, state]);
   const quests = useMemo<QuestMark[]>(
     () =>
-      islandsOf(a).flatMap((b) => {
-        const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((x) => x.id === b.id));
-        const open = isBiomeUnlocked(b.id, state.village.bridges);
-        return questStations(b.id).map((st) => {
-          const def = open ? pickExercise(b.id, st.typeId, levelFor(state, st.typeId), state.progress) : undefined;
-          const progress = def ? questProgress(b.id, st.typeId, state.progress) : undefined;
-          const s: QuestMark['state'] = !def ? 'locked' : progress ? progress.stars : 'new';
-          return { id: `${b.id}:${st.typeId}`, biome: b.id, typeId: st.typeId, cell: { x: ox + st.x, y: oy + st.y, z: oz }, state: s };
-        });
+      modele.bornes.map((b) => {
+        const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((x) => x.id === b.ile));
+        const st = questStations(b.ile).find((q) => q.typeId === b.mission)!;
+        return { id: b.id, biome: b.ile, typeId: b.mission, cell: { x: ox + st.x, y: oy + st.y, z: oz }, state: b.etat };
       }),
-    [a, state],
+    [modele],
   );
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
-  const destination = useMemo(() => nextDestination(state), [state]);
+  const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
   const islandLabels = useMemo(
     () =>
-      islandsOf(a)
-        .filter((b) => mapOpen || isBiomeUnlocked(b.id, state.village.bridges))
-        .map((b) => {
-          const st = islandState(state, b.id);
-          return { id: b.id, text: b.name, ...(mapOpen ? { state: { id: st.id, name: st.name } } : {}) };
-        }),
+      ilesDuModele(state, a)
+        .filter((i) => mapOpen || i.ouverte)
+        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: i.etat.name } } : {}) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [a, mapOpen, state.village.bridges, state.village.plans, state.progress],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
-    const q = quests.find((m) => m.biome === id && m.typeId === typeId);
-    if (q && q.state !== 'locked') navigate(`/aventure/${id}/${typeId}`);
+    if (borneTouchee(modele.bornes, id, typeId) === 'jouer') navigate(`/aventure/${id}/${typeId}`);
     else openIsland(id);
   };
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
@@ -207,9 +207,8 @@ export function WorldPage() {
   // L'ouvrage touché dans le monde : on ouvre l'île ouverte qu'il touche, sa proposition mise en avant.
   const [highlight, setHighlight] = useState<string | null>(null);
   const onPickBridge = (id: string) => {
-    const def = getBridge(id);
-    if (!def) return;
-    const from = isBiomeUnlocked(def.from, state.village.bridges) ? def.from : isBiomeUnlocked(def.to, state.village.bridges) ? def.to : def.from;
+    const from = ileDeLOuvrage(id, state.village.bridges);
+    if (!from) return;
     setHighlight(id);
     openIsland(from);
   };
@@ -241,17 +240,7 @@ export function WorldPage() {
   // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
   // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Avec « Réduire les animations » : un écran
   // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
-  const [voyage, setVoyage] = useState<{
-    to: ArchipelagoId;
-    from: ArchipelagoId;
-    back: boolean;
-    mode: 'panel' | 'cinema';
-    leg: VoyageLeg;
-    seq: number;
-    stage: 1 | 2 | 3;
-    dest: BiomeId;
-    approach: boolean;
-  } | null>(null);
+  const [voyage, setVoyage] = useState<Voyage | null>(null);
   const [veil, setVeil] = useState(false);
   const timers = useRef<number[]>([]);
   const later = (f: () => void, ms: number) => timers.current.push(window.setTimeout(f, ms));
@@ -284,10 +273,9 @@ export function WorldPage() {
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
     if (back) return hop(to, dest);
     clearTimers();
-    // L'étape du navire qui voyage : celle qui mène là-bas ; pour un retour, la plus grande déjà partie.
-    const stage = (back ? Math.max(1, launchedCount(state.village.bridges)) : (stageTo(to)?.stage ?? 1)) as 1 | 2 | 3;
-    const trip = { to, from: a, back, dest, stage, leg: 'depart' as const, approach: false };
-    if (settings.reduceMotion) return setVoyage({ ...trip, mode: 'panel', seq: 0 });
+    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion: settings.reduceMotion };
+    if (settings.reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
+    const stage = etapeDuVoyage(to, back, state.village.bridges);
     const text = voyageSentence(to, back, a);
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
@@ -297,7 +285,7 @@ export function WorldPage() {
       setWalk((w) => ({ route, seq: w.seq + 1 }));
       moveTo(port);
       setFocus((f) => ({ island: port, seq: f.seq + 1 }));
-      setVoyage((v) => ({ ...trip, mode: 'cinema', seq: v?.seq ?? 0, approach: true }));
+      setVoyage((v) => nouveauVoyage({ ...trip, approach: true }, v));
       later(() => sail(stage, back), walkDuration(route));
       return;
     }
@@ -306,13 +294,13 @@ export function WorldPage() {
       moveTo(port);
       setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
     }
-    setVoyage((v) => ({ ...trip, mode: 'cinema', seq: (v?.seq ?? 0) + 1 }));
+    setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     horn(stage, back);
   };
   /** Le départ commence : le bonhomme est au port, il embarque. */
   const sail = (stage: 1 | 2 | 3, back: boolean) => {
     clearTimers();
-    setVoyage((v) => (v && v.approach ? { ...v, approach: false, seq: v.seq + 1 } : v));
+    setVoyage(embarquer);
     horn(stage, back);
   };
   const horn = (stage: 1 | 2 | 3, back: boolean) => {
@@ -351,11 +339,12 @@ export function WorldPage() {
   };
   // La cinématique : la fin d'un temps (ou un toucher, une touche : on arrive tout de suite).
   const onLegEnd = () => {
-    if (!voyage || voyage.mode !== 'cinema') return;
+    const next = finDuTemps(voyage);
+    if (!voyage || !next) return;
     // Encore en route vers le port : un toucher le fait embarquer tout de suite.
-    if (voyage.approach) return sail(voyage.stage, voyage.back);
+    if (next === 'embarquer') return sail(voyage.stage, voyage.back);
     clearTimers();
-    if (voyage.leg === 'depart') {
+    if (next === 'changer-d-archipel') {
       // Sous le voile : l'archipel change (la scène est reconstruite), puis l'arrivée se joue dans le nouveau.
       setVeil(true);
       later(() => {
@@ -363,7 +352,7 @@ export function WorldPage() {
         // La caméra et le bonhomme passent au port d'en face : la scène nouvelle s'ouvre sur lui, pas sur la mer.
         setFocus((f) => ({ island: port, seq: f.seq + 1 }));
         setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
-        setVoyage((v) => (v ? { ...v, leg: 'arrivee', seq: v.seq + 1 } : v));
+        setVoyage(versLArrivee);
         later(() => setVeil(false), VEIL_MS / 3);
       }, VEIL_MS / 2);
     } else finish(getArchipelago(voyage.to).port, voyage.dest);
@@ -396,11 +385,12 @@ export function WorldPage() {
     setSaid(null);
     if (!island) setHighlight(null);
     if (!mapOpen) setMapTarget(null);
-    if (island && !isBiomeUnlocked(island.id, state.village.bridges) && archipelagoOf(island.id).classe !== a) {
+    const cap = island ? capVers(island.id, a, state.village.bridges) : 'archipel';
+    if (cap === 'port') {
       setFocus((f) => ({ island: archipelago.port, seq: f.seq + 1 }));
       return;
     }
-    if (island && archipelagoOf(island.id).classe !== a && isBiomeUnlocked(island.id, state.village.bridges)) {
+    if (island && cap === 'voyage') {
       onBoard(archipelagoOf(island.id).classe, true, island.id);
       return;
     }
@@ -519,7 +509,7 @@ export function WorldPage() {
             marker={marker}
             vehicle={vehicle}
             onPickVehicle={onPickVehicle}
-            voyage={voyage?.mode === 'cinema' && !voyage.approach ? { seq: voyage.seq, leg: voyage.leg, stage: voyage.stage, back: voyage.back } : null}
+            voyage={voyageAJouer(voyage)}
             onVoyageLegEnd={onLegEnd}
             onVoyageSkip={onLegEnd}
             avatar={avatar}
@@ -612,12 +602,12 @@ export function WorldPage() {
                   <details className="world-map-islands">
                     <summary>Les îles et leur état</summary>
                     <ul>
-                      {islandsOf(a).map((b) => {
-                        const st = islandState(state, b.id);
+                      {modele.iles.map((b) => {
+                        const st = b.etat;
                         return (
                           <li key={b.id}>
                             <button type="button" className="world-map-island" onClick={() => onIsland(b.id)}>
-                              <span className="world-map-island-name">{b.name}</span>
+                              <span className="world-map-island-name">{b.nom}</span>
                               <span className={`island-state island-state-${st.id}`}>
                                 <Icon name={st.icon} /> {st.name}
                               </span>
