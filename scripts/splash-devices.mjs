@@ -2,6 +2,8 @@
 // contrairement à Android qui le compose à partir du manifeste). Dimensions en pixels réels, en portrait, et densité.
 // Les fichiers sont produits par `npm run splash` (scripts/splash.mjs) dans public/splash/, et les balises
 // <link rel="apple-touch-startup-image"> ajoutées à index.html par le plugin `appleSplash` de vite.config.ts.
+import { iconeUrl } from './icones.mjs';
+
 export const SPLASH_DEVICES = [
   // iPhone
   { w: 1320, h: 2868, r: 3 }, // 16 Pro Max
@@ -31,7 +33,11 @@ export const SPLASH_DEVICES = [
 /** Nom du fichier d'un écran (dans public/splash/), pour une largeur et une hauteur en pixels réels. */
 export const splashFile = (w, h) => `splash/apple-splash-${w}x${h}.png`;
 
-/** Les balises <link> des écrans de lancement, portrait et paysage, avec la media query de chaque appareil. */
+/**
+ * Les balises <link> des écrans de lancement, portrait et paysage, avec la media query de chaque appareil. L'adresse
+ * porte l'empreinte de l'image (scripts/icones.mjs) : quand l'écran change, aucun cache ne peut resservir l'ancien à
+ * une installation neuve.
+ */
 export function splashLinks(base = '/') {
   return SPLASH_DEVICES.flatMap(({ w, h, r }) =>
     [
@@ -39,7 +45,7 @@ export function splashLinks(base = '/') {
       ['landscape', h, w],
     ].map(([orientation, fw, fh]) => ({
       rel: 'apple-touch-startup-image',
-      href: `${base}${splashFile(fw, fh)}`,
+      href: `${base}${iconeUrl(splashFile(fw, fh))}`,
       media: `(device-width: ${w / r}px) and (device-height: ${h / r}px) and (-webkit-device-pixel-ratio: ${r}) and (orientation: ${orientation})`,
     })),
   );
