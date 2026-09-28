@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { walkGround, walkPath } from './paths';
 import { avatarHome, avatarRoute, bridgePath, creaturePlacements, islandAt, worldCubes } from './terrain';
 import { BRIDGES } from './archipelago';

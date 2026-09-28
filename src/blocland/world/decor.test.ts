@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { surfaceOf } from '../pixel/surface';
 import { getArchipelago } from './archipelago';
 import { toutConstruit } from './budget';

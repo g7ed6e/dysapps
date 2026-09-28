@@ -4,11 +4,11 @@
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
-import { AVATAR_HOME } from '../Avatar';
 import { walkPath, type WalkGround } from './paths';
 import {
   CORE,
   archipelagoOfIsland,
+  DANS_LE_CIEL,
   inCore,
   isLand,
   islandDef,
@@ -26,13 +26,12 @@ import {
 } from './map';
 import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ } from './harbour';
 import { villageStage } from './villageStage';
-import { AMBIENCE } from './daylight';
 import { kitReady, launchedStages, stageBuildingAt } from './vehicle';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from '../Creatures';
 import { GUARDIAN_CUBES } from '../Guardians';
 import { guardianStatus } from '../boss';
-import type { PlaceId, VillagePlaceId, VoxelCube } from '../Voxel';
+import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
 import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
@@ -428,6 +427,9 @@ function nearSentier(x: number, y: number): boolean {
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (sentierCache.has(`${x + dx},${y + dy}`)) return true;
   return false;
 }
+
+/** Où le bonhomme se tient sur une île, en coordonnées relatives au cœur (à côté de la créature, loin des plans). */
+export const AVATAR_HOME = { x: 1, y: 1 };
 
 /** Où le bonhomme se tient sur une île (coordonnées du monde, z sous ses pieds : le dessus du bloc de sol). */
 export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
@@ -855,7 +857,7 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   const known = whaleCache.get(a);
   if (known) return known;
   // Les Îles du Ciel n'ont pas de mer : pas de baleines.
-  if (AMBIENCE[a].sky) {
+  if (DANS_LE_CIEL[a]) {
     whaleCache.set(a, []);
     return [];
   }
@@ -908,7 +910,7 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   const known = seaCache.get(a);
   if (known) return known;
   // Les Îles du Ciel : des nuages à la place de la mer, rien à semer.
-  if (AMBIENCE[a].sky) {
+  if (DANS_LE_CIEL[a]) {
     seaCache.set(a, []);
     return [];
   }
@@ -1184,7 +1186,7 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
     const kit = kitReady(building, progress);
     for (const c of building.kit) put(c, !kit);
   }
-  return { port, origin, cubes, afloat: !AMBIENCE[a].sky, building: building?.id ?? null };
+  return { port, origin, cubes, afloat: !DANS_LE_CIEL[a], building: building?.id ?? null };
 }
 
 // ---------- Les lieux du village : l'école et la salle des trophées ----------
@@ -1371,7 +1373,7 @@ export function monumentCenter(m: MonumentDef): { x: number; y: number; z: numbe
  */
 function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): void {
   const alt = mapOf(a)[0]?.altitude ?? 0;
-  const sky = AMBIENCE[a].sky;
+  const sky = DANS_LE_CIEL[a];
   const top = sky ? SNOW : BLOCKS.sable.side;
   for (const m of monumentsOf(a)) {
     const place: PlaceId = `monument:${m.id}`;

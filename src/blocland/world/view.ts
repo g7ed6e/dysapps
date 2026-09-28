@@ -2,7 +2,7 @@
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { IslandStateId } from './islandState';
 import type { BiomeId } from '../biomes';
-import type { PlaceId, VoxelCube } from '../Voxel';
+import type { PlaceId, VoxelCube } from './cube';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';

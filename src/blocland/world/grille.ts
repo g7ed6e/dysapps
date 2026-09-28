@@ -5,7 +5,7 @@
 // Jusqu'à l'étape J5, le repère d'une île est celui du monde : l'ancrage d'une entité porte son île, et son point est
 // déjà en cases du monde (`versMonde` le rend tel quel). J5 fera naître chaque île dans son repère à elle.
 import { BIOMES, type BiomeId } from '../biomes';
-import type { VillagePlaceId, VoxelCube } from '../Voxel';
+import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './disposition';
 import { getMonument } from './monuments';

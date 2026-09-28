@@ -1,6 +1,6 @@
 // Le décor rangé : les cubes d'un même élément (un arbre, un buisson…) deviennent un seul objet, posé à sa place (la 2D
 // le dessine en sprite, pixel/). Calcul pur, sans Three.js ni canvas : le terrain garde ses autres cubes.
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { kindOf } from './decor';
 
 // (Le genre d'un décor et le décor posé se lisent dans ./decor.ts, avec la grille : la marche en a besoin.)

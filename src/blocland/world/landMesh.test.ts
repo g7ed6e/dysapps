@@ -1,4 +1,4 @@
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { BIOMES } from '../biomes';
 import { toutConstruit } from './budget';
 import {
