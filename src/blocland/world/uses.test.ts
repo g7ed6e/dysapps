@@ -19,7 +19,7 @@ it('un bloc sert au plan en cours de son île et au Bloc-Navire, avec ce qu’il
   const fresh = sanitizeState({});
   const uses = blockUses(fresh, 'bois');
   expect(uses.map((u) => u.kind)).toEqual(['plan', 'navire']);
-  // Cohérent avec le prochain objectif (« Encore 26 bois pour La cabane de Mousso »).
+  // Cohérent avec le prochain objectif (« Encore 26 blocs de bois pour La cabane de Mousso »).
   expect(uses[0]).toMatchObject({ island: 'foret', name: 'La cabane de Mousso', need: CABANE, enough: false });
   expect(uses[1]).toMatchObject({ island: 'plaine', need: 20 });
   // Avec assez de blocs, le plan est faisable.

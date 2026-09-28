@@ -5,10 +5,13 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
+// Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
+// tard le phare : proches de la lueur `#FFD866`, voir `estUneLueur`) : au plus `LUEUR_MAX` à la vue île (décision du
+// directeur artistique, lot R5), affichée dans un second tableau.
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -67,7 +70,52 @@ const CAPTURES = [
   // « Réduire les animations » : deux captures à quelques secondes d'écart, qui doivent être identiques (rien ne bouge).
   { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true, encore: 'ile-reduit-bis' },
   { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true, encore: 'archipel-reduit-bis' },
+  // La construction (lot R5) : un chantier (le dernier plan de chaque île en fantômes), de jour, de nuit, en Contraste
+  // élevé ; le phare des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` :
+  // la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
+  { nom: 'chantier', vue: 'île', famille: 'chantier', partie: 'chantier' },
+  { nom: 'chantier-nuit', vue: 'île', famille: 'chantier', partie: 'chantier', nuit: true },
+  { nom: 'chantier-contraste', vue: 'île', famille: 'chantier', partie: 'chantier', theme: 'contraste' },
+  { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
+  { nom: 'tour-debut', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-debut' },
+  { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },
+  { nom: 'tour-apres', vue: 'île', famille: 'chantier', ile: 'tour' },
+  { nom: 'tour-nuit', vue: 'île', famille: 'chantier', ile: 'tour', nuit: true },
+  { nom: 'atelier', vue: 'île', famille: 'chantier', ile: 'atelier' },
+  { nom: 'atelier-nuit', vue: 'île', famille: 'chantier', ile: 'atelier', nuit: true },
+  { nom: 'phare', vue: 'île', famille: 'chantier', ile: 'phare' },
+  { nom: 'phare-avant', vue: 'île', famille: 'chantier', ile: 'phare', partie: 'avant' },
+  { nom: 'theatre', vue: 'île', famille: 'chantier', ile: 'theatre' },
+  { nom: 'comptoir', vue: 'île', famille: 'chantier', ile: 'comptoir' },
 ];
+/** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
+const LUEUR_MAX = 0.03;
+/**
+ * Un pixel de lueur : un jaune chaud et clair, proche de `#FFD866` (world/construction.ts, `LUEUR`), que la brume peut
+ * un peu voiler. Le compte se fait dans une page vide, sur la capture de la scène seule (sans les panneaux).
+ */
+const estUneLueur = '(r, g, b) => r >= 220 && g >= 170 && b <= 170 && r - b >= 90';
+async function partDeLueur(outil, png) {
+  return outil.evaluate(
+    async ({ b64, test }) => {
+      const img = new Image();
+      img.src = `data:image/png;base64,${b64}`;
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0);
+      const d = g.getImageData(0, 0, c.width, c.height).data;
+      const lueur = new Function(`return ${test}`)();
+      let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (lueur(d[i], d[i + 1], d[i + 2])) n++;
+      return n / (c.width * c.height);
+    },
+    { b64: png.toString('base64'), test: estUneLueur },
+  );
+}
+
 /** L'écart entre une capture et sa seconde (`encore`). */
 const ECART = 4000;
 const FAMILLES = option('--familles')?.split(',') ?? null;
@@ -99,30 +147,61 @@ async function scenes() {
   await server.listen();
   const base = server.resolvedUrls.local[0].replace(/\/$/, '');
   const load = (p) => server.ssrLoadModule(p);
-  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }] = await Promise.all([
+  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }] = await Promise.all([
     load('/src/blocland/biomes.ts'),
     load('/src/blocland/world/map.ts'),
     load('/src/blocland/world/budget.ts'),
+    load('/src/blocland/world/plans.ts'),
   ]);
   // La même partie tout construite que le test du budget (world/budget.test.ts).
   const { progress, village: built } = toutConstruit();
+  /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
+  const plansDe = (partie, ile) => {
+    const plans = { ...built.plans };
+    // Avant : aucun plan de l'île posé.
+    if (partie === 'avant') for (const p of plansFor(ile)) delete plans[p.id];
+    if (partie === 'chantier')
+      for (const b of BIOMES) {
+        const l = plansFor(b.id);
+        if (l.length) delete plans[l[l.length - 1].id];
+      }
+    if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
+      const l = plansFor('tour');
+      // Avant : aucun plan posé ; au début : la moitié du premier (les murs) ; pendant : le premier posé, la moitié du
+      // deuxième (le toit).
+      const faits = partie === 'tour-mi' ? 1 : 0;
+      l.forEach((p, i) => {
+        if (i >= faits) delete plans[p.id];
+      });
+      if (faits < l.length && partie !== 'tour-avant') {
+        const cells = planCells(l[faits]).map((c) => c.key);
+        plans[l[faits].id] = cells.slice(0, Math.floor(cells.length / 2));
+      }
+    }
+    return plans;
+  };
 
   const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || undefined,
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
   });
   if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+  // Une page vide, pour compter les pixels de lueur des captures de nuit.
+  const outil = await browser.newPage();
   const rows = [];
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
     const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte' };
+    const classe = (id) => BIOMES.find((b) => b.id === id).classe;
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
       ...(SHOTS
-        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille))).map((c) => ({
+        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).map((c) => ({
             vue: c.vue,
-            go: routes[c.vue],
+            go: c.ile ? `/aventure/${c.ile}` : routes[c.vue],
+            ile: c.ile,
+            plans: c.partie ? plansDe(c.partie, c.ile) : null,
             time: c.nuit ? NIGHT : DAY,
             view: c.view,
             theme: c.theme,
@@ -132,7 +211,7 @@ async function scenes() {
           }))
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.goto(`${base}/icon.svg`);
@@ -145,7 +224,7 @@ async function scenes() {
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, at }, progress, view, theme, reduceMotion },
+        { village: { ...built, ...(plans ? { plans } : {}), at: ile ?? at }, progress, view, theme, reduceMotion },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
@@ -153,6 +232,12 @@ async function scenes() {
         // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
         await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (time === NIGHT && view === '3d') {
+          // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
+          const box = await page.locator('.voxel-canvas').boundingBox();
+          const png = box && (await page.screenshot({ type: 'png', clip: box, timeout: 90000 }));
+          if (png) lueurs.push({ archipel: a, nom, vue, part: await partDeLueur(outil, png) });
+        }
         if (encore) {
           // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
           await page.waitForTimeout(ECART);
@@ -180,6 +265,9 @@ async function scenes() {
   return rows;
 }
 
+/** Les parts de lueur des captures de nuit en 3D. */
+const lueurs = [];
+
 // Le build d'abord : le serveur de développement le passerait en mode développement.
 const js = process.argv.includes('--sans-poids') ? null : await weights();
 const rows = await scenes();
@@ -189,9 +277,15 @@ for (const r of rows) {
   if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | | |`);
   else console.log(`| ${r.archipel} | ${r.vue} | ${r.calls} | ${r.triangles.toLocaleString('fr-FR')} | ${r.geometries} | ${r.textures} | ${r.fps} |`);
 }
+if (lueurs.length) {
+  console.log(`\n| Archipel | Capture de nuit | Part de lueur | Vue île : au plus ${LUEUR_MAX * 100} % |`);
+  console.log('| --- | --- | ---: | --- |');
+  for (const l of lueurs)
+    console.log(`| ${l.archipel} | ${l.nom} | ${(l.part * 100).toFixed(2).replace('.', ',')} % | ${l.vue === 'île' ? (l.part <= LUEUR_MAX ? 'oui' : 'NON') : ''} |`);
+}
 if (js) {
   console.log('\n| Fichier | Poids | Compressé (gzip) | Three.js |');
   console.log('| --- | ---: | ---: | --- |');
   for (const f of js.slice(0, 6)) console.log(`| ${f.file} | ${kilo(f.raw)} | ${kilo(f.gzip)} | ${f.three ? 'oui' : ''} |`);
 }
-process.exit(rows.some((r) => r.erreur) ? 1 : 0);
+process.exit(rows.some((r) => r.erreur) || lueurs.some((l) => l.vue === 'île' && l.part > LUEUR_MAX) ? 1 : 0);

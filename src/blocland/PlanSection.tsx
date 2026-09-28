@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
@@ -14,7 +14,7 @@ import { earnIsland, whereToEarn } from './world/uses';
 interface Props {
   biome: BiomeDef;
   builder: PlanBuilder;
-  /** En 3D, on peut aussi toucher les cases bleues dans le monde. */
+  /** En 3D, on peut aussi toucher les cases transparentes (à poser) dans le monde. */
   in3d?: boolean;
   /** Dans le panneau 3D : la section se replie quand il n'y a rien à poser (la clé change avec l'île). */
   fold?: string;
@@ -44,7 +44,7 @@ export function planSummary(builder: PlanBuilder, inventory: Partial<Record<Bloc
   const posed = `${status.done} / ${status.total} posés`;
   if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
   const [block, n] = lacking[0];
-  return `${posed} · il manque ${n - (inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()}`;
+  return `${posed} · il manque ${blockCount(block, n - (inventory[block] ?? 0))}`;
 }
 
 /**
@@ -99,13 +99,13 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
                       <li key={block}>
                         <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                         <span>
-                          <strong>{n}</strong> {BLOCKS[block].name.toLowerCase()} · <EarnLink block={block} here={biome.id} />
+                          <strong>{n}</strong> {blockName(block, n)} · <EarnLink block={block} here={biome.id} />
                         </span>
                       </li>
                     ))}
                   </ul>
                 )}
-                {in3d && <p className="view-note">Touche une case bleue du bâtiment dans le monde, ou utilise le bouton.</p>}
+                {in3d && <p className="view-note">Touche une case transparente du bâtiment dans le monde, ou utilise le bouton.</p>}
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>

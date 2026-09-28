@@ -445,7 +445,20 @@ Construit le 28 septembre 2026, derrière le drapeau, d’après la fiche d’in
 
 ### La construction du lot R5
 
-À écrire par le lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+Construit le 28 septembre 2026, derrière le drapeau. Cases, identifiants et sauvegardes inchangés ; le monde en blocs (Blocland) ne bouge pas : ses empreintes sont identiques.
+
+- **Les blocs taillés** (`world/construction.ts`, maillage pur sans Three.js) : bâtiments, ouvrages, monuments, quai et cœur des îles en blocs peints par sommet. Les faces cachées disparaissent et les faces voisines de même couleur sont fusionnées ; chaque bloc garde sa nuance (±4 %) et un biseau peint de 1,5 px au moins, plus clair de 22 % (14 niveaux au moins sur les teintes sombres), qui s’efface quand une case fait moins de 16 px à l’écran et disparaît en Contraste élevé. Trois appels de dessin : le plein, les fantômes, les fenêtres (`three/construction.ts`).
+- **Les fantômes** : unis, crème Brume `#E5EBE3`, avec une arête Nuit océan `#142B38` à chaque case (70 % hors Contraste élevé) ; plus opaques la nuit et en Contraste élevé. La consigne dit désormais « Touche une case transparente », en 3D comme en 2D.
+- **Les toits** (`world/toits.ts`) : trois quarts d’ardoise, teinte propre à chaque archipel sous son voile (fiche de famille, règle 2, DA 28/09), un quart de terre cuite `#C0764A` (Ferme, Mine, Comptoir, Théâtre, Belvédère), jamais deux voisins en terre cuite.
+- **Les fenêtres et les lanternes** : le verre hors d’un mur est à 80 % Brume et 20 % `#178078`, arête de 1,5 px `#142B38` à 40 %. La nuit, au plus trois vitres par bâtiment et deux lanternes par cour s’allument en `#FFD866`, progressivement et chacune à son heure, sans halo ni clignotement ; la 2D peinte fait de même (`pixel/paintedDraw.ts`). Lanterne : un corps de bois de 0,3 case, un cœur de 0,18 case.
+- **Les bornes** : un pilier de pierre à tête chanfreinée, instancié (un appel). **Le navire** : coque et ballon en blocs taillés, voile crème Brume.
+- **Le phare de Grimoire** : le plan « Le phare de Grimoire » monte le phare partagé de R4b-6e pièce par pièce (hauteur 6, rayon 1,2, sans socle) : les murs finis font le fût et ses bandes, le toit fini la galerie, la lanterne et le cône. Toucher le phare touche la case du plan.
+- **Un seul phare par île** : dans Archipéo, le décor du cœur des îles de la Tour (6e) et du Phare (3e) ne dresse plus sa tour (`sansToursDuCoeur`) ; Blocland garde les siennes.
+- **Poser un bloc** ne refait que le maillage de son île (8 à 16 ms au lieu de 31 à 53 ms).
+- **Mesures** (tout construit, `world/budget.test.ts`) : construction 6 178 triangles et 2 appels au 6e, 4 290 au 5e, 4 052 au 4e, 4 276 au 3e (enveloppe 6 500 / 3) ; bornes 784 / 1 au plus (1 000 / 1) ; navire 420 / 3 (1 000 / 3). Au navigateur, l’île de la Tour passe de 231 à 138 appels. Part des lueurs de nuit : 0,29 % de l’image au plus (`npm run rendu:mesures`), sous les 5 % de la règle 5.
+- **Décision (R5, directeur artistique)** : blocs taillés, avec un biseau d’au moins 14 niveaux de plus sur les teintes sombres ; fantômes unis, arête à 70 % hors Contraste élevé ; verre hors mur à 80 % Brume et 20 % `#178078`, arête de 1,5 px `#142B38` à 40 %. Lanternes en bois (0,3 case, cœur `#FFD866` de 0,18 case, deux allumées au plus par cour, sans halo) ; lueur de nuit mesurée sous 0,3 %. Le plan tour-phare de Grimoire monte le phare partagé de R4b-6e pièce par pièce ; dans Archipéo, le décor du cœur des îles de la Tour et du Phare est retiré : un seul phare par île. Validé le 28 septembre 2026 sur captures (voir la pull request).
+- **Avis du référent dys** : Adapté. Il demande une observation de une à deux minutes au crépuscule sur tablette (allumage des fenêtres), à faire à la revue d’ensemble.
+- **Écarts restants** : les colombages et l’architecture modulaire (lot 7) ; la 2D garde la tour du phare en cubes jusqu’à la revue d’ensemble ; la porte cède la place au modèle fini. Les ponts de pierre et de bois du 5e viennent dans une pull request suivante.
 
 ### Les personnages du lot R6
 

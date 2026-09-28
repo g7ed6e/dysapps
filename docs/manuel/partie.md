@@ -38,7 +38,7 @@ Avec les blocs gagnés, l'élève revient sur l'île. Le premier plan, **la caba
 
 **Poser tout ce que j'ai** pose d'un coup tous les blocs en poche. Le dernier bloc termine le bâtiment : Mousso remercie (lu à voix haute), le **coffre** donne les blocs de finition du plan suivant (la porte, les lanternes, les tuiles du toit) et de l'XP. Le plan suivant, le toit, s'affiche aussitôt.
 
-![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 pierre, 1 porte, 3 lanterne, 18 toit, +40 XP ; le succès Bâtisseur.](/captures/plan-termine.jpg)
+![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 blocs de pierre, 1 porte, 3 lanternes, 18 toits, +40 XP ; le succès Bâtisseur.](/captures/plan-termine.jpg)
 
 ## Ouvrir les îles
 

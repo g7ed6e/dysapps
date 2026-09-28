@@ -5,10 +5,13 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
+import { creerPiliers } from './bornes';
+import { creerConstruction, creerMateriaux, type MateriauxDeConstruction } from './construction';
 import { creerDecor } from './decor';
 import type { Large } from './large';
 import type { Lumiere } from './lumiere';
@@ -34,6 +37,8 @@ export interface Cubes extends PartieDeLaScene {
   eclat(mesh: THREE.Mesh, velocity: THREE.Vector3, born: number): void;
   /** La forme d'un éclat, partagée. */
   formeDEclat: THREE.BufferGeometry;
+  /** Les matériaux de la construction taillée d'Archipéo (lot R5), que le navire partage (`null` dans le monde en blocs). */
+  materiaux: MateriauxDeConstruction | null;
 }
 
 interface Spark {
@@ -51,6 +56,13 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
   // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
   if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
+  // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés.
+  const materiaux = archipeo ? creerMateriaux(lumiere) : null;
+  // Un maillage par île, gardé : poser un bloc ne refait que son île.
+  const taille = materiaux
+    ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), cache: cacheDeLaConstruction(), maillage: null as MaillageDeLaConstruction | null }
+    : null;
+  if (taille) scene.add(taille.construction.group, taille.piliers.group);
   // Le contour de la case visée (mode chantier).
   const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
   hover.visible = false;
@@ -67,7 +79,10 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
 
   return {
     champ: () => sol?.champ ?? null,
-    cibles: () => (sol ? [...terrain.children, ...sol.en3D.group.children, ...sol.decor.group.children] : terrain.children),
+    cibles: () =>
+      sol
+        ? [...terrain.children, ...sol.en3D.group.children, ...sol.decor.group.children, ...(taille ? [...taille.construction.group.children, ...taille.piliers.group.children] : [])]
+        : terrain.children,
     casesTouchees: (hit) => {
       const n = hit.face?.normal ?? new THREE.Vector3(0, 1, 0);
       // Le sol à facettes (lot R2) : le point touché et la normale de la facette redonnent la case (world/landMesh.ts).
@@ -82,11 +97,14 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
         const picked = caseDuDecor(champ, decor, Boolean(hit.object.userData.lueur), hit.faceIndex);
         if (picked) return picked;
       }
-      const inside = hit.point.clone().addScaledVector(n, -0.5);
-      const outside = hit.point.clone().addScaledVector(n, 0.5);
-      const cell = { x: Math.floor(inside.x), y: Math.floor(inside.z), z: Math.floor(inside.y) };
-      const next = { x: Math.floor(outside.x), y: Math.floor(outside.z), z: Math.floor(outside.y) };
-      return { cell, next };
+      // Le phare de Grimoire (R5) : la case de son plan la plus proche du point touché.
+      const groupe = hit.object.userData.groupe as string | undefined;
+      if (taille?.maillage && (groupe === 'opaque' || groupe === 'fenetres') && hit.faceIndex != null) {
+        const picked = caseDuPhare(taille.maillage, groupe, hit.faceIndex, hit.point, n);
+        if (picked) return picked;
+      }
+      // Un cube, un bloc taillé ou une borne : le bloc derrière la facette, et la case devant (world/construction.ts).
+      return caseDeLaConstruction(hit.point, n);
     },
     poser: (cubes) => {
       viderLeTerrain();
@@ -98,14 +116,24 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
       const surLeSol: VoxelCube[] = [];
       const autres: VoxelCube[] = [];
-      for (const c of cubes) (c.sol ? surLeSol : autres).push(c);
+      // Sans les tours du décor du cœur (un seul phare par île, lot R5) : Blocland les garde.
+      for (const c of sansToursDuCoeur(cubes)) (c.sol ? surLeSol : autres).push(c);
       // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
       const { elements, reste } = rangerLeDecor(autres);
       // Le modelé dessiné d'Archipéo (U2) par-dessus le relief de marche, que la grille garde.
       const auSol = modelerLeSol(archipel, surLeSol, reste);
       const champ = champDuSol(archipel, auSol, reste);
       // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
-      for (const g of buildMesh(poseDuDecor(champ, reste), auSol)) terrain.add(meshOf(g, surface));
+      // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.
+      const construction = poseDuDecor(champ, reste);
+      if (taille) {
+        const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
+        if (change || !taille.maillage) {
+          taille.construction.peindre(maillage);
+          taille.piliers.poser(piliersDe(construction));
+          taille.maillage = maillage;
+        }
+      }
       const signature = signatureDuChamp(champ);
       const style = styleDuMonde() === 'a' ? 'a' : 'b';
       if (signature !== sol.signature) sol.en3D.peindre(landMesh(champ, { style }));
@@ -137,6 +165,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       sparks.push({ mesh, velocity, born });
     },
     formeDEclat: sparkGeo,
+    materiaux,
     animer: (t, dt, reduit) => {
       // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
       sol?.decor.animer(t, dt, reduit);
@@ -161,6 +190,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       viderLeTerrain();
       sol?.en3D.dispose();
       sol?.decor.dispose();
+      taille?.construction.dispose();
+      taille?.piliers.dispose();
+      materiaux?.dispose();
       for (const s of sparks) (s.mesh.material as THREE.Material).dispose();
       sparkGeo.dispose();
     },

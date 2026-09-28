@@ -1,6 +1,6 @@
 // Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour le plan en cours, pour l'ouvrage le
 // moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île.
-import { BLOCKS, getBiome, type BiomeId } from '../biomes';
+import { blockCount, getBiome, type BiomeId, type BlockId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { canLaunch, currentPlan, planStatus } from '../engine';
 import {
@@ -32,15 +32,15 @@ export interface Goal {
   need: number;
 }
 
-/** Ce qu'il manque d'un plan, en blocs : « 16 bois », « 10 brique et 3 verre ». */
-function missingBlocks(state: BloclandState, missing: [keyof typeof BLOCKS, number][]) {
+/** Ce qu'il manque d'un plan, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
+function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
   const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.inventory[b] ?? 0))] as const).filter(([, n]) => n > 0);
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
   const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.inventory[b] ?? 0), 0);
   const words = left
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
-    .map(([b, n]) => `${n} ${BLOCKS[b].name.toLowerCase()}`);
+    .map(([b, n]) => blockCount(b, n));
   return { text: words.join(' et '), have, need, ready: left.length === 0 };
 }
 
@@ -59,7 +59,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null
   const current = currentPlan(state, island);
   if (current && !current.allDone) {
     const status = planStatus(state, current.plan);
-    const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
+    const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
     if (missing.length) {
       const m = missingBlocks(state, missing);
       candidates.push({
@@ -97,7 +97,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null
       });
     } else {
       const status = planStatus(state, stage);
-      const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [keyof typeof BLOCKS, number][];
+      const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
       const m = missingBlocks(state, missing);
       candidates.push({
         text: m.ready ? `Tu as tout pour ${VEHICLE_NAME} : pose tes blocs` : `Encore ${m.text} pour ${VEHICLE_NAME}`,

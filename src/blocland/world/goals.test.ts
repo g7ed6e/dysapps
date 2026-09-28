@@ -1,3 +1,4 @@
+import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { lockedHint, nextGoal, nextGoalInfo } from './goals';
 import { planCells, plansFor } from './plans';
@@ -33,7 +34,7 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   // Les plans de la Plaine finis et ses ouvrages construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['plaine-riviere', 'plaine-volcan'];
-  expect(nextGoal(sanitizeState({ village: { plans, bridges: built } }), 'plaine')).toMatch(/^Encore \d+ (sable|bois)( et \d+ \w+)? pour le Bloc-Navire\.$/);
+  expect(nextGoal(sanitizeState({ village: { plans, bridges: built } }), 'plaine')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
   const stocked = sanitizeState({ village: { plans, bridges: built }, inventory: { sable: 30, bois: 30, galet: 10, pierre: 5 } });
   expect(nextGoal(stocked, 'plaine')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
   // Toutes ses cases posées : il manque des Gardiens.
@@ -46,6 +47,30 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   // Parti : plus un mot du navire sur ce port.
   const sailed = sanitizeState({ village: { plans: hull, bridges: [...built, 'voyage-5e'] }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(sailed, 'plaine')).toBeNull();
+});
+
+it('les quantités de blocs s’accordent : « 18 toits et 3 lanternes », « 3 blocs de sable » (référent dys, 28/09)', () => {
+  // Le deuxième plan de la Forêt : il manque des blocs de finition, qu'on compte comme des objets.
+  const cabane = plansFor('foret')[0];
+  const plans = { [cabane.id]: planCells(cabane).map((c) => c.key) };
+  expect(nextGoal(sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme', 'foret-horloge'] } }), 'foret')).toBe(
+    'Encore 18 toits et 3 lanternes pour Le toit de la cabane.',
+  );
+  expect(blockCount('lanterne', 1)).toBe('1 lanterne');
+  expect(blockCount('barriere', 5)).toBe('5 barrières');
+  expect(blockCount('panneau', 2)).toBe('2 panneaux');
+  expect(blockCount('cristal', 2)).toBe('2 cristaux');
+  expect(blockCount('taille', 4)).toBe('4 pierres de taille');
+  // Les matières se comptent en blocs, le nom reste au singulier : ni « 2 ors », ni « 3 verres ».
+  expect(blockCount('sable', 3)).toBe('3 blocs de sable');
+  expect(blockCount('or', 2)).toBe('2 blocs d’or');
+  expect(blockCount('bois', 1)).toBe('1 bloc de bois');
+  // Aucun bloc ne reste au singulier après un nombre de 2 ou plus.
+  for (const id of Object.keys(BLOCKS) as BlockId[]) {
+    const text = blockCount(id, 2);
+    expect(text, id).not.toBe(`2 ${BLOCKS[id].name.toLowerCase()}`);
+    expect(text, id).toMatch(/^2 [^ ]*[sx]\b/);
+  }
 });
 
 it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’élargit', () => {

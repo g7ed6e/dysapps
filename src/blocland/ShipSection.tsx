@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, type BiomeDef, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, type BiomeDef, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { EarnLink } from './PlanSection';
@@ -13,7 +13,7 @@ import { VEHICLE_NAME, VEHICLE_STAGES, guardiansText, stageAt } from './world/ve
 interface Props {
   biome: BiomeDef;
   builder: VehicleBuilder;
-  /** En 3D, on peut aussi toucher les cases bleues du navire au quai. */
+  /** En 3D, on peut aussi toucher les cases transparentes du navire au quai. */
   in3d?: boolean;
   /** Embarquer vers un archipel (le suivant, ou un archipel déjà atteint pour y revenir). */
   onBoard: (to: ArchipelagoId, back: boolean) => void;
@@ -36,7 +36,7 @@ export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<B
   const lacking = missing.filter(([b, n]) => (inventory[b] ?? 0) < n);
   if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
   const [block, n] = lacking[0];
-  return `${posed} · il manque ${n - (inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()}`;
+  return `${posed} · il manque ${blockCount(block, n - (inventory[block] ?? 0))}`;
 }
 
 /**
@@ -100,7 +100,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
                   <li key={block}>
                     <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                     <span>
-                      <strong>{n}</strong> {BLOCKS[block].name.toLowerCase()} · <EarnLink block={block} here={biome.id} />
+                      <strong>{n}</strong> {blockName(block, n)} · <EarnLink block={block} here={biome.id} />
                     </span>
                   </li>
                 ))}
@@ -111,7 +111,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             </p>
             {!status.complete && (
               <>
-                {in3d && <p className="view-note">Touche une case bleue du Bloc-Navire, au quai, ou utilise le bouton.</p>}
+                {in3d && <p className="view-note">Touche une case transparente du Bloc-Navire, au quai, ou utilise le bouton.</p>}
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>

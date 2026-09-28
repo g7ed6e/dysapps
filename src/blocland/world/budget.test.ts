@@ -1,4 +1,4 @@
-import { APPEL_DU_PASSAGE, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -79,11 +79,22 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
   // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.
+  // R5 : ses trois postes dans les quatre archipels.
+  const R5: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { construction: constructionCost, bornes: bornesCost, navire: navireCost };
   // R4b-6e : les quatre postes de R4b aux Premiers Rivages ; les autres archipels suivent avec leur sous-lot.
   const COUTS: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { sol: solCost, mer: merCost, faune: fauneCost, decor: decorCost };
   for (const p of postes) {
     const cout = COUTS[p];
-    if (ENVELOPPES[p].lot === 'R4b' && cout) {
+    const r5 = R5[p];
+    if (r5) {
+      it(`R5 : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {
+        for (const a of ARCHIPELAGO_IDS) {
+          const m = r5(a);
+          expect(m.triangles, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
+          expect(m.drawCalls, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
+        }
+      }, 30_000);
+    } else if (ENVELOPPES[p].lot === 'R4b' && cout) {
       it(`R4b-6e : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe aux Premiers Rivages`, () => {
         const c = cout('6e');
         expect(c.triangles).toBeLessThanOrEqual(enveloppeDe(p, '6e').triangles);
