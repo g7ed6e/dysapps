@@ -76,6 +76,13 @@ Depuis le lot R7, la vue 2D est **peinte** avec le drapeau (`src/blocland/pixel/
 
 Univers, créatures et Gardiens sont dessinés en cubes (`src/blocland/Voxel.tsx`, `Avatar.ts`, les modèles de `world/personnages/`) ; noms et personnages sont originaux. La liste des créatures et des Gardiens, île par île, est dans [L’archipel](../pedagogie/archipel.md).
 
+Depuis le lot R6, derrière le drapeau, **les personnages** sont peints (`src/blocland/world/personnages/`) : le bonhomme, une créature par île et les Gardiens en sentinelles de pierre, en quelques volumes à facettes. En 3D, ils ont deux petits yeux sombres ; ce qui brille la nuit (la lanterne de Fi, au verre ambre le jour, l’abdomen d’Astra, la braise de Braise) ne s’assombrit pas ; un Gardien vaincu est rallumé (pierre claire `#B8B2A4`, flamme et veines `#FFD866`), les autres restent éteints. En 2D peinte :
+
+- les yeux du bonhomme et des créatures font **un pixel de large sur deux de haut**, debout, séparés de deux pixels de peau, sans pont sombre entre eux ; les orbites des sentinelles gardent deux pixels au moins ;
+- la silhouette est bordée d’un pixel dans la teinte sombre de sa dominante, jamais noire ; **la nuit, le bord du côté éclairé (en haut à gauche) devient un liseré clair et froid** (`#B8CCE0`) d’un pixel, qui détache le personnage du sol sombre ;
+- une créature a une ombre de contact, sombre et nette, sous ses pieds, plus marquée la nuit ;
+- ce qui brille la nuit fait au moins 3 × 3 pixels, avec un halo chaud d’un pixel sur ce qui l’entoure, fixe (il ne clignote jamais).
+
 ## Sons
 
 Les sons sont générés par le code avec Web Audio, sans aucun fichier : un « toc » à la pose, un « pop » au retrait, un refus doux, un carillon de deux notes (en onde triangle, jamais carrée) quand un plan est terminé ou un Gardien vaincu, le tambour du Gardien, l’ambiance en option (vent, oiseaux le jour, grillons la nuit). Jamais de son pendant la lecture à voix haute ; réglages « Sons dans le village » et « Ambiance sonore du village ».

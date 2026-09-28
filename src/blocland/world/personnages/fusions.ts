@@ -14,6 +14,7 @@ import { creaturePeinte } from './creaturesPeintes';
 import { lineaire } from '../landMesh';
 import { rgb } from '../decor/pinceau';
 import { LUEUR } from './couleurs';
+export { allumageDuGardien } from './allumage';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './peint';
 import { couleursAllumees } from './sentinelle';
 import { sentinellePeinte } from './sentinellesPeintes';
@@ -171,15 +172,6 @@ export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens 
     t0 += f.pieces.length;
   });
   return { ...base, lueur };
-}
-
-/**
- * Le degré d'allumage d'un Gardien posé dans le monde : 1 s'il est vaincu (son défi réussi), 0 sinon. Les Gardiens
- * vaincus arrivent de la grille avec `beaten` (../terrain.ts, `guardianPlacements`) ; le rallumage progressif, et son
- * mot, viennent au lot 6.
- */
-export function allumageDuGardien(c: object): 0 | 1 {
-  return 'beaten' in c && c.beaten === true ? 1 : 0;
 }
 
 /**

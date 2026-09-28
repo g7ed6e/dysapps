@@ -24,7 +24,8 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     nom: 'Mousso',
     metier: 'charpentier',
     dominante: 0x4c7a3b,
-    marque: { couleur: 0x8a887e, ou: ['ventre'] },
+    // Le plastron de pierre claire, tout le devant du torse : de face, il détache Mousso de l'herbe (DA, 2D, 28/09).
+    marque: { couleur: 0xb3ae9f, ou: ['plastron'] },
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
     silhouette: { largeur: 0.36, profondeur: 0.29, tete: 0.3, teteProfondeur: 0.26 },
     coiffe: (T, k) => {

@@ -272,6 +272,17 @@ export function drawPaintedShadow(ctx: CanvasRenderingContext2D, P: Peinture, sx
   ctx.fill();
 }
 
+/**
+ * L'ombre de contact d'une créature (DA, 28/09) : un ovale plus petit, plus sombre et net sous ses pieds, par-dessus son
+ * ombre douce ; la nuit, plus marquée (la silhouette se pose sur le sol).
+ */
+export function drawContactShadow(ctx: CanvasRenderingContext2D, P: Peinture, sx: number, sy: number, rx: number, ry: number) {
+  ctx.fillStyle = rgba(P.ombre, 0.3 + 0.2 * (1 - P.light));
+  ctx.beginPath();
+  ctx.ellipse(Math.round(sx), Math.round(sy), Math.max(1, Math.round(rx)), Math.max(1, Math.round(ry)), 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 /** Dessine un sprite peint, son pied au point (sx, sy), à l'échelle `s` ; avec `shadow`, son ombre au sol. */
 export function drawPaintedSprite(ctx: CanvasRenderingContext2D, kind: SpriteKind, muted: boolean, P: Peinture, sx: number, sy: number, s: number, shadow: boolean): void {
   const def = FORMES[kind];

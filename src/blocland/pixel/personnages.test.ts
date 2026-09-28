@@ -10,7 +10,7 @@ import type { Facing } from './characters';
 import { ANGLE_DU_BONHOMME, GESTES_DU_PAS } from './personnagesPeints';
 import { NUIT_OCEAN, PALIERS, peinture, sombreDe } from './painted';
 import { cleDuPersonnage } from './paintedSprites';
-import { ECART_DES_YEUX, OEIL_MIN, rasterDuModele, type OptionsDuRaster, type RasterDePersonnage } from './personnages';
+import { ECART_DES_YEUX_VIVANTS, HALO, LISERE_DE_NUIT, LUEUR_MIN, OEIL, OEIL_MIN, rasterDuModele, type OptionsDuRaster, type RasterDePersonnage } from './personnages';
 
 const couleurs = (r: RasterDePersonnage) => new Set(Array.from(r.pixels).filter((c) => c >= 0));
 const masque = (r: RasterDePersonnage) => Array.from(r.pixels, (c) => (c >= 0 ? 1 : 0)).join('');
@@ -33,9 +33,15 @@ const tousLesModeles: [string, FacettesDePersonnage, Omit<OptionsDuRaster, 'ligh
 
 describe('Les personnages de la 2D peinte (lot R6)', () => {
   it.each(tousLesModeles)('%s : un bord d’un pixel dans la teinte sombre d’une couleur du modèle, jamais noir, de jour comme de nuit', (_n, f, o) => {
+    const vivant = o.allumage === undefined;
     for (const light of [1, 0]) {
       const r = rasterDuModele(f, { ...o, light });
       const traits = new Set(bord(r));
+      // La nuit, le bonhomme et les créatures ont un liseré clair et froid du côté éclairé, en plus du trait.
+      if (vivant && light === 0) {
+        expect(traits.has(LISERE_DE_NUIT)).toBe(true);
+        traits.delete(LISERE_DE_NUIT);
+      }
       expect(traits.size).toBe(1);
       const [trait] = traits;
       const candidats = new Set(f.palette.filter((p) => p.role === 'dominante').map((p) => sombreDe(deNuit(o.archipel, p.couleur, light))));
@@ -62,13 +68,20 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   });
 
   it.each(tousLesModeles.filter(([, f]) => f.palette.some((p) => p.role === 'yeux') && !f.table.some((p) => p.nom === 'socle')))(
-    '%s : deux yeux d’au moins 2 × 2 pixels, séparés d’un pixel au moins, de face',
+    '%s : deux yeux d’un pixel sur deux, debout, séparés de deux pixels de peau (sans pont sombre), de face',
     (_n, f, o) => {
       const r = rasterDuModele(f, { ...o, light: 1 });
       expect(r.yeux).toHaveLength(2);
-      for (const e of r.yeux) expect(Math.min(e.w, e.h)).toBeGreaterThanOrEqual(OEIL_MIN);
+      for (const e of r.yeux) expect([e.w, e.h]).toEqual([OEIL.w, OEIL.h]);
       const [a, b] = [...r.yeux].sort((p, q) => p.x - q.x);
-      expect(b.x - (a.x + a.w)).toBeGreaterThanOrEqual(ECART_DES_YEUX);
+      expect(b.x - (a.x + a.w)).toBeGreaterThanOrEqual(ECART_DES_YEUX_VIVANTS);
+      // Entre les deux yeux, sur leurs lignes : ni vide, ni la couleur des yeux.
+      const oeil = r.pixels[a.y * r.largeur + a.x];
+      for (let j = Math.max(a.y, b.y); j < Math.min(a.y + a.h, b.y + b.h); j++)
+        for (let i = a.x + a.w; i < b.x; i++) {
+          expect(r.pixels[j * r.largeur + i]).toBeGreaterThanOrEqual(0);
+          expect(r.pixels[j * r.largeur + i]).not.toBe(oeil);
+        }
     },
   );
 
@@ -91,7 +104,7 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
         const r = rasterDuModele(bonhommePeint(), { archipel: '6e', light: 1, angle: ANGLE_DU_BONHOMME[facing], gestes: step ? GESTES_DU_PAS : {} });
         expect(r.yeux.length, `${facing} ${step}`).toBeGreaterThanOrEqual(vus[facing]);
         if (facing === 'up') expect(r.yeux).toHaveLength(0);
-        for (const e of r.yeux) expect(Math.min(e.w, e.h)).toBeGreaterThanOrEqual(OEIL_MIN);
+        for (const e of r.yeux) expect([e.w, e.h]).toEqual([OEIL.w, OEIL.h]);
       }
     // Le pas change la silhouette (les jambes s'écartent).
     const pas = (s: number) => masque(rasterDuModele(bonhommePeint(), { archipel: '6e', light: 1, angle: ANGLE_DU_BONHOMME.right, gestes: s ? GESTES_DU_PAS : {} }));
@@ -114,6 +127,33 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
     const jour = couleurs(rasterDuModele(f, { archipel: '6e', light: 1 }));
     const nuit = couleurs(rasterDuModele(f, { archipel: '6e', light: 0 }));
     for (const c of nuit) expect(jour.has(c)).toBe(false);
+  });
+
+  it('la braise de Braise, la nuit : au moins 3 × 3 pixels de lueur, et un halo chaud fixe sur le tablier autour', () => {
+    const f = creaturePeinte('forge');
+    const lueur = f.palette.find((p) => p.role === 'lueur')!.couleur;
+    const nuit = rasterDuModele(f, { archipel: '4e', light: 0 });
+    const jour = rasterDuModele(f, { archipel: '4e', light: 1 });
+    const at = (r: typeof nuit, i: number, j: number) => r.pixels[j * r.largeur + i];
+    let carre: [number, number] | null = null;
+    for (let j = 0; j + 2 < nuit.hauteur; j++)
+      for (let i = 0; i + 2 < nuit.largeur; i++) {
+        let plein = true;
+        for (let dj = 0; dj < 3; dj++) for (let di = 0; di < 3; di++) if (at(nuit, i + di, j + dj) !== lueur) plein = false;
+        if (plein) carre ??= [i, j];
+      }
+    expect(LUEUR_MIN).toBe(3);
+    expect(carre).not.toBeNull();
+    // Le halo : autour de la lueur, le personnage est plus chaud (plus rouge que bleu) qu'ailleurs.
+    const chaleur = (c: number) => ((c >> 16) & 255) - (c & 255);
+    const [ci, cj] = carre!;
+    const autour: number[] = [];
+    for (let j = cj - 1; j <= cj + 3; j++) for (let i = ci - 1; i <= ci + 3; i++) if (at(nuit, i, j) >= 0 && at(nuit, i, j) !== lueur) autour.push(chaleur(at(nuit, i, j)));
+    const ailleurs = Array.from(nuit.pixels).filter((c) => c >= 0 && c !== lueur).map(chaleur);
+    const moyenne = (l: number[]) => l.reduce((x, y) => x + y, 0) / l.length;
+    expect(autour.length).toBeGreaterThan(0);
+    expect(moyenne(autour), `${HALO}`).toBeGreaterThan(moyenne(ailleurs) + 10);
+    expect(rasterDuModele(f, { archipel: '4e', light: 1 }).pixels).toEqual(jour.pixels);
   });
 
   it('les sentinelles : la flamme et les veines de cendre éteintes, de la lueur rallumées, même la nuit', () => {

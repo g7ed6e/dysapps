@@ -53,7 +53,8 @@ import type * as PersonnagesPeints from './personnagesPeints';
 import { renduDuMonde } from '../rendu';
 import { morceauxAPeindre, palierDe, peinture, type Peinture } from './painted';
 import { seaPattern } from './paintedDraw';
-import { drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
+import { drawContactShadow, drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
+import { allumageDuGardien } from '../world/personnages/allumage';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
 import { CHUNK, TILE, buildTiles, frame2D, pickTile, project, toBase, toScreen, type TileMap, type View2D } from './oblique';
@@ -88,6 +89,8 @@ interface Walker {
   stroll: Stroll;
   sprite: Sprite | null;
   mid: { x: number; y: number };
+  /** En 2D peinte, un Gardien vaincu est rallumé (1), les autres restent éteints (0). */
+  allumage: number;
 }
 
 /** Un éclat de couleur (pose d'un bloc) : position et vitesse dans le monde, en blocs. */
@@ -214,7 +217,7 @@ export default function WorldCanvas2D({
       const xs = c.cubes.map((k) => k.x);
       const ys = c.cubes.map((k) => k.y);
       const mid = { x: (Math.min(...xs) + Math.max(...xs) + 1) / 2, y: (Math.min(...ys) + Math.max(...ys) + 1) / 2 };
-      return { stroll: strolls[i], sprite: painted ? null : voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes), mid };
+      return { stroll: strolls[i], sprite: painted ? null : voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes), mid, allumage: allumageDuGardien(c) };
     });
   }, [creatures]);
 
@@ -640,8 +643,8 @@ export default function WorldCanvas2D({
       for (const wk of walkers.current) {
         const { dx, dy, bob } = strollAt(wk.stroll, now, t);
         const o = wk.stroll.origin;
-        // En 2D peinte, le modèle d'Archipéo : la créature, ou la sentinelle éteinte (le rallumage viendra au lot 6).
-        const sprite = paint ? (peints.current?.personnagePeint2D(wk.stroll.kind, wk.stroll.id, paint) ?? null) : wk.sprite;
+        // En 2D peinte, le modèle d'Archipéo : la créature, ou la sentinelle, rallumée si le Gardien est vaincu.
+        const sprite = paint ? (peints.current?.personnagePeint2D(wk.stroll.kind, wk.stroll.id, paint, wk.allumage) ?? null) : wk.sprite;
         if (!sprite) continue;
         // Le milieu de sa place (les créatures en cubes occupent quelques cases ; le sprite se pose au milieu).
         const x = o.x + dx + wk.mid.x;
@@ -652,6 +655,8 @@ export default function WorldCanvas2D({
           draw: () => {
             const { sx, sy } = at(x, y, o.z);
             if (STYLE.shadows) shadow(sx + cam.s, sy, (sprite.w / 2.4) * cam.s, 3 * cam.s);
+            // En 2D peinte, une créature a en plus une ombre de contact, sombre et nette, sous ses pieds (marquée la nuit).
+            if (paint && wk.stroll.kind === 'creature') drawContactShadow(ctx, paint, sx + cam.s, sy, (sprite.w / 4) * cam.s, 1.5 * cam.s);
             const r = placeSprite(ctx, sprite, sx, sy - bob * TILE * cam.s, cam.s);
             const { id, kind } = wk.stroll;
             newHits.push({

@@ -25,9 +25,23 @@ export const PAS_2D = TILE;
  */
 export const PLONGEE = 0.7;
 
-/** Taille minimale d'un œil, en pixels de base, et l'écart minimal entre deux yeux. */
+/**
+ * Les yeux des sentinelles (leurs orbites) : au moins `OEIL_MIN` pixels de côté, séparés d'`ECART_DES_YEUX` pixel au
+ * moins. Ceux du bonhomme et des créatures : `OEIL` (un pixel de large, deux de haut, debout), séparés de
+ * `ECART_DES_YEUX_VIVANTS` pixels de peau, sans pont sombre entre eux (DA, 28/09).
+ */
 export const OEIL_MIN = 2;
 export const ECART_DES_YEUX = 1;
+export const OEIL = { w: 1, h: 2 } as const;
+export const ECART_DES_YEUX_VIVANTS = 2;
+
+/** La nuit, le liseré de la silhouette du côté éclairé (en haut à gauche) : un pixel clair et froid (DA, 28/09). */
+export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
+
+/** Ce qui brille la nuit (la braise de Braise, la lanterne de Fi, l'abdomen d'Astra) : au moins 3 × 3 pixels, et un
+ * halo chaud d'un pixel autour, fixe (il ne clignote pas), d'autant plus fort que la nuit est noire. */
+export const LUEUR_MIN = 3;
+export const HALO = 0.35;
 
 /** La lumière de la 2D peinte, d'en haut à gauche et de devant (normalisée). */
 const LUMIERE = (() => {
@@ -111,12 +125,18 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
   const angle = o.angle ?? 0;
   const gestes = o.gestes ?? {};
   const k = o.plongee ?? PLONGEE;
+  // Une sentinelle (on lui donne son allumage) garde ses orbites de pierre ; les autres ont des yeux vivants, posés
+  // après coup (leurs facettes ne se peignent pas : la peau reste entre eux).
+  const vivant = o.allumage === undefined;
+  const rolesDuModele = rolesDesTriangles(f);
   // Les sommets et les normales, posés (gestes, puis rotation), puis projetés.
   const sx = new Float64Array(n * 3);
   const sy = new Float64Array(n * 3);
   const sz = new Float64Array(n * 3);
   const vu = new Uint8Array(n);
   const lum = new Float64Array(n);
+  const devant = new Uint8Array(n);
+  const vuDevant = (t: number) => devant[t] === 1;
   for (let t = 0; t < n; t++) {
     const piece = f.table[f.pieces[t]];
     const g = gestes[piece.nom] ?? 0;
@@ -130,6 +150,8 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
     }
     const nn = tourneY(g ? tourneX([f.normals[t * 9], f.normals[t * 9 + 1], f.normals[t * 9 + 2]], [0, 0, 0], g) : [f.normals[t * 9], f.normals[t * 9 + 1], f.normals[t * 9 + 2]], angle);
     vu[t] = k * nn[1] - nn[2] > 1e-6 ? 1 : 0;
+    devant[t] = vu[t];
+    if (vivant && rolesDuModele[t] === 'yeux') vu[t] = 0;
     lum[t] = nn[0] * LUMIERE[0] + nn[1] * LUMIERE[1] + nn[2] * LUMIERE[2];
   }
   let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
@@ -177,7 +199,7 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
   }
 
   // Les couleurs : une par triangle (calculée une fois).
-  const roles = rolesDesTriangles(f);
+  const roles = rolesDuModele;
   const couleurs = new Map<number, Couleur>();
   const couleurDe = (t: number) => {
     let c = couleurs.get(t);
@@ -194,7 +216,44 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
   }
 
   // Les yeux : au moins 2 × 2 pixels, là où l'œil est vu (devant, et pas caché), séparés d'un pixel.
-  const yeux = poserLesYeux(f, roles, vu, sx, sy, sz, gx, gy, largeur, hauteur, profondeur, triangle);
+  // Ce qui brille la nuit : au moins 3 × 3 pixels, et un halo chaud d'un pixel sur ce qui l'entoure.
+  const light = Math.min(1, Math.max(0, o.light));
+  if (light < 1) {
+    let [bx0, bx1, by0, by1, nb] = [Infinity, -Infinity, Infinity, -Infinity, 0];
+    let lueur: Couleur | null = null;
+    for (let p = 0; p < pixels.length; p++) {
+      const t = triangle[p];
+      if (t < 0 || roles[t] !== 'lueur' || f.table[f.pieces[t]].lueur !== 'nuit') continue;
+      const [i, j] = [p % largeur, Math.floor(p / largeur)];
+      [bx0, bx1, by0, by1] = [Math.min(bx0, i), Math.max(bx1, i), Math.min(by0, j), Math.max(by1, j)];
+      nb++;
+      lueur ??= pixels[p];
+    }
+    if (nb && lueur !== null) {
+      const grandir = (a: number, b: number, max: number): [number, number] => {
+        const manque = LUEUR_MIN - (b - a + 1);
+        if (manque <= 0) return [a, b];
+        const a2 = Math.max(0, a - Math.floor(manque / 2));
+        return [a2, Math.min(max - 1, a2 + LUEUR_MIN - 1)];
+      };
+      [bx0, bx1] = grandir(bx0, bx1, largeur);
+      [by0, by1] = grandir(by0, by1, hauteur);
+      // Le halo : un pixel autour, sur le personnage seulement ; la petite lueur (une seule tache) le reçoit en plein.
+      for (let j = by0 - 1; j <= by1 + 1; j++)
+        for (let i = bx0 - 1; i <= bx1 + 1; i++) {
+          if (i < 0 || j < 0 || i >= largeur || j >= hauteur) continue;
+          const p = j * largeur + i;
+          const dedans = i >= bx0 && i <= bx1 && j >= by0 && j <= by1;
+          // Sur le personnage seulement : la silhouette ne change pas la nuit.
+          if (pixels[p] < 0) continue;
+          pixels[p] = dedans ? lueur : mixColor(pixels[p], lueur, HALO * (1 - light));
+        }
+    }
+  }
+
+  // Les yeux vivants sont cachés du tampon : on les cherche avec leurs faces tournées vers l'élève.
+  const yeuxVus = vivant ? Uint8Array.from(vu, (v, t) => (roles[t] === 'yeux' ? (vuDevant(t) ? 1 : 0) : v)) : vu;
+  const yeux = poserLesYeux(f, roles, yeuxVus, sx, sy, sz, gx, gy, largeur, hauteur, profondeur, triangle, vivant);
   for (const e of yeux) {
     const c = deNuit(o.archipel, e.couleur, Math.min(1, Math.max(0, o.light)));
     for (let j = e.y; j < e.y + e.h; j++) for (let i = e.x; i < e.x + e.w; i++) if (i >= 0 && j >= 0 && i < largeur && j < hauteur) pixels[j * largeur + i] = c;
@@ -211,7 +270,12 @@ export function rasterDuModele(f: FacettesDePersonnage, o: OptionsDuRaster): Ras
       if (pixels[j * largeur + i] >= 0) continue;
       if (plein(i - 1, j) || plein(i + 1, j) || plein(i, j - 1) || plein(i, j + 1)) bord.push(j * largeur + i);
     }
-  for (const p of bord) pixels[p] = trait;
+  // La nuit, le bord du côté éclairé (à gauche et en haut de la silhouette) devient un liseré clair et froid.
+  const lisere = mixColor(trait, LISERE_DE_NUIT, vivant ? 1 - light : 0);
+  for (const p of bord) {
+    const [i, j] = [p % largeur, Math.floor(p / largeur)];
+    pixels[p] = lisere !== trait && (plein(i + 1, j) || plein(i, j + 1)) ? lisere : trait;
+  }
 
   return { largeur, hauteur, ax: -gx, ay: -gy, pixels, yeux: yeux.map(({ x, y, w, h }) => ({ x, y, w, h })) };
 }
@@ -234,6 +298,7 @@ function poserLesYeux(
   hauteur: number,
   profondeur: Float64Array,
   triangle: Int32Array,
+  vivant: boolean,
 ): { x: number; y: number; w: number; h: number; couleur: Couleur }[] {
   const ts: number[] = [];
   for (let t = 0; t < roles.length; t++) if (roles[t] === 'yeux') ts.push(t);
@@ -277,8 +342,8 @@ function poserLesYeux(
     if (pi < 0 || pj < 0 || pi >= largeur || pj >= hauteur) continue;
     const p = pj * largeur + pi;
     if (triangle[p] >= 0 && !groupe.includes(triangle[p]) && profondeur[p] < cz - 0.08) continue;
-    const w = Math.max(OEIL_MIN, Math.round(bx1 - bx0));
-    const h = Math.max(OEIL_MIN, Math.round(by1 - by0));
+    const w = vivant ? OEIL.w : Math.max(OEIL_MIN, Math.round(bx1 - bx0));
+    const h = vivant ? OEIL.h : Math.max(OEIL_MIN, Math.round(by1 - by0));
     yeux.push({ x: Math.round(cx - w / 2), y: Math.round(cy - h / 2), w, h, couleur: f.teintes[groupe[0]], cx, cy });
   }
   // Deux yeux sur les mêmes lignes, trop près : on les écarte, chacun de son côté.
@@ -286,7 +351,7 @@ function poserLesYeux(
   for (let i = 0; i + 1 < yeux.length; i++) {
     const [a, b] = [yeux[i], yeux[i + 1]];
     if (a.y >= b.y + b.h || b.y >= a.y + a.h) continue;
-    const manque = a.x + a.w + ECART_DES_YEUX - b.x;
+    const manque = a.x + a.w + (vivant ? ECART_DES_YEUX_VIVANTS : ECART_DES_YEUX) - b.x;
     if (manque <= 0) continue;
     a.x -= Math.floor(manque / 2);
     b.x += Math.ceil(manque / 2);
