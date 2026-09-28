@@ -28,6 +28,7 @@ import { buildMesh, faceCount } from './mesher';
 import { plansFor } from './plans';
 import { worldCubes } from './terrain';
 import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
+import { BRIDGES } from './archipelago';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -384,5 +385,12 @@ describe('La construction taillée (lot R5)', () => {
     const sans = coutDeLaConstruction(maillageDeLaConstruction('4e', cubes, sol));
     const avec = coutDeLaConstruction(maillageDeLaConstruction('4e', cubes, sol, options));
     expect(avec.triangles).toBeGreaterThan(sans.triangles);
+  });
+});
+
+describe('Les toits de terre cuite (lot R5)', () => {
+  it('deux îles voisines ne sont jamais toutes deux en terre cuite', () => {
+    const voisines = BRIDGES.filter((b) => toitDe(b.from) === 'terre-cuite' && toitDe(b.to) === 'terre-cuite');
+    expect(voisines.map((b) => b.id)).toEqual([]);
   });
 });

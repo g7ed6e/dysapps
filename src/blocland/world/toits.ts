@@ -10,8 +10,8 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 /** Les deux couvertures d'un toit. */
 export type Couverture = 'ardoise' | 'terre-cuite';
 
-/** Les îles couvertes de terre cuite : 6e la Ferme et le Volcan, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. */
-export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'volcan', 'comptoir', 'theatre', 'belvedere'];
+/** Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. */
+export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'mine', 'comptoir', 'theatre', 'belvedere'];
 
 /** La terre cuite, la même dans les quatre archipels. */
 export const TERRE_CUITE: Couleur = 0xc0764a;
@@ -27,8 +27,8 @@ export const ARDOISES: Record<ArchipelagoId, { dessus: Couleur; rives: Couleur }
   '3e': { dessus: 0xe5ebe3, rives: 0x2e505e },
 };
 
-/** Les côtés d'un toit, un peu plus sombres que son dessus (comme les matières de la palette). */
-export const COTE_DU_TOIT = 0.82;
+/** Les côtés d'un toit, un peu plus sombres que son dessus : le plancher d'ombre des pentes (fiche de famille §3). */
+export const COTE_DU_TOIT = 0.85;
 
 /** La couverture du toit d'une île (le `tag` du cube). Une île inconnue est couverte d'ardoise. */
 export function toitDe(ile: string | undefined): Couverture {
