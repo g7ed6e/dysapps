@@ -12,6 +12,7 @@ function bornes() {
   const mission = (id: string, x: number, state: QuestMark['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as QuestMark;
   b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2)]);
   b.poserLeChemin([0, 1, 2, 3].map((x) => ({ x, y: 5, z: 1 })));
+  b.poserLaFleche({ x: 2, y: 2, z: 1 });
   const pose = () =>
     scene.children
       .flatMap((g) => [g, ...g.children])
@@ -20,7 +21,7 @@ function bornes() {
   return { b, pose };
 }
 
-it('avec « Réduire les animations », le fanion, les repères de mission et les balises du chemin ne bougent pas', () => {
+it('avec « Réduire les animations », le fanion, la flèche, les repères de mission et les balises du chemin ne bougent pas', () => {
   const { b, pose } = bornes();
   b.animer!(1.3, 0.016, true);
   const avant = JSON.stringify(pose());

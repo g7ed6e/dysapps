@@ -1,8 +1,8 @@
 // Le décor d'Archipéo en 3D (lot R4, derrière `?rendu=archipeo`) : les primitives de world/decorMesh.ts, fusionnées en
 // un seul maillage à couleurs par sommet (un second, sans lumière, pour ce qui brille : lanternes, lave ; un troisième,
 // sans lumière, pour les fumées qui bougent, R4b-6e). Les matériaux sont faits une fois par scène et libérés avec elle ;
-// les géométries, à chaque nouveau décor. `animer` fait bouger les fumées et passe la lanterne du phare à la nuit ; il
-// ne recopie que ce que calcule le code pur (world/decor/fumee.ts).
+// les géométries, à chaque nouveau décor. `animer` fait bouger les fumées ; `jour` passe la lanterne du phare et les
+// fumées à la nuit. Ils ne recopient que ce que calcule le code pur (world/decor/fumee.ts).
 import * as THREE from 'three';
 import { poserLesFumees, type FacettesDuDecor, type MaillageDuDecor } from '../world/decorMesh';
 

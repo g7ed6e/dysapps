@@ -169,12 +169,21 @@ const doux = (x: number) => {
  * La place de la volute de rang `k` d'une fumée de `n` volutes au temps `t` (en secondes), entre 0 et `n`, avec sa
  * taille (0 à la naissance et à la fin, 1 entre les deux). Immobile (`reduit`) : sa place du lot R4, taille 1.
  */
-export function placeDeLaVolute(k: number, n: number, phase: number, t: number, reduit: boolean): { s: number; taille: number } {
-  if (reduit) return { s: k, taille: 1 };
+export function placeDeLaVolute(k: number, n: number, phase: number, t: number, reduit: boolean, out = { s: 0, taille: 0 }): { s: number; taille: number } {
+  if (reduit) {
+    out.s = k;
+    out.taille = 1;
+    return out;
+  }
   const u = t / MOUVEMENT_DE_LA_FUMEE.periode + phase;
   const s = (((k + u) % n) + n) % n;
-  return { s, taille: doux(s / MOUVEMENT_DE_LA_FUMEE.naissance) * doux(n - s) };
+  out.s = s;
+  out.taille = doux(s / MOUVEMENT_DE_LA_FUMEE.naissance) * doux(n - s);
+  return out;
 }
+
+/** La place d'une volute, réutilisée à chaque image (rien ne s'alloue dans la boucle de rendu). */
+const PLACE = { s: 0, taille: 0 };
 
 /**
  * La couleur d'une volute (canaux 0..255 de jour, avant fondu) à un moment du jour (`light` : 0 la nuit, 1 le jour) :
@@ -225,10 +234,11 @@ export function poserLesFumees(f: FumeeDuDecor, t: number, light: number, reduit
   for (let v = 0; v < f.volutes.length; v++) {
     const { panache, k } = f.volutes[v];
     const p = f.panaches[panache];
-    const { s, taille } = placeDeLaVolute(k, p.n, p.phase, t, reduit);
+    const { s, taille } = placeDeLaVolute(k, p.n, p.phase, t, reduit, PLACE);
     const i = Math.min(Math.floor(s), p.n - 1);
     const w = s - i;
-    const [a, b] = [p.chemin[i], p.chemin[i + 1]];
+    const a = p.chemin[i];
+    const b = p.chemin[i + 1];
     T.cx[v] = a[0] + (b[0] - a[0]) * w;
     T.cy[v] = a[1] + (b[1] - a[1]) * w;
     T.cz[v] = a[2] + (b[2] - a[2]) * w;

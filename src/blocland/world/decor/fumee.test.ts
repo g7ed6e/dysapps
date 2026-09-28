@@ -1,3 +1,4 @@
+import type { VoxelCube } from '../../Voxel';
 import { toutConstruit } from '../budget';
 import { rangerLeDecor, maillageDuDecor } from '../decorMesh';
 import { champDuSol, hauteurDuSol } from '../landMesh';
@@ -5,7 +6,7 @@ import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../map';
 import { cielDe, luminance } from '../palette';
 import { islandCenter, worldCubes } from '../terrain';
 import { lineaire } from '../landMesh';
-import { FUMEE_DU_VOLCAN } from './6e';
+import { boucheDuVolcan, FUMEE_DU_VOLCAN } from './6e';
 import { couleurDeFumee, FUMEE, FUMEE_DE_NUIT, MOUVEMENT_DE_LA_BRUME, MOUVEMENT_DE_LA_FUMEE, placeDeLaVolute, poserLesFumees, respirationDeLaBrume } from './fumee';
 import { PHARES } from './phare';
 
@@ -151,4 +152,9 @@ it('la brume respire sur 15 s ou plus, son opacité varie de ±10 % au plus, ell
     }
     expect(respirationDeLaBrume(i, 42, true)).toEqual({ dy: 0, dx: 0, opacite: 1 });
   }
+});
+
+it('sans cône autour du cratère (sol plat), la fumée part du cratère lui-même', () => {
+  const pied = { x: 4, y: 7, z: 9, color: '#a9a4a0' } as VoxelCube;
+  expect(boucheDuVolcan(pied, () => 3)).toEqual({ x: 4, y: 7, z: 3 });
 });

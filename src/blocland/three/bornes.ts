@@ -122,7 +122,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       const avatar = bonhomme();
       beaconGroup.visible = instant.carte && avatar.visible;
       // « Réduire les animations » : le fanion, les repères de mission et les balises du chemin restent dans leur pose de
-      // base, sans rotation, rebond ni pulsation (comme le repère d'île ci-dessous).
+      // base, sans rotation, rebond ni pulsation, comme la flèche « Commence ici ».
       if (beaconGroup.visible) {
         beaconGroup.position.set(avatar.position.x, avatar.position.y + 8 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 1.5), avatar.position.z);
         beaconGroup.rotation.y = reduit ? 0 : t * 0.8;
@@ -138,9 +138,9 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
         trailGroup.scale.setScalar(1);
         for (const m of trailGroup.children) m.scale.setScalar(pulse);
       }
-      if (!reduit && markerGroup.visible) {
-        markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
-        markerGroup.rotation.y = t * 0.8;
+      if (markerGroup.visible) {
+        markerGroup.position.y = markerGroup.userData.base + 0.5 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 0.8);
+        markerGroup.rotation.y = reduit ? 0 : t * 0.8;
       }
     },
     dispose: () => {
