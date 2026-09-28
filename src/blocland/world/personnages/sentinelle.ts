@@ -1,6 +1,6 @@
 // Le gabarit des sentinelles d'Archipéo (lot R6) : les Gardiens deviennent des statues de pierre éteintes que la
 // réussite rallume. Chacune se dresse sur le même socle octogonal, huit blocs de haut socle compris, cinq cases de large
-// au plus, le visage vers −Z ; une flamme facettée dort dans le foyer, au pied de la statue, et deux ou trois veines
+// au plus, le visage vers −Z ; une flamme facettée dort dans le foyer, au pied de la statue, et une à trois lueurs
 // courent sur la pierre (ce qui s'allume sur chaque île : nervures, gemme, strates…). Rien ne bouge : pas de
 // respiration, pas de geste ; seul le degré d'allumage change, de 0 (éteinte) à 1 (rallumée), et les orbites restent
 // sombres à tous les degrés.
@@ -11,7 +11,7 @@ import { lineaire } from '../landMesh';
 import type { Couleur } from '../palette';
 import { clamp, rgb } from '../decor/pinceau';
 import { LUEUR, SENTINELLE } from './couleurs';
-import { devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
+import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
 
 /** La hauteur d'une sentinelle, socle compris, et celle du socle, en blocs. */
 export const HAUTEUR_DE_SENTINELLE = 8;
@@ -88,6 +88,22 @@ export function flamme(T: Trace, a: Atelier): void {
     a.lueur,
     { z: FOYER.z, rot: 0, bas: false },
   );
+}
+
+/**
+ * Un bandeau de lueur sur les faces `faces` du socle (`n − 1` devant, `0` et `n − 2` ses voisines), de `y0` à `y1`,
+ * posé juste devant la pierre et coupé aux arêtes du profil (la rampe du Masque).
+ */
+export function bandeauDuSocle(T: Trace, faces: number[], y0: number, y1: number, pe: Peindre): void {
+  const n = 8;
+  const ys = [y0, ...SOCLE.map((a) => a[0]).filter((y) => y > y0 && y < y1), y1];
+  const coin = (j: number, y: number): V3 => {
+    const r = anneauA(SOCLE, y)[1] + 0.014 / Math.cos(Math.PI / n);
+    const ang = avant(n) + (j / n) * Math.PI * 2;
+    return [r * Math.cos(ang), y, r * Math.sin(ang)];
+  };
+  for (const j of faces)
+    for (let k = 0; k + 1 < ys.length; k++) T.quad(coin(j, ys[k]), coin(j + 1, ys[k]), coin(j + 1, ys[k + 1]), coin(j, ys[k + 1]), [0, (ys[k] + ys[k + 1]) / 2, 0], pe);
 }
 
 // ---------- Les petites formes des statues ----------

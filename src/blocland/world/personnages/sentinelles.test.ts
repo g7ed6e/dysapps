@@ -31,6 +31,33 @@ function normalesCoherentes(f: FacettesDePersonnage): boolean {
 const lin = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((v) => lineaire(v / 255));
 const couleurDe = (colors: Float32Array, t: number, k: number) => Array.from(colors.slice(t * 9 + k * 3, t * 9 + k * 3 + 3));
 
+/**
+ * Les lueurs d'une sentinelle (hors flamme) : les amas de triangles des veines dont les boîtes se touchent à un
+ * cinquième de bloc près (deux traits aussi proches se lisent comme une seule lueur : le signe égal, les deux faces
+ * d'une aile).
+ */
+function lueurs(f: FacettesDePersonnage): number {
+  const veines = f.table.findIndex((p) => p.nom === 'veines');
+  const ts = [...f.pieces.keys()].filter((t) => f.pieces[t] === veines);
+  const boites = ts.map((t) => {
+    const b = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+    for (let k = 0; k < 3; k++)
+      sommet(f, t, k).forEach((v, a) => {
+        b[a] = Math.min(b[a], v);
+        b[a + 3] = Math.max(b[a + 3], v);
+      });
+    return b;
+  });
+  const parent = ts.map((_, i) => i);
+  const racine = (i: number): number => (parent[i] === i ? i : (parent[i] = racine(parent[i])));
+  for (let i = 0; i < ts.length; i++)
+    for (let j = i + 1; j < ts.length; j++) {
+      const [a, b] = [boites[i], boites[j]];
+      if ([0, 1, 2].every((k) => a[k] <= b[k + 3] + 0.2 && b[k] <= a[k + 3] + 0.2)) parent[racine(i)] = racine(j);
+    }
+  return new Set(ts.map((_, i) => racine(i))).size;
+}
+
 /** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne. */
 const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio'];
 
@@ -123,6 +150,12 @@ describe('Les Gardiens en sentinelles', () => {
         expect(f.table.map((p) => p.lueur ?? null)).toEqual([null, null, 'allumage', 'allumage']);
         for (const nomDePiece of ['socle', 'sculpture', 'flamme', 'veines']) expect(f.pieces.includes(f.table.findIndex((p) => p.nom === nomDePiece)), nomDePiece).toBe(true);
         for (let t = 0; t < nbTriangles(f); t++) expect(f.teintes[t] === LUEUR, `triangle ${t} (${nom(t)})`).toBe(nom(t) === 'flamme' || nom(t) === 'veines');
+      });
+
+      it('porte une à trois lueurs selon l’objet, en plus de la flamme', () => {
+        const n = lueurs(f);
+        expect(n).toBeGreaterThanOrEqual(1);
+        expect(n).toBeLessThanOrEqual(3);
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {

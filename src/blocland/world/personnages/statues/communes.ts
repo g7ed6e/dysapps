@@ -1,11 +1,19 @@
 // Les formes que partagent plusieurs sentinelles : le dragon assis (Volcan, Phare, Château), dessiné dans un repère
 // posé sur le socle (`base`) et à l'échelle `e`, pour tenir dans les huit blocs.
 import { pointe } from '../gabarit';
-import { devant, facette, fuseau, pose, type Anneau, type Peindre, type Trace, type V3 } from '../peint';
+import { devant, facette, fuseau, pose, repere, type Anneau, type Peindre, type Trace, type V3 } from '../peint';
 import { orbites, tube, veineSur, type Atelier } from '../sentinelle';
 
 /** Un repère sur le socle : relevé de `base`, agrandi de `e` (sans déformer), décalé de `z`. */
 export const surLeSocle = (T: Trace, base: number, e: number, z = 0): Trace => pose(T, (p) => [p[0] * e, base + p[1] * e, z + p[2] * e]);
+
+/** Le trois-quarts des bêtes couchées (Taureau, Lion) : leur corps tourné de 33° vers l'élève, l'avant (−X) vers −Z. */
+export const TROIS_QUARTS = -0.3;
+/** Un repère tourné de trois-quarts autour de l'axe vertical qui passe par (`x`, `z`). */
+export function deTroisQuarts(T: Trace, x: number, z = 0): Trace {
+  const r = repere([x, 0, z], 0, TROIS_QUARTS, 0);
+  return pose(T, (p) => r([p[0] - x, p[1], p[2] - z]));
+}
 
 // ---------- Le dragon assis ----------
 
@@ -62,21 +70,24 @@ export function ventreDuDragon(T: Trace, pe: Peindre): void {
     );
 }
 
-/** Les ailes déployées du dragon, en plaques minces (deux faces), du dos vers le haut et le dehors. */
-export function ailesDeployees(T: Trace, pe: Peindre): void {
+/** Les ailes déployées du dragon, en plaques minces (deux faces), du dos vers le haut et le dehors, agrandies de
+ * `ampleur` autour de leur attache. */
+export function ailesDeployees(T: Trace, pe: Peindre, ampleur = 1): void {
   for (const s of [-1, 1]) {
-    const pts: V3[] = [
-      [s * 0.5, 2.2, 0.8],
-      [s * 2.0, 2.9, 0.8],
-      [s * 2.35, 4.9, 0.8],
-      [s * 1.3, 4.3, 0.8],
-      [s * 0.5, 3.9, 0.8],
-    ];
-    facette(T, pts, [s * 1.3, 3.6, 2], pe);
+    const pts = (
+      [
+        [s * 0.5, 2.2, 0.8],
+        [s * 2.0, 2.9, 0.8],
+        [s * 2.35, 4.9, 0.8],
+        [s * 1.3, 4.3, 0.8],
+        [s * 0.5, 3.9, 0.8],
+      ] as V3[]
+    ).map(([x, y, z]): V3 => [s * 0.5 + (x - s * 0.5) * ampleur, 2.2 + (y - 2.2) * ampleur, z]);
+    facette(T, pts, [s * (0.5 + 0.8 * ampleur), 2.2 + 1.4 * ampleur, 2], pe);
     facette(
       T,
       pts.map(([x, y, z]): V3 => [x, y, z + 0.06]),
-      [s * 1.3, 3.6, -1],
+      [s * (0.5 + 0.8 * ampleur), 2.2 + 1.4 * ampleur, -1],
       pe,
     );
   }

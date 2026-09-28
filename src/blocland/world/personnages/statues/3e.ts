@@ -10,9 +10,10 @@ const CORPS_DU_SPHINX: Anneau[] = [
   [3.5, 1.0, 1.1, 0.2],
   [5.2, 0.65, 0.6, -0.1],
 ];
+/** La coiffe, élargie aux épaules en trapèze. */
 const NEMES: Anneau[] = [
-  [5.0, 0.9, 0.5, -0.2],
-  [6.6, 0.72, 0.5, -0.2],
+  [5.0, 1.4, 0.55, -0.2],
+  [6.6, 0.74, 0.5, -0.2],
   [7.6, 0.5, 0.45, -0.15],
   [8, 0.2, 0.2, -0.1],
 ];
@@ -32,14 +33,14 @@ const CHAPEAU_POINTU: Anneau[] = [
   [8, 0],
 ];
 
+/** Le dragon de lumière, assis au sommet de sa colonne (à l'échelle 0,70, la colonne au tiers de la hauteur). */
+const DRAGON_DU_PHARE = { e: 0.7, base: 8 - 0.7 * HAUTEUR_DU_DRAGON, ailes: 1.2 } as const;
 const COLONNE: Anneau[] = [
   [1, 0.9],
   [1.3, 0.8],
-  [4.0, 0.7],
-  [4.25, 0.95],
+  [DRAGON_DU_PHARE.base - 0.25, 0.72],
+  [DRAGON_DU_PHARE.base, 1.0],
 ];
-/** Le dragon de lumière, assis au sommet de sa colonne. */
-const DRAGON_DU_PHARE = { base: 4.25, e: (8 - 4.25) / HAUTEUR_DU_DRAGON } as const;
 
 const ROBE_DU_LECTEUR: Anneau[] = [
   [1, 1.2, 1.0],
@@ -60,16 +61,20 @@ const PIED = { bas: 1.0, haut: 0.14, sommet: 7.3 } as const;
 const CEINTURES = [2.7, 4.3, 5.8];
 const aLaHauteur = (y: number) => PIED.bas + ((PIED.haut - PIED.bas) * (y - 1)) / (PIED.sommet - 1);
 
+/** La pointe de l'écu, à ~0,3 bloc au-dessus de la flamme. */
+const BAS_DE_L_ECU = 2.35;
 /** Le contour de l'écu (x, y), et son plan. */
-const ECU: [number, number][] = [
-  [-1.0, 4.6],
-  [-1.0, 3.2],
-  [-0.6, 2.3],
-  [0, 1.9],
-  [0.6, 2.3],
-  [1.0, 3.2],
-  [1.0, 4.6],
-];
+const ECU: [number, number][] = (
+  [
+    [-1.0, 2.7],
+    [-1.0, 1.3],
+    [-0.6, 0.4],
+    [0, 0],
+    [0.6, 0.4],
+    [1.0, 1.3],
+    [1.0, 2.7],
+  ] as [number, number][]
+).map(([x, y]) => [x, BAS_DE_L_ECU + y]);
 const ECU_Z = [-1.2, -0.98] as const;
 
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
@@ -88,14 +93,16 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         { bas: false },
       );
       fuseau(T, CORPS_DU_SPHINX, 6, a.pierre);
+      // Les deux pattes avant, du poitrail jusque sur le socle, les griffes vers l'élève (un lion à tête humaine).
       for (const s of [-1, 1])
         tube(
           T,
           [
-            [s * 0.35, 2.2, -0.85],
-            [s * 0.35, 4.4, -0.55],
+            [s * 0.5, 4.2, -0.6],
+            [s * 0.6, 1.25, -0.95],
+            [s * 0.62, 1.24, -1.62],
           ],
-          0.18,
+          [0.24, 0.24, 0.22],
           4,
           a.pierre,
         );
@@ -110,8 +117,8 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
           NEMES,
           4,
           [
-            [s * 0.5, 5.2],
-            [s * 0.44, 6.6],
+            [s * 0.78, 5.2],
+            [s * 0.46, 6.6],
           ],
           0.09,
           a.lueur,
@@ -209,7 +216,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       fuseau(T, COLONNE, 6, a.moussue((k, j) => k === 0 || (k === 1 && j === 2)), { bas: false });
       dragonAssis(surLeSocle(T, DRAGON_DU_PHARE.base, DRAGON_DU_PHARE.e), a, 'deployees');
     },
-    veines: (T, a) => ailesDeployees(surLeSocle(T, DRAGON_DU_PHARE.base, DRAGON_DU_PHARE.e), a.lueur),
+    veines: (T, a) => ailesDeployees(surLeSocle(T, DRAGON_DU_PHARE.base, DRAGON_DU_PHARE.e), a.lueur, DRAGON_DU_PHARE.ailes),
   },
   textes: {
     nom: 'le Grand Lecteur',
@@ -335,8 +342,8 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       fuseau(
         T,
         [
-          [7.6, 0.14],
-          [7.8, 0.16],
+          [7.4, 0.21],
+          [7.7, 0.24],
           [8, 0],
         ],
         5,
@@ -354,8 +361,8 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         tube(
           T,
           [
-            [s * 0.7, 5.0, -0.4],
-            [s * 0.8, 4.65, -1.05],
+            [s * 0.7, BAS_DE_L_ECU + 3.1, -0.4],
+            [s * 0.8, BAS_DE_L_ECU + 2.75, -1.05],
           ],
           0.16,
           3,
@@ -364,12 +371,13 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     },
     veines: (T, a) => {
       const z = () => ECU_Z[0];
-      veine(T, [...ECU.map(([x, y]): [number, number] => [x * 0.86, 1.9 + (y - 1.9) * 0.9 + 0.1]), [-0.86, 4.43]], 0.09, a.lueur, z);
+      const b = BAS_DE_L_ECU;
+      veine(T, [...ECU.map(([x, y]): [number, number] => [x * 0.86, b + (y - b) * 0.9 + 0.1]), [-0.86, b + 2.53]], 0.09, a.lueur, z);
       veine(
         T,
         [
-          [0, 2.3],
-          [0, 4.3],
+          [0, b + 0.4],
+          [0, b + 2.4],
         ],
         0.14,
         a.lueur,

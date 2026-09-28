@@ -3,8 +3,8 @@
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../gabarit';
 import { devant, fuseau, pave, type Anneau } from '../peint';
-import { orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
-import { dragonAssis, surLeSocle, ventreDuDragon, HAUTEUR_DU_DRAGON } from './communes';
+import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
+import { deTroisQuarts, dragonAssis, surLeSocle, ventreDuDragon, HAUTEUR_DU_DRAGON } from './communes';
 
 const TRONC: Anneau[] = [
   [1, 0.85],
@@ -71,26 +71,48 @@ const TETE_DU_HANNETON: Anneau[] = [
   [7.35, 0.35, 0.3],
 ];
 
+/** Le Brochet dressé, la queue en bas : son corps, qui s'arrête à la tête (la mâchoire en bec est à part). */
 const BROCHET: Anneau[] = [
-  [1.5, 0.3, 0.2],
+  [1.6, 0.3, 0.2],
   [2.4, 0.55, 0.32],
   [4.6, 0.85, 0.45],
-  [6.6, 0.7, 0.4],
-  [7.6, 0.3, 0.22],
-  [8, 0],
+  [6.2, 0.68, 0.4, 0, -0.05],
+  [6.85, 0.42, 0.3, 0, -0.18],
+];
+/** Les deux lobes de la caudale en éventail (x > 0 ; l'autre en miroir) et la dorsale, près de la queue, côté +X. */
+const CAUDALE: [number, number][] = [
+  [0, 1.55],
+  [0.1, 1.0],
+  [0.9, 1.0],
+  [1.25, 2.2],
+  [0.25, 2.05],
+];
+const DORSALE: [number, number][] = [
+  [0.5, 2.5],
+  [1.05, 2.3],
+  [1.0, 3.25],
+  [0.72, 3.55],
 ];
 
 /** La tête du Lion, décalée vers la gauche de son corps couché. */
 const X_DU_LION = -0.75;
 const CRINIERE: Anneau[] = [
-  [5.15, 0.95, 0.8, -0.55],
-  [6.9, 1.05, 0.9, -0.6],
+  [5.7, 0.95, 0.8, -0.55],
+  [7.0, 1.05, 0.9, -0.6],
   [8, 0.5, 0.45, -0.55],
 ];
 const MUFLE: Anneau[] = [
-  [5.6, 0.36, 0.3, -1.35],
-  [6.55, 0.5, 0.36, -1.35],
-  [7.05, 0.38, 0.3, -1.3],
+  [5.95, 0.36, 0.3, -1.35],
+  [6.75, 0.5, 0.36, -1.35],
+  [7.2, 0.38, 0.3, -1.3],
+];
+/** Le quai du Lion, avant d'être tourné : x0, z0, x1, z1. */
+const QUAI = [-1.6, -1.2, 1.3, 0.8] as const;
+/** La lanterne du Lion (×1,9), posée sur le quai. */
+const LANTERNE_DU_LION: Anneau[] = [
+  [3.9, 0.38],
+  [5.1, 0.47],
+  [5.7, 0],
 ];
 
 const TOUR_DU_COUCOU: Anneau[] = [
@@ -234,8 +256,10 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     nom: 'le Taureau couché',
     allume: 'son joug',
     sculpture: (T, a) => {
+      // Couché de trois-quarts sur son pilier, l'avant vers l'élève, la tête tournée vers lui.
+      const C = deTroisQuarts(T, X_DU_TAUREAU);
       fuseau(
-        T,
+        C,
         [
           [1, 1.65, 1.15],
           [3.2, 1.55, 1.05],
@@ -244,9 +268,8 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
         a.moussue((_k, j) => j === 0 || j === 2),
         { bas: false },
       );
-      // Couché de profil, la tête tournée vers l'élève.
       tube(
-        T,
+        C,
         [
           [1.45, 4.15, 0.2],
           [-0.5, 4.25, 0],
@@ -341,9 +364,20 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     allume: 'la bande de son flanc',
     sculpture: (T, a) => {
       fuseau(T, BROCHET, 6, a.moussue((k, j) => k === 0 && j !== 5));
-      for (const s of [-1, 1]) pointe(T, [s * 0.12, 1.75, 0], 0.26, 0.95, a.pierre, [0, 0, s * (Math.PI - 0.55)], 4, 0.06);
-      pointe(T, [0, 4.8, 0.35], 0.06, 0.6, a.pierre, [Math.PI / 2 - 0.3, 0, 0], 4, 0.6);
-      orbites(T, a, 0, 7.2, devant(BROCHET, 6, 7.2).z, 0, 0.15);
+      // La caudale en éventail, posée sur le socle, et la dorsale, en plaques minces.
+      for (const s of [-1, 1])
+        dalle(
+          T,
+          CAUDALE.map(([x, y]): [number, number] => [s * x, y]),
+          -0.07,
+          0.07,
+          a.pierre,
+        );
+      dalle(T, DORSALE, -0.06, 0.06, a.pierre);
+      // La tête levée, la mâchoire en bec entrouverte : le bec du haut, long, jusqu'au sommet, celui du bas, plus court.
+      pointe(T, [-0.2, 6.75, 0], 0.3, 1.25 / Math.cos(0.32), a.pierre, [0, 0, 0.32], 4, 0.2);
+      pointe(T, [0.02, 6.7, 0], 0.22, 0.75, a.pierre, [0, 0, -0.2], 4, 0.16);
+      orbites(T, a, -0.15, 6.45, devant(BROCHET, 6, 6.45).z, 0, 0.15);
     },
     veines: (T, a) => {
       veineSur(
@@ -354,7 +388,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [0, 2.5],
           [0.1, 3.8],
           [0, 5.2],
-          [-0.06, 6.5],
+          [-0.08, 6.1],
         ],
         0.16,
         a.lueur,
@@ -380,14 +414,15 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
   },
   baie: {
     nom: 'le Lion de pierre',
-    allume: 'la lanterne entre ses pattes',
+    allume: 'la lanterne devant ses pattes',
     sculpture: (T, a) => {
-      pave(T, -1.7, 1, -1.0, 1.7, 3.9, 1.0, a.pierre);
-      // Couché de profil sur son quai, la tête tournée vers l'élève, les pattes devant.
+      // Couché de trois-quarts sur son quai, les pattes devant lui ; seule la tête se tourne vers l'élève.
+      const C = deTroisQuarts(T, X_DU_LION);
+      pave(C, QUAI[0], 1, QUAI[1], QUAI[2], 3.9, QUAI[3], a.pierre);
       tube(
-        T,
+        C,
         [
-          [1.55, 4.6, 0.15],
+          [1.3, 4.6, 0.15],
           [-0.3, 4.75, 0],
         ],
         [0.7, 0.85],
@@ -396,10 +431,10 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       );
       for (const s of [-1, 1])
         tube(
-          T,
+          C,
           [
-            [X_DU_LION + s * 0.45, 4.15, -0.2],
-            [X_DU_LION + s * 0.45, 4.15, -1.25],
+            [X_DU_LION + s * 0.45, 4.15, -0.1],
+            [X_DU_LION + s * 0.45, 4.15, -0.62],
           ],
           0.25,
           3,
@@ -407,20 +442,10 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
         );
       fuseau(T, CRINIERE, 6, a.moussue((k, j) => k === 1 && (j === 1 || j === 3)), { x: X_DU_LION, bas: false });
       fuseau(T, MUFLE, 5, a.pierre, { x: X_DU_LION, bas: false });
-      orbites(T, a, X_DU_LION, 6.6, devant(MUFLE, 5, 6.6).z, 0.18, 0.12);
+      orbites(T, a, X_DU_LION, 6.62, devant(MUFLE, 5, 6.62).z, 0.18, 0.12);
     },
-    veines: (T, a) =>
-      fuseau(
-        T,
-        [
-          [3.9, 0.2],
-          [4.55, 0.25],
-          [4.85, 0],
-        ],
-        4,
-        a.lueur,
-        { x: X_DU_LION, z: -1.05 },
-      ),
+    // La lanterne, près de deux fois plus grande, posée sur le quai devant les pattes.
+    veines: (T, a) => fuseau(deTroisQuarts(T, X_DU_LION), LANTERNE_DU_LION, 4, a.lueur, { x: X_DU_LION, z: -0.9 }),
   },
   horloge: {
     nom: 'le Coucou',

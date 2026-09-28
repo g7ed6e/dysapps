@@ -3,7 +3,7 @@
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../gabarit';
 import { devant, facette, fuseau, pave, pose, type Anneau, type Trace, type V3 } from '../peint';
-import { orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
+import { bandeauDuSocle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
 
 const TORSE_DU_TITAN: Anneau[] = [
   [2.8, 1.25, 0.8],
@@ -296,34 +296,21 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
       const z = (y: number) => devant(MASQUE, 8, y).z;
       pointe(T, [0, 6.0, z(6.0) + 0.05], 0.12, 0.3, a.pierre, [-(Math.PI / 2 + 0.3), 0, 0], 3);
       orbites(T, a, 0, 6.6, z(6.6), 0.42, 0.3);
-      // La bouche, sombre comme les orbites.
+      // La bouche, droite et neutre, sombre comme les orbites.
       veineSur(
         T,
         MASQUE,
         8,
         [
-          [-0.42, 5.5],
-          [0, 5.28],
-          [0.42, 5.5],
+          [-0.36, 5.4],
+          [0.36, 5.4],
         ],
-        0.14,
+        0.1,
         a.orbite,
       );
     },
-    veines: (T, a) => {
-      veineSur(
-        T,
-        STELE,
-        4,
-        [
-          [-0.66, 1.3],
-          [0.66, 1.3],
-        ],
-        0.12,
-        a.lueur,
-      );
-      for (const s of [-1, 1]) pointe(T, [s * 0.95, 1.0, -1.2], 0.12, 0.28, a.lueur, [0, 0, 0], 4);
-    },
+    // La rampe, allumée sur tout l'avant du socle (la face du devant et ses deux voisines).
+    veines: (T, a) => bandeauDuSocle(T, [6, 7, 0], 0.64, 0.82, a.lueur),
   },
   gare: {
     nom: 'la Locomotive',

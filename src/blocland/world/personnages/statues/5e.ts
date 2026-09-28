@@ -11,9 +11,11 @@ const TETE_DU_MAMMOUTH: Anneau[] = [
   [7.6, 0.6, 0.55, -1.1],
   [8, 0.25, 0.25, -1.0],
 ];
+/** Une patte-colonne du Mammouth, à six pans, le pied évasé. */
 const PATTE_DU_MAMMOUTH: Anneau[] = [
-  [1, 0.4],
-  [3.4, 0.36],
+  [1, 0.5],
+  [1.35, 0.4],
+  [3.4, 0.37],
 ];
 /** Les quatre pattes du Mammouth : x, z. */
 const PATTES: [number, number][] = [
@@ -102,7 +104,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
     nom: 'le Mammouth',
     allume: 'ses veines de givre',
     sculpture: (T, a) => {
-      for (const [x, z] of PATTES) fuseau(T, PATTE_DU_MAMMOUTH, 4, a.moussue((_k, j) => j === 1), { x, z, bas: false, haut: false });
+      for (const [x, z] of PATTES) fuseau(T, PATTE_DU_MAMMOUTH, 6, a.moussue((k, j) => k === 0 && j === 1), { x, z, bas: false, haut: false });
       tube(
         T,
         [
@@ -161,7 +163,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       veineSur(
         T,
         PATTE_DU_MAMMOUTH,
-        4,
+        6,
         [
           [0, 1.25],
           [0.08, 2.2],
