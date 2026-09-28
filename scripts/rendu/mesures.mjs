@@ -9,6 +9,9 @@
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
+// Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
+// tard le phare : proches de la lueur `#FFD866`, voir `estUneLueur`) : au plus `LUEUR_MAX` à la vue île (décision du
+// directeur artistique, lot R5), affichée dans un second tableau.
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -81,6 +84,34 @@ const CAPTURES = [
   { nom: 'atelier-nuit', vue: 'île', famille: 'chantier', ile: 'atelier', nuit: true },
   { nom: 'phare', vue: 'île', famille: 'chantier', ile: 'phare' },
 ];
+/** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
+const LUEUR_MAX = 0.03;
+/**
+ * Un pixel de lueur : un jaune chaud et clair, proche de `#FFD866` (world/construction.ts, `LUEUR`), que la brume peut
+ * un peu voiler. Le compte se fait dans une page vide, sur la capture de la scène seule (sans les panneaux).
+ */
+const estUneLueur = '(r, g, b) => r >= 220 && g >= 170 && b <= 170 && r - b >= 90';
+async function partDeLueur(outil, png) {
+  return outil.evaluate(
+    async ({ b64, test }) => {
+      const img = new Image();
+      img.src = `data:image/png;base64,${b64}`;
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0);
+      const d = g.getImageData(0, 0, c.width, c.height).data;
+      const lueur = new Function(`return ${test}`)();
+      let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (lueur(d[i], d[i + 1], d[i + 2])) n++;
+      return n / (c.width * c.height);
+    },
+    { b64: png.toString('base64'), test: estUneLueur },
+  );
+}
+
 /** L'écart entre une capture et sa seconde (`encore`). */
 const ECART = 4000;
 const FAMILLES = option('--familles')?.split(',') ?? null;
@@ -148,6 +179,8 @@ async function scenes() {
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
   });
   if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+  // Une page vide, pour compter les pixels de lueur des captures de nuit.
+  const outil = await browser.newPage();
   const rows = [];
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
@@ -192,6 +225,12 @@ async function scenes() {
         // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
         await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (time === NIGHT && view === '3d') {
+          // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
+          const box = await page.locator('.voxel-canvas').boundingBox();
+          const png = box && (await page.screenshot({ type: 'png', clip: box, timeout: 90000 }));
+          if (png) lueurs.push({ archipel: a, nom, vue, part: await partDeLueur(outil, png) });
+        }
         if (encore) {
           // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
           await page.waitForTimeout(ECART);
@@ -219,6 +258,9 @@ async function scenes() {
   return rows;
 }
 
+/** Les parts de lueur des captures de nuit en 3D. */
+const lueurs = [];
+
 // Le build d'abord : le serveur de développement le passerait en mode développement.
 const js = process.argv.includes('--sans-poids') ? null : await weights();
 const rows = await scenes();
@@ -228,9 +270,15 @@ for (const r of rows) {
   if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | | |`);
   else console.log(`| ${r.archipel} | ${r.vue} | ${r.calls} | ${r.triangles.toLocaleString('fr-FR')} | ${r.geometries} | ${r.textures} | ${r.fps} |`);
 }
+if (lueurs.length) {
+  console.log(`\n| Archipel | Capture de nuit | Part de lueur | Vue île : au plus ${LUEUR_MAX * 100} % |`);
+  console.log('| --- | --- | ---: | --- |');
+  for (const l of lueurs)
+    console.log(`| ${l.archipel} | ${l.nom} | ${(l.part * 100).toFixed(2).replace('.', ',')} % | ${l.vue === 'île' ? (l.part <= LUEUR_MAX ? 'oui' : 'NON') : ''} |`);
+}
 if (js) {
   console.log('\n| Fichier | Poids | Compressé (gzip) | Three.js |');
   console.log('| --- | ---: | ---: | --- |');
   for (const f of js.slice(0, 6)) console.log(`| ${f.file} | ${kilo(f.raw)} | ${kilo(f.gzip)} | ${f.three ? 'oui' : ''} |`);
 }
-process.exit(rows.some((r) => r.erreur) ? 1 : 0);
+process.exit(rows.some((r) => r.erreur) || lueurs.some((l) => l.vue === 'île' && l.part > LUEUR_MAX) ? 1 : 0);

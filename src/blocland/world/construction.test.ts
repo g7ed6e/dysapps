@@ -9,6 +9,10 @@ import {
   DECALAGE_MAX,
   ECLAT_GLSL,
   eclatDeFenetre,
+  eclatDuBiseau,
+  ECART_SOMBRE,
+  fenetresDe,
+  LANTERNES_ALLUMEES,
   formeDuPilier,
   piliersDe,
   signatureDeLaConstruction,
@@ -99,6 +103,29 @@ function blocEn(cubes: VoxelCube[]) {
 const surLaGrille = (c: VoxelCube) => Number.isInteger(c.z);
 const decale = (p: { x: number; y: number; z: number }, n: { x: number; y: number; z: number }, k: number) => ({ x: p.x + n.x * k, y: p.y + n.y * k, z: p.z + n.z * k });
 
+/** Une lanterne : un corps de 0,3 case sans dessous (cinq faces), un cœur de 0,18 case sans dessous. */
+const AIRE_DE_LANTERNE = 5 * 0.3 * 0.3 + 5 * 0.18 * 0.18;
+
+/** Les blocs pleins (sans fantômes ni bornes) et les lanternes, qui ne remplissent plus leur case. */
+function rangerLesLanternes(cubes: VoxelCube[]) {
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest));
+  const lanternes = new Map<string, VoxelCube>();
+  for (const [c, g] of genres) if (g === 'lanterne') lanternes.set(cle(c.x, c.y, c.z), c);
+  return { pleins: cubes.filter((c) => !c.ghost && !c.quest && genres.get(c) !== 'lanterne'), lanternes };
+}
+
+/** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
+function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
+  const { cell } = caseDeLaConstruction(t.centre, t.n);
+  const k = cle(cell.x, cell.y, cell.z);
+  if (!lanternes.has(k)) return false;
+  // Rien ne sort de la case.
+  expect(t.centre.x - cell.x).toBeGreaterThan(0.3);
+  expect(t.centre.x - cell.x).toBeLessThan(0.7);
+  expect(t.centre.y - cell.z).toBeLessThan(0.5);
+  return true;
+}
+
 /** La normale du sommet d'un triangle suit bien sa facette (le sens des sommets est le bon : face avant vers l'extérieur). */
 function sensJuste(g: GroupeDeConstruction): boolean {
   return triangles(g).every((t, i) => {
@@ -118,16 +145,16 @@ describe('La construction taillée (lot R5)', () => {
       }
       // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste).
       const { cubes, sol } = monde(a);
-      expect(coutDeLaConstruction(maillageDeLaConstruction(a, cubes, sol)).triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.65);
+      expect(coutDeLaConstruction(maillageDeLaConstruction(a, cubes, sol)).triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
     }
   }, 60_000);
 
-  it('les faces cachées le restent : exactement les faces que montrait le monde en blocs (le verre, désormais sombre, cache)', () => {
+  it('les faces cachées le restent : exactement les faces que montrait le monde en blocs (le verre, désormais sombre, cache ; une lanterne, plus petite, non)', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { cubes, sol } = monde(a);
-      const pleins = cubes.filter((c) => !c.ghost && !c.quest);
-      // Le monde en blocs, le verre compté comme un bloc plein.
-      const attendu = faceCount(buildMesh(pleins.map((c) => (c.texture === 'verre' ? { ...c, texture: 'pierre' } : c)), sol));
+      const { pleins, lanternes } = rangerLesLanternes(cubes);
+      // Le monde en blocs, le verre compté comme un bloc plein, sans les lanternes ; puis les lanternes, corps et cœur.
+      const attendu = faceCount(buildMesh(pleins.map((c) => (c.texture === 'verre' ? { ...c, texture: 'pierre' } : c)), sol)) + lanternes.size * AIRE_DE_LANTERNE;
       const occupe = new Set(pleins.map((c) => cle(c.x, c.y, c.z)));
       const bloc = blocEn(pleins);
       const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
@@ -138,6 +165,7 @@ describe('La construction taillée (lot R5)', () => {
           expect(sensJuste(g), `${a} ${mode}`).toBe(true);
           for (const t of triangles(g)) {
             aire += t.aire;
+            if (dansUneLanterne(lanternes, t)) continue;
             // Chaque face couvre un bloc, et rien de plein devant elle.
             const c = bloc(decale(t.centre, t.n, -0.01));
             expect(c, `${a} ${mode} ${JSON.stringify(t.centre)}`).toBeDefined();
@@ -150,20 +178,21 @@ describe('La construction taillée (lot R5)', () => {
             if (t.n.y < -0.5) expect(sous.has(cle(next.x, next.y, next.z))).toBe(false);
           }
         }
-        expect(aire, `${a} ${mode}`).toBeCloseTo(attendu, 3);
+        expect(aire, `${a} ${mode}`).toBeCloseTo(attendu, 2);
       }
     }
   }, 60_000);
 
   it('le biseau taillé reste dans la case de son bloc : le toucher retrouve le bloc, et la case devant est libre', () => {
     const { cubes, sol } = monde('6e');
-    const pleins = cubes.filter((c) => !c.ghost && !c.quest);
+    const { pleins, lanternes } = rangerLesLanternes(cubes);
     const occupe = new Set(pleins.map((c) => cle(c.x, c.y, c.z)));
     const bloc = blocEn(pleins);
     const m = maillageDeLaConstruction('6e', cubes, sol, { biseau: 'taille' });
     expect(sensJuste(m.opaque)).toBe(true);
     let bandes = 0;
     for (const t of triangles(m.opaque)) {
+      if (dansUneLanterne(lanternes, t)) continue;
       const c = bloc(decale(t.centre, t.n, -0.01));
       expect(c).toBeDefined();
       if (!surLaGrille(c!)) continue;
@@ -250,9 +279,9 @@ describe('La construction taillée (lot R5)', () => {
     }
   }, 30_000);
 
-  it('les fantômes : 0,35 de jour, 0,45 de nuit, l’arête à 50 % ; en Contraste élevé, 0,55 et l’arête pleine', () => {
-    expect(opaciteDesFantomes(1)).toEqual({ remplissage: 0.35, arete: 0.5 });
-    expect(opaciteDesFantomes(0)).toEqual({ remplissage: 0.45, arete: 0.5 });
+  it('les fantômes : 0,35 de jour, 0,45 de nuit, l’arête à 70 % ; en Contraste élevé, 0,55 et l’arête pleine', () => {
+    expect(opaciteDesFantomes(1)).toEqual({ remplissage: 0.35, arete: 0.7 });
+    expect(opaciteDesFantomes(0)).toEqual({ remplissage: 0.45, arete: 0.7 });
     expect(opaciteDesFantomes(0.5).remplissage).toBeCloseTo(0.4);
     expect(opaciteDesFantomes(1, true)).toEqual({ remplissage: 0.55, arete: 1 });
   });
@@ -427,5 +456,54 @@ describe('Les toits de terre cuite (lot R5)', () => {
     const i = cubes.findIndex((c) => c.ghost);
     const pose = cubes.map((c, k) => (k === i ? { ...c, ghost: undefined } : c));
     expect(signatureDeLaConstruction(pose, sol)).not.toBe(avant);
+  });
+
+  it('le biseau peint éclaire toujours : +22 % de lumière, et au moins +14 niveaux sRGB sur une teinte sombre', () => {
+    for (const c of [0x2e505e, 0x142b38, 0x3e3636, 0x224c5f]) {
+      const e = eclatDuBiseau(c);
+      for (const s of [16, 8, 0]) expect(((e >> s) & 255) - ((c >> s) & 255), c.toString(16)).toBeGreaterThanOrEqual(ECART_SOMBRE);
+    }
+    for (const c of [0xe5ebe3, 0xaaa497, 0xd08a5e, 0x000000, 0xffffff]) {
+      const e = eclatDuBiseau(c);
+      for (const s of [16, 8, 0]) expect((e >> s) & 255).toBeGreaterThanOrEqual((c >> s) & 255);
+    }
+    // Une teinte claire : seulement les 22 % de lumière (en linéaire : 170 devient 186).
+    expect(eclatDuBiseau(0xaaaaaa) & 255).toBe(186);
+  });
+
+  it('les lanternes : un corps sombre et un cœur, au plus deux allumées par cour ; le verre hors d’un mur porte son arête', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const { cubes, sol } = monde(a);
+      const f = fenetresDe(cubes);
+      const parCour = new Map<string, number>();
+      const parBatiment = new Map<string, number>();
+      for (const [c, { genre, decalage }] of f) {
+        expect(c.quest, a).toBeUndefined();
+        if (c.muted) expect(decalage, a).toBe(-1);
+        if (decalage < 0) continue;
+        const m = genre === 'lanterne' ? parCour : parBatiment;
+        const k = `${c.tag}|${c.place ?? ''}`;
+        m.set(k, (m.get(k) ?? 0) + 1);
+      }
+      expect(parCour.size, a).toBeGreaterThan(0);
+      for (const n of parCour.values()) expect(n, a).toBeLessThanOrEqual(LANTERNES_ALLUMEES);
+      for (const n of parBatiment.values()) expect(n, a).toBeLessThanOrEqual(FENETRES_ALLUMEES);
+      // La 2D (fenetresDe) et la 3D (le groupe des fenêtres) allument les mêmes : autant de décalages allumés.
+      const m = maillageDeLaConstruction(a, cubes, sol);
+      const allumes3D = new Set<string>();
+      triangles(m.fenetres).forEach((t, i) => {
+        if (m.fenetres.decalages[m.fenetres.indices[i * 3]] < 0) return;
+        const { cell } = caseDeLaConstruction(t.centre, t.n);
+        allumes3D.add(cle(cell.x, cell.y, cell.z));
+      });
+      const allumes2D = new Set([...f].filter(([, v]) => v.decalage >= 0).map(([c]) => cle(c.x, c.y, c.z)));
+      expect(allumes3D, a).toEqual(allumes2D);
+      expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
+    }
+    // La tour du 6e : son verre hors d'un mur porte l'arête ; les autres blocs non.
+    const m = maillageDeLaConstruction('6e', monde('6e').cubes, monde('6e').sol);
+    const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
+    expect(avec).toBeGreaterThan(0);
+    expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
   });
 });

@@ -3,9 +3,10 @@
 // fois par scène et libérés avec elle, les complètent dans le shader (`onBeforeCompile`) :
 //
 // - les blocs : la teinte de chaque bloc (± 4 %, tirée de sa case), et le biseau peint, une lumière qui accroche les
-//   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit ; de
-//   loin, quand une case tient en moins de 16 pixels, elle s'efface, pour ne pas scintiller ; sans biseau en Contraste
-//   élevé) ;
+//   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit :
+//   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
+//   16 pixels, elle s'efface, pour ne pas scintiller ; sans biseau en Contraste élevé) ; le verre hors d'un mur, cerné
+//   d'une arête fine par case ;
 // - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
 // - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
 //
@@ -13,8 +14,11 @@
 import * as THREE from 'three';
 import {
   ARETE,
+  ARETE_DU_VERRE,
   ARETE_FANTOME,
   BISEAU,
+  BISEAU_GLSL,
+  ECLAT_DU_BISEAU,
   ECLAT_GLSL,
   FANTOME,
   LUEUR,
@@ -24,9 +28,6 @@ import {
   type MaillageDeLaConstruction,
 } from '../world/construction';
 import type { Lumiere } from './lumiere';
-
-/** L'éclat du biseau peint : la part de lumière ajoutée au milieu de la bande. */
-export const ECLAT_DU_BISEAU = 0.22;
 
 /** Les trois matériaux de la construction, partagés par ses maillages (le monde, le navire). */
 export interface MateriauxDeConstruction {
@@ -44,16 +45,21 @@ export function creerMateriaux(lumiere: Lumiere | null): MateriauxDeConstruction
   const opaque = new THREE.MeshLambertMaterial({ vertexColors: true });
   opaque.onBeforeCompile = (s) => {
     s.uniforms.uBiseau = biseau;
+    s.uniforms.uArete = { value: new THREE.Color(ARETE) };
     s.vertexShader = s.vertexShader
       .replace(
         '#include <common>',
-        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nvarying vec3 vCase;\nvarying vec4 vBiseaux;\nvarying float vTeinte;',
+        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;',
       )
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCase = position - normal * 0.5;\nvBiseaux = biseaux;\nvTeinte = teinte;');
+      // La case d'un sommet : un quart de case derrière sa face (world/construction.ts, `caseDeLaConstruction`).
+      .replace(
+        '#include <begin_vertex>',
+        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;',
+      );
     s.fragmentShader = s.fragmentShader
       .replace(
         '#include <common>',
-        `#include <common>\nuniform float uBiseau;\nvarying vec3 vCase;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\n${TEINTE_GLSL}`,
+        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\n${TEINTE_GLSL}\n${BISEAU_GLSL}`,
       )
       .replace(
         '#include <color_fragment>',
@@ -65,7 +71,17 @@ diffuseColor.rgb *= vTeinte > 0.0 ? pow(vTeinte, 2.2) : teinteDeCase(floor(vCase
   vec4 fw = max(fwidth(vBiseaux), vec4(1e-5));
   vec4 w = max(vec4(${BISEAU.toFixed(3)}), 1.5 * fw);
   vec4 k = (1.0 - smoothstep(w - 0.5 * fw, w + 0.5 * fw, vBiseaux)) * clamp((1.0 / fw - 8.0) / 8.0, 0.0, 1.0);
-  diffuseColor.rgb *= 1.0 + uBiseau * max(max(k.x, k.y), max(k.z, k.w));
+  diffuseColor.rgb = biseauPeint(diffuseColor.rgb, max(max(k.x, k.y), max(k.z, k.w)), uBiseau);
+}
+if (vArete > 0.5) {
+  // Le verre hors d'un mur : une arête d'un pixel et demi au bord de chaque case, effacée de loin comme le biseau.
+  vec3 an = abs(vN);
+  vec2 q = an.x > 0.5 ? vPos.zy : (an.y > 0.5 ? vPos.xz : vPos.xy);
+  vec2 f = fract(q);
+  vec2 fq = max(fwidth(q), vec2(1e-5));
+  vec2 px = min(f, 1.0 - f) / fq;
+  float a = (1.0 - smoothstep(0.5, 1.0, min(px.x, px.y))) * clamp((1.0 / max(fq.x, fq.y) - 8.0) / 8.0, 0.0, 1.0);
+  diffuseColor.rgb = mix(diffuseColor.rgb, uArete, a * ${ARETE_DU_VERRE.toFixed(2)});
 }`,
       );
   };
@@ -193,7 +209,7 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     group,
     peindre(m) {
       vider();
-      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1] });
+      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1] });
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] });
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] });
       if (f) f.renderOrder = 1;

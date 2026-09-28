@@ -19,7 +19,7 @@ import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
-import { VEHICLE_STAGES } from './vehicle';
+import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -91,7 +91,6 @@ export function toutConstruit() {
 /** Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. */
 export function sceneModels(a: ArchipelagoId): { name: string; groups: MeshGroup[] }[] {
   const { progress, village } = toutConstruit();
-  const MAST_TOP = 7;
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
     { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false)) },
@@ -182,7 +181,6 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
 /** Le Bloc-Navire d'Archipéo (lot R5) : la coque et le ballon en construction taillée (un appel par groupe non vide). */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { progress, village } = toutConstruit();
-  const MAST_TOP = 7;
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   const parts = [ship.filter((c) => c.z < MAST_TOP), ship.filter((c) => c.z >= MAST_TOP)].map((cubes) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true })));
   return { triangles: parts.reduce((n, p) => n + p.triangles, 0), drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) };

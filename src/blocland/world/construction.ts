@@ -6,7 +6,7 @@
 // - `opaque` : les blocs, en couleurs par sommet (la palette de l'archipel, de jour ; la nuit vient de la lumière de
 //   la scène). Les faces coplanaires d'une même couleur sont fusionnées en rectangles (fusion gloutonne par plan, par
 //   sens et par couleur) ; chaque bloc garde sa teinte, à ± `TEINTE` de luminosité, que le shader tire de sa case
-//   (`TEINTE_GLSL` sur `floor(position - normal * 0.5)`, ou l'attribut `teintes` pour un bloc hors de la grille) : la
+//   (`TEINTE_GLSL` sur `floor(position - normal * 0.25)`, ou l'attribut `teintes` pour un bloc hors de la grille) : la
 //   fusion ne l'efface pas. Le biseau des arêtes saillantes (celles où deux faces visibles d'un bloc se rencontrent) est
 //   peint par défaut : l'attribut `biseaux` donne la distance aux bords saillants de chaque rectangle, et le shader
 //   incline la normale sur une bande de `BISEAU` case, sans un triangle de plus. Le biseau taillé en géométrie (bandes,
@@ -26,7 +26,7 @@ import { mixColor } from './daylight';
 import { DELAVE, eclaircir, hex, rgb } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import type { ArchipelagoId } from './map';
-import { ambianceDe, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
+import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
 import type { Cell } from './view';
@@ -43,6 +43,22 @@ export const LUEUR: Couleur = 0xffd866;
 export const VITRE_DE_JOUR = 0.55;
 /** Au plus tant de vitres allumées par bâtiment. */
 export const FENETRES_ALLUMEES = 3;
+/** Au plus tant de lanternes allumées par cour (une île et un lieu, comme les vitres). */
+export const LANTERNES_ALLUMEES = 2;
+/**
+ * Une lanterne (le genre `lanterne` : cours, comptoirs, sommets, pas les vitres) : un corps sombre de `corps` case de côté
+ * et de haut, posé au milieu de sa case, et sur lui un cœur de `coeur` case, qui s'allume. Rien ne sort de la case.
+ */
+export const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
+/** Le verre hors d'un mur (provisoire, jusqu'au phare de R4b) : 80 % Brume, 20 % Bleu lagon, avec une arête par case. */
+export const VERRE_HORS_MUR: Couleur = mixColor(BRUME, BLEU_LAGON, 0.2);
+/** L'arête du verre hors d'un mur : `ARETE`, à cette opacité, sur 1,5 pixel. */
+export const ARETE_DU_VERRE = 0.4;
+/** Le biseau peint : la lumière ajoutée au bord saillant (+22 %)… */
+export const ECLAT_DU_BISEAU = 0.22;
+/** … et au moins tant de niveaux sRGB de plus, par canal, sur une teinte sombre (luminance sous `SOMBRE`). */
+export const ECART_SOMBRE = 14;
+export const SOMBRE = 0.25;
 /** Le décalage d'allumage d'une fenêtre, de 0 à cette valeur (en degré de nuit). */
 export const DECALAGE_MAX = 0.15;
 /** L'allumage : rien sous ce degré de nuit, tout allumé à `PLEINE_NUIT`. */
@@ -84,7 +100,7 @@ export function teinteDeCase(x: number, y: number, z: number): number {
 }
 
 /**
- * Le même calcul en GLSL : `teinteDeCase(floor(position - normal * 0.5))`, en coordonnées de l'objet (le maillage est
+ * Le même calcul en GLSL : `teinteDeCase(floor(position - normal * 0.25))`, en coordonnées de l'objet (le maillage est
  * posé à l'origine du monde), rend le facteur à appliquer à la couleur linéaire (la puissance 2,2 fait ± 4 % sur la
  * couleur affichée).
  */
@@ -123,12 +139,13 @@ float eclatDeFenetre(float n, float decalage) {
 
 /**
  * L'opacité des fantômes, entre la nuit (`light` = 0) et le jour (1) : le remplissage (0,35 de jour, 0,45 de nuit ;
- * 0,55 en Contraste élevé) et l'arête (50 % ; pleine en Contraste élevé).
+ * 0,55 en Contraste élevé) et l'arête (70 % : à 50 %, les fantômes crème disparaissaient sur le marbre des Îles du Ciel ;
+ * pleine en Contraste élevé).
  */
 export function opaciteDesFantomes(light: number, contraste = false): { remplissage: number; arete: number } {
   if (contraste) return { remplissage: 0.55, arete: 1 };
   const l = Math.min(1, Math.max(0, light));
-  return { remplissage: 0.45 + (0.35 - 0.45) * l, arete: 0.5 };
+  return { remplissage: 0.45 + (0.35 - 0.45) * l, arete: 0.7 };
 }
 
 // ---------- Le maillage ----------
@@ -165,6 +182,8 @@ export interface GroupeOpaque extends GroupeDeConstruction {
    * (`poseDuDecor`) chevauche deux cases, et garderait sinon deux teintes.
    */
   teintes: Float32Array;
+  /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
+  aretes: Float32Array;
 }
 
 export interface MaillageDeLaConstruction {
@@ -237,6 +256,41 @@ export const TANGENTES: Record<'x' | 'y' | 'z', [V3, V3]> = {
 const TOITURES = new Set(['toit', 'tuile']);
 const LUMIERES = new Set(['lanterne', 'verre']);
 
+const srgbVersLineaire = (v: number) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+const lineaireVersSrgb = (v: number) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+
+/**
+ * La couleur (sRGB) au bord saillant d'une face de couleur `c`, là où le biseau peint est plein : +`ECLAT_DU_BISEAU` de
+ * lumière, et, sur une teinte sombre, au moins +`ECART_SOMBRE` niveaux par canal (le même calcul que `BISEAU_GLSL`).
+ * Toujours plus clair, jamais plus sombre.
+ */
+export function eclatDuBiseau(c: Couleur): Couleur {
+  const k = rgb(c).map((v) => v / 255);
+  const lin = k.map(srgbVersLineaire);
+  const sombre = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2] < SOMBRE;
+  const out = lin.map((l, i) => {
+    let f = l * (1 + ECLAT_DU_BISEAU);
+    if (sombre) f = Math.max(f, srgbVersLineaire(Math.min(1, k[i] + ECART_SOMBRE / 255)));
+    return Math.round(Math.min(1, lineaireVersSrgb(Math.min(1, f))) * 255);
+  });
+  return (out[0] << 16) | (out[1] << 8) | out[2];
+}
+
+/**
+ * Le biseau peint en GLSL : \`biseauPeint(c, k, force)\` rend la couleur linéaire \`c\` éclaircie à la part \`k\` de la bande
+ * (\`force\` : \`ECLAT_DU_BISEAU\`, 0 pour l'éteindre). Les fonctions sRGB sont celles de Three.js.
+ */
+export const BISEAU_GLSL = `
+vec3 biseauPeint(vec3 c, float k, float force) {
+  vec3 fort = c * (1.0 + force);
+  if (force > 0.0 && dot(c, vec3(0.2126, 0.7152, 0.0722)) < ${SOMBRE.toFixed(2)}) {
+    vec3 s = sRGBTransferOETF(vec4(c, 1.0)).rgb + ${(ECART_SOMBRE / 255).toFixed(5)};
+    fort = max(fort, sRGBTransferEOTF(vec4(min(s, vec3(1.0)), 1.0)).rgb);
+  }
+  return mix(c, fort, k);
+}
+`;
+
 /**
  * Le genre de chaque bloc : une vitre est une lanterne ou un verre pris dans un mur (deux blocs pleins de part et
  * d'autre sur une rangée, un bloc de la construction dessous, pas de toit dessus : les fenêtres de world/architect.ts,
@@ -248,7 +302,7 @@ export function genresDesBlocs(cubes: VoxelCube[]): Map<VoxelCube, Genre> {
   for (const c of cubes) if (!c.ghost) plein.set(cle(c.x, c.y, c.z), c);
   const mur = (x: number, y: number, z: number) => {
     const n = plein.get(cle(x, y, z));
-    return Boolean(n) && !LUMIERES.has(n!.texture ?? '');
+    return n !== undefined && !LUMIERES.has(n.texture ?? '');
   };
   const out = new Map<VoxelCube, Genre>();
   for (const c of cubes) {
@@ -273,7 +327,10 @@ export function genresDesBlocs(cubes: VoxelCube[]): Map<VoxelCube, Genre> {
 /** Le bâtiment d'un bloc, pour compter ses vitres allumées : son île et son lieu. */
 const batimentDe = (c: VoxelCube) => `${c.tag ?? ''}|${c.place ?? ''}`;
 
-/** Les décalages d'allumage des vitres et des lanternes : `FENETRES_ALLUMEES` vitres par bâtiment, rien sur une île fermée. */
+/**
+ * Les décalages d'allumage des vitres et des lanternes : `FENETRES_ALLUMEES` vitres par bâtiment, `LANTERNES_ALLUMEES`
+ * lanternes par cour (une île et un lieu), rien sur une île fermée.
+ */
 function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
   const out = new Map<VoxelCube, number>();
   const parBatiment = new Map<string, VoxelCube[]>();
@@ -281,16 +338,15 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
     if (g !== 'vitre' && g !== 'lanterne') continue;
     const d = c.muted ? -1 : DECALAGE_MAX * hasardDeCase(c.x + 17, c.y + 5, c.z + 11);
     out.set(c, d);
-    if (g === 'vitre' && !c.muted) {
-      const b = batimentDe(c);
-      const list = parBatiment.get(b);
-      if (list) list.push(c);
-      else parBatiment.set(b, [c]);
-    }
+    if (c.muted) continue;
+    const b = `${g}|${batimentDe(c)}`;
+    const list = parBatiment.get(b);
+    if (list) list.push(c);
+    else parBatiment.set(b, [c]);
   }
-  for (const list of parBatiment.values()) {
+  for (const [b, list] of parBatiment) {
     const rang = list.map((c) => ({ c, h: hasardDeCase(c.x, c.y + 31, c.z + 7) })).sort((p, q) => p.h - q.h);
-    for (const { c } of rang.slice(FENETRES_ALLUMEES)) out.set(c, -1);
+    for (const { c } of rang.slice(b.startsWith('vitre') ? FENETRES_ALLUMEES : LANTERNES_ALLUMEES)) out.set(c, -1);
   }
   return out;
 }
@@ -317,9 +373,10 @@ class Remplissage {
   uv: number[] = [];
   bis: number[] = [];
   tei: number[] = [];
+  are: number[] = [];
   /** Un polygone convexe (3 ou 4 sommets), tourné vers `n` (coordonnées de grille), et ses attributs par sommet. */
-  poly(pts: V3[], n: V3, couleurs: Couleur[] | null, attr: { extra?: number; uvs?: [number, number][]; biseaux?: number[][]; teinte?: number } = {}): void {
-    const { extra, uvs, biseaux, teinte } = attr;
+  poly(pts: V3[], n: V3, couleurs: Couleur[] | null, attr: { extra?: number; uvs?: [number, number][]; biseaux?: number[][]; teinte?: number; arete?: number } = {}): void {
+    const { extra, uvs, biseaux, teinte, arete = 0 } = attr;
     // Le sens : la normale du polygone doit suivre `n`.
     const [a, b, c] = pts;
     const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
@@ -343,6 +400,7 @@ class Remplissage {
       if (uvs) this.uv.push(uvs[i][0], uvs[i][1]);
       if (biseaux) this.bis.push(...biseaux[i]);
       if (teinte !== undefined) this.tei.push(teinte);
+      this.are.push(arete);
     }
     for (let i = 1; i + 1 < pts.length; i++) this.idx.push(base, base + i, base + i + 1);
   }
@@ -375,8 +433,9 @@ export function maillageDeLaConstruction(
   const dessines = options.bornes ? cubes : cubes.filter((c) => !c.quest);
   const genres = genresDesBlocs(dessines);
   const decalages = decalagesDe(genres);
+  // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
   const plein = new Map<string, VoxelCube>();
-  for (const c of dessines) if (!c.ghost) plein.set(cle(c.x, c.y, c.z), c);
+  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne') plein.set(cle(c.x, c.y, c.z), c);
   const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
 
   // Les couleurs d'un bloc, de jour.
@@ -391,6 +450,14 @@ export function maillageDeLaConstruction(
     else if (g === 'vitre') {
       const v = couleurDeMatiere(a, 'verre');
       f = delave({ dessus: eclaircir(v.dessus, VITRE_DE_JOUR), cote: eclaircir(v.cote, VITRE_DE_JOUR) });
+    } else if (c.texture === 'verre') {
+      // Le verre hors d'un mur (la tour du 6e, provisoire) : sous le voile, comme les matières ; ses côtés un peu plus sombres.
+      const [teinte, force] = ambianceDe(a).voile;
+      const v = mixColor(VERRE_HORS_MUR, teinte, force);
+      f = delave({ dessus: v, cote: eclaircir(v, 0.92) });
+    } else if (g === 'lanterne') {
+      // Le corps d'une lanterne : du bois sombre (son cœur, éteint le jour, est dans les fenêtres).
+      f = delave({ dessus: couleurDeMatiere(a, 'lambris').cote, cote: couleurDeMatiere(a, 'lambris').cote });
     } else if (c.texture === 'toile' && options.navire) {
       // Le crème Brume, sous le voile de l'archipel comme toutes les matières ; ses côtés un peu plus sombres.
       const [teinte, force] = ambianceDe(a).voile;
@@ -418,6 +485,8 @@ export function maillageDeLaConstruction(
   const teinteDe = (c: VoxelCube) =>
     Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
+  /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
+  const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' ? 1 : 0);
   /** L'arête entre les faces `d` et `e` d'un bloc est-elle biseautée ? */
   const biseaute = (c: VoxelCube, d: number, e: number) => taille(c) && visible(c, d) && visible(c, e);
 
@@ -441,7 +510,20 @@ export function maillageDeLaConstruction(
    * Un rectangle d'une face, de (uA, vA) à (uB, vB) sur son plan, ses bords saillants `r` (u−, u+, v−, v+) : rentré sous
    * le biseau taillé, ou avec les distances du biseau peint.
    */
-  const rectangle = (R: Remplissage, d: number, plan: number, uA: number, uB: number, vA: number, vB: number, r: boolean[], col: Couleur, extra?: number, teinte?: number) => {
+  const rectangle = (
+    R: Remplissage,
+    d: number,
+    plan: number,
+    uA: number,
+    uB: number,
+    vA: number,
+    vB: number,
+    r: boolean[],
+    col: Couleur,
+    extra?: number,
+    teinte?: number,
+    arete = 0,
+  ) => {
     const k = axeDe(d);
     const [i, j] = tangents(k);
     const u0 = uA + (r[0] ? retrait : 0);
@@ -460,7 +542,7 @@ export function maillageDeLaConstruction(
       coins.map(([u, v]) => point(k, plan, i, u, j, v)),
       DIRS[d],
       [col, col, col, col],
-      { extra, teinte: R === O ? teinte : undefined, biseaux: peint ? coins.map(([u, v]) => [dist(u - u0, r[0]), dist(u1 - u, r[1]), dist(v - v0, r[2]), dist(v1 - v, r[3])]) : undefined },
+      { extra, arete, teinte: R === O ? teinte : undefined, biseaux: peint ? coins.map(([u, v]) => [dist(u - u0, r[0]), dist(u1 - u, r[1]), dist(v - v0, r[2]), dist(v1 - v, r[3])]) : undefined },
     );
   };
 
@@ -482,12 +564,38 @@ export function maillageDeLaConstruction(
     );
   };
 
+  /**
+   * Une boîte de (x0, y0, z0) à (x1, y1, z1), en coordonnées de grille, sans son dessous (elle est posée) : ses faces
+   * pleines, sans biseau ni fusion.
+   */
+  const boite = (R: Remplissage, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, f: Faces, attr: { extra?: number; teinte?: number }) => {
+    const sansBiseau = R === O && mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    const q = (pts: V3[], n: V3, col: Couleur) => R.poly(pts, n, [col, col, col, col], { ...attr, biseaux: sansBiseau });
+    q([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], f.dessus);
+    q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0], f.cote);
+    q([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], [0, 1, 0], f.cote);
+    q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
+    q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
+  };
+  /** Une lanterne : son corps sombre (opaque), son cœur (les fenêtres : éteint le jour, allumé la nuit), dans sa case. */
+  const lanterne = (c: VoxelCube) => {
+    const m = (w: number) => [0.5 - w / 2, 0.5 + w / 2];
+    const [a0, a1] = m(LANTERNE.corps);
+    const [b0, b1] = m(LANTERNE.coeur);
+    boite(O, c.x + a0, c.x + a1, c.y + a0, c.y + a1, c.z, c.z + LANTERNE.corps, couleursDe(c), { teinte: teinteDe(c) });
+    const l = couleurDeMatiere(a, 'lanterne');
+    const eteint = c.muted ? { dessus: mixColor(l.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(l.cote, DELAVE[0], DELAVE[1]) } : { dessus: eclaircir(l.cote, 0.85), cote: eclaircir(l.cote, 0.75) };
+    const z0 = c.z + LANTERNE.corps;
+    boite(F, c.x + b0, c.x + b1, c.y + b0, c.y + b1, z0, z0 + LANTERNE.coeur, eteint, { extra: decalages.get(c) ?? -1 });
+  };
+
   // ---- Les faces des blocs, des vitres et des lanternes.
   interface Case {
     u: number;
     v: number;
     couleur: Couleur;
     teinte: number;
+    arete: number;
     /** Retraits du biseau : côté u−, u+, v−, v+. */
     r: [boolean, boolean, boolean, boolean];
     fait: boolean;
@@ -509,12 +617,16 @@ export function maillageDeLaConstruction(
       const pk = `g|${d}|${plan}`;
       let p = plans.get(pk);
       if (!p) plans.set(pk, (p = new Map()));
-      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: FANTOME, teinte: 0, r: SANS_BORDS, fait: false });
+      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: FANTOME, teinte: 0, arete: 0, r: SANS_BORDS, fait: false });
     }
   }
   for (const c of dessines) {
     if (c.ghost) continue;
     const g = genres.get(c);
+    if (g === 'lanterne') {
+      lanterne(c);
+      continue;
+    }
     for (let d = 0; d < 6; d++) {
       if (!visible(c, d)) continue;
       const k = axeDe(d);
@@ -529,13 +641,13 @@ export function maillageDeLaConstruction(
       ];
       if (g !== 'bloc' || !fusion) {
         // Une face seule : les vitres et les lanternes ont chacune leur décalage.
-        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c));
+        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c));
         continue;
       }
       const pk = `o|${d}|${plan}`;
       let p = plans.get(pk);
       if (!p) plans.set(pk, (p = new Map()));
-      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), r, fait: false });
+      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), arete: areteDe(c), r, fait: false });
     }
   }
 
@@ -549,7 +661,7 @@ export function maillageDeLaConstruction(
       if (s.fait) continue;
       const at = (u: number, v: number) => {
         const x = cases.get(`${u},${v}`);
-        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte ? x : undefined;
+        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete ? x : undefined;
       };
       // Le long de u : même couleur, mêmes retraits en v.
       let u1 = s.u;
@@ -581,7 +693,7 @@ export function maillageDeLaConstruction(
       }
       for (let v = s.v; v <= v1; v++) for (let u = s.u; u <= u1; u++) cases.get(`${u},${v}`)!.fait = true;
       if (groupe === 'g') fantome(d, plan, s.u, u1 + 1, s.v, v1 + 1);
-      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte);
+      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete);
     }
   }
 
@@ -691,7 +803,7 @@ export function maillageDeLaConstruction(
   const f = F.fin();
   const g = G.fin();
   return {
-    opaque: { ...opaque, biseaux: Float32Array.from(O.bis), teintes: Float32Array.from(O.tei) },
+    opaque: { ...opaque, biseaux: Float32Array.from(O.bis), teintes: Float32Array.from(O.tei), aretes: Float32Array.from(O.are) },
     fenetres: { ...f, decalages: Float32Array.from(F.extra) },
     fantomes: { ...g, colors: new Float32Array(0), uvs: Float32Array.from(G.uv) },
   };
@@ -712,15 +824,15 @@ export function coutDeLaConstruction(m: MaillageDeLaConstruction): { triangles: 
 
 /**
  * La case touchée sur la construction, et la case devant : le point touché et la normale de la facette (repère Three).
- * La case est celle du bloc sous le point (un demi-bloc derrière la facette, qui reste dans la case de son bloc, biseau
- * compris) ; la case devant est sa voisine du côté où la facette regarde le plus (le haut d'abord, pour un biseau ou un
+ * La case est celle du bloc sous le point (un quart de bloc derrière la facette : il reste dans la case de son bloc, biseau
+ * compris, et dans celle d'une lanterne ou d'une borne, plus petites que leur case) ; la case devant est sa voisine du côté où la facette regarde le plus (le haut d'abord, pour un biseau ou un
  * coin : on pose sur le dessus).
  */
 export function caseDeLaConstruction(point: { x: number; y: number; z: number }, normale: { x: number; y: number; z: number }): { cell: Cell; next: Cell } {
   const cell = {
-    x: Math.floor(point.x - normale.x * 0.5),
-    y: Math.floor(point.z - normale.z * 0.5),
-    z: Math.floor(point.y - normale.y * 0.5),
+    x: Math.floor(point.x - normale.x * 0.25),
+    y: Math.floor(point.z - normale.z * 0.25),
+    z: Math.floor(point.y - normale.y * 0.25),
   };
   const ax = Math.abs(normale.x);
   const ay = Math.abs(normale.y);

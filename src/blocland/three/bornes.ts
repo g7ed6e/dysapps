@@ -203,13 +203,14 @@ export function creerPiliers(archipel: ArchipelagoId): Piliers {
       for (const [nom, a] of Object.entries(attributs)) geo.setAttribute(nom, a);
       geo.setIndex(index);
       geo.setAttribute('delave', new THREE.InstancedBufferAttribute(Float32Array.from(piliers.map((p) => (p.muted ? 1 : 0))), 1));
-      mesh = new THREE.InstancedMesh(geo, mat, piliers.length);
+      const im = new THREE.InstancedMesh(geo, mat, piliers.length);
       const m = new THREE.Matrix4();
-      piliers.forEach((p, i) => mesh!.setMatrixAt(i, m.makeTranslation(p.x, p.z, p.y)));
-      mesh.computeBoundingSphere();
-      mesh.frustumCulled = false;
-      mesh.userData = { borne: true };
-      group.add(mesh);
+      piliers.forEach((p, i) => im.setMatrixAt(i, m.makeTranslation(p.x, p.z, p.y)));
+      im.computeBoundingSphere();
+      im.frustumCulled = false;
+      im.userData = { borne: true };
+      group.add(im);
+      mesh = im;
     },
     triangles: () => (mesh ? mesh.count * (forme.indices.length / 3) : 0),
     dispose() {

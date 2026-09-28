@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { maillageDeLaConstruction } from '../world/construction';
 import { VEHICLE_DECK } from '../world/harbour';
+import { MAST_TOP } from '../world/vehicle';
 import { buildMesh } from '../world/mesher';
 import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world/scene';
 import type { WorldViewProps } from '../world/view';
@@ -85,7 +86,6 @@ export function creerNavire(
         vehicleGroup.visible = false;
         return;
       }
-      const MAST_TOP = 7;
       const hull = vehicle.cubes.filter((c) => c.z < MAST_TOP);
       const balloon = vehicle.cubes.filter((c) => c.z >= MAST_TOP).map((c) => ({ ...c, x: c.x - 2, y: c.y - 3, z: c.z - MAST_TOP }));
       if (taille) {
