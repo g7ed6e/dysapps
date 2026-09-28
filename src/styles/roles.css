@@ -1,4 +1,5 @@
-/* Les insignes des rôles (components/RoleBadge.tsx) : un hexagone et un pictogramme, dessinés en SVG.
+/* Les insignes des rôles (components/RoleBadge.tsx) : un cadre et un pictogramme, dessinés en SVG. Ici, l'hexagone
+   et les couleurs d'Archipéo ; Blocland met un bloc de matériau à la place (styles/blocland.css).
    Chaque insigne a son nom écrit à côté : la couleur n'est jamais le seul repère. */
 .role-badge {
   width: 2.6rem;
@@ -7,6 +8,9 @@
   --role-bg: #d9b26a;
   --role-ink: #13283d;
   --role-edge: #13283d;
+}
+.role-badge .role-frame-bloc {
+  display: none;
 }
 .role-badge .role-frame {
   fill: var(--role-bg);
