@@ -61,10 +61,15 @@ const CAPTURES = [
   { nom: 'carte-2d-nuit', vue: 'carte', famille: '2d', view: '2d', nuit: true },
   { nom: 'ile-contraste', vue: 'île', famille: 'contraste', theme: 'contraste' },
   { nom: 'archipel-contraste', vue: 'archipel', famille: 'contraste', theme: 'contraste' },
+  { nom: 'carte-contraste', vue: 'carte', famille: 'contraste', theme: 'contraste' },
   { nom: 'ile-contraste-nuit', vue: 'île', famille: 'contraste', theme: 'contraste', nuit: true },
-  { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true },
-  { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true },
+  { nom: 'archipel-contraste-nuit', vue: 'archipel', famille: 'contraste', theme: 'contraste', nuit: true },
+  // « Réduire les animations » : deux captures à quelques secondes d'écart, qui doivent être identiques (rien ne bouge).
+  { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true, encore: 'ile-reduit-bis' },
+  { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true, encore: 'archipel-reduit-bis' },
 ];
+/** L'écart entre une capture et sa seconde (`encore`). */
+const ECART = 4000;
 const FAMILLES = option('--familles')?.split(',') ?? null;
 
 // ---------- Le poids de Three.js dans le paquet ----------
@@ -123,10 +128,11 @@ async function scenes() {
             theme: c.theme,
             reduceMotion: c.reduceMotion,
             nom: c.nom,
+            encore: c.encore,
           }))
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, mesure } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.goto(`${base}/icon.svg`);
@@ -147,6 +153,11 @@ async function scenes() {
         // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
         await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (encore) {
+          // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
+          await page.waitForTimeout(ECART);
+          await page.screenshot({ path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
+        }
         await page.close();
         continue;
       }
