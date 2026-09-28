@@ -312,7 +312,7 @@ const grue: Forme = ({ P, e, cx, cz, sol }) => {
  * petit que la grue dans la vue de l'archipel ; la brume de profondeur le pâlit. Dessiné par le lointain commun
  * (./lointain.ts, R4b-5e) ; son panache de 5 volutes, dans l'appel des fumées (`FUMEE_DU_VOLCAN_4E`).
  */
-export const VOLCAN_DU_FOND: Cone = { genre: 'cone', u: 0.04, recul: 100, haut: 16, rayon: 8, cratere: 1.8, pans: 9, couleur: 0x6a5048 };
+export const VOLCAN_DU_FOND: Cone = { genre: 'cone', u: 0.12, recul: 100, haut: 16, rayon: 8, cratere: 1.8, pans: 9, couleur: 0x6a5048 };
 
 /** Le panache du volcan : cinq volutes, poussées par le même vent que les fumées du lot R4 (vers +x et +y). */
 export const FUMEE_DU_VOLCAN_4E = { rayon: 1.1, volutes: 5, ecart: 0.7, vent: [0.15, 0.1] } as const;

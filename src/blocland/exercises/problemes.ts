@@ -1,14 +1,15 @@
 // Problèmes situés dans l’archipel : la mission « Carnet du passeur » de la Plaine des nombres (6e), avec un pont entre deux
 // falaises, un quai à clôturer, une traversée en bateau ; au Marché des proportions (5e), le niveau 3 des Balances (une
 // carte à l’échelle) et celui des Étals (une cargaison partagée selon un ratio) ; le niveau 3 de Pythagore au Belvédère
-// (3e), avec un mât tenu par un câble. Pour chaque item : un énoncé d’une ou deux phrases, le schéma de la situation
+// (3e), avec un mât tenu par un câble ; le niveau 4 des Balances (une traversée à vitesse constante, avec la conversion
+// des minutes en heures) et le niveau 2 de Thalès (l’ombre d’un mât). Pour chaque item : un énoncé d’une ou deux phrases, le schéma de la situation
 // (aide `scene`, voir Scene.tsx) avec ses cotes et un seul « ? », et le rappel de la méthode. Toutes les données de
 // l’énoncé sont sur le schéma, sans donnée parasite ; aucune cote affichée n’est proposée comme réponse, sauf si c’est
 // la réponse (et le tirage évite qu’elle le soit).
 import { randomInt } from '../../core/random';
 import { drawChoices } from '../../core/choices';
 import { buildDataItems, type ItemGenerator } from './college';
-import { formatDuree, formatHeure, formatNombre, type SceneProps } from './Scene';
+import { formatDuree, formatHeure, formatNombre, sayDuree, singulier, type SceneProps } from './Scene';
 import type { ExerciseDef, ExerciseItem } from './types';
 
 type Rng = () => number;
@@ -17,8 +18,8 @@ const m = (n: number): string => `${formatNombre(n)} m`;
 /** Un nombre avec son unité, écrit comme sur le schéma : « 1 500 m », « 0,5 km », « 16 caisses ». */
 const unit = (u: string) => (n: number): string => `${formatNombre(n)} ${u}`;
 const SPOKEN_UNIT: Record<string, string> = { m: 'mètres', km: 'kilomètres', cm: 'centimètres', kg: 'kilos', caisses: 'caisses' };
-/** Le même, lu à voix haute : « 1 500 mètres ». */
-const say = (n: number, u: string): string => `${formatNombre(n)} ${SPOKEN_UNIT[u] ?? u}`;
+/** Le même, lu à voix haute : « 1 500 mètres », « 1 mètre ». */
+const say = (n: number, u: string): string => `${formatNombre(n)} ${singulier(n, SPOKEN_UNIT[u] ?? u)}`;
 /** Arrondi qui efface les erreurs de virgule flottante (0,1 × 3). */
 const round = (n: number): number => Math.round(n * 1000) / 1000;
 const minutes = (n: number): string => `${n} min`;
@@ -423,6 +424,95 @@ export const partageTrois: ItemGenerator = (rng) => {
   };
 };
 
+// ---------- Marché des proportions : la traversée à vitesse constante (Balances, niveau 4, 5e-4e) ----------
+
+/** Des durées qui se changent en heures sans reste pénible : 15 min = 0,25 h, 1 h 30 min = 1,5 h. L’heure pile est rare. */
+const DUREES = [15, 30, 45, 90, 15, 30, 45, 90, 120];
+/** Un piège qui s’écrit simplement (au dixième) : on ne propose pas 2,667 m. */
+const clean = (traps: number[]) => traps.filter((t) => Math.abs(Math.round(t * 10) - t * 10) < 1e-9);
+const km = unit('km');
+const kmh = (n: number): string => `${formatNombre(n)} km/h`;
+/** La durée en heures, écrite à la française : 0,25 ; 1,5. */
+const enHeures = (min: number): string => formatNombre(round(min / 60));
+/** Ce que devient la durée si on prend une heure pour 100 minutes : 30 min lu 0,3 h, 1 h 30 min lu 1,3 h. */
+const centiemes = (min: number): number => Math.floor(min / 60) + (min % 60) / 100;
+/** Une durée, puis une vitesse qui donne une distance entière ; trois nombres différents (une cote ne vaut pas la réponse). */
+function traversee(rng: Rng, durees: readonly number[] = DUREES): { v: number; t: number; d: number } {
+  const t = pick(durees, rng);
+  const speeds = Array.from({ length: 17 }, (_, i) => i + 8).filter((v) => Number.isInteger((v * t) / 60) && new Set([v, t, (v * t) / 60]).size === 3);
+  const v = pick(speeds, rng);
+  return { v, t, d: (v * t) / 60 };
+}
+/** « 1 h 30 min = 1,5 h. », rien pour une heure pile (« 2 h = 2 h » n’apprend rien). */
+const conversion = (t: number): string => (t % 60 ? `${formatDuree(t)} = ${enHeures(t)} h. ` : '');
+const ruleVitesse = (last: string) =>
+  rule('La vitesse', [
+    '12 km/h : le bateau fait 12 km en une heure.',
+    '15 min = 0,25 h',
+    '30 min = 0,5 h',
+    '45 min = 0,75 h',
+    '1 h 30 min = 1,5 h',
+    last,
+  ]);
+const RULE_DISTANCE = ruleVitesse('distance = vitesse × durée en heures.');
+const RULE_VITESSE = ruleVitesse('vitesse = distance ÷ durée en heures.');
+const RULE_DUREE_ROUTE = ruleVitesse('durée en heures = distance ÷ vitesse ; puis × 60 pour les minutes.');
+
+/** La distance parcourue, la vitesse et la durée connues. */
+export const distanceRoute: ItemGenerator = (rng) => {
+  const { v, t, d } = traversee(rng);
+  const h = enHeures(t);
+  return {
+    key: `route-distance-${v}-${t}`,
+    prompt: `Le bateau avance à ${kmh(v)}. La traversée dure ${formatDuree(t)} : quelle distance parcourt-il ?`,
+    spoken: `Le bateau avance à ${formatNombre(v)} kilomètres par heure. La traversée dure ${sayDuree(t)} : quelle distance parcourt-il ?`,
+    // Pièges : les minutes non converties, une heure comptée comme 100 minutes, la vitesse divisée au lieu de multipliée.
+    choices: options(d, clean([v * t, v * centiemes(t), (v * 60) / t, d * 2]), [v, t], rng, km, 1),
+    answer: km(d),
+    hint: `${t % 60 ? `D’abord la durée en heures : ${formatDuree(t)} = ${h} h.` : `La durée est en heures : ${h} h.`} Puis vitesse × durée.`,
+    explanation: `${conversion(t)}${formatNombre(v)} × ${h} = ${formatNombre(d)} : le bateau parcourt ${km(d)}.`,
+    figure: scene({ scene: 'route', distance: '?', duree: t, vitesse: v }),
+    aid: RULE_DISTANCE,
+  };
+};
+
+/** La vitesse du bateau, la distance et la durée connues. */
+export const vitesseRoute: ItemGenerator = (rng) => {
+  const { v, t, d } = traversee(rng);
+  const h = enHeures(t);
+  return {
+    key: `route-vitesse-${v}-${t}`,
+    prompt: `La traversée fait ${km(d)} et dure ${formatDuree(t)}. À quelle vitesse avance le bateau ?`,
+    spoken: `La traversée fait ${formatNombre(d)} kilomètres et dure ${sayDuree(t)}. À quelle vitesse avance le bateau ?`,
+    // Pièges : une heure comptée comme 100 minutes, la multiplication au lieu de la division, la distance divisée par deux.
+    choices: options(v, clean([d / centiemes(t), (d * t) / 60, v * 2, d / 2]), [d, t], rng, kmh, 1),
+    answer: kmh(v),
+    hint: `${t % 60 ? `D’abord la durée en heures : ${formatDuree(t)} = ${h} h.` : `La durée est en heures : ${h} h.`} Puis distance ÷ durée.`,
+    explanation: `${conversion(t)}${formatNombre(d)} ÷ ${h} = ${formatNombre(v)} : le bateau avance à ${kmh(v)}.`,
+    figure: scene({ scene: 'route', distance: d, duree: t, vitesse: '?' }),
+    aid: RULE_VITESSE,
+  };
+};
+
+/** La durée de la traversée, en minutes, la distance et la vitesse connues. */
+export const dureeRoute: ItemGenerator = (rng) => {
+  // Une réponse en minutes : au plus 1 h 30 min.
+  const { v, t, d } = traversee(rng, [15, 30, 45, 90]);
+  const h = enHeures(t);
+  return {
+    key: `route-duree-${v}-${t}`,
+    prompt: `La traversée fait ${km(d)} et le bateau avance à ${kmh(v)}. Combien de minutes dure la traversée ?`,
+    spoken: `La traversée fait ${formatNombre(d)} kilomètres et le bateau avance à ${formatNombre(v)} kilomètres par heure. Combien de minutes dure la traversée ?`,
+    // Pièges : la durée en heures lue comme des minutes (0,75 h lu 75 min), la multiplication, une heure pile.
+    choices: options(t, [round((d / v) * 100), d * v, 60, t + 60], [d, v], rng, minutes, 15),
+    answer: minutes(t),
+    hint: `${formatNombre(d)} ÷ ${formatNombre(v)} donne la durée en heures. Puis × 60 pour les minutes.`,
+    explanation: `${formatNombre(d)} ÷ ${formatNombre(v)} = ${h} h. ${h} × 60 = ${t} : la traversée dure ${t} minutes.`,
+    figure: scene({ scene: 'route', distance: d, duree: '?', vitesse: v }),
+    aid: RULE_DUREE_ROUTE,
+  };
+};
+
 // ---------- Belvédère de Thalès : Pythagore situé (3e) ----------
 
 const TRIPLES: [number, number, number][] = [
@@ -481,6 +571,60 @@ export const matHauteur: ItemGenerator = (rng) => {
   };
 };
 
+// ---------- Belvédère de Thalès : Thalès situé, l’ombre du mât (3e) ----------
+
+const RULE_OMBRE = rule('Thalès en situation', [
+  'Le bâton et le mât sont verticaux : ils sont parallèles.',
+  'Le haut du bâton et le haut du mât sont sur le même rayon de soleil.',
+  'Grand triangle = petit triangle × le même nombre (le coefficient).',
+]);
+/**
+ * Les bâtons, leurs ombres et les coefficients possibles : un bâton d’un ou deux mètres, un mât d’au moins 4 m, toutes
+ * les longueurs entières, et quatre longueurs différentes (une cote affichée ne vaut jamais la réponse).
+ */
+const OMBRES = [2, 2.5, 3, 4, 5].flatMap((k) =>
+  [1, 2].flatMap((b) =>
+    [2, 3, 4, 5, 6]
+      .map((ob) => ({ b, ob, k, H: b * k, O: ob * k }))
+      .filter(({ b, ob, H, O }) => Number.isInteger(H) && Number.isInteger(O) && H >= 4 && new Set([b, ob, H, O]).size === 4),
+  ),
+);
+const shadows = (rng: Rng) => pick(OMBRES, rng);
+
+/** La hauteur du mât, depuis le bâton et les deux ombres. */
+export const ombreHauteur: ItemGenerator = (rng) => {
+  const { b, ob, k, H, O } = shadows(rng);
+  return {
+    key: `ombre-hauteur-${b}-${ob}-${k}`,
+    prompt: `Un bâton de ${m(b)} fait une ombre de ${m(ob)}. Au même moment, l’ombre du mât mesure ${m(O)} : quelle est la hauteur du mât ?`,
+    spoken: `Un bâton de ${say(b, 'm')} fait une ombre de ${say(ob, 'm')}. Au même moment, l’ombre du mât mesure ${say(O, 'm')} : quelle est la hauteur du mât ?`,
+    // Pièges : l’écart ajouté au lieu du coefficient, le rapport inversé, la distance du bâton au mât prise pour l’ombre.
+    choices: options(H, clean([b + (O - ob), (O * ob) / b, (b * (O - ob)) / ob, H + 1, H - 1]), [b, ob, O], rng, m, 1),
+    answer: m(H),
+    hint: `Le coefficient : ${formatNombre(O)} ÷ ${formatNombre(ob)}, l’ombre du mât ÷ l’ombre du bâton. Puis le bâton × ce nombre.`,
+    explanation: `${formatNombre(O)} ÷ ${formatNombre(ob)} = ${formatNombre(k)}. ${formatNombre(b)} × ${formatNombre(k)} = ${formatNombre(H)} : le mât mesure ${m(H)}.`,
+    figure: scene({ scene: 'ombre', unit: 'm', baton: b, ombreBaton: ob, hauteur: '?', ombre: O }),
+    aid: RULE_OMBRE,
+  };
+};
+
+/** L’ombre du mât, depuis le bâton, son ombre et la hauteur du mât. */
+export const ombreLongueur: ItemGenerator = (rng) => {
+  const { b, ob, k, H, O } = shadows(rng);
+  return {
+    key: `ombre-longueur-${b}-${ob}-${k}`,
+    prompt: `Un bâton de ${m(b)} fait une ombre de ${m(ob)}. Au même moment, le mât mesure ${m(H)} : quelle est la longueur de son ombre ?`,
+    spoken: `Un bâton de ${say(b, 'm')} fait une ombre de ${say(ob, 'm')}. Au même moment, le mât mesure ${say(H, 'm')} : quelle est la longueur de son ombre ?`,
+    // Pièges : l’écart ajouté au lieu du coefficient, le rapport inversé, l’ombre du bâton oubliée (O − ob).
+    choices: options(O, clean([ob + (H - b), (H * b) / ob, O - ob, O + 1, O - 1]), [b, ob, H], rng, m, 1),
+    answer: m(O),
+    hint: `Le coefficient : ${formatNombre(H)} ÷ ${formatNombre(b)}, le mât ÷ le bâton. Puis l’ombre du bâton × ce nombre.`,
+    explanation: `${formatNombre(H)} ÷ ${formatNombre(b)} = ${formatNombre(k)}. ${formatNombre(ob)} × ${formatNombre(k)} = ${formatNombre(O)} : l’ombre du mât mesure ${m(O)}.`,
+    figure: scene({ scene: 'ombre', unit: 'm', baton: b, ombreBaton: ob, hauteur: H, ombre: '?' }),
+    aid: RULE_OMBRE,
+  };
+};
+
 // ---------- Les missions ----------
 
 const PASSEUR_1 = 'Lis le schéma : le point d’interrogation montre ce que tu cherches. Calcule-le avec les nombres écrits dessus.';
@@ -489,6 +633,8 @@ const PASSEUR_3 = 'Deux calculs : d’abord ce que le schéma te permet de trouv
 const BALANCES_CARTE = 'Lis la carte : chaque centimètre représente la même distance en vrai. Avec une fraction, multiplie, puis convertis.';
 const ETALS_RATIO = 'Compte d’abord les parts, puis trouve ce que vaut une part : chaque case du schéma est une part.';
 const PYTHAGORE_MAT = 'Le mât, le sol et le câble forment un triangle rectangle : le câble est l’hypoténuse. Applique Pythagore.';
+const BALANCES_ROUTE = 'Lis le schéma : la vitesse dit combien de kilomètres en une heure. Passe toujours par la durée en heures.';
+const THALES_OMBRE = 'Le bâton et le mât sont verticaux, donc parallèles : trouve le coefficient avec les longueurs connues, puis multiplie.';
 
 interface Spec {
   biome: ExerciseDef['biome'];
@@ -529,11 +675,14 @@ export const PROBLEMES_EXERCISES: ExerciseDef[] = [
 ];
 
 /**
- * Les problèmes situés du collège, en niveau 3 de missions existantes (le Marché est l’île de l’école des Îles Brumeuses :
- * pas de quatrième borne) : la carte des Balances, la cargaison des Étals, le mât de Pythagore.
+ * Les problèmes situés du collège, en niveaux de plus de missions existantes (le Marché est l’île de l’école des Îles
+ * Brumeuses : pas de quatrième borne) : la carte (niveau 3) et la traversée (niveau 4) des Balances, la cargaison des
+ * Étals, le mât de Pythagore, l’ombre de Thalès.
  */
 export const PROBLEMES_COLLEGE_EXERCISES: ExerciseDef[] = [
   define({ biome: 'marche', type: 'etals', level: 3, instruction: ETALS_RATIO, generators: [partageDeux, partDepuisPart, partageTrois], block: 'toile', xp: 14 }),
   define({ biome: 'marche', type: 'balances', level: 3, instruction: BALANCES_CARTE, generators: [carteVersReel, reelVersCarte, carteFraction], block: 'toile', xp: 14 }),
+  define({ biome: 'marche', type: 'balances', level: 4, instruction: BALANCES_ROUTE, generators: [distanceRoute, vitesseRoute, dureeRoute], block: 'toile', xp: 14 }),
   define({ biome: 'belvedere', type: 'pythagore', level: 3, instruction: PYTHAGORE_MAT, generators: [matCable, matHauteur], block: 'marbre', xp: 14 }),
+  define({ biome: 'belvedere', type: 'thales', level: 2, instruction: THALES_OMBRE, generators: [ombreHauteur, ombreLongueur], block: 'marbre', xp: 14 }),
 ];

@@ -7,6 +7,7 @@
 import { ARCHIPELAGO_IDS, landscape, mapOf, type ArchipelagoId, type Ground } from './map';
 import { toutConstruit } from './budget';
 import { champDuSol } from './landMesh';
+import { modelerLeSol } from './modeleDessine';
 import { maillageDuDecor, rangerLeDecor, type FacettesDuDecor } from './decorMesh';
 import { cielDe, couleurDeMatiere, couleurDuSol, eauxDe, MATIERES, SOLS } from './palette';
 import type { TextureKind } from './pixels';
@@ -32,15 +33,14 @@ function empreintesDuRendu(a: ArchipelagoId): Record<string, string> {
   const { progress, village } = toutConstruit();
   const cubes = worldCubes(a, progress, village, false);
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
-  const champ = champDuSol(
-    a,
-    cubes.filter((c) => c.sol),
-    reste,
-  );
+  // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
+  const sol = modelerLeSol(a, cubes.filter((c) => c.sol), reste);
+  const champ = champDuSol(a, sol, reste);
   const decor = maillageDuDecor(a, champ, elements);
   const aplat = maillageDuDecor(a, champ, elements, { style: 'a' });
   return {
     relief: empreinte(mapOf(a).map((d) => [d.id, landscape(d)])),
+    'modelé dessiné': empreinte(champ.colonnes.map((c) => [c.x, c.y, c.haut])),
     'décor (primitives)': empreinteDuDecor(decor.decor),
     'décor (lueurs)': empreinteDuDecor(decor.lueurs),
     'décor (style a)': empreinteDuDecor(aplat.decor),

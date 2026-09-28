@@ -1,0 +1,1 @@
+Conception : le relief propre au dessin d'Archipéo (gradins, falaises) s'écrit désormais à part du relief où l'on marche, que les deux univers partagent. Les îles de Blocland ne changeront donc pas quand Archipéo sculptera les siennes. Rien ne change dans l'application.
