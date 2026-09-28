@@ -6,10 +6,11 @@ import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
-import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, UNIVERS, UNIVERS_OUVERT } from '../core/univers';
+import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/univers';
 import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
 import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
 import { Icon } from './Icon';
+import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 
@@ -25,7 +26,7 @@ function seenThisSession(): boolean {
 
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
-  return UNIVERS_OUVERT && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
+  return PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
 }
 
 const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
@@ -54,6 +55,7 @@ export function TitleScreen() {
   const batisseur = blocland?.batisseur ?? false;
   const suite = useRef(0);
   const depart = useRef<{ id: number; x: number; y: number } | null>(null);
+  const logo = useRef<HTMLImageElement>(null);
   const geste = useEffectEvent((g: Geste) => {
     suite.current = avancer(suite.current, g);
     if (suite.current === LONGUEUR_SUITE) {
@@ -71,6 +73,22 @@ export function TitleScreen() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+  // Safari (iPhone, iPad) ne suit pas toujours `touch-action` ni `overscroll-behavior` : un glissement vers le bas sur
+  // le logo rechargerait la page (« tirer pour recharger »). Le toucher du logo est donc gardé par la page, sans écouteur
+  // passif ; les événements de pointeur, eux, arrivent toujours.
+  useEffect(() => {
+    const el = logo.current;
+    if (!open || !el) return;
+    const garder = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    el.addEventListener('touchstart', garder, { passive: false });
+    el.addEventListener('touchmove', garder, { passive: false });
+    return () => {
+      el.removeEventListener('touchstart', garder);
+      el.removeEventListener('touchmove', garder);
+    };
+  }, [open, message]);
   if (!open) return null;
   // Au doigt (ou à la souris), les gestes se font sur le logo : glisser pour les flèches, toucher pour B et A.
   // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
@@ -121,10 +139,10 @@ export function TitleScreen() {
         {/* Sans l'icône qui retombe : le message tient à l'écran, même en grands caractères. */}
         <div className="title-card">
           <h1 id="titre-message-univers" className="title-message-heading">
-            <Syllabified text={MESSAGE_UNIVERS.titre} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.titre)} />
           </h1>
           <p className="title-message">
-            <Syllabified text={MESSAGE_UNIVERS.texte} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.texte)} />
           </p>
           <SpeakButton text={MESSAGE_LU} />
           <div className="title-actions">
@@ -144,6 +162,7 @@ export function TitleScreen() {
     <div className="title-screen" role="dialog" aria-modal="true" aria-labelledby="titre-appli">
       <div className="title-card">
         <img
+          ref={logo}
           className="title-logo"
           src={`${import.meta.env.BASE_URL}${univers.logo}`}
           alt=""

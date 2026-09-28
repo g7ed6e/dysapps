@@ -48,14 +48,17 @@ export async function generatePages() {
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
-    // Les textes d'univers (Gardiens, espèces) : ceux que lit l'élève, Blocland tant que l'univers n'est pas ouvert.
+    // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
+    const universCore = await load('/src/core/univers.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
       BIOMES: biomesMod.BIOMES,
       BLOCKS: biomesMod.BLOCKS,
       TEXTES: universMod.textesDe(universMod.universAffiche()),
+      UNIVERS: universCore.UNIVERS,
+      UNIVERS_PAR_DEFAUT: universCore.UNIVERS_PAR_DEFAUT,
       blockCount: biomesMod.blockCount,
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
@@ -848,8 +851,7 @@ function baremePage(d) {
         ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],
-        ['Essayer le nouveau dessin du monde (expérimental)', DEFAULT_SETTINGS.renduArchipeo ? 'oui' : 'non', ''],
-        ['Surface du monde (expérimental)', d.settings.STYLE_LABELS[DEFAULT_SETTINGS.styleArchipeo], Object.values(d.settings.STYLE_LABELS).join(', ')],
+        ['Univers', d.UNIVERS[d.UNIVERS_PAR_DEFAUT].nom, Object.values(d.UNIVERS).map((u) => u.nom).join(', ')],
       ],
     ),
     '',

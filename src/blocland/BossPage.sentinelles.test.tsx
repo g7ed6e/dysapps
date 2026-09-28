@@ -1,5 +1,4 @@
-// Le défi d'une sentinelle (lot 6, fil B2) : l'écran d'Archipéo, essayé comme s'il était ouvert (les textes de
-// l'univers sont ceux d'Archipéo, quelle que soit la constante `UNIVERS_OUVERT`).
+// Le défi d'une sentinelle (lot 6, fil B2) : l'écran d'Archipéo, avec les textes d'Archipéo.
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';

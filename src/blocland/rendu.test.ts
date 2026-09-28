@@ -1,13 +1,16 @@
 import { mesuresDepuis, renduDepuis, styleDepuis } from './rendu';
 
+// Le serveur de développement lit l'adresse ; l'application publiée non (troisième argument).
+const dev = true;
+
 it('garde le monde en blocs sans le drapeau', () => {
-  expect(renduDepuis('https://dysapps.fr/#/aventure')).toBe('blocs');
-  expect(renduDepuis('https://dysapps.fr/?rendu=autre#/aventure')).toBe('blocs');
+  expect(renduDepuis('https://dysapps.fr/#/aventure', {}, dev)).toBe('blocs');
+  expect(renduDepuis('https://dysapps.fr/?rendu=autre#/aventure', {}, dev)).toBe('blocs');
 });
 
 it('lit le drapeau avant le #, pas dans la route (que la navigation remplace)', () => {
-  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure/foret')).toBe('archipeo');
-  expect(renduDepuis('https://dysapps.fr/#/aventure?rendu=archipeo')).toBe('blocs');
+  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure/foret', {}, dev)).toBe('archipeo');
+  expect(renduDepuis('https://dysapps.fr/#/aventure?rendu=archipeo', {}, dev)).toBe('blocs');
 });
 
 it('lit le compteur de mesures', () => {
@@ -18,35 +21,32 @@ it('lit le compteur de mesures', () => {
 });
 
 it('lit l’option de style du lot R1, seulement avec le rendu Archipéo', () => {
-  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=b#/aventure')).toBe('b');
-  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=c#/aventure')).toBe('c');
-  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo#/aventure')).toBeNull();
-  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=z#/aventure')).toBeNull();
-  expect(styleDepuis('https://dysapps.fr/?style=a#/aventure')).toBeNull();
+  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=b#/aventure', {}, dev)).toBe('b');
+  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=c#/aventure', {}, dev)).toBe('c');
+  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', {}, dev)).toBeNull();
+  expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=z#/aventure', {}, dev)).toBeNull();
+  expect(styleDepuis('https://dysapps.fr/?style=a#/aventure', {}, dev)).toBeNull();
 });
 
-it('lit aussi les réglages expérimentaux ; l’adresse l’emporte sur eux', () => {
-  const archipeo = { renduArchipeo: true, styleArchipeo: 'textures' } as const;
-  expect(renduDepuis('https://dysapps.fr/#/aventure', archipeo)).toBe('archipeo');
-  expect(renduDepuis('https://dysapps.fr/#/aventure', { ...archipeo, renduArchipeo: false })).toBe('blocs');
-  expect(styleDepuis('https://dysapps.fr/#/aventure', archipeo)).toBeNull();
-  expect(styleDepuis('https://dysapps.fr/#/aventure', { ...archipeo, styleArchipeo: 'b' })).toBe('b');
-  expect(styleDepuis('https://dysapps.fr/?style=c#/aventure', { ...archipeo, styleArchipeo: 'b' })).toBe('c');
-  // Le style seul, sans le rendu Archipéo, ne change rien.
-  expect(styleDepuis('https://dysapps.fr/#/aventure', { renduArchipeo: false, styleArchipeo: 'a' })).toBeNull();
-});
-
-it('une fois l’univers ouvert, l’univers choisit le rendu à la place des réglages expérimentaux', () => {
+it('suit l’univers choisi : Blocland (ou rien, l’univers par défaut) en blocs, Archipéo en Archipéo', () => {
   const ici = 'https://dysapps.fr/#/aventure';
-  const choix = { renduArchipeo: true, styleArchipeo: 'b' } as const;
-  // Fermé : l'univers enregistré ne change rien.
-  expect(renduDepuis(ici, { ...choix, renduArchipeo: false, univers: 'archipeo' }, false)).toBe('blocs');
-  // Ouvert : Blocland (ou rien, l'univers par défaut) dessine en blocs, même avec l'ancien réglage expérimental ;
-  // Archipéo en Archipéo.
-  expect(renduDepuis(ici, { ...choix, univers: 'blocland' }, true)).toBe('blocs');
-  expect(renduDepuis(ici, { ...choix, renduArchipeo: false, univers: 'archipeo' }, true)).toBe('archipeo');
-  expect(renduDepuis(ici, { ...choix, renduArchipeo: false }, true)).toBe('blocs');
-  expect(styleDepuis(ici, { ...choix, univers: 'blocland' }, true)).toBeNull();
-  // L'adresse l'emporte encore jusqu'à la bascule, qui retire le drapeau.
-  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', { ...choix, univers: 'blocland' }, true)).toBe('archipeo');
+  expect(renduDepuis(ici, {}, dev)).toBe('blocs');
+  expect(renduDepuis(ici, { univers: 'blocland' }, dev)).toBe('blocs');
+  expect(renduDepuis(ici, { univers: 'archipeo' }, dev)).toBe('archipeo');
+  expect(styleDepuis(ici, { univers: 'archipeo' }, dev)).toBeNull();
+  expect(styleDepuis('https://dysapps.fr/?style=b#/aventure', { univers: 'archipeo' }, dev)).toBe('b');
+  expect(styleDepuis('https://dysapps.fr/?style=b#/aventure', { univers: 'blocland' }, dev)).toBeNull();
+});
+
+it('sur le serveur de développement, l’adresse l’emporte sur l’univers, dans les deux sens', () => {
+  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', { univers: 'blocland' }, dev)).toBe('archipeo');
+  expect(renduDepuis('https://dysapps.fr/?rendu=blocs#/aventure', { univers: 'archipeo' }, dev)).toBe('blocs');
+});
+
+it('dans l’application publiée, aucune adresse ne fait passer un appareil à Archipéo (décision 8)', () => {
+  const publiee = false;
+  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', { univers: 'blocland' }, publiee)).toBe('blocs');
+  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', {}, publiee)).toBe('blocs');
+  expect(renduDepuis('https://dysapps.fr/?rendu=blocs#/aventure', { univers: 'archipeo' }, publiee)).toBe('archipeo');
+  expect(styleDepuis('https://dysapps.fr/?style=b#/aventure', { univers: 'archipeo' }, publiee)).toBeNull();
 });

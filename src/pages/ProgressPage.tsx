@@ -9,6 +9,8 @@ import { Icon } from '../components/Icon';
 import { RecordTag } from '../components/RecordTag';
 import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 import { useTextes } from '../univers';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
@@ -17,6 +19,7 @@ const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 function SubjectPanel({ data }: { data: SubjectProgress }) {
   const info = SUBJECTS[data.subject];
   const { earned, max } = data.stars;
+  const univers = useUnivers();
   const percent = max ? Math.round((earned / max) * 100) : 0;
   const textes = useTextes();
   const titleId = `matiere-${data.subject}`;
@@ -41,7 +44,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
             <div className="xp-fill" style={{ width: `${percent}%` }} />
           </div>
           <p className="subject-progress-detail">
-            <Icon name="star" /> {earned} / {max} étoiles dans Archipéo
+            <Icon name="star" /> {earned} / {max} étoiles dans {UNIVERS[univers].nom}
           </p>
         </>
       )}

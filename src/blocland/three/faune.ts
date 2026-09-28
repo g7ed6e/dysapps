@@ -1,4 +1,4 @@
-// La faune et le ciel d'Archipéo en 3D (lot R3, derrière `?rendu=archipeo`) : les formes facettées de world/faune.ts,
+// La faune et le ciel d'Archipéo en 3D (lot R3, dans l’univers Archipéo (voir rendu.ts)) : les formes facettées de world/faune.ts,
 // une instanciation par famille. Toutes les baleines en un appel de dessin (leur queue bat et leur souffle s'ouvre dans
 // le dessin, d'après deux valeurs par baleine), tous les oiseaux en un (ils battent des ailes en s'écrasant en hauteur),
 // tous les nuages en un ; le liseré d'écume du passage de la baleine en un, seulement quand il se voit. Matériaux mats à

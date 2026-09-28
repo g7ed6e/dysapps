@@ -22,7 +22,7 @@ it('une balise par appareil et par orientation, avec sa media query', () => {
   expect(links).toHaveLength(SPLASH_DEVICES.length * 2);
   expect(links[0]).toEqual({
     rel: 'apple-touch-startup-image',
-    href: '/dysapps/splash/apple-splash-1320x2868.png',
+    href: expect.stringMatching(/^\/dysapps\/splash\/apple-splash-1320x2868\.png\?v=[0-9a-f]{8}$/),
     media: '(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
   });
 });

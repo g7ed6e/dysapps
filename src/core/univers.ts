@@ -1,11 +1,8 @@
 // L'univers de l'appareil (lot 6, docs/conception/univers.md et cadrage-archipeo.md, « Les fils du lot 6 ») : Archipéo
 // ou Blocland. Il choisit le dessin du monde et le titre ; jamais les règles, jamais la progression, commune aux deux.
-// Tout passe derrière `UNIVERS_OUVERT`, fausse jusqu'à la bascule : tant qu'elle l'est, l'élève ne voit rien changer
-// (titre « Archipéo », monde en blocs, section Expérimental) et le champ `univers` des réglages n'est jamais écrit.
+// Depuis la bascule du lot 6 (décision 10 de univers.md), l'univers se choisit dans Réglages › Univers : Blocland par
+// défaut, Archipéo au choix, en second. La section Expérimental d'avant n'existe plus.
 import type { AnyIconName } from '../components/Icon';
-
-/** La bascule du lot 6 : vraie, le réglage « Univers » remplace la section Expérimental. */
-export const UNIVERS_OUVERT = false;
 
 export type UniversChoice = 'archipeo' | 'blocland';
 
@@ -31,16 +28,8 @@ export interface UniversInfo {
   bienvenue: string;
 }
 
+// Blocland d'abord : c'est l'ordre des Réglages (Archipéo n'est pas mis en avant, mainteneur, 28 septembre 2026).
 export const UNIVERS: Record<UniversChoice, UniversInfo> = {
-  archipeo: {
-    nom: 'Archipéo',
-    phrase: 'Le savoir construit ton monde.',
-    icone: 'ancre',
-    logo: 'archipeo.svg',
-    presentation: 'Une aventure en mer : ton savoir reconstruit l’archipel.',
-    carte: 'Carte d’Archipéo',
-    bienvenue: 'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
-  },
   blocland: {
     nom: 'Blocland',
     phrase: 'Chaque bloc construit ton monde.',
@@ -49,6 +38,15 @@ export const UNIVERS: Record<UniversChoice, UniversInfo> = {
     presentation: 'Un monde en cubes, où tu reconstruis le village bloc par bloc.',
     carte: 'Carte de Blocland',
     bienvenue: 'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
+  },
+  archipeo: {
+    nom: 'Archipéo',
+    phrase: 'Le savoir construit ton monde.',
+    icone: 'ancre',
+    logo: 'archipeo.svg',
+    presentation: 'Une aventure en mer : ton savoir reconstruit l’archipel.',
+    carte: 'Carte d’Archipéo',
+    bienvenue: 'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
   },
 };
 
@@ -61,13 +59,19 @@ export interface AvantUnivers {
 }
 
 /**
+ * Le message unique qui présente Archipéo : éteint, Archipéo n'est pas mis en avant pour l'instant (mainteneur,
+ * 28 septembre 2026, décision 9 de univers.md). Il se choisit dans les Réglages, sans qu'aucun écran ne le propose.
+ */
+export const PRESENTER_ARCHIPEO = false;
+
+/**
  * Le premier univers d'un appareil, figé ensuite dans les réglages : toujours Blocland, l'univers par défaut. Archipéo
  * ne s'active que dans les Réglages, jamais d'office, même pour un appareil qui essayait la section Expérimental
- * (décisions 7 et 8 de univers.md). Un appareil qui a déjà une progression reçoit le message unique qui lui présente
- * Archipéo et le réglage ; un appareil neuf n'a rien à apprendre de nouveau.
+ * (décisions 7 et 8 de univers.md). Le message unique, s'il est rallumé (`PRESENTER_ARCHIPEO`), n'est dit qu'à un
+ * appareil qui a déjà une progression ; un appareil neuf n'a rien à apprendre de nouveau.
  */
-export function premierUnivers({ progression }: AvantUnivers): { univers: UniversChoice; message: boolean } {
-  return { univers: UNIVERS_PAR_DEFAUT, message: progression };
+export function premierUnivers({ progression }: AvantUnivers, presenter = PRESENTER_ARCHIPEO): { univers: UniversChoice; message: boolean } {
+  return { univers: UNIVERS_PAR_DEFAUT, message: presenter && progression };
 }
 
 /** Une progression enregistrée, d'après les sauvegardes brutes de l'appareil (`progress` et `blocland`). */
@@ -78,12 +82,9 @@ export function aUneProgression(progress: unknown, blocland: unknown): boolean {
   return Number(p.xp) > 0 || Number(p.totalAnswers) > 0 || etoiles;
 }
 
-/**
- * L'univers qui se voit : celui des réglages une fois ouvert (l'univers par défaut s'il n'y en a pas) ; avant la
- * bascule, les textes restent ceux d'aujourd'hui, c'est-à-dire ceux d'Archipéo.
- */
-export function titreAffiche(univers: UniversChoice | undefined, ouvert: boolean): UniversChoice {
-  return ouvert ? (univers ?? UNIVERS_PAR_DEFAUT) : 'archipeo';
+/** L'univers qui se voit (titre, barre du haut, habillage, textes) : celui des réglages, l'univers par défaut sinon. */
+export function universAffiche(univers?: UniversChoice): UniversChoice {
+  return univers ?? UNIVERS_PAR_DEFAUT;
 }
 
 // Le message unique, noté par appareil comme ce que la baleine a déjà dit (WhaleWord), jamais dans la sauvegarde :

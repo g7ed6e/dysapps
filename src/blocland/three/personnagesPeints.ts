@@ -1,4 +1,4 @@
-// Les personnages d'Archipéo dans la scène 3D (lot R6), derrière `?rendu=archipeo` : le bonhomme (un maillage à six
+// Les personnages d'Archipéo dans la scène 3D (lot R6), dans l’univers Archipéo (voir rendu.ts) : le bonhomme (un maillage à six
 // os), les créatures d'un archipel (un maillage à deux os par créature : le corps, le bras et son outil) et les
 // Gardiens en sentinelles de pierre (un maillage fixe), un appel de dessin chacun. Les modèles sont ceux de
 // world/personnages/ (fusions.ts), placés depuis la grille d'aujourd'hui : l'emprise au sol, la marche, les

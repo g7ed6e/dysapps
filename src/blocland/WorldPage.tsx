@@ -650,7 +650,7 @@ export function WorldPage() {
             onIntent={onIntent}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`Archipéo en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />

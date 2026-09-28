@@ -6,9 +6,6 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 
-// La bascule du lot 6, essayée d'avance : `UNIVERS_OUVERT` vraie.
-vi.mock('../core/univers', async (importOriginal) => ({ ...(await importOriginal<typeof import('../core/univers')>()), UNIVERS_OUVERT: true }));
-
 function renderPage() {
   return render(
     <SettingsProvider>
@@ -38,9 +35,9 @@ it('change d’univers seulement après la confirmation, qui dit ce qui reste', 
   expect(screen.getByRole('radio', { name: /^Blocland/ })).toBeChecked();
   await user.click(screen.getByRole('radio', { name: /^Archipéo/ }));
   expect(screen.getByRole('radio', { name: /^Blocland/ })).toBeChecked();
-  expect(screen.getByRole('group', { name: 'Passer à Archipéo ?' })).toHaveTextContent('Ce qui reste : tes étoiles, tes blocs, tes plans et tes missions.');
+  expect(screen.getByRole('group', { name: /^Passer à Archipéo\s\?$/ })).toHaveTextContent('Ce qui reste : tes étoiles, tes blocs, tes plans et tes missions.');
   await user.click(screen.getByRole('button', { name: 'Annuler' }));
-  expect(screen.queryByRole('group', { name: 'Passer à Archipéo ?' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('group', { name: /^Passer à Archipéo\s\?$/ })).not.toBeInTheDocument();
   await user.click(screen.getByRole('radio', { name: /^Archipéo/ }));
   await user.click(screen.getByRole('button', { name: 'Changer d’univers' }));
   expect(screen.getByRole('radio', { name: /^Archipéo/ })).toBeChecked();

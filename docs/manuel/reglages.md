@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux d’Archipéo, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -15,7 +15,7 @@ Quatre polices au choix :
 | **Atkinson Hyperlegible** | Formes de lettres très différenciées (b, d, p, q, I, l, 1). |
 | **Arial** | La police système, si l’élève y est habitué. |
 
-Le texte à lire reste toujours dans la police choisie. La police des titres de l’interface, Montserrat grasse, ne sert qu’aux titres courts et au nom « Archipéo ».
+Le texte à lire reste toujours dans la police choisie. La police des titres de l’interface ne sert qu’aux titres courts et au nom de l’univers : Archivo Black dans Blocland, Montserrat grasse dans Archipéo.
 
 ## Lecture
 
@@ -56,34 +56,38 @@ Les missions de LV2 arrivent île par île, en commençant par la 5e.
 
 ## Au démarrage
 
-- **Le village d’Archipéo** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
+- **Le village** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
 - **Le menu** : l’appli s’ouvre sur le menu principal, comme avant le village au démarrage.
 
 Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre toujours sur le menu.
 
 ## Animations et vue du monde
 
-- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, Archipéo suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
+- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, l’appli suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
 - **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
-  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Archipéo montre le même monde en 2D, en pixels, vu de dessus en oblique ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
+  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre le même monde en 2D, en pixels, vu de dessus en oblique ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
 
-## Expérimental
+## Univers
 
-![La section Expérimental des Réglages : la case « Essayer le nouveau dessin du monde » cochée, puis les quatre choix de la surface du monde.](/captures/reglages-experimental.jpg)
+![La section Univers des Réglages : Blocland, coché, avec son icône et sa phrase, puis Archipéo.](/captures/reglages-univers.jpg)
 
-Cette section rassemble des options **expérimentales**, désactivées par défaut. Elles montrent le nouveau dessin du monde d’Archipéo pendant qu’il se construit : il peut encore changer ou s’afficher moins bien. Elles ne touchent ni à la progression ni aux sauvegardes, et le changement se voit à la prochaine ouverture du monde.
+L’univers change le dessin du monde et l’histoire ; la progression reste la même. Deux univers se choisissent :
 
-- **Essayer le nouveau dessin du monde** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; sur un appareil sans WebGL, la 2D peinte) au lieu du monde en blocs, qui reste disponible en décochant la case.
-- **La surface du monde**, affichée quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Couleurs unies** (une couleur par face), **Couleurs nuancées** (la couleur fondue en douceur, le style retenu pour Archipéo), **Coins arrondis** (la lumière arrondie sur les coins des cubes).
+- **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
+- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
 
-Ces options préparent le choix de l’univers, qui les remplacera à l’ouverture du lot 6 : une section **Univers** où l’on choisit **Archipéo**, une aventure en mer, ou **Blocland**, le monde en blocs. Chaque univers y a une icône, son nom et une phrase à écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions) ; le changement se voit au retour au village. Un appareil qui a déjà une progression reste dans Blocland, et un message, dit une seule fois après le premier toucher de l’écran titre, lui présente Archipéo. Un appareil qui avait coché « Essayer le nouveau dessin du monde » passe à Archipéo sans ce message. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
+Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre, la barre du haut et l’habillage de l’interface.
+
+Tous les appareils s’ouvrent dans Blocland, même ceux qui ont déjà une progression. Archipéo ne se choisit qu’ici : aucun écran ne le propose, et aucune adresse ne fait passer un appareil à Archipéo. **Affichage par défaut** ne change pas l’univers.
+
+L’ancienne section **Expérimental** (« Essayer le nouveau dessin du monde ») n’existe plus : le nouveau dessin du monde s’appelle maintenant Archipéo et se choisit ici. Un appareil qui l’avait cochée s’ouvre dans Blocland, sans message.
 
 ## Application
 
@@ -114,7 +118,7 @@ Certaines règles ne sont pas des options, parce qu’elles font partie de la m�
 - pas de chronomètre, nulle part ;
 - une seule tâche par écran, et l’écran tient sans défiler ;
 - la consigne peut toujours être réécoutée ;
-- l’indice ne pénalise jamais (il compte pour un demi-point dans Archipéo, jamais en négatif) ;
+- l’indice ne pénalise jamais (il compte pour un demi-point dans l’aventure, jamais en négatif) ;
 - une réponse fausse rapporte un point d’effort et la correction explique ;
 - les cibles tactiles sont larges (au moins 48 px) ;
 - aucun texte à lire n’est dessiné dans la 3D ;

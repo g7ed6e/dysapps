@@ -1,4 +1,4 @@
-// Un personnage d'Archipéo seul, en 3D (lot R6), derrière `?rendu=archipeo` : la créature de la bulle, le Gardien du
+// Un personnage d'Archipéo seul, en 3D (lot R6), dans l’univers Archipéo (voir rendu.ts) : la créature de la bulle, le Gardien du
 // défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. La créature respire (et peut tourner
 // lentement) ; la sentinelle ne bouge jamais, seul son allumage change, en fondu (lot 6). Quand l'appareil demande moins
 // d'animations, rien ne bouge et l'allumage change d'un coup. VoxelCanvas.tsx reste celui du monde en blocs.

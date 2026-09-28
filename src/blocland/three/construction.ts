@@ -1,4 +1,4 @@
-// La construction taillée d'Archipéo en 3D (lot R5, derrière `?rendu=archipeo`) : les trois groupes de
+// La construction taillée d'Archipéo en 3D (lot R5, dans l’univers Archipéo (voir rendu.ts)) : les trois groupes de
 // world/construction.ts, trois appels de dessin. Les couleurs sont portées par les sommets ; trois matériaux, faits une
 // fois par scène et libérés avec elle, les complètent dans le shader (`onBeforeCompile`) :
 //

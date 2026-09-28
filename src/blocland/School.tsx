@@ -34,6 +34,7 @@ function greetingOf(island: BiomeDef): string {
 /** Les trois portes, ou les missions de la porte choisie (`?porte=maths` : on y revient après une mission). */
 export function SchoolBody() {
   const island = useSchoolIsland();
+  const univers = useUnivers();
   const { settings, speak } = useSettings();
   const [params, setParams] = useSearchParams();
   const asked = params.get('porte');
@@ -69,7 +70,7 @@ export function SchoolBody() {
           <SubjectApps subject={door} from={`${SCHOOL_PATH}?porte=${door}`} />
           <p className="school-more">
             <Link to={`/matiere/${door}`}>
-              <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans Archipéo
+              <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans {UNIVERS[univers].nom}
             </Link>
           </p>
         </section>

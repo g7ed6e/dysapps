@@ -66,3 +66,13 @@ it('au doigt, huit glissements sur le logo puis deux touchers', () => {
   for (const [dx, dy] of [[0, -80], [0, -80], [0, 80], [0, 80], [-80, 0], [80, 0], [-80, 0], [80, 0], [0, 0], [0, 0]]) glisser(dx, dy);
   expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
 });
+
+it('le toucher du logo ne fait pas défiler ni recharger la page', () => {
+  const { container } = renderTitle();
+  const logo = container.querySelector('.title-logo')!;
+  for (const type of ['touchstart', 'touchmove']) {
+    const toucher = new Event(type, { bubbles: true, cancelable: true });
+    logo.dispatchEvent(toucher);
+    expect(toucher.defaultPrevented).toBe(true);
+  }
+});

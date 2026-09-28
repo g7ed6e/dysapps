@@ -11,7 +11,7 @@ import type { Surface } from './surface';
 export interface Monde {
   scene: THREE.Scene;
   archipel: ArchipelagoId;
-  /** Le rendu d'Archipéo (drapeau `?rendu=archipeo`), sinon le monde en blocs. */
+  /** Le rendu d'Archipéo (l'univers Archipéo, voir rendu.ts), sinon le monde en blocs. */
   archipeo: boolean;
   /** L'option de style de surface (lot R1), ou `null` : les textures des blocs. */
   surface: Surface | null;

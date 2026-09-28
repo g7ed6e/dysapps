@@ -1,5 +1,5 @@
 // La mer d'Archipéo (lot R3 de la piste Rendu, docs/conception/cadrage-archipeo.md) : code pur, sans Three.js. La vue
-// 3D la dessine derrière `?rendu=archipeo` (three/mer.ts), en un seul appel de dessin.
+// 3D la dessine dans l’univers Archipéo (voir rendu.ts) (three/mer.ts), en un seul appel de dessin.
 //
 // - La carte de la mer (`carteDeLaMer`) : une image calculée, deux points par case, sur l'étendue de l'archipel et une
 //   marge. Ses couleurs vont du Bleu lagon sur les hauts-fonds à la mer de l'archipel, puis au large vers la Nuit océan
