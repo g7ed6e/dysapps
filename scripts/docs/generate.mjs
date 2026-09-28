@@ -121,6 +121,16 @@ const AID_NAME = {
   'right-triangle': 'triangle rectangle codé',
   'thales-figure': 'configuration de Thalès',
   'value-table': 'tableau de valeurs',
+  scene: 'schéma de la situation',
+};
+/** Les schémas de problèmes situés (`scene`), par sorte, avec la grandeur que l'élève cherche. */
+const SCENE_NAME = {
+  pont: 'pont en travées (une longueur)',
+  quai: 'quai à clôturer (un périmètre)',
+  traversee: 'traversée en bateau (une durée ou un horaire)',
+  carte: 'carte à l’échelle (une distance)',
+  cargaison: 'cargaison partagée selon un ratio (une part ou un total)',
+  mat: 'mât tenu par un câble (un côté du triangle rectangle)',
 };
 
 /** Échappe le texte pour une cellule ou une ligne de tableau Markdown. */
@@ -147,9 +157,13 @@ function plural(n, one, many = `${one}s`) {
 const CLASSES = ['6e', '5e', '4e', '3e'];
 
 function aidOf(exercise) {
-  const kinds = new Set(exercise.items.map((it) => it.aid?.kind).filter(Boolean));
+  const aids = exercise.items.flatMap((it) => [it.aid, it.figure]).filter((a) => a?.kind);
+  const kinds = new Set(aids.map((a) => a.kind));
   if (kinds.size === 0) return '';
-  return [...kinds].map((k) => AID_NAME[k] ?? k).join(', ');
+  const scenes = [...new Set(aids.filter((a) => a.kind === 'scene').map((a) => a.props?.scene))];
+  return [...kinds]
+    .map((k) => (k === 'scene' && scenes.length ? `${AID_NAME.scene} : ${scenes.map((x) => SCENE_NAME[x] ?? x).join(', ')}` : AID_NAME[k] ?? k))
+    .join(', ');
 }
 
 // ---------- Programme officiel ----------
