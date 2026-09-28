@@ -1,14 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
-<!-- Blocland : une île flottante en blocs, son grand chêne et la mer, dessinée à la main, en code. Proposée par le consultant de Blocland, retouchée et validée par le directeur artistique. -->
+<!-- Blocland : une île en blocs posée sur la mer, avec son grand chêne, vue de face, dessinée à la main, en code. Proposée par le consultant de Blocland, retouchée et validée par le directeur artistique. -->
 <rect width="512" height="512" rx="48" fill="#13283d"/>
-<rect x="56" y="336" width="400" height="40" fill="#4a9be0"/>
-<rect x="72" y="344" width="32" height="8" fill="#5eaae8"/><rect x="408" y="352" width="32" height="8" fill="#5eaae8"/>
-<rect x="152" y="152" width="32" height="56" fill="#7a5637"/>
+<rect x="56" y="352" width="400" height="48" fill="#4a9be0"/>
+<rect x="72" y="364" width="32" height="8" fill="#5eaae8"/><rect x="408" y="380" width="32" height="8" fill="#5eaae8"/>
+<rect x="152" y="152" width="32" height="64" fill="#7a5637"/>
 <rect x="112" y="96" width="112" height="64" fill="#5fa233"/>
 <rect x="128" y="104" width="40" height="24" fill="#7cc24a"/>
-<polygon points="128,208 384,208 424,248 88,248" fill="#7cc24a"/>
-<rect x="88" y="248" width="336" height="24" fill="#5fa233"/>
-<rect x="88" y="272" width="336" height="56" fill="#94694a"/>
-<rect x="128" y="328" width="256" height="48" fill="#94694a"/>
-<rect x="184" y="376" width="144" height="32" fill="#7a5637"/>
+<rect x="88" y="216" width="336" height="32" fill="#7cc24a"/>
+<rect x="88" y="248" width="336" height="80" fill="#94694a"/>
+<rect x="128" y="328" width="256" height="40" fill="#94694a"/>
+<rect x="184" y="368" width="144" height="16" fill="#7a5637"/>
+<rect x="88" y="248" width="336" height="16" fill="#5fa233"/>
+<g fill="#5fa233"><rect x="104" y="264" width="16" height="8"/><rect x="200" y="264" width="16" height="8"/><rect x="296" y="264" width="16" height="8"/><rect x="392" y="264" width="16" height="8"/></g>
+<g fill="#7a5637"><rect x="152" y="296" width="16" height="16"/><rect x="336" y="312" width="16" height="16"/></g>
 </svg>
