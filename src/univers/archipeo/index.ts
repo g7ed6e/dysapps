@@ -7,6 +7,8 @@ import { BLOCLAND } from '../blocland';
 import type { TextesUnivers } from '../types';
 
 const s = (n: number) => (n > 1 ? 's' : '');
+/** « de » devant un nom avec son article : « du Grand Chêne », « de la Dune vivante », « de l’Hydre des marais ». */
+const du = (nom: string) => nom.replace(/^le /, 'du ').replace(/^(la |l’)/, 'de $1');
 
 export const ARCHIPEO = {
   gardiens: {
@@ -277,6 +279,21 @@ export const ARCHIPEO = {
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
     progres: (n, total) => `${n} / ${total} Gardiens rallumés`,
+    // Le défi se relève, il ne se livre pas : ni exclamation ni « bâtisseur », rien à accorder selon le Gardien.
+    defiPret: 'Le défi du Gardien est prêt.',
+    defiPretCourt: 'Défi prêt',
+    defiFerme: (gardien, etoiles) => `${gardien} attend encore. Obtiens ${etoiles} étoiles dans chaque mission de l’île, puis reviens relever son défi.`,
+    arene: (gardien) => `Le défi ${du(gardien)}`,
+  },
+  // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
+  sentinelles: {
+    consigne: (gardien, total, n) =>
+      `${gardien} te propose ${total} épreuves, une de chaque mission. Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien. Il en faut ${n} pour la rallumer : prends ton temps, personne ne compte les secondes.`,
+    jauge: 'Épreuves réussies',
+    compte: (reussies, total) => `${reussies} sur ${total}`,
+    seuil: (n, assez) => (assez ? 'C’est assez pour la rallumer.' : `Il en faut ${n} pour la rallumer.`),
+    jaugeLue: (reussies, total, n) => `${reussies} épreuve${s(reussies)} réussie${s(reussies)} sur ${total}, il en faut ${n}`,
+    rallume: (gardien) => `${gardien} brille à nouveau.`,
   },
   baleine: {
     ...BLOCLAND.baleine,

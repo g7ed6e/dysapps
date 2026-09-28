@@ -11,7 +11,7 @@ import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './disposition';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
-import { avatarHome, avatarRoute, bridgePath, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 export const WALK_SPEED = 6;
@@ -84,6 +84,8 @@ export function dispositionEnGrille(
         const path = bridgePath(def);
         return ancre(def.from, path[Math.floor(path.length / 2)]);
       }
+      case 'gardien':
+        return ancre(e.id, bossIsletCenter(e.id));
       case 'plan': {
         const m = getMonument(e.id);
         return m && m.archipelago === a ? ancre(m.biome, monumentCenter(m)) : null;

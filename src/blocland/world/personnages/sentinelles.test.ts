@@ -84,6 +84,22 @@ describe('L’allumage des sentinelles', () => {
     for (const d of [0, 0.3, 0.5, 1]) expect(allumage(SENTINELLE.orbite, d)).toBe(SENTINELLE.orbite);
   });
 
+  it('au défi (lot 6), les lueurs s’allument avant la pierre : chaque partie à son degré', () => {
+    const f = sentinellePeinte('mine');
+    const lueursSeules = couleursAllumees(f, { pierre: 0, lueurs: 1 });
+    const pleine = couleursAllumees(f, 1);
+    let lueurs = 0;
+    for (let t = 0; t < nbTriangles(f); t++)
+      for (let k = 0; k < 3; k++) {
+        if (f.teintes[t] === LUEUR) {
+          lueurs++;
+          expect(couleurDe(lueursSeules, t, k)).toEqual(couleurDe(pleine, t, k));
+        } else expect(couleurDe(lueursSeules, t, k)).toEqual(couleurDe(f.colors, t, k));
+      }
+    expect(lueurs).toBeGreaterThan(0);
+    expect(Array.from(couleursAllumees(f, { pierre: 0.4, lueurs: 0.4 }))).toEqual(Array.from(couleursAllumees(f, 0.4)));
+  });
+
   it('les couleurs d’un modèle : éteintes par défaut, la lueur pleine et la pierre rallumée à 1', () => {
     const f = sentinellePeinte('mine');
     expect(Array.from(couleursAllumees(f, 0))).toEqual(Array.from(f.colors));

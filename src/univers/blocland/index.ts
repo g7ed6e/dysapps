@@ -273,7 +273,12 @@ export const BLOCLAND = {
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à vaincre dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} vaincu${s(n)} sur ${total}`,
     progres: (n, total) => `${n} / ${total} Gardiens vaincus`,
+    defiPret: 'Le Gardien accepte ton défi !',
+    defiPretCourt: 'Prêt à t’affronter',
+    defiFerme: (gardien, etoiles) => `${gardien} n’accepte que les bâtisseurs entraînés. Obtiens ${etoiles} étoiles dans chaque mission, puis reviens.`,
+    arene: () => 'L’arène du Gardien',
   },
+  sentinelles: null,
   baleine: {
     arrivee: {
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',

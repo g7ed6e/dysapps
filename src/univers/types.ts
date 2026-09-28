@@ -39,6 +39,36 @@ export interface LibellesGardiens {
   faitsSur: (n: number, total: number) => string;
   /** Sur la page des progrès. */
   progres: (n: number, total: number) => string;
+  /** Sous le nom du Gardien, dans le panneau d'une île, quand son défi est prêt. */
+  defiPret: string;
+  /** L'étiquette du Gardien dont le défi est prêt, sur la page de l'île. */
+  defiPretCourt: string;
+  /**
+   * Ce que dit la créature de l'île quand le défi n'est pas encore prêt (`gardien` : son nom, avec sa majuscule ;
+   * `etoiles` : les étoiles qu'il faut dans chaque mission).
+   */
+  defiFerme: (gardien: string, etoiles: number) => string;
+  /** Le nom de l'écran du défi, pour un lecteur d'écran (`gardien` : son nom avec son article, « le Grand Chêne »). */
+  arene: (gardien: string) => string;
+}
+
+/**
+ * Le défi d'une sentinelle et son rallumage (lot 6, fil B2), dans un univers où les Gardiens sont des sentinelles
+ * éteintes : la jauge compte les épreuves réussies, jamais celles qui restent, et le seuil est écrit.
+ */
+export interface TextesSentinelles {
+  /** La consigne du défi, qui en dit la règle (`gardien` : son nom, avec sa majuscule ; `n` : les réussites qu'il faut). */
+  consigne: (gardien: string, total: number, n: number) => string;
+  /** Le nom de la jauge. */
+  jauge: string;
+  /** Le compte de la jauge, écrit sous son nom (« 2 sur 7 »). */
+  compte: (reussies: number, total: number) => string;
+  /** Sous la jauge : combien il en faut, ou que c'est assez. */
+  seuil: (n: number, assez: boolean) => string;
+  /** Ce que lit un lecteur d'écran sur la jauge. */
+  jaugeLue: (reussies: number, total: number, n: number) => string;
+  /** Le mot du village, au moment où la sentinelle se rallume dans le monde (`gardien` : son nom, avec sa majuscule). */
+  rallume: (gardien: string) => string;
 }
 
 /** Le mot de la baleine (lot 5), aux grandes étapes d'un archipel. */
@@ -58,5 +88,7 @@ export interface TextesUnivers {
   /** L'espèce de la créature de chaque île (« golem de mousse »), après son nom. */
   especes: Record<BiomeId, string>;
   libelles: LibellesGardiens;
+  /** Le défi en sentinelle et le moment du rallumage ; `null` : l'arène d'avant le lot 6, sans moment au village. */
+  sentinelles: TextesSentinelles | null;
   baleine: TextesBaleine;
 }

@@ -2985,6 +2985,36 @@ button.app-card:active {
   background: var(--sand);
   transition: width 0.6s ease;
 }
+/* Archipéo (lot 6) : la jauge du défi d'une sentinelle, une pastille par épreuve ; pleine (Sable, une petite flamme)
+   pour une réussite, vide pour une épreuve ratée ou pas encore jouée, sans croix ni rouge. */
+.arena-pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.arena-pastille {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fbf6ea;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.arena-pastille.on {
+  border-color: #142b38;
+  background: #daa66a;
+  color: #142b38;
+}
+.arena-seuil {
+  margin: 0;
+  font-weight: 700;
+  max-width: none;
+}
+.arena-seuil .syl-0,
+.arena-seuil .syl-1 {
+  color: inherit;
+}
 .arena-line {
   margin: 0;
   font-weight: 700;

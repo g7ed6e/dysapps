@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MENU_PATH } from '../core/paths';
 import { Icon } from '../components/Icon';
@@ -24,6 +25,10 @@ import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RallumagePanel, useRallumage } from './Rallumage';
+import { playBell } from './sound';
+import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../univers';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { nextDestination } from './world/destination';
 import { islandState } from './world/islandState';
@@ -49,7 +54,16 @@ export function BloclandPage() {
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
   const destination = nextDestination(state);
-  const whale = useWhaleWord(state, here);
+  // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
+  const textes = useTextes();
+  const { settings } = useSettings();
+  const rallumage = useRallumage(state.progress, here, textes.sentinelles !== null);
+  const rallume = rallumage.enAttente[0] ?? null;
+  useEffect(() => {
+    if (rallume && settings.sounds) playBell();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rallume]);
+  const whale = useWhaleWord(state, here, !rallume);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   return (
     <>
@@ -73,7 +87,11 @@ export function BloclandPage() {
         </p>
       </section>
 
-      {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
+      {rallume ? (
+        <RallumagePanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
+      ) : (
+        whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
+      )}
 
       {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
       <section className="panel home-resume" aria-label="Prochaine destination">

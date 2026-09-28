@@ -1,7 +1,7 @@
 // Un personnage d'Archipéo seul, en 3D (lot R6), derrière `?rendu=archipeo` : la créature de la bulle, le Gardien du
-// défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. Il respire (et la créature tourne
-// lentement) ; avec « Réduire les animations », il reste immobile, sans fondu. VoxelCanvas.tsx reste celui du monde en
-// blocs.
+// défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. La créature respire (et peut tourner
+// lentement) ; la sentinelle ne bouge jamais, seul son allumage change, en fondu (lot 6). Quand l'appareil demande moins
+// d'animations, rien ne bouge et l'allumage change d'un coup. VoxelCanvas.tsx reste celui du monde en blocs.
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
@@ -9,14 +9,16 @@ import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/pinceau';
 import { LUEUR } from '../world/personnages/couleurs';
 import { modeleDuPortrait } from '../world/personnages/portrait';
-import { couleursAllumees } from '../world/personnages/sentinelle';
+import { couleursAllumees, degresDAllumage, type Allumage } from '../world/personnages/sentinelle';
 import { materiauALueur } from './personnagesPeints';
 
 export interface PersonnageCanvasProps {
   kind: 'creature' | 'guardian';
   id: BiomeId;
-  /** Pour un Gardien : son degré d'allumage (0 : éteint, 1 : rallumé). */
-  allumage?: number;
+  /** Pour un Gardien : son degré d'allumage (0 : éteint, 1 : rallumé), ou celui de sa pierre et de ses lueurs. */
+  allumage?: Allumage;
+  /** Pour un Gardien : la durée du fondu vers un nouvel allumage, en secondes (0 : d'un coup). Le premier est d'un coup. */
+  fondu?: number;
   /** Tourne lentement sur lui-même (désactivé avec « Réduire les animations »). */
   autoRotate?: boolean;
   reduceMotion?: boolean;
@@ -36,6 +38,7 @@ export default function PersonnageCanvas({
   kind,
   id,
   allumage = 0,
+  fondu = 0,
   autoRotate = false,
   reduceMotion = false,
   cameraDirection = [-0.35, -1],
@@ -45,6 +48,11 @@ export default function PersonnageCanvas({
   label,
 }: PersonnageCanvasProps) {
   const host = useRef<HTMLDivElement>(null);
+  const { pierre, lueurs } = degresDAllumage(allumage);
+  // L'allumage demandé et son fondu, lus par la scène sans la refaire ; `relancer` repart la boucle d'une scène immobile.
+  const demande = useRef({ pierre, lueurs, fondu });
+  demande.current = { pierre, lueurs, fondu };
+  const relancer = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const el = host.current;
@@ -67,14 +75,26 @@ export default function PersonnageCanvas({
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(f.positions, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(f.normals, 3));
-    g.setAttribute('color', new THREE.BufferAttribute(kind === 'guardian' ? couleursAllumees(f, allumage) : new Float32Array(f.colors), 3));
-    const lueur = new Float32Array((f.positions.length / 3) * 4);
-    if (kind === 'guardian' && allumage > 0) {
-      const k = rgb(LUEUR).map((v) => lineaire(v / 255));
-      for (let t = 0; t < f.pieces.length; t++)
-        if (f.table[f.pieces[t]].lueur === 'allumage') for (let s = 0; s < 3; s++) lueur.set([k[0], k[1], k[2], Math.min(1, allumage)], (t * 3 + s) * 4);
-    }
-    g.setAttribute('lueur', new THREE.BufferAttribute(lueur, 4));
+    g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(f.colors), 3));
+    g.setAttribute('lueur', new THREE.BufferAttribute(new Float32Array((f.positions.length / 3) * 4), 4));
+    const k = rgb(LUEUR).map((v) => lineaire(v / 255));
+    /** Peint la sentinelle à un degré : sa pierre, et ce qui brille (la flamme et les veines) au poids de leurs lueurs. */
+    const peindre = (d: { pierre: number; lueurs: number }) => {
+      if (kind !== 'guardian') return;
+      const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
+      const lueur = g.getAttribute('lueur') as THREE.BufferAttribute;
+      couleursAllumees(f, d, couleurs.array as Float32Array<ArrayBuffer>);
+      (lueur.array as Float32Array).fill(0);
+      if (d.lueurs > 0)
+        for (let t = 0; t < f.pieces.length; t++)
+          if (f.table[f.pieces[t]].lueur === 'allumage') for (let s = 0; s < 3; s++) (lueur.array as Float32Array).set([k[0], k[1], k[2], d.lueurs], (t * 3 + s) * 4);
+      couleurs.needsUpdate = true;
+      lueur.needsUpdate = true;
+    };
+    // Le fondu : d'où l'on part, où l'on va, quand il a commencé ; le premier allumage est posé d'un coup.
+    const fonte = { de: { ...demande.current }, vers: { ...demande.current }, t0: 0, duree: 0 };
+    let actuel = { pierre: demande.current.pierre, lueurs: demande.current.lueurs };
+    peindre(actuel);
     const { materiau, force } = materiauALueur();
     force.value = 1;
     const mesh = new THREE.Mesh(g, materiau);
@@ -100,26 +120,52 @@ export default function PersonnageCanvas({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
-      if (reduceMotion) renderer.render(scene, camera);
+      if (!frame) renderer.render(scene, camera);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
 
     let frame = 0;
     const clock = new THREE.Clock();
+    /** Rejoint l'allumage demandé : vrai tant que le fondu n'est pas fini. */
+    const fondre = (t: number): boolean => {
+      const d = demande.current;
+      if (d.pierre !== fonte.vers.pierre || d.lueurs !== fonte.vers.lueurs) {
+        Object.assign(fonte, { de: { ...actuel }, vers: { pierre: d.pierre, lueurs: d.lueurs }, t0: t, duree: reduceMotion ? 0 : d.fondu });
+      }
+      if (actuel.pierre === fonte.vers.pierre && actuel.lueurs === fonte.vers.lueurs) return false;
+      const u = fonte.duree > 0 ? Math.min(1, (t - fonte.t0) / fonte.duree) : 1;
+      // Doux au début et à la fin : la lumière monte, elle ne saute pas.
+      const e = u * u * (3 - 2 * u);
+      actuel = {
+        pierre: fonte.de.pierre + (fonte.vers.pierre - fonte.de.pierre) * e,
+        lueurs: fonte.de.lueurs + (fonte.vers.lueurs - fonte.de.lueurs) * e,
+      };
+      if (u >= 1) actuel = { ...fonte.vers };
+      peindre(actuel);
+      return u < 1;
+    };
+    // La créature respire (et tourne, si on le demande) ; la sentinelle, jamais.
+    const bouge = !reduceMotion && (kind === 'creature' || autoRotate);
     const loop = () => {
+      frame = 0;
       const t = clock.getElapsedTime();
+      const enFondu = fondre(t);
       if (!reduceMotion) {
-        mesh.position.y = RESPIRATION.amplitude * Math.sin((t / RESPIRATION.periode) * Math.PI * 2);
+        if (kind === 'creature') mesh.position.y = RESPIRATION.amplitude * Math.sin((t / RESPIRATION.periode) * Math.PI * 2);
         if (autoRotate) pivot.rotation.y = (t / TOUR) * Math.PI * 2;
       }
       renderer.render(scene, camera);
-      // Immobile, une image suffit.
-      if (!reduceMotion) frame = requestAnimationFrame(loop);
+      // Immobile et sans fondu en cours, une image suffit.
+      if (bouge || enFondu) frame = requestAnimationFrame(loop);
+    };
+    relancer.current = () => {
+      if (!frame) frame = requestAnimationFrame(loop);
     };
     loop();
 
     return () => {
+      relancer.current = null;
       cancelAnimationFrame(frame);
       observer.disconnect();
       g.dispose();
@@ -127,9 +173,13 @@ export default function PersonnageCanvas({
       renderer.dispose();
       renderer.domElement.remove();
     };
-    // Le cadrage se lit en nombres : un nouveau tableau de même valeur ne refait pas la scène.
+    // Le cadrage se lit en nombres : un nouveau tableau de même valeur ne refait pas la scène. L'allumage ne la refait
+    // pas non plus : la boucle le rejoint en fondu.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kind, id, allumage, autoRotate, reduceMotion, cameraDirection[0], cameraDirection[1], elevation, fit]);
+  }, [kind, id, autoRotate, reduceMotion, cameraDirection[0], cameraDirection[1], elevation, fit]);
+
+  // Un nouvel allumage : la scène immobile repart le temps du fondu.
+  useEffect(() => relancer.current?.(), [pierre, lueurs]);
 
   return <div ref={host} className={`voxel-canvas personnage-canvas ${className ?? ''}`.trim()} role="img" aria-label={label} />;
 }

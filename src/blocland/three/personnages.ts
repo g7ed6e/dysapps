@@ -3,6 +3,7 @@
 // leurs « habits », est en cubes ; derrière `?rendu=archipeo`, ce sont les personnages d'Archipéo en facettes
 // (./personnagesPeints.ts), chargés à la demande : sans le drapeau, leurs modèles ne pèsent pas sur la 3D.
 import * as THREE from 'three';
+import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
@@ -25,6 +26,8 @@ export interface Personnages extends PartieDeLaScene {
   /** Un nouvel itinéraire du bonhomme. */
   marcher(avatar: NonNullable<EnCasesDuMonde['avatar']>): void;
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
+  /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
+  rallumer(id: BiomeId | null, duree: number): void;
 }
 
 /** Le dessin des personnages, dans les groupes du bonhomme et des créatures : en cubes, ou ceux d'Archipéo. */
@@ -34,6 +37,11 @@ export interface Habits {
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
   /** Les créatures bougent (rien avec « Réduire les animations »). */
   animer(t: number, reduit: boolean): void;
+  /**
+   * Rallume la sentinelle d'un Gardien en fondu (lot 6), en `duree` millisecondes (0 : d'un coup), quel que soit son
+   * placement ; `null` rend à chaque Gardien le degré de son placement. Les personnages en cubes n'en font rien.
+   */
+  rallumer?(id: BiomeId | null, duree: number): void;
   dispose(): void;
 }
 
@@ -134,9 +142,12 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
 
   let habits: Habits | null = null;
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
+  // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
+  let rallumage: { id: BiomeId | null; duree: number } | null = null;
   let fini = false;
   const vetir = (h: Habits) => {
     habits = h;
+    if (rallumage) h.rallumer?.(rallumage.id, rallumage.duree);
     if (places) h.poserLesCreatures(places);
   };
   if (monde.archipeo)
@@ -166,6 +177,10 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     poserLesCreatures: (creatures) => {
       places = creatures;
       habits?.poserLesCreatures(creatures);
+    },
+    rallumer: (id, duree) => {
+      rallumage = { id, duree };
+      habits?.rallumer?.(id, duree);
     },
     // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
     deplacer: (t, _dt, reduit) => {

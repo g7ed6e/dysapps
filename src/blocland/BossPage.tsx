@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -17,6 +17,7 @@ import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossUnlocked, missingForBoss } 
 import { CreatureBubble } from './CreatureBubble';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
+import { FONDU, lueursDuDefi } from './world/personnages/allumage';
 import { playDrum, playGrowl, playVictory } from './sound';
 import { Loading } from '../components/Loading';
 import { useTextes } from '../univers';
@@ -39,9 +40,17 @@ export function BossPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, unlocked, run],
   );
-  const def = loaded ?? undefined;
+  // Archipéo (lot 6) : le défi d'une sentinelle, dont la consigne dit la règle ; Blocland garde l'arène d'avant.
+  const sent = textes.sentinelles;
+  const total = loaded?.items.length ?? 0;
+  // Les épreuves réussies qu'il faut : les mêmes 70 % que la victoire.
+  const needed = Math.ceil(total * 0.7);
+  const def = useMemo(
+    () => (loaded && sent && biome ? { ...loaded, instruction: sent.consigne(guardianTitle(biome), total, needed) } : (loaded ?? undefined)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [loaded, sent],
+  );
   // L'arène : résistance du Gardien (une épreuve réussie = un cran de moins), humeur et réplique.
-  const total = def?.items.length ?? 0;
   const [won, setWon] = useState(0);
   const [played, setPlayed] = useState(0);
   const [mood, setMood] = useState<GuardianMood>('idle');
@@ -56,7 +65,8 @@ export function BossPage() {
     setPlayed(0);
     setMood('idle');
     setLine(null);
-    if (def) sound(playDrum);
+    // Pas de tambour pour une sentinelle : rien ne se combat.
+    if (def && !sent) sound(playDrum);
     // Au lancement et à chaque revanche.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def]);
@@ -66,7 +76,7 @@ export function BossPage() {
   // Ce que dit l'arène, écrit et lu à l'identique.
   const arenaLine = line ?? (alreadyBeaten ? textes.libelles.dejaFaitArene(guardianTitle(biome)) : challenge);
   const finished = def ? played >= total : false;
-  const beatenNow = finished && won >= Math.ceil(total * 0.7);
+  const beatenNow = finished && won >= needed;
   const remaining = Math.max(0, total - won);
 
   const onRound = ({ correct }: { correct: boolean }) => {
@@ -76,12 +86,13 @@ export function BossPage() {
     setPlayed(nextPlayed);
     setSeq((n) => n + 1);
     const last = nextPlayed >= total;
-    const victory = last && nextWon >= Math.ceil(total * 0.7);
+    const victory = last && nextWon >= needed;
     const text = victory ? says.beaten : correct ? says.hit : says.miss;
     setMood(victory ? 'beaten' : correct ? 'hit' : 'miss');
     setLine(text);
     if (victory) sound(playVictory);
-    else if (!correct) sound(playGrowl);
+    // Une épreuve ratée n'a jamais de son dans Archipéo (rien ne s'éteint) ; Blocland garde le grognement.
+    else if (!correct && !sent) sound(playGrowl);
     if (settings.autoRead) speak(frenchTypography(text));
   };
 
@@ -91,7 +102,7 @@ export function BossPage() {
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>
-        <Icon name="shield" /> {guardianTitle(biome)}
+        <Icon name={sent ? 'flame' : 'shield'} /> {guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
         <Loading />
@@ -99,7 +110,7 @@ export function BossPage() {
         <>
           <CreatureBubble
             biome={biome}
-            text={`${guardianTitle(biome)} n’accepte que les bâtisseurs entraînés. Obtiens ${STARS_TO_BEAT} étoiles dans chaque mission, puis reviens.`}
+            text={textes.libelles.defiFerme(guardianTitle(biome), STARS_TO_BEAT)}
           />
           <p className="intro">
             <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
@@ -110,27 +121,71 @@ export function BossPage() {
         </>
       ) : (
         <>
-          <section className={`arena${beatenNow ? ' arena-beaten' : ''}`} aria-label="L’arène du Gardien">
-            <Guardian3D biome={biome.id} label={`${guardianTitle(biome)}, le Gardien du biome`} mood={mood} seq={seq} />
+          <section
+            className={`arena${sent ? ' arena-sentinelle' : ''}${beatenNow && !sent ? ' arena-beaten' : ''}`}
+            aria-label={textes.libelles.arene(biome.guardian)}
+          >
+            {sent ? (
+              // La sentinelle ne bouge pas : seules ses lueurs montent, une épreuve réussie après l'autre (jamais
+              // éteintes par un échec), et la pierre s'éclaircit à la victoire.
+              <Guardian3D
+                biome={biome.id}
+                label={`${guardianTitle(biome)}, le Gardien de l’île`}
+                allumage={{ pierre: beatenNow ? 1 : 0, lueurs: beatenNow ? 1 : lueursDuDefi(won, needed) }}
+                fondu={beatenNow ? FONDU.victoire : FONDU.reussite}
+              />
+            ) : (
+              <Guardian3D biome={biome.id} label={`${guardianTitle(biome)}, le Gardien du biome`} mood={mood} seq={seq} />
+            )}
             <div className="arena-info">
               <p className="arena-name">{guardianTitle(biome)}</p>
-              <div className="arena-gauge-label" aria-hidden="true">
-                <span>Résistance</span>
-                <span>
-                  {remaining} / {total}
-                </span>
-              </div>
-              <div
-                className="arena-gauge"
-                role="progressbar"
-                aria-label="Résistance du Gardien"
-                aria-valuemin={0}
-                aria-valuemax={total}
-                aria-valuenow={remaining}
-                aria-valuetext={textes.libelles.resistance(remaining, total)}
-              >
-                <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
-              </div>
+              {sent ? (
+                <>
+                  <div className="arena-gauge-label" aria-hidden="true">
+                    <span>{sent.jauge}</span>
+                    <span>{sent.compte(won, total)}</span>
+                  </div>
+                  <div
+                    className="arena-pastilles"
+                    role="progressbar"
+                    aria-label={sent.jauge}
+                    aria-valuemin={0}
+                    aria-valuemax={total}
+                    aria-valuenow={won}
+                    aria-valuetext={sent.jaugeLue(won, total, needed)}
+                  >
+                    {/* Les réussites d'abord, dans l'ordre où elles viennent : une pastille vide ne dit pas laquelle a raté. */}
+                    {Array.from({ length: total }, (_, i) => (
+                      <span key={i} className={`arena-pastille${i < won ? ' on' : ''}`}>
+                        {i < won && <Icon name="flame" size="14px" />}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="arena-seuil">
+                    <Syllabified text={sent.seuil(needed, won >= needed)} />
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="arena-gauge-label" aria-hidden="true">
+                    <span>Résistance</span>
+                    <span>
+                      {remaining} / {total}
+                    </span>
+                  </div>
+                  <div
+                    className="arena-gauge"
+                    role="progressbar"
+                    aria-label="Résistance du Gardien"
+                    aria-valuemin={0}
+                    aria-valuemax={total}
+                    aria-valuenow={remaining}
+                    aria-valuetext={textes.libelles.resistance(remaining, total)}
+                  >
+                    <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
+                  </div>
+                </>
+              )}
               <p className="arena-line" role="status" aria-live="polite">
                 <Syllabified text={arenaLine} />
               </p>

@@ -272,14 +272,26 @@ export function allumage(c: Couleur, degre: number): Couleur {
 }
 
 /**
+ * Le degré d'allumage d'une sentinelle : un nombre (toute la statue), ou la pierre et les lueurs (flamme et veines)
+ * chacune au sien. Au défi (lot 6), les lueurs montent avec les épreuves réussies, la pierre attend la victoire.
+ */
+export type Allumage = number | { pierre: number; lueurs: number };
+
+/** Le degré de la pierre et celui des lueurs, entre 0 et 1. */
+export function degresDAllumage(a: Allumage): { pierre: number; lueurs: number } {
+  return typeof a === 'number' ? { pierre: clamp(a, 0, 1), lueurs: clamp(a, 0, 1) } : { pierre: clamp(a.pierre, 0, 1), lueurs: clamp(a.lueurs, 0, 1) };
+}
+
+/**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
  * mesure qu'elle s'allume, et brille pleinement à 1.
  */
-export function couleursAllumees(f: FacettesDePersonnage, degre: number, dans = new Float32Array(f.colors.length)): Float32Array {
-  const d = clamp(degre, 0, 1);
+export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans = new Float32Array(f.colors.length)): Float32Array {
+  const { pierre, lueurs: dl } = degresDAllumage(degre);
   const lueurs = new Set(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur));
   for (let t = 0; t < f.teintes.length; t++) {
+    const d = lueurs.has(f.teintes[t]) ? dl : pierre;
     const k = rgb(allumage(f.teintes[t], d));
     const ny = f.normals[t * 9 + 1];
     let w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * ny, 0, 1);

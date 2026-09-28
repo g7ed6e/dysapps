@@ -646,6 +646,12 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
   return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
 }
 
+/** Le milieu de l'îlot du Gardien, en cases du monde, à mi-hauteur de sa sentinelle (la caméra la cadre là, lot 6). */
+export function bossIsletCenter(id: BiomeId): { x: number; y: number; z: number } {
+  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
+  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 4 };
+}
+
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
 function guardianOffset(id: BiomeId): { x: number; y: number } {
   const g = GUARDIAN_CUBES[id];
@@ -759,8 +765,11 @@ function taperLayers(cells: { x: number; y: number }[]): { x: number; y: number;
   return out;
 }
 
-/** L'îlot du Gardien en cubes : terre, sol de l'île, arène, petit décor, pas japonais, et le bloc d'or une fois vaincu. */
-function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
+/**
+ * L'îlot du Gardien en cubes : terre, sol de l'île, arène, petit décor, pas japonais, et le bloc d'or une fois vaincu.
+ * Sans `pas` (une sentinelle qui attend, lot 6), l'îlot n'a pas encore ses pas japonais : le chemin s'ouvre avec le défi.
+ */
+function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = true): void {
   const def = islandDef(biome.id);
   const gz = def.altitude;
   const tag = biome.id;
@@ -807,10 +816,11 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
       r,
     );
   }
-  for (const s of bossIsletSteps(biome.id)) {
-    block(s.x, s.y, s.z, BLOCKS.galet.side);
-    if (s.z === 0) block(s.x, s.y, -1, BLOCKS.galet.side);
-  }
+  if (pas)
+    for (const s of bossIsletSteps(biome.id)) {
+      block(s.x, s.y, s.z, BLOCKS.galet.side);
+      if (s.z === 0) block(s.x, s.y, -1, BLOCKS.galet.side);
+    }
   // Vaincu : un bloc d'or sur un socle de pierre, devant la statue.
   if (trophy) {
     block(trophy.x, trophy.y, gz + 1, BLOCKS.pierre.side);
@@ -826,16 +836,20 @@ function stoneOf(color: string): string {
   return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
 }
 
-/** Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. */
+/**
+ * Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. Avec
+ * `sentinelles` (Archipéo, lot 6), ceux des îles ouvertes sont là avant que leur défi soit prêt.
+ */
 export function guardianPlacements(
   a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
   bridges: string[],
+  sentinelles = false,
 ): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
   BIOMES.forEach((b, index) => {
     if (b.classe !== a) return;
-    const status = guardianStatus(b, progress, bridges);
+    const status = guardianStatus(b, progress, bridges, sentinelles);
     if (status === 'hidden') return;
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
@@ -1431,10 +1445,12 @@ export function cubesDeLIle(
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
   voisins: Set<string> = new Set(),
+  /** Archipéo (lot 6) : l'îlot et la sentinelle, avant que le défi soit prêt. */
+  sentinelles = false,
 ): VoxelCube[] {
   const index = BIOMES.findIndex((b) => b.id === id);
   const cubes: VoxelCube[] = [];
-  poserLIle(BIOMES[index], index, progress, village, withCreatures, trophies, voisins, cubes);
+  poserLIle(BIOMES[index], index, progress, village, withCreatures, trophies, voisins, cubes, sentinelles);
   const { ox, oy, oz } = islandOrigin(index);
   for (const c of cubes) {
     c.x -= ox;
@@ -1455,6 +1471,8 @@ export function worldCubes(
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
+  /** Archipéo (lot 6) : l'îlot et la sentinelle de chaque île ouverte, avant que son défi soit prêt. */
+  sentinelles = false,
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
@@ -1462,7 +1480,7 @@ export function worldCubes(
   for (const biome of BIOMES) {
     if (biome.classe !== a) continue;
     const o = origineDe(biome.id);
-    for (const c of cubesDeLIle(biome.id, progress, village, withCreatures, trophies, placed)) {
+    for (const c of cubesDeLIle(biome.id, progress, village, withCreatures, trophies, placed, sentinelles)) {
       c.x += o.x;
       c.y += o.y;
       c.z += o.z;
@@ -1482,6 +1500,7 @@ function poserLIle(
   trophies: (keyof typeof BLOCKS)[],
   placed: Set<string>,
   cubes: VoxelCube[],
+  sentinelles = false,
 ): void {
   const def = islandDef(biome.id);
   const { ox, oy, oz } = islandOrigin(index);
@@ -1596,9 +1615,10 @@ function poserLIle(
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)
     for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
-  // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais.
-  const guardian = guardianStatus(biome, progress, village.bridges);
-  if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes);
+  // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
+  // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
+  const guardian = guardianStatus(biome, progress, village.bridges, sentinelles);
+  if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes, guardian !== 'waiting');
   if (unlocked && withCreatures) {
     const spot = creatureSpot(biome.id);
     for (const c of CREATURE_CUBES[biome.id])
