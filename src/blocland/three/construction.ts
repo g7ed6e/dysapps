@@ -5,12 +5,12 @@
 // - les blocs : la teinte de chaque bloc (± 4 %, tirée de sa case), et le biseau peint, une lumière qui accroche les
 //   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit :
 //   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
-//   16 pixels, elle s'efface, pour ne pas scintiller ; sans biseau en Contraste élevé) ; le verre hors d'un mur, cerné
+//   16 pixels, elle s'efface, pour ne pas scintiller) ; le verre hors d'un mur, cerné
 //   d'une arête fine par case ;
 // - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
 // - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
 //
-// Rien ne bouge image par image : les uniformes suivent la lumière (`lumiere.suivre`, chaque minute au plus) et le thème.
+// Rien ne bouge image par image : les uniformes suivent la lumière (`lumiere.suivre`, chaque minute au plus).
 import * as THREE from 'three';
 import {
   ARETE,
@@ -37,11 +37,8 @@ export interface MateriauxDeConstruction {
   dispose(): void;
 }
 
-/** Contraste élevé : le thème de l'application (core/settings.ts, `data-theme` sur la racine du document). */
-const contrasteEleve = () => document.documentElement.dataset.theme === 'contraste';
-
 export function creerMateriaux(lumiere: Lumiere | null): MateriauxDeConstruction {
-  const biseau = { value: contrasteEleve() ? 0 : ECLAT_DU_BISEAU };
+  const biseau = { value: ECLAT_DU_BISEAU };
   const opaque = new THREE.MeshLambertMaterial({ vertexColors: true });
   opaque.onBeforeCompile = (s) => {
     s.uniforms.uBiseau = biseau;
@@ -137,29 +134,22 @@ if (vArete > 0.5) {
 
   let jour = 1;
   const regler = () => {
-    const contraste = contrasteEleve();
-    const o = opaciteDesFantomes(jour, contraste);
+    const o = opaciteDesFantomes(jour);
     remplissage.value = o.remplissage;
     arete.value = o.arete;
     nuit.value = 1 - jour;
-    // En Contraste élevé, pas de biseau : rien ne se lit comme une arête à côté de celles des fantômes.
-    biseau.value = contraste ? 0 : ECLAT_DU_BISEAU;
   };
   regler();
   lumiere?.suivre((j) => {
     jour = j;
     regler();
   });
-  // Le thème peut changer pendant la partie (les réglages).
-  const theme = new MutationObserver(regler);
-  theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   return {
     opaque,
     fenetres,
     fantomes,
     dispose: () => {
-      theme.disconnect();
       opaque.dispose();
       fenetres.dispose();
       fantomes.dispose();

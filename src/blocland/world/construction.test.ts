@@ -306,11 +306,10 @@ describe('La construction taillée (lot R5)', () => {
     }
   }, 30_000);
 
-  it('les fantômes : 0,35 de jour, 0,45 de nuit, l’arête à 70 % ; en Contraste élevé, 0,55 et l’arête pleine', () => {
+  it('les fantômes : 0,35 de jour, 0,45 de nuit, l’arête à 70 %', () => {
     expect(opaciteDesFantomes(1)).toEqual({ remplissage: 0.35, arete: 0.7 });
     expect(opaciteDesFantomes(0)).toEqual({ remplissage: 0.45, arete: 0.7 });
     expect(opaciteDesFantomes(0.5).remplissage).toBeCloseTo(0.4);
-    expect(opaciteDesFantomes(1, true)).toEqual({ remplissage: 0.55, arete: 1 });
   });
 
   it('la teinte de chaque bloc : stable, à ± 4 % au plus, et différente d’un bloc à son voisin', () => {

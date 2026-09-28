@@ -50,7 +50,7 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 - HTML sémantique d’abord ; ARIA seulement quand le HTML ne suffit pas, et selon les motifs de l’*ARIA Authoring Practices Guide* du W3C.
 - Tout contrôle a un nom accessible ; le focus est visible, jamais perdu à l’ouverture ou à la fermeture d’un panneau ; tout se fait au clavier.
 - La langue est déclarée (`lang="en"` sur un mot anglais) pour que la synthèse vocale et les lecteurs d’écran la suivent.
-- Les préférences du système sont respectées : `prefers-reduced-motion`, en plus du réglage « Réduire les animations ».
+- Les préférences du système sont respectées : `prefers-reduced-motion`, lue par `src/core/mouvement.ts` pour le monde, le voyage, les créatures et le Filon, et par une règle CSS pour le reste (le réglage de l’appli « Réduire les animations » est retiré le 28 septembre 2026, jusqu’au lot 11 du cadrage Archipéo).
 - Critères de référence : WCAG 2.2, repris par le RGAA 5.
 
 ## Ce que fait le dépôt

@@ -1,5 +1,7 @@
+import { UNIVERS, type UniversChoice } from './univers';
+
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
-export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
+export type ThemeChoice = 'creme' | 'nuit' | 'clair';
 /**
  * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
  * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
@@ -12,6 +14,7 @@ export type StartChoice = 'village' | 'menu';
  * style du lot R1 (src/blocland/world/style.ts, où chaque lettre est décrite).
  */
 export type StyleChoice = 'textures' | 'a' | 'b' | 'c';
+export type { UniversChoice } from './univers';
 
 /** La clé des réglages dans le stockage de l'appareil. */
 export const SETTINGS_KEY = 'settings';
@@ -28,7 +31,6 @@ export interface Settings {
   autoRead: boolean;
   /** Surligner les syllabes en couleurs alternées. */
   syllables: boolean;
-  reduceMotion: boolean;
   /** La vue de Blocland ; sans WebGL, le monde en 3D laisse la place à la liste, accessible. */
   worldView: WorldViewChoice;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
@@ -48,6 +50,11 @@ export interface Settings {
   renduArchipeo: boolean;
   /** Expérimental : la surface du rendu Archipéo, comme `?style=a|b|c` ; lue seulement avec `renduArchipeo`. */
   styleArchipeo: StyleChoice;
+  /**
+   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent avant le lot 6 et tant que `UNIVERS_OUVERT` est fausse :
+   * le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
+   */
+  univers?: UniversChoice;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -64,7 +71,6 @@ export const DEFAULT_SETTINGS: Settings = {
   speechRate: 0.9,
   autoRead: true,
   syllables: true,
-  reduceMotion: false,
   worldView: '3d',
   sounds: true,
   ambience: false,
@@ -103,11 +109,13 @@ export const THEME_LABELS: Record<ThemeChoice, string> = {
   creme: 'Crème',
   nuit: 'Nuit',
   clair: 'Clair',
-  contraste: 'Contraste élevé',
 };
 
-/** Anciens identifiants (versions précédentes) vers les nouveaux. */
-const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit' };
+/**
+ * Anciens identifiants (versions précédentes) vers les nouveaux. Le Contraste élevé n'est plus au choix (28/09/2026) :
+ * un appareil qui l'avait choisi retrouve le thème sombre le plus proche, la Nuit.
+ */
+const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit', contraste: 'nuit' };
 const LEGACY_FONTS: Record<string, FontChoice> = { systeme: 'arial' };
 
 const FONT_STACKS: Record<FontChoice, string> = {
@@ -140,7 +148,6 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     speechRate: clamp(Number(s.speechRate) || DEFAULT_SETTINGS.speechRate, 0.5, 1.3),
     autoRead: s.autoRead === undefined ? DEFAULT_SETTINGS.autoRead : Boolean(s.autoRead),
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
-    reduceMotion: Boolean(s.reduceMotion),
     worldView: s.worldView in WORLD_VIEW_LABELS ? s.worldView : DEFAULT_SETTINGS.worldView,
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
@@ -149,13 +156,29 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     renduArchipeo: s.renduArchipeo === true,
     styleArchipeo: Object.hasOwn(STYLE_LABELS, s.styleArchipeo) ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
+    // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut Archipéo.
+    ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : 'archipeo' }),
   };
+}
+
+let courants: Settings | null = null;
+
+/**
+ * Les réglages de l'application, tenus en mémoire par `SettingsProvider` (qui les pose avant le premier rendu de ses
+ * enfants, puis à chaque changement) : le rendu du monde les lit là, sans relire le stockage. `null` hors de
+ * l'application (un test, une page sans fournisseur).
+ */
+export function retenirReglages(settings: Settings | null): void {
+  courants = settings;
+}
+
+export function reglagesCourants(): Settings | null {
+  return courants;
 }
 
 /** Applique les réglages au document via des variables CSS et un attribut de thème. */
 export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = settings.theme;
-  root.dataset.reduceMotion = String(settings.reduceMotion);
   root.dataset.syllables = String(settings.syllables);
   root.style.setProperty('--font-family', FONT_STACKS[settings.font]);
   root.style.setProperty('--font-size', `${settings.fontSize}px`);

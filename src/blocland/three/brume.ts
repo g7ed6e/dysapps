@@ -1,7 +1,7 @@
 // La brume de la scène 3D : le brouillard de profondeur (couleur d'horizon, qui suit le jour ; aucun sur la Carte, vue
 // de très haut), les nappes translucides sous les sommets des Îles du Ciel, qui respirent lentement, et dans Archipéo
 // les bancs de brume des Îles Brumeuses sur la mer libre (R4b-5e, world/decor/brume.ts), en un appel de dessin, qui
-// respirent selon la règle commune, à moitié sur la Carte, figés avec « Réduire les animations ».
+// respirent selon la règle commune, à moitié sur la Carte, figés quand l'appareil demande moins d'animations (`reduit`).
 import * as THREE from 'three';
 import { AMBIENCE, mixColor, palette } from '../world/daylight';
 import { bancsDeBrume } from '../world/decor/brume';

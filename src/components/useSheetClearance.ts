@@ -1,4 +1,5 @@
 import { useLayoutEffect, type RefObject } from 'react';
+import { moinsDAnimations } from '../core/mouvement';
 
 /**
  * Le bandeau de résultat est fixé en bas de l'écran : il ne doit cacher ni la question, ni la réponse touchée,
@@ -42,8 +43,7 @@ export function useSheetClearance(sectionRef: RefObject<HTMLElement | null>, ope
 
     const delta = Math.min(target.bottom - floor, target.top - topbar - margin);
     if (delta > 0) {
-      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.reduceMotion === 'true';
-      window.scrollBy({ top: delta, behavior: reduce ? 'auto' : 'smooth' });
+      window.scrollBy({ top: delta, behavior: moinsDAnimations() ? 'auto' : 'smooth' });
     }
     return cleanup;
   }, [sectionRef, open]);

@@ -11,7 +11,7 @@ Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo 
 - **Formes** : panneaux et cartes à angles de 12 px, boutons, champs et réponses à 8 px, étiquettes courtes en pastille ; bordures pleines de 2 px ; action principale en **bouton plein bleu pétrole** `#0E5A6E`, actions secondaires sur fond d’eau claire `#DCEBEA` ; appuyé, un bouton fonce, sans saut. Aucune ombre sur la page ; une seule ombre douce sous un panneau posé sur le monde (panneau d’île, bulles d’aide, liste des archipels). Les cartes d’une matière ou d’une île portent un **liseré** de sa couleur en tête ; l’endroit où l’on est, dans la barre du haut, est sur un aplat de sable.
 - **Jauge d’XP** pleine et arrondie, remplie de vert d’eau, et **insigne de rôle** : un hexagone à la couleur du rôle, avec un pictogramme dessiné par le code (rose des vents, carte, arche, voilier, phare) ; un rôle pas encore gagné est en pointillé.
 - **Icône de l’application** (écran d’accueil, PWA) : un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues vert d’eau, avec une étoile de sable (`public/icon.svg`, et sa version à marge `icon-maskable.svg`).
-- **Écran de lancement et écran titre** : la même icône, sur le fond crème de l’application ; à l’écran titre, elle tombe et se pose (coupé par « Réduire les animations »), sous le nom « Archipéo » dans la police des titres et une ligne dans la police de lecture.
+- **Écran de lancement et écran titre** : la même icône, sur le fond crème de l’application ; à l’écran titre, elle tombe et se pose (coupé quand l’appareil demande de réduire les animations), sous le nom « Archipéo » dans la police des titres et une ligne dans la police de lecture.
 - **Icônes** Lucide.
 - **Site de documentation** : la même charte, dans `docs/.vitepress/theme/custom.css` : barre du haut bleu nuit avec l’icône et le nom « Archipéo », liens bleu pétrole (vert d’eau en sombre), page courante du sommaire sur un liseré de sable, titres de page et de partie en Montserrat grasse, texte en Luciole ; le thème sombre reprend le thème Nuit.
 
@@ -20,7 +20,7 @@ Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo 
 - **Crème** (par défaut) : la palette ci-dessus.
 - **Nuit** : fond `#0E1F2E`, panneaux `#16304A`, texte crème `#F3EEE3` ; l’action principale passe au sable `#E2B865`, texte bleu nuit ; accent `#4FB3A4`.
 - **Clair** : le Crème sans teinte (fond `#F4F6F7`, panneaux et barre du haut blancs), plat, sans ombre.
-- **Contraste élevé** : noir, blanc et jaune `#FFE600`, focus cyan ; angles de 4 px partout, sans ombre.
+- **Contraste élevé** : retiré le 28 septembre 2026, il revient au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots) (il était noir, blanc et jaune `#FFE600`, focus cyan, avec des angles de 4 px partout, sans ombre).
 
 Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent pas avec le thème de l’interface.
 
@@ -71,9 +71,9 @@ Depuis le lot R4, **le décor** est peint aussi (`src/blocland/world/decorMesh.t
 Depuis le lot R5, **la construction est taillée** (`src/blocland/world/construction.ts`, `toits.ts`, `three/construction.ts`) : les bâtiments des plans, les ouvrages, les monuments, le quai, le décor resté en blocs au cœur des îles et le Bloc-Navire se lisent toujours en blocs posés, mais peints de la palette :
 
 - chaque bloc a sa teinte propre, à 4 % près, tirée de sa case ; les faces d’une même matière sont fusionnées, sans joints ni texture ;
-- les arêtes saillantes accrochent la lumière (un biseau peint de 0,08 case, jamais moins de 1,5 pixel, plus clair de 22 % et d’au moins 14 niveaux sur les teintes sombres comme l’ardoise) ; il s’efface de loin et s’éteint en Contraste élevé ;
+- les arêtes saillantes accrochent la lumière (un biseau peint de 0,08 case, jamais moins de 1,5 pixel, plus clair de 22 % et d’au moins 14 niveaux sur les teintes sombres comme l’ardoise) ; il s’efface de loin ;
 - trois toits sur quatre sont en ardoise, de la teinte de l’archipel (enneigée aux Îles du Ciel), un sur quatre en terre cuite (`#C0764A`) : la Ferme et la Mine, le Comptoir, le Théâtre, le Belvédère ; deux îles voisines ne sont jamais toutes deux en terre cuite, et la couleur d’un toit ne dit rien ;
-- un fantôme de plan est un cube crème Brume (`#E5EBE3`) translucide, cerné de Nuit océan (`#142B38`) à chaque case, plus opaque en Contraste élevé ; il ne montre plus la matière, que le panneau du plan dit ;
+- un fantôme de plan est un cube crème Brume (`#E5EBE3`) translucide, cerné de Nuit océan (`#142B38`) à chaque case; il ne montre plus la matière, que le panneau du plan dit ;
 - les fenêtres des maisons, des tours et des huttes sont des vitres sombres le jour ; elles s’allument une à une quand la nuit tombe (rien avant un degré de nuit de 0,3, toutes à 0,8), au plus trois par bâtiment, sans jamais clignoter ; les lanternes des cours sont un petit corps de bois au cœur jaune (`#FFD866`), au plus deux allumées par cour ; toutes les lueurs ensemble restent sous 3 % de l’image la nuit ;
 - le plan « Le phare de Grimoire » prend, étape par étape, le modèle du phare d’Archipéo (fût crème à deux bandes, galerie, lanterne, toit conique) ; aux Îles du Ciel, il n’y a qu’un phare, le grand ;
 - les bornes de mission sont des piliers de pierre à tête chanfreinée ; la voile du Bloc-Navire devient crème.

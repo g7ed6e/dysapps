@@ -29,7 +29,8 @@ Le texte à lire reste toujours dans la police choisie. La police des titres de 
 | **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit, barre du haut bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
 | **Nuit** | Fond bleu nuit et texte crème ; boutons principaux couleur sable. |
 | **Clair** | Fond blanc, plat, sans ombre ; barre du haut blanche. |
-| **Contraste élevé** | Noir, blanc et jaune, plat, angles presque droits, pour les basses visions. |
+
+Le thème **Contraste élevé** n’est plus au choix : il reviendra dans un lot ultérieur. Un appareil qui l’avait choisi s’ouvre en Nuit, le thème sombre le plus proche.
 
 ## Espacements
 
@@ -54,7 +55,7 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 
 ## Animations et vue du monde
 
-- **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
+- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, Archipéo suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
 - **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
@@ -74,7 +75,7 @@ Cette section rassemble des options **expérimentales**, désactivées par défa
 - **Essayer le nouveau dessin du monde** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; sur un appareil sans WebGL, la 2D peinte) au lieu du monde en blocs, qui reste disponible en décochant la case.
 - **La surface du monde**, affichée quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Couleurs unies** (une couleur par face), **Couleurs nuancées** (la couleur fondue en douceur, le style retenu pour Archipéo), **Coins arrondis** (la lumière arrondie sur les coins des cubes).
 
-Ces options préparent le choix de l’univers, qui arrivera dans les Réglages et les remplacera : on y choisira Archipéo ou Blocland, le monde en blocs. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
+Ces options préparent le choix de l’univers, qui les remplacera à l’ouverture du lot 6 : une section **Univers** où l’on choisit **Archipéo**, une aventure en mer, ou **Blocland**, le monde en blocs. Chaque univers y a une icône, son nom et une phrase à écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions) ; le changement se voit au retour au village. Un appareil qui a déjà une progression reste dans Blocland, et un message, dit une seule fois après le premier toucher de l’écran titre, lui présente Archipéo. Un appareil qui avait coché « Essayer le nouveau dessin du monde » passe à Archipéo sans ce message. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
 
 ## Application
 

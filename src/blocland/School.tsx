@@ -9,11 +9,12 @@ import { SpeakButton } from '../components/SpeakButton';
 import { SubjectApps } from '../components/SubjectApps';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
-import { useSettings } from '../core/SettingsContext';
+import { useSettings, useUnivers } from '../core/SettingsContext';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
 import { archipelagoOf } from './world/archipelago';
+import { UNIVERS } from '../core/univers';
 
 export const SCHOOL_TITLE = 'École du village';
 /** L'adresse de l'école (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
@@ -116,11 +117,12 @@ export function SchoolSheet({ onClose }: { onClose: () => void }) {
 
 /** L'école en vue simple : une page. */
 export function SchoolPage() {
+  const univers = useUnivers();
   const island = useSchoolIsland();
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Archipéo
+        <Icon name="back" /> {UNIVERS[univers].nom}
       </Link>
       <h1 className="page-title">
         <Icon name="school" /> {SCHOOL_TITLE}

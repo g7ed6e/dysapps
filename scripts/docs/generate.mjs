@@ -836,7 +836,6 @@ function baremePage(d) {
         ['Vitesse de lecture', String(DEFAULT_SETTINGS.speechRate), '0,5 à 1,3'],
         ['Lire les consignes à voix haute', DEFAULT_SETTINGS.autoRead ? 'oui' : 'non', ''],
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
-        ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
         ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
         ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],

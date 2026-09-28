@@ -71,7 +71,7 @@ Les nappes suivent `respirationDeLaBrume` et se figent d’un coup avec « Rédu
   - Proportions et couleurs identiques au 6e.
   - Aucune case du cœur sous le socle.
   - Les nappes coûtent un seul appel.
-  - Les deux captures « Réduire les animations » sont identiques, oiseau compris.
+  - Avec « Réduire les animations » (la préférence de l’appareil), rien ne bouge, oiseau compris. Plus de capture dédiée depuis le 28 septembre 2026 : la vidéo sur tablette le montre.
   - Les lueurs couvrent moins de 5 % des captures de nuit.
   - Le test en gris est réussi. Le budget est tenu, par poste.
 

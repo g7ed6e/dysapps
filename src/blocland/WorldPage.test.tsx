@@ -6,6 +6,7 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
 import { WorldPage } from './WorldPage';
 import { BADGES } from '../core/progress';
+import { demanderMoinsDAnimations } from '../core/mouvement.testing';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île.
 vi.mock('./three', () => ({
@@ -148,13 +149,13 @@ it('embarquer joue le voyage en deux temps : le départ, le changement d’archi
   expect(screen.getByRole('dialog', { name: /Marché des proportions/ })).toBeInTheDocument();
 });
 
-it('avec « Réduire les animations », le voyage est un écran fixe avec un bouton « Arriver »', async () => {
+it('quand l’appareil demande moins d’animations, le voyage est un écran fixe avec un bouton « Arriver »', async () => {
   const { VEHICLE_STAGES } = await import('./world/vehicle');
   const { planCells } = await import('./world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
-  localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
+  demanderMoinsDAnimations();
   const user = userEvent.setup();
   renderAt('/aventure/plaine');
   await user.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e/ }));
@@ -194,8 +195,8 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('foret'));
 });
 
-it('avec « Réduire les animations », un archipel déjà atteint s’ouvre tout de suite, sans écran du voyage', async () => {
-  localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
+it('quand l’appareil demande moins d’animations, un archipel déjà atteint s’ouvre tout de suite, sans écran du voyage', async () => {
+  demanderMoinsDAnimations();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
   renderAt('/aventure/foret');
   expect(screen.queryByRole('dialog', { name: /Le voyage/ })).not.toBeInTheDocument();

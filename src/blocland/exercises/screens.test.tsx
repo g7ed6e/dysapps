@@ -6,6 +6,7 @@ import { ProgressProvider } from '../../core/ProgressContext';
 import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
 import { loadAllExercises } from './index';
+import { demanderMoinsDAnimations } from '../../core/mouvement.testing';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -151,7 +152,7 @@ it('chasse au son au clavier : les chiffres cochent les cartes, Entrée valide p
 
 it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', async () => {
   unlockAll();
-  localStorage.setItem('dysapps:settings', JSON.stringify({ reduceMotion: true }));
+  demanderMoinsDAnimations();
   const user = userEvent.setup();
   const def = getExercise('mine-filon-b')!;
   renderAt('/aventure/mine/filon');

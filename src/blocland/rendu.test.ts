@@ -35,3 +35,17 @@ it('lit aussi les réglages expérimentaux ; l’adresse l’emporte sur eux', (
   // Le style seul, sans le rendu Archipéo, ne change rien.
   expect(styleDepuis('https://dysapps.fr/#/aventure', { renduArchipeo: false, styleArchipeo: 'a' })).toBeNull();
 });
+
+it('une fois l’univers ouvert, l’univers choisit le rendu à la place des réglages expérimentaux', () => {
+  const ici = 'https://dysapps.fr/#/aventure';
+  const choix = { renduArchipeo: true, styleArchipeo: 'b' } as const;
+  // Fermé : l'univers enregistré ne change rien.
+  expect(renduDepuis(ici, { ...choix, renduArchipeo: false, univers: 'archipeo' }, false)).toBe('blocs');
+  // Ouvert : Blocland dessine en blocs, même avec l'ancien réglage expérimental ; Archipéo (ou rien) en Archipéo.
+  expect(renduDepuis(ici, { ...choix, univers: 'blocland' }, true)).toBe('blocs');
+  expect(renduDepuis(ici, { ...choix, renduArchipeo: false, univers: 'archipeo' }, true)).toBe('archipeo');
+  expect(renduDepuis(ici, { ...choix, renduArchipeo: false }, true)).toBe('archipeo');
+  expect(styleDepuis(ici, { ...choix, univers: 'blocland' }, true)).toBeNull();
+  // L'adresse l'emporte encore jusqu'à la bascule, qui retire le drapeau.
+  expect(renduDepuis('https://dysapps.fr/?rendu=archipeo#/aventure', { ...choix, univers: 'blocland' }, true)).toBe('archipeo');
+});

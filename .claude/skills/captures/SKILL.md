@@ -1,6 +1,6 @@
 ---
 name: captures
-description: Prendre vite les captures d'écran de DysApps (manuel, lots de rendu Archipéo et Blocland, Contraste élevé, avant/après) et les publier sur la branche captures. À lire avant toute capture.
+description: Prendre vite les captures d'écran de DysApps (manuel, lots de rendu Archipéo et Blocland, avant/après) et les publier sur la branche captures. À lire avant toute capture.
 ---
 
 # Les captures d'écran, vite
@@ -27,7 +27,7 @@ Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite d
 
 ## Ce qu'un lot de rendu montre
 
-Voir `docs/conception/cadrage-archipeo.md` (les captures déclarées d'avance) et `docs/conception/bonnes-pratiques-dys.md` : jour, nuit, Contraste élevé, et « Réduire les animations » (pas de 2D) (deux captures qui doivent être identiques octet pour octet). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
+Voir `docs/conception/cadrage-archipeo.md` (les captures déclarées d'avance) et `docs/conception/bonnes-pratiques-dys.md` : jour et nuit, en 3D. Ni 2D, ni Contraste élevé, ni « Réduire les animations » : ces captures sont retirées le 28 septembre 2026 (les deux réglages reviennent au lot 11 du cadrage Archipéo, avec leurs captures). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
 
 ## Publier sur la branche `captures`
 

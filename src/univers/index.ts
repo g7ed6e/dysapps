@@ -3,12 +3,14 @@
 // tient en une ligne. Voir docs/conception/cadrage-archipeo.md, « Les fils du lot 6 ».
 import { ARCHIPEO } from './archipeo';
 import { BLOCLAND } from './blocland';
+import { useUniversChoisi } from '../core/SettingsContext';
+import { UNIVERS_OUVERT } from '../core/univers';
 import type { TextesUnivers, UniversId } from './types';
 
 export type { TextesUnivers, UniversId } from './types';
 
-/** Fausse jusqu'à la bascule du lot 6. */
-export const UNIVERS_OUVERT = false;
+/** Fausse jusqu'à la bascule du lot 6 : une seule constante, celle du réglage « Univers » (`src/core/univers.ts`). */
+export { UNIVERS_OUVERT };
 
 const TEXTES: Record<UniversId, TextesUnivers> = { archipeo: ARCHIPEO, blocland: BLOCLAND };
 
@@ -24,10 +26,7 @@ export function textesDe(univers: UniversId): TextesUnivers {
   return TEXTES[univers];
 }
 
-/**
- * Les textes de l'univers affiché, pour un composant. Le réglage « Univers » (fil A du lot 6) viendra ici ; d'ici là,
- * ce sont ceux de Blocland.
- */
+/** Les textes de l'univers affiché, pour un composant : l'univers des réglages une fois ouvert, Blocland avant. */
 export function useTextes(): TextesUnivers {
-  return textesDe(universAffiche());
+  return textesDe(universAffiche(useUniversChoisi()));
 }

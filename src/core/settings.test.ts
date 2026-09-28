@@ -20,6 +20,11 @@ it('convertit les anciens thèmes et polices', () => {
   expect(sanitizeSettings({ font: 'systeme' as never }).font).toBe('arial');
 });
 
+it('le Contraste élevé et « Réduire les animations » retirés : la Nuit, et plus de réglage des animations', () => {
+  expect(sanitizeSettings({ theme: 'contraste' as never }).theme).toBe('nuit');
+  expect(sanitizeSettings({ reduceMotion: true } as never)).not.toHaveProperty('reduceMotion');
+});
+
 it('montre le monde en 3D par défaut et lit la vue enregistrée', () => {
   expect(sanitizeSettings({}).worldView).toBe('3d');
   expect(sanitizeSettings({ worldView: 'liste' }).worldView).toBe('liste');
@@ -83,4 +88,13 @@ it('s’ouvre sur le village par défaut, et lit le choix « Au démarrage »', 
   expect(sanitizeSettings({}).startIn).toBe('village');
   expect(sanitizeSettings({ startIn: 'menu' }).startIn).toBe('menu');
   expect(sanitizeSettings({ startIn: 'plage' as never }).startIn).toBe('village');
+});
+
+it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vaut Archipéo', () => {
+  expect('univers' in sanitizeSettings({})).toBe(false);
+  expect(sanitizeSettings({ univers: 'blocland' }).univers).toBe('blocland');
+  expect(sanitizeSettings({ univers: 'archipeo' }).univers).toBe('archipeo');
+  expect(sanitizeSettings({ univers: 'atlantide' as never }).univers).toBe('archipeo');
+  expect(sanitizeSettings({ univers: 'toString' as never }).univers).toBe('archipeo');
+  expect('univers' in DEFAULT_SETTINGS).toBe(false);
 });

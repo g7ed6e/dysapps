@@ -4,7 +4,7 @@ import { AppUpdateBanner } from '../core/AppUpdateBanner';
 import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
-import { useSettings } from '../core/SettingsContext';
+import { moinsDAnimations } from '../core/mouvement';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
 import { Icon, type AnyIconName } from './Icon';
@@ -35,7 +35,6 @@ export function Layout() {
 
 function Shell() {
   const { progress } = useProgress();
-  const { settings } = useSettings();
   const { pathname } = useLocation();
   // Pendant une partie : ni barre du haut ni onglets, seulement le bouton Pause (mode concentration).
   const focus = useFocusActive();
@@ -46,7 +45,7 @@ function Shell() {
   // Changer de page coupe la lecture vocale en cours.
   useEffect(() => stopSpeaking, [pathname]);
 
-  // Un nouvel écran glisse doucement en place (pas le monde de Blocland, ni avec « Réduire les animations »).
+  // Un nouvel écran glisse doucement en place (pas le monde de Blocland, ni quand l’appareil demande moins d’animations).
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   useEffect(() => {
@@ -54,7 +53,7 @@ function Shell() {
       first.current = false;
       return;
     }
-    const reduce = settings.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const reduce = moinsDAnimations();
     if (immersive || reduce || !main.current?.animate) return;
     main.current.animate(
       [
