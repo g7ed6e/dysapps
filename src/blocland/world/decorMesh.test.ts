@@ -6,6 +6,7 @@ import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
+import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/phare';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
 
@@ -131,20 +132,21 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
   }
 });
 
-it('tout le décor en un ou deux appels de dessin, en moins de triangles que ses cubes', () => {
+it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses fumées), en moins de triangles que ses cubes', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const { maillage, elements, sol } = monde(a);
     const cout = coutDuDecor(maillage);
     expect(cout.drawCalls, a).toBeGreaterThanOrEqual(1);
-    expect(cout.drawCalls, a).toBeLessThanOrEqual(2);
+    expect(cout.drawCalls, a).toBeLessThanOrEqual(3);
     const cubes = elements.flatMap((e) => e.cubes);
     const avant = faceCount(buildMesh(cubes, sol)) * 2;
     expect(cout.triangles, a).toBeLessThan(avant);
     expect(cout.triangles, a).toBeLessThanOrEqual(15_000);
     // Des couleurs finies, dans l'espace linéaire.
-    for (const f of [maillage.decor, maillage.lueurs]) {
+    for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {
       expect(f.positions.length).toBe(f.elements.length * 9);
-      for (const v of f.colors) expect(v >= 0 && v <= 1).toBe(true);
+      // (Seul le fût du phare dépasse 1, peint plus clair que blanc ; il n'est pas encore posé dans le décor.)
+      for (const v of f.colors) expect(v >= 0 && v <= ECLAT_DU_FUT * (1 + OMBRE_DU_FUT.eclat) * (1 + OMBRE_DU_FUT.chaleur)).toBe(true);
       for (const v of f.positions) expect(Number.isFinite(v)).toBe(true);
     }
   }
@@ -295,11 +297,17 @@ it('le chêne géant montre moins de la moitié de son tronc ; les repères n’
 
 it('la fumée : chaque volute plus grosse, dérivée sous le vent comme le carré de son rang, les dernières fondues', () => {
   expect(FUMEE).toEqual({ croissance: 0.35, fondu: 0.3, volutes: 3 });
-  const { elements, maillage } = monde('4e');
-  const i = elements.findIndex((e) => e.genre === 'haut-fourneau');
-  // Les volutes : des icosaèdres de vingt facettes, les derniers triangles de l'élément.
-  const ts = triangles(maillage, i).slice(-20 * 8);
-  const volutes = Array.from({ length: 8 }, (_, k) => ts.slice(k * 20, k * 20 + 20).flatMap((t) => t.p));
+  // Les volutes du haut-fourneau (4e) : des icosaèdres de vingt facettes, dans le maillage des fumées (R4b-6e), dans leur
+  // pose immobile du lot R4.
+  const f = monde('4e').maillage.fumees;
+  expect(f.panaches.length).toBe(1);
+  const volutes = Array.from({ length: 8 }, (_, k) => {
+    const pts: [number, number, number][] = [];
+    for (let t = 0; t < f.facettes.elements.length; t++)
+      if (f.volutes[f.facettes.elements[t]].k === k) for (let s = 0; s < 3; s++) pts.push([0, 1, 2].map((j) => f.facettes.positions[t * 9 + s * 3 + j]) as [number, number, number]);
+    expect(pts.length, `volute ${k}`).toBe(60);
+    return pts;
+  });
   const centres = volutes.map((pts) => [0, 1, 2].map((j) => pts.reduce((s, q) => s + q[j], 0) / pts.length));
   const tailles = volutes.map((pts) => Math.max(...pts.map((q) => q[0])) - Math.min(...pts.map((q) => q[0])));
   for (let k = 1; k < 8; k++) expect(tailles[k], `volute ${k}`).toBeGreaterThan(tailles[k - 1] * 0.9);

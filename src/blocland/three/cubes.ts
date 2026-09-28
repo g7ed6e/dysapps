@@ -53,6 +53,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
   const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(), decorSignature: '' } : null;
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
+  // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
+  if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
   // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés.
   const materiaux = archipeo ? creerMateriaux(lumiere) : null;
   const taille = materiaux ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), signature: '' } : null;
@@ -149,7 +151,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     },
     formeDEclat: sparkGeo,
     materiaux,
-    animer: (_t, _dt, reduit) => {
+    animer: (t, dt, reduit) => {
+      // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
+      sol?.decor.animer(t, dt, reduit);
       if (reduit) return;
       // Éclats : petits cubes qui retombent et disparaissent.
       for (const s of [...sparks]) {

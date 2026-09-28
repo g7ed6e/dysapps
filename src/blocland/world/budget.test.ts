@@ -1,5 +1,5 @@
-import { APPEL_DU_PASSAGE, bornesCost, constructionCost, ENVELOPPES, navireCost, enveloppeDe, fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit, type Poste } from './budget';
-import { ARCHIPELAGO_IDS } from './map';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
+import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
   const { progress, village } = toutConstruit();
@@ -27,8 +27,9 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
   for (const a of ARCHIPELAGO_IDS) {
     const { sol, mer, faune, decor, triangles, drawCalls } = sceneCostArchipeo(a);
     expect(sol.drawCalls, a).toBeLessThanOrEqual(2);
-    // Lot R4 : tout le décor (arbres, rochers, repères, cascades, habillage de la mer) en un appel, deux avec ses lueurs.
-    expect(decor.drawCalls, a).toBeLessThanOrEqual(2);
+    // Lot R4 : tout le décor (arbres, rochers, repères, cascades, habillage de la mer) en un appel, deux avec ses lueurs,
+    // trois avec ses fumées, qui bougent (R4b-6e).
+    expect(decor.drawCalls, a).toBeLessThanOrEqual(3);
     expect(decor.triangles, a).toBeLessThanOrEqual(15_000);
     expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
@@ -78,19 +79,28 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
   // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.
-  const mesures: Partial<Record<Poste, (a: (typeof ARCHIPELAGO_IDS)[number]) => { triangles: number; drawCalls: number }>> = {
-    construction: constructionCost,
-    bornes: bornesCost,
-    navire: navireCost,
-  };
-  for (const p of postes)
-    if (mesures[p])
-      it(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {
+  // R5 : ses trois postes dans les quatre archipels.
+  const R5: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { construction: constructionCost, bornes: bornesCost, navire: navireCost };
+  // R4b-6e : les quatre postes de R4b aux Premiers Rivages ; les autres archipels suivent avec leur sous-lot.
+  const COUTS: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { sol: solCost, mer: merCost, faune: fauneCost, decor: decorCost };
+  for (const p of postes) {
+    const cout = COUTS[p];
+    const r5 = R5[p];
+    if (r5) {
+      it(`R5 : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {
         for (const a of ARCHIPELAGO_IDS) {
-          const m = mesures[p]!(a);
+          const m = r5(a);
           expect(m.triangles, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
           expect(m.drawCalls, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
         }
       }, 30_000);
-    else it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
+    } else if (ENVELOPPES[p].lot === 'R4b' && cout) {
+      it(`R4b-6e : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe aux Premiers Rivages`, () => {
+        const c = cout('6e');
+        expect(c.triangles).toBeLessThanOrEqual(enveloppeDe(p, '6e').triangles);
+        expect(c.drawCalls).toBeLessThanOrEqual(enveloppeDe(p, '6e').drawCalls);
+      }, 30_000);
+      it.todo(`R4b : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe dans les trois autres archipels`);
+    } else it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
+  }
 });

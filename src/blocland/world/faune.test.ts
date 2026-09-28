@@ -1,6 +1,9 @@
 import { AMBIENCE } from './daylight';
+import { luminance } from './palette';
 import {
   BALEINE,
+  couleursDeLaBaleine,
+  VENTRE_DE_NUIT,
   EVENT,
   formeDeBaleine,
   formeDEcume,
@@ -122,4 +125,23 @@ describe('la pose des baleines', () => {
     expect(fin.fini).toBe(true);
     expect(fin.pose).toEqual(poseDeRonde(ronde, 100 + sink + swim + rise + 0.1));
   });
+});
+
+it('la nuit, le ventre crème de la baleine s’assombrit vers son flanc, sans rien changer d’autre ni le jour (R4b-6e)', () => {
+  const f = formeDeBaleine();
+  const jour = couleursDeLaBaleine(f, 0, new Float32Array(f.colors.length));
+  expect(Array.from(jour)).toEqual(Array.from(f.colors));
+  const nuit = couleursDeLaBaleine(f, 1, new Float32Array(f.colors.length));
+  let ventres = 0;
+  for (let i = 0; i < f.colors.length; i += 3) {
+    const change = [0, 1, 2].some((j) => nuit[i + j] !== f.colors[i + j]);
+    if (!change) continue;
+    ventres++;
+    // Plus sombre qu'au jour, et plus clair que le flanc : le ventre se lit encore, sans luire.
+    const l = (c: ArrayLike<number>) => 0.2126 * c[i] + 0.7152 * c[i + 1] + 0.0722 * c[i + 2];
+    expect(l(nuit)).toBeLessThan(l(f.colors));
+  }
+  expect(ventres).toBeGreaterThan(0);
+  expect(luminance(VENTRE_DE_NUIT)).toBeLessThan(luminance(BALEINE.ventre));
+  expect(luminance(VENTRE_DE_NUIT)).toBeGreaterThan(luminance(BALEINE.flanc));
 });
