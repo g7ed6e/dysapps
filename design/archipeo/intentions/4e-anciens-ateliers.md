@@ -16,7 +16,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
   - Câble et crochet immobiles. C’est la seule verticale fine de l’archipel.
 - **Le fourneau de la Forge** (R4b, dans l’emprise de 2 × 2 du haut-fourneau de Blocland).
   - Maçonnerie tronconique de pierre `#6F473D`, 5 cases de haut, de 1,7 à 1,2 case de section, deux cerclages de métal rouillé `#AF6C55`.
-  - Une gueule voûtée en bas, de 0,8 × 1 case, sur la face vue par la caméra, qui rougeoie dans les lueurs `#E8662C`, sans pulser.
+  - Une gueule voûtée en bas, de 0,8 × 1 case, sur la face vue par la caméra, qui rougeoie dans les lueurs `#E8662C`, sans pulser, sans scintiller, sans varier par à-coups avec le degré de nuit. Sur une île fermée, elle reste éteinte et délavée, comme la lanterne du phare : elle rougeoie une fois l’île ouverte, et la remise en marche garde son avant et son après. Elle compte dans les lueurs sous 5 % de l’image.
   - Trois volutes minces au sommet. Plus bas que la tour de l’atelier de R5.
 - **Le volcan lointain** (R4b, par `lointain.ts`, environ 150 triangles).
   - Cône tronqué à 9 pans, roche `#6A5048`, de 15 à 18 blocs, de 80 à 120 cases derrière le bout droit de la crête.
@@ -36,6 +36,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 - **Le haut-fourneau** (basalte, lave au sommet) devient le fourneau de maçonnerie. Il se lisait comme un second volcan, et sa fumée frôlait le nom « Forge des puissances ».
 - **Les aiguilles d’ardoise en mer** deviennent des écueils bas, une case au plus au-dessus de l’eau, de `#57504C` à `#3E3636`, avec de l’écume. Le semis sur la Carte est moins dense (reporté de R4).
 - **Les rochers de la Forge** passent en pierre chaude (point 5, reporté de R4).
+- **Le commentaire de `palette.ts`** qui dit que le volcan du 4e « fume et rougeoie » se corrige : aucune lueur au cratère.
 - **La neige des pics de la Falaise** se peint en roche chaude claire (point 5) : pas de sommets blancs comme au 3e.
 
 ## 5. L’ambiance (`ambianceDe('4e')`)
@@ -64,7 +65,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - **Captures** : les 21 déclarées (l’île montrée est la Forge), l’arrivée en voyage, et l’Atelier de jour et de nuit.
 - **Critères** :
-  - La flèche de la grue et les fumées ne chevauchent aucun nom.
+  - La flèche de la grue et les fumées (fourneau et panache du volcan, qui dérive derrière les îles du fond) ne chevauchent aucune étiquette, ni la flèche, ni le bonhomme, dans la vue de l’archipel comme sur la Carte.
   - Le volcan paraît plus petit que la grue dans la vue de l’archipel.
   - Aucune case de sol n’est blanche.
   - Les lueurs (la gueule, plus les fenêtres de R5 à la revue d’ensemble) couvrent moins de 5 % des captures de nuit.

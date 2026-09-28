@@ -9,8 +9,10 @@
 3. **Le lointain ne ressemble jamais à une île** : pas de plage, pas de quai, pas d’étiquette, rien à toucher. Il est caché sur la Carte.
 4. **Chaque genre de décor de Blocland** (écueil, banc, repère) garde ses cubes dans la grille. Seule sa forme dans Archipéo change, par archipel. Les cubes de `seaDecor` ne changent pas.
 5. **Ne bougent pas** : les entrées de nuit, la direction du soleil, les strates, la règle de mouvement (`world/decor/fumee.ts` : une volute toutes les 7 s, la brume qui respire sur 16 s, opacité ±10 %, glissement de 0,1 case par seconde au plus), le modèle du phare (`world/decor/phare.ts`) et la caméra.
-6. **Rien ne passe devant ce qu’on lit** : aucune fumée, brume, grue ni oiseau sur un nom, la flèche ou le bonhomme, dans aucune capture.
-7. **On juge sur la caméra du jeu.** L’horizon est hors du cadre dans la vue d’une île, la vue de l’archipel et la Carte ; on ne le voit qu’en voyage, dans le haut du cadre. Les pourcentages de composition des esquisses ne s’appliquent pas : les critères de chaque fiche sont écrits sur les vraies vues.
+6. **Rien ne passe devant ni derrière ce qu’on lit ou ce qu’on suit** : nom et état d’île (dont « Fermée »), flèche « Commence ici », bonhomme, navire en voyage, repères des bornes. Aucune fumée, brume, grue ni oiseau, dans la vue d’une île, la vue de l’archipel, la Carte et l’arrivée en voyage. Les étiquettes ont un fond opaque dessiné par-dessus le relief : une couche transparente ne se dessine jamais après elles.
+7. **Rien ne s’écrit dans la scène** (fiche de famille, règle 7) : ni sur une bannière, ni sur un entrepôt, un mât ou une enseigne de R5.
+8. **Aucune lueur ne pulse, ne scintille ni ne varie par à-coups avec le degré de nuit** (fiche de famille, règle 5).
+9. **On juge sur la caméra du jeu.** L’horizon est hors du cadre dans la vue d’une île, la vue de l’archipel et la Carte ; on ne le voit qu’en voyage, dans le haut du cadre. Les pourcentages de composition des esquisses ne s’appliquent pas : les critères de chaque fiche sont écrits sur les vraies vues.
 
 ## Le relief, en deux parties
 
@@ -45,7 +47,14 @@ En plus du tableau « Qui possède quoi » du cadrage :
 Les 21 captures déclarées (`scripts/rendu/mesures.mjs`), plus deux prises en local :
 
 - **l’arrivée en voyage** : c’est la seule vue où l’horizon se voit ;
-- **l’île qui porte le repère**, de jour et de nuit, quand ce n’est pas la première île de l’archipel (la seule que montre la capture déclarée d’une île).
+- **l’île qui porte le repère**, de jour et de nuit, quand ce n’est pas la première île de l’archipel (la seule que montre la capture déclarée d’une île) ;
+- **la vue de l’archipel en thème Contraste élevé**, avec une île fermée, de nuit ;
+- **une courte vidéo sur tablette**, avec et sans « Réduire les animations », de ce qui bouge dans l’archipel (bancs du 5e, fourneau et volcan du 4e, oiseau du 3e) : un rythme ne se juge pas sur une image fixe, et le sous-lot ne l’attend pas de la revue d’ensemble.
+
+Dans chaque sous-lot, deux critères s’ajoutent à ceux de la fiche (référent dys) :
+
+- les bancs, les nappes, les fumées et l’oiseau ne voilent jamais une étiquette ni la flèche, sur aucune capture ;
+- le contour des étiquettes, la flèche, le bonhomme et les repères des bornes restent nets sur la brume, le plancher de nuages et la neige, en thème Contraste élevé aussi.
 
 ## Le test en niveaux de gris
 

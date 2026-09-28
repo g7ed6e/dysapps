@@ -20,8 +20,10 @@ L’accomplissement : on voit loin. En arrivant, l’élève voit au centre de l
   - Dans la vue de l’archipel, sa crête reste sous la galerie du phare.
 - **Le plancher de nuages** `#DDE3E8` (aujourd’hui `#E0E6F2`), un blanc bleuté, jamais sable.
 - **L’oiseau planeur** (R4b, dans `world/faune.ts`, un appel de dessin, 150 triangles au plus).
-  - Un seul oiseau, de 3 cases d’envergure, ailes fixes, aux couleurs des oiseaux communs, qui tourne derrière et au-dessus du phare, plus haut que tous les autres oiseaux, en 24 s au moins par tour.
-  - Figé avec « Réduire les animations ». Jamais sur un nom.
+  - Un seul oiseau, de 3 cases d’envergure, ailes fixes, aux couleurs des oiseaux communs, qui tourne au-dessus du massif, derrière l’arc des îles, à hauteur de la galerie du phare, plus haut que tous les autres oiseaux, en 24 s au moins par tour, à vitesse constante, sans à-coups ni battement d’ailes.
+  - Sa ronde reste tout entière au-dessus du massif : jamais devant la lanterne, jamais sur une île. Il vole seul.
+  - Il ne tourne pas au-dessus d’une île : le lot 9 prévoit des oiseaux qui signalent la zone active, et un oiseau qui tourne toujours au-dessus de la même île serait pris pour ce signal.
+  - Figé avec « Réduire les animations », dans une pose hors des étiquettes. Il ne passe jamais devant ni derrière une étiquette, la flèche ou le bonhomme.
 - **Pas de baleine** jusqu’au lot 8.
 
 ## 3. Le relief (partie 2, après U2)
@@ -64,7 +66,7 @@ Les nappes suivent `respirationDeLaBrume` et se figent d’un coup avec « Rédu
 - **Captures** : les 21 déclarées (l’île montrée est le Belvédère), l’arrivée en voyage, l’île du Phare de jour et de nuit, et les deux phares au même cadrage.
 - **Critères** :
   - La teinte de l’horizon et du voile est entre 195° et 215°.
-  - La lanterne du phare est le point le plus haut de la vue de l’archipel, sur le ciel.
+  - La lanterne du phare est le point le plus haut de la vue de l’archipel (l’oiseau planeur mis à part), sur le ciel.
   - Le fût se lit en gris contre la neige et le plancher : un contraste d’au moins 1,3:1 avec son fond direct, sinon ce sont les bandes qui portent la silhouette.
   - Proportions et couleurs identiques au 6e.
   - Aucune case du cœur sous le socle.
@@ -86,7 +88,7 @@ Rien de propre au 3e. Les deux écarts à la règle 1 (le site, le socle de 3 ×
 
 ## Pour R5
 
-- **Retirer le phare du décor du cœur** de l’île du Phare (`world/decor.ts`, entrée `phare`) : le 3e n’a qu’un phare.
+- **Retirer le phare du décor du cœur** de l’île du Phare (`world/decor.ts`, entrée `phare`), dans Archipéo seulement : le 3e n’a qu’un phare. Blocland le garde ; le consultant de Blocland relit.
 - **Les plans des îles du Phare et de l’Observatoire des textes** se dessinent en tours de pierre de taille, sans le modèle du phare : lanterne sans bandes, toit d’ardoise enneigé, pas de cône en terre cuite.
 - **Les toits** sont enneigés (règle 2 de la fiche de famille).
 - **Propositions du consultant d’Archipéo, validées** : une coupole d’astronomie de pierre claire à l’Observatoire des données ; une salle des archives à verrière à l’Observatoire des textes ; un mât de télégraphie en bois haubané au Studio ; une bannière en terre cuite et des créneaux discrets au Château.

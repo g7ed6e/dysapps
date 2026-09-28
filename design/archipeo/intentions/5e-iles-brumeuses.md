@@ -21,7 +21,7 @@ Aucun n’est partagé avec un autre archipel.
 - **Les tours et les ruines de pierre** `#7D8A86`, sans aucune lueur (R4b, de 60 à 110 triangles chacune).
   - **Carrefour** : une tour carrée en ruine, 3 cases, toit d’ardoise `#224C5F` effondré.
   - **Marais** : une tour d’archives trapue, carrée, penchée d’environ 8°, 3,5 cases de haut, le pied dans les roseaux et dans des éboulis qui couvrent toute l’emprise du champignon de Blocland.
-  - **Masse lointaine centrale** : une tour carrée de 5 cases au toit d’ardoise, comme sur la planche.
+  - **Masse lointaine centrale** : une tour carrée de 5 cases au toit d’ardoise, comme sur la planche, sans chemin, sans quai et sans lueur, pâlie par la brume comme sa masse.
 - **La calotte de sérac du Glacier** (R4b) : un bloc de glace pâle `#E5EBE3`, facetté, sur le sommet du plus haut pic seulement, sur moins d’un quart de sa hauteur, au-dessus de la brume. Le nom de l’île reste vrai.
 - **Les ponts de pierre et de bois** (R5, si le mainteneur l’accepte) : voir « Pour R5 ».
 
@@ -66,7 +66,7 @@ Aucun n’est partagé avec un autre archipel.
 
 - **Captures** : les 21 déclarées (l’île montrée est le Glacier), l’arrivée en voyage, et le Marais de jour et de nuit.
 - **Critères** :
-  - La brume couvre au moins 50 % de la mer visible dans la vue de l’archipel, et aucune case de terre.
+  - La brume couvre au moins 50 % de la mer visible dans la vue de l’archipel, et aucune case de terre. Elle ne couvre jamais la route du navire pendant le voyage : le navire reste entier et visible. Sur la Carte, aucun banc ne passe sous une étiquette ni sous la flèche.
   - Au moins trois masses lointaines se lisent dans le haut de la vue de l’archipel ; sinon l’artiste technique 3D le signale et le directeur artistique tranche.
   - Aucune case de sol n’est blanche sous la calotte du Glacier.
   - Aucune tour ni masse ne cache une borne, un nom ou un cœur d’île.
@@ -88,7 +88,7 @@ Aucun n’est partagé avec un autre archipel.
 
 ## Pour R5
 
-- **Les ponts à construire du 5e** (Marché–Marais, Marché–Comptoir, Marais–Manoir, Comptoir–Manoir) : un tablier droit et rigide de planches `#9C7C4B`, un garde-corps `#6E5234`, des culées de pierre `#7D8A86`. Les états avant et après la restauration se voient. Le référent dys relit.
+- **Les ponts à construire du 5e** (Marché–Marais, Marché–Comptoir, Marais–Manoir, Comptoir–Manoir) : un tablier droit et rigide de planches `#9C7C4B`, un garde-corps `#6E5234`, des culées de pierre `#7D8A86`. Les états avant et après la restauration se voient. L’état « à restaurer » se lit par la forme (tablier incomplet, planches absentes), pas par la seule couleur ; il ne ressemble jamais à un passage qu’on peut prendre, et le pont reste nommé comme les autres ouvrages dans l’interface. Le référent dys relit.
 - **« Le phare du large »** : une tour ronde à feu ouvert, de pierre, sans bandes ni toit conique.
 - **Propositions du consultant d’Archipéo, validées** : une échelle de marée de pierre et de bois, graduée sans chiffres, au Glacier ; un entrepôt de quai à mât de charge au Comptoir ; un manoir de pierre grise et d’ardoise aux volets clos, qui se rouvrent à la restauration.
 
