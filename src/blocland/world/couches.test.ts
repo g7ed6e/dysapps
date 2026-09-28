@@ -71,7 +71,7 @@ const GRILLE = [
 function estUnivers(file: string): boolean {
   const n = nom(file);
   if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/univers';
-  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/habillage/') || n === 'world/palette' || n.startsWith('world/modeleDessine');
+  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/habillage/') || n === 'world/palette' || n === 'world/modeleDessine' || n.startsWith('world/modeleDessine/');
 }
 
 /** Le contrat commun des vues et sa simulation. */
@@ -81,7 +81,9 @@ const PERMIS: Record<Couche, Couche[]> = {
   regle: ['regle', 'neutre'],
   grille: ['regle', 'grille', 'neutre'],
   commun: ['regle', 'grille', 'commun', 'neutre'],
-  univers: ['regle', 'grille', 'commun', 'univers', 'neutre'],
+  // Un univers habille le dessin et peut donc le lire (sa palette lit l'heure, son habillage le rendu choisi). Seuls les
+  // règles, la grille et le contrat commun sont parcourus : ce qui compte ici, c'est qu'aucun d'eux n'importe un univers.
+  univers: ['regle', 'grille', 'commun', 'univers', 'dessin', 'neutre'],
   dessin: ['regle', 'grille', 'commun', 'univers', 'dessin', 'neutre'],
   neutre: ['neutre'],
 };
@@ -163,8 +165,8 @@ describe('Les couches du jeu', () => {
 
   it('les textes, l’habillage, la palette et le modelé de chaque univers sont dans la couche des univers', () => {
     const univers = ['univers/index.ts', 'univers/blocland/index.ts', 'univers/communs.ts', 'core/univers.ts'].map((f) => join(SRC, f));
-    const dessin = ['habillage.ts', 'world/habillage/index.ts', 'world/habillage/archipeo.ts', 'world/palette.ts', 'world/modeleDessine/5e.ts'].map((f) => join(BLOCLAND, f));
-    expect([...univers, ...dessin].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
+    const habillages = ['habillage.ts', 'world/habillage/index.ts', 'world/habillage/blocland.ts', 'world/habillage/archipeo.ts', 'world/palette.ts', 'world/modeleDessine/5e.ts'].map((f) => join(BLOCLAND, f));
+    expect([...univers, ...habillages].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
     expect(PERMIS.regle.includes('univers') || PERMIS.grille.includes('univers') || PERMIS.commun.includes('univers')).toBe(false);
   });
 });
