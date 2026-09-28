@@ -87,6 +87,10 @@ export async function generatePages() {
       EXCLUSIONS: exclusionsMod.EXCLUSIONS,
       motsOutils: motsOutilsMod,
     };
+    // Une matière ajoutée au jeu doit l'être ici aussi (nom et complément), dans le même ordre : sinon « undefined ».
+    const matieres = Object.keys(data.SUBJECTS).join(',');
+    for (const [nom, table] of [['SUBJECT_NAME', SUBJECT_NAME], ['SUBJECT_DE', SUBJECT_DE]])
+      if (Object.keys(table).join(',') !== matieres) throw new Error(`generate.mjs : ${nom} (${Object.keys(table)}) ne suit pas les matières du jeu (${matieres})`);
     data.coverage = coverageOf(data);
     return [
       programmesPage(data),
@@ -106,9 +110,11 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais' };
+const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
+/** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
+const SUBJECT_DE = { francais: 'de français', maths: 'de maths', anglais: 'd’anglais', lv2: 'de LV2' };
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'le premier plan de l’île de départ terminé',
@@ -347,7 +353,7 @@ function archipelPage(d) {
     `| Version | ${d.version} |`,
     `| Îles | ${BIOMES.length} (${SUBJECT_IDS.map((s) => [s, BIOMES.filter((b) => b.subject === s).length])
       .filter(([, n]) => n > 0)
-      .map(([s, n]) => `${n} ${s === 'anglais' ? 'd’anglais' : `de ${SUBJECT_NAME[s].toLowerCase()}`}`)
+      .map(([s, n]) => `${n} ${SUBJECT_DE[s]}`)
       .join(', ')}) |`,
     `| Missions | ${quests} |`,
     `| Exercices (variantes et niveaux) | ${EXERCISES.length}, dont ${EXERCISES.filter((e) => e.generate).length} générés |`,

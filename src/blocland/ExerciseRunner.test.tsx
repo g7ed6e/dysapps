@@ -186,4 +186,32 @@ describe('lecture automatique', () => {
     expect(lu[0]).not.toContain(frenchTypography(notices.instruction));
     expect(lu[0]).not.toContain(second.prompt as string);
   }, 30_000);
+
+  it('dictée à choix en LV2 (niveau 2) : la consigne, puis le mot dans la voix de la langue ; le mot seul ensuite', async () => {
+    const user = userEvent.setup();
+    // La synthèse simulée finit chaque phrase aussitôt dite (fin de la consigne, puis de chaque mot).
+    const langues: string[] = [];
+    let enCours: { onend?: () => void } | null = null;
+    vi.stubGlobal('speechSynthesis', {
+      cancel: () => {},
+      getVoices: () => [],
+      speaking: false,
+      pending: false,
+      speak: (u: { text: string; lang: string; onend?: () => void }) => {
+        dit.push(u.text);
+        langues.push(u.lang);
+        enCours = u;
+      },
+    });
+    localStorage.setItem('dysapps:blocland', JSON.stringify({ types: { 'es-familia': { level: 2 } } }));
+    const dictee = getExercise('relais-es-familia-2')!;
+    renderAt('/aventure/relais/es-familia');
+    await loaded();
+    const [first, second] = runItems(dictee, runSeed(dictee));
+    expect(dit).toEqual([frenchTypography(dictee.instruction)]);
+    enCours!.onend?.();
+    expect(dit).toEqual([frenchTypography(dictee.instruction), first.spoken]);
+    expect(langues).toEqual(['fr-FR', 'es-ES']);
+    expect(await suivant(user, first.answer as string)).toEqual([second.spoken]);
+  }, 30_000);
 });

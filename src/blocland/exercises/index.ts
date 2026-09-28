@@ -97,8 +97,10 @@ const ORDER: (string | ExerciseDef[])[] = [
   'studio-faux-amis-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
   'chateau-passif-1', 'chateau-passif-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
-  'relais-de-hallo-1', 'relais-de-zahlen-1', 'relais-de-familie-1', 'relais-de-der-die-das-1',
-  'relais-es-hola-1', 'relais-es-numeros-1', 'relais-es-familia-1', 'relais-es-el-la-1',
+  'relais-de-hallo-1', 'relais-de-hallo-2', 'relais-de-zahlen-1', 'relais-de-zahlen-2', 'relais-de-familie-1',
+  'relais-de-familie-2', 'relais-de-der-die-das-1', 'relais-de-der-die-das-2', 'relais-es-hola-1', 'relais-es-hola-2',
+  'relais-es-numeros-1', 'relais-es-numeros-2', 'relais-es-familia-1', 'relais-es-familia-2', 'relais-es-el-la-1',
+  'relais-es-el-la-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });

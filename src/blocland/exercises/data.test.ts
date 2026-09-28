@@ -325,9 +325,16 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       expect(String(it.explanation).length).toBeGreaterThan(5);
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
       for (const text of [it.question, it.prompt, it.spoken, it.hint, it.explanation, ...choices]) if (text !== undefined) expect(String(text), it.key).not.toContain("'");
-      // Pas encore de phrase à trou en LV2 (le mot lu pour le trou n'est pas décidé) ; ¿ et ¡ s'affichent, jamais lus.
-      expect(String(it.prompt), it.key).not.toContain('…');
+      // ¿ et ¡ s'affichent, jamais lus. Pas de phrase à trou lue en LV2 (le mot lu pour le trou n'est pas décidé) : un
+      // trou n'y sert qu'à la dictée à choix, un seul par item, et la voix dit le mot ou la phrase en entier.
       expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
+      const prompt = String(it.prompt);
+      if (prompt.includes('…')) {
+        expect(def.programme?.some((id) => id.endsWith('.ecrire.dictee-fiche')), `${def.id} : un trou, seulement en dictée`).toBe(true);
+        expect(prompt.split('…').length, it.key).toBe(2);
+        expect(it.question, it.key).toBeUndefined();
+        expect(String(it.spoken), it.key).toBe(prompt.replace('…', String(it.answer)).replace(/[¿¡]/g, ''));
+      }
       if (it.question !== undefined) {
         expect(String(it.question), it.key).toMatch(/\?$/);
         expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
