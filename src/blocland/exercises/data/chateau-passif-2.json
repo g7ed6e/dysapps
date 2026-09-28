@@ -9,7 +9,7 @@
     {
       "key": "chateau-passif-2-0",
       "prompt": "Someone stole my bike. → My bike … .",
-      "spoken": "Someone stole my bike. → My bike blank .",
+      "spoken": "Someone stole my bike. My bike blank.",
       "choices": [
         "was stolen",
         "stole",
@@ -33,7 +33,7 @@
     {
       "key": "chateau-passif-2-1",
       "prompt": "They will build a new school. → A new school … built.",
-      "spoken": "They will build a new school. → A new school blank built.",
+      "spoken": "They will build a new school. A new school blank built.",
       "choices": [
         "will be",
         "will",

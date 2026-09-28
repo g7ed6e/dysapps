@@ -53,7 +53,7 @@
       "spoken": "« Qu’elle prenne son temps. »",
       "choices": ["subjonctif", "présent", "futur"],
       "answer": "subjonctif",
-      "hint": "« qu’elle » + verbe : subjonctif.",
+      "hint": "« prenne », et non « prend » : subjonctif.",
       "explanation": "« qu’elle prenne » : subjonctif présent.",
       "aid": {
         "kind": "rule-card",
@@ -154,8 +154,8 @@
     },
     {
       "key": "marais-roseaux-2-7",
-      "prompt": "« Il faudrait que tu viennes. »",
-      "spoken": "« Il faudrait que tu viennes. »",
+      "prompt": "« Il faudrait que tu viennes. » Temps de « viennes » ?",
+      "spoken": "« Il faudrait que tu viennes. » Temps de « viennes » ?",
       "choices": ["subjonctif", "conditionnel", "futur"],
       "answer": "subjonctif",
       "hint": "Le verbe après « que tu » : « viennes », subjonctif.",

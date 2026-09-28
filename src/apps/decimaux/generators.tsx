@@ -1,7 +1,7 @@
 import type { Question } from '../../components/QuizSession';
 import type { QuestDef } from '../../components/QuestMenu';
 import { GraduatedLine } from '../../components/math/FractionFigures';
-import { placeChoices } from '../../core/choices';
+import { drawChoices, placeChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import { NumberLineJumps } from '../tables/aids';
 import { DecimalTable } from './DecimalTable';
@@ -13,12 +13,12 @@ type Generator = (rng: Rng) => Keyed;
 
 export const QUESTIONS_PER_QUEST = 8;
 
-/** Réponses décimales sans doublon de valeur, de la plus petite à la plus grande. */
+/**
+ * Réponses décimales (en millièmes) sans doublon de valeur, de la plus petite à la plus grande ; la place de la bonne
+ * réponse est tirée ici, les pièges pris de part et d'autre, des voisins d'un dixième s'il en manque (voir `drawChoices`).
+ */
 function decimalChoices(answer: number, traps: number[], rng: Rng): string[] {
-  const pool = [...new Set(traps)].filter((t) => Number.isInteger(t) && t >= 0 && t !== answer && t < 100000 * SCALE);
-  const picked = shuffle(pool, rng).slice(0, 3);
-  for (let d = 100; picked.length < 3; d += 100) for (const t of [answer + d, answer - d]) if (t >= 0 && !picked.includes(t) && picked.length < 3) picked.push(t);
-  return [answer, ...picked].sort((a, b) => a - b).map(f);
+  return drawChoices(answer, traps, rng, { step: 100, ok: (t) => Number.isInteger(t) && t >= 0 && t < 100000 * SCALE }).map(f);
 }
 
 // ---------- Lire un décimal ----------
@@ -86,7 +86,8 @@ export const compare: Generator = (rng) => {
   return {
     key: [a, b].sort().join('|'),
     id: `cmp-${a}-${b}`,
-    prompt: `Quel est le plus grand : ${fa} ou ${fb} ?`,
+    // Les deux nombres peuvent être égaux : la question le dit, pour ne pas piéger.
+    prompt: `Quel est le plus grand : ${fa} ou ${fb} ? Ou sont-ils égaux ?`,
     choices: [fa, fb, EQUAL],
     answer,
     hint: 'Complète avec des 0 pour avoir autant de chiffres après la virgule, puis compare chiffre par chiffre depuis la gauche.',

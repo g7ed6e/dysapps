@@ -4,7 +4,7 @@
   "type": "numbers",
   "level": 1,
   "lang": "en",
-  "instruction": "Écoute le nombre en anglais et choisis le bon chiffre. La règle est affichée.",
+  "instruction": "Écoute le nombre en anglais et choisis le bon nombre. La règle est affichée.",
   "items": [
     {
       "key": "baie-numbers-1-0",
@@ -124,7 +124,7 @@
         "20"
       ],
       "answer": "12",
-      "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
+      "hint": "Twelve n’a ni -teen ni -ty : relis la ligne 11, 12 de la règle.",
       "explanation": "twelve = 12 (et twenty = 20).",
       "aid": {
         "kind": "rule-card",

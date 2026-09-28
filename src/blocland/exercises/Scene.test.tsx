@@ -27,7 +27,7 @@ describe('Scene', () => {
 
   it('dit la traversée avec les heures en toutes lettres', () => {
     render(<Scene scene="traversee" depart={580} arrivee="?" duree={35} />);
-    expect(screen.getByRole('img')).toHaveAccessibleName("Une traversée en bateau d'une île à l'autre. Départ : 9 h 40. Durée : 35 min. Arrivée : inconnue.");
+    expect(screen.getByRole('img')).toHaveAccessibleName("Une traversée en bateau d’une île à l’autre. Départ : 9 h 40. Durée : 35 min. Arrivée : inconnue.");
     expect(screen.getByText('durée : 35 min')).toBeInTheDocument();
   });
 
@@ -63,7 +63,7 @@ describe('Scene', () => {
   it('dit le mât et son câble', () => {
     render(<Scene scene="mat" unit="m" hauteur={8} pied={6} cable="?" />);
     expect(screen.getByRole('img')).toHaveAccessibleName(
-      "Un mât vertical tenu par un câble tendu jusqu'au sol, un triangle rectangle au pied du mât. Hauteur du mât : 8 mètres. Du pied du mât au câble, au sol : 6 mètres. Longueur du câble : inconnu.",
+      "Un mât vertical tenu par un câble tendu jusqu’au sol, un triangle rectangle au pied du mât. Hauteur du mât : 8 mètres. Du pied du mât au câble, au sol : 6 mètres. Longueur du câble : inconnu.",
     );
   });
 });

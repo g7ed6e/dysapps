@@ -176,8 +176,8 @@
     },
     {
       "key": "theatre-preterit-irregulier-2-7",
-      "prompt": "… you see the fireworks?",
-      "spoken": "blank you see the fireworks?",
+      "prompt": "… you see the fireworks last night?",
+      "spoken": "blank you see the fireworks last night?",
       "choices": [
         "Did",
         "Saw",

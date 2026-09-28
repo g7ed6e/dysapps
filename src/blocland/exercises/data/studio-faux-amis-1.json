@@ -71,7 +71,7 @@
       ],
       "answer": "raisonnable",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
-      "explanation": "sensible = raisonnable (sensible se dit sensitive).",
+      "explanation": "sensible = raisonnable (le français « sensible » se dit sensitive).",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -152,7 +152,7 @@
       ],
       "answer": "grande",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
-      "explanation": "large = grand (large se dit wide).",
+      "explanation": "large = grand (le français « large » se dit wide).",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -205,8 +205,8 @@
         "sportif"
       ],
       "answer": "sensible",
-      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
-      "explanation": "sensitive = sensible (sensible = raisonnable).",
+      "hint": "Relis la règle : sensible et sensitive ne veulent pas dire la même chose.",
+      "explanation": "sensitive = sensible (l’anglais sensible = raisonnable).",
       "aid": {
         "kind": "rule-card",
         "props": {

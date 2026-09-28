@@ -67,12 +67,12 @@
     },
     {
       "key": "marais-rives-1-3",
-      "prompt": "Hier, j’… mon devoir en une heure.",
-      "spoken": "Hier, j’ (mot manquant)  mon devoir en une heure.",
-      "choices": ["finissais", "ai fini", "finis"],
-      "answer": "ai fini",
+      "prompt": "Hier, tu … ton devoir en une heure.",
+      "spoken": "Hier, tu  (mot manquant)  ton devoir en une heure.",
+      "choices": ["finissais", "as fini", "finiras"],
+      "answer": "as fini",
       "hint": "Hier, action finie une fois : passé composé.",
-      "explanation": "Action achevée : passé composé, « ai fini ».",
+      "explanation": "Action achevée : passé composé, « as fini ».",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -131,7 +131,7 @@
       "spoken": "Les enfants  (mot manquant)  pendant que je cuisinais.",
       "choices": ["jouaient", "ont joué", "jouent"],
       "answer": "jouaient",
-      "hint": "Pendant que… = deux actions en même temps, longues : imparfait.",
+      "hint": "« Pendant que » : deux actions en même temps, longues : imparfait.",
       "explanation": "Action longue en arrière-plan : imparfait, « jouaient ».",
       "aid": {
         "kind": "rule-card",

@@ -123,7 +123,8 @@ it('problèmes situés : la réponse se calcule depuis les cotes, et aucune cote
 it('problèmes situés : l’énoncé dit ce que montre le schéma, sans donnée parasite, en deux phrases au plus', () => {
   for (const def of ALL) {
     for (const it of def.items) {
-      const prompt = String(it.prompt);
+      // L’échelle « 1 / 25 000 » de l’énoncé (espaces insécables, pour que RichText ne la coupe pas) est « 1/25 000 » sur le schéma.
+      const prompt = String(it.prompt).replace(/\u00a0\/\u00a0/g, '/');
       const { shown, data } = read(sceneOf(it));
       let rest = prompt;
       // Les plus longues d’abord : « 500 m » ne doit pas mordre dans « 1500 m ».

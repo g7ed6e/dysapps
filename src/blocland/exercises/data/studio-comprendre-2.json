@@ -33,8 +33,8 @@
     },
     {
       "key": "studio-comprendre-2-1",
-      "prompt": "The shops were full of people, and everybody was buying chocolate eggs. What time of year is it?",
-      "spoken": "The shops were full of people, and everybody was buying chocolate eggs. What time of year is it?",
+      "prompt": "The shops were full of people, and everybody was buying chocolate eggs. What time of year was it?",
+      "spoken": "The shops were full of people, and everybody was buying chocolate eggs. What time of year was it?",
       "choices": [
         "Easter.",
         "Christmas.",
