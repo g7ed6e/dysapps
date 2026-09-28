@@ -42,19 +42,23 @@ it('ses triangles n’ont pas d’élément : le toucher ne les retrouve pas', (
   expect(new Set(f.elements)).toEqual(new Set([SANS_ELEMENT]));
 });
 
-it('une masse en gradins est plus haute que large, et son sommet est plat', () => {
-  const l: Lointain = { graine: 'g', pieces: [{ genre: 'gradins', u: 0.5, recul: 80, haut: 24, rayon: 7, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a }] };
-  const f = sommets(l);
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let haut = -Infinity;
-  for (let i = 0; i < f.positions.length; i += 3) {
-    minX = Math.min(minX, f.positions[i]);
-    maxX = Math.max(maxX, f.positions[i]);
-    haut = Math.max(haut, f.positions[i + 1]);
-  }
+it('une masse en gradins a son sommet plat ; `allonge` l’élargit le long de l’horizon', () => {
+  const masse = (allonge?: number): Lointain => ({ graine: 'g', pieces: [{ genre: 'gradins', u: 0.5, recul: 80, haut: 24, rayon: 7, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a, allonge }] });
+  const mesure = (f: ReturnType<typeof sommets>) => {
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let haut = -Infinity;
+    for (let i = 0; i < f.positions.length; i += 3) {
+      minX = Math.min(minX, f.positions[i]);
+      maxX = Math.max(maxX, f.positions[i]);
+      haut = Math.max(haut, f.positions[i + 1]);
+    }
+    return { large: maxX - minX, haut };
+  };
+  const f = sommets(masse());
+  const { large, haut } = mesure(f);
   expect(haut).toBeCloseTo(24);
-  expect(haut / (maxX - minX)).toBeGreaterThanOrEqual(1.6);
+  expect(mesure(sommets(masse(2))).large).toBeCloseTo(large * 2, 0);
   // Le sommet : des facettes horizontales tout en haut.
   let plat = 0;
   for (let i = 0; i < f.normals.length; i += 3) if (f.normals[i + 1] > 0.999 && Math.abs(f.positions[i + 1] - 24) < 1e-4) plat++;

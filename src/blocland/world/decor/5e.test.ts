@@ -3,8 +3,8 @@ import { caseDuDecor, rangerLeDecor, maillageDuDecor, type ElementDeDecor } from
 import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
 import { ALTITUDE, inCore, islandDef } from '../map';
 import { ambianceDe, luminance } from '../palette';
-import { merLibre, worldCubes } from '../terrain';
-import { bancsDeBrume, COUCHES_5E } from './brume';
+import { worldCubes } from '../terrain';
+import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './brume';
 import { COULEURS_5E } from './5e';
 import { respirationDeLaBrume } from './fumee';
 
@@ -54,7 +54,7 @@ it('un repère d’Archipéo couvre toutes les cases que bloque celui de Bloclan
   }
 });
 
-it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives du Marais fait environ 3,5 cases et penche', () => {
+it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives du Marais dépasse les toits et penche', () => {
   const haut = (i: number) => {
     let h = -Infinity;
     const f = m.decor;
@@ -66,8 +66,8 @@ it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives d
   expect(haut(ia) - pied).toBeLessThanOrEqual(2.5);
   const [marais, im] = repere('champignon-geant');
   const h = haut(im) - Math.min(...marais.cubes.map((c) => c.z));
-  expect(h).toBeGreaterThan(3.5);
-  expect(h).toBeLessThan(5.5);
+  expect(h).toBeGreaterThan(5);
+  expect(h).toBeLessThan(6.5);
 });
 
 it('la tour en ruine et la calotte sont hors de la grille : sans cubes, on ne les touche pas ; la calotte coiffe le plus haut pic du Glacier', () => {
@@ -92,17 +92,18 @@ it('la tour en ruine et la calotte sont hors de la grille : sans cubes, on ne le
   expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(ambianceDe('5e').sols!.neige!.dessus));
 });
 
-it('les bancs de brume : sur la mer libre seulement, jamais sur une île ni le quai, toujours sous le sol des îles', () => {
+it('les bancs de brume : jamais sur un ouvrage, le quai ni la route du navire ; toujours sous le sol des îles, qui les cache', () => {
   const b = bancsDeBrume('5e')!;
-  const libre = merLibre('5e');
+  const place = placeDeLaBrume('5e');
   for (let v = 0; v < b.positions.length / 3; v++) {
     const [x, y, z] = [b.positions[v * 3], b.positions[v * 3 + 1], b.positions[v * 3 + 2]];
     expect(y).toBeLessThan(ALTITUDE['5e']);
     expect(y).toBeGreaterThan(NIVEAU_EAU);
-    // Un sommet visible (d'opacité non nulle) est sur la mer libre, jamais sur une case de terre.
+    // Un sommet visible (d'opacité non nulle) est à sa place ; au pied d'une île, il passe sous son sol.
     if (b.colors[v * 4 + 3] > 0) {
-      expect(libre(x, z), `${x},${z}`).toBe(true);
-      expect(colonneEn(champ, Math.floor(x), Math.floor(z))).toBeUndefined();
+      expect(place(x, z), `${x},${z}`).toBe(true);
+      const col = colonneEn(champ, Math.floor(x), Math.floor(z));
+      if (col) expect(y + 0.5, `${x},${z}`).toBeLessThan(col.haut);
     }
   }
   // La couche du bas à 0,6 d'opacité au plus ; de `#C5D9EB` en bas à `#E5EBE3` en haut.

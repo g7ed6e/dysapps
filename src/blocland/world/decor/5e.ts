@@ -49,12 +49,12 @@ const tourDArchives = enRepere(({ P, e, cx, cz, pied, rot, hasard, vari, sol }) 
   const auSol = (x: number, z: number) => sol(x, z, pied + 0.3);
   tertre(P, cx, cz, 3.45, 0.45, 9, rot, auSol, hasard, peintre(pierre, pied, 0.8, 0.9 * vari()));
   const base = auSol(cx, cz) + 0.2;
-  const haut = pave(P, cx, base - 0.3, cz, 2.3, 2.3, 3.8, rot, (8 * Math.PI) / 180, peintre(pierre, base, 3.5, vari()), false);
+  const haut = pave(P, cx, base - 0.3, cz, 2.3, 2.3, 4.8, rot, (10 * Math.PI) / 180, peintre(pierre, base, 4, vari()), false);
   // Le toit : une pyramide basse d'ardoise, un peu débordante.
   const c: V3 = [(haut[0][0] + haut[2][0]) / 2, (haut[0][1] + haut[2][1]) / 2, (haut[0][2] + haut[2][2]) / 2];
   const deborde = haut.map((p): V3 => [c[0] + (p[0] - c[0]) * 1.15, p[1] - 0.05, c[2] + (p[2] - c[2]) * 1.15]);
-  const pointe: V3 = [c[0], c[1] + 0.9, c[2]];
-  const toit = peintre(faces(COULEURS_5E.ardoise, e.muted), c[1], 0.9, vari());
+  const pointe: V3 = [c[0] + (c[0] - cx) * 0.2, c[1] + 1.2, c[2] + (c[2] - cz) * 0.2];
+  const toit = peintre(faces(COULEURS_5E.ardoise, e.muted), c[1], 1.2, vari());
   for (let i = 0; i < 4; i++) P.triangle(deborde[i], deborde[(i + 1) % 4], pointe, [c[0], c[1] - 0.5, c[2]], toit);
   for (let i = 1; i < 3; i++) P.triangle(deborde[0], deborde[i], deborde[i + 1], pointe, toit);
   // Les roseaux, en touffes, au bord de l'emprise.
@@ -111,21 +111,21 @@ const rocheMoussue: Forme = ({ P, e, hasard, rot, vari }) => {
 
 export const RETOUCHES_5E: Record<string, Forme> = { banc: rocheMoussue };
 
-/** La tour en ruine du Carrefour : 3 cases de haut, un mur plus haut que l'autre, son toit d'ardoise tombé au pied. */
+/** La tour en ruine du Carrefour : environ 3,5 cases de haut, un mur rompu plus haut que l'autre, son toit d'ardoise tombé au pied. */
 function tourEnRuine(P: Pinceau, cx: number, cz: number, base: number, rot: number, muted: boolean, hasard: () => number): void {
   const pierre = peintre(faces(COULEURS_5E.pierre, muted), base, 3, 0.96 + 0.08 * hasard());
-  const cote = 1.7;
-  pave(P, cx, base - 0.3, cz, cote, cote, 2.6, rot, 0, pierre);
+  const cote = 2;
+  pave(P, cx, base - 0.3, cz, cote, cote, 2.2, rot, 0, pierre);
   // Ce qui reste du haut : un pan de mur, et un coin plus haut encore.
   const u = (d: number): [number, number] => [cx + d * Math.cos(rot), cz + d * Math.sin(rot)];
   const [mx, mz] = u(cote / 2 - 0.18);
-  pave(P, mx, base + 2.3, mz, 0.36, cote, 0.5, rot, 0, pierre);
+  pave(P, mx, base + 1.9, mz, 0.4, cote, 0.9, rot, 0, pierre);
   const v = (du: number, dv: number): [number, number] => [cx + du * Math.cos(rot) - dv * Math.sin(rot), cz + du * Math.sin(rot) + dv * Math.cos(rot)];
   const [kx, kz] = v(cote / 2 - 0.18, cote / 2 - 0.18);
-  pave(P, kx, base + 2.7, kz, 0.36, 0.36, 0.45, rot, 0, pierre);
+  pave(P, kx, base + 2.8, kz, 0.4, 0.5, 0.9, rot, 0, pierre);
   // Le toit effondré : une dalle d'ardoise tombée contre le pied, penchée.
   const [tx, tz] = v(-cote / 2 - 0.35, 0.1);
-  pave(P, tx, base - 0.2, tz, 0.18, cote * 1.1, 1.3, rot, -0.55, peintre(faces(COULEURS_5E.ardoise, muted), base, 1.2), true);
+  pave(P, tx, base - 0.2, tz, 0.2, cote * 1.15, 1.5, rot, -0.55, peintre(faces(COULEURS_5E.ardoise, muted), base, 1.2), true);
 }
 
 /** La calotte de sérac : un bloc de glace pâle, facetté, posé sur le sommet du plus haut pic. */
@@ -168,17 +168,17 @@ export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDeco
 }
 
 /**
- * Le lointain des Îles Brumeuses (intention, §2) : des masses de roche en gradins, plus hautes que larges, au sommet
- * plat et moussu, la plus au centre portant une tour carrée au toit d'ardoise ; derrière elles, une chaîne de cimes
- * très pâles.
+ * Le lointain des Îles Brumeuses (intention, §2) : des masses de roche en gradins irrégulières, de largeurs très
+ * différentes (la plus proche, plus large que haute, est la plus pâle), au sommet plat et moussu, la plus au centre
+ * portant une tour carrée au toit d'ardoise ; derrière elles, une chaîne de cimes basses et pâles, fondues dans le voile.
  */
 export const LOINTAIN_5E: Lointain = {
   graine: 'lointain-5e',
   pieces: [
-    { genre: 'gradins', u: 0.1, recul: 62, haut: 19, rayon: 5.5, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a },
-    { genre: 'gradins', u: 0.42, recul: 85, haut: 24, rayon: 7, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a, tour: { cote: 2.5, haut: 5, pierre: 0x7d8a86, toit: 0x224c5f } },
-    { genre: 'gradins', u: 0.7, recul: 66, haut: 21, rayon: 6, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a },
-    { genre: 'gradins', u: 0.95, recul: 100, haut: 18, rayon: 5.5, marche: 2.5, retrait: 0.6, pans: 6, couleur: 0x6895ad, sommet: 0x6f8f6a },
-    { genre: 'cretes', u: -0.3, a: 1.3, recul: 125, haut: 22, cimes: 7, epaisseur: 24, couleur: 0xa9c4d4, sommet: 0xe6eef2, neige: 0.78 },
+    { genre: 'gradins', u: 0.08, recul: 60, haut: 15, rayon: 6, allonge: 1.8, marche: 2.5, retrait: 0.8, pans: 7, couleur: 0x86a9bd, sommet: 0x7f9c7a },
+    { genre: 'gradins', u: 0.38, recul: 70, haut: 17, rayon: 6.5, marche: 3, retrait: 0.7, pans: 7, couleur: 0x7298af, sommet: 0x6f8f6a, tour: { cote: 3, haut: 6, pierre: 0x7d8a86, toit: 0x224c5f } },
+    { genre: 'gradins', u: 0.64, recul: 64, haut: 16, rayon: 4.5, marche: 2.5, retrait: 0.5, pans: 6, couleur: 0x7298af, sommet: 0x6f8f6a },
+    { genre: 'gradins', u: 0.92, recul: 86, haut: 15, rayon: 8, allonge: 1.4, marche: 2, retrait: 0.9, pans: 8, couleur: 0x7a9fb4, sommet: 0x6f8f6a },
+    { genre: 'cretes', u: -0.3, a: 1.3, recul: 125, haut: 16, cimes: 11, epaisseur: 24, couleur: 0xb3cad8, sommet: 0xcbd9e3, neige: 0.85 },
   ],
 };

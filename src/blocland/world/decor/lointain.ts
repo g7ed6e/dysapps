@@ -54,6 +54,8 @@ export interface MasseEnGradins extends Place {
   couleur: Couleur;
   /** Le dessus du sommet (moussu, enneigé…). */
   sommet: Couleur;
+  /** L'étirement le long de l'horizon (1 par défaut) : au-dessus de 1, une masse plus large que profonde. */
+  allonge?: number;
   /** Une tour carrée sur le sommet, en cases : côté, hauteur, et son toit (pyramide). */
   tour?: { cote: number; haut: number; pierre: Couleur; toit: Couleur };
 }
@@ -146,7 +148,8 @@ function gradins(P: Pinceau, e: Etendue, m: MasseEnGradins, hasard: () => number
   const rot = hasard() * Math.PI * 2;
   // Chaque pan a son rayon, et chaque marche ne recule que sur certains pans : des falaises droites d'un côté, des
   // gradins de l'autre, des verticales massives et irrégulières, jamais une pièce montée.
-  const base = Array.from({ length: m.pans }, () => m.rayon * (0.8 + 0.4 * hasard()));
+  const base = Array.from({ length: m.pans }, () => m.rayon * (0.7 + 0.6 * hasard()));
+  const allonge = m.allonge ?? 1;
   let rayons = [...base];
   const marches = Math.max(1, Math.round(m.haut / m.marche));
   const peindre = peinture(m.couleur, m.sommet, m.haut);
@@ -156,7 +159,7 @@ function gradins(P: Pinceau, e: Etendue, m: MasseEnGradins, hasard: () => number
   const anneau = (y: number, r: number[]): V3[] =>
     r.map((rayon, i) => {
       const a = rot + (i / m.pans) * Math.PI * 2;
-      return [cx + rayon * Math.cos(a), y, cz + rayon * Math.sin(a)];
+      return [cx + allonge * rayon * Math.cos(a), y, cz + rayon * Math.sin(a)];
     });
   let y0 = PIED;
   for (let s = 0; s < marches; s++) {

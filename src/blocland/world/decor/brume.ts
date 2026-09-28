@@ -3,18 +3,23 @@
 // toujours sous le sol des îles. Code pur, sans Three.js : un maillage à couleurs par sommet, avec leur opacité, que
 // three/brume.ts dessine en un appel et fait respirer selon la règle commune (`respirationDeLaBrume`, ./fumee.ts).
 //
-// - La mer libre est celle de l'habillage de la mer (`merLibre`, ../terrain.ts) : jamais sur une île, un îlot, un
-//   ouvrage, le quai ou les places de la baleine ; en plus, jamais sur la route du navire, droit vers le large depuis
-//   le quai (../voyage.ts, `vehiclePath`).
-// - Une grille lâche : chaque sommet a son opacité (nulle hors de la mer libre), modulée par un bruit lent qui fait les
-//   bancs ; seuls les carrés où un sommet au moins est visible sont tracés.
-import { getArchipelago } from '../archipelago';
+// - Jamais sur la terre : les couches sont sous le sol des îles (3 blocs au 5e, 2 pour les mares), qui les cache ; elles
+//   viennent donc lécher le pied des falaises, dans les chenaux, comme la fiche le demande. Jamais sur un ouvrage, le
+//   quai, un îlot, les places de la baleine ni la route du navire, droit vers le large depuis le quai (../voyage.ts,
+//   `vehiclePath`) : la brume s'y éteint.
+// - Une grille lâche : chaque sommet a son opacité (nulle là où la brume n'a pas sa place, et au cœur des îles, où rien
+//   ne se verrait), modulée par un bruit lent qui fait les bancs ; seuls les carrés où un sommet au moins est visible
+//   sont tracés. Sans la brume de profondeur : de la couleur de l'horizon, elle s'y fondrait.
+import { BIOMES } from '../../biomes';
+import { BRIDGES, getArchipelago } from '../archipelago';
+import { archipelagoOfIsland } from '../archipels';
 import { dockBox } from '../harbour';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
-import { smoothNoise, type ArchipelagoId } from '../map';
+import { landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
+import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { Couleur } from '../palette';
 import { rgb } from './pinceau';
-import { merLibre, worldBounds } from '../terrain';
+import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, whaleSpots, worldBounds } from '../terrain';
 
 /** Une couche de brume : sa hauteur au-dessus de l'eau, sa couleur, son opacité la plus forte et la part de la mer qu'elle couvre. */
 export interface CoucheDeBrume {
@@ -30,16 +35,16 @@ export interface CoucheDeBrume {
  * plus. Toutes sous le sol des îles (à 3 blocs dans les Îles Brumeuses).
  */
 export const COUCHES_5E: readonly CoucheDeBrume[] = [
-  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.55, couvre: 0.75 },
-  { hauteur: 0.95, couleur: 0xd5e2e7, opacite: 0.45, couvre: 0.5 },
-  { hauteur: 1.6, couleur: 0xe5ebe3, opacite: 0.4, couvre: 0.3 },
+  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.6, couvre: 0.9 },
+  { hauteur: 0.95, couleur: 0xd5e2e7, opacite: 0.55, couvre: 0.65 },
+  { hauteur: 1.6, couleur: 0xe5ebe3, opacite: 0.5, couvre: 0.4 },
 ];
 
 /** Les bancs de brume des archipels qui en ont. */
 export const BANCS_DE_BRUME: Readonly<Partial<Record<ArchipelagoId, readonly CoucheDeBrume[]>>> = { '5e': COUCHES_5E };
 
 /** Le pas de la grille, en cases, et la marge autour de l'archipel (celle de l'habillage de la mer). */
-export const PAS_DE_LA_BRUME = 7;
+export const PAS_DE_LA_BRUME = 6;
 const MARGE = 26;
 /** La largeur du couloir laissé au navire, de part et d'autre de son quai, et sa longueur vers le large. */
 const ROUTE_DU_NAVIRE = { marge: 4, large: 30 };
@@ -53,18 +58,41 @@ export interface BancsDeBrume {
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
-/** La mer libre du 5e, moins la route du navire. */
-function libre(a: ArchipelagoId): (x: number, y: number) => boolean {
-  const mer = merLibre(a);
+/** Au cœur d'une île, à plus de tant de cases de la mer, la brume ne se verrait pas : elle n'y est pas tracée. */
+const BORD_DES_ILES = 4;
+
+/**
+ * Là où la brume a sa place : partout sauf sur un ouvrage (à une case près), le quai (à deux), un îlot, les places de
+ * la baleine, la route du navire et le cœur des îles. Au pied des îles, elle passe sous leur sol, qui la cache.
+ */
+export function placeDeLaBrume(a: ArchipelagoId): (x: number, y: number) => boolean {
+  const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
+  const interdit = new Set<number>();
+  const terre = new Set<number>();
+  for (const def of mapOf(a)) {
+    for (const c of landCells(def)) terre.add(cle(c.x, c.y));
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
+    for (let x = -1; x <= ISLET_W; x++) for (let y = -1; y <= ISLET_H; y++) interdit.add(cle(o.x + x, o.y + y));
+  }
+  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
+    for (const c of bridgePath(def)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const quai = dockBox(getArchipelago(a).port);
+  for (let x = quai.x0 - 2; x <= quai.x1 + 2; x++) for (let y = quai.y0 - 2; y <= quai.y1 + 2; y++) interdit.add(cle(x, y));
+  for (const m of monumentsOf(a)) for (let x = -1; x <= MONUMENT_ISLET; x++) for (let y = -1; y <= MONUMENT_ISLET; y++) interdit.add(cle(m.islet.x + x, m.islet.y + y));
+  const baleines = whaleSpots(a);
+  const auCoeur = (x: number, y: number) => {
+    for (let dx = -BORD_DES_ILES; dx <= BORD_DES_ILES; dx += BORD_DES_ILES) for (let dy = -BORD_DES_ILES; dy <= BORD_DES_ILES; dy += BORD_DES_ILES) if (!terre.has(cle(x + dx, y + dy))) return false;
+    return true;
+  };
   return (x, y) => {
     if (x >= quai.x0 - ROUTE_DU_NAVIRE.marge && x <= quai.x1 + ROUTE_DU_NAVIRE.marge && y <= quai.y1 && y >= quai.y0 - ROUTE_DU_NAVIRE.large) return false;
-    return mer(x, y);
+    if (interdit.has(cle(x, y)) || auCoeur(x, y)) return false;
+    return baleines.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 2);
   };
 }
 
 /**
- * L'opacité d'une couche en un point : nulle hors de la mer libre, pleine au cœur d'un banc ; elle s'éteint au large,
+ * L'opacité d'une couche en un point : nulle là où la brume n'a pas sa place, pleine au cœur d'un banc ; elle s'éteint au large,
  * au bord de la grille (`b` : l'étendue de l'archipel), pour qu'aucun bord droit ne se voie.
  */
 export function opaciteDeLaBrume(c: CoucheDeBrume, k: number, x: number, y: number, estLibre: (x: number, y: number) => boolean, b: { minX: number; maxX: number; minY: number; maxY: number }): number {
@@ -89,7 +117,7 @@ export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
     return null;
   }
   const b = worldBounds(a);
-  const estLibre = libre(a);
+  const estLibre = placeDeLaBrume(a);
   const x0 = b.minX - MARGE;
   const y0 = b.minY - MARGE;
   const nx = Math.ceil((b.maxX + MARGE - x0) / PAS_DE_LA_BRUME);

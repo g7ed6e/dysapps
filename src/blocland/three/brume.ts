@@ -41,7 +41,7 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
   // Les bancs de brume (Archipéo, 5e) : sans lumière ; la nuit les assombrit vers le bleu de crépuscule.
   const bancs = archipeo ? bancsDeBrume(archipel) : null;
   let banc: THREE.Mesh | null = null;
-  const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false });
   if (bancs) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(bancs.positions, 3));
