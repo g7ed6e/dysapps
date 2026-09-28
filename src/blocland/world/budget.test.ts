@@ -1,4 +1,4 @@
-import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -83,7 +83,9 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   const R5: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { construction: constructionCost, bornes: bornesCost, navire: navireCost };
   // R4b-6e : les quatre postes de R4b aux Premiers Rivages ; les autres archipels suivent avec leur sous-lot.
   const COUTS: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { sol: solCost, mer: merCost, faune: fauneCost, decor: decorCost };
+  const PERSONNAGES = ['bonhomme', 'creatures', 'gardiens'] as const;
   for (const p of postes) {
+    if ((PERSONNAGES as readonly Poste[]).includes(p)) continue;
     const cout = COUTS[p];
     const r5 = R5[p];
     if (r5) {
@@ -113,4 +115,16 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(c.drawCalls).toBeLessThanOrEqual(enveloppeDe(p, '4e').drawCalls);
       }, 30_000);
   }
+
+  // Lot R6 : mesuré sur les modèles purs que la vue 3D dessinera (world/personnages/fusions.ts), placés sur la grille
+  // de l'archipel tout construit : toutes ses créatures en un maillage, tous ses Gardiens en sentinelles en un autre.
+  for (const p of PERSONNAGES)
+    it(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {
+      for (const a of ARCHIPELAGO_IDS) {
+        const cout = personnagesCost(a)[p];
+        expect(cout.triangles, a).toBeGreaterThan(0);
+        expect(cout.triangles, a).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
+        expect(cout.drawCalls, a).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
+      }
+    });
 });

@@ -2,5 +2,7 @@
 import { lazy } from 'react';
 
 export const VoxelCanvas = lazy(() => import('./VoxelCanvas'));
+/** Un personnage d'Archipéo seul (lot R6, derrière `?rendu=archipeo`) : la bulle d'une créature, le défi d'un Gardien. */
+export const PersonnageCanvas = lazy(() => import('./PersonnageCanvas'));
 export { hasWebGL } from './webgl';
 export const WorldCanvas = lazy(() => import('./WorldCanvas'));

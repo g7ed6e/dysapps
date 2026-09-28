@@ -49,11 +49,13 @@ import {
   type Sprite,
 } from './characters';
 import { drawSprite } from './sprites';
+import type * as PersonnagesPeints from './personnagesPeints';
 import { renduDuMonde } from '../rendu';
 import { morceauxAPeindre, palierDe, peinture, type Peinture } from './painted';
 import { seaPattern } from './paintedDraw';
 import { fenetresDe } from '../world/construction';
-import { drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
+import { drawContactShadow, drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
+import { allumageDuGardien } from '../world/personnages/allumage';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
 import { CHUNK, TILE, buildTiles, frame2D, pickTile, project, toBase, toScreen, type TileMap, type View2D } from './oblique';
@@ -80,11 +82,18 @@ interface Hit {
   act: (sx: number, sy: number) => boolean | void;
 }
 
-/** Une créature ou un Gardien qui se promène, son sprite, et le milieu de la place qu'occupent ses cubes. */
+/**
+ * Une créature ou un Gardien qui se promène, son sprite, et le milieu de la place qu'occupent ses cubes. En 2D peinte,
+ * pas de sprite ici : celui du modèle en facettes se prend à chaque image, au palier de lumière.
+ */
 interface Walker {
   stroll: Stroll;
   sprite: Sprite | null;
   mid: { x: number; y: number };
+  /** En 2D peinte, un Gardien vaincu est rallumé (1), les autres restent éteints (0). */
+  allumage: 0 | 1;
+  /** Son sprite en pixels (tiré de ses cubes, gardé en cache), si les personnages peints ne se chargent pas. */
+  enPixels: () => Sprite | null;
 }
 
 /** Un éclat de couleur (pose d'un bloc) : position et vitesse dans le monde, en blocs. */
@@ -140,6 +149,24 @@ export default function WorldCanvas2D({
   const host = useRef<HTMLDivElement>(null);
   // La 2D peinte, derrière le drapeau `?rendu=archipeo` (lot R7) ; sans lui, la 2D en pixels, inchangée.
   const [painted] = useState(() => renduDuMonde() === 'archipeo');
+  // Les personnages d'Archipéo (lot R6), chargés à la demande sous le drapeau ; tant qu'ils arrivent, rien n'est dessiné.
+  // S'ils ne se chargent pas (réseau coupé, nouvelle version publiée), les personnages en pixels, plutôt que rien.
+  const peints = useRef<typeof PersonnagesPeints | null>(null);
+  const peintsEnEchec = useRef(false);
+  useEffect(() => {
+    if (!painted) return;
+    let vivant = true;
+    import('./personnagesPeints')
+      .then((m) => {
+        if (vivant) peints.current = m;
+      })
+      .catch(() => {
+        if (vivant) peintsEnEchec.current = true;
+      });
+    return () => {
+      vivant = false;
+    };
+  }, [painted]);
   // Le palier de lumière de la 2D peinte (la boucle le relit chaque image ; un changement repeint le terrain).
   const palier = useRef(palierDe(forceDay ? 1 : daylight().light));
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
@@ -206,7 +233,8 @@ export default function WorldCanvas2D({
       const xs = c.cubes.map((k) => k.x);
       const ys = c.cubes.map((k) => k.y);
       const mid = { x: (Math.min(...xs) + Math.max(...xs) + 1) / 2, y: (Math.min(...ys) + Math.max(...ys) + 1) / 2 };
-      return { stroll: strolls[i], sprite: voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes), mid };
+      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes);
+      return { stroll: strolls[i], sprite: painted ? null : enPixels(), mid, allumage: allumageDuGardien(c), enPixels };
     });
   }, [creatures]);
 
@@ -439,6 +467,11 @@ export default function WorldCanvas2D({
         }
       }
       const paint = tm.env.painted;
+      // Les personnages peints : quelques sprites neufs au plus par image (le reste attend, sur son sprite d'avant).
+      peints.current?.nouvelleImage();
+      /** Le sprite du bonhomme : peint (ou en pixels si les personnages peints n'ont pas pu se charger). */
+      const spriteDuBonhomme = (facing: Facing, step: number) =>
+        !paint || peintsEnEchec.current ? avatarSprite(facing, step) : (peints.current?.bonhommePeint2D(facing, step, paint) ?? null);
 
       // Le Bloc-Navire : à quai, il tangue (ou plane, dans le ciel) ; en voyage, il suit sa trajectoire.
       let aboard = false;
@@ -632,17 +665,25 @@ export default function WorldCanvas2D({
       for (const wk of walkers.current) {
         const { dx, dy, bob } = strollAt(wk.stroll, now, t);
         const o = wk.stroll.origin;
-        const sprite = wk.sprite;
-        if (!sprite) continue;
         // Le milieu de sa place (les créatures en cubes occupent quelques cases ; le sprite se pose au milieu).
         const x = o.x + dx + wk.mid.x;
         const y = o.y + dy + wk.mid.y;
         if (!visibleAt(x, y, o.z)) continue;
+        // En 2D peinte, le modèle d'Archipéo : la créature, ou la sentinelle, rallumée si le Gardien est vaincu (celles
+        // hors de l'écran ne se rastérisent pas).
+        const sprite = !paint
+          ? wk.sprite
+          : peintsEnEchec.current
+            ? wk.enPixels()
+            : (peints.current?.personnagePeint2D(wk.stroll.kind, wk.stroll.id, paint, wk.allumage) ?? null);
+        if (!sprite) continue;
         standing.push({
           depth: y - o.z,
           draw: () => {
             const { sx, sy } = at(x, y, o.z);
             if (STYLE.shadows) shadow(sx + cam.s, sy, (sprite.w / 2.4) * cam.s, 3 * cam.s);
+            // En 2D peinte, une créature a en plus une ombre de contact, sombre et nette, sous ses pieds (marquée la nuit).
+            if (paint && wk.stroll.kind === 'creature') drawContactShadow(ctx, paint, sx + cam.s, sy, (sprite.w / 4) * cam.s, 1.5 * cam.s);
             const r = placeSprite(ctx, sprite, sx, sy - bob * TILE * cam.s, cam.s);
             const { id, kind } = wk.stroll;
             newHits.push({
@@ -681,7 +722,7 @@ export default function WorldCanvas2D({
             // Le bonhomme sur le pont, pendant le voyage.
             if (aboard && p.avatar) {
               const d = at(pos.x + VEHICLE_DECK.x + 0.5, pos.y + VEHICLE_DECK.y + 0.5, pos.z + 1);
-              const sprite = avatarSprite('down', 0);
+              const sprite = spriteDuBonhomme('down', 0);
               if (sprite) placeSprite(ctx, sprite, d.sx, d.sy, cam.s);
             }
             // Le toucher : une case à poser se pose ; ailleurs sur le navire, le panneau du port s'ouvre.
@@ -710,7 +751,7 @@ export default function WorldCanvas2D({
           draw: () => {
             const { sx, sy } = at(x + 0.5, y + 0.5, z);
             const step = moving ? Math.floor(t * 8) % 2 : 0;
-            const sprite = avatarSprite(h.facing, step);
+            const sprite = spriteDuBonhomme(h.facing, step);
             if (!sprite) return;
             if (STYLE.shadows) shadow(sx, sy, 6 * cam.s, 2 * cam.s);
             placeSprite(ctx, sprite, sx, sy - (moving ? (step ? 1 : 0) * cam.s : 0), cam.s);

@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,contraste` n'en refait que certaines familles (jour, nuit, contraste, reduit, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,contraste` n'en refait que certaines familles (jour, nuit, contraste, reduit, personnages, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -67,6 +67,13 @@ const CAPTURES = [
   // « Réduire les animations » : deux captures à quelques secondes d'écart, qui doivent être identiques (rien ne bouge).
   { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true, encore: 'ile-reduit-bis' },
   { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true, encore: 'archipel-reduit-bis' },
+  // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
+  // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
+  // sans étoiles), en 3D et en SVG.
+  { nom: 'defi', vue: 'défi', famille: 'personnages', parIle: true },
+  { nom: 'defi-svg', vue: 'défi', famille: 'personnages', view: 'liste' },
+  { nom: 'bulle', vue: 'bulle', famille: 'personnages', sansEtoiles: true },
+  { nom: 'bulle-svg', vue: 'bulle', famille: 'personnages', view: 'liste', sansEtoiles: true },
   // La construction (lot R5) : un chantier (le dernier plan de chaque île en fantômes), de jour, de nuit, en Contraste
   // élevé ; le phare des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` :
   // la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
@@ -195,28 +202,32 @@ async function scenes() {
   const rows = [];
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
-    const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte' };
+    const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte', défi: `/aventure/${at}/gardien`, bulle: `/aventure/${at}/gardien` };
+    const iles = BIOMES.filter((b) => b.classe === a).map((b) => b.id);
     const classe = (id) => BIOMES.find((b) => b.id === id).classe;
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
       ...(SHOTS
-        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).map((c) => ({
-            vue: c.vue,
-            go: c.ile ? `/aventure/${c.ile}` : routes[c.vue],
-            ile: c.ile,
-            plans: c.partie ? plansDe(c.partie, c.ile) : null,
-            bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
-            time: c.nuit ? NIGHT : DAY,
-            view: c.view,
-            theme: c.theme,
-            reduceMotion: c.reduceMotion,
-            nom: c.nom,
-            encore: c.encore,
-          }))
+        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
+            (c.parIle ? iles : [null]).map((parIle) => ({
+              vue: c.vue,
+              go: parIle ? `/aventure/${parIle}/gardien` : c.ile ? `/aventure/${c.ile}` : routes[c.vue],
+              ile: c.ile,
+              plans: c.partie ? plansDe(c.partie, c.ile) : null,
+              bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
+              time: c.nuit ? NIGHT : DAY,
+              view: c.view,
+              theme: c.theme,
+              reduceMotion: c.reduceMotion,
+              sansEtoiles: c.sansEtoiles,
+              nom: parIle ? `${c.nom}-${parIle}` : c.nom,
+              encore: c.encore,
+            })),
+          )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans, bridges } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, sansEtoiles, nom, encore, mesure, ile, plans, bridges } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
@@ -230,7 +241,7 @@ async function scenes() {
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress, view, theme, reduceMotion },
+        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view, theme, reduceMotion },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
