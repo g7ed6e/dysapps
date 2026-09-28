@@ -4,10 +4,10 @@
 // par une seule ligne. Un décor bâti sans forme propre se dessine en boîtes (`enBoites`).
 import { FORMES_COMMUNES } from './communes';
 import { FORMES_6E } from './6e';
-import { FORMES_5E } from './5e';
-import { FORMES_4E, RETOUCHES_4E } from './4e';
+import { FORMES_5E, LOINTAIN_5E } from './5e';
+import { FORMES_4E, LOINTAIN_4E, RETOUCHES_4E } from './4e';
 import { FORMES_3E } from './3e';
-import { formeHorsGrille } from './horsGrille';
+import type { Lointain } from './lointain';
 import { enBoites, type Forme } from './outils';
 import type { ArchipelagoId } from '../map';
 
@@ -19,7 +19,13 @@ export const FORMES: Readonly<Record<string, Forme>> = { ...FORMES_COMMUNES, ...
  */
 const RETOUCHES: Partial<Record<ArchipelagoId, Record<string, Forme>>> = { '4e': RETOUCHES_4E };
 
-/** La forme d'un genre de décor dans un archipel (sa retouche, son décor hors de la grille), sinon ses cubes en boîtes. */
+/** La forme d'un genre de décor dans un archipel (sa retouche, s'il en a une), sinon ses cubes en boîtes. */
 export function formeDe(genre: string, a?: ArchipelagoId): Forme {
-  return (a && (RETOUCHES[a]?.[genre] ?? formeHorsGrille(a, genre))) || FORMES[genre] || enBoites;
+  return (a ? RETOUCHES[a]?.[genre] : undefined) ?? FORMES[genre] ?? enBoites;
 }
+
+/**
+ * Le lointain de chaque archipel qui en a un (./lointain.ts) : chaque sous-lot décrit le sien dans son fichier et le
+ * range ici par une seule ligne. Le 6e le reçoit à la revue d'ensemble seulement.
+ */
+export const LOINTAINS: Readonly<Partial<Record<ArchipelagoId, Lointain>>> = { '5e': LOINTAIN_5E, '4e': LOINTAIN_4E };

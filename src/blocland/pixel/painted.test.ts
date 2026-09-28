@@ -248,11 +248,16 @@ it('les fenêtres, les lanternes et les contours des ouvrages : la teinte sombre
         expect(luminance(s), `${a} ${t}`).toBeLessThan(luminance(cote));
         expect(Math.max(...rgb(s)), `${a} ${t}`).toBeGreaterThan(0x20);
       }
-  // Un mur clair se détache d'un sol clair (marbre sur neige, pierre taillée sur roche).
+  // Un mur clair se détache d'un sol clair (marbre sur neige, pierre taillée sur roche) par son contour sombre ; au 4e,
+  // dont la roche chaude est sombre (R4b-4e), il peut aussi s'en détacher par sa propre clarté.
   for (const a of ARCHIPELAGO_IDS) {
     const P = peinture(a, PALIERS);
-    for (const [mur, sol, min] of [['marbre', 'neige', 3], ['marbre', 'sable', 3], ['taille', 'pierre', 2]] as const)
-      expect(contraste(sombreDe(P.matiere(mur, false).cote), P.sol(sol, false).dessus), `${a} ${mur}/${sol}`).toBeGreaterThanOrEqual(min);
+    for (const [mur, sol, min] of [['marbre', 'neige', 3], ['marbre', 'sable', 3], ['taille', 'pierre', 2]] as const) {
+      const cote = P.matiere(mur, false).cote;
+      const dessus = P.sol(sol, false).dessus;
+      const parSaClarte = a === '4e' ? contraste(cote, dessus) : 0;
+      expect(Math.max(contraste(sombreDe(cote), dessus), parSaClarte), `${a} ${mur}/${sol}`).toBeGreaterThanOrEqual(min);
+    }
   }
 });
 

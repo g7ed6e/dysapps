@@ -111,11 +111,12 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     brume: [90, 300],
     voile: [0xc48c5c, 0.1],
     // Les sols chauds (R4b-4e) : l'herbe sèche, la roche brune ; pas de sommet blanc (la neige des Îles du Ciel) : les
-    // hauts de la Falaise se peignent en roche claire.
+    // hauts de la Falaise se peignent en roche chaude claire, assez claire pour qu'un mur de marbre s'en détache par
+    // son contour en 2D (3:1), la valeur de l'intention (`#9A8E84`) passant aux côtés.
     sols: {
       herbe: { dessus: 0x6f8a3a, cote: 0x6a5040 },
       roche: { dessus: 0x7a7068, cote: 0x57504c },
-      neige: { dessus: 0x9a8e84, cote: 0x7a7068 },
+      neige: { dessus: 0xccbfb0, cote: 0x9a8e84 },
     },
     nuages: AMBIENCE['4e'].sky,
     // La mer : un bleu pétrole plus sombre, sous la brume chaude.

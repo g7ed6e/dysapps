@@ -5,15 +5,18 @@
 // - Le fourneau de la Forge remplace le haut-fourneau de basalte (dans son emprise de 2 × 2) : de la maçonnerie, une
 //   gueule qui rougeoie, trois volutes minces.
 // - Les aiguilles d'ardoise deviennent des écueils bas, cernés d'écume ; les rochers posés sur le basalte, de la pierre chaude.
-// - Hors de la grille (rien ne s'y touche, rien n'y marche) : la grue de bois de l'Atelier, et le volcan au fond.
+// - Hors de la grille (rien ne s'y touche, rien n'y marche) : la grue de bois de l'Atelier ; au loin (./lointain.ts), le
+//   volcan et deux rangs de crêtes.
 import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
 import { CORE, MAP } from '../map';
-import type { Faces } from '../palette';
+import type { Couleur, Faces } from '../palette';
 import { PLAN_ZONE } from '../plans';
-import { FORMES_COMMUNES } from './communes';
+import { worldBounds } from '../terrain';
+import { dessinerRocher, FORMES_COMMUNES } from './communes';
+import type { Cone, Etendue, Lointain } from './lointain';
 import { bouffees } from './fumee';
 import { enRepere, type Forme } from './outils';
 import { DELAVE, eclaircir, hex, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
@@ -38,8 +41,8 @@ export const COULEURS_4E = {
 } as const;
 
 /** Des faces d'une couleur : le dessus un peu plus clair ; délavées sur une île fermée. */
-function faces(c: string, muted = false): Faces {
-  const cote = hex(c);
+function faces(c: string | Couleur, muted = false): Faces {
+  const cote = typeof c === 'number' ? c : hex(c);
   const f: Faces = { dessus: eclaircir(cote, 1.14), cote };
   return muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f;
 }
@@ -158,7 +161,7 @@ const ecueil: Forme = (o) => {
   for (const c of cases.values()) {
     const t = hasard();
     const couleur = mixColor(clair, sombre, t);
-    const f = faces(`#${couleur.toString(16).padStart(6, '0')}`, e.muted);
+    const f = faces(couleur, e.muted);
     const top = NIVEAU_EAU + ECUEIL_BAS.haut * (0.45 + 0.55 * hasard());
     const [x, z] = [c.x + 0.5, c.y + 0.5];
     const a0 = rot + hasard() * 2;
@@ -184,16 +187,9 @@ function anneauDEcume(P: Pinceau, x: number, z: number, r: number, rot: number, 
 /** Les rochers (DA, point reporté de R4) : posés sur le basalte (la Forge, la Gare), de la pierre chaude, pas du basalte. */
 const rocher: Forme = (o) => {
   const col = colonneEn(o.champ, o.e.x, o.e.y);
-  const sous = col?.matieres[col.matieres.length - 1];
-  if (sous !== 'basalte') {
-    FORMES_COMMUNES.rocher(o);
-    return;
-  }
-  const chaude = faces(COULEURS_4E.pierreChaude, o.e.muted);
-  FORMES_COMMUNES.rocher({ ...o, champ: SANS_SOL, du: () => chaude });
+  if (col?.matieres[col.matieres.length - 1] === 'basalte') dessinerRocher(o, faces(COULEURS_4E.pierreChaude, o.e.muted));
+  else FORMES_COMMUNES.rocher(o);
 };
-/** Un champ sans colonne : le rocher commun y prend la couleur de son cube (ici, la pierre chaude). */
-const SANS_SOL = { colonnes: [], index: new Map() } as unknown as ChampDuSol;
 
 // ---------- Hors de la grille : la grue de l'Atelier ----------
 
@@ -222,14 +218,17 @@ export const GRUE = {
 export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDecor[]): { x: number; y: number; z: number } | null {
   const def = MAP.find((d) => d.id === GRUE.ile);
   if (!def) return null;
-  const pris = new Set(elements.map((e) => `${e.x},${e.y}`));
+  // Les cases prises par le décor posé (toute l'emprise d'un repère) : le décor du paysage, le même à toute étape de la partie.
+  const pris = new Set<string>();
+  for (const e of elements) for (let dx = 0; dx < e.emprise; dx++) for (let dy = 0; dy < e.emprise; dy++) pris.add(`${e.x + dx},${e.y + dy}`);
+  const dansLeCoeur = (x: number, y: number) => x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
   const [wx, wy] = [def.core.x + GRUE.voulue.dx, def.core.y + GRUE.voulue.dy];
   let best: { x: number; y: number; z: number } | null = null;
   let bestD = Infinity;
   for (let x = wx - 2; x <= wx + 4; x++)
     for (let y = wy - 2; y <= wy + 2; y++) {
       const col = colonneEn(champ, x, y);
-      if (!col || col.liquide || col.fixe || col.ile !== GRUE.ile) continue;
+      if (!col || col.liquide || col.fixe || col.ile !== GRUE.ile || dansLeCoeur(x, y)) continue;
       // La grue et son pied tiennent sur la case et ses voisines : rien d'autre n'y pousse.
       let libre = true;
       for (let dx = -1; dx <= 1 && libre; dx++) for (let dy = -1; dy <= 1 && libre; dy++) if (pris.has(`${x + dx},${y + dy}`)) libre = false;
@@ -245,7 +244,8 @@ export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDeco
 
 const grue: Forme = ({ P, e, cx, cz, sol }) => {
   const G = GRUE;
-  const def = MAP.find((d) => d.id === G.ile)!;
+  const def = MAP.find((d) => d.id === G.ile);
+  if (!def) return;
   const pied = Math.min(sol(cx - 0.45, cz - 0.45, e.z), sol(cx + 0.45, cz - 0.45, e.z), sol(cx - 0.45, cz + 0.45, e.z), sol(cx + 0.45, cz + 0.45, e.z)) - 0.2;
   const haut = e.z + G.hauteur;
   const mat = peintre(faces(COULEURS_4E.mat, e.muted), pied, haut - pied);
@@ -304,52 +304,55 @@ const grue: Forme = ({ P, e, cx, cz, sol }) => {
   tronconique(P, ch[0], ch[2], yC, yC + 0.4, 0.05, 0.22, 4, 0, peintre(faces('#5A5550', e.muted), yC, 0.5));
 };
 
-// ---------- Hors de la grille : le volcan du fond ----------
+// ---------- Le lointain : le volcan du fond et deux rangs de crêtes ----------
 
 /**
- * Le volcan du fond (DA, intention du 4e) : un cône tronqué à 9 pans, roche `#6A5048`, de 16 blocs, de 80 à 120 cases
- * derrière le bout droit de la crête (la droite de la caméra : −x), un panache de 5 volutes, sans lueur au cratère. Il
- * paraît plus petit que la grue dans la vue de l'archipel ; la brume de profondeur le pâlit.
+ * Le volcan du fond (DA, intention du 4e) : un cône tronqué à 9 pans, roche `#6A5048`, de 16 blocs, à 100 cases
+ * derrière le bout droit de la crête (la droite de la caméra : l'ouest, `u` = 0), sans lueur au cratère. Il paraît plus
+ * petit que la grue dans la vue de l'archipel ; la brume de profondeur le pâlit. Dessiné par le lointain commun
+ * (./lointain.ts, R4b-5e) ; son panache de 5 volutes, dans l'appel des fumées (`FUMEE_DU_VOLCAN_4E`).
  */
-export const VOLCAN = { derriere: 120, decale: 30, hauteur: 15, rayons: [8, 1.8], pans: 9, fumee: { rayon: 1.1, volutes: 5, ecart: 0.7, vent: [0.15, 0.1] } } as const;
+export const VOLCAN_DU_FOND: Cone = { genre: 'cone', u: 0.04, recul: 100, haut: 16, rayon: 8, cratere: 1.8, pans: 9, couleur: 0x6a5048 };
 
-/** La place du volcan : derrière le bout droit de la crête (la plus petite x des îles, la plus grande y). */
-export function placeDuVolcan(champ: ChampDuSol): { x: number; y: number } | null {
-  let minX = Infinity;
-  let maxY = -Infinity;
-  for (const c of champ.colonnes) {
-    if (c.x < minX) minX = c.x;
-    if (c.y > maxY) maxY = c.y;
-  }
-  if (!Number.isFinite(minX)) return null;
-  return { x: minX + VOLCAN.decale, y: maxY + VOLCAN.derriere };
+/** Le panache du volcan : cinq volutes, poussées par le même vent que les fumées du lot R4 (vers +x et +y). */
+export const FUMEE_DU_VOLCAN_4E = { rayon: 1.1, volutes: 5, ecart: 0.7, vent: [0.15, 0.1] } as const;
+
+/**
+ * Le lointain des Anciens Ateliers (intention du 4e, §2) : le volcan, et deux rangs de crêtes chaudes, `#8A6E78` devant,
+ * `#C89A88` derrière, que la brume pâlit. Pas de sommets blancs.
+ */
+export const LOINTAIN_4E: Lointain = {
+  graine: 'lointain-4e',
+  pieces: [
+    { genre: 'cretes', u: -0.25, a: 0.75, recul: 72, haut: 15, cimes: 6, epaisseur: 18, couleur: 0x8a6e78 },
+    VOLCAN_DU_FOND,
+    { genre: 'cretes', u: 0.2, a: 1.3, recul: 130, haut: 22, cimes: 7, epaisseur: 24, couleur: 0xc89a88 },
+  ],
+};
+
+/** Le milieu du cratère du volcan, en cases (comme `ancre` de ./lointain.ts). */
+export function cratereDuVolcan(e: Etendue): { x: number; y: number; z: number } {
+  return { x: e.minX + VOLCAN_DU_FOND.u * (e.maxX - e.minX), y: e.maxY + VOLCAN_DU_FOND.recul, z: VOLCAN_DU_FOND.haut };
 }
 
-const volcan: Forme = ({ P, F, cx, cz, hasard, horizon }) => {
-  const V = VOLCAN;
-  const bas = NIVEAU_EAU - 0.6;
-  const sommet = NIVEAU_EAU + V.hauteur;
-  const roche = faces(COULEURS_4E.volcan);
-  const rot = hasard() * Math.PI;
-  // Deux gradins de flanc : le cône se lit de loin comme un volcan, pas comme une pyramide.
-  tronconique(P, cx, cz, bas, NIVEAU_EAU + V.hauteur * 0.32, V.rayons[0], V.rayons[0] * 0.66, V.pans, rot, peintre(roche, bas, V.hauteur, 0.92), false);
-  tronconique(P, cx, cz, NIVEAU_EAU + V.hauteur * 0.32, sommet, V.rayons[0] * 0.66, V.rayons[1], V.pans, rot + 0.2, peintre(roche, bas, V.hauteur), false);
-  // Le cratère : un creux sombre, sans lueur.
-  tronconique(P, cx, cz, sommet - 0.9, sommet + 0.02, V.rayons[1] * 0.55, V.rayons[1] * 0.9, V.pans, rot + 0.2, peintre(faces('#4A3934'), sommet - 1, 1));
+/** Le panache du volcan : seulement ses volutes (le cône est dans le lointain). */
+const panache: Forme = ({ F, e, hasard, rot, horizon }) => {
+  const V = FUMEE_DU_VOLCAN_4E;
+  const [x, y] = [e.x + 0.5, e.y + 0.5];
   bouffees(
     F,
     [
-      { x: cx - 0.5, y: cz - 0.5, z: sommet, color: '' },
-      { x: cx - 0.5 + V.fumee.vent[0], y: cz - 0.5 + V.fumee.vent[1], z: sommet + 1, color: '' },
+      { x: x - 0.5, y: y - 0.5, z: e.z, color: '' },
+      { x: x - 0.5 + V.vent[0], y: y - 0.5 + V.vent[1], z: e.z + 1, color: '' },
     ] as VoxelCube[],
     hasard,
     rot,
     horizon,
-    { rayon: V.fumee.rayon, volutes: V.fumee.volutes, ecart: V.fumee.ecart, bas: sommet + 0.6 },
+    { rayon: V.rayon, volutes: V.volutes, ecart: V.ecart, bas: e.z + 0.5 },
   );
 };
 
-/** Le décor des Anciens Ateliers hors de la grille : la grue de l'Atelier, le volcan du fond. */
+/** Le décor des Anciens Ateliers hors de la grille : la grue de l'Atelier, le panache du volcan du fond. */
 export function horsGrille4e(champ: ChampDuSol, elements: readonly ElementDeDecor[]): ElementDeDecor[] {
   const out: ElementDeDecor[] = [];
   const g = caseDeLaGrue(champ, elements);
@@ -357,13 +360,14 @@ export function horsGrille4e(champ: ChampDuSol, elements: readonly ElementDeDeco
     const col = colonneEn(champ, g.x, g.y);
     out.push({ id: `hors-grille/grue@${g.x},${g.y}`, genre: 'grue', cubes: [], x: g.x, y: g.y, z: g.z, emprise: 1, muted: Boolean(col?.muted), horsGrille: true });
   }
-  const v = placeDuVolcan(champ);
-  if (v) out.push({ id: `hors-grille/volcan@${v.x},${v.y}`, genre: 'volcan', cubes: [], x: v.x, y: v.y, z: 0, emprise: 1, muted: false, horsGrille: true });
+  // Le panache : une case fictive, sous le milieu du cratère (x et y entiers : l'élément est au milieu de sa case).
+  const v = cratereDuVolcan(worldBounds('4e'));
+  out.push({ id: 'hors-grille/panache', genre: 'panache', cubes: [], x: v.x - 0.5, y: v.y - 0.5, z: v.z, emprise: 1, muted: false, horsGrille: true, auLoin: true });
   return out;
 }
 
 /** Les formes du 4e hors de la grille. */
-export const FORMES_HORS_GRILLE_4E: Record<string, Forme> = { grue, volcan };
+export const FORMES_HORS_GRILLE_4E: Record<string, Forme> = { grue, panache };
 
 /** Les repères du 4e. */
 export const FORMES_4E: Record<string, Forme> = { 'haut-fourneau': fourneau };

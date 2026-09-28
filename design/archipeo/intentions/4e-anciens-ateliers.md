@@ -10,9 +10,10 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - **L’atelier-forteresse en chantier et ses échafaudages** (R5), le héros de l’archipel, sur l’île de l’Atelier (le port).
 - **La grue de bois** (R4b, île de l’Atelier, hors de la grille, de 120 à 150 triangles, sans appel de plus).
-  - Sur une case où l’on ne marche pas, au fond et à droite du cœur, hors du quai et de la route du navire.
-  - Mât en treillis `#884D40`, 11 cases de haut et 1 case de section.
-  - Flèche `#9C7C4B` de 6 cases, à 0,85 de la hauteur, tournée vers la zone des plans ; contre-flèche de 2 cases avec un contrepoids de pierre.
+  - Sur une case où l’on ne marche pas, sur le flanc droit du cœur, à mi-profondeur, hors du quai et de la route du navire.
+  - Mât en treillis `#884D40`, 9 cases de haut et 1 case de section.
+  - Flèche `#9C7C4B` de 6 cases, à 0,7 de la hauteur, tournée vers le coin avant de la zone des plans ; contre-flèche de 2 cases avec un contrepoids de pierre.
+  - Décidé par le directeur artistique le 28 septembre 2026, sur les captures de R4b-4e : au fond, à 11 cases et 0,85, la flèche était à la hauteur des noms (posés à 12 cases au-dessus du cœur) et passait derrière celui de l’Atelier.
   - Câble et crochet immobiles. C’est la seule verticale fine de l’archipel.
 - **Le fourneau de la Forge** (R4b, dans l’emprise de 2 × 2 du haut-fourneau de Blocland).
   - Maçonnerie tronconique de pierre `#6F473D`, 5 cases de haut, de 1,7 à 1,2 case de section, deux cerclages de métal rouillé `#AF6C55`.
@@ -43,7 +44,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - Le ciel de R1 reste : zénith `#355F98`, horizon `#D8B088`, lueur `#F2B878`, soleil `#FFD8A6` à 2,4, ambiance de force 1,0. Le couchant se fait par l’horizon ambré, jamais par le contre-jour ; on ne le pousse pas plus loin (l’orange est la couleur de l’anglais).
 - Brume de profondeur 90 / 300 et voile `#C48C5C` à 0,10 (inchangés).
-- Sols : herbe `#6F8A3A` / `#6A5040` ; roche `#7A7068` / `#57504C` ; neige `#9A8E84` / `#7A7068`.
+- Sols : herbe `#6F8A3A` / `#6A5040` ; roche `#7A7068` / `#57504C` ; neige `#CCBFB0` / `#9A8E84` (R4b-4e : `#9A8E84` passe aux côtés, pour qu’un mur de marbre se détache de la roche claire par son contour en 2D, 3:1 ; à valider par le directeur artistique).
 - Mer `#21606E` (inchangée). Ardoise `#3E3636`.
 
 ## 6. La fumée
