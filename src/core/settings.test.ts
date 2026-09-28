@@ -40,6 +40,14 @@ it('convertit l’ancien interrupteur « vues en 3D »', () => {
   expect('view3d' in sanitizeSettings({ view3d: false })).toBe(false);
 });
 
+it('éteint les rendus expérimentaux par défaut et rejette les styles inconnus', () => {
+  expect(sanitizeSettings({}).renduArchipeo).toBe(false);
+  expect(sanitizeSettings({}).styleArchipeo).toBe('textures');
+  expect(sanitizeSettings({ renduArchipeo: true, styleArchipeo: 'c' })).toMatchObject({ renduArchipeo: true, styleArchipeo: 'c' });
+  expect(sanitizeSettings({ renduArchipeo: 'oui' as never, styleArchipeo: 'z' as never })).toMatchObject({ renduArchipeo: false, styleArchipeo: 'textures' });
+  expect(sanitizeSettings({ styleArchipeo: 'toString' as never }).styleArchipeo).toBe('textures');
+});
+
 it('respecte les minimums orthophoniques', () => {
   const s = sanitizeSettings({ fontSize: 12, lineHeight: 1.1 });
   expect(s.fontSize).toBe(18);

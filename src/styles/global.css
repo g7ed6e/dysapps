@@ -1269,6 +1269,15 @@ button.app-card:active {
   display: grid;
   gap: 0.8rem;
 }
+/* Un groupe de choix dans un encadré (Expérimental → La surface du monde) : sa légende, sans second cadre. */
+.settings fieldset.settings-subgroup {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.settings-subgroup legend {
+  padding: 0 0 0.4rem;
+}
 .settings legend {
   font-family: var(--display-font);
   font-weight: var(--display-weight);

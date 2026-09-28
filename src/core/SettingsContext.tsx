@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { applySettings, DEFAULT_SETTINGS, sanitizeSettings, type Settings } from './settings';
+import { applySettings, DEFAULT_SETTINGS, sanitizeSettings, SETTINGS_KEY, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
 import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
 
@@ -13,14 +13,13 @@ interface SettingsContextValue {
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
-const STORAGE_KEY = 'settings';
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<Settings>(() => sanitizeSettings(loadJSON(STORAGE_KEY, DEFAULT_SETTINGS)));
+  const [settings, setSettings] = useState<Settings>(() => sanitizeSettings(loadJSON(SETTINGS_KEY, DEFAULT_SETTINGS)));
 
   useEffect(() => {
     applySettings(settings);
-    saveJSON(STORAGE_KEY, settings);
+    saveJSON(SETTINGS_KEY, settings);
   }, [settings]);
 
   const update = useCallback((patch: Partial<Settings>) => {
