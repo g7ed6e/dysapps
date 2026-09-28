@@ -36,7 +36,7 @@ export const UNIVERS: Record<UniversChoice, UniversInfo> = {
     nom: 'Archipéo',
     phrase: 'Le savoir construit ton monde.',
     icone: 'ancre',
-    logo: 'icon.svg',
+    logo: 'archipeo.svg',
     presentation: 'Une aventure en mer : ton savoir reconstruit l’archipel.',
     carte: 'Carte d’Archipéo',
     bienvenue: 'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
