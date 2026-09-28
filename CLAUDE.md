@@ -37,3 +37,8 @@ Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) po
 
 - Toute pull request qui modifie du code (application, rendu, scripts, tests, configuration, CI, dépendances) passe par l'agent `expert-frontend` avant d'être ouverte. Il regarde d'abord la sécurité, puis la performance, puis la maintenabilité. Sa description donne son verdict (Conforme, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
 - Il rend un avis sans trancher : la technique du rendu reste à l'`artiste-technique-3d`, l'accessibilité dys au `referent-dys`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-code.md`.
+
+## Relecture des univers (systématique)
+
+- Toute pull request qui touche les noms, le récit ou le rendu d'un univers (Archipéo, Blocland) passe par son consultant (`consultant-archipeo`, `consultant-blocland`) avant d'être ouverte ; un changement du jeu commun qui change ce que l'élève voit dans les deux univers passe par les deux. Sa description donne le verdict (Fidèle, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé par le `directeur-artistique` ou tranché par le mainteneur.
+- Les consultants travaillent sous l'autorité du `directeur-artistique`, qui valide leurs propositions et tranche entre eux. Voir `docs/conception/univers.md` et `docs/conception/contribuer.md` (« Les agents »).

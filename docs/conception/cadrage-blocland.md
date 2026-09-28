@@ -4,6 +4,8 @@ Blocland est le nom de travail du jeu, et reste celui de son module dans le code
 
 Ce document rassemble les décisions de game design en vigueur dans Blocland, prises du 25 au 27 septembre 2026, avec leur raison. Il remplace les anciens cadrages du monde, du village, des archipels et de « l’appli entière » : l’historique pull request par pull request reste dans git et dans le [journal](../journal.md). Ce que l’application fait, écran par écran, est dans le manuel ([L’aventure Blocland](../manuel/blocland.md)) ; le contenu île par île est dans [L’archipel](../pedagogie/archipel.md) et [Ouvrages et plans](../pedagogie/ouvrages.md). Le jeu migre vers Archipéo ([cadrage « De Blocland à Archipéo »](cadrage-archipeo.md)) : une décision qui change l’existant s’écrit là-bas, et ce document est mis à jour quand le lot est construit.
 
+Blocland reste un univers à part entière, à côté d’Archipéo ([Plusieurs univers](univers.md)). Ce document devient le cadrage de cet univers : l’agent `consultant-blocland` le tient, sous l’autorité du directeur artistique, avec la fiche de l’univers (`design/blocland/fiche.md`).
+
 ## Ce qu’on garde absolument
 
 - **Rien à lire dans le monde** (3D ou 2D). Tout ce qui se lit est dans un panneau HTML, en police dys, lu à voix haute. Les seules exceptions sont les étiquettes des noms d’îles, dans la police de lecture, sur fond clair.
