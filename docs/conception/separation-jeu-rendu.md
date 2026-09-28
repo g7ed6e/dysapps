@@ -95,7 +95,7 @@ Pendant les lots R, **aucun fichier ne déménage** : un déménagement touchera
 ```
 src/blocland/
   jeu/          règles, état, modèle du monde, machine du voyage (sans coordonnées)
-  disposition/  grille/ (terrain, map, harbour, paths, ground) et reseau/
+  disposition/  grille/ (terrain, decor, map, harbour, paths, ground) et reseau/
   world/        ce que les rendus partagent : palette, style, landMesh, décor, étiquettes, budget
   three/        la 3D
   pixel/        la 2D

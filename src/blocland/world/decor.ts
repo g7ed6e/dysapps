@@ -412,6 +412,20 @@ const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
  */
 export const DECOR_BATI: ReadonlySet<string> = new Set<string>([...REPERES, 'cascade', 'ecueil', 'banc']);
 
+/** Le genre d'un élément de décor d'après son nom (« foret/cœur:arbre@8,2 » : un arbre). */
+export function kindOf(decor: string): string {
+  const name = decor.slice(decor.lastIndexOf('/') + 1).replace(/^cœur:/, '');
+  return name.slice(0, name.indexOf('@'));
+}
+
+/**
+ * Un décor posé sur le sol (un arbre, un buisson, un objet du quai), par son nom ; pas un décor bâti (`DECOR_BATI` :
+ * repère, cascade, écueil, banc), que le sol porte comme une construction.
+ */
+export function decorPose(decor: string | undefined): boolean {
+  return decor !== undefined && decor !== '' && !DECOR_BATI.has(kindOf(decor));
+}
+
 /** Les volutes d'une fumée, décalées comme au vent. */
 export const PUFFS: [number, number, number][] = [
   [0, 0, 2],

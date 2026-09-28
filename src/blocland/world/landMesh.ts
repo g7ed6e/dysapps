@@ -27,7 +27,7 @@ import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
-import { decorPose } from './props';
+import { decorPose } from './decor';
 import { bruit, FROID, FROID_SOUS } from './style';
 import type { Cell } from './view';
 
