@@ -195,7 +195,8 @@ const rocher: Forme = (o) => {
 
 /**
  * La grue de bois (DA, intention du 4e) : sur une case où l'on ne marche pas, sur le flanc droit du cœur de l'Atelier
- * (la droite de la caméra, −x), à mi-profondeur, hors du quai et de la route du navire. Un mât en treillis de 9 cases et
+ * (la droite de la caméra, −x), un peu en avant de la mi-profondeur (7 cases : au milieu, dans la vue de l'île, son mât
+ * passait sous le bouton de l'archipel ; plus en avant, les repères posés prennent toutes les cases), hors du quai et de la route du navire. Un mât en treillis de 9 cases et
  * d'une case de section ; une flèche de 6 cases à 0,7 de la hauteur, tournée vers le coin avant de la zone des plans :
  * elle passe sous le nom de l'île, posé à 12 cases (décision du directeur artistique, 28/09 ; au fond, à 11 cases et
  * 0,85, elle passait derrière lui). Une contre-flèche de 2 cases et son contrepoids ; un câble et un crochet immobiles.
@@ -203,7 +204,7 @@ const rocher: Forme = (o) => {
 export const GRUE = {
   ile: 'atelier',
   /** La case voulue, depuis le coin du cœur ; on prend la plus proche qui soit libre. */
-  voulue: { dx: -2, dy: CORE - 7 },
+  voulue: { dx: -2, dy: CORE - 9 },
   hauteur: 9,
   section: 1,
   fleche: 6,

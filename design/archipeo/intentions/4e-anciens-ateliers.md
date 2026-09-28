@@ -10,7 +10,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - **L’atelier-forteresse en chantier et ses échafaudages** (R5), le héros de l’archipel, sur l’île de l’Atelier (le port).
 - **La grue de bois** (R4b, île de l’Atelier, hors de la grille, de 120 à 150 triangles, sans appel de plus).
-  - Sur une case où l’on ne marche pas, sur le flanc droit du cœur, à mi-profondeur, hors du quai et de la route du navire.
+  - Sur une case où l’on ne marche pas, sur le flanc droit du cœur, un peu en avant de la mi-profondeur (à 7 cases du bord avant : au milieu, le mât passait sous le bouton de l’archipel dans la vue de l’île), hors du quai et de la route du navire.
   - Mât en treillis `#884D40`, 9 cases de haut et 1 case de section.
   - Flèche `#9C7C4B` de 6 cases, à 0,7 de la hauteur, tournée vers le coin avant de la zone des plans ; contre-flèche de 2 cases avec un contrepoids de pierre.
   - Décidé par le directeur artistique le 28 septembre 2026, sur les captures de R4b-4e : au fond, à 11 cases et 0,85, la flèche était à la hauteur des noms (posés à 12 cases au-dessus du cœur) et passait derrière celui de l’Atelier.
