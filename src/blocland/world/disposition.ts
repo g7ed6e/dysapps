@@ -1,5 +1,5 @@
-// Les types de la séparation du jeu et du rendu (docs/conception/separation-jeu-rendu.md, étape J0), sans usage pour
-// l'instant. Le jeu parle d'entités (une île, une borne, un ouvrage…) ; une disposition dit où elles sont : en grille
+// Les types de la séparation du jeu et du rendu (docs/conception/separation-jeu-rendu.md, étape J0). La disposition en
+// grille (./grille.ts, étape J3) les réalise. Le jeu parle d'entités (une île, une borne, un ouvrage…) ; une disposition dit où elles sont : en grille
 // (le monde en cases d'aujourd'hui, pour la 3D et la 2D) ou en réseau (Archipéo : les îles sont des lieux, reliés par
 // des liaisons). Une vue reçoit des entités et une disposition, et renvoie des intentions.
 import type { BiomeId } from '../biomes';
@@ -50,8 +50,10 @@ export interface Etendue {
 /** Où sont les entités : la grille d'aujourd'hui, ou le réseau d'Archipéo. Jamais ce qu'elles valent. */
 export interface Disposition {
   genre: 'grille' | 'reseau';
-  /** La place d'une entité, ou `null` si elle n'est pas dans cet archipel. */
+  /** La place d'une entité, ou `null` si elle n'est pas dans cet archipel (ou pas encore placée par cette disposition). */
   placeDe(e: Entite): Ancrage | null;
+  /** Où le bonhomme se tient sur une île. */
+  seTenir(ile: BiomeId): Ancrage;
   /** Le point du monde où dessiner un ancrage (une matrice par île, calculée une fois). */
   versMonde(a: Ancrage): Point;
   /** Le trajet du bonhomme d'une entité à une autre, ou `null` s'il n'y a pas de chemin ouvert. */

@@ -4,7 +4,26 @@
 // monde, le chemin est un plus court chemin (huit directions), redressé en lignes droites là où le sol est plat et libre.
 import type { VoxelCube } from '../Voxel';
 import { decorPose } from './decor';
-import type { Cell, CreaturePlacement } from './view';
+import type { BiomeId } from '../biomes';
+
+/** Une case du monde. */
+export interface Cell {
+  x: number;
+  y: number;
+  z: number;
+}
+
+/** Une créature (ou un Gardien) à sa place : ses cubes, sa case, et comment elle se promène. */
+export interface CreaturePlacement {
+  id: BiomeId;
+  cubes: VoxelCube[];
+  origin: Cell;
+  /** Une créature se promène ; un Gardien reste sur son îlot. */
+  kind?: 'creature' | 'guardian';
+  still?: boolean;
+  /** Les pas possibles depuis sa place (sinon ceux par défaut). */
+  steps?: [number, number][];
+}
 
 /** Le décor qu'on enjambe (bas, au ras du sol) ; le reste barre le passage. */
 const LOW: ReadonlySet<string> = new Set(['fleur', 'champignon', 'roseau']);
