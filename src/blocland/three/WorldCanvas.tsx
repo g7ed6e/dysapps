@@ -10,6 +10,7 @@ import { ARROW_DIRS, cubeTags, finishWalk, groundTap, islandInDirection, toucheR
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
+import { habillageDe } from '../habillage';
 import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe } from './surface';
@@ -133,12 +134,12 @@ export default function WorldCanvas({
     const scene = new THREE.Scene();
     const bounds = worldBounds(archipelago);
     // Archipéo (lot R1) : l'option de style `?style=a|b|c` (seulement avec le drapeau), sinon les textures des blocs.
-    const archipeo = rendu === 'archipeo';
-    const style = archipeo ? styleDuMonde() : null;
+    const habillage = habillageDe(rendu);
+    const style = habillage.sol === 'facettes' ? styleDuMonde() : null;
     const monde: Monde = {
       scene,
       archipel: archipelago,
-      archipeo,
+      habillage,
       surface: style ? surfaceDe(style, archipelago) : null,
       etendue: bounds,
       centre: { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 },

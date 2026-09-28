@@ -17,19 +17,20 @@ import type { Instant, Monde, PartieDeLaScene } from './partie';
 const NUIT_DES_BANCS = 0x5d7196;
 
 export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): PartieDeLaScene {
-  const { scene, archipel, archipeo, largeur } = monde;
+  const { scene, archipel, largeur } = monde;
+  const fiche = monde.habillage.brume === 'bancs';
   const ambience = AMBIENCE[archipel];
   const ciel = cielDe(archipel, 1);
-  const fog = archipeo
+  const fog = fiche
     ? new THREE.Fog(ciel.horizon, ciel.brumeProche, ciel.brumeLoin)
     : new THREE.Fog(palette(1, archipel).sky, largeur * ambience.fog[0], largeur * ambience.fog[1]);
   scene.fog = fog;
   // Sa couleur : celle de l'horizon (Archipéo), ou du ciel.
-  lumiere.suivre((jour) => fog.color.setHex(archipeo ? cielDe(archipel, jour).horizon : palette(jour, archipel).sky));
+  lumiere.suivre((jour) => fog.color.setHex(fiche ? cielDe(archipel, jour).horizon : palette(jour, archipel).sky));
 
   // La brume des sommets : une nappe translucide sous chaque île la plus haute (seulement sous les Îles du Ciel), dans
   // le monde en blocs ; Archipéo les dessine en un seul maillage, avec les bancs.
-  const mistMat = archipeo ? null : new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
+  const mistMat = fiche ? null : new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
   const mists: THREE.Mesh[] = [];
   if (mistMat) for (const m of mistPatches(archipel)) {
     const mist = new THREE.Mesh(new THREE.PlaneGeometry(m.w, m.h), mistMat);
@@ -41,7 +42,7 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
 
   // Les bancs de brume (Archipéo, 5e) ou les nappes des sommets (3e) : sans lumière ; la nuit les assombrit vers le bleu
   // de crépuscule.
-  const bancs = archipeo ? brumeDArchipeo(archipel) : null;
+  const bancs = fiche ? brumeDArchipeo(archipel) : null;
   let banc: THREE.Mesh | null = null;
   const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, fog: false });
   if (bancs) {
@@ -68,8 +69,8 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
         bancMat.opacity = (instant.carte ? 0.5 : 1) * r.opacite;
       }
       // Sur la Carte, vue de très haut : pas de brume, tout le continent net. Archipéo : la brume de profondeur.
-      fog.near = instant.carte ? largeur * 8 : archipeo ? ciel.brumeProche : largeur * 1.2;
-      fog.far = instant.carte ? largeur * 16 : archipeo ? ciel.brumeLoin : largeur * 3;
+      fog.near = instant.carte ? largeur * 8 : fiche ? ciel.brumeProche : largeur * 1.2;
+      fog.far = instant.carte ? largeur * 16 : fiche ? ciel.brumeLoin : largeur * 3;
       if (!reduit) for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
     },
     dispose: () => {

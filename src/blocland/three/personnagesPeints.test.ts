@@ -1,6 +1,7 @@
 // Les personnages d'Archipéo dans la scène 3D (lot R6) : sans WebGL (jsdom), on vérifie l'arbre de la scène, le toucher,
 // le matériau à lueur, « Réduire les animations » et la libération des ressources.
 import * as THREE from 'three';
+import { HABILLAGES, type Habillage } from '../habillage';
 import { toutConstruit } from '../world/budget';
 import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/personnages/fusions';
@@ -10,11 +11,11 @@ import { materiauALueur } from './personnagesPeints';
 
 const { progress, village } = toutConstruit();
 
-function monde(archipeo: boolean): Monde {
+function monde(habillage: Habillage): Monde {
   return {
     scene: new THREE.Scene(),
     archipel: '6e',
-    archipeo,
+    habillage,
     surface: null,
     etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 },
     centre: { x: 5, y: 5 },
@@ -43,7 +44,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   const gardiens = guardianPlacements('6e', progress, village.bridges);
 
   it('un appel pour le bonhomme, un pour les créatures, un pour les Gardiens', async () => {
-    const m = monde(true);
+    const m = monde(HABILLAGES.archipeo);
     const p = creerPersonnages(m, () => null, instant(), { nuit: () => 0 });
     // Posés avant que leurs modèles soient chargés : ils arrivent avec eux.
     p.poserLesCreatures([...creatures, ...gardiens]);
@@ -60,7 +61,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('chaque créature et chaque Gardien garde une boîte de toucher, invisible, à son nom', async () => {
-    const m = monde(true);
+    const m = monde(HABILLAGES.archipeo);
     const p = creerPersonnages(m, () => null, instant(), null);
     await vi.dynamicImportSettled();
     p.poserLesCreatures([...creatures, ...gardiens]);
@@ -79,7 +80,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('avec « Réduire les animations », rien ne bouge : ni promenade, ni geste', async () => {
-    const m = monde(true);
+    const m = monde(HABILLAGES.archipeo);
     const p = creerPersonnages(m, () => null, instant(), null);
     await vi.dynamicImportSettled();
     p.poserLesCreatures(creatures);
@@ -93,7 +94,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('libère ses géométries, ses matériaux et ses squelettes', async () => {
-    const m = monde(true);
+    const m = monde(HABILLAGES.archipeo);
     const p = creerPersonnages(m, () => null, instant(), null);
     await vi.dynamicImportSettled();
     p.poserLesCreatures([...creatures, ...gardiens]);
@@ -130,7 +131,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('la nuit, le liseré suit le degré de nuit sur les vivants, jamais sur les sentinelles', async () => {
-    const m = monde(true);
+    const m = monde(HABILLAGES.archipeo);
     let nuit = 0;
     const p = creerPersonnages(m, () => null, instant(), { nuit: () => nuit });
     await vi.dynamicImportSettled();

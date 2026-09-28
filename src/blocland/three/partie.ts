@@ -3,6 +3,7 @@
 // La boucle de `WorldCanvas.tsx` ne fait qu'itérer sur elles (docs/conception/separation-jeu-rendu.md, étape D).
 import type * as THREE from 'three';
 import type { BiomeId } from '../biomes';
+import type { Habillage } from '../habillage';
 import type { ArchipelagoId } from '../world/archipelago';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Surface } from './surface';
@@ -11,8 +12,8 @@ import type { Surface } from './surface';
 export interface Monde {
   scene: THREE.Scene;
   archipel: ArchipelagoId;
-  /** Le rendu d'Archipéo (l'univers Archipéo, voir rendu.ts), sinon le monde en blocs. */
-  archipeo: boolean;
+  /** Ce que l'univers change au dessin (../habillage.ts), lu par chaque partie à sa construction. */
+  habillage: Habillage;
   /** L'option de style de surface (lot R1), ou `null` : les textures des blocs. */
   surface: Surface | null;
   etendue: { minX: number; maxX: number; minY: number; maxY: number };

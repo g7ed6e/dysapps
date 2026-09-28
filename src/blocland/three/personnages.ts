@@ -150,7 +150,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     if (rallumage) h.rallumer?.(rallumage.id, rallumage.dureeMs);
     if (places) h.poserLesCreatures(places);
   };
-  if (monde.archipeo)
+  if (monde.habillage.personnages === 'modeles')
     import('./personnagesPeints')
       .then(({ habiller }) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
