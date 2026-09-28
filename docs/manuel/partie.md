@@ -6,7 +6,7 @@ Cette page suit une élève, de sa première séance à la fin des Premiers Riva
 
 L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce premier toucher débloque aussi la voix et les sons.
 
-![L'écran titre : l'icône, « Archipéo » et le gros bouton bleu pétrole Jouer.](/captures/titre.jpg)
+![L'écran titre : le « A » d'Archipéo, « Archipéo » et le gros bouton bleu pétrole Jouer.](/captures/titre.jpg)
 
 Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de huit bulles, lues à voix haute, présente les lieux. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
