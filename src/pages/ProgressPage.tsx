@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { SUBJECTS, type Subject } from '../apps/registry';
+import { subjectInfo, visibleSubjects } from '../apps/registry';
+import { useSettings } from '../core/SettingsContext';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Stars } from '../blocland/Stars';
 import { BADGES, levelFromXp } from '../core/progress';
@@ -15,7 +16,8 @@ const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
 /** Une matière : sa jauge d'étoiles, ses chiffres, et les missions à retravailler (un lien les relance). */
 function SubjectPanel({ data }: { data: SubjectProgress }) {
-  const info = SUBJECTS[data.subject];
+  const { settings } = useSettings();
+  const info = subjectInfo(data.subject, settings.lv2);
   const { earned, max } = data.stars;
   const percent = max ? Math.round((earned / max) * 100) : 0;
   const textes = useTextes();
@@ -113,7 +115,8 @@ export function ProgressPage() {
 export function ProgressBody() {
   const { progress } = useProgress();
   const { state } = useBlocland();
-  const subjects = (Object.keys(SUBJECTS) as Subject[]).map((s) => subjectProgress(s, progress.apps, state));
+  const { settings } = useSettings();
+  const subjects = visibleSubjects(settings.lv2).map((s) => subjectProgress(s, progress.apps, state));
   const earned = BADGES.filter((b) => progress.badges[b.id]).length;
   const rate = progress.totalAnswers ? Math.round((progress.correctAnswers / progress.totalAnswers) * 100) : 0;
 

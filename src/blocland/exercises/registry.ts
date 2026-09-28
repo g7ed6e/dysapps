@@ -161,4 +161,13 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'for-since': { component: CalculScreen, batch: 1 },
   if: { component: CalculScreen, batch: 1 },
   passif: { component: CalculScreen, batch: 1 },
+  // LV2 (lang: 'de' ou 'es'), les écrans de l'anglais : question et réponse entière, nombres, document à lire, article.
+  'de-hallo': { component: CalculScreen, batch: 1 },
+  'de-zahlen': { component: CalculScreen, batch: 1 },
+  'de-familie': { component: CalculScreen, batch: 1 },
+  'de-der-die-das': { component: CalculScreen, batch: 1 },
+  'es-hola': { component: CalculScreen, batch: 1 },
+  'es-numeros': { component: CalculScreen, batch: 1 },
+  'es-familia': { component: CalculScreen, batch: 1 },
+  'es-el-la': { component: CalculScreen, batch: 1 },
 };

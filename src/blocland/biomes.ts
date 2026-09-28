@@ -1031,7 +1031,17 @@ export const BIOMES: BiomeDef[] = [
       ],
       home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
     },
-    exercises: [],
+    exercises: [
+      // Les missions de chaque langue, dans le même ordre : la borne de même rang ouvre celle de la LV2 choisie.
+      { id: 'es-hola', title: 'Hola', description: 'Se présenter : une question en espagnol, la bonne réponse (ser et tener).', programme: ['c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-numeros', title: 'Números', description: 'Les nombres entendus : sesenta ou setenta, doce ou dos ?', programme: ['c4.es.ecouter.intervention-breve', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-familia', title: 'Familia y colegio', description: 'La famille, les consignes de la classe, un panneau ; tu ou tú ?', programme: ['c4.es.lire.consignes-panneaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-el-la', title: 'El, la, los, las', description: 'L’article du nom, au singulier et au pluriel (el día).', programme: ['c4.es.langue.groupe-nominal'], lv2: 'es' },
+      { id: 'de-hallo', title: 'Hallo', description: 'Se présenter : une question en allemand, la bonne réponse (sein et haben).', programme: ['c4.de.dialoguer.echanges-sociaux', 'c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-zahlen', title: 'Zahlen', description: 'Les nombres entendus : -zehn ou -zig, 24 ou 42 ?', programme: ['c4.de.ecouter.intervention-breve', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-familie', title: 'Familie und Schule', description: 'La famille, les consignes de la classe, un panneau ; schon ou schön ?', programme: ['c4.de.lire.consignes-panneaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-der-die-das', title: 'Der, die, das', description: 'L’article du nom, toujours avec sa majuscule (das Mädchen).', programme: ['c4.de.langue.groupe-nominal'], lv2: 'de' },
+    ],
   },
 ];
 

@@ -2,7 +2,7 @@
 // du directeur artistique.
 import type { BiomeId } from '../../../biomes';
 import { TENUE } from '../couleurs';
-import { disque, jalon, manche, pointe, type Espece } from '../gabarit';
+import { anneau, disque, jalon, manche, pointe, type Espece } from '../gabarit';
 import { facette, fuseau, parFace, pave, pose, repere } from '../peint';
 
 export const ESPECES_5E = {
@@ -203,6 +203,42 @@ export const ESPECES_5E = {
       dessiner: (T, k) => {
         disque(pose(T, repere([0, -0.08, 0], Math.PI / 2, 0, 0)), 0, 0.09, 0.025, k.fer);
         for (const c of [-1, 0, 1]) pave(pose(T, repere([c * 0.04, -0.15, 0], 0, 0, c * 0.3)), -0.016, -0.25, -0.012, 0.016, 0, 0.012, k.laiton);
+      },
+    },
+  },
+  relais: {
+    // La cigogne voyageuse (LV2, DA lot 2) : corps blanc, bouts d'ailes noirs, long bec et hautes pattes orange, sans coiffe.
+    nom: 'Lina',
+    metier: 'aubergiste',
+    dominante: 0xe2ded4,
+    marque: { couleur: 0xd07a48, ou: ['museau'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
+    silhouette: { largeur: 0.29, profondeur: 0.25, jambes: 0.95, jambe: 0.08, tete: 0.24, teteProfondeur: 0.24 },
+    museau: { forme: 'bec', long: 0.44, r: 0.05, y: 2.2 },
+    corps: (T, k) => {
+      for (const c of [-1, 1]) {
+        // Les hautes pattes, orange comme le bec, par-dessus celles du gabarit.
+        fuseau(
+          T,
+          [
+            [0, 0.09, 0.12, -0.03],
+            [0.93, 0.075],
+          ],
+          4,
+          k.marque,
+          { x: c * 0.14, haut: false },
+        );
+        // Les bouts d'ailes, sombres, repliés le long des flancs vers l'arrière (le fer des outils : la dominante et
+        // sa marque sont déjà le blanc et l'orange).
+        pointe(T, [c * 0.25, 1.2, 0.14], 0.1, 0.62, k.fer, [2.3, 0, c * 0.12], 3, 0.05);
+      }
+    },
+    outil: {
+      // Le cor du relais, en laiton : il annonce la diligence.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        anneau(T, [0, -0.12, 0], 0.09, 0.02, k.laiton, [0, Math.PI / 2, 0], 8, 3);
+        pointe(T, [0, -0.2, 0.09], 0.06, 0.16, k.laiton, [Math.PI, 0, 0], 6);
       },
     },
   },

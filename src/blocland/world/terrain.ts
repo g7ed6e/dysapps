@@ -111,6 +111,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.rail.side]: 'rail',
   [BLOCKS.antenne.side]: 'antenne',
   [BLOCKS.taille.side]: 'taille',
+  [BLOCKS.dalle.side]: 'dalle',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',

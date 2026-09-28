@@ -10,8 +10,11 @@ import { mixColor } from './daylight';
 import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './decor/pinceau';
 import type { Couleur, Faces } from './palette';
 
-/** Les ponts à construire du 5e dessinés en pierre et en bois (décidé par le mainteneur le 28 septembre 2026). */
-export const PONTS_DE_PIERRE_ET_DE_BOIS: ReadonlySet<string> = new Set(['marche-marais', 'marche-comptoir', 'marais-manoir', 'comptoir-manoir']);
+/**
+ * Les ponts à construire du 5e dessinés en pierre et en bois (décidé par le mainteneur le 28 septembre 2026), et celui
+ * du Relais des voyageurs (LV2), venu après : tous les ponts du 5e.
+ */
+export const PONTS_DE_PIERRE_ET_DE_BOIS: ReadonlySet<string> = new Set(['marche-marais', 'marche-comptoir', 'marais-manoir', 'comptoir-manoir', 'comptoir-relais']);
 
 /** Les couleurs du pont (fiche d'intention du 5e). */
 export const COULEURS_DU_PONT = {

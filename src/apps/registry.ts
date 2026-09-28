@@ -4,6 +4,7 @@ import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { AnyIconName } from '../components/Icon';
 import type { ProgrammeId } from '../programme';
+import { LV2_LABELS, type Lv2Choice } from '../core/settings';
 
 /** Les matières ; `lv2` est la deuxième langue (espagnol ou allemand), dont le titre affiché suit les Réglages (`subjectTitle`). */
 export type Subject = 'francais' | 'maths' | 'anglais' | 'lv2';
@@ -29,6 +30,19 @@ export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; descr
   anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
   lv2: { title: 'LV2', icon: 'languages', description: 'Se présenter, compter, parler de sa famille', expedition: 'Cartes et messages' },
 };
+
+type SubjectInfo = (typeof SUBJECTS)[Subject];
+
+/** Une matière telle qu'elle s'affiche : la LV2 prend le nom de la langue choisie (« Espagnol », « Allemand »). */
+export function subjectInfo(subject: Subject, lv2: Lv2Choice): SubjectInfo {
+  const info = SUBJECTS[subject];
+  return subject === 'lv2' && lv2 !== 'aucune' ? { ...info, title: LV2_LABELS[lv2] } : info;
+}
+
+/** Les matières à montrer : sans LV2 choisie (« Pas de LV2 »), la LV2 n'apparaît nulle part. */
+export function visibleSubjects(lv2: Lv2Choice): Subject[] {
+  return (Object.keys(SUBJECTS) as Subject[]).filter((s) => s !== 'lv2' || lv2 !== 'aucune');
+}
 
 export const APPS: AppDef[] = [
   {

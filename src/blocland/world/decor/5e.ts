@@ -9,10 +9,13 @@ import { NIVEAU_EAU, type ChampDuSol, type Colonne } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
 import { enRepere, type Forme } from './outils';
-import { DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { boite, DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de la fiche : la pierre des tours, l'ardoise, la mousse des roches, la glace de la calotte. */
 export const COULEURS_5E = { pierre: 0x7d8a86, ardoise: 0x224c5f, mousse: 0x5a7e50, roche: 0x6a7f86, glace: 0xe5ebe3, glaceCote: 0xc9d8dc, ecume: 0xe8eeec, roseau: 0x8a8a5a } as const;
+
+/** Le Relais des voyageurs (LV2, DA lot 2) : le bois du ponton et le fer de la girouette. */
+export const COULEURS_DU_RELAIS = { planche: 0x9c7c4b, poteau: 0x6e5234, fer: 0x3a4148 } as const;
 
 /** Les deux faces d'une couleur de la fiche : un dessus un peu plus clair ; délavées si l'île est fermée. */
 function faces(c: Couleur, muted: boolean, dessus = eclaircir(c, 1.12)): Faces {
@@ -134,10 +137,52 @@ function calotte(P: Pinceau, x: number, y: number, z: number, muted: boolean, ha
   icosaedre(P, [x, y + 0.25, z], 1.25, 0.62, 0.2, hasard, peintre(f, y - 0.4, 1.3), hasard() * Math.PI);
 }
 
-/** La tour en ruine et la calotte : des formes hors de la grille (./horsGrille.ts), sans cubes, qu'on ne touche pas. */
+/** Le ponton du Relais : un tablier de planches au ras de l'eau, vers le large (+x), sur quatre pieux, une échelle au rivage. */
+export const PONTON = { long: 3.2, large: 1.1, dessus: NIVEAU_EAU + 0.5, planche: 0.14, pieu: 0.09 } as const;
+
+function ponton(P: Pinceau, cx: number, cz: number, base: number, muted: boolean): void {
+  const planche = peintre(faces(COULEURS_DU_RELAIS.planche, muted), PONTON.dessus - 0.2, 0.3);
+  const bois = peintre(faces(COULEURS_DU_RELAIS.poteau, muted), NIVEAU_EAU - 0.3, base - NIVEAU_EAU);
+  const x0 = cx + 0.5;
+  const x1 = x0 + PONTON.long;
+  const [z0, z1] = [cz - PONTON.large / 2, cz + PONTON.large / 2];
+  boite(P, x0 - 0.05, PONTON.dessus - PONTON.planche, z0, x1, PONTON.dessus, z1, planche);
+  for (const x of [x0 + 1.2, x1 - 0.15]) for (const z of [z0, z1]) tronconique(P, x, z, NIVEAU_EAU - 0.3, PONTON.dessus + 0.35, PONTON.pieu, PONTON.pieu * 0.8, 4, Math.PI / 4, bois);
+  // L'échelle, du tablier au haut du rivage : deux montants, trois barreaux.
+  const [e0, e1] = [PONTON.dessus, base];
+  for (const z of [cz - 0.25, cz + 0.25]) boite(P, x0 + 0.02, e0, z - 0.04, x0 + 0.1, e1 + 0.3, z + 0.04, bois);
+  for (let i = 1; i <= 3; i++) {
+    const y = e0 + ((e1 - e0) * i) / 4;
+    boite(P, x0 + 0.03, y - 0.03, cz - 0.25, x0 + 0.09, y + 0.03, cz + 0.25, bois);
+  }
+}
+
+/** La girouette du Relais : un mât de fer, les quatre branches du vent, une cigogne découpée qui tourne au sommet. */
+export const GIROUETTE = { mat: 6.6, branche: 0.45 } as const;
+
+function girouette(P: Pinceau, cx: number, cz: number, base: number, muted: boolean): void {
+  const fer = peintre(faces(COULEURS_DU_RELAIS.fer, muted), base, GIROUETTE.mat + 1);
+  const y = base + GIROUETTE.mat;
+  tronconique(P, cx, cz, base - 0.2, y, 0.07, 0.05, 4, Math.PI / 4, fer);
+  const b = GIROUETTE.branche;
+  boite(P, cx - b, y - 0.55, cz - 0.025, cx + b, y - 0.5, cz + 0.025, fer);
+  boite(P, cx - 0.025, y - 0.55, cz - b, cx + 0.025, y - 0.5, cz + b, fer);
+  // La cigogne, de profil (une plaque de fer à peine épaisse) : le corps, la queue, le cou, la tête et son long bec, les pattes.
+  const e = 0.03;
+  boite(P, cx - 0.3, y + 0.25, cz - e, cx + 0.25, y + 0.45, cz + e, fer);
+  boite(P, cx - 0.5, y + 0.3, cz - e, cx - 0.3, y + 0.4, cz + e, fer);
+  boite(P, cx + 0.15, y + 0.45, cz - e, cx + 0.22, y + 0.8, cz + e, fer);
+  boite(P, cx + 0.12, y + 0.78, cz - e, cx + 0.3, y + 0.9, cz + e, fer);
+  boite(P, cx + 0.3, y + 0.8, cz - e, cx + 0.62, y + 0.84, cz + e, fer);
+  boite(P, cx - 0.05, y, cz - e, cx + 0.0, y + 0.25, cz + e, fer);
+}
+
+/** La tour en ruine, la calotte, le ponton et la girouette : des formes hors de la grille (./horsGrille.ts), sans cubes, qu'on ne touche pas. */
 export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
   'tour-en-ruine': ({ P, e, cx, cz, base, hasard }) => tourEnRuine(P, cx, cz, base, 0.35, e.muted, hasard),
   calotte: ({ P, e, cx, cz, base, hasard }) => calotte(P, cx, base, cz, e.muted, hasard),
+  ponton: ({ P, e, cx, cz, base }) => ponton(P, cx, cz, base, e.muted),
+  girouette: ({ P, e, cx, cz, base }) => girouette(P, cx, cz, base, e.muted),
 };
 
 /**
@@ -165,6 +210,25 @@ export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDeco
   let pic: Colonne | null = null;
   for (const c of champ.colonnes) if (c.ile === 'glacier' && !c.liquide && (!pic || c.haut > pic.haut)) pic = c;
   if (pic) out.push({ id: `hors-grille/calotte@${pic.x},${pic.y}`, genre: 'calotte', cubes: [], x: pic.x, y: pic.y, z: pic.haut + 1, emprise: 1, muted: pic.muted, horsGrille: true });
+  // Le Relais des voyageurs : le ponton sur son rivage est (le plus à l'est, au milieu du cœur), et la girouette sur la
+  // première ou la deuxième rangée derrière le cœur, juste derrière l'auberge (vers les colonnes 9 et 10 du cœur).
+  const relais = islandDef('relais');
+  const milieu = relais.core.y + CORE / 2;
+  let rive: Colonne | null = null;
+  let mat: Colonne | null = null;
+  // L'écart d'une case à la place voulue de la girouette : derrière la cheminée de l'auberge, au plus près du cœur.
+  const ecart = (c: Colonne) => Math.abs(c.x - relais.core.x - 9.5) + 2 * (c.y - relais.core.y - CORE);
+  // Le ponton et la girouette ne se posent que sur une case sans décor (un arbre voisin ne les gêne pas : le ponton part
+  // vers le large, le mât de la girouette dépasse les arbres).
+  const portees = new Set(elements.flatMap((e) => e.cubes.map((c) => `${c.x},${c.y}`)));
+  for (const c of champ.colonnes) {
+    if (c.ile !== 'relais' || c.liquide || c.fixe || portees.has(`${c.x},${c.y}`)) continue;
+    if (!inCore(relais, c.x, c.y) && c.x >= relais.core.x + CORE && Math.abs(c.y - milieu) <= 3 && (!rive || c.x > rive.x || (c.x === rive.x && Math.abs(c.y - milieu) < Math.abs(rive.y - milieu))))
+      rive = c;
+    if (c.y >= relais.core.y + CORE && c.y <= relais.core.y + CORE + 1 && (!mat || ecart(c) < ecart(mat))) mat = c;
+  }
+  if (rive) out.push({ id: `hors-grille/ponton@${rive.x},${rive.y}`, genre: 'ponton', cubes: [], x: rive.x, y: rive.y, z: rive.haut + 1, emprise: 1, muted: rive.muted, horsGrille: true });
+  if (mat) out.push({ id: `hors-grille/girouette@${mat.x},${mat.y}`, genre: 'girouette', cubes: [], x: mat.x, y: mat.y, z: mat.haut + 1, emprise: 1, muted: mat.muted, horsGrille: true });
   return out;
 }
 

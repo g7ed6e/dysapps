@@ -1,9 +1,10 @@
 // Les Gardiens des Îles Brumeuses (5e) en sentinelles de pierre (lot R6), d'après l'intention du directeur
-// artistique : la statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
+// artistique : la statue et ce qui s'allume. Sept îles (le Relais des voyageurs, LV2, en plus) pour 1 800 triangles,
+// socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../gabarit';
 import { devant, fuseau, pave, type Anneau } from '../peint';
-import { orbites, tube, veineSur, type Statue } from '../sentinelle';
+import { orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
   [5.0, 0.8, 0.75, -1.2],
@@ -429,5 +430,64 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
         a.lueur,
         { z: -1.1 },
       ),
+  },
+  relais: {
+    // La Diligence de cuivre (LV2, DA lot 2), vue de profil : la caisse sur quatre roues, les bagages sur l'impériale,
+    // le siège du cocher à l'avant ; ses deux vitres sont ses orbites. Au-dessus du siège, sa boussole se rallume.
+    nom: 'la Diligence',
+    allume: 'la boussole de son siège',
+    sculpture: (T, a) => {
+      // Les roues : celles de devant à huit pans, celles de derrière (à peine vues) à six.
+      for (const x of [-1.3, 1.1]) {
+        tube(
+          T,
+          [
+            [x, 1.78, -1.06],
+            [x, 1.78, -0.86],
+          ],
+          0.78,
+          8,
+          a.pierre,
+        );
+        tube(
+          T,
+          [
+            [x, 1.78, 0.86],
+            [x, 1.78, 1.06],
+          ],
+          0.78,
+          6,
+          a.pierre,
+        );
+      }
+      // Le train, la caisse (plus longue que haute), l'impériale qui déborde et les bagages.
+      pave(T, -1.5, 1.7, -0.7, 1.3, 2.15, 0.7, a.pierre);
+      pave(T, -1.75, 2.15, -0.8, 0.95, 4.1, 0.8, a.pierre);
+      pave(T, -1.9, 4.1, -0.92, 1.1, 4.3, 0.92, a.pierre);
+      pave(T, -1.6, 4.3, -0.6, 0.55, 4.9, 0.6, a.lichen);
+      // Le siège du cocher, à l'avant : son coffre, son dossier, le marchepied ; le mât de la boussole.
+      pave(T, 0.95, 3.3, -0.7, 1.85, 3.75, 0.7, a.pierre);
+      pave(T, 0.95, 3.75, -0.7, 1.12, 4.5, 0.7, a.pierre);
+      pave(T, 1.5, 2.55, -0.75, 2.3, 2.72, 0.75, a.pierre);
+      tube(
+        T,
+        [
+          [1.5, 3.75, 0],
+          [1.5, 7.2, 0],
+        ],
+        0.08,
+        4,
+        a.pierre,
+      );
+      // Le boîtier de la boussole, face à l'élève, jusqu'au haut des huit blocs.
+      pave(T, 1.05, 7.2, -0.18, 1.95, 8, 0.12, a.pierre);
+      // Les deux vitres de la portière : ses orbites.
+      orbites(T, a, -0.4, 3.35, -0.8, 0.5, 0.45);
+    },
+    veines: (T, a) => {
+      // Le cadran de la boussole et son aiguille.
+      plaque(T, 1.5, 7.6, 0.32, 0.32, 8, a.lueur, () => -0.18);
+      plaque(T, 1.5, 7.6, 0.05, 0.3, 4, a.lueur, () => -0.2);
+    },
   },
 };

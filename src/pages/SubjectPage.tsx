@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
-import { SUBJECTS, type Subject } from '../apps/registry';
+import { subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
+import { useSettings } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
@@ -12,8 +13,9 @@ import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked }
 export function SubjectPage() {
   const { subject } = useParams();
   const { state } = useBlocland();
-  if (!subject || !(subject in SUBJECTS)) return <NotFoundPage />;
-  const info = SUBJECTS[subject as Subject];
+  const { settings } = useSettings();
+  if (!subject || !visibleSubjects(settings.lv2).includes(subject as Subject)) return <NotFoundPage />;
+  const info = subjectInfo(subject as Subject, settings.lv2);
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
   const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.village.bridges));
   const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.village.bridges));

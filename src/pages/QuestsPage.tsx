@@ -11,7 +11,8 @@ export function QuestsPage() {
       </h1>
       <p className="intro">Des missions courtes pour s’entraîner, matière par matière.</p>
       <div className="grid subjects">
-        {(Object.keys(SUBJECTS) as Subject[]).map((key) => {
+        {/* Les matières qui ont des missions courtes (la LV2 n'a que ses îles). */}
+        {(Object.keys(SUBJECTS) as Subject[]).filter((key) => appsBySubject(key).length > 0).map((key) => {
           const subject = SUBJECTS[key];
           const available = appsBySubject(key).filter((a) => a.status === 'disponible').length;
           return (

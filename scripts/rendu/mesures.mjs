@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -94,6 +94,12 @@ const CAPTURES = [
   { nom: 'marais-nuit', vue: 'île', famille: 'brumeuses', ile: 'marais', nuit: true },
   { nom: 'carrefour', vue: 'île', famille: 'brumeuses', ile: 'carrefour' },
   { nom: 'glacier', vue: 'île', famille: 'brumeuses', ile: 'glacier' },
+  // Le Relais des voyageurs (LV2, 5e) : l'île et son pont depuis le Comptoir, de jour et de nuit ; son chantier (le
+  // dernier plan, la fontaine, en fantômes) ; le pont à construire (le Relais pas encore ouvert).
+  { nom: 'relais', vue: 'île', famille: 'relais', ile: 'relais' },
+  { nom: 'relais-nuit', vue: 'île', famille: 'relais', ile: 'relais', nuit: true },
+  { nom: 'relais-chantier', vue: 'île', famille: 'relais', ile: 'relais', partie: 'chantier' },
+  { nom: 'relais-pont-avant', vue: 'île', famille: 'relais', ile: 'comptoir', sansPonts: ['comptoir-relais'] },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

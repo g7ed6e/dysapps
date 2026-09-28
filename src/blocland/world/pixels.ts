@@ -30,6 +30,7 @@ export type TextureKind =
   | 'rail'
   | 'antenne'
   | 'taille'
+  | 'dalle'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -81,6 +82,28 @@ export const grain =
     const [br, bg, bb] = hex(b);
     return [ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t];
   };
+
+/** Le joint des dalles. */
+const JOINT_DE_DALLE: [number, number, number] = [122, 106, 78];
+
+/**
+ * Des dalles de 8 × 8 en quinconce : `fond` uni, un joint d'un pixel (le bas et la droite de chaque dalle), et trois ou
+ * quatre pixels `clair` par dalle, placés par un hachage de la dalle (pas par le hasard du canvas : la même texture sur
+ * chaque face, quelle que soit la graine).
+ */
+function dalle(fond: string, clair: [number, number, number]): Painter {
+  const base = hex(fond);
+  return (x, y) => {
+    const rangee = Math.floor(y / 8);
+    const u = x + (rangee % 2) * 4;
+    if (y % 8 === 7 || u % 8 === 7) return JOINT_DE_DALLE;
+    const d = rangee * 3 + Math.floor(u / 8);
+    const px = (u % 8) + (y % 8) * 7;
+    const n = 3 + (d % 2);
+    for (let k = 0; k < n; k++) if (px === (d * 17 + k * 13 + 5) % 49) return clair;
+    return base;
+  };
+}
 
 export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom?: Painter }> = {
   herbe: {
@@ -241,6 +264,10 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
     top: (x, y, r) => (x % 8 === 0 || y % 8 === 0 ? [150, 138, 116] : grain('#d8ccb0', '#e6dcc4')(x, y, r)),
     side: (x, y, r) => (y % 5 === 4 || (x + (Math.floor(y / 5) % 2 ? 8 : 0)) % 16 === 0 ? [150, 138, 116] : grain('#d8ccb0', '#e6dcc4')(x, y, r)),
   },
+  // Dalle (le Relais des voyageurs, LV2 5e) : des dalles de 8 × 8 décalées d'une demi-dalle d'une rangée à l'autre,
+  // joints d'un pixel, trois ou quatre pixels plus clairs par dalle, sans grain ni dégradé. Elle se distingue de la
+  // pierre de taille (joints droits, grain), du galet (ronds) et de la pierre (grise) par le motif.
+  dalle: { top: dalle('#b8a07a', [208, 190, 156]), side: dalle('#9a8462', [184, 164, 128]) },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),
     side: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#d4a820', '#eac03c')(x, y, r)),

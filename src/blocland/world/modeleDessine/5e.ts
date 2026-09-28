@@ -24,7 +24,11 @@ interface Sommet {
 export const MARCHE_DES_GRADINS = 2.5;
 const ABORDS = 3;
 
-/** Les crêtes de la fiche : Glacier 11 et 8 (il garde ses deux sommets), Carrefour 8, Manoir 9, Comptoir 7. */
+/**
+ * Les crêtes de la fiche : Glacier 11 et 8 (il garde ses deux sommets), Carrefour 8, Manoir 9, Comptoir 7. Le Relais
+ * des voyageurs (LV2, venu après la fiche) ferme la ligne à l'est d'une crête basse, 6, sur son flanc droit : le toit
+ * d'ardoise de l'auberge se lit encore sur le ciel, et la ligne des crêtes ne finit pas à plat.
+ */
 export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   glacier: [
     { x: 4, h: 11, l: 7 },
@@ -33,6 +37,7 @@ export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   carrefour: [{ x: 9, h: 8, l: 9 }],
   manoir: [{ x: 7, h: 9, l: 8 }],
   comptoir: [{ x: 5, h: 7, l: 7 }],
+  relais: [{ x: 13, h: 6, l: 7 }],
 };
 
 const smooth = (t: number) => t * t * (3 - 2 * t);

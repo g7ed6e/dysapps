@@ -382,6 +382,20 @@ const KNIGHT = fromLayers(
   { K: '#2a2622', B: '#2f5aa8', Y: '#f2c944', S: '#b8c0c8', R: '#c0392b' },
 );
 
+// Lina : une cigogne voyageuse, corps blanc, bouts d'ailes et queue noirs, long bec et hautes pattes orange, sans coiffe.
+const LINA = fromLayers(
+  [
+    ['.....', '.O.O.', '.....', '.....', '.....'],
+    ['.....', '.O.O.', '.....', '.....', '.....'],
+    ['.WWW.', 'KWWWK', 'KWWWK', '.KWK.', '..K..'],
+    ['.WWW.', 'KWWWK', 'KWWWK', '.WWW.', '.....'],
+    ['..O..', '..W..', '..W..', '.....', '.....'],
+    ['.EOE.', '.WWW.', '.....', '.....', '.....'],
+    ['.WWW.', '.WWW.', '.....', '.....', '.....'],
+  ],
+  { W: '#f6f1e6', K: '#1f1a16', O: '#e8732e', E: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -407,6 +421,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   horloge: TICK,
   comptoir: PUDDING,
   manoir: MOUSTACHE,
+  relais: LINA,
   theatre: PUCK,
   gare: VAPEUR,
   studio: ECHO,

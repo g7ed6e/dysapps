@@ -22,12 +22,12 @@ const montee = (x: number, y: number) => {
   return i === undefined ? 0 : apres.colonnes[i].haut - avant.colonnes[i].haut;
 };
 
-it('les crêtes montent au fond du Glacier, du Carrefour, du Comptoir et du Manoir ; le Marché et le Marais restent bas', () => {
+it('les crêtes montent au fond du Glacier, du Carrefour, du Comptoir, du Manoir et du Relais ; le Marché et le Marais restent bas', () => {
   const max: Record<string, number> = {};
   for (const c of avant.colonnes) max[c.ile!] = Math.max(max[c.ile!] ?? 0, montee(c.x, c.y));
   expect(max.marche).toBe(0);
   expect(max.marais).toBe(0);
-  for (const id of ['glacier', 'carrefour', 'comptoir', 'manoir']) expect(max[id], id).toBeGreaterThanOrEqual(5);
+  for (const id of ['glacier', 'carrefour', 'comptoir', 'manoir', 'relais']) expect(max[id], id).toBeGreaterThanOrEqual(5);
   expect(max.glacier).toBeGreaterThanOrEqual(max.carrefour);
 });
 

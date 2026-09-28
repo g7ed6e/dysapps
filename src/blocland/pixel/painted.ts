@@ -244,13 +244,14 @@ export const SURFACE_DE_TEXTURE: Record<string, Material> = {
  * de bois, les joints larges des briques et des pierres taillées. Des bandes de deux pixels au moins, 11 % plus
  * sombres, jamais un grain ; comptées en pixels de l'écran, elles courent d'une case à l'autre sans rupture.
  */
-export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | null;
+export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | 'dalles' | null;
 
 export function motifDe(texture: string | undefined): Motif {
   if (texture === 'planches' || texture === 'lambris' || texture === 'barriere' || texture === 'escalier' || texture === 'porte') return 'lames';
   if (texture === 'tuile' || texture === 'toit') return 'rangs';
   if (texture === 'brique') return 'briques';
   if (texture === 'taille' || texture === 'marbre') return 'pierres';
+  if (texture === 'dalle') return 'dalles';
   return null;
 }
 
@@ -265,6 +266,8 @@ export function nuanceDuMotif(motif: Motif, gx: number, gy: number): number {
   const mod = (v: number, n: number) => ((v % n) + n) % n;
   if (motif === 'lames' || motif === 'rangs') return mod(gy, 8) >= 6 ? JOINT : 1;
   if (motif === 'briques') return mod(gy, 8) >= 6 || mod(gx + (mod(Math.floor(gy / 8), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
+  // Les dalles du Relais : 8 × 8 en quinconce, d'une demi-dalle d'une rangée à l'autre (deux par case).
+  if (motif === 'dalles') return mod(gy, 8) >= 6 || mod(gx + (mod(Math.floor(gy / 8), 2) ? 4 : 0), 8) >= 6 ? JOINT : 1;
   if (motif === 'pierres') return mod(gy, 16) >= 14 || mod(gx + (mod(Math.floor(gy / 16), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   return 1;
 }

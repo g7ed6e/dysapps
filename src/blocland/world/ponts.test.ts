@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BRIDGES } from './archipelago';
+import { archipelagoOfIsland } from './archipels';
 import { toutConstruit } from './budget';
 import { Pinceau } from './decor/pinceau';
 import { dessinerPont, PONTS_DE_PIERRE_ET_DE_BOIS, pontsDePierreEtDeBois } from './ponts';
@@ -8,10 +9,11 @@ import { bridgePath, worldCubes } from './terrain';
 describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', () => {
   const { progress, village } = toutConstruit();
 
-  it('sont les quatre ponts à construire du 5e, de vrais ponts', () => {
+  it('sont les cinq ponts à construire du 5e (le Relais des voyageurs compris), de vrais ponts', () => {
     const ponts = BRIDGES.filter((b) => PONTS_DE_PIERRE_ET_DE_BOIS.has(b.id));
     expect(ponts.map((b) => b.id).sort()).toEqual([...PONTS_DE_PIERRE_ET_DE_BOIS].sort());
     for (const b of ponts) expect(b.kind).toBe('pont');
+    expect(BRIDGES.filter((b) => b.kind === 'pont' && archipelagoOfIsland(b.from) === '5e').map((b) => b.id).sort()).toEqual([...PONTS_DE_PIERRE_ET_DE_BOIS].sort());
   });
 
   it('construits, remplacent leurs planches par le modèle, dans l’ordre du tracé ; les lanternes restent des cubes', () => {

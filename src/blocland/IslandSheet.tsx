@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -26,6 +26,8 @@ import { SchoolLink } from './School';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
+
+const SANS_LV2 = 'L’île de ta deuxième langue est fermée. Tu peux choisir une LV2 dans les Réglages.';
 
 interface Props {
   biome: BiomeDef;
@@ -50,6 +52,7 @@ interface Props {
 export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
+  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const greeting = unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
@@ -102,11 +105,23 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       {goal && <GoalLine goal={goal} />}
       {/* Sur l'île-port : l'état du village de l'archipel, qui se voit aussi au port en cubes. */}
       {unlocked && archipelagoOf(biome.id).port === biome.id && <VillageStageLine village={state.village} archipelago={biome.classe} />}
-      {!unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />}
+      {sansLv2 ? (
+        // « Pas de LV2 » : l'île reste au loin, fermée ; rien à construire, rien à jouer (décision du directeur artistique).
+        <p className="island-sheet-says">
+          <Syllabified text={SANS_LV2} /> <SpeakButton text={SANS_LV2} compact />{' '}
+          <Link to="/reglages">
+            <Icon name="settings" /> Réglages
+          </Link>
+        </p>
+      ) : (
+        !unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} />
+      )}
 
-      <h3 className="island-sheet-heading">
-        <Icon name="hammer" /> Missions
-      </h3>
+      {!sansLv2 && (
+        <h3 className="island-sheet-heading">
+          <Icon name="hammer" /> Missions
+        </h3>
+      )}
       <ul className="island-quests" aria-label="Missions de l’île">
         {missionsJouables(biome).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
@@ -163,32 +178,34 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
             </li>
           </>
         )}
-        <li>
-          {bossReady ? (
-            <Link to={`/aventure/${biome.id}/gardien`} className="island-quest island-boss">
-              <span className="island-quest-icon boss-icon">
-                <Icon name="shield" />
-              </span>
-              <span className="island-quest-text">
-                <span className="island-quest-title">{guardianTitle(biome)}</span>
-                <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : textes.libelles.defiPret}</span>
-              </span>
-              {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label={textes.libelles.etoiles} />}
-            </Link>
-          ) : (
-            <button type="button" className="island-quest locked island-boss-locked" onClick={explainBoss} aria-describedby={`gardien-${biome.id}`}>
-              <span className="island-quest-icon">
-                <Icon name="lock" />
-              </span>
-              <span className="island-quest-text">
-                <span className="island-quest-title">{guardianTitle(biome)}</span>
-                <span className="island-quest-desc">
-                  {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+        {!sansLv2 && (
+          <li>
+            {bossReady ? (
+              <Link to={`/aventure/${biome.id}/gardien`} className="island-quest island-boss">
+                <span className="island-quest-icon boss-icon">
+                  <Icon name="shield" />
                 </span>
-              </span>
-            </button>
-          )}
-        </li>
+                <span className="island-quest-text">
+                  <span className="island-quest-title">{guardianTitle(biome)}</span>
+                  <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : textes.libelles.defiPret}</span>
+                </span>
+                {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label={textes.libelles.etoiles} />}
+              </Link>
+            ) : (
+              <button type="button" className="island-quest locked island-boss-locked" onClick={explainBoss} aria-describedby={`gardien-${biome.id}`}>
+                <span className="island-quest-icon">
+                  <Icon name="lock" />
+                </span>
+                <span className="island-quest-text">
+                  <span className="island-quest-title">{guardianTitle(biome)}</span>
+                  <span className="island-quest-desc">
+                    {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                  </span>
+                </span>
+              </button>
+            )}
+          </li>
+        )}
       </ul>
       <p id={`gardien-${biome.id}`} className="bridges-said" role="status" aria-live="polite">
         {bossSaid ? <Syllabified text={bossSaid} /> : ''}

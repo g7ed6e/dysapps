@@ -52,7 +52,7 @@ Comme au collège, l’élève a une seule **deuxième langue vivante**, à part
 
 Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne ou allemande d’Allemagne si l’appareil en a une, sinon une autre voix de la langue. **Tester la voix espagnole** (ou **allemande**) lit une phrase d’exemple. Si l’appareil n’a aucune voix de cette langue, la page le dit, avec un bouton pour l’écouter : les mots seraient lus avec un accent français, et il faut en installer une dans le système (rubrique Langue ou Synthèse vocale de l’appareil). **Affichage par défaut** ne change pas la LV2.
 
-Les missions de LV2 arrivent île par île, en commençant par la 5e.
+Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses missions sont sur l’île de LV2 de chaque archipel, à partir de la 5e (le Relais des voyageurs ; voir [Le monde de Blocland](blocland.md)) ; celles de la 4e et de la 3e arrivent ensuite.
 
 ## Au démarrage
 

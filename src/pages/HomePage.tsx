@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SUBJECTS, type Subject } from '../apps/registry';
+import { SUBJECTS, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useBlocland } from '../blocland/BloclandContext';
 import { questsToReview } from '../blocland/review';
 import { VillageStageLine } from '../blocland/VillageStageLine';
@@ -12,10 +12,11 @@ import { Syllabified } from '../components/Syllabified';
 import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
-import { useUnivers } from '../core/SettingsContext';
+import { useSettings, useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
 
-const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais'];
+/** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
+const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais', 'lv2'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
@@ -23,6 +24,7 @@ const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais'];
  * premiers blocs tiennent sans défiler.
  */
 export function HomePage() {
+  const { settings } = useSettings();
   const { progress } = useProgress();
   const { state } = useBlocland();
   const rank = levelFromXp(progress.xp);
@@ -121,15 +123,15 @@ export function HomePage() {
         </Link>
       </p>
 
-      {/* Les trois Expéditions : une matière chacune, ses missions en deux touchers. */}
+      {/* Les Expéditions : une matière chacune, ses missions en deux touchers. */}
       <nav className="grid home-menu" aria-label="Menu principal">
-        {EXPEDITIONS.map((id) => (
+        {EXPEDITIONS.filter((id) => visibleSubjects(settings.lv2).includes(id)).map((id) => (
           <Link key={id} to={`/matiere/${id}`} className={`panel menu-tile subject-card subject-${id}`}>
             <span className="subject-icon">
               <Icon name={SUBJECTS[id].icon} size="2.2rem" />
             </span>
             <span className="menu-tile-text">
-              <span className="subject-title">{SUBJECTS[id].title}</span>
+              <span className="subject-title">{subjectInfo(id, settings.lv2).title}</span>
               <span className="subject-expedition">Expédition {SUBJECTS[id].expedition}</span>
             </span>
           </Link>
