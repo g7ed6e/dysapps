@@ -196,6 +196,14 @@ export const ARCHIPEO = {
         beaten: 'Ma couronne se rallume. Le Comptoir est à toi, et à Pudding.',
       },
     },
+    relais: {
+      challenge: 'La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale dans ta deuxième langue, écoute bien ce qu’on te dit. »',
+      guardianSays: {
+        hit: 'Une aiguille de ma boussole s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Réécoute le mot, regarde bien son petit article, et reprends.',
+        beaten: 'Ma boussole se rallume. Le ponton est à toi, et à Lina.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir murmure sous son voile : « Ma lanterne est éteinte. Tu as fouillé toutes mes pièces, raconte-moi aujourd’hui, hier, et ce qui est plus grand. »',
       guardianSays: {
@@ -261,6 +269,7 @@ export const ARCHIPEO = {
     baie: 'rouge-gorge des quais',
     horloge: 'hérisson horloger',
     comptoir: 'bouledogue marchand',
+    relais: 'cigogne voyageuse',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',

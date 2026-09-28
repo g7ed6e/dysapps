@@ -5,7 +5,8 @@ import { lazy } from 'react';
 import type { AnyIconName } from '../components/Icon';
 import type { ProgrammeId } from '../programme';
 
-export type Subject = 'francais' | 'maths' | 'anglais';
+/** Les matières ; `lv2` est la deuxième langue (espagnol ou allemand), dont le titre affiché suit les Réglages (`subjectTitle`). */
+export type Subject = 'francais' | 'maths' | 'anglais' | 'lv2';
 
 export interface AppDef {
   id: string;
@@ -26,6 +27,7 @@ export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; descr
   francais: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
   maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux', expedition: 'Mécanismes et énigmes' },
   anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
+  lv2: { title: 'LV2', icon: 'languages', description: 'Se présenter, compter, parler de sa famille', expedition: 'Cartes et messages' },
 };
 
 export const APPS: AppDef[] = [

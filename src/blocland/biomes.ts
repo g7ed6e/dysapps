@@ -2,6 +2,10 @@
 import type { Subject } from '../apps/registry';
 import type { ProgrammeId } from '../programme';
 import type { AnyIconName } from '../components/Icon';
+import { lv2Courante, type Lv2Choice } from '../core/settings';
+
+/** Une deuxième langue vivante (pas « Pas de LV2 »). */
+export type Lv2 = Exclude<Lv2Choice, 'aucune'>;
 
 export type BiomeId =
   | 'foret'
@@ -31,7 +35,8 @@ export type BiomeId =
   | 'theatre'
   | 'gare'
   | 'studio'
-  | 'chateau';
+  | 'chateau'
+  | 'relais';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -63,6 +68,7 @@ export type BlockId =
   | 'taille'
   | 'or'
   | 'cristal'
+  | 'dalle'
   | 'toit'
   | 'porte'
   | 'lanterne'
@@ -112,6 +118,7 @@ export type BlockTexture =
   | 'taille'
   | 'or'
   | 'cristal'
+  | 'dalle'
   | 'feuilles'
   | 'tronc'
   | 'nuage'
@@ -152,6 +159,8 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   taille: { id: 'taille', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
   or: { id: 'or', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
+  // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
+  dalle: { id: 'dalle', name: 'Dalle', top: '#b8a07a', side: '#9a8462', texture: 'dalle' },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
   toit: { id: 'toit', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
   porte: { id: 'porte', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
@@ -197,6 +206,11 @@ export interface ExerciseTypeDef {
   description: string;
   /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). Au moins une. */
   programme: readonly ProgrammeId[];
+  /**
+   * Une mission de LV2 (île `relais`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
+   * Réglages se jouent ; voir `missionsDe`.
+   */
+  lv2?: Lv2;
 }
 
 export interface CreatureDef {
@@ -993,6 +1007,32 @@ export const BIOMES: BiomeDef[] = [
       { id: 'passif', title: 'Passif', description: 'Is spoken, was built, will be shown : be + participe passé.', programme: ['c4.en.langue.modaux-passif'] },
     ],
   },
+  // La LV2 (allemand ou espagnol), à partir de la 5e : une seule île par archipel, la même pour les deux langues, en bout
+  // de chemin (rien n'en dépend). Seules changent les missions, choisies par la LV2 des Réglages (`missionsDe`), et la voix.
+  {
+    id: 'relais',
+    name: 'Relais des voyageurs',
+    module: 'Se présenter, compter, décrire',
+    subject: 'lv2',
+    classe: '5e',
+    description: 'Se présenter, compter, parler de sa famille et de son école : les premiers mots du voyage, dans ta deuxième langue.',
+    block: 'dalle',
+    guardian: 'la Diligence de cuivre',
+    icon: 'languages',
+    creature: {
+      name: 'Lina',
+      greeting:
+        'Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village.',
+      lines: [
+        'Chaque année, je vole d’un pays à l’autre : les langues, ça me connaît.',
+        'Dans ta deuxième langue, le nom a souvent un petit mot devant. Apprends-les ensemble, comme deux cubes collés.',
+        'Un, deux, trois… Les nombres se posent comme des dalles : un par un, à voix haute.',
+        'Mon nid est sur la cheminée de l’auberge. Chaque bonne réponse pose une dalle devant la porte.',
+      ],
+      home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
+    },
+    exercises: [],
+  },
 ];
 
 /** Les îles d'une matière, dans l'ordre des classes. */
@@ -1007,6 +1047,19 @@ export function biomesOf(subject: Subject): BiomeDef[] {
  */
 export function guardianTitle(biome: Pick<BiomeDef, 'guardian'>): string {
   return biome.guardian.charAt(0).toUpperCase() + biome.guardian.slice(1);
+}
+
+/**
+ * Les missions qui se jouent sur une île : toutes, sauf celles d'une autre LV2 que celle des Réglages. Avec « Pas de
+ * LV2 », l'île de la LV2 n'en a aucune. Les bornes, le Gardien et la progression passent par ici.
+ */
+export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Choice = lv2Courante()): ExerciseTypeDef[] {
+  return biome.exercises.filter((x) => x.lv2 === undefined || x.lv2 === lv2);
+}
+
+/** Une île de LV2 : ses missions dépendent de la langue choisie. */
+export function estIleLv2(biome: Pick<BiomeDef, 'subject'>): boolean {
+  return biome.subject === 'lv2';
 }
 
 export function getBiome(id: string | undefined): BiomeDef | undefined {

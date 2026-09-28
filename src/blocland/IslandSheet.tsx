@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { guardianTitle, type BiomeDef } from './biomes';
+import { guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -108,7 +108,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         <Icon name="hammer" /> Missions
       </h3>
       <ul className="island-quests" aria-label="Missions de l’île">
-        {biome.exercises.map((exercise) => {
+        {missionsJouables(biome).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);

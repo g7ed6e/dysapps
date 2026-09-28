@@ -191,6 +191,11 @@ export function reglagesCourants(): Settings | null {
   return courants;
 }
 
+/** La LV2 des réglages en mémoire ; hors de l'application (un test, le générateur), celle par défaut. */
+export function lv2Courante(): Lv2Choice {
+  return courants?.lv2 ?? DEFAULT_SETTINGS.lv2;
+}
+
 /** Applique les réglages au document via des variables CSS et un attribut de thème. */
 export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = settings.theme;

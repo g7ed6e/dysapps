@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple. Le décor (arbres, décor du cœur,
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
-import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
+import { BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { walkPath, type WalkGround } from './paths';
 import {
@@ -286,7 +286,7 @@ export const QUEST_ROW = 1;
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
-  return biome.exercises.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
+  return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
 const STEP = '#8f8f8f';

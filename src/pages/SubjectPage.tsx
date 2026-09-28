@@ -3,7 +3,7 @@ import { SUBJECTS, type Subject } from '../apps/registry';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
-import { biomesOf, type Classe } from '../blocland/biomes';
+import { biomesOf, missionsJouables, type Classe } from '../blocland/biomes';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Creature } from '../blocland/Creatures';
 import { questProgress } from '../blocland/exercises';
@@ -74,7 +74,7 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
       <ul className="grid apps blocland-islands">
         {islands.map((biome) => {
           const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-          const stars = biome.exercises.reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
+          const stars = missionsJouables(biome).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>
               <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>

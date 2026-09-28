@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, guardianTitle, ofBlock } from './biomes';
+import { BLOCKS, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
 import { SchoolLink } from './School';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
@@ -72,7 +72,7 @@ export function BiomePage() {
         <Icon name="hammer" /> Missions
       </h2>
       <ul className="grid apps">
-        {biome.exercises.map((exercise) => {
+        {missionsJouables(biome).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const content = (
