@@ -833,7 +833,6 @@ function baremePage(d) {
         ['Réduire les animations', DEFAULT_SETTINGS.reduceMotion ? 'oui' : 'non', ''],
         ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
         ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
-        ['Marche libre (monde en 2D)', DEFAULT_SETTINGS.freeWalk ? 'oui' : 'non', ''],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],
       ],

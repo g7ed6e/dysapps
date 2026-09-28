@@ -17,7 +17,6 @@ describe('Les intentions d’une vue', () => {
     r.onPickCreature!('foret', 'creature');
     r.onPickVehicle!('plaine');
     r.build!.onPickFace({ x: 1, y: 2, z: 3 }, { x: 1, y: 2, z: 4 });
-    r.onWalkedInto!('plaine');
     r.onVoyageLegEnd!();
     r.onVoyageSkip!();
     expect(recues).toEqual([
@@ -29,7 +28,6 @@ describe('Les intentions d’une vue', () => {
       { genre: 'creature', id: 'foret', gardien: false },
       { genre: 'navire', port: 'plaine' },
       { genre: 'face', case: { x: 1, y: 2, z: 3 }, voisine: { x: 1, y: 2, z: 4 } },
-      { genre: 'entree', ile: 'plaine' },
       { genre: 'fin-du-voyage' },
       { genre: 'voyage-saute' },
     ]);
