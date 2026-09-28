@@ -34,6 +34,7 @@ const REGLES = [
   'world/plansV1',
   'world/architect',
   'world/monuments',
+  'world/modele',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
