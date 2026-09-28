@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
-import { islandOrigin } from './world/terrain';
+
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
 
@@ -38,7 +38,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
   const [notice, setNotice] = useState<string | null>(null);
-  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { x: 0, y: 0, z: 0 }, color: '#fff' });
+  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
 
   const here = stageAt(island);
@@ -68,8 +68,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     }
   };
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[block].top }));
+    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
   };
   const finished = (done: VehicleStage) => {
     const msg = kit

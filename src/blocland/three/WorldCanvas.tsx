@@ -8,6 +8,7 @@ import { type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, finishWalk, groundTap, islandInDirection, toucheRetenue, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
+import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
 import { useSettings } from '../../core/SettingsContext';
@@ -37,27 +38,37 @@ interface Scene3D {
 export default function WorldCanvas({
   archipelago,
   cubes,
-  focus,
+  focus: focusEnAncrages,
   reduceMotion = false,
   creatures = [],
   forceDay = false,
   bridges = [],
-  marker = null,
+  marker: markerEnAncrage = null,
   vehicle = null,
   voyage = null,
-  avatar,
+  avatar: avatarEnAncrages,
   map = false,
   home,
-  trail,
-  quests,
+  trail: trailEnAncrages,
+  quests: questsEnAncrages,
   islandLabels,
   whalePass = null,
-  burst,
+  burst: burstEnAncrage,
   className,
   label,
   onIntent,
   chantier = false,
 }: WorldViewProps) {
+  // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
+  const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
+    archipelago,
+    focus: focusEnAncrages,
+    marker: markerEnAncrage,
+    avatar: avatarEnAncrages,
+    trail: trailEnAncrages,
+    quests: questsEnAncrages,
+    burst: burstEnAncrage,
+  });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
   const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,

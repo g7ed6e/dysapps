@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
-import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
-import { islandOrigin } from './world/terrain';
+
 import { planCells, plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
+import type { Ancrage } from './world/disposition';
 import type { Burst } from './world/view';
 import { useHaptics } from '../core/haptics';
 
@@ -27,7 +28,7 @@ export interface PlanBuilder {
   /** Éclats à dessiner dans le monde 3D. */
   burst: Burst;
   /** Des éclats de fête à un endroit du monde (coordonnées du monde), sans poser de bloc. */
-  celebrate: (cell: { x: number; y: number; z: number }, color: string) => void;
+  celebrate: (cell: Ancrage, color: string) => void;
   /** Pose le bloc attendu à une cellule du plan (coordonnées relatives à l'île). */
   fillAt: (x: number, y: number, z: number) => void;
   /** Pose le prochain bloc possible. */
@@ -74,7 +75,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
   const { settings, speak } = useSettings();
   const { completePlan } = useProgress();
   const [notice, setNotice] = useState<string | null>(null);
-  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { x: 0, y: 0, z: 0 }, color: '#fff' });
+  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
 
   const plans = plansFor(island);
@@ -102,8 +103,8 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     }
   };
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: ox + x, y: oy + y, z: oz + z + 1 }, color: BLOCKS[block].top }));
+    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
   };
   // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
   const finished = (done: PlanDef) => {

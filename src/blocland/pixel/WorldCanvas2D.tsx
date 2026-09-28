@@ -32,6 +32,7 @@ import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
+import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
 import { propsOf, type Prop, type Station } from '../world/props';
 import {
@@ -100,25 +101,35 @@ interface Spark {
 export default function WorldCanvas2D({
   archipelago,
   cubes,
-  focus,
+  focus: focusEnAncrages,
   reduceMotion = false,
   vehicle = null,
   voyage = null,
   creatures = [],
   forceDay = false,
-  marker = null,
-  avatar,
+  marker: markerEnAncrage = null,
+  avatar: avatarEnAncrages,
   map = false,
   home,
-  trail,
-  quests,
+  trail: trailEnAncrages,
+  quests: questsEnAncrages,
   islandLabels,
-  burst,
+  burst: burstEnAncrage,
   className,
   label,
   onIntent,
   chantier = false,
 }: WorldViewProps) {
+  // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
+  const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
+    archipelago,
+    focus: focusEnAncrages,
+    marker: markerEnAncrage,
+    avatar: avatarEnAncrages,
+    trail: trailEnAncrages,
+    quests: questsEnAncrages,
+    burst: burstEnAncrage,
+  });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
   const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,

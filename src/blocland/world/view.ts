@@ -7,7 +7,7 @@ import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
-import type { Intention } from './disposition';
+import type { Ancrage, Intention } from './disposition';
 import { dispositionEnGrille } from './grille';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
@@ -19,7 +19,7 @@ export interface WorldFocus {
   /** Change à chaque demande, pour pouvoir redemander la même île. */
   seq: number;
   /** Un point à cadrer plutôt que le cœur de l'île (l'îlot d'un monument, au large de `island`). */
-  spot?: { x: number; y: number; z: number };
+  spot?: Ancrage;
 }
 
 /**
@@ -35,8 +35,8 @@ export interface QuestMark {
   id: string;
   biome: BiomeId;
   typeId: string;
-  /** La case du socle (z : le sol sous le socle). */
-  cell: Cell;
+  /** Le socle : son île et sa case dans le repère de l'île (z : le sol sous le socle). */
+  place: Ancrage;
   /** `'new'` : à faire (repère jaune) ; un nombre : les étoiles gagnées ; `'locked'` : rien. */
   state: 'new' | 'locked' | number;
 }
@@ -44,7 +44,8 @@ export interface QuestMark {
 /** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
 export interface Burst {
   seq: number;
-  cell: Cell;
+  /** Le cube posé : son île et sa case dans le repère de l'île. */
+  cell: Ancrage;
   color: string;
 }
 
@@ -84,16 +85,16 @@ export interface WorldViewProps {
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'une case du monde (le chantier du navire). */
-  marker?: BiomeId | Cell | null;
+  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'un point (le chantier du navire). */
+  marker?: BiomeId | Ancrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
-  avatar?: { route: Cell[]; seq: number };
+  avatar?: { route: Ancrage[]; seq: number };
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
   map?: boolean;
   /** L'île où le bonhomme se tient (ou se rend) : la caméra cadre cette île et ses voisines, tournée vers le continent. */
   home?: BiomeId;
   /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
-  trail?: Cell[];
+  trail?: Ancrage[];
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
@@ -106,6 +107,20 @@ export interface WorldViewProps {
   burst?: Burst;
   className?: string;
   label: string;
+}
+
+/**
+ * Les positions du contrat, en cases du monde (étape J5) : la 3D et la 2D dessinent le monde en cases, la grille y pose
+ * chaque ancrage (`versMonde`). Les positions d'une vue en réseau resteront des ancrages. Les créatures et le navire
+ * sont encore en cases du monde (R6 et R5 les passent en ancrages).
+ */
+export interface EnCasesDuMonde {
+  focus: Omit<WorldFocus, 'spot'> & { spot?: Cell };
+  marker: BiomeId | Cell | null;
+  avatar?: { route: Cell[]; seq: number };
+  trail?: Cell[];
+  quests?: (Omit<QuestMark, 'place'> & { cell: Cell })[];
+  burst?: Omit<Burst, 'cell'> & { cell: Cell };
 }
 
 /**
