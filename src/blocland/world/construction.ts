@@ -33,6 +33,7 @@ import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
+import { dessinerPont, pontsDePierreEtDeBois } from './ponts';
 import { islandDef, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
@@ -589,7 +590,9 @@ export function maillageDeLaConstruction(
   const fusion = options.fusion ?? true;
   // Le phare de Grimoire : ses étapes finies laissent la place au modèle (dessiné à la fin).
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
-  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !phare?.remplacees.has(cle(c.x, c.y, c.z)));
+  // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./ponts.ts).
+  const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
+  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !ponts?.remplacees.has(cle(c.x, c.y, c.z)));
   const genres = genresDesBlocs(dessines);
   const decalages = decalagesDe(genres);
   // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
@@ -981,6 +984,13 @@ export function maillageDeLaConstruction(
       fenetres: F.facettes(L.fin(), { extra: 0 }),
       cellules: phare.cellules,
     };
+  }
+
+  // ---- Les ponts de pierre et de bois : culées, et tablier et garde-corps d'un pont construit, en facettes peintes.
+  if (ponts?.ponts.length) {
+    const P = new Pinceau();
+    for (const p of ponts.ponts) dessinerPont(P, p);
+    O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
   }
 
   const opaque = O.fin();
