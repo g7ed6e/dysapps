@@ -8,7 +8,7 @@ import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/univers';
 import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
-import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
+import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './codeSecret';
 import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
@@ -54,7 +54,7 @@ export function TitleScreen() {
   const blocland = useOptionalBlocland();
   const batisseur = blocland?.batisseur ?? false;
   const suite = useRef(0);
-  const depart = useRef<{ id: number; x: number; y: number } | null>(null);
+  const depart = useRef<{ id: number; x: number; y: number; zone: DOMRect } | null>(null);
   const logo = useRef<HTMLImageElement>(null);
   const geste = useEffectEvent((g: Geste) => {
     suite.current = avancer(suite.current, g);
@@ -90,18 +90,20 @@ export function TitleScreen() {
     };
   }, [open, message]);
   if (!open) return null;
-  // Au doigt (ou à la souris), les gestes se font sur le logo : glisser pour les flèches, toucher pour B et A.
+  // Au doigt (ou à la souris), les gestes se font sur le logo : toucher son bord (ou glisser) pour les flèches, toucher
+  // son centre pour B et A.
   // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
   const logoDown = (e: PointerEvent<HTMLImageElement>) => {
     if (depart.current) return;
-    depart.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    depart.current = { id: e.pointerId, x: e.clientX, y: e.clientY, zone: e.currentTarget.getBoundingClientRect() };
     e.currentTarget.setPointerCapture?.(e.pointerId);
   };
   const logoUp = (e: PointerEvent<HTMLImageElement>) => {
     if (depart.current?.id !== e.pointerId) return;
-    const { x, y } = depart.current;
+    const { x, y, zone } = depart.current;
     depart.current = null;
-    geste(gesteDeGlissement(e.clientX - x, e.clientY - y));
+    const g = gesteDeGlissement(e.clientX - x, e.clientY - y);
+    geste(g === 'toucher' ? gesteDeZone(x - zone.left, y - zone.top, zone.width, zone.height) : g);
   };
   // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
   const resume = launchedAt === '/' ? lastPlace() : null;
