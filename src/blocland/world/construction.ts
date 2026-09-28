@@ -33,7 +33,7 @@ import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
-import { dessinerPont, pontsDePierreEtDeBois } from './ponts';
+import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
 import { islandDef, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
@@ -222,6 +222,8 @@ export interface MaillageDeLaConstruction {
    * triangles), et les cases qu'il remplace, pour que le toucher les retrouve (`caseDuPhare`).
    */
   phare?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
+  /** Les ponts de pierre et de bois du 5e (./ponts.ts) : leur tranche du groupe opaque (triangles), dessinée à la fin. */
+  ponts?: { opaque: [number, number] };
 }
 
 export interface OptionsDeLaConstruction {
@@ -733,6 +735,31 @@ export function maillageDeLaConstruction(
   };
 
   /**
+   * Le fantôme d'une case de pont à restaurer (./ponts.ts) : une boîte plus courte que la case le long du tracé et moins
+   * haute, le haut au niveau du tablier, cernée sur tout son tour (ses uv vont de 0 à 1 sur chaque face).
+   */
+  const fantomeDePont = (c: VoxelCube, leLongDeX: boolean) => {
+    const e = (1 - FANTOME_DU_PONT.long) / 2;
+    const [x0, x1] = leLongDeX ? [c.x + e, c.x + 1 - e] : [c.x, c.x + 1];
+    const [y0, y1] = leLongDeX ? [c.y, c.y + 1] : [c.y + e, c.y + 1 - e];
+    const z1 = c.z + 1;
+    const z0 = z1 - FANTOME_DU_PONT.haut;
+    const uvs: [number, number][] = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ];
+    const q = (pts: V3[], n: V3) => G.poly(pts, n, null, { uvs });
+    q([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1]);
+    q([[x0, y0, z0], [x0, y1, z0], [x1, y1, z0], [x1, y0, z0]], [0, 0, -1]);
+    q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0]);
+    q([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], [0, 1, 0]);
+    q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0]);
+    q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
+  };
+
+  /**
    * Une boîte de (x0, y0, z0) à (x1, y1, z1), en coordonnées de grille, sans son dessous (elle est posée) : ses faces
    * pleines, sans biseau ni fusion.
    */
@@ -773,6 +800,11 @@ export function maillageDeLaConstruction(
   // Les fantômes : toutes leurs faces (un fantôme ne cache rien), fusionnées par plan comme les blocs.
   for (const c of dessines) {
     if (!c.ghost) continue;
+    const pont = ponts?.fantomes.get(cle(c.x, c.y, c.z));
+    if (pont !== undefined) {
+      fantomeDePont(c, pont);
+      continue;
+    }
     for (let d = 0; d < 6; d++) {
       const k = axeDe(d);
       const [i, j] = tangents(k);
@@ -987,10 +1019,11 @@ export function maillageDeLaConstruction(
   }
 
   // ---- Les ponts de pierre et de bois : culées, et tablier et garde-corps d'un pont construit, en facettes peintes.
+  let dessinDesPonts: MaillageDeLaConstruction['ponts'];
   if (ponts?.ponts.length) {
     const P = new Pinceau();
     for (const p of ponts.ponts) dessinerPont(P, p);
-    O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
+    dessinDesPonts = { opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }) };
   }
 
   const opaque = O.fin();
@@ -1002,6 +1035,7 @@ export function maillageDeLaConstruction(
     fantomes: { ...g, colors: new Float32Array(0), uvs: Float32Array.from(G.uv) },
   };
   if (dessinDuPhare) m.phare = dessinDuPhare;
+  if (dessinDesPonts) m.ponts = dessinDesPonts;
   return m;
 }
 

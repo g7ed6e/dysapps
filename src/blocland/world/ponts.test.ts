@@ -19,7 +19,8 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
     const { ponts, remplacees } = pontsDePierreEtDeBois(cubes);
     expect(ponts.map((p) => p.id).sort()).toEqual([...PONTS_DE_PIERRE_ET_DE_BOIS].sort());
     for (const p of ponts) {
-      const def = BRIDGES.find((b) => b.id === p.id)!;
+      const def = BRIDGES.find((b) => b.id === p.id);
+      if (!def) throw new Error(`ouvrage inconnu : ${p.id}`);
       expect(p.construit).toBe(true);
       expect(p.cases).toHaveLength(bridgePath(def).length);
       // D'une case à la suivante, un pas d'une case.
@@ -33,15 +34,15 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
     const cubes = worldCubes('5e', progress, { ...village, bridges: village.bridges.filter((id) => id !== 'comptoir-manoir') }, false);
     const { ponts, remplacees } = pontsDePierreEtDeBois(cubes);
     const pont = ponts.find((p) => p.id === 'comptoir-manoir');
-    expect(pont?.construit).toBe(false);
+    if (!pont) throw new Error('pont Comptoir–Manoir absent');
+    expect(pont.construit).toBe(false);
     expect([...remplacees].some((k) => cubes.some((c) => c.bridge === 'comptoir-manoir' && `${c.x},${c.y},${c.z}` === k))).toBe(false);
     const avant = new Pinceau();
-    dessinerPont(avant, pont!);
+    dessinerPont(avant, pont);
     const apres = new Pinceau();
-    dessinerPont(apres, { ...pont!, construit: true });
+    dessinerPont(apres, { ...pont, construit: true });
     // Deux culées de cinq faces : l'état à restaurer ne se lit pas par la couleur seule, le tablier manque.
     expect(avant.fin().positions.length / 9).toBe(20);
     expect(apres.fin().positions.length).toBeGreaterThan(10 * avant.fin().positions.length);
   });
-
 });

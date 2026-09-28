@@ -33,8 +33,8 @@ export const PONT = {
   /** Le garde-corps : un poteau par côté une case sur deux, une lisse continue sur chaque travée. */
   poteau: 0.1,
   lisse: { largeur: 0.08, hauteur: 0.08, haut: 0.55 },
-  /** Les culées : plus larges que le tablier, jusque sous l'eau. */
-  culee: { debord: 0.12, pied: 0 },
+  /** Les culées : plus larges que le tablier, jusque sous l'eau (la mer est à −0,45, houle comprise : three/large.ts). */
+  culee: { debord: 0.12, pied: -1 },
   /** Une pile de pierre au milieu des ponts d'au moins autant de cases. */
   pile: { des: 5, largeur: 0.5 },
 } as const;
@@ -56,7 +56,7 @@ const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
  * lanternes du bout), et les cases qu'un pont construit remplace. Un pont à moitié posé n'existe pas : un ouvrage se
  * construit d'un coup, ses cubes sont tous fantômes ou tous posés.
  */
-export function pontsDePierreEtDeBois(cubes: VoxelCube[]): { ponts: PoseDuPont[]; remplacees: Set<string> } {
+export function pontsDePierreEtDeBois(cubes: VoxelCube[]): { ponts: PoseDuPont[]; remplacees: Set<string>; fantomes: Map<string, boolean> } {
   const parPont = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
     if (!c.bridge || !PONTS_DE_PIERRE_ET_DE_BOIS.has(c.bridge)) continue;
@@ -67,13 +67,29 @@ export function pontsDePierreEtDeBois(cubes: VoxelCube[]): { ponts: PoseDuPont[]
   }
   const ponts: PoseDuPont[] = [];
   const remplacees = new Set<string>();
+  const fantomes = new Map<string, boolean>();
   for (const [id, l] of parPont) {
     const construit = l.every((c) => !c.ghost);
-    ponts.push({ id, cases: dansLOrdre(l), construit, muted: l.some((c) => c.muted) });
+    const cases = dansLOrdre(l);
+    ponts.push({ id, cases, construit, muted: l.some((c) => c.muted) });
     if (construit) for (const c of l) remplacees.add(cle(c.x, c.y, c.z));
+    else cases.forEach((c, i) => fantomes.set(cle(c.x, c.y, c.z), leLongDeX(cases, i)));
   }
-  return { ponts, remplacees };
+  return { ponts, remplacees, fantomes };
 }
+
+/** Le sens du tracé en une case : le long de x (sinon de y), d'après ses voisines. */
+export function leLongDeX(cases: readonly CaseDuPont[], i: number): boolean {
+  const a = cases[Math.max(0, i - 1)];
+  const b = cases[Math.min(cases.length - 1, i + 1)];
+  return Math.abs(b.x - a.x) >= Math.abs(b.y - a.y);
+}
+
+/**
+ * Le fantôme d'une case de pont à restaurer (directeur artistique) : plus court que sa case le long du tracé, un jour
+ * entre deux, et moitié moins haut, pour que la rangée se lise comme des blocs à poser, jamais comme un passage.
+ */
+export const FANTOME_DU_PONT = { long: 0.8, haut: 0.5 } as const;
 
 /** Les cases d'un pont, d'un bout à l'autre (le tracé est une ligne, avec au plus un coude ; les marches ne comptent pas). */
 function dansLOrdre(l: VoxelCube[]): CaseDuPont[] {
@@ -117,12 +133,9 @@ export function dessinerPont(P: Pinceau, pont: PoseDuPont): void {
   const peint = (c: Couleur, v = 1): Peindre => peintre(delave(c, muted), bas, haut - bas, v);
   const pierre = peint(COULEURS_DU_PONT.pierre);
   const sombre = peint(COULEURS_DU_PONT.gardeCorps);
-  /** Le sens du tracé en une case : le long de x ou de y. */
-  const lelongDeX = (i: number) => {
-    const a = cases[Math.max(0, i - 1)];
-    const b = cases[Math.min(n - 1, i + 1)];
-    return Math.abs(b.x - a.x) >= Math.abs(b.y - a.y);
-  };
+  /** Deux teintes de planche, en alternance. */
+  const bois = [peint(COULEURS_DU_PONT.planche), peint(COULEURS_DU_PONT.planche, 0.93)];
+  const lelongDeX = (i: number) => leLongDeX(cases, i);
   /** Une boîte dans le repère de la case : `u` le long du tracé, `v` en travers (0 à 1), `h` en hauteur. */
   const dansLaCase = (c: CaseDuPont, i: number, u0: number, u1: number, v0: number, v1: number, h0: number, h1: number, p: Peindre) => {
     if (lelongDeX(i)) boite(P, c.x + u0, h0, c.y + v0, c.x + u1, h1, c.y + v1, p);
@@ -185,7 +198,7 @@ export function dessinerPont(P: Pinceau, pont: PoseDuPont): void {
     for (let j = 0; j < k; j++) {
       const u0 = j * pas + PONT.jour / 2;
       const u1 = (j + 1) * pas - PONT.jour / 2;
-      planche(c, i, u0, u1, sous, top, peint(COULEURS_DU_PONT.planche, (i + j) % 2 ? 0.93 : 1));
+      planche(c, i, u0, u1, sous, top, (i + j) % 2 ? bois[1] : bois[0]);
     }
     // Un poteau de chaque côté, une case sur deux et aux deux bouts.
     if (i % 2 === 0 || i === n - 1)

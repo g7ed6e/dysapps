@@ -87,10 +87,12 @@ const CAPTURES = [
   { nom: 'phare-avant', vue: 'île', famille: 'chantier', ile: 'phare', partie: 'avant' },
   { nom: 'theatre', vue: 'île', famille: 'chantier', ile: 'theatre' },
   { nom: 'comptoir', vue: 'île', famille: 'chantier', ile: 'comptoir' },
-  // Les ponts de pierre et de bois du 5e : le Manoir et ses deux ponts, construits, puis l'un d'eux à restaurer.
+  // Les ponts de pierre et de bois du 5e : construits autour du Manoir ; à restaurer autour du Comptoir (Marché–Comptoir
+  // en entier, et Marché–Marais, le plus long, en haut à gauche).
   { nom: 'ponts', vue: 'île', famille: 'ponts', ile: 'manoir' },
-  { nom: 'ponts-avant', vue: 'île', famille: 'ponts', ile: 'manoir', sansPonts: ['comptoir-manoir'] },
-  { nom: 'ponts-avant-contraste', vue: 'île', famille: 'ponts', ile: 'manoir', sansPonts: ['comptoir-manoir'], theme: 'contraste' },
+  { nom: 'ponts-avant', vue: 'île', famille: 'ponts', ile: 'comptoir', sansPonts: ['marche-comptoir', 'marche-marais'] },
+  { nom: 'ponts-avant-contraste', vue: 'île', famille: 'ponts', ile: 'comptoir', sansPonts: ['marche-comptoir', 'marche-marais'], theme: 'contraste' },
+  { nom: 'ponts-apres', vue: 'île', famille: 'ponts', ile: 'comptoir' },
   { nom: 'ponts-nuit', vue: 'île', famille: 'ponts', ile: 'manoir', nuit: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
