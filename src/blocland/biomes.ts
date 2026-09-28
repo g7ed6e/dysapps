@@ -166,6 +166,31 @@ export function ofBlock(id: BlockId): string {
   return /^[aeiouyéèêh]/.test(name) ? `d’${name}` : `de ${name}`;
 }
 
+/**
+ * Les matières : on les compte en blocs, le nom reste au singulier (« 3 blocs de sable », « 2 blocs d’or ») ; au
+ * pluriel, « 3 sables » ou « 2 ors » sont rares, et « 3 verres » ou « 3 glaces » veulent dire autre chose (référent
+ * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
+ */
+const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
+  ['bois', 'pierre', 'sable', 'terre', 'verre', 'obsidienne', 'glace', 'toile', 'tourbe', 'acier', 'marbre', 'quartz', 'velours', 'lambris', 'or'],
+);
+
+/** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
+const PLURIELS: Partial<Record<BlockId, string>> = { cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille' };
+
+/** Ce qui suit le nombre, accordé : « toit », « toits », « bloc de sable », « blocs d’or », « cristaux ». */
+export function blockName(id: BlockId, n: number): string {
+  if (MATIERES.has(id)) return `${n > 1 ? 'blocs' : 'bloc'} ${ofBlock(id)}`;
+  const name = BLOCKS[id].name.toLowerCase();
+  if (n < 2) return name;
+  return PLURIELS[id] ?? (/[sxz]$/.test(name) ? name : `${name}s`);
+}
+
+/** Une quantité de blocs, accordée : « 5 toits », « 1 lanterne », « 16 blocs de bois ». */
+export function blockCount(id: BlockId, n: number): string {
+  return `${n} ${blockName(id, n)}`;
+}
+
 export interface ExerciseTypeDef {
   id: string;
   title: string;
@@ -546,7 +571,7 @@ export const BIOMES: BiomeDef[] = [
         programme: ['c4.ma.b.proportionnalite', 'c4.ma.b.ratio', 'c3.ma.nombres.proportionnalite'],
       },
       { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.', programme: ['c4.ma.b.pourcentages-echelles', 'c3.ma.nombres.proportionnalite'] },
-      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle'] },
+      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle', 'c4.ma.c.conversions'] },
     ],
   },
   {
@@ -783,7 +808,7 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
-      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.', programme: ['c4.ma.d.thales'] },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton.', programme: ['c4.ma.d.thales'] },
       { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],
   },

@@ -63,7 +63,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.ma.b.lire-donnees': A_COUVRIR('Lire un tableau, un diagramme ou un histogramme : prévu dans l’Observatoire des données (Relevés).'),
   'c4.ma.b.effectifs-frequences': A_COUVRIR('Effectifs et fréquences : prévus dans l’Observatoire des données (Relevés).'),
   'c4.ma.c.aires-volumes': A_COUVRIR('Aires et volumes du cycle 4 : pas encore de figure dessinée pour cela.'),
-  'c4.ma.c.conversions': A_COUVRIR('Conversions d’unités : les longueurs d’une carte à l’échelle se convertissent au niveau 3 des Balances (Marché des proportions) ; les autres unités et la correspondance entre volume et contenance sont prévues avec l’île Grandeurs.'),
   'c4.ma.c.agrandissement': A_COUVRIR('Effet d’un agrandissement sur les aires et les volumes : aucune mission ne l’aborde.'),
   'c4.ma.d.solides': HORS('Représentations de solides (perspective, sections, patrons) : demandent des figures que l’application ne dessine pas.'),
   'c4.ma.d.angles-triangles': A_COUVRIR('Somme des angles, inégalité triangulaire : pas encore de figure dessinée pour cela.'),

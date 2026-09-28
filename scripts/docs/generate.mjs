@@ -53,6 +53,7 @@ export async function generatePages() {
       version: appVersion(root),
       BIOMES: biomesMod.BIOMES,
       BLOCKS: biomesMod.BLOCKS,
+      blockCount: biomesMod.blockCount,
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
       BRIDGES: archMod.BRIDGES,
@@ -131,6 +132,8 @@ const SCENE_NAME = {
   carte: 'carte à l’échelle (une distance)',
   cargaison: 'cargaison partagée selon un ratio (une part ou un total)',
   mat: 'mât tenu par un câble (un côté du triangle rectangle)',
+  route: 'traversée à vitesse constante (une distance, une vitesse ou une durée)',
+  ombre: 'ombre d’un bâton et d’un mât (une hauteur ou une ombre, par Thalès)',
 };
 
 /** Échappe le texte pour une cellule ou une ligne de tableau Markdown. */
@@ -458,7 +461,7 @@ function islandPage(b, d) {
           e.perRun && e.perRun < e.items.length ? `${e.items.length} (${e.perRun} joués par partie)` : String(e.items.length),
           e.generate ? 'généré (autres nombres à chaque partie)' : 'écrit à la main',
           aidOf(e) || '—',
-          `${e.reward.amount} ${BLOCKS[e.reward.block].name.toLowerCase()}, ${e.reward.xp} XP`,
+          `${d.blockCount(e.reward.block, e.reward.amount)}, ${e.reward.xp} XP`,
           `${percent(e.adaptive.promoteAt)} / ${percent(e.adaptive.demoteAt)}`,
         ]),
       ),
@@ -481,10 +484,10 @@ function islandPage(b, d) {
           const byBlock = {};
           for (const c of p.cells) byBlock[c.block] = (byBlock[c.block] ?? 0) + 1;
           const blocks = Object.entries(byBlock)
-            .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+            .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
             .join(', ');
           const chest = Object.entries(p.reward.chest)
-            .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+            .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
             .join(', ');
           return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), chest || '—', `« ${p.done} »`];
         }),
@@ -495,7 +498,7 @@ function islandPage(b, d) {
   const stage = d.VEHICLE_STAGES.find((s) => s.biome === b.id);
   if (stage) {
     const count = (cells) => Object.entries(cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
-      .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+      .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
       .join(', ');
     lines.push(
       '## Le chantier du Bloc-Navire',
@@ -688,7 +691,7 @@ function ouvragesPage(d) {
       ['Étape', 'Nom', 'Se construit sur', 'Blocs à poser', 'Kit', 'Gardiens', 'Mène aux', 'XP'],
       d.VEHICLE_STAGES.map((s) => {
         const count = (cells) => Object.entries(cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
-          .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+          .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
           .join(', ');
         return [String(s.stage), s.name, `[${name(s.biome)}](iles/${s.biome}.md)`, count(s.cells), count(s.kit), `${s.guardians} des ${d.ARCHIPELAGOS.find((a) => a.classe === s.from).name}`, d.ARCHIPELAGOS.find((a) => a.classe === s.to).name, String(s.reward.xp)];
       }),
@@ -723,7 +726,7 @@ function ouvragesPage(d) {
       ['Île', 'Plan', 'Blocs', 'XP', 'Coffre'],
       PLANS.map((p) => {
         const chest = Object.entries(p.reward.chest)
-          .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+          .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
           .join(', ');
         return [`[${name(p.biome)}](iles/${p.biome}.md)`, p.name, String(p.cells.length), String(p.reward.xp), chest || '—'];
       }),
@@ -738,7 +741,7 @@ function ouvragesPage(d) {
       d.MONUMENTS.map((m) => {
         const need = Object.entries(m.cells.reduce((acc, c) => ({ ...acc, [c.block]: (acc[c.block] ?? 0) + 1 }), {}))
           .sort((x, y) => y[1] - x[1])
-          .map(([k, n]) => `${n} ${BLOCKS[k]?.name.toLowerCase() ?? k}`)
+          .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
           .join(', ');
         return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, `${m.cells.length} : ${need}`, String(m.reward.xp)];
       }),

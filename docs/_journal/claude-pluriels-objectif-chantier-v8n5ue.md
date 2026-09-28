@@ -1,0 +1,1 @@
+Textes : les quantités de blocs s’accordent partout où le jeu les écrit (prochain objectif d’une île, plan, Bloc-Navire, ouvrages, inventaire, monuments, coffre d’un plan). On lit « Encore 18 toits et 3 lanternes », « 2 panneaux », « 2 cristaux ». Les matières se comptent en blocs et gardent leur nom au singulier : « 16 blocs de bois », « 3 blocs de sable », « 2 blocs d’or ».

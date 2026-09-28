@@ -60,6 +60,18 @@ function read(s: SceneProps): { shown: string[]; data: string[]; answer: string 
     s.parts.forEach((p, k) => add(p, out, () => s.ratio[k] * one));
     add(s.total, out, () => sum * one);
     data.push(s.ratio.join(' : '));
+  } else if (s.scene === 'route') {
+    const heures = num(s.duree) / 60;
+    add(s.distance, withUnit('km'), () => num(s.vitesse) * heures);
+    add(s.vitesse, withUnit('km/h'), () => num(s.distance) / heures);
+    // La durée s’affiche « 1 h 30 min » ; cherchée, elle se donne en minutes.
+    if (s.duree === '?') answer = `${Math.round((num(s.distance) / num(s.vitesse)) * 60)} min`;
+    else shown.push(formatDuree(s.duree));
+  } else if (s.scene === 'ombre') {
+    add(s.baton, m, () => (num(s.hauteur) * num(s.ombreBaton)) / num(s.ombre));
+    add(s.ombreBaton, m, () => (num(s.ombre) * num(s.baton)) / num(s.hauteur));
+    add(s.hauteur, m, () => (num(s.baton) * num(s.ombre)) / num(s.ombreBaton));
+    add(s.ombre, m, () => (num(s.ombreBaton) * num(s.hauteur)) / num(s.baton));
   } else {
     add(s.hauteur, m, () => Math.sqrt(num(s.cable) ** 2 - num(s.pied) ** 2));
     add(s.pied, m, () => Math.sqrt(num(s.cable) ** 2 - num(s.hauteur) ** 2));
@@ -76,9 +88,15 @@ const value = (c: string): number => {
 };
 const kindsOf = (defs: ExerciseDef[]) => defs.map((def) => [...new Set(def.items.map((it) => sceneOf(it).scene))].sort());
 
-it('les missions de problèmes situés : trois niveaux de huit items, un schéma et un rappel de méthode sur chacun', () => {
+it('les missions de problèmes situés : des niveaux de huit items, un schéma et un rappel de méthode sur chacun', () => {
   expect(PROBLEMES_EXERCISES.map((e) => e.id)).toEqual(['plaine-passeur-1', 'plaine-passeur-2', 'plaine-passeur-3']);
-  expect(PROBLEMES_COLLEGE_EXERCISES.map((e) => e.id)).toEqual(['marche-etals-3', 'marche-balances-3', 'belvedere-pythagore-3']);
+  expect(PROBLEMES_COLLEGE_EXERCISES.map((e) => e.id)).toEqual([
+    'marche-etals-3',
+    'marche-balances-3',
+    'marche-balances-4',
+    'belvedere-pythagore-3',
+    'belvedere-thales-2',
+  ]);
   for (const def of ALL) {
     expect(def.items).toHaveLength(8);
     expect(new Set(def.items.map((i) => i.key)).size).toBe(8);
@@ -91,7 +109,7 @@ it('les missions de problèmes situés : trois niveaux de huit items, un schéma
   }
   // Chaque niveau mêle les scènes prévues.
   expect(kindsOf(PROBLEMES_EXERCISES)).toEqual([['pont', 'traversee'], ['quai', 'traversee'], ['pont', 'quai', 'traversee']]);
-  expect(kindsOf(PROBLEMES_COLLEGE_EXERCISES)).toEqual([['cargaison'], ['carte'], ['mat']]);
+  expect(kindsOf(PROBLEMES_COLLEGE_EXERCISES)).toEqual([['cargaison'], ['carte'], ['route'], ['mat'], ['ombre']]);
   // Les Étals : deux et trois navires, le total connu ou non ; les Balances : l’échelle en mots et en fraction.
   const etals = PROBLEMES_COLLEGE_EXERCISES[0].items.map(sceneOf);
   expect(etals.some((s) => s.scene === 'cargaison' && s.ratio.length === 3)).toBe(true);
@@ -99,6 +117,12 @@ it('les missions de problèmes situés : trois niveaux de huit items, un schéma
   const balances = PROBLEMES_COLLEGE_EXERCISES[1].items.map(sceneOf);
   expect(balances.some((s) => s.scene === 'carte' && 'fraction' in s.echelle)).toBe(true);
   expect(balances.some((s) => s.scene === 'carte' && 'reel' in s.echelle)).toBe(true);
+  // La traversée : chercher la distance, la vitesse et la durée.
+  const route = PROBLEMES_COLLEGE_EXERCISES[2].items.map(sceneOf);
+  for (const key of ['distance', 'vitesse', 'duree'] as const) expect(route.some((s) => s.scene === 'route' && s[key] === '?')).toBe(true);
+  // L’ombre : chercher la hauteur du mât et la longueur de son ombre.
+  const ombre = PROBLEMES_COLLEGE_EXERCISES[4].items.map(sceneOf);
+  for (const key of ['hauteur', 'ombre'] as const) expect(ombre.some((s) => s.scene === 'ombre' && s[key] === '?')).toBe(true);
 });
 
 it('problèmes situés : la réponse se calcule depuis les cotes, et aucune cote affichée n’est proposée', () => {
