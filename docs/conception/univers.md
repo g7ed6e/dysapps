@@ -31,8 +31,8 @@ Leurs avis sont résumés à chaque section.
 
 Deux univers au départ :
 
-- **Archipéo** : l’aventure maritime de la migration, univers par défaut à l’ouverture du lot 6 ;
-- **Blocland** : le monde en blocs et son univers d’aujourd’hui, gardé (décision du mainteneur).
+- **Blocland** : le monde en blocs et son univers d’aujourd’hui, gardé, et **univers par défaut** (décision 7 du mainteneur : les élèves y sont très attachés) ;
+- **Archipéo** : l’aventure maritime de la migration, au choix dans les Réglages à partir du lot 6, et seulement là (décision 8).
 
 ## 2. L’univers choisit son rendu
 
@@ -50,7 +50,8 @@ Basculer de vue ne change donc jamais d’univers. Seul le réglage « Univers �
 
 Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur trois points.
 
-- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Il fait d’Archipéo l’univers par défaut. Le drapeau `?rendu=archipeo` devient le réglage « Univers » (§7, décision 5). « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
+- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Blocland reste l’univers par défaut, et Archipéo s’ouvre à tous dans les Réglages (§7, décisions 5 et 7). Le drapeau `?rendu=archipeo` devient le réglage « Univers ». « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
+- **L’interface.** Elle suit l’univers (décision 7). Dans Blocland, les panneaux, les boutons et les titres prennent un style propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu. Dans Archipéo, l’interface reste celle des lots 1 et 2. Les mots, la place des éléments, la taille des cibles et les règles dys ne changent jamais d’un univers à l’autre (§4). Ce style d’interface n’est pas un lot R : « figé dans son dessin » vaut pour le monde en blocs, pas pour ses panneaux.
 - **Le budget.** Le monde en blocs ne tient pas celui d’Archipéo sur tablette : 66 672 triangles et 220 appels de dessin aux Premiers Rivages, mesurés après R4, pour 60 000 et 40. Blocland garde son propre plafond de non-régression (80 000 et 240, `budget.test.ts`). Sur un appareil lent, il a « Réduire les animations » et la liste des îles. Le budget d’Archipéo ne change pas.
 - **La maintenance.** L’artiste technique 3D le chiffre : garder deux familles de rendu, c’est tester chaque partie de la scène dans les deux univers.
   - Parade : Blocland est **figé dans son dessin**. Il ne reçoit aucun lot R. Il suit les règles du jeu partagé, avec ses empreintes et ses captures d’aujourd’hui (sauf la 2D, arrêtée le 28 septembre 2026).
@@ -67,7 +68,7 @@ Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur tr
 - **Les mots de l’interface**, repères de l’élève, du manuel et de l’enseignant : Menu, Aventure, Missions, Succès, Réglages, mission, bloc, plan, étoile, XP, Expéditions.
 - **Sous chaque nom d’île, des repères stables** : le nom de la mission, la notion travaillée (« Les sons »), l’icône et la couleur de matière, l’ordre des missions.
 - **L’objectif pédagogique** (§4.2).
-- **L’interface et les règles dys** : panneaux, sons de réussite et d’erreur, rien à lire dans la 3D.
+- **L’interface et les règles dys** : la place de chaque élément, ses mots, la taille des cibles, les sons de réussite et d’erreur, rien à lire dans la 3D. Seul son habillage (police des titres, palette, cadres et boutons) suit l’univers (décision 7).
 
 ### 4.1 Ce qu’un univers change : son récit et son monde
 
@@ -156,7 +157,7 @@ Les registres du socle deviennent à clé composée **(univers, archipel)**, ave
 | **U0. Cette feuille de route** | Ce document et les décisions du mainteneur (§7). | Maintenant | S |
 | **U1. Les consultants** | Les agents `consultant-archipeo` et `consultant-blocland` dans `.claude/agents/`, sous l’autorité du directeur artistique, qui passe de « conduire la migration » à « conduire les univers ». **Qui tient quoi** : le consultant d’Archipéo reprend le dossier `design/archipeo/` et le [cadrage Archipéo](cadrage-archipeo.md) ; celui de Blocland le [cadrage de Blocland](cadrage-blocland.md), qui devient le cadrage de son univers ; le directeur artistique garde les règles communes et ce document. **La référence figée de Blocland** : une étiquette git posée juste avant le lot 6 (`blocland-reference`), puisque `style.md` sera réécrit pour Archipéo ; le consultant en tire une fiche, `design/blocland/fiche.md` (noms, récit, silhouettes, ce que les lots 1 à 5 d’Archipéo ont changé pour tous et qu’il reprend ou non). **Quand on le consulte** : une ligne dans `CLAUDE.md`, comme pour le référent dys : toute pull request qui touche les noms, le récit ou le rendu d’un univers passe par son consultant, et sa description en cite le verdict (Fidèle, À ajuster, Bloquant). La page Contribuer le dit. | **Faite** le 28 septembre 2026 : les deux agents, la ligne de `CLAUDE.md`, la page Contribuer et une première fiche de Blocland. Reste l’étiquette : le fil du lot 6 la pose sur `main` juste avant son premier commit (`git tag blocland-reference` puis `git push origin blocland-reference`), et le consultant de Blocland relit alors sa fiche. | S |
 | **U2. Le relief séparé du modelé** | **Construit.** Le relief de marche (`world/silhouettes/`, lu par `map.ts`) reste commun ; le modelé dessiné d’Archipéo s’écrit dans `world/modeleDessine/<archipel>.ts`, en repère d’île, et `modelerLeSol` l’applique au seul sol à facettes, sans changement d’image. | Avancé le 28 septembre 2026 par le mainteneur : avant le relief de R4b-5e et R4b-3e (leur partie 2), par le fil de la séparation ; voir `design/archipeo/intentions/commun.md` | S |
-| **U3. Le lot 6 à deux univers** | Archipéo devient l’univers par défaut ; Blocland reste, choisi par le réglage « Univers » (décision 5). Le drapeau `?rendu=archipeo` disparaît. Rien n’est retiré de Blocland. Captures du manuel dans les deux univers. Les textes des Gardiens, des espèces et du mot de la baleine entrent déjà dans `src/univers/` (une tranche de J8 avancée). Découpage en fils : [Les fils du lot 6](cadrage-archipeo.md#les-fils-du-lot-6). | Au lot 6 | M |
+| **U3. Le lot 6 à deux univers** | Blocland reste l’univers par défaut ; Archipéo se choisit dans le réglage « Univers » (décisions 5 et 7). L’interface de Blocland prend son propre style (décision 7). Le drapeau `?rendu=archipeo` disparaît. Rien n’est retiré de Blocland. Captures du manuel dans les deux univers. Les textes des Gardiens, des espèces et du mot de la baleine entrent déjà dans `src/univers/` (une tranche de J8 avancée). Découpage en fils : [Les fils du lot 6](cadrage-archipeo.md#les-fils-du-lot-6). | Au lot 6 | M |
 | **U4. L’habillage, sans changement d’image** | J8 : les textes des deux univers dans `src/univers/` (ceux des Gardiens, des espèces et du mot de la baleine y sont depuis le lot 6). Le lexique court et l’écran de passage du §6.1, puisque c’est à U4 que des noms changent (décidé par le mainteneur le 28 septembre 2026). J6 : l’objet `Habillage` à la place du booléen. J7 : la couche `univers`. Le type `Univers` et les tests de parité et de portabilité. Les noms propres à Blocland que le lot 1 avait remplacés y reviennent, si son consultant le propose et que le directeur artistique le valide. | Avec J7, après le lot 6 | M |
 | **U5. L’habillage pédagogique de Blocland** | La preuve (décision du mainteneur). Les problèmes situés, puis les phrases de français et d’anglais, puis un ou deux textes de lecture, habillés pour Blocland avec les tests d’équivalence. Le directeur contenu pédagogique écrit, le consultant de Blocland relit l’univers, le référent dys relit tout. | Après U4 | L |
 | **U6. Un troisième univers** | Seulement quand U5 a prouvé que l’axe tient. Sa fiche, son consultant, son rendu (un univers complet coûte en art autant que R4b et R6 réunis), son habillage. | Après les lots 8 et 8b | L |
@@ -192,5 +193,12 @@ Puis, le même jour :
 
 | Question | Décision |
 | --- | --- |
-| **5. Quand le réglage « Univers » arrive** | **Au lot 6**, quand Archipéo devient l’univers par défaut. Un appareil qui a déjà une progression reste dans Blocland. Un seul message, lu à voix haute, lui présente Archipéo et le réglage. Blocland garde ses mots d’aujourd’hui jusqu’à U4. |
+| **5. Quand le réglage « Univers » arrive** | **Au lot 6**, quand Archipéo devient l’univers par défaut (*remplacé le soir même par la décision 7 : Blocland reste l’univers par défaut*). Un appareil qui a déjà une progression reste dans Blocland. Un seul message, lu à voix haute, lui présente Archipéo et le réglage. Blocland garde ses mots d’aujourd’hui jusqu’à U4. |
 | **6. Le nom de l’application** | **« Archipéo, par DysApps »** reste le nom de l’application installée. L’écran titre montre le nom de l’univers choisi. |
+
+Puis, le même jour au soir :
+
+| Question | Décision |
+| --- | --- |
+| **7. L’univers par défaut** | **Blocland reste l’univers par défaut** : les élèves sont très attachés au monde en blocs. Archipéo se choisit dans les Réglages. L’interface suit l’univers : dans Blocland, elle prend un style propre à Blocland ; dans Archipéo, elle reste celle d’aujourd’hui. Cela remplace « quand Archipéo devient l’univers par défaut » dans la décision 5 : le réglage arrive toujours au lot 6, un appareil neuf s’ouvre dans Blocland sans message, un appareil qui a déjà une progression s’ouvre dans Blocland et reçoit le message unique qui lui présente Archipéo. |
+| **8. Où s’active Archipéo** | **Seulement dans les Réglages de l’application**, section « Univers », par l’élève ou un adulte. Rien ne fait passer un appareil à Archipéo d’office : ni la bascule, ni la section Expérimental d’avant le lot 6 (un appareil qui l’avait allumée s’ouvre dans Blocland comme les autres, avec le message unique s’il a une progression), ni une adresse (le drapeau `?rendu=archipeo` disparaît à la bascule). Le message unique ne fait que mener au réglage (« Voir le réglage »). |

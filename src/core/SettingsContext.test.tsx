@@ -17,8 +17,8 @@ it('fermé, n’écrit jamais l’univers : un appareil neuf ne reste pas figé 
   expect(loadJSON(MESSAGE_UNIVERS_KEY, null)).toBeNull();
 });
 
-it('ouvert, fige le premier univers : Archipéo pour un appareil neuf', () => {
-  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'archipeo' }, message: false });
+it('ouvert, fige le premier univers : Blocland pour un appareil neuf, sans message', () => {
+  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'blocland' }, message: false });
 });
 
 it('ouvert, garde Blocland à un appareil qui a une progression, avec le message unique à dire', () => {
@@ -28,10 +28,10 @@ it('ouvert, garde Blocland à un appareil qui a une progression, avec le message
   expect(loadJSON(MESSAGE_UNIVERS_KEY, null)).toBeNull();
 });
 
-it('ouvert, passe à Archipéo sans message un appareil qui essayait déjà le nouveau dessin', () => {
+it('ouvert, garde Blocland même à un appareil qui essayait le nouveau dessin : Archipéo ne s’active que dans les Réglages', () => {
   saveJSON('progress', { xp: 40, totalAnswers: 10 });
   saveJSON('settings', { renduArchipeo: true });
-  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'archipeo' }, message: false });
+  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'blocland' }, message: true });
 });
 
 it('ouvert, ne recalcule jamais un univers déjà choisi', () => {

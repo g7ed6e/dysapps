@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useOptionalBlocland } from '../blocland/BloclandContext';
 import { unlockSounds } from '../blocland/sound';
 import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, UNIVERS, UNIVERS_OUVERT } from '../core/univers';
+import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
+import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
 import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
@@ -47,7 +50,41 @@ export function TitleScreen() {
   const [launchedAt] = useState(useLocation().pathname);
   // Le message unique, une fois montré : la page où l'élève allait (`to` absent : l'accueil).
   const [message, setMessage] = useState<{ to?: string } | null>(null);
+  const blocland = useOptionalBlocland();
+  const batisseur = blocland?.batisseur ?? false;
+  const suite = useRef(0);
+  const depart = useRef<{ id: number; x: number; y: number } | null>(null);
+  const geste = useEffectEvent((g: Geste) => {
+    suite.current = avancer(suite.current, g);
+    if (suite.current === LONGUEUR_SUITE) {
+      suite.current = 0;
+      blocland?.ouvrirBatisseur();
+    }
+  });
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      const g = gesteDeTouche(e.key);
+      if (g) geste(g);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
   if (!open) return null;
+  // Au doigt (ou à la souris), les gestes se font sur le logo : glisser pour les flèches, toucher pour B et A.
+  // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
+  const logoDown = (e: PointerEvent<HTMLImageElement>) => {
+    if (depart.current) return;
+    depart.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const logoUp = (e: PointerEvent<HTMLImageElement>) => {
+    if (depart.current?.id !== e.pointerId) return;
+    const { x, y } = depart.current;
+    depart.current = null;
+    geste(gesteDeGlissement(e.clientX - x, e.clientY - y));
+  };
   // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
   const resume = launchedAt === '/' ? lastPlace() : null;
 
@@ -106,13 +143,31 @@ export function TitleScreen() {
   return (
     <div className="title-screen" role="dialog" aria-modal="true" aria-labelledby="titre-appli">
       <div className="title-card">
-        <img className="title-logo" src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={160} height={160} />
+        <img
+          className="title-logo"
+          src={`${import.meta.env.BASE_URL}icon.svg`}
+          alt=""
+          width={160}
+          height={160}
+          draggable={false}
+          onPointerDown={logoDown}
+          onPointerUp={logoUp}
+          onPointerCancel={() => (depart.current = null)}
+          onLostPointerCapture={(e) => {
+            if (depart.current?.id === e.pointerId) depart.current = null;
+          }}
+        />
         <h1 id="titre-appli" className="title-name">
           {univers.nom}
         </h1>
         <p className="title-tagline">
           <Syllabified text={univers.phrase} />
         </p>
+        {batisseur && (
+          <p className="title-batisseur" role="status">
+            {BANDEAU_BATISSEUR}
+          </p>
+        )}
         <div className="title-actions">
           {resume && (
             <button type="button" className="button primary title-button" onClick={() => start(resume.path)} autoFocus>
