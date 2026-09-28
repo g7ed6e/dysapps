@@ -181,11 +181,60 @@ export function domeDuCiel(c: Ciel, segments = 24): { positions: number[]; color
   return { positions, colors, indices };
 }
 
+// ---------- La mer (lot R3) ----------
+
+/** Les cinq valeurs de la planche maître du pack visuel (docs/conception/cadrage-archipeo.md, §3.4). */
+export const NUIT_OCEAN = 0x142b38;
+export const BLEU_LAGON = 0x178078;
+export const VERT_ILE = 0x438b82;
+export const SABLE = 0xdaa66a;
+export const BRUME = 0xe5ebe3;
+
+/**
+ * Les eaux d'un archipel, de jour, telles qu'on doit les voir sur une eau plate (la vue 3D compense la lumière, voir
+ * world/mer.ts) : le lagon sur les hauts-fonds, la mer de l'archipel un peu plus loin, le large vers la Nuit océan, et
+ * l'écume du rivage. Aux Îles du Ciel, le plancher de nuages : plus sombre sous les îles (`lagon`), clair au loin.
+ */
+export interface Eaux {
+  lagon: Couleur;
+  mer: Couleur;
+  large: Couleur;
+  ecume: Couleur;
+}
+
+/** La teinte de mer propre à chaque archipel (celle de la fiche), entre le lagon et le large. */
+const MERS: Record<ArchipelagoId, Couleur> = {
+  // Les Premiers Rivages : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
+  '6e': 0x1a7486,
+  // Les Îles Brumeuses : la « mer rare » de la fiche, plus froide.
+  '5e': 0x23789c,
+  // Les Anciens Ateliers : un bleu pétrole plus sombre, sous la brume chaude.
+  '4e': 0x21606e,
+  // Les Îles du Ciel : le plancher de nuages de la fiche.
+  '3e': 0xdbdde1,
+};
+
+/** Les eaux d'un archipel (voir `Eaux`). */
+export function eauxDe(a: ArchipelagoId): Eaux {
+  const mer = MERS[a];
+  if (PALETTES[a].nuages)
+    // Un plancher de nuages : l'ombre bleutée des îles au-dessus, le blanc des nuages, puis la couleur de l'horizon.
+    return { lagon: mixColor(mer, PALETTES[a].jour.ambianceSol, 0.35), mer, large: mixColor(mer, PALETTES[a].jour.horizon, 0.5), ecume: mer };
+  return {
+    // Les hauts-fonds : le Bleu lagon, à peine teinté de la mer de l'archipel.
+    lagon: mixColor(BLEU_LAGON, mer, 0.2),
+    mer,
+    // Le large : la mer de l'archipel qui s'enfonce vers la Nuit océan.
+    large: mixColor(mer, NUIT_OCEAN, 0.62),
+    ecume: BRUME,
+  };
+}
+
 // ---------- Les surfaces ----------
 
 /** Les sols, de jour, avant le voile de l'archipel : la planche (herbe chaude, sable clair, roche tiède). */
 export const SOLS: Record<Ground, Faces> = {
-  herbe: { dessus: 0x72ad44, cote: 0x8a6b4a },
+  herbe: { dessus: 0x76a860, cote: 0x8a6b4a },
   sable: { dessus: 0xe6d3a0, cote: 0xcbb27e },
   roche: { dessus: 0xa49b8c, cote: 0x867c6f },
   neige: { dessus: 0xf1f4f6, cote: 0xd0d9e2 },

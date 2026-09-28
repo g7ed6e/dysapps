@@ -5,7 +5,9 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures de ces scènes (3D et 2D, de jour et de nuit), pour comparer un lot
 // de rendu à l'état d'avant ; elles ne sont pas versionnées. `--rendu archipeo` mesure le rendu en construction (le drapeau
-// `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel.
+// `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
+// `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
+// plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -31,6 +33,7 @@ const QUERY = (() => {
   return s ? `?${s}` : '';
 })();
 const ONLY = option('--archipel');
+const WAIT = Number(option('--attente') ?? 10) * 1000;
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
 const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
@@ -120,7 +123,7 @@ async function scenes() {
       try {
         // Le monde se construit en quelques secondes (rendu logiciel), puis la caméra rejoint son cadrage en douceur.
         // (Pas de waitForFunction : l'horloge figée de la page l'empêche de sonder.)
-        await page.waitForTimeout(10000);
+        await page.waitForTimeout(WAIT);
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
         rows.push({ archipel: a, vue, ...s });
@@ -139,11 +142,11 @@ async function scenes() {
 // Le build d'abord : le serveur de développement le passerait en mode développement.
 const js = process.argv.includes('--sans-poids') ? null : await weights();
 const rows = await scenes();
-console.log('\n| Archipel | Vue | Appels de dessin | Triangles | Géométries | Textures |');
-console.log('| --- | --- | ---: | ---: | ---: | ---: |');
+console.log('\n| Archipel | Vue | Appels de dessin | Triangles | Géométries | Textures | Images/s (rendu logiciel) |');
+console.log('| --- | --- | ---: | ---: | ---: | ---: | ---: |');
 for (const r of rows) {
-  if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | |`);
-  else console.log(`| ${r.archipel} | ${r.vue} | ${r.calls} | ${r.triangles.toLocaleString('fr-FR')} | ${r.geometries} | ${r.textures} |`);
+  if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | | |`);
+  else console.log(`| ${r.archipel} | ${r.vue} | ${r.calls} | ${r.triangles.toLocaleString('fr-FR')} | ${r.geometries} | ${r.textures} | ${r.fps} |`);
 }
 if (js) {
   console.log('\n| Fichier | Poids | Compressé (gzip) | Three.js |');

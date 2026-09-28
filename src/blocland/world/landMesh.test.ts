@@ -5,6 +5,8 @@ import {
   appelsDuSol,
   champDuSol,
   colonneEn,
+  CONTRASTE,
+  ecartDeCouleur,
   eclairement,
   EBOULIS,
   epaisseurDesStrates,
@@ -189,6 +191,54 @@ describe('le champ du sol', () => {
     expect(vus).toBeGreaterThan(100);
     expect(FRANGE).toBe(0.55);
     expect(FONDU).toBeLessThanOrEqual(0.3);
+  });
+
+  it('entre deux dessus qui tranchent (une dalle claire contre la roche), le passage se fait au bord, sur 0,3 case de chaque côté', () => {
+    // Lot R3 : une dalle d'acier contre du basalte, puis de l'herbe contre de la mousse, sur un plateau de 6 × 5.
+    const bloc = (gauche: string, droite: string): VoxelCube[] =>
+      Array.from({ length: 5 }, (_, y) => Array.from({ length: 6 }, (_, x) => colonne(x, y, 3).map((c, i, all) => (i === all.length - 1 ? { ...c, texture: x < 3 ? gauche : droite } : c)))).flat(2);
+    const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    const rgbLin = (c: number) => [lin(((c >> 16) & 255) / 255), lin(((c >> 8) & 255) / 255), lin((c & 255) / 255)];
+    const proche = (u: number[], v: number[]) => Math.hypot(u[0] - v[0], u[1] - v[1], u[2] - v[2]) < 3e-3;
+    /** Les sommets du dessus de la colonne (x, 2), leur x et leur couleur. */
+    const sommets = (champ: ChampDuSol, x: number) => {
+      const { sol } = landMesh(champ, { style: 'a' });
+      const out: { x: number; c: number[] }[] = [];
+      for (let t = 0; t < sol.colonnes.length; t++) {
+        const col = champ.colonnes[sol.colonnes[t]];
+        if (col.x !== x || col.y !== 2 || sol.normals[t * 9 + 1] < 0.5) continue;
+        for (let k = 0; k < 3; k++) out.push({ x: sol.positions[t * 9 + k * 3], c: [0, 1, 2].map((j) => sol.colors[t * 9 + k * 3 + j]) });
+      }
+      return out;
+    };
+    const dalle = couleurDeMatiere('4e', 'acier').dessus;
+    const roche = couleurDeMatiere('4e', 'basalte').dessus;
+    expect(ecartDeCouleur(dalle, roche)).toBeGreaterThan(CONTRASTE);
+    const champ = champDuSol('4e', bloc('acier', 'basalte'));
+    const milieu = [0, 1, 2].map((j) => (rgbLin(dalle)[j] + rgbLin(roche)[j]) / 2);
+    let bord = 0;
+    for (const [x, pure] of [
+      [2, dalle],
+      [3, roche],
+    ] as const)
+      for (const s of sommets(champ, x)) {
+        const aLaFrontiere = Math.abs(s.x - 3);
+        if (aLaFrontiere >= FONDU - 1e-4) expect(proche(s.c, rgbLin(pure)), `x = ${s.x}`).toBe(true);
+        else {
+          expect(aLaFrontiere).toBeLessThan(1e-4);
+          // Au bord, les deux côtés se rejoignent à mi-chemin (dans la gamme 0..255, avant le passage en linéaire).
+          const mi = rgbLin(((((dalle >> 16) & 255) + ((roche >> 16) & 255)) >> 1) * 65536 + ((((dalle >> 8) & 255) + ((roche >> 8) & 255)) >> 1) * 256 + (((dalle & 255) + (roche & 255)) >> 1));
+          expect(proche(s.c, mi) || proche(s.c, milieu), `x = ${s.x}`).toBe(true);
+          bord++;
+        }
+      }
+    expect(bord).toBeGreaterThan(0);
+    // La case voisine, plus loin du bord : sa couleur pure, sans rien de la roche.
+    for (const s of sommets(champ, 1)) expect(proche(s.c, rgbLin(dalle))).toBe(true);
+    // Herbe et mousse, proches, se fondent toujours d'un coin à l'autre (pas de découpe au bord).
+    expect(ecartDeCouleur(couleurDeMatiere('4e', 'herbe').dessus, couleurDeMatiere('4e', 'mousse').dessus)).toBeLessThan(CONTRASTE);
+    const doux = sommets(champDuSol('4e', bloc('herbe', 'mousse')), 2);
+    expect(doux.every((s) => Number.isInteger(Math.round(s.x * 1e4) / 1e4))).toBe(true);
   });
 
   it("descend la côte jusqu'à l'eau au niveau de la mer, et d'un bloc en altitude", () => {

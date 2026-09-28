@@ -34,12 +34,16 @@ import { createMeter } from './meter';
 import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
 import { cielDe, SOLEIL_DIRECTION, teinteSur } from '../world/palette';
 import { creerDome } from './ciel';
-import { passPhase, passingWhale, whalePassRoute, type WhaleRoute } from '../world/whalePass';
+import { passingWhale, whalePassRoute, type WhaleRoute } from '../world/whalePass';
 import { playWhaleBlow } from '../sound';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe, type Surface } from './surface';
 import { champDuSol, landMesh, pickCell, piedsSur, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { creerSol, type SolEn3D } from './sol';
+import { creerMer, type MerEn3D } from './mer';
+import { creerFaune } from './faune';
+import { NUAGES, nuagesDe, oiseauxDe, poseDePassage, poseDeRonde, type PoseDeBaleine, type Ronde } from '../world/faune';
+import { signatureDesTerres, terresDeLaMer } from '../world/mer';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
@@ -68,16 +72,8 @@ const ARROW_GAP = 56;
 const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
 /** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
 const EAU_MOYENNE = 0x54a2e4;
-/** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes. */
-const CLOUDS: [number, number, number][] = [
-  [0.05, 0.1, 4],
-  [0.22, 0.9, 3],
-  [0.4, 0.3, 5],
-  [0.55, 1.1, 3],
-  [0.7, -0.1, 4],
-  [0.88, 0.6, 3],
-  [1.02, 0.2, 2],
-];
+/** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes (world/faune.ts). */
+const CLOUDS = NUAGES;
 
 /** Une nappe de brume : blanc au centre, qui s'efface vers les bords (dégradé radial peint une fois). */
 function mistTexture(): THREE.Texture | null {
@@ -225,6 +221,8 @@ export default function WorldCanvas({
     surface: Surface | null;
     /** Le terrain à facettes d'Archipéo (lot R2), ou `null` dans le monde en blocs : son champ, pour le toucher et la marche. */
     sol: { en3D: SolEn3D; champ: ChampDuSol | null; signature: string } | null;
+    /** La mer d'Archipéo (lot R3), ou `null` dans le monde en blocs : repeinte quand la côte change. */
+    mer: { en3D: MerEn3D; signature: string } | null;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
@@ -405,8 +403,15 @@ export default function WorldCanvas({
     water.rotation.x = -Math.PI / 2;
     water.position.set(center.x, WATER_LEVEL, center.y);
     // Les Îles du Ciel : pas de mer, un plancher de nuages qui dérive lentement sous les îles.
-    water.visible = !ambience.sky;
+    water.visible = !ambience.sky && !archipeo;
     scene.add(water);
+    // Archipéo (lot R3) : la mer en dégradé de profondeur, l'écume du rivage et la houle (ou le plancher de nuages), en
+    // un appel de dessin ; peinte avec le terrain, quand la côte est connue.
+    const mer = archipeo ? creerMer(archipelago, bounds, width * 4) : null;
+    if (mer) {
+      mer.mesh.position.y = ambience.sky ? CLOUD_FLOOR : WATER_LEVEL;
+      scene.add(mer.mesh);
+    }
     const floorTex = ambience.sky ? mistTexture() : null;
     if (floorTex) {
       floorTex.wrapS = THREE.RepeatWrapping;
@@ -417,14 +422,19 @@ export default function WorldCanvas({
     const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
     cloudFloor.rotation.x = -Math.PI / 2;
     cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
-    cloudFloor.visible = ambience.sky;
+    cloudFloor.visible = ambience.sky && !archipeo;
     scene.add(cloudFloor);
 
     // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
     const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
     const clouds = new THREE.Group();
-    const cloudSpots: [number, number, number][] = ambience.sky ? [...CLOUDS, ...CLOUDS.map(([fx, fy, len]) => [(fx + 0.5) % 1.1, fy - 0.45, len + 1] as [number, number, number])] : CLOUDS;
-    cloudSpots.forEach(([fx, fy, len], i) => {
+    const cloudSpots = nuagesDe(archipelago);
+    /** Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. */
+    const cloudAt = cloudSpots.map(([fx, fy, len], i) => {
+      const low = ambience.sky && i >= CLOUDS.length;
+      return { x: bounds.minX + fx * width, y: low ? 4 + (i % 3) : 12, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
+    });
+    if (!archipeo) cloudSpots.forEach(([fx, fy, len], i) => {
       const cloud = new THREE.Group();
       for (let k = 0; k < len; k++) {
         const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
@@ -454,8 +464,7 @@ export default function WorldCanvas({
     const wingGeo = new THREE.BoxGeometry(0.5, 0.08, 0.16);
     const birds: { group: THREE.Group; wings: THREE.Mesh[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
     // Plus d'oiseaux et plus haut dans les Anciens Ateliers ; tout en haut dans les Îles du Ciel.
-    const birdCount = archipelago === '4e' ? 8 : 6;
-    const birdAlt = archipelago === '4e' ? 17 : ambience.sky ? 18 : 13;
+    const { nombre: birdCount, altitude: birdAlt } = oiseauxDe(archipelago);
     for (let i = 0; i < birdCount; i++) {
       const group = new THREE.Group();
       const left = new THREE.Mesh(wingGeo, birdMat);
@@ -463,7 +472,8 @@ export default function WorldCanvas({
       left.position.x = -0.25;
       right.position.x = 0.25;
       group.add(left, right);
-      scene.add(group);
+      // (Archipéo : les oiseaux sont des instances de la faune, plus bas ; le groupe ne sert qu'à garder leur vol.)
+      if (!archipeo) scene.add(group);
       birds.push({
         group,
         wings: [left, right],
@@ -480,7 +490,7 @@ export default function WorldCanvas({
     const whaleMat = new THREE.MeshLambertMaterial({ color: 0x3f5d7a });
     const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
     const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
-    const whales: { group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; skin: THREE.Mesh[]; cx: number; cy: number; r: number; phase: number; speed: number }[] = [];
+    const whales: ({ group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; skin: THREE.Mesh[] } & Ronde)[] = [];
     whaleSpots(archipelago).forEach((spot, i) => {
       const group = new THREE.Group();
       const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
@@ -500,7 +510,8 @@ export default function WorldCanvas({
       }
       spout.visible = false;
       group.add(body, head, belly, fin, fluke, spout);
-      scene.add(group);
+      // (Archipéo : les baleines sont des instances de la faune, plus bas.)
+      if (!archipeo) scene.add(group);
       whales.push({ group, fluke, spout, skin: [body, head, fin, fluke], cx: spot.x, cy: spot.y, r: spot.r, phase: i * 2.1, speed: 0.12 + i * 0.03 });
     });
     // Le passage au large (le mot de la baleine) : la baleine qui passe prend une peau qui garde sa silhouette la nuit
@@ -521,7 +532,31 @@ export default function WorldCanvas({
       foam.add(strip);
     }
     foam.visible = false;
-    scene.add(foam);
+    if (!archipeo) scene.add(foam);
+    // Archipéo (lot R3) : les baleines, les oiseaux et les nuages en facettes, un appel de dessin par famille.
+    const faune = archipeo ? creerFaune({ baleines: whales.length, oiseaux: birds.length, nuages: cloudAt.length }) : null;
+    if (faune) scene.add(faune.group);
+    /** Pose un nuage d'Archipéo à sa place (le milieu de ses cubes d'avant), tourné d'un rien, chacun le sien. */
+    const placeCloud = (i: number) => {
+      const c = cloudAt[i];
+      faune?.poserNuage(i, c.x + c.len / 2, c.y, c.z + 0.6, c.len, ((i * 0.37) % 1) * 0.6 - 0.3);
+    };
+    /** Le vol d'un oiseau à l'instant `t` : sur son cercle, à son altitude, tourné le long du cercle. */
+    const birdAt = (b: (typeof birds)[number], t: number) => {
+      const a = t * b.speed + b.phase;
+      return { x: b.cx + Math.cos(a) * b.r, y: b.alt + Math.sin(t * 0.7 + b.phase) * 0.6, z: b.cy + Math.sin(a) * b.r, cap: -a };
+    };
+    if (faune) {
+      // Leur place de départ : avec « Réduire les animations », ils y restent, figés (ailes à plat, queue droite, sans
+      // souffle).
+      cloudAt.forEach((_, i) => placeCloud(i));
+      birds.forEach((b, i) => {
+        const o = birdAt(b, 0);
+        faune.poserOiseau(i, o.x, o.y, o.z, o.cap, 0.6);
+      });
+      whales.forEach((wh, i) => faune.poserBaleine(i, { ...poseDeRonde(wh, 0), queue: 0, souffle: 0 }));
+      faune.fin();
+    }
     /** Le passage en cours : la baleine, son trajet, son début (temps de l'horloge), son souffle déjà joué ou non. */
     let pass: { whale: number; route: WhaleRoute; heading: number; start: number; blown: boolean } | null = null;
 
@@ -641,6 +676,7 @@ export default function WorldCanvas({
       vehicle: { group: vehicleGroup, hull: hullGroup, balloon: balloonGroup },
       surface,
       sol,
+      mer: mer ? { en3D: mer, signature: '' } : null,
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -791,6 +827,7 @@ export default function WorldCanvas({
         sun.intensity = c.soleilForce;
         waterMat.color.setHex(teinteSur(c.mer, EAU_MOYENNE));
         if (ambience.sky) cloudFloorMat.color.setHex(c.mer);
+        faune?.nuit(1 - light);
         return;
       }
       const p = palette(light, archipelago);
@@ -1050,12 +1087,25 @@ export default function WorldCanvas({
           cloud.position.x -= 0.004;
           if (cloud.position.x < bounds.minX - 12) cloud.position.x = bounds.maxX + 12;
         }
+        if (faune)
+          cloudAt.forEach((c, i) => {
+            c.x -= 0.004;
+            if (c.x < bounds.minX - 12) c.x = bounds.maxX + 12;
+            placeCloud(i);
+          });
         if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
+        // La houle et l'écume d'Archipéo.
+        mer?.temps(t);
         if (floorTex) floorTex.offset.set(t * 0.004, t * 0.002);
-        for (const b of birds) {
-          const a = t * b.speed + b.phase;
-          b.group.position.set(b.cx + Math.cos(a) * b.r, b.alt + Math.sin(t * 0.7 + b.phase) * 0.6, b.cy + Math.sin(a) * b.r);
-          b.group.rotation.y = -a;
+        for (const [i, b] of birds.entries()) {
+          const o = birdAt(b, t);
+          // Archipéo : l'oiseau bat des ailes en s'écrasant en hauteur (ailes relevées, puis baissées).
+          if (faune) {
+            faune.poserOiseau(i, o.x, o.y, o.z, o.cap, 0.3 + 0.8 * Math.sin(t * 9 + b.phase));
+            continue;
+          }
+          b.group.position.set(o.x, o.y, o.z);
+          b.group.rotation.y = o.cap;
           const flap = Math.sin(t * 9 + b.phase) * 0.6;
           b.wings[0].rotation.z = flap;
           b.wings[1].rotation.z = -flap;
@@ -1073,63 +1123,55 @@ export default function WorldCanvas({
             const i = route ? passingWhale(whales.map((wh) => ({ x: wh.cx, y: wh.cy })), route) : -1;
             if (route && i >= 0) {
               pass = { whale: i, route, heading: Math.atan2(-(route.to.y - route.from.y), route.to.x - route.from.x), start: t, blown: false };
-              for (const m of whales[i].skin) m.material = passMat;
+              if (!faune) for (const m of whales[i].skin) m.material = passMat;
             }
           }
         }
         for (const [i, wh] of whales.entries()) {
-          const a = t * wh.speed + wh.phase;
-          // Elle monte et descend lentement ; en surface, elle souffle.
-          const rise = Math.sin(t * 0.45 + wh.phase);
-          wh.group.position.set(wh.cx + Math.cos(a) * wh.r, -0.9 + rise * 0.9, wh.cy + Math.sin(a) * wh.r);
-          wh.group.rotation.y = -a - Math.PI / 2;
-          wh.group.rotation.z = rise * 0.12;
-          wh.fluke.rotation.z = Math.sin(t * 2.4 + wh.phase) * 0.35;
-          const surfacing = rise > 0.7;
-          wh.spout.visible = surfacing;
-          if (surfacing) wh.spout.scale.setScalar(0.6 + (rise - 0.7) * 2.5);
-          if (!pass || pass.whale !== i) continue;
-          const ph = passPhase(t - pass.start);
-          if (ph.phase === 'done') {
-            // De retour à sa ronde : sa peau ordinaire, plus d'écume.
-            for (const m of wh.skin) m.material = whaleMat;
-            wh.group.scale.setScalar(1);
-            foam.visible = false;
-            pass = null;
+          // Sa ronde au large ; pendant son passage, au large de l'île (world/faune.ts).
+          let pose: PoseDeBaleine = poseDeRonde(wh, t);
+          const passing = pass !== null && pass.whale === i;
+          if (pass && passing) {
+            const p = poseDePassage(wh, t, pass);
+            if (p.fini) {
+              // De retour à sa ronde : sa peau ordinaire, plus d'écume.
+              if (!faune) for (const m of wh.skin) m.material = whaleMat;
+              foam.visible = false;
+              faune?.poserEcume(null, 0);
+              pass = null;
+            } else {
+              pose = p.pose;
+              if (pose.souffle > 0 && !pass.blown) {
+                pass.blown = true;
+                if (soundsRef.current) playWhaleBlow();
+              }
+            }
+          }
+          const enPassage = passing && pass !== null;
+          if (faune) {
+            faune.poserBaleine(i, pose);
+            if (enPassage) faune.poserEcume(pose, WATER_LEVEL + 0.04);
             continue;
           }
-          if (ph.phase !== 'swim') {
-            // Elle s'enfonce à sa ronde, ou en remonte : sous l'eau, le trajet ne se voit pas.
-            wh.group.position.y -= ph.sink * 3.2;
-            wh.group.scale.setScalar(1);
-            wh.spout.visible = false;
-            foam.visible = false;
-            continue;
-          }
-          // Au large de l'île : elle glisse le long du trajet, fait surface, souffle une fois, replonge.
-          const { from, to } = pass.route;
-          const x = from.x + (to.x - from.x) * ph.u;
-          const z = from.y + (to.y - from.y) * ph.u;
-          wh.group.position.set(x, -0.15 - ph.depth * 3.05 + (1 - ph.depth) * Math.sin(t * 1.2) * 0.06, z);
-          wh.group.rotation.y = pass.heading;
-          wh.group.rotation.z = ph.pitch;
-          wh.group.scale.setScalar(1.2);
-          wh.fluke.rotation.z = Math.sin(t * 1.6) * 0.25;
-          wh.spout.visible = ph.spout > 0;
-          if (ph.spout > 0) wh.spout.scale.setScalar(0.7 + ph.spout * 0.9);
-          if (ph.spout > 0 && !pass.blown) {
-            pass.blown = true;
-            if (soundsRef.current) playWhaleBlow();
-          }
+          wh.group.position.set(pose.x, pose.y, pose.z);
+          wh.group.rotation.y = pose.cap;
+          wh.group.rotation.z = pose.roulis;
+          if (passing) wh.group.scale.setScalar(pose.echelle);
+          wh.fluke.rotation.z = pose.queue;
+          wh.spout.visible = pose.souffle > 0;
+          if (pose.souffle > 0) wh.spout.scale.setScalar(pose.souffle);
+          if (!enPassage) continue;
+          // Le liseré d'écume sous la baleine qui passe ; la nuit, un reflet de lune garde sa silhouette.
           const night = 1 - light;
           passMat.emissive.setRGB(0.05 * night, 0.09 * night, 0.14 * night);
           foamMat.emissive.setRGB(0.3 * night, 0.34 * night, 0.38 * night);
-          foamMat.opacity = 0.8 * Math.max(0, 1 - ph.depth * 1.6);
+          foamMat.opacity = pose.ecume;
           foam.visible = foamMat.opacity > 0.02;
-          foam.position.set(x, WATER_LEVEL + 0.04, z);
-          foam.rotation.y = pass.heading;
-          foam.scale.setScalar(1.2);
+          foam.position.set(pose.x, WATER_LEVEL + 0.04, pose.z);
+          foam.rotation.y = pose.cap;
+          foam.scale.setScalar(pose.echelle);
         }
+        faune?.fin();
         if (markerGroup.visible) {
           markerGroup.position.y = markerGroup.userData.base + 0.5 + Math.abs(Math.sin(t * 2.2)) * 0.8;
           markerGroup.rotation.y = t * 0.8;
@@ -1209,7 +1251,11 @@ export default function WorldCanvas({
       cloudFloorMat.dispose();
       floorTex?.dispose();
       cloudGeo.dispose();
+      wingGeo.dispose();
+      birdMat.dispose();
       dome?.dispose();
+      mer?.dispose();
+      faune?.dispose();
       arrowTex.dispose();
       mapArrow.material.dispose();
       meter?.dispose();
@@ -1248,6 +1294,15 @@ export default function WorldCanvas({
       w.sol.signature = signature;
     }
     w.sol.champ = champ;
+    // La mer (lot R3) : repeinte seulement si la côte a changé.
+    if (w.mer) {
+      const terres = terresDeLaMer(champ, autres);
+      const sig = signatureDesTerres(terres);
+      if (sig !== w.mer.signature) {
+        w.mer.en3D.peindre(terres);
+        w.mer.signature = sig;
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cubes]);
 

@@ -47,6 +47,13 @@ export const PAROI_HAUTE = 4;
  */
 export const FRANGE = 0.55;
 export const FONDU = 0.3;
+/**
+ * Deux dessus voisins de couleurs trop différentes (plus que ça, en distance entre couleurs 0..255) ne se fondent pas
+ * d'un coin à l'autre, sur deux cases : chacun garde sa couleur et le passage se fait au bord, sur `FONDU` de case de
+ * chaque côté (une dalle claire contre la roche, comme le sable au rivage). Les voisins proches (herbe et mousse, galet
+ * et pierre) se fondent toujours d'un coin à l'autre.
+ */
+export const CONTRASTE = 100;
 /** Les bornes de la nuance des pentes et des parois (option b). */
 export const NUANCE_SOL: [number, number] = [0.82, 1.08];
 /** Une pente à l'ombre reste au moins à cette part de la lumière d'un dessus plat. */
@@ -716,14 +723,17 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
   };
   const sableDe = (col: Colonne): RGB => rgb(col.muted ? mixColor(sable, DELAVE[0], DELAVE[1]) : sable);
   /** La couleur d'un coin : celle des cases qui s'y touchent (au plus un bloc d'écart), mêlées ; pas de damier. */
-  const coinVu = new Map<number, Couleur>();
+  const coinVu = new Map<string, Couleur>();
   const estSable = (c: Colonne) => c.matieres[c.matieres.length - 1] === 'sable';
+  /** Deux dessus qui ne se fondent pas d'un coin à l'autre (voir `CONTRASTE`). */
+  const tranchent = (p: Colonne, q: Colonne) => ecartDeCouleur(dessusDe(p), dessusDe(q)) > CONTRASTE;
   const couleurCoin = (col: Colonne, k: number): Couleur => {
     // Le sable reste du sable pur, et ne se fond pas dans ses voisines : le passage au sable est net (voir `FONDU`).
     if (col.liquide || estSable(col)) return dessusDe(col);
     const px = col.x + COINS[k][0];
     const py = col.y + COINS[k][1];
-    const key = cle(px, py) * 16 + (col.haut & 15) * 2 + (col.muted ? 1 : 0);
+    // (La couleur d'un coin dépend aussi du dessus de la colonne : une voisine qui tranche n'y entre pas.)
+    const key = `${cle(px, py) * 16 + (col.haut & 15) * 2 + (col.muted ? 1 : 0)}:${dessusDe(col)}`;
     const known = coinVu.get(key);
     if (known !== undefined) return known;
     let r = 0;
@@ -731,7 +741,7 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     let b = 0;
     let n = 0;
     for (const v of [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)]) {
-      if (!v || v.liquide || estSable(v) || Math.abs(v.haut - col.haut) > 1) continue;
+      if (!v || v.liquide || estSable(v) || Math.abs(v.haut - col.haut) > 1 || tranchent(col, v)) continue;
       const c = dessusDe(v);
       r += (c >> 16) & 255;
       g += (c >> 8) & 255;
@@ -767,6 +777,17 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     // La part de sable à une hauteur : 1 jusqu'à `FRANGE` de la case (depuis la mer), 0 après le fondu.
     const partDeSable = (y: number) => (!plage ? 0 : etendue < 1e-6 ? 1 : clamp((FRANGE + FONDU - (y - RIVAGE) / etendue) / FONDU, 0, 1));
     const sab = sableDe(col);
+    // Les côtés contre une voisine qui tranche (voir `CONTRASTE`) : le passage se fait au bord, sur `FONDU` de case.
+    const bords: { d: (q: V3) => number; axe: 0 | 2; ligne: number; c: RGB }[] = [];
+    if (!col.liquide && !estSable(col))
+      for (const [dx, dy] of COTES4) {
+        const v = colonneEn(champ, col.x + dx, col.y + dy);
+        if (!v || v.liquide || estSable(v) || Math.abs(v.haut - col.haut) > 1 || !tranchent(col, v)) continue;
+        const axe = dx !== 0 ? 0 : 2;
+        const bord = dx > 0 ? col.x + 1 : dx < 0 ? col.x : dy > 0 ? col.y + 1 : col.y;
+        const signe = dx + dy;
+        bords.push({ d: (q) => signe * (bord - q[axe]), axe, ligne: bord - signe * FONDU, c: rgb(dessusDe(v)) });
+      }
     for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonale)) {
       let morceaux: Sommet[][] = [
         [
@@ -779,10 +800,18 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
         for (const h of [RIVAGE + FRANGE * etendue, RIVAGE + (FRANGE + FONDU) * etendue])
           // (Un éclat plus fin qu'un centième de case ne se verrait pas : on ne le garde pas.)
           morceaux = morceaux.flatMap((m) => [couper(m, h, true), couper(m, h, false)].filter((q) => q.length >= 3 && aireAuSol(q) > 1e-3));
+      for (const b of bords)
+        morceaux = morceaux.flatMap((m) => [couper(m, b.ligne, true, b.axe), couper(m, b.ligne, false, b.axe)].filter((q) => q.length >= 3 && aireAuSol(q) > 1e-4));
       for (const m of morceaux) {
         const cs = m.map(({ p: q, c }) => {
+          // Contre une voisine qui tranche : à mi-chemin des deux couleurs au bord, sa couleur propre à `FONDU` de case.
+          let base = c;
+          for (const b of bords) {
+            const w = 0.5 * Math.max(0, 1 - b.d(q) / FONDU);
+            if (w > 0) base = [0, 1, 2].map((j) => base[j] + (b.c[j] - base[j]) * w) as RGB;
+          }
           const f = partDeSable(q[1]);
-          return peintRGB([0, 1, 2].map((j) => c[j] + (sab[j] - c[j]) * f) as RGB, q, true);
+          return peintRGB([0, 1, 2].map((j) => base[j] + (sab[j] - base[j]) * f) as RGB, q, true);
         });
         for (let j = 1; j + 1 < m.length; j++) t.triangle(m[0].p, m[j].p, m[j + 1].p, cs[0], cs[j], cs[j + 1], HAUT, i, ombree);
       }
@@ -893,10 +922,10 @@ interface Sommet {
   c: RGB;
 }
 
-/** Garde d'un polygone convexe la part sous (ou sur) la hauteur `h`, en coupant ses arêtes. */
-function couper(poly: Sommet[], h: number, dessous: boolean): Sommet[] {
+/** Garde d'un polygone convexe la part sous (ou sur) `h` le long d'un axe (la hauteur par défaut), en coupant ses arêtes. */
+function couper(poly: Sommet[], h: number, dessous: boolean, axe: 0 | 1 | 2 = 1): Sommet[] {
   const out: Sommet[] = [];
-  const f = (v: Sommet) => (dessous ? h - v.p[1] : v.p[1] - h);
+  const f = (v: Sommet) => (dessous ? h - v.p[axe] : v.p[axe] - h);
   for (let i = 0; i < poly.length; i++) {
     const a = poly[i];
     const b = poly[(i + 1) % poly.length];
@@ -923,6 +952,13 @@ function aireAuSol(poly: Sommet[]): number {
 }
 
 const rgb = (c: Couleur): RGB => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+
+/** La distance entre deux couleurs (canaux 0..255). */
+export function ecartDeCouleur(a: Couleur, b: Couleur): number {
+  const p = rgb(a);
+  const q = rgb(b);
+  return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+}
 
 /** Au-delà de ce cosinus (moins de 14° de la verticale), une facette du dessous regarde trop bas pour être vue. */
 export const DESSOUS_CACHE = 0.97;

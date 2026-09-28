@@ -196,7 +196,8 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
   expect(sheet()).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('foret');
+  // La sauvegarde suit l'arrivée : l'attendre, sans supposer qu'elle est déjà écrite quand l'écran change.
+  await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('foret'));
 });
 
 it('avec « Réduire les animations », un archipel déjà atteint s’ouvre tout de suite, sans écran du voyage', async () => {

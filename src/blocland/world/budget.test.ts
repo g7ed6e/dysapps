@@ -1,4 +1,4 @@
-import { RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit } from './budget';
+import { fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit } from './budget';
 import { ARCHIPELAGO_IDS } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -22,16 +22,32 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
 
 it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {
   // Lot R2 : le sol et la roche de chaque archipel, tout construit, en un maillage à facettes (world/landMesh.ts) ;
-  // 16 600 à 21 800 triangles aujourd'hui (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
+  // 18 200 à 25 200 triangles depuis le lot R3 (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
   // pour la lave du volcan).
   for (const a of ARCHIPELAGO_IDS) {
-    const { sol, triangles, drawCalls } = sceneCostArchipeo(a);
+    const { sol, mer, faune, triangles, drawCalls } = sceneCostArchipeo(a);
     expect(sol.drawCalls, a).toBeLessThanOrEqual(2);
     expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
-    // Et la scène entière ne dessine pas plus que le monde en blocs.
+    // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
+    // que le monde en blocs.
     const blocs = sceneCost(a);
-    expect(triangles, a).toBeLessThanOrEqual(blocs.triangles);
-    expect(drawCalls, a).toBeLessThan(blocs.drawCalls);
+    expect(triangles - mer.triangles - faune.triangles, a).toBeLessThanOrEqual(blocs.triangles);
+    expect(drawCalls - mer.drawCalls - faune.drawCalls, a).toBeLessThan(blocs.drawCalls);
+  }
+}, 30_000);
+
+it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en trois, en quelques milliers de triangles', () => {
+  // Lot R3. Avant : une mer texturée (un appel), et une soixantaine de modèles en cubes pour les nuages, les oiseaux et
+  // les baleines, jusqu'à 180 appels quand tout est dans la vue (un nuage en cubes texturés : six appels par cube).
+  for (const a of ARCHIPELAGO_IDS) {
+    const mer = merCost(a);
+    const faune = fauneCost(a);
+    expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
+    expect(mer.drawCalls, a).toBe(1);
+    expect(mer.triangles, a).toBeLessThanOrEqual(6000);
+    // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
+    expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
+    expect(faune.triangles, a).toBeLessThanOrEqual(1500);
   }
 }, 30_000);
 
