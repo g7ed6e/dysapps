@@ -720,3 +720,81 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
   else next.y += Math.sign(normale.z);
   return { cell, next };
 }
+
+// ---------- Les bornes de mission (poste « Bornes ») ----------
+
+/** Une borne de mission : la case de son socle (le bas de ses deux cubes `quest`), et si son île est fermée. */
+export interface Pilier {
+  quest: string;
+  x: number;
+  y: number;
+  z: number;
+  muted: boolean;
+}
+
+/** Les bornes d'un monde : une par mission, posée sur la case de son cube le plus bas. */
+export function piliersDe(cubes: VoxelCube[]): Pilier[] {
+  const parQuete = new Map<string, Pilier>();
+  for (const c of cubes) {
+    if (!c.quest || c.ghost) continue;
+    const p = parQuete.get(c.quest);
+    if (!p || c.z < p.z) parQuete.set(c.quest, { quest: c.quest, x: c.x, y: c.y, z: c.z, muted: Boolean(c.muted) || Boolean(p?.muted) });
+    else if (c.muted) p.muted = true;
+  }
+  return [...parQuete.values()];
+}
+
+/**
+ * La forme d'une borne, pour l'instancier (repère Three, origine au coin bas de la case du socle) : un pilier de pierre
+ * taillée, puis une tête d'ardoise (la couleur `borne`) chanfreinée sur le dessus. Elle tient dans ses deux cases, en
+ * retrait des bords : le toucher (`caseDeLaConstruction`) retrouve la case du socle ou celle de la tête.
+ */
+export const PILIER = { corps: [0.2, 0.8], hautDuCorps: 1.3, tete: [0.08, 0.92], chanfrein: 0.12, haut: 2 } as const;
+
+export function formeDuPilier(a: ArchipelagoId): GroupeDeConstruction {
+  const R = new Remplissage();
+  const pierre = couleurDeMatiere(a, 'pierre').cote;
+  const tete = couleurDeMatiere(a, 'borne');
+  const [c0, c1] = PILIER.corps;
+  const [t0, t1] = PILIER.tete;
+  const h = PILIER.hautDuCorps;
+  const H = PILIER.haut;
+  const k = PILIER.chanfrein;
+  const quad = (pts: V3[], n: V3, col: Couleur) => R.poly(pts, n, [col, col, col, col]);
+  // Le corps : quatre côtés (le dessous est sur le sol, le dessus sous la tête).
+  quad([[c0, c0, 0], [c1, c0, 0], [c1, c0, h], [c0, c0, h]], [0, -1, 0], pierre);
+  quad([[c0, c1, 0], [c1, c1, 0], [c1, c1, h], [c0, c1, h]], [0, 1, 0], pierre);
+  quad([[c0, c0, 0], [c0, c1, 0], [c0, c1, h], [c0, c0, h]], [-1, 0, 0], pierre);
+  quad([[c1, c0, 0], [c1, c1, 0], [c1, c1, h], [c1, c0, h]], [1, 0, 0], pierre);
+  // La tête : son dessous, ses côtés, ses chanfreins, son dessus.
+  quad([[t0, t0, h], [t1, t0, h], [t1, t1, h], [t0, t1, h]], [0, 0, -1], tete.cote);
+  const e = H - k;
+  quad([[t0, t0, h], [t1, t0, h], [t1, t0, e], [t0, t0, e]], [0, -1, 0], tete.cote);
+  quad([[t0, t1, h], [t1, t1, h], [t1, t1, e], [t0, t1, e]], [0, 1, 0], tete.cote);
+  quad([[t0, t0, h], [t0, t1, h], [t0, t1, e], [t0, t0, e]], [-1, 0, 0], tete.cote);
+  quad([[t1, t0, h], [t1, t1, h], [t1, t1, e], [t1, t0, e]], [1, 0, 0], tete.cote);
+  const i0 = t0 + k;
+  const i1 = t1 - k;
+  // Les chanfreins : quatre trapèzes qui se rejoignent en onglet aux coins.
+  quad([[t0, t0, e], [t1, t0, e], [i1, i0, H], [i0, i0, H]], [0, -1, 1], tete.dessus);
+  quad([[t0, t1, e], [t1, t1, e], [i1, i1, H], [i0, i1, H]], [0, 1, 1], tete.dessus);
+  quad([[t0, t0, e], [t0, t1, e], [i0, i1, H], [i0, i0, H]], [-1, 0, 1], tete.dessus);
+  quad([[t1, t0, e], [t1, t1, e], [i1, i1, H], [i1, i0, H]], [1, 0, 1], tete.dessus);
+  quad([[i0, i0, H], [i1, i0, H], [i1, i1, H], [i0, i1, H]], [0, 0, 1], tete.dessus);
+  return R.fin();
+}
+
+/** Triangles et appels de dessin des bornes d'un monde : une forme, instanciée une fois par borne, en un appel. */
+export function coutDesPiliers(piliers: Pilier[]): { triangles: number; drawCalls: number } {
+  return { triangles: piliers.length * (formeDuPilier('6e').indices.length / 3), drawCalls: piliers.length ? 1 : 0 };
+}
+
+/**
+ * La signature d'une construction : la même tant que ses cubes (et le nombre de cubes du sol sous elle) ne changent pas.
+ * La vue 3D ne refait le maillage que si elle change.
+ */
+export function signatureDeLaConstruction(cubes: VoxelCube[], sol: VoxelCube[]): string {
+  let s = `${sol.length}`;
+  for (const c of cubes) s += `|${c.x},${c.y},${c.z},${c.texture ?? c.color},${c.top ?? ''},${c.ghost ? 1 : 0}${c.muted ? 1 : 0},${c.tag ?? ''},${c.place ?? ''},${c.quest ?? ''}`;
+  return s;
+}

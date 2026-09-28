@@ -1,4 +1,4 @@
-import { APPEL_DU_PASSAGE, ENVELOPPES, enveloppeDe, fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, ENVELOPPES, navireCost, enveloppeDe, fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -78,5 +78,19 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
   // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.
-  for (const p of postes) it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
+  const mesures: Partial<Record<Poste, (a: (typeof ARCHIPELAGO_IDS)[number]) => { triangles: number; drawCalls: number }>> = {
+    construction: constructionCost,
+    bornes: bornesCost,
+    navire: navireCost,
+  };
+  for (const p of postes)
+    if (mesures[p])
+      it(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {
+        for (const a of ARCHIPELAGO_IDS) {
+          const m = mesures[p]!(a);
+          expect(m.triangles, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
+          expect(m.drawCalls, `${p} ${a}`).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
+        }
+      }, 30_000);
+    else it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
 });

@@ -9,6 +9,9 @@ import {
   DECALAGE_MAX,
   ECLAT_GLSL,
   eclatDeFenetre,
+  formeDuPilier,
+  piliersDe,
+  signatureDeLaConstruction,
   FENETRES_ALLUMEES,
   genresDesBlocs,
   maillageDeLaConstruction,
@@ -392,5 +395,37 @@ describe('Les toits de terre cuite (lot R5)', () => {
   it('deux îles voisines ne sont jamais toutes deux en terre cuite', () => {
     const voisines = BRIDGES.filter((b) => toitDe(b.from) === 'terre-cuite' && toitDe(b.to) === 'terre-cuite');
     expect(voisines.map((b) => b.id)).toEqual([]);
+  });
+
+  it('les bornes : un pilier taillé à tête chanfreinée, dans ses deux cases, une borne par mission', () => {
+    const forme = formeDuPilier('6e');
+    expect(forme.indices.length / 3).toBe(28);
+    expect(sensJuste(forme)).toBe(true);
+    for (const v of forme.positions) {
+      expect(v).toBeGreaterThanOrEqual(0);
+      expect(v).toBeLessThanOrEqual(2);
+    }
+    // Le toucher retrouve la case du socle ou de la tête, et la case devant est hors de la borne.
+    for (const t of triangles(forme)) {
+      const { cell, next } = caseDeLaConstruction(t.centre, t.n);
+      expect([cle(0, 0, 0), cle(0, 0, 1)]).toContain(cle(cell.x, cell.y, cell.z));
+      // (Sous la tête, qui déborde du corps, la case devant est le socle : on ne construit pas sous une borne.)
+      if (t.n.y > -0.5) expect([cle(0, 0, 0), cle(0, 0, 1)]).not.toContain(cle(next.x, next.y, next.z));
+    }
+    for (const a of ARCHIPELAGO_IDS) {
+      const { cubes } = monde(a);
+      const piliers = piliersDe(cubes);
+      expect(piliers.length, a).toBe(new Set(cubes.filter((c) => c.quest).map((c) => c.quest)).size);
+      for (const p of piliers) expect(cubes.some((c) => c.quest === p.quest && c.z === p.z + 1), a).toBe(true);
+    }
+  });
+
+  it('la signature change quand un bloc est posé, pas autrement', () => {
+    const { cubes, sol } = monde('5e', 'dernier');
+    const avant = signatureDeLaConstruction(cubes, sol);
+    expect(signatureDeLaConstruction([...cubes], sol)).toBe(avant);
+    const i = cubes.findIndex((c) => c.ghost);
+    const pose = cubes.map((c, k) => (k === i ? { ...c, ghost: undefined } : c));
+    expect(signatureDeLaConstruction(pose, sol)).not.toBe(avant);
   });
 });

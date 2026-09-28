@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -67,6 +67,19 @@ const CAPTURES = [
   // « Réduire les animations » : deux captures à quelques secondes d'écart, qui doivent être identiques (rien ne bouge).
   { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true, encore: 'ile-reduit-bis' },
   { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true, encore: 'archipel-reduit-bis' },
+  // La construction (lot R5) : un chantier (le dernier plan de chaque île en fantômes), de jour, de nuit, en Contraste
+  // élevé ; le phare des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` :
+  // la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
+  { nom: 'chantier', vue: 'île', famille: 'chantier', partie: 'chantier' },
+  { nom: 'chantier-nuit', vue: 'île', famille: 'chantier', partie: 'chantier', nuit: true },
+  { nom: 'chantier-contraste', vue: 'île', famille: 'chantier', partie: 'chantier', theme: 'contraste' },
+  { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
+  { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },
+  { nom: 'tour-apres', vue: 'île', famille: 'chantier', ile: 'tour' },
+  { nom: 'tour-nuit', vue: 'île', famille: 'chantier', ile: 'tour', nuit: true },
+  { nom: 'atelier', vue: 'île', famille: 'chantier', ile: 'atelier' },
+  { nom: 'atelier-nuit', vue: 'île', famille: 'chantier', ile: 'atelier', nuit: true },
+  { nom: 'phare', vue: 'île', famille: 'chantier', ile: 'phare' },
 ];
 /** L'écart entre une capture et sa seconde (`encore`). */
 const ECART = 4000;
@@ -99,13 +112,36 @@ async function scenes() {
   await server.listen();
   const base = server.resolvedUrls.local[0].replace(/\/$/, '');
   const load = (p) => server.ssrLoadModule(p);
-  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }] = await Promise.all([
+  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }] = await Promise.all([
     load('/src/blocland/biomes.ts'),
     load('/src/blocland/world/map.ts'),
     load('/src/blocland/world/budget.ts'),
+    load('/src/blocland/world/plans.ts'),
   ]);
   // La même partie tout construite que le test du budget (world/budget.test.ts).
   const { progress, village: built } = toutConstruit();
+  /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
+  const plansDe = (partie) => {
+    const plans = { ...built.plans };
+    if (partie === 'chantier')
+      for (const b of BIOMES) {
+        const l = plansFor(b.id);
+        if (l.length) delete plans[l[l.length - 1].id];
+      }
+    if (partie === 'tour-avant' || partie === 'tour-mi') {
+      const l = plansFor('tour');
+      // Avant : aucun plan posé ; pendant : le premier posé, la moitié du deuxième.
+      const faits = partie === 'tour-avant' ? 0 : 1;
+      l.forEach((p, i) => {
+        if (i >= faits) delete plans[p.id];
+      });
+      if (faits < l.length && partie === 'tour-mi') {
+        const cells = planCells(l[faits]).map((c) => c.key);
+        plans[l[faits].id] = cells.slice(0, Math.floor(cells.length / 2));
+      }
+    }
+    return plans;
+  };
 
   const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || undefined,
@@ -116,13 +152,16 @@ async function scenes() {
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
     const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte' };
+    const classe = (id) => BIOMES.find((b) => b.id === id).classe;
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
       ...(SHOTS
-        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille))).map((c) => ({
+        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).map((c) => ({
             vue: c.vue,
-            go: routes[c.vue],
+            go: c.ile ? `/aventure/${c.ile}` : routes[c.vue],
+            ile: c.ile,
+            plans: c.partie ? plansDe(c.partie) : null,
             time: c.nuit ? NIGHT : DAY,
             view: c.view,
             theme: c.theme,
@@ -132,7 +171,7 @@ async function scenes() {
           }))
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.goto(`${base}/icon.svg`);
@@ -145,7 +184,7 @@ async function scenes() {
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, at }, progress, view, theme, reduceMotion },
+        { village: { ...built, ...(plans ? { plans } : {}), at: ile ?? at }, progress, view, theme, reduceMotion },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
