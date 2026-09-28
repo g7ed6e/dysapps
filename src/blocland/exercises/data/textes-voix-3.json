@@ -3,7 +3,7 @@
   "biome": "textes",
   "type": "voix",
   "level": 3,
-  "instruction": "Quelle subordonnée, et quel rôle pour le pronom relatif ? Le rappel est affiché.",
+  "instruction": "Nomme la subordonnée, ou trouve l’antécédent et la fonction du pronom relatif. Le rappel est affiché.",
   "items": [
     {
       "key": "textes-voix-3-0",
@@ -11,18 +11,18 @@
       "spoken": "« Je lis le livre que tu m’as prêté. » Quelle subordonnée ?",
       "choices": ["relative", "conjonctive", "interrogative indirecte"],
       "answer": "relative",
-      "hint": "« Que » suit le nom « livre » : il le reprend.",
+      "hint": "Quel mot vient juste avant « que » ? Est-ce un nom ?",
       "explanation": "« Que tu m’as prêté » complète le nom « livre », son antécédent : subordonnée relative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -33,18 +33,18 @@
       "spoken": "« Je crois que tu as raison. » Quelle subordonnée ?",
       "choices": ["conjonctive", "relative", "interrogative indirecte"],
       "answer": "conjonctive",
-      "hint": "« Que » suit un verbe, « crois », et ne reprend aucun nom.",
+      "hint": "Quel mot vient juste avant « que » : un nom ou un verbe ?",
       "explanation": "« Que tu as raison » complète le verbe « crois » (je crois quoi ?) : subordonnée conjonctive, COD du verbe.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -55,18 +55,18 @@
       "spoken": "« Je me demande où il est. » Quelle subordonnée ?",
       "choices": ["interrogative indirecte", "relative", "conjonctive"],
       "answer": "interrogative indirecte",
-      "hint": "C’est une question rapportée : « Où est-il ? »",
+      "hint": "Peut-on en faire une question ?",
       "explanation": "« Où il est » rapporte la question « Où est-il ? » après « je me demande » : subordonnée interrogative indirecte.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -77,18 +77,18 @@
       "spoken": "« La ville où je suis né est au bord de la mer. » Quelle subordonnée ?",
       "choices": ["relative", "interrogative indirecte", "conjonctive"],
       "answer": "relative",
-      "hint": "« Où » suit le nom « ville » : il le reprend.",
+      "hint": "Quel mot vient juste avant « où » ? Est-ce un nom ?",
       "explanation": "« Où je suis né » complète le nom « ville », son antécédent : subordonnée relative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -106,11 +106,11 @@
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -128,11 +128,11 @@
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -150,11 +150,11 @@
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
@@ -166,17 +166,17 @@
       "choices": ["complément de lieu", "sujet", "COD"],
       "answer": "complément de lieu",
       "hint": "J’étudie où ?",
-      "explanation": "« Où » reprend « le collège » et dit où j’étudie : complément circonstanciel de lieu.",
+      "explanation": "« Où » reprend « le collège » et dit où j’étudie : complément de lieu.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les subordonnées",
           "lines": [
-            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
-            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
-            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
-            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
-            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+            "Relative : complète un nom, l’antécédent (qui, que, où). Le sac que je porte.",
+            "Conjonctive : complète un verbe (que). Je pense que tu viendras.",
+            "Interrogative indirecte : question rapportée (si, où, quand). Je me demande quand il rentre.",
+            "Relatif qui : sujet (l’oiseau qui chante). Relatif que : souvent COD.",
+            "Relatif où : complément de lieu ou de temps (le jour où il neige)."
           ]
         }
       }
