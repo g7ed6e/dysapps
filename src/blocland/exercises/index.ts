@@ -85,7 +85,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'cabinet-racines-1',
   'cabinet-racines-2', 'cabinet-sens-1', 'cabinet-sens-2', 'cabinet-nuances-1', 'cabinet-nuances-2',
   'textes-inferences-1', 'textes-inferences-2',
-  'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'baie-hello-1', 'baie-hello-2',
+  'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'textes-voix-1', 'textes-voix-2', 'textes-voix-3', 'baie-hello-1', 'baie-hello-2',
   'baie-numbers-1', 'baie-numbers-2', 'baie-ears-1', 'baie-ears-2', 'horloge-to-be-1', 'horloge-to-be-2',
   'horloge-have-got-1', 'horloge-have-got-2', 'horloge-present-simple-1', 'horloge-present-simple-2',
   'comptoir-shopping-1', 'comptoir-shopping-2', 'comptoir-routine-1', 'comptoir-routine-2', 'comptoir-listening-1',
