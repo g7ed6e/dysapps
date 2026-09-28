@@ -1,7 +1,7 @@
 import { AVATAR_PARTS } from '../../Avatar';
 import { BIOMES, type BiomeId } from '../../biomes';
 import { ARCHIPELAGO_IDS } from '../archipels';
-import { BRUME } from '../palette';
+import { ambianceDe, BRUME, SOLS } from '../palette';
 import { BONHOMME, LUEUR, OEIL, OUTIL, TENUE, VERRE_DE_FI } from './couleurs';
 import { bonhommePeint, TAILLE_DU_BONHOMME, TETE_DU_BONHOMME } from './bonhomme';
 import { creaturePeinte, ESPECES } from './creaturesPeintes';
@@ -220,30 +220,65 @@ describe('Le bonhomme en facettes', () => {
     /** Le centre d'un triangle, sur l'axe `k` (0 : X, 1 : Y, 2 : Z). */
     const centre = (t: number, k: number) => (sommet(f, t, 0)[k] + sommet(f, t, 1)[k] + sommet(f, t, 2)[k]) / 3;
     const sable = (t: number) => f.teintes[t] === BONHOMME.rabat;
+    const bretelle = (t: number) => f.teintes[t] === BONHOMME.bretelles;
+    const sac = (t: number) => f.teintes[t] === BONHOMME.sac || sable(t);
     /** L'aire vue, en blocs carrés, de ce qui vérifie `pred` (au centième de bloc). */
     const aire = (angle: number, pred: (t: number) => boolean) => pixels(projeter(f, { angle, pas: 0.01 }), pred) * 0.01 * 0.01;
 
-    it('ses deux bretelles Sable (0,06 bloc de large) se voient de face, une de chaque côté, sur la poitrine', () => {
+    it('ses deux bretelles de cuir (0,06 bloc de large) se voient de face, une de chaque côté, sur la poitrine', () => {
       for (const cote of [-1, 1]) {
-        const bretelle = (t: number) => sable(t) && centre(t, 2) < 0 && Math.sign(centre(t, 0)) === cote;
-        // Au moins 0,06 × 0,3 bloc de face, et de trois quarts des deux côtés.
-        for (const angle of [0, -0.6, 0.6]) expect(aire(angle, bretelle), `côté ${cote}, angle ${angle}`).toBeGreaterThanOrEqual(0.06 * 0.3);
-        const xs = [...f.teintes.keys()].filter((t) => bretelle(t) && centre(t, 1) < 1.4).flatMap((t) => [0, 1, 2].map((k) => sommet(f, t, k)[0]));
+        const devant = (t: number) => bretelle(t) && centre(t, 2) < 0 && Math.sign(centre(t, 0)) === cote;
+        // Au moins 0,06 × 0,25 bloc de face, et de trois quarts des deux côtés.
+        for (const angle of [0, -0.6, 0.6]) expect(aire(angle, devant), `côté ${cote}, angle ${angle}`).toBeGreaterThanOrEqual(0.06 * 0.25);
+        const xs = [...f.teintes.keys()].filter((t) => devant(t) && centre(t, 1) < 1.4).flatMap((t) => [0, 1, 2].map((k) => sommet(f, t, k)[0]));
         expect(Math.max(...xs) - Math.min(...xs), `côté ${cote}`).toBeCloseTo(0.06, 2);
       }
     });
 
+    it('aucune bande claire au milieu du torse (revue d’ensemble, DA-6) : devant, rien de plus clair que la peau', () => {
+      const lum = (c: number) => luminance(c);
+      const torse = f.table.findIndex((p) => p.nom === 'corps');
+      for (let t = 0; t < nbTriangles(f); t++)
+        if (f.pieces[t] === torse && centre(t, 2) < 0) expect(lum(f.teintes[t]), `triangle ${t}`).toBeLessThan(lum(BONHOMME.peau));
+      expect(lum(BONHOMME.bretelles)).toBeLessThan(0.1);
+    });
+
+    it('le sac se voit en volume de trois quarts face, des deux côtés, et de dos', () => {
+      for (const angle of [-0.6, 0.6]) expect(aire(angle, sac), `angle ${angle}`).toBeGreaterThanOrEqual(0.03);
+      for (const angle of [Math.PI, Math.PI - 0.6, 0.6 - Math.PI]) expect(aire(angle, sac), `angle ${angle}`).toBeGreaterThanOrEqual(0.15);
+    });
+
     it('son rabat Sable, en haut du sac, se voit de dos et de trois quarts dos (0,1 × 0,1 bloc au moins)', () => {
-      const rabat = (t: number) => sable(t) && centre(t, 2) > 0.1 && centre(t, 1) < 1.47;
+      const rabat = (t: number) => sable(t) && centre(t, 2) > 0.1 && centre(t, 1) < 1.52;
       for (const angle of [Math.PI, Math.PI - 0.6, 0.6 - Math.PI]) expect(aire(angle, rabat), `angle ${angle}`).toBeGreaterThanOrEqual(0.1 * 0.1);
     });
 
-    it('le sac est sur le dos : rien de cuir ni de Sable devant le torse sous les bretelles, ni à la hanche', () => {
+    it('le sac est sur le dos : rien de cuir ni de Sable devant le torse, ni à la hanche', () => {
       for (let t = 0; t < nbTriangles(f); t++) {
-        if (f.teintes[t] === BONHOMME.sac) expect(centre(t, 2), `triangle ${t}`).toBeGreaterThan(0.1);
-        if (sable(t)) expect(centre(t, 1), `triangle ${t}`).toBeGreaterThan(1);
+        if (f.teintes[t] === BONHOMME.sac || sable(t)) expect(centre(t, 2), `triangle ${t}`).toBeGreaterThan(0.1);
+        if (sac(t)) expect(centre(t, 1), `triangle ${t}`).toBeGreaterThan(0.9);
       }
     });
+  });
+
+  it('se détache des sols (revue d’ensemble, DA-6) : 3:1 au moins, la veste et les cheveux sur l’herbe du 6e et la roche du 5e, la veste sur l’herbe du 5e, le jean sur le basalte du 4e', () => {
+    const contraste = (a: number, b: number) => {
+      const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+      return (x + 0.05) / (y + 0.05);
+    };
+    const herbe6e = ambianceDe('6e').sols?.herbe?.dessus ?? SOLS.herbe.dessus;
+    const roche5e = ambianceDe('5e').sols?.roche?.dessus ?? SOLS.roche.dessus;
+    const basalte4e = ambianceDe('4e').sols?.basalte?.dessus ?? SOLS.basalte.dessus;
+    for (const c of [BONHOMME.veste, BONHOMME.cheveux]) {
+      expect(contraste(c, herbe6e)).toBeGreaterThanOrEqual(3);
+      expect(contraste(c, roche5e)).toBeGreaterThanOrEqual(3);
+    }
+    expect(contraste(BONHOMME.jean, basalte4e)).toBeGreaterThanOrEqual(3);
+    // La veste, en Nuit océan, se lit aussi sur l'herbe sombre du 5e (directeur artistique et référent dys).
+    const herbe5e = ambianceDe('5e').sols?.herbe?.dessus ?? SOLS.herbe.dessus;
+    expect(contraste(BONHOMME.veste, herbe5e)).toBeGreaterThanOrEqual(3);
+    // Le jean, plus clair que la veste : les deux masses se lisent l'une contre l'autre.
+    expect(contraste(BONHOMME.jean, BONHOMME.veste)).toBeGreaterThanOrEqual(3);
   });
 
   it('tient dans sa case, centré', () => {

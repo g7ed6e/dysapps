@@ -120,7 +120,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
             [s * 0.78, 5.2],
             [s * 0.46, 6.6],
           ],
-          0.09,
+          0.09 * a.veines,
           a.lueur,
         );
       veineSur(
@@ -131,7 +131,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
           [-0.32, 7.35],
           [0.32, 7.35],
         ],
-        0.09,
+        0.09 * a.veines,
         a.lueur,
       );
     },
@@ -372,14 +372,14 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     veines: (T, a) => {
       const z = () => ECU_Z[0];
       const b = BAS_DE_L_ECU;
-      veine(T, [...ECU.map(([x, y]): [number, number] => [x * 0.86, b + (y - b) * 0.9 + 0.1]), [-0.86, b + 2.53]], 0.09, a.lueur, z);
+      veine(T, [...ECU.map(([x, y]): [number, number] => [x * 0.86, b + (y - b) * 0.9 + 0.1]), [-0.86, b + 2.53]], 0.09 * a.veines, a.lueur, z);
       veine(
         T,
         [
           [0, b + 0.4],
           [0, b + 2.4],
         ],
-        0.14,
+        0.14 * a.veines,
         a.lueur,
         z,
       );

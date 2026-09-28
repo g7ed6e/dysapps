@@ -13,8 +13,14 @@ export interface Modele {
    */
   hauteur(x: number, y: number, h: number): number;
   /**
-   * La matière du dessus d'une colonne modelée (une texture de ../pixels.ts, par exemple « neige » sur le gradin du haut),
-   * à partir de sa hauteur dessinée `h` et de sa matière de marche ; sans cette fonction, le dessus garde sa matière.
+   * La matière du dessus d'une colonne modelée (une texture de ../pixels.ts, ou « sol:<sol> », un sol de la palette de
+   * l'archipel, par exemple « sol:roche », voir ../palette.ts `couleurDuSol`), à partir de sa hauteur dessinée `h` et de
+   * sa matière de marche ; sans cette fonction, le dessus garde sa matière.
    */
   dessus?(x: number, y: number, h: number, matiere: string | undefined): string | undefined;
+  /**
+   * La matière des flancs d'une colonne qui monte (les cubes ajoutés sous son dessus), comme `dessus` ; sans elle, les
+   * cubes ajoutés sont de la matière d'en dessous.
+   */
+  flanc?: string;
 }

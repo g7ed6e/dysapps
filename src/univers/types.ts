@@ -83,6 +83,12 @@ export interface TextesBaleine {
   ouvrage: (ile: string) => string;
 }
 
+/** Ce que dit le panneau d'un monument dont l'univers change le dessin (sa description, son message de fin). */
+export interface TextesMonument {
+  description: string;
+  done: string;
+}
+
 export interface TextesUnivers {
   gardiens: Record<BiomeId, TextesGardien>;
   /** L'espèce de la créature de chaque île (« golem de mousse »), après son nom. */
@@ -91,4 +97,9 @@ export interface TextesUnivers {
   /** Le défi en sentinelle et le moment du rallumage ; `null` : l'arène d'avant le lot 6, sans moment au village. */
   sentinelles: TextesSentinelles | null;
   baleine: TextesBaleine;
+  /**
+   * Les monuments que l'univers dessine autrement, par identifiant (`world/monuments.ts`) : leur nom, leurs cases et
+   * leur coût restent communs ; les autres gardent le texte de `world/monuments.ts`.
+   */
+  monuments: Partial<Record<string, TextesMonument>>;
 }

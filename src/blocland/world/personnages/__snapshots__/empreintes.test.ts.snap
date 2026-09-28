@@ -2,7 +2,7 @@
 
 exports[`Empreintes des personnages en facettes > le bonhomme 1`] = `
 {
-  "empreinte": "cb0448e1",
+  "empreinte": "2c9c7d03",
   "triangles": 472,
 }
 `;
@@ -44,21 +44,21 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
 {
   "3e": {
     "creatures": "1667 f3c57bc1 3d8fa5cd",
-    "gardiens": "1331 875aa579",
+    "gardiens": "1331 cff72e77",
   },
   "4e": {
     "creatures": "1528 ea5d735f c5257533",
-    "gardiens": "1258 e4b24e6b",
+    "gardiens": "1258 77be2995",
   },
   "5e": {
     "creatures": "1605 4f4fd296 50e4196b",
-    "gardiens": "1453 65c1acf2",
+    "gardiens": "1453 8107df79",
   },
   "6e": {
     "creatures": "2488 cae52569 4c8615d7",
-    "gardiens": "1726 42877540",
+    "gardiens": "1726 106135e3",
   },
-  "bonhomme": "472 3df78282 1032f390",
+  "bonhomme": "472 045a95c7 1032f390",
 }
 `;
 
@@ -98,14 +98,14 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
 exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, de jour et de nuit 1`] = `
 {
   "bonhomme": {
-    "down:0": "16×37 7c2d8c28 16×37 d018d216",
-    "down:1": "16×39 9c766bc9 16×39 6ba036d6",
-    "left:0": "12×38 34578de0 12×38 b9db9a06",
-    "left:1": "20×38 fe7d8313 20×38 59312225",
-    "right:0": "12×38 780c714e 12×38 406cbce2",
-    "right:1": "19×36 1c5ce59e 19×36 fbe18061",
-    "up:0": "16×37 4dc94462 16×37 03ba87dc",
-    "up:1": "16×40 a6d052e1 16×40 16aa14eb",
+    "down:0": "16×37 e811ed29 16×37 d6003df7",
+    "down:1": "16×39 755d1bc5 16×39 7e2fc2e0",
+    "left:0": "14×38 61a0a64e 14×38 7ca3e03a",
+    "left:1": "20×38 2da1cbb0 20×38 49c1c092",
+    "right:0": "14×38 60bc599f 14×38 d738ab8d",
+    "right:1": "19×36 b313078c 19×36 cf597ba7",
+    "up:0": "16×37 22cd2899 16×37 a1635a59",
+    "up:1": "16×40 494fe969 16×40 7ad3c6dd",
   },
   "creatures": {
     "atelier": "23×48 58f841fd 23×48 9bd01a3c",

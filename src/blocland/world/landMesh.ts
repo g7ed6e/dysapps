@@ -24,8 +24,8 @@
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 import type { VoxelCube } from './cube';
 import { AMBIENCE, mixColor } from './daylight';
-import { ALTITUDE, type ArchipelagoId } from './map';
-import { cielDe, couleurDeMatiere, laveQuiBrille, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
+import { ALTITUDE, type ArchipelagoId, type Ground } from './map';
+import { cielDe, couleurDeMatiere, couleurDuSol, laveQuiBrille, MATIERES, SOLEIL_DIRECTION, SOLS, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
 import { decorPose } from './decor';
 import { bruit, FROID, FROID_SOUS } from './style';
@@ -230,7 +230,8 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
     let d = dessus.get(c);
     if (d === undefined) {
       const m = c.matieres[c.matieres.length - 1];
-      d = m in MATIERES ? couleurDeMatiere(a, m as TextureKind).dessus : parseInt(m.slice(1), 16);
+      const g = solNomme(m);
+      d = m in MATIERES ? couleurDeMatiere(a, m as TextureKind).dessus : g ? couleurDuSol(a, g).dessus : parseInt(m.slice(1), 16);
       dessus.set(c, d);
     }
     return d;
@@ -370,8 +371,13 @@ export function poseDuDecor(champ: ChampDuSol, cubes: VoxelCube[]): VoxelCube[] 
   });
 }
 
+/** Un sol de la palette de l'archipel, nommé par le modelé dessiné (« sol:roche ») : sa matière, ou `null`. */
+export function solNomme(m: string): Ground | null {
+  return m.startsWith('sol:') && m.slice(4) in SOLS ? (m.slice(4) as Ground) : null;
+}
+
 function matiereDe(c: VoxelCube): string {
-  return c.texture && c.texture in MATIERES ? c.texture : c.color;
+  return c.texture && (c.texture in MATIERES || solNomme(c.texture)) ? c.texture : c.color;
 }
 
 /**
@@ -711,7 +717,8 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     const k = muted ? `~${m}` : m;
     let f = facesVues.get(k);
     if (!f) {
-      f = m in MATIERES ? couleurDeMatiere(a, m as TextureKind) : { dessus: parseInt(m.slice(1), 16), cote: parseInt(m.slice(1), 16) };
+      const g = solNomme(m);
+      f = m in MATIERES ? couleurDeMatiere(a, m as TextureKind) : g ? couleurDuSol(a, g) : { dessus: parseInt(m.slice(1), 16), cote: parseInt(m.slice(1), 16) };
       if (muted) f = { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) };
       facesVues.set(k, f);
     }

@@ -21,6 +21,8 @@
 //
 // Le phare de Grimoire (6e, décision 16) : chaque étape finie de son plan laisse la place à une pièce du phare de
 // référence (world/decor/phare.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
+// Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
+// ronde de pierre à feu ouvert (./phareDuLarge.ts), dans l'opaque (son feu dans les fenêtres).
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDuPhare`, la case du
@@ -34,6 +36,7 @@ import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseD
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
+import { dessinerPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
@@ -222,6 +225,8 @@ export interface MaillageDeLaConstruction {
   phare?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
   /** Les ponts de pierre et de bois du 5e (./ponts.ts) : leur tranche du groupe opaque (triangles), dessinée à la fin. */
   ponts?: { opaque: [number, number] };
+  /** Le phare du large du 5e (./phareDuLarge.ts), fini : comme `phare`, ses triangles et les cases du monument. */
+  phareDuLarge?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
 }
 
 export interface OptionsDeLaConstruction {
@@ -592,7 +597,13 @@ export function maillageDeLaConstruction(
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
   // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./ponts.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
-  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !ponts?.remplacees.has(cle(c.x, c.y, c.z)));
+  // Le phare du large du 5e : fini, il laisse la place à son modèle (./phareDuLarge.ts).
+  const large = options.navire ? null : phareDuLarge(cubes);
+  const remplace = (c: VoxelCube) => {
+    const k = cle(c.x, c.y, c.z);
+    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
+  };
+  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !remplace(c));
   const genres = genresDesBlocs(dessines);
   const decalages = decalagesDe(genres);
   // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
@@ -1024,6 +1035,20 @@ export function maillageDeLaConstruction(
     dessinDesPonts = { opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }) };
   }
 
+  // ---- Le phare du large : la tour, sa corniche et son parapet dans l'opaque, son feu dans les fenêtres (allumé le
+  // premier : il suit la lueur, sans pulser ; éteint et délavé sur une île fermée).
+  let dessinDuLarge: MaillageDeLaConstruction['phareDuLarge'];
+  if (large?.pose) {
+    const P = new Pinceau();
+    const L = new Pinceau();
+    dessinerPhareDuLarge(P, L, large.pose);
+    dessinDuLarge = {
+      opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }),
+      fenetres: F.facettes(L.fin(), { extra: 0 }),
+      cellules: large.pose.cellules,
+    };
+  }
+
   const opaque = O.fin();
   const f = F.fin();
   const g = G.fin();
@@ -1034,6 +1059,7 @@ export function maillageDeLaConstruction(
   };
   if (dessinDuPhare) m.phare = dessinDuPhare;
   if (dessinDesPonts) m.ponts = dessinDesPonts;
+  if (dessinDuLarge) m.phareDuLarge = dessinDuLarge;
   return m;
 }
 
@@ -1074,9 +1100,9 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
 }
 
 /**
- * La case touchée sur le phare de Grimoire (`groupe` : le maillage touché, `triangle` : l'indice du triangle) : la case
- * remplacée la plus proche du point touché, et la case devant, du côté où la facette regarde le plus. `null` si le
- * triangle n'est pas au phare.
+ * La case touchée sur le phare de Grimoire ou le phare du large (`groupe` : le maillage touché, `triangle` : l'indice du
+ * triangle) : la case remplacée la plus proche du point touché, et la case devant, du côté où la facette regarde le
+ * plus. `null` si le triangle n'est à aucun des deux phares.
  */
 export function caseDuPhare(
   m: MaillageDeLaConstruction,
@@ -1085,10 +1111,9 @@ export function caseDuPhare(
   point: { x: number; y: number; z: number },
   normale: { x: number; y: number; z: number },
 ): { cell: Cell; next: Cell } | null {
-  const p = m.phare;
+  // Le phare de Grimoire, ou le phare du large : celui dont les triangles contiennent le triangle touché.
+  const p = [m.phare, m.phareDuLarge].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
   if (!p) return null;
-  const [t0, t1] = p[groupe];
-  if (triangle < t0 || triangle >= t1 || !p.cellules.length) return null;
   // Repère Three : le point (x, hauteur, y), un quart de case derrière la facette, comme `caseDeLaConstruction`.
   const q = { x: point.x - normale.x * 0.25, y: point.z - normale.z * 0.25, z: point.y - normale.y * 0.25 };
   let cell = p.cellules[0];
@@ -1162,7 +1187,7 @@ export function construireParIle(
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };
 }
 
-/** Des maillages mis bout à bout : les trois groupes, indices décalés (et les triangles du phare avec eux). */
+/** Des maillages mis bout à bout : les trois groupes, indices décalés (et les triangles des phares avec eux). */
 export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaConstruction {
   const joindre = <T extends GroupeDeConstruction>(groupes: T[], extras: (keyof T)[]): { g: GroupeDeConstruction & Record<string, Float32Array>; debuts: number[] } => {
     const debuts: number[] = [];
@@ -1202,12 +1227,15 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
     fantomes: g.g as unknown as GroupeDesFantomes,
   };
   liste.forEach((x, i) => {
-    if (!x.phare) return;
-    m.phare = {
-      opaque: [x.phare.opaque[0] + o.debuts[i], x.phare.opaque[1] + o.debuts[i]],
-      fenetres: [x.phare.fenetres[0] + f.debuts[i], x.phare.fenetres[1] + f.debuts[i]],
-      cellules: x.phare.cellules,
-    };
+    for (const k of ['phare', 'phareDuLarge'] as const) {
+      const q = x[k];
+      if (!q) continue;
+      m[k] = {
+        opaque: [q.opaque[0] + o.debuts[i], q.opaque[1] + o.debuts[i]],
+        fenetres: [q.fenetres[0] + f.debuts[i], q.fenetres[1] + f.debuts[i]],
+        cellules: q.cellules,
+      };
+    }
   });
   return m;
 }

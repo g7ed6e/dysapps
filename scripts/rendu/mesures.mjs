@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -94,6 +94,14 @@ const CAPTURES = [
   { nom: 'marais-nuit', vue: 'île', famille: 'brumeuses', ile: 'marais', nuit: true },
   { nom: 'carrefour', vue: 'île', famille: 'brumeuses', ile: 'carrefour' },
   { nom: 'glacier', vue: 'île', famille: 'brumeuses', ile: 'glacier' },
+  // La revue d'ensemble du directeur artistique (28/09) : le phare du large du 5e, de jour et de nuit (`lieu` : la vue
+  // d'un monument, dans l'archipel `archipel`, le bonhomme sur l'île `ile`) ; une sentinelle de près, à côté du phare de
+  // la Tour (6e, la Plaine et l'arbre voisin de son îlot) et de la grue de l'Atelier (4e), de jour et de nuit.
+  { nom: 'phare-large', vue: 'île', famille: 'revue', ile: 'glacier', lieu: 'monument-phare-large' },
+  { nom: 'phare-large-nuit', vue: 'île', famille: 'revue', ile: 'glacier', lieu: 'monument-phare-large', nuit: true },
+  { nom: 'sentinelle', vue: 'île', famille: 'revue', ile: 'plaine' },
+  { nom: 'sentinelle-nuit', vue: 'île', famille: 'revue', ile: 'plaine', nuit: true },
+  { nom: 'sentinelle-grue', vue: 'île', famille: 'revue', ile: 'atelier' },
   // Les repères des Îles du Ciel (R4b-3e) : le grand phare sur son socle, de jour et de nuit, les gradins de
   // l'Observatoire des textes.
   { nom: 'phare-du-ciel', vue: 'île', famille: 'ciel', ile: 'phare' },
@@ -215,7 +223,7 @@ async function scenes() {
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({
               vue: c.vue,
-              go: parIle ? `/aventure/${parIle}/gardien` : c.ile && c.vue === 'île' ? `/aventure/${c.ile}` : routes[c.vue],
+              go: parIle ? `/aventure/${parIle}/gardien` : c.lieu ? `/aventure/${c.lieu}` : c.ile && c.vue === 'île' ? `/aventure/${c.ile}` : routes[c.vue],
               ile: c.ile,
               plans: c.partie ? plansDe(c.partie, c.ile) : null,
               bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
