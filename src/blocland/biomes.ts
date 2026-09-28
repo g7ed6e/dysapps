@@ -673,7 +673,7 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.', programme: ['c4.ma.a.puissances', 'c4.ma.a.ecritures-ordres-de-grandeur'] },
       { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.', programme: ['c4.ma.a.puissances'] },
-      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers.', programme: ['c4.ma.a.carres-racine', 'c4.ma.a.divisibilite-premiers', 'c3.ma.nombres.divisibilite'] },
+      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers, puis décomposition en facteurs premiers.', programme: ['c4.ma.a.carres-racine', 'c4.ma.a.divisibilite-premiers', 'c3.ma.nombres.divisibilite'] },
     ],
   },
   {
@@ -706,8 +706,8 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.', programme: ['c4.ma.a.reduire-developper'] },
-      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.', programme: ['c4.ma.a.reduire-developper'] },
-      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.', programme: ['c4.ma.a.equations'] },
+      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double, puis factoriser.', programme: ['c4.ma.a.reduire-developper'] },
+      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes, puis tester une égalité et les équations produits.', programme: ['c4.ma.a.equations'] },
     ],
   },
   {
