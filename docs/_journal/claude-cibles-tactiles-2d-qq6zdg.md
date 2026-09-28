@@ -1,0 +1,1 @@
+- Cibles tactiles 2D : dans le monde en 2D (appareils sans 3D), un panneau de mission ou une créature dessiné plus petit que le doigt se touche maintenant sur au moins 48 px autour de lui, comme les boutons ; son dessin ne change pas. Quand deux zones se chevauchent, le toucher va à celle dont le milieu est le plus près du doigt.
