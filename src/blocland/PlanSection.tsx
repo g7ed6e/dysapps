@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
@@ -44,7 +44,7 @@ export function planSummary(builder: PlanBuilder, inventory: Partial<Record<Bloc
   const posed = `${status.done} / ${status.total} posés`;
   if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
   const [block, n] = lacking[0];
-  return `${posed} · il manque ${n - (inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()}`;
+  return `${posed} · il manque ${blockCount(block, n - (inventory[block] ?? 0))}`;
 }
 
 /**
@@ -99,7 +99,7 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
                       <li key={block}>
                         <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                         <span>
-                          <strong>{n}</strong> {BLOCKS[block].name.toLowerCase()} · <EarnLink block={block} here={biome.id} />
+                          <strong>{n}</strong> {blockName(block, n)} · <EarnLink block={block} here={biome.id} />
                         </span>
                       </li>
                     ))}
