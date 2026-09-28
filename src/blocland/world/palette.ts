@@ -60,13 +60,23 @@ export interface PaletteArchipel {
   sols?: Partial<Record<Ground, Faces>>;
   /** Un monde du ciel : un plancher de nuages à la place de la mer (le 3e, repris de `AMBIENCE`). */
   nuages: boolean;
+  /** La teinte de mer de la fiche, entre le lagon et le large (le plancher de nuages aux Îles du Ciel) : voir `eauxDe`. */
+  teinteDeMer: Couleur;
 }
+
+/**
+ * L'ambiance d'un archipel : tout ce que son sous-lot R4b règle, et rien d'autre (la fiche de famille, dans
+ * docs/conception/cadrage-archipeo.md §6). Le ciel et la lumière de jour, la brume de profondeur, le voile, les sols
+ * propres, la mer. La direction du soleil (`SOLEIL_DIRECTION`), la nuit (`deNuit`), les matières (`MATIERES`) et les
+ * sols communs (`SOLS`) sont les mêmes pour les quatre.
+ */
+export type Ambiance = PaletteArchipel;
 
 /** Le soleil vient d'en haut, à gauche et devant la vue ordinaire : les dessus et les faces vers la caméra sont éclairés. */
 export const SOLEIL_DIRECTION: [number, number, number] = [-35, 60, -40];
 
-/** L'ambiance de chaque archipel, de jour et de nuit. Toutes les nuits restent un bleu de crépuscule. */
-export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
+/** L'ambiance de chaque archipel, de jour et de nuit (lue par `ambianceDe`). Toutes les nuits restent un bleu de crépuscule. */
+export const PALETTES: Record<ArchipelagoId, Ambiance> = {
   // Les Premiers Rivages : un ciel d'été franc, une lueur chaude sur l'horizon, la mer turquoise.
   '6e': {
     jour: { zenith: 0x3f8ed6, horizon: 0xcfe3ec, lueur: 0xf5ecd8, soleil: 0xffe2b8, soleilForce: 2.4, ambianceCiel: 0xc2d8ee, ambianceSol: 0x5c7c86, ambianceForce: 1.05, mer: 0x1f86d4 },
@@ -74,6 +84,8 @@ export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
     brume: [100, 330],
     voile: [0xf2d9a8, 0.04],
     nuages: AMBIENCE['6e'].sky,
+    // La mer : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
+    teinteDeMer: 0x1a7486,
   },
   // Les Îles Brumeuses : plus froid, plus pâle, la brume plus proche ; l'herbe tire vers le vert d'eau.
   '5e': {
@@ -83,6 +95,8 @@ export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
     voile: [0xa4bcc4, 0.1],
     sols: { herbe: { dessus: 0x6f9f6a, cote: 0x7a6a56 } },
     nuages: AMBIENCE['5e'].sky,
+    // La mer : la « mer rare » de la fiche, plus froide.
+    teinteDeMer: 0x23789c,
   },
   // Les Anciens Ateliers : un ciel profond et une brume chaude, couleur de poussière et de forge.
   '4e': {
@@ -91,6 +105,8 @@ export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
     brume: [90, 300],
     voile: [0xc48c5c, 0.1],
     nuages: AMBIENCE['4e'].sky,
+    // La mer : un bleu pétrole plus sombre, sous la brume chaude.
+    teinteDeMer: 0x21606e,
   },
   // Les Îles du Ciel : un ciel haut et pâle, lavande à l'horizon, un plancher de nuages sous les îles.
   '3e': {
@@ -99,12 +115,19 @@ export const PALETTES: Record<ArchipelagoId, PaletteArchipel> = {
     brume: [110, 350],
     voile: [0xd8d4ee, 0.06],
     nuages: AMBIENCE['3e'].sky,
+    // Le plancher de nuages de la fiche.
+    teinteDeMer: 0xdbdde1,
   },
 };
 
+/** L'ambiance d'un archipel (voir `Ambiance`) : la seule entrée que son sous-lot R4b écrit dans ce fichier. */
+export function ambianceDe(a: ArchipelagoId): Ambiance {
+  return PALETTES[a];
+}
+
 /** Le ciel d'un archipel, entre la nuit (`light` = 0) et le plein jour (1), avec `daylight().light`. */
 export function cielDe(a: ArchipelagoId, light: number): Ciel {
-  const p = PALETTES[a];
+  const p = ambianceDe(a);
   const l = Math.min(1, Math.max(0, light));
   const mix = (k: keyof Moment) => mixColor(p.nuit[k], p.jour[k], l);
   const num = (k: 'soleilForce' | 'ambianceForce') => p.nuit[k] + (p.jour[k] - p.nuit[k]) * l;
@@ -202,24 +225,13 @@ export interface Eaux {
   ecume: Couleur;
 }
 
-/** La teinte de mer propre à chaque archipel (celle de la fiche), entre le lagon et le large. */
-const MERS: Record<ArchipelagoId, Couleur> = {
-  // Les Premiers Rivages : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
-  '6e': 0x1a7486,
-  // Les Îles Brumeuses : la « mer rare » de la fiche, plus froide.
-  '5e': 0x23789c,
-  // Les Anciens Ateliers : un bleu pétrole plus sombre, sous la brume chaude.
-  '4e': 0x21606e,
-  // Les Îles du Ciel : le plancher de nuages de la fiche.
-  '3e': 0xdbdde1,
-};
-
 /** Les eaux d'un archipel (voir `Eaux`). */
 export function eauxDe(a: ArchipelagoId): Eaux {
-  const mer = MERS[a];
-  if (PALETTES[a].nuages)
+  const p = ambianceDe(a);
+  const mer = p.teinteDeMer;
+  if (p.nuages)
     // Un plancher de nuages : l'ombre bleutée des îles au-dessus, le blanc des nuages, puis la couleur de l'horizon.
-    return { lagon: mixColor(mer, PALETTES[a].jour.ambianceSol, 0.35), mer, large: mixColor(mer, PALETTES[a].jour.horizon, 0.5), ecume: mer };
+    return { lagon: mixColor(mer, p.jour.ambianceSol, 0.35), mer, large: mixColor(mer, p.jour.horizon, 0.5), ecume: mer };
   return {
     // Les hauts-fonds : le Bleu lagon, à peine teinté de la mer de l'archipel.
     lagon: mixColor(BLEU_LAGON, mer, 0.2),
@@ -312,13 +324,13 @@ export function multiplie(a: Couleur, b: Couleur): Couleur {
  * couleurs sans matière, pixel/painted.ts).
  */
 export function deNuit(a: ArchipelagoId, c: Couleur, light = 0): Couleur {
-  const n = PALETTES[a].nuit;
+  const n = ambianceDe(a).nuit;
   const nuit = mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3);
   return mixColor(nuit, c, Math.min(1, Math.max(0, light)));
 }
 
 function surface(a: ArchipelagoId, f: Faces, light: number, lumineuse = false): Faces {
-  const [teinte, force] = PALETTES[a].voile;
+  const [teinte, force] = ambianceDe(a).voile;
   const jour = (c: Couleur) => mixColor(c, teinte, force);
   const l = Math.min(1, Math.max(0, light));
   const at = (c: Couleur) => (lumineuse ? jour(c) : deNuit(a, jour(c), l));
@@ -327,12 +339,12 @@ function surface(a: ArchipelagoId, f: Faces, light: number, lumineuse = false): 
 
 /** Les couleurs d'un sol dans un archipel, entre la nuit (0) et le jour (1). */
 export function couleurDuSol(a: ArchipelagoId, g: Ground, light = 1): Faces {
-  return surface(a, PALETTES[a].sols?.[g] ?? SOLS[g], light);
+  return surface(a, ambianceDe(a).sols?.[g] ?? SOLS[g], light);
 }
 
 /** Les couleurs d'une matière (bloc, décor) dans un archipel, entre la nuit (0) et le jour (1). */
 export function couleurDeMatiere(a: ArchipelagoId, m: TextureKind, light = 1): Faces {
-  const sol = (m === 'herbe' || m === 'sable' || m === 'glace' || m === 'mousse' || m === 'basalte' || m === 'lave' || m === 'eau') && PALETTES[a].sols?.[m];
+  const sol = (m === 'herbe' || m === 'sable' || m === 'glace' || m === 'mousse' || m === 'basalte' || m === 'lave' || m === 'eau') && ambianceDe(a).sols?.[m];
   return surface(a, sol || MATIERES[m], light, LUMINEUSES.has(m));
 }
 

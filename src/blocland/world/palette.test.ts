@@ -5,6 +5,8 @@ import {
   LUEUR,
   MATIERES,
   PALETTES,
+  ambianceDe,
+  eauxDe,
   SOLS,
   cielDe,
   couleurDeMatiere,
@@ -193,5 +195,24 @@ it('mélange et luminance', () => {
     if (PALETTES[a].nuages) continue;
     const got = rgb(multiplie(teinteSur(mer, moyenne), moyenne));
     rgb(mer).forEach((v, i) => expect(Math.abs(got[i] - v), a).toBeLessThanOrEqual(2));
+  }
+});
+
+it('l’ambiance de chaque archipel reste dans les bornes de la fiche de famille (cadrage Archipéo §6)', () => {
+  // Ce qu'un sous-lot R4b peut régler : la force du soleil et de l'ambiance de jour, la brume de profondeur, le voile.
+  // La nuit, la direction du soleil et les matières sont communes et ne passent pas par l'ambiance.
+  for (const a of ARCHIPELAGO_IDS) {
+    const p = ambianceDe(a);
+    expect(p, a).toBe(PALETTES[a]);
+    expect(p.jour.soleilForce, a).toBeGreaterThanOrEqual(2.0);
+    expect(p.jour.soleilForce, a).toBeLessThanOrEqual(2.4);
+    expect(p.jour.ambianceForce, a).toBeGreaterThanOrEqual(0.95);
+    expect(p.jour.ambianceForce, a).toBeLessThanOrEqual(1.2);
+    expect(p.brume[0], a).toBeGreaterThanOrEqual(60);
+    expect(p.brume[0], a).toBeLessThanOrEqual(120);
+    expect(p.brume[1], a).toBeGreaterThanOrEqual(250);
+    expect(p.brume[1], a).toBeLessThanOrEqual(360);
+    expect(p.voile[1], a).toBeLessThanOrEqual(0.12);
+    expect(eauxDe(a).mer, a).toBe(p.teinteDeMer);
   }
 });
