@@ -110,6 +110,13 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     nuit: { zenith: 0x1c2d5a, horizon: 0x4a5788, lueur: 0x7a6a84, soleil: 0xaab8e4, soleilForce: 1.1, ambianceCiel: 0x7a88c0, ambianceSol: 0x33385c, ambianceForce: 1.2, mer: 0x254878 },
     brume: [90, 300],
     voile: [0xc48c5c, 0.1],
+    // Les sols chauds (R4b-4e) : l'herbe sèche, la roche brune ; pas de sommet blanc (la neige des Îles du Ciel) : les
+    // hauts de la Falaise se peignent en roche claire.
+    sols: {
+      herbe: { dessus: 0x6f8a3a, cote: 0x6a5040 },
+      roche: { dessus: 0x7a7068, cote: 0x57504c },
+      neige: { dessus: 0x9a8e84, cote: 0x7a7068 },
+    },
     nuages: AMBIENCE['4e'].sky,
     // La mer : un bleu pétrole plus sombre, sous la brume chaude.
     teinteDeMer: 0x21606e,

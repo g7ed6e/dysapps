@@ -19,6 +19,7 @@ import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
 import { formeDe } from './decor/formes';
+import { decorHorsGrille } from './decor/horsGrille';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
@@ -48,6 +49,8 @@ export interface ElementDeDecor {
   emprise: number;
   /** Île fermée : couleurs délavées. */
   muted: boolean;
+  /** Posé hors de la grille (./decor/horsGrille.ts) : sans cubes, il ne se touche pas. */
+  horsGrille?: true;
 }
 
 /** Les genres dessinés en primitives : le décor rangé de la 2D (arbres, buissons, rochers…) et le décor bâti. */
@@ -132,7 +135,9 @@ export interface OptionsDuDecor {
  * Le décor d'un archipel en primitives, posé sur le champ du sol : un maillage pour tout le décor, un pour ce qui
  * brille. Les couleurs de la palette de l'archipel, de jour : la nuit vient de la lumière de la scène.
  */
-export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: ElementDeDecor[], options: OptionsDuDecor = {}): MaillageDuDecor {
+export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, poses: ElementDeDecor[], options: OptionsDuDecor = {}): MaillageDuDecor {
+  // Le décor posé dans la grille, puis celui d'Archipéo seul, hors de la grille (la grue du 4e…).
+  const elements = [...poses, ...decorHorsGrille(a, champ, poses)];
   const style = options.style ?? 'b';
   const P = new Pinceau();
   const L = new Pinceau();
@@ -190,7 +195,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     const hautDe = (pred: (c: VoxelCube) => boolean) => Math.max(...e.cubes.filter(pred).map((c) => c.z + 1), e.z);
     const premier = (pred: (c: VoxelCube) => boolean) => e.cubes.find(pred);
     const rot = hasard() * Math.PI * 2;
-    formeDe(e.genre)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
+    formeDe(e.genre, a)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
   });
   return { decor: P.fin(), lueurs: L.fin(), fumees: F.fin(a), elements };
 }
@@ -210,7 +215,7 @@ export function caseDuDecor(champ: ChampDuSol, m: MaillageDuDecor, lueur: boolea
   const f = lueur ? m.lueurs : m.decor;
   const i = f.elements[triangle];
   const e = i === undefined ? undefined : m.elements[i];
-  if (!e) return null;
+  if (!e || e.horsGrille) return null;
   const col = colonneEn(champ, e.x, e.y);
   const z = col ? col.haut : e.z - 1;
   return { cell: { x: e.x, y: e.y, z }, next: { x: e.x, y: e.y, z: z + 1 } };

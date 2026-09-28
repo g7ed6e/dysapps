@@ -2,7 +2,7 @@
 // un seul maillage à couleurs par sommet (un second, sans lumière, pour ce qui brille : lanternes, lave ; un troisième,
 // sans lumière, pour les fumées qui bougent, R4b-6e). Les matériaux sont faits une fois par scène et libérés avec elle ;
 // les géométries, à chaque nouveau décor. `animer` fait bouger les fumées ; `jour` passe la lanterne du phare et les
-// fumées à la nuit. Ils ne recopient que ce que calcule le code pur (world/decor/fumee.ts).
+// fumées à la nuit. Le décor hors de la grille ne se touche pas. Ils ne recopient que ce que calcule le code pur (world/decor/fumee.ts).
 import * as THREE from 'three';
 import { poserLesFumees, type FacettesDuDecor, type MaillageDuDecor } from '../world/decorMesh';
 
@@ -52,11 +52,23 @@ export function creerDecor(): DecorEn3D {
     geo.computeBoundingSphere();
     return geo;
   };
-  const ajouter = (f: FacettesDuDecor, material: THREE.Material, lueur: boolean) => {
+  const ajouter = (m: MaillageDuDecor, f: FacettesDuDecor, material: THREE.Material, lueur: boolean) => {
     if (!f.elements.length) return null;
     const geo = geometrie(f);
     const mesh = new THREE.Mesh(geo, material);
     mesh.userData = { decor: true, lueur };
+    // Le décor hors de la grille (la grue du 4e, le lointain) ne se touche pas : le toucher passe au travers.
+    if (m.elements.some((e) => e.horsGrille)) {
+      const toucher = mesh.raycast.bind(mesh);
+      mesh.raycast = (ray, hits) => {
+        const n = hits.length;
+        toucher(ray, hits);
+        for (let i = hits.length - 1; i >= n; i--) {
+          const t = hits[i].faceIndex;
+          if (t != null && m.elements[f.elements[t]]?.horsGrille) hits.splice(i, 1);
+        }
+      };
+    }
     // Un seul maillage pour tout l'archipel : le tri par la vue ne ferait rien gagner.
     mesh.frustumCulled = false;
     group.add(mesh);
@@ -67,8 +79,8 @@ export function creerDecor(): DecorEn3D {
     maillage: null,
     peindre(m) {
       vider();
-      ajouter(m.decor, mat, false);
-      const l = ajouter(m.lueurs, brille, true);
+      ajouter(m, m.decor, mat, false);
+      const l = ajouter(m, m.lueurs, brille, true);
       if (l && m.lueurs.colorsNuit) {
         // Une copie : la géométrie garde les couleurs de jour du maillage pour les rendre au lever du jour.
         const color = new THREE.BufferAttribute(Float32Array.from(m.lueurs.colors), 3);
