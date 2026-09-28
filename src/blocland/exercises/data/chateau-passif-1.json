@@ -8,8 +8,8 @@
   "items": [
     {
       "key": "chateau-passif-1-0",
-      "prompt": "English … spoken all over the world.",
-      "spoken": "English blank spoken all over the world.",
+      "prompt": "English … spoken all over the world today.",
+      "spoken": "English blank spoken all over the world today.",
       "choices": [
         "is",
         "are",
@@ -104,8 +104,8 @@
     },
     {
       "key": "chateau-passif-1-4",
-      "prompt": "The room is cleaned … the cleaner every day.",
-      "spoken": "The room is cleaned blank the cleaner every day.",
+      "prompt": "The room is cleaned … Mrs Brown every day.",
+      "spoken": "The room is cleaned blank Mrs Brown every day.",
       "choices": [
         "by",
         "from",
@@ -113,7 +113,7 @@
       ],
       "answer": "by",
       "hint": "Qui fait l’action ? par…",
-      "explanation": "by = par : cleaned by the cleaner.",
+      "explanation": "by = par : cleaned by Mrs Brown.",
       "aid": {
         "kind": "rule-card",
         "props": {

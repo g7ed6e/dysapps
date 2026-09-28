@@ -36,7 +36,7 @@
       "spoken": "Have you done your homework blank?",
       "choices": [
         "yet",
-        "already",
+        "ever",
         "just"
       ],
       "answer": "yet",
@@ -132,7 +132,7 @@
       "spoken": "Has he arrived blank?",
       "choices": [
         "yet",
-        "already",
+        "ever",
         "never"
       ],
       "answer": "yet",

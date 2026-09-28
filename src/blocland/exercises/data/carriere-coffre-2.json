@@ -10,7 +10,7 @@
       "word": "plusieurs",
       "choices": ["plusieurs", "plusieur", "pluzieurs"],
       "answer": "plusieurs",
-      "hint": "plusieurs finit toujours par un s, même seul."
+      "hint": "plusieurs finit toujours par un s : il veut dire plus d’un."
     },
     {
       "key": "quelquefois",

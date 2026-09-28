@@ -24,7 +24,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -33,8 +33,8 @@
     },
     {
       "key": "manoir-preterit-2-1",
-      "prompt": "The bus … at the station.",
-      "spoken": "The bus blank at the station.",
+      "prompt": "The bus … at the station five minutes ago.",
+      "spoken": "The bus blank at the station five minutes ago.",
       "choices": [
         "stopped",
         "stoped",
@@ -49,7 +49,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -74,7 +74,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -99,7 +99,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -124,7 +124,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -149,7 +149,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -174,7 +174,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]
@@ -199,7 +199,7 @@
           "title": "Le prétérit : écrire et demander",
           "lines": [
             "y après une consonne → ied (study → studied, tidy → tidied).",
-            "Consonne + voyelle + consonne : on double (stop → stopped).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
             "e final : + d (bake → baked).",
             "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
           ]

@@ -24,7 +24,9 @@ it('place les réponses au hasard à chaque partie : un même item change de pla
 });
 
 it('répartit les places de la bonne réponse sur une partie : aucune colonne ne domine', () => {
-  for (const def of EXERCISES as ExerciseDef[]) {
+  // Les exercices générés tirent la place de la réponse dans leurs générateurs (voir college.test.ts) : la partie ne
+  // replace pas leurs choix.
+  for (const def of (EXERCISES as ExerciseDef[]).filter((d) => !d.generate)) {
     for (const seed of ['x', 'y', 'z']) {
       const items = runItems(def, `${def.id}#${seed}`).filter(
         (i) => Array.isArray(i.choices) && i.choices.length === 2 && !/^\s*[−-]?\d/.test(String(i.choices[0])),

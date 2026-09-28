@@ -156,7 +156,7 @@
       "key": "carrefour-bifurcation-1-7",
       "prompt": "… la fête, … cousins dansent.",
       "spoken": " (mot manquant)  la fête,  (mot manquant)  cousins dansent.",
-      "choices": ["À / ses", "A / ces", "À / ces"],
+      "choices": ["À / ses", "A / ces", "A / ses"],
       "answer": "À / ses",
       "hint": "« avait » ne marche pas : à. « les siens » : ses.",
       "explanation": "À la fête (préposition), ses cousins (les siens) dansent.",

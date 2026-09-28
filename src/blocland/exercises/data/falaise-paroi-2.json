@@ -9,7 +9,7 @@
       "key": "falaise-paroi-2-0",
       "prompt": "Des chaussettes … .",
       "spoken": "Des chaussettes  (mot manquant)  .",
-      "choices": ["orange", "oranges", "orangées"],
+      "choices": ["orange", "oranges", "orangés"],
       "answer": "orange",
       "hint": "« orange » vient d’un fruit : invariable.",
       "explanation": "Couleur venant d’un nom (le fruit) : invariable, « orange ».",
@@ -20,7 +20,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -41,7 +41,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -62,7 +62,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -72,7 +72,7 @@
       "key": "falaise-paroi-2-3",
       "prompt": "Des fleurs … .",
       "spoken": "Des fleurs  (mot manquant)  .",
-      "choices": ["roses", "rose", "rosées"],
+      "choices": ["roses", "rose", "rosés"],
       "answer": "roses",
       "hint": "« rose » fait exception : il s’accorde.",
       "explanation": "Exception : « rose » s’accorde, « roses ».",
@@ -83,7 +83,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -104,7 +104,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -125,7 +125,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -146,7 +146,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }
@@ -167,7 +167,7 @@
           "lines": [
             "Couleur simple : accord (des robes vertes).",
             "Couleur composée ou nom de chose : invariable (des yeux bleu clair, des robes orange).",
-            "Sauf rose, mauve, fauve, écarlate, pourpre, violet : ils s’accordent.",
+            "Sauf rose, mauve, fauve, écarlate, pourpre : ils s’accordent.",
             "Demi, nu : invariables devant le nom (une demi-heure), accord après (une heure et demie)."
           ]
         }

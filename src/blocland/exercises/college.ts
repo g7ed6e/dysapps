@@ -1,5 +1,6 @@
 // Missions de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
+import { drawChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
 import { seeded } from './maths';
@@ -10,8 +11,8 @@ import type { ExerciseDef, ExerciseItem } from './types';
 type Rng = () => number;
 export type ItemGenerator = (rng: Rng) => ExerciseItem;
 
-/** « −7 » avec le vrai signe moins ; les milliers espacés. */
-export const fmt = (n: number): string => (n < 0 ? `−${(-n).toLocaleString('fr-FR')}` : n.toLocaleString('fr-FR'));
+/** « −7 » avec le vrai signe moins ; les milliers espacés ; « 0 » pour −0 (−3 × 0). */
+export const fmt = (n: number): string => (n < 0 ? `−${(-n).toLocaleString('fr-FR')}` : (n + 0).toLocaleString('fr-FR'));
 /** Entre parenthèses seulement s'il est négatif : « 5 », « (−3) ». */
 export const par = (n: number): string => (n < 0 ? `(${fmt(n)})` : fmt(n));
 /** Version lue à voix haute : « moins 7 ». */
@@ -19,29 +20,11 @@ export const say = (n: number): string => (n < 0 ? `moins ${-n}` : String(n));
 
 /**
  * 4 réponses (la bonne + 3 pièges), sans doublon, rangées de la plus petite à la plus grande. La place de la bonne
- * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut.
+ * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut,
+ * et des voisins proches s'il en manque d'un côté (positifs si la réponse l'est). Voir `drawChoices`.
  */
-export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt): string[] {
-  const pool = [...new Set(traps)].filter((t) => Number.isFinite(t) && t !== answer);
-  const below = shuffle(
-    pool.filter((t) => t < answer),
-    rng,
-  );
-  const above = shuffle(
-    pool.filter((t) => t > answer),
-    rng,
-  );
-  const wanted = randomInt(0, 3, rng);
-  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
-  // Pas assez de pièges du côté voulu : ceux de l'autre côté, puis des voisins (positifs si la réponse l'est).
-  for (const t of [...below.slice(wanted), ...above.slice(3 - wanted)]) if (picked.length < 3) picked.push(t);
-  const sides = wanted > 0 ? [-1, 1] : [1, -1];
-  for (let d = 1; picked.length < 3; d++)
-    for (const side of sides) {
-      const t = answer + side * d;
-      if (!picked.includes(t) && picked.length < 3 && (t > 0 || answer <= 0)) picked.push(t);
-    }
-  return [answer, ...picked].sort((a, b) => a - b).map(format);
+export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt, neighbours = true): string[] {
+  return drawChoices(answer, traps, rng, { neighbourOk: (t) => t > 0 || answer <= 0, neighbours }).map(format);
 }
 
 /** `count` items différents (par clé), en alternant les générateurs, tirés de façon reproductible. */
@@ -96,8 +79,8 @@ const nonZero = (min: number, max: number, rng: Rng): number => {
 export const compareRelatifs: ItemGenerator = (rng) => {
   let a = nonZero(-9, 9, rng);
   let b = nonZero(-9, 9, rng);
-  if (a === b) b = -b;
   if (rng() < 0.5 && a > 0) a = -a;
+  if (a === b) b = -b;
   const small = rng() < 0.5;
   const answer = small ? Math.min(a, b) : Math.max(a, b);
   return {
@@ -164,7 +147,7 @@ export const subRelatifs: ItemGenerator = (rng) => {
     spoken: `${say(a)} moins ${say(b)}, combien ?`,
     choices: choices(d, [a + b, -d, b - a, d + 1, d - 1], rng),
     answer: fmt(d),
-    hint: `Soustraire ${fmt(b)}, c’est ajouter son opposé : ${fmt(a)} + (${fmt(-b)}).`,
+    hint: `Soustraire ${fmt(b)}, c’est ajouter son opposé : ${fmt(a)} + ${par(-b)}.`,
     explanation: `${fmt(a)} − ${par(b)} = ${fmt(a)} + ${par(-b)} = ${fmt(d)}.`,
     aid: { kind: 'number-line', props: { min: -10, max: 10, points: [a, d], jump: [a, d] } },
   };
@@ -173,7 +156,7 @@ export const subRelatifs: ItemGenerator = (rng) => {
 const SIGN_RULES = [
   'Deux signes identiques : résultat positif (+ et +, − et −).',
   'Deux signes différents : résultat négatif (+ et −).',
-  'Le résultat a la même valeur que sans les signes.',
+  'Sans les signes, on multiplie comme d’habitude : 3 × 4 = 12.',
 ];
 
 export const mulRelatifs: ItemGenerator = (rng) => {
@@ -213,12 +196,20 @@ export const divRelatifs: ItemGenerator = (rng) => {
 
 // ---------- Marché des proportions ----------
 
-const GOODS = ['pommes', 'cahiers', 'billes', 'crêpes', 'stylos', 'tomates'];
+/** Les articles du marché : le pluriel de l'énoncé et le singulier, avec son article, de l'explication. */
+const GOODS: { pl: string; one: string }[] = [
+  { pl: 'pommes', one: 'Une pomme' },
+  { pl: 'cahiers', one: 'Un cahier' },
+  { pl: 'billes', one: 'Une bille' },
+  { pl: 'crêpes', one: 'Une crêpe' },
+  { pl: 'stylos', one: 'Un stylo' },
+  { pl: 'tomates', one: 'Une tomate' },
+];
 const euro = (n: number) => `${n.toLocaleString('fr-FR')} €`;
 
 /** Quatrième proportionnelle, coefficient entier. */
 export const fourthInt: ItemGenerator = (rng) => {
-  const good = GOODS[randomInt(0, GOODS.length - 1, rng)];
+  const { pl: good, one } = GOODS[randomInt(0, GOODS.length - 1, rng)];
   const n1 = randomInt(2, 6, rng);
   const price = randomInt(2, 5, rng);
   const n2 = randomInt(n1 + 1, 12, rng);
@@ -230,7 +221,7 @@ export const fourthInt: ItemGenerator = (rng) => {
     choices: choices(answer, [n2 * price + price, n2 * price - price, n1 * price + n2, n2 + price], rng, euro),
     answer: euro(answer),
     hint: `Trouve d’abord le prix d’un seul : ${n1 * price} ÷ ${n1}. Puis multiplie par ${n2}.`,
-    explanation: `Un ${good.slice(0, -1)} coûte ${euro(price)} (${n1 * price} ÷ ${n1}). ${n2} × ${price} = ${answer} : ${euro(answer)}.`,
+    explanation: `${one} coûte ${euro(price)} (${n1 * price} ÷ ${n1}). ${n2} × ${price} = ${answer} : ${euro(answer)}.`,
     aid: {
       kind: 'ratio-table',
       props: {
@@ -250,14 +241,16 @@ export const fourthCoef: ItemGenerator = (rng) => {
   const k = [1.5, 2.5, 0.5, 3.5][randomInt(0, 3, rng)];
   const a = randomInt(2, 9, rng) * 2;
   const b = a * k;
-  const c = randomInt(2, 9, rng) * 2;
+  // Une autre quantité que celle de l'énoncé : sinon la réponse serait déjà écrite.
+  let c = randomInt(2, 9, rng) * 2;
+  while (c === a) c = randomInt(2, 9, rng) * 2;
   const answer = c * k;
   const f = (n: number) => n.toLocaleString('fr-FR');
   return {
     key: `fc-${a}-${k}-${c}`,
     prompt: `${a} kg coûtent ${euro(b)}. Combien coûtent ${c} kg ?`,
     spoken: `${a} kilos coûtent ${f(b)} euros. Combien coûtent ${c} kilos ?`,
-    choices: choices(answer, [c * k + k, c + b, b + (c - a), c * 2], rng, euro),
+    choices: choices(answer, [c * k + k, c + b, b + (c - a), c * 2].filter((t) => t > 0), rng, euro),
     answer: euro(answer),
     hint: `Le coefficient est ${f(k)} : on multiplie les kilos par ${f(k)} pour avoir le prix.`,
     explanation: `${b} ÷ ${a} = ${f(k)}, donc ${c} × ${f(k)} = ${f(answer)} : ${euro(answer)}.`,
@@ -284,7 +277,7 @@ export const percentOf: ItemGenerator = (rng) => {
     key: `pct-${p}-${n}`,
     prompt: `${p} % de ${n} = …`,
     spoken: `${p} pour cent de ${n}, combien ?`,
-    choices: choices(answer, [n - answer, answer * 2, answer / 2, n / p], rng),
+    choices: choices(answer, [n - answer, answer * 2, answer / 2, n / p].filter((t) => t > 0 && Number.isInteger(t * 10)), rng),
     answer: fmt(answer),
     hint: `${p} % de ${n}, c’est ${n} × ${p} ÷ 100. Astuce : 10 %, c’est diviser par 10 ; 50 %, la moitié ; 25 %, le quart.`,
     explanation: `${n} × ${p} ÷ 100 = ${answer}.`,
@@ -312,7 +305,7 @@ export const percentChange: ItemGenerator = (rng) => {
     key: `chg-${p}-${n}-${down ? 'd' : 'u'}`,
     prompt: `Un article coûte ${euro(n)}. Son prix ${down ? 'baisse' : 'augmente'} de ${p} %. Nouveau prix ?`,
     spoken: `Un article coûte ${n} euros. Son prix ${down ? 'baisse' : 'augmente'} de ${p} pour cent. Quel est le nouveau prix ?`,
-    choices: choices(answer, [down ? n + delta : n - delta, delta, n - p, n + p], rng, euro),
+    choices: choices(answer, [down ? n + delta : n - delta, delta, n - p, n + p].filter((t) => t > 0), rng, euro),
     answer: euro(answer),
     hint: `Calcule d’abord ${p} % de ${n} (${delta}), puis ${down ? 'enlève' : 'ajoute'} cette somme.`,
     explanation: `${p} % de ${n} = ${delta}. ${n} ${down ? '−' : '+'} ${delta} = ${answer} : ${euro(answer)}.`,
@@ -333,7 +326,8 @@ export const percentChange: ItemGenerator = (rng) => {
 /** Vitesse constante : distance pour une autre durée. */
 export const speed: ItemGenerator = (rng) => {
   const v = randomInt(3, 12, rng) * 10;
-  const t1 = randomInt(1, 4, rng);
+  // Au moins deux heures dans l'énoncé : le passage par une heure reste une vraie étape.
+  const t1 = randomInt(2, 4, rng);
   let t2 = randomInt(1, 6, rng);
   if (t2 === t1) t2 += 1;
   const answer = v * t2;
@@ -341,7 +335,7 @@ export const speed: ItemGenerator = (rng) => {
     key: `spd-${v}-${t1}-${t2}`,
     prompt: `Une voiture roule à vitesse constante : ${v * t1} km en ${t1} h. Combien de km en ${t2} h ?`,
     spoken: `Une voiture roule à vitesse constante : ${v * t1} kilomètres en ${t1} heure${t1 > 1 ? 's' : ''}. Combien de kilomètres en ${t2} heure${t2 > 1 ? 's' : ''} ?`,
-    choices: choices(answer, [v * (t2 + 1), v * (t2 - 1), v * t1 + t2, v * t1 * t2], rng, (n) => `${fmt(n)} km`),
+    choices: choices(answer, [v * (t2 + 1), v * (t2 - 1), v * t1 + t2, v * t1 * t2].filter((t) => t > 0), rng, (n) => `${fmt(n)} km`),
     answer: `${fmt(answer)} km`,
     hint: `En 1 h : ${v * t1} ÷ ${t1} = ${v} km. Puis × ${t2}.`,
     explanation: `${v} km par heure, donc ${v} × ${t2} = ${answer} km.`,
@@ -368,7 +362,10 @@ export const mapScale: ItemGenerator = (rng) => {
     key: `scale-${kmPerCm}-${cm}`,
     prompt: `Sur la carte, 1 cm représente ${kmPerCm} km. Que représentent ${cm} cm ?`,
     spoken: `Sur la carte, 1 centimètre représente ${kmPerCm} kilomètres. Que représentent ${cm} centimètres ?`,
-    choices: choices(answer, [cm + kmPerCm, answer + kmPerCm, answer - kmPerCm, cm * 10], rng, (n) => `${fmt(n)} km`),
+    // La distance de 1 cm, déjà écrite dans l'énoncé, n'est jamais un piège (ni un voisin).
+    choices: drawChoices(answer, [cm + kmPerCm, answer + kmPerCm, answer - kmPerCm, cm * 10], rng, { ok: (t) => t > 0 && t !== kmPerCm }).map(
+      (n) => `${fmt(n)} km`,
+    ),
     answer: `${fmt(answer)} km`,
     hint: `Chaque centimètre vaut ${kmPerCm} km : multiplie ${cm} par ${kmPerCm}.`,
     explanation: `${cm} × ${kmPerCm} = ${answer} km.`,
@@ -414,7 +411,9 @@ export const powerOfTen: ItemGenerator = (rng) => {
     key: `p10-${n}`,
     prompt: `${pow(10, n)} = …`,
     spoken: `10 puissance ${n}, combien ?`,
-    choices: choices(v, [10 * n, 10 ** (n + 1), 10 ** (n - 1), n * 100], rng),
+    // Pièges : l'exposant pris comme facteur (10 × n, 100 × n), un ou deux zéros de trop ou de moins ; jamais de
+    // voisin (100 001 n'est pas une erreur d'élève).
+    choices: choices(v, [10 * n, n * 100, 10 ** (n + 1), 10 ** (n - 1), 10 ** (n + 2), ...(n >= 2 ? [10 ** (n - 2)] : [])], rng, fmt, false),
     answer: fmt(v),
     hint: `Écris 1, puis ${n} zéro${n > 1 ? 's' : ''}.`,
     explanation: `${pow(10, n)} = 1 suivi de ${n} zéro${n > 1 ? 's' : ''} = ${fmt(v)}.`,
@@ -448,13 +447,15 @@ export const scientific: ItemGenerator = (rng) => {
   const a = randomInt(11, 99, rng);
   const n = randomInt(2, 6, rng);
   const value = a * 10 ** (n - 1);
-  const mant = `${Math.floor(a / 10)},${a % 10}`;
+  // « 3,4 », ou « 3 » quand le chiffre des unités de a est 0 (jamais « 3,0 »).
+  const mant = (a / 10).toLocaleString('fr-FR');
   const answer = `${mant} × ${pow(10, n)}`;
   return {
     key: `sci-${a}-${n}`,
-    prompt: `${fmt(value)} = …`,
+    // « en notation scientifique » : 34 × 10² est aussi égal à 3 400, mais ce n'est pas la notation scientifique.
+    prompt: `${fmt(value)} en notation scientifique = …`,
     spoken: `Écris ${fmt(value)} en notation scientifique.`,
-    choices: textChoices(answer, [`${a} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n + 1)}`, `0,${a} × ${pow(10, n + 1)}`], rng),
+    choices: textChoices(answer, [`${a} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n - 1)}`, `${mant} × ${pow(10, n + 1)}`, `${(a / 100).toLocaleString('fr-FR')} × ${pow(10, n + 1)}`], rng),
     answer,
     hint: 'Un seul chiffre avant la virgule, puis compte de combien de rangs la virgule a bougé.',
     explanation: `${fmt(value)} = ${mant} × ${pow(10, n)} : la virgule recule de ${n} rangs.`,
@@ -478,7 +479,7 @@ export const powerOfNumber: ItemGenerator = (rng) => {
       kind: 'rule-card',
       props: {
         title: 'Puissance d’un nombre',
-        lines: [`${pow('a', 'n' as unknown as number)} : a multiplié par lui-même n fois.`, '2³ = 2 × 2 × 2 = 8 (pas 2 × 3 !).', 'a¹ = a et a⁰ = 1.'],
+        lines: ['aⁿ : a multiplié par lui-même n fois.', '2³ = 2 × 2 × 2 = 8 (pas 2 × 3 !).', 'a¹ = a et a⁰ = 1.'],
       },
     },
   };
@@ -510,7 +511,8 @@ export const productOfPowers: ItemGenerator = (rng) => {
 };
 
 export const squareRoot: ItemGenerator = (rng) => {
-  const r = randomInt(2, 15, rng);
+  // Les carrés parfaits du programme : de 1 à 144 (c4.ma.a.carres-racine), comme le rappel affiché.
+  const r = randomInt(2, 12, rng);
   const v = r * r;
   return {
     key: `sqrt-${v}`,
@@ -537,16 +539,30 @@ export const squareRoot: ItemGenerator = (rng) => {
 const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 const isPrime = (n: number) => n > 1 && PRIMES.includes(n);
 
+/** Les questions de diviseurs possibles : n, un diviseur d (ni 1 ni n), et les non-diviseurs de part et d'autre de d. */
+const DIVISOR_PAIRS = [12, 18, 20, 24, 30, 36, 42, 45, 48].flatMap((n) => {
+  const divs = Array.from({ length: n }, (_, i) => i + 1).filter((x) => n % x === 0);
+  const notDivs = Array.from({ length: n }, (_, i) => i + 2).filter((x) => n % x !== 0);
+  return divs.slice(1, -1).map((d) => ({
+    n,
+    d,
+    divs,
+    below: notDivs.filter((x) => x < d).reverse(),
+    above: notDivs.filter((x) => x > d),
+  }));
+});
+
 export const primeOrDivisor: ItemGenerator = (rng) => {
   if (rng() < 0.5) {
     const p = PRIMES[randomInt(2, PRIMES.length - 1, rng)];
-    const traps = [p + 1, p + 3, p * 2].filter((t) => !isPrime(t));
-    while (traps.length < 3) traps.push(randomInt(4, 50, rng) * 2);
+    // Des non-premiers des deux côtés de p : la place de la réponse est tirée ici (les choix ne sont pas replacés).
+    const traps = [p - 1, p - 3, p - 5, p + 1, p + 3, p + 5, p * 2].filter((t) => t > 1 && !isPrime(t));
     return {
       key: `prime-${p}`,
       prompt: 'Lequel est un nombre premier ?',
       spoken: 'Lequel de ces nombres est un nombre premier ?',
-      choices: [p, ...traps.slice(0, 3)].sort((a, b) => a - b).map(fmt),
+      // Un voisin ajouté n'est jamais premier : une seule bonne réponse.
+      choices: drawChoices(p, traps, rng, { neighbourOk: (t) => t > 1 && !isPrime(t) }).map(fmt),
       answer: fmt(p),
       hint: 'Un nombre premier a exactement deux diviseurs : 1 et lui-même. Élimine les pairs (sauf 2) et les multiples de 3 et de 5.',
       explanation: `${p} n’est divisible que par 1 et par ${p} : c’est un nombre premier.`,
@@ -559,15 +575,18 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
       },
     };
   }
-  const n = [12, 18, 20, 24, 30, 36, 42, 45, 48][randomInt(0, 8, rng)];
-  const divs = Array.from({ length: n }, (_, i) => i + 1).filter((d) => n % d === 0);
-  const d = divs[randomInt(1, divs.length - 2, rng)];
-  const notDivs = [d + 1, d + 2, d + 3, d + 5].filter((x) => n % x !== 0);
+  // La place de d (1re à 4e) est tirée d'abord, puis un couple (n, d) qui la permet : assez de non-diviseurs plus
+  // petits et plus grands que d (un petit diviseur n'en a souvent aucun plus petit que lui). Pièges : les non-diviseurs
+  // les plus proches de d, de part et d'autre ; jamais un voisin inventé, qui pourrait être un autre diviseur.
+  const wanted = randomInt(0, 3, rng);
+  const pairs = DIVISOR_PAIRS.filter((q) => q.below.length >= wanted && q.above.length >= 3 - wanted);
+  const { n, d, divs, below, above } = pairs[randomInt(0, pairs.length - 1, rng)];
+  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
   return {
     key: `div-${n}-${d}`,
     prompt: `Lequel est un diviseur de ${n} ?`,
     spoken: `Lequel de ces nombres est un diviseur de ${n} ?`,
-    choices: [d, ...notDivs.slice(0, 3)].sort((a, b) => a - b).map(fmt),
+    choices: [d, ...picked].sort((a, b) => a - b).map(fmt),
     answer: fmt(d),
     hint: `Un diviseur de ${n} : la division ${n} ÷ d tombe juste, sans reste.`,
     explanation: `${n} ÷ ${d} = ${n / d}, sans reste : ${d} est un diviseur de ${n}.`,
@@ -590,10 +609,14 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
 const REDUCE_RULES = ['On additionne les x entre eux, et les nombres entre eux.', '3x + 5x = 8x (comme 3 pommes + 5 pommes).', 'x + x = 2x, mais x × x = x².'];
 const ax = (a: number, letter = 'x') => (a === 1 ? letter : a === -1 ? `−${letter}` : `${fmt(a)}${letter}`);
 const plus = (a: number) => (a < 0 ? `− ${fmt(-a)}` : `+ ${fmt(a)}`);
+/** « 4x + 3 », « 4x − 1 », « 4x » (jamais « 4x + 0 »). */
+const withConst = (x: number, n: number) => (n === 0 ? ax(x) : `${ax(x)} ${plus(n)}`);
 
 export const reduceSimple: ItemGenerator = (rng) => {
   const a = randomInt(2, 9, rng);
-  const b = randomInt(2, 9, rng);
+  let b = randomInt(2, 9, rng);
+  // 2 × 2 = 2 + 2 : le piège du produit serait la réponse, il ne resterait que trois choix.
+  if (a === 2 && b === 2) b = 3;
   const s = a + b;
   return {
     key: `red-${a}-${b}`,
@@ -614,12 +637,25 @@ export const reduceMixed: ItemGenerator = (rng) => {
   const d = randomInt(-6, 6, rng) || 2;
   const sx = a + c;
   const sn = b + d;
-  const answer = sn === 0 ? ax(sx) : `${ax(sx)} ${plus(sn)}`;
+  const answer = withConst(sx, sn);
   return {
     key: `redm-${a}-${b}-${c}-${d}`,
     prompt: `${ax(a)} + ${b} + ${ax(c)} ${plus(d)} = …`,
     spoken: `${a} x plus ${b} plus ${c} x ${d < 0 ? 'moins' : 'plus'} ${Math.abs(d)}, combien ?`,
-    choices: textChoices(answer, [`${ax(sx)} ${plus(b - d)}`, `${ax(sx + sn)}`, `${ax(a + b)} ${plus(c + d)}`, `${ax(sx)} ${plus(sn + 1)}`], rng),
+    // Pièges : un signe perdu, tout mis ensemble, un nombre compté avec les x, une unité d'écart (jamais « 0x » ni « −x »).
+    choices: textChoices(
+      answer,
+      [
+        [sx, b - d],
+        [sx + sn, 0],
+        [a + b, c + d],
+        [sx, sn + 1],
+        [sx, sn - 1],
+      ]
+        .filter(([x]) => x > 0)
+        .map(([x, n]) => withConst(x, n)),
+      rng,
+    ),
     answer,
     hint: 'Regroupe d’abord les x, puis les nombres seuls.',
     explanation: `Les x : ${a} + ${c} = ${sx}. Les nombres : ${b} ${plus(d)} = ${fmt(sn)}. Résultat : ${answer}.`,
@@ -640,7 +676,7 @@ export const developSimple: ItemGenerator = (rng) => {
   return {
     key: `dev-${k}-${b}`,
     prompt: `${k}(x + ${b}) = …`,
-    spoken: `${k} facteur de x plus ${b}, développe.`,
+    spoken: `${k} fois la parenthèse x plus ${b}. Développe.`,
     choices: textChoices(answer, [`${ax(k)} + ${b}`, `x + ${fmt(k * b)}`, `${ax(k)} + ${fmt(k + b)}`, `${ax(k + b)}`], rng),
     answer,
     hint: `Multiplie ${k} par x, puis ${k} par ${b}.`,
@@ -656,10 +692,10 @@ export const developDouble: ItemGenerator = (rng) => {
   return {
     key: `devd-${a}-${b}`,
     prompt: `(x + ${a})(x + ${b}) = …`,
-    spoken: `x plus ${a}, facteur de x plus ${b}, développe.`,
+    spoken: `La parenthèse x plus ${a}, fois la parenthèse x plus ${b}. Développe.`,
     choices: textChoices(answer, [`x² + ${fmt(a * b)}`, `x² + ${ax(a * b)} + ${fmt(a + b)}`, `${ax(2)} + ${fmt(a + b)}`, `x² + ${ax(a + b)}`], rng),
     answer,
-    hint: 'Quatre produits : x × x, x × b, a × x, a × b. Puis réduis.',
+    hint: `Quatre produits : x × x, x × ${b}, ${a} × x, ${a} × ${b}. Puis réduis.`,
     explanation: `x² + ${ax(b)} + ${ax(a)} + ${a * b} = ${answer}.`,
     aid: { kind: 'rule-card', props: { title: 'Double distributivité', lines: DEV_RULES } },
   };
@@ -780,7 +816,9 @@ export const thales: ItemGenerator = (rng) => {
   const k = [2, 3, 1.5, 2.5][randomInt(0, 3, rng)];
   const am = randomInt(2, 6, rng);
   const ab = am * k;
-  const an = randomInt(2, 6, rng);
+  // AN différent de AM : sinon AC serait AB, déjà écrit.
+  let an = randomInt(2, 6, rng);
+  while (an === am) an = randomInt(2, 6, rng);
   const ac = an * k;
   const f = (n: number) => n.toLocaleString('fr-FR');
   return {
@@ -883,17 +921,19 @@ export const probability: ItemGenerator = (rng) => {
   const kind = randomInt(0, 2, rng);
   if (kind === 0) {
     const red = randomInt(1, 5, rng);
-    const blue = randomInt(1, 5, rng);
+    // Pas 1 rouge et 1 bleue : les pièges 1/2 et 1/2 seraient la réponse, il ne resterait que trois choix.
+    const blue = randomInt(red === 1 ? 2 : 1, 5, rng);
     const total = red + blue;
     const answer = `${red}/${total}`;
+    const s = (k: number) => (k > 1 ? 's' : '');
     return {
       key: `proba-urne-${red}-${blue}`,
-      prompt: `Un sac contient ${red} boule${red > 1 ? 's' : ''} rouge${red > 1 ? 's' : ''} et ${blue} bleue${blue > 1 ? 's' : ''}. Probabilité de tirer une rouge = …`,
-      spoken: `Un sac contient ${red} boules rouges et ${blue} boules bleues. Quelle est la probabilité de tirer une rouge ?`,
+      prompt: `Un sac contient ${red} boule${s(red)} rouge${s(red)} et ${blue} bleue${s(blue)}. Probabilité de tirer une rouge = …`,
+      spoken: `Un sac contient ${red} boule${s(red)} rouge${s(red)} et ${blue} boule${s(blue)} bleue${s(blue)}. Quelle est la probabilité de tirer une rouge ?`,
       choices: textChoices(answer, [`${blue}/${total}`, `${red}/${blue}`, `1/${total}`, `${total}/${red}`], rng),
       answer,
-      hint: `Cas favorables : ${red} rouges. Cas possibles : ${total} boules en tout.`,
-      explanation: `${red} boules rouges sur ${total} boules : ${answer}.`,
+      hint: `Cas favorables : ${red} boule${s(red)} rouge${s(red)}. Cas possibles : ${total} boules en tout.`,
+      explanation: `${red} boule${s(red)} rouge${s(red)} sur ${total} boules : ${answer}.`,
       aid: {
         kind: 'rule-card',
         props: {
@@ -929,7 +969,8 @@ export const probability: ItemGenerator = (rng) => {
 
 export const imageOf: ItemGenerator = (rng) => {
   const a = nonZero(-4, 5, rng);
-  const b = randomInt(-6, 8, rng);
+  // b non nul : jamais « f(x) = 5x + 0 ».
+  const b = nonZero(-6, 8, rng);
   const x = randomInt(-3, 6, rng);
   const y = a * x + b;
   const expr = `f(x) = ${ax(a)} ${plus(b)}`;
@@ -939,8 +980,8 @@ export const imageOf: ItemGenerator = (rng) => {
     spoken: `f de x égale ${say(a)} x ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}. Quelle est l’image de ${say(x)} ?`,
     choices: choices(y, [a * x - b, a + b + x, -y, y + a], rng),
     answer: fmt(y),
-    hint: `Remplace x par ${fmt(x)} : ${a} × ${par(x)} ${plus(b)}.`,
-    explanation: `f(${fmt(x)}) = ${a} × ${par(x)} ${plus(b)} = ${fmt(a * x)} ${plus(b)} = ${fmt(y)}.`,
+    hint: `Remplace x par ${fmt(x)} : ${fmt(a)} × ${par(x)} ${plus(b)}.`,
+    explanation: `f(${fmt(x)}) = ${fmt(a)} × ${par(x)} ${plus(b)} = ${fmt(a * x)} ${plus(b)} = ${fmt(y)}.`,
     aid: {
       kind: 'ratio-table',
       props: {
@@ -958,7 +999,8 @@ export const imageOf: ItemGenerator = (rng) => {
 
 export const antecedent: ItemGenerator = (rng) => {
   const a = nonZero(-3, 4, rng);
-  const b = randomInt(-5, 5, rng);
+  // b non nul : jamais « f(x) = 2x + 0 ».
+  const b = nonZero(-5, 5, rng);
   const x = randomInt(-3, 6, rng);
   const y = a * x + b;
   return {
@@ -967,7 +1009,7 @@ export const antecedent: ItemGenerator = (rng) => {
     spoken: `f de x égale ${say(a)} x ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}. Quel est l’antécédent de ${say(y)} ?`,
     choices: choices(x, [y, -x, x + 1, x - 1], rng),
     answer: fmt(x),
-    hint: `Résous ${ax(a)} ${plus(b)} = ${fmt(y)} : enlève ${fmt(b)}, puis divise par ${fmt(a)}.`,
+    hint: `Résous ${ax(a)} ${plus(b)} = ${fmt(y)} : ${b < 0 ? `ajoute ${-b}` : `enlève ${b}`}, puis divise par ${fmt(a)}.`,
     explanation: `${ax(a)} = ${fmt(y)} ${plus(-b)} = ${fmt(y - b)}, donc x = ${fmt(y - b)} ÷ ${par(a)} = ${fmt(x)}.`,
     aid: { kind: 'ratio-table', props: { cols: ['x', 'f(x)'], rows: [['?', fmt(y)]], caption: 'On cherche x tel que f(x) = ' + fmt(y) } },
   };
@@ -982,7 +1024,7 @@ export const linearOrAffine: ItemGenerator = (rng) => {
     return {
       key: `coef-${a}-${b}`,
       prompt: `${expr}. Coefficient directeur = …`,
-      spoken: `f de x égale ${say(a)} x ${b === 0 ? '' : (b < 0 ? 'moins ' : 'plus ') + Math.abs(b)}. Quel est le coefficient directeur ?`,
+      spoken: `f de x égale ${say(a)} x${b === 0 ? '' : ` ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}`}. Quel est le coefficient directeur ?`,
       choices: choices(a, [b, -a, a + b, 1], rng),
       answer: fmt(a),
       hint: 'Le coefficient directeur est le nombre devant x.',
@@ -1000,15 +1042,19 @@ export const linearOrAffine: ItemGenerator = (rng) => {
       },
     };
   }
-  const answer = b === 0 ? 'linéaire' : 'affine';
+  // Une fonction linéaire est aussi affine : on demande seulement si elle est linéaire (une seule réponse juste).
+  const answer = b === 0 ? 'oui' : 'non';
   return {
     key: `kind-${a}-${b}`,
-    prompt: `${expr}. Cette fonction est …`,
-    spoken: `f de x égale ${say(a)} x ${b === 0 ? '' : (b < 0 ? 'moins ' : 'plus ') + Math.abs(b)}. Cette fonction est linéaire ou affine ?`,
-    choices: ['affine', 'linéaire'],
+    prompt: `${expr}. Est-elle linéaire ?`,
+    spoken: `f de x égale ${say(a)} x${b === 0 ? '' : ` ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)}`}. Cette fonction est-elle linéaire ?`,
+    choices: ['non', 'oui'],
     answer,
-    hint: 'Linéaire : f(x) = ax, rien d’ajouté. Affine : f(x) = ax + b.',
-    explanation: b === 0 ? `${expr} est de la forme ax : linéaire.` : `${expr} est de la forme ax + b avec b = ${fmt(b)} : affine.`,
+    hint: 'Linéaire : f(x) = ax, rien d’ajouté. Si on ajoute un nombre b non nul, elle est affine, mais pas linéaire.',
+    explanation:
+      b === 0
+        ? `${expr} est de la forme ax : oui, elle est linéaire.`
+        : `${expr} est de la forme ax + b avec b = ${fmt(b)} : non, elle est affine, mais pas linéaire.`,
     aid: {
       kind: 'rule-card',
       props: {

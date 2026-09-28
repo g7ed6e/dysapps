@@ -1,5 +1,5 @@
 import type { Question } from '../../components/QuizSession';
-import { placeChoices } from '../../core/choices';
+import { drawChoices, placeChoices } from '../../core/choices';
 import { randomInt, shuffle } from '../../core/random';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from './aids';
 import { formatNumber as f } from './format';
@@ -13,15 +13,10 @@ export const QUESTIONS_PER_QUEST = 10;
 /**
  * 4 réponses : la bonne + 3 pièges plausibles, rangées dans l'ordre croissant
  * (un repère stable, plus simple qu'un ordre aléatoire pour les élèves dyscalculiques).
+ * La place de la bonne réponse est tirée ici, les pièges pris de part et d'autre (voir `drawChoices`).
  */
 export function numericChoices(answer: number, traps: number[], rng: Rng): string[] {
-  const candidates = [...new Set(traps.filter((n) => Number.isInteger(n) && n >= 0 && n !== answer))];
-  let picked = shuffle(candidates, rng).slice(0, 3);
-  // Compléter si les pièges ne suffisent pas.
-  for (let d = 1; picked.length < 3; d++) {
-    for (const n of [answer + d, answer - d]) if (n >= 0 && n !== answer && !picked.includes(n) && picked.length < 3) picked.push(n);
-  }
-  return [answer, ...picked].sort((a, b) => a - b).map(f);
+  return drawChoices(answer, traps, rng, { ok: (n) => Number.isInteger(n) && n >= 0 }).map(f);
 }
 
 // ---------- Tables de multiplication ----------

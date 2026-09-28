@@ -16,6 +16,11 @@ import {
   seededItems,
   thales,
 } from './college';
+import { MATHS_EXERCISES } from './maths';
+import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
+import { runItems } from './run';
+import { shuffleRunChoices } from './shuffle';
+import type { ExerciseItem } from './types';
 
 it('formate et lit les relatifs, range les réponses', () => {
   expect(fmt(-7)).toBe('−7');
@@ -83,7 +88,8 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   for (let i = 0; i < 20; i++) {
     const s = scientific(rng);
     expect(s.choices).toContain(s.answer);
-    expect(String(s.answer)).toMatch(/^\d,\d × 10[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+    // « 3,4 × 10³ », ou « 8 × 10⁵ » (jamais « 8,0 × 10⁵ »).
+    expect(String(s.answer)).toMatch(/^[1-9](,[1-9])? × 10[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
     const e = equationTwoSteps(rng);
     expect(e.choices).toContain(e.answer);
     expect((e.choices as string[]).length).toBe(4);
@@ -132,3 +138,85 @@ it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données'
     }
   }
 });
+
+it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombres de l’énoncé', () => {
+  const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
+  const num = (c: string) => Number(c.replace('−', '-').replace(/\s/g, ''));
+  const isPrime = (n: number) => n > 1 && Array.from({ length: n - 2 }, (_, i) => i + 2).every((d) => n % d !== 0);
+  for (let s = 0; s < 300; s++) {
+    for (const id of ['glacier-thermometre-1', 'forge-trempe-2']) {
+      const def = byId(id);
+      const seed = `${id}#garde${s}`;
+      const raw = def.generate!(seed);
+      const run = shuffleRunChoices(def, raw, seed);
+      run.forEach((item, i) => {
+        const list = item.choices as string[];
+        // Les mêmes nombres qu'au tirage, une seule fois la bonne réponse.
+        expect([...list].sort()).toEqual([...(raw[i].choices as string[])].sort());
+        expect(list.filter((c) => c === item.answer)).toHaveLength(1);
+        const prompt = String(item.prompt);
+        if (id === 'glacier-thermometre-1') {
+          const [, a, b] = /: (\S+) ou (\S+) \?/.exec(prompt)!;
+          expect(a).not.toBe(b);
+          expect([...list].sort()).toEqual([a, b].sort());
+          const values = [num(a), num(b)];
+          expect(num(String(item.answer))).toBe(prompt.includes('petit') ? Math.min(...values) : Math.max(...values));
+        } else if (prompt.includes('premier')) {
+          expect(list).toHaveLength(4);
+          expect(list.filter((c) => isPrime(num(c)))).toEqual([item.answer]);
+        } else {
+          const n = Number(/de (\d+) \?/.exec(prompt)![1]);
+          expect(list).toHaveLength(4);
+          expect(list.filter((c) => n % num(c) === 0)).toEqual([item.answer]);
+        }
+      });
+    }
+  }
+});
+
+it('maths générées : les accords au singulier (« 1 caisse », « une pomme »), sur des centaines de parties', () => {
+  const texts = (item: ExerciseItem) =>
+    [item.prompt, item.spoken, item.hint, item.explanation, ...((item.choices as unknown[]) ?? [])].map(String).join(' ¦ ');
+  const plural = /(?<![\d,  ])1 (caisses|boules|rouges|bleues|parts|graduations|zéros|rangs|mètres|kilos|centimètres|kilomètres)\b/;
+  const gender = /\b[Uu]n (pomme|bille|crêpe|tomate)\b/;
+  for (const def of [...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+    for (let s = 0; s < 150; s++) {
+      for (const item of runItems(def, `${def.id}#accords${s}`)) {
+        const t = texts(item);
+        expect(t, def.id).not.toMatch(plural);
+        expect(t, def.id).not.toMatch(gender);
+      }
+    }
+  }
+});
+
+it('maths générées : la partie garde les choix tirés, et la bonne réponse prend chaque place (aucune au-delà de 40 %)', () => {
+  const report: string[] = [];
+  for (const def of [...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+    const byPlace = new Map<number, number[]>();
+    for (let s = 0; s < 300; s++) {
+      const seed = `${def.id}#places${s}`;
+      const raw = def.generate!(seed);
+      const run = runItems(def, seed);
+      // Aucun piège inventé ni déplacé pendant la partie : les choix sont ceux des générateurs, dans leur ordre.
+      expect(run.map((it) => it.choices)).toEqual(raw.map((it) => it.choices));
+      for (const item of run) {
+        const list = (item.choices as unknown[]).map(String);
+        const place = list.indexOf(String(item.answer));
+        expect(place, `${def.id} ${item.key}`).toBeGreaterThanOrEqual(0);
+        expect(new Set(list).size, `${def.id} ${item.key}`).toBe(list.length);
+        if (def.id === 'donnees-chances-1' && String(item.prompt).startsWith('Un sac')) expect(list, String(item.prompt)).toHaveLength(4);
+        if (def.id === 'marche-balances-2') expect(list).not.toContain(`${/représente (\d+) km/.exec(String(item.prompt))![1]} km`);
+        if (!byPlace.has(list.length)) byPlace.set(list.length, Array(list.length).fill(0));
+        byPlace.get(list.length)![place]++;
+      }
+    }
+    for (const [n, counts] of byPlace) {
+      const total = counts.reduce((a, b) => a + b, 0);
+      // Quatre réponses : aucune place au-delà de 40 % ; deux ou trois réponses (comparer, oui ou non) : 1/n + 20 points.
+      const limit = n === 4 ? 0.4 : 1 / n + 0.2;
+      if (Math.max(...counts) / total > limit) report.push(`${def.id} (${n} choix) : ${counts.join('/')}`);
+    }
+  }
+  expect(report).toEqual([]);
+}, 60_000);

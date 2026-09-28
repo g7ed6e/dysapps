@@ -116,7 +116,7 @@
       "spoken": "« Elle est fatiguée  (mot manquant)  elle a mal dormi. » Quel connecteur ?",
       "choices": ["car", "donc", "puis"],
       "answer": "car",
-      "hint": "La seconde phrase donne la cause.",
+      "hint": "La seconde partie donne la cause.",
       "explanation": "Cause : « car ».",
       "aid": {
         "kind": "rule-card",

@@ -63,8 +63,7 @@
     "fr": "obtenir",
     "level": 1,
     "traps": [
-      "getted",
-      "gotten"
+      "getted"
     ]
   },
   {
@@ -255,7 +254,7 @@
     "base": "fly",
     "preterit": "flew",
     "participle": "flown",
-    "fr": "voler (dans les airs)",
+    "fr": "voler dans les airs",
     "level": 2
   },
   {
@@ -466,7 +465,7 @@
     "base": "ride",
     "preterit": "rode",
     "participle": "ridden",
-    "fr": "monter (à vélo, à cheval)",
+    "fr": "monter à vélo, à cheval",
     "level": 3
   },
   {
@@ -501,7 +500,7 @@
     "base": "steal",
     "preterit": "stole",
     "participle": "stolen",
-    "fr": "voler (dérober)",
+    "fr": "voler, dérober",
     "level": 3
   },
   {
@@ -515,7 +514,7 @@
     "base": "wear",
     "preterit": "wore",
     "participle": "worn",
-    "fr": "porter (un vêtement)",
+    "fr": "porter un vêtement",
     "level": 3
   }
 ]

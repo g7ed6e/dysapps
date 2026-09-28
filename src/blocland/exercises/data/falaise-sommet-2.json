@@ -127,12 +127,12 @@
     },
     {
       "key": "falaise-sommet-2-6",
-      "prompt": "Ni Léa ni Tom ne … .",
-      "spoken": "Ni Léa ni Tom ne  (mot manquant)  .",
-      "choices": ["viennent", "vient", "viens"],
-      "answer": "viennent",
-      "hint": "Deux sujets avec « ni… ni » : pluriel.",
-      "explanation": "« ni Léa ni Tom » : pluriel, « viennent ».",
+      "prompt": "Ce sont mes amis qui … le match.",
+      "spoken": "Ce sont mes amis qui  (mot manquant)  le match.",
+      "choices": ["ont gagné", "a gagné", "avons gagné"],
+      "answer": "ont gagné",
+      "hint": "« qui » = mes amis : 3e personne du pluriel.",
+      "explanation": "« qui » reprend « mes amis » (pluriel) : « ont gagné ».",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -18,73 +18,85 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
     },
     {
       "key": "carrefour-bifurcation-2-1",
-      "prompt": "… mal … sortir sans manteau.",
-      "spoken": " (mot manquant)  mal  (mot manquant)  sortir sans manteau.",
-      "choices": ["C’est / de", "S’est / de", "C’est / d’en"],
-      "answer": "C’est / de",
-      "hint": "« cela est » : c’est. Puis « de ».",
-      "explanation": "C’est mal de sortir : cela est mal de.",
+      "prompt": "Elle … fait mal … la cour.",
+      "spoken": "Elle  (mot manquant)  fait mal  (mot manquant)  la cour.",
+      "choices": ["s’est / dans", "c’est / dans", "s’est / d’en"],
+      "answer": "s’est / dans",
+      "hint": "« je me suis fait mal » : s’est. « à l’intérieur de » : dans.",
+      "explanation": "Elle s’est fait mal (verbe se faire mal) dans la cour (à l’intérieur).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
     },
     {
       "key": "carrefour-bifurcation-2-2",
-      "prompt": "… tu veux, on … va.",
-      "spoken": " (mot manquant)  tu veux, on  (mot manquant)  va.",
+      "prompt": "… tu veux, on … met.",
+      "spoken": " (mot manquant)  tu veux, on  (mot manquant)  met.",
       "choices": ["Si / s’y", "S’y / si", "Si / si"],
       "answer": "Si / s’y",
-      "hint": "condition : si. « s’y rendre » : s’y.",
-      "explanation": "Si tu veux (condition), on s’y va (se + y).",
+      "hint": "Condition : si. « s’y mettre » : s’y.",
+      "explanation": "Si tu veux (condition), on s’y met (se + y).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
     },
     {
       "key": "carrefour-bifurcation-2-3",
-      "prompt": "Il … dit … partir.",
-      "spoken": "Il  (mot manquant)  dit  (mot manquant)  partir.",
+      "prompt": "Il … levé … faire de bruit.",
+      "spoken": "Il  (mot manquant)  levé  (mot manquant)  faire de bruit.",
       "choices": ["s’est / sans", "c’est / sans", "s’est / s’en"],
       "answer": "s’est / sans",
-      "hint": "« il se dit » au passé : s’est. « pas de » : sans.",
-      "explanation": "Il s’est dit (verbe pronominal) sans partir (pas de).",
+      "hint": "« je me suis levé » : s’est. « pas de » : sans.",
+      "explanation": "Il s’est levé (verbe se lever) sans faire de bruit (pas de bruit).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
@@ -93,8 +105,8 @@
       "key": "carrefour-bifurcation-2-4",
       "prompt": "… … fini, ils rentrent.",
       "spoken": " (mot manquant)   (mot manquant)  fini, ils rentrent.",
-      "choices": ["Quand c’est", "Quant s’est", "Qu’en c’est"],
-      "answer": "Quand c’est",
+      "choices": ["Quand / c’est", "Quant / s’est", "Qu’en / c’est"],
+      "answer": "Quand / c’est",
       "hint": "« lorsque » : quand. « cela est » : c’est.",
       "explanation": "Quand c’est fini : lorsque cela est fini.",
       "aid": {
@@ -102,10 +114,13 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
@@ -114,7 +129,7 @@
       "key": "carrefour-bifurcation-2-5",
       "prompt": "Elle … … chaussures neuves.",
       "spoken": "Elle  (mot manquant)   (mot manquant)  chaussures neuves.",
-      "choices": ["a / ses", "à / ces", "a / ces"],
+      "choices": ["a / ses", "à / ces", "à / ses"],
       "answer": "a / ses",
       "hint": "« avait » : a. « les siennes » : ses.",
       "explanation": "Elle a (avait) ses (les siennes) chaussures neuves.",
@@ -123,10 +138,13 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
@@ -144,10 +162,13 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }
@@ -158,17 +179,20 @@
       "spoken": "Je  (mot manquant)  sais pas  (mot manquant)  tu viens.",
       "choices": ["ne / si", "n’y / si", "ne / s’y"],
       "answer": "ne / si",
-      "hint": "négation : ne. condition : si.",
-      "explanation": "Je ne sais pas si tu viens : négation, puis condition.",
+      "hint": "Négation : ne. Question « est-ce que tu viens ? » : si.",
+      "explanation": "Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est.",
-            "son = le sien · sont = verbe être (ils sont).",
-            "a = avait · à = préposition.",
-            "on = quelqu’un · ont = verbe avoir (ils ont)."
+            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
+            "ni = et pas · n’y = ne + y · ne = négation.",
+            "si = condition ou question · s’y = se + y (il s’y met).",
+            "c’est = cela est · s’est = se + est (elle s’est assise).",
+            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
+            "quand = lorsque · quant à = pour ce qui est de.",
+            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
           ]
         }
       }

@@ -98,7 +98,7 @@
   ],
   "feedback": {
     "correct": "Bien assemblé !",
-    "wrong": "{word} se fabrique avec {answer} : {meaning}."
+    "wrong": "{word} se fabrique avec {answer}. {meaning}"
   },
   "reward": {
     "block": "sable",

@@ -140,7 +140,7 @@
       "choices": [
         "il fait froid dans la maison",
         "il va sortir",
-        "il est malade"
+        "il a trop chaud"
       ],
       "answer": "il fait froid dans la maison",
       "hint": "Deux pulls et une écharpe, dedans.",

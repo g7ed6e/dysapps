@@ -3,7 +3,7 @@
   "biome": "falaise",
   "type": "corde",
   "level": 1,
-  "instruction": "Accorde le participe passé : avec être, il suit le sujet ; avec avoir, il ne bouge pas. La règle est affichée.",
+  "instruction": "Accorde le participe passé : avec être, il suit le sujet ; avec avoir, il ne s’accorde pas avec le sujet. La règle est affichée.",
   "items": [
     {
       "key": "falaise-corde-1-0",

@@ -117,7 +117,7 @@
       "choices": [
         "Repeat",
         "Open",
-        "Look"
+        "Sit"
       ],
       "answer": "Repeat",
       "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
@@ -164,8 +164,8 @@
     },
     {
       "key": "baie-hello-2-6",
-      "prompt": "Sorry, I don’t … . Can you repeat?",
-      "spoken": "Sorry, I don’t blank . Can you repeat?",
+      "prompt": "Sorry, I don’t … . Can you repeat that?",
+      "spoken": "Sorry, I don’t blank . Can you repeat that?",
       "choices": [
         "understand",
         "open",
