@@ -1,0 +1,1 @@
+Archipéo ne s’activera que dans les Réglages, section « Univers » : rien ne fera passer un appareil à Archipéo d’office, pas même la section Expérimental d’aujourd’hui. Blocland reste l’univers de tous les appareils à l’ouverture.
