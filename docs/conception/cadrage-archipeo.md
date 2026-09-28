@@ -286,6 +286,8 @@ Ni Archipéo ni Blocland ne s’affichent en 2D (décidé par le mainteneur le 2
 3. Quand les retouches sont faites, C démarre.
 4. Quand C est fusionné, le référent dys vérifie ses points ouverts (voir le décor du lot R4) et relit chaque univers avec les réglages extrêmes. La bascule vient ensuite.
 
+*Remplacés le 28 septembre 2026 au soir par la bascule avancée* (décision 10 de [Plusieurs univers](univers.md)) : la bascule passe juste après #211, DA-14 et DA-15, la relecture du référent dys sur ce qui change pour Blocland et le manuel en texte ; le reste de C, la revue d’ensemble des retouches d’Archipéo et R4b-3e la suivent.
+
 **Les garde-fous** (expert frontend) :
 
 - Les réglages s’enregistrent dès l’ouverture de l’application. Tant que la constante est fausse, `univers` n’est donc pas écrit ; sinon, un appareil neuf resterait figé sur Archipéo à tort.
