@@ -502,10 +502,10 @@ export const BIOMES: BiomeDef[] = [
   {
     id: 'glacier',
     name: 'Glacier des relatifs',
-    module: 'Nombres relatifs',
+    module: 'Nombres relatifs et fractions',
     subject: 'maths',
     classe: '5e',
-    description: 'Comparer, additionner, soustraire, multiplier des nombres négatifs, la droite sous les yeux.',
+    description: 'Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.',
     block: 'glace',
     guardian: 'le Mammouth de givre',
     guardianSays: {
@@ -524,6 +524,7 @@ export const BIOMES: BiomeDef[] = [
         'Moins cinq, c’est plus petit que moins deux. Plus on va à gauche, plus il fait froid.',
         'Soustraire, c’est ajouter l’opposé. Comme enlever un manteau.',
         'Mon igloo est en glace. Chaque calcul en taille un bloc.',
+        'Un iceberg ne montre qu’une fraction de lui : le reste dort sous l’eau.',
       ],
       home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
     },
@@ -531,6 +532,7 @@ export const BIOMES: BiomeDef[] = [
       { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.', programme: ['c4.ma.a.relatifs', 'c4.ma.d.reperage'] },
       { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.', programme: ['c4.ma.a.calcul-relatifs'] },
       { id: 'crevasses', title: 'Crevasses', description: 'Multiplie et divise avec la règle des signes affichée.', programme: ['c4.ma.a.calcul-relatifs'] },
+      { id: 'icebergs', title: 'Icebergs des fractions', description: 'Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.', programme: ['c4.ma.a.fractions', 'c4.ma.a.calcul-fractions'] },
     ],
   },
   {

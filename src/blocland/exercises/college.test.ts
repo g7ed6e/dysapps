@@ -75,10 +75,10 @@ it('les pourcentages : nouveau prix cohérent', () => {
   }
 });
 
-it('Glacier et Marché : six exercices chacun, huit items avec aide et explication', () => {
+it('Glacier et Marché : neuf et six exercices, huit items avec aide et explication', () => {
   const glacier = COLLEGE_EXERCISES.filter((e) => e.biome === 'glacier');
   const marche = COLLEGE_EXERCISES.filter((e) => e.biome === 'marche');
-  expect(glacier).toHaveLength(6);
+  expect(glacier).toHaveLength(9);
   expect(marche).toHaveLength(6);
   for (const def of [...glacier, ...marche]) {
     expect(def.items).toHaveLength(8);
@@ -406,3 +406,71 @@ it('maths générées : la partie garde les choix tirés, et la bonne réponse p
   }
   expect(report).toEqual([]);
 }, 60_000);
+
+it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’énoncé, et les pièges tirés d’erreurs réelles', () => {
+  const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
+  const parse = (f: string): [number, number] => {
+    const [n, d] = f.split('/').map(Number);
+    return [n, d];
+  };
+  const val = (f: string) => parse(f)[0] / parse(f)[1];
+  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+  const irreducible = (f: string) => gcd(...parse(f)) === 1;
+  const seen = { sumTrap: 0, unsimplified: 0, wrongInverse: 0, cross: 0 };
+  for (let s = 0; s < 200; s++) {
+    for (const level of [1, 2, 3]) {
+      const def = byId(`glacier-icebergs-${level}`);
+      expect(def.instruction).not.toMatch(/[/×÷]/);
+      for (const item of def.generate!(`${def.id}#glace${s}`)) {
+        const list = (item.choices as string[]).map(String);
+        const prompt = String(item.prompt);
+        const spoken = String(item.spoken);
+        // Lu à voix haute sans symbole : « 3 quarts fois 2 tiers ».
+        expect(spoken, spoken).not.toMatch(/[/×÷−+…]/);
+        expect((item.aid as { kind: string }).kind).toBe('rule-card');
+        expect(new Set(list).size).toBe(list.length);
+        expect(list).toContain(item.answer);
+        if (level < 3) expect((item.figure as { kind: string }).kind).toBe('compare-bars');
+        const [x, op, y] = /^(\d+\/\d+) ?(\S*) ?(\d+\/\d+)/
+          .exec(prompt.replace(/^Compare /, '').replace(' et ', ' ? '))!
+          .slice(1);
+        if (level === 1) {
+          expect(list).toEqual([x, y, 'Elles sont égales']);
+          const [a, b] = parse(x);
+          const [c, d] = parse(y);
+          const expected = a * d === b * c ? 'Elles sont égales' : a * d > b * c ? x : y;
+          expect(item.answer, prompt).toBe(expected);
+          continue;
+        }
+        expect(list.length, prompt).toBe(4);
+        // Rangées de la plus petite à la plus grande.
+        expect(list.map(val)).toEqual([...list.map(val)].sort((p, q) => p - q));
+        const [a, b] = parse(x);
+        const [c, d] = parse(y);
+        const exact = { '+': a / b + c / d, '−': a / b - c / d, '×': (a * c) / (b * d), '÷': (a * d) / (b * c) }[op]!;
+        const close = (v: number) => Math.abs(v - exact) < 1e-9;
+        expect(close(val(String(item.answer))), prompt).toBe(true);
+        expect(irreducible(String(item.answer)), prompt).toBe(true);
+        if (level === 2) {
+          // Aucune autre écriture de la réponse : une seule réponse juste.
+          expect(list.filter((f) => close(val(f))), prompt).toEqual([item.answer]);
+          if (op === '+' && list.includes(`${a + c}/${b + d}`)) seen.sumTrap++;
+        } else {
+          // La seule autre écriture possible de la réponse est celle qu'on a oublié de simplifier.
+          const same = list.filter((f) => close(val(f)) && f !== item.answer);
+          expect(same.length, prompt).toBeLessThanOrEqual(1);
+          for (const f of same) expect(irreducible(f), prompt).toBe(false);
+          if (same.length) seen.unsimplified++;
+          expect(prompt).toMatch(/simplifiée/);
+          // Jamais une fraction de l'énoncé parmi les réponses.
+          for (const f of list) expect([x, y].some((o) => Math.abs(val(f) - val(o)) < 1e-9), `${prompt} ${f}`).toBe(false);
+          const reduce = (n: number, m: number) => `${n / gcd(n, m)}/${m / gcd(n, m)}`;
+          if (op === '÷' && list.includes(reduce(b * c, a * d))) seen.wrongInverse++;
+          if (op === '×' && list.includes(reduce(a * d, b * c))) seen.cross++;
+        }
+      }
+    }
+  }
+  // Les pièges annoncés sont bien là, souvent.
+  for (const [trap, count] of Object.entries(seen)) expect(count, trap).toBeGreaterThan(100);
+});
