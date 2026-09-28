@@ -14,6 +14,8 @@ import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoTitle, getArchipelago, isArchipelagoReached } from './world/archipelago';
 import { MONUMENTS, monumentsOf, type MonumentDef } from './world/monuments';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
@@ -210,10 +212,11 @@ export function MonumentsSheet({ onClose }: { onClose: () => void }) {
 }
 
 export function MonumentsPage() {
+  const univers = useUnivers();
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Archipéo
+        <Icon name="back" /> {UNIVERS[univers].nom}
       </Link>
       <h1 className="page-title">
         <Icon name="castle" /> {MONUMENTS_TITLE}

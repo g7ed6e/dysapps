@@ -1,3 +1,5 @@
+import { UNIVERS, type UniversChoice } from './univers';
+
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
 /**
@@ -12,6 +14,7 @@ export type StartChoice = 'village' | 'menu';
  * style du lot R1 (src/blocland/world/style.ts, où chaque lettre est décrite).
  */
 export type StyleChoice = 'textures' | 'a' | 'b' | 'c';
+export type { UniversChoice } from './univers';
 
 /** La clé des réglages dans le stockage de l'appareil. */
 export const SETTINGS_KEY = 'settings';
@@ -48,6 +51,11 @@ export interface Settings {
   renduArchipeo: boolean;
   /** Expérimental : la surface du rendu Archipéo, comme `?style=a|b|c` ; lue seulement avec `renduArchipeo`. */
   styleArchipeo: StyleChoice;
+  /**
+   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent avant le lot 6 et tant que `UNIVERS_OUVERT` est fausse :
+   * le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
+   */
+  univers?: UniversChoice;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -149,7 +157,24 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     renduArchipeo: s.renduArchipeo === true,
     styleArchipeo: Object.hasOwn(STYLE_LABELS, s.styleArchipeo) ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
+    // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut Archipéo.
+    ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : 'archipeo' }),
   };
+}
+
+let courants: Settings | null = null;
+
+/**
+ * Les réglages de l'application, tenus en mémoire par `SettingsProvider` (qui les pose avant le premier rendu de ses
+ * enfants, puis à chaque changement) : le rendu du monde les lit là, sans relire le stockage. `null` hors de
+ * l'application (un test, une page sans fournisseur).
+ */
+export function retenirReglages(settings: Settings | null): void {
+  courants = settings;
+}
+
+export function reglagesCourants(): Settings | null {
+  return courants;
 }
 
 /** Applique les réglages au document via des variables CSS et un attribut de thème. */

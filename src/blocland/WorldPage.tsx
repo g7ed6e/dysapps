@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
-import { useSettings } from '../core/SettingsContext';
+import { useSettings, useUnivers } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome, type BiomeId } from './biomes';
 import type { QuestMark } from './world/view';
@@ -70,6 +70,7 @@ import {
 import { stageTo } from './world/vehicle';
 import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
+import { UNIVERS } from '../core/univers';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -87,6 +88,7 @@ export function WorldPage() {
   const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
+  const univers = useUnivers();
   // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
   const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
@@ -679,7 +681,7 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, '[data-tuto="carte"]', undefined, '[data-tuto="blocs"]', '[data-tuto="ecole"]', undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
+              UNIVERS[univers].bienvenue,
               'Touche la Forêt des sons, sous la flèche jaune : ton bonhomme y va, la caméra le suit et le panneau de l’île s’ouvre. Pour aller ailleurs, touche une île, ou le bouton Carte pour voir tout l’archipel du ciel.',
               'Sur chaque île, les bornes à panneau sont les missions : touche une borne pour jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles.',
               'Dans le panneau : les missions donnent des blocs, les blocs construisent le plan de l’île, et le Gardien t’attend quand tu as des étoiles partout.',

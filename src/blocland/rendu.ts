@@ -7,28 +7,34 @@
 // (world/style.ts), pour les comparer en captures ; sans lui, le rendu Archipéo garde les textures des blocs.
 // Les mêmes choix se font aussi dans les Réglages, section « Expérimental » (réglages `renduArchipeo` et
 // `styleArchipeo`, éteints par défaut, enregistrés sur l'appareil) ; l'adresse l'emporte sur eux. Le réglage « Univers »
-// du lot 6 (docs/conception/univers.md, étape U3) les remplacera.
-import { DEFAULT_SETTINGS, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
+// du lot 6 (src/core/univers.ts) les remplace à la bascule (`UNIVERS_OUVERT`) : l'univers choisit alors le rendu.
+import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
+import { UNIVERS_OUVERT } from '../core/univers';
 import { STYLES, type StyleSurface } from './world/style';
 
 export type Rendu = 'blocs' | 'archipeo';
 
-/** Les réglages expérimentaux du rendu. */
-export type ChoixExperimentaux = Pick<Settings, 'renduArchipeo' | 'styleArchipeo'>;
+/** Les réglages qui choisissent le rendu : l'univers (à la bascule), sinon les réglages expérimentaux. */
+export type ChoixExperimentaux = Pick<Settings, 'renduArchipeo' | 'styleArchipeo' | 'univers'>;
 
 const SANS_REGLAGE: ChoixExperimentaux = { renduArchipeo: false, styleArchipeo: 'textures' };
 
 const params = (href: string) => new URL(href, 'http://localhost/').searchParams;
 
-/** Le rendu du monde : `archipeo` avec `?rendu=archipeo` ou le réglage expérimental, sinon le monde en blocs. */
-export function renduDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE): Rendu {
-  return params(href).get('rendu') === 'archipeo' || choix.renduArchipeo ? 'archipeo' : 'blocs';
+/**
+ * Le rendu du monde : `archipeo` avec `?rendu=archipeo` ; sinon, une fois l'univers ouvert, celui de l'univers (Archipéo
+ * par défaut) ; avant, le réglage expérimental, et le monde en blocs sans lui.
+ */
+export function renduDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE, ouvert = UNIVERS_OUVERT): Rendu {
+  if (params(href).get('rendu') === 'archipeo') return 'archipeo';
+  if (ouvert) return choix.univers === 'blocland' ? 'blocs' : 'archipeo';
+  return choix.renduArchipeo ? 'archipeo' : 'blocs';
 }
 
 /** L'option de style de surface (`?style=a|b|c`, sinon le réglage), seulement avec le rendu Archipéo. */
-export function styleDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE): StyleSurface | null {
-  if (renduDepuis(href, choix) !== 'archipeo') return null;
+export function styleDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE, ouvert = UNIVERS_OUVERT): StyleSurface | null {
+  if (renduDepuis(href, choix, ouvert) !== 'archipeo') return null;
   const s = params(href).get('style') ?? choix.styleArchipeo;
   return STYLES.find((x) => x === s) ?? null;
 }
@@ -42,12 +48,16 @@ export function mesuresDepuis(href: string): boolean {
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
 let lu: { brut: string | null; choix: ChoixExperimentaux } | null = null;
-
 /**
- * Les réglages expérimentaux enregistrés sur l'appareil (le monde les relit à son ouverture : les Réglages sont une autre
- * page). Relus à chaque appel, décodés seulement quand ils ont changé : la 3D en demande à chaque mise à jour des cubes.
+ * Les réglages du rendu : ceux que `SettingsProvider` tient en mémoire (`reglagesCourants`), sans relire le stockage ;
+ * le monde ne lit son rendu qu'à son ouverture (les Réglages sont une autre page), un changement d'univers se voit donc
+ * au retour au village, jamais au milieu d'une mission. Sinon (hors de l'application, dans un test), ceux enregistrés sur
+ * l'appareil, relus à chaque appel et décodés seulement quand ils ont changé : la 3D en demande à chaque mise à jour des
+ * cubes.
  */
 function reglages(): ChoixExperimentaux {
+  const courants = reglagesCourants();
+  if (courants) return courants;
   if (typeof window === 'undefined') return SANS_REGLAGE;
   let brut: string | null = null;
   try {

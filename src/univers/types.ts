@@ -4,7 +4,7 @@
 import type { BiomeId } from '../blocland/biomes';
 import type { ArchipelagoId } from '../blocland/world/archipelago';
 
-export type UniversId = 'archipeo' | 'blocland';
+export type { UniversChoice as UniversId } from '../core/univers';
 
 /** Ce que dit un Gardien pendant son défi. */
 export interface TextesGardien {
