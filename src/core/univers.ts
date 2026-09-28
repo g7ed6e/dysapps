@@ -1,11 +1,8 @@
 // L'univers de l'appareil (lot 6, docs/conception/univers.md et cadrage-archipeo.md, « Les fils du lot 6 ») : Archipéo
 // ou Blocland. Il choisit le dessin du monde et le titre ; jamais les règles, jamais la progression, commune aux deux.
-// Tout passe derrière `UNIVERS_OUVERT`, fausse jusqu'à la bascule : tant qu'elle l'est, l'élève ne voit rien changer
-// (titre « Archipéo », monde en blocs, section Expérimental) et le champ `univers` des réglages n'est jamais écrit.
+// Depuis la bascule du lot 6 (décision 10 de univers.md), l'univers se choisit dans Réglages › Univers : Blocland par
+// défaut, Archipéo au choix, en second. La section Expérimental d'avant n'existe plus.
 import type { AnyIconName } from '../components/Icon';
-
-/** La bascule du lot 6 : vraie, le réglage « Univers » remplace la section Expérimental. */
-export const UNIVERS_OUVERT = false;
 
 export type UniversChoice = 'archipeo' | 'blocland';
 
@@ -85,12 +82,9 @@ export function aUneProgression(progress: unknown, blocland: unknown): boolean {
   return Number(p.xp) > 0 || Number(p.totalAnswers) > 0 || etoiles;
 }
 
-/**
- * L'univers qui se voit : celui des réglages une fois ouvert (l'univers par défaut s'il n'y en a pas) ; avant la
- * bascule, Blocland (décision de G du 28/09/2026 : les élèves ne sont pas prêts à quitter Blocland), comme le monde.
- */
-export function titreAffiche(univers: UniversChoice | undefined, ouvert: boolean): UniversChoice {
-  return ouvert ? (univers ?? UNIVERS_PAR_DEFAUT) : 'blocland';
+/** L'univers qui se voit (titre, barre du haut, habillage, textes) : celui des réglages, l'univers par défaut sinon. */
+export function universAffiche(univers?: UniversChoice): UniversChoice {
+  return univers ?? UNIVERS_PAR_DEFAUT;
 }
 
 // Le message unique, noté par appareil comme ce que la baleine a déjà dit (WhaleWord), jamais dans la sauvegarde :

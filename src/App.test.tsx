@@ -76,7 +76,7 @@ it('liste les missions d’anglais du portail', () => {
   expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Verbes irréguliers/ })).toBeInTheDocument();
   // Les îles d'anglais de Blocland, avec leur classe : la Baie et l'Horloge, derrière la Ferme et la Forêt.
-  expect(screen.getByRole('heading', { name: /Dans Archipéo/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Dans Blocland/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Baie des mots.*Niveau 6e/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Horloge des verbes.*Ouvrage à construire.*Niveau 6e/ })).toBeInTheDocument();
 });
