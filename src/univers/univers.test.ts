@@ -153,7 +153,8 @@ describe('les textes communs (J8, U4)', () => {
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
-      const r = Object.fromEntries(BIOMES.map((b) => [b.id, t.creatures[b.id]]));
+      // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('4f1dd9f0202484ec1729227ee4229132ec290545a64489f7694dd6967b29532a');
       expect(t.etatsDIle).toEqual({ fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', restauree: 'Restaurée' });
     }

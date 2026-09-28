@@ -305,4 +305,14 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
   },
+  jardin: {
+    greeting:
+      'Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée et on lit le menu, dans ta deuxième langue. La voix lit chaque mot pour toi. Chaque bonne réponse, c’est un bloc d’osier pour le village.',
+    lines: [
+      'Ma soupe mijote : ici, personne n’est pressé.',
+      'Je range mes noisettes par moment de la journée : celles du matin, celles du soir.',
+      'Mon panier d’osier se tresse brin par brin, comme une phrase : un mot après l’autre.',
+    ],
+    home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
+  },
 };

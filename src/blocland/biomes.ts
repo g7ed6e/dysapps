@@ -767,17 +767,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'osier',
     guardian: 'le Soleil de cuivre',
     icon: 'languages',
-    creature: {
-      name: 'Muscade',
-      greeting:
-        'Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée et on lit le menu, dans ta deuxième langue. La voix lit chaque mot pour toi. Chaque bonne réponse, c’est un bloc d’osier pour le village.',
-      lines: [
-        'Ma soupe mijote : ici, personne n’est pressé.',
-        'Je range mes noisettes par moment de la journée : celles du matin, celles du soir.',
-        'Mon panier d’osier se tresse brin par brin, comme une phrase : un mot après l’autre.',
-      ],
-      home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
-    },
+    creature: { name: 'Muscade' },
     exercises: [
       // Même ordre dans les deux langues : la borne de même rang ouvre la mission de la LV2 choisie.
       { id: 'es-hora', title: '¿Qué hora es?', description: 'L’heure entendue et lue : y cuarto, y media, menos cuarto.', programme: ['c4.es.ecouter.intervention-breve', 'c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.lexique'], lv2: 'es' },
