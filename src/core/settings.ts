@@ -1,7 +1,7 @@
 import { UNIVERS, type UniversChoice } from './univers';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
-export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
+export type ThemeChoice = 'creme' | 'nuit' | 'clair';
 /**
  * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
  * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
@@ -31,7 +31,6 @@ export interface Settings {
   autoRead: boolean;
   /** Surligner les syllabes en couleurs alternées. */
   syllables: boolean;
-  reduceMotion: boolean;
   /** La vue de Blocland ; sans WebGL, le monde en 3D laisse la place à la liste, accessible. */
   worldView: WorldViewChoice;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
@@ -72,7 +71,6 @@ export const DEFAULT_SETTINGS: Settings = {
   speechRate: 0.9,
   autoRead: true,
   syllables: true,
-  reduceMotion: false,
   worldView: '3d',
   sounds: true,
   ambience: false,
@@ -111,11 +109,13 @@ export const THEME_LABELS: Record<ThemeChoice, string> = {
   creme: 'Crème',
   nuit: 'Nuit',
   clair: 'Clair',
-  contraste: 'Contraste élevé',
 };
 
-/** Anciens identifiants (versions précédentes) vers les nouveaux. */
-const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit' };
+/**
+ * Anciens identifiants (versions précédentes) vers les nouveaux. Le Contraste élevé n'est plus au choix (28/09/2026) :
+ * un appareil qui l'avait choisi retrouve le thème sombre le plus proche, la Nuit.
+ */
+const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit', contraste: 'nuit' };
 const LEGACY_FONTS: Record<string, FontChoice> = { systeme: 'arial' };
 
 const FONT_STACKS: Record<FontChoice, string> = {
@@ -148,7 +148,6 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     speechRate: clamp(Number(s.speechRate) || DEFAULT_SETTINGS.speechRate, 0.5, 1.3),
     autoRead: s.autoRead === undefined ? DEFAULT_SETTINGS.autoRead : Boolean(s.autoRead),
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
-    reduceMotion: Boolean(s.reduceMotion),
     worldView: s.worldView in WORLD_VIEW_LABELS ? s.worldView : DEFAULT_SETTINGS.worldView,
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
@@ -180,7 +179,6 @@ export function reglagesCourants(): Settings | null {
 /** Applique les réglages au document via des variables CSS et un attribut de thème. */
 export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = settings.theme;
-  root.dataset.reduceMotion = String(settings.reduceMotion);
   root.dataset.syllables = String(settings.syllables);
   root.style.setProperty('--font-family', FONT_STACKS[settings.font]);
   root.style.setProperty('--font-size', `${settings.fontSize}px`);

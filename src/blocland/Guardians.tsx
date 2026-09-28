@@ -2,6 +2,7 @@
 import { lazy, Suspense, useState } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
+import { useMoinsDAnimations } from '../core/mouvement';
 import type { BiomeId } from './biomes';
 import { renduDuMonde } from './rendu';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
@@ -24,6 +25,7 @@ interface Props {
 /** Le Gardien en 3D (respiration), en SVG sans WebGL ; l'humeur anime le cadre (s'incline, gronde, s'écroule). */
 export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
   const { settings } = useSettings();
+  const reduceMotion = useMoinsDAnimations();
   const cubes = GUARDIAN_CUBES[biome];
   // Le rendu d'Archipéo (drapeau `?rendu=archipeo`) : le Gardien en sentinelle de pierre, éteinte, rallumée (1) une
   // fois vaincu, d'un coup, sans fondu ; sans le drapeau, en cubes, inchangé.
@@ -44,7 +46,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
       kind="guardian"
       id={biome}
       allumage={allumage}
-      reduceMotion={settings.reduceMotion}
+      reduceMotion={reduceMotion}
       cameraDirection={[-0.55, -0.85]}
       elevation={0.35}
       className="creature-3d guardian-3d"
@@ -55,7 +57,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
       cubes={cubes}
       breathe
       interactive={false}
-      reduceMotion={settings.reduceMotion}
+      reduceMotion={reduceMotion}
       cameraDirection={[0.55, -0.85]}
       elevation={0.35}
       fit={1.5}

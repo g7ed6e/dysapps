@@ -71,7 +71,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
   - Le volcan paraît plus petit que la grue dans la vue de l’archipel.
   - Aucune case de sol n’est blanche.
   - Les lueurs (la gueule, plus les fenêtres de R5 à la revue d’ensemble) couvrent moins de 5 % des captures de nuit.
-  - Les deux captures « Réduire les animations » sont identiques.
+  - Avec « Réduire les animations » (la préférence de l’appareil), rien ne bouge. Plus de capture dédiée depuis le 28 septembre 2026 : la vidéo sur tablette le montre.
   - Le test en gris est réussi, d’abord sans R5, puis à la revue d’ensemble.
   - Le budget est tenu, par poste.
 

@@ -6,6 +6,7 @@ import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings, useUnivers } from '../core/SettingsContext';
+import { useMoinsDAnimations } from '../core/mouvement';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome, type BiomeId } from './biomes';
 import type { QuestMark } from './world/view';
@@ -89,6 +90,7 @@ export function WorldPage() {
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
   const univers = useUnivers();
+  const reduceMotion = useMoinsDAnimations();
   // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
   const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
@@ -243,7 +245,7 @@ export function WorldPage() {
   // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
   // d'archipel) sont un fondu court (`hop`, plus bas). Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
   // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
-  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Avec « Réduire les animations » : un écran
+  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Quand l'appareil demande moins d'animations : un écran
   // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
   const [voyage, setVoyage] = useState<Voyage | null>(null);
   const [veil, setVeil] = useState(false);
@@ -268,7 +270,7 @@ export function WorldPage() {
     };
     setHopTo(to);
     later(() => setHopTo(null), 3500);
-    if (settings.reduceMotion) return land();
+    if (reduceMotion) return land();
     setVeil(true);
     later(() => {
       land();
@@ -278,8 +280,8 @@ export function WorldPage() {
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
     if (back) return hop(to, dest);
     clearTimers();
-    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion: settings.reduceMotion };
-    if (settings.reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
+    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion };
+    if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     const stage = etapeDuVoyage(to, back, state.village.bridges);
     const text = voyageSentence(to, back, a);
     if (settings.autoRead) speak(frenchTypography(text));
@@ -537,7 +539,7 @@ export function WorldPage() {
             cubes={cubes}
             creatures={creatures}
             focus={focus}
-            reduceMotion={settings.reduceMotion}
+            reduceMotion={reduceMotion}
             forceDay={forceDay}
             bridges={state.village.bridges}
             marker={marker}
@@ -549,7 +551,7 @@ export function WorldPage() {
             trail={trail}
             quests={quests}
             islandLabels={voyage ? undefined : islandLabels}
-            whalePass={whaleWord && !settings.reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
+            whalePass={whaleWord && !reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             burst={burst}
             onIntent={onIntent}
             chantier={Boolean(island)}

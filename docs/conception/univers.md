@@ -27,7 +27,7 @@ Leurs avis sont résumés à chaque section.
 
 ## 1. Les mots
 
-« Thème » est déjà pris : les Réglages appellent ainsi les couleurs de l’interface (Crème, Nuit, Clair, Contraste élevé ; `ThemeChoice` dans `src/core/settings.ts`). La fonctionnalité s’appelle donc **l’univers**, à l’écran (« Univers : Archipéo ») comme dans le code. « Monde » et « aventure » sont pris aussi : « Vue du monde », « Reprendre l’aventure ».
+« Thème » est déjà pris : les Réglages appellent ainsi les couleurs de l’interface (Crème, Nuit, Clair ; `ThemeChoice` dans `src/core/settings.ts`). La fonctionnalité s’appelle donc **l’univers**, à l’écran (« Univers : Archipéo ») comme dans le code. « Monde » et « aventure » sont pris aussi : « Vue du monde », « Reprendre l’aventure ».
 
 Deux univers au départ :
 
@@ -172,7 +172,7 @@ Le choix se fait **dans les Réglages** (décision du mainteneur). Le risque pri
 - **Les repères stables du §4** sous chaque nom d’île.
 - **Un lexique court par univers**, une dizaine de mots au plus. Chacun est expliqué et lu à voix haute la première fois.
 - **Aucun texte ne présente un univers comme une aide « pour les dys ».** C’est une affinité, pas une adaptation.
-- **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, Contraste élevé, voix coupée, « Réduire les animations ») et en vue simple. Les invariants du §4 entrent dans les [principes dys](../pedagogie/principes.md) quand U4 les vérifie par des tests.
+- **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, voix coupée, « Réduire les animations » de l’appareil ; le Contraste élevé quand il revient, au lot 11 du cadrage Archipéo) et en vue simple. Les invariants du §4 entrent dans les [principes dys](../pedagogie/principes.md) quand U4 les vérifie par des tests.
 
 Un point en faveur de Blocland, à vérifier sur tablette avec un élève dyspraxique : une grille en cubes montre mieux la case touchée que des facettes en pente.
 

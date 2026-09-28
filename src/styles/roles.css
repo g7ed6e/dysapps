@@ -67,14 +67,3 @@
   width: 3rem;
   height: 3rem;
 }
-:root[data-theme="contraste"] .role-badge {
-  --role-bg: #000000;
-  --role-ink: #ffe600;
-  --role-edge: #ffffff;
-}
-:root[data-theme="contraste"] .role-badge .role-fill {
-  fill: #ffe600;
-}
-:root[data-theme="contraste"] .role-badge.locked {
-  --role-ink: #ffffff;
-}

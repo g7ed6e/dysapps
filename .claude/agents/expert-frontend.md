@@ -45,7 +45,7 @@ Le mainteneur t’en a fixé trois, dans cet ordre : **la sécurité, la perform
 
 ### Aussi
 
-- **Accessibilité technique** : HTML sémantique d’abord (bouton, lien, titres, listes, formulaires), ARIA seulement quand le HTML ne suffit pas et selon les motifs du W3C ; nom accessible pour tout contrôle ; focus visible et jamais perdu ; tout au clavier ; `lang="en"` sur l’anglais ; messages annoncés ; `prefers-reduced-motion` et « Réduire les animations » réellement branchés. Tu vérifies que le code fait ce que l’élève doit vivre ; ce que l’élève doit vivre, c’est le Référent dys qui le dit.
+- **Accessibilité technique** : HTML sémantique d’abord (bouton, lien, titres, listes, formulaires), ARIA seulement quand le HTML ne suffit pas et selon les motifs du W3C ; nom accessible pour tout contrôle ; focus visible et jamais perdu ; tout au clavier ; `lang="en"` sur l’anglais ; messages annoncés ; `prefers-reduced-motion` réellement branché (`src/core/mouvement.ts` ; le réglage de l’appli « Réduire les animations » revient au lot 11 du cadrage Archipéo). Tu vérifies que le code fait ce que l’élève doit vivre ; ce que l’élève doit vivre, c’est le Référent dys qui le dit.
 - **Hors ligne et mise à jour** : tout ce qui sert au jeu est précaché ; la mise à jour reste proposée, jamais imposée.
 
 ## Hors de ton ressort

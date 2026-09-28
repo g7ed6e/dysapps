@@ -552,7 +552,7 @@ export default function WorldCanvas2D({
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.imageSmoothingEnabled = false;
       if (paint) {
-        // En 2D peinte : le large de la palette, et ses reflets longs et rares (figés avec « Réduire les animations »).
+        // En 2D peinte : le large de la palette, et ses reflets longs et rares (figés quand l'appareil demande moins d'animations).
         ctx.fillStyle = hex(paint.mer.large);
         ctx.fillRect(0, 0, scr.w, scr.h);
         const pattern = paintedSeaOf(paint);
