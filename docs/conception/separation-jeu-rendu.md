@@ -150,6 +150,6 @@ Le mainteneur a tranché le 28 septembre 2026 :
 | **Quand ?** | (a) avant le lot 6 ; (b) J0 à J5 maintenant, entre les lots R, et la disposition en réseau avec les lots 8 et 8b ; (c) tout après le lot 8 | **(b).** Le lot 6 s’ouvre en grille. |
 | **Entre deux îles, que voit l’élève en réseau ?** | (a) il marche le long de l’ouvrage ; (b) un trajet court par la liaison, qu’on peut sauter ; (c) un fondu | **(b).** « Réduire les animations » le ramène à (c). |
 
-Pour plusieurs univers (un récit, un habillage du monde et des énoncés au choix de l’élève, sur le même jeu), la feuille de route [Plusieurs univers](univers.md) ajoute à ce plan une note en J5, l’objet `Habillage` en J6, une couche `univers` en J7 et une étape J8 (les textes d’Archipéo sortis en données, sans changement d’image) ; elle n’en change aucune décision.
+Pour plusieurs univers (Archipéo et Blocland au choix de l’élève, chacun avec son récit, son rendu et l’habillage de ses énoncés, sur le même jeu), la feuille de route [Plusieurs univers](univers.md) ajoute à ce plan une note en J5, l’objet `Habillage` en J6, une couche `univers` en J7 et une étape J8 (les textes d’Archipéo sortis en données, sans changement d’image) ; elle n’en change aucune décision.
 
 Reste à cadrer avec le directeur artistique, avant J6 : la maquette d’une île en réseau (échelle, ce qu’elle montre de loin et de près), la place des Gardiens et des monuments, la Carte et la carte des quatre archipels (lot 8b), la 2D en réseau.
