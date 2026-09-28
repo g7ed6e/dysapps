@@ -35,9 +35,9 @@ export interface CoucheDeBrume {
  * plus. Toutes sous le sol des îles (à 3 blocs dans les Îles Brumeuses).
  */
 export const COUCHES_5E: readonly CoucheDeBrume[] = [
-  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.6, couvre: 0.9 },
-  { hauteur: 0.95, couleur: 0xd5e2e7, opacite: 0.55, couvre: 0.65 },
-  { hauteur: 1.6, couleur: 0xe5ebe3, opacite: 0.5, couvre: 0.4 },
+  { hauteur: 0.35, couleur: 0xc5d9eb, opacite: 0.55, couvre: 0.7 },
+  { hauteur: 0.95, couleur: 0xd5e2e7, opacite: 0.45, couvre: 0.45 },
+  { hauteur: 1.6, couleur: 0xe5ebe3, opacite: 0.4, couvre: 0.25 },
 ];
 
 /** Les bancs de brume des archipels qui en ont. */
