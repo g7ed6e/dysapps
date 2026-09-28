@@ -1,0 +1,239 @@
+{
+  "id": "jardin-de-mein-tag-2",
+  "biome": "jardin",
+  "type": "de-mein-tag",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis la question en allemand et appuie sur Écouter pour l’entendre, puis choisis la réponse à la question. La règle est affichée.",
+  "items": [
+    {
+      "key": "jardin-de-mein-tag-2-0",
+      "prompt": "Wann stehst du auf?",
+      "spoken": "Wann stehst du auf?",
+      "choices": [
+        "Ich stehe um sieben auf.",
+        "Ich aufstehe um sieben.",
+        "Um sieben ich stehe auf."
+      ],
+      "answer": "Ich stehe um sieben auf.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin.",
+      "explanation": "aufstehen : ich stehe um sieben auf (je me lève à 7 h). La particule auf part à la fin de la phrase.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-1",
+      "prompt": "Wann fängt die Schule an?",
+      "spoken": "Wann fängt die Schule an?",
+      "choices": [
+        "Sie fängt um acht an.",
+        "Sie anfängt um acht.",
+        "Sie fangt um acht an."
+      ],
+      "answer": "Sie fängt um acht an.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin. Et regarde bien le ä.",
+      "explanation": "anfangen : sie fängt um acht an (elle commence à 8 h). La particule an va à la fin ; avec sie, fangen prend un ä.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-2",
+      "prompt": "Was machst du nach dem Abendessen?",
+      "spoken": "Was machst du nach dem Abendessen?",
+      "choices": [
+        "Dann sehe ich fern.",
+        "Dann fernsehe ich.",
+        "Dann ich sehe fern."
+      ],
+      "answer": "Dann sehe ich fern.",
+      "hint": "Dann en 1re place, le verbe en 2e, la particule à la fin.",
+      "explanation": "fernsehen : dann sehe ich fern (ensuite, je regarde la télé). Le verbe en 2e place, fern à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-3",
+      "prompt": "Rufst du Oma an?",
+      "spoken": "Rufst du Oma an?",
+      "choices": [
+        "Ja, ich rufe sie an.",
+        "Ja, ich anrufe sie.",
+        "Ja, ich rufe an sie."
+      ],
+      "answer": "Ja, ich rufe sie an.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin.",
+      "explanation": "anrufen : ich rufe sie an (je l’appelle). La particule an va tout à la fin, après sie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-4",
+      "prompt": "Kommst du mit zum Schwimmbad?",
+      "spoken": "Kommst du mit zum Schwimmbad?",
+      "choices": [
+        "Ja, ich komme mit.",
+        "Ja, ich mitkomme.",
+        "Ja, ich kommst mit."
+      ],
+      "answer": "Ja, ich komme mit.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin. Et la fin du verbe avec ich ?",
+      "explanation": "mitkommen : ja, ich komme mit (oui, je viens avec toi). mit va à la fin ; avec ich, le verbe finit par -e.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-5",
+      "prompt": "Was macht Paul am Samstag?",
+      "spoken": "Was macht Paul am Samstag?",
+      "choices": [
+        "Er räumt sein Zimmer auf.",
+        "Er aufräumt sein Zimmer.",
+        "Er räumt auf sein Zimmer."
+      ],
+      "answer": "Er räumt sein Zimmer auf.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin.",
+      "explanation": "aufräumen : er räumt sein Zimmer auf (il range sa chambre). La particule auf va tout à la fin, après sein Zimmer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-6",
+      "prompt": "Wann kommt der Bus an?",
+      "spoken": "Wann kommt der Bus an?",
+      "choices": [
+        "Er kommt um acht an.",
+        "Er ankommt um acht.",
+        "Um acht er kommt an."
+      ],
+      "answer": "Er kommt um acht an.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin.",
+      "explanation": "ankommen : er kommt um acht an (il arrive à 8 h). Le verbe en 2e place, an à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-mein-tag-2-7",
+      "prompt": "Machst du das Fenster zu?",
+      "spoken": "Machst du das Fenster zu?",
+      "choices": [
+        "Ja, ich mache es zu.",
+        "Ja, ich zumache es.",
+        "Ja, ich mache zu es."
+      ],
+      "answer": "Ja, ich mache es zu.",
+      "hint": "Le verbe en 2e place, sa particule tout à la fin.",
+      "explanation": "zumachen : ja, ich mache es zu (oui, je la ferme). La particule zu va tout à la fin, après es.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes à particule",
+          "lines": [
+            "aufstehen = se lever ; fernsehen = regarder la télé",
+            "anfangen = commencer ; aufräumen = ranger ; anrufen = appeler",
+            "mitkommen = venir avec ; zumachen = fermer ; ankommen = arriver",
+            "Le verbe en 2e place, sa particule tout à la fin.",
+            "einkaufen : Samstags kaufe ich ein. (je fais les courses)",
+            "Particules : auf, an, ein, fern, mit, zu."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "osier",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

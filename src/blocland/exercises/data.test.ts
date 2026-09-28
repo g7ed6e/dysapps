@@ -343,3 +343,20 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
     }
   }
 });
+
+it('des choix qui sont tous des nombres de même unité sont rangés : sinon la réponse garde la place que lui donne le fichier', () => {
+  // Même lecture que placeAnswer (src/core/choices.ts) : un nombre, puis une unité sans chiffre.
+  const nombre = /^\s*([-−]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:[.,](\d+))?([^\d/]*)$/;
+  const desordre: string[] = [];
+  for (const def of EXERCISES)
+    for (const it of def.items) {
+      const choices = it.choices;
+      if (!Array.isArray(choices) || choices.length < 2) continue;
+      const lus = choices.map((c) => (typeof c === 'number' ? { v: c, u: '' } : nombre.exec(String(c)))).map((m) =>
+        m && 'v' in m ? m : m ? { v: Number(`${m[1] ? '-' : ''}${m[2].replace(/\D/g, '')}.${m[3] ?? '0'}`), u: m[4] } : null,
+      );
+      if (lus.some((l) => l === null) || new Set(lus.map((l) => l!.u)).size > 1) continue;
+      if (!lus.every((l, i) => i === 0 || l!.v > lus[i - 1]!.v)) desordre.push(`${def.id} ${it.key}`);
+    }
+  expect(desordre).toEqual([]);
+});

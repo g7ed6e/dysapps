@@ -89,7 +89,6 @@ export interface BlockDef {
 }
 
 export type BlockTexture =
-  | 'osier'
   | 'herbe'
   | 'terre'
   | 'pierre'
@@ -770,13 +769,13 @@ export const BIOMES: BiomeDef[] = [
     creature: { name: 'Muscade' },
     exercises: [
       // Même ordre dans les deux langues : la borne de même rang ouvre la mission de la LV2 choisie.
-      { id: 'es-hora', title: '¿Qué hora es?', description: 'L’heure entendue et lue : y cuarto, y media, menos cuarto.', programme: ['c4.es.ecouter.intervention-breve', 'c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.lexique'], lv2: 'es' },
-      { id: 'es-mi-dia', title: 'Mi día', description: 'La journée : me levanto, se acuesta ; e devient ie, o devient ue.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.groupe-nominal', 'c4.es.langue.lexique'], lv2: 'es' },
-      { id: 'es-horario', title: 'Horarios y menús', description: 'Un emploi du temps, un horaire, un menu : la bonne ligne.', programme: ['c4.es.lire.informations', 'c4.es.culture.ecole-societe', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-hora', title: '¿Qué hora es?', description: 'L’heure entendue : y cuarto, menos cuarto ; puis où est-on, qui parle ?', programme: ['c4.es.ecouter.intervention-breve', 'c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-mi-dia', title: 'Mi día', description: 'La journée : me levanto, se ducha ; puis e devient ie, o devient ue.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.groupe-nominal', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-horario', title: 'Horarios y menús', description: 'Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.', programme: ['c4.es.lire.informations', 'c4.es.culture.ecole-societe', 'c4.es.langue.lexique'], lv2: 'es' },
       { id: 'es-ser-estar', title: 'Ser, estar, hay', description: 'Être (ser ou estar), il y a (hay), puis tener que, poder, querer.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },
-      { id: 'de-uhrzeit', title: 'Wie spät ist es?', description: 'L’heure entendue et lue : Viertel nach, Viertel vor, halb.', programme: ['c4.de.ecouter.intervention-breve', 'c4.de.dialoguer.echanges-sociaux', 'c4.de.langue.lexique'], lv2: 'de' },
-      { id: 'de-mein-tag', title: 'Mein Tag', description: 'La journée : le verbe en deuxième place, puis les verbes à particule.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
-      { id: 'de-stundenplan', title: 'Stundenplan und Mensa', description: 'Un emploi du temps, un horaire, une carte : la bonne ligne.', programme: ['c4.de.lire.informations', 'c4.de.culture.ecole-societe', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-uhrzeit', title: 'Wie spät ist es?', description: 'L’heure entendue : Viertel nach, halb ; puis où est-on, qui parle ?', programme: ['c4.de.ecouter.intervention-breve', 'c4.de.dialoguer.echanges-sociaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-mein-tag', title: 'Mein Tag', description: 'La journée : le verbe en deuxième place, puis la particule à la fin.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-stundenplan', title: 'Stundenplan und Mensa', description: 'Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.', programme: ['c4.de.lire.informations', 'c4.de.culture.ecole-societe', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-ich-kann', title: 'Ich esse, ich kann', description: 'L’accusatif (einen, den), puis können, müssen, wollen.', programme: ['c4.de.langue.groupe-nominal', 'c4.de.langue.lexique'], lv2: 'de' },
     ],
   },

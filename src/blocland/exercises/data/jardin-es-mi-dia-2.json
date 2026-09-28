@@ -1,0 +1,239 @@
+{
+  "id": "jardin-es-mi-dia-2",
+  "biome": "jardin",
+  "type": "es-mi-dia",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis la question en espagnol et appuie sur Écouter pour l’entendre, puis choisis la réponse à la question. La règle est affichée.",
+  "items": [
+    {
+      "key": "jardin-es-mi-dia-2-0",
+      "prompt": "¿A qué hora te despiertas?",
+      "spoken": "A qué hora te despiertas?",
+      "choices": [
+        "Me despierto a las siete.",
+        "Me desperto a las siete.",
+        "Te despiertas a las siete."
+      ],
+      "answer": "Me despierto a las siete.",
+      "hint": "despertarse : e devient ie avec yo. Et tu réponds pour toi.",
+      "explanation": "On te pose la question : tu réponds pour toi. despertarse : e devient ie, me despierto. desperto n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-1",
+      "prompt": "¿A qué hora te acuestas?",
+      "spoken": "A qué hora te acuestas?",
+      "choices": [
+        "Me acuesto a las diez.",
+        "Me acosto a las diez.",
+        "Te acuestas a las diez."
+      ],
+      "answer": "Me acuesto a las diez.",
+      "hint": "acostarse : o devient ue avec yo.",
+      "explanation": "On te pose la question : tu réponds pour toi. acostarse : o devient ue, me acuesto. acosto n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-2",
+      "prompt": "¿Encuentras tu mochila?",
+      "spoken": "Encuentras tu mochila?",
+      "choices": [
+        "No, no la encuentro.",
+        "No, no la encontro.",
+        "No, no la encuentras."
+      ],
+      "answer": "No, no la encuentro.",
+      "hint": "encontrar : o devient ue avec yo.",
+      "explanation": "On te pose la question : tu réponds pour toi. encontrar : o devient ue, no la encuentro. encontro n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-3",
+      "prompt": "¿Meriendas después del colegio?",
+      "spoken": "Meriendas después del colegio?",
+      "choices": [
+        "Sí, meriendo pan con chocolate.",
+        "Sí, merendo pan con chocolate.",
+        "Sí, meriendas pan con chocolate."
+      ],
+      "answer": "Sí, meriendo pan con chocolate.",
+      "hint": "merendar : e devient ie avec yo.",
+      "explanation": "On te pose la question : tu réponds pour toi. merendar : e devient ie, meriendo. En Espagne, on goûte souvent vers 18 h.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-4",
+      "prompt": "¿Cuántas horas duermes?",
+      "spoken": "Cuántas horas duermes?",
+      "choices": [
+        "Duermo nueve horas.",
+        "Dormo nueve horas.",
+        "Duermes nueve horas."
+      ],
+      "answer": "Duermo nueve horas.",
+      "hint": "dormir : o devient ue avec yo.",
+      "explanation": "On te pose la question : tu réponds pour toi. dormir : o devient ue, duermo nueve horas. dormo n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-5",
+      "prompt": "¿Prefieres la leche o el zumo?",
+      "spoken": "Prefieres la leche o el zumo?",
+      "choices": [
+        "Prefiero el zumo.",
+        "Prefero el zumo.",
+        "Prefieres el zumo."
+      ],
+      "answer": "Prefiero el zumo.",
+      "hint": "preferir : le deuxième e devient ie avec yo.",
+      "explanation": "On te pose la question : tu réponds pour toi. preferir : e devient ie, prefiero. prefero n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-6",
+      "prompt": "¿A qué juegas en el recreo?",
+      "spoken": "A qué juegas en el recreo?",
+      "choices": [
+        "Juego al fútbol.",
+        "Jugo al fútbol.",
+        "Juegas al fútbol."
+      ],
+      "answer": "Juego al fútbol.",
+      "hint": "jugar est le seul verbe où u devient ue.",
+      "explanation": "On te pose la question : tu réponds pour toi. jugar : u devient ue, juego al fútbol. jugo veut dire « le jus ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-es-mi-dia-2-7",
+      "prompt": "¿A qué hora os despertáis los domingos?",
+      "spoken": "A qué hora os despertáis los domingos?",
+      "choices": [
+        "Nos despertamos a las diez.",
+        "Nos despiertamos a las diez.",
+        "Os despertáis a las diez."
+      ],
+      "answer": "Nos despertamos a las diez.",
+      "hint": "On te demande pour vous tous : réponds avec nos. Avec nosotros, le e ne change pas.",
+      "explanation": "On vous pose la question, à toi et aux autres : tu réponds avec nos. Avec nosotros, rien ne change : nos despertamos.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes qui changent",
+          "lines": [
+            "e devient ie : empezar (commencer) : empiezo, empiezas, empieza",
+            "o devient ue : volver (rentrer) : vuelvo, vuelves, vuelve",
+            "u devient ue : un seul verbe, jugar (jouer).",
+            "Avec nosotros et vosotros, rien ne change : volvemos, volvéis.",
+            "despertarse = se réveiller ; acostarse = se coucher",
+            "merendar = goûter ; preferir = préférer ; encontrar = trouver"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "osier",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

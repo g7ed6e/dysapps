@@ -202,8 +202,8 @@ export const BLOCLAND = {
     jardin: {
       challenge: 'Le Soleil de cuivre se lève au-dessus du jardin : « Tu as suivi toute ma journée, du matin au soir. Montre-moi que tu sais la raconter. »',
       guardianSays: {
-        hit: 'Midi ! Juste. Un rayon de plus sur le jardin.',
-        miss: 'Ce n’est rien : réécoute le mot, relis la règle, et reprends.',
+        hit: 'Juste. Un rayon de plus sur le jardin.',
+        miss: 'Ce n’est rien : réécoute la phrase, relis la règle, et reprends.',
         beaten: 'Je me couche… en pierre, pour ton village. Le Jardin est à toi… et à Muscade.',
       },
     },

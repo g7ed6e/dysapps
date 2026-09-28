@@ -200,9 +200,9 @@
       "prompt": "It’s the twentieth of June.",
       "spoken": "It’s the twentieth of June.",
       "choices": [
-        "20 juin",
+        "2 juin",
         "12 juin",
-        "2 juin"
+        "20 juin"
       ],
       "answer": "20 juin",
       "hint": "Écoute le jour : twentieth, twelfth ou second ?",
