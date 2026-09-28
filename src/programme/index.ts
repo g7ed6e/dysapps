@@ -1,5 +1,6 @@
-// Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais) que les
-// missions citent (champ `programme` de biomes.ts et de apps/registry.ts). Provenance : data.gouv.fr, Licence Ouverte.
+// Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais ; allemand et
+// espagnol en LV2, cycle 4 seulement) que les missions citent (champ `programme` de biomes.ts et de apps/registry.ts).
+// Provenance : data.gouv.fr, Licence Ouverte.
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../blocland/biomes';
 import { DOMAINES_C3, ENTRIES_C3 } from './cycle3';
@@ -14,6 +15,8 @@ export const DISCIPLINES: Record<Discipline, { label: string; short: string }> =
   francais: { label: 'Français', short: 'fr' },
   maths: { label: 'Mathématiques', short: 'ma' },
   anglais: { label: 'Anglais (langues vivantes)', short: 'en' },
+  allemand: { label: 'Allemand (LV2)', short: 'de' },
+  espagnol: { label: 'Espagnol (LV2)', short: 'es' },
 };
 
 export const DOMAINES: readonly ProgrammeDomaine[] = [...DOMAINES_C3, ...DOMAINES_C4];

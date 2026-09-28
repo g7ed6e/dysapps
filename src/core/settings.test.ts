@@ -98,3 +98,11 @@ it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vau
   expect(sanitizeSettings({ univers: 'toString' as never }).univers).toBe('blocland');
   expect('univers' in DEFAULT_SETTINGS).toBe(false);
 });
+
+it('met l’espagnol en LV2 par défaut, garde l’allemand ou « Pas de LV2 » choisis, rejette une langue inconnue', () => {
+  expect(sanitizeSettings({}).lv2).toBe('es');
+  expect(sanitizeSettings({ lv2: 'de' }).lv2).toBe('de');
+  expect(sanitizeSettings({ lv2: 'aucune' }).lv2).toBe('aucune');
+  expect(sanitizeSettings({ lv2: 'it' as never }).lv2).toBe('es');
+  expect(sanitizeSettings({ lv2: 'toString' as never }).lv2).toBe('es');
+});
