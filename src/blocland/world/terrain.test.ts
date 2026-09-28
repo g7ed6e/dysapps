@@ -1,4 +1,4 @@
-import { BIOMES } from '../biomes';
+import { BIOMES, missionsJouables } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { BADGES } from '../../core/progress';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
@@ -443,7 +443,7 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
 it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {
   for (const b of BIOMES) {
     const stations = questStations(b.id);
-    expect(stations.map((s) => s.typeId)).toEqual(b.exercises.map((e) => e.id));
+    expect(stations.map((s) => s.typeId)).toEqual(missionsJouables(b).map((e) => e.id));
     const spot = creatureSpot(b.id);
     const creature = new Set<string>();
     for (const [sx, sy] of spot.steps) for (const c of CREATURE_CUBES[b.id]) creature.add(`${spot.x + sx + c.x},${spot.y + sy + c.y}`);

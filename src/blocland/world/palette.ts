@@ -129,15 +129,22 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // La mer : un bleu pétrole plus sombre, sous la brume chaude.
     teinteDeMer: 0x21606e,
   },
-  // Les Îles du Ciel : un ciel haut et pâle, lavande à l'horizon, un plancher de nuages sous les îles.
+  // Les Îles du Ciel (R4b-3e) : un bleu franc, plus de lavande, de jour comme de nuit (horizon et lueur de nuit du
+  // directeur artistique) ; la neige et la roche froides du massif, le plancher de
+  // nuages d'un blanc bleuté, jamais sable (design/archipeo/intentions/3e-iles-du-ciel.md §5).
   '3e': {
-    jour: { zenith: 0x4f7cc8, horizon: 0xc3c9e8, lueur: 0xf6e4d2, soleil: 0xfff0d4, soleilForce: 2.2, ambianceCiel: 0xd0dcf2, ambianceSol: 0x8e98b8, ambianceForce: 0.95, mer: 0xe0e6f2 },
-    nuit: { zenith: 0x243a72, horizon: 0x56689d, lueur: 0x7381b0, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
+    jour: { zenith: 0x3a86cc, horizon: 0xb4d2ec, lueur: 0xeef3f4, soleil: 0xfff4e2, soleilForce: 2.3, ambianceCiel: 0xd4e4f6, ambianceSol: 0x8c9cbe, ambianceForce: 1.05, mer: 0xdde3e8 },
+    nuit: { zenith: 0x243a72, horizon: 0x4c709e, lueur: 0x6e8bb2, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
     brume: [110, 350],
-    voile: [0xd8d4ee, 0.06],
+    voile: [0xdce8f2, 0.05],
+    sols: {
+      neige: { dessus: 0xe6ecef, cote: 0xc4d0de },
+      roche: { dessus: 0xa3a7ad, cote: 0x6e7896 },
+      herbe: { dessus: 0x74a064, cote: 0x6c6250 },
+    },
     nuages: AMBIENCE['3e'].sky,
     // Le plancher de nuages de la fiche.
-    teinteDeMer: 0xdbdde1,
+    teinteDeMer: 0xdde3e8,
   },
 };
 
@@ -309,6 +316,8 @@ export const MATIERES: Record<TextureKind, Faces> = {
   rail: { dessus: 0x86643e, cote: 0x4e4e54 },
   antenne: { dessus: 0xb4bcc4, cote: 0x9aa4ae },
   taille: { dessus: 0xe4dac4, cote: 0xd4c8ae },
+  // La dalle du Relais : pierre claire et chaude, plus sombre et plus dorée que la pierre de taille.
+  dalle: { dessus: 0xc8b28a, cote: 0xa8916c },
   or: { dessus: 0xf0c84a, cote: 0xcca22e },
   cristal: { dessus: 0x88e8e0, cote: 0x4cbdb6 },
   feuilles: { dessus: 0x5e9a3e, cote: 0x4a8434 },

@@ -1,7 +1,7 @@
 // La progression d'une matière, tous jeux confondus : les étoiles des îles de Blocland (de la 6e à la 3e), les
 // records des applis, et une courte liste de missions à retravailler (les plus faibles d'abord). Code pur.
 import { appsBySubject, bestScore, type Subject } from '../apps/registry';
-import { biomesOf } from '../blocland/biomes';
+import { biomesOf, missionsJouables } from '../blocland/biomes';
 import { isBossBeaten } from '../blocland/bossCore';
 import { levelFor, type BloclandState } from '../blocland/engine';
 import { pickExercise, questProgress } from '../blocland/exercises';
@@ -42,7 +42,7 @@ export function subjectProgress(
   const rework: ReworkItem[] = [];
   for (const biome of biomes) {
     const open = isBiomeUnlocked(biome.id, bridges);
-    for (const quest of biome.exercises) {
+    for (const quest of missionsJouables(biome)) {
       max += 3;
       const done = questProgress(biome.id, quest.id, progress);
       earned += done?.stars ?? 0;

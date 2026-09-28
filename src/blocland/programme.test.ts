@@ -6,6 +6,13 @@ import { EXCLUSIONS } from '../programme/exclusions';
 import { BIOMES } from './biomes';
 import { loadAllExercises } from './exercises';
 
+/** La discipline attendue d'une mission : celle de son île, ou pour l'île de la LV2 la langue de la mission. */
+const LV2_DISCIPLINE = { de: 'allemand', es: 'espagnol' } as const;
+function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
+  const lv2 = b.exercises.find((x) => x.id === mission)?.lv2;
+  return lv2 ? LV2_DISCIPLINE[lv2] : b.subject;
+}
+
 const EXERCISES = await loadAllExercises();
 
 /** Qui travaille quoi : missions des îles, missions du portail, exercices qui précisent leur programme. */
@@ -31,7 +38,7 @@ it('chaque mission d’une île cite au moins une compétence, existante, sans d
         return e!;
       });
       for (const e of entries) {
-        expect(e.discipline, `${where} cite ${e.id}, d’une autre matière`).toBe(b.subject);
+        expect(e.discipline, `${where} cite ${e.id}, d’une autre matière`).toBe(disciplineDe(b, q.id));
         // Une île de 6e ne travaille pas le cycle 4 ; une île du cycle 4 peut consolider une compétence du cycle 3.
         if (cycle === 3) expect(e.cycle, `${where} cite ${e.id}, du cycle 4`).toBe(3);
       }
@@ -62,7 +69,7 @@ it('un exercice qui précise son programme cite des compétences existantes, de 
     for (const id of e.programme) {
       const p = byId(id);
       expect(p, `${e.id} : compétence inconnue ${id}`).toBeTruthy();
-      expect(p!.discipline, `${e.id} cite ${id}, d’une autre matière`).toBe(b.subject);
+      expect(p!.discipline, `${e.id} cite ${id}, d’une autre matière`).toBe(disciplineDe(b, e.type));
       if (CYCLE_OF[b.classe] === 3) expect(p!.cycle, `${e.id} cite ${id}, du cycle 4`).toBe(3);
     }
   }

@@ -11,13 +11,12 @@ const A_COUVRIR = (motif: string): Exclusion => ({ kind: 'a-couvrir', motif });
 const ORAL = 'Production orale : hors de ce que peut faire une application sans micro ni interlocuteur.';
 const ECRITURE_LIBRE = 'Production écrite libre : l’application propose des réponses à choisir, pas de rédaction.';
 
-// LV2 (allemand, espagnol) : aucune île encore. Ce qui est prévu, lot par lot (docs/conception/cadrage-contenu.md, « LV2 ») :
-// lot 2, île de 5e au niveau 1 ; lot 3, son niveau 2 ; lot 4, île de 4e ; lot 5, île de 3e.
-const LOT2 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 5e (lot 2 du cadrage LV2) : ${quoi}.`);
-const LOT3 = (quoi: string) => A_COUVRIR(`À venir avec le niveau 2 de l’île LV2 de 5e (lot 3 du cadrage LV2) : ${quoi}.`);
-const LOT4 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 4e (lot 4 du cadrage LV2) : ${quoi}.`);
-const LOT5 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 3e (lot 5 du cadrage LV2) : ${quoi}.`);
-const LV2_LANGAGES = A_COUVRIR('Médias, chansons et cinéma : rien ne s’emprunte, et aucun lot du cadrage LV2 (lots 2 à 5) ne les prévoit ; à reprendre après le lot 5.');
+// LV2 (allemand, espagnol). Ce qui est prévu, étape par étape (docs/conception/cadrage-contenu.md, « LV2 ») : LV2-2, île
+// de 5e au niveau 1 (le Relais des voyageurs) ; LV2-3, son niveau 2 ; LV2-4, île de 4e ; LV2-5, île de 3e.
+const LV2_3 = (quoi: string) => A_COUVRIR(`À venir avec le niveau 2 de l’île LV2 de 5e (LV2-3 du cadrage du contenu) : ${quoi}.`);
+const LV2_4 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 4e (LV2-4 du cadrage du contenu) : ${quoi}.`);
+const LV2_5 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 3e (LV2-5 du cadrage du contenu) : ${quoi}.`);
+const LV2_LANGAGES = A_COUVRIR('Médias, chansons et cinéma : rien ne s’emprunte, et aucune étape du cadrage LV2 (LV2-2 à LV2-5) ne les prévoit ; à reprendre après LV2-5.');
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
@@ -83,45 +82,33 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.en.culture.voyages-rencontres': A_COUVRIR('Voyages, migrations, patrimoine des pays anglophones : aucune mission ne les aborde.'),
   'c4.en.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, allemand (LV2) ----------
-  'c4.de.ecouter.intervention-breve': LOT2('comprendre un mot ou une phrase entendus (se présenter, nombres, famille, école)'),
-  'c4.de.ecouter.recit': LOT5('suivre un petit récit entendu'),
-  'c4.de.ecouter.indices': LOT4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
-  'c4.de.lire.informations': LOT4('trouver une information dans un horaire, un menu, une annonce'),
-  'c4.de.lire.consignes-panneaux': LOT2('comprendre un panneau et une consigne écrite courants'),
-  'c4.de.lire.recit': LOT5('lire un petit texte suivi'),
-  'c4.de.dialoguer.echanges-sociaux': LOT2('choisir la réponse à une question simple (se présenter, l’âge, l’école)'),
-  'c4.de.dialoguer.reagir': LOT3('réagir à une proposition, dire ce qu’on aime'),
+  'c4.de.ecouter.recit': LV2_5('suivre un petit récit entendu'),
+  'c4.de.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
+  'c4.de.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
+  'c4.de.lire.recit': LV2_5('lire un petit texte suivi'),
+  'c4.de.dialoguer.reagir': LV2_3('réagir à une proposition, dire ce qu’on aime'),
   'c4.de.parler.presenter-raconter': HORS(ORAL),
-  'c4.de.ecrire.dictee-fiche': LOT2('dictée à choix, sans clavier, de mots courants'),
+  'c4.de.ecrire.dictee-fiche': LV2_3('dictée à choix, sans clavier, de mots courants (ei et ie, Umlaut)'),
   'c4.de.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.de.culture.langages': LV2_LANGAGES,
-  'c4.de.culture.ecole-societe': LOT4('la journée, l’école et les loisirs des pays germanophones'),
-  'c4.de.culture.voyages-rencontres': LOT5('voyages et villes des pays germanophones'),
-  'c4.de.langue.lexique': LOT2('lexique du quotidien (se présenter, nombres, famille, école)'),
-  'c4.de.langue.groupe-nominal': LOT2('genre du nom toujours écrit avec son article (der, die, das), majuscule des noms'),
-  'c4.de.langue.temps-verbaux': LOT2('présent, sein et haben ; le passé (Perfekt) au lot 5'),
-  'c4.de.langue.modaux-passif': LOT4('verbes de modalité (können, müssen, wollen) ; le passif reste hors du niveau A2 visé en fin de 3e'),
-  'c4.de.langue.phrase-complexe': LOT5('subordonnées en weil et dass'),
+  'c4.de.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays germanophones'),
+  'c4.de.culture.voyages-rencontres': LV2_5('voyages et villes des pays germanophones'),
+  'c4.de.langue.modaux-passif': LV2_4('verbes de modalité (können, müssen, wollen) ; le passif reste hors du niveau A2 visé en fin de 3e'),
+  'c4.de.langue.phrase-complexe': LV2_5('subordonnées en weil et dass'),
   'c4.de.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, espagnol (LV2) ----------
-  'c4.es.ecouter.intervention-breve': LOT2('comprendre un mot ou une phrase entendus (se présenter, nombres, famille, école)'),
-  'c4.es.ecouter.recit': LOT5('suivre un petit récit entendu'),
-  'c4.es.ecouter.indices': LOT4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
-  'c4.es.lire.informations': LOT4('trouver une information dans un horaire, un menu, une annonce'),
-  'c4.es.lire.consignes-panneaux': LOT2('comprendre un panneau et une consigne écrite courants'),
-  'c4.es.lire.recit': LOT5('lire un petit texte suivi'),
-  'c4.es.dialoguer.echanges-sociaux': LOT2('choisir la réponse à une question simple (se présenter, l’âge, l’école)'),
-  'c4.es.dialoguer.reagir': LOT3('réagir à une proposition, dire ce qu’on aime'),
+  'c4.es.ecouter.recit': LV2_5('suivre un petit récit entendu'),
+  'c4.es.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
+  'c4.es.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
+  'c4.es.lire.recit': LV2_5('lire un petit texte suivi'),
+  'c4.es.dialoguer.reagir': LV2_3('réagir à une proposition, dire ce qu’on aime'),
   'c4.es.parler.presenter-raconter': HORS(ORAL),
-  'c4.es.ecrire.dictee-fiche': LOT2('dictée à choix, sans clavier, de mots courants'),
+  'c4.es.ecrire.dictee-fiche': LV2_3('dictée à choix, sans clavier, de mots courants (ñ, accents)'),
   'c4.es.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.es.culture.langages': LV2_LANGAGES,
-  'c4.es.culture.ecole-societe': LOT4('la journée, l’école et les loisirs des pays hispanophones'),
-  'c4.es.culture.voyages-rencontres': LOT5('voyages et villes des pays hispanophones'),
-  'c4.es.langue.lexique': LOT2('lexique du quotidien (se présenter, nombres, famille, école)'),
-  'c4.es.langue.groupe-nominal': LOT2('genre et nombre du nom (el, la, los, las)'),
-  'c4.es.langue.temps-verbaux': LOT2('présent des verbes en -ar, -er, -ir ; le passé (pretérito indefinido) au lot 5'),
-  'c4.es.langue.modaux-passif': LOT4('obligation et possibilité (tener que, poder) ; le passif reste hors du niveau A2 visé en fin de 3e'),
-  'c4.es.langue.phrase-complexe': LOT5('phrases reliées par porque, cuando, pero'),
+  'c4.es.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays hispanophones'),
+  'c4.es.culture.voyages-rencontres': LV2_5('voyages et villes des pays hispanophones'),
+  'c4.es.langue.modaux-passif': LV2_4('obligation et possibilité (tener que, poder) ; le passif reste hors du niveau A2 visé en fin de 3e'),
+  'c4.es.langue.phrase-complexe': LV2_5('phrases reliées par porque, cuando, pero'),
   'c4.es.langue.phonologie': HORS(ORAL),
 };

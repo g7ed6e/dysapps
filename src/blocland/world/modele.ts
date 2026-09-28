@@ -2,7 +2,7 @@
 // en identifiants, sans une seule case. WorldPage le lit au lieu de décider lui-même ; une disposition (la grille
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
-import { BIOMES, type BiomeId } from '../biomes';
+import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { levelFor } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
@@ -40,7 +40,8 @@ export interface ModeleDuMonde {
 
 /** Les missions d'une île, dans l'ordre de ses bornes. */
 export function missionsDe(ile: BiomeId): string[] {
-  return BIOMES.find((b) => b.id === ile)?.exercises.map((x) => x.id) ?? [];
+  const biome = BIOMES.find((b) => b.id === ile);
+  return biome ? missionsJouables(biome).map((x) => x.id) : [];
 }
 
 /** L'état d'une borne : fermée si son île l'est ou s'il n'y a rien à jouer, sinon à faire ou ses étoiles. */

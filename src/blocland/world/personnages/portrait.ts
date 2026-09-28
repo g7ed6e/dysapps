@@ -7,10 +7,10 @@ import { clamp } from '../decor/pinceau';
 import { creaturePeinte } from './creaturesPeintes';
 import type { FacettesDePersonnage } from './peint';
 import { couleursAllumees, type Allumage } from './sentinelle';
-import { sentinellePeinte } from './sentinellesPeintes';
+import { sentinelleAuDefi } from './sentinellesPeintes';
 
 /** Le modèle d'un personnage montré hors du monde : la créature d'une île, ou son Gardien en sentinelle. */
-export const modeleDuPortrait = (kind: 'creature' | 'guardian', id: BiomeId): FacettesDePersonnage => (kind === 'guardian' ? sentinellePeinte(id) : creaturePeinte(id));
+export const modeleDuPortrait = (kind: 'creature' | 'guardian', id: BiomeId): FacettesDePersonnage => (kind === 'guardian' ? sentinelleAuDefi(id) : creaturePeinte(id));
 
 export interface OptionsDuPortrait {
   /** La rotation du personnage autour de la verticale, en radians (0 : de face ; par défaut, un trois quarts léger). */

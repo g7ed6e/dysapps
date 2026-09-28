@@ -465,6 +465,26 @@ const ANTENNE = fromLayers(
 // Le Dragon gallois : le dragon rouge du pays de Galles, ventre doré, ailes pourpres.
 const DRAGON_G = dragon({ C: '#c0392b', O: '#f2c944', W: '#8a1f1f', R: '#f6f1e6', M: '#4a0e0e', H: '#f4f1e4' });
 
+// La Diligence de cuivre : une diligence de cuivre vue de face, quatre roues sombres, deux lanternes pour yeux, une
+// grille pour bouche ; des bagages sur l'impériale, le siège du cocher et sa boussole de laiton, l'aiguille rouge.
+const DILIGENCE = fromLayers(
+  [
+    ['K.......K', 'K.......K', '.........', 'K.......K', 'K.......K'],
+    ['K.......K', 'KcccccccK', '.ccccccc.', 'KcccccccK', 'K.......K'],
+    ['KCCCCCCCK', 'KCCCCCCCK', '.CCCCCCC.', 'KCCCCCCCK', 'KCCCCCCCK'],
+    ['.CCMMMCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.'],
+    ['.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.'],
+    ['.CECCCEC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.'],
+    ['.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.', '.CCCCCCC.'],
+    ['ccccccccc', 'ccccccccc', 'ccccccccc', 'ccccccccc', 'ccccccccc'],
+    ['..LLLLL..', '..LLLLL..', '..RRRRR..', '..RRRRR..', '.........'],
+    ['.........', '..LLLLL..', '..RRRRR..', '.........', '.........'],
+    ['....B....', '.........', '.........', '.........', '.........'],
+    ['...BNB...', '.........', '.........', '.........', '.........'],
+  ],
+  { C: '#b87333', c: '#8a5226', K: '#2a2622', E: '#f5d63d', M: '#1f1a16', R: '#6f4d2a', L: '#4a3a2a', B: '#c9a24a', N: '#c0392b' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -490,6 +510,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   horloge: COUCOU,
   comptoir: REINE,
   manoir: SPECTRE,
+  relais: DILIGENCE,
   theatre: MASQUE,
   gare: LOCOMOTIVE,
   studio: ANTENNE,

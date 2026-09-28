@@ -33,7 +33,7 @@ import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
 import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
-import { renduDuMonde } from './rendu';
+import { habillageDuMonde } from './habillage';
 import { useTextes } from '../univers';
 import {
   borneTouchee,
@@ -126,13 +126,15 @@ export function WorldPage() {
   // Gardien est là dès l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village,
   // éteint, pour se rallumer sous les yeux de l'élève.
   const textes = useTextes();
-  const [rendu] = useState(renduDuMonde);
-  const sentinelles = textes.sentinelles !== null && rendu === 'archipeo';
+  const [habillage] = useState(habillageDuMonde);
+  const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
     () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles),
-    [a, state.progress, state.village, trophyBlocks, sentinelles],
+    // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2],
   );
   const creatures = useMemo(
     () => [
@@ -169,7 +171,8 @@ export function WorldPage() {
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
-  const modele = useMemo(() => modeleDuMonde(state, a), [a, state]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const modele = useMemo(() => modeleDuMonde(state, a), [a, state, settings.lv2]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({

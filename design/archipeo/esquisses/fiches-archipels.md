@@ -45,6 +45,8 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **À éviter** : des pitons en obus lisses ; une brume plate ou sombre ; la neige au premier plan.
 - **Composition** : la brume remplit le bas jusqu'à y 65 % ; une masse à gauche (x 0-40 %) monte à y 10 % ; une autre à droite (x 55-85 %) porte une tour à y 20 % ; le pont les relie à y 40 % ; une troisième, plus petite, émerge au centre-bas ; au fond des silhouettes décolorées.
 
+- **Le Relais des voyageurs (LV2)** : une escale au bout du chemin, par un pont depuis le Comptoir ; l’auberge de Lina, l’écurie et la fontaine sur des dalles chaudes `#B8A07A` (côté `#9A8462`) ; un ponton à l’est et une girouette derrière l’auberge. Lina : cigogne blanche, bec et pattes orange, pointes d’ailes fer. La Diligence de cuivre : caisse sur quatre roues, de profil, boussole de laiton sur un mât au-dessus du siège.
+
 ## 4e — Les Anciens Ateliers
 
 - **Intention** : la maîtrise ; un grand atelier ancien qu'on remet en marche.

@@ -7,9 +7,9 @@ export type Cycle = 3 | 4;
 
 /**
  * Les disciplines du référentiel : les matières de l'application, et les deux LV2 (allemand, espagnol, de la 5e à la 3e,
- * cycle 4 seulement). Les LV2 deviennent des matières de l'application avec leur première île (lot 2 du cadrage LV2).
+ * cycle 4 seulement). Les LV2 deviennent des matières de l'application avec leur première île (LV2-2 du cadrage du contenu).
  */
-export type Discipline = Subject | 'allemand' | 'espagnol';
+export type Discipline = Exclude<Subject, 'lv2'> | 'allemand' | 'espagnol';
 
 export type SourceId = 'c3' | 'c4';
 

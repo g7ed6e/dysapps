@@ -41,9 +41,13 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(28);
+  expect(BRIDGES).toHaveLength(29);
   expect(VOYAGES.map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e', 'voyage-3e']);
-  expect(BIOMES.length).toBe(28);
+  expect(BIOMES.length).toBe(29);
+  // Le Relais des voyageurs (LV2) est en bout de chemin : un seul ouvrage y mène, depuis le Comptoir.
+  expect(BRIDGES.filter((b) => b.from === 'relais' || b.to === 'relais').map((b) => b.id)).toEqual(['comptoir-relais']);
+  expect(isBiomeUnlocked('relais', ['voyage-5e', 'marche-comptoir', 'comptoir-relais'])).toBe(true);
+  expect(isBiomeUnlocked('relais', ['voyage-5e', 'marche-comptoir'])).toBe(false);
 });
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {

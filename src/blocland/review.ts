@@ -1,6 +1,6 @@
 // Les révisions du jour : les items ratés reviennent à J+1, J+3, J+7, J+15 (répétition espacée, `engine.ts`). Ici, ce
 // que l'appli en fait : quels exercices et quelles missions ont des items à revoir aujourd'hui.
-import { getBiome, type BiomeId } from './biomes';
+import { getBiome, missionsJouables, type BiomeId } from './biomes';
 import { dueItems, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
 import { isBiomeUnlocked } from './world/archipelago';
@@ -40,7 +40,7 @@ export function questsToReview(spaced: SpacedItem[], bridges: string[], today = 
     if (seen.has(key) || !isBiomeUnlocked(meta.biome, bridges)) continue;
     seen.add(key);
     const biome = getBiome(meta.biome);
-    const title = biome?.exercises.find((e) => e.id === meta.type)?.title;
+    const title = biome && missionsJouables(biome).find((e) => e.id === meta.type)?.title;
     if (!biome || !title) continue;
     out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/aventure/${meta.biome}/${meta.type}` });
   }

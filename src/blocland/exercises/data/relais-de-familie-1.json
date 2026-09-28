@@ -1,0 +1,247 @@
+{
+  "id": "relais-de-familie-1",
+  "biome": "relais",
+  "type": "de-familie",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis la question, puis la phrase ou le panneau en allemand, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "relais-de-familie-1-0",
+      "question": "Qui est Paul pour Lena ?",
+      "prompt": "Ich heiße Lena. Das ist mein Bruder Paul.",
+      "spoken": "Ich heiße Lena. Das ist mein Bruder Paul.",
+      "choices": [
+        "Son frère",
+        "Son père",
+        "Son cousin"
+      ],
+      "answer": "Son frère",
+      "hint": "Cherche le mot juste avant Paul.",
+      "explanation": "mein Bruder = mon frère : Paul est le frère de Lena.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-1",
+      "question": "Qui est Frau Weber ?",
+      "prompt": "Frau Weber ist meine Lehrerin.",
+      "spoken": "Frau Weber ist meine Lehrerin.",
+      "choices": [
+        "Ma professeure",
+        "Ma mère",
+        "Ma sœur"
+      ],
+      "answer": "Ma professeure",
+      "hint": "Lehrer, c’est le professeur. Et avec -in à la fin ?",
+      "explanation": "die Lehrerin = la professeure : -in dit que c’est une femme. Frau Weber = Madame Weber.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-2",
+      "question": "Que demande le professeur ?",
+      "prompt": "Öffnet die Bücher!",
+      "spoken": "Öffnet die Bücher!",
+      "choices": [
+        "Ouvrir les livres",
+        "Fermer les livres",
+        "Prendre les cahiers"
+      ],
+      "answer": "Ouvrir les livres",
+      "hint": "Bücher, ce sont les livres (das Buch, le livre). Et öffnen ?",
+      "explanation": "öffnen = ouvrir : Öffnet die Bücher! = Ouvrez les livres ! Fermer se dit schließen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-3",
+      "question": "Que demande le professeur ?",
+      "prompt": "Hört zu!",
+      "spoken": "Hört zu!",
+      "choices": [
+        "Écouter",
+        "Écrire",
+        "Lire"
+      ],
+      "answer": "Écouter",
+      "hint": "Regarde le lexique : zuhören, lesen, schreiben.",
+      "explanation": "Hört zu! = Écoutez ! (zuhören = écouter). Écrire se dit schreiben, lire se dit lesen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-4",
+      "question": "Que dit Tom de sa nouvelle école ?",
+      "prompt": "Meine neue Schule ist schön.",
+      "spoken": "Meine neue Schule ist schön.",
+      "choices": [
+        "Elle est belle",
+        "Elle est déjà finie",
+        "Elle est petite"
+      ],
+      "answer": "Elle est belle",
+      "hint": "Écoute le dernier mot : entends-tu le son « eu » ?",
+      "explanation": "schön, avec ö (le son « eu »), veut dire beau : l’école de Tom est belle. Sans les deux points, schon veut dire déjà.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-5",
+      "question": "Où est Mia ?",
+      "prompt": "Mia ist schon in der Schule.",
+      "spoken": "Mia ist schon in der Schule.",
+      "choices": [
+        "Déjà à l’école",
+        "Dans une belle école",
+        "Pas encore à l’école"
+      ],
+      "answer": "Déjà à l’école",
+      "hint": "Écoute le mot après ist : entends-tu « o » ou « eu » ?",
+      "explanation": "schon, sans les deux points (le son « o »), veut dire déjà : Mia est déjà à l’école. schön, avec ö, veut dire beau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-6",
+      "question": "Que demande ce panneau de la bibliothèque ?",
+      "prompt": "Bibliothek\nBitte leise!",
+      "spoken": "Bibliothek. Bitte leise!",
+      "choices": [
+        "Ne pas faire de bruit",
+        "Rendre les livres",
+        "Fermer la porte"
+      ],
+      "answer": "Ne pas faire de bruit",
+      "hint": "bitte = s’il vous plaît. Et leise ?",
+      "explanation": "leise = doucement, sans bruit : Bitte leise! = Silence, s’il vous plaît.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-familie-1-7",
+      "question": "Combien de frères et sœurs a Jonas ?",
+      "prompt": "Ich heiße Jonas. Ich habe zwei Schwestern und einen Bruder.",
+      "spoken": "Ich heiße Jonas. Ich habe zwei Schwestern und einen Bruder.",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "3",
+      "hint": "Compte les sœurs (Schwestern), puis le frère (Bruder).",
+      "explanation": "zwei Schwestern (2 sœurs) und einen Bruder (1 frère) : 3 en tout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille et l’école",
+          "lines": [
+            "der Vater (le père), die Mutter (la mère), der Bruder (le frère), die Schwester (la sœur)",
+            "mein Bruder (mon frère), meine Schwester (ma sœur) ; Frau Weber = Madame Weber",
+            "die Schule (l’école), der Lehrer, die Lehrerin (le professeur, la professeure), das Buch (le livre)",
+            "In der Klasse : lesen (lire), schreiben (écrire), zuhören (écouter), öffnen (ouvrir) ; bitte = s’il vous plaît",
+            "schon = déjà ; schön (avec ö, le son « eu ») = beau, joli."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

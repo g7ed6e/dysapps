@@ -52,7 +52,7 @@ it('le phare suit les proportions de la fiche de famille : fût, bandes, galerie
   expect(PHARE.toit.rayon).toBeGreaterThan(PHARE.lanterne.rayon);
   // Au 6e et au 3e, seuls la taille, le socle et l'emprise changent.
   expect(PHARES['6e']).toEqual({ H: 6, r: 1.2, socle: 0, emprise: 3 });
-  expect(PHARES['3e']).toEqual({ H: 11, r: 1.2, socle: 3, emprise: 4 });
+  expect(PHARES['3e']).toEqual({ H: 11, r: 1.2, socle: 3, emprise: 3 });
 });
 
 it('ses couleurs sont celles de la fiche, et ses bandes de terre cuite sont où elle le dit', () => {

@@ -1,0 +1,13 @@
+{
+  "id": "relais-fontaine",
+  "biome": "relais",
+  "name": "La fontaine du relais",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Une fontaine, une barrière, une marche… Mon Relais est complet. Bon voyage, d’où que tu viennes !"
+}

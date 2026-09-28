@@ -1,0 +1,239 @@
+{
+  "id": "relais-es-hola-1",
+  "biome": "relais",
+  "type": "es-hola",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "relais-es-hola-1-0",
+      "prompt": "¿Cómo te llamas?",
+      "spoken": "Cómo te llamas?",
+      "choices": [
+        "Me llamo Lucía.",
+        "Tengo doce años.",
+        "Vivo en Sevilla."
+      ],
+      "answer": "Me llamo Lucía.",
+      "hint": "Écoute le mot de la question : cómo (comment), cuántos (combien), dónde (où), de dónde (d’où).",
+      "explanation": "« ¿Cómo te llamas? » = Comment t’appelles-tu ? On répond : Me llamo Lucía.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-1",
+      "prompt": "¿Cuántos años tienes?",
+      "spoken": "Cuántos años tienes?",
+      "choices": [
+        "Tengo doce años.",
+        "Soy doce años.",
+        "Vivo en Madrid."
+      ],
+      "answer": "Tengo doce años.",
+      "hint": "L’âge se dit avec tener (avoir), comme en français.",
+      "explanation": "« ¿Cuántos años tienes? » = Quel âge as-tu ? On répond avec tener : Tengo doce años, pas soy (comme I’m twelve en anglais). años s’écrit avec ñ.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-2",
+      "prompt": "¿Dónde vives?",
+      "spoken": "Dónde vives?",
+      "choices": [
+        "Vivo en Sevilla.",
+        "Soy de Francia.",
+        "Tengo once años."
+      ],
+      "answer": "Vivo en Sevilla.",
+      "hint": "Écoute le mot de la question : cómo (comment), cuántos (combien), dónde (où), de dónde (d’où).",
+      "explanation": "« ¿Dónde vives? » = Où habites-tu ? On répond avec vivir : Vivo en Sevilla.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-3",
+      "prompt": "¿De dónde eres?",
+      "spoken": "De dónde eres?",
+      "choices": [
+        "Soy de Francia.",
+        "Vivo en Sevilla.",
+        "Me llamo Pablo."
+      ],
+      "answer": "Soy de Francia.",
+      "hint": "Écoute le mot de la question : cómo (comment), cuántos (combien), dónde (où), de dónde (d’où).",
+      "explanation": "« ¿De dónde eres? » = D’où es-tu ? On répond avec ser de : Soy de Francia.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-4",
+      "prompt": "¿Qué tal?",
+      "spoken": "Qué tal?",
+      "choices": [
+        "Bien, gracias.",
+        "¡Adiós!",
+        "Tengo trece años."
+      ],
+      "answer": "Bien, gracias.",
+      "hint": "On te demande si tu vas bien.",
+      "explanation": "« ¿Qué tal? » = Comment ça va ? On répond : Bien, gracias (bien, merci). ¡Adiós! veut dire au revoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-5",
+      "prompt": "¿Tienes hermanos?",
+      "spoken": "Tienes hermanos?",
+      "choices": [
+        "Sí, tengo una hermana.",
+        "Sí, tengo doce años.",
+        "Vivo en Madrid."
+      ],
+      "answer": "Sí, tengo una hermana.",
+      "hint": "hermanos = les frères et sœurs.",
+      "explanation": "« ¿Tienes hermanos? » = As-tu des frères et sœurs ? Sí, avec accent, veut dire oui : Sí, tengo una hermana.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-6",
+      "prompt": "¿Cuántos años tiene tu hermano?",
+      "spoken": "Cuántos años tiene tu hermano?",
+      "choices": [
+        "Tiene catorce años.",
+        "Tengo catorce años.",
+        "Es catorce años."
+      ],
+      "answer": "Tiene catorce años.",
+      "hint": "On parle de ton frère : il. Et l’âge se dit avec tener.",
+      "explanation": "tu hermano = ton frère (tu, sans accent = ton) : il tiene catorce años. Tengo, c’est pour soi, et l’âge ne se dit pas avec ser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-1-7",
+      "prompt": "Me llamo Ana. ¿Y tú?",
+      "spoken": "Me llamo Ana. Y tú?",
+      "choices": [
+        "Me llamo Hugo.",
+        "Se llama Hugo.",
+        "Tengo una hermana."
+      ],
+      "answer": "Me llamo Hugo.",
+      "hint": "¿Y tú? = Et toi ? Ana te demande ton prénom.",
+      "explanation": "« ¿Y tú? » = Et toi ? tú, avec accent, veut dire toi : on répond Me llamo Hugo. Se llama, c’est pour une autre personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "¡Hola! = bonjour. ¡Adiós! ¡Hasta luego! = au revoir.",
+            "¿ et ¡ ouvrent la question et l’exclamation ; ? et ! les ferment.",
+            "¿Cómo te llamas? — Me llamo… (je m’appelle…)",
+            "¿Cuántos años tienes? — Tengo doce años. (l’âge se dit avec tener, avoir)",
+            "ser (être) : soy, eres, es. tener (avoir) : tengo, tienes, tiene.",
+            "ñ se dit « gn », comme dans montagne : año, España, mañana."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
