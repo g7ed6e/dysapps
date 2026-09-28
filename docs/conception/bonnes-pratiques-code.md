@@ -63,7 +63,7 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 | Dépendances suivies | Dependabot chaque semaine, npm et actions | `.github/dependabot.yml` |
 | TypeScript strict | `strict`, variables et paramètres inutilisés refusés, aucun `any` hors tests ; typage vérifié à chaque build | `tsconfig.json`, `npm run build` |
 | Chargement à la demande | 3D, 2D et missions en `lazy` ; exercices lus seulement au lancement d’une partie | `src/blocland/three/index.ts`, `src/blocland/pixel/index.ts`, `src/apps/registry.ts` |
-| Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/blocland/three/WorldCanvas.tsx` |
+| Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/blocland/three/` (chaque partie de la scène a son `dispose`) |
 | Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `src/blocland/world/budget.ts` |
 | Logique pure et testée | Monde calculé en fonctions pures, empreintes du monde | `src/blocland/world/`, `separation-jeu-rendu.md` |
 | Bornes d’erreur | Une page ou une scène qui ne charge pas propose de recharger | `src/components/ErrorBoundary.tsx` |
@@ -75,7 +75,7 @@ Ces points ne sont pas des défauts constatés : ce sont les endroits où le cod
 
 - **Pas de linter** : aucune règle ne vérifie automatiquement les règles de React. Ajouter ESLint avec `eslint-plugin-react-hooks` (préréglage `recommended`) les ferait respecter à chaque pull request.
 - **Le React Compiler n’est pas activé** : il mémoïserait sans `useMemo` ni `useCallback` à la main. À décider après le linter, qui dit d’abord quels composants il ne pourrait pas compiler.
-- **Les gros fichiers** : `WorldCanvas.tsx` (environ 1 600 lignes, découpage prévu à l’étape D de la séparation), `world/terrain.ts`, `world/landMesh.ts`, `biomes.ts`. Chaque lot qui les touche ne les fait pas grossir sans raison.
+- **Les gros fichiers** : `world/terrain.ts`, `world/landMesh.ts`, `biomes.ts`. Chaque lot qui les touche ne les fait pas grossir sans raison.
 - **La mesure réelle** : l’INP et les images par seconde se mesurent sur la tablette de référence (`/?mesures`), pas seulement en local.
 - **`min-release-age`** : la CI tourne sur Node 22, dont le npm ne connaît pas ce réglage. Passer à Node 24 (LTS) permettrait de l’ajouter à `.npmrc`.
 - **WebGPU** : le rendu reste en WebGL ; un passage éventuel au `WebGPURenderer` est une décision de l’artiste technique 3D, avec la réécriture des matériaux en TSL.
