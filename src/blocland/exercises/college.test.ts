@@ -10,6 +10,7 @@ import {
   fmt,
   mean,
   mulRelatifs,
+  NOT_RIGHT,
   percentChange,
   pow,
   primeDecomposition,
@@ -17,11 +18,15 @@ import {
   productEquation,
   pythagoreHyp,
   pythagoreSide,
+  RECIPROQUE_PYTHAGORE_CHOICES,
+  reciprocalPythagore,
+  reciprocalThales,
   scientific,
   seededItems,
   testEquality,
   TO_FACTOR,
   thales,
+  THALES_CASES,
 } from './college';
 import { MATHS_EXERCISES } from './maths';
 import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
@@ -241,6 +246,82 @@ it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données'
         expect(JSON.parse(JSON.stringify(it))).toEqual(it);
       }
     }
+  }
+});
+
+it('Belvédère, réciproques : la réponse se calcule depuis l’énoncé, les pièges sont ceux des élèves', () => {
+  // Les triangles « pas rectangles » le sont vraiment, et sont de vrais triangles.
+  for (const [a, b, c] of NOT_RIGHT) {
+    expect(a * a + b * b, `${a} ${b} ${c}`).not.toBe(c * c);
+    expect(a + b).toBeGreaterThan(c);
+    expect(c).toBeGreaterThan(b);
+  }
+  // Réciproque de Thalès : de quoi tirer dans chaque cas ; le même coefficient ne donne jamais la même différence ;
+  // quatre longueurs différentes.
+  expect(THALES_CASES.parallel.length).toBeGreaterThan(8);
+  expect(THALES_CASES.sameGap.length).toBeGreaterThan(8);
+  expect(THALES_CASES.close.length).toBeGreaterThan(8);
+  for (const t of THALES_CASES.parallel) expect(t.ab - t.am).not.toBe(t.ac - t.an);
+  for (const t of Object.values(THALES_CASES).flat()) expect(new Set([t.am, t.ab, t.an, t.ac]).size).toBe(4);
+
+  const rng = seededItems('reciproques');
+  const pythAnswers = new Set<string>();
+  let hypNotBC = 0;
+  let sameGapSeen = 0;
+  let mixedOrder = 0;
+  for (let i = 0; i < 300; i++) {
+    const p = reciprocalPythagore(rng);
+    const [ab, ac, bc] = keyNumbers(p.key);
+    const len: Record<string, number> = { AB: ab, AC: ac, BC: bc };
+    const big = Object.keys(len).reduce((u, v) => (len[v] > len[u] ? v : u));
+    const others = Object.keys(len).filter((s) => s !== big);
+    const right = len[big] ** 2 === len[others[0]] ** 2 + len[others[1]] ** 2;
+    const vertex = { AB: 'C', AC: 'B', BC: 'A' }[big];
+    expect(p.answer).toBe(right ? `oui, en ${vertex}` : 'non');
+    expect(p.choices).toEqual(RECIPROQUE_PYTHAGORE_CHOICES);
+    expect(String(p.prompt)).toBe(`Triangle ABC : AB = ${ab} cm, AC = ${ac} cm, BC = ${bc} cm. Est-il rectangle ?`);
+    expect(String(p.spoken)).not.toMatch(/[=²√÷×]|\bcm\b/);
+    // La correction refait le calcul : le carré du plus grand côté et la somme des deux autres.
+    expect(String(p.explanation)).toContain(`${big}² = ${len[big]}² = ${len[big] ** 2}`);
+    expect(String(p.explanation)).toContain(`= ${len[others[0]] ** 2 + len[others[1]] ** 2}.`);
+    // Le tableau range les côtés du plus petit au plus grand, avec leurs carrés ; l'indice, lu à voix haute, est en mots.
+    const rows = (p.figure as { kind: string; props: { rows: string[][] } }).props.rows;
+    expect(rows.map((r) => r[0])).toEqual(Object.keys(len).sort((u, v) => len[u] - len[v]));
+    for (const [s, l, sq] of rows) expect([l, sq]).toEqual([`${len[s]} cm`, String(len[s] ** 2)]);
+    expect(String(p.hint)).not.toMatch(/[=²√÷×+−]/);
+    pythAnswers.add(String(p.answer));
+    if (right && big !== 'BC') hypNotBC++;
+
+    const t = reciprocalThales(rng);
+    const [am, tab, an, tac] = keyNumbers(t.key);
+    expect(t.answer).toBe(tab * an === tac * am ? 'oui' : 'non');
+    expect(t.choices).toEqual(['non', 'oui']);
+    expect(am).toBeLessThan(tab);
+    expect(an).toBeLessThan(tac);
+    // L'énoncé donne les quatre longueurs de la clé ; le tableau les range, petit triangle puis grand.
+    const prompt = String(t.prompt);
+    for (const [s, v] of [['AM', am], ['AB', tab], ['AN', an], ['AC', tac]] as const) expect(prompt).toContain(`${s} = ${v} cm`);
+    expect((t.figure as { props: { rows: string[][] } }).props.rows).toEqual([
+      [`AM = ${am}`, `AB = ${tab}`],
+      [`AN = ${an}`, `AC = ${tac}`],
+    ]);
+    expect(String(t.spoken)).not.toMatch(/[=÷×()[\]]|\bcm\b/);
+    expect(String(t.hint)).not.toMatch(/[=÷×−]/);
+    // Deux phrases : l'énoncé avec ses longueurs, puis la question.
+    expect(prompt.split(/(?<=[.?]) /)).toHaveLength(2);
+    if (t.answer === 'non' && tab - am === tac - an) sameGapSeen++;
+    if (prompt.indexOf('AC =') < prompt.indexOf('AN =')) mixedOrder++;
+  }
+  expect([...pythAnswers].sort()).toEqual(RECIPROQUE_PYTHAGORE_CHOICES);
+  expect(hypNotBC).toBeGreaterThan(100);
+  expect(sameGapSeen).toBeGreaterThan(40);
+  expect(mixedOrder).toBeGreaterThan(100);
+
+  // Les deux niveaux : huit items, une règle affichée, la consigne unique du niveau.
+  for (const id of ['belvedere-pythagore-4', 'belvedere-thales-3']) {
+    const def = COLLEGE_EXERCISES.find((e) => e.id === id)!;
+    expect(def.items).toHaveLength(8);
+    for (const it of def.items) expect((it.aid as { kind: string }).kind).toBe('rule-card');
   }
 });
 

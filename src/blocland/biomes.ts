@@ -784,7 +784,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Géométrie : Pythagore, Thalès, trigonométrie',
     subject: 'maths',
     classe: '3e',
-    description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux.',
+    description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux ; puis les réciproques : le triangle est-il rectangle, les droites sont-elles parallèles ?',
     block: 'marbre',
     guardian: 'le Sphinx de marbre',
     guardianSays: {
@@ -807,8 +807,8 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
     },
     exercises: [
-      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
-      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton.', programme: ['c4.ma.d.thales'] },
+      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât, enfin la réciproque : le triangle est-il rectangle ?', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton, enfin la réciproque : les droites sont-elles parallèles ?', programme: ['c4.ma.d.thales'] },
       { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],
   },
