@@ -1,10 +1,10 @@
 import { BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
+import { MAP } from './map';
 import { planCells, plansFor } from './plans';
 import {
   ARCHIPELAGOS,
   BRIDGES,
-  ISLANDS,
   CONDITION_OF,
   LEGACY_BRIDGES,
   VOYAGES,
@@ -33,10 +33,10 @@ import {
 import { VEHICLE_STAGES } from './vehicle';
 
 it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouvrent les suivants', () => {
-  for (const b of BIOMES) expect(ISLANDS.find((i) => i.id === b.id)).toBeDefined();
+  for (const b of BIOMES) expect(MAP.find((i) => i.id === b.id)).toBeDefined();
   for (const b of BRIDGES) {
-    expect(ISLANDS.find((i) => i.id === b.from)).toBeDefined();
-    expect(ISLANDS.find((i) => i.id === b.to)).toBeDefined();
+    expect(MAP.find((i) => i.id === b.from)).toBeDefined();
+    expect(MAP.find((i) => i.id === b.to)).toBeDefined();
   }
   // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);

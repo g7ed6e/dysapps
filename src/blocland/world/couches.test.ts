@@ -29,6 +29,7 @@ const REGLES = [
   'world/archipelago',
   'world/vehicle',
   'world/voyage',
+  'world/archipels',
   'world/plans',
   'world/plansV1',
   'world/architect',
@@ -54,13 +55,9 @@ const PERMIS: Record<Couche, Couche[]> = {
  * Une exception retirée du code sort de cette liste.
  */
 const EXCEPTIONS: Record<string, string> = {
-  'biomes → components/Icon': 'l’icône d’une île, un détail d’interface dans les données (J1)',
-  'boss → exercises/registry': 'le défi du Gardien choisit ses écrans (J1)',
-  'world/islandState → components/Icon': 'l’icône d’un état d’île (J1)',
-  'world/archipelago → world/map': 'archipelagoOfIsland et ARCHIPELAGO_IDS, des règles rangées avec la carte (J1)',
-  'world/plans → world/harbour': 'l’origine d’un plan du navire, tirée de la place du quai (J1 : origines figées)',
-  'world/plans → world/map': 'l’origine d’un plan, tirée du cœur de l’île (J1 : origines figées)',
-  'world/monuments → world/map': 'l’îlot d’un monument, en cases du monde (J1 : origines figées)',
+  'biomes → components/Icon': 'le nom d’icône d’une île (un type seulement), un détail d’interface dans les données (J7)',
+  'boss → exercises/registry': 'le défi du Gardien lit combien d’items montre chaque écran, rangé avec les écrans (J7)',
+  'world/islandState → components/Icon': 'le nom d’icône d’un état d’île (un type seulement) (J7)',
   'world/paths → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
   'world/paths → world/view': 'les types Cell et CreaturePlacement, rangés dans le contrat des vues (J3)',
   'world/terrain → Avatar': 'la place du bonhomme sur son île, AVATAR_HOME (J5)',
