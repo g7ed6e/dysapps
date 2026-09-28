@@ -502,10 +502,10 @@ export const BIOMES: BiomeDef[] = [
   {
     id: 'glacier',
     name: 'Glacier des relatifs',
-    module: 'Nombres relatifs',
+    module: 'Nombres relatifs et fractions',
     subject: 'maths',
     classe: '5e',
-    description: 'Comparer, additionner, soustraire, multiplier des nombres négatifs, la droite sous les yeux.',
+    description: 'Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.',
     block: 'glace',
     guardian: 'le Mammouth de givre',
     guardianSays: {
@@ -524,6 +524,7 @@ export const BIOMES: BiomeDef[] = [
         'Moins cinq, c’est plus petit que moins deux. Plus on va à gauche, plus il fait froid.',
         'Soustraire, c’est ajouter l’opposé. Comme enlever un manteau.',
         'Mon igloo est en glace. Chaque calcul en taille un bloc.',
+        'Un iceberg ne montre qu’une fraction de lui : le reste dort sous l’eau.',
       ],
       home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
     },
@@ -531,6 +532,7 @@ export const BIOMES: BiomeDef[] = [
       { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.', programme: ['c4.ma.a.relatifs', 'c4.ma.d.reperage'] },
       { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.', programme: ['c4.ma.a.calcul-relatifs'] },
       { id: 'crevasses', title: 'Crevasses', description: 'Multiplie et divise avec la règle des signes affichée.', programme: ['c4.ma.a.calcul-relatifs'] },
+      { id: 'icebergs', title: 'Icebergs des fractions', description: 'Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.', programme: ['c4.ma.a.fractions', 'c4.ma.a.calcul-fractions'] },
     ],
   },
   {
@@ -673,7 +675,7 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.', programme: ['c4.ma.a.puissances', 'c4.ma.a.ecritures-ordres-de-grandeur'] },
       { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.', programme: ['c4.ma.a.puissances'] },
-      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers.', programme: ['c4.ma.a.carres-racine', 'c4.ma.a.divisibilite-premiers', 'c3.ma.nombres.divisibilite'] },
+      { id: 'trempe', title: 'Trempe', description: 'Racines carrées, puis diviseurs et nombres premiers, puis décomposition en facteurs premiers.', programme: ['c4.ma.a.carres-racine', 'c4.ma.a.divisibilite-premiers', 'c3.ma.nombres.divisibilite'] },
     ],
   },
   {
@@ -706,8 +708,8 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.', programme: ['c4.ma.a.reduire-developper'] },
-      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double.', programme: ['c4.ma.a.reduire-developper'] },
-      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes.', programme: ['c4.ma.a.equations'] },
+      { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double, puis factoriser.', programme: ['c4.ma.a.reduire-developper'] },
+      { id: 'equilibre', title: 'Équilibre', description: 'Équations du premier degré, en une puis deux étapes, puis tester une égalité et les équations produits.', programme: ['c4.ma.a.equations'] },
     ],
   },
   {
@@ -750,7 +752,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Vocabulaire',
     subject: 'francais',
     classe: '4e',
-    description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, synonymes et registres.',
+    description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.',
     block: 'parchemin',
     guardian: 'le Hibou lexicographe',
     guardianSays: {
@@ -774,8 +776,8 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.', programme: ['c4.fr.langue.formation-des-mots'] },
-      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.', programme: ['c4.fr.langue.sens-des-mots'] },
-      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.oral-ecrit', 'c3.fr.langue.synonymie'] },
+      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées, puis le champ lexical.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.reseaux-de-mots'] },
+      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue, puis le degré d’intensité.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.reseaux-de-mots', 'c4.fr.langue.oral-ecrit', 'c3.fr.langue.synonymie'] },
     ],
   },
   {
@@ -784,7 +786,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Géométrie : Pythagore, Thalès, trigonométrie',
     subject: 'maths',
     classe: '3e',
-    description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux.',
+    description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux ; puis les réciproques : le triangle est-il rectangle, les droites sont-elles parallèles ?',
     block: 'marbre',
     guardian: 'le Sphinx de marbre',
     guardianSays: {
@@ -807,8 +809,8 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
     },
     exercises: [
-      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
-      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton.', programme: ['c4.ma.d.thales'] },
+      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât, enfin la réciproque : le triangle est-il rectangle ?', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton, enfin la réciproque : les droites sont-elles parallèles ?', programme: ['c4.ma.d.thales'] },
       { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],
   },

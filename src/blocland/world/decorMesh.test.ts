@@ -7,6 +7,8 @@ import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSo
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/phare';
+import { COULEURS_4E } from './decor/4e';
+import { eclaircir, hex } from './decor/pinceau';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
 
@@ -297,28 +299,31 @@ it('le chêne géant montre moins de la moitié de son tronc ; les repères n’
 
 it('la fumée : chaque volute plus grosse, dérivée sous le vent comme le carré de son rang, les dernières fondues', () => {
   expect(FUMEE).toEqual({ croissance: 0.35, fondu: 0.3, volutes: 3 });
-  // Les volutes du haut-fourneau (4e) : des icosaèdres de vingt facettes, dans le maillage des fumées (R4b-6e), dans leur
-  // pose immobile du lot R4.
+  // Les volutes du volcan du fond (4e) : des icosaèdres de vingt facettes, dans le maillage des fumées (R4b-6e), dans
+  // leur pose immobile du lot R4. Le fourneau de la Forge a les siennes, trois minces (R4b-4e).
   const f = monde('4e').maillage.fumees;
-  expect(f.panaches.length).toBe(1);
-  const volutes = Array.from({ length: 8 }, (_, k) => {
+  expect(f.panaches.map((p) => p.n).sort()).toEqual([3, 5]);
+  const p = f.panaches.findIndex((q) => q.n === 5);
+  const volutes = Array.from({ length: 5 }, (_, k) => {
     const pts: [number, number, number][] = [];
-    for (let t = 0; t < f.facettes.elements.length; t++)
-      if (f.volutes[f.facettes.elements[t]].k === k) for (let s = 0; s < 3; s++) pts.push([0, 1, 2].map((j) => f.facettes.positions[t * 9 + s * 3 + j]) as [number, number, number]);
+    for (let t = 0; t < f.facettes.elements.length; t++) {
+      const v = f.volutes[f.facettes.elements[t]];
+      if (v.panache === p && v.k === k) for (let s = 0; s < 3; s++) pts.push([0, 1, 2].map((j) => f.facettes.positions[t * 9 + s * 3 + j]) as [number, number, number]);
+    }
     expect(pts.length, `volute ${k}`).toBe(60);
     return pts;
   });
   const centres = volutes.map((pts) => [0, 1, 2].map((j) => pts.reduce((s, q) => s + q[j], 0) / pts.length));
   const tailles = volutes.map((pts) => Math.max(...pts.map((q) => q[0])) - Math.min(...pts.map((q) => q[0])));
-  for (let k = 1; k < 8; k++) expect(tailles[k], `volute ${k}`).toBeGreaterThan(tailles[k - 1] * 0.9);
-  expect(tailles[7] / tailles[0]).toBeGreaterThan(2.5);
+  for (let k = 1; k < 5; k++) expect(tailles[k], `volute ${k}`).toBeGreaterThan(tailles[k - 1] * 0.9);
+  expect(tailles[4] / tailles[0]).toBeGreaterThan(1.8);
   // La dérive : de plus en plus grande à chaque rang.
   const d = centres.map((c) => Math.hypot(c[0] - centres[0][0], c[2] - centres[0][2]));
-  for (let k = 2; k < 8; k++) expect(d[k] - d[k - 1]).toBeGreaterThan(d[k - 1] - d[k - 2] - 0.05);
-  for (let k = 1; k < 8; k++) expect(centres[k][1]).toBeGreaterThan(centres[k - 1][1]);
+  for (let k = 2; k < 5; k++) expect(d[k] - d[k - 1]).toBeGreaterThan(d[k - 1] - d[k - 2] - 0.05);
+  for (let k = 1; k < 5; k++) expect(centres[k][1]).toBeGreaterThan(centres[k - 1][1]);
 });
 
-it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche', () => {
+it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche, ou la pierre chaude sur le basalte', () => {
   const { elements, maillage } = monde('6e');
   const mer = new Set(elements.map((e, i) => (e.genre === 'ecueil' || e.genre === 'banc' ? i : -1)));
   let n = 0;
@@ -327,7 +332,8 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
   // Tous les écueils et les bancs sont là, un élément chacun.
   expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(139);
   expect(elements.filter((e) => e.genre === 'banc').length).toBe(55);
-  // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre.
+  // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
+  // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');
   const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('forge/'));
   expect(rochers.length).toBeGreaterThan(5);
@@ -337,7 +343,7 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
     if (['herbe', 'mousse', 'sable', 'neige', 'glace', 'terre'].includes(m)) continue;
     const dessus = triangles(forge.maillage, i).filter((t) => t.n > 0.3);
     const v = Math.max(...dessus.flatMap((t) => t.c.map((c) => valeur(c as [number, number, number]))));
-    const roche = valeur(couleurDuSol('4e', m === 'basalte' ? 'basalte' : 'roche').dessus);
+    const roche = valeur(m === 'basalte' ? eclaircir(hex(COULEURS_4E.pierreChaude), 1.14) : couleurDuSol('4e', 'roche').dessus);
     expect(v / roche, e.id).toBeLessThan(1.1 * 1.08 * 1.02);
   }
 });

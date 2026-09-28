@@ -1,6 +1,7 @@
 // Missions de maths du collège (cycle 4) : générateurs (reproductibles pour une graine, une graine par partie) qui produisent directement des items Blocland,
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
 import { drawChoices } from '../../core/choices';
+import { fractionWords } from '../../core/fractions';
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
 import { seeded } from './maths';
@@ -192,6 +193,291 @@ export const divRelatifs: ItemGenerator = (rng) => {
     explanation: `${par(b)} × ${par(q)} = ${fmt(a)}, donc ${fmt(a)} ÷ ${par(b)} = ${fmt(q)}.`,
     aid: { kind: 'rule-card', props: { title: 'Règle des signes', lines: SIGN_RULES } },
   };
+};
+
+// ---------- Glacier : Icebergs des fractions (cycle 4) ----------
+
+/** Une fraction : [numérateur, dénominateur], toujours positive. */
+type Fr = [number, number];
+/** Plafond des tirages d'une question : les tables en donnent bien avant, il garde de toute boucle sans fin. */
+const MAX_TRIES = 1000;
+const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+const lcm = (a: number, b: number) => (a * b) / gcd(a, b);
+const simplify = ([n, d]: Fr): Fr => {
+  const g = gcd(n, d);
+  return [n / g, d / g];
+};
+/** « 3/4 » : l'écran l'affiche en colonne (RichText). */
+const fr = ([n, d]: Fr) => `${n}/${d}`;
+/** « 3 quarts » : la même fraction, lue à voix haute. */
+const frSay = ([n, d]: Fr) => fractionWords(n, d);
+const value = ([n, d]: Fr) => n / d;
+/** Une fraction qui se dit en toutes lettres (« 5 douzièmes », jamais « 5 13ièmes ») et qui n'est pas un entier. */
+const speakable = ([n, d]: Fr) => Number.isInteger(n) && Number.isInteger(d) && n >= 1 && d >= 2 && !/\dième/.test(fractionWords(1, d));
+const pick = <T>(list: readonly T[], rng: Rng): T => list[randomInt(0, list.length - 1, rng)];
+
+/**
+ * Réponses-fractions : la bonne et trois pièges, sans doublon, rangées de la plus petite à la plus grande. La place de la
+ * bonne réponse est tirée parmi celles que les pièges permettent. Un piège de même valeur que la réponse n'est gardé que
+ * si `unsimplified` : c'est la fraction qu'on a oublié de simplifier, et la consigne demande de simplifier jusqu'au bout.
+ * Aucun piège n'est inventé : ce sont les erreurs données par le générateur.
+ */
+function fractionChoices(answer: Fr, traps: Fr[], rng: Rng, unsimplified = false, operands: Fr[] = []): string[] {
+  // Jamais une fraction de l'énoncé proposée comme réponse.
+  const seen = new Set<number>([value(answer), ...operands.map(value)]);
+  const same: Fr[] = [];
+  const pool: Fr[] = [];
+  for (const t of traps) {
+    // Jamais un entier écrit en fraction (6/6, 2/2) : ce n'est l'erreur de personne.
+    if (!speakable(t) || t[0] % t[1] === 0 || fr(t) === fr(answer)) continue;
+    if (value(t) === value(answer) && !operands.some((o) => value(o) === value(t))) {
+      // Une écriture non simplifiée de la réponse : un seul piège de ce genre.
+      if (unsimplified && same.length === 0 && gcd(t[0], t[1]) > 1) same.push(t);
+      continue;
+    }
+    if (seen.has(value(t))) continue;
+    seen.add(value(t));
+    pool.push(t);
+  }
+  const below = shuffle(
+    pool.filter((t) => value(t) < value(answer)),
+    rng,
+  );
+  const above = shuffle(
+    pool.filter((t) => value(t) > value(answer)),
+    rng,
+  );
+  // Places possibles : la réponse (et la fraction non simplifiée, juste avant ou juste après elle) au milieu des pièges.
+  const options: { wanted: number; sameFirst: boolean }[] = [];
+  const others = 3 - same.length;
+  for (let wanted = 0; wanted <= others; wanted++) {
+    if (wanted > below.length || others - wanted > above.length) continue;
+    options.push({ wanted, sameFirst: false });
+    if (same.length) options.push({ wanted, sameFirst: true });
+  }
+  const { wanted, sameFirst } = options.length ? pick(options, rng) : { wanted: Math.min(below.length, others), sameFirst: false };
+  const picked = [...below.slice(0, wanted), ...above.slice(0, others - wanted)];
+  const ordered = [...picked].sort((a, b) => value(a) - value(b));
+  const lower = ordered.filter((t) => value(t) < value(answer)).map(fr);
+  const upper = ordered.filter((t) => value(t) > value(answer)).map(fr);
+  const middle = same.length ? (sameFirst ? [fr(same[0]), fr(answer)] : [fr(answer), fr(same[0])]) : [fr(answer)];
+  return [...lower, ...middle, ...upper];
+}
+
+const COMPARE_RULES = [
+  'Même dénominateur : la plus grande fraction a le plus grand numérateur.',
+  'Sinon, mets-les au même dénominateur : multiplie le numérateur et le dénominateur par le même nombre.',
+  'Des nombres plus grands ne font pas une fraction plus grande.',
+];
+
+/** Couples de dénominateurs : l'un multiple de l'autre (5e), ou un dénominateur commun à trouver (4e), jusqu'à 24. */
+const COMPARE_DENOMINATORS: [number, number][] = [
+  [2, 4], [2, 6], [2, 8], [2, 10], [3, 6], [3, 9], [3, 12], [4, 8], [4, 12], [5, 10], [5, 15], [5, 20], [6, 12], [4, 16],
+  [8, 16], [2, 3], [3, 4], [4, 6], [6, 8], [3, 5], [4, 5], [6, 9], [8, 12], [4, 10],
+];
+const EQUAL_FRACTIONS = 'Elles sont égales';
+
+/** Comparer deux fractions de dénominateurs différents, en les mettant au même dénominateur. */
+export const compareFractionsC4: ItemGenerator = (rng) => {
+  const equal = rng() < 0.25;
+  let [b, d] = COMPARE_DENOMINATORS[0];
+  let a = 1;
+  let c = 1;
+  for (let tries = 0; tries < 60; tries++) {
+    [b, d] = pick(COMPARE_DENOMINATORS, rng);
+    a = randomInt(1, b - 1, rng);
+    if (gcd(a, b) > 1) continue;
+    if (equal) {
+      if ((a * d) % b !== 0) continue;
+      c = (a * d) / b;
+      break;
+    }
+    c = randomInt(1, d - 1, rng);
+    if (gcd(c, d) > 1 || a * d === c * b) continue;
+    // Le plus souvent, le piège classique : la fraction aux plus grands nombres est la plus petite (5/8 et 3/4).
+    if (tries < 40 && rng() < 0.7 && !(c > a && c * b < a * d)) continue;
+    break;
+  }
+  const D = lcm(b, d);
+  const pair: [Fr, Fr] = rng() < 0.5 ? [[a, b], [c, d]] : [[c, d], [a, b]];
+  const [x, y] = pair;
+  const [fx, fy] = [fr(x), fr(y)];
+  const X = (x[0] * D) / x[1];
+  const Y = (y[0] * D) / y[1];
+  const answer = X === Y ? EQUAL_FRACTIONS : X > Y ? fx : fy;
+  const convert = [x, y]
+    .filter(([, den]) => den !== D)
+    .map(([num, den]) => `${fr([num, den])} = ${fr([(num * D) / den, D])}`)
+    .join(' et ');
+  const verdict =
+    X === Y ? `Même numérateur, ${X} : elles sont égales.` : `${Math.max(X, Y)} est plus grand que ${Math.min(X, Y)}, donc ${answer} est la plus grande.`;
+  return {
+    key: `cmpf-${fx}-${fy}`,
+    prompt: `Compare ${fx} et ${fy} : laquelle est la plus grande, ou sont-elles égales ?`,
+    spoken: `Compare ${frSay(x)} et ${frSay(y)} : laquelle est la plus grande, ou sont-elles égales ?`,
+    choices: [fx, fy, EQUAL_FRACTIONS],
+    answer,
+    hint: `Mets les deux fractions au même dénominateur, ${D}, puis compare les numérateurs.`,
+    explanation: `Au même dénominateur, ${D} : ${convert}. ${verdict}`,
+    figure: { kind: 'compare-bars', props: { a: x, b: y } },
+    aid: { kind: 'rule-card', props: { title: 'Comparer deux fractions', lines: COMPARE_RULES } },
+  };
+};
+
+const SUM_RULES = [
+  'Même dénominateur d’abord : multiplie le numérateur et le dénominateur par le même nombre.',
+  'Puis additionne ou soustrais les numérateurs.',
+  'Le dénominateur reste le même : on n’additionne jamais les dénominateurs.',
+];
+
+/** Couples de dénominateurs : l'un multiple de l'autre surtout (5e), quelques-uns avec un dénominateur commun (4e). */
+const SUM_DENOMINATORS: [number, number][] = [
+  [2, 4], [2, 6], [2, 8], [2, 10], [3, 6], [3, 9], [3, 12], [4, 8], [4, 12], [4, 16], [5, 10], [5, 15], [5, 20], [6, 12],
+  [6, 18], [8, 16], [10, 20], [2, 3], [3, 4], [2, 5], [4, 6], [6, 8],
+];
+
+/** Additionner ou soustraire deux fractions : au même dénominateur, puis les numérateurs. */
+export const addSubFractions: ItemGenerator = (rng) => {
+  for (let tries = 0; tries < MAX_TRIES; tries++) {
+    const [b, d] = pick(SUM_DENOMINATORS, rng);
+    const a = randomInt(1, b - 1, rng);
+    const c = randomInt(1, d - 1, rng);
+    if (gcd(a, b) > 1 || gcd(c, d) > 1) continue;
+    const minus = rng() < 0.5;
+    const D = lcm(b, d);
+    const A = (a * D) / b;
+    const C = (c * D) / d;
+    if (minus && A === C) continue;
+    // La première est la plus grande dans une soustraction ; au hasard dans une addition.
+    const swap = minus ? A < C : rng() < 0.5;
+    const [x, y]: [Fr, Fr] = swap ? [[c, d], [a, b]] : [[a, b], [c, d]];
+    const [X, Y] = swap ? [C, A] : [A, C];
+    const N = minus ? X - Y : X + Y;
+    // Le résultat est déjà simplifié : la mission ne demande pas de simplifier à ce niveau.
+    if (gcd(N, D) > 1 || !speakable([N, D])) continue;
+    // Un résultat d'une seule part n'a presque aucun piège plus petit : on en tire moins.
+    if (N === 1 && rng() < 0.6) continue;
+    const answer: Fr = [N, D];
+    const op = (p: number, q: number) => (minus ? p - q : p + q);
+    const traps: Fr[] = [
+      // Additionner (ou soustraire) les numérateurs et les dénominateurs.
+      [op(x[0], y[0]), op(x[1], y[1])],
+      // Au même dénominateur, puis additionner aussi les dénominateurs (2/4 + 1/4 = 3/8).
+      ...(minus ? [] : [[N, 2 * D] as Fr]),
+      // Changer de dénominateur sans changer les numérateurs.
+      [op(x[0], y[0]), D],
+      // Multiplier les dénominateurs, sans toucher aux numérateurs.
+      [op(x[0], y[0]), x[1] * y[1]],
+      // L'autre opération sur les numérateurs.
+      [minus ? X + Y : X - Y, D],
+      // Une erreur de calcul sur les numérateurs.
+      [N + 1, D],
+      [N - 1, D],
+      [N + 2, D],
+      [N - 2, D],
+      [N + 3, D],
+      [N + 4, D],
+      [N + 5, D],
+    ];
+    const sign = minus ? '−' : '+';
+    const convert = [x, y]
+      .filter(([, den]) => den !== D)
+      .map(([num, den]) => `${fr([num, den])} = ${fr([(num * D) / den, D])}`)
+      .join(' et ');
+    return {
+      key: `som-${fr(x)}${sign}${fr(y)}`,
+      prompt: `${fr(x)} ${sign} ${fr(y)} = …`,
+      spoken: `${frSay(x)} ${minus ? 'moins' : 'plus'} ${frSay(y)}, combien ?`,
+      choices: fractionChoices(answer, traps, rng),
+      answer: fr(answer),
+      hint: `Le même dénominateur : ${D}. Puis ${minus ? 'soustrais' : 'additionne'} les numérateurs et garde le dénominateur.`,
+      explanation: `Au même dénominateur, ${D} : ${convert}. Puis ${X} ${sign} ${Y} = ${N}, et le dénominateur reste ${D} : ${fr([X, D])} ${sign} ${fr([Y, D])} = ${fr(answer)}.`,
+      // Les deux fractions déjà au même dénominateur : des barres coupées en autant de parts.
+      figure: { kind: 'compare-bars', props: { a: [X, D], b: [Y, D] } },
+      aid: { kind: 'rule-card', props: { title: 'Additionner, soustraire', lines: SUM_RULES } },
+    };
+  }
+  throw new Error('addSubFractions : aucune question trouvée');
+};
+
+const FRACTION_PRODUCT_RULES = [
+  'Multiplier : numérateur fois numérateur, dénominateur fois dénominateur.',
+  'Diviser : multiplie par l’inverse de la deuxième fraction (numérateur et dénominateur échangés).',
+  'Simplifier : divise le numérateur et le dénominateur par le même nombre, jusqu’au bout.',
+];
+
+/** « On simplifie par 6 : 6/12 = 1/2. » ou « 3/8 ne se simplifie pas. » */
+const simplifyText = (raw: Fr): string => {
+  const g = gcd(raw[0], raw[1]);
+  return g > 1 ? `On simplifie par ${g} : ${fr(raw)} = ${fr(simplify(raw))}.` : `${fr(raw)} ne se simplifie pas.`;
+};
+
+/** Une simplification arrêtée trop tôt (par 2 au lieu de 6), s'il y en a une. */
+const partial = (raw: Fr): Fr[] => {
+  const g = gcd(raw[0], raw[1]);
+  for (let p = 2; p < g; p++) if (g % p === 0) return [[raw[0] / p, raw[1] / p]];
+  return [];
+};
+
+/** Multiplier ou diviser deux fractions, puis simplifier jusqu'au bout. */
+export const mulDivFractions: ItemGenerator = (rng) => {
+  for (let tries = 0; tries < MAX_TRIES; tries++) {
+    const divide = rng() < 0.5;
+    const b = randomInt(2, 9, rng);
+    const d = randomInt(2, 9, rng);
+    const a = randomInt(1, b - 1, rng);
+    const c = randomInt(divide ? 2 : 1, Math.max(divide ? 2 : 1, d - 1), rng);
+    if (gcd(a, b) > 1 || gcd(c, d) > 1 || c >= d) continue;
+    const x: Fr = [a, b];
+    const y: Fr = [c, d];
+    const raw: Fr = divide ? [a * d, b * c] : [a * c, b * d];
+    const answer = simplify(raw);
+    // La réponse n'est jamais une fraction de l'énoncé (4/9 ÷ 2/3 = 2/3).
+    if (!speakable(answer) || !speakable(raw) || [x, y].some((o) => value(o) === value(answer))) continue;
+    // Le plus souvent, le résultat est à simplifier.
+    if (tries < 30 && gcd(raw[0], raw[1]) === 1 && rng() < 0.75) continue;
+    const traps: Fr[] = divide
+      ? [
+          // Oublier de simplifier, ou s'arrêter trop tôt.
+          raw,
+          ...partial(raw),
+          // Inverser la première fraction au lieu de la deuxième.
+          simplify([b * c, a * d]),
+          // Multiplier sans inverser.
+          simplify([a * c, b * d]),
+          // Inverser les deux fractions.
+          simplify([b * d, a * c]),
+        ]
+      : [
+          raw,
+          ...partial(raw),
+          // Le produit en croix : numérateur de l'une fois dénominateur de l'autre.
+          simplify([a * d, b * c]),
+          // Garder le dénominateur quand il est le même (3/5 × 2/5 = 6/5).
+          ...(b === d ? [[a * c, b] as Fr] : []),
+        ];
+    // Une erreur de calcul sur le numérateur, en dernier recours, simplifiée comme la réponse.
+    for (const k of [1, -1, 2, -2, 3, -3, 4, 5, 6]) if (answer[0] + k >= 1) traps.push(simplify([answer[0] + k, answer[1]]));
+    const sign = divide ? '÷' : '×';
+    const inverse: Fr = [d, c];
+    const steps = divide
+      ? `Diviser par ${fr(y)}, c’est multiplier par son inverse, ${fr(inverse)} : ${fr(x)} × ${fr(inverse)}. Numérateurs : ${a} × ${d} = ${raw[0]} ; dénominateurs : ${b} × ${c} = ${raw[1]}.`
+      : `Numérateurs : ${a} × ${c} = ${raw[0]} ; dénominateurs : ${b} × ${d} = ${raw[1]}.`;
+    return {
+      key: `prod-${fr(x)}${sign}${fr(y)}`,
+      // La réponse attendue est simplifiée : l'énoncé le dit, la fraction non simplifiée ne piège pas sans prévenir.
+      prompt: `${fr(x)} ${sign} ${fr(y)} = … Donne la fraction simplifiée.`,
+      spoken: `${frSay(x)} ${divide ? 'divisé par' : 'fois'} ${frSay(y)}, combien ? Donne la fraction simplifiée.`,
+      choices: fractionChoices(answer, traps, rng, true, [x, y]),
+      answer: fr(answer),
+      hint: divide
+        ? `Multiplie ${frSay(x)} par l’inverse de ${frSay(y)}, c’est-à-dire ${frSay(inverse)}. Puis simplifie jusqu’au bout.`
+        : 'Numérateur fois numérateur, dénominateur fois dénominateur. Puis simplifie jusqu’au bout.',
+      explanation: `${steps} ${simplifyText(raw)}`,
+      aid: { kind: 'rule-card', props: { title: 'Multiplier, diviser', lines: FRACTION_PRODUCT_RULES } },
+    };
+  }
+  throw new Error('mulDivFractions : aucune question trouvée');
 };
 
 // ---------- Marché des proportions ----------
@@ -604,6 +890,74 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
   };
 };
 
+/** Les facteurs premiers de n, du plus petit au plus grand : 60 → [2, 2, 3, 5]. */
+export const primeFactors = (n: number): number[] => {
+  const out: number[] = [];
+  let rest = n;
+  for (let p = 2; rest > 1; p++) {
+    while (rest % p === 0) {
+      out.push(p);
+      rest /= p;
+    }
+  }
+  return out;
+};
+const product = (factors: number[]) => [...factors].sort((a, b) => a - b).join(' × ');
+
+/**
+ * Les nombres à décomposer : trois facteurs premiers ou plus, tous inférieurs ou égaux à 7 (les divisions se font de
+ * tête), jamais plus de trois fois le même facteur (pas 48 = 2 × 2 × 2 × 2 × 3 : on ne compte pas des 2 à l'œil).
+ */
+export const TO_FACTOR = [12, 18, 20, 24, 28, 30, 36, 40, 42, 45, 50, 54, 56, 60, 63, 70, 72, 75, 84, 90, 98, 100];
+
+/** Décomposer en produit de facteurs premiers, écrit en long (« 2 × 2 × 3 × 5 ») : pas d'exposant à déchiffrer. */
+export const primeDecomposition: ItemGenerator = (rng) => {
+  const n = TO_FACTOR[randomInt(0, TO_FACTOR.length - 1, rng)];
+  const f = primeFactors(n);
+  const answer = product(f);
+  const small = f[0];
+  const big = f[f.length - 1];
+  // Pièges, dans cet ordre : un facteur oublié, deux facteurs égaux restés ensemble (4, 9 ne sont pas premiers), la
+  // division arrêtée à la première étape (par le plus petit, puis par le plus grand), un facteur de trop. Le facteur de
+  // trop n'est proposé que si le plus petit facteur n'est écrit qu'une fois : le piège ne se joue jamais sur le nombre
+  // de 2 à compter. Deux pièges peuvent s'écrire pareil (45 : 9 × 5 est aussi l'arrêt par 5) : on garde les trois
+  // premiers différents, ici, sans compter sur le tri de `textChoices`.
+  const repeated = f.find((p, i) => f[i + 1] === p);
+  const candidates = [
+    product(f.slice(1)),
+    ...(repeated ? [product([repeated * repeated, ...f.filter((_, i) => i !== f.indexOf(repeated) && i !== f.indexOf(repeated) + 1)])] : []),
+    product([small, n / small]),
+    product([big, n / big]),
+    ...(f.filter((p) => p === small).length === 1 ? [product([...f, small])] : []),
+  ];
+  const traps = candidates.filter((t, i) => t !== answer && candidates.indexOf(t) === i).slice(0, 3);
+  // La chaîne des divisions : 60 = 2 × 30 = 2 × 2 × 15 = 2 × 2 × 3 × 5.
+  const steps = f.slice(0, -1).map((_, i) => {
+    const done = f.slice(0, i + 1);
+    return `${done.join(' × ')} × ${n / done.reduce((a, b) => a * b, 1)}`;
+  });
+  return {
+    key: `dfp-${n}`,
+    prompt: `${n} en facteurs premiers = …`,
+    spoken: `Décompose ${n} en produit de facteurs premiers.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `Divise ${n} par ${small} : ${n / small}. Continue avec ${n / small}, jusqu’à n’avoir que des nombres premiers.`,
+    explanation: `${n} = ${[...steps, answer].filter((s, i, all) => all.indexOf(s) === i).join(' = ')} : tous les facteurs sont premiers.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Facteurs premiers',
+        lines: [
+          'Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.',
+          'Chaque facteur doit être premier : 2, 3, 5, 7, 11, 13…',
+          '4, 6, 9, 10 ne sont pas premiers : on les décompose encore.',
+        ],
+      },
+    },
+  };
+};
+
 // ---------- Atelier du calcul littéral ----------
 
 const REDUCE_RULES = ['On additionne les x entre eux, et les nombres entre eux.', '3x + 5x = 8x (comme 3 pommes + 5 pommes).', 'x + x = 2x, mais x × x = x².'];
@@ -753,6 +1107,143 @@ export const equationTwoSteps: ItemGenerator = (rng) => {
   };
 };
 
+const FACT_RULES = [
+  'Factoriser, c’est le contraire de développer.',
+  '6x + 15 = 3 × 2x + 3 × 5 = 3(2x + 5).',
+  'x² + 4x = x × x + x × 4 = x(x + 4).',
+];
+
+/** Factoriser par un nombre : 12x − 8 = 4(3x − 2). Le facteur est le plus grand : une seule écriture juste. */
+export const factorNumber: ItemGenerator = (rng) => {
+  let k = randomInt(2, 6, rng);
+  let a = randomInt(1, 5, rng);
+  let b = randomInt(1, 7, rng);
+  // Le facteur commun est bien k (a et b sans diviseur commun), et jamais l'exemple du rappel.
+  while (gcd(a, b) !== 1 || (k === 3 && a === 2 && b === 5)) {
+    k = randomInt(2, 6, rng);
+    a = randomInt(1, 5, rng);
+    b = randomInt(1, 7, rng);
+  }
+  const minus = rng() < 0.4;
+  const op = minus ? '−' : '+';
+  const expr = `${ax(k * a)} ${op} ${k * b}`;
+  const answer = `${k}(${ax(a)} ${op} ${b})`;
+  // Pièges : le second terme pas divisé, le premier pas divisé, le coefficient de x oublié, x mis en facteur alors qu'un terme n'en a pas,
+  // le facteur pris sur le premier terme seulement.
+  const traps = [
+    `${k}(${ax(a)} ${op} ${k * b})`,
+    `${k}(${ax(k * a)} ${op} ${b})`,
+    ...(a > 1 ? [`${k}(x ${op} ${b})`, `${k * a}(x ${op} ${b})`] : []),
+    `${k}x(${a} ${op} ${b})`,
+  ];
+  return {
+    key: `fact-${k}-${a}-${b}-${minus ? 'm' : 'p'}`,
+    prompt: `${expr} = …`,
+    spoken: `${k * a} x ${minus ? 'moins' : 'plus'} ${k * b}. Factorise.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `Cherche le nombre qui divise ${k * a} et ${k * b} : ${k * a} = ${k} × ${a} et ${k * b} = ${k} × ${b}.`,
+    explanation: `${ax(k * a)} = ${k} × ${ax(a)} et ${k * b} = ${k} × ${b} : le facteur commun est ${k}. Donc ${expr} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Factoriser', lines: FACT_RULES } },
+  };
+};
+
+/** Factoriser par x : x² + 5x = x(x + 5). */
+export const factorX: ItemGenerator = (rng) => {
+  let b = randomInt(2, 9, rng);
+  const minus = rng() < 0.4;
+  if (b === 4 && !minus) b = 7;
+  const op = minus ? '−' : '+';
+  const expr = `x² ${op} ${ax(b)}`;
+  const answer = `x(x ${op} ${b})`;
+  // Pièges : le x laissé dans la parenthèse (x² ou bx), le nombre qui garde le x, x² sorti à la place de x.
+  const traps = [`x(x² ${op} ${b})`, `x(x ${op} ${ax(b)})`, `${ax(b)}(x ${op} 1)`, `x²(1 ${op} ${b})`];
+  return {
+    key: `factx-${b}-${minus ? 'm' : 'p'}`,
+    prompt: `${expr} = …`,
+    spoken: `x au carré ${minus ? 'moins' : 'plus'} ${b} x. Factorise.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `x² = x × x et ${ax(b)} = x × ${b} : x est dans les deux termes.`,
+    explanation: `x² = x × x et ${ax(b)} = x × ${b} : le facteur commun est x. Donc ${expr} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Factoriser', lines: FACT_RULES } },
+  };
+};
+
+const TEST_RULES = [
+  'Tester une égalité : on remplace x par la valeur, de chaque côté.',
+  'Même résultat des deux côtés : l’égalité est vraie.',
+  'Deux résultats différents : elle est fausse pour cette valeur.',
+];
+/** « 2 x », « x » : le coefficient lu à voix haute. */
+const sayX = (a: number) => (a === 1 ? 'x' : `${a} x`);
+
+/** Tester une égalité pour une valeur de x : 4x − 5 = 2x + 1 pour x = 3 ? */
+export const testEquality: ItemGenerator = (rng) => {
+  const s = randomInt(-3, 6, rng);
+  const a = randomInt(2, 6, rng);
+  const c = randomInt(1, a - 1, rng);
+  const b = nonZero(-9, 9, rng);
+  const d = (a - c) * s + b;
+  const yes = rng() < 0.5;
+  // Une valeur fausse proche de la solution : une unité d'écart, ou le signe perdu.
+  const wrong = [s + 1, s - 1, ...(s !== 0 ? [-s] : [])];
+  const t = yes ? s : wrong[randomInt(0, wrong.length - 1, rng)];
+  const left = a * t + b;
+  const right = c * t + d;
+  const rhs = d === 0 ? ax(c) : `${ax(c)} ${plus(d)}`;
+  const sayRhs = d === 0 ? sayX(c) : `${sayX(c)} ${d < 0 ? 'moins' : 'plus'} ${Math.abs(d)}`;
+  return {
+    key: `test-${a}-${b}-${c}-${d}-${t}`,
+    prompt: `Pour x = ${fmt(t)}, l’égalité ${ax(a)} ${plus(b)} = ${rhs} est-elle vraie ?`,
+    spoken: `Pour x égale ${say(t)}, l’égalité ${sayX(a)} ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)} égale ${sayRhs} est-elle vraie ?`,
+    choices: ['non', 'oui'],
+    answer: yes ? 'oui' : 'non',
+    hint: `Remplace x par ${fmt(t)} à gauche, puis à droite, et compare les deux résultats.`,
+    explanation: `À gauche : ${a} × ${par(t)} ${plus(b)} = ${fmt(left)}. À droite : ${c} × ${par(t)}${d === 0 ? '' : ` ${plus(d)}`} = ${fmt(right)}. ${
+      yes ? 'Même résultat : oui, l’égalité est vraie.' : `${fmt(left)} n’est pas égal à ${fmt(right)} : non, elle est fausse pour x = ${fmt(t)}.`
+    }`,
+    aid: { kind: 'rule-card', props: { title: 'Tester une égalité', lines: TEST_RULES } },
+  };
+};
+
+const PRODUCT_RULES = [
+  'Un produit est nul si l’un de ses facteurs est nul.',
+  '(x − 2)(x + 1) = 0 : x − 2 = 0 ou x + 1 = 0.',
+  'Donc x = 2 ou x = −1 : le signe change.',
+];
+/** « x − 3 », « x + 5 », « x » (racine 0). */
+const factorOf = (r: number) => (r === 0 ? 'x' : r > 0 ? `(x − ${r})` : `(x + ${-r})`);
+const sayFactor = (r: number) => (r === 0 ? 'x' : `la parenthèse x ${r > 0 ? 'moins' : 'plus'} ${Math.abs(r)}`);
+const solveFactor = (r: number) => (r === 0 ? 'x = 0' : `${factorOf(r).replace(/[()]/g, '')} = 0, donc x = ${fmt(r)}`);
+const roots = (p: number, q: number) => (p === q ? `x = ${fmt(p)}` : `x = ${fmt(p)} ou x = ${fmt(q)}`);
+
+/** Équation produit : (x − 3)(x + 5) = 0, ou x(x − 4) = 0. */
+export const productEquation: ItemGenerator = (rng) => {
+  const withX = rng() < 0.3;
+  let r1 = withX ? 0 : nonZero(-7, 7, rng);
+  let r2 = nonZero(-7, 7, rng);
+  // Deux solutions différentes, de valeurs absolues différentes (sinon deux pièges de signe se confondraient),
+  // et jamais l'exemple du rappel.
+  while (Math.abs(r1) === Math.abs(r2) || (r1 === 2 && r2 === -1)) {
+    r1 = withX ? 0 : nonZero(-7, 7, rng);
+    r2 = nonZero(-7, 7, rng);
+  }
+  const answer = roots(r1, r2);
+  // Pièges : le signe gardé (x − 3 donne −3), un seul signe corrigé, la solution x = 0 oubliée.
+  const traps = withX ? [roots(0, -r2), `x = ${fmt(r2)}`, `x = ${fmt(-r2)}`] : [roots(-r1, -r2), roots(r1, -r2), roots(-r1, r2)];
+  return {
+    key: `prod-${r1}-${r2}`,
+    prompt: `${factorOf(r1)}${factorOf(r2)} = 0. Quelles sont les solutions ?`,
+    spoken: `${sayFactor(r1).replace(/^l/, 'L')}, fois ${sayFactor(r2)}, égale zéro. Quelles sont les solutions ?`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: 'Un des deux facteurs vaut zéro : écris les deux petites équations et résous-les.',
+    explanation: `Soit ${solveFactor(r1)} ; soit ${solveFactor(r2)}. Solutions : ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Équation produit', lines: PRODUCT_RULES } },
+  };
+};
+
 // ---------- Belvédère de Thalès ----------
 
 const TRIPLES: [number, number, number][] = [
@@ -839,6 +1330,173 @@ export const thales: ItemGenerator = (rng) => {
           [f(an), '?'],
         ],
         caption: `Coefficient : × ${f(k)}`,
+      },
+    },
+  };
+};
+
+// ---------- Belvédère : les réciproques ----------
+
+const SIDES = ['AB', 'AC', 'BC'] as const;
+type Side = (typeof SIDES)[number];
+/** Le sommet en face d'un côté : AB fait face à C, AC à B, BC à A. */
+const OPPOSITE: Record<Side, string> = { AB: 'C', AC: 'B', BC: 'A' };
+/** « A B » : les lettres d'un nom de segment, lues une à une. */
+const letters = (s: string) => s.split('').join(' ');
+
+/**
+ * Des triangles qui ne sont pas rectangles, tout près d'un triangle rectangle connu (6, 8, 9 à côté de 6, 8, 10) :
+ * l'élève qui reconnaît deux nombres d'un triplet croit le triangle rectangle. Tous sont de vrais triangles.
+ */
+export const NOT_RIGHT: [number, number, number][] = [
+  [4, 5, 6],
+  [5, 6, 8],
+  [6, 8, 9],
+  [6, 8, 11],
+  [5, 12, 14],
+  [8, 15, 16],
+  [9, 12, 16],
+  [10, 12, 15],
+  [12, 16, 21],
+  [7, 24, 26],
+];
+/** Les longueurs des trois côtés : le plus grand, puis les deux autres, chacun à sa place. */
+function sideLengths(big: Side, c: number, [s1, a]: [Side, number], [s2, b]: [Side, number]): Record<Side, number> {
+  const len: Record<Side, number> = { AB: 0, AC: 0, BC: 0 };
+  len[big] = c;
+  len[s1] = a;
+  len[s2] = b;
+  return len;
+}
+export const RECIPROQUE_PYTHAGORE_CHOICES = ['non', 'oui, en A', 'oui, en B', 'oui, en C'];
+
+/**
+ * Réciproque de Pythagore : trois longueurs, le triangle est-il rectangle, et en quel sommet ? Le plus grand côté est
+ * tiré parmi AB, AC et BC : l'élève qui teste toujours BC² = AB² + AC² (le plus grand côté au mauvais endroit) se
+ * trompe, et les sommets au bout du plus grand côté sont les pièges. Une fois sur quatre, le triangle n'est pas
+ * rectangle : chacune des quatre réponses revient aussi souvent.
+ */
+export const reciprocalPythagore: ItemGenerator = (rng) => {
+  const right = rng() < 0.75;
+  const [a, b, c] = right ? TRIPLES[randomInt(0, TRIPLES.length - 1, rng)] : NOT_RIGHT[randomInt(0, NOT_RIGHT.length - 1, rng)];
+  const big = SIDES[randomInt(0, 2, rng)];
+  const [s1, s2] = shuffle(
+    SIDES.filter((s) => s !== big),
+    rng,
+  );
+  const len = sideLengths(big, c, [s1, a], [s2, b]);
+  // Les deux autres côtés, dans l'ordre de l'énoncé.
+  const [x, y] = SIDES.filter((s) => s !== big);
+  const sum = len[x] ** 2 + len[y] ** 2;
+  return {
+    key: `recpyth-${len.AB}-${len.AC}-${len.BC}`,
+    prompt: `Triangle ABC : AB = ${len.AB} cm, AC = ${len.AC} cm, BC = ${len.BC} cm. Est-il rectangle ?`,
+    spoken: `Triangle A B C : A B égale ${len.AB} centimètres, A C égale ${len.AC} centimètres, B C égale ${len.BC} centimètres. Est-il rectangle ?`,
+    choices: [...RECIPROQUE_PYTHAGORE_CHOICES],
+    answer: right ? `oui, en ${OPPOSITE[big]}` : 'non',
+    // L'indice est lu à voix haute : les opérations en mots.
+    hint: `Le plus grand côté est ${big}. Compare ${c} au carré avec ${len[x]} au carré plus ${len[y]} au carré.`,
+    explanation: `Le plus grand côté est ${big}. ${big}² = ${c}² = ${c * c} ; ${x}² + ${y}² = ${len[x]}² + ${len[y]}² = ${len[x] ** 2} + ${len[y] ** 2} = ${sum}. ${
+      right
+        ? `C’est égal : d’après la réciproque de Pythagore, ABC est rectangle en ${OPPOSITE[big]}, le sommet en face de ${big}.`
+        : `${c * c} n’est pas égal à ${sum} : ABC n’est pas rectangle.`
+    }`,
+    // Les côtés rangés du plus petit au plus grand, avec leurs carrés : le calcul est fait, reste à comparer et à
+    // trouver le sommet en face du plus grand côté.
+    figure: {
+      kind: 'ratio-table',
+      props: {
+        cols: ['côté', 'longueur', 'carré'],
+        rows: [...SIDES].sort((u, v) => len[u] - len[v]).map((s) => [s, `${len[s]} cm`, String(len[s] ** 2)]),
+        caption: 'Le plus grand côté est sur la dernière ligne.',
+      },
+    },
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Réciproque de Pythagore',
+        lines: [
+          'Calcule le carré du plus grand côté.',
+          'Calcule la somme des carrés des deux autres côtés.',
+          'Égal : rectangle, l’angle droit en face du plus grand côté. Pas égal : pas rectangle.',
+          'Le théorème trouve une longueur ; la réciproque dit si le triangle est rectangle.',
+        ],
+      },
+    },
+  };
+};
+
+/** Les coefficients de la réciproque de Thalès : ceux du niveau 1, et 4. */
+const RECIPROQUE_K = [1.5, 2, 2.5, 3, 4];
+/** Toutes les configurations aux quatre longueurs entières et différentes (AM et AN de 2 à 6), rangées selon la réponse. */
+export const THALES_CASES = (() => {
+  const all: { am: number; ab: number; an: number; ac: number; k1: number; k2: number }[] = [];
+  for (const am of [2, 3, 4, 5, 6])
+    for (const an of [2, 3, 4, 5, 6])
+      for (const k1 of RECIPROQUE_K)
+        for (const k2 of RECIPROQUE_K) {
+          const ab = am * k1;
+          const ac = an * k2;
+          if (new Set([am, ab, an, ac]).size === 4 && Number.isInteger(ab) && Number.isInteger(ac)) all.push({ am, ab, an, ac, k1, k2 });
+        }
+  return {
+    // Même coefficient : les différences (AB − AM et AC − AN) ne sont jamais égales, puisque AM et AN ne le sont pas.
+    parallel: all.filter((t) => t.k1 === t.k2),
+    // Coefficients différents, mais la même différence : l'élève qui compare les différences croit les droites parallèles.
+    sameGap: all.filter((t) => t.k1 !== t.k2 && t.ab - t.am === t.ac - t.an),
+    // Coefficients différents et proches (0,5 ou 1 d'écart).
+    close: all.filter((t) => t.k1 !== t.k2 && Math.abs(t.k1 - t.k2) <= 1 && t.ab - t.am !== t.ac - t.an),
+  };
+})();
+
+/**
+ * Réciproque de Thalès : M sur [AB], N sur [AC], quatre longueurs ; (MN) et (BC) sont-elles parallèles ? Pièges tirés
+ * des erreurs d'élèves : la même différence sans le même coefficient (conclure sur les différences), et les longueurs
+ * données dans le désordre (AC avant AN), pour qui ne compare pas les rapports dans le même sens. Le tableau les range.
+ */
+export const reciprocalThales: ItemGenerator = (rng) => {
+  const parallel = rng() < 0.5;
+  const pool = parallel ? THALES_CASES.parallel : rng() < 0.5 ? THALES_CASES.sameGap : THALES_CASES.close;
+  const { am, ab, an, ac, k1, k2 } = pool[randomInt(0, pool.length - 1, rng)];
+  const f = (n: number) => n.toLocaleString('fr-FR');
+  // Sur chaque côté, le petit segment avant le grand, ou l'inverse.
+  const first: [string, number][] = rng() < 0.5 ? [['AM', am], ['AB', ab]] : [['AB', ab], ['AM', am]];
+  const second: [string, number][] = rng() < 0.5 ? [['AN', an], ['AC', ac]] : [['AC', ac], ['AN', an]];
+  const given = [...first, ...second];
+  const sameGap = ab - am === ac - an;
+  return {
+    key: `recthales-${am}-${ab}-${an}-${ac}`,
+    prompt: `M est sur le segment [AB] et N sur le segment [AC], avec ${given.map(([s, v]) => `${s} = ${f(v)} cm`).join(', ')}. Les droites (MN) et (BC) sont-elles parallèles ?`,
+    spoken: `M est sur le segment A B et N sur le segment A C, avec ${given.map(([s, v]) => `${letters(s)} égale ${f(v)} centimètres`).join(', ')}. Les droites M N et B C sont-elles parallèles ?`,
+    choices: ['non', 'oui'],
+    answer: parallel ? 'oui' : 'non',
+    // L'indice est lu à voix haute : la division en mots.
+    hint: 'Calcule AB divisé par AM, puis AC divisé par AN : chaque fois, le grand triangle divisé par le petit.',
+    explanation: `AB ÷ AM = ${f(ab)} ÷ ${f(am)} = ${f(k1)} ; AC ÷ AN = ${f(ac)} ÷ ${f(an)} = ${f(k2)}. ${
+      parallel
+        ? 'Le même coefficient : d’après la réciproque de Thalès, (MN) et (BC) sont parallèles.'
+        : `Les coefficients sont différents : (MN) et (BC) ne sont pas parallèles.${sameGap ? ` AB − AM = AC − AN = ${f(ab - am)} cm : la même différence ne suffit pas.` : ''}`
+    }`,
+    figure: {
+      kind: 'ratio-table',
+      props: {
+        cols: ['petit triangle', 'grand triangle'],
+        rows: [
+          [`AM = ${f(am)}`, `AB = ${f(ab)}`],
+          [`AN = ${f(an)}`, `AC = ${f(ac)}`],
+        ],
+      },
+    },
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Réciproque de Thalès',
+        lines: [
+          'Sur chaque ligne du tableau, le coefficient : grand triangle ÷ petit triangle.',
+          'Même coefficient : les droites sont parallèles.',
+          'Coefficients différents : elles ne sont pas parallèles.',
+          'La même différence ne suffit pas : compare les coefficients.',
+        ],
       },
     },
   };
@@ -1077,6 +1735,9 @@ const BANQUISE = 'Additionne les deux relatifs. Le bond sur la droite te montre 
 const BANQUISE_SUB = 'Soustraire un nombre, c’est ajouter son opposé. Suis le bond sur la droite.';
 const CREVASSES = 'Multiplie. Regarde les signes d’abord, la règle est affichée.';
 const CREVASSES_DIV = 'Divise. Même règle des signes que la multiplication.';
+const ICEBERGS = 'Compare les deux fractions : mets-les d’abord au même dénominateur.';
+const ICEBERGS_SOMME = 'Mets d’abord les deux fractions au même dénominateur. Puis additionne ou soustrais les numérateurs.';
+const ICEBERGS_PRODUIT = 'Calcule, puis simplifie le résultat jusqu’au bout. Pour diviser, multiplie par l’inverse de la deuxième fraction.';
 const ETALS = 'Complète le tableau de proportionnalité : passe par le prix d’un seul.';
 const ETALS_COEF = 'Complète le tableau : trouve le coefficient qui fait passer d’une colonne à l’autre.';
 const REMISES = 'Prends le pourcentage du nombre. Le tableau te rappelle que 100 % est le tout.';
@@ -1090,16 +1751,22 @@ const ENCLUME = 'Calcule la puissance : le nombre multiplié par lui-même, auta
 const ENCLUME_PROD = 'Même base : additionne les exposants pour un produit, soustrais-les pour un quotient.';
 const TREMPE = 'Trouve la racine carrée : le nombre qui, multiplié par lui-même, donne celui-ci.';
 const TREMPE_PRIME = 'Nombres premiers et diviseurs : la règle et les critères sont affichés.';
+const TREMPE_FACTEURS = 'Décompose le nombre en produit de facteurs premiers : divise par 2, puis 3, puis 5, puis 7.';
 const REDUIRE = 'Réduis l’expression : regroupe les x entre eux, puis les nombres entre eux.';
 const REDUIRE_MIXTE = 'Réduis l’expression : les x d’un côté, les nombres de l’autre, attention aux signes.';
 const DEVELOPPER = 'Développe : distribue le nombre à chaque terme de la parenthèse.';
 const DEVELOPPER_DOUBLE = 'Développe la double distributivité : chaque terme avec chaque terme, puis réduis.';
+const FACTORISER = 'Factorise : trouve ce qui est commun aux deux termes et mets-le devant la parenthèse.';
 const EQUILIBRE = 'Trouve x : fais la même opération des deux côtés de l’égalité.';
 const EQUILIBRE_DEUX = 'Trouve x en deux étapes : d’abord le nombre seul, puis divise.';
+const EQUILIBRE_TEST = 'Remplace x par sa valeur de chaque côté, puis compare les deux résultats.';
+const EQUILIBRE_PRODUIT = 'Un produit est nul si l’un de ses facteurs est nul : trouve les deux solutions.';
 
 const PYTHAGORE = 'Trouve l’hypoténuse : hypoténuse au carré égale la somme des carrés des deux autres côtés. La figure est codée.';
 const PYTHAGORE_COTE = 'Trouve un côté de l’angle droit : hypoténuse au carré moins l’autre côté au carré, puis racine carrée.';
 const THALES = 'Les droites sont parallèles : les longueurs du grand triangle sont celles du petit multipliées par le même nombre.';
+const PYTHAGORE_RECIPROQUE = 'Le triangle est-il rectangle ? Compare le carré du plus grand côté à la somme des carrés des deux autres.';
+const THALES_RECIPROQUE = 'Les droites sont-elles parallèles ? Calcule les deux coefficients, grand triangle divisé par petit, puis compare-les.';
 const TRIGO = 'Choisis le bon rapport pour l’angle B : cosinus, sinus ou tangente. Le rappel est affiché.';
 const MOYENNE = 'Calcule la moyenne : additionne toutes les valeurs, puis divise par leur nombre.';
 const MEDIANE = 'Médiane ou étendue de la série rangée : la valeur du milieu, ou la plus grande moins la plus petite.';
@@ -1115,6 +1782,9 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'glacier', type: 'banquise', level: 2, instruction: BANQUISE_SUB, generators: [subRelatifs], block: 'glace' }),
   defineData({ biome: 'glacier', type: 'crevasses', level: 1, instruction: CREVASSES, generators: [mulRelatifs], block: 'glace' }),
   defineData({ biome: 'glacier', type: 'crevasses', level: 2, instruction: CREVASSES_DIV, generators: [divRelatifs], block: 'glace' }),
+  defineData({ biome: 'glacier', type: 'icebergs', level: 1, instruction: ICEBERGS, generators: [compareFractionsC4], block: 'glace' }),
+  defineData({ biome: 'glacier', type: 'icebergs', level: 2, instruction: ICEBERGS_SOMME, generators: [addSubFractions], block: 'glace' }),
+  defineData({ biome: 'glacier', type: 'icebergs', level: 3, instruction: ICEBERGS_PRODUIT, generators: [mulDivFractions], block: 'glace' }),
   defineData({ biome: 'marche', type: 'etals', level: 1, instruction: ETALS, generators: [fourthInt], block: 'toile' }),
   defineData({ biome: 'marche', type: 'etals', level: 2, instruction: ETALS_COEF, generators: [fourthCoef], block: 'toile' }),
   defineData({ biome: 'marche', type: 'remises', level: 1, instruction: REMISES, generators: [percentOf], block: 'toile' }),
@@ -1127,15 +1797,21 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'forge', type: 'enclume', level: 2, instruction: ENCLUME_PROD, generators: [productOfPowers], block: 'acier' }),
   defineData({ biome: 'forge', type: 'trempe', level: 1, instruction: TREMPE, generators: [squareRoot], block: 'acier' }),
   defineData({ biome: 'forge', type: 'trempe', level: 2, instruction: TREMPE_PRIME, generators: [primeOrDivisor], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'trempe', level: 3, instruction: TREMPE_FACTEURS, generators: [primeDecomposition], block: 'acier' }),
   defineData({ biome: 'atelier', type: 'reduire', level: 1, instruction: REDUIRE, generators: [reduceSimple], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'reduire', level: 2, instruction: REDUIRE_MIXTE, generators: [reduceMixed], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'developper', level: 1, instruction: DEVELOPPER, generators: [developSimple], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'developper', level: 2, instruction: DEVELOPPER_DOUBLE, generators: [developDouble], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'developper', level: 3, instruction: FACTORISER, generators: [factorNumber, factorX], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 1, instruction: EQUILIBRE, generators: [equationOneStep], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 2, instruction: EQUILIBRE_DEUX, generators: [equationTwoSteps], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 3, instruction: EQUILIBRE_TEST, generators: [testEquality], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 4, instruction: EQUILIBRE_PRODUIT, generators: [productEquation], block: 'calque' }),
   defineData({ biome: 'belvedere', type: 'pythagore', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'marbre' }),
   defineData({ biome: 'belvedere', type: 'pythagore', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'marbre' }),
+  defineData({ biome: 'belvedere', type: 'pythagore', level: 4, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'marbre' }),
   defineData({ biome: 'belvedere', type: 'thales', level: 1, instruction: THALES, generators: [thales], block: 'marbre' }),
+  defineData({ biome: 'belvedere', type: 'thales', level: 3, instruction: THALES_RECIPROQUE, generators: [reciprocalThales], block: 'marbre' }),
   defineData({ biome: 'belvedere', type: 'trigo', level: 1, instruction: TRIGO, generators: [trigo], block: 'marbre' }),
   defineData({ biome: 'donnees', type: 'moyenne', level: 1, instruction: MOYENNE, generators: [mean], block: 'quartz' }),
   defineData({ biome: 'donnees', type: 'moyenne', level: 2, instruction: MEDIANE, generators: [medianRange], block: 'quartz' }),

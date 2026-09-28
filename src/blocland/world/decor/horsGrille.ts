@@ -7,6 +7,7 @@ import type { ElementDeDecor } from '../decorMesh';
 import type { ChampDuSol } from '../landMesh';
 import type { ArchipelagoId } from '../map';
 import { FORMES_HORS_GRILLE_5E, horsGrille5e } from './5e';
+import { FORMES_HORS_GRILLE_4E, horsGrille4e } from './4e';
 import type { Forme } from './outils';
 
 /** Ce qu'un archipel pose hors de la grille, d'après son sol et le décor déjà posé, et les formes qui le dessinent. */
@@ -17,6 +18,7 @@ interface DecorHorsGrille {
 
 const PAR_ARCHIPEL: Partial<Record<ArchipelagoId, DecorHorsGrille>> = {
   '5e': { poser: horsGrille5e, formes: FORMES_HORS_GRILLE_5E },
+  '4e': { poser: horsGrille4e, formes: FORMES_HORS_GRILLE_4E },
 };
 
 /** Les éléments hors de la grille d'un archipel (sans cubes, marqués `horsGrille`). */

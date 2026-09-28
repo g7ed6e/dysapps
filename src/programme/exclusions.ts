@@ -55,11 +55,8 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.fr.langue.subordonnees': A_COUVRIR('Subordonnées et pronom relatif : prévus dans l’Observatoire des textes.'),
   'c4.fr.langue.ponctuation': A_COUVRIR('Rôle de la ponctuation : aucune mission ne l’aborde.'),
   'c4.fr.langue.passif': A_COUVRIR('Le passif : prévu dans l’Observatoire des textes.'),
-  'c4.fr.langue.reseaux-de-mots': A_COUVRIR('Champ lexical, intensité, généralité : prévus dans le Cabinet des mots.'),
   'c4.fr.langue.enonciation': A_COUVRIR('Situation d’énonciation : prévue dans l’Observatoire des textes (Voix des textes).'),
   // ---------- Cycle 4, maths ----------
-  'c4.ma.a.fractions': A_COUVRIR('Égalité et comparaison de fractions au cycle 4 : prévues dans le Glacier des relatifs (Icebergs des fractions).'),
-  'c4.ma.a.calcul-fractions': A_COUVRIR('Calcul avec les fractions : prévu dans le Glacier des relatifs (Icebergs des fractions).'),
   'c4.ma.b.lire-donnees': A_COUVRIR('Lire un tableau, un diagramme ou un histogramme : prévu dans l’Observatoire des données (Relevés).'),
   'c4.ma.b.effectifs-frequences': A_COUVRIR('Effectifs et fréquences : prévus dans l’Observatoire des données (Relevés).'),
   'c4.ma.c.aires-volumes': A_COUVRIR('Aires et volumes du cycle 4 : pas encore de figure dessinée pour cela.'),
