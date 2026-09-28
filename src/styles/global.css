@@ -4270,6 +4270,9 @@ button.island-quest:active {
 .title-logo {
   width: 10rem;
   height: 10rem;
+  /* Les glissements sur le logo sont des gestes, pas un défilement. */
+  touch-action: none;
+  user-select: none;
   animation: title-drop 0.6s cubic-bezier(0.3, 1.4, 0.6, 1) both;
 }
 .title-name {
@@ -4281,6 +4284,13 @@ button.island-quest:active {
 .title-tagline {
   margin: 0 0 0.6rem;
   max-width: none;
+}
+.title-batisseur {
+  margin: 0 0 0.6rem;
+  padding: 0.3rem 0.8rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--yellow) 35%, var(--surface));
 }
 .title-message-heading {
   margin: 0;
