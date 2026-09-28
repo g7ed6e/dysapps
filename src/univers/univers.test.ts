@@ -108,7 +108,8 @@ describe('les textes d’univers', () => {
   it('le mot de la baleine : mêmes étapes dans les deux univers, seul le mot des Gardiens change', () => {
     const guardians = Object.fromEntries(BIOMES.filter((b) => b.classe === '6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
     const moments = reachedWhaleMoments(sanitizeState({ progress: guardians }), '6e');
-    const gardiens = moments.find((m) => m.kind === 'gardiens')!;
+    const gardiens = moments.find((m) => m.kind === 'gardiens');
+    if (!gardiens) throw new Error('étape « gardiens » non atteinte');
     expect(pagesBaleine(gardiens, textesDe('blocland'))).toEqual(['Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large.']);
     expect(pagesBaleine(gardiens, textesDe('archipeo'))).toEqual(['Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.']);
     for (const a of ARCHIPELAGOS) {

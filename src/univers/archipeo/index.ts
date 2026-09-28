@@ -30,7 +30,7 @@ export const ARCHIPEO = {
       challenge: 'La Dune vivante murmure : « Mes couches de pierre sont éteintes. Écris chaque mot juste, et elles s’allumeront une à une. »',
       guardianSays: {
         hit: 'Une couche de pierre s’allume. Ce mot était bien écrit.',
-        miss: 'Rien ne s’éteint. Réessaie au prochain mot.',
+        miss: 'Rien ne s’éteint. Essaie au prochain mot.',
         beaten: 'Mes couches de pierre se rallument. La carrière est à toi, et à Rouxel.',
       },
     },
@@ -101,7 +101,7 @@ export const ARCHIPEO = {
     marais: {
       challenge: 'L’Hydre des marais parle de ses trois voix : « Tu as traversé mes trois eaux. Montre-moi que tu connais le passé, le futur et le doute. »',
       guardianSays: {
-        hit: 'Un de mes trois cous s’allume. C’est juste.',
+        hit: 'Une écaille de mes cous s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche l’indice de temps dans la phrase, et reprends.',
         beaten: 'Mes trois cous se rallument. Le marais est à toi, et à Kroa.',
       },
@@ -117,9 +117,9 @@ export const ARCHIPEO = {
     atelier: {
       challenge: 'Le Golem des équations se met en équilibre : « Tu as tracé tous mes plans. Montre-moi que tu sais trouver l’inconnue. »',
       guardianSays: {
-        hit: 'Un de mes plateaux s’allume. Les deux côtés sont égaux.',
+        hit: 'Un plateau de ma balance s’allume. Les deux côtés sont égaux.',
         miss: 'Rien ne s’éteint. Fais la même chose des deux côtés, et reprends.',
-        beaten: 'Mes deux plateaux se rallument. L’atelier est à toi, et à Ixe.',
+        beaten: 'Ma balance se rallume. L’atelier est à toi, et à Ixe.',
       },
     },
     falaise: {
@@ -227,11 +227,11 @@ export const ARCHIPEO = {
       },
     },
     chateau: {
-      challenge: 'Le Dragon gallois parle depuis son écu : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
+      challenge: 'Le Dragon gallois parle depuis son bouclier : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume sur mon écu. C’est juste.',
+        hit: 'Une veine d’or s’allume sur mon bouclier. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche le petit mot, comme for, since, if ou by, relis la règle, et reprends.',
-        beaten: 'Mon écu se rallume. Le château est à toi, et à Knight.',
+        beaten: 'Mon bouclier se rallume. Le château est à toi, et à Knight.',
       },
     },
   },

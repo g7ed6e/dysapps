@@ -63,6 +63,8 @@ export function BossPage() {
 
   if (!biome) return <NotFoundPage />;
   const { challenge, guardianSays: says } = textes.gardiens[biome.id];
+  // Ce que dit l'arène, écrit et lu à l'identique.
+  const arenaLine = line ?? (alreadyBeaten ? textes.libelles.dejaFaitArene(guardianTitle(biome)) : challenge);
   const finished = def ? played >= total : false;
   const beatenNow = finished && won >= Math.ceil(total * 0.7);
   const remaining = Math.max(0, total - won);
@@ -130,9 +132,9 @@ export function BossPage() {
                 <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
               </div>
               <p className="arena-line" role="status" aria-live="polite">
-                <Syllabified text={line ?? (alreadyBeaten ? textes.libelles.dejaFaitArene(guardianTitle(biome)) : challenge)} />
+                <Syllabified text={arenaLine} />
               </p>
-              <SpeakButton text={line ?? challenge} label="Écouter" />
+              <SpeakButton text={arenaLine} label="Écouter" />
             </div>
           </section>
           {shipHint && (
