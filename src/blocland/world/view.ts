@@ -7,6 +7,7 @@ import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
+import type { Intention } from './disposition';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -20,8 +21,8 @@ export interface WorldFocus {
   spot?: { x: number; y: number; z: number };
 }
 
+/** En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
 export interface BuildProps {
-  /** Face touchée : le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
   onPickFace: (cell: Cell, next: Cell) => void;
 }
 
@@ -63,23 +64,18 @@ export interface WorldViewProps {
   reduceMotion?: boolean;
   /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
   vehicle?: VehiclePlacement | null;
-  /** Le navire touché (hors d'une case à poser) : on ouvre le panneau du port sur sa section. */
-  onPickVehicle?: (port: BiomeId) => void;
+  /**
+   * Les gestes, traduits en intentions (world/disposition.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
+   * navire, une face en chantier, l'entrée dans une île en marche libre, la fin d'un temps du voyage ou le voyage sauté.
+   * La vue ne décide rien : la page reçoit l'intention et décide. Sans `onIntent`, la vue se regarde sans se toucher.
+   */
+  onIntent?: (i: Intention) => void;
+  /** Mode chantier : toucher une face (un fantôme du plan) donne une intention `face` au lieu d'entrer dans l'île. */
+  chantier?: boolean;
   /** Le voyage en cours : le départ (le bonhomme embarque, le navire s'éloigne) ou l'arrivée (il accoste, le bonhomme débarque). */
   voyage?: { seq: number; leg: VoyageLeg; stage: 1 | 2 | 3; back: boolean } | null;
-  /** Le temps du voyage est joué jusqu'au bout. */
-  onVoyageLegEnd?: () => void;
-  /** Un toucher ou une touche pendant le voyage : on arrive tout de suite. */
-  onVoyageSkip?: () => void;
-  /** Île touchée (un tap, pas un glissé), sur l'île elle-même. */
-  onPickIsland?: (id: BiomeId) => void;
-  /** Ouvrage touché (construit ou fantôme) : son identifiant. */
-  onPickBridge?: (id: string) => void;
-  /** Mode chantier : on touche une face (un fantôme du plan) au lieu d'entrer dans l'île. */
-  build?: BuildProps;
   /** Les créatures, animées à part du terrain. */
   creatures?: CreaturePlacement[];
-  onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
@@ -103,15 +99,42 @@ export interface WorldViewProps {
    * Jamais avec « Réduire les animations » (WorldPage ne le passe pas) ; la 2D n'a pas de baleine.
    */
   whalePass?: { island: BiomeId; seq: number } | null;
-  /** Borne de mission touchée (le socle, le panneau ou son repère). */
-  onPickQuest?: (biome: BiomeId, typeId: string) => void;
-  /** Lieu du village touché (l'école) : on y entre. */
-  onPickPlace?: (place: PlaceId, island: BiomeId) => void;
   burst?: Burst;
   /** La marche libre (vue 2D, en option) : une croix de direction et un bouton « Entrer » ; toucher pour aller reste. */
   freeWalk?: boolean;
-  /** En marche libre, le bonhomme vient d'arriver sur une autre île (ouverte) : elle devient la sienne. */
-  onWalkedInto?: (id: BiomeId) => void;
   className?: string;
   label: string;
+}
+
+/**
+ * Les rappels d'une vue, tirés de ses intentions (étape J4) : les vues convertissent en tête de rendu, leur intérieur ne
+ * change pas. Un rappel absent veut dire « ce geste ne fait rien » ; `build` n'existe qu'en chantier.
+ */
+export interface RappelsDeLaVue {
+  onPickIsland?: (id: BiomeId) => void;
+  onPickBridge?: (id: string) => void;
+  onPickQuest?: (biome: BiomeId, typeId: string) => void;
+  onPickPlace?: (place: PlaceId, island: BiomeId) => void;
+  onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
+  onPickVehicle?: (port: BiomeId) => void;
+  build?: BuildProps;
+  onWalkedInto?: (id: BiomeId) => void;
+  onVoyageLegEnd?: () => void;
+  onVoyageSkip?: () => void;
+}
+
+export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, chantier = false): RappelsDeLaVue {
+  if (!onIntent) return {};
+  return {
+    onPickIsland: (id) => onIntent({ genre: 'ile', id }),
+    onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
+    onPickQuest: (ile, mission) => onIntent({ genre: 'borne', ile, mission }),
+    onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
+    onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
+    onPickVehicle: (port) => onIntent({ genre: 'navire', port }),
+    build: chantier ? { onPickFace: (cell, next) => onIntent({ genre: 'face', case: cell, voisine: next }) } : undefined,
+    onWalkedInto: (ile) => onIntent({ genre: 'entree', ile }),
+    onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
+    onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
+  };
 }

@@ -30,7 +30,7 @@ import {
   type VoyageRun,
   type Walk,
 } from '../world/scene';
-import type { WorldViewProps } from '../world/view';
+import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 import { createMeter } from './meter';
 import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
@@ -169,32 +169,30 @@ export default function WorldCanvas({
   cubes,
   focus,
   reduceMotion = false,
-  onPickIsland,
-  onPickBridge,
-  build,
   creatures = [],
-  onPickCreature,
   forceDay = false,
   bridges = [],
   marker = null,
   vehicle = null,
-  onPickVehicle,
   voyage = null,
-  onVoyageLegEnd,
-  onVoyageSkip,
   avatar,
   map = false,
   home,
   trail,
   quests,
-  onPickQuest,
-  onPickPlace,
   islandLabels,
   whalePass = null,
   burst,
   className,
   label,
+  onIntent,
+  chantier = false,
 }: WorldViewProps) {
+  // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
+  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
+    onIntent,
+    chantier,
+  );
   const host = useRef<HTMLDivElement>(null);
   // Le rendu du monde (drapeau `?rendu=archipeo`), lu une fois pour la vie du composant.
   const rendu = useRef(renduDuMonde()).current;
@@ -996,7 +994,8 @@ export default function WorldCanvas({
       if (nowMs - lastFrame > 45 && renderer.getPixelRatio() > 1) {
         if (++slowFrames > 30) renderer.setPixelRatio(1);
       } else slowFrames = 0;
-      const dt = Math.min(0.1, (nowMs - lastFrame) / 1000);
+      // Jamais négatif : une horloge qui recule (celle, figée, des captures de la documentation) ne remonte pas le temps.
+      const dt = Math.max(0, Math.min(0.1, (nowMs - lastFrame) / 1000));
       lastFrame = nowMs;
       const w = world.current;
       if (!w) return;
@@ -1098,7 +1097,7 @@ export default function WorldCanvas({
           w.trail.scale.setScalar(1);
           for (const m of w.trail.children) m.scale.setScalar(pulse);
         }
-        const dt = Math.min(0.1, (nowMs - lastFrame) / 1000 || 0.016);
+        const dt = Math.max(0, Math.min(0.1, (nowMs - lastFrame) / 1000)) || 0.016;
         const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.5);
         if (w.camTarget.lengthSq() === 0 && w.camPos.lengthSq() === 0) {
           w.camTarget.copy(target);
