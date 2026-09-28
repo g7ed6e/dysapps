@@ -1,7 +1,8 @@
 // Le drapeau de développement de la migration vers Archipéo : `?rendu=archipeo` dans l'adresse, avant le `#`
 // (`/?rendu=archipeo#/aventure`), choisit le rendu en construction (lots R0 à R7), invisible des élèves ; sans lui, le
-// monde reste en blocs. Il devient le rendu de tous au lot 6, et le drapeau disparaît avec lui. `?mesures` affiche en
-// plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer sur une tablette.
+// monde reste en blocs. Au lot 6, le réglage « Univers » le remplace (Blocland par défaut), et le drapeau disparaît.
+// `?mesures` affiche en plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer
+// sur une tablette.
 // Avant le `#` seulement : la navigation ne change que la route, le drapeau tient donc toute la session.
 // `?style=a|b|c`, avec `?rendu=archipeo` seulement, peint les cubes d'une des trois options de style du lot R1
 // (world/style.ts), pour les comparer en captures ; sans lui, le rendu Archipéo garde les textures des blocs.
@@ -10,7 +11,7 @@
 // du lot 6 (src/core/univers.ts) les remplace à la bascule (`UNIVERS_OUVERT`) : l'univers choisit alors le rendu.
 import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
-import { UNIVERS_OUVERT } from '../core/univers';
+import { UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT } from '../core/univers';
 import { STYLES, type StyleSurface } from './world/style';
 
 export type Rendu = 'blocs' | 'archipeo';
@@ -23,12 +24,12 @@ const SANS_REGLAGE: ChoixExperimentaux = { renduArchipeo: false, styleArchipeo: 
 const params = (href: string) => new URL(href, 'http://localhost/').searchParams;
 
 /**
- * Le rendu du monde : `archipeo` avec `?rendu=archipeo` ; sinon, une fois l'univers ouvert, celui de l'univers (Archipéo
- * par défaut) ; avant, le réglage expérimental, et le monde en blocs sans lui.
+ * Le rendu du monde : `archipeo` avec `?rendu=archipeo` ; sinon, une fois l'univers ouvert, celui de l'univers (le monde
+ * en blocs de Blocland par défaut) ; avant, le réglage expérimental, et le monde en blocs sans lui.
  */
 export function renduDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE, ouvert = UNIVERS_OUVERT): Rendu {
   if (params(href).get('rendu') === 'archipeo') return 'archipeo';
-  if (ouvert) return choix.univers === 'blocland' ? 'blocs' : 'archipeo';
+  if (ouvert) return (choix.univers ?? UNIVERS_PAR_DEFAUT) === 'archipeo' ? 'archipeo' : 'blocs';
   return choix.renduArchipeo ? 'archipeo' : 'blocs';
 }
 
