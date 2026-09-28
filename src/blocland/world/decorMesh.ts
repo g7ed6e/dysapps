@@ -14,7 +14,7 @@
 //   affleurent à la surface de la mer.
 // - Rien ne bouge : « Réduire les animations » n'a rien à arrêter ici. La nuit vient de la lumière de la scène, comme
 //   pour le sol ; ce qui brille (lanternes, lave) est à part, sans ombre ni lumière.
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
 import { formeDe } from './decor/formes';

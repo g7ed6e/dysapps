@@ -1,7 +1,7 @@
 // Jour et nuit selon l'heure réelle de l'appareil : aube à 7 h, crépuscule à 20 h, transitions d'une heure.
 // Code pur : renvoie un facteur de lumière (1 = plein jour, 0 = nuit) et une phase nommée.
 // Chaque archipel a son ambiance : ciel, mer, brouillard et sol changent de teinte d'un archipel à l'autre.
-import type { ArchipelagoId } from './map';
+import { DANS_LE_CIEL, type ArchipelagoId } from './map';
 
 export type DayPhase = 'jour' | 'nuit' | 'aube' | 'crepuscule';
 
@@ -45,20 +45,20 @@ export interface Ambience {
   ground: number;
   /** Portée du brouillard, en fractions de la largeur du monde (début, fin). */
   fog: [number, number];
-  /** Un monde du ciel : pas de mer, un plancher de nuages. */
+  /** Un monde du ciel : pas de mer, un plancher de nuages (DANS_LE_CIEL, dans la grille). */
   sky: boolean;
 }
 
 /** L'ambiance de chaque archipel. Toutes les nuits restent un bleu de crépuscule, jamais un noir. */
 export const AMBIENCE: Record<ArchipelagoId, Ambience> = {
   // Les Premiers Rivages : la mer tempérée, le ciel d'été.
-  '6e': { skyDay: 0x8fd0f5, skyNight: 0x2c3f70, waterDay: 0x4a9be0, waterNight: 0x22437a, ground: 0x8a6a4a, fog: [1.2, 3.0], sky: false },
+  '6e': { skyDay: 0x8fd0f5, skyNight: 0x2c3f70, waterDay: 0x4a9be0, waterNight: 0x22437a, ground: 0x8a6a4a, fog: [1.2, 3.0], sky: DANS_LE_CIEL['6e'] },
   // Les Îles Brumeuses : plus froid, une mer turquoise.
-  '5e': { skyDay: 0xaadcf2, skyNight: 0x27406e, waterDay: 0x3f9fc4, waterNight: 0x1f4468, ground: 0x7a8a9a, fog: [1.2, 3.0], sky: false },
+  '5e': { skyDay: 0xaadcf2, skyNight: 0x27406e, waterDay: 0x3f9fc4, waterNight: 0x1f4468, ground: 0x7a8a9a, fog: [1.2, 3.0], sky: DANS_LE_CIEL['5e'] },
   // Les Anciens Ateliers : un bleu profond, la brume de montagne plus proche.
-  '4e': { skyDay: 0x74b0e4, skyNight: 0x233560, waterDay: 0x2c6d9c, waterNight: 0x172f52, ground: 0x6a5a58, fog: [1.0, 2.6], sky: false },
+  '4e': { skyDay: 0x74b0e4, skyNight: 0x233560, waterDay: 0x2c6d9c, waterNight: 0x172f52, ground: 0x6a5a58, fog: [1.0, 2.6], sky: DANS_LE_CIEL['4e'] },
   // Les Îles du Ciel : un ciel très pâle, et des nuages à la place de la mer.
-  '3e': { skyDay: 0xc4e6fb, skyNight: 0x33478a, waterDay: 0xf3f7fb, waterNight: 0x8b97b8, ground: 0xdde6f0, fog: [1.4, 3.4], sky: true },
+  '3e': { skyDay: 0xc4e6fb, skyNight: 0x33478a, waterDay: 0xf3f7fb, waterNight: 0x8b97b8, ground: 0xdde6f0, fog: [1.4, 3.4], sky: DANS_LE_CIEL['3e'] },
 };
 
 /** Palette du ciel, de l'eau et de la lumière selon le moment, dans un archipel. */

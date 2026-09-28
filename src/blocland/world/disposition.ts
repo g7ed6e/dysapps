@@ -78,9 +78,9 @@ export type Intention =
   | { genre: 'creature'; id: BiomeId; gardien: boolean }
   | { genre: 'navire'; port: BiomeId }
   /**
-   * En chantier, une face touchée : le bloc touché et la case voisine, devant la face. En cases du monde jusqu'à J5, qui
-   * les donnera en cases du plan (celles de la sauvegarde).
+   * En chantier, une face touchée sur l'île `ile` (ou sur le navire amarré à son port) : le bloc touché et la case
+   * voisine, devant la face, en cases du plan de l'île (celles de la sauvegarde).
    */
-  | { genre: 'face'; case: Point; voisine: Point }
+  | { genre: 'face'; ile: BiomeId; case: Point; voisine: Point }
   | { genre: 'fin-du-voyage' }
   | { genre: 'voyage-saute' };
