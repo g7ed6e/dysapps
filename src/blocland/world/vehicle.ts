@@ -4,7 +4,7 @@
 // arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
 import { BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
-import { ARCHIPELAGOS, getArchipelago, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
+import { ARCHIPELAGOS, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
 import type { PlanCell, PlanDef } from './plans';
 
 export const VEHICLE_NAME = 'le Bloc-Navire';
@@ -162,13 +162,4 @@ export function vehicleModel(level: number): { x: number; y: number; z: number; 
     for (const c of [...s.cells, ...s.kit]) cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, top: BLOCKS[c.block].top });
   }
   return cubes;
-}
-
-/** Ce que dit la créature du port quand le kit arrive, ou ce qu'il manque pour cela. */
-export function guardiansText(stage: VehicleStage, progress: Record<string, { stars: number }>): string {
-  const beaten = beatenGuardians(stage.from, progress);
-  const name = getArchipelago(stage.from).name;
-  if (beaten >= stage.guardians) return `Gardiens : c’est fait ! ${beaten} sur ${stage.guardians}, ${stage.short} est là.`;
-  const left = stage.guardians - beaten;
-  return `Gardiens : encore ${left} à vaincre dans les ${name} pour ${stage.short}.`;
 }

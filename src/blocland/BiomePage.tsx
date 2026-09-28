@@ -23,6 +23,7 @@ import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { useTextes } from '../univers';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -31,6 +32,7 @@ export function BiomePage() {
   const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
   const { state } = useBlocland();
+  const textes = useTextes();
   const biome = getBiome(biomeId);
   const builder = usePlanBuilder(biome?.id ?? 'foret');
   const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe);
@@ -148,7 +150,7 @@ export function BiomePage() {
             <span className="app-title">{guardianTitle(biome)}</span>
             <span className="app-desc">Une épreuve de chaque mission, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
             {beaten && boss ? (
-              <Stars count={boss.stars} label={`Gardien vaincu : ${boss.stars} étoiles sur 3`} />
+              <Stars count={boss.stars} label={textes.libelles.etoilesSur3(boss.stars)} />
             ) : ready ? (
               <span className="tag tag-new">Prêt à t’affronter</span>
             ) : (

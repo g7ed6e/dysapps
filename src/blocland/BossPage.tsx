@@ -19,6 +19,7 @@ import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { playDrum, playGrowl, playVictory } from './sound';
 import { Loading } from '../components/Loading';
+import { useTextes } from '../univers';
 
 /** Le Gardien d'un biome : le défi de fin de biome, une manche de chaque mission, dans son arène. */
 export function BossPage() {
@@ -26,6 +27,7 @@ export function BossPage() {
   const { state } = useBlocland();
   const { beatBoss } = useProgress();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
   const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossUnlocked(biome, state.progress));
@@ -60,7 +62,7 @@ export function BossPage() {
   }, [def]);
 
   if (!biome) return <NotFoundPage />;
-  const says = biome.guardianSays;
+  const { challenge, guardianSays: says } = textes.gardiens[biome.id];
   const finished = def ? played >= total : false;
   const beatenNow = finished && won >= Math.ceil(total * 0.7);
   const remaining = Math.max(0, total - won);
@@ -123,14 +125,14 @@ export function BossPage() {
                 aria-valuemin={0}
                 aria-valuemax={total}
                 aria-valuenow={remaining}
-                aria-valuetext={`${remaining} épreuves sur ${total} avant de le vaincre`}
+                aria-valuetext={textes.libelles.resistance(remaining, total)}
               >
                 <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
               </div>
               <p className="arena-line" role="status" aria-live="polite">
-                <Syllabified text={line ?? (alreadyBeaten ? `${guardianTitle(biome)} est déjà vaincu, mais il aime les revanches.` : biome.challenge)} />
+                <Syllabified text={line ?? (alreadyBeaten ? textes.libelles.dejaFaitArene(guardianTitle(biome)) : challenge)} />
               </p>
-              <SpeakButton text={line ?? biome.challenge} label="Écouter" />
+              <SpeakButton text={line ?? challenge} label="Écouter" />
             </div>
           </section>
           {shipHint && (
