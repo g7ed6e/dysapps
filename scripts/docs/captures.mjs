@@ -133,7 +133,6 @@ const SHOTS = [
   { name: 'monument', state: MID, go: '/aventure/monument-observatoire' },
   { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
   { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
-  { name: 'vue-2d', state: MID, view: '2d', go: '/aventure/foret', act: closeSheet },
   { name: 'vue-simple', state: MID, view: 'liste', go: '/aventure' },
   { name: 'telephone-village', state: MID, go: '/aventure/foret', size: PHONE },
   { name: 'telephone-quete', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
