@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux d’Archipéo, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux d’Archipéo, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 

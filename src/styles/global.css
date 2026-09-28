@@ -368,12 +368,16 @@ svg {
     display: none;
   }
 }
-/* Jamais de mot coupé dans la jauge : le numéro de niveau part d'abord (il est dans l'écusson), puis le rôle ; la
-   jauge reste, et tout est sur la page Succès. */
+/* Dans la barre, le titre de la jauge passe à la ligne plutôt que de couper un mot (« Architecte de l'archipel »). */
+.topbar .xp-title {
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.2;
+}
+/* Jamais de mot coupé dans la jauge : sous 56rem, tout son titre part (niveau et rôle) ; l'insigne et la jauge
+   restent, et tout est sur la page Succès. */
 @container barre (max-width: 48rem) {
-  .nav-label,
-  .topbar .xp-lvl,
-  .topbar .xp-sep {
+  .nav-label {
     display: none;
   }
   /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
@@ -381,7 +385,7 @@ svg {
     content: '';
   }
 }
-@container barre (max-width: 40rem) {
+@container barre (max-width: 56rem) {
   .topbar .xp-title {
     display: none;
   }
@@ -1358,6 +1362,30 @@ button.app-card:active {
   width: 1.2rem;
   height: 1.2rem;
   accent-color: var(--primary-bg);
+}
+/*
+ * Le rond d'une option, dessiné (DA-15) : le rond du navigateur prenait la couleur du fond de la case choisie et ne
+ * se voyait plus coché. Il suit la couleur du texte de sa case, sur tous les thèmes et dans les deux univers, et
+ * grandit avec la taille du texte. Coché, un point plein dans l'anneau : il se lit sans la couleur.
+ */
+.option input[type='radio'] {
+  appearance: none;
+  flex-shrink: 0;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin: 0;
+  border: 0.15rem solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+}
+.option input[type='radio']:checked {
+  background: radial-gradient(circle, currentColor 0 42%, transparent 48%);
+}
+/* Couleurs forcées (contraste élevé de l'appareil) : le fond dessiné s'efface ; le rond du système revient. */
+@media (forced-colors: active) {
+  .option input[type='radio'] {
+    appearance: auto;
+  }
 }
 .font-atkinson {
   font-family: "Atkinson Hyperlegible", sans-serif;
