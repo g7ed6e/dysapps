@@ -333,3 +333,97 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
     expect(v / roche, e.id).toBeLessThan(1.1 * 1.08 * 1.02);
   }
 });
+
+it('toucher une couronne qui surplombe une borne de la Forêt des sons redonne la borne ; sans rien dessous, le décor', async () => {
+  const { cubeTags, groundTap, toucheRetenue } = await import('./scene');
+  const { islandOrigin, questStations } = await import('./terrain');
+  const { BIOMES } = await import('../biomes');
+  const { cubes, champ } = monde('6e');
+  const tags = cubeTags(cubes);
+  const can = { quest: true, bridge: true, build: false, place: true };
+  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === 'foret'));
+  // Le rayon de la vue d'une île (three/WorldCanvas.tsx, ISLAND_VIEW), vers la caméra, repère Three.
+  const versCamera = [0.7, 0.9, -0.7];
+  const l = Math.hypot(...versCamera);
+  const dir = versCamera.map((v) => -v / l) as [number, number, number];
+  /** Le rayon qui arrive au point `p`, depuis 40 blocs en arrière. */
+  const rayon = (p: number[]) => ({ o: p.map((v, j) => v - dir[j] * 40), d: dir });
+  const triangle = (o: number[], d: number[], a: number[], b: number[], c: number[]): number | null => {
+    const e1 = [0, 1, 2].map((j) => b[j] - a[j]);
+    const e2 = [0, 1, 2].map((j) => c[j] - a[j]);
+    const pv = [d[1] * e2[2] - d[2] * e2[1], d[2] * e2[0] - d[0] * e2[2], d[0] * e2[1] - d[1] * e2[0]];
+    const det = e1[0] * pv[0] + e1[1] * pv[1] + e1[2] * pv[2];
+    if (Math.abs(det) < 1e-9) return null;
+    const tv = [0, 1, 2].map((j) => o[j] - a[j]);
+    const u = (tv[0] * pv[0] + tv[1] * pv[1] + tv[2] * pv[2]) / det;
+    if (u < 0 || u > 1) return null;
+    const qv = [tv[1] * e1[2] - tv[2] * e1[1], tv[2] * e1[0] - tv[0] * e1[2], tv[0] * e1[1] - tv[1] * e1[0]];
+    const v = (d[0] * qv[0] + d[1] * qv[1] + d[2] * qv[2]) / det;
+    if (v < 0 || u + v > 1) return null;
+    const t = (e2[0] * qv[0] + e2[1] * qv[1] + e2[2] * qv[2]) / det;
+    return t > 0 ? t : null;
+  };
+  const boite = (o: number[], d: number[], min: number[]): number | null => {
+    let t0 = -Infinity;
+    let t1 = Infinity;
+    for (let j = 0; j < 3; j++) {
+      const a = (min[j] - o[j]) / d[j];
+      const b = (min[j] + 1 - o[j]) / d[j];
+      t0 = Math.max(t0, Math.min(a, b));
+      t1 = Math.min(t1, Math.max(a, b));
+    }
+    return t1 >= t0 && t0 > 0 ? t0 : null;
+  };
+  let vus = 0;
+  for (const st of questStations('foret')) {
+    const bx = ox + st.x;
+    const by = oy + st.y;
+    const borne = cubes.filter((c) => c.x === bx && c.y === by && c.quest);
+    const haut = Math.max(...borne.map((c) => c.z));
+    const col = colonneEn(champ, bx + 1, by - 1)!;
+    // Un arbre de trois blocs sur la case voisine, côté caméra : sa couronne surplombe la borne.
+    for (const graine of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      const id = `foret/arbre@${bx + 1},${by - 1}${graine}`;
+      const arbre: ElementDeDecor = {
+        id,
+        genre: 'arbre',
+        cubes: [0, 1, 2].map((k) => ({ x: bx + 1, y: by - 1, z: col.haut + 1 + k, color: '#6b4a2e', texture: 'tronc', decor: id })),
+        x: bx + 1,
+        y: by - 1,
+        z: col.haut + 1,
+        emprise: 1,
+        muted: false,
+      };
+      const m = maillageDuDecor('6e', champ, [arbre]);
+      for (const [u, v] of [
+        [0.5, 0.5],
+        [0.3, 0.7],
+        [0.7, 0.3],
+      ]) {
+        const p = [bx + u, haut + 1, by + v];
+        const { o, d } = rayon(p);
+        let tDecor: number | null = null;
+        for (let t = 0; t < m.decor.elements.length; t++) {
+          const q = (k: number) => [0, 1, 2].map((j) => m.decor.positions[t * 9 + k * 3 + j]);
+          const h = triangle(o, d, q(0), q(1), q(2));
+          if (h !== null && (tDecor === null || h < tDecor)) tDecor = h;
+        }
+        const tBorne = Math.min(...borne.map((c) => boite(o, d, [c.x, c.z, c.y]) ?? Infinity));
+        if (tDecor === null || !(tDecor < tBorne)) continue;
+        vus++;
+        // Le feuillage est devant ; la borne, derrière, est une cible : elle gagne.
+        const cellule = { x: bx, y: by, z: haut };
+        const cible = groundTap('6e', { cell: cellule, next: { ...cellule, z: haut + 1 }, ground: { x: bx + u, y: by + v } }, tags, can).kind === 'quest';
+        expect(cible).toBe(true);
+        expect(toucheRetenue([{ decor: true, distance: tDecor, cible: false }, { decor: false, distance: tBorne, cible }])).toBe(1);
+      }
+    }
+  }
+  expect(vus).toBeGreaterThan(0);
+  // Rien de touchable derrière : le décor ; devant une cible, le plus proche ; une créature derrière le décor gagne.
+  expect(toucheRetenue([{ decor: true, distance: 3, cible: false }, { decor: false, distance: 5, cible: false }])).toBe(0);
+  expect(toucheRetenue([{ decor: false, distance: 3, cible: false }, { decor: true, distance: 1, cible: false }])).toBe(1);
+  expect(toucheRetenue([{ decor: false, distance: 5, cible: true }, { decor: false, distance: 3, cible: false }])).toBe(1);
+  expect(toucheRetenue([{ decor: true, distance: 2, cible: false }, { decor: false, distance: 6, cible: true }])).toBe(1);
+  expect(toucheRetenue([])).toBe(-1);
+});

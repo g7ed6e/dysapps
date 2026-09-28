@@ -22,6 +22,8 @@ import {
   startStrolls,
   startVoyage,
   strollAt,
+  toucheRetenue,
+  type Touche,
   voyageFrame,
   walkPose,
   type Stroll,
@@ -693,9 +695,16 @@ export default function WorldCanvas({
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
       const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children, vehicleGroup], true)[0];
-      const ground = ray.intersectObjects(sol ? [...terrain.children, ...sol.en3D.group.children, ...sol.decor.group.children] : terrain.children, false)[0];
-      if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
-      return { creature: undefined, hit: ground };
+      const grounds = ray.intersectObjects(sol ? [...terrain.children, ...sol.en3D.group.children, ...sol.decor.group.children] : terrain.children, false);
+      // Le décor en primitives déborde de sa case (une couronne d'arbre) : une cible derrière lui, sous le doigt, gagne
+      // (world/scene.ts, toucheRetenue). Les quelques premiers objets traversés suffisent.
+      const candidats = grounds.slice(0, 8);
+      const touches: Touche[] = candidats.map((h) => ({ decor: Boolean(h.object.userData.decor), distance: h.distance, cible: !h.object.userData.decor && estUneCible(h) }));
+      if (creature) touches.push({ decor: false, distance: creature.distance, cible: true });
+      const i = toucheRetenue(touches);
+      if (i < 0) return { creature: undefined, hit: undefined };
+      if (creature && i === touches.length - 1) return { creature, hit: undefined };
+      return { creature: undefined, hit: candidats[i] };
     };
     const questIdOf = (o: THREE.Object3D): { biome: BiomeId; typeId: string } | null => {
       let cur: THREE.Object3D | null = o;
@@ -748,6 +757,16 @@ export default function WorldCanvas({
       const cell = { x: Math.floor(inside.x), y: Math.floor(inside.z), z: Math.floor(inside.y) };
       const next = { x: Math.floor(outside.x), y: Math.floor(outside.z), z: Math.floor(outside.y) };
       return { cell, next };
+    };
+    /** Un cube touché qui est une cible : borne, lieu, ouvrage, ou face à construire en chantier. */
+    const estUneCible = (h: THREE.Intersection): boolean => {
+      const tap = groundTap(
+        archRef.current,
+        { ...cellsOf(h), ground: { x: h.point.x, y: h.point.z } },
+        tags.current,
+        { quest: Boolean(pickQuestRef.current), bridge: Boolean(pickBridgeRef.current), build: Boolean(buildRef.current), place: Boolean(pickPlaceRef.current) },
+      );
+      return tap.kind !== 'island';
     };
     const onUp = (e: PointerEvent) => {
       if (!down) return;

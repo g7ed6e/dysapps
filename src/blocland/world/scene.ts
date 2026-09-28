@@ -265,3 +265,27 @@ export function groundTap(
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };
   return { kind: 'island', id: islandAt(a, Math.floor(hit.ground.x), Math.floor(hit.ground.y)) };
 }
+
+/** Un objet sous le doigt, le long du rayon : le décor en primitives, ou autre chose (cube, sol, créature). */
+export interface Touche {
+  /** Un élément du décor d'Archipéo (feuillage, rocher, repère). */
+  decor: boolean;
+  /** Sa distance au long du rayon. */
+  distance: number;
+  /** Une cible : une borne, un lieu, un ouvrage, une face à construire, une créature, le navire. */
+  cible: boolean;
+}
+
+/**
+ * Ce que retient un toucher parmi ce qu'il traverse : le plus proche, sauf si c'est du décor (un feuillage déborde de
+ * sa case) et qu'une cible est derrière, sous le doigt : la cible gagne. Le décor ne gagne que s'il n'y a rien de
+ * touchable derrière lui. L'indice dans `touches`, ou −1 s'il n'y a rien.
+ */
+export function toucheRetenue(touches: Touche[]): number {
+  if (!touches.length) return -1;
+  const ordre = touches.map((t, i) => ({ t, i })).sort((p, q) => p.t.distance - q.t.distance);
+  const premier = ordre[0];
+  if (!premier.t.decor) return premier.i;
+  const cible = ordre.find(({ t }) => !t.decor && t.cible);
+  return cible ? cible.i : premier.i;
+}
