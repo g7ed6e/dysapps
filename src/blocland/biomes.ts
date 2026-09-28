@@ -820,7 +820,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Statistiques et probabilités',
     subject: 'maths',
     classe: '3e',
-    description: 'Moyenne, médiane, étendue d’une petite série, probabilités simples, les barres sous les yeux.',
+    description: 'Moyenne, médiane, étendue d’une petite série, probabilités simples, diagrammes et fréquences, les barres sous les yeux.',
     block: 'quartz',
     guardian: 'le Comptable des étoiles',
     guardianSays: {
@@ -839,12 +839,14 @@ export const BIOMES: BiomeDef[] = [
         'La moyenne : tout additionner, puis partager équitablement.',
         'La médiane coupe la série rangée en deux moitiés.',
         'Mon dôme est en quartz. Chaque calcul en polit une facette.',
+        'Dans mon carnet de relevés, chaque barre porte son effectif. Additionne-les tous : c’est l’effectif total.',
       ],
       home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
     },
     exercises: [
       { id: 'moyenne', title: 'Moyenne', description: 'La moyenne, puis la médiane et l’étendue d’une petite série.', programme: ['c4.ma.b.indicateurs'] },
       { id: 'chances', title: 'Chances', description: 'Probabilités simples : sac de boules, dé.', programme: ['c4.ma.b.probabilites'] },
+      { id: 'releves', title: 'Relevés', description: 'Lis un diagramme ou un tableau, puis calcule une fréquence, en fraction et en pourcentage.', programme: ['c4.ma.b.lire-donnees', 'c4.ma.b.effectifs-frequences'] },
     ],
   },
   {

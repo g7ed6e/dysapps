@@ -47,12 +47,13 @@ Les autres « Blocland » remplacés par « Archipéo » au lot 1 :
 
 Le phare du large et le kiosque à musique disent encore « entre les Collines » et « la fanfare des Collines » : le lot 1 ne les a pas changés (`src/blocland/world/monuments.ts`).
 
-**Communs, inchangés** (vérifiés dans `src/blocland/biomes.ts` : noms identiques avant le lot 1 et aujourd’hui ; quelques répliques et une mission ajoutées par les lots de contenu #150, `bfc02f6`, et #151, `8c95ecf`) :
+**Communs, inchangés** (vérifiés dans `src/blocland/biomes.ts` : noms identiques avant le lot 1 et aujourd’hui ; quelques répliques et une mission ajoutées par les lots de contenu #150, `bfc02f6`, #151, `8c95ecf`, et « Relevés », #190) :
 
 - les **28 îles** et leurs noms (Forêt des sons, Mine des lettres, Plaine des nombres, Marché des proportions, Phare des fonctions…) ;
 - les **28 Gardiens** (le Grand Chêne, le Golem de roche, la Dune vivante, le Hanneton de bronze, le Dragon de cendre, le Colporteur, le Titan d’acier, la Locomotive de fer, le Dragon gallois…) et leurs répliques (`guardianSays`) ;
 - les **28 créatures** (Mousso, Tunel, Rouxel, Bloquette, Grimoire, Coco, Nénu, Lavi, Bazar, Ixe, Fi, Knight…) et leurs répliques ;
 - ce que #150 et #151 ont ajouté : le module de la Plaine des nombres passe de « Calcul mental » à « Calcul et problèmes », avec la mission « Carnet du passeur » ; Coco (Plaine des nombres) et Bazar (Marché des proportions) ont chacun deux répliques de plus, sur le port, les navires et la carte ; les descriptions d’Étals, de Balances et de Pythagore s’allongent ; le Glacier des relatifs reçoit une quatrième mission, « Icebergs des fractions » (`icebergs`), son module devient « Nombres relatifs et fractions », sa description s’allonge et Frimas a une réplique de plus, sur l’iceberg ;
+- ce que le lot « Relevés » a ajouté : l’Observatoire des données reçoit une troisième mission, « Relevés » (`releves`), et une borne de plus ; sa description s’allonge (« diagrammes et fréquences ») et Stat a une réplique de plus, sur son carnet de relevés ;
 - les **blocs** et leurs noms (bois, pierre, sable, brique, obsidienne, or, cristal…) ;
 - le **Bloc-Navire** et ses étapes : la coque et la voile, le ballon, le réacteur (`src/blocland/world/vehicle.ts`) ; les succès Capitaine, Aéronaute, Pilote du ciel ;
 - les **monuments** (l’observatoire des baleines, le grand moulin, le phare du large, le viaduc, l’amphithéâtre, le temple de marbre…) et les **ouvrages** (pont, bac, sentier, escalier taillé, tunnel, col) ;

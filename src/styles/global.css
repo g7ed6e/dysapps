@@ -3823,6 +3823,16 @@ button.island-quest:active {
   text-align: right;
   font-weight: 700;
 }
+/* Diagramme en barres : le nom de la réponse, son effectif, puis la barre. Une seule grille pour les quatre lignes :
+   la colonne des noms prend la largeur du plus long, sans couper un mot. */
+.bar-list.labelled [role="img"] {
+  grid-template-columns: max-content 2.5rem 1fr;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.bar-list.labelled .bar-row {
+  display: contents;
+}
 .bar-list .bar {
   display: block;
   height: 1.1rem;
