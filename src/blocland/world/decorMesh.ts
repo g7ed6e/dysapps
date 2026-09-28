@@ -17,7 +17,7 @@ import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, SMOKE, type Repere } from './decor';
 import { colonneEn, hauteurDuSol, lineaire, NIVEAU_EAU, type ChampDuSol } from './landMesh';
 import type { ArchipelagoId } from './map';
-import { couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
+import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { kindOf, PROP_KINDS } from './props';
 import type { Cell } from './view';
@@ -201,12 +201,44 @@ function peintre(f: Faces, y0: number, h: number, v = 1): Peindre {
 }
 
 /** La fumée : claire, à peine ombrée (une volute, pas un rocher). */
-function vaporeux(f: Faces): Peindre {
+function vaporeux(f: Faces, voile: RGB, fondu: number): Peindre {
   const dessus = rgb(f.dessus);
   const cote = rgb(f.cote);
   return (_, n) => {
     const w = clamp(0.75 + 0.35 * n[1], 0, 1);
-    return [0, 1, 2].map((j) => lineaire((cote[j] + (dessus[j] - cote[j]) * w) / 255)) as RGB;
+    return [0, 1, 2].map((j) => {
+      const v = cote[j] + (dessus[j] - cote[j]) * w;
+      return lineaire((v + (voile[j] - v) * fondu) / 255);
+    }) as RGB;
+  };
+}
+
+/** La valeur d'une couleur (canaux 0..255, pondérés comme l'œil) : pour comparer des verts entre eux. */
+export const valeur = (c: RGB | Couleur): number => {
+  const [r, g, b] = typeof c === 'number' ? rgb(c) : c;
+  return 0.3 * r + 0.59 * g + 0.11 * b;
+};
+
+/**
+ * Les deux familles de verts du feuillage (décision du directeur artistique, lot R4) : environ six arbres sur dix clairs,
+ * vers `#7FB24E`, quatre profonds, vers `#3F7A3A` ; la valeur de chacune rapportée à celle de l'herbe de l'archipel
+ * (`FAMILLES[].valeur` fois), à 15 % d'écart au moins.
+ */
+export const FAMILLES = [
+  { teinte: 0x7fb24e, part: 0.6, valeur: 1.1 },
+  { teinte: 0x3f7a3a, part: 0.4, valeur: 0.93 },
+] as const;
+/** Le dégradé d'une boule de feuillage, du bas au haut, en part de la valeur de sa famille. */
+export const FEUILLAGE: [number, number] = [0.7, 1.15];
+/** Les trois tailles de feuillage, en part de la taille de base. */
+export const TAILLES = [0.7, 1, 1.3] as const;
+
+/** Une boule de feuillage : de sa couleur, plus sombre en bas, plus claire en haut (de `y0` à `y0 + h` : ses sommets extrêmes). */
+function feuillage(c: RGB, y0: number, h: number): Peindre {
+  return (p) => {
+    const t = h > 0 ? clamp((p[1] - y0) / h, 0, 1) : 1;
+    const k = FEUILLAGE[0] + (FEUILLAGE[1] - FEUILLAGE[0]) * t;
+    return [0, 1, 2].map((j) => lineaire((c[j] / 255) * k)) as RGB;
   };
 }
 
@@ -216,6 +248,15 @@ function lueur(f: Faces): Peindre {
   const k = c.map((v) => lineaire(v / 255)) as RGB;
   return () => k;
 }
+
+/** Une couleur multipliée par `k` (bornée au blanc). */
+function eclaircir(c: Couleur, k: number): Couleur {
+  const [r, g, b] = rgb(c).map((v) => Math.round(clamp(v * k, 0, 255)));
+  return (r << 16) | (g << 8) | b;
+}
+
+/** Les sols où un rocher garde sa pierre (sur la roche, il en prend la couleur). */
+const SOLS_TENDRES: ReadonlySet<string> = new Set(['herbe', 'mousse', 'sable', 'neige', 'glace', 'eau', 'lave', 'terre']);
 
 // ---------- Les primitives ----------
 
@@ -350,6 +391,20 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     return f;
   };
   const matiere = (m: TextureKind, muted: boolean) => facesDe(m, '#000000', undefined, muted);
+  // Les verts du feuillage : la teinte de la famille, un peu de celle de l'archipel, à la valeur voulue de son herbe.
+  const herbe = valeur(couleurDuSol(a, 'herbe').dessus);
+  const feuilles = couleurDeMatiere(a, 'feuilles').dessus;
+  const verts = FAMILLES.map((f) => {
+    const t = rgb(mixColor(feuilles, f.teinte, 0.7));
+    const k = (herbe * f.valeur) / valeur(t);
+    const c = t.map((v) => clamp(v * k, 0, 255)) as RGB;
+    return { ouvert: c, ferme: rgb(mixColor((c[0] << 16) | (c[1] << 8) | c[2], DELAVE[0], DELAVE[1])) };
+  });
+  const vertDe = (hasard: () => number, muted: boolean) => {
+    const v = verts[hasard() < FAMILLES[0].part ? 0 : 1];
+    return muted ? v.ferme : v.ouvert;
+  };
+  const horizon = rgb(cielDe(a, 1).horizon);
   const du = (c: VoxelCube) => facesDe(c.texture, c.color, c.top, Boolean(c.muted));
   /** La hauteur du sol en un point, sinon `repli` (au-dessus de l'eau). */
   const sol = (x: number, y: number, repli: number) => hauteurDuSol(champ, x, y) ?? repli;
@@ -376,16 +431,19 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
         const tronc = e.cubes.filter((c) => c.texture === 'tronc');
         const tall = Math.max(1, tronc.length);
         const fT = du(tronc[0] ?? e.cubes[0]);
-        const fF = du(premier((c) => c.texture === 'feuilles') ?? e.cubes[e.cubes.length - 1]);
-        // Un tronc court, un feuillage rond et large (la couronne de 3 × 3 cubes), un second plus petit sur les grands.
-        const s = 0.92 + 0.16 * hasard();
+        // Un tronc court, un feuillage rond et large (la couronne de 3 × 3 cubes), un second plus petit sur les grands ;
+        // trois tailles, deux familles de verts, chaque boule plus claire en haut.
+        const vert = vertDe(hasard, e.muted);
+        const s = TAILLES[Math.min(2, Math.floor(hasard() * 3))] * (0.95 + 0.1 * hasard());
         const yF = base + 0.55 * tall + 1.05 * s;
         tronconique(P, cx, cz, base - ENFONCE, yF - 0.4, 0.19 * s, 0.12 * s, 5, rot, peintre(fT, base, tall, vari()), false);
-        const pF = peintre(fF, yF - 1.2 * s, 2.5 * s, vari());
-        icosaedre(P, [cx, yF, cz], 1.22 * s, 0.86, 0.14, hasard, pF, rot);
+        const R = 1.22 * s;
+        icosaedre(P, [cx, yF, cz], R, 0.86, 0.14, hasard, feuillage(vert, yF - 0.75 * R * 0.86, 1.5 * R * 0.86), rot);
         if (tall >= 3) {
           const a = rot + hasard() * Math.PI * 2;
-          icosaedre(P, [cx + 0.55 * Math.cos(a), yF + 0.75 * s, cz + 0.55 * Math.sin(a)], 0.75 * s, 0.9, 0.14, hasard, pF, rot);
+          const r = 0.75 * s;
+          const y = yF + 0.75 * s;
+          icosaedre(P, [cx + 0.55 * Math.cos(a), y, cz + 0.55 * Math.sin(a)], r, 0.9, 0.14, hasard, feuillage(vert, y - 0.75 * r * 0.9, 1.5 * r * 0.9), rot);
         }
         return;
       }
@@ -432,7 +490,14 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
         return;
       }
       case 'rocher': {
-        const f = du(e.cubes[0]);
+        // Sur la roche, un rocher prend la roche de l'île (de 0,9 à 1,1 fois sa valeur) ; ailleurs, sa pierre.
+        const col = colonneEn(champ, e.x, e.y);
+        const sous = col?.matieres[col.matieres.length - 1];
+        const surRoche = sous !== undefined && sous in MATIERES && !SOLS_TENDRES.has(sous);
+        const r0 = surRoche ? couleurDeMatiere(a, sous as TextureKind) : du(e.cubes[0]);
+        const k = 0.9 + 0.2 * hasard();
+        const teinte = (c: Couleur) => mixColor(c, e.muted ? DELAVE[0] : c, e.muted ? DELAVE[1] : 0);
+        const f: Faces = surRoche ? { dessus: teinte(eclaircir(r0.dessus, k)), cote: teinte(r0.cote) } : r0;
         const haut = hautDe(() => true) - e.z;
         const r = haut >= 2 ? 0.66 : 0.5 + 0.08 * hasard();
         const sy = haut >= 2 ? 1.05 : 0.68;
@@ -464,7 +529,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
       }
       case 'ecueil': {
         // Un rocher qui affleure, un par case (aux Anciens Ateliers, une aiguille d'ardoise sur une pierre) : de sous
-        // l'eau jusqu'au haut de ses cubes.
+        // l'eau jusqu'au haut de ses cubes. Peu de facettes : ils sont nombreux, et loin.
         const cases = new Map<string, VoxelCube[]>();
         for (const c of e.cubes) cases.set(`${c.x},${c.y}`, [...(cases.get(`${c.x},${c.y}`) ?? []), c]);
         for (const list of cases.values()) {
@@ -473,44 +538,39 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
           const ardoise = list.filter((q) => q.texture === 'ardoise' && q.z >= 0);
           const dessous = list.reduce((p, q) => (q.z < p.z ? q : p));
           const r = 0.5 + 0.1 * hasard();
+          const a0 = rot + hasard();
           if (ardoise.length) {
-            tronconique(P, x + 0.5, y + 0.5, NIVEAU_EAU - 0.3, haut - 0.05, 0.42, 0.13, 5, rot, peintre(du(ardoise[0]), NIVEAU_EAU, haut - NIVEAU_EAU, vari()));
-            octaedre(P, [x + 0.5, NIVEAU_EAU - 0.05, y + 0.5], r + 0.1, 0.55, peintre(du(dessous), NIVEAU_EAU - 0.3, 0.6, vari()), true, rot);
+            tronconique(P, x + 0.5, y + 0.5, NIVEAU_EAU - 0.3, haut - 0.05, 0.42, 0, 5, a0, peintre(du(ardoise[0]), NIVEAU_EAU, haut - NIVEAU_EAU, vari()));
             continue;
           }
           // Les cases voisines d'un écueil : un caillou bas, à quatre facettes.
           if (x !== e.x || y !== e.y) {
-            octaedre(P, [x + 0.5, NIVEAU_EAU - 0.05, y + 0.5], r, clamp((haut - 0.3 - NIVEAU_EAU) / r, 0.5, 1.2), peintre(du(dessous), NIVEAU_EAU - 0.2, 0.7, vari()), true, rot + 0.4);
+            octaedre(P, [x + 0.5, NIVEAU_EAU - 0.05, y + 0.5], r, clamp((haut - 0.3 - NIVEAU_EAU) / r, 0.5, 1.2), peintre(du(dessous), NIVEAU_EAU - 0.2, 0.7, vari()), true, a0);
             continue;
           }
+          // Le rocher : un tronc de cône à cinq pans, au sommet plat et penché.
           const top = haut - 0.25;
-          const sy = clamp((top - NIVEAU_EAU + 0.2) / (r * 1.45), 0.45, 1.6);
           const f = du(list.reduce((p, q) => (q.z > p.z ? q : p)));
-          icosaedre(P, [x + 0.5, NIVEAU_EAU - 0.2 + r * sy * 0.5, y + 0.5], r, sy, 0.18, hasard, peintre(f, NIVEAU_EAU - 0.2, top - NIVEAU_EAU + 0.2, vari()), rot);
+          tronconique(P, x + 0.5, y + 0.5, NIVEAU_EAU - 0.25, top, r, r * 0.45, 5, a0, peintre(f, NIVEAU_EAU - 0.2, top - NIVEAU_EAU + 0.2, vari()));
         }
         return;
       }
       case 'banc': {
-        // Un banc de sable (de glace, de galets) au ras de l'eau : une tache plate, bordée d'un rebord bas.
+        // Un banc de sable (de glace, de galets) au ras de l'eau : un cône très plat, dont le bord plonge sous l'eau.
         const f = du(e.cubes[0]);
-        const mx = e.cubes.reduce((s, c) => s + c.x + 0.5, 0) / e.cubes.length;
-        const mz = e.cubes.reduce((s, c) => s + c.y + 0.5, 0) / e.cubes.length;
+        const mx = e.cubes.reduce((t, c) => t + c.x + 0.5, 0) / e.cubes.length;
+        const mz = e.cubes.reduce((t, c) => t + c.y + 0.5, 0) / e.cubes.length;
         const R = 0.45 + 0.42 * Math.sqrt(e.cubes.length);
-        const n = 7;
-        const y = NIVEAU_EAU + 0.1;
+        const n = 5;
         const bord: V3[] = [];
         for (let k = 0; k < n; k++) {
           const a = rot + (k / n) * Math.PI * 2;
           const r = R * (0.78 + 0.34 * hasard());
-          bord.push([mx + r * Math.cos(a), y, mz + r * 0.85 * Math.sin(a)]);
+          bord.push([mx + r * Math.cos(a), NIVEAU_EAU - 0.2, mz + r * 0.85 * Math.sin(a)]);
         }
+        const sommet: V3 = [mx, NIVEAU_EAU + 0.12, mz];
         const p = peintre(f, NIVEAU_EAU - 0.1, 0.2, vari());
-        for (let k = 1; k + 1 < n; k++) P.triangle(bord[0], bord[k], bord[k + 1], [mx, y - 1, mz], p);
-        for (let k = 0; k < n; k++) {
-          const q = bord[(k + 1) % n];
-          const b = bord[k];
-          P.quad(b, q, [q[0], NIVEAU_EAU - 0.15, q[2]], [b[0], NIVEAU_EAU - 0.15, b[2]], [mx, NIVEAU_EAU - 0.05, mz], p);
-        }
+        for (let k = 0; k < n; k++) P.triangle(bord[k], bord[(k + 1) % n], sommet, [mx, NIVEAU_EAU - 1, mz], p);
         return;
       }
       case 'cascade': {
@@ -518,7 +578,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
         return;
       }
       default:
-        repere(P, L, e, { base, plusBas, du, matiere, hasard, vari, rot, style });
+        repere(P, L, e, { base, plusBas, du, matiere, hasard, vari, rot, style, horizon, vert: vertDe(hasard, e.muted) });
     }
   });
   return { decor: P.fin(), lueurs: L.fin(), elements };
@@ -596,7 +656,15 @@ interface OutilsDuRepere {
   vari: () => number;
   rot: number;
   style: 'a' | 'b';
+  /** L'horizon : les dernières volutes d'une fumée s'y fondent. */
+  horizon: RGB;
+  /** Le vert du feuillage (le chêne géant). */
+  vert: RGB;
 }
+
+/** La fumée : chaque volute plus grosse que la précédente de `FUMEE.croissance` (de la première), dérivée sous le vent
+ * comme le carré de son rang ; les dernières se fondent dans l'horizon (`FUMEE.fondu`), comme plus transparentes. */
+export const FUMEE = { croissance: 0.35, fondu: 0.3, volutes: 3 } as const;
 
 /** Les repères : un grand ouvrage par région, posé au plus bas de son emprise (il s'y enfonce, jamais ne flotte). */
 function repere(P: Pinceau, L: Pinceau, e: ElementDeDecor, o: OutilsDuRepere): void {
@@ -608,10 +676,22 @@ function repere(P: Pinceau, L: Pinceau, e: ElementDeDecor, o: OutilsDuRepere): v
   const fumee = e.cubes.filter((c) => c.color === SMOKE);
   const fFumee: Faces = { dessus: mixColor(hex(SMOKE), 0xffffff, 0.35), cote: mixColor(hex(SMOKE), 0x9aa4b0, 0.3) };
   const bouffees = (list: VoxelCube[]) => {
-    list.forEach((c, k) => {
-      const r = 0.5 + 0.12 * o.hasard() + 0.03 * k;
-      icosaedre(P, [c.x + 0.5, c.z + 0.5, c.y + 0.5], r, 0.85, 0.16, o.hasard, vaporeux(fFumee), o.rot + k);
-    });
+    if (!list.length) return;
+    // Du bas de la fumée à son dernier cube : le vent, et la montée.
+    const tri = [...list].sort((p, q) => p.z - q.z);
+    const n = tri.length;
+    const [d, f] = [tri[0], tri[n - 1]];
+    const k2 = Math.max(1, (n - 1) * (n - 1));
+    const vx = (f.x - d.x) / k2;
+    const vz = (f.y - d.y) / k2;
+    const r0 = 0.42;
+    let y = d.z + 0.5;
+    for (let k = 0; k < n; k++) {
+      const r = r0 * (1 + FUMEE.croissance * k);
+      if (k > 0) y += 0.55 * (r + r0 * (1 + FUMEE.croissance * (k - 1)));
+      const fondu = FUMEE.fondu * clamp((k - (n - 1 - FUMEE.volutes)) / FUMEE.volutes, 0, 1);
+      icosaedre(P, [d.x + 0.5 + vx * k * k, y, d.y + 0.5 + vz * k * k], r, 0.85, 0.16, o.hasard, vaporeux(fFumee, o.horizon, fondu), o.rot + k);
+    }
   };
   const du = (texture: TextureKind) => {
     const c = e.cubes.find((q) => q.texture === texture);
@@ -621,14 +701,15 @@ function repere(P: Pinceau, L: Pinceau, e: ElementDeDecor, o: OutilsDuRepere): v
     case 'grand-arbre': {
       // Un chêne géant : un tronc évasé au pied, trois masses de feuillage.
       const fT = du('tronc');
-      const fF = du('feuilles');
-      const pT = peintre(fT, pied, Z + 6 - pied);
+      // Le tronc visible fait moins de la moitié de la hauteur : la couronne descend, ses masses s'élargissent.
+      const pT = peintre(fT, pied, Z + 5 - pied);
       tronconique(P, cx, cz, pied, o.base + 0.7, 1.05, 0.72, 7, o.rot, pT, false);
-      tronconique(P, cx, cz, o.base + 0.6, Z + 6.6, 0.72, 0.5, 7, o.rot, pT, false);
-      const pF = peintre(fF, Z + 6, 4);
-      icosaedre(P, [cx, Z + 7.6, cz], 2.8, 0.6, 0.12, o.hasard, pF, o.rot);
-      icosaedre(P, [cx - 0.6, Z + 8.6, cz + 0.4], 1.9, 0.72, 0.12, o.hasard, pF, o.rot + 1);
-      icosaedre(P, [cx + 0.9, Z + 8.3, cz - 0.6], 1.4, 0.8, 0.12, o.hasard, pF, o.rot + 2);
+      tronconique(P, cx, cz, o.base + 0.6, Z + 5.2, 0.72, 0.5, 7, o.rot, pT, false);
+      const masse = (x: number, y: number, z: number, r: number, sy: number, rot: number) =>
+        icosaedre(P, [x, y, z], r, sy, 0.12, o.hasard, feuillage(o.vert, y - 0.75 * r * sy, 1.5 * r * sy), rot);
+      masse(cx, Z + 6.2, cz, 3.36, 0.7, o.rot);
+      masse(cx - 0.7, Z + 7.4, cz + 0.5, 2.28, 0.8, o.rot + 1);
+      masse(cx + 1.05, Z + 7.1, cz - 0.7, 1.68, 0.85, o.rot + 2);
       return;
     }
     case 'champignon-geant': {

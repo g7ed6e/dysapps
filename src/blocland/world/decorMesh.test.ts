@@ -1,7 +1,8 @@
 import type { VoxelCube } from '../Voxel';
 import { toutConstruit } from './budget';
 import { DECOR_BATI } from './decor';
-import { caseDuDecor, coutDuDecor, ENFONCE, enPrimitives, maillageDuDecor, rangerLeDecor, type ElementDeDecor } from './decorMesh';
+import { caseDuDecor, coutDuDecor, ENFONCE, enPrimitives, FAMILLES, FEUILLAGE, FUMEE, maillageDuDecor, rangerLeDecor, TAILLES, valeur, type ElementDeDecor } from './decorMesh';
+import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
@@ -224,4 +225,111 @@ it('sans le drapeau, rien ne change : le monde en cubes garde tout son décor', 
   const copie: VoxelCube[] = cubes.map((c) => ({ ...c }));
   rangerLeDecor(cubes.filter((c) => !c.sol));
   expect(cubes).toEqual(copie);
+});
+
+/** Les triangles d'un élément : sommets et couleurs (sRGB 0..255). */
+function triangles(m: ReturnType<typeof ranger>['maillage'], i: number) {
+  const out: { p: [number, number, number][]; c: number[][]; n: number }[] = [];
+  const f = m.decor;
+  const srgb = (v: number) => 255 * (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+  for (let t = 0; t < f.elements.length; t++) {
+    if (f.elements[t] !== i) continue;
+    const p = [0, 1, 2].map((k) => [f.positions[t * 9 + k * 3], f.positions[t * 9 + k * 3 + 1], f.positions[t * 9 + k * 3 + 2]] as [number, number, number]);
+    const c = [0, 1, 2].map((k) => [0, 1, 2].map((j) => srgb(f.colors[t * 9 + k * 3 + j])));
+    out.push({ p, c, n: f.normals[t * 9 + 1] });
+  }
+  return out;
+}
+
+it('les arbres : deux familles de verts (six sur dix clairs), trois tailles, chaque boule plus claire en haut qu’en bas', () => {
+  const a = '6e';
+  const { elements, maillage } = monde(a);
+  const herbe = valeur(couleurDuSol(a, 'herbe').dessus);
+  // Les familles, à 15 % d'écart de valeur au moins ; le haut d'une boule plus clair que l'herbe (la nuit aussi : la
+  // lumière de la scène les assombrit de même), son bas nettement plus sombre.
+  expect(FAMILLES[1].valeur / FAMILLES[0].valeur).toBeLessThanOrEqual(0.85);
+  expect(FAMILLES[1].valeur * FEUILLAGE[1]).toBeGreaterThan(1.05);
+  expect(TAILLES).toEqual([0.7, 1, 1.3]);
+  const arbres = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'arbre' && !e.muted);
+  const clairs: number[] = [];
+  const largeurs = new Set<number>();
+  for (const { i } of arbres) {
+    const feuilles = triangles(maillage, i).filter((t) => t.p.some((q) => q[1] > Math.min(...triangles(maillage, i).map((u) => u.p[0][1])) + 1.5));
+    const pts = feuilles.flatMap((t) => t.p.map((q, k) => ({ y: q[1], v: valeur(t.c[k] as [number, number, number]), x: q[0] })));
+    const haut = pts.reduce((p, q) => (q.y > p.y ? q : p));
+    const bas = pts.reduce((p, q) => (q.y < p.y ? q : p));
+    expect(haut.v / herbe).toBeGreaterThan(1.05);
+    expect(bas.v / herbe).toBeLessThan(0.8);
+    clairs.push(haut.v / herbe > FAMILLES[0].valeur * 1.1 ? 1 : 0);
+    largeurs.add(Math.round((Math.max(...pts.map((q) => q.x)) - Math.min(...pts.map((q) => q.x))) * 2) / 2);
+  }
+  const part = clairs.reduce((s, v) => s + v, 0) / clairs.length;
+  expect(part).toBeGreaterThan(0.45);
+  expect(part).toBeLessThan(0.75);
+  // Trois tailles : des couronnes étroites et larges (autour de 2,4 cases pour la taille de base).
+  expect(Math.min(...largeurs)).toBeLessThan(2);
+  expect(Math.max(...largeurs)).toBeGreaterThan(2.8);
+});
+
+it('le chêne géant montre moins de la moitié de son tronc ; les repères n’ont pas de dalle à leur pied', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const { elements, maillage, champ } = monde(a);
+    elements.forEach((e, i) => {
+      if (!['grand-arbre', 'champignon-geant', 'aiguille-de-glace', 'haut-fourneau', 'tour-de-guet', 'grand-phare'].includes(e.genre)) return;
+      const ts = triangles(maillage, i);
+      let sol = Infinity;
+      for (const u of [0.1, 0.5, 0.9]) for (const v of [0.1, 0.5, 0.9]) sol = Math.min(sol, hauteurDuSol(champ, e.x + u * e.emprise, e.y + v * e.emprise) ?? Infinity);
+      // Rien de plat au ras de la pente : pas de dalle, le pied plonge dans le sol, jamais plus de 0,3 case au-dessus.
+      for (const t of ts) if (t.n > 0.95 && Math.max(...t.p.map((q) => q[1])) < sol + 0.3) throw new Error(`${e.id} : une dalle au pied`);
+      if (e.genre === 'grand-arbre') {
+        const y0 = sol;
+        const top = Math.max(...ts.flatMap((t) => t.p.map((q) => q[1])));
+        // Le bas de la couronne : le plus bas des sommets verts.
+        const verts = ts.filter((t) => t.c.every((c) => c[1] > c[0] * 1.15));
+        const bas = Math.min(...verts.flatMap((t) => t.p.map((q) => q[1])));
+        expect((bas - y0) / (top - y0), e.id).toBeLessThanOrEqual(0.45);
+      }
+    });
+  }
+});
+
+it('la fumée : chaque volute plus grosse, dérivée sous le vent comme le carré de son rang, les dernières fondues', () => {
+  expect(FUMEE).toEqual({ croissance: 0.35, fondu: 0.3, volutes: 3 });
+  const { elements, maillage } = monde('4e');
+  const i = elements.findIndex((e) => e.genre === 'haut-fourneau');
+  // Les volutes : des icosaèdres de vingt facettes, les derniers triangles de l'élément.
+  const ts = triangles(maillage, i).slice(-20 * 8);
+  const volutes = Array.from({ length: 8 }, (_, k) => ts.slice(k * 20, k * 20 + 20).flatMap((t) => t.p));
+  const centres = volutes.map((pts) => [0, 1, 2].map((j) => pts.reduce((s, q) => s + q[j], 0) / pts.length));
+  const tailles = volutes.map((pts) => Math.max(...pts.map((q) => q[0])) - Math.min(...pts.map((q) => q[0])));
+  for (let k = 1; k < 8; k++) expect(tailles[k], `volute ${k}`).toBeGreaterThan(tailles[k - 1] * 0.9);
+  expect(tailles[7] / tailles[0]).toBeGreaterThan(2.5);
+  // La dérive : de plus en plus grande à chaque rang.
+  const d = centres.map((c) => Math.hypot(c[0] - centres[0][0], c[2] - centres[0][2]));
+  for (let k = 2; k < 8; k++) expect(d[k] - d[k - 1]).toBeGreaterThan(d[k - 1] - d[k - 2] - 0.05);
+  for (let k = 1; k < 8; k++) expect(centres[k][1]).toBeGreaterThan(centres[k - 1][1]);
+});
+
+it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche', () => {
+  const { elements, maillage } = monde('6e');
+  const mer = new Set(elements.map((e, i) => (e.genre === 'ecueil' || e.genre === 'banc' ? i : -1)));
+  let n = 0;
+  for (const i of maillage.decor.elements) if (mer.has(i)) n++;
+  expect(n).toBeLessThanOrEqual(2500);
+  // Tous les écueils et les bancs sont là, un élément chacun.
+  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(139);
+  expect(elements.filter((e) => e.genre === 'banc').length).toBe(55);
+  // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre.
+  const forge = monde('4e');
+  const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('forge/'));
+  expect(rochers.length).toBeGreaterThan(5);
+  for (const { e, i } of rochers) {
+    const col = colonneEn(forge.champ, e.x, e.y)!;
+    const m = col.matieres[col.matieres.length - 1];
+    if (['herbe', 'mousse', 'sable', 'neige', 'glace', 'terre'].includes(m)) continue;
+    const dessus = triangles(forge.maillage, i).filter((t) => t.n > 0.3);
+    const v = Math.max(...dessus.flatMap((t) => t.c.map((c) => valeur(c as [number, number, number]))));
+    const roche = valeur(couleurDuSol('4e', m === 'basalte' ? 'basalte' : 'roche').dessus);
+    expect(v / roche, e.id).toBeLessThan(1.1 * 1.08 * 1.02);
+  }
 });
