@@ -49,7 +49,7 @@ Les autres « Blocland » remplacés par « Archipéo » au lot 1 :
 
 Le phare du large et le kiosque à musique disent encore « entre les Collines » et « la fanfare des Collines » : le lot 1 ne les a pas changés (`src/blocland/world/monuments.ts`).
 
-**Communs, inchangés** (vérifiés dans `src/blocland/biomes.ts` : noms identiques avant le lot 1 et aujourd’hui ; quelques répliques et une mission ajoutées par les lots de contenu #150, `bfc02f6`, #151, `8c95ecf`, « Relevés », #190, « Notices », #198, et « Voix des textes ») :
+**Communs, inchangés** (vérifiés dans `src/blocland/biomes.ts` : noms identiques avant le lot 1 et aujourd’hui ; quelques répliques et une mission ajoutées par les lots de contenu #150, `bfc02f6`, #151, `8c95ecf`, « Relevés », #190, « Notices », #198, et « Voix des textes », #203) :
 
 - les **29 îles** et leurs noms (Forêt des sons, Mine des lettres, Plaine des nombres, Marché des proportions, Phare des fonctions…) ;
 - les **29 Gardiens** (le Grand Chêne, le Golem de roche, la Dune vivante, le Hanneton de bronze, le Dragon de cendre, le Colporteur, le Titan d’acier, la Locomotive de fer, le Dragon gallois…) et leurs répliques (`guardianSays`), rangées depuis le lot 6 (fil B1) avec les espèces des créatures, les libellés « Gardien vaincu » et le mot de la baleine dans `src/univers/blocland/index.ts`, sans un mot changé (empreinte vérifiée par `src/univers/univers.test.ts`) ;
