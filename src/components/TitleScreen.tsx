@@ -6,10 +6,11 @@ import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
-import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, UNIVERS, UNIVERS_OUVERT } from '../core/univers';
+import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS, UNIVERS_OUVERT } from '../core/univers';
 import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
 import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
 import { Icon } from './Icon';
+import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 
@@ -25,7 +26,7 @@ function seenThisSession(): boolean {
 
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
-  return UNIVERS_OUVERT && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
+  return UNIVERS_OUVERT && PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
 }
 
 const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
@@ -138,10 +139,10 @@ export function TitleScreen() {
         {/* Sans l'icône qui retombe : le message tient à l'écran, même en grands caractères. */}
         <div className="title-card">
           <h1 id="titre-message-univers" className="title-message-heading">
-            <Syllabified text={MESSAGE_UNIVERS.titre} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.titre)} />
           </h1>
           <p className="title-message">
-            <Syllabified text={MESSAGE_UNIVERS.texte} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.texte)} />
           </p>
           <SpeakButton text={MESSAGE_LU} />
           <div className="title-actions">

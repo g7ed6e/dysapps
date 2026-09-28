@@ -6,6 +6,7 @@ import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { useVoixDisponible } from '../core/useVoix';
 import { Icon } from '../components/Icon';
+import { frenchTypography } from '../components/math/RichText';
 import { SauvegardePanel } from '../components/SauvegardePanel';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -267,7 +268,7 @@ export function SettingsPage() {
                     <Icon name={UNIVERS[u].icone} size="1.6em" />
                     <span className="univers-text">
                       <strong>{UNIVERS[u].nom}</strong>
-                      <Syllabified text={UNIVERS[u].presentation} />
+                      <Syllabified text={frenchTypography(UNIVERS[u].presentation)} />
                     </span>
                   </label>
                   <SpeakButton text={`${UNIVERS[u].nom}. ${UNIVERS[u].presentation}`} compact />
@@ -278,11 +279,11 @@ export function SettingsPage() {
               <div className="univers-confirm" role="group" aria-labelledby="univers-confirm-titre">
                 <p id="univers-confirm-titre" ref={confirmRef} tabIndex={-1}>
                   <strong>
-                    <Syllabified text={CONFIRMATION_UNIVERS.titre(universDemande)} />
+                    <Syllabified text={frenchTypography(CONFIRMATION_UNIVERS.titre(universDemande))} />
                   </strong>
                 </p>
                 <p>
-                  <Syllabified text={CONFIRMATION_UNIVERS.texte} />
+                  <Syllabified text={frenchTypography(CONFIRMATION_UNIVERS.texte)} />
                 </p>
                 <SpeakButton text={`${CONFIRMATION_UNIVERS.titre(universDemande)} ${CONFIRMATION_UNIVERS.texte}`} />
                 <div className="actions">
