@@ -121,18 +121,20 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     animer: (t, _dt, reduit) => {
       const avatar = bonhomme();
       beaconGroup.visible = instant.carte && avatar.visible;
+      // « Réduire les animations » : le fanion, les repères de mission et les balises du chemin restent dans leur pose de
+      // base, sans rotation, rebond ni pulsation (comme le repère d'île ci-dessous).
       if (beaconGroup.visible) {
-        beaconGroup.position.set(avatar.position.x, avatar.position.y + 8 + Math.abs(Math.sin(t * 2.2)) * 1.5, avatar.position.z);
-        beaconGroup.rotation.y = t * 0.8;
+        beaconGroup.position.set(avatar.position.x, avatar.position.y + 8 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 1.5), avatar.position.z);
+        beaconGroup.rotation.y = reduit ? 0 : t * 0.8;
       }
       for (const mk of questMarksGroup.children) {
         if (mk.userData.bob) {
-          mk.position.y = mk.userData.base + Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5;
-          mk.rotation.y = t * 1.2;
-        } else mk.rotation.y = t * 0.4;
+          mk.position.y = mk.userData.base + (reduit ? 0 : Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5);
+          mk.rotation.y = reduit ? 0 : t * 1.2;
+        } else mk.rotation.y = reduit ? 0 : t * 0.4;
       }
       if (trailGroup.children.length) {
-        const pulse = 0.85 + Math.sin(t * 3) * 0.15;
+        const pulse = reduit ? 1 : 0.85 + Math.sin(t * 3) * 0.15;
         trailGroup.scale.setScalar(1);
         for (const m of trailGroup.children) m.scale.setScalar(pulse);
       }

@@ -54,7 +54,7 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 
 ## Animations et vue du monde
 
-- **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
+- **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
 - **Vue du monde** : trois choix.
   - **Le monde en 3D** (par défaut).
   - **Le monde en 2D (expérimental)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Archipéo](blocland.md)).
