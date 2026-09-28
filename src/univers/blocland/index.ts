@@ -1,5 +1,6 @@
 // Les textes de Blocland : ceux d'avant le lot 6, déplacés sans un mot changé (Blocland garde « vaincre », le Gardien
 // vaincu et sa statue). Leur invariance est vérifiée par src/univers/univers.test.ts.
+import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
 
 const s = (n: number) => (n > 1 ? 's' : '');
@@ -239,6 +240,8 @@ export const BLOCLAND = {
       },
     },
   },
+  creatures: REPLIQUES,
+  etatsDIle: ETATS_D_ILE,
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe cubique',
