@@ -6,5 +6,6 @@ Ce dossier est la référence de la migration vers Archipéo (voir `docs/concept
 - **`planche-archipeo.webp`** est l’image jointe telle quelle (fichier d’origine, non retouché).
 - **`pack-visuel/`** est l’archive `archipeo-visual-assets.zip` fournie par le mainteneur le 27 septembre 2026, décompressée telle quelle (onze PNG, `README.md`, `MANIFEST.json`, non retouchés). Sa planche maître `reference/archipeo-visual-identity-board.png` est plus récente que `planche-archipeo.webp` ; les autres images en sont des découpes. Ce sont des concepts de référence, ni publiés ni embarqués dans l’application.
 - **`esquisses/`** n’est pas une archive fournie : ce sont les fiches des quatre archipels écrites par le directeur artistique d’après le pack, et le code Three.js qui en dessine les esquisses (aucun modèle ni texture importés). Les images ne sont pas versionnées, le code les refait.
+- **`intentions/`** n’est pas une archive fournie : ce sont les fiches d’intention des sous-lots R4b-5e, R4b-4e et R4b-3e, écrites par le directeur artistique le 28 septembre 2026 avec le consultant d’Archipéo et l’artiste technique 3D.
 
 Les fichiers de l’archive ne se modifient pas ici : une décision qui s’en écarte s’écrit dans le cadrage.
