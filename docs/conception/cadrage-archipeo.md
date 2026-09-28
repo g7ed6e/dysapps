@@ -351,7 +351,7 @@ Cette fiche est la référence commune aux quatre sous-lots R4b, à R5 et à R6 
 - **La lanterne**, de 0,73 à 0,85 H, rayon 0,55 r : vitrée et claire de jour (le verre de la palette), elle brille la nuit dans les lueurs, en `#FFD866`. Ni faisceau ni rotation avant le lot 9. Sur une île fermée, elle reste éteinte et délavée, comme le reste du décor.
 - **Le toit**, conique, de 0,85 à 1,00 H, base de rayon 0,85 r qui dépasse la lanterne, en terre cuite `#A8553A`.
 - **Le socle**, en pierre, avec un anneau pétrole `#3F8299` de 0,15 case à la jonction du socle et du fût.
-- **Au 6e** : H = 8 cases, r = 1,0 case, sur un socle d’une case ; une emprise de 2 × 2 cases, sur l’île de la Tour (le plan « Le phare de Grimoire », dessiné par R5), lanterne tournée vers le large. C’est la seule verticale nette de l’archipel.
+- **Au 6e** : H = 6 cases, r = 1,2 case, sans socle propre, dans l’emprise de 3 × 3 cases du plan « Le phare de Grimoire » (île de la Tour, dessiné par R5 ; décision 4 ci-dessous), lanterne tournée vers le large. C’est la seule verticale nette de l’archipel.
 - **Au 3e**, seuls la taille, le socle et le site changent (§5) : H = 11 cases, r = 1,2 case, sur un socle de salles de pierre de taille `#DBDADD`, trois cases de haut et 4 × 4 d’emprise, au sommet de l’île en gradins, au centre de la vue de l’archipel. Proportions, couleurs et bandes ne changent pas.
 - **Au 5e et au 4e**, aucun phare de ce modèle (« Le phare du large », au 5e, est une tour à feu de pierre).
 
@@ -396,6 +396,7 @@ Cette fiche est la référence commune aux quatre sous-lots R4b, à R5 et à R6 
 1. **Le phare du 6e** est celui du plan « Le phare de Grimoire » (`tour-phare`, île de la Tour), dessiné par R5 avec le modèle unique : sa restauration devient l’avant/après, et l’archipel n’a qu’un phare. R4b-6e construit le modèle sans le poser en repère. Le monument du 5e « Le phare du large » est dessiné par R5 comme une tour à feu de pierre, sans bandes ni toit conique.
 2. **Au 5e, un pont court et rigide**, de pierre et de bois, comme sur la planche maître, et non une passerelle suspendue.
 3. **Le volcan de l’île du Volcan (6e)** garde une fumée mince, sans lueur de lave, plus basse que le phare : le volcan fumant reste une signature du 4e.
+4. **Le phare du 6e** fait 6 cases de haut, r = 1,2, sans socle, pour tenir dans l’emprise de 3 × 3 cases du plan « Le phare de Grimoire » (posé par R5).
 
 ### Les silhouettes des Premiers Rivages (R4b-6e)
 

@@ -47,8 +47,9 @@ export const COULEURS_DU_PHARE = {
 /**
  * L'éclat du fût : sous la lumière de la scène, un crème peint tel quel se lit grège, et gris à l'ombre (relecture du
  * DA, 28/09). Le fût est donc peint plus clair que blanc dans l'espace linéaire (×`ECLAT_DU_FUT`), sans assombrir son
- * pied ni griser son ombre : à l'écran, environ `#DDD5C2` au soleil et `#B3AA97` à l'ombre, la note la plus claire du
- * phare. La couleur de la fiche (`fut`) ne change pas.
+ * pied ni griser son ombre : à l'écran, sous la lumière du 6e, environ `#DDCCAE` au soleil et `#B0AA9A` à l'ombre (lu et
+ * validé par le DA, docs/conception/cadrage-archipeo.md, R4b-6e), la note la plus claire du phare. La couleur de la
+ * fiche (`fut`) ne change pas.
  */
 export const ECLAT_DU_FUT = 1.55;
 /** L'ombre du fût : plus claire (+`eclat`) et plus chaude (`chaleur` : plus de rouge, moins de bleu), à l'opposé du soleil. */
