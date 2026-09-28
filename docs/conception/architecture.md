@@ -14,6 +14,8 @@ src/
   programme/     le référentiel des programmes officiels (cycles 3 et 4 : français, maths, anglais), les exclusions
                  motivées, la liste des mots-outils ; sert aux tests et à la documentation, pas à l'application
   styles/        thèmes (jetons de couleur et de forme), styles globaux
+  univers/       les textes de chaque univers (archipeo/, blocland/) : répliques des Gardiens, espèces des créatures,
+                 libellés des Gardiens, mot de la baleine ; la constante UNIVERS_OUVERT
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
 design/          archipeo/ : le dossier de game design et la planche d’Archipéo (voir cadrage-archipeo.md) ;
@@ -52,7 +54,7 @@ public/          icônes, police Luciole
 
 Blocland est le nom du module ; à l’écran, le jeu s’appelle Archipéo.
 
-- `biomes.ts` : les **vingt-huit îles** (nom, matière, classe, module, bloc, créature et ses phrases, Gardien et ses répliques, missions) et les **blocs**. La classe d’une île est aussi son **archipel**. Chaque mission cite dans `programme` les compétences du programme officiel qu’elle travaille (identifiants de `src/programme/`, vérifiés par le compilateur) ; les missions du portail font de même dans `src/apps/registry.ts`.
+- `biomes.ts` : les **vingt-huit îles** (nom, matière, classe, module, bloc, créature et ses phrases, nom du Gardien, missions) et les **blocs**. La classe d’une île est aussi son **archipel**. Chaque mission cite dans `programme` les compétences du programme officiel qu’elle travaille (identifiants de `src/programme/`, vérifiés par le compilateur) ; les missions du portail font de même dans `src/apps/registry.ts`.
 - `exercises/` : le **moteur d’exercice** de Blocland. `types.ts` définit le format d’un exercice ; `index.ts` le catalogue (l’index de tous les exercices, et `loadExercise` qui charge à la demande le contenu d’un exercice JSON) ; `registry.ts` associe chaque type d’exercice à son écran (`QcmItem`, `ChasseSonScreen`, `FilonScreen`, `MotTroueScreen`, `AscensionScreen`, `RimesScreen`, `DicteeItem`, `FamillesScreen`, `EnclosScreen`, `CalculScreen`, `BossScreen`) ; `data/*.json` les exercices écrits à la main ; `maths.ts` et `college.ts` les exercices générés ; `run.ts` la graine de chaque partie. Voir [Format des exercices](exercices.md).
 - `engine.ts` : logique pure et testée du jeu : score, étoiles, blocs, XP, répétition espacée, série de régularité et coffres, adaptation du niveau, inventaire, lancement du Bloc-Navire et migration des sauvegardes. `completePortalQuest` : les blocs d’une mission du portail, gagnés à l’école du village.
 - `ExerciseRunner.tsx` : joue un exercice (consigne écrite et lue, écrans, correction, récompense). `boss.ts` et `BossPage.tsx` : le défi du Gardien, deux manches par mission. `review.ts` : les révisions du jour (items de la répétition espacée dus aujourd’hui) : quelles missions les proposent, quels items passent en tête de la partie ; `components/AppBadge.tsx` en fait la pastille de l’icône.
@@ -64,6 +66,12 @@ Blocland est le nom du module ; à l’écran, le jeu s’appelle Archipéo.
 - `sound.ts`, `useAmbience.ts` : sons Web Audio générés par le code.
 
 Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:blocland` ; l’XP alimente aussi les rôles et succès communs.
+
+## Les univers (`src/univers/`)
+
+Les textes qui changent d’un univers à l’autre, sur le même jeu (lot 6, une tranche de l’étape J8 de la [feuille de route des univers](univers.md)) : `archipeo/index.ts` et `blocland/index.ts`, typés `TextesUnivers` (`types.ts`), chacun avec, par île (`Record<BiomeId, …>`), les répliques du Gardien pendant son défi et l’espèce de la créature, puis les libellés qui disent où en sont les Gardiens (vaincus dans Blocland, rallumés dans Archipéo) et le mot de la baleine (`baleine.ts` en fait les pages ; `world/whale.ts` ne dit que les étapes atteintes). Les noms des îles, des créatures et des Gardiens restent dans `biomes.ts` jusqu’à U4.
+
+`index.ts` porte la constante `UNIVERS_OUVERT`, fausse jusqu’à la bascule du lot 6 : tant qu’elle l’est, `useTextes()` rend les textes de Blocland, ceux d’avant le lot 6, quel que soit le rendu. `univers.test.ts` vérifie que Blocland garde ses textes mot pour mot (une empreinte), qu’aucun texte « rallumer » n’est lu tant que la constante est fausse, que Blocland ne rallume jamais et qu’Archipéo ne fait jamais tomber un Gardien. Les pages générées de la documentation lisent les textes de l’univers affiché.
 
 ## Tests
 

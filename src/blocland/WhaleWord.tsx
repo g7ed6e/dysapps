@@ -3,6 +3,8 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
+import { pagesBaleine } from '../univers/baleine';
+import { useTextes } from '../univers';
 import { loadJSON, saveJSON } from '../core/storage';
 import type { BloclandState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
@@ -79,9 +81,11 @@ interface Props {
 /** Le panneau « Le mot de la baleine » : une ou deux pages lues à voix haute, fermé par « J'ai compris » ou Échap. */
 export function WhaleWordPanel({ word, onClose, className = '' }: Props) {
   const { settings, speak } = useSettings();
+  const textes = useTextes();
+  const pages = pagesBaleine(word, textes);
   const [page, setPage] = useState(0);
-  const text = word.pages[page] ?? word.pages[0];
-  const last = page >= word.pages.length - 1;
+  const text = pages[page] ?? pages[0];
+  const last = page >= pages.length - 1;
   useEffect(() => setPage(0), [word.id]);
   useEffect(() => {
     if (settings.autoRead) speak(frenchTypography(text));
@@ -105,9 +109,9 @@ export function WhaleWordPanel({ word, onClose, className = '' }: Props) {
       </p>
       <div className="whale-word-actions">
         <SpeakButton text={text} />
-        {word.pages.length > 1 && (
-          <span className="whale-word-dots" aria-label={`Page ${page + 1} sur ${word.pages.length}`}>
-            {word.pages.map((_, i) => (
+        {pages.length > 1 && (
+          <span className="whale-word-dots" aria-label={`Page ${page + 1} sur ${pages.length}`}>
+            {pages.map((_, i) => (
               <span key={i} className={i === page ? 'on' : undefined} />
             ))}
           </span>

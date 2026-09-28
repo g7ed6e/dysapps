@@ -8,7 +8,8 @@ import { EarnLink } from './PlanSection';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, getArchipelago, reachedArchipelagos, type ArchipelagoId } from './world/archipelago';
-import { VEHICLE_NAME, VEHICLE_STAGES, guardiansText, stageAt } from './world/vehicle';
+import { VEHICLE_NAME, VEHICLE_STAGES, beatenGuardians, stageAt } from './world/vehicle';
+import { useTextes, type TextesUnivers } from '../univers';
 
 interface Props {
   biome: BiomeDef;
@@ -26,12 +27,12 @@ interface Props {
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 /** L'état du chantier en une ligne, pour le pli replié. */
-export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<BlockId, number>>): string {
+export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<BlockId, number>>, textes: TextesUnivers): string {
   const { stage, status, launch } = builder;
   if (!stage || !status) return 'Voyage déjà fait';
   if (launch?.ok) return 'Prêt : embarque !';
   const posed = `${status.done} / ${status.total} posés`;
-  if (launch && !launch.ok && launch.reason === 'gardiens') return `${posed} · encore ${launch.missing} Gardien${launch.missing > 1 ? 's' : ''} à vaincre`;
+  if (launch && !launch.ok && launch.reason === 'gardiens') return `${posed} · ${textes.libelles.encoreAFaire(launch.missing)}`;
   const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
   const lacking = missing.filter(([b, n]) => (inventory[b] ?? 0) < n);
   if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
@@ -46,6 +47,7 @@ export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<B
  */
 export function ShipSection({ biome, builder, in3d = false, onBoard, highlight = false, fold }: Props) {
   const { state } = useBlocland();
+  const textes = useTextes();
   const section = useRef<HTMLElement>(null);
   useEffect(() => {
     if (highlight) section.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
@@ -69,7 +71,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
   // Ouvert quand on peut poser, embarquer, ou que le navire vient d'être touché dans le monde ; replié sinon.
   const defaultOpen = builder.canFill || ready || highlight || builder.notice !== null;
   return (
-    <Foldable fold={fold} name="navire" heading={heading} status={shipSummary(builder, state.inventory)} defaultOpen={defaultOpen}>
+    <Foldable fold={fold} name="navire" heading={heading} status={shipSummary(builder, state.inventory, textes)} defaultOpen={defaultOpen}>
       <section
         ref={section}
         className={`plan-section ship-section${ready ? ' ship-ready' : ''}${highlight ? ' bridge-highlight' : ''}`}
@@ -107,7 +109,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               </ul>
             )}
             <p className="ship-guardians">
-              <Icon name="shield" /> <Syllabified text={guardiansText(stage, state.progress)} />
+              <Icon name="shield" /> <Syllabified text={textes.libelles.navireGardiens(beatenGuardians(stage.from, state.progress), stage.guardians, getArchipelago(stage.from).name, stage.short)} />
             </p>
             {!status.complete && (
               <>
@@ -123,7 +125,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             {status.complete && waiting && (
               <p className="ship-wait">
                 <Syllabified
-                  text={`Le Bloc-Navire a tous ses blocs ! Il attend encore ${waiting.missing} Gardien${waiting.missing > 1 ? 's' : ''} vaincu${waiting.missing > 1 ? 's' : ''}.`}
+                  text={textes.libelles.navireAttend(waiting.missing)}
                 />
               </p>
             )}

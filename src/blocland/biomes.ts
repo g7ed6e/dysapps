@@ -201,7 +201,6 @@ export interface ExerciseTypeDef {
 
 export interface CreatureDef {
   name: string;
-  species: string;
   /** Ce que dit la créature quand on arrive dans son biome. */
   greeting: string;
   /** Petites phrases quand on la touche dans le village. */
@@ -222,11 +221,11 @@ export interface BiomeDef {
   description: string;
   block: BlockId;
   icon: AnyIconName;
-  /** Le Gardien du biome (boss de fin de biome) et ce qu'il dit quand on l'affronte. */
+  /**
+   * Le nom du Gardien du biome (boss de fin de biome). Ce qu'il dit pendant le défi et l'espèce de la créature sont des
+   * textes d'univers, dans `src/univers/` (lot 6).
+   */
   guardian: string;
-  challenge: string;
-  /** Ce que dit le Gardien pendant le défi : épreuve réussie, épreuve ratée, et quand il est vaincu. */
-  guardianSays: { hit: string; miss: string; beaten: string };
   creature: CreatureDef;
   exercises: ExerciseTypeDef[];
 }
@@ -242,16 +241,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Écouter, couper en syllabes, repérer les sons et les rimes.',
     block: 'bois',
     guardian: 'le Grand Chêne',
-    guardianSays: {
-      hit: 'Mes branches tremblent. Tu as l’oreille fine.',
-      miss: 'Ce n’est rien : même le vent se trompe de feuille. Continue.',
-      beaten: 'Je m’incline, bâtisseur. La forêt est à toi… et à Mousso.',
-    },
-    challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Montre-moi tout ce que tu sais faire. »',
     icon: 'tree',
     creature: {
       name: 'Mousso',
-      species: 'golem de mousse',
       greeting: 'Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
       lines: [
         'Tu entends ? Le vent coupe les mots en syllabes.',
@@ -275,16 +267,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.',
     block: 'pierre',
     guardian: 'le Golem de roche',
-    guardianSays: {
-      hit: 'Une fissure ! Tes yeux ne se trompent pas.',
-      miss: 'Ma roche est dure, mais tu peux la reprendre. Regarde bien.',
-      beaten: 'Je m’écroule… en pierres pour ton village. Bien joué.',
-    },
-    challenge: 'Le Golem de roche gronde : « Mes lettres se ressemblent toutes. Toi, tu les reconnais ? Prouve-le. »',
     icon: 'pickaxe',
     creature: {
       name: 'Tunel',
-      species: 'taupe cubique',
       greeting: 'Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre.',
       lines: [
         'Un b, un d… regarde bien de quel côté est le ventre.',
@@ -307,16 +292,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Écrire les mots juste, les familles de mots, les mots-outils.',
     block: 'sable',
     guardian: 'la Dune vivante',
-    guardianSays: {
-      hit: 'Je recule d’un pas. Ce mot était bien écrit.',
-      miss: 'Le sable bouge, moi aussi. Réessaie au prochain mot.',
-      beaten: 'Je me couche sur la plage. Le chemin est libre, bâtisseur.',
-    },
-    challenge: 'La Dune vivante siffle : « Chaque mot bien écrit me fait reculer. Écris juste, et je te laisserai passer. »',
     icon: 'mountain',
     creature: {
       name: 'Rouxel',
-      species: 'renard cubique',
       greeting: 'Hé, bâtisseur ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt ?',
       lines: [
         'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
@@ -340,16 +318,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Accorder sujet et verbe, choisir a/à, et/est, -é/-er.',
     block: 'terre',
     guardian: 'le Taureau de terre',
-    guardianSays: {
-      hit: 'Meuh ! Mes sabots glissent. C’était bien accordé.',
-      miss: 'Tout le monde trébuche parfois. Le prochain enclos est à toi.',
-      beaten: 'Je m’assieds dans l’herbe. Tout s’accorde, tu as gagné.',
-    },
-    challenge: 'Le Taureau de terre frappe le sol : « Ici, tout s’accorde ou tout s’écroule. À toi de jouer. »',
     icon: 'wheat',
     creature: {
       name: 'Bloquette',
-      species: 'vache carrée',
       greeting: 'Meuh ! À la ferme, tout doit s’accorder. Trie bien les graines et je remplis tes sacs de terre.',
       lines: [
         'Meuh. Les vaches, au pluriel, prennent un s. Comme les murs.',
@@ -373,16 +344,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Lire à voix haute, étage par étage.',
     block: 'verre',
     guardian: 'la Chouette de verre',
-    guardianSays: {
-      hit: 'Hou… Tu lis mieux que je ne vois la nuit.',
-      miss: 'Lire lentement, c’est lire quand même. Reprends ton souffle.',
-      beaten: 'Hou hou. Le phare est à toi. Je te confie la nuit.',
-    },
-    challenge: 'La Chouette de verre cligne des yeux : « Lis-moi, à ton rythme. Le phare t’attend en haut. »',
     icon: 'castle',
     creature: {
       name: 'Grimoire',
-      species: 'hibou de pierre',
       greeting: 'Hou hou. Chaque paragraphe que tu lis construit un étage de ma tour. Prends ton temps, je ne compte pas les secondes à voix haute.',
       lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
       home: 'Hou hou ! Mon phare est allumé. Regarde-le briller ce soir.',
@@ -398,16 +362,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Tables, compléments, doubles et moitiés, puis les problèmes du port, avec des aides visuelles toujours affichées.',
     block: 'brique',
     guardian: 'le Hanneton de bronze',
-    guardianSays: {
-      hit: 'Bzzz… Juste ! Mes ailes de bronze grincent.',
-      miss: 'Ce n’est rien : regarde les points, compte par cinq, et recommence.',
-      beaten: 'Bzzz. Tu calcules plus vite que mes ailes. La plaine est à toi… et à Coco.',
-    },
-    challenge: 'Le Hanneton de bronze bourdonne : « Tu as compté toute ma plaine. Montre-moi ce que tu sais calculer. »',
     icon: 'calculator',
     creature: {
       name: 'Coco',
-      species: 'coccinelle à dix points',
       greeting:
         'Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
       lines: [
@@ -440,16 +397,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.',
     block: 'galet',
     guardian: 'le Brochet d’argent',
-    guardianSays: {
-      hit: 'Plouf ! Juste. Mes écailles frissonnent.',
-      miss: 'Ce n’est rien : regarde les parts, compte celles qui sont coloriées, et reprends.',
-      beaten: 'Glou. Tu partages mieux que la rivière elle-même. Elle est à toi… et à Nénu.',
-    },
-    challenge: 'Le Brochet d’argent fend l’eau : « Tu as partagé toute ma rivière. Montre-moi comment tu lis les parts. »',
     icon: 'pizza',
     creature: {
       name: 'Nénu',
-      species: 'grenouille des nénuphars',
       greeting:
         'Coâ ! Bienvenue à la rivière. Ici, on coupe en parts égales et on regarde la figure avant de répondre. Chaque fraction lue, c’est un galet pour le village.',
       lines: [
@@ -474,16 +424,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Lire, comparer et placer des nombres à virgule, le tableau de numération toujours affiché.',
     block: 'obsidienne',
     guardian: 'le Dragon de cendre',
-    guardianSays: {
-      hit: 'Grrr… Exact. Ma fumée se dissipe.',
-      miss: 'Ce n’est rien : repère la virgule, puis lis les rangs un par un. Reprends.',
-      beaten: 'Grrr. Tu lis les rangs mieux que mes flammes. Le volcan est à toi… et à Lavi.',
-    },
-    challenge: 'Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. »',
     icon: 'flame',
     creature: {
       name: 'Lavi',
-      species: 'salamandre de lave',
       greeting:
         'Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
       lines: [
@@ -508,16 +451,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.',
     block: 'glace',
     guardian: 'le Mammouth de givre',
-    guardianSays: {
-      hit: 'Brrr… Juste. Mes défenses en tremblent.',
-      miss: 'Ce n’est rien : regarde la droite, zéro au milieu, et reprends.',
-      beaten: 'Brrr. Tu comptes même sous zéro. Le glacier est à toi… et à Frimas.',
-    },
-    challenge: 'Le Mammouth de givre barrit : « Tu as traversé toute ma banquise. Montre-moi comment tu comptes sous zéro. »',
     icon: 'mountain',
     creature: {
       name: 'Frimas',
-      species: 'pingouin comptable',
       greeting:
         'Salut, bâtisseur ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
       lines: [
@@ -544,16 +480,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.',
     block: 'toile',
     guardian: 'le Colporteur',
-    guardianSays: {
-      hit: 'Hé hé… Juste ! Tu sais compter tes sous.',
-      miss: 'Ce n’est rien : passe par la valeur d’un seul, et reprends.',
-      beaten: 'Hé hé. Tu marchandes mieux que moi. Le marché est à toi… et à Bazar.',
-    },
-    challenge: 'Le Colporteur pose sa besace : « Tu as fait le tour de mes étals. Montre-moi comment tu fais les comptes. »',
     icon: 'ruler',
     creature: {
       name: 'Bazar',
-      species: 'raton laveur marchand',
       greeting:
         'Bienvenue au marché, bâtisseur ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
       lines: [
@@ -585,16 +514,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.',
     block: 'panneau',
     guardian: 'le Sphinx des routes',
-    guardianSays: {
-      hit: 'Hmm… Juste. Tu connais le chemin des mots.',
-      miss: 'Ce n’est rien : relis la règle sur le panneau, remplace le mot, et reprends.',
-      beaten: 'Je m’écarte. Toutes les routes sont à toi… et à Sema.',
-    },
-    challenge: 'Le Sphinx des routes se dresse : « Tu as lu tous mes panneaux. Montre-moi que tu ne te trompes plus de chemin. »',
     icon: 'compass',
     creature: {
       name: 'Sema',
-      species: 'caméléon des panneaux',
       greeting:
         'Salut, bâtisseur ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
       lines: [
@@ -619,16 +541,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.',
     block: 'tourbe',
     guardian: 'l’Hydre des marais',
-    guardianSays: {
-      hit: 'Sss… Juste. Une de mes têtes s’incline.',
-      miss: 'Ce n’est rien : cherche l’indice de temps dans la phrase, et reprends.',
-      beaten: 'Sss. Mes trois têtes se taisent. Le marais est à toi… et à Kroa.',
-    },
-    challenge: 'L’Hydre des marais sort de la vase : « Tu as traversé mes trois eaux. Montre-moi que tu connais le passé, le futur et le doute. »',
     icon: 'footprints',
     creature: {
       name: 'Kroa',
-      species: 'triton des roseaux',
       greeting:
         'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
       lines: [
@@ -653,16 +568,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Puissances de 10, notation scientifique, puissances, racines carrées, nombres premiers.',
     block: 'acier',
     guardian: 'le Titan d’acier',
-    guardianSays: {
-      hit: 'Clang ! Juste. Mon armure sonne creux.',
-      miss: 'Ce n’est rien : relis la règle, compte les zéros, et reprends.',
-      beaten: 'Clang. Tu frappes plus fort que mon marteau. La forge est à toi… et à Braise.',
-    },
-    challenge: 'Le Titan d’acier lève son marteau : « Tu as chauffé toute ma forge. Montre-moi la puissance de tes calculs. »',
     icon: 'zap',
     creature: {
       name: 'Braise',
-      species: 'golem forgeron',
       greeting:
         'Salut, bâtisseur ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
       lines: [
@@ -687,16 +595,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée.',
     block: 'calque',
     guardian: 'le Golem des équations',
-    guardianSays: {
-      hit: 'Égal… Juste. Mes deux plateaux sont à niveau.',
-      miss: 'Ce n’est rien : fais la même chose des deux côtés, et reprends.',
-      beaten: 'Égal. Tu as trouvé tous mes x. L’atelier est à toi… et à Ixe.',
-    },
-    challenge: 'Le Golem des équations se met en équilibre : « Tu as tracé tous mes plans. Montre-moi que tu sais trouver l’inconnue. »',
     icon: 'ruler',
     creature: {
       name: 'Ixe',
-      species: 'robot dessinateur',
       greeting:
         'Bip. Bonjour, bâtisseur ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
       lines: [
@@ -721,16 +622,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Participe passé, adjectifs, sujet caché : accorder sans se tromper, la règle sous les yeux.',
     block: 'ardoise',
     guardian: 'le Bélier de granit',
-    guardianSays: {
-      hit: 'Boum… Juste. Mes cornes s’émoussent.',
-      miss: 'Ce n’est rien : cherche le sujet, cherche le complément, et reprends.',
-      beaten: 'Boum. Tu grimpes plus sûrement que moi. La falaise est à toi… et à Cléa.',
-    },
-    challenge: 'Le Bélier de granit frappe le rocher : « Tu as gravi toute ma paroi. Montre-moi que tes accords tiennent la corde. »',
     icon: 'mountain',
     creature: {
       name: 'Cléa',
-      species: 'chèvre des cimes',
       greeting:
         'Bêêê, bâtisseur ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
       lines: [
@@ -755,16 +649,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.',
     block: 'parchemin',
     guardian: 'le Hibou lexicographe',
-    guardianSays: {
-      hit: 'Hou… Juste. Tu as lu jusqu’à la racine.',
-      miss: 'Ce n’est rien : découpe le mot, cherche le petit morceau connu, et reprends.',
-      beaten: 'Hou. Tu connais mes mots mieux que mon dictionnaire. Le cabinet est à toi… et à Plume.',
-    },
-    challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Tu as ouvert tous mes tiroirs. Montre-moi que tu sais démonter les mots. »',
     icon: 'library',
     creature: {
       name: 'Plume',
-      species: 'pie collectionneuse',
       greeting:
         'Bonjour, bâtisseur ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
       lines: [
@@ -789,16 +676,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux ; puis les réciproques : le triangle est-il rectangle, les droites sont-elles parallèles ?',
     block: 'marbre',
     guardian: 'le Sphinx de marbre',
-    guardianSays: {
-      hit: 'Hmm… Juste. L’angle droit te salue.',
-      miss: 'Ce n’est rien : repère l’hypoténuse, écris l’égalité, et reprends.',
-      beaten: 'Je m’incline. Toutes les longueurs sont à toi… et à Théo.',
-    },
-    challenge: 'Le Sphinx de marbre se redresse : « Tu as mesuré tout mon belvédère. Montre-moi que tu trouves ce qui manque. »',
     icon: 'compass',
     creature: {
       name: 'Théo',
-      species: 'héron géomètre',
       greeting:
         'Bonjour, bâtisseur ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
       lines: [
@@ -823,16 +703,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Moyenne, médiane, étendue d’une petite série, probabilités simples, diagrammes et fréquences, les barres sous les yeux.',
     block: 'quartz',
     guardian: 'le Comptable des étoiles',
-    guardianSays: {
-      hit: 'Tic… Juste. Une étoile de plus dans ma colonne.',
-      miss: 'Ce n’est rien : range la série, compte les valeurs, et reprends.',
-      beaten: 'Tic. Tu comptes les étoiles mieux que moi. L’observatoire est à toi… et à Stat.',
-    },
-    challenge: 'Le Comptable des étoiles ouvre son grand livre : « Tu as relevé toutes mes séries. Montre-moi que tu sais les résumer. »',
     icon: 'star',
     creature: {
       name: 'Stat',
-      species: 'chouette astronome',
       greeting:
         'Hou ! Bienvenue à l’observatoire, bâtisseur. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
       lines: [
@@ -858,16 +731,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Image, antécédent, fonction linéaire ou affine : le tableau de valeurs toujours affiché.',
     block: 'prisme',
     guardian: 'le Dragon de lumière',
-    guardianSays: {
-      hit: 'Flash… Juste. Ma lumière trouve son image.',
-      miss: 'Ce n’est rien : remplace x par le nombre, calcule, et reprends.',
-      beaten: 'Flash. Tu éclaires plus loin que moi. Le phare est à toi… et à Fi.',
-    },
-    challenge: 'Le Dragon de lumière déploie ses ailes : « Tu as allumé tout mon phare. Montre-moi que tu suis la lumière de x jusqu’à f(x). »',
     icon: 'lightbulb',
     creature: {
       name: 'Fi',
-      species: 'lampe de phare vivante',
       greeting:
         'Bonjour, bâtisseur ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
       lines: [
@@ -891,16 +757,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Lire entre les lignes, reconnaître les figures de style, la nature et la fonction des mots.',
     block: 'lentille',
     guardian: 'le Grand Lecteur',
-    guardianSays: {
-      hit: 'Mmh… Juste. Tu lis ce qui n’est pas écrit.',
-      miss: 'Ce n’est rien : relis la phrase, cherche l’indice, et reprends.',
-      beaten: 'Je ferme mon livre. L’observatoire est à toi… et à Astra. Tu sais lire, vraiment lire.',
-    },
-    challenge: 'Le Grand Lecteur lève les yeux de son livre : « Tu as observé tous mes textes. Montre-moi que tu vois ce qu’ils cachent. »',
     icon: 'book',
     creature: {
       name: 'Astra',
-      species: 'luciole lectrice',
       greeting:
         'Bonsoir, bâtisseur ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
       lines: [
@@ -925,16 +784,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Se présenter, compter, dire l’heure, reconnaître un mot à l’oreille : l’anglais de tous les jours.',
     block: 'cabine',
     guardian: 'le Lion de pierre',
-    guardianSays: {
-      hit: 'Rrr… Juste. Tu as l’oreille anglaise.',
-      miss: 'Ce n’est rien : réécoute le mot, relis la règle, et reprends.',
-      beaten: 'Je me recouche sur mon socle. La baie est à toi… et à Robin. Well done!',
-    },
-    challenge: 'Le Lion de pierre se dresse sur son socle : « Tu as écouté tous les mots de la baie. Montre-moi que tu les comprends. »',
     icon: 'languages',
     creature: {
       name: 'Robin',
-      species: 'rouge-gorge des quais',
       greeting:
         'Hello, bâtisseur ! Dans la baie, on parle anglais. Écoute bien : le bouton Écouter lit chaque mot avec une voix anglaise. Chaque mot compris, c’est une cabine rouge pour le village.',
       lines: [
@@ -959,16 +811,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.',
     block: 'cadran',
     guardian: 'le Coucou de bronze',
-    guardianSays: {
-      hit: 'Coucou ! Juste. Ton verbe est à l’heure.',
-      miss: 'Ce n’est rien : cherche le sujet, relis la règle, et reprends.',
-      beaten: 'Coucou… Je rentre dans mon horloge. Les verbes sont à toi… et à Tick.',
-    },
-    challenge: 'Le Coucou de bronze jaillit de son horloge : « Tu as remonté tous mes rouages. Montre-moi que tes verbes sonnent juste. »',
     icon: 'history',
     creature: {
       name: 'Tick',
-      species: 'hérisson horloger',
       greeting:
         'Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village.',
       lines: [
@@ -993,16 +838,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Faire ses courses, raconter sa journée, comprendre une phrase entendue : l’anglais du quotidien.',
     block: 'tuile',
     guardian: 'la Reine du marché',
-    guardianSays: {
-      hit: 'Splendid! Juste. Tu parles comme au marché de Londres.',
-      miss: 'Ce n’est rien : réécoute la phrase, relis la règle, et reprends.',
-      beaten: 'Je range ma couronne. Le Comptoir est à toi… et à Pudding.',
-    },
-    challenge: 'La Reine du marché descend de son estrade : « Tu as fait toutes tes courses en anglais. Montre-moi que tu comprends tout ce qu’on te dit. »',
     icon: 'languages',
     creature: {
       name: 'Pudding',
-      species: 'bouledogue marchand',
       greeting:
         'Hello, bâtisseur ! Au Comptoir, on achète, on compte, on raconte sa journée, en anglais. Écoute bien chaque phrase : la voix anglaise la lit pour toi. Chaque bonne réponse, c’est une tuile pour le village.',
       lines: [
@@ -1027,16 +865,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Ce qui se passe maintenant, ce qui s’est passé hier, et qui est le plus grand : la règle sous les yeux.',
     block: 'lambris',
     guardian: 'le Spectre du manoir',
-    guardianSays: {
-      hit: 'Bouh… Juste. Tu ne crains pas le passé.',
-      miss: 'Ce n’est rien : cherche le mot du temps (now, yesterday…), relis la règle, et reprends.',
-      beaten: 'Je m’efface… Le manoir est à toi… et à Moustache.',
-    },
-    challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
     icon: 'history',
     creature: {
       name: 'Moustache',
-      species: 'chat du manoir',
       greeting:
         'Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village.',
       lines: [
@@ -1061,16 +892,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Répondre à une question entendue, dire combien, raconter au passé : l’anglais sur scène.',
     block: 'velours',
     guardian: 'le Masque',
-    guardianSays: {
-      hit: 'Bravo! Juste. La salle applaudit.',
-      miss: 'Ce n’est rien : réécoute la réplique, relis la règle, et reprends.',
-      beaten: 'Le rideau tombe. Le théâtre est à toi… et à Puck.',
-    },
-    challenge: 'Le Masque descend des cintres : « Tu connais toutes mes répliques. Montre-moi que tu sais donner la bonne. »',
     icon: 'languages',
     creature: {
       name: 'Puck',
-      species: 'lutin souffleur',
       greeting:
         'Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village.',
       lines: [
@@ -1095,16 +919,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Ce qui arrivera, ce qu’on peut ou doit faire, ce qu’on a déjà fait : la règle sous les yeux.',
     block: 'rail',
     guardian: 'la Locomotive de fer',
-    guardianSays: {
-      hit: 'Tchou ! Juste. Tu es sur les bons rails.',
-      miss: 'Ce n’est rien : cherche le petit mot (will, can, already…), relis la règle, et reprends.',
-      beaten: 'Je m’arrête en gare. Les voies sont à toi… et à Vapeur.',
-    },
-    challenge: 'La Locomotive de fer entre en gare dans un nuage de vapeur : « Tu as pris tous mes trains. Montre-moi que tu sais où tu vas. »',
     icon: 'history',
     creature: {
       name: 'Vapeur',
-      species: 'blaireau chef de gare',
       greeting:
         'Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village.',
       lines: [
@@ -1129,16 +946,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Comprendre un petit texte, relier ses idées, se méfier des faux amis : l’anglais de la radio.',
     block: 'antenne',
     guardian: 'la Grande Antenne',
-    guardianSays: {
-      hit: 'Bip… Juste. Message bien reçu.',
-      miss: 'Ce n’est rien : relis le texte, cherche l’indice, et reprends.',
-      beaten: 'Fin de l’émission. Le studio est à toi… et à Écho.',
-    },
-    challenge: 'La Grande Antenne grésille et s’allume : « Tu as capté toutes mes ondes. Montre-moi que tu comprends chaque message. »',
     icon: 'languages',
     creature: {
       name: 'Écho',
-      species: 'chauve-souris animatrice radio',
       greeting:
         'Hello, bâtisseur ! Au studio, on lit et on écoute des messages entiers : qui, quand, pourquoi ? Et attention aux faux amis : library n’est pas une librairie ! Chaque message compris, c’est une antenne pour le village.',
       lines: [
@@ -1163,16 +973,9 @@ export const BIOMES: BiomeDef[] = [
     description: 'Depuis quand, et si…, et par qui : les phrases longues de 3e, la règle sous les yeux.',
     block: 'taille',
     guardian: 'le Dragon gallois',
-    guardianSays: {
-      hit: 'Grrr… Juste. Ma flamme vacille.',
-      miss: 'Ce n’est rien : cherche le petit mot (for, since, if, by…), relis la règle, et reprends.',
-      beaten: 'Je replie mes ailes rouges. Le château est à toi… et à Knight.',
-    },
-    challenge: 'Le Dragon gallois se pose sur le donjon : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
     icon: 'castle',
     creature: {
       name: 'Knight',
-      species: 'petit chevalier',
       greeting:
         'Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village.',
       lines: [

@@ -9,6 +9,7 @@ import { Icon } from '../components/Icon';
 import { RecordTag } from '../components/RecordTag';
 import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
+import { useTextes } from '../univers';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
@@ -17,6 +18,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
   const info = SUBJECTS[data.subject];
   const { earned, max } = data.stars;
   const percent = max ? Math.round((earned / max) * 100) : 0;
+  const textes = useTextes();
   const titleId = `matiere-${data.subject}`;
   const more = data.reworkTotal - data.rework.length;
   return (
@@ -50,7 +52,7 @@ function SubjectPanel({ data }: { data: SubjectProgress }) {
               {data.islands.open} / {data.islands.total} îles ouvertes
             </li>
             <li className="tag">
-              {data.guardians.beaten} / {data.guardians.total} Gardiens vaincus
+              {textes.libelles.progres(data.guardians.beaten, data.guardians.total)}
             </li>
           </>
         )}
