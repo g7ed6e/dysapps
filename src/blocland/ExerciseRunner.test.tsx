@@ -69,7 +69,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(screen.getByRole('link', { name: /Abattage syllabique.*Nouveau/ })).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
   // La consigne est écrite (pas seulement lue), et le mot n'est pas découpé en syllabes (ce serait la réponse).
-  expect(screen.getByRole('heading', { name: DEF.instruction })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: DEF.instruction })).toBeInTheDocument();
   expect(document.querySelector('.item-word .syllables')).toBeNull();
 
   const items = await play(user, [1]);
