@@ -53,7 +53,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
   },
   "5e": {
     "creatures": "1863 fcf6beec 20c93da6",
-    "gardiens": "1791 6e52e3b6",
+    "gardiens": "1791 7f0fdf9f",
   },
   "6e": {
     "creatures": "2488 cae52569 4c8615d7",
@@ -87,7 +87,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "mine": "177 80669e4a",
   "phare": "203 b057d33b",
   "plaine": "177 8335cb8f",
-  "relais": "338 999d5087",
+  "relais": "338 261a1cd8",
   "riviere": "190 08403a77",
   "studio": "262 0e836ac3",
   "textes": "224 97bdbfba",
@@ -163,7 +163,7 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "mine": "62×153 bd5e2f7a 62×153 e30a7c77",
     "phare": "64×153 f0721f1d 64×153 eaabd0c0",
     "plaine": "66×150 0a4affd0 66×150 31d83b14",
-    "relais": "60×124 de5fbcd3 60×124 921390e1",
+    "relais": "60×124 8907dc31 60×124 ea30a62e",
     "riviere": "60×151 7ea9caab 60×151 140a8663",
     "studio": "60×151 1a8b21d5 60×151 22abb7a8",
     "textes": "60×154 0a774855 60×154 ef0c50d8",

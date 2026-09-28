@@ -60,12 +60,12 @@ const ROUES_DE_LA_DILIGENCE: [number, number][] = [
 /** Le tour qui montre de profil, à une caméra venue de (`dx`, `dz`), une statue dessinée de profil face à −Z. */
 const deProfilPour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
 /**
- * Les tours de la Diligence (retouche du directeur artistique, DA, LV2-2) : dans le monde, vers les caméras du Relais,
- * qui le regardent depuis l'est (la vue de l'île, tournée vers le centre de l'archipel, et celle du bonhomme :
- * three/camera.ts, `ISLAND_VIEW`, `VIEW` et `viewYaw`) ; au défi, vers sa caméra de trois quarts (Guardians.tsx,
- * `cameraDirection` [−0,55 ; −0,85]).
+ * Les tours de la Diligence (retouches du directeur artistique, DA, LV2-2) : de vrai profil, ses roues alignées. Dans
+ * le monde, vers les caméras qui la regardent depuis l'est, mesurées de son îlot : celle du bonhomme sur le Relais
+ * (0,97 ; −0,22) et celle qui glisse vers elle au rallumage (0,99 ; −0,13) (three/camera.ts, `VIEW`, `ISLAND_VIEW`,
+ * `viewYaw`) ; au défi, vers sa caméra de trois quarts (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]).
  */
-export const TOURS_DE_LA_DILIGENCE = { monde: deProfilPour(0.93, -0.36), defi: deProfilPour(-0.55, -0.85) };
+export const TOURS_DE_LA_DILIGENCE = { monde: deProfilPour(0.98, -0.18), defi: deProfilPour(-0.55, -0.85) };
 /** Le centre du cadran de la boussole, au-dessus du siège du cocher (le haut de la Diligence, vers 5 blocs). */
 const BOUSSOLE = { x: 1.3, y: 4.8 };
 
