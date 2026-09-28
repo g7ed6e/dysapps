@@ -5,8 +5,8 @@
    de côté et s'enfonce quand on appuie ; un panneau n'en a pas. Direction du consultant de Blocland, validée par
    le directeur artistique le 28 septembre 2026. Rien n'est copié d'un autre jeu.
    Ne change que l'habillage : la place des éléments, leurs mots, la taille des cibles et les règles dys sont
-   ceux de global.css. Actif quand l'univers affiché est Blocland (`data-univers`, posé par applySettings) ;
-   avant la bascule du lot 6, l'univers affiché reste Archipéo et cette feuille ne s'applique pas.
+   ceux de global.css. Actif quand l'univers affiché est Blocland (`data-univers`, posé par applySettings),
+   c'est-à-dire par défaut ; Archipéo, choisi dans les Réglages, garde les couleurs de global.css.
    ===================================================================== */
 
 /* ===== Thème Crème ===== */
@@ -150,4 +150,21 @@
 :root[data-univers="blocland"] button.island-quest:disabled {
   box-shadow: none;
   transform: none;
+}
+
+/* ===== Les pastilles des thèmes (Réglages) : les couleurs de chaque thème dans Blocland ===== */
+:root[data-univers="blocland"] .theme-swatch.theme-creme {
+  background: #f2ecdf;
+  color: #2b2118;
+  border-color: #7a5a3c;
+}
+:root[data-univers="blocland"] .theme-swatch.theme-nuit {
+  background: #2a231b;
+  color: #f2ecdf;
+  border-color: #9c8262;
+}
+:root[data-univers="blocland"] .theme-swatch.theme-clair {
+  background: #ffffff;
+  color: #2b2118;
+  border-color: #7a5a3c;
 }
