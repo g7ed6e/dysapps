@@ -1,4 +1,4 @@
-// Le ciel d'Archipéo en 3D (lot R1, derrière `?rendu=archipeo`) : un dôme dégradé du zénith à l'horizon, tiré de
+// Le ciel d'Archipéo en 3D (lot R1, dans l’univers Archipéo (voir rendu.ts)) : un dôme dégradé du zénith à l'horizon, tiré de
 // world/palette.ts. Un seul maillage, un seul appel de dessin, dessiné en premier derrière tout le reste (ni test ni
 // écriture de profondeur), sans brume : il suit la caméra, l'horizon reste toujours à la même place.
 import * as THREE from 'three';

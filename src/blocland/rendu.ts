@@ -1,42 +1,40 @@
-// Le drapeau de développement de la migration vers Archipéo : `?rendu=archipeo` dans l'adresse, avant le `#`
-// (`/?rendu=archipeo#/aventure`), choisit le rendu en construction (lots R0 à R7), invisible des élèves ; sans lui, le
-// monde reste en blocs. Au lot 6, le réglage « Univers » le remplace (Blocland par défaut), et le drapeau disparaît.
+// Le rendu du monde suit l'univers choisi dans Réglages › Univers (lot 6, src/core/univers.ts) : le monde en blocs pour
+// Blocland, l'univers par défaut, le rendu d'Archipéo pour Archipéo. Un changement d'univers se voit au retour au village.
+// Pour les fils de rendu seulement, le serveur de développement (`npm run dev`, les captures et les mesures) lit aussi
+// l'adresse, avant le `#` (la navigation ne change que la route, le drapeau tient donc toute la session) :
+// `?rendu=archipeo` ou `?rendu=blocs` l'emporte sur l'univers ; `?style=a|b|c`, avec le rendu d'Archipéo, peint les
+// cubes d'une des trois options de style du lot R1 (world/style.ts). L'application publiée les ignore : aucune adresse
+// ne fait passer un appareil d'élève à Archipéo (décisions 8 et 10 de docs/conception/univers.md).
 // `?mesures` affiche en plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer
 // sur une tablette.
-// Avant le `#` seulement : la navigation ne change que la route, le drapeau tient donc toute la session.
-// `?style=a|b|c`, avec `?rendu=archipeo` seulement, peint les cubes d'une des trois options de style du lot R1
-// (world/style.ts), pour les comparer en captures ; sans lui, le rendu Archipéo garde les textures des blocs.
-// Les mêmes choix se font aussi dans les Réglages, section « Expérimental » (réglages `renduArchipeo` et
-// `styleArchipeo`, éteints par défaut, enregistrés sur l'appareil) ; l'adresse l'emporte sur eux. Le réglage « Univers »
-// du lot 6 (src/core/univers.ts) les remplace à la bascule (`UNIVERS_OUVERT`) : l'univers choisit alors le rendu.
 import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
-import { UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT } from '../core/univers';
+import { universAffiche } from '../core/univers';
 import { STYLES, type StyleSurface } from './world/style';
 
 export type Rendu = 'blocs' | 'archipeo';
 
-/** Les réglages qui choisissent le rendu : l'univers (à la bascule), sinon les réglages expérimentaux. */
-export type ChoixExperimentaux = Pick<Settings, 'renduArchipeo' | 'styleArchipeo' | 'univers'>;
+/** Le réglage qui choisit le rendu : l'univers. */
+export type ChoixUnivers = Pick<Settings, 'univers'>;
 
-const SANS_REGLAGE: ChoixExperimentaux = { renduArchipeo: false, styleArchipeo: 'textures' };
+const SANS_REGLAGE: ChoixUnivers = {};
+
+/** L'adresse ne compte que sur le serveur de développement, jamais dans l'application publiée. */
+const ADRESSE_LUE = import.meta.env.DEV;
 
 const params = (href: string) => new URL(href, 'http://localhost/').searchParams;
 
-/**
- * Le rendu du monde : `archipeo` avec `?rendu=archipeo` ; sinon, une fois l'univers ouvert, celui de l'univers (le monde
- * en blocs de Blocland par défaut) ; avant, le réglage expérimental, et le monde en blocs sans lui.
- */
-export function renduDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE, ouvert = UNIVERS_OUVERT): Rendu {
-  if (params(href).get('rendu') === 'archipeo') return 'archipeo';
-  if (ouvert) return (choix.univers ?? UNIVERS_PAR_DEFAUT) === 'archipeo' ? 'archipeo' : 'blocs';
-  return choix.renduArchipeo ? 'archipeo' : 'blocs';
+/** Le rendu du monde : celui de l'univers ; sur le serveur de développement, `?rendu=archipeo|blocs` l'emporte. */
+export function renduDepuis(href: string, choix: ChoixUnivers = SANS_REGLAGE, adresse = ADRESSE_LUE): Rendu {
+  const drapeau = adresse ? params(href).get('rendu') : null;
+  if (drapeau === 'archipeo' || drapeau === 'blocs') return drapeau;
+  return universAffiche(choix.univers) === 'archipeo' ? 'archipeo' : 'blocs';
 }
 
-/** L'option de style de surface (`?style=a|b|c`, sinon le réglage), seulement avec le rendu Archipéo. */
-export function styleDepuis(href: string, choix: ChoixExperimentaux = SANS_REGLAGE, ouvert = UNIVERS_OUVERT): StyleSurface | null {
-  if (renduDepuis(href, choix, ouvert) !== 'archipeo') return null;
-  const s = params(href).get('style') ?? choix.styleArchipeo;
+/** L'option de style de surface (`?style=a|b|c`, serveur de développement seulement), avec le rendu d'Archipéo. */
+export function styleDepuis(href: string, choix: ChoixUnivers = SANS_REGLAGE, adresse = ADRESSE_LUE): StyleSurface | null {
+  if (!adresse || renduDepuis(href, choix, adresse) !== 'archipeo') return null;
+  const s = params(href).get('style');
   return STYLES.find((x) => x === s) ?? null;
 }
 
@@ -48,7 +46,7 @@ export function mesuresDepuis(href: string): boolean {
 
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
-let lu: { brut: string | null; choix: ChoixExperimentaux } | null = null;
+let lu: { brut: string | null; choix: ChoixUnivers } | null = null;
 /**
  * Les réglages du rendu : ceux que `SettingsProvider` tient en mémoire (`reglagesCourants`), sans relire le stockage ;
  * le monde ne lit son rendu qu'à son ouverture (les Réglages sont une autre page), un changement d'univers se voit donc
@@ -56,7 +54,7 @@ let lu: { brut: string | null; choix: ChoixExperimentaux } | null = null;
  * l'appareil, relus à chaque appel et décodés seulement quand ils ont changé : la 3D en demande à chaque mise à jour des
  * cubes.
  */
-function reglages(): ChoixExperimentaux {
+function reglages(): ChoixUnivers {
   const courants = reglagesCourants();
   if (courants) return courants;
   if (typeof window === 'undefined') return SANS_REGLAGE;

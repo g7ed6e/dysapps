@@ -1,4 +1,4 @@
-import { titreAffiche, UNIVERS, UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT, type UniversChoice } from './univers';
+import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './univers';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair';
@@ -9,11 +9,6 @@ export type ThemeChoice = 'creme' | 'nuit' | 'clair';
 export type WorldViewChoice = '3d' | 'liste';
 /** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
 export type StartChoice = 'village' | 'menu';
-/**
- * Expérimental : la surface du rendu Archipéo en construction, les textures des blocs ou l'une des trois options de
- * style du lot R1 (src/blocland/world/style.ts, où chaque lettre est décrite).
- */
-export type StyleChoice = 'textures' | 'a' | 'b' | 'c';
 export type { UniversChoice } from './univers';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du
@@ -51,15 +46,8 @@ export interface Settings {
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
   /**
-   * Expérimental : le rendu Archipéo en construction (lots R0 à R7) à la place du monde en blocs, comme le drapeau
-   * `?rendu=archipeo`. Précurseur du réglage « Univers » du lot 6, qui le remplacera.
-   */
-  renduArchipeo: boolean;
-  /** Expérimental : la surface du rendu Archipéo, comme `?style=a|b|c` ; lue seulement avec `renduArchipeo`. */
-  styleArchipeo: StyleChoice;
-  /**
-   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent avant le lot 6 et tant que `UNIVERS_OUVERT` est fausse :
-   * le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
+   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
+   * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
    */
   univers?: UniversChoice;
 }
@@ -85,8 +73,6 @@ export const DEFAULT_SETTINGS: Settings = {
   appBadge: true,
   startIn: 'village',
   lv2: 'es',
-  renduArchipeo: false,
-  styleArchipeo: 'textures',
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -102,7 +88,7 @@ export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
 };
 
 export const START_LABELS: Record<StartChoice, string> = {
-  village: 'Le village d’Archipéo',
+  village: 'Le village',
   menu: 'Le menu',
 };
 
@@ -110,13 +96,6 @@ export const LV2_LABELS: Record<Lv2Choice, string> = {
   es: 'Espagnol',
   de: 'Allemand',
   aucune: 'Pas de LV2',
-};
-
-export const STYLE_LABELS: Record<StyleChoice, string> = {
-  textures: 'Les textures des blocs',
-  a: 'Couleurs unies',
-  b: 'Couleurs nuancées',
-  c: 'Coins arrondis',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -169,8 +148,6 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
-    renduArchipeo: s.renduArchipeo === true,
-    styleArchipeo: Object.hasOwn(STYLE_LABELS, s.styleArchipeo) ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
   };
@@ -193,11 +170,11 @@ export function reglagesCourants(): Settings | null {
 
 /**
  * Applique les réglages au document via des variables CSS et des attributs : le thème, et l'univers affiché, qui
- * choisit l'habillage de l'interface (styles/blocland.css ; Archipéo avant la bascule du lot 6).
+ * choisit l'habillage de l'interface (styles/blocland.css).
  */
-export function applySettings(settings: Settings, root: HTMLElement = document.documentElement, ouvert = UNIVERS_OUVERT): void {
+export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = settings.theme;
-  root.dataset.univers = titreAffiche(settings.univers, ouvert);
+  root.dataset.univers = universAffiche(settings.univers);
   root.dataset.syllables = String(settings.syllables);
   root.style.setProperty('--font-family', FONT_STACKS[settings.font]);
   root.style.setProperty('--font-size', `${settings.fontSize}px`);

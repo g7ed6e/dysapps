@@ -6,9 +6,6 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 
-// La bascule du lot 6, essayée d'avance : `UNIVERS_OUVERT` vraie.
-vi.mock('../core/univers', async (importOriginal) => ({ ...(await importOriginal<typeof import('../core/univers')>()), UNIVERS_OUVERT: true }));
-
 function renderPage() {
   return render(
     <SettingsProvider>

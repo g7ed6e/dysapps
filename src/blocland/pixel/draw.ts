@@ -63,7 +63,7 @@ export interface DrawEnv {
   style: typeof STYLE;
   /** Une mer autour (pas dans les Îles du Ciel) : l'écume au pied des rives. */
   sea: boolean;
-  /** La 2D peinte (`?rendu=archipeo`, lot R7) : l'archipel et le palier de lumière ; sans elle, la 2D en pixels. */
+  /** La 2D peinte (univers Archipéo, lot R7) : l'archipel et le palier de lumière ; sans elle, la 2D en pixels. */
   painted?: Peinture;
   /** La 2D peinte vue de loin (la Carte) : sans les joints ni les cadres des ouvrages, qui y feraient une grille serrée. */
   loin?: boolean;

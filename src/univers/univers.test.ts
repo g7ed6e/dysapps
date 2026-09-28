@@ -4,7 +4,7 @@ import { sanitizeState } from '../blocland/engine';
 import { ARCHIPELAGOS } from '../blocland/world/archipelago';
 import { reachedWhaleMoments } from '../blocland/world/whale';
 import { pagesBaleine } from './baleine';
-import { UNIVERS_OUVERT, textesDe, universAffiche, type TextesUnivers, type UniversId } from '.';
+import { textesDe, universAffiche, type TextesUnivers, type UniversId } from '.';
 
 const UNIVERS: UniversId[] = ['archipeo', 'blocland'];
 
@@ -69,18 +69,10 @@ describe('les textes d’univers', () => {
     expect([l.faitsSur(1, 10), l.faitsSur(2, 10), l.progres(3, 28)]).toEqual(['1 Gardien vaincu sur 10', '2 Gardiens vaincus sur 10', '3 / 28 Gardiens vaincus']);
   });
 
-  it('tant que l’univers n’est pas ouvert, l’élève ne lit aucun texte « rallumer »', () => {
-    expect(UNIVERS_OUVERT).toBe(false);
-    for (const choisi of [undefined, ...UNIVERS]) {
-      expect(universAffiche(choisi)).toBe('blocland');
-      expect(tousLesTextes(textesDe(universAffiche(choisi))).join('\n')).not.toMatch(/rallum/i);
-    }
-  });
-
-  it('une fois ouvert, l’univers choisi s’affiche, Blocland par défaut', () => {
-    expect(universAffiche(undefined, true)).toBe('blocland');
-    expect(universAffiche('blocland', true)).toBe('blocland');
-    expect(universAffiche('archipeo', true)).toBe('archipeo');
+  it('l’univers choisi s’affiche, Blocland par défaut', () => {
+    expect(universAffiche(undefined)).toBe('blocland');
+    expect(universAffiche('blocland')).toBe('blocland');
+    expect(universAffiche('archipeo')).toBe('archipeo');
   });
 
   it('Blocland ne rallume jamais ; Archipéo ne fait jamais tomber un Gardien', () => {

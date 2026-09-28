@@ -1,4 +1,4 @@
-// Le terrain d'Archipéo en 3D (lot R2, derrière `?rendu=archipeo`) : le maillage à facettes de world/landMesh.ts, en
+// Le terrain d'Archipéo en 3D (lot R2, dans l’univers Archipéo (voir rendu.ts)) : le maillage à facettes de world/landMesh.ts, en
 // un seul appel de dessin (deux s'il y a de la lave, qui brille d'elle-même). Les couleurs sont portées par les
 // sommets ; les matériaux sont faits une fois par scène et libérés avec elle.
 import * as THREE from 'three';

@@ -1,6 +1,6 @@
 // Les personnages de la scène 3D : le bonhomme (qui marche le long de son itinéraire, d'un petit pas sautillant, et se
 // tourne vers là où il va) et les créatures et Gardiens (un petit balancement, un pas de temps en temps). Leur dessin,
-// leurs « habits », est en cubes ; derrière `?rendu=archipeo`, ce sont les personnages d'Archipéo en facettes
+// leurs « habits », est en cubes ; dans l’univers Archipéo (voir rendu.ts), ce sont les personnages d'Archipéo en facettes
 // (./personnagesPeints.ts), chargés à la demande : sans le drapeau, leurs modèles ne pèsent pas sur la 3D.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
@@ -127,8 +127,8 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
 }
 
 /**
- * Les personnages ; `champ` rend le sol à facettes d'Archipéo (ou `null`), sur lequel ils posent les pieds. Sous le
- * drapeau `?rendu=archipeo`, ceux d'Archipéo, dont les lueurs suivent le degré de nuit de `lumiere` : le temps de les
+ * Les personnages ; `champ` rend le sol à facettes d'Archipéo (ou `null`), sur lequel ils posent les pieds. Dans
+ * l’univers Archipéo, ceux d'Archipéo, dont les lueurs suivent le degré de nuit de `lumiere` : le temps de les
  * charger, le bonhomme marche déjà (sans corps) et les créatures attendent.
  */
 export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, instant: Instant, lumiere: Pick<Lumiere, 'nuit'> | null = null): Personnages {
