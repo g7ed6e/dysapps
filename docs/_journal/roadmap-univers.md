@@ -1,0 +1,1 @@
+Conception : une feuille de route, « Plusieurs univers », décrit comment l'élève pourra un jour choisir un autre récit et un autre habillage du monde et des problèmes, sans rien changer à ce qu'il apprend ni à sa progression. Rien ne change dans l'application.

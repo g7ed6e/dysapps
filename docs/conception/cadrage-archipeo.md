@@ -241,6 +241,8 @@ Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de
 
 **Les problèmes situés dans l’archipel** (contenu, M à L) : des problèmes de maths qui se passent dans le monde d’Archipéo (un pont entre deux falaises, un quai, un phare), avec une nouvelle aide « scène », un schéma plat dessiné par le code à côté de la consigne, jamais dans le décor 3D. Ce lot se cadre et se construit dans [le cadrage du contenu](cadrage-contenu.md#la-suite-a-couvrir) (lot 8 de sa liste) ; ajouté le 27 septembre 2026 à la demande du mainteneur. L’exercice de la planche n’est pas à recopier : sa seule cote (18 m) est aussi un des choix, et rien ne permet de trouver la réponse.
 
+**Plusieurs univers** (feuille de route du 28 septembre 2026, [Plusieurs univers](univers.md)) : d’autres récits et habillages au choix de l’élève, sur le même jeu et le même objectif pédagogique. Rien n’entre dans les lots R ; la préparation suit J5 et J7, un univers de preuve vient après les lots 8 et 8b, le choix de l’élève avec le lot 10.
+
 La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plusieurs compétences) dépend d’abord du contenu : elle se cadre avec le directeur contenu pédagogique après le lot 8.
 
 ### Les risques
