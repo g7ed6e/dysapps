@@ -1,0 +1,255 @@
+{
+  "id": "relais-de-zahlen-2",
+  "biome": "relais",
+  "type": "de-zahlen",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.",
+  "items": [
+    {
+      "key": "relais-de-zahlen-2-0",
+      "prompt": "siebenundsechzig",
+      "spoken": "siebenundsechzig",
+      "choices": [
+        "60",
+        "67",
+        "76"
+      ],
+      "answer": "67",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "siebenundsechzig = « sept et soixante » = 67 : l’unité (sieben) d’abord, la dizaine (sechzig) ensuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-1",
+      "prompt": "sechsundsiebzig",
+      "spoken": "sechsundsiebzig",
+      "choices": [
+        "67",
+        "70",
+        "76"
+      ],
+      "answer": "76",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "sechsundsiebzig = « six et soixante-dix » = 76 : l’unité (sechs) d’abord, la dizaine (siebzig) ensuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-2",
+      "prompt": "fünfundachtzig",
+      "spoken": "fünfundachtzig",
+      "choices": [
+        "58",
+        "80",
+        "85"
+      ],
+      "answer": "85",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "fünfundachtzig = « cinq et quatre-vingts » = 85 : l’unité (fünf) d’abord, la dizaine (achtzig) ensuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-3",
+      "prompt": "einundzwanzig",
+      "spoken": "einundzwanzig",
+      "choices": [
+        "12",
+        "20",
+        "21"
+      ],
+      "answer": "21",
+      "hint": "ein, c’est 1 devant und.",
+      "explanation": "einundzwanzig = « un et vingt » = 21 : 1 devient ein devant und. 12 se dit zwölf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-4",
+      "prompt": "neunundneunzig",
+      "spoken": "neunundneunzig",
+      "choices": [
+        "19",
+        "90",
+        "99"
+      ],
+      "answer": "99",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "neunundneunzig = « neuf et quatre-vingt-dix » = 99. 19 se dit neunzehn, 90 neunzig.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-5",
+      "prompt": "achtunddreißig",
+      "spoken": "achtunddreißig",
+      "choices": [
+        "38",
+        "80",
+        "83"
+      ],
+      "answer": "38",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "achtunddreißig = « huit et trente » = 38 : l’unité (acht) d’abord, la dizaine (dreißig) ensuite. 83 se dit dreiundachtzig.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-6",
+      "prompt": "sechzig",
+      "spoken": "sechzig",
+      "choices": [
+        "6",
+        "16",
+        "60"
+      ],
+      "answer": "60",
+      "hint": "Écoute la fin : -zehn (de 13 à 19) ou -zig (les dizaines) ?",
+      "explanation": "sechzig = 60 : -zig, c’est une dizaine. 16 se dit sechzehn, 6 sechs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-de-zahlen-2-7",
+      "prompt": "zweiundfünfzig",
+      "spoken": "zweiundfünfzig",
+      "choices": [
+        "25",
+        "50",
+        "52"
+      ],
+      "answer": "52",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "zweiundfünfzig = « deux et cinquante » = 52 : l’unité (zwei) d’abord, la dizaine (fünfzig) ensuite. 25 se dit fünfundzwanzig.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres jusqu’à 100",
+          "lines": [
+            "20 zwanzig, 30 dreißig, 40 vierzig, 50 fünfzig",
+            "60 sechzig, 70 siebzig, 80 achtzig, 90 neunzig, 100 hundert",
+            "De 21 à 99 : l’unité d’abord, puis und, puis la dizaine.",
+            "43 = dreiundvierzig (« trois et quarante »).",
+            "1 devient ein devant und : 31 = einunddreißig.",
+            "sechzig (60) et siebzig (70) sont plus courts que sechs et sieben.",
+            "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

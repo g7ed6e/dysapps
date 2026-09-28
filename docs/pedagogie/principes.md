@@ -68,7 +68,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 ## La LV2 : les mêmes deux voix
 
 - **Allemand ou espagnol, comme l’anglais** : consigne, joker, indice et correction en français avec la voix française ; les mots et les phrases de la LV2 lus avec une **voix allemande d’Allemagne** ou **espagnole d’Espagne** (une autre voix de la langue si l’appareil n’en a pas, jamais la voix française). Si l’appareil n’a aucune voix de la langue, les Réglages le disent, et le message se lit à voix haute.
-- **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais.
+- **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais : à la dictée à choix, la lecture automatique dit le mot dès l’ouverture de l’écran.
 - **Un signe qui change le sens** (schon/schön, tu/tú, si/sí) se travaille avec le son et dans une phrase, jamais sur la forme seule ; ¿ et ¡ s’affichent mais ne se lisent pas.
 
 ## Ce que travaille chaque île

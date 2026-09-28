@@ -11,9 +11,8 @@ const A_COUVRIR = (motif: string): Exclusion => ({ kind: 'a-couvrir', motif });
 const ORAL = 'Production orale : hors de ce que peut faire une application sans micro ni interlocuteur.';
 const ECRITURE_LIBRE = 'Production écrite libre : l’application propose des réponses à choisir, pas de rédaction.';
 
-// LV2 (allemand, espagnol). Ce qui est prévu, étape par étape (docs/conception/cadrage-contenu.md, « LV2 ») : LV2-2, île
-// de 5e au niveau 1 (le Relais des voyageurs) ; LV2-3, son niveau 2 ; LV2-4, île de 4e ; LV2-5, île de 3e.
-const LV2_3 = (quoi: string) => A_COUVRIR(`À venir avec le niveau 2 de l’île LV2 de 5e (LV2-3 du cadrage du contenu) : ${quoi}.`);
+// LV2 (allemand, espagnol). Ce qui est prévu, étape par étape (docs/conception/cadrage-contenu.md, « LV2 ») : l’île de 5e
+// (le Relais des voyageurs) est faite, niveaux 1 et 2 (LV2-2, LV2-3) ; restent LV2-4, île de 4e, et LV2-5, île de 3e.
 const LV2_4 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 4e (LV2-4 du cadrage du contenu) : ${quoi}.`);
 const LV2_5 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 3e (LV2-5 du cadrage du contenu) : ${quoi}.`);
 const LV2_LANGAGES = A_COUVRIR('Médias, chansons et cinéma : rien ne s’emprunte, et aucune étape du cadrage LV2 (LV2-2 à LV2-5) ne les prévoit ; à reprendre après LV2-5.');
@@ -86,9 +85,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.de.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
   'c4.de.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
   'c4.de.lire.recit': LV2_5('lire un petit texte suivi'),
-  'c4.de.dialoguer.reagir': LV2_3('réagir à une proposition, dire ce qu’on aime'),
   'c4.de.parler.presenter-raconter': HORS(ORAL),
-  'c4.de.ecrire.dictee-fiche': LV2_3('dictée à choix, sans clavier, de mots courants (ei et ie, Umlaut)'),
   'c4.de.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.de.culture.langages': LV2_LANGAGES,
   'c4.de.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays germanophones'),
@@ -101,9 +98,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.es.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
   'c4.es.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
   'c4.es.lire.recit': LV2_5('lire un petit texte suivi'),
-  'c4.es.dialoguer.reagir': LV2_3('réagir à une proposition, dire ce qu’on aime'),
   'c4.es.parler.presenter-raconter': HORS(ORAL),
-  'c4.es.ecrire.dictee-fiche': LV2_3('dictée à choix, sans clavier, de mots courants (ñ, accents)'),
   'c4.es.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.es.culture.langages': LV2_LANGAGES,
   'c4.es.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays hispanophones'),
