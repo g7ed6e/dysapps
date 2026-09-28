@@ -299,6 +299,15 @@ Ni Archipéo ni Blocland ne s’affichent en 2D (décidé par le mainteneur le 2
 - **La confirmation** : « Passer à Archipéo ? » (ou à Blocland), « Ce qui change : le dessin du monde, le titre et l’histoire. Les îles gardent leur nom. Ce qui reste : tes étoiles, tes blocs, tes plans et tes missions. Le changement se voit au retour au village. », puis « Changer d’univers » ou « Annuler ».
 - **Le message unique**, sur l’écran titre, après le premier toucher (qui débloque la voix), lu à voix haute et noté dit par appareil au toucher de l’un de ses deux boutons : « Un nouvel univers : Archipéo. Ton monde en blocs s’appelle maintenant Blocland. Archipéo est une aventure en mer. Tes étoiles, tes blocs, tes plans et tes missions restent les mêmes. Tu peux changer d’univers quand tu veux, dans les Réglages. » Boutons : « Rester dans Blocland » (va où l’élève allait) et « Voir le réglage ».
 
+**Les textes « rallumer » d’Archipéo** (fil B1 ; proposés par le consultant d’Archipéo, validés par le directeur artistique le 28 septembre 2026 ; dans `src/univers/archipeo/`) :
+
+- Les espèces : taupe, renard, brebis (Bloquette), tortue copiste (Grimoire), automate dessinateur ; les autres ne changent pas ; une espèce n’appartient qu’à une créature.
+- Chaque épreuve ratée commence par « Rien ne s’éteint. », puis garde le conseil de méthode d’aujourd’hui.
+- Chaque épreuve réussie nomme la partie de la sentinelle qui s’allume (couronne, gemme, couches de pierre, collier, vitrail, ailes, flanc, ventre de braise, veines de givre, lanterne, coiffe, trois cous, cœur de forge, balance, cornes, livre, coiffe, étoiles gravées, ailes de verre, pages, crinière, cadran, couronne, lanterne sous le voile, rampe, lampe, voyant, bouclier) : R6 et B2 la dessinent et y allument les veines.
+- La réplique finale dit que la sentinelle « se rallume », jamais qu’elle se rallume tout entière (« Toutes mes… ») ni qu’elle « brille à nouveau » : on réussit le défi avant d’avoir tout réussi, et « brille à nouveau » est réservé au mot du village (B2) et à la baleine (« Tous les Gardiens des … brillent à nouveau. J’ai vu leur lumière depuis le large. »).
+- Ni exclamation anglaise (Well done!, Splendid!, Bravo!) ni « bâtisseur » dans les répliques des Gardiens ; les mots anglais d’un conseil de méthode restent ; « {Gardien} brille déjà » plutôt qu’un participe à accorder.
+- Reste pour B2, avant la bascule : « Résistance du Gardien », « L’arène du Gardien », « n’accepte que les bâtisseurs entraînés » et le grognement d’une épreuve ratée, qui passent par les textes d’univers ; la jauge dit les épreuves réussies (« 2 épreuves sur 3 »).
+
 ### Les risques
 
 - **Un monde hybride** : parade, le drapeau et l’ouverture en une fois (lot 6). Si la piste Rendu traîne, la piste Jeu continue : ses lots ne dépendent pas du rendu.

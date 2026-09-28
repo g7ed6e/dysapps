@@ -70,3 +70,11 @@ export function useSettings(): SettingsContextValue {
 export function useUnivers(): UniversChoice {
   return titreAffiche(useSettings().settings.univers, UNIVERS_OUVERT);
 }
+
+/**
+ * L'univers choisi dans les réglages, sans exiger de fournisseur (un composant rendu seul dans un test lit alors
+ * l'univers d'avant la bascule). Pour les textes d'univers (`useTextes` de src/univers).
+ */
+export function useUniversChoisi(): UniversChoice | undefined {
+  return useContext(SettingsContext)?.settings.univers;
+}

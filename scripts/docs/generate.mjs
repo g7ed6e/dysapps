@@ -48,11 +48,14 @@ export async function generatePages() {
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
+    // Les textes d'univers (Gardiens, espèces) : ceux que lit l'élève, Blocland tant que l'univers n'est pas ouvert.
+    const universMod = await load('/src/univers/index.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
       BIOMES: biomesMod.BIOMES,
       BLOCKS: biomesMod.BLOCKS,
+      TEXTES: universMod.textesDe(universMod.universAffiche()),
       blockCount: biomesMod.blockCount,
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
@@ -375,7 +378,7 @@ function archipelPage(d) {
           list.map((b) => [
             `[${b.name}](iles/${b.id}.md)`,
             b.module,
-            `${b.creature.name}, ${b.creature.species}`,
+            `${b.creature.name}, ${d.TEXTES.especes[b.id]}`,
             capFirst(b.guardian),
             d.BLOCKS[b.block].name,
             b.exercises.map((e) => e.title).join(', '),
@@ -413,7 +416,7 @@ function islandPage(b, d) {
     `| Archipel | Les ${d.ARCHIPELAGOS.find((a) => a.classe === b.classe).name} (${b.classe}) |`,
     `| Île-port | ${d.ARCHIPELAGOS.some((a) => a.port === b.id) ? 'oui : le quai et le Bloc-Navire sont devant l’île' : 'non'} |`,
     `| École du village | ${d.ARCHIPELAGOS.some((a) => a.school === b.id) ? `oui : les missions du portail y rapportent des blocs ${BLOCKS[b.block].name.toLowerCase().match(/^[aeiouyéèêh]/) ? 'd’' : 'de '}${BLOCKS[b.block].name.toLowerCase()}` : 'non'} |`,
-    `| Créature | ${b.creature.name}, ${b.creature.species} |`,
+    `| Créature | ${b.creature.name}, ${d.TEXTES.especes[b.id]} |`,
     `| Gardien | ${capFirst(b.guardian)} |`,
     `| Bloc gagné | ${BLOCKS[b.block].name} |`,
     `| Missions | ${b.exercises.length} |`,
@@ -432,13 +435,13 @@ function islandPage(b, d) {
     '',
     '## Le Gardien',
     '',
-    `${b.challenge}`,
+    `${d.TEXTES.gardiens[b.id].challenge}`,
     '',
     'Le défi enchaîne deux manches de chaque mission de l’île, au niveau de l’élève, sans chrono. Deux étoiles le font tomber.',
     '',
-    `- Épreuve réussie : « ${b.guardianSays.hit} »`,
-    `- Épreuve ratée : « ${b.guardianSays.miss} »`,
-    `- Vaincu : « ${b.guardianSays.beaten} »`,
+    `- Épreuve réussie : « ${d.TEXTES.gardiens[b.id].guardianSays.hit} »`,
+    `- Épreuve ratée : « ${d.TEXTES.gardiens[b.id].guardianSays.miss} »`,
+    `- Vaincu : « ${d.TEXTES.gardiens[b.id].guardianSays.beaten} »`,
     '',
     '## Les missions',
     '',

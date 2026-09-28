@@ -25,6 +25,7 @@ import { VillageStageLine } from './VillageStageLine';
 import { SchoolLink } from './School';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
+import { useTextes } from '../univers';
 
 interface Props {
   biome: BiomeDef;
@@ -49,6 +50,7 @@ interface Props {
 export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const greeting = unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
@@ -169,9 +171,9 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
               </span>
               <span className="island-quest-text">
                 <span className="island-quest-title">{guardianTitle(biome)}</span>
-                <span className="island-quest-desc">{bossBeaten ? 'Déjà vaincu. Une revanche ?' : 'Le Gardien accepte ton défi !'}</span>
+                <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : 'Le Gardien accepte ton défi !'}</span>
               </span>
-              {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label="Gardien vaincu" />}
+              {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label={textes.libelles.etoiles} />}
             </Link>
           ) : (
             <button type="button" className="island-quest locked island-boss-locked" onClick={explainBoss} aria-describedby={`gardien-${biome.id}`}>
