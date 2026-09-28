@@ -5,6 +5,7 @@
 // chacun à son altitude, qui est une ambiance : les Îles du Ciel flottent au-dessus des nuages.
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipels';
+import { silhouetteDe } from './silhouettes';
 
 export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
 
@@ -222,21 +223,9 @@ export interface LandCell {
   decor?: Decor;
 }
 
-/** Les pics d'une île (relatifs au coin du cœur) : centre, hauteur, rayon. */
+/** Les pics d'une île, à sa place dans le monde : son relief, écrit en repère d'île (./silhouettes/). */
 function peaks(def: IslandDef): { x: number; y: number; h: number; r: number }[] {
-  const back = def.core.y + CORE + def.ext.back - 1;
-  const mid = def.core.x + CORE / 2;
-  if (def.relief === 'montagne') {
-    const two = def.ext.back >= 6;
-    return two
-      ? [
-          { x: mid - 3, y: back - 1, h: 9, r: 6 },
-          { x: mid + 4, y: back - 2, h: 6, r: 4 },
-        ]
-      : [{ x: mid + 1, y: back - 1, h: 7, r: 5 }];
-  }
-  if (def.relief === 'volcan') return [{ x: mid, y: back - 2, h: 8, r: 6 }];
-  return [];
+  return silhouetteDe(def.id).pics.map((p) => ({ x: def.core.x + p.x, y: def.core.y + p.y, h: p.h, r: p.r }));
 }
 
 const landscapeCache = new Map<BiomeId, LandCell[]>();
