@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, getBiome, type BlockId } from './biomes';
+import { BLOCKS, blockName, getBiome, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { InventoryLink } from './Inventory';
@@ -77,7 +77,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
                     <li key={block}>
                       <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                       <span>
-                        <strong>{n}</strong> {BLOCKS[block].name.toLowerCase()}
+                        <strong>{n}</strong> {blockName(block, n)}
                         {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
                       </span>
                     </li>

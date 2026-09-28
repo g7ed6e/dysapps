@@ -62,7 +62,7 @@ Toucher une île ouverte fait voler la caméra et ouvre son panneau (il glisse d
 6. **Le Bloc-Navire**, sur l’île-port seulement : l’étape en chantier, ses blocs manquants avec le même lien vers l’île où les gagner, les Gardiens à vaincre, le bouton « Embarquer » quand tout est prêt, et les boutons pour revenir sur un archipel déjà atteint.
 7. **Les ouvrages** qui partent de l’île, avec leur coût et leur condition.
 
-Le plan, le Bloc-Navire et les ouvrages sont des **sections repliables**. Elles s’ouvrent d’elles-mêmes quand il y a quelque chose à y faire (un bloc à poser, un ouvrage à construire, le navire prêt, ou l’ouvrage ou le navire que l’on vient de toucher dans le monde) et restent repliées sinon, avec leur état en une ligne (« 3 / 16 posés · il manque 6 bois », « Encore 3 blocs pour le moins cher »). Le panneau reste court ; un toucher sur le titre ouvre ou referme une section.
+Le plan, le Bloc-Navire et les ouvrages sont des **sections repliables**. Elles s’ouvrent d’elles-mêmes quand il y a quelque chose à y faire (un bloc à poser, un ouvrage à construire, le navire prêt, ou l’ouvrage ou le navire que l’on vient de toucher dans le monde) et restent repliées sinon, avec leur état en une ligne (« 3 / 16 posés · il manque 6 blocs de bois », « Encore 3 blocs pour le moins cher »). Le panneau reste court ; un toucher sur le titre ouvre ou referme une section.
 
 Dans le monde, chaque île a **une borne par mission** (un socle et un panneau) : la toucher lance la mission. Après un exercice, on revient au même endroit, panneau ouvert.
 

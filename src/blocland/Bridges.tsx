@@ -3,7 +3,7 @@ import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, getBiome, type BiomeId } from './biomes';
+import { BLOCKS, blockCount, getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { playDone, playNope } from './sound';
@@ -54,7 +54,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
     const what = withArticle(b.kind);
     if (r.ok) {
       const used = Object.entries(r.used)
-        .map(([id, n]) => `${n} ${BLOCKS[id as keyof typeof BLOCKS].name.toLowerCase()}`)
+        .map(([id, n]) => blockCount(id as keyof typeof BLOCKS, n))
         .join(', ');
       const built = b.kind === 'pont' || b.kind === 'bac' ? 'construit' : b.kind === 'tunnel' ? 'percé' : b.kind === 'sentier' ? 'tracé' : 'taillé';
       text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}. L’île est ouverte.`;

@@ -56,7 +56,7 @@ it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y fair
   const ouvrages = () => document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages')!;
   expect(plan()).not.toHaveAttribute('open');
   const cabane = plansFor('foret')[0].cells.length;
-  expect(plan().textContent).toContain(`0 / ${cabane} posés · il manque ${cabane} bois`);
+  expect(plan().textContent).toContain(`0 / ${cabane} posés · il manque ${cabane} blocs de bois`);
   expect(ouvrages()).not.toHaveAttribute('open');
   expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
@@ -80,7 +80,7 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
   expect(navire.textContent).toContain('0 / 45 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
   expect(links[0]).toHaveAttribute('href', '/aventure/foret');
-  expect(document.body.textContent).toContain('brique · à gagner ici, dans les missions');
+  expect(document.body.textContent).toContain('briques · à gagner ici, dans les missions');
 });
 
 it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
