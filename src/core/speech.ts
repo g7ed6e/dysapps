@@ -4,11 +4,22 @@ export function isSpeechAvailable(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
 }
 
-/** Langue d'un texte lu : le français (consignes, corrections) ou l'anglais (mots et phrases travaillés en anglais). */
-export type Lang = 'fr' | 'en';
+/**
+ * Langue d'un texte lu : le français (consignes, corrections), ou la langue vivante travaillée (anglais, et en LV2
+ * allemand ou espagnol) pour ses mots et ses phrases.
+ */
+export type Lang = 'fr' | 'en' | 'de' | 'es';
 
-/** L'accent de chaque langue : français de France, anglais britannique (celui des manuels du collège). */
-export const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB' };
+/**
+ * L'accent de chaque langue : français de France, anglais britannique (celui des manuels du collège), allemand
+ * d'Allemagne et espagnol d'Espagne (ceux des manuels de LV2).
+ */
+export const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES' };
+
+/** Une langue vivante lue par sa propre voix, ou `undefined` (le français, une valeur inconnue). */
+export function langueVivante(value: unknown): Exclude<Lang, 'fr'> | undefined {
+  return value !== 'fr' && typeof value === 'string' && Object.hasOwn(LOCALES, value) ? (value as Exclude<Lang, 'fr'>) : undefined;
+}
 
 /** La voix d'une langue : l'accent attendu, installée sur l'appareil de préférence, sinon toute voix de la langue. */
 export function pickVoice(voices: SpeechSynthesisVoice[], lang: Lang): SpeechSynthesisVoice | undefined {
@@ -24,6 +35,17 @@ export function pickVoice(voices: SpeechSynthesisVoice[], lang: Lang): SpeechSyn
 /** Attribut `lang` d'un texte affiché : seulement quand il n'est pas en français (lecteurs d'écran, césure). */
 export function langAttr(lang: Lang | undefined): string | undefined {
   return lang && lang !== 'fr' ? lang : undefined;
+}
+
+/**
+ * L'appareil a-t-il une voix pour cette langue ? `undefined` tant que la liste des voix n'est pas chargée (elle arrive
+ * après coup sur Chrome) : on ne dit « pas de voix » qu'à coup sûr.
+ */
+export function hasVoice(lang: Lang): boolean | undefined {
+  if (!isSpeechAvailable()) return false;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return undefined;
+  return pickVoice(voices, lang) !== undefined;
 }
 
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {

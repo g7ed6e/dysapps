@@ -24,7 +24,7 @@ export function frenchTypography(text: string): string {
 }
 
 export function RichText({ text, lang = 'fr' }: { text: string; lang?: Lang }) {
-  // L'anglais n'a pas d'espace avant « ? ! : ; » : on n'y touche pas.
+  // L'anglais, l'allemand et l'espagnol n'ont pas d'espace avant « ? ! : ; » : on n'y touche pas.
   const parts = (lang === 'fr' ? frenchTypography(text) : text).split(TOKEN);
   return (
     <>

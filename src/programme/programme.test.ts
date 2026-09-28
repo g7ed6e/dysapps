@@ -2,15 +2,35 @@ import { DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf }
 import { EXCLUSIONS } from './exclusions';
 import { COFFRE_HORS_LISTE, MOTS_OUTILS_CE1, MOTS_OUTILS_CP, MOTS_OUTILS_SOURCE, motDictable, motsOutilsDictables } from './motsOutils';
 
-const ID = /^c[34]\.(fr|ma|en)\.[a-z0-9-]+\.[a-z0-9-]+$/;
+const ID = /^c[34]\.(fr|ma|en|de|es)\.[a-z0-9-]+\.[a-z0-9-]+$/;
 const straightApostrophe = (t: string) => t.includes("'");
 
-it('le référentiel a une taille raisonnable et chaque discipline est présente dans les deux cycles', () => {
+/** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
+const LV2 = ['allemand', 'espagnol'] as const;
+
+it('le référentiel a une taille raisonnable et chaque discipline est présente dans ses cycles', () => {
+  // 188 compétences pour le français, les maths et l'anglais, plus 20 par LV2 (le programme de langues vivantes du
+  // cycle 4 est commun à toutes les langues) : le plafond passe de 200 à 250 pour les accueillir.
   expect(PROGRAMME.length).toBeGreaterThanOrEqual(100);
-  expect(PROGRAMME.length).toBeLessThanOrEqual(200);
+  expect(PROGRAMME.length).toBeLessThanOrEqual(250);
   for (const discipline of Object.keys(DISCIPLINES) as (keyof typeof DISCIPLINES)[]) {
-    expect(entriesOf(3, discipline).length, `${discipline}, cycle 3`).toBeGreaterThanOrEqual(10);
+    const lv2 = (LV2 as readonly string[]).includes(discipline);
+    if (lv2) expect(entriesOf(3, discipline), `${discipline} : pas de LV2 au cycle 3`).toHaveLength(0);
+    else expect(entriesOf(3, discipline).length, `${discipline}, cycle 3`).toBeGreaterThanOrEqual(10);
     expect(entriesOf(4, discipline).length, `${discipline}, cycle 4`).toBeGreaterThanOrEqual(10);
+  }
+});
+
+it('chaque LV2 reprend le programme de langues vivantes de l’anglais au cycle 4 : mêmes compétences, libellés et pages', () => {
+  const en = entriesOf(4, 'anglais');
+  for (const discipline of LV2) {
+    const short = DISCIPLINES[discipline].short;
+    const lv = entriesOf(4, discipline);
+    expect(lv.map((e) => e.id)).toEqual(en.map((e) => e.id.replace('c4.en.', `c4.${short}.`)));
+    lv.forEach((e, i) => {
+      expect([e.attendu, e.competence, e.page], e.id).toEqual([en[i].attendu, en[i].competence, en[i].page]);
+      expect(domaineOf(e)!.title, e.id).toBe(domaineOf(en[i])!.title);
+    });
   }
 });
 
@@ -47,7 +67,7 @@ it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec u
   }
   const domaineIds = DOMAINES.map((d) => d.id);
   expect(new Set(domaineIds).size).toBe(domaineIds.length);
-  for (const d of DOMAINES) expect(d.id).toMatch(/^c[34]-(fr|ma|en)-[a-z0-9-]+$/);
+  for (const d of DOMAINES) expect(d.id).toMatch(/^c[34]-(fr|ma|en|de|es)-[a-z0-9-]+$/);
 });
 
 it('les sources disent d’où vient le texte : jeu de données, PDF, licence, texte réglementaire, date', () => {

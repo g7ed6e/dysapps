@@ -46,6 +46,14 @@ La lecture à voix haute utilise la **synthèse vocale du navigateur** (rien n�
 
 Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britannique si l’appareil en a une, sinon une autre voix anglaise. **Tester la voix anglaise** lit une phrase d’exemple ; si elle est lue avec l’accent français, installer une voix anglaise (Royaume-Uni) dans le système.
 
+## Deuxième langue (LV2)
+
+Comme au collège, l’élève a une seule **deuxième langue vivante**, à partir de la 5e : **Espagnol** (le choix par défaut), **Allemand** ou **Pas de LV2**, pour un élève qui en est dispensé. Le choix est gardé sur l’appareil et se change à tout moment : ce qui est construit reste, et chaque langue garde ses étoiles. La langue non choisie n’apparaît nulle part.
+
+Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne ou allemande d’Allemagne si l’appareil en a une, sinon une autre voix de la langue. **Tester la voix espagnole** (ou **allemande**) lit une phrase d’exemple. Si l’appareil n’a aucune voix de cette langue, la page le dit : en installer une dans le système (rubrique Langue ou Synthèse vocale de l’appareil). **Affichage par défaut** ne change pas la LV2.
+
+Les missions de LV2 arrivent île par île, en commençant par la 5e.
+
 ## Au démarrage
 
 - **Le village d’Archipéo** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.

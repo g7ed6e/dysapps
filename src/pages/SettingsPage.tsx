@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, STYLE_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type StartChoice, type StyleChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
+import { DEFAULT_SETTINGS, FONT_LABELS, LV2_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, STYLE_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type Lv2Choice, type StartChoice, type StyleChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
-import { isSpeechAvailable } from '../core/speech';
+import { hasVoice, isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -13,7 +13,12 @@ import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../core/
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
 const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
 const REPO_URL = 'https://github.com/g7ed6e/dysapps';
-const SAMPLE_EN ='Hello! My name is Robin. I have got three blue blocks.';
+const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
+/** Une phrase de 5e dans chaque LV2, pour tester sa voix. */
+const SAMPLE_LV2: Record<Exclude<Lv2Choice, 'aucune'>, { text: string; voix: string }> = {
+  es: { text: '¡Hola! Me llamo Robin. Tengo tres bloques azules.', voix: 'espagnole' },
+  de: { text: 'Hallo! Ich heiße Robin. Ich habe drei blaue Blöcke.', voix: 'allemande' },
+};
 
 export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
@@ -21,6 +26,7 @@ export function SettingsPage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [typed, setTyped] = useState('');
   const appUpdate = useAppUpdate();
+  const lv2 = settings.lv2 === 'aucune' ? null : settings.lv2;
   // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
   const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);
   const universRef = useRef<HTMLFieldSetElement>(null);
@@ -160,6 +166,33 @@ export function SettingsPage() {
             </>
           ) : (
             <p>La lecture à voix haute n’est pas disponible sur ce navigateur.</p>
+          )}
+        </fieldset>
+
+        <fieldset className="panel">
+          <legend>Deuxième langue (LV2)</legend>
+          <div className="option-row">
+            {(Object.keys(LV2_LABELS) as Lv2Choice[]).map((choix) => (
+              <label key={choix} className={`option${settings.lv2 === choix ? ' selected' : ''}`}>
+                <input type="radio" name="lv2" value={choix} checked={settings.lv2 === choix} onChange={() => update({ lv2: choix })} />
+                {LV2_LABELS[choix]}
+              </label>
+            ))}
+          </div>
+          <p>
+            <Syllabified text="À partir de la 5e. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque langue garde ses étoiles." />
+          </p>
+          {lv2 && isSpeechAvailable() && (
+            <>
+              <button type="button" className="button" onClick={() => speak(SAMPLE_LV2[lv2].text, undefined, lv2)}>
+                <Icon name="speaker" /> Tester la voix {SAMPLE_LV2[lv2].voix}
+              </button>
+              {hasVoice(lv2) === false && (
+                <p className="settings-note">
+                  <Syllabified text={`Cet appareil n’a pas de voix ${SAMPLE_LV2[lv2].voix} : les mots seront lus avec une autre voix. Tu peux en ajouter une dans les réglages de l’appareil, rubrique Langue ou Synthèse vocale.`} />
+                </p>
+              )}
+            </>
           )}
         </fieldset>
 
