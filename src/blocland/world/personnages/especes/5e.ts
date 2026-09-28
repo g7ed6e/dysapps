@@ -207,7 +207,7 @@ export const ESPECES_5E = {
     },
   },
   relais: {
-    // La cigogne voyageuse (LV2, DA lot 2) : corps blanc, bouts d'ailes noirs, long bec et hautes pattes orange, sans coiffe.
+    // La cigogne voyageuse (DA, LV2-2) : corps blanc, bouts d'ailes noirs, long bec et hautes pattes orange, sans coiffe.
     nom: 'Lina',
     metier: 'aubergiste',
     dominante: 0xe2ded4,

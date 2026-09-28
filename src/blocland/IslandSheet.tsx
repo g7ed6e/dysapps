@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { SANS_LV2, estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -26,8 +26,6 @@ import { SchoolLink } from './School';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
-
-const SANS_LV2 = 'L’île de ta deuxième langue est fermée. Tu peux choisir une LV2 dans les Réglages.';
 
 interface Props {
   biome: BiomeDef;
@@ -55,10 +53,11 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-  const greeting = unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
+  // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
+  const greeting = sansLv2 ? SANS_LV2 : unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
-  const goal = unlocked ? nextGoalInfo(state, biome.id) : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
   const [bossSaid, setBossSaid] = useState<string | null>(null);
   // En 3D, le plan, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
@@ -106,11 +105,10 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       {/* Sur l'île-port : l'état du village de l'archipel, qui se voit aussi au port en cubes. */}
       {unlocked && archipelagoOf(biome.id).port === biome.id && <VillageStageLine village={state.village} archipelago={biome.classe} />}
       {sansLv2 ? (
-        // « Pas de LV2 » : l'île reste au loin, fermée ; rien à construire, rien à jouer (décision du directeur artistique).
-        <p className="island-sheet-says">
-          <Syllabified text={SANS_LV2} /> <SpeakButton text={SANS_LV2} compact />{' '}
-          <Link to="/reglages">
-            <Icon name="settings" /> Réglages
+        // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
+        <p>
+          <Link to="/reglages" className="button">
+            <Icon name="settings" /> Choisir une LV2
           </Link>
         </p>
       ) : (
@@ -123,7 +121,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         </h3>
       )}
       <ul className="island-quests" aria-label="Missions de l’île">
-        {missionsJouables(biome).map((exercise) => {
+        {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);

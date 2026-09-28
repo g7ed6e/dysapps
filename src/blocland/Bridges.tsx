@@ -44,7 +44,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
     el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
   }, [highlight, island]);
   const world = { progress: state.progress, plans: state.village.plans };
-  const bridges = buildableBridges(state.village.bridges, island, world);
+  const bridges = buildableBridges(state.village.bridges, island, world, settings.lv2);
   const have = payableBlocks(state.inventory);
   if (!bridges.length && !said) return null;
 

@@ -365,7 +365,7 @@ describe('La construction taillée (lot R5)', () => {
       const iles = [...new Set(cubes.filter((c) => c.texture === 'toit').map((c) => c.tag!))];
       const part = iles.filter((i) => toitDe(i) === 'terre-cuite').length / iles.length;
       // Aux Îles Brumeuses, le Relais des voyageurs (LV2) reste d'ardoise à côté du Comptoir : jamais deux voisins en terre
-      // cuite (DA, lot 2 de la LV2) ; une île sur six.
+      // cuite (DA, LV2-2) ; une île sur six.
       expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }

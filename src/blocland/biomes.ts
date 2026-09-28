@@ -1067,6 +1067,9 @@ export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Cho
   return biome.exercises.filter((x) => x.lv2 === undefined || x.lv2 === lv2);
 }
 
+/** Ce que dit l'île de la LV2 avec « Pas de LV2 » (lu à l'ouverture de son panneau), qu'elle soit ouverte ou non. */
+export const SANS_LV2 = 'Tu n’as pas choisi de LV2 : les missions de ta deuxième langue ne sont pas proposées ici. Tu peux en choisir une dans les Réglages.';
+
 /** Une île de LV2 : ses missions dépendent de la langue choisie. */
 export function estIleLv2(biome: Pick<BiomeDef, 'subject'>): boolean {
   return biome.subject === 'lv2';

@@ -197,11 +197,11 @@ export const ARCHIPEO = {
       },
     },
     relais: {
-      challenge: 'La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale dans ta deuxième langue, écoute bien ce qu’on te dit. »',
+      challenge: 'La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale chez mes voyageurs : écoute bien ce qu’ils te disent. »',
       guardianSays: {
-        hit: 'Une aiguille de ma boussole s’allume. C’est juste.',
-        miss: 'Rien ne s’éteint. Réécoute le mot, regarde bien son petit article, et reprends.',
-        beaten: 'Ma boussole se rallume. Le ponton est à toi, et à Lina.',
+        hit: 'Une pointe de ma rose des vents s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Réécoute le mot, relis la règle, et reprends.',
+        beaten: 'Ma boussole se rallume. Le Relais est à toi, et à Lina.',
       },
     },
     manoir: {

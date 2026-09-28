@@ -263,7 +263,7 @@ function kiosque(b: BlockId): Stages {
 }
 
 /**
- * Le relais de diligence (le Relais des voyageurs, LV2 5e) : trois plans, trois choses qu'on reconnaît (DA, lot 2).
+ * Le relais de diligence (le Relais des voyageurs, LV2 5e) : trois plans, trois choses qu'on reconnaît (DA, LV2-2).
  * L'auberge : une maison de quatre sur trois à gauche, une porte, trois fenêtres. L'écurie : le toit à deux pans de
  * l'auberge et sa cheminée haute (le nid de Lina), et, à droite, un appentis ouvert sur deux poteaux, sous un toit plus
  * bas, une mangeoire entre eux. La fontaine : devant l'écurie, un bassin de dalles et sa colonne, et devant l'auberge une

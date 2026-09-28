@@ -14,7 +14,7 @@ import { boite, DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type P
 /** Les couleurs de la fiche : la pierre des tours, l'ardoise, la mousse des roches, la glace de la calotte. */
 export const COULEURS_5E = { pierre: 0x7d8a86, ardoise: 0x224c5f, mousse: 0x5a7e50, roche: 0x6a7f86, glace: 0xe5ebe3, glaceCote: 0xc9d8dc, ecume: 0xe8eeec, roseau: 0x8a8a5a } as const;
 
-/** Le Relais des voyageurs (LV2, DA lot 2) : le bois du ponton et le fer de la girouette. */
+/** Le Relais des voyageurs (DA, LV2-2) : le bois du ponton et le fer de la girouette. */
 export const COULEURS_DU_RELAIS = { planche: 0x9c7c4b, poteau: 0x6e5234, fer: 0x3a4148 } as const;
 
 /** Les deux faces d'une couleur de la fiche : un dessus un peu plus clair ; délavées si l'île est fermée. */

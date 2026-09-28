@@ -49,6 +49,26 @@ const FACE_DU_SPHINX: Anneau[] = [
   [7.4, 0.28, 0.2, -0.95],
 ];
 
+/**
+ * Les roues de la Diligence : x et rayon (les grandes derrière, les petites devant), posées sur le socle. Toute la
+ * Diligence tient à 2,5 blocs de l'axe du socle : ses tours la gardent dans les cinq cases.
+ */
+const ROUES_DE_LA_DILIGENCE: [number, number][] = [
+  [-1.35, 0.9],
+  [1.45, 0.6],
+];
+/** Le tour qui montre de profil, à une caméra venue de (`dx`, `dz`), une statue dessinée de profil face à −Z. */
+const deProfilPour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
+/**
+ * Les tours de la Diligence (retouche du directeur artistique, DA, LV2-2) : dans le monde, vers les caméras du Relais,
+ * qui le regardent depuis l'est (la vue de l'île, tournée vers le centre de l'archipel, et celle du bonhomme :
+ * three/camera.ts, `ISLAND_VIEW`, `VIEW` et `viewYaw`) ; au défi, vers sa caméra de trois quarts (Guardians.tsx,
+ * `cameraDirection` [−0,55 ; −0,85]).
+ */
+export const TOURS_DE_LA_DILIGENCE = { monde: deProfilPour(0.93, -0.36), defi: deProfilPour(-0.55, -0.85) };
+/** Le centre du cadran de la boussole, au-dessus du siège du cocher (le haut de la Diligence, vers 5 blocs). */
+const BOUSSOLE = { x: 1.3, y: 4.8 };
+
 const CORPS_DE_L_HYDRE: Anneau[] = [
   [1, 1.3, 1.0],
   [2.4, 1.2, 0.95],
@@ -432,62 +452,84 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       ),
   },
   relais: {
-    // La Diligence de cuivre (LV2, DA lot 2), vue de profil : la caisse sur quatre roues, les bagages sur l'impériale,
-    // le siège du cocher à l'avant ; ses deux vitres sont ses orbites. Au-dessus du siège, sa boussole se rallume.
+    // La Diligence de cuivre (DA, LV2-2), dessinée de profil face à −Z puis tournée vers chaque caméra (`tour`), plus
+    // longue que haute : la caisse basse sur quatre roues (les grandes derrière), les bagages à l'arrière de
+    // l'impériale, le siège du cocher à l'avant ; la vitre de la portière, à meneau, fait ses orbites. Ses roues portent
+    // des rayons de lichen, pour ne pas se lire comme des joues. Au-dessus du siège, sur un mât court, sa boussole se
+    // rallume : la seule sentinelle basse, son boîtier vers cinq blocs (retouche du directeur artistique).
     nom: 'la Diligence',
     allume: 'la boussole de son siège',
+    tour: TOURS_DE_LA_DILIGENCE,
     sculpture: (T, a) => {
-      // Les roues : celles de devant à huit pans, celles de derrière (à peine vues) à six.
-      for (const x of [-1.3, 1.1]) {
+      for (const [x, r] of ROUES_DE_LA_DILIGENCE) {
+        const y = 1 + r;
+        // La roue vue, à huit pans, ses deux rayons croisés et son moyeu ; celle d'en face, à peine vue, à six.
         tube(
           T,
           [
-            [x, 1.78, -1.06],
-            [x, 1.78, -0.86],
+            [x, y, -1.02],
+            [x, y, -0.84],
           ],
-          0.78,
+          r,
           8,
+          a.pierre,
+        );
+        // Le bandage de lichen, la roue de pierre dedans, les rayons, et le moyeu qui dépasse (il accroche la lumière
+        // quand la pierre se rallume, d'une seule couleur) : une roue, pas une joue.
+        plaque(T, x, y, r, r, 8, a.lichen, () => -1.02);
+        plaque(T, x, y, r * 0.74, r * 0.74, 8, a.pierre, () => -1.04);
+        plaque(T, x, y, 0.12, r * 0.8, 4, a.lichen, () => -1.06);
+        plaque(T, x, y, r * 0.8, 0.12, 4, a.lichen, () => -1.06);
+        tube(
+          T,
+          [
+            [x, y, -1.02],
+            [x, y, -1.24],
+          ],
+          0.2,
+          4,
           a.pierre,
         );
         tube(
           T,
           [
-            [x, 1.78, 0.86],
-            [x, 1.78, 1.06],
+            [x, y, 0.84],
+            [x, y, 1.02],
           ],
-          0.78,
+          r,
           6,
           a.pierre,
         );
       }
-      // Le train, la caisse (plus longue que haute), l'impériale qui déborde et les bagages.
-      pave(T, -1.5, 1.7, -0.7, 1.3, 2.15, 0.7, a.pierre);
-      pave(T, -1.75, 2.15, -0.8, 0.95, 4.1, 0.8, a.pierre);
-      pave(T, -1.9, 4.1, -0.92, 1.1, 4.3, 0.92, a.pierre);
-      pave(T, -1.6, 4.3, -0.6, 0.55, 4.9, 0.6, a.lichen);
-      // Le siège du cocher, à l'avant : son coffre, son dossier, le marchepied ; le mât de la boussole.
-      pave(T, 0.95, 3.3, -0.7, 1.85, 3.75, 0.7, a.pierre);
-      pave(T, 0.95, 3.75, -0.7, 1.12, 4.5, 0.7, a.pierre);
-      pave(T, 1.5, 2.55, -0.75, 2.3, 2.72, 0.75, a.pierre);
+      // Le train, la caisse basse et longue, l'impériale qui déborde et les bagages.
+      pave(T, -2.1, 1.7, -0.72, 2.0, 1.98, 0.72, a.pierre);
+      pave(T, -2.2, 1.98, -0.8, 0.5, 3.2, 0.8, a.pierre);
+      pave(T, -2.3, 3.2, -0.92, 0.65, 3.38, 0.92, a.pierre);
+      pave(T, -2.1, 3.38, -0.6, -0.9, 3.9, 0.6, a.lichen);
+      // Le siège du cocher, à l'avant : son coffre, son dossier, le marchepied ; le mât court de la boussole.
+      pave(T, 0.5, 2.6, -0.7, 1.7, 3.05, 0.7, a.pierre);
+      pave(T, 0.5, 3.05, -0.7, 0.68, 3.6, 0.7, a.pierre);
+      pave(T, 1.7, 2.2, -0.72, 2.25, 2.35, 0.72, a.pierre);
       tube(
         T,
         [
-          [1.5, 3.75, 0],
-          [1.5, 7.2, 0],
+          [BOUSSOLE.x, 3.05, 0],
+          [BOUSSOLE.x, BOUSSOLE.y - 0.35, 0],
         ],
         0.08,
         4,
         a.pierre,
       );
-      // Le boîtier de la boussole, face à l'élève, jusqu'au haut des huit blocs.
-      pave(T, 1.05, 7.2, -0.18, 1.95, 8, 0.12, a.pierre);
-      // Les deux vitres de la portière : ses orbites.
-      orbites(T, a, -0.4, 3.35, -0.8, 0.5, 0.45);
+      // Le boîtier de la boussole, face à l'élève.
+      pave(T, BOUSSOLE.x - 0.35, BOUSSOLE.y - 0.35, -0.18, BOUSSOLE.x + 0.35, BOUSSOLE.y + 0.35, 0.12, a.pierre);
+      // La vitre de la portière, partagée par son meneau (une fenêtre, pas deux yeux) : ses orbites, à l'avant de la
+      // caisse, entre la grande roue et la petite, pas au milieu (un visage entre deux joues).
+      orbites(T, a, -0.25, 2.76, -0.8, 0.25, 0.42);
     },
     veines: (T, a) => {
       // Le cadran de la boussole et son aiguille.
-      plaque(T, 1.5, 7.6, 0.32, 0.32, 8, a.lueur, () => -0.18);
-      plaque(T, 1.5, 7.6, 0.05, 0.3, 4, a.lueur, () => -0.2);
+      plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.28, 0.28, 8, a.lueur, () => -0.18);
+      plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.05, 0.26, 4, a.lueur, () => -0.2);
     },
   },
 };

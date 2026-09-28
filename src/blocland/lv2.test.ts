@@ -1,3 +1,6 @@
+import { DEFAULT_SETTINGS, retenirReglages } from '../core/settings';
+import { CATALOG } from './exercises';
+import { questsToReview } from './review';
 import { subjectInfo, visibleSubjects } from '../apps/registry';
 import { bridgesOf, buildableBridges, grantAccess } from './world/archipelago';
 import { getBiome, missionsJouables } from './biomes';
@@ -41,4 +44,19 @@ it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont
   expect(buildableBridges(faits, 'comptoir', undefined, 'aucune').some((b) => b.to === 'relais' || b.from === 'relais')).toBe(false);
   expect(bridgesOf('relais').map((b) => [b.from, b.to])).toEqual([['comptoir', 'relais']]);
   expect(versRelais('es')).toHaveLength(bridgesOf('relais').length);
+});
+
+it('« À revoir » ne propose que les missions de la LV2 choisie', () => {
+  const ids = CATALOG.filter((m) => m.biome === 'relais').map((m) => m.id);
+  const spaced = ids.map((id) => ({ itemId: `${id}:1`, due: '2026-01-01', stage: 0, streak: 0 }));
+  const bridges = grantAccess([], ['relais']);
+  try {
+    retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'de' });
+    const types = questsToReview(spaced, bridges, '2026-09-28').map((q) => q.type);
+    expect(types).toEqual(['de-hallo', 'de-zahlen', 'de-familie', 'de-der-die-das']);
+    retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'aucune' });
+    expect(questsToReview(spaced, bridges, '2026-09-28')).toEqual([]);
+  } finally {
+    retenirReglages(null);
+  }
 });

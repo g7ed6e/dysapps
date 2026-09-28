@@ -24,3 +24,20 @@ export function sentinellePeinte(id: BiomeId): FacettesDePersonnage {
   }
   return f;
 }
+
+const auDefi = new Map<BiomeId, FacettesDePersonnage>();
+
+/**
+ * La sentinelle d'une île telle que le défi la montre : la même que dans le monde, sauf une statue longue (`tour`), qui
+ * s'y tourne pour se montrer de profil à la caméra du défi (calculée une fois).
+ */
+export function sentinelleAuDefi(id: BiomeId): FacettesDePersonnage {
+  const s = STATUES[id];
+  if (!s?.tour) return sentinellePeinte(id);
+  let f = auDefi.get(id);
+  if (!f) {
+    f = sentinelleEnFacettes(s, 'defi');
+    auDefi.set(id, f);
+  }
+  return f;
+}
