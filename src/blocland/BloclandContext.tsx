@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadJSON, removeKey, saveJSON } from '../core/storage';
+import { gelerSauvegarde, loadJSON, removeKey, saveJSON } from '../core/storage';
+import { bacASable, remplir } from './batisseur';
 import {
   EMPTY_STATE,
   buildBridge as buildBridgePure,
@@ -52,6 +53,10 @@ interface BloclandContextValue {
   /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
   launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
+  /** Le mode bâtisseur est-il ouvert ? (une copie de la partie, en mémoire seulement) */
+  batisseur: boolean;
+  /** Ouvre le mode bâtisseur : la sauvegarde est gelée, la partie devient un bac à sable. */
+  ouvrirBatisseur: () => void;
 }
 
 const BloclandContext = createContext<BloclandContextValue | null>(null);
@@ -62,6 +67,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const stateRef = useRef(state);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
+  const [batisseur, setBatisseur] = useState(false);
+  const batisseurRef = useRef(false);
 
   useEffect(() => {
     saveJSON(STORAGE_KEY, state);
@@ -92,15 +99,18 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const fillPlan = useCallback((plan: PlanDef, x: number, y: number, z: number) => {
     const r = fillPlanCellPure(stateRef.current, plan, x, y, z);
     if (r.ok) {
-      stateRef.current = r.state;
-      setState(r.state);
+      const next = batisseurRef.current ? remplir(r.state) : r.state;
+      stateRef.current = next;
+      setState(next);
+      return { ...r, state: next };
     }
     return r;
   }, []);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
-    stateRef.current = r.state;
-    setState(r.state);
+    const next = batisseurRef.current ? remplir(r.state) : r.state;
+    stateRef.current = next;
+    setState(next);
     return r.result;
   }, []);
   const moveTo = useCallback((id: BiomeId) => {
@@ -120,6 +130,15 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const continueSession = useCallback(() => {
     setSessionCount(0);
     sessionStart.current = Date.now();
+  }, []);
+
+  const ouvrirBatisseur = useCallback(() => {
+    if (batisseurRef.current) return;
+    gelerSauvegarde();
+    batisseurRef.current = true;
+    setBatisseur(true);
+    stateRef.current = bacASable(stateRef.current);
+    setState(stateRef.current);
   }, []);
 
   const reset = useCallback(() => {
@@ -146,8 +165,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       moveTo,
       launch,
       reset,
+      batisseur,
+      ouvrirBatisseur,
     }),
-    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset],
+    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

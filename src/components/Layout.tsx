@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AppUpdateBanner } from '../core/AppUpdateBanner';
+import { BandeauBatisseur } from './BandeauBatisseur';
 import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
@@ -102,6 +103,7 @@ function Shell() {
         </header>
       )}
       <AppUpdateBanner />
+      <BandeauBatisseur />
       <Celebrations />
       <main id="contenu" className="content" ref={main}>
         {/* Une page qui échoue n'emporte pas la barre du haut ; changer de page efface l'erreur

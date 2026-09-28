@@ -7,12 +7,10 @@ it('reste fermé jusqu’à la bascule du lot 6', () => {
 it('choisit le premier univers d’un appareil d’après sa progression', () => {
   // Un appareil neuf : Blocland, l'univers par défaut, sans message.
   expect(UNIVERS_PAR_DEFAUT).toBe('blocland');
-  expect(premierUnivers({ progression: false, experimental: false })).toEqual({ univers: 'blocland', message: false });
+  expect(premierUnivers({ progression: false })).toEqual({ univers: 'blocland', message: false });
   // Une progression : Blocland, avec le message unique qui présente Archipéo.
-  expect(premierUnivers({ progression: true, experimental: false })).toEqual({ univers: 'blocland', message: true });
-  // La section Expérimental allumée : l'élève a déjà choisi Archipéo, sans message.
-  expect(premierUnivers({ progression: true, experimental: true })).toEqual({ univers: 'archipeo', message: false });
-  expect(premierUnivers({ progression: false, experimental: true })).toEqual({ univers: 'archipeo', message: false });
+  expect(premierUnivers({ progression: true })).toEqual({ univers: 'blocland', message: true });
+  // Archipéo ne s'active que dans les Réglages : jamais d'office (décision 8).
 });
 
 it('reconnaît une progression enregistrée, sans planter sur une sauvegarde abîmée', () => {

@@ -54,18 +54,15 @@ export const UNIVERS_IDS = Object.keys(UNIVERS) as UniversChoice[];
 export interface AvantUnivers {
   /** Une progression enregistrée (des réponses, de l'XP, une étoile). */
   progression: boolean;
-  /** La section Expérimental allumée : l'élève a déjà choisi le nouveau dessin. */
-  experimental: boolean;
 }
 
 /**
- * Le premier univers d'un appareil, figé ensuite dans les réglages : Blocland, l'univers par défaut, sauf pour un
- * appareil qui essayait déjà le nouveau dessin (Archipéo, sans message). Un appareil qui a déjà une progression reçoit
- * le message unique qui lui présente Archipéo ; un appareil neuf n'a rien à apprendre de nouveau (décisions 5 et 7 de
- * univers.md, décision 2 des fils du lot 6).
+ * Le premier univers d'un appareil, figé ensuite dans les réglages : toujours Blocland, l'univers par défaut. Archipéo
+ * ne s'active que dans les Réglages, jamais d'office, même pour un appareil qui essayait la section Expérimental
+ * (décisions 7 et 8 de univers.md). Un appareil qui a déjà une progression reçoit le message unique qui lui présente
+ * Archipéo et le réglage ; un appareil neuf n'a rien à apprendre de nouveau.
  */
-export function premierUnivers({ progression, experimental }: AvantUnivers): { univers: UniversChoice; message: boolean } {
-  if (experimental) return { univers: 'archipeo', message: false };
+export function premierUnivers({ progression }: AvantUnivers): { univers: UniversChoice; message: boolean } {
   return { univers: UNIVERS_PAR_DEFAUT, message: progression };
 }
 
