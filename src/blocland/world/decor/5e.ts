@@ -144,11 +144,14 @@ export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
  * Le décor du 5e hors de la grille : la tour en ruine du Carrefour, derrière son cœur, sur une case de terre où rien
  * n'est posé ; la calotte de sérac sur le plus haut pic du Glacier.
  */
+/** Le décalage de la tour en ruine sur la droite de l'axe du Carrefour, pour qu'elle ne passe pas sous le nom de l'île. */
+const DECALAGE_DE_LA_RUINE = 5;
+
 export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDecor[]): ElementDeDecor[] {
   const out: ElementDeDecor[] = [];
   const occupees = new Set<string>();
   for (const e of elements) for (const c of e.cubes) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 3; dy++) occupees.add(`${c.x + dx},${c.y + dy}`);
-  // Le Carrefour : une case libre juste derrière le cœur, au plus près de son axe, sans décor devant elle (la caméra
+  // Le Carrefour : une case libre juste derrière le cœur, à droite de son axe, sans décor devant elle (la caméra
   // regarde vers le nord), jamais dans le cœur.
   const carrefour = islandDef('carrefour');
   const axe = carrefour.core.x + CORE / 2;
@@ -158,8 +161,8 @@ export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDeco
     // Juste derrière le cœur, avant les crêtes du fond : vue de l'île, elle se lit au-dessus des toits.
     if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + CORE || c.y > carrefour.core.y + CORE + 2) continue;
     if (occupees.has(`${c.x},${c.y}`)) continue;
-    // Au plus près de l'axe ; à égalité, la plus au fond.
-    const score = -Math.abs(c.x - axe) * 4 + (c.y - carrefour.core.y);
+    // À quelques cases à droite de l'axe (le nom de l'île se place au-dessus de son axe) ; à égalité, la plus au fond.
+    const score = -Math.abs(c.x - axe - DECALAGE_DE_LA_RUINE) * 4 + (c.y - carrefour.core.y);
     if (score > meilleur) [tour, meilleur] = [c, score];
   }
   if (tour) out.push({ id: `hors-grille/tour-en-ruine@${tour.x},${tour.y}`, genre: 'tour-en-ruine', cubes: [], x: tour.x, y: tour.y, z: tour.haut + 1, emprise: 1, muted: tour.muted, horsGrille: true });
