@@ -45,7 +45,7 @@ Aucun n’est partagé avec un autre archipel.
 - Ciel de jour : zénith `#6F9FC2`, horizon `#C5D9EB`, lueur `#E5EBE3`.
 - Soleil `#F4F2EA`, force 2,0. Ambiance du ciel `#D2E2EE`, du sol `#64848E`, force 1,2 : une lumière diffuse de matin froid.
 - Brume de profondeur 70 / 260 (inchangée). Voile `#A9C2CC`, force 0,11.
-- Sols : herbe `#5A7E50` / `#6A6A5A` ; roche `#8C9894` / `#6A7F86` ; neige `#B3C1C7` / `#8A9CA4` (une roche claire gris-bleu ; pas plus sombre, car un test de la 2D exige un contraste de 3 avec les murs de marbre ; les gradins du relief sont en roche nue) ; glace `#C9D8DC` / `#9FB4BA`.
+- Sols : herbe `#5A7E50` / `#6A6A5A` ; roche `#8C9894` / `#6A7F86` ; neige `#B3C1C7` / `#8A9CA4` (une roche claire gris-bleu ; pas plus sombre, car un test de la 2D exige un contraste de 3 avec les murs de marbre ; les gradins du relief sont en roche nue) ; glace `#A6BAC2` / `#869EA8`.
 - Mer `#23789C` (inchangée). Ardoise `#224C5F`.
 
 ## 6. La brume et la fumée
