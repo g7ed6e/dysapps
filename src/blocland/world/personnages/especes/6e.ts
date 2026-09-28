@@ -233,9 +233,9 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     metier: 'passeuse',
     gabarit: 'elance',
     dominante: 0x6f8f3e,
-    // Le ciré en tunique à mi-cuisse, ouvert, à manches courtes : les jambes, le poitrail et les avant-bras, verts, se
-    // lisent d'abord.
-    tenue: { couleur: SABLE, vetements: ['cire'], bas: 0.5, manches: 'courtes', ouvert: true },
+    // Le ciré en tunique courte (les jambes vertes dès mi-cuisse), ouvert de l'ourlet au cou sur le devant, à manches
+    // courtes : les jambes, le poitrail et les avant-bras, verts, se lisent d'abord.
+    tenue: { couleur: SABLE, vetements: ['cire'], bas: 0.635, manches: 'courtes', ouvert: true },
     silhouette: { tete: 0.33, teteProfondeur: 0.23, jambe: 0.11 },
     coiffe: (T, k) => {
       for (const c of [-1, 1]) fuseau(T, BOSSE, 5, k.dom, { x: c * 0.17, z: -0.05 });

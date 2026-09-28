@@ -137,7 +137,7 @@ export interface Espece {
   /**
    * La tenue : sa couleur, ses vêtements ; `bas`, l'ourlet de la robe ou du ciré (0,25 et 0,4 bloc par défaut au gabarit
    * standard : 0,5 à mi-cuisse, 0,35 au genou) ; des manches courtes (sous une robe, un ciré ou un gilet) laissent voir
-   * l'avant-bras ; une robe ou un ciré `ouvert` laisse voir la dominante sur le devant, de la taille au cou.
+   * l'avant-bras ; une robe ou un ciré `ouvert` laisse voir la dominante sur le devant, de l'ourlet au cou.
    */
   tenue: { couleur: Couleur; vetements: Vetement[]; bas?: number; manches?: 'courtes'; ouvert?: boolean };
   silhouette?: Partial<Silhouette>;
@@ -175,6 +175,8 @@ const AVANT_DU_TORSE = [6, 7, 0];
 const DOS_DU_TORSE = [2, 3, 4];
 const VISAGE = 5;
 const PLASTRON = [5, 6, 7, 0, 1];
+/** La face du devant, que laisse voir une tenue ouverte : 0,41 de la largeur du torse, de face. */
+const OUVERTURE = N_TORSE - 1;
 
 function torse(s: Silhouette): Anneau[] {
   return [
@@ -267,7 +269,7 @@ function corps(e: Espece, s: Silhouette, T: Trace, k: Kit): void {
       (m.has('dos') && DOS_DU_TORSE.includes(j))
     )
       c = marque;
-    if (j >= 0 && (v.has('robe') || v.has('cire')) && kk <= (v.has('cire') ? 3 : 1) && !(e.tenue.ouvert && j === 7 && kk >= 1)) c = tenue;
+    if (j >= 0 && (v.has('robe') || v.has('cire')) && kk <= (v.has('cire') ? 3 : 1) && !(e.tenue.ouvert && j === OUVERTURE)) c = tenue;
     if (j >= 0 && v.has('gilet') && (kk === 1 || kk === 2) && j !== 7) c = tenue;
     return c;
   };
@@ -282,7 +284,8 @@ function corps(e: Espece, s: Silhouette, T: Trace, k: Kit): void {
         [1.0, s.largeur + 0.012, s.profondeur + 0.012, -s.ventre],
       ],
       N_TORSE,
-      tenue,
+      // Ouverte, la tenue laisse voir la dominante sur toute sa hauteur, de l'ourlet au cou.
+      e.tenue.ouvert ? parFace((_k, j) => (j === OUVERTURE ? dom : tenue)) : tenue,
       { bas: false, haut: false },
     );
   }

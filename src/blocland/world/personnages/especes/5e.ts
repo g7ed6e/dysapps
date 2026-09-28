@@ -182,16 +182,17 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
       }
     },
     corps: (T, k) =>
-      // La queue dressée derrière le corps (0,15 bloc derrière le dos au moins), qui monte 0,3 bloc au-dessus de
-      // l'épaule droite et recourbe son bout vers l'avant.
+      // La queue dressée derrière le corps (0,15 bloc derrière le dos au moins), du côté opposé au trousseau (décalée
+      // de 0,2 bloc vers la gauche), qui monte 0,3 bloc au-dessus de l'épaule gauche et recourbe son bout vers
+      // l'avant : de trois quarts, il sort du contour.
       fuseau(
         T,
         [
-          [0.8, 0.05, 0.05, 0.22, 0.08],
-          [1.3, 0.045, 0.045, 0.34, 0.2],
-          [1.85, 0.045, 0.045, 0.34, 0.33],
-          [2.08, 0.04, 0.04, 0.3, 0.4],
-          [2.16, 0, 0, 0.17, 0.4],
+          [0.8, 0.05, 0.05, 0.22, -0.2],
+          [1.3, 0.045, 0.045, 0.34, -0.32],
+          [1.85, 0.045, 0.045, 0.34, -0.45],
+          [2.08, 0.04, 0.04, 0.3, -0.52],
+          [2.16, 0, 0, 0.17, -0.52],
         ],
         4,
         k.dom,
