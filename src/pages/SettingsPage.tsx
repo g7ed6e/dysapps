@@ -6,6 +6,7 @@ import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { useVoixDisponible } from '../core/useVoix';
 import { Icon } from '../components/Icon';
+import { SauvegardePanel } from '../components/SauvegardePanel';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { CONFIRMATION_UNIVERS, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, type UniversChoice } from '../core/univers';
@@ -329,7 +330,7 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Application</legend>
-          <p className="settings-version">Archipéo, par DysApps. Version {APP_VERSION}.</p>
+          <p className="settings-version">DysApps, version {APP_VERSION}.</p>
           {appUpdate.ready ? (
             <button type="button" className="button primary" onClick={() => void applyUpdate()}>
               Mettre à jour maintenant
@@ -358,6 +359,8 @@ export function SettingsPage() {
             </a>
           </div>
         </fieldset>
+
+        <SauvegardePanel />
 
         <div className="actions">
           <button type="button" className="button" onClick={reset}>

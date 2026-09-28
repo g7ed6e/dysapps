@@ -91,6 +91,18 @@ La version installée est affichée, avec le bouton **Vérifier les mises à jou
 
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 
+## Ma sauvegarde
+
+**Enregistrer ma progression** range dans un fichier (`dysapps-progression-<date>.json`) tout ce que l’appli garde sur l’appareil : XP, succès, étoiles, blocs, bâtiments, répétition espacée et réglages. Sur iPhone et iPad, la feuille de partage s’ouvre pour le ranger (Fichiers, e-mail) ; ailleurs, et quand l’appareil ne sait pas partager ce fichier, il se télécharge.
+
+**Restaurer une sauvegarde…** ouvre un fichier enregistré ainsi. L’appli dit de quel jour il date et qu’il va **remplacer** la progression de l’appareil ; sous la date, elle rappelle d’enregistrer d’abord la progression qu’on veut garder ; rien ne change avant d’avoir touché **Restaurer**. La page se recharge ensuite, et « Ta progression est restaurée. » s’affiche. Un fichier qui n’est pas une sauvegarde de l’appli est refusé, sans rien changer.
+
+Le fichier sert à changer d’appareil, ou à réinstaller l’appli sans rien perdre.
+
+## Réinstaller l’appli
+
+Pour avoir une nouvelle icône, ou si l’appli ne marche plus, la section **Réinstaller l’appli** commence par conseiller de prendre une photo de l’écran, qui disparaît quand on supprime l’appli, et donne quatre étapes, à écouter avec **Écouter** : enregistrer sa progression, supprimer l’appli (appui long sur l’icône sur iPhone, iPad et Android ; menu ⋮ (trois points) puis « Désinstaller » sur ordinateur), l’installer de nouveau depuis l’adresse affichée (le bouton **Copier l’adresse** évite de la retaper), puis restaurer la sauvegarde dans l’appli installée. Sur iPhone et iPad, il faut restaurer dans l’appli installée et non dans Safari : ils ne partagent pas la progression. Voir aussi [Quand l’icône change](demarrer.md#quand-licone-change).
+
 ## Effacer ma progression
 
 En bas de la page, loin des autres boutons, un encadré orangé **Effacer ma progression** efface XP, succès, étoiles, blocs et bâtiments (les réglages restent). Pour confirmer, il faut écrire le mot **effacer** : un doigt qui glisse n'efface rien. **Affichage par défaut**, plus haut, ne remet que les réglages d'affichage.

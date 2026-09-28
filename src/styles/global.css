@@ -3942,6 +3942,21 @@ button.island-quest:active {
   margin: 0.6rem 0 0;
   font-size: 0.95em;
 }
+.settings-steps {
+  margin: 0.4rem 0 0;
+  padding-left: 1.6rem;
+}
+.settings-steps > li {
+  margin-bottom: 0.6rem;
+}
+.settings-steps ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.2rem;
+}
+/* L'adresse se coupe où il faut sur un téléphone, sans faire défiler la page. */
+.settings-adresse {
+  overflow-wrap: anywhere;
+}
 .settings-links {
   display: flex;
   flex-wrap: wrap;
