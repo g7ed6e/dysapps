@@ -49,7 +49,7 @@ import { VEIL_MS, legTiming } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
 import { dispositionEnGrille } from './world/grille';
-import type { Entite } from './world/disposition';
+import type { Entite, Intention } from './world/disposition';
 import { isPlanDone, plansFor } from './world/plans';
 import { Loading } from '../components/Loading';
 import {
@@ -473,6 +473,34 @@ export function WorldPage() {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
     openIsland(id);
   };
+  // Ce que l'élève fait dans le monde, en 3D comme en 2D : la vue renvoie une intention, la page décide.
+  const onIntent = (i: Intention) => {
+    switch (i.genre) {
+      case 'ile':
+        return onIsland(i.id);
+      case 'borne':
+        return onPickQuest(i.ile, i.mission);
+      case 'lieu':
+        return navigate(i.id === 'ecole' ? SCHOOL_PATH : i.id === 'trophees' ? TROPHIES_PATH : `/aventure/${i.id.slice('monument:'.length)}`);
+      case 'ouvrage':
+        return onPickBridge(i.id);
+      case 'creature':
+        return onCreature(i.id, i.gardien ? 'guardian' : 'creature');
+      case 'navire':
+        return onPickVehicle(i.port);
+      case 'face':
+        // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
+        if (island) builder.tryFill(i.case) || ship.tryFill(i.case) || openIsland(grille.ileEn(i.case));
+        return;
+      case 'entree':
+        // En marche libre, le bonhomme est entré dans une autre île : elle devient la sienne si elle est ouverte.
+        if (isBiomeUnlocked(i.ile, state.village.bridges)) moveTo(i.ile);
+        return;
+      case 'fin-du-voyage':
+      case 'voyage-saute':
+        return onLegEnd();
+    }
+  };
   const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
     `${KIND_NAME[b.kind]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
 
@@ -509,26 +537,18 @@ export function WorldPage() {
             bridges={state.village.bridges}
             marker={marker}
             vehicle={vehicle}
-            onPickVehicle={onPickVehicle}
             voyage={voyageAJouer(voyage)}
-            onVoyageLegEnd={onLegEnd}
-            onVoyageSkip={onLegEnd}
             avatar={avatar}
             map={mapOpen}
             home={at}
             trail={trail}
             quests={quests}
-            onPickQuest={onPickQuest}
-            onPickPlace={(place) => navigate(place === 'ecole' ? SCHOOL_PATH : place === 'trophees' ? TROPHIES_PATH : `/aventure/${place.slice('monument:'.length)}`)}
             islandLabels={voyage ? undefined : islandLabels}
             whalePass={whaleWord && !settings.reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
-            onPickIsland={onIsland}
-            onPickBridge={onPickBridge}
-            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(grille.ileEn(cell)) } : undefined}
             burst={burst}
-            onPickCreature={onCreature}
             freeWalk={settings.freeWalk}
-            onWalkedInto={(id) => isBiomeUnlocked(id, state.village.bridges) && moveTo(id)}
+            onIntent={onIntent}
+            chantier={Boolean(island)}
             className="voxel-canvas-stage"
             label={`Archipéo en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
