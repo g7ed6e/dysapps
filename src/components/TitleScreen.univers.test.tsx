@@ -30,10 +30,10 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-it('montre le nom de l’univers choisi : Archipéo sur un appareil neuf, sans message', async () => {
+it('montre le nom de l’univers choisi : Blocland sur un appareil neuf, sans message', async () => {
   const user = userEvent.setup();
   renderTitle();
-  expect(screen.getByRole('dialog', { name: 'Archipéo' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'Blocland' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Jouer/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

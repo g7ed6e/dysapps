@@ -77,8 +77,8 @@ describe('les textes d’univers', () => {
     }
   });
 
-  it('une fois ouvert, l’univers choisi s’affiche, Archipéo par défaut', () => {
-    expect(universAffiche(undefined, true)).toBe('archipeo');
+  it('une fois ouvert, l’univers choisi s’affiche, Blocland par défaut', () => {
+    expect(universAffiche(undefined, true)).toBe('blocland');
     expect(universAffiche('blocland', true)).toBe('blocland');
     expect(universAffiche('archipeo', true)).toBe('archipeo');
   });

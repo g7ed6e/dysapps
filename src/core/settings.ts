@@ -1,4 +1,4 @@
-import { UNIVERS, type UniversChoice } from './univers';
+import { UNIVERS, UNIVERS_PAR_DEFAUT, type UniversChoice } from './univers';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair';
@@ -171,8 +171,8 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
     renduArchipeo: s.renduArchipeo === true,
     styleArchipeo: Object.hasOwn(STYLE_LABELS, s.styleArchipeo) ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
-    // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut Archipéo.
-    ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : 'archipeo' }),
+    // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
+    ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
   };
 }
 
