@@ -1,7 +1,10 @@
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
-/** La vue de Blocland : le monde en 3D, le monde en 2D (pixels, vue de dessus en oblique), ou la liste des îles. */
-export type WorldViewChoice = '3d' | '2d' | 'liste';
+/**
+ * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
+ * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
+ */
+export type WorldViewChoice = '3d' | 'liste';
 /** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
 export type StartChoice = 'village' | 'menu';
 /**
@@ -81,7 +84,6 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 
 export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
-  '2d': 'Le monde en 2D (expérimental)',
   liste: 'La liste des îles',
 };
 
@@ -124,6 +126,8 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
   const s = { ...DEFAULT_SETTINGS, ...input };
   // Avant les trois vues : un interrupteur « vues en 3D » (éteint : la liste des îles).
   if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'liste';
+  // Le monde en 2D n'est plus au choix (28/09/2026) : un appareil qui l'avait choisi retrouve le monde en 3D.
+  if ((s.worldView as string) === '2d') s.worldView = '3d';
   if (typeof s.theme === 'string' && s.theme in LEGACY_THEMES) s.theme = LEGACY_THEMES[s.theme];
   if (typeof s.font === 'string' && s.font in LEGACY_FONTS) s.font = LEGACY_FONTS[s.font];
   return {
