@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
-import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction } from '../world/construction';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
@@ -115,7 +115,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
       const auSol: VoxelCube[] = [];
       const autres: VoxelCube[] = [];
-      for (const c of cubes) (c.sol ? auSol : autres).push(c);
+      // Sans les tours du décor du cœur (un seul phare par île, lot R5) : Blocland les garde.
+      for (const c of sansToursDuCoeur(cubes)) (c.sol ? auSol : autres).push(c);
       // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
       const { elements, reste } = rangerLeDecor(autres);
       const champ = champDuSol(archipel, auSol, reste);

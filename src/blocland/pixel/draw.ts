@@ -7,7 +7,7 @@ import type { STYLE } from './style';
 import { PRIORITY, columnAt, materialOf, type Surface } from './surface';
 import { designedTile, fringeColors, hash, isGrainy, pavedTile } from './tiles';
 import type { Peinture } from './painted';
-import type { fenetresDe } from '../world/construction';
+import type { FenetresDuMonde } from '../world/construction';
 import { drawPaintedChunk, drawPaintedTileMap } from './paintedDraw';
 
 const images = new Map<string, HTMLCanvasElement | null>();
@@ -71,7 +71,7 @@ export interface DrawEnv {
    * La 2D peinte : les vitres et les lanternes du monde (world/construction.ts, `fenetresDe`), qui s'allument la nuit
    * comme en 3D (lot R5). Sans elles, les lanternes gardent leur couleur.
    */
-  fenetres?: ReturnType<typeof fenetresDe>;
+  fenetres?: FenetresDuMonde;
 }
 
 /** L'image d'une face : dessinée pour la 2D si le style le veut et si son sol en a une, sinon la texture du bloc. */

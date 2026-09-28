@@ -17,7 +17,7 @@ import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
-import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe } from './construction';
+import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 
@@ -169,7 +169,7 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
  */
 export function constructionCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { ground, reste, champ } = archipelArchipeo(a);
-  const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, reste), ground));
+  const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, sansToursDuCoeur(reste)), ground));
   return { triangles, drawCalls };
 }
 

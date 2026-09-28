@@ -34,6 +34,7 @@ import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseD
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import { islandDef, type ArchipelagoId } from './map';
+import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
@@ -382,11 +383,40 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
 }
 
 /**
+ * Les tours du décor du cœur que le rendu Archipéo ne dessine pas (décision du directeur artistique, lot R5) : un seul
+ * phare par île. Sur l'île de la Tour (6e), la tour de verre à sommet d'or cachait le pied du phare de Grimoire ; sur
+ * l'île du Phare (3e), la petite tour de pierre à lanterne doublait le grand phare. Cases du cœur (world/decor.ts,
+ * `DECOR`), que Blocland garde : son dessin ne change pas.
+ */
+export const TOURS_DU_COEUR: Partial<Record<string, readonly (readonly [number, number])[]>> = {
+  tour: [
+    [8, 4],
+    [9, 4],
+    [8, 5],
+    [9, 5],
+  ],
+  phare: [[9, 3]],
+};
+
+/** Les cubes du monde sans les tours du décor du cœur (`TOURS_DU_COEUR`) : le rendu Archipéo seulement. */
+export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
+  const retirees = new Set<string>();
+  for (const [ile, cases] of Object.entries(TOURS_DU_COEUR)) {
+    const o = origineDe(ile as Parameters<typeof origineDe>[0]);
+    for (const [dx, dy] of cases ?? []) retirees.add(`${ile}|${o.x + LAYOUT_PAD.x + dx},${o.y + LAYOUT_PAD.y + dy}`);
+  }
+  return cubes.filter((c) => c.sol || c.decor || c.ghost || !retirees.has(`${c.tag}|${c.x},${c.y}`));
+}
+
+/** Les vitres et les lanternes d'un monde, et leur décalage d'allumage. */
+export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>;
+
+/**
  * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée) : pour la 2D peinte,
  * qui les allume selon le même `eclatDeFenetre` que la 3D. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
-export function fenetresDe(cubes: VoxelCube[]): Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }> {
+export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
   // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
   const phare = phareDeGrimoire(cubes);
   const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z))));
@@ -800,12 +830,13 @@ export function maillageDeLaConstruction(
       };
       // Le long de u : même couleur, mêmes retraits en v.
       let u1 = s.u;
+      let droite = s;
       for (;;) {
         const n = at(u1 + 1, s.v);
         if (!n || n.r[2] !== s.r[2] || n.r[3] !== s.r[3] || s.r[1] || n.r[0]) break;
+        droite = n;
         u1++;
       }
-      const droite = cases.get(`${u1},${s.v}`)!;
       const bords = { gauche: s.r[0], droite: droite.r[1], bas: s.r[2], haut: s.r[3] };
       // Puis le long de v, rangée par rangée.
       let v1 = s.v;
@@ -826,7 +857,11 @@ export function maillageDeLaConstruction(
         v1++;
         bords.haut = haut;
       }
-      for (let v = s.v; v <= v1; v++) for (let u = s.u; u <= u1; u++) cases.get(`${u},${v}`)!.fait = true;
+      for (let v = s.v; v <= v1; v++)
+        for (let u = s.u; u <= u1; u++) {
+          const c = cases.get(`${u},${v}`);
+          if (c) c.fait = true;
+        }
       if (groupe === 'g') fantome(d, plan, s.u, u1 + 1, s.v, v1 + 1);
       else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete);
     }

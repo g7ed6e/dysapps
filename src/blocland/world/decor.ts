@@ -256,7 +256,9 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
   phare: (put, h) => {
-    // Deux blocs au sol. Plus de tour de pierre à lanterne : aux Îles du Ciel, un seul phare, le grand repère (R5).
+    // Un phare : tour de pierre, lanterne de prisme au sommet.
+    for (let z = 1; z <= 5; z++) put(9, 3, h(9, 3) + z, z === 5 ? BLOCKS.prisme.side : BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 6, BLOCKS.or.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.prisme.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },

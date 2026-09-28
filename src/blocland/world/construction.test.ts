@@ -45,6 +45,7 @@ import { ambianceDe } from './palette';
 import { mixColor } from './daylight';
 import { worldCubes } from './terrain';
 import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
+import { sansToursDuCoeur } from './construction';
 import { BRIDGES } from './archipelago';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
@@ -669,5 +670,21 @@ describe('Un maillage par île (lot R5)', () => {
     // Le premier triangle du phare est le même.
     const t = (m: MaillageDeLaConstruction, i: number) => [0, 1, 2].map((k) => m.opaque.positions[m.opaque.indices[i * 3] * 3 + k]);
     expect(t(r.maillage, p.opaque[0])).toEqual(t(seul, seul.phare!.opaque[0]));
+  }, 30_000);
+});
+
+describe('Les tours du décor du cœur (lot R5, Archipéo seulement)', () => {
+  it('ne retire que la tour de verre de la Tour et la petite tour du Phare, rien ailleurs', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const { progress, village } = toutConstruit();
+      const cubes = worldCubes(a, progress, village, false);
+      const gardes = new Set(sansToursDuCoeur(cubes));
+      const retires = cubes.filter((c) => !gardes.has(c));
+      const attendu = a === '6e' ? { tour: 21 } : a === '3e' ? { phare: 6 } : {};
+      const parIle: Record<string, number> = {};
+      for (const c of retires) parIle[c.tag ?? ''] = (parIle[c.tag ?? ''] ?? 0) + 1;
+      expect(parIle, a).toEqual(attendu);
+      expect(retires.every((c) => !c.sol && !c.decor && !c.ghost && !c.quest), a).toBe(true);
+    }
   }, 30_000);
 });
