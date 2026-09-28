@@ -1,10 +1,10 @@
 # Séparer le jeu du rendu
 
-Ce document est un **plan** : rien n’est encore construit. Il décrit comment isoler complètement la logique du jeu de son dessin, pour qu’une même logique serve trois rendus :
+Ce document est un **plan** : rien n’est encore construit. Ses trois décisions ont été prises par le mainteneur le 28 septembre 2026 (§5). Il décrit comment isoler complètement la logique du jeu de son dessin, pour qu’une même logique serve trois rendus :
 
 - le **monde par cases** (Blocland) en **3D** (`src/blocland/three/`) ;
 - le même monde par cases en **2D** (`src/blocland/pixel/`) ;
-- un mode où **les distances sont plus abstraites** (Archipéo) : les îles sont des lieux reliés par des liaisons, pas des morceaux d’une grille continue.
+- un mode où **les distances sont abstraites** (Archipéo) : tout le monde devient un réseau ; chaque île est un lieu, une maquette posée sur la mer, reliée aux autres par des liaisons, et le bonhomme ne marche plus.
 
 La vue simple (les pages HTML de Blocland) en est un quatrième consommateur : elle joue déjà tout le jeu sans aucune géométrie, preuve que la logique n’a pas besoin de cases.
 
@@ -72,9 +72,17 @@ Une interface, deux réalisations. Elle dit **où** sont les entités du modèle
 
 La **disposition en grille** enveloppe les fonctions de `terrain.ts`, `map.ts`, `harbour.ts` et `paths.ts` : c’est le monde d’aujourd’hui, à l’identique, pour la 3D et la 2D.
 
-La **disposition en réseau** (Archipéo, distances abstraites) place chaque île librement sur la mer ; une liaison est une courbe (un pont, un bac, une passerelle) dont la longueur à l’écran ne suit plus un nombre de cases, et dont le coût en blocs ne change pas ; un trajet va de lieu en lieu dans l’île puis prend la liaison, en un temps court qu’on peut sauter. **Dans une île, la grille reste** : relief, décor, bornes et chantiers gardent leurs cases (c’est l’avis du directeur artistique, à confirmer par le mainteneur, voir §5).
+La **disposition en réseau** (Archipéo, distances abstraites) s’applique **au monde entier** (décision du 28 septembre 2026) :
 
-Pour que la disposition en réseau réutilise le terrain à facettes, le décor et la construction des lots R, la géométrie d’une île se génère **dans le repère de l’île** (origine au coin de son cœur), puis la disposition la place. Seuls la mer, les ouvrages et les îlots (Gardiens, monuments) restent « entre les îles », chacun rattaché à un ancrage.
+- Chaque île est un **lieu**, placé librement sur la mer : une maquette de l’île, avec son relief, son décor, ses bornes, ses lieux du village et ses chantiers, sans grille de marche.
+- **On touche pour agir, on ne marche pas** : toucher une île y mène ; toucher une borne, un lieu, un chantier ou le navire l’ouvre directement. Le bonhomme se tient à l’île où il est, sans trajet à pied.
+- Entre deux îles, un **trajet court par la liaison** (il passe le pont, une barque passe le bac), qu’un toucher saute ; « Réduire les animations » le remplace par un fondu.
+- Une **liaison** est une courbe (un pont, un bac, une passerelle) dont la longueur à l’écran ne suit plus un nombre de cases ; son coût en blocs et sa condition ne changent pas.
+- **La construction reste en blocs posés case par case** : un plan garde ses cases (celles de la sauvegarde), dessinées à la place du chantier sur la maquette.
+
+Les mêmes gestes donnent les mêmes intentions dans les trois rendus (toucher une île, une borne, un chantier) : seul le trajet change. La vue simple ne change pas.
+
+Pour que les maquettes du réseau réutilisent le terrain à facettes, le décor et la construction des lots R, la géométrie d’une île se génère **dans le repère de l’île** (origine au coin de son cœur), puis la disposition la place. Seuls la mer, les ouvrages et les îlots (Gardiens, monuments) restent « entre les îles », chacun rattaché à un ancrage.
 
 ### 2.3 Les rendus
 
@@ -105,7 +113,7 @@ Chaque étape est une pull request, sans changement d’image, sauf J6. La preuv
 | **J3. La disposition en grille** | La disposition en grille enveloppe `terrain.ts`, `map.ts`, `harbour.ts` et `paths.ts` ; `WorldPage.tsx` et `world/scene.ts` passent par elle (durées de trajet, clavier, toucher). `terrain.ts` ne change presque pas. | Après les trois préalables de R4, avant le corps de R4 | `scene.ts` ; R4 garde son `world/decor.ts` et se rebase sur des signatures, pas sur le décor. |
 | **J4. Le contrat des vues** | `WorldViewProps` en entités, ancrages et intentions (`onIntent`) ; les deux vues convertissent les ancrages par `versMonde` en tête de rendu, leur intérieur ne change pas ; la 2D ne décide plus d’entrer dans une île, elle le demande. | Juste après J3, **avant** la découpe de `WorldCanvas.tsx` prévue avant R5 | `view.ts`, les props et le toucher de `WorldCanvas.tsx` et `WorldCanvas2D.tsx`. |
 | **J5. Chaque île dans son repère** | La génération par île (`terrain.ts` : cubes, sol, décor en repère local ; les « ports d’attache » d’une île, là où un ouvrage la touche, en entrée pour la côte), fusionnée dans le monde par la disposition en grille ; les modèles des créatures et des Gardiens sortis des composants React. | Après R4b, avant la découpe de `WorldCanvas.tsx` et R5 | `terrain.ts`, `landMesh.ts`. R4b écrit ses reliefs directement en repère local ; `three/cubes.ts` naît en repère d’île. |
-| **J6. La disposition en réseau** | Le mode à distances abstraites, derrière `?rendu=archipeo&disposition=reseau` : îles en lieux, liaisons en courbes, trajets de lieu en lieu, cadrage, Carte et voyage recalculés ; budget vérifié ; captures ajoutées à `scripts/docs/captures.mjs`, manuel inchangé tant qu’il n’est pas ouvert aux élèves. Seule étape qui change l’image, et seulement sous son drapeau. | Selon la décision du §5 (recommandé : avec les lots 8 et 8b) | Aucun lot R n’est encore ouvert à ce moment. |
+| **J6. La disposition en réseau** | Le mode à distances abstraites, derrière `?rendu=archipeo&disposition=reseau` : le monde entier en lieux (maquettes d’îles sans marche, gestes directs), liaisons en courbes, trajet court par la liaison, cadrage, Carte et voyage recalculés ; budget vérifié ; captures ajoutées à `scripts/docs/captures.mjs`, manuel inchangé tant qu’il n’est pas ouvert aux élèves. Seule étape qui change l’image, et seulement sous son drapeau. | Avec les lots 8 et 8b (décision du 28 septembre 2026) | Aucun lot R n’est encore ouvert à ce moment. |
 | **J7. Le rangement** | Les dossiers `jeu/`, `disposition/` et le reste en déplacements purs ; le test des dépendances devient strict, sans exception. | Après le lot 6 | Aucun (les lots R sont fusionnés). |
 
 ### Ce que ça change pour les lots R
@@ -124,19 +132,21 @@ Une étape à la fois, comme les lots R : chacune attend la fusion de la précé
 
 - **Les appels de dessin** : un maillage par île ferait exploser le budget. Tout se fusionne par archipel après `versMonde`.
 - **Le toucher** : il rend toujours une entité (une île, une borne, un ouvrage, une case d’un plan), jamais une case du monde. En réseau, toucher la mer ou une liaison rend l’ouvrage.
-- **La marche** : la grille de marche d’aujourd’hui est continue d’une île à l’autre. En réseau, il faut un graphe de marche par île plus les liaisons, sinon le bonhomme traverse la mer. La marche libre de la 2D n’existe pas entre les îles en réseau.
+- **La marche** : elle n’existe qu’en grille. En réseau, le bonhomme passe d’un lieu à l’autre par un trajet court le long de la liaison ; ni grille de marche ni marche libre. `world/scene.ts` sépare donc le trajet (commun) de la marche case à case (propre à la grille).
 - **Le voyage** : le départ et l’arrivée supposent un quai en coordonnées du monde ; ils passent en ancrages, et la durée d’une traversée ne dépend plus d’une distance en cases.
-- **La 2D peinte** : sa projection et son découpage en tuiles aiment une grille. En réseau, chaque île se peint dans sa tuile et les liaisons en traits ; c’est une reprise notable de `WorldCanvas2D.tsx`, à cadrer avec le directeur artistique si la 2D doit suivre.
+- **La 2D peinte** : sa projection et son découpage en tuiles aiment une grille. Le réseau est d’abord un rendu 3D ; une 2D en réseau (chaque île peinte dans sa tuile, les liaisons en traits) serait une reprise notable de `WorldCanvas2D.tsx`, à cadrer avec le directeur artistique avec les lots 8 et 8b.
 - **Les sauvegardes** : aucune migration. Les identifiants (îles, ouvrages, plans) ne changent pas, et les clés des plans restent en cases du plan, avec des origines figées.
 - **Les captures de la documentation** : J0 à J5 n’en changent aucune ; J6 en ajoute sous son drapeau.
 - **Les performances** : `versMonde` se calcule une fois par île (une matrice), pas à chaque image pour chaque objet.
 
-## 5. Ce que le mainteneur décide
+## 5. Les décisions
 
-Le directeur artistique recommande **deux échelles** : dans l’île, la grille reste et le cube disparaît ; entre les îles, la mer devient un réseau de lieux et de liaisons. Un troisième rendu qui abstrairait tout le monde, au même rang que la 3D et la 2D, changerait de jeu en changeant de vue (les mêmes gestes ne donneraient plus la même chose) et retarderait l’ouverture du lot 6.
+Le mainteneur a tranché le 28 septembre 2026 :
 
-1. **Jusqu’où va l’abstraction ?** (a) le monde entier, des îles jetons sans marche ; (b) deux échelles, l’île sur la grille, la mer en réseau ; (c) rien de plus que la carte des quatre archipels du lot 8b. **Recommandé : (b).**
-2. **Quand ?** (a) avant le lot 6, qui recule d’autant ; (b) les étapes J0 à J5 maintenant, sans changement d’image, entre les lots R comme au §3, et la disposition en réseau avec les lots 8 et 8b ; (c) tout après le lot 8. **Recommandé : (b).**
-3. **Entre deux îles, que voit l’élève en réseau ?** (a) le bonhomme marche le long de l’ouvrage, comme aujourd’hui ; (b) un trajet court par la liaison (il traverse le pont, une barque passe le bac), qu’on peut sauter ; (c) un fondu, et on y est. **Recommandé : (b)** ; « Réduire les animations » le ramène à (c).
+| Question | Options | Décision |
+| --- | --- | --- |
+| **Jusqu’où va l’abstraction ?** | (a) le monde entier, des îles en lieux sans marche ; (b) deux échelles, l’île sur la grille et la mer en réseau (recommandé par le directeur artistique) ; (c) rien de plus que la carte des quatre archipels du lot 8b | **(a) le monde entier.** Le directeur artistique recommandait (b) : un mode tout abstrait, à côté de la grille, fait changer le trajet en changeant de rendu. La parade : les mêmes gestes donnent les mêmes intentions partout, et la construction reste case par case. |
+| **Quand ?** | (a) avant le lot 6 ; (b) J0 à J5 maintenant, entre les lots R, et la disposition en réseau avec les lots 8 et 8b ; (c) tout après le lot 8 | **(b).** Le lot 6 s’ouvre en grille. |
+| **Entre deux îles, que voit l’élève en réseau ?** | (a) il marche le long de l’ouvrage ; (b) un trajet court par la liaison, qu’on peut sauter ; (c) un fondu | **(b).** « Réduire les animations » le ramène à (c). |
 
-Si (b) est retenu à la première question, le principe de la piste Rendu du [cadrage Archipéo](cadrage-archipeo.md#piste-rendu-derriere-le-drapeau) devient : « Dans l’île, la grille reste et le cube disparaît ; entre les îles, la mer est un réseau de lieux et de liaisons », et le lot 8b s’étend : la Carte de l’archipel et la carte des quatre archipels deviennent une même vue de la mer. Ces changements s’écrivent au cadrage une fois la décision prise.
+Reste à cadrer avec le directeur artistique, avant J6 : la maquette d’une île en réseau (échelle, ce qu’elle montre de loin et de près), la place des Gardiens et des monuments, la Carte et la carte des quatre archipels (lot 8b), la 2D en réseau.
