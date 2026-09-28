@@ -16,8 +16,8 @@ import { clamp, hasardDe, rgb, type Peindre, type Pinceau, type RGB, type V3 } f
 /** L'élément des triangles du lointain : aucun (le toucher ne les retrouve pas). */
 export const SANS_ELEMENT = -1;
 
-/** Les bornes du lointain (commun.md) : de 60 à 150 cases derrière l'archipel, de 15 à 30 blocs de haut. */
-export const BORNES_DU_LOINTAIN = { recul: [60, 150], haut: [15, 30] } as const;
+/** Les bornes du lointain (commun.md) : de 60 à 150 cases derrière l'archipel, de 10 à 30 blocs de haut (10 : décision du directeur artistique au 5e, pour que la tour de la masse centrale se lise sous le bandeau). */
+export const BORNES_DU_LOINTAIN = { recul: [60, 150], haut: [10, 30] } as const;
 
 /** Où se pose une pièce : `u` le long de la largeur de l'archipel, `recul` en cases au-delà de son bord nord. */
 interface Place {

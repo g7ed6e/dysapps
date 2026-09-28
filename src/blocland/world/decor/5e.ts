@@ -145,7 +145,7 @@ export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
  * n'est posé ; la calotte de sérac sur le plus haut pic du Glacier.
  */
 /** Le décalage de la tour en ruine par rapport à l'axe du Carrefour, en cases, pour qu'elle ne passe pas sous le nom de l'île. */
-const DECALAGE_DE_LA_RUINE = -5;
+const DECALAGE_DE_LA_RUINE = -8;
 
 export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDecor[]): ElementDeDecor[] {
   const out: ElementDeDecor[] = [];
@@ -182,7 +182,7 @@ export const LOINTAIN_5E: Lointain = {
   graine: 'lointain-5e',
   pieces: [
     { genre: 'gradins', u: 0.08, recul: 60, haut: 15, rayon: 6, allonge: 1.8, marche: 2.5, retrait: 0.8, pans: 7, couleur: 0x86a9bd, sommet: 0x7f9c7a },
-    { genre: 'gradins', u: 0.38, recul: 70, haut: 17, rayon: 6.5, marche: 3, retrait: 0.7, pans: 7, couleur: 0x7298af, sommet: 0x6f8f6a, tour: { cote: 3, haut: 6, pierre: 0x7d8a86, toit: 0x224c5f } },
+    { genre: 'gradins', u: 0.38, recul: 60, haut: 10, rayon: 6.5, marche: 2.5, retrait: 0.7, pans: 7, couleur: 0x7298af, sommet: 0x6f8f6a, tour: { cote: 3, haut: 4.5, pierre: 0x7d8a86, toit: 0x224c5f } },
     { genre: 'gradins', u: 0.64, recul: 64, haut: 16, rayon: 4.5, marche: 2.5, retrait: 0.5, pans: 6, couleur: 0x7298af, sommet: 0x6f8f6a },
     { genre: 'gradins', u: 0.92, recul: 86, haut: 15, rayon: 8, allonge: 1.4, marche: 2, retrait: 0.9, pans: 8, couleur: 0x7a9fb4, sommet: 0x6f8f6a },
     { genre: 'cretes', u: -0.3, a: 1.3, recul: 125, haut: 16, cimes: 11, epaisseur: 24, couleur: 0xb3cad8, sommet: 0xcbd9e3, neige: 0.85 },
