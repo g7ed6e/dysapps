@@ -5,9 +5,11 @@
 //
 // Chaque facette prend un aplat de sa couleur (clair au-dessus, ombre bleutée du côté opposé à la lumière, qui vient
 // d'en haut à gauche) ; la silhouette est bordée d'un pixel dans la teinte sombre de sa dominante, jamais d'un noir ;
-// les yeux font au moins 2 × 2 pixels, séparés d'un pixel au moins. La nuit, les couleurs passent par `deNuit` au palier
+// les yeux du bonhomme et des créatures font 1 × 2 pixels (debout), séparés de deux pixels de peau ; les orbites des
+// sentinelles, au moins 2 × 2, séparées d'un pixel au moins. La nuit, les couleurs passent par `deNuit` au palier
 // de lumière, sauf ce qui brille : la lueur de nuit (Fi, Astra, Braise) et, selon l'allumage, la flamme et les veines.
 import { mixColor } from '../world/daylight';
+import { LISERE_DE_NUIT } from '../world/personnages/couleurs';
 import type { ArchipelagoId } from '../world/map';
 import { deNuit, type Couleur } from '../world/palette';
 import { rolesDesTriangles, type FacettesDePersonnage, type PieceDuModele, type Role } from '../world/personnages/peint';
@@ -36,7 +38,7 @@ export const OEIL = { w: 1, h: 2 } as const;
 export const ECART_DES_YEUX_VIVANTS = 2;
 
 /** La nuit, le liseré de la silhouette du côté éclairé (en haut à gauche) : un pixel clair et froid (DA, 28/09). */
-export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
+export { LISERE_DE_NUIT };
 
 /** Ce qui brille la nuit (la braise de Braise, la lanterne de Fi, l'abdomen d'Astra) : au moins 3 × 3 pixels, et un
  * halo chaud d'un pixel autour, fixe (il ne clignote pas), d'autant plus fort que la nuit est noire. */

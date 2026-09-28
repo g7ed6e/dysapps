@@ -22,8 +22,10 @@ export function Creature3D({ biome, label, className }: Props) {
   // Le rendu d'Archipéo (drapeau `?rendu=archipeo`) : la créature en facettes ; sans lui, en cubes, inchangée.
   const [archipeo] = useState(() => renduDuMonde() === 'archipeo');
   const cubes = <Creature biome={biome} label={label} className={className} />;
+  // Le temps que la créature en facettes arrive : sa place, vide, à sa taille (pas la créature en cubes, qui sauterait).
+  const place = <span className={`creature ${className ?? ''}`.trim()} role="img" aria-label={label} />;
   const flat = archipeo ? (
-    <Suspense fallback={cubes}>
+    <Suspense fallback={place}>
       <PersonnageSvg kind="creature" id={biome} label={label} className={className} />
     </Suspense>
   ) : (

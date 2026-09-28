@@ -9,7 +9,8 @@ import { ESPECES_3E } from './especes/3e';
 import { creatureEnFacettes, type Espece } from './gabarit';
 import type { FacettesDePersonnage } from './peint';
 
-export const ESPECES = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E, ...ESPECES_3E } as Record<BiomeId, Espece>;
+/** Une espèce par île : le type l'exige (une île sans créature ne compile pas), le test de peint.test.ts le vérifie. */
+export const ESPECES: Record<BiomeId, Espece> = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E, ...ESPECES_3E };
 
 const cache = new Map<BiomeId, FacettesDePersonnage>();
 
@@ -17,9 +18,7 @@ const cache = new Map<BiomeId, FacettesDePersonnage>();
 export function creaturePeinte(id: BiomeId): FacettesDePersonnage {
   let f = cache.get(id);
   if (!f) {
-    const e = ESPECES[id];
-    if (!e) throw new Error(`Pas de créature en facettes pour ${id}`);
-    f = creatureEnFacettes(e);
+    f = creatureEnFacettes(ESPECES[id]);
     cache.set(id, f);
   }
   return f;

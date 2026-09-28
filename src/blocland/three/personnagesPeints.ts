@@ -18,6 +18,7 @@ import {
   type Os,
 } from '../world/personnages/fusions';
 import { startStrolls, strollAt, type Stroll } from '../world/scene';
+import { LISERE_DE_NUIT } from '../world/personnages/couleurs';
 import type { Lumiere } from './lumiere';
 import type { Instant, Monde } from './partie';
 import type { Habits } from './personnages';
@@ -33,30 +34,64 @@ const PAS: Record<string, number> = {
 /** Le geste lent d'une créature : son bras et son outil se lèvent un peu, une fois toutes les cinq secondes. */
 export const GESTE = { periode: 5, angle: 0.12 } as const;
 
-/** Un matériau de personnage : ses couleurs de sommet, éclairées ; et ce qui brille, selon `force` (0 à 1). */
+/**
+ * Un matériau de personnage : ses couleurs de sommet, éclairées ; ce qui brille, selon `force` (0 à 1) ; et la nuit, le
+ * voile éclairci et le liseré froid des vivants, selon `lisere` (0 à 1 ; toujours 0 pour les sentinelles).
+ */
 export interface MateriauALueur {
   materiau: THREE.MeshLambertMaterial;
   force: { value: number };
+  lisere: { value: number };
 }
 
 /**
+ * Le liseré de nuit en 3D (référent dys, 28/09 : de nuit, une créature doit se lire au moins aussi bien que de jour).
+ * Le liseré seul n'y suffit pas (quelques pixels) : il s'ajoute à un voile de nuit plus léger (`ECLAIRCIE`).
+ * Comme en 2D (pixel/personnages.ts), la silhouette prend du côté éclairé une teinte claire et froide : ici, les facettes
+ * du bord (vues de biais : leur normale s'écarte de la direction de la caméra au-delà de `bord`), d'autant plus qu'elles
+ * regardent vers le haut, mêlées à `LISERE_DE_NUIT` jusqu'à `poids` au cœur de la nuit. Fixe : rien ne clignote.
+ */
+export const LISERE_3D = { bord: [0.4, 0.75], poids: 0.9 } as const;
+
+/**
+ * Et un voile de nuit plus léger sur les vivants : au cœur de la nuit, leur lumière est multipliée par `1 + ECLAIRCIE`
+ * (la nuit de la scène divise à peu près par deux celle du jour) ; ils restent bleutés, mais plus clairs que le sol.
+ */
+export const ECLAIRCIE = 0.4;
+
+/**
  * Le matériau des personnages : un Lambert à couleurs de sommet, qui mêle à la lumière de la scène la couleur de
- * l'attribut `lueur` (rgb, et son poids en a), à `force` : ce qui brille ne s'assombrit pas la nuit.
+ * l'attribut `lueur` (rgb, et son poids en a), à `force` : ce qui brille ne s'assombrit pas la nuit ; et la nuit, à
+ * `lisere`, un voile plus léger que celui de la scène et le liseré froid du bord de la silhouette.
  */
 export function materiauALueur(): MateriauALueur {
   const force = { value: 0 };
+  const lisere = { value: 0 };
+  const couleurDuLisere = { value: new THREE.Color(LISERE_DE_NUIT) };
   const materiau = new THREE.MeshLambertMaterial({ vertexColors: true });
   materiau.onBeforeCompile = (shader) => {
     shader.uniforms.forceDeLueur = force;
+    shader.uniforms.forceDeNuit = lisere;
+    shader.uniforms.couleurDuLisere = couleurDuLisere;
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec4 lueur;\nvarying vec4 vLueur;')
       .replace('#include <color_vertex>', '#include <color_vertex>\nvLueur = lueur;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float forceDeLueur;\nvarying vec4 vLueur;')
-      .replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);\n#include <opaque_fragment>');
+      .replace('#include <common>', '#include <common>\nuniform float forceDeLueur;\nuniform float forceDeNuit;\nuniform vec3 couleurDuLisere;\nvarying vec4 vLueur;')
+      .replace(
+        '#include <opaque_fragment>',
+        [
+          'outgoingLight *= 1.0 + forceDeNuit * ' + ECLAIRCIE.toFixed(2) + ';',
+          'outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);',
+          'float bordDuLisere = smoothstep(' + LISERE_3D.bord[0].toFixed(2) + ', ' + LISERE_3D.bord[1].toFixed(2) + ', 1.0 - saturate(dot(geometryNormal, geometryViewDir)));',
+          'float hautDuLisere = 0.5 + 0.5 * dot(geometryNormal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz));',
+          'outgoingLight = mix(outgoingLight, couleurDuLisere, forceDeNuit * ' + LISERE_3D.poids.toFixed(2) + ' * bordDuLisere * hautDuLisere * (1.0 - vLueur.a));',
+          '#include <opaque_fragment>',
+        ].join('\n'),
+      );
   };
   materiau.customProgramCacheKey = () => 'personnage-lueur';
-  return { materiau, force };
+  return { materiau, force, lisere };
 }
 
 /** La géométrie d'une fusion : ses positions, normales, couleurs, et ce qui brille (sans lueur : rien). */
@@ -206,6 +241,8 @@ export function habiller(
         });
         const degres = Object.fromEntries(gardiens.map((c) => [c.id, allumageDuGardien(c)]));
         const g = geometrieDe(f, lueursDesGardiens(f, degres));
+        // Le cast est sûr : `geometrieDe` fait l'attribut `color` d'un Float32Array neuf (une copie de `f.colors`, que les
+        // couleurs allumées réécrivent sans toucher au modèle), que `getAttribute` rend typé en `TypedArray`.
         couleursDesGardiens(f, degres, g.getAttribute('color').array as Float32Array<ArrayBuffer>);
         const mesh = new THREE.Mesh(g, matGardiens.materiau);
         scene.add(mesh);
@@ -225,7 +262,11 @@ export function habiller(
     },
     animer: (t, reduit) => {
       // Ce qui brille la nuit suit le degré de nuit (figé avec « Réduire les animations », comme la lumière).
-      matCreatures.force.value = lumiere?.nuit() ?? 0;
+      const nuit = lumiere?.nuit() ?? 0;
+      matCreatures.force.value = nuit;
+      // Le liseré froid des vivants, la nuit (les sentinelles n'en ont pas : leur pierre se lit sans).
+      matCreatures.lisere.value = nuit;
+      matBonhomme.lisere.value = nuit;
       if (reduit) return;
       for (const q of promeneurs) {
         const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);

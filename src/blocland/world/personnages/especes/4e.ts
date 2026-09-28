@@ -12,7 +12,7 @@ const LENTILLE: Anneau[] = [
   [0.06, 0.14],
 ];
 
-export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
+export const ESPECES_4E = {
   forge: {
     nom: 'Braise',
     metier: 'forgeron',
@@ -218,4 +218,4 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
       },
     },
   },
-};
+} satisfies Partial<Record<BiomeId, Espece>>;

@@ -5,7 +5,7 @@ import { TENUE } from '../couleurs';
 import { disque, jalon, manche, pointe, type Espece } from '../gabarit';
 import { facette, fuseau, parFace, pave, pose, repere } from '../peint';
 
-export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
+export const ESPECES_5E = {
   glacier: {
     nom: 'Frimas',
     metier: 'guetteur',
@@ -206,4 +206,4 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
       },
     },
   },
-};
+} satisfies Partial<Record<BiomeId, Espece>>;

@@ -113,7 +113,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('le matériau à lueur mêle la couleur de l’attribut `lueur` à la lumière, au poids donné', () => {
-    const { materiau, force } = materiauALueur();
+    const { materiau, force, lisere } = materiauALueur();
     const shader = {
       uniforms: {} as Record<string, unknown>,
       vertexShader: THREE.ShaderLib.lambert.vertexShader,
@@ -123,6 +123,31 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
     expect(shader.uniforms.forceDeLueur).toBe(force);
     expect(shader.vertexShader).toContain('vLueur = lueur;');
     expect(shader.fragmentShader).toContain('outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);');
+    // La nuit, le liseré froid du bord de la silhouette, à `lisere`, après la lueur (et jamais sur ce qui brille).
+    expect(shader.uniforms.forceDeNuit).toBe(lisere);
+    expect(shader.fragmentShader).toMatch(/mix\(outgoingLight, couleurDuLisere, forceDeNuit \* [\d.]+ \* bordDuLisere \* hautDuLisere \* \(1\.0 - vLueur\.a\)\);\n#include <opaque_fragment>/);
     materiau.dispose();
+  });
+
+  it('la nuit, le liseré suit le degré de nuit sur les vivants, jamais sur les sentinelles', async () => {
+    const m = monde(true);
+    let nuit = 0;
+    const p = creerPersonnages(m, () => null, instant(), { nuit: () => nuit });
+    await vi.dynamicImportSettled();
+    p.poserLesCreatures([...creatures, ...gardiens]);
+    const lisere = () =>
+      dessines(m.scene).map((x) => {
+        const mat = x.material as THREE.MeshLambertMaterial;
+        const shader = { uniforms: {} as Record<string, { value: number }>, vertexShader: THREE.ShaderLib.lambert.vertexShader, fragmentShader: THREE.ShaderLib.lambert.fragmentShader };
+        mat.onBeforeCompile(shader as unknown as THREE.WebGLProgramParametersWithUniforms, undefined as unknown as THREE.WebGLRenderer);
+        return [x instanceof THREE.SkinnedMesh, shader.uniforms.forceDeNuit.value] as const;
+      });
+    p.animer!(0, 0.1, false);
+    expect(lisere().every(([, v]) => v === 0)).toBe(true);
+    nuit = 1;
+    // Avec « Réduire les animations » aussi : le liseré n'est pas une animation.
+    p.animer!(0, 0.1, true);
+    for (const [vivant, v] of lisere()) expect(v).toBe(vivant ? 1 : 0);
+    p.dispose();
   });
 });

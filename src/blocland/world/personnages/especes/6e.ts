@@ -19,7 +19,7 @@ const BOSSE: Anneau[] = [
   [2.62, 0],
 ];
 
-export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
+export const ESPECES_6E = {
   foret: {
     nom: 'Mousso',
     metier: 'charpentier',
@@ -342,4 +342,4 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     autreBras: { rx: 0.35, rz: 0.2 },
     autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.06, 0.2, 0.08, k.laiton, 6) },
   },
-};
+} satisfies Partial<Record<BiomeId, Espece>>;

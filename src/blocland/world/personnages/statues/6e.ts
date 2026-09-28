@@ -245,7 +245,8 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
             [-w * 0.2, y + 0.08],
             [w, y - 0.04],
           ],
-          0.08,
+          // Au moins 0,12 de large (référent dys, 28/09) : plus fine, la veine se perdait sur le grès, éteinte ou non.
+          0.12,
           a.lueur,
           { x: c[4] },
         );
@@ -401,7 +402,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [-0.24, 3.4],
           [-0.2, 4.2],
         ],
-        0.07,
+        0.12,
         a.lueur,
       );
     },

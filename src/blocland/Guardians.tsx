@@ -30,8 +30,10 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
   const [archipeo] = useState(() => renduDuMonde() === 'archipeo');
   const allumage = mood === 'beaten' ? 1 : 0;
   const enCubes = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;
+  // Le temps que la sentinelle arrive : sa place, vide, à sa taille (pas le Gardien en cubes, qui sauterait).
+  const place = <span className="creature guardian-svg" role="img" aria-label={label} />;
   const svg = archipeo ? (
-    <Suspense fallback={enCubes}>
+    <Suspense fallback={place}>
       <PersonnageSvg kind="guardian" id={biome} allumage={allumage} className="guardian-svg" label={label} />
     </Suspense>
   ) : (

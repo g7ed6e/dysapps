@@ -135,12 +135,19 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
   let habits: Habits | null = null;
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
   let fini = false;
+  const vetir = (h: Habits) => {
+    habits = h;
+    if (places) h.poserLesCreatures(places);
+  };
   if (monde.archipeo)
-    void import('./personnagesPeints').then(({ habiller }) => {
-      if (fini) return;
-      habits = habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup);
-      if (places) habits.poserLesCreatures(places);
-    });
+    import('./personnagesPeints')
+      .then(({ habiller }) => {
+        if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
+      })
+      // Le morceau ne se charge pas (réseau coupé, nouvelle version publiée) : les personnages en cubes, plutôt que rien.
+      .catch(() => {
+        if (!fini && !habits) vetir(habitsEnCubes(monde, champ, instant, avatarGroup, creaturesGroup));
+      });
   else habits = habitsEnCubes(monde, champ, instant, avatarGroup, creaturesGroup);
 
   const p: Personnages = {

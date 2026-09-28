@@ -16,6 +16,12 @@ export const OUTIL = { bois: 0x8a6236, fer: 0x5c6470, laiton: 0xc9a24a } as cons
 export const LUEUR: Couleur = 0xffd866;
 
 /**
+ * La nuit, le liseré des vivants (le bonhomme et les créatures, jamais les sentinelles) du côté éclairé : clair et froid
+ * (DA, 28/09). En 2D, un pixel du contour, en haut à gauche ; en 3D, les facettes du bord de la silhouette, vers le haut.
+ */
+export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
+
+/**
  * Le verre de la lanterne de Fi : ambre pâle et mat le jour, la lueur la nuit (proposition du directeur artistique,
  * 28/09, à acter par le mainteneur : pour un verre qui brille aussi le jour, `jour` redevient `LUEUR`).
  */

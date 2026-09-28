@@ -291,37 +291,77 @@ export function drawPaintedSprite(ctx: CanvasRenderingContext2D, kind: SpriteKin
   if (img) ctx.drawImage(img, Math.round(sx - def.ax * s), Math.round(sy - def.ay * s), Math.round(def.w * s), Math.round(def.h * s));
 }
 
-const personnages = new Map<string, Sprite | null>();
-
-/** La clé d'un personnage peint : lequel (et sa pose), l'archipel et le palier de lumière. */
-export const cleDuPersonnage = (cle: string, P: Peinture) => `${cle}:${P.cle}`;
+/**
+ * Combien de personnages se rastérisent au plus par image (avis de l'expert frontend, 28/09) : un raster coûte quelques
+ * millisecondes (plus sur une tablette ancienne), et le premier passage, ou un changement de palier, en demanderait une
+ * vingtaine d'un coup. Au-delà, un personnage garde le sprite qu'il avait (celui du palier précédent, ou d'une autre
+ * pose), ou attend une image ou deux s'il n'en a pas encore.
+ */
+export const RASTERS_PAR_IMAGE = 2;
 
 /**
- * Le sprite d'un personnage peint (lot R6) : son raster (./personnages.ts) mis dans un canvas, une fois par personnage,
- * pose et palier de lumière (la nuit en fait un autre). Le pied du sprite est celui du modèle.
+ * L'atelier des personnages peints : il fait leurs sprites à la demande, au plus `parImage` par image (sauf l'urgent, le
+ * bonhomme, qu'on ne laisse jamais sans corps), et les garde. `faire` met un raster en image (un canvas dans le jeu,
+ * autre chose dans les tests).
+ *
+ * La borne du cache : une entrée par personnage, pose et palier de lumière, pour les archipels visités ; au plus, pour
+ * les quatre archipels et leurs cinq paliers, 8 poses du bonhomme, une créature par île et deux états par sentinelle
+ * (éteinte, rallumée), soit moins de 600 petits canvas (quelques kilo-octets chacun). Il n'est jamais vidé : un retour
+ * sur un archipel ou à un palier déjà vu ne refait rien.
  */
-export function spriteDePersonnage(cle: string, P: Peinture, raster: () => RasterDePersonnage): Sprite | null {
-  const k = cleDuPersonnage(cle, P);
-  if (personnages.has(k)) return personnages.get(k)!;
-  const r = raster();
+export class AtelierDePersonnages<T> {
+  private readonly paliers = new Map<string, Map<string, T | null>>();
+  /** Le dernier sprite fait de chaque personnage (par clé, puis par famille), pour attendre le suivant. */
+  private readonly derniers = new Map<string, T | null>();
+  private faits = 0;
+
+  constructor(
+    private readonly faire: (r: RasterDePersonnage) => T | null,
+    private readonly parImage = RASTERS_PAR_IMAGE,
+  ) {}
+
+  /** Une nouvelle image commence : le compte des rasters repart de zéro. */
+  nouvelleImage(): void {
+    this.faits = 0;
+  }
+
+  /**
+   * Le sprite d'un personnage : `cle` dit lequel et sa pose, `famille` lequel seulement (le sprite d'une autre pose, en
+   * attendant), `palier` la clé de la peinture (archipel et palier de lumière).
+   */
+  prendre(cle: string, famille: string, palier: string, raster: () => RasterDePersonnage, urgent = false): T | null {
+    let deCePalier = this.paliers.get(palier);
+    if (!deCePalier) {
+      deCePalier = new Map();
+      this.paliers.set(palier, deCePalier);
+    }
+    if (deCePalier.has(cle)) return deCePalier.get(cle) ?? null;
+    if (!urgent && this.faits >= this.parImage) return this.derniers.get(cle) ?? this.derniers.get(famille) ?? null;
+    this.faits++;
+    const out = this.faire(raster());
+    deCePalier.set(cle, out);
+    this.derniers.set(cle, out);
+    this.derniers.set(famille, out);
+    return out;
+  }
+}
+
+/** Un raster de personnage dans un canvas (null si le navigateur n'en donne pas) ; le pied du sprite est celui du modèle. */
+export function canvasDuRaster(r: RasterDePersonnage): Sprite | null {
   const canvas = document.createElement('canvas');
   canvas.width = r.largeur;
   canvas.height = r.hauteur;
   const ctx = canvas.getContext('2d');
-  let out: Sprite | null = null;
-  if (ctx) {
-    const img = ctx.createImageData(r.largeur, r.hauteur);
-    for (let p = 0; p < r.pixels.length; p++) {
-      const c = r.pixels[p];
-      if (c < 0) continue;
-      img.data[p * 4] = (c >> 16) & 255;
-      img.data[p * 4 + 1] = (c >> 8) & 255;
-      img.data[p * 4 + 2] = c & 255;
-      img.data[p * 4 + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
-    out = { canvas, w: r.largeur, h: r.hauteur, ax: r.ax, ay: r.ay };
+  if (!ctx) return null;
+  const img = ctx.createImageData(r.largeur, r.hauteur);
+  for (let p = 0; p < r.pixels.length; p++) {
+    const c = r.pixels[p];
+    if (c < 0) continue;
+    img.data[p * 4] = (c >> 16) & 255;
+    img.data[p * 4 + 1] = (c >> 8) & 255;
+    img.data[p * 4 + 2] = c & 255;
+    img.data[p * 4 + 3] = 255;
   }
-  personnages.set(k, out);
-  return out;
+  ctx.putImageData(img, 0, 0);
+  return { canvas, w: r.largeur, h: r.hauteur, ax: r.ax, ay: r.ay };
 }

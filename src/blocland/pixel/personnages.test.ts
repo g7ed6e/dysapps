@@ -9,7 +9,7 @@ import { sentinellePeinte } from '../world/personnages/sentinellesPeintes';
 import type { Facing } from './characters';
 import { ANGLE_DU_BONHOMME, GESTES_DU_PAS } from './personnagesPeints';
 import { NUIT_OCEAN, PALIERS, peinture, sombreDe } from './painted';
-import { cleDuPersonnage } from './paintedSprites';
+import { AtelierDePersonnages, RASTERS_PAR_IMAGE } from './paintedSprites';
 import { ECART_DES_YEUX_VIVANTS, HALO, LISERE_DE_NUIT, LUEUR_MIN, OEIL, OEIL_MIN, rasterDuModele, type OptionsDuRaster, type RasterDePersonnage } from './personnages';
 
 const couleurs = (r: RasterDePersonnage) => new Set(Array.from(r.pixels).filter((c) => c >= 0));
@@ -175,9 +175,48 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
     expect(NUIT_OCEAN & 0xff).toBeGreaterThan((NUIT_OCEAN >> 16) & 0xff);
   });
 
-  it('le palier de lumière est dans la clé du cache des sprites', () => {
-    const cles = new Set(Array.from({ length: PALIERS + 1 }, (_, p) => cleDuPersonnage('creature:foret', peinture('6e', p))));
-    expect(cles.size).toBe(PALIERS + 1);
-    expect(cleDuPersonnage('creature:foret', peinture('6e', 4))).not.toBe(cleDuPersonnage('creature:foret', peinture('5e', 4)));
+  it('un sprite par personnage, pose et palier de lumière, gardé', () => {
+    const faits: string[] = [];
+    const atelier = new AtelierDePersonnages<string>((r) => `${r.largeur}`, 100);
+    const raster = (nom: string) => () => {
+      faits.push(nom);
+      return rasterDuModele(creaturePeinte('foret'), { archipel: '6e', light: 1 });
+    };
+    const paliers = Array.from({ length: PALIERS + 1 }, (_, p) => peinture('6e', p).cle);
+    expect(new Set(paliers).size).toBe(PALIERS + 1);
+    expect(peinture('6e', 4).cle).not.toBe(peinture('5e', 4).cle);
+    for (const p of paliers) atelier.prendre('creature:foret', 'creature:foret', p, raster(p));
+    for (const p of paliers) atelier.prendre('creature:foret', 'creature:foret', p, raster(p));
+    expect(faits).toEqual(paliers);
+  });
+
+  it(`au plus ${RASTERS_PAR_IMAGE} rasters par image : les autres gardent leur sprite d’avant, le bonhomme passe toujours`, () => {
+    let n = 0;
+    const atelier = new AtelierDePersonnages<number>(() => ++n);
+    const raster = () => rasterDuModele(creaturePeinte('foret'), { archipel: '6e', light: 1 });
+    const ids = ['a', 'b', 'c', 'd', 'e'];
+    // Le premier passage : deux par image, les autres attendent (rien à montrer encore).
+    atelier.nouvelleImage();
+    expect(ids.map((id) => atelier.prendre(id, id, 'jour', raster))).toEqual([1, 2, null, null, null]);
+    atelier.nouvelleImage();
+    expect(ids.map((id) => atelier.prendre(id, id, 'jour', raster))).toEqual([1, 2, 3, 4, null]);
+    atelier.nouvelleImage();
+    expect(ids.map((id) => atelier.prendre(id, id, 'jour', raster))).toEqual([1, 2, 3, 4, 5]);
+    // Un autre palier : chacun garde le sprite du palier d'avant jusqu'à son tour.
+    atelier.nouvelleImage();
+    expect(ids.map((id) => atelier.prendre(id, id, 'soir', raster))).toEqual([6, 7, 3, 4, 5]);
+    // Le bonhomme (urgent) ne reste jamais sans corps, même le budget de l'image pris.
+    atelier.nouvelleImage();
+    atelier.prendre('c', 'c', 'soir', raster);
+    atelier.prendre('d', 'd', 'soir', raster);
+    expect(atelier.prendre('bonhomme:down:0', 'bonhomme', 'soir', raster, true)).toBe(10);
+    atelier.nouvelleImage();
+    atelier.prendre('e', 'e', 'soir', raster);
+    expect(atelier.prendre('bonhomme:up:0', 'bonhomme', 'soir', raster, true)).toBe(12);
+    atelier.nouvelleImage();
+    atelier.prendre('x', 'x', 'soir', raster);
+    expect(atelier.prendre('sentinelle:y:0', 'sentinelle:y', 'soir', raster)).toBe(14);
+    // Plus de budget : la sentinelle rallumée attend sur l'éteinte.
+    expect(atelier.prendre('sentinelle:y:1', 'sentinelle:y', 'soir', raster)).toBe(14);
   });
 });

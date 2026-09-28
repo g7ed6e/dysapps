@@ -6,7 +6,7 @@ import { TENUE, VERRE_DE_FI } from '../couleurs';
 import { COU, disque, jalon, manche, pointe, SOMMET_DE_TETE, type Espece } from '../gabarit';
 import { fuseau, pave, pose, repere } from '../peint';
 
-export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
+export const ESPECES_3E = {
   belvedere: {
     nom: 'Théo',
     metier: 'géomètre',
@@ -248,4 +248,4 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
         ),
     },
   },
-};
+} satisfies Partial<Record<BiomeId, Espece>>;
