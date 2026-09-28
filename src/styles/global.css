@@ -677,10 +677,10 @@ button.app-card:active {
   padding: 0.1rem 0.9rem;
   position: relative;
   z-index: 1;
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  /* Un mot qui porte un sens : la police de lecture, en gras (principes dys), pas celle des titres. */
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 1.2rem;
-  letter-spacing: 0.04em;
   line-height: 1.45;
   color: var(--on-sand);
   background: var(--sand);
@@ -985,14 +985,12 @@ button.app-card:active {
   line-height: 1.35;
 }
 .celebration-kicker {
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  font-weight: 700;
   font-size: 1.15rem;
-  letter-spacing: 0.06em;
 }
+/* Le nom du rôle ou du succès : seul endroit où il s'écrit, donc dans la police de lecture choisie, en gras. */
 .celebration-text strong {
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  font-weight: 700;
 }
 .celebration p {
   margin: 0;
@@ -1226,15 +1224,6 @@ button.app-card:active {
   margin: 0;
   display: grid;
   gap: 0.8rem;
-}
-/* Un groupe de choix dans un encadré (Expérimental → La surface du monde) : sa légende, sans second cadre. */
-.settings fieldset.settings-subgroup {
-  border: 0;
-  padding: 0;
-  min-width: 0;
-}
-.settings-subgroup legend {
-  padding: 0 0 0.4rem;
 }
 .settings legend {
   font-family: var(--display-font);
