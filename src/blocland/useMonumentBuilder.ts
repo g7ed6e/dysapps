@@ -8,7 +8,7 @@ import { nextFillable, planStatus, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import type { MonumentDef } from './world/monuments';
-import { monumentAnchor } from './world/terrain';
+import { monumentAnchor, origineDe } from './world/terrain';
 
 export interface MonumentBuilder {
   monument: MonumentDef;
@@ -32,14 +32,16 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
   const { completeMonument } = useProgress();
   const haptics = useHaptics();
   const [notice, setNotice] = useState<string | null>(null);
-  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { x: 0, y: 0, z: 0 }, color: '#fff' });
+  const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: monument.biome, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [monument.id]);
   const status = planStatus(state, monument);
   const sound = (f: () => void) => settings.sounds && f();
 
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
+    // L'îlot du monument est au large de son île : la case, dans le repère de l'île.
     const o = monumentAnchor(monument);
-    setBurst((b) => ({ seq: b.seq + 1, cell: { x: o.x + x, y: o.y + y, z: o.z + z }, color: BLOCKS[block].top }));
+    const ile = origineDe(monument.biome);
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: monument.biome, local: { x: o.x + x - ile.x, y: o.y + y - ile.y, z: o.z + z - ile.z } }, color: BLOCKS[block].top }));
   };
   const finished = () => {
     const msg = `${monument.name} : terminé ! ${monument.done} +${monument.reward.xp} XP.`;

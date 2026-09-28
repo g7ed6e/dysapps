@@ -32,6 +32,7 @@ import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
+import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
 import { propsOf, type Prop, type Station } from '../world/props';
 import {
@@ -104,28 +105,39 @@ interface Spark {
 export default function WorldCanvas2D({
   archipelago,
   cubes,
-  focus,
+  focus: focusEnAncrages,
   reduceMotion = false,
   vehicle = null,
   voyage = null,
   creatures = [],
   forceDay = false,
-  marker = null,
-  avatar,
+  marker: markerEnAncrage = null,
+  avatar: avatarEnAncrages,
   map = false,
   home,
-  trail,
-  quests,
+  trail: trailEnAncrages,
+  quests: questsEnAncrages,
   islandLabels,
-  burst,
+  burst: burstEnAncrage,
   className,
   label,
   onIntent,
   chantier = false,
 }: WorldViewProps) {
+  // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
+  const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
+    archipelago,
+    focus: focusEnAncrages,
+    marker: markerEnAncrage,
+    avatar: avatarEnAncrages,
+    trail: trailEnAncrages,
+    quests: questsEnAncrages,
+    burst: burstEnAncrage,
+  });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
   const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,
+    archipelago,
     chantier,
   );
   const host = useRef<HTMLDivElement>(null);
@@ -693,7 +705,7 @@ export default function WorldCanvas2D({
                 const vo = q.vehicle.origin;
                 const cell = { x: vo.x + hit.cell.x, y: vo.y + hit.cell.y, z: vo.z + hit.cell.z };
                 const ghost = q.vehicle.cubes.some((c) => c.ghost && c.x === hit.cell.x && c.y === hit.cell.y && c.z === hit.cell.z);
-                if (ghost && q.build) q.build.onPickFace(cell, cell);
+                if (ghost && q.build) q.build.onPickFace(cell, cell, q.vehicle.port);
                 else q.onPickVehicle?.(q.vehicle.port);
               },
             });

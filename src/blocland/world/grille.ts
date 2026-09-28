@@ -2,15 +2,16 @@
 // la 3D et la 2D. Elle enveloppe terrain.ts, paths.ts et monuments.ts sans rien changer à ce qu'ils calculent : la page du
 // monde et la simulation demandent où sont les choses à la disposition, plus aux fonctions de la grille.
 //
-// Jusqu'à l'étape J5, le repère d'une île est celui du monde : l'ancrage d'une entité porte son île, et son point est
-// déjà en cases du monde (`versMonde` le rend tel quel). J5 fera naître chaque île dans son repère à elle.
-import { BIOMES, type BiomeId } from '../biomes';
-import type { VillagePlaceId, VoxelCube } from '../Voxel';
+// Depuis l'étape J5, chaque île naît dans son repère (terrain.ts, `cubesDeLIle`) : son origine est le coin de son cœur, à
+// son altitude. L'ancrage d'une entité porte son île et un point dans ce repère ; `versMonde` y ajoute l'origine de l'île,
+// `versIle` fait l'inverse pour un point du monde (le toucher).
+import type { BiomeId } from '../biomes';
+import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './disposition';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
-import { avatarHome, avatarRoute, bridgePath, islandAt, islandCenter, islandOrigin, monumentCenter, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { avatarHome, avatarRoute, bridgePath, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 export const WALK_SPEED = 6;
@@ -28,11 +29,17 @@ export interface DispositionEnGrille extends Disposition {
   archipel: ArchipelagoId;
   /** En grille, un point est toujours sur une île ou près d'elle : l'île la plus proche. */
   ileEn(p: Point): BiomeId;
+  /** Un point du monde dans le repère de l'île la plus proche, ou de l'île `ile` si elle est donnée. */
+  versIle(p: Point, ile?: BiomeId): Ancrage;
   /** Le chemin à pied d'un point à un autre sur le sol (autour du décor et des créatures), ou `null`. */
   raccord(depuis: Point, vers: Point): Point[] | null;
 }
 
-const ancre = (ile: BiomeId, p: Point): Ancrage => ({ ile, local: { x: p.x, y: p.y, z: p.z } });
+/** Un point du monde, ancré à l'île `ile` : dans son repère. */
+function ancre(ile: BiomeId, p: Point): Ancrage {
+  const o = origineDe(ile);
+  return { ile, local: { x: p.x - o.x, y: p.y - o.y, z: p.z - o.z } };
+}
 
 /**
  * La disposition en grille de l'archipel `a`. Avec les ouvrages construits (`bridges`), elle trace les trajets ; avec les
@@ -46,7 +53,11 @@ export function dispositionEnGrille(
   let ground: WalkGround | undefined;
   const marche = () => (sol ? (ground ??= walkGround(sol.cubes, sol.creatures)) : undefined);
   const seTenir = (ile: BiomeId) => ancre(ile, avatarHome(ile));
-  const versMonde = (x: Ancrage): Point => x.local;
+  const versMonde = (x: Ancrage): Point => {
+    const o = origineDe(x.ile);
+    return { x: x.local.x + o.x, y: x.local.y + o.y, z: x.local.z + o.z };
+  };
+  const ileEn = (p: Point) => islandAt(a, Math.floor(p.x), Math.floor(p.y));
   const raccord = (depuis: Point, vers: Point) => {
     const g = marche();
     return g ? walkPath(g, depuis, vers) : null;
@@ -60,8 +71,8 @@ export function dispositionEnGrille(
         const [ile, mission] = e.id.split(':') as [BiomeId, string];
         const st = questStations(ile).find((q) => q.typeId === mission);
         if (!st) return null;
-        const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === ile));
-        return ancre(ile, { x: ox + st.x, y: oy + st.y, z: oz });
+        // La borne est posée sur la case (st.x, st.y) du cœur, z : l'altitude de l'île.
+        return { ile, local: { x: st.x, y: st.y, z: 0 } };
       }
       case 'lieu': {
         const door = placeDoor(e.id as VillagePlaceId, e.ile);
@@ -96,7 +107,7 @@ export function dispositionEnGrille(
       const toDoor = door ? (raccord(last, door) ?? [last, door]) : [last];
       route.push(...toDoor.slice(1));
     }
-    return { etapes: route.map((p) => ancre(islandAt(a, Math.floor(p.x), Math.floor(p.y)), p)), duree: dureeDeMarche(route) };
+    return { etapes: route.map((p) => ancre(ileEn(p), p)), duree: dureeDeMarche(route) };
   }
 
   return {
@@ -113,6 +124,7 @@ export function dispositionEnGrille(
     },
     cadrage: (ile): Etendue => viewZone(ile),
     etendue: (): Etendue => worldBounds(a),
-    ileEn: (p) => islandAt(a, Math.floor(p.x), Math.floor(p.y)),
+    ileEn,
+    versIle: (p, ile) => ancre(ile ?? ileEn(p), p),
   };
 }

@@ -49,6 +49,8 @@ const GRILLE = [
   'world/decor',
   'world/whalePass',
   'world/grille',
+  // Le monde en cubes : un cube en cases du monde, ce qu'on touche pour entrer (J5).
+  'world/cube',
   // Le relief de chaque île, en repère d'île, un fichier par archipel (socle de la piste Rendu).
   'world/silhouettes',
   'world/silhouettes/types',
@@ -81,14 +83,6 @@ const EXCEPTIONS: Record<string, string> = {
   'biomes → components/Icon': 'le nom d’icône d’une île (un type seulement), un détail d’interface dans les données (J7)',
   'boss → exercises/registry': 'le défi du Gardien lit combien d’items montre chaque écran, rangé avec les écrans (J7)',
   'world/islandState → components/Icon': 'le nom d’icône d’un état d’île (un type seulement) (J7)',
-  'world/grille → Voxel': 'les types VoxelCube et VillagePlaceId, rangés dans un composant (J5)',
-  'world/paths → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
-  'world/terrain → Avatar': 'la place du bonhomme sur son île, AVATAR_HOME (J5)',
-  'world/terrain → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
-  'world/decor → Voxel': 'le type VoxelCube, rangé dans un composant ; le décor sorti de terrain.ts au lot R4 en hérite (J5)',
-  'world/terrain → world/daylight': 'l’ambiance d’un archipel (le ciel), lue pour poser le décor (J5)',
-  'world/view → Voxel': 'le contrat des vues reçoit des cubes ; ils passent en ancrages avec le repère des îles (J5)',
-  'world/scene → Voxel': 'la simulation lit les cubes ; ils passent en ancrages avec le repère des îles (J5)',
 };
 
 /** Le nom court d'un module : chemin depuis src/ (ou depuis src/ hors de Blocland), sans extension. */
@@ -130,7 +124,7 @@ function contresens(): string[] {
   for (const n of [...REGLES, ...GRILLE, ...COMMUN]) {
     const f = fichier(n);
     const src = readFileSync(f, 'utf8');
-    for (const m of src.matchAll(/(?:from|import)\s+'([^']+)'/g)) {
+    for (const m of src.matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)) {
       const cible = resoudre(f, m[1]);
       if (!cible) continue;
       const c = couche(cible);

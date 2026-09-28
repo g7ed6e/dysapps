@@ -2,12 +2,13 @@
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { IslandStateId } from './islandState';
 import type { BiomeId } from '../biomes';
-import type { PlaceId, VoxelCube } from '../Voxel';
+import type { PlaceId, VoxelCube } from './cube';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
-import type { Intention } from './disposition';
+import type { Ancrage, Intention } from './disposition';
+import { dispositionEnGrille } from './grille';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -18,12 +19,15 @@ export interface WorldFocus {
   /** Change à chaque demande, pour pouvoir redemander la même île. */
   seq: number;
   /** Un point à cadrer plutôt que le cœur de l'île (l'îlot d'un monument, au large de `island`). */
-  spot?: { x: number; y: number; z: number };
+  spot?: Ancrage;
 }
 
-/** En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
+/**
+ * En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`), en cases du monde.
+ * `ile` : l'île dont le plan est touché, quand la vue la connaît (le navire : son port) ; sinon l'île la plus proche.
+ */
 export interface BuildProps {
-  onPickFace: (cell: Cell, next: Cell) => void;
+  onPickFace: (cell: Cell, next: Cell, ile?: BiomeId) => void;
 }
 
 export interface QuestMark {
@@ -31,8 +35,8 @@ export interface QuestMark {
   id: string;
   biome: BiomeId;
   typeId: string;
-  /** La case du socle (z : le sol sous le socle). */
-  cell: Cell;
+  /** Le socle : son île et sa case dans le repère de l'île (z : le sol sous le socle). */
+  place: Ancrage;
   /** `'new'` : à faire (repère jaune) ; un nombre : les étoiles gagnées ; `'locked'` : rien. */
   state: 'new' | 'locked' | number;
 }
@@ -40,7 +44,8 @@ export interface QuestMark {
 /** Éclats de couleur à un endroit du monde (pose d'un bloc) ; `seq` change à chaque demande. */
 export interface Burst {
   seq: number;
-  cell: Cell;
+  /** Le cube posé : son île et sa case dans le repère de l'île. */
+  cell: Ancrage;
   color: string;
 }
 
@@ -80,16 +85,16 @@ export interface WorldViewProps {
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'une case du monde (le chantier du navire). */
-  marker?: BiomeId | Cell | null;
+  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'un point (le chantier du navire). */
+  marker?: BiomeId | Ancrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
-  avatar?: { route: Cell[]; seq: number };
+  avatar?: { route: Ancrage[]; seq: number };
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
   map?: boolean;
   /** L'île où le bonhomme se tient (ou se rend) : la caméra cadre cette île et ses voisines, tournée vers le continent. */
   home?: BiomeId;
   /** Un chemin à construire, montré par des balises jaunes qui flottent au-dessus de ses cases. */
-  trail?: Cell[];
+  trail?: Ancrage[];
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
@@ -102,6 +107,20 @@ export interface WorldViewProps {
   burst?: Burst;
   className?: string;
   label: string;
+}
+
+/**
+ * Les positions du contrat, en cases du monde (étape J5) : la 3D et la 2D dessinent le monde en cases, la grille y pose
+ * chaque ancrage (`versMonde`). Les positions d'une vue en réseau resteront des ancrages. Les créatures et le navire
+ * sont encore en cases du monde (R6 et R5 les passent en ancrages).
+ */
+export interface EnCasesDuMonde {
+  focus: Omit<WorldFocus, 'spot'> & { spot?: Cell };
+  marker: BiomeId | Cell | null;
+  avatar?: { route: Cell[]; seq: number };
+  trail?: Cell[];
+  quests?: (Omit<QuestMark, 'place'> & { cell: Cell })[];
+  burst?: Omit<Burst, 'cell'> & { cell: Cell };
 }
 
 /**
@@ -120,8 +139,17 @@ export interface RappelsDeLaVue {
   onVoyageSkip?: () => void;
 }
 
-export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, chantier = false): RappelsDeLaVue {
+export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, archipel: ArchipelagoId, chantier = false): RappelsDeLaVue {
   if (!onIntent) return {};
+  // Une face touchée passe du monde aux cases du plan de son île : le repère de l'île, un cran plus bas (le plan compte
+  // depuis le sol de l'île).
+  const face = (cell: Cell, next: Cell, ile?: BiomeId): Intention => {
+    const g = dispositionEnGrille(archipel);
+    const c = g.versIle(cell, ile);
+    const n = g.versIle(next, c.ile);
+    const duPlan = (p: Cell): Cell => ({ x: p.x, y: p.y, z: p.z - 1 });
+    return { genre: 'face', ile: c.ile, case: duPlan(c.local), voisine: duPlan(n.local) };
+  };
   return {
     onPickIsland: (id) => onIntent({ genre: 'ile', id }),
     onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
@@ -129,7 +157,7 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, c
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
     onPickVehicle: (port) => onIntent({ genre: 'navire', port }),
-    build: chantier ? { onPickFace: (cell, next) => onIntent({ genre: 'face', case: cell, voisine: next }) } : undefined,
+    build: chantier ? { onPickFace: (cell, next, ile) => onIntent(face(cell, next, ile)) } : undefined,
     onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
   };

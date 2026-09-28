@@ -29,6 +29,8 @@ export interface IslandDef {
 export const CORE = 16;
 /** Altitude par classe (uniforme dans un archipel). */
 export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e': 6, '3e': 9 };
+/** Un archipel du ciel : pas de mer, les îles flottent au-dessus d'un plancher de nuages (les Îles du Ciel). */
+export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e': false, '4e': false, '3e': true };
 
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 

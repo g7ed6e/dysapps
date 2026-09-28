@@ -3,7 +3,7 @@
 // en altitude et l'habillage de la mer (rochers qui affleurent, bancs de sable). Générateur pur, sans Three.js : il pose
 // des cubes par une fonction `put` que lui donne le terrain, qui décide où ils vont et ce qu'ils ne recouvrent pas.
 import { BLOCKS, type BiomeId } from '../biomes';
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { CORE, inCore, isLand, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
 
 /** Les couleurs du paysage et du décor (les textures 3D s'en déduisent, voir `TEXTURES` dans ./terrain.ts). */
