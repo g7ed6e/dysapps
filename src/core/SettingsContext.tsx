@@ -8,7 +8,7 @@ interface SettingsContextValue {
   settings: Settings;
   update: (patch: Partial<Settings>) => void;
   reset: () => void;
-  /** Lit un texte à voix haute avec la vitesse choisie par l'élève (en français, sauf `lang: 'en'`). */
+  /** Lit un texte à voix haute avec la vitesse choisie par l'élève (en français, sauf `lang` : anglais, allemand ou espagnol). */
   speak: (text: string, onEnd?: () => void, lang?: Lang) => void;
   stop: () => void;
 }
@@ -25,7 +25,6 @@ export function lireReglages(ouvert = UNIVERS_OUVERT): { settings: Settings; mes
   if (!ouvert || settings.univers !== undefined) return { settings, message: false };
   const { univers, message } = premierUnivers({
     progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})),
-    experimental: settings.renduArchipeo,
   });
   return { settings: { ...settings, univers }, message };
 }
@@ -51,8 +50,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => sanitizeSettings({ ...prev, ...patch }));
   }, []);
 
-  // « Affichage par défaut » garde l'univers : ce n'est pas un réglage d'affichage.
-  const reset = useCallback(() => setSettings((prev) => (prev.univers === undefined ? DEFAULT_SETTINGS : { ...DEFAULT_SETTINGS, univers: prev.univers })), []);
+  // « Affichage par défaut » ne touche ni à l'univers ni à la LV2 : ce ne sont pas des réglages d'affichage.
+  const reset = useCallback(
+    () => setSettings((prev) => ({ ...DEFAULT_SETTINGS, lv2: prev.lv2, ...(prev.univers === undefined ? {} : { univers: prev.univers }) })),
+    [],
+  );
 
   const speak = useCallback((text: string, onEnd?: () => void, lang?: Lang) => speakRaw(text, settings.speechRate, onEnd, lang), [settings.speechRate]);
 

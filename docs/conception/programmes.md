@@ -9,14 +9,14 @@ src/programme/
   types.ts         les types : cycle, discipline, source, domaine, compétence, exclusion
   sources.ts       la provenance : jeu de données data.gouv.fr, PDF, licence, arrêté, date de consultation
   cycle3.ts        le cycle 3 (6e) : domaines et compétences, français, maths, anglais
-  cycle4.ts        le cycle 4 (5e, 4e, 3e) : domaines et compétences, français, maths, anglais
+  cycle4.ts        le cycle 4 (5e, 4e, 3e) : domaines et compétences, français, maths, anglais, allemand et espagnol (LV2)
   exclusions.ts    les compétences sans mission, avec leur motif
   motsOutils.ts    la liste officielle des mots-outils (CP, CE1), citée pour le Coffre à mots
   index.ts         PROGRAMME, DOMAINES, DISCIPLINES, CYCLE_OF, byId, entriesOf ; le type ProgrammeId
   programme.test.ts
 ```
 
-Une **compétence** (`ProgrammeEntry`) est une ligne du programme au grain d’une mission : un identifiant stable `c<cycle>.<fr|ma|en>.<domaine>.<compétence>`, le cycle, la discipline, le domaine, l’attendu de fin de cycle, la connaissance ou compétence associée, et la page du PDF. Les libellés sont des résumés fidèles du texte officiel, courts, sans apostrophe droite ni barre verticale (ils vont dans des tableaux) ; le texte fait foi.
+Une **compétence** (`ProgrammeEntry`) est une ligne du programme au grain d’une mission : un identifiant stable `c<cycle>.<fr|ma|en|de|es>.<domaine>.<compétence>`, le cycle, la discipline, le domaine, l’attendu de fin de cycle, la connaissance ou compétence associée, et la page du PDF. Les libellés sont des résumés fidèles du texte officiel, courts, sans apostrophe droite ni barre verticale (ils vont dans des tableaux) ; le texte fait foi.
 
 Une **mission** cite ses compétences dans le champ `programme` de `src/blocland/biomes.ts` (obligatoire, au moins une) ou de `src/apps/registry.ts` (portail). Un exercice peut préciser les siennes (`programme` dans son JSON) quand ses niveaux ne travaillent pas la même chose. Le type `ProgrammeId` est l’union des identifiants du référentiel : `tsc` refuse un identifiant inconnu.
 
@@ -39,7 +39,7 @@ Ce que data.gouv.fr **ne** fournit **pas** : un lexique scolaire, une liste de f
 2. **Extraire le texte.** `npm run programme:extract -- c3` (ou `c4`, ou l’URL d’un autre PDF) télécharge le PDF déclaré dans `sources.ts`, écrit `.programme/<id>.txt` (le texte, une marque `===== PAGE n =====` par page) et `.programme/<id>.toc.txt` (les titres repérés avec leur page), et affiche ce sommaire. Le dossier `.programme/` est ignoré par git.
 3. **Repérer les pages.** Dans le sommaire, noter où commence la discipline, puis chercher dans le texte « Attendus de fin de cycle », « Connaissances et compétences associées », « Repères de progressivité », « Terminologie », et pour les langues « Niveau A1 », « Niveau A2 ».
 4. **Rédiger les compétences.** Une compétence par chose qu’une mission peut travailler : ni l’attendu entier, ni chaque puce du PDF ; de 20 à 35 par discipline et par cycle. Déclarer d’abord les domaines (`DOMAINES_C3`, `DOMAINES_C4` : identifiant `c<cycle>-<abréviation>-<domaine>`, titre officiel, page), puis les compétences avec leur attendu, leur libellé et leur page. Prévoir une compétence « témoin » par domaine que l’application ne peut pas travailler (l’oral, l’écriture libre) : la page de couverture dit ainsi ce que l’application ne fait pas.
-5. **Déclarer la discipline.** Une nouvelle matière est d’abord une matière de l’application : `Subject` dans `src/apps/registry.ts`, puis `DISCIPLINES` dans `src/programme/index.ts` (libellé, abréviation des identifiants). Un nouveau PDF se déclare dans `SOURCES`.
+5. **Déclarer la discipline.** Une nouvelle matière est d’abord une matière de l’application : `Subject` dans `src/apps/registry.ts`, puis `DISCIPLINES` dans `src/programme/index.ts` (libellé, abréviation des identifiants). Une discipline peut entrer au référentiel avant d’avoir une île : elle s’ajoute alors à `Discipline` dans `src/programme/types.ts` (`Subject | 'allemand' | 'espagnol'`) et devient une matière de l’application avec sa première île, comme l’allemand et l’espagnol (LV2). Une discipline qui n’existe que dans un cycle (la LV2 commence en 5e) se déclare dans `programme.test.ts`, qui sinon l’attend dans les deux. Un nouveau PDF se déclare dans `SOURCES`.
 6. **Exclure ce qui n’a pas de mission.** Lancer `npm test` : le test de couverture nomme chaque compétence sans mission ; l’ajouter à `exclusions.ts`, `a-couvrir` avec ce qui est prévu, ou `hors-perimetre` avec la raison.
 7. **Rattacher les missions.** Le champ `programme` des missions concernées ; une île de 6e ne cite que le cycle 3, une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3. Retirer les exclusions des compétences désormais couvertes.
 8. **Vérifier et relire.** `npm test`, `npm run docs:build`, puis relire `dist-docs/pedagogie/programmes/` et les pages des îles touchées (`npm run docs:preview`). La page se génère seule ; il reste le fragment de journal.
@@ -47,3 +47,5 @@ Ce que data.gouv.fr **ne** fournit **pas** : un lexique scolaire, une liste de f
 ## Ce que l’analyse d’origine a établi
 
 Le référentiel a été écrit le 27 septembre 2026 à partir des PDF des cycles 3 et 4, pour le français, les mathématiques et les langues vivantes (portées par la matière Anglais). Les 79 missions des 28 îles et les 7 missions du portail ont été rattachées ; les compétences sans mission sont listées dans `exclusions.ts` avec ce qui est prévu pour chacune (nouvelles missions, nouvelle île de grandeurs et mesures en 6e). Le [cadrage du contenu](cadrage-contenu.md) reprend ces suites.
+
+Le 28 septembre 2026, l’allemand et l’espagnol y sont entrés en deuxième langue vivante (LV2), au cycle 4 seulement : le programme de langues vivantes est commun à toutes les langues, et leurs 20 compétences (`c4.de.*`, `c4.es.*`) recopient celles de l’anglais, avec les mêmes libellés et les mêmes pages. Les pages n’ont pas pu être vérifiées à nouveau dans le PDF ce jour-là (téléchargement refusé depuis l’environnement de travail) : ce sont celles de l’anglais, relues lors de l’analyse d’origine. Toutes sont exclues en attendant les îles LV2 (lots 2 à 5 du [cadrage du contenu](cadrage-contenu.md)).

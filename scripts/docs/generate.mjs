@@ -222,12 +222,16 @@ function programmesPage(d) {
     '',
     'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
     '',
+    'Le programme de langues vivantes est commun à toutes les langues : l’anglais le suit du cycle 3 au cycle 4, et la deuxième langue vivante (LV2), l’allemand ou l’espagnol, commencée en 5e, le suit au cycle 4 seulement, avec les mêmes compétences et les mêmes pages.',
+    '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
+      // Une discipline absente d'un cycle (les LV2 n'ont que le cycle 4) n'a pas de ligne.
       [3, 4].flatMap((cycle) =>
-        disciplines.map((disc) => {
+        disciplines.flatMap((disc) => {
           const list = PROGRAMME.filter((e) => e.cycle === cycle && e.discipline === disc);
-          return [`Cycle ${cycle}`, DISCIPLINES[disc].label, String(list.length), String(count(list, 'travaillee')), String(count(list, 'a-couvrir')), String(count(list, 'hors-perimetre'))];
+          if (list.length === 0) return [];
+          return [[`Cycle ${cycle}`, DISCIPLINES[disc].label, String(list.length), String(count(list, 'travaillee')), String(count(list, 'a-couvrir')), String(count(list, 'hors-perimetre'))]];
         }),
       ),
     ),

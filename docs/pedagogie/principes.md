@@ -65,6 +65,12 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Le trou se lit « blank »** dans une phrase anglaise, comme en classe d’anglais : la voix anglaise ne dit pas « mot manquant ».
 - **Lire un document** (panneau, menu, horaire) : la question, en français, vient d’abord, en syllabes comme une consigne, et se lit avec la voix française (d’elle-même à chaque item si la lecture automatique est active) ; le document, en anglais, est encadré dessous, une ligne par information, jamais tout en capitales, sans syllabes, et se lit avec la voix anglaise à la demande. Le lexique affiché aide à lire, il ne recopie pas une réponse.
 
+## La LV2 : les mêmes deux voix
+
+- **Allemand ou espagnol, comme l’anglais** : consigne, joker, indice et correction en français avec la voix française ; les mots et les phrases de la LV2 lus avec une **voix allemande d’Allemagne** ou **espagnole d’Espagne** (une autre voix de la langue si l’appareil n’en a pas, jamais la voix française). Si l’appareil n’a aucune voix de la langue, les Réglages le disent, et le message se lit à voix haute.
+- **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais.
+- **Un signe qui change le sens** (schon/schön, tu/tú, si/sí) se travaille avec le son et dans une phrase, jamais sur la forme seule ; ¿ et ¡ s’affichent mais ne se lisent pas.
+
 ## Ce que travaille chaque île
 
 | Classe | Français | Maths | Anglais |
