@@ -70,7 +70,7 @@ Aucun n’est partagé avec un autre archipel.
   - Au moins trois masses lointaines se lisent dans le haut de la vue de l’archipel ; sinon l’artiste technique 3D le signale et le directeur artistique tranche.
   - Aucune case de sol n’est blanche sous la calotte du Glacier.
   - Aucune tour ni masse ne cache une borne, un nom ou un cœur d’île.
-  - Les deux captures « Réduire les animations » sont identiques.
+  - Avec « Réduire les animations » (la préférence de l’appareil), rien ne bouge. Plus de capture dédiée depuis le 28 septembre 2026 : la vidéo sur tablette le montre.
   - Les lueurs couvrent moins de 5 % des captures de nuit.
   - Le test en gris est réussi.
   - Le budget est tenu : sol ≤ 23 000 / 1, mer ≤ 5 000 / 1, faune ≤ 1 500 / 3, décor ≤ 9 000 / 3, vérifiés par `budget.test.ts`.

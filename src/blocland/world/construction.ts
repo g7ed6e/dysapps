@@ -165,12 +165,10 @@ float eclatDeFenetre(float n, float decalage) {
 `;
 
 /**
- * L'opacité des fantômes, entre la nuit (`light` = 0) et le jour (1) : le remplissage (0,35 de jour, 0,45 de nuit ;
- * 0,55 en Contraste élevé) et l'arête (70 % : à 50 %, les fantômes crème disparaissaient sur le marbre des Îles du Ciel ;
- * pleine en Contraste élevé).
+ * L'opacité des fantômes, entre la nuit (`light` = 0) et le jour (1) : le remplissage (0,35 de jour, 0,45 de nuit)
+ * et l'arête (70 % : à 50 %, les fantômes crème disparaissaient sur le marbre des Îles du Ciel).
  */
-export function opaciteDesFantomes(light: number, contraste = false): { remplissage: number; arete: number } {
-  if (contraste) return { remplissage: 0.55, arete: 1 };
+export function opaciteDesFantomes(light: number): { remplissage: number; arete: number } {
   const l = Math.min(1, Math.max(0, light));
   return { remplissage: 0.45 + (0.35 - 0.45) * l, arete: 0.7 };
 }

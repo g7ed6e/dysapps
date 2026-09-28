@@ -29,7 +29,8 @@ Le texte à lire reste toujours dans la police choisie. La police des titres de 
 | **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit, barre du haut bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
 | **Nuit** | Fond bleu nuit et texte crème ; boutons principaux couleur sable. |
 | **Clair** | Fond blanc, plat, sans ombre ; barre du haut blanche. |
-| **Contraste élevé** | Noir, blanc et jaune, plat, angles presque droits, pour les basses visions. |
+
+Le thème **Contraste élevé** n’est plus au choix : il reviendra dans un lot ultérieur. Un appareil qui l’avait choisi s’ouvre en Nuit, le thème sombre le plus proche.
 
 ## Espacements
 
@@ -54,7 +55,7 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 
 ## Animations et vue du monde
 
-- **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
+- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, Archipéo suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
 - **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.

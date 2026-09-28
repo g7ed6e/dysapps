@@ -44,13 +44,13 @@ Elle utilise la synthèse vocale du navigateur. Vérifier le volume et le mode s
 Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, espacement des lettres et des mots, thème. Voir [Réglages et accessibilité](reglages.md).
 
 **Les animations gênent ou l’appareil est lent.**
-Activer « Réduire les animations ». Si la 3D reste lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
+Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». Archipéo suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)). Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.
 
 **Pas de son dans le village.**
-Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, grillons) est désactivée par défaut : voir Réglages → Animations. Aucun son n’est joué pendant la lecture à voix haute.
+Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, grillons) est désactivée par défaut : voir Réglages → Sons et vibrations. Aucun son n’est joué pendant la lecture à voix haute.
 
 ## Mises à jour et données
 

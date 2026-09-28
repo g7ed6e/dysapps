@@ -20,6 +20,11 @@ it('convertit les anciens thèmes et polices', () => {
   expect(sanitizeSettings({ font: 'systeme' as never }).font).toBe('arial');
 });
 
+it('le Contraste élevé et « Réduire les animations » retirés : la Nuit, et plus de réglage des animations', () => {
+  expect(sanitizeSettings({ theme: 'contraste' as never }).theme).toBe('nuit');
+  expect(sanitizeSettings({ reduceMotion: true } as never)).not.toHaveProperty('reduceMotion');
+});
+
 it('montre le monde en 3D par défaut et lit la vue enregistrée', () => {
   expect(sanitizeSettings({}).worldView).toBe('3d');
   expect(sanitizeSettings({ worldView: 'liste' }).worldView).toBe('liste');

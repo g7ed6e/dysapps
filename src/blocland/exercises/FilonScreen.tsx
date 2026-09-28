@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../../components/Icon';
-import { useSettings } from '../../core/SettingsContext';
+import { useMoinsDAnimations } from '../../core/mouvement';
 import type { ScreenProps } from './registry';
 
 /** Durée de passage d'un bloc, en secondes, selon le niveau (la vitesse ne monte qu'après 90 % de réussite). */
@@ -8,17 +8,16 @@ const DURATIONS = [8, 6, 4.5, 3.5, 3];
 
 /**
  * Filon : un bloc-lettre traverse la galerie ; piocher seulement la lettre cible.
- * Laisser passer une autre lettre est juste. Avec « réduire les animations », le bloc attend.
+ * Laisser passer une autre lettre est juste. Quand l’appareil demande moins d’animations, le bloc attend.
  * Champs de l'item : letter, correct, tip (repère pour la correction), et `target` quand la lettre à piocher change à chaque bloc.
  */
 export function FilonScreen({ items, answered, onAnswer, level, target }: ScreenProps) {
   const item = items[0];
-  const { settings } = useSettings();
   const [slow, setSlow] = useState(false);
   const timer = useRef<number | null>(null);
   const done = useRef(false);
   const duration = DURATIONS[Math.min(DURATIONS.length - 1, Math.max(0, level - 1))] * (slow ? 1.5 : 1);
-  const moving = !settings.reduceMotion;
+  const moving = !useMoinsDAnimations();
 
   const decide = (mined: boolean) => {
     if (done.current) return;

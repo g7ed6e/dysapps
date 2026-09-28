@@ -48,13 +48,12 @@ Les 21 captures déclarées (`scripts/rendu/mesures.mjs`), plus deux prises en l
 
 - **l’arrivée en voyage** : c’est la seule vue où l’horizon se voit ;
 - **l’île qui porte le repère**, de jour et de nuit, quand ce n’est pas la première île de l’archipel (la seule que montre la capture déclarée d’une île) ;
-- **la vue de l’archipel en thème Contraste élevé**, avec une île fermée, de nuit ;
-- **une courte vidéo sur tablette**, avec et sans « Réduire les animations », de ce qui bouge dans l’archipel (bancs du 5e, fourneau et volcan du 4e, oiseau du 3e) : un rythme ne se juge pas sur une image fixe, et le sous-lot ne l’attend pas de la revue d’ensemble.
+- **une courte vidéo sur tablette**, avec et sans « Réduire les animations » (la préférence de l’appareil), de ce qui bouge dans l’archipel (bancs du 5e, fourneau et volcan du 4e, oiseau du 3e) : un rythme ne se juge pas sur une image fixe, et le sous-lot ne l’attend pas de la revue d’ensemble.
 
 Dans chaque sous-lot, deux critères s’ajoutent à ceux de la fiche (référent dys) :
 
 - les bancs, les nappes, les fumées et l’oiseau ne voilent jamais une étiquette ni la flèche, sur aucune capture ;
-- le contour des étiquettes, la flèche, le bonhomme et les repères des bornes restent nets sur la brume, le plancher de nuages et la neige, en thème Contraste élevé aussi.
+- le contour des étiquettes, la flèche, le bonhomme et les repères des bornes restent nets sur la brume, le plancher de nuages et la neige (le thème Contraste élevé, retiré le 28 septembre 2026, reviendra au lot 11 du cadrage Archipéo avec ce critère).
 
 ## Le test en niveaux de gris
 
