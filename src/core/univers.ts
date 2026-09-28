@@ -87,10 +87,10 @@ export function aUneProgression(progress: unknown, blocland: unknown): boolean {
 
 /**
  * L'univers qui se voit : celui des réglages une fois ouvert (l'univers par défaut s'il n'y en a pas) ; avant la
- * bascule, les textes restent ceux d'aujourd'hui, c'est-à-dire ceux d'Archipéo.
+ * bascule, Blocland (décision de G du 28/09/2026 : les élèves ne sont pas prêts à quitter Blocland), comme le monde.
  */
 export function titreAffiche(univers: UniversChoice | undefined, ouvert: boolean): UniversChoice {
-  return ouvert ? (univers ?? UNIVERS_PAR_DEFAUT) : 'archipeo';
+  return ouvert ? (univers ?? UNIVERS_PAR_DEFAUT) : 'blocland';
 }
 
 // Le message unique, noté par appareil comme ce que la baleine a déjà dit (WhaleWord), jamais dans la sauvegarde :

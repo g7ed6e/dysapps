@@ -7,7 +7,7 @@ L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.
 L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’Archipéo, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Archipéo](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
 - **Menu** (adresse `#/menu`) : le menu principal, en page. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple). De haut en bas :
-  - **Archipéo** et « Le savoir construit ton monde. » ;
+  - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
   - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Forêt des sons. Tu as tout pour finir La cabane de Mousso : pose tes blocs. ») ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
   - la **progression** : le rôle et le niveau, le nombre d’archipels atteints sur quatre, et le lien **Succès** ;
@@ -21,7 +21,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : Archipéo, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
+![Le menu en page sur tablette : Blocland, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
 
 ![Le menu sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
@@ -31,13 +31,13 @@ Pendant une partie, l’écran se vide pour laisser toute la place à la questio
 
 ## Installer sur l’écran d’accueil
 
-Archipéo est une application web installable (PWA). Une fois installée, elle s’ouvre en plein écran, sans la barre d’adresse, et **fonctionne hors ligne** après la première visite.
+DysApps est une application web installable (PWA). Une fois installée, elle s’ouvre en plein écran, sans la barre d’adresse, et **fonctionne hors ligne** après la première visite.
 
 - **Android (Chrome)** : menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
 - **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
 
-L’icône de l’appli installée est un « D » crème sur fond bleu nuit, pour DysApps, la même quel que soit l’univers ; le « A » d’Archipéo reste sur l’écran titre. Installée, l’application s’ouvre comme une appli : un **écran de lancement** neutre (le « D » de DysApps sur fond crème, avec le nom DysApps sur Android) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
+L’icône de l’appli installée est un « D » crème sur fond bleu nuit, pour DysApps, la même quel que soit l’univers ; l’écran titre montre le logo de l’univers. Installée, l’application s’ouvre comme une appli : un **écran de lancement** neutre (le « D » de DysApps sur fond crème, avec le nom DysApps sur Android) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
 ### Quand l’icône change
 
@@ -51,9 +51,9 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le « A » d’Archipéo, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), « Blocland » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
-![L'écran titre : le « A » d'Archipéo, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
+![L'écran titre : l'île en blocs de Blocland, « Blocland » et le bouton Jouer.](/captures/titre.jpg)
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
