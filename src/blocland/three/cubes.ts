@@ -41,7 +41,7 @@ interface Spark {
   born: number;
 }
 
-export function creerCubes(monde: Monde, large: Large, instant: Instant, lumiere: Lumiere): Cubes {
+export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant: Instant): Cubes {
   const { scene, archipel, archipeo, surface } = monde;
   const terrain = new THREE.Group();
   scene.add(terrain);
