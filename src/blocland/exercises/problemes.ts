@@ -331,7 +331,8 @@ export const carteFraction: ItemGenerator = (rng) => {
   const kmU = unit('km');
   return {
     key: `carte-fraction-${f}-${c}`,
-    prompt: `La carte est à l’échelle 1/${formatNombre(f)}. Les deux îles y sont à ${c} cm : quelle distance les sépare en vrai, en kilomètres ?`,
+    // Espaces insécables autour de la barre : « 1/10 000 » collé serait lu par RichText comme la fraction 1/10 suivie de « 000 ».
+    prompt: `La carte est à l’échelle 1\u00a0/\u00a0${formatNombre(f)}. Les deux îles y sont à ${c} cm : quelle distance les sépare en vrai, en kilomètres ?`,
     spoken: `La carte est à l’échelle 1 sur ${formatNombre(f)}. Les deux îles y sont à ${c} centimètres : quelle distance les sépare en vrai, en kilomètres ?`,
     // Pièges : la conversion ratée d’un, deux ou trois rangs.
     choices: options(km, [km * 10, km / 10, km * 100, km * 1000], [c], rng, kmU),

@@ -112,7 +112,7 @@
       "spoken": "You look tired. You blank go to bed.",
       "choices": [
         "should",
-        "can",
+        "can’t",
         "mustn’t"
       ],
       "answer": "should",
@@ -138,7 +138,7 @@
       "choices": [
         "Can",
         "Must",
-        "Should"
+        "Does"
       ],
       "answer": "Can",
       "hint": "On demande la permission.",

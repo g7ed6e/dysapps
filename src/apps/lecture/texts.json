@@ -89,7 +89,7 @@
         ],
         "answer": "Pour lui prendre son fromage",
         "lines": [
-          11,
+          5,
           13
         ],
         "explanation": "Le Renard veut que le Corbeau ouvre le bec pour attraper le fromage."
@@ -120,7 +120,7 @@
           11,
           12
         ],
-        "explanation": "Il ouvre le bec… et laisse tomber le fromage."
+        "explanation": "Il ouvre le bec, et il laisse tomber le fromage."
       },
       {
         "prompt": "Quelle est la leçon de la fable ?",
@@ -358,8 +358,8 @@
         "definition": "dire du mal de quelqu’un"
       },
       {
-        "word": "je tette",
-        "definition": "je bois encore le lait de"
+        "word": "je tette encor ma mère",
+        "definition": "je bois encore le lait de ma mère"
       },
       {
         "word": "sans autre forme de procès",
@@ -590,7 +590,7 @@
       [
         "Il rentra chez lui et prévint son nouveau domestique, un Français nommé Passepartout.",
         "Celui-ci, qui espérait une vie tranquille, fut stupéfait.",
-        "À huit heures quarante-cinq, le 2 octobre, les deux hommes montaient dans le train pour Douvres.",
+        "À huit heures quarante-cinq du soir, le 2 octobre, les deux hommes montaient dans le train pour Douvres.",
         "Ils devaient être de retour au Reform Club le 21 décembre, à la même heure."
       ]
     ],
@@ -689,7 +689,7 @@
           10,
           11
         ],
-        "explanation": "Il voulait du calme… et part le soir même pour un tour du monde !"
+        "explanation": "Il voulait du calme, et il part le soir même pour un tour du monde !"
       }
     ]
   }

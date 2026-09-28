@@ -12,6 +12,8 @@ type Choice = string | number;
 interface WithChoices {
   choices?: unknown;
   answer?: unknown;
+  /** Choix à laisser tels quels : ils viennent de l'énoncé (« −7 ou 5 ? ») ou une seule valeur y est juste (diviseur, nombre premier). */
+  keepChoices?: boolean;
 }
 
 export function shuffled<T>(list: readonly T[], rng: Rng): T[] {
@@ -69,8 +71,11 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
   const round = (v: number) => Number(v.toFixed(decimals));
   const allowNegative = values.some((v) => v < 0);
   const allowZero = allowNegative || values.some((v) => v === 0);
+  // Une unité qui est un nom au pluriel (« caisses ») : pas de « 1 caisses ».
+  const countNoun = /\p{L}{3,}s$/u.test(unit.trim());
   const next = [...values];
-  const valid = (v: number) => (allowNegative || v > 0 || (allowZero && v === 0)) && v !== answer && !next.includes(v);
+  const valid = (v: number) =>
+    (allowNegative || v > 0 || (allowZero && v === 0)) && !(countNoun && Math.abs(v) <= 1) && v !== answer && !next.includes(v);
   const step = 10 ** -decimals;
   /** Le piège passé de l'autre côté : à la même distance, sinon un cran plus loin, sinon au rapport inverse (×2 → ÷2). */
   const mirror = (v: number): number | undefined => {
@@ -114,7 +119,7 @@ export function placeAnswer(choices: Choice[], answer: unknown, target: number, 
 /** Une série de questions, la bonne réponse de chacune à une place tirée au hasard, les places réparties. */
 export function placeChoices<T extends object>(list: readonly T[], rng: Rng): T[] {
   const items = list as readonly (T & WithChoices)[];
-  const sizes = items.map((item) => (Array.isArray(item.choices) && item.choices.length >= 2 ? item.choices.length : 0));
+  const sizes = items.map((item) => (!item.keepChoices && Array.isArray(item.choices) && item.choices.length >= 2 ? item.choices.length : 0));
   const targets = new Map<number, number[]>();
   for (const n of new Set(sizes)) {
     if (n === 0) continue;

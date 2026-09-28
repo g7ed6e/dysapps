@@ -157,7 +157,7 @@ function Quai({ unit, longueur, largeur, entree, perimetre }: { unit: string; lo
 function Traversee({ depart, arrivee, duree }: { depart: Cote; arrivee: Cote; duree: Cote }) {
   const h = (c: Cote) => (c === '?' ? '?' : formatHeure(c));
   const d = duree === '?' ? '?' : formatDuree(duree);
-  const label = `Une traversée en bateau d'une île à l'autre. Départ : ${depart === '?' ? 'inconnu' : formatHeure(depart)}. Durée : ${duree === '?' ? 'inconnue' : formatDuree(duree)}. Arrivée : ${arrivee === '?' ? 'inconnue' : formatHeure(arrivee)}.`;
+  const label = `Une traversée en bateau d’une île à l’autre. Départ : ${depart === '?' ? 'inconnu' : formatHeure(depart)}. Durée : ${duree === '?' ? 'inconnue' : formatDuree(duree)}. Arrivée : ${arrivee === '?' ? 'inconnue' : formatHeure(arrivee)}.`;
   return (
     <svg viewBox="0 0 380 190" role="img" aria-label={label}>
       <path d="M 0 150 Q 190 132 380 150 L 380 190 L 0 190 z" className="water" />
@@ -259,7 +259,7 @@ function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[
 }
 
 function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Cote; pied: Cote; cable: Cote }) {
-  const label = `Un mât vertical tenu par un câble tendu jusqu'au sol, un triangle rectangle au pied du mât. Hauteur du mât : ${spoken(hauteur, unit)}. Du pied du mât au câble, au sol : ${spoken(pied, unit)}. Longueur du câble : ${spoken(cable, unit)}.`;
+  const label = `Un mât vertical tenu par un câble tendu jusqu’au sol, un triangle rectangle au pied du mât. Hauteur du mât : ${spoken(hauteur, unit)}. Du pied du mât au câble, au sol : ${spoken(pied, unit)}. Longueur du câble : ${spoken(cable, unit)}.`;
   return (
     <svg viewBox="0 0 380 220" role="img" aria-label={label}>
       <line x1="20" y1="180" x2="360" y2="180" className="ground" />

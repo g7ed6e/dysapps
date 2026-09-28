@@ -16,7 +16,7 @@
         "le cahier"
       ],
       "answer": "la librairie",
-      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "hint": "Bookshop = book (livre) + shop (magasin).",
       "explanation": "a bookshop = une librairie (library = bibliothèque).",
       "aid": {
         "kind": "rule-card",
@@ -206,7 +206,7 @@
       ],
       "answer": "les raisins",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
-      "explanation": "grapes = les raisins (grapefruit = pamplemousse).",
+      "explanation": "grapes = les raisins (une grappe = a bunch ; grapefruit = pamplemousse).",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -106,7 +106,7 @@
         "Qui veux-tu ?"
       ],
       "answer": "Lequel veux-tu ?",
-      "hint": "Écoute le premier mot : where, what, when, who, why, how ?",
+      "hint": "Écoute le premier mot : where, what, when, who, why, how, which ?",
       "explanation": "which one = lequel ; want = vouloir.",
       "choicesLang": "fr"
     }

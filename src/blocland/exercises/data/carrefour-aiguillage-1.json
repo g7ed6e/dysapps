@@ -11,7 +11,7 @@
       "spoken": " (mot manquant)  heure est-il ?",
       "choices": ["Quel", "Quelle", "Qu’elle"],
       "answer": "Quelle",
-      "hint": "« heure » est un nom féminin : on cherche l’adjectif.",
+      "hint": "« heure » est un nom féminin : on cherche le déterminant.",
       "explanation": "« Quelle heure » : quelle accompagne le nom féminin « heure ».",
       "aid": {
         "kind": "rule-card",

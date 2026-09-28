@@ -95,7 +95,7 @@
       "spoken": "« Je ne te déteste pas. »",
       "choices": ["litote", "hyperbole", "énumération"],
       "answer": "litote",
-      "hint": "Négation pour dire… le contraire, en plus fort.",
+      "hint": "Négation pour dire le contraire, en plus fort.",
       "explanation": "« ne pas détester » pour dire « aimer » : litote.",
       "aid": {
         "kind": "rule-card",

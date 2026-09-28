@@ -16,6 +16,11 @@ import {
   seededItems,
   thales,
 } from './college';
+import { MATHS_EXERCISES } from './maths';
+import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
+import { runItems } from './run';
+import { shuffleRunChoices } from './shuffle';
+import type { ExerciseItem } from './types';
 
 it('formate et lit les relatifs, range les réponses', () => {
   expect(fmt(-7)).toBe('−7');
@@ -83,7 +88,8 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   for (let i = 0; i < 20; i++) {
     const s = scientific(rng);
     expect(s.choices).toContain(s.answer);
-    expect(String(s.answer)).toMatch(/^\d,\d × 10[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+    // « 3,4 × 10³ », ou « 8 × 10⁵ » (jamais « 8,0 × 10⁵ »).
+    expect(String(s.answer)).toMatch(/^[1-9](,[1-9])? × 10[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
     const e = equationTwoSteps(rng);
     expect(e.choices).toContain(e.answer);
     expect((e.choices as string[]).length).toBe(4);
@@ -128,6 +134,57 @@ it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données'
         expect(it.choices).toContain(it.answer);
         expect(it.aid ?? it.figure).toBeDefined();
         expect(JSON.parse(JSON.stringify(it))).toEqual(it);
+      }
+    }
+  }
+});
+
+it('Glacier et Forge : les choix qui viennent de l’énoncé ou d’une propriété ne sont pas replacés pendant la partie', () => {
+  const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
+  const num = (c: string) => Number(c.replace('−', '-').replace(/\s/g, ''));
+  const isPrime = (n: number) => n > 1 && Array.from({ length: n - 2 }, (_, i) => i + 2).every((d) => n % d !== 0);
+  for (let s = 0; s < 300; s++) {
+    for (const id of ['glacier-thermometre-1', 'forge-trempe-2']) {
+      const def = byId(id);
+      const seed = `${id}#garde${s}`;
+      const raw = def.generate!(seed);
+      const run = shuffleRunChoices(def, raw, seed);
+      run.forEach((item, i) => {
+        const list = item.choices as string[];
+        // Les mêmes nombres qu'au tirage, une seule fois la bonne réponse.
+        expect([...list].sort()).toEqual([...(raw[i].choices as string[])].sort());
+        expect(list.filter((c) => c === item.answer)).toHaveLength(1);
+        const prompt = String(item.prompt);
+        if (id === 'glacier-thermometre-1') {
+          const [, a, b] = /: (\S+) ou (\S+) \?/.exec(prompt)!;
+          expect(a).not.toBe(b);
+          expect([...list].sort()).toEqual([a, b].sort());
+          const values = [num(a), num(b)];
+          expect(num(String(item.answer))).toBe(prompt.includes('petit') ? Math.min(...values) : Math.max(...values));
+        } else if (prompt.includes('premier')) {
+          expect(list).toHaveLength(4);
+          expect(list.filter((c) => isPrime(num(c)))).toEqual([item.answer]);
+        } else {
+          const n = Number(/de (\d+) \?/.exec(prompt)![1]);
+          expect(list).toHaveLength(4);
+          expect(list.filter((c) => n % num(c) === 0)).toEqual([item.answer]);
+        }
+      });
+    }
+  }
+});
+
+it('maths générées : les accords au singulier (« 1 caisse », « une pomme »), sur des centaines de parties', () => {
+  const texts = (item: ExerciseItem) =>
+    [item.prompt, item.spoken, item.hint, item.explanation, ...((item.choices as unknown[]) ?? [])].map(String).join(' ¦ ');
+  const plural = /(?<![\d,  ])1 (caisses|boules|rouges|bleues|parts|graduations|zéros|rangs|mètres|kilos|centimètres|kilomètres)\b/;
+  const gender = /\b[Uu]n (pomme|bille|crêpe|tomate)\b/;
+  for (const def of [...MATHS_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+    for (let s = 0; s < 150; s++) {
+      for (const item of runItems(def, `${def.id}#accords${s}`)) {
+        const t = texts(item);
+        expect(t, def.id).not.toMatch(plural);
+        expect(t, def.id).not.toMatch(gender);
       }
     }
   }

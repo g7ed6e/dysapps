@@ -3,7 +3,7 @@
   "biome": "ferme",
   "type": "enclos",
   "level": 2,
-  "instruction": "Attention aux pièges : cherche qui fait l’action, puis choisis le verbe. Puis valide.",
+  "instruction": "Attention aux pièges : cherche qui fait l’action, choisis le verbe, puis valide.",
   "items": [
     {
       "key": "paul-et-léa",

@@ -107,8 +107,8 @@
     },
     {
       "key": "cabinet-nuances-1-5",
-      "prompt": "Un antonyme de « ancien » :",
-      "spoken": "Un antonyme de « ancien » :",
+      "prompt": "Un antonyme d’« ancien » :",
+      "spoken": "Un antonyme d’« ancien » :",
       "choices": ["nouveau", "vieux", "vétuste"],
       "answer": "nouveau",
       "hint": "Sens contraire.",
