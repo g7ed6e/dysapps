@@ -5,7 +5,7 @@ import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
-import type { WorldViewProps } from '../world/view';
+import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import { meshOf } from './maillage';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
@@ -28,7 +28,7 @@ export interface Personnages extends PartieDeLaScene {
   cap: number;
   montrerLeBonhomme(visible: boolean): void;
   /** Un nouvel itinéraire du bonhomme. */
-  marcher(avatar: NonNullable<WorldViewProps['avatar']>): void;
+  marcher(avatar: NonNullable<EnCasesDuMonde['avatar']>): void;
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
 }
 

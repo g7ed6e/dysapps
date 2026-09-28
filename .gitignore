@@ -13,3 +13,4 @@ docs/.vitepress/.temp
 .claude/settings.local.json
 .claude/worktrees/
 docs/_captures
+*.tsbuildinfo

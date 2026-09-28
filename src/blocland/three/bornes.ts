@@ -5,7 +5,7 @@ import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
 import type { ArchipelagoId } from '../world/map';
 import { islandCenter } from '../world/terrain';
-import type { WorldViewProps } from '../world/view';
+import type { EnCasesDuMonde } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
 export interface Bornes extends PartieDeLaScene {
@@ -13,9 +13,9 @@ export interface Bornes extends PartieDeLaScene {
   fleche: THREE.Group;
   /** Les repères des bornes de mission (on les touche). */
   missions: THREE.Group;
-  poserLaFleche(marker: WorldViewProps['marker']): void;
-  poserLesMissions(quests: WorldViewProps['quests']): void;
-  poserLeChemin(trail: WorldViewProps['trail']): void;
+  poserLaFleche(marker: EnCasesDuMonde['marker']): void;
+  poserLesMissions(quests: EnCasesDuMonde['quests']): void;
+  poserLeChemin(trail: EnCasesDuMonde['trail']): void;
 }
 
 /**
