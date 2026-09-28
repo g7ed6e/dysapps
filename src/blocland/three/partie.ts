@@ -4,7 +4,7 @@
 import type * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import type { ArchipelagoId } from '../world/archipelago';
-import type { WorldViewProps } from '../world/view';
+import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Surface } from './surface';
 
 /** Le monde que dessine la scène : fixé pour sa vie (elle est refaite quand l'archipel ou « Réduire les animations » change). */
@@ -24,7 +24,7 @@ export interface Monde {
 /** Les dernières props de la vue, lues à chaque image (la scène n'est pas refaite quand elles changent). */
 export interface Derniers {
   carte: boolean;
-  focus: WorldViewProps['focus'];
+  focus: EnCasesDuMonde['focus'];
   home: BiomeId | null;
   forceDay: boolean;
   whalePass: WorldViewProps['whalePass'];

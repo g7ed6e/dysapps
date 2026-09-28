@@ -1,6 +1,6 @@
 // La fumée du décor d'Archipéo (lot R4) : une seule règle pour toutes les fumées des quatre archipels (le volcan, le
 // haut-fourneau), celle de la fiche de famille. Son mouvement (plus doux, plus pâle la nuit) se règle en R4b-6e.
-import type { VoxelCube } from '../../Voxel';
+import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import { SMOKE } from '../decor';
 import type { Faces } from '../palette';

@@ -1,6 +1,6 @@
 // Maillage du village : seules les faces visibles sont gardées, regroupées par matériau.
 // Pur (sans Three.js) : testable, et le composant 3D n'a plus qu'à créer une géométrie par groupe.
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 
 export type FaceSide = 'top' | 'bottom' | 'side';
 

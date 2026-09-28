@@ -2,7 +2,7 @@
 // voyage, les touches du clavier et ce que fait un toucher sur le sol. Code pur : les vues ne font que dessiner ce que
 // ces fonctions calculent, à chaque image. Les temps sont en millisecondes (horloge de la page : `performance.now()`).
 import type { BiomeId } from '../biomes';
-import type { PlaceId, VoxelCube } from '../Voxel';
+import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
 import { CREATURE_STEPS, boardingRoute, routeAt, routeLengths } from './terrain';
 import { WALK_MAX_MS, WALK_SPEED, dispositionEnGrille, dureeDeMarche, type DispositionEnGrille } from './grille';

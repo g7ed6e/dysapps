@@ -22,7 +22,7 @@
 // dessus (une silhouette propre à chaque archipel viendra des cubes, pas d'ici).
 // - Le toucher (`pickCell`) et la marche (`hauteurDuSol`, `piedsSur`) lisent le même champ : un point touché redevient
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
-import type { VoxelCube } from '../Voxel';
+import type { VoxelCube } from './cube';
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
