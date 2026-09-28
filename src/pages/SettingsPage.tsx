@@ -24,6 +24,11 @@ export function SettingsPage() {
   // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
   const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);
   const universRef = useRef<HTMLFieldSetElement>(null);
+  const confirmRef = useRef<HTMLParagraphElement>(null);
+  // La confirmation s'ouvre sous les choix : le focus y va, pour qu'elle ne s'ouvre jamais hors de l'écran.
+  useEffect(() => {
+    if (universDemande) confirmRef.current?.focus();
+  }, [universDemande]);
   const section = (useLocation().state as { section?: string } | null)?.section;
   // Venu du message unique (« Voir le réglage ») : la section Univers, sous les yeux.
   useEffect(() => {
@@ -204,7 +209,9 @@ export function SettingsPage() {
         {UNIVERS_OUVERT ? (
           <fieldset className="panel" id="reglage-univers" ref={universRef}>
             <legend>Univers</legend>
-            <p>L’univers change le dessin du monde et l’histoire. Ta progression reste la même.</p>
+            <p>
+              <Syllabified text="L’univers change le dessin du monde et l’histoire. Ta progression reste la même." />
+            </p>
             <div className="univers-choices">
               {UNIVERS_IDS.map((u) => (
                 <div key={u} className={`option univers-choice${settings.univers === u ? ' selected' : ''}`}>
@@ -222,8 +229,10 @@ export function SettingsPage() {
             </div>
             {universDemande && universDemande !== settings.univers && (
               <div className="univers-confirm" role="group" aria-labelledby="univers-confirm-titre">
-                <p id="univers-confirm-titre">
-                  <strong>{CONFIRMATION_UNIVERS.titre(universDemande)}</strong>
+                <p id="univers-confirm-titre" ref={confirmRef} tabIndex={-1}>
+                  <strong>
+                    <Syllabified text={CONFIRMATION_UNIVERS.titre(universDemande)} />
+                  </strong>
                 </p>
                 <p>
                   <Syllabified text={CONFIRMATION_UNIVERS.texte} />

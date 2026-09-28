@@ -85,7 +85,7 @@ export const MESSAGE_UNIVERS_KEY = 'univers-message';
 export const MESSAGE_UNIVERS = {
   titre: 'Un nouvel univers : Archipéo',
   texte:
-    'Ton monde en blocs s’appelle maintenant Blocland. Archipéo est un nouvel univers : une aventure en mer, où ton savoir reconstruit l’archipel. Tes étoiles, tes blocs, tes plans et tes missions restent les mêmes. Tu peux changer d’univers quand tu veux, dans les Réglages.',
+    'Ton monde en blocs s’appelle maintenant Blocland. Archipéo est une aventure en mer. Tes étoiles, tes blocs, tes plans et tes missions restent les mêmes. Tu peux changer d’univers quand tu veux, dans les Réglages.',
   voir: 'Voir le réglage',
   rester: 'Rester dans Blocland',
 };
