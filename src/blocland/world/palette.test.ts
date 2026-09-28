@@ -140,6 +140,8 @@ it('a une couleur de dessus et de côté pour chaque sol et chaque matière, dan
   expect(new Set(ARCHIPELAGO_IDS.map((a) => couleurDuSol(a, 'herbe').dessus)).size).toBe(4);
   // L'herbe du sol et le bloc d'herbe sont la même couleur.
   for (const a of ARCHIPELAGO_IDS) expect(couleurDeMatiere(a, 'herbe')).toEqual(couleurDuSol(a, 'herbe'));
+  // L'herbe retouchée au lot R3 (moins citron, vers le vert de la planche), ses côtés de terre inchangés.
+  expect(SOLS.herbe).toEqual({ dessus: 0x76a860, cote: 0x8a6b4a });
 });
 
 it('la nuit, les surfaces bleuissent sans jamais devenir noires ; les lanternes gardent leur éclat', () => {

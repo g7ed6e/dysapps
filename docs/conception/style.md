@@ -50,7 +50,16 @@ Depuis le lot R2, **le terrain n’est plus en cubes** : le sol et la roche des 
 - une marche d’un bloc devient une pente douce, une marche de deux blocs ou plus reste une falaise, peinte en strates de deux blocs ;
 - une case où quelque chose est posé (borne, maison, plan, décor, pont, monument) reste plate à sa hauteur : ce qui se construit case par case ne flotte jamais sur une pente ;
 - la côte descend jusqu’à l’eau et se teinte de sable au bord de la mer ; sous les îles en altitude, la roche s’amincit en facettes ;
-- les couleurs sont celles de la palette, nuancées selon l’option (b) retenue au lot R1 : plus sombres vers la mer, de larges taches sur les dessus, les couleurs voisines mêlées aux coins, pour que la grille ne se lise pas en damier.
+- les couleurs sont celles de la palette, nuancées selon l’option (b) retenue au lot R1 : plus sombres vers la mer, de larges taches sur les dessus, les couleurs voisines mêlées aux coins, pour que la grille ne se lise pas en damier ; deux dessus qui tranchent (une dalle claire contre la roche, une arène contre l’herbe) ne se mêlent pas d’un coin à l’autre : le passage se fait au bord, sur 0,3 case de chaque côté, comme le sable au rivage (lot R3).
+
+Depuis le lot R3, **la mer et la faune** sont peintes aussi (`src/blocland/world/mer.ts`, `faune.ts`) :
+
+- la mer se lit en profondeur : le Bleu lagon de la planche (`#178078`) sur les hauts-fonds autour des îles, la teinte de mer de l’archipel un peu plus loin, puis le large, qui s’enfonce vers la Nuit océan (`#142B38`) ; les rochers et les bancs semés en mer ne font pas de lagon, seulement de l’écume ;
+- au ras de chaque côte, rocher ou pilotis, **un liseré d’écume** couleur Brume (`#E5EBE3`), et plus loin une ligne plus pâle ; il respire doucement ; le sable se détache du lagon comme sur la planche (2,2 pour 1) et l’écume à plus de 3 pour 1 ;
+- **une houle légère** : de grandes facettes irrégulières, soulevées de quelques centimètres au large et calmes près des côtes, qui prennent la lumière chacune à sa façon ;
+- aux Îles du Ciel, le même principe fait le plancher de nuages : bleuté sous les îles, blanc au loin, une houle plus ample et plus lente, sans écume ;
+- les baleines, les oiseaux et les nuages sont des formes facettées peintes par sommet : la baleine bleu profond (`#1E3A5C`) au ventre crème, avec sa queue qui bat et son souffle couleur Brume ; des oiseaux blancs aux ailes grises, le bout plus sombre, qui battent des ailes ; des cumulus crème au dessous bleuté ;
+- « Réduire les animations » fige la houle, l’écume, les oiseaux (ailes à plat), les nuages et les baleines (queue droite, sans souffle) : les formes restent, rien ne bouge.
 
 La construction, le décor, les créatures et le bonhomme restent en cubes (lots R4 à R6) ; `?style=a|b|c` les peint de la palette selon les trois options de style du cadrage. La vue simple ne change pas.
 
