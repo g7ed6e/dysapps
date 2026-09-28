@@ -5,6 +5,7 @@ import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
+import { SauvegardePanel } from '../components/SauvegardePanel';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { CONFIRMATION_UNIVERS, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, type UniversChoice } from '../core/univers';
@@ -316,6 +317,8 @@ export function SettingsPage() {
             </a>
           </div>
         </fieldset>
+
+        <SauvegardePanel />
 
         <div className="actions">
           <button type="button" className="button" onClick={reset}>

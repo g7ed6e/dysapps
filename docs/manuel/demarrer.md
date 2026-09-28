@@ -45,7 +45,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 - **Android (Chrome)** : Chrome vérifie l’icône et le nom quand on ouvre l’appli, au plus une fois par jour, après que l’élève a touché **Mettre à jour**. Le changement peut prendre jusqu’à un jour ; Android demande souvent de l’accepter. Avec un autre navigateur, l’icône peut rester l’ancienne : il faut alors réinstaller.
 - **Ordinateur (Chrome, Edge)** : le navigateur vérifie au lancement de l’appli, après la mise à jour, et peut demander de confirmer la nouvelle icône.
-- **iPhone, iPad (Safari)** et **Mac (Safari, « Ajouter au Dock »)** : l’icône est photographiée à l’installation et ne change plus. Seule une réinstallation la change. Attention : sur iPhone et iPad, supprimer l’appli de l’écran d’accueil **efface sa progression**, qui n’est pas transférée. Si l’élève a une progression, mieux vaut garder l’ancienne icône.
+- **iPhone, iPad (Safari)** et **Mac (Safari, « Ajouter au Dock »)** : l’icône est photographiée à l’installation et ne change plus. Seule une réinstallation la change. Attention : sur iPhone et iPad, supprimer l’appli de l’écran d’accueil **efface sa progression**. Il faut donc l’enregistrer d’abord dans un fichier, puis la restaurer : Réglages, section « Réinstaller l’appli » (voir [Réglages](reglages.md#reinstaller-lappli)).
 
 > L’application était aussi publiée sur GitHub Pages, à l’adresse de cette documentation. Si elle y avait été installée, le raccourci ouvre désormais cette documentation : il suffit de réinstaller l’application depuis l’adresse ci-dessus. La progression enregistrée sur l’appareil dépend de l’adresse d’origine et n’est pas transférée.
 
@@ -83,8 +83,8 @@ Tout est enregistré **sur l’appareil**, dans le stockage local du navigateur 
 
 Conséquences pratiques :
 
-- Deux appareils ont deux progressions différentes.
-- Effacer les données du site dans le navigateur (ou désinstaller l’application) efface la progression.
+- Deux appareils ont deux progressions différentes. Pour passer de l’un à l’autre, **Réglages → Ma sauvegarde** enregistre la progression dans un fichier, puis la restaure sur l’autre appareil (voir [Réglages](reglages.md#ma-sauvegarde)).
+- Effacer les données du site dans le navigateur (ou désinstaller l’application) efface la progression, sauf si elle a été enregistrée dans un fichier.
 - Les navigations privées ne gardent rien après fermeture.
 
 Sur un appareil partagé entre plusieurs élèves, le plus simple est d’utiliser un profil de navigateur par élève.

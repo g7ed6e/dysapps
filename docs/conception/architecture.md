@@ -49,6 +49,7 @@ public/          icônes, police Luciole
 - `syllables.ts` : le découpage syllabique par règles.
 - `progress.ts` : XP, niveaux, rôles, succès, et les évènements (`recordAnswer`, `recordSession`, `recordPlan`, `recordBoss`). Logique pure, testée.
 - `storage.ts` : lecture et écriture dans `localStorage`, avec correction des données lues (champs manquants, valeurs hors bornes).
+- `sauvegarde.ts` : la sauvegarde dans un fichier (Réglages → Ma sauvegarde) : copie telles quelles les valeurs rangées sous le préfixe `dysapps:`, sans convertir aucun format ; la restauration vérifie le fichier (format, clés, JSON, taille) et remplace tout ou rien.
 - `appUpdate.ts` : la mise à jour de la PWA (bande « Mettre à jour », bouton dans les réglages).
 - `useLoaded.ts` : attend un contenu chargé à la demande (un exercice, un défi de Gardien) ; un échec remonte à la limite d’erreur de la page (`components/ErrorBoundary.tsx`, message et bouton « Recharger »).
 
