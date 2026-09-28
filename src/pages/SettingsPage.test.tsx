@@ -4,20 +4,6 @@ import { SettingsPage } from './SettingsPage';
 import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 
-it('montre la section Univers ; la section Expérimental n’existe plus depuis la bascule du lot 6', () => {
-  render(
-    <SettingsProvider>
-      <ProgressProvider>
-        <MemoryRouter>
-          <SettingsPage />
-        </MemoryRouter>
-      </ProgressProvider>
-    </SettingsProvider>,
-  );
-  expect(screen.getByRole('group', { name: 'Univers' })).toBeInTheDocument();
-  expect(screen.queryByRole('group', { name: 'Expérimental' })).not.toBeInTheDocument();
-});
-
 it('propose la LV2, l’espagnol par défaut, et garde le choix de l’allemand ou de « Pas de LV2 »', () => {
   localStorage.clear();
   render(

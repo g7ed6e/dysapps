@@ -1,4 +1,4 @@
-// Le décor de la 2D peinte (lot R7), derrière `?rendu=archipeo` : les mêmes formes que les sprites en pixels
+// Le décor de la 2D peinte (lot R7), dans l’univers Archipéo (voir rendu.ts) : les mêmes formes que les sprites en pixels
 // (./sprites.ts : même taille, même pied, même ombre), peintes en deux ou trois aplats de la matière (world/palette.ts) :
 // clair en haut à gauche, ombre bleutée en bas à droite, un contour dans la teinte sombre de la matière (jamais noir).
 // Aucun grain. Les personnages (bonhomme, créatures, Gardiens en sentinelles, lot R6) sont rastérisés depuis leurs

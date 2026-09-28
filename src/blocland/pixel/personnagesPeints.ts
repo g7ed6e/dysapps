@@ -1,4 +1,4 @@
-// Les personnages d'Archipéo en 2D peinte (lot R6), derrière `?rendu=archipeo` : le bonhomme, les créatures et les
+// Les personnages d'Archipéo en 2D peinte (lot R6), dans l’univers Archipéo (voir rendu.ts) : le bonhomme, les créatures et les
 // sentinelles, rastérisés depuis leurs modèles en facettes (./personnages.ts), sans contour noir, de nuit par palier.
 // Chargé à la demande par ./WorldCanvas2D.tsx, seulement sous le drapeau : les modèles ne pèsent pas sur la 2D en pixels.
 import type { BiomeId } from '../biomes';

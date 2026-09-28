@@ -1,4 +1,4 @@
-// Un personnage d'Archipéo en SVG (lot R6), derrière `?rendu=archipeo` : le repli sans WebGL de la bulle d'une
+// Un personnage d'Archipéo en SVG (lot R6), dans l’univers Archipéo (voir rendu.ts) : le repli sans WebGL de la bulle d'une
 // créature et du défi d'un Gardien, ou hors de la vue 3D. Ses facettes vues, en polygones plats
 // (world/personnages/portrait.ts), sans animation. Chargé à la demande : les modèles ne pèsent pas sur le monde en blocs.
 import { useMemo } from 'react';

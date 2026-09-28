@@ -1,4 +1,4 @@
-// La mer d'Archipéo en 3D (lot R3, derrière `?rendu=archipeo`) : la grille et la carte de world/mer.ts, en un seul
+// La mer d'Archipéo en 3D (lot R3, dans l’univers Archipéo (voir rendu.ts)) : la grille et la carte de world/mer.ts, en un seul
 // appel de dessin. Un matériau mat à facettes (`flatShading`), dont le dessin est complété de trois choses : la houle
 // soulève les sommets (calme près des côtes), la couleur vient de la carte (lagon, mer, large), et l'écume du rivage se
 // lit dans la distance à la terre de la carte, avec un léger souffle. Aux Îles du Ciel, le même maillage fait le

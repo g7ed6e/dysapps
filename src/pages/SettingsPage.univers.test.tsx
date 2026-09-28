@@ -6,7 +6,6 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 
-
 function renderPage() {
   return render(
     <SettingsProvider>
