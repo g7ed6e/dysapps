@@ -162,7 +162,7 @@ Entre ces lots s’intercalent, sans changement d’image, les étapes qui isole
 
 ### Les fils de la piste Rendu (R4b, R5, R6)
 
-Jusqu’à R4, un seul fil enchaînait les lots sur une seule branche : quand il s’arrêtait, tout attendait derrière lui. Les trois lots qui restent se mènent **dans des fils séparés, en même temps**, après un socle commun. Plan proposé le 28 septembre 2026 avec l’artiste technique 3D (fichiers, budget) et le directeur artistique (ce qui se juge ensemble) ; il attend les décisions du mainteneur (en fin de section).
+Jusqu’à R4, un seul fil enchaînait les lots sur une seule branche : quand il s’arrêtait, tout attendait derrière lui. Les trois lots qui restent se mènent **dans des fils séparés, en même temps**, après un socle commun. Plan établi le 28 septembre 2026 avec l’artiste technique 3D (fichiers, budget) et le directeur artistique (ce qui se juge ensemble) ; le mainteneur l’a accepté en entier le même jour (en fin de section).
 
 **L’ordre.** Chaque ligne attend la fusion de la précédente ; les lots d’une même ligne tournent en même temps, chacun dans son fil et sa pull request.
 
@@ -219,13 +219,13 @@ Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de
 
 **Les règles des fils.** Au plus trois fils de rendu en même temps, plus celui de la séparation. Chaque fil part de `main` à jour, se remet sur `main` après chaque fusion d’un autre fil, garde sa pull request en brouillon jusqu’aux captures validées, et ne fusionne que sur le mot du mainteneur, en squash sans signature. Un fil qui doit écrire dans un fichier d’un autre lot écrit un nouveau fichier et le passe au propriétaire. Un fil arrêté ne bloque que son lot.
 
-**À décider par le mainteneur.**
+**Décidé par le mainteneur le 28 septembre 2026** (tout accepté) :
 
 1. Ce découpage : un socle, puis R4b en quatre sous-lots (6e, puis 5e et 4e, puis 3e), R5 et R6 en parallèle.
-2. Avancer J5 avant R4b (recommandé : sinon J5 attend le dernier sous-lot, et R5 et R6 avec lui).
-3. Confier la découpe de la scène 3D au fil de la séparation, juste après J4, qui possède déjà ces lignes (recommandé).
-4. Donner à R6 la sortie des modèles des créatures et des Gardiens hors de React, prévue en J5 (recommandé : c’est son terrain).
-5. Le phare, modèle unique construit par R4b-6e et réutilisé par le 3e et par R5 (recommandé par le directeur artistique).
+2. J5 avancé avant R4b : sinon J5 attendrait le dernier sous-lot, et R5 et R6 avec lui.
+3. La découpe de la scène 3D confiée au fil de la séparation, juste après J4 : il possède déjà ces lignes.
+4. La sortie des modèles des créatures et des Gardiens hors de React, prévue en J5, donnée à R6 : c’est son terrain.
+5. Le phare, modèle unique construit par R4b-6e et réutilisé par le 3e et par R5.
 6. Les enveloppes du budget ci-dessus.
 
 ### L’ouverture et la suite
