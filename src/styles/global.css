@@ -372,15 +372,12 @@ svg {
 .topbar .xp-title {
   white-space: normal;
   overflow: visible;
-  text-overflow: clip;
   line-height: 1.2;
 }
-/* Jamais de mot coupé dans la jauge : le numéro de niveau part d'abord (il est dans l'écusson), puis le rôle ; la
-   jauge reste, et tout est sur la page Succès. */
+/* Jamais de mot coupé dans la jauge : sous 56rem, tout son titre part (niveau et rôle) ; l'insigne et la jauge
+   restent, et tout est sur la page Succès. */
 @container barre (max-width: 48rem) {
-  .nav-label,
-  .topbar .xp-lvl,
-  .topbar .xp-sep {
+  .nav-label {
     display: none;
   }
   /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
@@ -1383,6 +1380,12 @@ button.app-card:active {
 }
 .option input[type='radio']:checked {
   background: radial-gradient(circle, currentColor 0 42%, transparent 48%);
+}
+/* Couleurs forcées (contraste élevé de l'appareil) : le fond dessiné s'efface ; le rond du système revient. */
+@media (forced-colors: active) {
+  .option input[type='radio'] {
+    appearance: auto;
+  }
 }
 .font-atkinson {
   font-family: "Atkinson Hyperlegible", sans-serif;
