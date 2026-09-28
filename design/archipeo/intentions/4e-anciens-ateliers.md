@@ -81,7 +81,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 ## 10. Pour le mainteneur
 
-Rien, sinon U2 (voir `commun.md`), et seulement pour la butte facultative de la Forge.
+Rien. U2, avancé par le mainteneur (voir `commun.md`), ne sert ici qu’à la butte facultative de la Forge.
 
 ## Pour R5
 

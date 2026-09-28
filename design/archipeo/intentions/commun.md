@@ -1,6 +1,6 @@
 # Ce qui vaut pour les trois fiches
 
-**Statut.** Ces fiches sont l’intention du directeur artistique, écrite avant les sous-lots R4b-5e, R4b-4e et R4b-3e. Chaque sous-lot écrit ensuite dans sa sous-section du cadrage ce qu’il a construit, et il y signale tout écart à sa fiche. Rien ici ne contredit le §5 ni la fiche de famille du cadrage, sauf les deux écarts du 3e (le site du phare et son socle), dits dans sa fiche, et le pont du 5e, soumis au mainteneur.
+**Statut.** Ces fiches sont l’intention du directeur artistique, écrite avant les sous-lots R4b-5e, R4b-4e et R4b-3e. Chaque sous-lot écrit ensuite dans sa sous-section du cadrage ce qu’il a construit, et il y signale tout écart à sa fiche. Rien ici ne contredit le §5 ni la fiche de famille du cadrage, sauf les deux écarts du 3e (le site du phare et son socle), dits dans sa fiche, et le pont du 5e, confié à R5 par le mainteneur.
 
 ## Les règles du directeur artistique pour les trois
 
@@ -19,7 +19,7 @@
 Le relief des îles (`world/silhouettes/<archipel>.ts`) est lu par la grille de marche commune aux deux univers : le changer redessine aussi Blocland, la 2D et les empreintes de J0. Chaque fiche sépare donc deux parties.
 
 - **Partie 1, sans relief** (ambiance, repères, brume, fumée, lointain) : elle part tout de suite.
-- **Partie 2, le relief** : elle attend U2, qui sépare le relief de la marche du modelé dessiné ([Plusieurs univers](../../../docs/conception/univers.md)). Le directeur artistique recommande d’avancer U2, dans le fil de la séparation, pendant la partie 1 : la question est posée au mainteneur.
+- **Partie 2, le relief** : elle attend U2, qui sépare le relief de la marche du modelé dessiné ([Plusieurs univers](../../../docs/conception/univers.md)). Sur la recommandation du directeur artistique, le mainteneur a décidé le 28 septembre 2026 d’avancer U2, dans le fil de la séparation, pendant la partie 1 : c’est un écart à l’ordre de [Plusieurs univers](../../../docs/conception/univers.md), qui plaçait U2 après les sous-lots R4b.
 - **Si U2 n’est pas avancé**, le relief reste tel qu’il est, et la silhouette passe par des masses hors de la grille, dans le lointain. On écarte le relief surélevé au seul rendu : il montrerait une 3D et une 2D différentes (règle 8 de la fiche de famille).
 
 Mesures de l’artiste technique 3D : le relief ne naît que sur l’anneau de terre autour du cœur (2 à 6 cases de large) ; on obtient des crêtes au fond des îles, pas des masses isolées. Élargir une île fait chevaucher les îlots des Gardiens et des monuments : on ne le fait pas.

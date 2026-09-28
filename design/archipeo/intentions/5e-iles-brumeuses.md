@@ -23,7 +23,7 @@ Aucun n’est partagé avec un autre archipel.
   - **Marais** : une tour d’archives trapue, carrée, penchée d’environ 8°, 3,5 cases de haut, le pied dans les roseaux et dans des éboulis qui couvrent toute l’emprise du champignon de Blocland.
   - **Masse lointaine centrale** : une tour carrée de 5 cases au toit d’ardoise, comme sur la planche, sans chemin, sans quai et sans lueur, pâlie par la brume comme sa masse.
 - **La calotte de sérac du Glacier** (R4b) : un bloc de glace pâle `#E5EBE3`, facetté, sur le sommet du plus haut pic seulement, sur moins d’un quart de sa hauteur, au-dessus de la brume. Le nom de l’île reste vrai.
-- **Les ponts de pierre et de bois** (R5, si le mainteneur l’accepte) : voir « Pour R5 ».
+- **Les ponts de pierre et de bois** (R5, décidé par le mainteneur) : voir « Pour R5 ».
 
 ## 3. Le relief (partie 2, après U2)
 
@@ -83,7 +83,9 @@ Aucun n’est partagé avec un autre archipel.
 
 ## 10. Pour le mainteneur
 
-- Avancer U2 (voir `commun.md`).
+Les deux questions sont tranchées par le mainteneur le 28 septembre 2026, sur la recommandation du directeur artistique :
+
+- U2 est avancé (voir `commun.md`).
 - **Le pont du 5e passe de R4b à R5.** Les ponts du 5e existent déjà comme ouvrages à construire. Un pont décoratif qu’on ne peut pas prendre serait une fausse promesse ; un pont restauré sert le monde (DP-09). La décision du mainteneur (un pont court et rigide, de pierre et de bois) est tenue, mais par les vrais ponts. C’est un écart à la frontière R4b / R5 du plan accepté.
 
 ## Pour R5
