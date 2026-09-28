@@ -148,16 +148,18 @@ const SHOTS = [
  * au plus grand, sans voix, et l'appareil qui demande de réduire les animations. Ces captures ne vont pas au manuel :
  * elles ne se prennent que nommées (`npm run docs:captures -- extreme-carte-nuit`), pour une relecture.
  */
+// Les bornes de sanitizeSettings (src/core/settings.ts) : une valeur au-delà serait ramenée sans erreur.
 const EXTREMES = { font: 'opendyslexic', fontSize: 32, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5, autoRead: false };
-const extreme = (name, theme, shot) => ({ ...shot, name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme }, reduit: true, surDemande: true });
+const deBase = (n) => SHOTS.find((s) => s.name === n) ?? (() => { throw new Error(`capture inconnue : ${n}`); })();
+const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme }, reduit: true, surDemande: true });
 SHOTS.push(
-  extreme('quete-correction', 'creme', SHOTS.find((s) => s.name === 'quete-correction')),
-  extreme('telephone-quete', 'creme', SHOTS.find((s) => s.name === 'telephone-quete')),
-  extreme('carte', 'nuit', SHOTS.find((s) => s.name === 'carte')),
-  extreme('telephone-village', 'nuit', SHOTS.find((s) => s.name === 'telephone-village')),
-  extreme('gardien', 'clair', SHOTS.find((s) => s.name === 'gardien')),
-  extreme('quete-fin', 'clair', SHOTS.find((s) => s.name === 'quete-fin')),
-  extreme('vue-simple', 'creme', SHOTS.find((s) => s.name === 'vue-simple')),
+  extreme('quete-correction', 'creme'),
+  extreme('telephone-quete', 'creme'),
+  extreme('carte', 'nuit'),
+  extreme('telephone-village', 'nuit'),
+  extreme('gardien', 'clair'),
+  extreme('quete-fin', 'clair'),
+  extreme('vue-simple', 'creme'),
 );
 
 /** La section Univers des Réglages : Blocland, coché, puis Archipéo. */
