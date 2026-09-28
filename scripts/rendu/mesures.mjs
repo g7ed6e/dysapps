@@ -84,6 +84,9 @@ const CAPTURES = [
   { nom: 'atelier', vue: 'île', famille: 'chantier', ile: 'atelier' },
   { nom: 'atelier-nuit', vue: 'île', famille: 'chantier', ile: 'atelier', nuit: true },
   { nom: 'phare', vue: 'île', famille: 'chantier', ile: 'phare' },
+  { nom: 'phare-avant', vue: 'île', famille: 'chantier', ile: 'phare', partie: 'avant' },
+  { nom: 'theatre', vue: 'île', famille: 'chantier', ile: 'theatre' },
+  { nom: 'comptoir', vue: 'île', famille: 'chantier', ile: 'comptoir' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -153,8 +156,10 @@ async function scenes() {
   // La même partie tout construite que le test du budget (world/budget.test.ts).
   const { progress, village: built } = toutConstruit();
   /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
-  const plansDe = (partie) => {
+  const plansDe = (partie, ile) => {
     const plans = { ...built.plans };
+    // Avant : aucun plan de l'île posé.
+    if (partie === 'avant') for (const p of plansFor(ile)) delete plans[p.id];
     if (partie === 'chantier')
       for (const b of BIOMES) {
         const l = plansFor(b.id);
@@ -196,7 +201,7 @@ async function scenes() {
             vue: c.vue,
             go: c.ile ? `/aventure/${c.ile}` : routes[c.vue],
             ile: c.ile,
-            plans: c.partie ? plansDe(c.partie) : null,
+            plans: c.partie ? plansDe(c.partie, c.ile) : null,
             time: c.nuit ? NIGHT : DAY,
             view: c.view,
             theme: c.theme,
