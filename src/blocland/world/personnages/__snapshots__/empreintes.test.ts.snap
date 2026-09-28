@@ -2,15 +2,15 @@
 
 exports[`Empreintes des personnages en facettes > le bonhomme 1`] = `
 {
-  "empreinte": "4070c333",
-  "triangles": 388,
+  "empreinte": "cb0448e1",
+  "triangles": 472,
 }
 `;
 
 exports[`Empreintes des personnages en facettes > les créatures, île par île 1`] = `
 {
   "atelier": "336 38a12594",
-  "baie": "244 30411aee",
+  "baie": "244 712605e6",
   "belvedere": "222 6065f789",
   "cabinet": "204 7319f9c0",
   "carrefour": "263 67e39f4d",
@@ -22,20 +22,20 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "ferme": "247 58b1a34a",
   "foret": "250 3bdddf6c",
   "forge": "200 da24e468",
-  "gare": "249 7ab250eb",
+  "gare": "249 79814f3d",
   "glacier": "236 bb1c8d90",
-  "horloge": "265 17aca2fe",
-  "manoir": "299 08069e9a",
+  "horloge": "265 f170a175",
+  "manoir": "299 acc9d5ee",
   "marais": "259 e107cad9",
   "marche": "319 4a4ff7b3",
   "mine": "241 d3def54b",
   "phare": "268 40b9051e",
-  "plaine": "256 a9c3b807",
-  "riviere": "228 62f33eba",
+  "plaine": "256 eb13baf5",
+  "riviere": "248 dc401824",
   "studio": "278 485c007e",
-  "textes": "298 d87bfb1b",
+  "textes": "318 d8386d93",
   "theatre": "264 32d0b77e",
-  "tour": "247 8948b262",
+  "tour": "247 164109af",
   "volcan": "233 58147ea1",
 }
 `;

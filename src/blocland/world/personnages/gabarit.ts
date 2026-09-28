@@ -134,7 +134,12 @@ export interface Espece {
   gabarit?: Gabarit;
   dominante: Couleur;
   marque?: { couleur: Couleur; ou: Marque[] };
-  tenue: { couleur: Couleur; vetements: Vetement[] };
+  /**
+   * La tenue : sa couleur, ses vêtements ; `bas`, l'ourlet de la robe ou du ciré (0,25 et 0,4 bloc par défaut au gabarit
+   * standard : 0,5 à mi-cuisse, 0,35 au genou) ; des manches courtes (sous une robe, un ciré ou un gilet) laissent voir
+   * l'avant-bras ; une robe ou un ciré `ouvert` laisse voir la dominante sur le devant, de la taille au cou.
+   */
+  tenue: { couleur: Couleur; vetements: Vetement[]; bas?: number; manches?: 'courtes'; ouvert?: boolean };
   silhouette?: Partial<Silhouette>;
   /** Un museau (vers −Z, sous les yeux), un bec (une pointe), ou rien. */
   museau?: { forme: 'museau' | 'bec'; long: number; r: number; y?: number };
@@ -200,17 +205,30 @@ function repereDuBras(s: Silhouette, cote: -1 | 1, rx: number, rz: number): (p: 
   return repere([cote * e[0], e[1], e[2]], rx, 0, cote * rz);
 }
 
-function bras(T: Trace, s: Silhouette, cote: -1 | 1, rx: number, rz: number, peau: Peindre, manche: Peindre): void {
+function bras(T: Trace, s: Silhouette, cote: -1 | 1, rx: number, rz: number, peau: Peindre, manche: Peindre, courtes = false): void {
   const R = pose(T, repereDuBras(s, cote, rx, rz));
-  fuseau(
-    R,
-    [
-      [-s.bras, 0.066],
-      [0, 0.085],
-    ],
-    5,
-    parFace((_k, j) => (j === -1 ? peau : manche)),
-  );
+  if (courtes)
+    // La manche courte s'arrête à mi-bras : l'avant-bras a la couleur de la peau.
+    fuseau(
+      R,
+      [
+        [-s.bras, 0.066],
+        [-s.bras * 0.5, 0.076],
+        [0, 0.085],
+      ],
+      5,
+      parFace((k, j) => (j === -1 || k === 0 ? peau : manche)),
+    );
+  else
+    fuseau(
+      R,
+      [
+        [-s.bras, 0.066],
+        [0, 0.085],
+      ],
+      5,
+      parFace((_k, j) => (j === -1 ? peau : manche)),
+    );
 }
 
 /** Le repère de la main (`cote`), tourné de `rot` : là où se tient un outil. */
@@ -249,14 +267,14 @@ function corps(e: Espece, s: Silhouette, T: Trace, k: Kit): void {
       (m.has('dos') && DOS_DU_TORSE.includes(j))
     )
       c = marque;
-    if (j >= 0 && (v.has('robe') || v.has('cire')) && kk <= (v.has('cire') ? 3 : 1)) c = tenue;
+    if (j >= 0 && (v.has('robe') || v.has('cire')) && kk <= (v.has('cire') ? 3 : 1) && !(e.tenue.ouvert && j === 7 && kk >= 1)) c = tenue;
     if (j >= 0 && v.has('gilet') && (kk === 1 || kk === 2) && j !== 7) c = tenue;
     return c;
   };
   const profil = torse(s);
   fuseau(T, profil, N_TORSE, parFace(peint), { haut: false });
   if (v.has('robe') || v.has('cire')) {
-    const bas = v.has('robe') ? 0.25 : 0.4;
+    const bas = e.tenue.bas ?? (v.has('robe') ? 0.25 : 0.4);
     fuseau(
       T,
       [
@@ -337,7 +355,7 @@ function corps(e: Espece, s: Silhouette, T: Trace, k: Kit): void {
   // Le bras gauche, et ce qu'il tient.
   const ab = { rx: e.autreBras?.rx ?? 0.08, rz: e.autreBras?.rz ?? 0.1 };
   const manche = v.has('robe') || v.has('cire') || v.has('gilet') ? tenue : dom;
-  bras(T, s, -1, ab.rx, ab.rz, dom, manche);
+  bras(T, s, -1, ab.rx, ab.rz, dom, manche, e.tenue.manches === 'courtes');
   e.corps?.(T, k);
 }
 
@@ -421,7 +439,7 @@ export function piecesDe(e: Espece): Piece[] {
   pieces.push(
     piece('bras', [ep[0], ep[1], ep[2]], (T, pot) => {
       const k = kit(pot);
-      bras(T, s, 1, br.rx, br.rz, k.dom, manche ? k.tenue : k.dom);
+      bras(T, s, 1, br.rx, br.rz, k.dom, manche ? k.tenue : k.dom, e.tenue.manches === 'courtes');
     }),
   );
   pieces.push(piece('outil', main, (T, pot) => e.outil.dessiner(pose(T, repereDeLaMain(s, 1, br.rx, br.rz, e.outil.pose)), kit(pot))));

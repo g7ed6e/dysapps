@@ -134,7 +134,8 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
     metier: 'copiste',
     dominante: 0x3a3a4a,
     marque: { couleur: 0xb8bcc8, ou: ['visage'] },
-    tenue: { couleur: TENUE.lin, vetements: ['robe'] },
+    // La robe au genou, à manches courtes : les jambes et les avant-bras, sombres, se lisent d'abord.
+    tenue: { couleur: TENUE.lin, vetements: ['robe'], bas: 0.35, manches: 'courtes' },
     coiffe: (T, k) => {
       for (const c of [-1, 1]) pointe(T, [c * 0.08, 2.46, -0.02], 0.025, 0.3, k.dom, [-0.3, 0, -c * 0.75], 3);
     },

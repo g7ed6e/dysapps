@@ -204,9 +204,9 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
     silhouette: { largeur: 0.37, profondeur: 0.28, ventre: 0.04, tete: 0.32 },
     museau: { forme: 'museau', long: 0.14, r: 0.08 },
     coiffe: (T, k) => {
-      // La casquette et sa visière.
+      // La casquette et sa visière, qui dépasse de 0,1 bloc de chaque côté (ce qui la distingue de Plume).
       disque(T, 2.54, 0.3, 0.1, k.tenue, 8);
-      pave(T, -0.16, 2.49, -0.42, 0.16, 2.52, -0.2, k.fer);
+      pave(T, -0.4, 2.48, -0.42, 0.4, 2.52, -0.16, k.fer);
     },
     outil: {
       // La lanterne de signal.

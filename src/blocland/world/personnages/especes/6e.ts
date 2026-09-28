@@ -172,23 +172,24 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     gabarit: 'trapu',
     dominante: 0x6e6a86,
     marque: { couleur: 0x4c4866, ou: [] },
-    tenue: { couleur: TENUE.lin, vetements: ['robe'] },
+    // Une tunique à mi-cuisse : les jambes et la carapace, violettes, se lisent d'abord.
+    tenue: { couleur: TENUE.lin, vetements: ['robe'], bas: 0.5 },
     // Une tête de tortue : large, plate sur le dessus, le museau en avant.
     silhouette: { tete: 0.3, teteProfondeur: 0.28, crane: 1 },
     museau: { forme: 'museau', long: 0.1, r: 0.1, y: 2.15 },
     corps: (T, k) => {
-      // La carapace en dôme sur le dos : elle déborde du tronc de chaque côté et derrière (0,2 bloc de trois quarts).
+      // La carapace en dôme sur le dos : elle déborde du tronc de 0,2 bloc derrière et de 0,1 au-dessus des épaules,
+      // de chaque côté de la tête (un octogone, un sommet à mi-hauteur de l'épaule : son bord monte en arc).
       fuseau(
-        pose(T, repere([0, 1.22, 0.1], Math.PI / 2, 0, 0)),
+        pose(T, repere([0, 1.37, 0.1], Math.PI / 2, 0, 0)),
         [
-          [0, 0.47, 0.58],
-          [0.12, 0.45, 0.55],
-          [0.26, 0.32, 0.42],
+          [0, 0.55, 0.81],
+          [0.24, 0.42, 0.62],
           [0.34, 0],
         ],
-        6,
+        8,
         k.marque,
-        { rot: 0, bas: false },
+        { rot: 0 },
       );
     },
     outil: {
@@ -204,19 +205,19 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     nom: 'Coco',
     metier: 'arpenteuse',
     dominante: 0xa8443a,
-    marque: { couleur: 0x2e2a28, ou: [] },
+    marque: { couleur: 0x5a2a24, ou: [] },
     tenue: { couleur: TENUE.lin, vetements: ['ceinture'] },
     silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.04 },
     coiffe: (T, k) => {
       for (const c of [-1, 1]) pointe(T, [c * 0.07, 2.47, -0.02], 0.02, 0.22, k.marque, [-0.3, 0, -c * 0.35], 3);
     },
     corps: (T, k) => {
-      // Les élytres en cape, rouges, et leurs trois points sombres.
+      // Les élytres en cape, rouges, et leurs trois points brun sombre (0,12 bloc).
       fuseau(T, ELYTRES, 4, k.dom, { rot: 0 });
       const points: [number, number, number][] = [
-        [-0.24, 1.4, 0.09],
-        [0.24, 1.4, 0.09],
-        [0, 0.85, 0.1],
+        [-0.24, 1.4, 0.06],
+        [0.24, 1.4, 0.06],
+        [0, 0.85, 0.06],
       ];
       for (const [x, y, r] of points) {
         const [, rx, rz, dz] = anneauA(ELYTRES, y);
@@ -232,7 +233,9 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     metier: 'passeuse',
     gabarit: 'elance',
     dominante: 0x6f8f3e,
-    tenue: { couleur: SABLE, vetements: ['cire'] },
+    // Le ciré en tunique à mi-cuisse, ouvert, à manches courtes : les jambes, le poitrail et les avant-bras, verts, se
+    // lisent d'abord.
+    tenue: { couleur: SABLE, vetements: ['cire'], bas: 0.5, manches: 'courtes', ouvert: true },
     silhouette: { tete: 0.33, teteProfondeur: 0.23, jambe: 0.11 },
     coiffe: (T, k) => {
       for (const c of [-1, 1]) fuseau(T, BOSSE, 5, k.dom, { x: c * 0.17, z: -0.05 });
@@ -292,8 +295,9 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
         4,
         k.dom,
       );
-      // Le cordage : un anneau de corde (0,5 bloc) passé à l'épaule gauche, qui se voit de face et de trois quarts.
-      anneau(T, [-0.4, 1.6, -0.02], 0.215, 0.035, k.lin, [0, 1.0, 0], 6);
+      // Le cordage : un anneau de corde (0,55 bloc) passé à l'épaule gauche, le bras au milieu, sans le toucher ; il se
+      // voit de face et de trois quarts.
+      anneau(T, [-0.44, 1.62, -0.02], 0.24, 0.035, k.lin, [0, 0.35, 0], 6);
     },
     outil: {
       // Le bout du cordage, qui pend de la main.
@@ -305,11 +309,11 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     nom: 'Tick',
     metier: 'horloger',
     dominante: 0x6a6258,
-    marque: { couleur: 0xd8c8a8, ou: ['museau', 'visage'] },
+    marque: { couleur: 0xd8c8a8, ou: ['museau', 'visage', 'ventre'] },
     tenue: { couleur: TENUE.cuir, vetements: ['gilet'] },
     museau: { forme: 'museau', long: 0.2, r: 0.08 },
-    // Un hérisson : rond, sur de courtes pattes.
-    silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.06, jambes: 0.5 },
+    // Un hérisson : rond, sur de courtes pattes (15 % plus courtes que celles du gabarit), que le ventre clair arrête net.
+    silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.06, jambes: 0.6 },
     corps: (T, k) => {
       // Les piquants du dos, en éventail : ils dépassent des épaules et de la tête.
       const piquants: [number, number, number, number, number][] = [

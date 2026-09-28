@@ -216,12 +216,34 @@ describe('Le bonhomme en facettes', () => {
     }
   });
 
-  it('montre le rabat Sable de sa besace à la hanche, de face et de trois quarts (0,1 bloc au moins)', () => {
-    for (const angle of [0, -0.6, 0.6]) {
-      const p = projeter(f, { angle, pas: 0.01 });
-      const rabat = pixels(p, (t) => f.teintes[t] === BONHOMME.rabat) * 0.01 * 0.01;
-      expect(rabat, `angle ${angle}`).toBeGreaterThanOrEqual(0.1 * 0.1);
-    }
+  describe('porte un sac à dos (la planche maître), sans besace ni bandoulière', () => {
+    /** Le centre d'un triangle, sur l'axe `k` (0 : X, 1 : Y, 2 : Z). */
+    const centre = (t: number, k: number) => (sommet(f, t, 0)[k] + sommet(f, t, 1)[k] + sommet(f, t, 2)[k]) / 3;
+    const sable = (t: number) => f.teintes[t] === BONHOMME.rabat;
+    /** L'aire vue, en blocs carrés, de ce qui vérifie `pred` (au centième de bloc). */
+    const aire = (angle: number, pred: (t: number) => boolean) => pixels(projeter(f, { angle, pas: 0.01 }), pred) * 0.01 * 0.01;
+
+    it('ses deux bretelles Sable (0,06 bloc de large) se voient de face, une de chaque côté, sur la poitrine', () => {
+      for (const cote of [-1, 1]) {
+        const bretelle = (t: number) => sable(t) && centre(t, 2) < 0 && Math.sign(centre(t, 0)) === cote;
+        // Au moins 0,06 × 0,3 bloc de face, et de trois quarts des deux côtés.
+        for (const angle of [0, -0.6, 0.6]) expect(aire(angle, bretelle), `côté ${cote}, angle ${angle}`).toBeGreaterThanOrEqual(0.06 * 0.3);
+        const xs = [...f.teintes.keys()].filter((t) => bretelle(t) && centre(t, 1) < 1.4).flatMap((t) => [0, 1, 2].map((k) => sommet(f, t, k)[0]));
+        expect(Math.max(...xs) - Math.min(...xs), `côté ${cote}`).toBeCloseTo(0.06, 2);
+      }
+    });
+
+    it('son rabat Sable, en haut du sac, se voit de dos et de trois quarts dos (0,1 × 0,1 bloc au moins)', () => {
+      const rabat = (t: number) => sable(t) && centre(t, 2) > 0.1 && centre(t, 1) < 1.47;
+      for (const angle of [Math.PI, Math.PI - 0.6, 0.6 - Math.PI]) expect(aire(angle, rabat), `angle ${angle}`).toBeGreaterThanOrEqual(0.1 * 0.1);
+    });
+
+    it('le sac est sur le dos : rien de cuir ni de Sable devant le torse sous les bretelles, ni à la hanche', () => {
+      for (let t = 0; t < nbTriangles(f); t++) {
+        if (f.teintes[t] === BONHOMME.sac) expect(centre(t, 2), `triangle ${t}`).toBeGreaterThan(0.1);
+        if (sable(t)) expect(centre(t, 1), `triangle ${t}`).toBeGreaterThan(1);
+      }
+    });
   });
 
   it('tient dans sa case, centré', () => {
@@ -259,10 +281,11 @@ describe('Le bonhomme en facettes', () => {
 describe('Les créatures en facettes', () => {
   const LUMINEUSES: BiomeId[] = ['phare', 'textes', 'forge'];
   /**
-   * Celles dont la tenue (robe, ciré, tunique) couvre plus que la dominante à 40 pixels : la règle « dominante lue
-   * d'abord » (DA, 28/09) ne les tient pas encore ; le directeur artistique dit s'il faut raccourcir la tenue.
+   * Les exceptions à la règle « dominante lue d'abord, à 40 pixels » (DA, 28/09) : celles dont la tenue est le métier et
+   * dont une signature de silhouette porte l'identité. Fi, l'allumeuse (son ciré, sa tête-lanterne) ; Knight, le héraut
+   * (sa tunique, ses oreilles rondes, son étendard).
    */
-  const TENUE_D_ABORD: BiomeId[] = ['tour', 'riviere', 'phare', 'textes', 'chateau'];
+  const TENUE_D_ABORD: BiomeId[] = ['phare', 'chateau'];
   const MATIERES_D_OUTIL = new Set<number>([...Object.values(OUTIL), ...Object.values(TENUE)]);
 
   it('le verre de Fi est ambre mat le jour et prend la lueur la nuit', () => {
@@ -356,7 +379,7 @@ describe('Les créatures en facettes', () => {
         expect(pixels(p, (t) => f.pieces[t] === piece('tete') && f.teintes[t] === marque) / face).toBeLessThanOrEqual(0.35);
       });
 
-      it(TENUE_D_ABORD.includes(b.id) ? 'se lit d’abord à sa tenue, à 40 pixels (en attente du directeur artistique)' : 'se lit d’abord à sa dominante, à 40 pixels', () => {
+      it(TENUE_D_ABORD.includes(b.id) ? 'se lit d’abord à sa tenue, à 40 pixels (la tenue est son métier)' : 'se lit d’abord à sa dominante, à 40 pixels', () => {
         const p = projeter(f, { pas: PAS_A_40_PIXELS });
         const dominantes = new Set(f.palette.filter((q) => q.role === 'dominante').map((q) => q.couleur));
         const tenue = e.tenue.couleur;
