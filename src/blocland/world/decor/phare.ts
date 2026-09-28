@@ -54,9 +54,13 @@ export const ECLAT_DU_FUT = 1.55;
 /** L'ombre du fût : plus claire (+`eclat`) et plus chaude (`chaleur` : plus de rouge, moins de bleu), à l'opposé du soleil. */
 export const OMBRE_DU_FUT = { eclat: 0.55, chaleur: 0.1 } as const;
 
-/** Le phare de chaque archipel qui en a un : seuls la taille, le socle et le site changent (H et r en cases). */
+/**
+ * Le phare de chaque archipel qui en a un : seuls la taille, le socle et le site changent (H et r en cases). Au 6e, il
+ * s'inscrit dans l'emprise du plan « Le phare de Grimoire » (une tour de 3 × 3, haute de 6 cases), sans socle propre
+ * (décision du mainteneur du 28 septembre 2026, posée par R5).
+ */
 export const PHARES = {
-  '6e': { H: 8, r: 1, socle: 1, emprise: 2 },
+  '6e': { H: 6, r: 1.2, socle: 0, emprise: 3 },
   '3e': { H: 11, r: 1.2, socle: 3, emprise: 4 },
 } as const;
 

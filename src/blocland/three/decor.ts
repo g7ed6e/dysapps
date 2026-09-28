@@ -12,10 +12,12 @@ export interface DecorEn3D {
   /** Remplace le décor. */
   peindre(m: MaillageDuDecor): void;
   /**
-   * Chaque image : les fumées au temps `t` (en secondes), au moment du jour `light` (0 la nuit, 1 le jour) ; figées
-   * dans leur pose immobile avec « Réduire les animations » (`reduit`). La lanterne du phare suit `light`.
+   * Chaque image (le contrat des parties de la scène, `animer(t, dt, reduit)`) : les fumées au temps `t` (en
+   * secondes), figées dans leur pose immobile avec « Réduire les animations » (`reduit`).
    */
-  animer(t: number, light: number, reduit: boolean): void;
+  animer(t: number, dt: number, reduit: boolean): void;
+  /** Le moment du jour (0 la nuit, 1 le jour), à chaque changement de lumière : la lanterne du phare et les fumées le suivent. */
+  jour(light: number): void;
   /** Le décor dessiné, pour retrouver la case d'un triangle touché. */
   maillage: MaillageDuDecor | null;
   dispose(): void;
@@ -32,6 +34,8 @@ export function creerDecor(): DecorEn3D {
   let lanterne: { color: THREE.BufferAttribute; jour: Float32Array; nuit: Float32Array; light: number } | null = null;
   /** Le dernier état posé des fumées : immobiles, on ne les repose que si le jour ou le réglage change. */
   const pose = { light: -1, reduit: false };
+  /** Le moment du jour courant (`jour`). */
+  let lumiere = 1;
   const vider = () => {
     for (const child of [...group.children]) {
       group.remove(child);
@@ -90,8 +94,10 @@ export function creerDecor(): DecorEn3D {
         pose.reduit = false;
       }
       d.maillage = m;
+      if (lanterne) d.jour(lumiere);
     },
-    animer(t, light, reduit) {
+    jour(light) {
+      lumiere = light;
       if (lanterne && Math.abs(lanterne.light - light) > 1e-3) {
         const a = lanterne.color.array as Float32Array;
         const k = Math.min(1, Math.max(0, light));
@@ -99,6 +105,9 @@ export function creerDecor(): DecorEn3D {
         lanterne.color.needsUpdate = true;
         lanterne.light = light;
       }
+    },
+    animer(t, _dt, reduit) {
+      const light = lumiere;
       const m = d.maillage;
       if (!fumee || !m) return;
       if (reduit && pose.reduit && Math.abs(pose.light - light) < 1e-3) return;

@@ -27,17 +27,17 @@ it('la lanterne passe de ses couleurs de jour à celles de nuit sans toucher au 
   d.peindre(m);
   const [, lueurs, fumee] = d.group.children as import('three').Mesh[];
   const couleur = () => Array.from(lueurs.geometry.getAttribute('color').array as Float32Array);
-  d.animer(0, 0, false);
+  d.jour(0);
   expect(couleur().slice(0, 3).map((v) => +v.toFixed(3))).toEqual([1, 0.8, 0.2]);
   expect(Array.from(m.lueurs.colors)).toEqual(Array.from(jour));
-  d.animer(0, 1, false);
+  d.jour(1);
   expect(couleur()).toEqual(Array.from(jour));
   const pos = () => Array.from(fumee.geometry.getAttribute('position').array as Float32Array);
-  d.animer(1, 1, false);
+  d.animer(1, 0.016, false);
   const a = pos();
-  d.animer(2, 1, false);
+  d.animer(2, 0.016, false);
   expect(pos()).not.toEqual(a);
-  d.animer(3, 1, true);
+  d.animer(3, 0.016, true);
   expect(pos()).toEqual(Array.from(m.fumees.facettes.positions));
   // La fumée ne se touche pas.
   expect(fumee.raycast.length).toBe(0);

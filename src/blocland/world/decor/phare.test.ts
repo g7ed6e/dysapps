@@ -51,7 +51,7 @@ it('le phare suit les proportions de la fiche de famille : fût, bandes, galerie
   // Le toit dépasse la lanterne ; la galerie dépasse le haut du fût.
   expect(PHARE.toit.rayon).toBeGreaterThan(PHARE.lanterne.rayon);
   // Au 6e et au 3e, seuls la taille, le socle et l'emprise changent.
-  expect(PHARES['6e']).toEqual({ H: 8, r: 1, socle: 1, emprise: 2 });
+  expect(PHARES['6e']).toEqual({ H: 6, r: 1.2, socle: 0, emprise: 3 });
   expect(PHARES['3e']).toEqual({ H: 11, r: 1.2, socle: 3, emprise: 4 });
 });
 
