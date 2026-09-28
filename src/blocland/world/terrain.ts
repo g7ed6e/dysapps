@@ -551,12 +551,6 @@ export function routeAt(route: { x: number; y: number; z: number }[], cum: numbe
   return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f, z: a.z + (b.z - a.z) * f };
 }
 
-/** Coordonnées du monde → case relative à une île (z relatif : 0 = premier bloc sur le sol de la zone libre). */
-export function toIslandCell(id: BiomeId, x: number, y: number, z: number): { x: number; y: number; z: number } {
-  const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: x - ox, y: y - oy, z: z - oz - 1 };
-}
-
 /** Tous les cubes du village, étiquetés par biome. Les îles verrouillées sont en pierre grise, sans créature. */
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [

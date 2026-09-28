@@ -490,7 +490,7 @@ export function WorldPage() {
         return onPickVehicle(i.port);
       case 'face':
         // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
-        if (island) builder.tryFill(i.case) || ship.tryFill(i.case) || openIsland(grille.ileEn(i.case));
+        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || openIsland(i.ile);
         return;
       case 'fin-du-voyage':
       case 'voyage-saute':

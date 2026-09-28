@@ -61,6 +61,7 @@ export default function WorldCanvas({
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
   const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,
+    archipelago,
     chantier,
   );
   const host = useRef<HTMLDivElement>(null);
@@ -249,7 +250,7 @@ export default function WorldCanvas({
         const n = creature.face?.normal ?? new THREE.Vector3(0, 1, 0);
         const local = navire.groupe.worldToLocal(creature.point.clone().addScaledVector(n, -0.5));
         const cell = { x: v.origin.x + Math.floor(local.x), y: v.origin.y + Math.floor(local.z), z: v.origin.z + Math.floor(local.y) };
-        if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell);
+        if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, v.port);
         return pickVehicleRef.current?.(v.port);
       }
       if (creature) {

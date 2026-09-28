@@ -8,6 +8,7 @@ import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
 import type { Intention } from './disposition';
+import { dispositionEnGrille } from './grille';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -21,9 +22,12 @@ export interface WorldFocus {
   spot?: { x: number; y: number; z: number };
 }
 
-/** En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
+/**
+ * En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`), en cases du monde.
+ * `ile` : l'île dont le plan est touché, quand la vue la connaît (le navire : son port) ; sinon l'île la plus proche.
+ */
 export interface BuildProps {
-  onPickFace: (cell: Cell, next: Cell) => void;
+  onPickFace: (cell: Cell, next: Cell, ile?: BiomeId) => void;
 }
 
 export interface QuestMark {
@@ -120,8 +124,17 @@ export interface RappelsDeLaVue {
   onVoyageSkip?: () => void;
 }
 
-export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, chantier = false): RappelsDeLaVue {
+export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, archipel: ArchipelagoId, chantier = false): RappelsDeLaVue {
   if (!onIntent) return {};
+  // Une face touchée passe du monde aux cases du plan de son île : le repère de l'île, un cran plus bas (le plan compte
+  // depuis le sol de l'île).
+  const face = (cell: Cell, next: Cell, ile?: BiomeId): Intention => {
+    const g = dispositionEnGrille(archipel);
+    const c = g.versIle(cell, ile);
+    const n = g.versIle(next, c.ile);
+    const duPlan = (p: Cell): Cell => ({ x: p.x, y: p.y, z: p.z - 1 });
+    return { genre: 'face', ile: c.ile, case: duPlan(c.local), voisine: duPlan(n.local) };
+  };
   return {
     onPickIsland: (id) => onIntent({ genre: 'ile', id }),
     onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
@@ -129,7 +142,7 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, c
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
     onPickVehicle: (port) => onIntent({ genre: 'navire', port }),
-    build: chantier ? { onPickFace: (cell, next) => onIntent({ genre: 'face', case: cell, voisine: next }) } : undefined,
+    build: chantier ? { onPickFace: (cell, next, ile) => onIntent(face(cell, next, ile)) } : undefined,
     onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
   };

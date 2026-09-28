@@ -122,6 +122,7 @@ export default function WorldCanvas2D({
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
   const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
     onIntent,
+    archipelago,
     chantier,
   );
   const host = useRef<HTMLDivElement>(null);
@@ -676,7 +677,7 @@ export default function WorldCanvas2D({
                 const vo = q.vehicle.origin;
                 const cell = { x: vo.x + hit.cell.x, y: vo.y + hit.cell.y, z: vo.z + hit.cell.z };
                 const ghost = q.vehicle.cubes.some((c) => c.ghost && c.x === hit.cell.x && c.y === hit.cell.y && c.z === hit.cell.z);
-                if (ghost && q.build) q.build.onPickFace(cell, cell);
+                if (ghost && q.build) q.build.onPickFace(cell, cell, q.vehicle.port);
                 else q.onPickVehicle?.(q.vehicle.port);
               },
             });

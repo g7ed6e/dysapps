@@ -5,7 +5,7 @@ import { BIOMES, BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
-import { islandOrigin, toIslandCell } from './world/terrain';
+import { islandOrigin } from './world/terrain';
 import { planCells, plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
 import type { Burst } from './world/view';
@@ -35,7 +35,8 @@ export interface PlanBuilder {
   /** Pose d'un coup tous les blocs du plan que l'inventaire permet (les grands bâtiments ont beaucoup de cases). */
   fillAll: () => void;
   /** Une case du monde touchée : pose si c'est une cellule du plan de cette île. Renvoie vrai si c'était le cas. */
-  tryFill: (cell: { x: number; y: number; z: number }) => boolean;
+  /** Poser le bloc d'une case du plan de l'île `ile` (cases de la sauvegarde), si c'est celle du chantier en cours. */
+  tryFill: (ile: BiomeId, cell: { x: number; y: number; z: number }) => boolean;
 }
 
 export { whereToEarn };
@@ -131,9 +132,8 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     const next = nextFillable(state, plan);
     if (next) fillAt(next.x, next.y, next.z);
   };
-  const tryFill = (cell: { x: number; y: number; z: number }) => {
-    if (!plan) return false;
-    const c = toIslandCell(island, cell.x, cell.y, cell.z);
+  const tryFill = (ile: BiomeId, c: { x: number; y: number; z: number }) => {
+    if (!plan || ile !== island) return false;
     if (!planCellAt(plan, c.x, c.y, c.z)) return false;
     fillAt(c.x, c.y, c.z);
     return true;
