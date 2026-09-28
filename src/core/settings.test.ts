@@ -71,6 +71,19 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-size')).toBe('24px');
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
+
+  it('pose l’univers affiché, qui choisit l’habillage : Archipéo avant la bascule, puis l’univers choisi', () => {
+    const root = document.createElement('div');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, false);
+    expect(root.dataset.univers).toBe('archipeo');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, true);
+    expect(root.dataset.univers).toBe('blocland');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root, true);
+    expect(root.dataset.univers).toBe('archipeo');
+    // Un appareil sans univers enregistré s'habille comme l'univers par défaut.
+    applySettings(DEFAULT_SETTINGS, root, true);
+    expect(root.dataset.univers).toBe('blocland');
+  });
 });
 
 it('dit les espacements et la vitesse de la voix en mots, pas en nombres', () => {
@@ -97,4 +110,12 @@ it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vau
   expect(sanitizeSettings({ univers: 'atlantide' as never }).univers).toBe('blocland');
   expect(sanitizeSettings({ univers: 'toString' as never }).univers).toBe('blocland');
   expect('univers' in DEFAULT_SETTINGS).toBe(false);
+});
+
+it('met l’espagnol en LV2 par défaut, garde l’allemand ou « Pas de LV2 » choisis, rejette une langue inconnue', () => {
+  expect(sanitizeSettings({}).lv2).toBe('es');
+  expect(sanitizeSettings({ lv2: 'de' }).lv2).toBe('de');
+  expect(sanitizeSettings({ lv2: 'aucune' }).lv2).toBe('aucune');
+  expect(sanitizeSettings({ lv2: 'it' as never }).lv2).toBe('es');
+  expect(sanitizeSettings({ lv2: 'toString' as never }).lv2).toBe('es');
 });

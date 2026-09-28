@@ -2,6 +2,7 @@ import { Icon } from '../../components/Icon';
 import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
+import { langueVivante } from '../../core/speech';
 import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';
 
@@ -53,7 +54,7 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
         level={level}
         target={round.target as string | undefined}
         exerciseId={String(round.exerciseId)}
-        lang={round.lang === 'en' ? 'en' : undefined}
+        lang={langueVivante(round.lang)}
       />
     </div>
   );
