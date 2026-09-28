@@ -1,6 +1,9 @@
 // Les repères de la scène 3D : la flèche « Commence ici », le fanion du bonhomme sur la Carte (« tu es ici »), les
 // balises du chemin à construire et les repères des bornes de mission (un losange à faire, ou les étoiles gagnées).
 import * as THREE from 'three';
+import { formeDuPilier, type Pilier } from '../world/construction';
+import { DELAVE } from '../world/decor/pinceau';
+import type { ArchipelagoId } from '../world/map';
 import { islandCenter } from '../world/terrain';
 import type { EnCasesDuMonde } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
@@ -148,6 +151,73 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       vider(trailGroup);
       for (const g of [markerGroup, beaconGroup]) vider(g);
       markerMat.dispose();
+    },
+  };
+}
+
+// ---------- Les piliers des bornes (lot R5, Archipéo) ----------
+
+/** Les piliers des bornes de mission : une forme de pierre taillée, instanciée une fois par borne, en un appel. */
+export interface Piliers {
+  /** Le maillage instancié (on le touche : sa géométrie reste dans les deux cases de la borne). */
+  group: THREE.Group;
+  /** Pose les piliers des bornes d'un monde (les cubes `quest`). */
+  poser(piliers: Pilier[]): void;
+  /** Triangles dessinés (pour les mesures). */
+  triangles(): number;
+  dispose(): void;
+}
+
+export function creerPiliers(archipel: ArchipelagoId): Piliers {
+  const group = new THREE.Group();
+  const forme = formeDuPilier(archipel);
+  const attributs = {
+    position: new THREE.BufferAttribute(forme.positions, 3),
+    normal: new THREE.BufferAttribute(forme.normals, 3),
+    color: new THREE.BufferAttribute(forme.colors, 3),
+  };
+  const index = new THREE.BufferAttribute(Uint16Array.from(forme.indices), 1);
+  // Une île fermée : la borne délavée vers le gris clair, comme le reste de l'île.
+  const delave = new THREE.Color(DELAVE[0]);
+  const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
+  mat.onBeforeCompile = (s) => {
+    s.uniforms.uDelave = { value: delave };
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', `#include <common>\nattribute float delave;\nuniform vec3 uDelave;`)
+      .replace('#include <color_vertex>', `#include <color_vertex>\nvColor.rgb = mix(vColor.rgb, uDelave, delave * ${DELAVE[1].toFixed(2)});`);
+  };
+  mat.customProgramCacheKey = () => 'piliers';
+  let mesh: THREE.InstancedMesh | null = null;
+  const vider = () => {
+    if (!mesh) return;
+    group.remove(mesh);
+    mesh.geometry.dispose();
+    mesh.dispose();
+    mesh = null;
+  };
+  return {
+    group,
+    poser(piliers) {
+      vider();
+      if (!piliers.length) return;
+      // Une géométrie par pose (la forme est partagée) : son attribut par borne, l'île fermée.
+      const geo = new THREE.BufferGeometry();
+      for (const [nom, a] of Object.entries(attributs)) geo.setAttribute(nom, a);
+      geo.setIndex(index);
+      geo.setAttribute('delave', new THREE.InstancedBufferAttribute(Float32Array.from(piliers.map((p) => (p.muted ? 1 : 0))), 1));
+      const im = new THREE.InstancedMesh(geo, mat, piliers.length);
+      const m = new THREE.Matrix4();
+      piliers.forEach((p, i) => im.setMatrixAt(i, m.makeTranslation(p.x, p.z, p.y)));
+      im.computeBoundingSphere();
+      im.frustumCulled = false;
+      im.userData = { borne: true };
+      group.add(im);
+      mesh = im;
+    },
+    triangles: () => (mesh ? mesh.count * (forme.indices.length / 3) : 0),
+    dispose() {
+      vider();
+      mat.dispose();
     },
   };
 }

@@ -60,9 +60,8 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
       const voulue = sommet ? Math.round(v) : Math.round(Math.floor(v / MARCHE_DES_GRADINS) * MARCHE_DES_GRADINS);
       return Math.max(h, voulue);
     },
-    // Les gradins sont de roche ; la neige du Glacier reste là où la marche la met (une roche claire dans Archipéo).
+    // Les gradins sont de roche nue, au Glacier aussi : la seule glace blanche est la calotte de son plus haut pic.
     dessus(_x, _y, dh, matiere) {
-      if (matiere === 'neige' || matiere === 'glace') return matiere;
       return dh >= 3 ? 'roche' : matiere;
     },
   };

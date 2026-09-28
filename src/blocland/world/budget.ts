@@ -3,7 +3,8 @@
 // scène (terrain, créatures, Gardiens, Bloc-Navire, bonhomme) tels que la vue 3D les dessine : un appel de dessin par
 // groupe de `buildMesh`. La mer, les nuages, les baleines, les oiseaux, les étiquettes et les repères de borne s'y
 // ajoutent dans le navigateur : `npm run rendu:mesures` mesure la scène entière. `sceneCostArchipeo()` compte en plus,
-// pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4). Vérifié par world/budget.test.ts.
+// pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
+// le navire (R5). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES } from '../biomes';
 import { CATALOG } from '../exercises';
@@ -18,8 +19,9 @@ import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, w
 import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/brume';
+import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
-import { VEHICLE_STAGES } from './vehicle';
+import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -91,7 +93,6 @@ export function toutConstruit() {
 /** Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. */
 export function sceneModels(a: ArchipelagoId): { name: string; groups: MeshGroup[] }[] {
   const { progress, village } = toutConstruit();
-  const MAST_TOP = 7;
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
     { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false)) },
@@ -169,9 +170,32 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 }
 
 /**
+ * La construction taillée d'Archipéo (lot R5) : bâtiments, ouvrages, monuments, quai et cœur des îles, fantômes et
+ * fenêtres compris (./construction.ts), sans les bornes : trois appels de dessin au plus.
+ */
+export function constructionCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  const { ground, reste, champ } = archipelArchipeo(a);
+  const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, sansToursDuCoeur(reste)), ground));
+  return { triangles, drawCalls };
+}
+
+/** Les bornes de mission d'Archipéo (lot R5) : un pilier taillé, instancié une fois par borne, en un appel. */
+export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  return coutDesPiliers(piliersDe(archipelArchipeo(a).reste));
+}
+
+/** Le Bloc-Navire d'Archipéo (lot R5) : la coque et le ballon en construction taillée (un appel par groupe non vide). */
+export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  const { progress, village } = toutConstruit();
+  const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
+  const parts = [ship.filter((c) => c.z < MAST_TOP), ship.filter((c) => c.z >= MAST_TOP)].map((cubes) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true })));
+  return { triangles: parts.reduce((n, p) => n + p.triangles, 0), drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) };
+}
+
+/**
  * Les modèles de la scène d'un archipel tout construit dans le rendu Archipéo, lot par lot : le sol en facettes (R2),
- * la mer et la faune (R3), le décor en primitives (R4), et tout le reste encore en blocs (construction, objets du quai,
- * créatures, Gardiens, navire, bonhomme). `triangles` et `drawCalls` comptent tout.
+ * la mer et la faune (R3), le décor en primitives (R4), la construction taillée, les bornes et le navire (R5), et le
+ * reste encore en blocs (créatures, Gardiens, bonhomme). `triangles` et `drawCalls` comptent tout.
  */
 export function sceneCostArchipeo(a: ArchipelagoId): {
   triangles: number;
@@ -180,16 +204,20 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
   mer: { triangles: number; drawCalls: number };
   faune: { triangles: number; drawCalls: number };
   decor: { triangles: number; drawCalls: number };
+  construction: { triangles: number; drawCalls: number };
+  bornes: { triangles: number; drawCalls: number };
+  navire: { triangles: number; drawCalls: number };
 } {
   const sol = solCost(a);
   const decor = decorCost(a);
-  const { ground, reste, champ } = archipelArchipeo(a);
-  // Comme la vue 3D : le décor resté en cubes d'une case descendue au bas de sa pente descend avec elle.
-  const rest = buildMesh(poseDuDecor(champ, reste), ground);
-  const models = sceneModels(a).map((m) => (m.name === 'terrain' ? { ...m, groups: rest } : m));
+  // Lot R5 : la construction taillée, les bornes et le navire à la place des cubes restants, de la coque et du ballon.
+  const construction = constructionCost(a);
+  const bornes = bornesCost(a);
+  const navire = navireCost(a);
+  const models = sceneModels(a).filter((m) => m.name !== 'terrain' && m.name !== 'coque' && m.name !== 'ballon');
   const mer = merCost(a);
   const faune = fauneCost(a);
-  const parts = [sol, mer, faune, decor];
+  const parts = [sol, mer, faune, decor, construction, bornes, navire];
   return {
     triangles: parts.reduce((n, p) => n + p.triangles, 0) + models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
     drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) + models.reduce((n, m) => n + m.groups.length, 0),
@@ -197,5 +225,8 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
     mer,
     faune,
     decor,
+    construction,
+    bornes,
+    navire,
   };
 }

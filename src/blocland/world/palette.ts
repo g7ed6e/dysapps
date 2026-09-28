@@ -104,7 +104,7 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     sols: {
       herbe: { dessus: 0x5a7e50, cote: 0x6a6a5a },
       roche: { dessus: 0x8c9894, cote: 0x6a7f86 },
-      neige: { dessus: 0x9aabb3, cote: 0x7b8f98 },
+      neige: { dessus: 0xb3c1c7, cote: 0x8a9ca4 },
       glace: { dessus: 0xa6bac2, cote: 0x869ea8 },
     },
     nuages: AMBIENCE['5e'].sky,
