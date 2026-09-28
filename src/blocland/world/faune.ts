@@ -6,7 +6,7 @@
 //
 // Repères des formes (repère Three) : la baleine regarde vers +X (tête), le dos vers +Y ; l'oiseau vole vers +Z, ailes
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
-import { AMBIENCE } from './daylight';
+import { AMBIENCE, mixColor } from './daylight';
 import type { ArchipelagoId } from './map';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
@@ -104,6 +104,25 @@ class Atelier {
 
 /** La baleine de la fiche : bleu profond, ventre crème ; son souffle, couleur de brume. */
 export const BALEINE = { dos: 0x1e3a5c, flanc: 0x27496c, ventre: 0xe3d9c0, nageoire: 0x2a4a6a, souffle: BRUME } as const;
+/**
+ * La nuit, le ventre crème s'assombrit vers le flanc (R4b-6e, repris du lot R3) : il ne luit pas sur la mer sombre ; la
+ * baleine reste lisible par le reflet de lune de la vue 3D. `nuit` : 0 le jour, 1 en pleine nuit.
+ */
+export const VENTRE_DE_NUIT = mixColor(BALEINE.flanc, BALEINE.ventre, 0.4);
+
+/** Les couleurs de la baleine à un moment de la nuit : celles de `f`, le ventre fondu vers `VENTRE_DE_NUIT`. */
+export function couleursDeLaBaleine(f: Forme, nuit: number, out: Float32Array): Float32Array {
+  // Les couleurs de la forme sont en simple précision.
+  const jour = rgbLineaire(BALEINE.ventre).map(Math.fround);
+  const soir = rgbLineaire(VENTRE_DE_NUIT);
+  const k = Math.min(1, Math.max(0, nuit));
+  for (let i = 0; i < f.colors.length; i += 3) {
+    const ventre = f.colors[i] === jour[0] && f.colors[i + 1] === jour[1] && f.colors[i + 2] === jour[2];
+    for (let j = 0; j < 3; j++) out[i + j] = ventre ? jour[j] + (soir[j] - jour[j]) * k : f.colors[i + j];
+  }
+  return out;
+}
+
 /** Le pivot de la queue (le long de X) et l'évent d'où part le souffle. */
 export const PIVOT_QUEUE = -1.9;
 export const EVENT: V3 = [2.3, 0.55, 0];

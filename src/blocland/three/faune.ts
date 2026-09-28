@@ -4,7 +4,7 @@
 // tous les nuages en un ; le liseré d'écume du passage de la baleine en un, seulement quand il se voit. Matériaux mats à
 // facettes, couleurs par sommet ; faits une fois par scène et libérés avec elle.
 import * as THREE from 'three';
-import { EVENT, formeDeBaleine, formeDEcume, formeDeNuage, formeDOiseau, PIVOT_QUEUE, type Forme, type PoseDeBaleine } from '../world/faune';
+import { couleursDeLaBaleine, EVENT, formeDeBaleine, formeDEcume, formeDeNuage, formeDOiseau, PIVOT_QUEUE, type Forme, type PoseDeBaleine } from '../world/faune';
 
 export interface FauneEn3D {
   group: THREE.Group;
@@ -52,7 +52,9 @@ export function creerFaune(n: { baleines: number; oiseaux: number; nuages: numbe
   };
 
   // Les baleines : la queue bat autour de son pivot, le souffle s'ouvre depuis l'évent (aAnim : angle, taille).
-  const geoBaleine = geometrie(formeDeBaleine());
+  const baleine = formeDeBaleine();
+  const geoBaleine = geometrie({ ...baleine, colors: Float32Array.from(baleine.colors) });
+  let nuitDuVentre = 0;
   const anim = new THREE.InstancedBufferAttribute(new Float32Array(Math.max(1, n.baleines) * 2), 2);
   anim.setUsage(THREE.DynamicDrawUsage);
   geoBaleine.setAttribute('aAnim', anim);
@@ -122,6 +124,13 @@ export function creerFaune(n: { baleines: number; oiseaux: number; nuages: numbe
     },
     nuit(k) {
       matBaleine.emissive.setRGB(0.05 * k, 0.09 * k, 0.14 * k);
+      // Le ventre crème s'éteint la nuit vers le flanc (world/faune.ts) : repeint seulement quand la nuit change.
+      if (Math.abs(k - nuitDuVentre) > 1e-3) {
+        const color = geoBaleine.getAttribute('color') as THREE.BufferAttribute;
+        couleursDeLaBaleine(baleine, k, color.array as Float32Array);
+        color.needsUpdate = true;
+        nuitDuVentre = k;
+      }
       matEcume.emissive.setRGB(0.3 * k, 0.34 * k, 0.38 * k);
     },
     fin() {
