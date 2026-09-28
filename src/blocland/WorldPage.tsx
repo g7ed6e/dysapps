@@ -7,7 +7,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BIOMES, getBiome, type BiomeId } from './biomes';
+import { getBiome, type BiomeId } from './biomes';
 import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
@@ -48,20 +48,13 @@ import { VILLAGE_STAGES, villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming } from './world/voyage';
 import { daylight } from './world/daylight';
 import { walkDuration } from './world/scene';
-import { walkGround, walkPath } from './world/paths';
+import { dispositionEnGrille } from './world/grille';
+import type { Entite } from './world/disposition';
 import { isPlanDone, plansFor } from './world/plans';
 import { Loading } from '../components/Loading';
 import {
-  avatarHome,
-  avatarRoute,
-  bridgePath,
   creaturePlacements,
   guardianPlacements,
-  islandAt,
-  islandOrigin,
-  questStations,
-  placeDoor,
-  monumentCenter,
   vehiclePlacement,
   worldCubes,
 } from './world/terrain';
@@ -126,13 +119,21 @@ export function WorldPage() {
     () => [...creaturePlacements(a, state.village.bridges), ...guardianPlacements(a, state.progress, state.village.bridges)],
     [a, state.progress, state.village.bridges],
   );
-  // Le sol où le bonhomme marche : il suit les îles et contourne arbres, bornes, maisons et créatures.
-  const ground = useMemo(() => walkGround(cubes, creatures), [cubes, creatures]);
+  // La disposition en grille (world/grille.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
+  // qui suit le sol et contourne arbres, bornes, maisons et créatures.
+  const grille = useMemo(() => dispositionEnGrille(a, state.village.bridges, { cubes, creatures }), [a, state.village.bridges, cubes, creatures]);
+  /** Où le bonhomme se tient sur une île (en cases du monde). */
+  const seTenir = (id: BiomeId) => grille.versMonde(grille.seTenir(id));
+  /** Son chemin d'une île à une île ou à la porte d'un lieu, sur les ouvrages construits ; `null` s'il n'y en a pas. */
+  const chemin = (de: BiomeId, vers: Entite) => {
+    const t = grille.trajet({ genre: 'ile', id: de }, vers);
+    return t ? t.etapes.map(grille.versMonde) : null;
+  };
   /** Un nouveau trajet part d'où le bonhomme se tient (la porte de l'école), pas forcément de la place de son île. */
   const fromHere = (prev: { x: number; y: number; z: number }[], route: { x: number; y: number; z: number }[]) => {
     const here = prev[prev.length - 1];
     if (!here || samePoint(here, route[0])) return route;
-    const path = walkPath(ground, here, route[0]);
+    const path = grille.raccord(here, route[0]);
     return path ? [...path, ...route.slice(1)] : [here, ...route];
   };
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
@@ -149,12 +150,14 @@ export function WorldPage() {
   const modele = useMemo(() => modeleDuMonde(state, a), [a, state]);
   const quests = useMemo<QuestMark[]>(
     () =>
-      modele.bornes.map((b) => {
-        const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((x) => x.id === b.ile));
-        const st = questStations(b.ile).find((q) => q.typeId === b.mission)!;
-        return { id: b.id, biome: b.ile, typeId: b.mission, cell: { x: ox + st.x, y: oy + st.y, z: oz }, state: b.etat };
-      }),
-    [modele],
+      modele.bornes.map((b) => ({
+        id: b.id,
+        biome: b.ile,
+        typeId: b.mission,
+        cell: grille.versMonde(grille.placeDe({ genre: 'borne', id: b.id })!),
+        state: b.etat,
+      })),
+    [modele, grille],
   );
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
@@ -215,7 +218,7 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
-  const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => bridgePath(b).map((c) => ({ x: c.x, y: c.y, z: c.z }))) : undefined), [remaining]);
+  const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id)) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
@@ -256,7 +259,7 @@ export function WorldPage() {
     clearTimers();
     const land = () => {
       moveTo(dest);
-      setWalk((w) => ({ route: [avatarHome(dest)], seq: w.seq + 1 }));
+      setWalk((w) => ({ route: [seTenir(dest)], seq: w.seq + 1 }));
       setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
       setSheetOpen(true);
       if (biomeId !== dest) navigate(`/aventure/${dest}`);
@@ -280,7 +283,7 @@ export function WorldPage() {
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
     const port = archipelago.port;
-    const route = at === port ? null : avatarRoute(at, port, state.village.bridges, ground);
+    const route = at === port ? null : chemin(at, { genre: 'ile', id: port });
     if (route) {
       setWalk((w) => ({ route, seq: w.seq + 1 }));
       moveTo(port);
@@ -292,7 +295,7 @@ export function WorldPage() {
     if (at !== port) {
       // Pas de chemin d'ouvrages jusqu'au port : il s'y trouve directement.
       moveTo(port);
-      setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
+      setWalk((w) => ({ route: [seTenir(port)], seq: w.seq + 1 }));
     }
     setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     horn(stage, back);
@@ -324,8 +327,8 @@ export function WorldPage() {
     clearTimers();
     setVoyage(null);
     setVeil(false);
-    const route = dest === port ? null : avatarRoute(port, dest, state.village.bridges, ground);
-    setWalk((w) => ({ route: route ?? [avatarHome(dest)], seq: w.seq + 1 }));
+    const route = dest === port ? null : chemin(port, { genre: 'ile', id: dest });
+    setWalk((w) => ({ route: route ?? [seTenir(dest)], seq: w.seq + 1 }));
     if (dest !== port) moveTo(dest);
     setSheetOpen(true);
     setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
@@ -351,7 +354,7 @@ export function WorldPage() {
         const port = applyArrival(voyage);
         // La caméra et le bonhomme passent au port d'en face : la scène nouvelle s'ouvre sur lui, pas sur la mer.
         setFocus((f) => ({ island: port, seq: f.seq + 1 }));
-        setWalk((w) => ({ route: [avatarHome(port)], seq: w.seq + 1 }));
+        setWalk((w) => ({ route: [seTenir(port)], seq: w.seq + 1 }));
         setVoyage(versLArrivee);
         later(() => setVeil(false), VEIL_MS / 3);
       }, VEIL_MS / 2);
@@ -372,7 +375,7 @@ export function WorldPage() {
   }, [voyage?.seq, voyage?.leg, voyage?.mode, voyage?.approach]);
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
-  const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [avatarHome(at)], seq: 0 }));
+  const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [seTenir(at)], seq: 0 }));
   const avatar = useMemo(() => ({ route: walk.route, seq: walk.seq }), [walk]);
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
@@ -397,7 +400,7 @@ export function WorldPage() {
     // Un monument : la caméra va sur son îlot, au large ; le bonhomme reste où il est. Celui d'un autre archipel n'est
     // pas dans la scène : son panneau s'ouvre, la caméra revient au bonhomme.
     if (monument) {
-      if (monument.archipelago === a) setFocus((f) => ({ island: monument.biome, spot: monumentCenter(monument), seq: f.seq + 1 }));
+      if (monument.archipelago === a) setFocus((f) => ({ island: monument.biome, spot: grille.versMonde(grille.placeDe({ genre: 'plan', id: monument.id })!), seq: f.seq + 1 }));
       else setFocus((f) => ({ island: null, seq: f.seq + 1 }));
       return;
     }
@@ -405,19 +408,17 @@ export function WorldPage() {
     if (placeOpen) {
       const school = archipelago.school;
       setFocus((f) => ({ island: school, seq: f.seq + 1 }));
-      const door = placeDoor(placeOpen, school);
-      const route = avatarRoute(at, school, state.village.bridges, ground) ?? [avatarHome(school)];
-      const last = route[route.length - 1];
-      const toDoor = door ? (walkPath(ground, last, door) ?? [last, door]) : [last];
-      setWalk((w) => ({ route: fromHere(w.route, [...route, ...toDoor.slice(1)]), seq: w.seq + 1 }));
+      const porte: Entite = { genre: 'lieu', id: placeOpen, ile: school };
+      const route = chemin(at, porte) ?? chemin(school, porte)!;
+      setWalk((w) => ({ route: fromHere(w.route, route), seq: w.seq + 1 }));
       moveTo(school);
       return;
     }
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
-    if (island && (island.id !== at || !samePoint(walk.route[walk.route.length - 1], avatarHome(at))) && isBiomeUnlocked(island.id, state.village.bridges)) {
-      const route = avatarRoute(at, island.id, state.village.bridges, ground);
+    if (island && (island.id !== at || !samePoint(walk.route[walk.route.length - 1], seTenir(at))) && isBiomeUnlocked(island.id, state.village.bridges)) {
+      const route = chemin(at, { genre: 'ile', id: island.id });
       if (route) setWalk((w) => ({ route: fromHere(w.route, route), seq: w.seq + 1 }));
-      else setWalk((w) => ({ route: [avatarHome(island.id)], seq: w.seq + 1 }));
+      else setWalk((w) => ({ route: [seTenir(island.id)], seq: w.seq + 1 }));
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -523,7 +524,7 @@ export function WorldPage() {
             whalePass={whaleWord && !settings.reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             onPickIsland={onIsland}
             onPickBridge={onPickBridge}
-            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(islandAt(a, cell.x, cell.y)) } : undefined}
+            build={island ? { onPickFace: (cell) => builder.tryFill(cell) || ship.tryFill(cell) || openIsland(grille.ileEn(cell)) } : undefined}
             burst={burst}
             onPickCreature={onCreature}
             freeWalk={settings.freeWalk}

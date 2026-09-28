@@ -4,7 +4,8 @@
 import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from '../Voxel';
 import { islandsOf, type ArchipelagoId } from './archipelago';
-import { CREATURE_STEPS, boardingRoute, islandAt, islandCenter, routeAt, routeLengths } from './terrain';
+import { CREATURE_STEPS, boardingRoute, routeAt, routeLengths } from './terrain';
+import { WALK_MAX_MS, WALK_SPEED, dispositionEnGrille, dureeDeMarche, type DispositionEnGrille } from './grille';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './view';
 
@@ -13,9 +14,16 @@ export const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 
 
 // ---- Le bonhomme
 
-/** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
-export const WALK_SPEED = 6;
-export const WALK_MAX_MS = 6000;
+// La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grille.ts).
+export { WALK_MAX_MS, WALK_SPEED };
+
+/** La disposition en grille d'un archipel, pour le clavier et le toucher (ce qu'ils lisent ne dépend que de l'archipel). */
+const grilles = new Map<ArchipelagoId, DispositionEnGrille>();
+function grilleDe(a: ArchipelagoId): DispositionEnGrille {
+  let g = grilles.get(a);
+  if (!g) grilles.set(a, (g = dispositionEnGrille(a)));
+  return g;
+}
 
 /** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
 export interface Walk {
@@ -41,8 +49,7 @@ export function avatarWalk(avatar: { route: Cell[]; seq: number }, now: number):
 
 /** Le temps d'un trajet du bonhomme : six cases par seconde, jamais plus de six secondes. */
 export function walkDuration(route: Cell[]): number {
-  if (route.length < 2) return 0;
-  return Math.min(WALK_MAX_MS, (routeLengths(route)[route.length - 1] / WALK_SPEED) * 1000);
+  return dureeDeMarche(route);
 }
 
 export interface WalkPose extends Cell {
@@ -205,8 +212,9 @@ export const ARROW_DIRS: Record<string, [number, number]> = { ArrowRight: [1, 0]
 /** L'île voisine dans une direction : la plus proche, et la mieux alignée ; `null` s'il n'y en a pas. */
 export function islandInDirection(a: ArchipelagoId, from: { x: number; y: number }, dir: [number, number]): BiomeId | null {
   let best: { id: BiomeId; score: number } | null = null;
+  const g = grilleDe(a);
   for (const b of islandsOf(a)) {
-    const c = islandCenter(b.id);
+    const c = g.versMonde(g.placeDe({ genre: 'ile', id: b.id })!);
     const dx = c.x - from.x;
     const dy = c.y - from.y;
     const dist = Math.hypot(dx, dy);
@@ -259,11 +267,11 @@ export function groundTap(
     return { kind: 'quest', biome: biome as BiomeId, typeId };
   }
   const place = tags.places?.get(key);
-  if (place && can.place) return { kind: 'place', place, island: islandAt(a, Math.floor(hit.ground.x), Math.floor(hit.ground.y)) };
+  if (place && can.place) return { kind: 'place', place, island: grilleDe(a).ileEn({ ...hit.ground, z: 0 }) };
   const bridge = tags.bridges.get(key);
   if (bridge && can.bridge) return { kind: 'bridge', id: bridge };
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };
-  return { kind: 'island', id: islandAt(a, Math.floor(hit.ground.x), Math.floor(hit.ground.y)) };
+  return { kind: 'island', id: grilleDe(a).ileEn({ ...hit.ground, z: 0 }) };
 }
 
 /** Un objet sous le doigt, le long du rayon : le décor en primitives, ou autre chose (cube, sol, créature). */

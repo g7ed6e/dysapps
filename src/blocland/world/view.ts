@@ -6,6 +6,10 @@ import type { PlaceId, VoxelCube } from '../Voxel';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
+import type { Cell, CreaturePlacement } from './paths';
+
+// Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
+export type { Cell, CreaturePlacement } from './paths';
 
 export interface WorldFocus {
   /** Île à cadrer, ou `null` pour la vue d'ensemble. */
@@ -16,26 +20,9 @@ export interface WorldFocus {
   spot?: { x: number; y: number; z: number };
 }
 
-export interface Cell {
-  x: number;
-  y: number;
-  z: number;
-}
-
 export interface BuildProps {
   /** Face touchée : le bloc touché (`cell`) et la case voisine, devant la face (`next`). */
   onPickFace: (cell: Cell, next: Cell) => void;
-}
-
-export interface CreaturePlacement {
-  id: BiomeId;
-  cubes: VoxelCube[];
-  origin: Cell;
-  /** Une créature se promène ; un Gardien reste sur son îlot. */
-  kind?: 'creature' | 'guardian';
-  still?: boolean;
-  /** Les pas possibles depuis sa place (sinon ceux par défaut). */
-  steps?: [number, number][];
 }
 
 export interface QuestMark {
