@@ -600,7 +600,8 @@ const LINEAIRE = Float32Array.from({ length: 4097 }, (_, i) => {
   const v = i / 4096;
   return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
 });
-const lineaire = (v: number) => LINEAIRE[Math.round(clamp(v, 0, 1) * 4096)];
+/** Une composante sRGB (0..1) dans l'espace linéaire de Three.js. */
+export const lineaire = (v: number) => LINEAIRE[Math.round(clamp(v, 0, 1) * 4096)];
 
 /** La nuance d'un sommet (option b sur les facettes) : plus sombre vers la mer, des taches sur les dessus. */
 export function nuanceDuSol(x: number, y: number, z: number, dessus: boolean, altitude: number): number {

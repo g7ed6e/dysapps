@@ -40,6 +40,8 @@ import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe, type Surface } from './surface';
 import { champDuSol, landMesh, pickCell, piedsSur, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { creerSol, type SolEn3D } from './sol';
+import { creerDecor, type DecorEn3D } from './decor';
+import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { creerMer, type MerEn3D } from './mer';
 import { creerFaune } from './faune';
 import { NUAGES, nuagesDe, oiseauxDe, poseDePassage, poseDeRonde, type PoseDeBaleine, type Ronde } from '../world/faune';
@@ -219,8 +221,11 @@ export default function WorldCanvas({
     vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
     /** L'option de style de surface (lot R1), ou `null` : les textures des blocs. */
     surface: Surface | null;
-    /** Le terrain à facettes d'Archipéo (lot R2), ou `null` dans le monde en blocs : son champ, pour le toucher et la marche. */
-    sol: { en3D: SolEn3D; champ: ChampDuSol | null; signature: string } | null;
+    /**
+     * Le terrain à facettes d'Archipéo (lot R2), ou `null` dans le monde en blocs : son champ, pour le toucher et la marche ;
+     * et le décor en primitives (lot R4), posé dessus.
+     */
+    sol: { en3D: SolEn3D; champ: ChampDuSol | null; signature: string; decor: DecorEn3D; decorSignature: string } | null;
     /** La mer d'Archipéo (lot R3), ou `null` dans le monde en blocs : repeinte quand la côte change. */
     mer: { en3D: MerEn3D; signature: string } | null;
   } | null>(null);
@@ -631,9 +636,9 @@ export default function WorldCanvas({
 
     const terrain = new THREE.Group();
     scene.add(terrain);
-    // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction, décor).
-    const sol = archipeo ? { en3D: creerSol(), champ: null, signature: '' } : null;
-    if (sol) scene.add(sol.en3D.group);
+    // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
+    const sol = archipeo ? { en3D: creerSol(), champ: null, signature: '', decor: creerDecor(), decorSignature: '' } : null;
+    if (sol) scene.add(sol.en3D.group, sol.decor.group);
     const creaturesGroup = new THREE.Group();
     scene.add(creaturesGroup);
     // Le Bloc-Navire : un groupe à part, amarré au quai, qui tangue ; le ballon pivote au sommet du mât.
@@ -688,7 +693,7 @@ export default function WorldCanvas({
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
       const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children, vehicleGroup], true)[0];
-      const ground = ray.intersectObjects(sol ? [...terrain.children, ...sol.en3D.group.children] : terrain.children, false)[0];
+      const ground = ray.intersectObjects(sol ? [...terrain.children, ...sol.en3D.group.children, ...sol.decor.group.children] : terrain.children, false)[0];
       if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
       return { creature: undefined, hit: ground };
     };
@@ -730,6 +735,12 @@ export default function WorldCanvas({
       const champ = world.current?.sol?.champ;
       if (hit.object.userData.sol && champ) {
         const picked = pickCell(champ, hit.point, n);
+        if (picked) return picked;
+      }
+      // Le décor en primitives (lot R4) : la case où pousse l'élément touché.
+      const decor = world.current?.sol?.decor.maillage;
+      if (hit.object.userData.decor && champ && decor && hit.faceIndex != null) {
+        const picked = caseDuDecor(champ, decor, Boolean(hit.object.userData.lueur), hit.faceIndex);
         if (picked) return picked;
       }
       const inside = hit.point.clone().addScaledVector(n, -0.5);
@@ -1234,6 +1245,7 @@ export default function WorldCanvas({
       (hover.material as THREE.Material).dispose();
       for (const m of terrain.children) (m as THREE.Mesh).geometry.dispose();
       sol?.en3D.dispose();
+      sol?.decor.dispose();
       creaturesGroup.traverse((o) => {
         if (o instanceof THREE.Mesh) o.geometry.dispose();
       });
@@ -1285,14 +1297,20 @@ export default function WorldCanvas({
     const sol: typeof cubes = [];
     const autres: typeof cubes = [];
     for (const c of cubes) (c.sol ? sol : autres).push(c);
-    const champ = champDuSol(archipelago, sol, autres);
-    // Le décor d'une case descendue au bas de sa pente descend avec elle (world/landMesh.ts).
-    for (const g of buildMesh(poseDuDecor(champ, autres), sol)) w.terrain.add(meshOf(g, w.surface));
+    // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
+    const { elements, reste } = rangerLeDecor(autres);
+    const champ = champDuSol(archipelago, sol, reste);
+    // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
+    for (const g of buildMesh(poseDuDecor(champ, reste), sol)) w.terrain.add(meshOf(g, w.surface));
     const signature = signatureDuChamp(champ);
-    if (signature !== w.sol.signature) {
-      w.sol.en3D.peindre(landMesh(champ, { style: styleDuMonde() === 'a' ? 'a' : 'b' }));
-      w.sol.signature = signature;
+    const style = styleDuMonde() === 'a' ? 'a' : 'b';
+    if (signature !== w.sol.signature) w.sol.en3D.peindre(landMesh(champ, { style }));
+    const decorSignature = signatureDuDecor(elements);
+    if (signature !== w.sol.signature || decorSignature !== w.sol.decorSignature) {
+      w.sol.decor.peindre(maillageDuDecor(archipelago, champ, elements, { style }));
+      w.sol.decorSignature = decorSignature;
     }
+    w.sol.signature = signature;
     w.sol.champ = champ;
     // La mer (lot R3) : repeinte seulement si la côte a changé.
     if (w.mer) {
