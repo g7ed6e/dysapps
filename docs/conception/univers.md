@@ -1,6 +1,6 @@
 # Plusieurs univers, un même objectif
 
-Ce document est une **feuille de route**. Il a été écrit le 28 septembre 2026 à la demande du mainteneur, avant toute ligne de code, puis revu le même jour avec ses décisions (§7). Il dit :
+Ce document est une **feuille de route**. Il a été écrit le 28 septembre 2026 à la demande du mainteneur, avant toute ligne de code, puis revu le même jour avec ses décisions (§7), toutes prises. Il dit :
 
 - ce qu’est un jeu à plusieurs univers ;
 - ce qu’il faut ajouter au plan de [séparation du jeu et du rendu](separation-jeu-rendu.md) pour le permettre ;
@@ -49,7 +49,7 @@ Basculer de vue ne change donc jamais d’univers. Seul le réglage « Univers �
 
 Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur trois points.
 
-- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Il fait d’Archipéo l’univers par défaut. Le drapeau `?rendu=archipeo` devient le réglage « Univers » (§6, question 5). « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
+- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Il fait d’Archipéo l’univers par défaut. Le drapeau `?rendu=archipeo` devient le réglage « Univers » (§7, décision 5). « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
 - **Le budget.** Le monde en blocs ne tient pas celui d’Archipéo sur tablette : 66 672 triangles et 220 appels de dessin aux Premiers Rivages, mesurés après R4, pour 60 000 et 40. Blocland garde son propre plafond de non-régression (80 000 et 240, `budget.test.ts`). Sur un appareil lent, il a sa 2D et la liste des îles. Le budget d’Archipéo ne change pas.
 - **La maintenance.** L’artiste technique 3D le chiffre : garder deux familles de rendu, c’est tester chaque partie de la scène dans les deux univers.
   - Parade : Blocland est **figé dans son dessin**. Il ne reçoit aucun lot R. Il suit les règles du jeu partagé, avec ses empreintes et ses captures d’aujourd’hui.
@@ -131,7 +131,7 @@ Le plan [Séparer le jeu du rendu](separation-jeu-rendu.md) fait déjà l’esse
 - **Sécurité.** Un univers est un **module TypeScript du dépôt**, relu en pull request. Jamais un fichier chargé à l’exécution, jamais un fichier fourni par un tiers ou par l’élève. Il contient du texte brut seulement, affiché par React : ni HTML, ni Markdown interprété, ni adresse. Les couleurs sont validées par un test, contraste AA compris.
 - **Rangement.** `src/univers/<id>/index.ts`, typé `Univers` avec `satisfies`. Ses clés sont **dérivées** des identifiants stables : `Record<BiomeId, …>`, missions, ouvrages, Gardiens, plans. Il les habille sans les remplacer. Aucune règle ne l’importe.
 - **Le choix** est une **préférence d’appareil**, rangée dans `Settings` à côté de `worldView`.
-  - Aucune migration. Un champ absent vaut Archipéo pour un appareil sans progression. Pour un appareil qui a déjà une progression au lot 6, il vaut Blocland (question 5) : l’élève ne découvre pas, sans l’avoir choisi, des noms tous nouveaux.
+  - Aucune migration. Un champ absent vaut Archipéo pour un appareil sans progression. Pour un appareil qui a déjà une progression au lot 6, il vaut Blocland (décision 5) : l’élève ne découvre pas, sans l’avoir choisi, des noms tous nouveaux.
   - Pourquoi une préférence d’appareil plutôt qu’un champ de la sauvegarde : la progression est elle-même enregistrée sur l’appareil, sans export ([Questions](../manuel/questions.md)). Les deux voyagent donc ensemble. Le jour où un export de la progression existera, l’univers partira avec elle, pour qu’un élève n’ait pas deux jeux de noms au collège et à la maison.
   - `sanitizeSettings` remplace un univers inconnu par Archipéo sans planter.
   - Un test relit une même sauvegarde sous les deux univers et obtient le même état : c’est la portabilité de la progression.
@@ -155,7 +155,7 @@ Les registres du socle deviennent à clé composée **(univers, archipel)**, ave
 | **U0. Cette feuille de route** | Ce document et les décisions du mainteneur (§7). | Maintenant | S |
 | **U1. Les consultants** | Les agents `consultant-archipeo` et `consultant-blocland` dans `.claude/agents/`, sous l’autorité du directeur artistique, qui passe de « conduire la migration » à « conduire les univers ». **Qui tient quoi** : le consultant d’Archipéo reprend le dossier `design/archipeo/` et le [cadrage Archipéo](cadrage-archipeo.md) ; celui de Blocland le [cadrage de Blocland](cadrage-blocland.md), qui devient le cadrage de son univers ; le directeur artistique garde les règles communes et ce document. **La référence figée de Blocland** : une étiquette git posée juste avant le lot 6 (`blocland-reference`), puisque `style.md` sera réécrit pour Archipéo ; le consultant en tire une fiche, `design/blocland/fiche.md` (noms, récit, silhouettes, ce que les lots 1 à 5 d’Archipéo ont changé pour tous et qu’il reprend ou non). **Quand on le consulte** : une ligne dans `CLAUDE.md`, comme pour le référent dys : toute pull request qui touche les noms, le récit ou le rendu d’un univers passe par son consultant, et sa description en cite le verdict (Fidèle, À ajuster, Bloquant). La page Contribuer le dit. | Maintenant, sans code | S |
 | **U2. La note dans J5** | Le relief de disposition et le modelé dessiné séparés dans le repère d’île (§5). | Avec J5, par le fil de la séparation | S |
-| **U3. Le lot 6 à deux univers** | Archipéo devient l’univers par défaut ; Blocland reste, choisi par le réglage « Univers » (question 5). Le drapeau `?rendu=archipeo` disparaît. Rien n’est retiré de Blocland. Captures du manuel dans les deux univers. | Au lot 6 | M |
+| **U3. Le lot 6 à deux univers** | Archipéo devient l’univers par défaut ; Blocland reste, choisi par le réglage « Univers » (décision 5). Le drapeau `?rendu=archipeo` disparaît. Rien n’est retiré de Blocland. Captures du manuel dans les deux univers. | Au lot 6 | M |
 | **U4. L’habillage, sans changement d’image** | J8 : les textes des deux univers dans `src/univers/`. J6 : l’objet `Habillage` à la place du booléen. J7 : la couche `univers`. Le type `Univers` et les tests de parité et de portabilité. Les noms propres à Blocland que le lot 1 avait remplacés y reviennent, si son consultant le propose et que le directeur artistique le valide. | Avec J7, après le lot 6 | M |
 | **U5. L’habillage pédagogique de Blocland** | La preuve (décision du mainteneur). Les problèmes situés, puis les phrases de français et d’anglais, puis un ou deux textes de lecture, habillés pour Blocland avec les tests d’équivalence. Le directeur contenu pédagogique écrit, le consultant de Blocland relit l’univers, le référent dys relit tout. | Après U4 | L |
 | **U6. Un troisième univers** | Seulement quand U5 a prouvé que l’axe tient. Sa fiche, son consultant, son rendu (un univers complet coûte en art autant que R4b et R6 réunis), son habillage. | Après les lots 8 et 8b | L |
@@ -187,9 +187,9 @@ Le mainteneur a tranché le 28 septembre 2026 :
 | **4. L’univers de preuve** | **Blocland.** Il existe déjà en dessin : la preuve porte sur la séparation des textes et sur l’habillage pédagogique. |
 | **Précisions** | Le choix se fait dans les Réglages. La progression est portable entre les univers. Les noms des lieux, des Gardiens et des constructions varient selon l’univers. Chaque univers a son agent consultant, sous l’autorité du directeur artistique. |
 
-Restent ouvertes :
+Puis, le même jour :
 
-| Question | Options | Recommandation |
-| --- | --- | --- |
-| **5. Quand le réglage « Univers » arrive** | (a) au lot 6, quand Archipéo devient l’univers par défaut ; (b) au lot 10 « Un village à soi » | **(a)**, et un appareil qui a déjà une progression reste dans Blocland : un seul message, lu à voix haute, lui présente Archipéo et le réglage. Avec (b), entre les lots 6 et 10, un élève perdrait le monde en blocs qu’il connaît, sans moyen de le retrouver. Le réglage ne demande que le choix : Blocland garde ses mots d’aujourd’hui jusqu’à U4. |
-| **6. Le nom de l’application** | (a) « Archipéo, par DysApps » reste le nom de l’application installée, et l’écran titre montre le nom de l’univers choisi ; (b) un nom commun au-dessus des univers | **(a)**. Le nom installé ne change pas une deuxième fois, et l’élève de Blocland voit « Blocland » en ouvrant le jeu. |
+| Question | Décision |
+| --- | --- |
+| **5. Quand le réglage « Univers » arrive** | **Au lot 6**, quand Archipéo devient l’univers par défaut. Un appareil qui a déjà une progression reste dans Blocland. Un seul message, lu à voix haute, lui présente Archipéo et le réglage. Blocland garde ses mots d’aujourd’hui jusqu’à U4. |
+| **6. Le nom de l’application** | **« Archipéo, par DysApps »** reste le nom de l’application installée. L’écran titre montre le nom de l’univers choisi. |
