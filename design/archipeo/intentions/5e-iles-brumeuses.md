@@ -11,17 +11,17 @@ L’exploration : on devine plus qu’on ne voit. En arrivant par la mer, l’é
 Aucun n’est partagé avec un autre archipel.
 
 - **Les bancs de brume en couches** (R4b, en mer libre).
-  - Deux ou trois couches étagées, de `#E5EBE3` en haut à `#C5D9EB` en bas, dans un maillage translucide d’un appel de dessin.
-  - Seulement là où le filtre de `seaDecor` laisse la mer libre : jamais sur une île, un ouvrage, le quai, la route du navire ou les places de la baleine.
-  - Toujours sous le sol des îles. Sur la Carte, à la moitié de leur opacité.
+  - Trois couches étagées, de `#E5EBE3` en haut à `#C5D9EB` en bas, dans un maillage translucide d’un appel de dessin : opacité 0,54, 0,45 et 0,4 du bas vers le haut (0,6 au plus, respiration comprise), couverture 0,7, 0,45 et 0,25.
+  - Jamais sur un ouvrage, le quai, un îlot, la route du navire ou les places de la baleine. Construit : toujours sous le sol des îles, qui les cache, elles entrent dans les chenaux et lèchent le pied des falaises (dans la seule mer libre de `seaDecor`, elles restaient au large, hors du cadre).
+  - Hors de la brume de profondeur, qui les effaçait (elle a la couleur de l’horizon). Sur la Carte, à la moitié de leur opacité.
 - **Les masses lointaines** (R4b, `lointain.ts`, hors de la grille).
-  - Trois ou quatre masses en gradins, dans la mer, de 60 à 120 cases derrière l’archipel, de 18 à 28 blocs de haut.
-  - Au moins 1,6 fois plus hautes que larges à la base, en gradins de 2 à 3 blocs, avec un sommet plat et moussu. Jamais de pointe en obus.
+  - Quatre masses en gradins, dans la mer, de 60 à 86 cases derrière l’archipel, de 10 à 17 blocs de haut (construit : plus basses que prévu, pour se lire sous le bandeau ; la masse centrale fait 10 blocs pour que sa tour se lise).
+  - Largeurs très différentes ; la plus proche est allongée, plus large que haute, et la plus pâle. Pans irréguliers, en gradins de 2 à 3 blocs, avec un sommet plat et moussu. Jamais de pointe en obus.
   - Roche lointaine `#6895AD`, puis une chaîne de cimes très pâles, `#A9C4D4`, aux sommets `#E6EEF2`.
 - **Les tours et les ruines de pierre** `#7D8A86`, sans aucune lueur (R4b, de 60 à 110 triangles chacune).
-  - **Carrefour** : une tour carrée en ruine, 3 cases, toit d’ardoise `#224C5F` effondré.
-  - **Marais** : une tour d’archives trapue, carrée, penchée d’environ 8°, 3,5 cases de haut, le pied dans les roseaux et dans des éboulis qui couvrent toute l’emprise du champignon de Blocland.
-  - **Masse lointaine centrale** : une tour carrée de 5 cases au toit d’ardoise, comme sur la planche, sans chemin, sans quai et sans lueur, pâlie par la brume comme sa masse.
+  - **Carrefour** : une tour carrée en ruine, environ 4,5 cases, un mur rompu, toit d’ardoise `#224C5F` effondré au pied ; juste derrière le cœur, à côté du nom de l’île et jamais dessous.
+  - **Marais** : une tour d’archives trapue, carrée, penchée de 10°, 4,8 cases de fût plus le toit (plus haute que les toits du Marais), le pied dans les roseaux et dans des éboulis qui couvrent toute l’emprise du champignon de Blocland.
+  - **Masse lointaine centrale** : une tour carrée de 4,5 cases au toit d’ardoise, comme sur la planche, sans chemin, sans quai et sans lueur, pâlie par la brume comme sa masse.
 - **La calotte de sérac du Glacier** (R4b) : un bloc de glace pâle `#E5EBE3`, facetté, sur le sommet du plus haut pic seulement, sur moins d’un quart de sa hauteur, au-dessus de la brume. Le nom de l’île reste vrai.
 - **Les ponts de pierre et de bois** (R5, décidé par le mainteneur) : voir « Pour R5 ».
 
@@ -45,13 +45,13 @@ Aucun n’est partagé avec un autre archipel.
 - Ciel de jour : zénith `#6F9FC2`, horizon `#C5D9EB`, lueur `#E5EBE3`.
 - Soleil `#F4F2EA`, force 2,0. Ambiance du ciel `#D2E2EE`, du sol `#64848E`, force 1,2 : une lumière diffuse de matin froid.
 - Brume de profondeur 70 / 260 (inchangée). Voile `#A9C2CC`, force 0,11.
-- Sols : herbe `#5A7E50` / `#6A6A5A` ; roche `#8C9894` / `#6A7F86` ; neige `#B9C4C4` / `#93A2A4` (une roche claire) ; glace `#C9D8DC` / `#9FB4BA`.
+- Sols : herbe `#5A7E50` / `#6A6A5A` ; roche `#8C9894` / `#6A7F86` ; neige `#B3C1C7` / `#8A9CA4` (une roche claire gris-bleu ; pas plus sombre, car un test de la 2D exige un contraste de 3 avec les murs de marbre ; les gradins du relief sont en roche nue) ; glace `#A6BAC2` / `#869EA8`.
 - Mer `#23789C` (inchangée). Ardoise `#224C5F`.
 
 ## 6. La brume et la fumée
 
 - Les bancs suivent `respirationDeLaBrume`, avec l’opacité de la couche du bas à 0,6 au plus.
-- « Réduire les animations » les fige d’un coup.
+- Quand l’appareil demande moins d’animations (la préférence qui remplace « Réduire les animations »), elles se figent d’un coup.
 - Aucune fumée au 5e dans R4b.
 
 ## 7. Ce qui est interdit
