@@ -1,7 +1,8 @@
 // Les textes d'Archipéo (lot 6) : les Gardiens sont des sentinelles de pierre éteintes, que l'élève rallume par son
 // savoir. « Rallumer » remplace « vaincre » ; chaque épreuve réussie nomme ce qui s'allume sur la sentinelle, chaque
-// épreuve ratée commence par « Rien ne s'éteint. ». Proposés par le consultant d'Archipéo, validés par le directeur
-// artistique ; lus seulement une fois l'univers ouvert (voir src/univers/index.ts).
+// épreuve ratée commence par « Rien ne s'éteint. », et la réplique finale dit que la sentinelle « se rallume » (« brille
+// à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
+// artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/univers/index.ts).
 import { BLOCLAND } from '../blocland';
 import type { TextesUnivers } from '../types';
 
@@ -12,17 +13,17 @@ export const ARCHIPEO = {
     foret: {
       challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Ma couronne est éteinte. Montre-moi tout ce que tu sais faire. »',
       guardianSays: {
-        hit: 'Une nervure s’allume dans ma couronne. Tu as l’oreille fine.',
+        hit: 'Une branche s’allume dans ma couronne. Tu as l’oreille fine.',
         miss: 'Rien ne s’éteint. Écoute bien le prochain mot, et continue.',
-        beaten: 'Ma couronne brille à nouveau. La forêt est à toi, et à Mousso.',
+        beaten: 'Ma couronne se rallume. La forêt est à toi, et à Mousso.',
       },
     },
     mine: {
       challenge: 'Le Golem de roche gronde : « Ma pierre est froide. Mes lettres se ressemblent toutes. Toi, tu les reconnais ? Montre-le. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume vers ma gemme. Tu regardes bien.',
+        hit: 'Une veine d’or s’allume jusqu’à ma gemme. Tu regardes bien.',
         miss: 'Rien ne s’éteint. Regarde bien la lettre, et reprends.',
-        beaten: 'Ma gemme brille à nouveau. La mine est à toi, et à Tunel.',
+        beaten: 'Ma gemme se rallume. La mine est à toi, et à Tunel.',
       },
     },
     carriere: {
@@ -30,15 +31,15 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une couche de pierre s’allume. Ce mot était bien écrit.',
         miss: 'Rien ne s’éteint. Réessaie au prochain mot.',
-        beaten: 'Toutes mes couches brillent. La carrière est à toi, et à Rouxel.',
+        beaten: 'Mes couches de pierre se rallument. La carrière est à toi, et à Rouxel.',
       },
     },
     ferme: {
-      challenge: 'Le Taureau de terre souffle : « Ici, tout doit s’accorder. Mon joug est éteint. À toi de jouer. »',
+      challenge: 'Le Taureau de terre souffle : « Ici, tout doit s’accorder. Mon collier est éteint. À toi de jouer. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume sur mon joug. C’était bien accordé.',
+        hit: 'Une veine d’or s’allume sur mon collier. C’était bien accordé.',
         miss: 'Rien ne s’éteint. Le prochain enclos t’attend.',
-        beaten: 'Mon joug brille à nouveau. Tout s’accorde. La ferme est à toi, et à Bloquette.',
+        beaten: 'Mon collier se rallume. Tout s’accorde. La ferme est à toi, et à Bloquette.',
       },
     },
     tour: {
@@ -46,7 +47,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Un morceau de mon vitrail s’allume. Tu lis bien.',
         miss: 'Rien ne s’éteint. Lire lentement, c’est lire quand même. Reprends ton souffle.',
-        beaten: 'Mon vitrail brille à nouveau. Le phare de la tour est à toi, et à Grimoire.',
+        beaten: 'Mon vitrail se rallume. La tour et son phare sont à toi, et à Grimoire.',
       },
     },
     plaine: {
@@ -54,7 +55,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine d’or s’allume entre mes ailes. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde les points, compte par cinq, et recommence.',
-        beaten: 'Mes ailes brillent à nouveau. La plaine est à toi, et à Coco.',
+        beaten: 'Mes ailes se rallument. La plaine est à toi, et à Coco.',
       },
     },
     riviere: {
@@ -62,7 +63,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une part de mon flanc s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde les parts, compte celles qui sont coloriées, et reprends.',
-        beaten: 'Tout mon flanc brille. La rivière est à toi, et à Nénu.',
+        beaten: 'Mon flanc se rallume. La rivière est à toi, et à Nénu.',
       },
     },
     volcan: {
@@ -70,7 +71,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une braise s’allume sur mon ventre. C’est exact.',
         miss: 'Rien ne s’éteint. Repère la virgule, puis lis les rangs un par un. Reprends.',
-        beaten: 'Mon ventre de braise brille à nouveau. Le volcan est à toi, et à Lavi.',
+        beaten: 'Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi.',
       },
     },
     glacier: {
@@ -78,7 +79,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine s’allume dans mon givre. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la droite, zéro au milieu, et reprends.',
-        beaten: 'Mes veines de givre brillent. Le glacier est à toi, et à Frimas.',
+        beaten: 'Mes veines de givre se rallument. Le glacier est à toi, et à Frimas.',
       },
     },
     marche: {
@@ -86,7 +87,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une lueur s’allume dans ma lanterne. Tu sais compter tes sous.',
         miss: 'Rien ne s’éteint. Passe par la valeur d’un seul, et reprends.',
-        beaten: 'Ma lanterne brille à nouveau. Le marché est à toi, et à Bazar.',
+        beaten: 'Ma lanterne se rallume. Le marché est à toi, et à Bazar.',
       },
     },
     carrefour: {
@@ -94,7 +95,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une bande de ma coiffe s’allume. Tu connais le chemin des mots.',
         miss: 'Rien ne s’éteint. Relis la règle sur le panneau, remplace le mot, et reprends.',
-        beaten: 'Ma coiffe brille à nouveau. Toutes les routes sont à toi, et à Sema.',
+        beaten: 'Ma coiffe se rallume. Toutes les routes sont à toi, et à Sema.',
       },
     },
     marais: {
@@ -102,7 +103,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Un de mes trois cous s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche l’indice de temps dans la phrase, et reprends.',
-        beaten: 'Mes trois cous brillent. Le marais est à toi, et à Kroa.',
+        beaten: 'Mes trois cous se rallument. Le marais est à toi, et à Kroa.',
       },
     },
     forge: {
@@ -110,7 +111,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine d’or s’allume vers mon cœur. C’est juste.',
         miss: 'Rien ne s’éteint. Relis la règle, compte les zéros, et reprends.',
-        beaten: 'Mon cœur de forge brille à nouveau. La forge est à toi, et à Braise.',
+        beaten: 'Mon cœur de forge se rallume. La forge est à toi, et à Braise.',
       },
     },
     atelier: {
@@ -118,7 +119,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Un de mes plateaux s’allume. Les deux côtés sont égaux.',
         miss: 'Rien ne s’éteint. Fais la même chose des deux côtés, et reprends.',
-        beaten: 'Mes deux plateaux brillent. L’atelier est à toi, et à Ixe.',
+        beaten: 'Mes deux plateaux se rallument. L’atelier est à toi, et à Ixe.',
       },
     },
     falaise: {
@@ -126,7 +127,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une spirale de mes cornes s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche le sujet, cherche le complément, et reprends.',
-        beaten: 'Mes cornes brillent à nouveau. La falaise est à toi, et à Cléa.',
+        beaten: 'Mes cornes se rallument. La falaise est à toi, et à Cléa.',
       },
     },
     cabinet: {
@@ -134,7 +135,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon livre. Tu as trouvé la racine.',
         miss: 'Rien ne s’éteint. Découpe le mot, cherche le petit morceau connu, et reprends.',
-        beaten: 'Mon livre brille à nouveau. Le cabinet est à toi, et à Plume.',
+        beaten: 'Mon livre se rallume. Le cabinet est à toi, et à Plume.',
       },
     },
     belvedere: {
@@ -142,7 +143,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une bande de ma coiffe s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Repère l’hypoténuse, écris l’égalité, et reprends.',
-        beaten: 'Ma coiffe brille à nouveau. Toutes les longueurs sont à toi, et à Théo.',
+        beaten: 'Ma coiffe se rallume. Toutes les longueurs sont à toi, et à Théo.',
       },
     },
     donnees: {
@@ -150,7 +151,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une étoile gravée s’allume sur ma robe. C’est juste.',
         miss: 'Rien ne s’éteint. Range la série, compte les valeurs, et reprends.',
-        beaten: 'Toutes mes étoiles brillent. L’observatoire est à toi, et à Stat.',
+        beaten: 'Mes étoiles se rallument. L’observatoire des données est à toi, et à Stat.',
       },
     },
     phare: {
@@ -158,7 +159,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine s’allume dans mes ailes. Tu as trouvé l’image.',
         miss: 'Rien ne s’éteint. Remplace x par le nombre, calcule, et reprends.',
-        beaten: 'Mes ailes de verre brillent. Le phare est à toi, et à Fi.',
+        beaten: 'Mes ailes de verre se rallument. Le phare est à toi, et à Fi.',
       },
     },
     textes: {
@@ -166,15 +167,15 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une page de mon livre s’allume. Tu lis ce qui n’est pas écrit.',
         miss: 'Rien ne s’éteint. Relis la phrase, cherche l’indice, et reprends.',
-        beaten: 'Toutes mes pages brillent. L’observatoire est à toi, et à Astra. Tu sais lire, vraiment lire.',
+        beaten: 'Mes pages se rallument. L’observatoire des textes est à toi, et à Astra. Tu sais lire, vraiment lire.',
       },
     },
     baie: {
       challenge: 'Le Lion de pierre parle depuis son quai : « Tu as écouté tous les mots de la baie. Montre-moi que tu les comprends. »',
       guardianSays: {
-        hit: 'Une lueur s’allume dans ma lanterne. Tu as l’oreille anglaise.',
+        hit: 'Une veine d’or s’allume dans ma crinière. Tu as l’oreille anglaise.',
         miss: 'Rien ne s’éteint. Réécoute le mot, relis la règle, et reprends.',
-        beaten: 'Ma lanterne brille à nouveau. La baie est à toi, et à Robin.',
+        beaten: 'Ma crinière se rallume. La baie est à toi, et à Robin.',
       },
     },
     horloge: {
@@ -182,7 +183,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une heure s’allume sur mon cadran. Ton verbe est juste.',
         miss: 'Rien ne s’éteint. Cherche le sujet, relis la règle, et reprends.',
-        beaten: 'Mon cadran brille à nouveau. Les verbes sont à toi, et à Tick.',
+        beaten: 'Mon cadran se rallume. Les verbes sont à toi, et à Tick.',
       },
     },
     comptoir: {
@@ -190,7 +191,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une pierre de ma couronne s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Réécoute la phrase, relis la règle, et reprends.',
-        beaten: 'Ma couronne et mon sceptre brillent. Le Comptoir est à toi, et à Pudding.',
+        beaten: 'Ma couronne se rallume. Le Comptoir est à toi, et à Pudding.',
       },
     },
     manoir: {
@@ -198,7 +199,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Ma lanterne brille un peu plus sous mon voile. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche le mot du temps (now, yesterday…), relis la règle, et reprends.',
-        beaten: 'Ma lanterne brille à travers mon voile. Le manoir est à toi, et à Moustache.',
+        beaten: 'Ma lanterne se rallume sous mon voile. Le manoir est à toi, et à Moustache.',
       },
     },
     theatre: {
@@ -206,7 +207,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une lampe de ma rampe s’allume. C’est la bonne réplique.',
         miss: 'Rien ne s’éteint. Réécoute la réplique, relis la règle, et reprends.',
-        beaten: 'Toute ma rampe brille. Le théâtre est à toi, et à Puck.',
+        beaten: 'Ma rampe se rallume. Le théâtre est à toi, et à Puck.',
       },
     },
     gare: {
@@ -214,7 +215,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une lueur s’allume dans ma lampe. Tu es sur les bons rails.',
         miss: 'Rien ne s’éteint. Cherche le petit mot (will, can, already…), relis la règle, et reprends.',
-        beaten: 'Ma lampe brille à nouveau. Les voies sont à toi, et à Vapeur.',
+        beaten: 'Ma lampe se rallume. Les voies sont à toi, et à Vapeur.',
       },
     },
     studio: {
@@ -222,7 +223,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Mon voyant brille un peu plus. Message bien reçu.',
         miss: 'Rien ne s’éteint. Relis le texte, cherche l’indice, et reprends.',
-        beaten: 'Mon voyant brille à nouveau. Le studio est à toi, et à Écho.',
+        beaten: 'Mon voyant se rallume. Le studio est à toi, et à Écho.',
       },
     },
     chateau: {
@@ -230,7 +231,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon écu. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche le petit mot (for, since, if, by…), relis la règle, et reprends.',
-        beaten: 'Mon écu brille à nouveau. Le château est à toi, et à Knight.',
+        beaten: 'Mon écu se rallume. Le château est à toi, et à Knight.',
       },
     },
   },

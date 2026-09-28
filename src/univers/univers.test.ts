@@ -88,6 +88,14 @@ describe('les textes d’univers', () => {
     for (const g of Object.values(textesDe('archipeo').gardiens)) expect(g.guardianSays.miss).toMatch(/^Rien ne s’éteint\. /);
   });
 
+  it('dans Archipéo, la réplique finale dit que la sentinelle se rallume, sans promettre qu’elle brille toute', () => {
+    // On gagne le défi avant d'avoir tout réussi, et le rallumage se voit au village : « brille à nouveau » est à lui.
+    for (const g of Object.values(textesDe('archipeo').gardiens)) {
+      expect(g.guardianSays.beaten).toMatch(/se rallument?[ .]/);
+      expect(g.guardianSays.beaten).not.toMatch(/brillent? à nouveau|^Tou(te)?s? /);
+    }
+  });
+
   it('le mot de la baleine : mêmes étapes dans les deux univers, seul le mot des Gardiens change', () => {
     const guardians = Object.fromEntries(BIOMES.filter((b) => b.classe === '6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
     const moments = reachedWhaleMoments(sanitizeState({ progress: guardians }), '6e');
