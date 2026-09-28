@@ -9,6 +9,7 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
   glacier: {
     nom: 'Frimas',
     metier: 'guetteur',
+    gabarit: 'elance',
     dominante: 0x2e3a48,
     marque: { couleur: 0xe8e0cc, ou: ['ventre', 'visage'] },
     tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
@@ -19,17 +20,19 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
   marche: {
     nom: 'Bazar',
     metier: 'marchand',
-    dominante: 0x7d7a74,
-    marque: { couleur: 0xb8b4ac, ou: ['ventre', 'museau'] },
+    gabarit: 'trapu',
+    // Gris chaud et oreilles rondes : il ne se confond pas avec Moustache, gris froid aux oreilles pointues.
+    dominante: 0x8a7f70,
+    marque: { couleur: 0xc4baa8, ou: ['ventre', 'museau'] },
     tenue: { couleur: TENUE.cuir, vetements: ['gilet'] },
     museau: { forme: 'museau', long: 0.18, r: 0.08 },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.17, 2.44, 0.02], 0.08, 0.14, k.dom, [0, 0, -c * 0.3], 4);
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.21, 2.5, 0.03], Math.PI / 2, 0, 0)), 0, 0.13, 0.04, k.dom, 6);
     },
     corps: (T, k) =>
       // La queue rayée.
       fuseau(
-        pose(T, repere([0, 0.85, 0.2], 2.0, 0, 0)),
+        pose(T, repere([-0.1, 0.85, 0.2], 1.9, 0, 0.9)),
         [
           [0, 0.07],
           [0.14, 0.09],
@@ -57,17 +60,20 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
     metier: 'peintre d’enseignes',
     dominante: 0x7fa048,
     tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
-    coiffe: (T, k) => pointe(T, [0, 2.44, 0.08], 0.14, 0.2, k.dom, [0.6, 0, 0], 4, 0.035),
+    // Le casque du caméléon, une crête haute qui part vers l'arrière.
+    coiffe: (T, k) => pointe(T, [0, 2.4, 0.1], 0.17, 0.32, k.dom, [0.55, 0, 0], 4, 0.04),
     corps: (T, k) =>
-      // La queue enroulée derrière.
+      // La queue enroulée en spirale, à côté de la jambe.
       fuseau(
-        T,
+        pose(T, repere([-0.2, 0.7, 0.18], 0, 0, 0)),
         [
-          [0.6, 0.07, 0.07, 0.24],
-          [0.72, 0.065, 0.065, 0.42],
-          [0.92, 0.06, 0.06, 0.5],
-          [1.08, 0.05, 0.05, 0.42],
-          [1.14, 0, 0, 0.32],
+          [-0.05, 0.08, 0.08, 0, 0],
+          [0.05, 0.075, 0.075, 0.1, -0.12],
+          [0.2, 0.07, 0.07, 0.12, -0.3],
+          [0.4, 0.06, 0.06, 0.04, -0.36],
+          [0.52, 0.055, 0.055, -0.04, -0.24],
+          [0.56, 0.04, 0.04, 0, -0.16],
+          [0.58, 0, 0, 0, -0.12],
         ],
         4,
         k.dom,
@@ -80,19 +86,19 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
       },
     },
     autreMain: {
-      // Le panneau fléché.
-      pose: [0, -Math.PI / 2, 0],
+      // Le panneau fléché (0,5 × 0,3 bloc, et sa pointe), tourné vers l'avant : il se voit de face.
+      pose: [0, 0, 0],
       dessiner: (T, k) => {
-        manche(T, -0.4, 0.45, 0.022, k.bois);
-        pave(T, -0.34, 0.2, -0.018, 0.04, 0.4, 0.018, k.lin);
+        manche(T, -0.4, 0.5, 0.022, k.bois);
+        pave(T, -0.5, 0.18, -0.018, 0.04, 0.48, 0.018, k.lin);
         facette(
           T,
           [
-            [-0.34, 0.16, -0.019],
-            [-0.34, 0.44, -0.019],
-            [-0.5, 0.3, -0.019],
+            [-0.5, 0.12, -0.019],
+            [-0.5, 0.54, -0.019],
+            [-0.68, 0.33, -0.019],
           ],
-          [-0.38, 0.3, 1],
+          [-0.55, 0.33, 1],
           k.lin,
         );
       },
@@ -101,6 +107,7 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
   marais: {
     nom: 'Kroa',
     metier: 'vannier',
+    gabarit: 'trapu',
     dominante: 0x3f5a3a,
     marque: { couleur: 0xb8683a, ou: ['ventre'] },
     tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
@@ -108,18 +115,18 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
     corps: (T, k) => {
       // Les roseaux sur le dos, et la queue.
       for (const [x, rz, h] of [
-        [-0.12, 0.12, 1.5],
-        [-0.04, 0.04, 1.65],
-        [0.05, -0.05, 1.55],
-        [0.13, -0.14, 1.45],
+        [-0.14, 0.32, 1.4],
+        [-0.05, 0.14, 1.65],
+        [0.05, -0.12, 1.55],
+        [0.14, -0.3, 1.35],
       ])
         manche(pose(T, repere([x, 0.95, 0.3], 0.12, 0, rz)), 0, h, 0.018, k.lin, 3);
       fuseau(
-        pose(T, repere([0, 0.75, 0.2], 2.2, 0, 0)),
+        pose(T, repere([0, 0.75, 0.2], 2.3, 0, 0)),
         [
           [0, 0.09],
-          [0.3, 0.06],
-          [0.55, 0],
+          [0.25, 0.06],
+          [0.45, 0],
         ],
         5,
         k.dom,
@@ -131,8 +138,8 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
         fuseau(
           T,
           [
-            [-0.24, 0.13],
-            [0, 0.18],
+            [-0.3, 0.17],
+            [0, 0.24],
           ],
           6,
           k.bois,
@@ -143,6 +150,7 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
   comptoir: {
     nom: 'Pudding',
     metier: 'commis',
+    gabarit: 'trapu',
     dominante: 0xd8c8a8,
     marque: { couleur: 0x8a6a4a, ou: ['museau'] },
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
@@ -173,13 +181,26 @@ export const ESPECES_5E: Partial<Record<BiomeId, Espece>> = {
         pave(pose(T, repere([c * 0.2, 2.15, -0.26], 0, 0, c * 0.12)), -0.13, -0.008, -0.008, 0.13, 0.008, 0.008, k.marque);
       }
     },
-    corps: (T, k) => manche(pose(T, repere([0, 0.8, 0.2], 0.5, 0, 0)), 0, 0.8, 0.035, k.dom),
+    corps: (T, k) =>
+      // La queue dressée, qui monte à côté du corps et se recourbe au bout.
+      fuseau(
+        pose(T, repere([0.1, 0.8, 0.24], 0.35, 0, -0.45)),
+        [
+          [0, 0.05],
+          [0.5, 0.045, 0.045, 0.05, 0.08],
+          [0.95, 0.045, 0.045, 0.06, 0.1],
+          [1.2, 0.04, 0.04, 0.02, -0.05],
+          [1.3, 0, 0, 0, -0.12],
+        ],
+        4,
+        k.dom,
+      ),
     outil: {
-      // Le trousseau de clés.
+      // Le trousseau de clés (0,25 bloc).
       pose: [0, 0, 0],
       dessiner: (T, k) => {
-        disque(pose(T, repere([0, -0.06, 0], Math.PI / 2, 0, 0)), 0, 0.07, 0.02, k.fer);
-        for (const c of [-1, 1]) pave(pose(T, repere([c * 0.03, -0.12, 0], 0, 0, c * 0.25)), -0.012, -0.18, -0.01, 0.012, 0, 0.01, k.laiton);
+        disque(pose(T, repere([0, -0.08, 0], Math.PI / 2, 0, 0)), 0, 0.09, 0.025, k.fer);
+        for (const c of [-1, 0, 1]) pave(pose(T, repere([c * 0.04, -0.15, 0], 0, 0, c * 0.3)), -0.016, -0.25, -0.012, 0.016, 0, 0.012, k.laiton);
       },
     },
   },

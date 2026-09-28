@@ -1,15 +1,24 @@
 // Le bonhomme d'Archipéo en facettes peintes (lot R6) : l'avatar de l'élève, un collégien explorateur à la silhouette
-// neutre, deux blocs de haut, la tête au sixième de sa taille. Cheveux courts en bataille, veste à capuche, sac de cuir
-// à rabat sur le dos, jean. Les six pièces portent les noms de celles du bonhomme en blocs (../../Avatar.ts) et pivotent
+// neutre, deux blocs de haut, la tête à 1/5,5 de sa taille (un collégien, pas un adulte : tête un peu forte, jambes
+// courtes, poignets en haut des cuisses, bras légèrement écartés). Cheveux courts en bataille, veste à capuche, besace
+// de cuir à la hanche dont le rabat Sable se voit de face, jean. Les six pièces portent les noms de celles du bonhomme en blocs (../../Avatar.ts) et pivotent
 // aux mêmes articulations (cou, hanches, épaules) : la marche (`walkPose`) les anime de la même façon.
 import { BONHOMME as C, OEIL } from './couleurs';
 import { devant, fuseau, parFace, pave, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Piece, type Pot, type Trace } from './peint';
 
-/** Sa taille, en blocs, et la hauteur de sa tête (un sixième). */
+/** Sa taille, en blocs, et la hauteur de sa tête (1/5,5). */
 export const TAILLE_DU_BONHOMME = 2;
-const COU = TAILLE_DU_BONHOMME * (5 / 6);
-const HANCHES = 0.92;
-const EPAULES = 1.6;
+export const TETE_DU_BONHOMME = 1 / 5.5;
+const COU = TAILLE_DU_BONHOMME * (1 - TETE_DU_BONHOMME);
+/** Les hanches : les jambes 5 % plus courtes qu'au premier dessin (0,92). */
+const HANCHES = 0.874;
+const EPAULES = 1.56;
+/** Les bras s'écartent du corps de 7° ; le poignet tombe en haut de la cuisse. */
+const ECART_DES_BRAS = (7 * Math.PI) / 180;
+/** La tête et les cheveux : du premier dessin (tête au sixième), agrandis vers le bas depuis le sommet. */
+const K = TETE_DU_BONHOMME * 6;
+const hy = (y: number) => TAILLE_DU_BONHOMME - (TAILLE_DU_BONHOMME - y) * K;
+const LARGE = 1.06;
 
 const jambe =
   (x: number): Piece['dessiner'] =>
@@ -28,16 +37,16 @@ const jambe =
 const bras =
   (cote: -1 | 1): Piece['dessiner'] =>
   (T, pot) => {
-    const x = cote * 0.255;
+    // Dans le repère de l'épaule, tourné vers le dehors : la main, le poignet, la manche.
     const profil: Anneau[] = [
-      [0.9, 0.042, 0.042, 0, cote * 0.02],
-      [1.045, 0.045, 0.045, 0, cote * 0.016],
-      [1.06, 0.058, 0.058, 0, cote * 0.015],
-      [1.62, 0.062],
+      [-0.83, 0.042],
+      [-0.69, 0.045],
+      [-0.675, 0.058],
+      [0.02, 0.062],
     ];
     const peau = pot(C.peau, 'dominante');
     const veste = pot(C.veste, 'tenue');
-    fuseau(T, profil, 5, parFace((k) => (k === 0 ? peau : veste)), { x });
+    fuseau(pose(T, repere([cote * 0.255, EPAULES, 0], 0, 0, cote * ECART_DES_BRAS)), profil, 5, parFace((k) => (k === 0 ? peau : veste)));
   };
 
 function corps(T: Trace, pot: Pot): void {
@@ -45,10 +54,10 @@ function corps(T: Trace, pot: Pot): void {
   fuseau(
     T,
     [
-      [0.9, 0.195, 0.125],
-      [1.1, 0.19, 0.12],
-      [1.5, 0.215, 0.13],
-      [1.65, 0.11, 0.085],
+      [0.86, 0.195, 0.125],
+      [1.06, 0.19, 0.12],
+      [1.46, 0.215, 0.13],
+      [1.62, 0.11, 0.085],
     ],
     8,
     veste,
@@ -57,24 +66,26 @@ function corps(T: Trace, pot: Pot): void {
   fuseau(
     T,
     [
-      [1.56, 0.13, 0.07, 0.09],
-      [1.66, 0.12, 0.08, 0.1],
-      [1.7, 0.06, 0.04, 0.1],
+      [1.52, 0.13, 0.07, 0.09],
+      [1.62, 0.12, 0.08, 0.1],
+      [1.66, 0.06, 0.04, 0.1],
     ],
     6,
     veste,
   );
-  // Le sac sur le dos, son rabat, et la sangle en travers de la poitrine.
-  pave(T, -0.13, 1.02, 0.1, 0.13, 1.44, 0.25, pot(C.sac, 'outil'));
-  pave(T, -0.135, 1.3, 0.095, 0.135, 1.46, 0.265, pot(C.rabat, 'outil'));
-  pave(pose(T, repere([0, 1.27, 0], 0, 0, -0.52)), -0.02, -0.32, -0.136, 0.02, 0.32, -0.108, pot(C.sac, 'outil'));
+  // La besace à la hanche gauche, son rabat Sable (qui se voit de face et de trois quarts), et la sangle en travers
+  // de la poitrine, de l'épaule droite à la hanche gauche.
+  const sac = pot(C.sac, 'outil');
+  pave(T, -0.31, 0.72, -0.14, -0.18, 0.96, 0.04, sac);
+  pave(T, -0.315, 0.85, -0.147, -0.175, 0.97, 0.046, pot(C.rabat, 'outil'));
+  pave(pose(T, repere([0, 1.24, 0], 0, 0, -0.52)), -0.02, -0.34, -0.136, 0.02, 0.3, -0.108, sac);
 }
 
 const TETE: Anneau[] = [
-  [COU, 0.085, 0.08],
-  [1.72, 0.135, 0.125],
-  [1.9, 0.14, 0.13],
-  [1.96, 0.125, 0.115],
+  [COU, 0.085 * LARGE, 0.08 * LARGE],
+  [hy(1.72), 0.135 * LARGE, 0.125 * LARGE],
+  [hy(1.9), 0.14 * LARGE, 0.13 * LARGE],
+  [hy(1.96), 0.125 * LARGE, 0.115 * LARGE],
 ];
 
 function tete(T: Trace, pot: Pot): void {
@@ -86,9 +97,9 @@ function tete(T: Trace, pot: Pot): void {
   fuseau(
     T,
     [
-      [1.87, 0.148, 0.138, 0.008],
-      [1.94, 0.14, 0.13, 0.008],
-      [1.975, 0.08, 0.075, 0.008],
+      [hy(1.87), 0.148 * LARGE, 0.138 * LARGE, 0.008],
+      [hy(1.94), 0.14 * LARGE, 0.13 * LARGE, 0.008],
+      [hy(1.975), 0.08 * LARGE, 0.075 * LARGE, 0.008],
     ],
     6,
     cheveux,
@@ -105,21 +116,22 @@ function tete(T: Trace, pot: Pot): void {
     [0.01, 1.93, 0.1, 0.8, 0],
     [0.12, 1.91, 0.01, 0, -0.9],
   ];
-  for (const [x, y, z, rx, rz] of meches) fuseau(pose(T, repere([x, y, z], rx, 0, rz)), meche, 3, cheveux);
+  for (const [x, y, z, rx, rz] of meches) fuseau(pose(T, repere([x * LARGE, hy(y), z * LARGE], rx, 0, rz)), meche, 3, cheveux);
   // Les oreilles.
   for (const s of [-1, 1])
     fuseau(
       T,
       [
-        [1.76, 0.02, 0.03],
-        [1.84, 0.02, 0.03],
+        [hy(1.76), 0.02, 0.03],
+        [hy(1.84), 0.02, 0.03],
       ],
       3,
       peau,
-      { x: s * 0.14 },
+      { x: s * 0.14 * LARGE },
     );
-  const face = devant(TETE, 6, 1.8);
-  yeux(T, pot(OEIL, 'yeux'), 0, 1.8, face.z, 0.045, 0.026);
+  const y = hy(1.8);
+  const face = devant(TETE, 6, y);
+  yeux(T, pot(OEIL, 'yeux'), 0, y, face.z, 0.048, 0.028);
 }
 
 /** Les six pièces du bonhomme, de mêmes noms que celles du bonhomme en blocs. */

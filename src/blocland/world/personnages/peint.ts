@@ -34,6 +34,8 @@ export interface Piece {
   pivot: V3;
   /** Une pièce qui brille : la nuit (lanterne de Fi, abdomen d'Astra, braise de Braise), ou au rallumage (sentinelles). */
   lueur?: 'nuit' | 'allumage';
+  /** La couleur que prend la nuit une pièce qui brille, si elle n'est pas celle dont elle est peinte (le verre de Fi). */
+  nuit?: Couleur;
   dessiner(T: Trace, pot: Pot): void;
 }
 
@@ -111,7 +113,7 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
     colors: f.colors,
     pieces: f.elements.map((e) => e & 255),
     teintes: f.elements.map((e) => palette[e >> 8].couleur),
-    table: pieces.map(({ nom, pivot, lueur }) => (lueur ? { nom, pivot, lueur } : { nom, pivot })),
+    table: pieces.map(({ nom, pivot, lueur, nuit }) => ({ nom, pivot, ...(lueur ? { lueur } : {}), ...(nuit !== undefined ? { nuit } : {}) })),
     palette,
   };
 }

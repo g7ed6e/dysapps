@@ -2,7 +2,7 @@
 // du directeur artistique. Fi, l'allumeuse à tête-lanterne, n'a pas d'yeux ; sa lanterne et l'abdomen d'Astra brillent
 // la nuit.
 import type { BiomeId } from '../../../biomes';
-import { TENUE } from '../couleurs';
+import { TENUE, VERRE_DE_FI } from '../couleurs';
 import { COU, disque, jalon, manche, pointe, SOMMET_DE_TETE, type Espece } from '../gabarit';
 import { fuseau, pave, pose, repere } from '../peint';
 
@@ -10,6 +10,7 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
   belvedere: {
     nom: 'Théo',
     metier: 'géomètre',
+    gabarit: 'elance',
     dominante: 0x7f93a6,
     marque: { couleur: 0xd8d2c4, ou: ['poitrine', 'museau'] },
     tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
@@ -29,6 +30,7 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
   donnees: {
     nom: 'Stat',
     metier: 'astronome',
+    gabarit: 'elance',
     dominante: 0x8e8272,
     marque: { couleur: 0xd8ccb4, ou: ['visage', 'ventre'] },
     tenue: { couleur: 0x2e3e5c, vetements: ['cape'] },
@@ -62,6 +64,7 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
   phare: {
     nom: 'Fi',
     metier: 'allumeuse',
+    gabarit: 'elance',
     dominante: 0x8a7a5a,
     tenue: { couleur: 0x2a3550, vetements: ['cire'] },
     yeux: false,
@@ -92,8 +95,11 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
     },
     coiffe: (T, k) => pointe(T, [0, SOMMET_DE_TETE - 0.02, 0], 0.035, 0.12, k.laiton, [0, 0, 0], 4),
     lueur: {
+      // Le verre : ambre pâle et mat le jour, la lueur la nuit.
       nom: 'lanterne',
       sur: 'tete',
+      couleur: VERRE_DE_FI.jour,
+      nuit: VERRE_DE_FI.nuit,
       dessiner: (T, k) =>
         fuseau(
           T,
@@ -130,16 +136,17 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
     marque: { couleur: 0xb8bcc8, ou: ['visage'] },
     tenue: { couleur: TENUE.lin, vetements: ['robe'] },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.08, 2.47, -0.02], 0.02, 0.2, k.dom, [-0.3, 0, -c * 0.4], 3);
+      for (const c of [-1, 1]) pointe(T, [c * 0.08, 2.46, -0.02], 0.025, 0.3, k.dom, [-0.3, 0, -c * 0.75], 3);
     },
     corps: (T, k) => {
-      // Les ailes claires, repliées sur le dos.
+      // Les ailes claires, dressées sur le dos, qui s'écartent au-dessus des épaules.
       for (const c of [-1, 1])
         fuseau(
-          pose(T, repere([c * 0.12, 1.75, 0.24], 0.25, 0, c * 0.3)),
+          pose(T, repere([c * 0.14, 1.6, 0.24], 0.35, 0, -c * 0.55)),
           [
-            [-0.55, 0.08, 0.015],
             [0, 0.06, 0.015],
+            [0.35, 0.12, 0.015],
+            [0.7, 0.05, 0.015],
           ],
           4,
           k.marque,
@@ -181,10 +188,10 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
     coiffe: (T, k) => {
       // Les grandes oreilles, le casque et ses écouteurs.
       for (const c of [-1, 1]) {
-        pointe(T, [c * 0.16, 2.44, 0.02], 0.09, 0.24, k.dom, [0, 0, -c * 0.3], 4);
-        disque(pose(T, repere([c * 0.28, 2.28, 0], 0, 0, Math.PI / 2)), 0, 0.075, 0.05, k.fer);
+        pointe(T, [c * 0.18, 2.4, 0.02], 0.13, 0.32, k.dom, [0, 0, -c * 0.6], 4);
+        disque(pose(T, repere([c * 0.28, 2.28, 0], 0, 0, Math.PI / 2)), 0, 0.075, 0.05, k.laiton);
       }
-      pave(T, -0.29, 2.5, -0.03, 0.29, 2.54, 0.03, k.fer);
+      pave(T, -0.29, 2.5, -0.03, 0.29, 2.54, 0.03, k.laiton);
     },
     outil: {
       // Le micro.
@@ -207,7 +214,8 @@ export const ESPECES_3E: Partial<Record<BiomeId, Espece>> = {
   chateau: {
     nom: 'Knight',
     metier: 'écuyer héraut',
-    dominante: 0xa89c8c,
+    // Une souris gris froid.
+    dominante: 0x8c8a84,
     marque: { couleur: 0xe0d4c8, ou: ['museau'] },
     tenue: { couleur: 0x3e5c8a, vetements: ['robe', 'ceinture'] },
     museau: { forme: 'museau', long: 0.14, r: 0.07 },

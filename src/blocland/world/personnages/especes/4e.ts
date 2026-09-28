@@ -16,6 +16,7 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
   forge: {
     nom: 'Braise',
     metier: 'forgeron',
+    gabarit: 'trapu',
     dominante: 0x4a4648,
     marque: { couleur: 0x7a7674, ou: ['visage'] },
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
@@ -55,7 +56,15 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
       fuseau(pose(T, repere([0, FACE, devantDeLaTete(FACE) + 0.01], -Math.PI / 2, 0, 0)), LENTILLE, 6, k.marque);
     },
     yeux: { y: FACE, ecart: 0.06, taille: 0.04, z: devantDeLaTete(FACE) + 0.01 - 0.06 },
-    coiffe: (T, k) => pointe(T, [0, 2.48, 0], 0.03, 0.2, k.fer, [0, 0, 0], 3),
+    coiffe: (T, k) => {
+      // L'antenne, et son voyant.
+      manche(T, 2.45, 2.66, 0.02, k.fer, 3);
+      disque(T, 2.68, 0.05, 0.04, k.fer, 5);
+    },
+    corps: (T, k) => {
+      // Les rouages des épaules, qui débordent : un automate.
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.43, 1.76, 0], Math.PI / 2, 0, 0)), 0, 0.17, 0.08, k.dom, 8);
+    },
     outil: {
       // Le compas.
       pose: [0, 0, 0.1],
@@ -76,24 +85,26 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
   falaise: {
     nom: 'Cléa',
     metier: 'cordière',
+    gabarit: 'elance',
     dominante: 0xe6e0d2,
     marque: { couleur: 0x8a7a62, ou: [] },
     tenue: { couleur: TENUE.cuir, vetements: ['gilet'] },
     museau: { forme: 'museau', long: 0.14, r: 0.09 },
     coiffe: (T, k) => {
-      // Les cornes, recourbées vers l'arrière, et les oreilles.
+      // Les cornes (0,3 bloc), qui montent, s'écartent et se recourbent vers l'arrière, et les oreilles.
       for (const c of [-1, 1]) {
         fuseau(
-          pose(T, repere([c * 0.1, 2.46, 0.02], 0.9, 0, -c * 0.2)),
+          pose(T, repere([c * 0.12, 2.42, 0.02], 0.55, 0, -c * 0.45)),
           [
-            [0, 0.05],
-            [0.12, 0.04, 0.04, 0.04],
-            [0.24, 0, 0, 0.1],
+            [0, 0.065, 0.06],
+            [0.14, 0.05, 0.045, 0.03],
+            [0.26, 0.032, 0.03, 0.09],
+            [0.34, 0, 0, 0.17],
           ],
           4,
           k.marque,
         );
-        pointe(T, [c * 0.26, 2.34, 0], 0.04, 0.13, k.dom, [0, 0, -c * 1.3], 3);
+        pointe(T, [c * 0.26, 2.3, 0], 0.04, 0.13, k.dom, [0, 0, -c * 1.3], 3);
       }
     },
     surTete: (T, k) => pointe(T, [0, 2.16, -0.2], 0.04, 0.14, k.marque, [Math.PI, 0, 0], 3),
@@ -151,30 +162,32 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
     metier: 'souffleur',
     dominante: 0x4e7a4a,
     tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
+    silhouette: { largeur: 0.27, profondeur: 0.23 },
     coiffe: (T, k) => {
-      // Le bonnet pointu, et les oreilles pointues.
+      // Un béret à plat, penché (un souffleur de théâtre, pas un lutin), et deux oreilles rondes basses.
       fuseau(
-        T,
+        pose(T, repere([0.03, 2.47, 0], 0, 0, -0.18)),
         [
-          [2.4, 0.3, 0.27],
-          [2.48, 0.25, 0.22],
-          [2.68, 0, 0, 0.1],
+          [0, 0.27, 0.26],
+          [0.06, 0.31, 0.3],
+          [0.12, 0.12, 0.12],
         ],
-        5,
+        6,
         k.tenue,
       );
-      for (const c of [-1, 1]) pointe(T, [c * 0.27, 2.3, 0], 0.05, 0.16, k.dom, [0, 0, -c * 1.2], 3);
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.3, 2.3, 0.02], 0, 0, Math.PI / 2)), 0, 0.075, 0.035, k.dom, 5);
     },
-    outil: { pose: [0, 0, Math.PI / 2], dessiner: (T, k) => manche(T, -0.2, 0.2, 0.05, k.lin, 5) },
+    outil: { pose: [0, 0, Math.PI / 2], dessiner: (T, k) => manche(T, -0.32, 0.32, 0.055, k.lin, 5) },
+    autreBras: { rx: 0.5, rz: 0.15 },
     autreMain: {
-      // Le cornet.
-      pose: [-1.2, 0, 0],
+      // Le cornet, le pavillon tourné vers le dehors : il se voit de face.
+      pose: [0, 0, 1.25],
       dessiner: (T, k) =>
         fuseau(
           T,
           [
-            [0, 0.025],
-            [0.28, 0.1],
+            [-0.04, 0.035],
+            [0.28, 0.15],
           ],
           6,
           k.laiton,
@@ -187,11 +200,13 @@ export const ESPECES_4E: Partial<Record<BiomeId, Espece>> = {
     dominante: 0x6e6e70,
     marque: { couleur: 0xd8d4cc, ou: ['visage', 'museau'] },
     tenue: { couleur: 0xa8443a, vetements: ['gilet'] },
+    // Un blaireau : large d'épaules, la tête large sous la casquette.
+    silhouette: { largeur: 0.37, profondeur: 0.28, ventre: 0.04, tete: 0.32 },
     museau: { forme: 'museau', long: 0.14, r: 0.08 },
     coiffe: (T, k) => {
       // La casquette et sa visière.
-      disque(T, 2.54, 0.25, 0.09, k.tenue, 8);
-      pave(T, -0.14, 2.49, -0.36, 0.14, 2.52, -0.18, k.fer);
+      disque(T, 2.54, 0.3, 0.1, k.tenue, 8);
+      pave(T, -0.16, 2.49, -0.42, 0.16, 2.52, -0.2, k.fer);
     },
     outil: {
       // La lanterne de signal.

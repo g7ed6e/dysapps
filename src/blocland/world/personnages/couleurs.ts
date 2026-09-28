@@ -16,6 +16,12 @@ export const OUTIL = { bois: 0x8a6236, fer: 0x5c6470, laiton: 0xc9a24a } as cons
 export const LUEUR: Couleur = 0xffd866;
 
 /**
+ * Le verre de la lanterne de Fi : ambre pâle et mat le jour, la lueur la nuit (proposition du directeur artistique,
+ * 28/09, à acter par le mainteneur : pour un verre qui brille aussi le jour, `jour` redevient `LUEUR`).
+ */
+export const VERRE_DE_FI = { jour: 0xd9c99a, nuit: LUEUR } as const satisfies Record<string, Couleur>;
+
+/**
  * Le bonhomme, un collégien explorateur à la silhouette neutre (cheveux courts en bataille, veste à capuche, sac) :
  * veste pétrole, sac de cuir à rabat Sable, jean, cheveux châtain sombre.
  */

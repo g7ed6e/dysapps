@@ -1,11 +1,13 @@
 import { AVATAR_PARTS } from '../../Avatar';
 import { BIOMES, type BiomeId } from '../../biomes';
 import { ARCHIPELAGO_IDS } from '../archipels';
-import { BONHOMME, OEIL, OUTIL, TENUE } from './couleurs';
-import { bonhommePeint, TAILLE_DU_BONHOMME } from './bonhomme';
+import { BRUME } from '../palette';
+import { BONHOMME, LUEUR, OEIL, OUTIL, TENUE, VERRE_DE_FI } from './couleurs';
+import { bonhommePeint, TAILLE_DU_BONHOMME, TETE_DU_BONHOMME } from './bonhomme';
 import { creaturePeinte, ESPECES } from './creaturesPeintes';
-import { TAILLE_DE_CREATURE } from './gabarit';
+import { GABARITS, tailleDe, type Gabarit } from './gabarit';
 import { avant, devant, facette, fuseau, pave, peindrePersonnage, pose, repere, type Anneau, type FacettesDePersonnage, type Piece, type V3 } from './peint';
+import { PAS_A_40_PIXELS, pixels, projeter } from './projection';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
 
@@ -38,6 +40,12 @@ function volume(f: FacettesDePersonnage, pred: (t: number) => boolean = () => tr
     v += (a[0] * (b[1] * c[2] - b[2] * c[1]) - a[1] * (b[0] * c[2] - b[2] * c[0]) + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6;
   }
   return v;
+}
+
+/** La luminance relative d'une couleur (sRGB linéarisé, pondération de la WCAG). */
+function luminance(c: number): number {
+  const f = (v: number) => (v / 255 <= 0.04045 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * f((c >> 16) & 255) + 0.7152 * f((c >> 8) & 255) + 0.0722 * f(c & 255);
 }
 
 /** Chaque normale est unitaire et suit l'ordre des sommets (la face avant, pour Three.js). */
@@ -173,12 +181,47 @@ describe('Le bonhomme en facettes', () => {
     }
   });
 
-  it('mesure deux blocs, les pieds en 0, la tête au sixième de sa taille', () => {
+  it('mesure deux blocs, les pieds en 0, la tête à 1/5,5 de sa taille (un collégien, pas un adulte)', () => {
     const [bas, haut] = hauteurs(f, () => true);
     expect(bas).toBeCloseTo(0, 6);
     expect(haut).toBeCloseTo(TAILLE_DU_BONHOMME, 2);
     const [t0, t1] = hauteurs(f, (t) => f.pieces[t] === tete);
-    expect((t1 - t0) / TAILLE_DU_BONHOMME).toBeCloseTo(1 / 6, 2);
+    expect(TETE_DU_BONHOMME).toBeCloseTo(1 / 5.5, 9);
+    expect((t1 - t0) / TAILLE_DU_BONHOMME).toBeCloseTo(1 / 5.5, 2);
+  });
+
+  it('a les jambes 5 % plus courtes qu’au premier dessin, le poignet en haut de la cuisse, les bras écartés de 6 à 8°', () => {
+    const jambe = f.table.findIndex((p) => p.nom === 'jambe-droite');
+    const [, hanches] = hauteurs(f, (t) => f.pieces[t] === jambe);
+    expect(hanches).toBeCloseTo(0.92 * 0.95, 3);
+    for (const nom of ['bras-gauche', 'bras-droit']) {
+      const i = f.table.findIndex((p) => p.nom === nom);
+      const [, poignet] = hauteurs(f, (t) => f.pieces[t] === i && f.teintes[t] === BONHOMME.peau);
+      expect(poignet, nom).toBeGreaterThan(hanches - 0.08);
+      expect(poignet, nom).toBeLessThan(hanches + 0.05);
+      // L'axe du bras : de l'épaule au milieu de la main.
+      let [x, y, n] = [0, 0, 0];
+      for (let t = 0; t < nbTriangles(f); t++)
+        if (f.pieces[t] === i && f.teintes[t] === BONHOMME.peau)
+          for (let k = 0; k < 3; k++) {
+            x += sommet(f, t, k)[0];
+            y += sommet(f, t, k)[1];
+            n++;
+          }
+      const [px, py] = f.table[i].pivot;
+      const angle = (Math.atan2(Math.abs(x / n - px), py - y / n) * 180) / Math.PI;
+      expect(Math.sign(x / n - px), nom).toBe(Math.sign(px));
+      expect(angle, nom).toBeGreaterThanOrEqual(6);
+      expect(angle, nom).toBeLessThanOrEqual(8);
+    }
+  });
+
+  it('montre le rabat Sable de sa besace à la hanche, de face et de trois quarts (0,1 bloc au moins)', () => {
+    for (const angle of [0, -0.6, 0.6]) {
+      const p = projeter(f, { angle, pas: 0.01 });
+      const rabat = pixels(p, (t) => f.teintes[t] === BONHOMME.rabat) * 0.01 * 0.01;
+      expect(rabat, `angle ${angle}`).toBeGreaterThanOrEqual(0.1 * 0.1);
+    }
   });
 
   it('tient dans sa case, centré', () => {
@@ -215,11 +258,38 @@ describe('Le bonhomme en facettes', () => {
 
 describe('Les créatures en facettes', () => {
   const LUMINEUSES: BiomeId[] = ['phare', 'textes', 'forge'];
+  /**
+   * Celles dont la tenue (robe, ciré, tunique) couvre plus que la dominante à 40 pixels : la règle « dominante lue
+   * d'abord » (DA, 28/09) ne les tient pas encore ; le directeur artistique dit s'il faut raccourcir la tenue.
+   */
+  const TENUE_D_ABORD: BiomeId[] = ['tour', 'riviere', 'phare', 'textes', 'chateau'];
   const MATIERES_D_OUTIL = new Set<number>([...Object.values(OUTIL), ...Object.values(TENUE)]);
+
+  it('le verre de Fi est ambre mat le jour et prend la lueur la nuit', () => {
+    const f = creaturePeinte('phare');
+    const lanterne = f.table.find((p) => p.lueur);
+    expect(lanterne).toEqual(expect.objectContaining({ nom: 'lanterne', lueur: 'nuit', nuit: LUEUR }));
+    expect(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur)).toEqual([VERRE_DE_FI.jour]);
+    expect(VERRE_DE_FI).toEqual({ jour: 0xd9c99a, nuit: 0xffd866 });
+    // Les autres lueurs brillent de leur couleur, de jour comme de nuit.
+    for (const id of ['textes', 'forge'] as const) expect(creaturePeinte(id).table.some((p) => p.nuit !== undefined), id).toBe(false);
+  });
 
   it('chaque île a sa créature, une espèce par île', () => {
     expect(Object.keys(ESPECES).sort()).toEqual(BIOMES.map((b) => b.id).sort());
     expect(new Set(Object.values(ESPECES).map((e) => e.nom)).size).toBe(BIOMES.length);
+  });
+
+  it('ont les gabarits du directeur artistique : six trapus, six élancés, les autres standard', () => {
+    const de = (g: Gabarit) =>
+      Object.entries(ESPECES)
+        .filter(([, e]) => (e.gabarit ?? 'standard') === g)
+        .map(([, e]) => e.nom)
+        .sort();
+    expect(de('trapu')).toEqual(['Bazar', 'Braise', 'Grimoire', 'Kroa', 'Pudding', 'Tunel']);
+    expect(de('elance')).toEqual(['Cléa', 'Fi', 'Frimas', 'Nénu', 'Stat', 'Théo']);
+    expect(GABARITS).toEqual({ trapu: { taille: 2.3, largeur: 1.2 }, standard: { taille: 2.6, largeur: 1 }, elance: { taille: 2.9, largeur: 0.85 } });
+    expect(GABARITS.standard.taille).toBeCloseTo(1.3 * TAILLE_DU_BONHOMME, 9);
   });
 
   it('tiennent dans leur budget : 2 500 triangles au plus par archipel, toutes ensemble', () => {
@@ -232,15 +302,19 @@ describe('Les créatures en facettes', () => {
   for (const b of BIOMES)
     describe(`${ESPECES[b.id]?.nom} (${b.id})`, () => {
       const f = creaturePeinte(b.id);
+      const e = ESPECES[b.id];
       const piece = (nom: string) => f.table.findIndex((p) => p.nom === nom);
-      const sansOutil = (t: number) => f.table[f.pieces[t]].nom !== 'outil';
+      /** Ce que tiennent les mains (l'outil, et ce que tient la main gauche) est à part. */
+      const sansOutil = (t: number) => !['outil', 'autre-main'].includes(f.table[f.pieces[t]].nom);
+      const taille = tailleDe(e);
 
-      it('debout, 1,3 fois le bonhomme (2,6 blocs à un dixième près), la tête au cinquième', () => {
+      it(`debout, à la taille de son gabarit (${e.gabarit ?? 'standard'} : ${String(taille).replace('.', ',')} blocs, à 4 % près), la tête au cinquième`, () => {
         const [bas, haut] = hauteurs(f, sansOutil);
         expect(bas).toBeCloseTo(0, 6);
-        expect(Math.abs(haut - 1.3 * TAILLE_DU_BONHOMME)).toBeLessThanOrEqual(0.1 + 1e-9);
+        // Le haut de la tête à 25/26 de la taille, la coiffe jusqu'à 27/26 (au standard : de 2,5 à 2,7 blocs).
+        expect(Math.abs(haut - taille)).toBeLessThanOrEqual(taille / 26 + 1e-6);
         const [t0, t1] = hauteurs(f, (t) => f.pieces[t] === piece('tete'));
-        expect((t1 - t0) / TAILLE_DE_CREATURE).toBeCloseTo(1 / 5, 2);
+        expect((t1 - t0) / taille).toBeCloseTo(1 / 5, 2);
       });
 
       it('a son corps, sa tête, son bras porteur et son outil de métier, pièces à part', () => {
@@ -268,6 +342,29 @@ describe('Les créatures en facettes', () => {
         expect(de('tenue').size).toBe(1);
         for (const c of de('outil')) expect(MATIERES_D_OUTIL.has(c), c.toString(16)).toBe(true);
         expect([...de('yeux')].every((c) => c === OEIL)).toBe(true);
+        // Cinq teintes au plus, hors yeux et outils.
+        expect(new Set(f.palette.filter((p) => p.role !== 'yeux' && p.role !== 'outil').map((p) => p.couleur)).size).toBeLessThanOrEqual(5);
+      });
+
+      it('a un masque clair sous 35 % de la face, jamais plus clair que Brume', () => {
+        const marque = e.marque?.couleur;
+        if (marque === undefined) return;
+        expect(luminance(marque), marque.toString(16)).toBeLessThanOrEqual(luminance(BRUME));
+        if (luminance(marque) <= luminance(e.dominante)) return;
+        const p = projeter(f, { pas: 0.01 });
+        const face = pixels(p, (t) => f.pieces[t] === piece('tete'));
+        expect(pixels(p, (t) => f.pieces[t] === piece('tete') && f.teintes[t] === marque) / face).toBeLessThanOrEqual(0.35);
+      });
+
+      it(TENUE_D_ABORD.includes(b.id) ? 'se lit d’abord à sa tenue, à 40 pixels (en attente du directeur artistique)' : 'se lit d’abord à sa dominante, à 40 pixels', () => {
+        const p = projeter(f, { pas: PAS_A_40_PIXELS });
+        const dominantes = new Set(f.palette.filter((q) => q.role === 'dominante').map((q) => q.couleur));
+        const tenue = e.tenue.couleur;
+        const tient = (t: number) => ['outil', 'autre-main'].includes(f.table[f.pieces[t]].nom);
+        const dom = pixels(p, (t) => !tient(t) && dominantes.has(f.teintes[t]));
+        const ten = pixels(p, (t) => !tient(t) && f.teintes[t] === tenue);
+        if (TENUE_D_ABORD.includes(b.id)) expect(dom).toBeLessThan(ten);
+        else expect(dom).toBeGreaterThan(ten);
       });
 
       it(LUMINEUSES.includes(b.id) ? 'brille la nuit, d’une seule pièce' : 'ne brille pas', () => {

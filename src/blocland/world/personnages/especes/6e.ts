@@ -3,8 +3,15 @@
 import type { BiomeId } from '../../../biomes';
 import { SABLE } from '../../palette';
 import { TENUE } from '../couleurs';
-import { disque, jalon, manche, pointe, type Espece } from '../gabarit';
-import { devant, fuseau, parFace, pave, pose, repere, type Anneau } from '../peint';
+import { anneau, disque, jalon, manche, pointe, type Espece } from '../gabarit';
+import { anneauA, devant, facette, fuseau, parFace, pave, pose, repere, type Anneau, type V3 } from '../peint';
+
+/** Les élytres de Coco, en losange (l'arête au milieu du dos) : elles débordent des épaules. */
+const ELYTRES: Anneau[] = [
+  [0.45, 0.62, 0.07, 0.33],
+  [1.3, 0.58, 0.07, 0.31],
+  [1.86, 0.4, 0.05, 0.23],
+];
 
 const BOSSE: Anneau[] = [
   [2.4, 0.085],
@@ -21,20 +28,38 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
     silhouette: { largeur: 0.36, profondeur: 0.29, tete: 0.3, teteProfondeur: 0.26 },
     coiffe: (T, k) => {
-      pointe(T, [-0.05, 2.47, 0], 0.05, 0.14, k.dom, [0.3, 0, 0.4]);
-      pointe(T, [0.06, 2.47, 0.02], 0.045, 0.12, k.dom, [-0.2, 0, -0.5]);
+      // Une touffe de pousses sur la tête.
+      pointe(T, [-0.08, 2.46, 0], 0.07, 0.2, k.dom, [0.2, 0, 0.5]);
+      pointe(T, [0.02, 2.47, 0.02], 0.07, 0.22, k.dom, [-0.1, 0, -0.1]);
+      pointe(T, [0.1, 2.46, 0.02], 0.06, 0.18, k.dom, [-0.3, 0, -0.7]);
+    },
+    corps: (T, k) => {
+      // Les épaules de mousse, en mottes : un golem large du haut.
+      for (const c of [-1, 1])
+        fuseau(
+          T,
+          [
+            [1.52, 0.13, 0.15],
+            [1.76, 0.2, 0.2],
+            [1.94, 0.1, 0.11],
+          ],
+          4,
+          k.dom,
+          { x: c * 0.42 },
+        );
     },
     outil: {
       pose: [-0.5, 0, 0],
       dessiner: (T, k) => {
         manche(T, -0.12, 0.55, 0.03, k.bois);
-        pave(T, -0.15, 0.5, -0.09, 0.15, 0.7, 0.09, k.bois);
+        pave(T, -0.2, 0.48, -0.1, 0.2, 0.74, 0.1, k.bois);
       },
     },
   },
   mine: {
     nom: 'Tunel',
     metier: 'mineur',
+    gabarit: 'trapu',
     dominante: 0x7a5236,
     tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
     silhouette: { ventre: 0.04 },
@@ -51,6 +76,7 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
         ],
         6,
         k.laiton,
+        { bas: false },
       );
       pave(T, -0.05, 2.43, -0.26, 0.05, 2.53, -0.19, k.fer);
     },
@@ -71,19 +97,20 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
     museau: { forme: 'museau', long: 0.24, r: 0.09 },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.13, 2.44, 0.03], 0.07, 0.2, k.dom, [0, 0, -c * 0.25]);
+      for (const c of [-1, 1]) pointe(T, [c * 0.15, 2.43, 0.03], 0.09, 0.28, k.dom, [0, 0, -c * 0.35]);
     },
     corps: (T, k) => {
-      // La queue touffue, au bout clair.
+      // La queue touffue au bout clair, relevée sur le côté : elle se voit de face.
       fuseau(
-        pose(T, repere([0, 0.75, 0.22], 1.9, 0, 0)),
+        pose(T, repere([-0.12, 0.8, 0.24], 1.2, 0, 0.8)),
         [
-          [0, 0.05],
-          [0.22, 0.12],
-          [0.48, 0],
+          [0, 0.07],
+          [0.2, 0.18],
+          [0.44, 0.17],
+          [0.66, 0],
         ],
         5,
-        parFace((s) => (s === 1 ? k.marque : k.dom)),
+        parFace((s) => (s === 2 ? k.marque : k.dom)),
       );
     },
     outil: {
@@ -142,28 +169,34 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
   tour: {
     nom: 'Grimoire',
     metier: 'relieur copiste',
+    gabarit: 'trapu',
     dominante: 0x6e6a86,
     marque: { couleur: 0x4c4866, ou: [] },
     tenue: { couleur: TENUE.lin, vetements: ['robe'] },
-    museau: { forme: 'museau', long: 0.08, r: 0.09 },
+    // Une tête de tortue : large, plate sur le dessus, le museau en avant.
+    silhouette: { tete: 0.3, teteProfondeur: 0.28, crane: 1 },
+    museau: { forme: 'museau', long: 0.1, r: 0.1, y: 2.15 },
     corps: (T, k) => {
-      // La carapace, sur le dos.
+      // La carapace en dôme sur le dos : elle déborde du tronc de chaque côté et derrière (0,2 bloc de trois quarts).
       fuseau(
-        pose(T, repere([0, 1.25, 0.12], Math.PI / 2, 0, 0)),
+        pose(T, repere([0, 1.22, 0.1], Math.PI / 2, 0, 0)),
         [
-          [0, 0.34, 0.44],
-          [0.14, 0.3, 0.4],
-          [0.24, 0],
+          [0, 0.47, 0.58],
+          [0.12, 0.45, 0.55],
+          [0.26, 0.32, 0.42],
+          [0.34, 0],
         ],
         6,
         k.marque,
+        { rot: 0, bas: false },
       );
     },
     outil: {
+      // Le livre, tenu couverture en avant (0,5 bloc de haut).
       pose: [0, 0, 0],
       dessiner: (T, k) => {
-        pave(T, -0.045, -0.05, -0.16, 0.045, 0.37, 0.16, k.bois);
-        pave(T, -0.036, -0.035, -0.172, 0.036, 0.355, 0.14, k.lin);
+        pave(T, -0.2, -0.08, -0.05, 0.2, 0.42, 0.05, k.bois);
+        pave(T, -0.19, -0.07, -0.04, 0.21, 0.41, 0.04, k.lin);
       },
     },
   },
@@ -171,17 +204,33 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     nom: 'Coco',
     metier: 'arpenteuse',
     dominante: 0xa8443a,
-    marque: { couleur: 0x2e2a28, ou: ['ventre'] },
-    tenue: { couleur: TENUE.lin, vetements: ['elytres', 'ceinture'] },
+    marque: { couleur: 0x2e2a28, ou: [] },
+    tenue: { couleur: TENUE.lin, vetements: ['ceinture'] },
     silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.04 },
     coiffe: (T, k) => {
       for (const c of [-1, 1]) pointe(T, [c * 0.07, 2.47, -0.02], 0.02, 0.22, k.marque, [-0.3, 0, -c * 0.35], 3);
+    },
+    corps: (T, k) => {
+      // Les élytres en cape, rouges, et leurs trois points sombres.
+      fuseau(T, ELYTRES, 4, k.dom, { rot: 0 });
+      const points: [number, number, number][] = [
+        [-0.24, 1.4, 0.09],
+        [0.24, 1.4, 0.09],
+        [0, 0.85, 0.1],
+      ];
+      for (const [x, y, r] of points) {
+        const [, rx, rz, dz] = anneauA(ELYTRES, y);
+        const z = dz + rz * (1 - Math.max(0, Math.abs(x) - r) / rx) + 0.006;
+        const pts: V3[] = Array.from({ length: 6 }, (_, i) => [x + r * Math.cos((i * Math.PI) / 3), y + r * Math.sin((i * Math.PI) / 3), z]);
+        facette(T, pts, [x, y, z - 1], k.marque);
+      }
     },
     outil: { pose: [0, 0, 0], dessiner: (T, k) => jalon(T, -1.12, 0.9, 0.028, 4, k.bois, k.lin) },
   },
   riviere: {
     nom: 'Nénu',
     metier: 'passeuse',
+    gabarit: 'elance',
     dominante: 0x6f8f3e,
     tenue: { couleur: SABLE, vetements: ['cire'] },
     silhouette: { tete: 0.33, teteProfondeur: 0.23, jambe: 0.11 },
@@ -194,25 +243,33 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
   volcan: {
     nom: 'Lavi',
     metier: 'fondeuse',
-    dominante: 0xc8702e,
+    dominante: 0xd08a3a,
     tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
-    silhouette: { tete: 0.26, teteProfondeur: 0.27 },
-    museau: { forme: 'museau', long: 0.12, r: 0.1 },
+    // Une tête de salamandre, large et plate.
+    silhouette: { tete: 0.34, teteProfondeur: 0.27, crane: 0.95 },
+    museau: { forme: 'museau', long: 0.12, r: 0.12, y: 2.15 },
+    bras: { rx: 0.7, rz: 0.1 },
     corps: (T, k) =>
+      // La longue queue, qui traîne au sol et s'enroule sur le côté.
       fuseau(
-        pose(T, repere([0, 0.7, 0.22], 2.2, 0, 0)),
+        pose(T, repere([0.05, 0.5, 0.12], Math.PI / 2 - 0.25, 0, 0)),
         [
-          [0, 0.1],
-          [0.3, 0.07],
-          [0.55, 0],
+          [0, 0.11],
+          [0.22, 0.09, 0.09, 0.02, 0.06],
+          [0.42, 0.065, 0.065, 0.04, 0.22],
+          [0.58, 0, 0, 0.05, 0.44],
         ],
         5,
         k.dom,
       ),
     outil: {
-      pose: [-0.9, 0, 0],
+      // La longue pince (1,2 bloc), tenue en travers du corps : elle se voit de face.
+      pose: [0, -0.3, 1.05],
       dessiner: (T, k) => {
-        for (const c of [-1, 1]) pave(pose(T, repere([0, 0, 0], 0, 0, c * 0.06)), -0.02, -0.05, -0.02, 0.02, 0.8, 0.02, k.fer);
+        for (const c of [-1, 1]) {
+          manche(pose(T, repere([0, -0.3, 0], 0, 0, c * 0.04)), 0, 1.2, 0.026, k.fer, 3);
+          pointe(T, [c * 0.03, 0.84, 0], 0.035, 0.1, k.fer, [0, 0, -c * 0.5], 3);
+        }
       },
     },
   },
@@ -220,22 +277,12 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
     nom: 'Robin',
     metier: 'amarreur',
     dominante: 0x70563f,
-    marque: { couleur: 0xc8703a, ou: ['poitrine'] },
+    marque: { couleur: 0xc8703a, ou: ['plastron'] },
     tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
     silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.06, jambe: 0.05, jambes: 0.55 },
     museau: { forme: 'bec', long: 0.12, r: 0.05, y: 2.2 },
     corps: (T, k) => {
-      // Le cordage à l'épaule, en travers du torse, et la queue.
-      fuseau(
-        pose(T, repere([0, 1.4, 0], 0, 0, 0.6)),
-        [
-          [-0.035, 0.39, 0.33],
-          [0.035, 0.39, 0.33],
-        ],
-        6,
-        k.lin,
-        { bas: false, haut: false },
-      );
+      // La queue relevée.
       fuseau(
         pose(T, repere([0, 0.8, 0.24], 2.0, 0, 0)),
         [
@@ -245,36 +292,49 @@ export const ESPECES_6E: Partial<Record<BiomeId, Espece>> = {
         4,
         k.dom,
       );
+      // Le cordage : un anneau de corde (0,5 bloc) passé à l'épaule gauche, qui se voit de face et de trois quarts.
+      anneau(T, [-0.4, 1.6, -0.02], 0.215, 0.035, k.lin, [0, 1.0, 0], 6);
     },
-    outil: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0, 0.17, 0.08, k.lin) },
+    outil: {
+      // Le bout du cordage, qui pend de la main.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => manche(T, -0.4, 0.04, 0.035, k.lin, 4),
+    },
   },
   horloge: {
     nom: 'Tick',
     metier: 'horloger',
-    dominante: 0x6e5a48,
+    dominante: 0x6a6258,
     marque: { couleur: 0xd8c8a8, ou: ['museau', 'visage'] },
     tenue: { couleur: TENUE.cuir, vetements: ['gilet'] },
     museau: { forme: 'museau', long: 0.2, r: 0.08 },
+    // Un hérisson : rond, sur de courtes pattes.
+    silhouette: { largeur: 0.36, profondeur: 0.3, ventre: 0.06, jambes: 0.5 },
     corps: (T, k) => {
-      // Les piquants du dos.
+      // Les piquants du dos, en éventail : ils dépassent des épaules et de la tête.
       const piquants: [number, number, number, number, number][] = [
-        [-0.15, 1.6, 0.22, 1.2, 0.3],
-        [0.15, 1.6, 0.22, 1.2, -0.3],
+        [-0.26, 1.72, 0.12, 0.6, 1.05],
+        [0.26, 1.72, 0.12, 0.6, -1.05],
+        [-0.22, 1.35, 0.18, 0.9, 1.25],
+        [0.22, 1.35, 0.18, 0.9, -1.25],
         [0, 1.3, 0.26, 1.4, 0],
-        [0, 1.85, 0.16, 1.0, 0],
+        [0, 1.8, 0.16, 1.0, 0],
       ];
-      for (const [x, y, z, rx, rz] of piquants) pointe(T, [x, y, z], 0.07, 0.2, k.dom, [rx, 0, rz], 3);
+      for (const [x, y, z, rx, rz] of piquants) pointe(T, [x, y, z], 0.08, 0.36, k.dom, [rx, 0, rz], 3);
     },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.1, 2.44, 0.1], 0.06, 0.16, k.dom, [0.8, 0, -c * 0.3], 3);
+      for (const c of [-1, 1]) pointe(T, [c * 0.14, 2.4, 0.1], 0.07, 0.26, k.dom, [0.6, 0, -c * 0.7], 3);
+      pointe(T, [0, 2.44, 0.12], 0.07, 0.26, k.dom, [0.9, 0, 0], 3);
     },
     outil: {
       pose: [-0.2, 0, 0],
       dessiner: (T, k) => {
         manche(T, -0.02, 0.2, 0.024, k.bois);
-        disque(pose(T, repere([0, 0.31, 0], Math.PI / 2, 0, 0)), 0, 0.11, 0.03, k.laiton, 8);
+        disque(pose(T, repere([0, 0.31, 0], Math.PI / 2, 0, 0)), 0, 0.11, 0.03, k.laiton, 6);
       },
     },
-    autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.02, 0.14, 0.08, k.laiton, 8) },
+    // L'horloge de laiton, tenue cadran en avant.
+    autreBras: { rx: 0.35, rz: 0.2 },
+    autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.06, 0.2, 0.08, k.laiton, 6) },
   },
 };
