@@ -32,7 +32,7 @@ Leurs avis sont résumés à chaque section.
 Deux univers au départ :
 
 - **Blocland** : le monde en blocs et son univers d’aujourd’hui, gardé, et **univers par défaut** (décision 7 du mainteneur : les élèves y sont très attachés) ;
-- **Archipéo** : l’aventure maritime de la migration, au choix dans les Réglages à partir du lot 6.
+- **Archipéo** : l’aventure maritime de la migration, au choix dans les Réglages à partir du lot 6, et seulement là (décision 8).
 
 ## 2. L’univers choisit son rendu
 
@@ -200,4 +200,5 @@ Puis, le même jour au soir :
 
 | Question | Décision |
 | --- | --- |
-| **7. L’univers par défaut** | **Blocland reste l’univers par défaut** : les élèves sont très attachés au monde en blocs. Archipéo se choisit dans les Réglages. L’interface suit l’univers : dans Blocland, elle prend un style propre à Blocland ; dans Archipéo, elle reste celle d’aujourd’hui. Cela remplace « quand Archipéo devient l’univers par défaut » dans la décision 5 : le réglage arrive toujours au lot 6, un appareil neuf s’ouvre dans Blocland sans message, un appareil qui a déjà une progression s’ouvre dans Blocland et reçoit le message unique qui lui présente Archipéo, et un appareil qui avait allumé la section Expérimental passe à Archipéo sans message. |
+| **7. L’univers par défaut** | **Blocland reste l’univers par défaut** : les élèves sont très attachés au monde en blocs. Archipéo se choisit dans les Réglages. L’interface suit l’univers : dans Blocland, elle prend un style propre à Blocland ; dans Archipéo, elle reste celle d’aujourd’hui. Cela remplace « quand Archipéo devient l’univers par défaut » dans la décision 5 : le réglage arrive toujours au lot 6, un appareil neuf s’ouvre dans Blocland sans message, un appareil qui a déjà une progression s’ouvre dans Blocland et reçoit le message unique qui lui présente Archipéo. |
+| **8. Où s’active Archipéo** | **Seulement dans les Réglages de l’application**, section « Univers », par l’élève ou un adulte. Rien ne fait passer un appareil à Archipéo d’office : ni la bascule, ni la section Expérimental d’avant le lot 6 (un appareil qui l’avait allumée s’ouvre dans Blocland comme les autres, avec le message unique s’il a une progression), ni une adresse (le drapeau `?rendu=archipeo` disparaît à la bascule). Le message unique ne fait que mener au réglage (« Voir le réglage »). |

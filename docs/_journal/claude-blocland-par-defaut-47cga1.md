@@ -1,1 +1,3 @@
 Le plan change : **Blocland reste l’univers par défaut**, parce que les élèves sont très attachés au monde en blocs. Au lot 6, Archipéo s’ajoutera au choix dans les Réglages, section « Univers ». Un appareil neuf s’ouvrira dans Blocland ; un appareil qui a déjà une progression y restera, avec un message qui présente Archipéo. L’interface suivra l’univers : dans Blocland, les panneaux, les boutons et les titres prendront un style propre à Blocland ; dans Archipéo, ils resteront ceux d’aujourd’hui. Rien ne change encore à l’écran.
+
+Archipéo ne s’activera que dans les Réglages, section « Univers » : rien ne fera passer un appareil à Archipéo d’office, pas même la section Expérimental d’aujourd’hui.
