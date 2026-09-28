@@ -137,7 +137,8 @@ export function dessinerPhare(P: Pinceau, L: Pinceau, o: PoseDuPhare): void {
     const s = o.emprise / 2;
     boite(P, cx - s, o.pied, cz - s, cx + s, y, cz + s, peintre(delave(o.pierre, muted), o.pied, haut - o.pied));
   }
-  if (a('anneau')) tronconique(P, cx, cz, y, y + PHARE.anneau.hauteur, r + PHARE.anneau.debord, rayonDuFut(r, PHARE.anneau.hauteur / H) + PHARE.anneau.debord, n, rot, peint(COULEURS_DU_PHARE.anneau));
+  // L'anneau est à la jonction du socle et du fût : sans socle (le 6e), pas d'anneau (DA, 28/09).
+  if (a('anneau') && y > o.pied) tronconique(P, cx, cz, y, y + PHARE.anneau.hauteur, r + PHARE.anneau.debord, rayonDuFut(r, PHARE.anneau.hauteur / H) + PHARE.anneau.debord, n, rot, peint(COULEURS_DU_PHARE.anneau));
   if (a('fut')) {
     // Le fût en tranches : crème, bande, crème, bande, crème ; un seul cône, des couleurs par tranche. Sans galerie
     // (un plan du phare en cours, R5), son haut est fermé : on ne voit jamais l'intérieur.

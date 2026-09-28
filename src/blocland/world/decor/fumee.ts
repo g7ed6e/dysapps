@@ -125,6 +125,8 @@ export interface OptionsDeFumee {
   rayon?: number;
   volutes?: number;
   bas?: number;
+  /** L'écart entre deux volutes, en somme de leurs rayons : 0,55 (elles se chevauchent, lot R4) ; plus de 1, séparées. */
+  ecart?: number;
 }
 
 /**
@@ -147,7 +149,7 @@ export function bouffees(F: Fumees, list: VoxelCube[], hasard: () => number, rot
   let y = o.bas ?? d.z + 0.5;
   for (let k = 0; k <= n; k++) {
     const r = r0 * (1 + FUMEE.croissance * k);
-    if (k > 0) y += 0.55 * (r + r0 * (1 + FUMEE.croissance * (k - 1)));
+    if (k > 0) y += (o.ecart ?? 0.55) * (r + r0 * (1 + FUMEE.croissance * (k - 1)));
     chemin.push([d.x + 0.5 + vx * k * k, y, d.y + 0.5 + vz * k * k]);
     rayons.push(r);
   }

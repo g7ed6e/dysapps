@@ -19,12 +19,12 @@ const grandArbre = enRepere(({ P, cx, cz, base, pied, Z, rot, hasard, vert, deMa
 });
 
 /**
- * La fumée du Volcan : aux Premiers Rivages, une fumée mince, trois petites volutes qui sortent d'une bouche sur le
- * flanc sud du cône (celui que la caméra voit toujours, elle regarde vers le nord), à mi-hauteur (`bouche`), et restent
+ * La fumée du Volcan : aux Premiers Rivages, une fumée mince, trois petites volutes séparées (`ecart`), en traînée, qui sortent d'une bouche sur le
+ * flanc sud du cône (celui que la caméra voit toujours, elle regarde vers le nord), au bas de sa face (`bouche`), et restent
  * contre la roche sombre : jamais au-dessus du cratère, donc jamais derrière le nom de l'île, et plus basses que le
  * phare (le volcan fumant est la signature du 4e ; recommandation du directeur artistique, fiche de famille).
  */
-export const FUMEE_DU_VOLCAN = { rayon: 0.38, volutes: 3, bouche: 0.3, marche: 6 } as const;
+export const FUMEE_DU_VOLCAN = { rayon: 0.22, volutes: 3, ecart: 1.3, bouche: 0.2, marche: 6 } as const;
 
 /**
  * La bouche de la fumée : la crête du cône est le plus haut du sol sous le pied des cubes de fumée (au-dessus du
@@ -47,7 +47,7 @@ const fumee = enRepere(({ e, fumee, bouffees, sol }) => {
   if (!list.length) return;
   const pied = list.reduce((p, q) => (q.z < p.z ? q : p));
   const b = boucheDuVolcan(pied, sol);
-  bouffees([{ ...pied, x: b.x, y: b.y }], { rayon: FUMEE_DU_VOLCAN.rayon, volutes: FUMEE_DU_VOLCAN.volutes, bas: b.z });
+  bouffees([{ ...pied, x: b.x, y: b.y }], { rayon: FUMEE_DU_VOLCAN.rayon, volutes: FUMEE_DU_VOLCAN.volutes, ecart: FUMEE_DU_VOLCAN.ecart, bas: b.z });
 });
 
 /** La tour de guet de la Mine : une tour de pierre sur le pic, sa lanterne et sa bannière. */

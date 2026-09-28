@@ -121,3 +121,10 @@ it('le fût est peint plus clair que blanc, dans une borne connue (crème lu à 
   expect(max).toBeLessThanOrEqual(ECLAT_DU_FUT * (1 + OMBRE_DU_FUT.eclat) * (1 + OMBRE_DU_FUT.chaleur));
   expect(Math.min(...P.colors)).toBeGreaterThanOrEqual(0);
 });
+
+it('sans socle (le 6e), pas d’anneau : il n’existe qu’à la jonction du socle et du fût (DA, 28/09)', () => {
+  const sans = trace({ y: 0.7, pieces: new Set(['anneau']) });
+  expect(sans.P.elements.length + sans.L.elements.length).toBe(0);
+  const avec = trace({ pieces: new Set(['anneau']) });
+  expect(avec.P.elements.length).toBeGreaterThan(0);
+});
