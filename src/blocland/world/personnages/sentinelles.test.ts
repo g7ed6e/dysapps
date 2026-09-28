@@ -15,10 +15,11 @@ import {
   ECHELLE_DANS_LE_MONDE,
   EPAISSEUR_DES_VEINES_DANS_LE_MONDE,
   FOYER,
+  HAUT_DU_SOCLE,
   HAUTEUR_DANS_LE_MONDE,
   HAUTEUR_DE_SENTINELLE,
 } from './sentinelle';
-import { sentinelleDuMonde, sentinellePeinte, STATUES } from './sentinellesPeintes';
+import { sentinelleAuDefi, sentinelleDuMonde, sentinellePeinte, STATUES } from './sentinellesPeintes';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
 
@@ -74,6 +75,8 @@ function lueurs(f: FacettesDePersonnage): number {
 
 /** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne. */
 const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio'];
+/** Les sentinelles basses, plus longues que hautes (la Diligence, retouche du directeur artistique) : leur haut, en blocs. */
+const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5] };
 
 describe('L’allumage des sentinelles', () => {
   it('éteinte (0) et rallumée (1), exactement les couleurs du directeur artistique', () => {
@@ -163,7 +166,8 @@ describe('Les Gardiens en sentinelles', () => {
       const f = sentinellePeinte(b.id);
       const nom = (t: number) => f.table[f.pieces[t]].nom;
 
-      it('huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
+      const basse = BASSES[b.id];
+      it(basse ? 'basse et plus longue que haute, les pieds en 0 ; cinq cases de large au plus' : 'huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
         let [bas, haut] = [Infinity, -Infinity];
         for (let i = 0; i < f.positions.length; i += 3) {
           bas = Math.min(bas, f.positions[i + 1]);
@@ -172,7 +176,20 @@ describe('Les Gardiens en sentinelles', () => {
           expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
         }
         expect(bas).toBeCloseTo(0, 6);
-        expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
+        if (!basse) return expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
+        expect(haut).toBeGreaterThanOrEqual(basse[0]);
+        expect(haut).toBeLessThanOrEqual(basse[1]);
+        // Sa longueur, le long de son grand axe (tourné de son `tour` dans le monde).
+        const tour = STATUES[b.id].tour?.monde ?? 0;
+        let [gauche, droite] = [Infinity, -Infinity];
+        for (let t = 0; t < nbTriangles(f); t++)
+          if (nom(t) === 'sculpture')
+            for (let k = 0; k < 3; k++) {
+              const [x, , z] = sommet(f, t, k);
+              const l = x * Math.cos(tour) - z * Math.sin(tour);
+              [gauche, droite] = [Math.min(gauche, l), Math.max(droite, l)];
+            }
+        expect(droite - gauche).toBeGreaterThan(haut - HAUT_DU_SOCLE);
       });
 
       it('quatre pièces figées ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
@@ -199,7 +216,9 @@ describe('Les Gardiens en sentinelles', () => {
         expect(orbites.length).toBeGreaterThanOrEqual(2);
         for (const t of orbites) {
           expect(nom(t)).toBe('sculpture');
-          expect(f.normals[t * 9 + 2]).toBeLessThan(-0.95);
+          // Vers −Z, tournées avec la statue quand elle se tourne pour se montrer de profil (`tour`).
+          const tour = STATUES[b.id].tour?.monde ?? 0;
+          expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
         }
       });
 
@@ -215,10 +234,34 @@ describe('Les Gardiens en sentinelles', () => {
     });
 });
 
+describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
+  const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
+  it('la Diligence seule', () => expect(tournees.map((b) => b.id)).toEqual(['relais']));
+
+  for (const b of tournees)
+    it(`${STATUES[b.id].nom} : au défi, sa portière face à la caméra de trois quarts, dans les cinq cases ; le socle ne tourne pas`, () => {
+      const f = sentinelleAuDefi(b.id);
+      const monde = sentinellePeinte(b.id);
+      expect(f).not.toBe(monde);
+      expect(f.pieces.length).toBe(monde.pieces.length);
+      // La caméra du défi (Guardians.tsx, `cameraDirection`), vue de dessus.
+      const [cx, cz] = [-0.55, -0.85].map((v) => v / Math.hypot(0.55, 0.85));
+      const orbites = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.orbite);
+      expect(orbites.length).toBeGreaterThanOrEqual(2);
+      for (const t of orbites) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+      for (let i = 0; i < f.positions.length; i += 3) {
+        expect(Math.abs(f.positions[i])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+        expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+      }
+      const socle = (g: typeof f) => Array.from(g.positions).filter((_, j) => g.pieces[Math.floor(j / 9)] === g.table.findIndex((p) => p.nom === 'socle'));
+      expect(socle(f)).toEqual(socle(monde));
+    });
+});
+
 describe('Les sentinelles dans le monde (revue d’ensemble du directeur artistique, DA-5)', () => {
   const { progress, village } = toutConstruit();
 
-  it('font environ 5 blocs socle compris, plus basses que le phare de Grimoire (6 cases) et que la grue de l’Atelier (9)', () => {
+  it('font environ 5 blocs socle compris (la Diligence, basse, à l’échelle), plus basses que le phare de Grimoire (6 cases) et que la grue de l’Atelier (9)', () => {
     expect(HAUTEUR_DANS_LE_MONDE).toBeGreaterThanOrEqual(4.8);
     expect(HAUTEUR_DANS_LE_MONDE).toBeLessThanOrEqual(5.4);
     expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(PHARES['6e'].H);
@@ -230,7 +273,11 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
         const pied = pointDePose(p)[1];
         let haut = -Infinity;
         for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
-        expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
+        const basse = BASSES[p.id];
+        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
+        expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
       });
     }
   });

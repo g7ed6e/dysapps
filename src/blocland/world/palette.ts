@@ -316,6 +316,8 @@ export const MATIERES: Record<TextureKind, Faces> = {
   rail: { dessus: 0x86643e, cote: 0x4e4e54 },
   antenne: { dessus: 0xb4bcc4, cote: 0x9aa4ae },
   taille: { dessus: 0xe4dac4, cote: 0xd4c8ae },
+  // La dalle du Relais : pierre claire et chaude, plus sombre et plus dorée que la pierre de taille.
+  dalle: { dessus: 0xc8b28a, cote: 0xa8916c },
   or: { dessus: 0xf0c84a, cote: 0xcca22e },
   cristal: { dessus: 0x88e8e0, cote: 0x4cbdb6 },
   feuilles: { dessus: 0x5e9a3e, cote: 0x4a8434 },

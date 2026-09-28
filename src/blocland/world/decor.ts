@@ -306,6 +306,15 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(3, 9, h(3, 9) + 1, BLOCKS.lambris.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
+  relais: (put, h) => {
+    // Un poteau indicateur de bois, deux planches à deux hauteurs (deux routes) ; un montoir de dalles ; une botte de foin.
+    for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, TRUNK);
+    put(10, 3, h(10, 3) + 3, BLOCKS.bois.side);
+    put(8, 3, h(8, 3) + 2, BLOCKS.bois.side);
+    put(11, 5, h(11, 5) + 1, BLOCKS.dalle.side);
+    put(3, 9, h(3, 9) + 1, HAY);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
   theatre: (put, h) => {
     // Une petite scène : deux colonnes de rideau pourpre, une frise au-dessus, deux lanternes de rampe devant.
     for (const px of [8, 10]) for (let z = 1; z <= 3; z++) put(px, 3, h(px, 3) + z, BLOCKS.velours.side);

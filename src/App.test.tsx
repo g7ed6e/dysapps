@@ -20,12 +20,13 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est le menu de Blocland : le village, les trois Expéditions, puis Missions et Réglages', () => {
+it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais', '/matiere/lv2']);
+  expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
   const links = screen.getByRole('link', { name: /Toutes les missions/ }).closest('p')!;

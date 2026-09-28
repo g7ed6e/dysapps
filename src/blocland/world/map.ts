@@ -35,7 +35,7 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les vingt-huit îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les vingt-neuf îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
@@ -70,6 +70,8 @@ export const MAP: IslandDef[] = [
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'comptoir', region: 'basses-terres', core: { x: 101, y: 320 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
   { id: 'manoir', region: 'hauteurs', core: { x: 101, y: 366 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
+  // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
+  { id: 'relais', region: 'basses-terres', core: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
   // Anglais 4e : aux deux bouts de la crête, la Gare avant la Forge, le Théâtre après le Cabinet.
   { id: 'theatre', region: 'hauteurs', core: { x: 158, y: 618 }, altitude: 6, ext: e(3, 4, 2, 4), relief: 'collines', seed: 71 },
   { id: 'gare', region: 'feu', core: { x: -2, y: 632 }, altitude: 6, ext: e(4, 3, 2, 4), relief: 'collines', seed: 72 },

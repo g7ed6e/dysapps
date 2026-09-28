@@ -190,6 +190,14 @@ export const BLOCLAND = {
         beaten: 'Je range ma couronne. Le Comptoir est à toi… et à Pudding.',
       },
     },
+    relais: {
+      challenge: 'La Diligence de cuivre s’arrête devant l’auberge : « Tu as accueilli tous mes voyageurs. Montre-moi que tu comprends ce qu’ils te disent. »',
+      guardianSays: {
+        hit: 'Hue ! Juste. Mes roues tournent rond.',
+        miss: 'Ce n’est rien : réécoute le mot, relis la règle, et reprends.',
+        beaten: 'Je dételle mes chevaux. Le Relais est à toi… et à Lina.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
       guardianSays: {
@@ -255,6 +263,7 @@ export const BLOCLAND = {
     baie: 'rouge-gorge des quais',
     horloge: 'hérisson horloger',
     comptoir: 'bouledogue marchand',
+    relais: 'cigogne voyageuse',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',

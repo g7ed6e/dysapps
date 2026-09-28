@@ -70,9 +70,9 @@ it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives d
   expect(h).toBeLessThan(6.5);
 });
 
-it('la tour en ruine et la calotte sont hors de la grille : sans cubes, on ne les touche pas ; la calotte coiffe le plus haut pic du Glacier', () => {
+it('la tour en ruine, la calotte, le ponton et la girouette du Relais sont hors de la grille : sans cubes, on ne les touche pas ; la calotte coiffe le plus haut pic du Glacier', () => {
   const hors = m.elements.filter((e) => e.horsGrille);
-  expect(hors.map((e) => e.genre).sort()).toEqual(['calotte', 'tour-en-ruine']);
+  expect(hors.map((e) => e.genre).sort()).toEqual(['calotte', 'girouette', 'ponton', 'tour-en-ruine']);
   for (const e of hors) {
     expect(e.cubes).toEqual([]);
     const i = m.elements.indexOf(e);
@@ -88,6 +88,17 @@ it('la tour en ruine et la calotte sont hors de la grille : sans cubes, on ne le
   const tour = hors.find((e) => e.genre === 'tour-en-ruine')!;
   expect(colonneEn(champ, tour.x, tour.y)?.ile).toBe('carrefour');
   expect(inCore(islandDef('carrefour'), tour.x, tour.y)).toBe(false);
+  // Le ponton du Relais, sur son rivage est, hors du cœur ; la girouette juste derrière le cœur, derrière l'auberge.
+  const relais = islandDef('relais');
+  const ponton = hors.find((e) => e.genre === 'ponton')!;
+  expect(colonneEn(champ, ponton.x, ponton.y)?.ile).toBe('relais');
+  expect(ponton.x).toBeGreaterThanOrEqual(relais.core.x + 16);
+  expect(colonneEn(champ, ponton.x + 1, ponton.y)?.ile === 'relais' && !colonneEn(champ, ponton.x + 1, ponton.y)?.liquide).toBe(false);
+  const girouette = hors.find((e) => e.genre === 'girouette')!;
+  expect(colonneEn(champ, girouette.x, girouette.y)?.ile).toBe('relais');
+  expect(girouette.y - relais.core.y).toBeGreaterThanOrEqual(16);
+  expect(girouette.y - relais.core.y).toBeLessThanOrEqual(17);
+  expect(Math.abs(girouette.x - relais.core.x - 9.5)).toBeLessThanOrEqual(3);
   // La neige du sol se peint en roche claire : jamais aussi claire que la glace de la calotte.
   expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(ambianceDe('5e').sols!.neige!.dessus));
 });

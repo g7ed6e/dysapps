@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { getBiome } from './biomes';
+import { getBiome, missionsJouables } from './biomes';
 import { useBlocland } from './BloclandContext';
+import { useSettings } from '../core/SettingsContext';
 import { levelFor } from './engine';
 import { ExerciseRunner } from './ExerciseRunner';
 import { loadExercise, pickExercise } from './exercises';
@@ -16,9 +17,11 @@ import { Loading } from '../components/Loading';
 export function ExercisePage() {
   const { biomeId, typeId } = useParams();
   const { state } = useBlocland();
+  const { settings } = useSettings();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const type = biome?.exercises.find((e) => e.id === typeId);
+  // Une mission d'une autre LV2 que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
+  const type = biome && missionsJouables(biome, settings.lv2).find((e) => e.id === typeId);
   // « Continuer » (écran titre, menus) ramène ici.
   useRememberPlace(biome && type ? { path: `/aventure/${biome.id}/${type.id}`, label: `${type.title} · ${biome.name}` } : null);
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :

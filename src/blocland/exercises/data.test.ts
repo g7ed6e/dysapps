@@ -306,3 +306,33 @@ it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix
     }
   }
 });
+
+it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ et ¡ jamais lus, une correction en français', () => {
+  const defs = EXERCISES.filter((e) => e.lang === 'de' || e.lang === 'es');
+  expect(defs.length).toBeGreaterThan(0);
+  for (const def of defs) {
+    // Une mission par langue : son identifiant dit sa langue (relais-de-hallo, relais-es-hola).
+    expect(def.type.startsWith(`${def.lang}-`), def.id).toBe(true);
+    expect(SCREEN_TYPES[def.type].component, def.id).toBe(CalculScreen);
+    expect(def.items.length, def.id).toBe(8);
+    for (const it of def.items) {
+      const choices = it.choices as string[];
+      expect(choices, `${def.id} ${it.key}`).toContain(it.answer);
+      expect(choices.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(choices).size).toBe(choices.length);
+      // Jamais deux réponses qui ne diffèrent que par une majuscule.
+      expect(new Set(choices.map((c) => c.toLowerCase())).size, it.key).toBe(choices.length);
+      expect(String(it.explanation).length).toBeGreaterThan(5);
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
+      for (const text of [it.question, it.prompt, it.spoken, it.hint, it.explanation, ...choices]) if (text !== undefined) expect(String(text), it.key).not.toContain("'");
+      // Pas encore de phrase à trou en LV2 (le mot lu pour le trou n'est pas décidé) ; ¿ et ¡ s'affichent, jamais lus.
+      expect(String(it.prompt), it.key).not.toContain('…');
+      expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
+      if (it.question !== undefined) {
+        expect(String(it.question), it.key).toMatch(/\?$/);
+        expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
+        expect(it.choicesLang, it.key).toBe('fr');
+      }
+    }
+  }
+});

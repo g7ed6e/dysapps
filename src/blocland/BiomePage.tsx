@@ -1,7 +1,8 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, getBiome, guardianTitle, ofBlock } from './biomes';
+import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
+import { useSettings } from '../core/SettingsContext';
 import { SchoolLink } from './School';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
@@ -34,6 +35,7 @@ export function BiomePage() {
   const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
   const { state } = useBlocland();
+  const { settings } = useSettings();
   const textes = useTextes();
   const univers = useUnivers();
   const biome = getBiome(biomeId);
@@ -45,7 +47,8 @@ export function BiomePage() {
   const owned = state.inventory[biome.block] ?? 0;
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const port = archipelagoOf(biome.id).port === biome.id;
-  const goal = unlocked ? nextGoalInfo(state, biome.id) : null;
+  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
 
   return (
     <>
@@ -63,19 +66,30 @@ export function BiomePage() {
       {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
       {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
 
-      <CreatureBubble biome={biome} text={unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
+      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
-      <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
+      {sansLv2 ? (
+        <p>
+          <Link to="/reglages" className="button">
+            <Icon name="settings" /> Choisir une LV2
+          </Link>
+        </p>
+      ) : (
+        <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
+      )}
 
+      {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}
+      {!sansLv2 && (
+        <>
       <h2 className="section-title">
         <Icon name="hammer" /> Missions
       </h2>
       <ul className="grid apps">
-        {biome.exercises.map((exercise) => {
+        {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const content = (
@@ -114,6 +128,8 @@ export function BiomePage() {
           );
         })}
       </ul>
+        </>
+      )}
 
       {unlocked && archipelagoOf(biome.id).school === biome.id && (
         <>
@@ -138,10 +154,12 @@ export function BiomePage() {
         </>
       )}
 
-      <h2 className="section-title">
-        <Icon name="shield" /> Le Gardien
-      </h2>
-      {(() => {
+      {!sansLv2 && (
+        <h2 className="section-title">
+          <Icon name="shield" /> Le Gardien
+        </h2>
+      )}
+      {!sansLv2 && (() => {
         const ready = unlocked && isBossUnlocked(biome, state.progress);
         const beaten = isBossBeaten(biome.id, state.progress);
         const boss = state.progress[`${biome.id}-gardien`];

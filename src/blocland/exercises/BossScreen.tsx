@@ -3,6 +3,7 @@ import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { langueVivante } from '../../core/speech';
+import { BIOMES } from '../biomes';
 import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';
 
@@ -76,6 +77,7 @@ const LABELS: Record<string, string> = {
   notices: 'Notices',
 };
 
+/** Le nom d'une épreuve : son libellé, sinon le titre de sa mission (« Hola »), jamais un identifiant. */
 function labelOf(type: string): string {
-  return LABELS[type] ?? type;
+  return LABELS[type] ?? BIOMES.flatMap((b) => b.exercises).find((x) => x.id === type)?.title ?? type;
 }

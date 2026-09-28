@@ -2,7 +2,8 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple. Le décor (arbres, décor du cœur,
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
-import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
+import { BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
+import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { walkPath, type WalkGround } from './paths';
 import {
@@ -111,6 +112,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.rail.side]: 'rail',
   [BLOCKS.antenne.side]: 'antenne',
   [BLOCKS.taille.side]: 'taille',
+  [BLOCKS.dalle.side]: 'dalle',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -286,7 +288,7 @@ export const QUEST_ROW = 1;
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
-  return biome.exercises.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
+  return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
 const STEP = '#8f8f8f';
@@ -560,7 +562,8 @@ export const CREATURE_STEPS: [number, number][] = [
   [-1, 1],
 ];
 
-const creatureSpots = new Map<BiomeId, CreatureSpot>();
+// Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
+const creatureSpots = new Map<string, CreatureSpot>();
 
 export interface CreatureSpot {
   x: number;
@@ -575,7 +578,8 @@ export interface CreatureSpot {
  * d'où elle peut se promener ; sinon elle reste immobile.
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
-  const known = creatureSpots.get(id);
+  const cle = `${id}:${lv2Courante()}`;
+  const known = creatureSpots.get(cle);
   if (known) return known;
   const index = BIOMES.findIndex((b) => b.id === id);
   const def = islandDef(id);
@@ -613,7 +617,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     }
   }
   const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
-  creatureSpots.set(id, spot);
+  creatureSpots.set(cle, spot);
   return spot;
 }
 

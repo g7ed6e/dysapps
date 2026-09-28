@@ -5,6 +5,7 @@
 // île de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { lv2Courante, type Lv2Choice } from '../../core/settings';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
 import { plansFor, isPlanDone } from './plans';
@@ -129,6 +130,8 @@ export const BRIDGES: BridgeDef[] = [
   b('marche', 'comptoir', 'pont', 6),
   b('marais', 'manoir', 'pont', 6),
   b('comptoir', 'manoir', 'pont', 5),
+  // La LV2, en bout de chemin : un pont depuis le Comptoir vers le Relais des voyageurs, à l'est ; rien n'en dépend.
+  b('comptoir', 'relais', 'pont', 6),
   // Anciens Ateliers (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
   b('atelier', 'forge', 'pont', 4),
   b('atelier', 'falaise', 'pont', 4),
@@ -251,6 +254,7 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'rail',
   'antenne',
   'taille',
+  'dalle',
   'or',
   'cristal',
 ];
@@ -342,9 +346,13 @@ export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldP
   return !world || conditionMet(bridge, bridges, world) ? 'buildable' : 'blocked';
 }
 
-/** Les ouvrages proposés maintenant (constructibles ou bloqués par une condition), qui touchent une île donnée (ou tous). */
-export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress): BridgeDef[] {
+/**
+ * Les ouvrages proposés maintenant (constructibles ou bloqués par une condition), qui touchent une île donnée (ou tous).
+ * Avec « Pas de LV2 », aucun ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs.
+ */
+export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante()): BridgeDef[] {
   return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
+    if (lv2 === 'aucune' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
     const state = bridgeState(b, bridges, world);
     return state === 'buildable' || state === 'blocked';
   });

@@ -11,7 +11,7 @@ import { lineaire } from '../landMesh';
 import type { Couleur } from '../palette';
 import { clamp, rgb } from '../decor/pinceau';
 import { LUEUR, SENTINELLE } from './couleurs';
-import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
+import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
 
 /** La hauteur d'une sentinelle, socle compris, et celle du socle, en blocs (le modèle, tel que le montre l'écran du défi). */
 export const HAUTEUR_DE_SENTINELLE = 8;
@@ -62,7 +62,15 @@ export interface Statue {
   allume: string;
   sculpture(T: Trace, a: Atelier): void;
   veines(T: Trace, a: Atelier): void;
+  /**
+   * Pour une statue longue, dessinée de profil face à −Z (la Diligence) : son tour autour de la verticale, en radians,
+   * dans le monde et au défi, pour se montrer de profil à chaque caméra. Le socle et son foyer ne tournent pas.
+   */
+  tour?: Record<OuSeMontre, number>;
 }
+
+/** Là où se montre une sentinelle : dans le monde, ou au défi (le portrait). */
+export type OuSeMontre = 'monde' | 'defi';
 
 // ---------- Le socle commun, le foyer et la flamme ----------
 
@@ -319,22 +327,29 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
 
 // ---------- La sentinelle entière ----------
 
-/** Les quatre pièces d'une sentinelle ; `veines` : la largeur de ses veines, en part de celle du dessin. */
-export function piecesDeSentinelle(s: Statue, { veines = 1 }: { veines?: number } = {}): Piece[] {
+/**
+ * Les quatre pièces d'une sentinelle ; `ou` : où elle se montre (une statue longue, `tour`, s'y tourne) ; `veines` : la
+ * largeur de ses veines, en part de celle du dessin.
+ */
+export function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSeMontre; veines?: number } = {}): Piece[] {
   const a = (pot: Pot) => new Atelier(pot, veines);
+  const tour = s.tour?.[ou] ?? 0;
+  const tourne = repere([0, 0, 0], 0, tour, 0);
+  const R = (T: Trace): Trace => (tour ? pose(T, tourne) : T);
   return [
     { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, a(pot)) },
-    { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0], dessiner: (T, pot) => s.sculpture(T, a(pot)) },
+    { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0], dessiner: (T, pot) => s.sculpture(R(T), a(pot)) },
     { nom: 'flamme', pivot: [0, FOYER.haut, FOYER.z], lueur: 'allumage', dessiner: (T, pot) => flamme(T, a(pot)) },
-    { nom: 'veines', pivot: [0, HAUT_DU_SOCLE, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(T, a(pot)) },
+    { nom: 'veines', pivot: [0, HAUT_DU_SOCLE, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(R(T), a(pot)) },
   ];
 }
 
 /**
- * Une sentinelle en facettes, éteinte (ses couleurs au degré 0 ; `couleursAllumees` donne les autres). `veines` : la
- * largeur de ses veines, en part de celle du dessin (`EPAISSEUR_DES_VEINES_DANS_LE_MONDE` pour une sentinelle du monde).
+ * Une sentinelle en facettes, éteinte (ses couleurs au degré 0 ; `couleursAllumees` donne les autres). `ou` : où elle se
+ * montre ; `veines` : la largeur de ses veines, en part de celle du dessin (`EPAISSEUR_DES_VEINES_DANS_LE_MONDE` pour une
+ * sentinelle du monde).
  */
-export function sentinelleEnFacettes(s: Statue, { veines = 1 }: { veines?: number } = {}): FacettesDePersonnage {
-  const f = peindrePersonnage(piecesDeSentinelle(s, { veines }));
+export function sentinelleEnFacettes(s: Statue, options: { ou?: OuSeMontre; veines?: number } = {}): FacettesDePersonnage {
+  const f = peindrePersonnage(piecesDeSentinelle(s, options));
   return { ...f, colors: couleursAllumees(f, 0) };
 }

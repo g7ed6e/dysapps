@@ -51,6 +51,7 @@
   --pink: #d9772e; /* brique */
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
+  --lv2: #d98cb3; /* églantine : la deuxième langue, à 48° au moins des autres teintes */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -449,6 +450,9 @@ svg {
 .title-anglais svg {
   color: var(--violet);
 }
+.title-lv2 svg {
+  color: var(--lv2);
+}
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
@@ -522,7 +526,8 @@ button.app-card:active {
 .subject-progress,
 .app-card.subject-francais,
 .app-card.subject-maths,
-.app-card.subject-anglais {
+.app-card.subject-anglais,
+.app-card.subject-lv2 {
   border-top-width: 8px;
 }
 .subject-francais {
@@ -533,6 +538,9 @@ button.app-card:active {
 }
 .subject-anglais {
   border-top-color: var(--violet);
+}
+.subject-lv2 {
+  border-top-color: var(--lv2);
 }
 .app-card.locked {
   border-top-width: var(--border-width);
@@ -556,6 +564,8 @@ button.app-card:active {
 .subject-maths .app-icon,
 .subject-anglais .subject-icon,
 .subject-anglais .app-icon,
+.subject-lv2 .subject-icon,
+.subject-lv2 .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -570,6 +580,10 @@ button.app-card:active {
 .subject-anglais .subject-icon,
 .subject-anglais .app-icon {
   background: var(--violet);
+}
+.subject-lv2 .subject-icon,
+.subject-lv2 .app-icon {
+  background: var(--lv2);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {
@@ -2328,6 +2342,9 @@ button.app-card:active {
 }
 .biome-manoir {
   --biome-color: #5a3a22;
+}
+.biome-relais {
+  --biome-color: #9a8462;
 }
 .biome-name {
   font-family: var(--display-font);

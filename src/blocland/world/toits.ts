@@ -10,7 +10,10 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 /** Les deux couvertures d'un toit. */
 export type Couverture = 'ardoise' | 'terre-cuite';
 
-/** Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. */
+/**
+ * Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. Le Relais
+ * des voyageurs (LV2, 5e), voisin du Comptoir, reste d'ardoise : jamais deux voisins en terre cuite.
+ */
 export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'mine', 'comptoir', 'theatre', 'belvedere'];
 
 /** La terre cuite, la même dans les quatre archipels. */

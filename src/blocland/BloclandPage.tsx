@@ -127,7 +127,7 @@ export function BloclandPage() {
               {islandsOf(a.classe).map((biome) => {
                 const block = BLOCKS[biome.block];
                 const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-                const bridge = unlocked || !reached ? undefined : buildableBridges(state.village.bridges, biome.id)[0];
+                const bridge = unlocked || !reached ? undefined : buildableBridges(state.village.bridges, biome.id, undefined, settings.lv2)[0];
                 const owned = state.inventory[biome.block] ?? 0;
                 const st = islandState(state, biome.id);
                 return (

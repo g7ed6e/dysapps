@@ -132,7 +132,9 @@ export function WorldPage() {
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
     () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles),
-    [a, state.progress, state.village, trophyBlocks, sentinelles],
+    // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2],
   );
   const creatures = useMemo(
     () => [
@@ -169,7 +171,8 @@ export function WorldPage() {
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
-  const modele = useMemo(() => modeleDuMonde(state, a), [a, state]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const modele = useMemo(() => modeleDuMonde(state, a), [a, state, settings.lv2]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
