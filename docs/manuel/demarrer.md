@@ -39,6 +39,14 @@ Archipéo est une application web installable (PWA). Une fois installée, elle s
 
 L’icône est un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues, avec une étoile de sable. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (l’icône sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
+### Quand l’icône change
+
+Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouveau nom d’elle-même. Cela dépend de l’appareil :
+
+- **Android (Chrome)** : Chrome vérifie l’icône et le nom quand on ouvre l’appli, au plus une fois par jour, après que l’élève a touché **Mettre à jour**. Le changement peut prendre jusqu’à un jour ; Android demande souvent de l’accepter. Avec un autre navigateur, l’icône peut rester l’ancienne : il faut alors réinstaller.
+- **Ordinateur (Chrome, Edge)** : le navigateur vérifie au lancement de l’appli, après la mise à jour, et peut demander de confirmer la nouvelle icône.
+- **iPhone, iPad (Safari)** et **Mac (Safari, « Ajouter au Dock »)** : l’icône est photographiée à l’installation et ne change plus. Seule une réinstallation la change. Attention : sur iPhone et iPad, supprimer l’appli de l’écran d’accueil **efface sa progression**, qui n’est pas transférée. Si l’élève a une progression, mieux vaut garder l’ancienne icône.
+
 > L’application était aussi publiée sur GitHub Pages, à l’adresse de cette documentation. Si elle y avait été installée, le raccourci ouvre désormais cette documentation : il suffit de réinstaller l’application depuis l’adresse ci-dessus. La progression enregistrée sur l’appareil dépend de l’adresse d’origine et n’est pas transférée.
 
 ## L’écran titre

@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { appVersion } from './scripts/version.mjs';
 import { exerciseMeta } from './scripts/exerciseMeta.mjs';
 import { splashLinks } from './scripts/splash-devices.mjs';
+import { iconeUrl } from './scripts/icones.mjs';
 
 // Deux cibles de déploiement :
 // - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
@@ -40,6 +41,19 @@ function securityHeaders(): Plugin {
   };
 }
 
+// Icône de l'onglet et icône d'iPhone et d'iPad, avec l'empreinte de leur dessin (scripts/icones.mjs). Safari ne
+// relit jamais l'icône d'une appli déjà sur l'écran d'accueil : l'empreinte garantit au moins qu'une installation
+// neuve prend le dessin du jour.
+function iconLinks(): Plugin {
+  return {
+    name: 'dysapps-icon-links',
+    transformIndexHtml: () => [
+      { tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: base + iconeUrl('icon.svg') }, injectTo: 'head' },
+      { tag: 'link', attrs: { rel: 'apple-touch-icon', href: base + iconeUrl('apple-touch-icon.png') }, injectTo: 'head' },
+    ],
+  };
+}
+
 // Écrans de lancement d'iPhone et d'iPad : Safari ne les compose pas à partir du manifeste (Android, si). Une image par
 // appareil et par orientation, fabriquée par `npm run splash` dans public/splash/.
 function appleSplash(): Plugin {
@@ -61,12 +75,16 @@ export default defineConfig({
     react(),
     exerciseMeta(),
     securityHeaders(),
+    iconLinks(),
     appleSplash(),
     VitePWA({
       // La mise à jour est proposée (bande + bouton), jamais imposée en pleine partie.
       registerType: 'prompt',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
+        // L'identité de l'appli installée : Chrome et Edge la déduisaient de start_url, on l'écrit pour qu'elle ne
+        // bouge plus. Elle ne doit jamais changer, sinon les appareils voient une autre appli (sans ses données).
+        id: base,
         name: 'Archipéo – Entraînement collège',
         short_name: 'Archipéo',
         description: 'Le savoir construit ton monde : français, maths et anglais pour les élèves dys du collège, par DysApps',
@@ -76,11 +94,12 @@ export default defineConfig({
         display: 'standalone',
         start_url: base,
         scope: base,
+        // L'empreinte dans l'adresse fait voir aux appareils qu'une icône a changé (scripts/icones.mjs).
         icons: [
-          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: iconeUrl('pwa-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: iconeUrl('pwa-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: iconeUrl('pwa-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: iconeUrl('icon.svg'), sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
@@ -90,6 +109,8 @@ export default defineConfig({
         // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
         // les précharger ferait télécharger 1 Mo d'images à tous les élèves.
         globIgnores: ['splash/**'],
+        // Les icônes sont demandées avec leur empreinte (« ?v= ») : le service worker les sert quand même hors ligne.
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/],
       },
     }),
   ],
