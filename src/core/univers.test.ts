@@ -23,9 +23,9 @@ it('reconnaît une progression enregistrée, sans planter sur une sauvegarde ab�
   expect(aUneProgression({ xp: 'beaucoup' }, { progress: 'rien' })).toBe(false);
 });
 
-it('garde les textes d’aujourd’hui tant que l’univers est fermé', () => {
-  expect(titreAffiche('blocland', false)).toBe('archipeo');
-  expect(titreAffiche(undefined, false)).toBe('archipeo');
+it('montre Blocland tant que l’univers est fermé', () => {
+  expect(titreAffiche('archipeo', false)).toBe('blocland');
+  expect(titreAffiche(undefined, false)).toBe('blocland');
   expect(titreAffiche('blocland', true)).toBe('blocland');
   expect(titreAffiche('archipeo', true)).toBe('archipeo');
   expect(titreAffiche(undefined, true)).toBe('blocland');

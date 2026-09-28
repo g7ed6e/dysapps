@@ -68,7 +68,7 @@ export function useSettings(): SettingsContextValue {
   return ctx;
 }
 
-/** L'univers qui se voit (titre, retour vers la Carte) : celui des réglages une fois ouvert, Archipéo avant. */
+/** L'univers qui se voit (titre, retour vers la Carte) : celui des réglages une fois ouvert, Blocland avant. */
 export function useUnivers(): UniversChoice {
   return titreAffiche(useSettings().settings.univers, UNIVERS_OUVERT);
 }

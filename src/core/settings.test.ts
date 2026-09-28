@@ -72,10 +72,10 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
 
-  it('pose l’univers affiché, qui choisit l’habillage : Archipéo avant la bascule, puis l’univers choisi', () => {
+  it('pose l’univers affiché, qui choisit l’habillage : Blocland avant la bascule, puis l’univers choisi', () => {
     const root = document.createElement('div');
-    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, false);
-    expect(root.dataset.univers).toBe('archipeo');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root, false);
+    expect(root.dataset.univers).toBe('blocland');
     applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, true);
     expect(root.dataset.univers).toBe('blocland');
     applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root, true);
