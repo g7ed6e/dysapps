@@ -101,7 +101,7 @@ export interface WorldViewProps {
   islandLabels?: IslandLabel[];
   /**
    * Le mot de la baleine est ouvert : une baleine quitte sa ronde et passe au large de cette île (une fois par `seq`).
-   * Jamais avec « Réduire les animations » (WorldPage ne le passe pas) ; la 2D n'a pas de baleine.
+   * Jamais quand l'appareil demande moins d'animations (WorldPage ne le passe pas) ; la 2D n'a pas de baleine.
    */
   whalePass?: { island: BiomeId; seq: number } | null;
   burst?: Burst;

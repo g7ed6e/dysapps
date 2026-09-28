@@ -245,7 +245,7 @@ export function WorldPage() {
   // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
   // d'archipel) sont un fondu court (`hop`, plus bas). Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
   // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
-  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Avec « Réduire les animations » : un écran
+  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Quand l'appareil demande moins d'animations : un écran
   // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
   const [voyage, setVoyage] = useState<Voyage | null>(null);
   const [veil, setVeil] = useState(false);
@@ -280,7 +280,7 @@ export function WorldPage() {
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
     if (back) return hop(to, dest);
     clearTimers();
-    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion: reduceMotion };
+    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion };
     if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     const stage = etapeDuVoyage(to, back, state.village.bridges);
     const text = voyageSentence(to, back, a);

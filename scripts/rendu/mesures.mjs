@@ -67,8 +67,8 @@ const CAPTURES = [
   { nom: 'defi-svg', vue: 'défi', famille: 'personnages', view: 'liste' },
   { nom: 'bulle', vue: 'bulle', famille: 'personnages', sansEtoiles: true },
   { nom: 'bulle-svg', vue: 'bulle', famille: 'personnages', view: 'liste', sansEtoiles: true },
-  // La construction (lot R5) : un chantier (le dernier plan de chaque île en fantômes), de jour et de nuit ; le phare des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` :
-  // la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
+  // La construction (lot R5) : un chantier (le dernier plan de chaque île en fantômes), de jour et de nuit ; le phare
+  // des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` : la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
   { nom: 'chantier', vue: 'île', famille: 'chantier', partie: 'chantier' },
   { nom: 'chantier-nuit', vue: 'île', famille: 'chantier', partie: 'chantier', nuit: true },
   { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
@@ -206,28 +206,27 @@ async function scenes() {
               bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
               time: c.nuit ? NIGHT : DAY,
               view: c.view,
-              theme: c.theme,
               sansEtoiles: c.sansEtoiles,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, sansEtoiles, nom, mesure, ile, plans, bridges } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, theme }) => {
+        ({ village, progress, view }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(theme ? { theme } : {}) }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view, theme },
+        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);

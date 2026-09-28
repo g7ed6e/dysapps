@@ -50,7 +50,7 @@ Demander à l’appareil de réduire les animations : sur iPad et iPhone, Régla
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.
 
 **Pas de son dans le village.**
-Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, grillons) est désactivée par défaut : voir Réglages → Sons et vibrations. Aucun son n’est joué pendant la lecture à voix haute.
+Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, grillons) est désactivée par défaut : voir Réglages → Sons, vibrations et pastille. Aucun son n’est joué pendant la lecture à voix haute.
 
 ## Mises à jour et données
 

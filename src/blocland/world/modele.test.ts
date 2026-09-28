@@ -74,7 +74,7 @@ it('le cap vers une île : dans l’archipel, en voyage, ou le port quand elle e
 describe('la machine du voyage', () => {
   const p = { to: '5e' as const, from: '6e' as const, back: false, dest: getArchipelago('5e').port, bridges: [], reduceMotion: false, approach: false };
 
-  it('l’écran fixe avec « Réduire les animations »', () => {
+  it('l’écran fixe quand l’appareil demande moins d’animations', () => {
     expect(nouveauVoyage({ ...p, reduceMotion: true }, null)).toMatchObject({ mode: 'panel', seq: 0, leg: 'depart', approach: false, stage: 1 });
     expect(finDuTemps(nouveauVoyage({ ...p, reduceMotion: true }, null))).toBeNull();
   });

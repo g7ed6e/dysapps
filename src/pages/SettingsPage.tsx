@@ -190,7 +190,7 @@ export function SettingsPage() {
         </fieldset>
 
         <fieldset className="panel">
-          <legend>Sons et vibrations</legend>
+          <legend>Sons, vibrations et pastille</legend>
           <label className="toggle">
             <input type="checkbox" checked={settings.sounds} onChange={(e) => update({ sounds: e.target.checked })} />
             Sons dans le village (poser, retirer un bloc)
