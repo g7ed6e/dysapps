@@ -85,7 +85,7 @@ Le directeur artistique :
 - tranche entre deux consultants ;
 - valide ce qu’un consultant propose.
 
-Chaque nom propre à un univers est vérifié à l’oreille avec la voix française et découpé correctement en syllabes ; aucun nom anglais sans la voix anglaise. Le directeur contenu pédagogique garde l’objectif commun. Le référent dys relit chaque univers. Premiers consultants : `consultant-archipeo` et `consultant-blocland`.
+Chaque nom propre à un univers est vérifié à l’oreille avec la voix française et découpé correctement en syllabes ; aucun nom anglais sans la voix anglaise. Le directeur contenu pédagogique garde l’objectif commun. Le référent dys relit chaque univers. Premiers consultants : `consultant-archipeo` et `consultant-blocland`, puis `consultant-periple` pour le troisième univers (§6, U6).
 
 ### 4.2 L’habillage pédagogique
 
@@ -158,7 +158,7 @@ Les registres du socle deviennent à clé composée **(univers, archipel)**, ave
 | **U3. Le lot 6 à deux univers** | Archipéo devient l’univers par défaut ; Blocland reste, choisi par le réglage « Univers » (décision 5). Le drapeau `?rendu=archipeo` disparaît. Rien n’est retiré de Blocland. Captures du manuel dans les deux univers. | Au lot 6 | M |
 | **U4. L’habillage, sans changement d’image** | J8 : les textes des deux univers dans `src/univers/`. J6 : l’objet `Habillage` à la place du booléen. J7 : la couche `univers`. Le type `Univers` et les tests de parité et de portabilité. Les noms propres à Blocland que le lot 1 avait remplacés y reviennent, si son consultant le propose et que le directeur artistique le valide. | Avec J7, après le lot 6 | M |
 | **U5. L’habillage pédagogique de Blocland** | La preuve (décision du mainteneur). Les problèmes situés, puis les phrases de français et d’anglais, puis un ou deux textes de lecture, habillés pour Blocland avec les tests d’équivalence. Le directeur contenu pédagogique écrit, le consultant de Blocland relit l’univers, le référent dys relit tout. | Après U4 | L |
-| **U6. Un troisième univers** | Seulement quand U5 a prouvé que l’axe tient. Sa fiche, son consultant, son rendu (un univers complet coûte en art autant que R4b et R6 réunis), son habillage. | Après les lots 8 et 8b | L |
+| **U6. Un troisième univers** | Seulement quand U5 a prouvé que l’axe tient. Sa fiche, son consultant, son rendu (un univers complet coûte en art autant que R4b et R6 réunis), son habillage. **La conception est avancée** (§6.2) : la piste, sa fiche et son consultant, sans code. | La conception, le 28 septembre 2026 ; le code, après U5 et les lots 8 et 8b | L |
 
 ### 6.1 Le choix, côté élève
 
@@ -174,6 +174,17 @@ Le choix se fait **dans les Réglages** (décision du mainteneur). Le risque pri
 - **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, Contraste élevé, voix coupée, « Réduire les animations ») et en vue simple. Les invariants du §4 entrent dans les [principes dys](../pedagogie/principes.md) quand U4 les vérifie par des tests.
 
 Un point en faveur de Blocland, à vérifier sur tablette avec un élève dyspraxique : une grille en cubes montre mieux la case touchée que des facettes en pente.
+
+### 6.2 Le troisième univers : Périple
+
+Le 28 septembre 2026, le mainteneur a voulu commencer à concevoir un troisième univers, sans attendre U6 pour le dessin et le récit. Quatre pistes ont été proposées, avec l’avis du directeur artistique, du directeur contenu pédagogique et de l’artiste technique 3D : la Station des étoiles, les Contes et le Moyen Âge, les Cités antiques et le Carnet d’expédition. Le mainteneur a choisi **le Carnet d’expédition** : un carnet de voyage et de naturaliste inachevé, que l’élève complète pour faire refleurir le pays, dessiné en 2D, en papier découpé et encre. Son nom de travail est **Périple**.
+
+- **La fiche** : `design/periple/fiche.md` (récit, figure qui guide, Gardien qui refleurit, ce que deviennent les choses communes, monde, habillage pédagogique, questions ouvertes).
+- **Le consultant** : `consultant-periple`, sous l’autorité du directeur artistique, comme les deux autres.
+- **Où il se branche.** Rien n’entre dans le code avant U6. D’ici là, chaque lot du jeu commun dit aussi ce qu’il devient dans Périple, le lot 8 d’abord (le véhicule du plan partagé). Le rendu part de la 2D peinte (R7) et des peintres de la vue 2D : il attend la fin de R6, qui possède `WorldCanvas2D.tsx`, et l’objet `Habillage` de J6 et J7. L’habillage pédagogique suit U5, qui aura fixé les tests d’équivalence.
+- **Deux questions pour la feuille de route**, à trancher par le mainteneur :
+  - un univers dont la vue principale est en 2D, sans 3D (le §2 fait de la 2D un secours) ;
+  - les règles et les corrections des problèmes situés qui nomment le décor (le pont, le navire, le mât) : les rendre neutres, ou en faire un nom substituable vérifié par le test d’équivalence. La question vaut pour Blocland dès U5.
 
 ## 7. Les décisions
 
