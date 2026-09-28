@@ -14,7 +14,7 @@ import { earnIsland, whereToEarn } from './world/uses';
 interface Props {
   biome: BiomeDef;
   builder: PlanBuilder;
-  /** En 3D, on peut aussi toucher les cases bleues dans le monde. */
+  /** En 3D, on peut aussi toucher les cases transparentes (à poser) dans le monde. */
   in3d?: boolean;
   /** Dans le panneau 3D : la section se replie quand il n'y a rien à poser (la clé change avec l'île). */
   fold?: string;
@@ -105,7 +105,7 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
                     ))}
                   </ul>
                 )}
-                {in3d && <p className="view-note">Touche une case bleue du bâtiment dans le monde, ou utilise le bouton.</p>}
+                {in3d && <p className="view-note">Touche une case transparente du bâtiment dans le monde, ou utilise le bouton.</p>}
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>

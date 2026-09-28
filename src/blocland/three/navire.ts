@@ -2,12 +2,15 @@
 // sommet du mât ; en voyage, il s'éloigne ou accoste, le bonhomme à bord, avec l'écume à la poupe ou la flamme du réacteur.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
+import { maillageDeLaConstruction } from '../world/construction';
 import { VEHICLE_DECK } from '../world/harbour';
+import { MAST_TOP } from '../world/vehicle';
 import { buildMesh } from '../world/mesher';
 import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world/scene';
 import type { WorldViewProps } from '../world/view';
 import { vehiclePath } from '../world/voyage';
 import type { Cubes } from './cubes';
+import { creerConstruction } from './construction';
 import { meshOf } from './maillage';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 import type { Personnages } from './personnages';
@@ -41,7 +44,7 @@ export function creerNavire(
   amarre: { current: Amarre | null },
   voyage: { current: VoyageRun | null },
 ): Navire {
-  const { scene, surface } = monde;
+  const { scene, surface, archipel } = monde;
   // Le Bloc-Navire : un groupe à part, amarré au quai, qui tangue ; le ballon pivote au sommet du mât.
   const vehicleGroup = new THREE.Group();
   vehicleGroup.userData = { vehicle: true };
@@ -53,15 +56,24 @@ export function creerNavire(
   flame.position.set(2.5, 1.5, 11.6);
   flame.visible = false;
   vehicleGroup.add(hullGroup, balloonGroup, flame);
+  // Archipéo (lot R5) : la coque et le ballon en construction taillée, avec les matériaux de la construction du monde.
+  const taille = cubes.materiaux ? { coque: creerConstruction(cubes.materiaux), ballon: creerConstruction(cubes.materiaux) } : null;
+  if (taille) {
+    hullGroup.add(taille.coque.group);
+    balloonGroup.add(taille.ballon.group);
+  }
   scene.add(vehicleGroup);
 
   const vider = () => {
     for (const part of [hullGroup, balloonGroup]) {
       for (const child of [...part.children]) {
+        if (!(child instanceof THREE.Mesh)) continue;
         part.remove(child);
-        (child as THREE.Mesh).geometry.dispose();
+        child.geometry.dispose();
       }
     }
+    taille?.coque.dispose();
+    taille?.ballon.dispose();
   };
 
   return {
@@ -74,11 +86,15 @@ export function creerNavire(
         vehicleGroup.visible = false;
         return;
       }
-      const MAST_TOP = 7;
       const hull = vehicle.cubes.filter((c) => c.z < MAST_TOP);
       const balloon = vehicle.cubes.filter((c) => c.z >= MAST_TOP).map((c) => ({ ...c, x: c.x - 2, y: c.y - 3, z: c.z - MAST_TOP }));
-      for (const g of buildMesh(hull)) hullGroup.add(meshOf(g, surface));
-      for (const g of buildMesh(balloon)) balloonGroup.add(meshOf(g, surface));
+      if (taille) {
+        taille.coque.peindre(maillageDeLaConstruction(archipel, hull, [], { navire: true }));
+        taille.ballon.peindre(maillageDeLaConstruction(archipel, balloon, [], { navire: true }));
+      } else {
+        for (const g of buildMesh(hull)) hullGroup.add(meshOf(g, surface));
+        for (const g of buildMesh(balloon)) balloonGroup.add(meshOf(g, surface));
+      }
       balloonGroup.position.set(2, MAST_TOP, 3);
       vehicleGroup.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
       vehicleGroup.rotation.set(0, 0, 0);
