@@ -115,7 +115,7 @@ Le mainteneur a retenu le 27 septembre 2026 toutes les recommandations du direct
 
 ## 6. Le plan en lots
 
-Chaque lot est **une pull request livrable seule**. Aucun ne casse la vue 2D, la vue simple ni une sauvegarde, et aucun n’enfreint les règles dys.
+Chaque lot est **une pull request livrable seule**. Aucun ne casse la vue 2D (le repli sans WebGL), la vue simple ni une sauvegarde, et aucun n’enfreint les règles dys.
 
 ### Les règles de tous les lots
 
@@ -125,7 +125,7 @@ Chaque lot est **une pull request livrable seule**. Aucun ne casse la vue 2D, la
 - **Pas de monde à moitié en cubes, à moitié en facettes, devant un élève.** Les lots de rendu (R) se construisent derrière le drapeau de développement et ne s’ouvrent qu’ensemble, au lot 6. Seule exception, décidée par le mainteneur le 28 septembre 2026 : la section **Expérimental** des Réglages, éteinte par défaut, sans message ni mise en avant, ouvre le rendu en construction à qui va la chercher (voir le point « Rendu en développement » au §5).
 - **« Réduire les animations »** coupe dès leur arrivée la brume animée, la houle, les oiseaux et la baleine.
 - **Rien d’emprunté** : aucun modèle ni texture importé, tout est dessiné par le code.
-- Le directeur artistique relit chaque lot (captures 3D et 2D, jour et nuit, avant et après) ; l’artiste technique 3D réalise et relit ceux qui touchent au rendu.
+- Le directeur artistique relit chaque lot (captures 3D, jour et nuit, avant et après ; plus de captures 2D depuis le 28 septembre 2026, voir [les univers](univers.md)) ; l’artiste technique 3D réalise et relit ceux qui touchent au rendu.
 
 ### Deux pistes en parallèle
 
@@ -215,7 +215,7 @@ Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de
 
 - Chaque fil montre ses captures validées par le directeur artistique (branche `captures`, un dossier par lot : `r4b-6e/`, `r5/`, `r6/`…) et le verdict du référent dys, comme R1 à R4.
 - R6 se juge d’abord seul, sur le terrain et le décor de R4 (silhouettes, pas de gros yeux, sentinelle éteinte puis rallumée) ; son échelle et ses couleurs se valident dans la revue d’ensemble.
-- **La revue d’ensemble**, une seule, quand R4b, R5 et R6 sont fusionnés : une planche par archipel, tout construit et avant restauration, de près et de loin (une île, l’archipel, la Carte), de jour et de nuit, en 3D et en 2D, en Contraste élevé et avec « Réduire les animations » ; une planche des quatre archipels côte à côte au même cadrage (les deux phares, la lumière, la fumée, aucun archipel jumeau) ; le budget mesuré. Elle vaut la validation par archipel qu’attend le lot 6 ; ce qui en sort part en retouches ciblées, sans rouvrir de lot.
+- **La revue d’ensemble**, une seule, quand R4b, R5 et R6 sont fusionnés : une planche par archipel, tout construit et avant restauration, de près et de loin (une île, l’archipel, la Carte), de jour et de nuit, en 3D, en Contraste élevé et avec « Réduire les animations » ; une planche des quatre archipels côte à côte au même cadrage (les deux phares, la lumière, la fumée, aucun archipel jumeau) ; le budget mesuré. Elle vaut la validation par archipel qu’attend le lot 6 ; ce qui en sort part en retouches ciblées, sans rouvrir de lot.
 - Rien ne sort du drapeau avant le lot 6, même un archipel prêt. Les teintes d’archipel et de matière n’entrent dans l’interface qu’avec la reprise de l’interface. « Rallumer » attend le lot 6.
 
 **Les intentions par archipel.** Avant R4b-5e, R4b-4e et R4b-3e, le directeur artistique a écrit une fiche d’intention par archipel, avec le consultant d’Archipéo et l’artiste technique 3D : `design/archipeo/intentions/` (repères signatures, relief, ambiance, interdits, captures et critères d’acceptation, enveloppe du décor, ce qu’elle demande à R5, ce qu’elle change pour Blocland). Chaque sous-lot part de sa fiche et écrit dans sa sous-section ce qu’il a construit et ses écarts. Trois écarts à la fiche de famille y sont signalés : au 3e, le phare garde son site actuel et son socle fait 3 × 3 cases (directeur artistique, confirmé à la revue d’ensemble) ; au 5e, le pont passe de R4b à R5, porté par les vrais ponts à construire (décidé par le mainteneur le 28 septembre 2026). U2 (le relief de marche séparé du modelé) est avancé avant le relief du 5e et du 3e : décidé par le mainteneur le 28 septembre 2026.
@@ -255,7 +255,7 @@ La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plu
 ### Les risques
 
 - **Un monde hybride** : parade, le drapeau et l’ouverture en une fois (lot 6). Si la piste Rendu traîne, la piste Jeu continue : ses lots ne dépendent pas du rendu.
-- **La 2D ou la vue simple qui décroche** : chaque lot montre ses captures 3D et 2D, et chaque lot de boucle a son équivalent en liste.
+- **La 2D ou la vue simple qui décroche** : chaque lot montre ses captures 3D (la 2D n’est plus au choix, mais un lot ne la casse pas), et chaque lot de boucle a son équivalent en liste.
 - **Le décor qui rattrape la consigne** : le panneau d’exercice reste opaque et uni ; rien ne s’écrit dans la scène.
 - **Des couleurs qui se confondent** : sur la planche, le violet sert au français et au 3e, l’orange à l’anglais et au 4e. Des teintes distinctes ou des libellés, jamais la couleur seule.
 - **Le toucher sur un terrain en pente** (R2) : c’est le risque technique principal ; la conversion du point touché en case est pure et testée avant tout le reste.
@@ -277,7 +277,7 @@ Mesuré le 27 septembre 2026 sur le monde en blocs, chaque archipel tout constru
 - **D’où viennent les appels** (Premiers Rivages, vue d’une île ; relevé de l’artiste technique 3D) : le terrain, 62 800 triangles en 87 groupes (un par matériau et par face) ; les créatures et les Gardiens, 8 900 triangles en 92 appels (les dix Gardiens : 6 000 et 47) ; le bonhomme, 4 800 triangles en 21 appels ; les repères d’or des bornes, 81 appels pour moins de 1 000 triangles ; le Bloc-Navire, 34 appels ; les nuages, les oiseaux, les baleines et les étiquettes d’île, une soixantaine d’appels à eux tous. Pour tenir 40 appels : un maillage par famille (créatures, Gardiens, bonhomme, navire, nuages, oiseaux, baleines) avec la couleur portée par les sommets, les repères dessinés en une seule fois (instanciation), le terrain regroupé par matériau, et un bonhomme de quelques centaines de triangles.
 - **Le poids de Three.js** : le morceau chargé à la demande avec la vue 3D pèse 534 Ko (132 Ko compressé), le monde 3D lui-même 24 Ko (9 Ko).
 - **Les images par seconde** se mesurent sur la tablette de référence, dans l’application publiée, avec `?mesures` dans l’adresse (`/?mesures#/aventure`) : la vue 3D affiche alors ses appels, ses triangles et ses images par seconde. Relevé à faire par le mainteneur.
-- **Les captures « avant »** (3D et 2D, de jour et de nuit, Carte, par archipel) se refont avec `npm run rendu:mesures -- --captures <dossier>` ; elles ne sont pas versionnées.
+- **Les captures « avant »** (3D, de jour et de nuit, Carte, par archipel) se refont avec `npm run rendu:mesures -- --captures <dossier>` ; elles ne sont pas versionnées.
 
 ### Les options de style du lot R1
 
@@ -346,7 +346,7 @@ Construit le 28 septembre 2026, sans aucun changement d’image : les empreintes
 - **Le registre des formes** : `FORMES[genre]` (`world/decor/formes.ts`) remplace le `switch` de `decorMesh.ts`. Les formes communes aux quatre archipels sont dans `world/decor/communes.ts`, les repères de chaque archipel dans `world/decor/6e.ts`…, la fumée (une seule règle) dans `world/decor/fumee.ts`, le pinceau et les primitives dans `world/decor/pinceau.ts`. Un décor bâti sans forme propre se dessine en boîtes. Dans le monde en blocs, `decor.ts` range de même ses formes par genre (`BLOCS_DU_DECOR`, `REPERES_EN_BLOCS`).
 - **L’ambiance d’un archipel** : `ambianceDe(archipel)` (`world/palette.ts`) rend tout ce qu’un sous-lot de R4b règle, et rien d’autre : le ciel et la lumière de jour, la brume de profondeur, le voile, les sols propres, la teinte de la mer. Un test vérifie les bornes de la fiche de famille.
 - **Le budget par poste** : `ENVELOPPES` et `enveloppeDe(poste, archipel)` (`world/budget.ts`) reprennent le tableau ci-dessus ; un test vérifie que leur somme tient dans 60 000 triangles et 40 appels (passage de la baleine compris), et chaque poste a son `it.todo` que son lot change en plafond.
-- **Les captures déclarées d’avance** : `CAPTURES` dans `scripts/rendu/mesures.mjs`, vingt et une par archipel (une île, l’archipel et la Carte, de jour et de nuit, en 3D et en 2D ; en Contraste élevé, de jour et de nuit ; avec « Réduire les animations », deux fois à quatre secondes d’écart, pour vérifier que rien ne bouge), pour chaque lot et pour la revue d’ensemble ; `--familles nuit,2d` n’en refait que certaines. La capture d’une île montre le panneau de l’île ouvert, avec son texte : on y vérifie que rien ne bouge près de ce qu’on lit.
+- **Les captures déclarées d’avance** : `CAPTURES` dans `scripts/rendu/mesures.mjs`, quinze par archipel (une île, l’archipel et la Carte, de jour et de nuit, en 3D ; plus de 2D depuis le 28 septembre 2026 ; en Contraste élevé, de jour et de nuit ; avec « Réduire les animations », deux fois à quatre secondes d’écart, pour vérifier que rien ne bouge), pour chaque lot et pour la revue d’ensemble ; `--familles nuit,contraste` n’en refait que certaines. La capture d’une île montre le panneau de l’île ouvert, avec son texte : on y vérifie que rien ne bouge près de ce qu’on lit.
 - **Les empreintes par archipel** : celles du rendu sont rangées par archipel, et les empreintes globales de J0 (la place des îles, des bornes et des lieux ; les ouvrages, l’embarquement et les voyages) sont coupées par archipel, sans qu’aucune valeur calculée change : un sous-lot ne régénère que les siennes. Les clés des cases des plans restent une seule empreinte : elles ne changent jamais.
 
 #### La fiche de famille

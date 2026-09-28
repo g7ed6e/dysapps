@@ -82,14 +82,12 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ![Le Marché des proportions, port des Îles Brumeuses : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
 
-## Sur téléphone, en 2D, en liste
+## Sur téléphone, en liste
 
 Le même jeu tient sur un téléphone en portrait : le monde en haut, le panneau de l'île en dessous.
 
 ![Sur téléphone : le monde en haut, les boutons en icônes, le panneau de la Forêt des sons en bas.](/captures/telephone-village.jpg)
 
-La **vue 2D** (expérimentale) dessine le même monde en pixels, vu de dessus en oblique. La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
-
-![Le monde en 2D : la Forêt des sons en pixels, vue de dessus, la cabane en fantômes à côté de la maison.](/captures/vue-2d.jpg)
+La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
 
 ![La vue simple : la page Archipéo, ses boutons Mes blocs, École du village, Monuments, et les îles en cartes.](/captures/vue-simple.jpg)

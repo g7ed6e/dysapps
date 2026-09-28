@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,contraste` n'en refait que certaines familles (jour, nuit, contraste, reduit, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -46,8 +46,10 @@ const NIGHT = new Date('2026-09-28T22:30:00');
 /**
  * Les captures déclarées d'avance (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) : pour chaque
  * archipel tout construit, tout ce que montrent les lots de rendu et la revue d'ensemble du directeur artistique, de près
- * et de loin (une île, l'archipel, la Carte), de jour et de nuit, en 3D et en 2D, en Contraste élevé et avec « Réduire
- * les animations ». Le fichier : `<archipel>-<nom>.jpg`. Les captures de jour en 3D sont aussi celles des mesures.
+ * et de loin (une île, l'archipel, la Carte), de jour et de nuit, en Contraste élevé et avec « Réduire les animations ».
+ * Pas de capture en 2D : ni Archipéo ni Blocland n'ont de vue en 2D au choix (décision du mainteneur, 28/09/2026) ; elles
+ * reviendront avec un univers dessiné en 2D. Le fichier : `<archipel>-<nom>.jpg`. Les captures de jour sont aussi celles
+ * des mesures.
  * Un lot ne change pas cette liste : il refait les captures et les montre toutes.
  */
 const CAPTURES = [
@@ -57,12 +59,6 @@ const CAPTURES = [
   { nom: 'ile-nuit', vue: 'île', famille: 'nuit', nuit: true },
   { nom: 'archipel-nuit', vue: 'archipel', famille: 'nuit', nuit: true },
   { nom: 'carte-nuit', vue: 'carte', famille: 'nuit', nuit: true },
-  { nom: 'ile-2d', vue: 'île', famille: '2d', view: '2d' },
-  { nom: 'archipel-2d', vue: 'archipel', famille: '2d', view: '2d' },
-  { nom: 'carte-2d', vue: 'carte', famille: '2d', view: '2d' },
-  { nom: 'ile-2d-nuit', vue: 'île', famille: '2d', view: '2d', nuit: true },
-  { nom: 'archipel-2d-nuit', vue: 'archipel', famille: '2d', view: '2d', nuit: true },
-  { nom: 'carte-2d-nuit', vue: 'carte', famille: '2d', view: '2d', nuit: true },
   { nom: 'ile-contraste', vue: 'île', famille: 'contraste', theme: 'contraste' },
   { nom: 'archipel-contraste', vue: 'archipel', famille: 'contraste', theme: 'contraste' },
   { nom: 'carte-contraste', vue: 'carte', famille: 'contraste', theme: 'contraste' },
@@ -239,7 +235,7 @@ async function scenes() {
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
-        // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
+        // Les autres captures (nuit, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
         if (time === NIGHT && view === '3d') {

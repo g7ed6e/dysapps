@@ -14,7 +14,7 @@ npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
 npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/)
 npm run docs:captures # rejoue le jeu dans Chromium et fait les captures d’écran (docs/_captures/, hors du dépôt)
-npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D et 2D, de jour et de nuit ; --attente <s> : temps laissé à la caméra)
+npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D, de jour et de nuit ; --attente <s> : temps laissé à la caméra)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 ```
