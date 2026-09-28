@@ -1,4 +1,4 @@
-import { aUneProgression, premierUnivers, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT, titreAffiche } from './univers';
+import { aUneProgression, premierUnivers, PRESENTER_ARCHIPEO, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT, titreAffiche } from './univers';
 
 it('reste fermé jusqu’à la bascule du lot 6', () => {
   expect(UNIVERS_OUVERT).toBe(false);
@@ -8,8 +8,12 @@ it('choisit le premier univers d’un appareil d’après sa progression', () =>
   // Un appareil neuf : Blocland, l'univers par défaut, sans message.
   expect(UNIVERS_PAR_DEFAUT).toBe('blocland');
   expect(premierUnivers({ progression: false })).toEqual({ univers: 'blocland', message: false });
-  // Une progression : Blocland, avec le message unique qui présente Archipéo.
-  expect(premierUnivers({ progression: true })).toEqual({ univers: 'blocland', message: true });
+  // Une progression : Blocland, sans message non plus tant qu'Archipéo n'est pas mis en avant (décision 9).
+  expect(PRESENTER_ARCHIPEO).toBe(false);
+  expect(premierUnivers({ progression: true })).toEqual({ univers: 'blocland', message: false });
+  // Rallumé, le message unique n'est dit qu'à un appareil qui a une progression.
+  expect(premierUnivers({ progression: true }, true)).toEqual({ univers: 'blocland', message: true });
+  expect(premierUnivers({ progression: false }, true)).toEqual({ univers: 'blocland', message: false });
   // Archipéo ne s'active que dans les Réglages : jamais d'office (décision 8).
 });
 
@@ -32,7 +36,8 @@ it('garde les textes d’aujourd’hui tant que l’univers est fermé', () => {
 });
 
 it('donne à chaque univers un nom, une phrase, une icône distincte et ses textes', () => {
-  expect(UNIVERS_IDS).toEqual(['archipeo', 'blocland']);
+  // Blocland d'abord : l'ordre des Réglages, qui ne met pas Archipéo en avant.
+  expect(UNIVERS_IDS).toEqual(['blocland', 'archipeo']);
   expect(new Set(UNIVERS_IDS.map((u) => UNIVERS[u].icone)).size).toBe(UNIVERS_IDS.length);
   for (const u of UNIVERS_IDS) {
     for (const texte of Object.values(UNIVERS[u])) expect(String(texte).trim()).not.toBe('');
