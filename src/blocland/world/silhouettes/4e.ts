@@ -1,5 +1,5 @@
-// Le relief des Anciens Ateliers (4e), île par île, en repère d'île (./types.ts). Ce fichier appartient au sous-lot
-// R4b-4e (docs/conception/cadrage-archipeo.md §6).
+// Le relief de marche des Anciens Ateliers (4e), île par île, en repère d'île (./types.ts). Il est commun à Blocland : le
+// changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../modeleDessine/4e.ts (U2).
 import type { Silhouette } from './types';
 
 export const SILHOUETTES_4E = {

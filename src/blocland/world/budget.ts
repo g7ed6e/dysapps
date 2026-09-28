@@ -11,6 +11,7 @@ import { CATALOG } from '../exercises';
 import { BRIDGES, VOYAGES } from './archipelago';
 import type { ArchipelagoId } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
+import { modelerLeSol } from './modeleDessine';
 import { buildMesh, faceCount, type MeshGroup } from './mesher';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
@@ -117,8 +118,9 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 function archipelArchipeo(a: ArchipelagoId) {
   const { progress, village } = toutConstruit();
   const cubes = worldCubes(a, progress, village, false);
-  const ground = cubes.filter((c) => c.sol);
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
+  // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
+  const ground = modelerLeSol(a, cubes.filter((c) => c.sol), reste);
   return { ground, elements, reste, champ: champDuSol(a, ground, reste) };
 }
 

@@ -546,7 +546,7 @@ export const BIOMES: BiomeDef[] = [
         programme: ['c4.ma.b.proportionnalite', 'c4.ma.b.ratio', 'c3.ma.nombres.proportionnalite'],
       },
       { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.', programme: ['c4.ma.b.pourcentages-echelles', 'c3.ma.nombres.proportionnalite'] },
-      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle'] },
+      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle', 'c4.ma.c.conversions'] },
     ],
   },
   {
@@ -783,7 +783,7 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
-      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.', programme: ['c4.ma.d.thales'] },
+      { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton.', programme: ['c4.ma.d.thales'] },
       { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],
   },

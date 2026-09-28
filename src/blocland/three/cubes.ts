@@ -6,6 +6,7 @@ import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
+import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
@@ -113,12 +114,14 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
       // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
       // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
-      const auSol: VoxelCube[] = [];
+      const surLeSol: VoxelCube[] = [];
       const autres: VoxelCube[] = [];
       // Sans les tours du décor du cœur (un seul phare par île, lot R5) : Blocland les garde.
-      for (const c of sansToursDuCoeur(cubes)) (c.sol ? auSol : autres).push(c);
+      for (const c of sansToursDuCoeur(cubes)) (c.sol ? surLeSol : autres).push(c);
       // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
       const { elements, reste } = rangerLeDecor(autres);
+      // Le modelé dessiné d'Archipéo (U2) par-dessus le relief de marche, que la grille garde.
+      const auSol = modelerLeSol(archipel, surLeSol, reste);
       const champ = champDuSol(archipel, auSol, reste);
       // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
       // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.

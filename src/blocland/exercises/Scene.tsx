@@ -1,5 +1,5 @@
-// Les schémas des problèmes situés dans l'archipel (mission « Carnet du passeur ») : un pont, un quai, une traversée,
-// dessinés à plat à partir de données. Chaque schéma porte au plus un « ? », la grandeur cherchée, en couleur.
+// Les schémas des problèmes situés dans l'archipel (mission « Carnet du passeur », niveaux situés du collège) : un pont,
+// un quai, une traversée, une carte, une cargaison, un mât, une route, une ombre, dessinés à plat à partir de données. Chaque schéma porte au plus un « ? », la grandeur cherchée, en couleur.
 
 /** Une cote : un nombre connu, ou « ? » pour la grandeur cherchée. */
 export type Cote = number | '?';
@@ -19,7 +19,14 @@ export type SceneProps =
    */
   | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }
   /** Un mât vertical tenu par un câble jusqu'au sol : un triangle rectangle, l'angle droit codé au pied du mât. */
-  | { scene: 'mat'; unit: 'm'; hauteur: Cote; pied: Cote; cable: Cote };
+  | { scene: 'mat'; unit: 'm'; hauteur: Cote; pied: Cote; cable: Cote }
+  /** Une traversée à vitesse constante d'une île à l'autre : la distance (km), la durée (minutes), la vitesse (km/h). */
+  | { scene: 'route'; distance: Cote; duree: Cote; vitesse: Cote }
+  /**
+   * Un bâton et un mât verticaux, et leurs ombres au sol qui finissent au même point (Thalès) : les hauts du bâton et du
+   * mât sont sur le même rayon de soleil.
+   */
+  | { scene: 'ombre'; unit: 'm'; baton: Cote; ombreBaton: Cote; hauteur: Cote; ombre: Cote };
 
 /** 2250 → « 2 250 », 50000 → « 50 000 », 1.5 → « 1,5 » (écriture française, espace insécable entre les classes). */
 export function formatNombre(n: number): string {
@@ -41,9 +48,23 @@ export function formatDuree(min: number): string {
   return m ? `${h} h ${m} min` : `${h} h`;
 }
 
+/** 90 → « 1 heure 30 minutes », 45 → « 45 minutes » : une durée lue à voix haute (jamais nulle). */
+export function sayDuree(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  const hours = h ? `${h} heure${h > 1 ? 's' : ''}` : '';
+  const mins = m ? `${m} minutes` : '';
+  return [hours, mins].filter(Boolean).join(' ');
+}
+
 const UNIT_SPOKEN: Record<string, string> = { m: 'mètres', km: 'kilomètres', cm: 'centimètres', kg: 'kilos' };
 const cote = (c: Cote, unit: string) => (c === '?' ? '?' : `${formatNombre(c)} ${unit}`);
-const spoken = (c: Cote, unit: string) => (c === '?' ? 'inconnu' : `${formatNombre(c)} ${UNIT_SPOKEN[unit] ?? unit}`);
+/**
+ * Au-dessous de 2, l’unité reste au singulier : « 1 mètre », « 1,5 kilo ». Pour une unité d’un seul mot : « kilomètres
+ * par heure » ne passe pas par ici.
+ */
+export const singulier = (n: number, unit: string): string => (Math.abs(n) < 2 ? unit.replace(/s$/, '') : unit);
+const spoken = (c: Cote, unit: string) => (c === '?' ? 'inconnu' : `${formatNombre(c)} ${singulier(c, UNIT_SPOKEN[unit] ?? unit)}`);
 const cls = (c: Cote) => (c === '?' ? 'len ask' : 'len');
 
 /** Une cote tracée : un trait fléché aux deux bouts et son texte. */
@@ -279,7 +300,62 @@ function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Cote; pied
   );
 }
 
-/** Le schéma de la situation : pont, quai, traversée, carte, cargaison ou mât, à plat, la grandeur cherchée marquée « ? ». */
+function Route({ distance, duree, vitesse }: { distance: Cote; duree: Cote; vitesse: Cote }) {
+  const label = `Une traversée en bateau d’une île à l’autre, à vitesse constante. Distance : ${spoken(distance, 'km')}. Durée : ${duree === '?' ? 'inconnue' : sayDuree(duree)}. Vitesse : ${vitesse === '?' ? 'inconnue' : `${formatNombre(vitesse)} kilomètres par heure`}.`;
+  return (
+    <svg viewBox="0 0 380 236" role="img" aria-label={label}>
+      <Arrow />
+      <Dim x1={52} x2={328} y={52} label={cote(distance, 'km')} c={distance} above />
+      {/* Les îles posées sur l’eau. */}
+      <path d="M 0 130 Q 190 114 380 130 L 380 236 L 0 236 z" className="water" />
+      <ellipse cx="52" cy="112" rx="50" ry="20" className="island" />
+      <ellipse cx="328" cy="112" rx="50" ry="20" className="island" />
+      <line x1="102" y1="112" x2="278" y2="112" className="route" />
+      {/* Le bateau, au milieu de la route. */}
+      <path d="M 174 100 h 32 l -6 10 h -20 z" className="boat" />
+      <path d="M 190 100 v -20 l 12 16 z" className="boat" />
+      <text x="190" y="170" textAnchor="middle" className={cls(duree)}>
+        {`durée : ${duree === '?' ? '?' : formatDuree(duree)}`}
+      </text>
+      <rect x="100" y="186" width="180" height="34" rx="4" className="cartouche" />
+      <text x="190" y="210" textAnchor="middle" className={cls(vitesse)}>
+        {`vitesse : ${vitesse === '?' ? '?' : `${formatNombre(vitesse)} km/h`}`}
+      </text>
+    </svg>
+  );
+}
+
+function Ombre({ unit, baton, ombreBaton, hauteur, ombre }: { unit: string; baton: Cote; ombreBaton: Cote; hauteur: Cote; ombre: Cote }) {
+  // Le coefficient entre les deux triangles, depuis la paire connue ; le dessin garde le mât et son ombre fixes.
+  const k =
+    typeof hauteur === 'number' && typeof baton === 'number' ? hauteur / baton : typeof ombre === 'number' && typeof ombreBaton === 'number' ? ombre / ombreBaton : 2;
+  const [ground, tip, mx, mh] = [196, 350, 84, 150];
+  const bx = tip - (tip - mx) / k;
+  const bh = mh / k;
+  const label = `Un bâton et un mât, tous deux verticaux, et leurs ombres au sol qui finissent au même point : le haut du bâton et le haut du mât sont sur le même rayon de soleil. Bâton : ${spoken(baton, unit)}, son ombre : ${spoken(ombreBaton, unit)}. Mât : ${spoken(hauteur, unit)}, son ombre : ${spoken(ombre, unit)}.`;
+  return (
+    <svg viewBox="0 0 380 300" role="img" aria-label={label}>
+      <Arrow />
+      <line x1="10" y1={ground} x2="370" y2={ground} className="ground" />
+      <line x1={mx} y1={ground} x2={tip} y2={ground} className="shadow" />
+      {/* Le soleil, au bout du rayon qui passe par le haut du mât et le haut du bâton. */}
+      <line x1={mx - 36} y1={ground - mh - 20} x2={tip} y2={ground} className="ray" />
+      <circle cx={mx - 48} cy={ground - mh - 27} r="12" className="sun" />
+      <rect x={mx - 6} y={ground - mh} width="12" height={mh} className="mast" />
+      <rect x={bx - 3} y={ground - bh} width="6" height={bh} className="mast" />
+      <text x={mx - 14} y={ground - mh / 2 + 6} textAnchor="end" className={cls(hauteur)}>
+        {cote(hauteur, unit)}
+      </text>
+      <text x={bx - 10} y={ground - bh / 2 + 6} textAnchor="end" className={cls(baton)}>
+        {cote(baton, unit)}
+      </text>
+      <Dim x1={bx} x2={tip} y={218} label={cote(ombreBaton, unit)} c={ombreBaton} />
+      <Dim x1={mx} x2={tip} y={256} label={cote(ombre, unit)} c={ombre} />
+    </svg>
+  );
+}
+
+/** Le schéma de la situation : pont, quai, traversée, carte, cargaison, mât, route ou ombre, à plat, la grandeur cherchée marquée « ? ». */
 export function Scene(props: SceneProps) {
   return (
     <figure className={`scene-figure scene-${props.scene}`}>
@@ -289,6 +365,8 @@ export function Scene(props: SceneProps) {
       {props.scene === 'carte' && <Carte {...props} />}
       {props.scene === 'cargaison' && <Cargaison {...props} />}
       {props.scene === 'mat' && <Mat {...props} />}
+      {props.scene === 'route' && <Route {...props} />}
+      {props.scene === 'ombre' && <Ombre {...props} />}
     </figure>
   );
 }
