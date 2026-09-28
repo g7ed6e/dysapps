@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 3e 1`] = `
+{
+  "ambiance": "f6a53a7b",
+  "décor (lueurs)": "1509bf4b",
+  "décor (primitives)": "b468d3d4",
+  "décor (style a)": "b9788815",
+  "relief": "c1cbbf83",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 4e 1`] = `
+{
+  "ambiance": "8291fc0d",
+  "décor (lueurs)": "1c69a7e6",
+  "décor (primitives)": "28ccb732",
+  "décor (style a)": "795e1fef",
+  "relief": "6e338bb4",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] = `
+{
+  "ambiance": "f97cd948",
+  "décor (lueurs)": "13fe3a3b",
+  "décor (primitives)": "234220b6",
+  "décor (style a)": "17e680a0",
+  "relief": "8faeaccf",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] = `
+{
+  "ambiance": "62a4fce8",
+  "décor (lueurs)": "9c445ce7",
+  "décor (primitives)": "3338b962",
+  "décor (style a)": "849c2660",
+  "relief": "3559ec24",
+}
+`;

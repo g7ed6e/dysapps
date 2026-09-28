@@ -40,7 +40,23 @@ const REGLES = [
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
-const GRILLE = ['world/map', 'world/harbour', 'world/ground', 'world/paths', 'world/terrain', 'world/decor', 'world/whalePass', 'world/grille'];
+const GRILLE = [
+  'world/map',
+  'world/harbour',
+  'world/ground',
+  'world/paths',
+  'world/terrain',
+  'world/decor',
+  'world/whalePass',
+  'world/grille',
+  // Le relief de chaque île, en repère d'île, un fichier par archipel (socle de la piste Rendu).
+  'world/silhouettes',
+  'world/silhouettes/types',
+  'world/silhouettes/6e',
+  'world/silhouettes/5e',
+  'world/silhouettes/4e',
+  'world/silhouettes/3e',
+];
 
 /** Le contrat commun des vues et sa simulation. */
 const COMMUN = ['world/view', 'world/scene'];
@@ -102,8 +118,8 @@ function resoudre(from: string, spec: string): string | null {
 }
 
 function fichier(n: string): string {
-  const f = join(BLOCLAND, `${n}.ts`);
-  return existsSync(f) ? f : join(BLOCLAND, `${n}.tsx`);
+  const f = [`${n}.ts`, `${n}.tsx`, `${n}/index.ts`].map((x) => join(BLOCLAND, x)).find((x) => existsSync(x));
+  return f ?? join(BLOCLAND, `${n}.tsx`);
 }
 
 /** Les dépendances à contresens des règles, de la grille et du contrat commun, « a → b ». */

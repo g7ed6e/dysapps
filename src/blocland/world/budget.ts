@@ -26,6 +26,55 @@ export const RENDER_BUDGET = {
   drawCalls: 40,
 } as const;
 
+/** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
+export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
+
+/** Une enveloppe : les triangles et les appels de dessin qu'un poste peut prendre dans un archipel tout construit. */
+export interface Enveloppe {
+  triangles: number;
+  drawCalls: number;
+}
+
+/**
+ * Les postes du budget (docs/conception/cadrage-archipeo.md §6, « Le budget par poste »), décidés le 28 septembre
+ * 2026 : chaque lot de rendu tient ses postes dans leur enveloppe, et la somme tient dans `RENDER_BUDGET`. Les Premiers
+ * Rivages ont leur colonne (leur phare, leur volcan) ; les trois autres archipels partagent la leur. Chaque lot n'écrit
+ * que sa ligne ; le socle les a toutes posées.
+ */
+export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe }> = {
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 23_000, drawCalls: 1 } },
+  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 5_000, drawCalls: 1 }, autres: { triangles: 5_000, drawCalls: 1 } },
+  // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
+  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_500, drawCalls: 3 }, autres: { triangles: 1_500, drawCalls: 3 } },
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_500, drawCalls: 3 }, autres: { triangles: 9_000, drawCalls: 3 } },
+  construction: {
+    lot: 'R5',
+    nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
+    premiersRivages: { triangles: 6_500, drawCalls: 3 },
+    autres: { triangles: 6_500, drawCalls: 3 },
+  },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_000, drawCalls: 1 }, autres: { triangles: 1_000, drawCalls: 1 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 1_000, drawCalls: 3 } },
+  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 800, drawCalls: 2 }, autres: { triangles: 800, drawCalls: 2 } },
+  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 2_500, drawCalls: 1 } },
+  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 1_500, drawCalls: 1 }, autres: { triangles: 1_500, drawCalls: 1 } },
+  scene: {
+    lot: 'socle',
+    nom: 'Dans la scène : étiquettes, flèche, fanion, balises',
+    premiersRivages: { triangles: 500, drawCalls: 5 },
+    autres: { triangles: 500, drawCalls: 5 },
+  },
+};
+
+/** L'appel de dessin en plus pendant le passage de la baleine (l'écume sous elle), compté dans la faune. */
+export const APPEL_DU_PASSAGE = 1;
+
+/** L'enveloppe d'un poste dans un archipel. */
+export function enveloppeDe(poste: Poste, a: ArchipelagoId): Enveloppe {
+  const e = ENVELOPPES[poste];
+  return a === '6e' ? e.premiersRivages : e.autres;
+}
+
 /** Une partie où tout est construit : trois étoiles partout, Gardiens vaincus, tous les plans, ouvrages, étapes du navire et ponts. */
 export function toutConstruit() {
   const progress: Record<string, { stars: number; attempts: number; best: number }> = Object.fromEntries([

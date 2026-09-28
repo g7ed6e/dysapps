@@ -3,8 +3,9 @@
 // Three.js dans le paquet de l'application. `npm run rendu:mesures` ; `npm run rendu:mesures -- --sans-poids` saute le
 // build. Chromium en rendu logiciel (SwiftShader) : les appels et les triangles ne dépendent pas de la carte graphique,
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
-// `--captures <dossier>` enregistre en plus les captures de ces scènes (3D et 2D, de jour et de nuit), pour comparer un lot
-// de rendu à l'état d'avant ; elles ne sont pas versionnées. `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
+// rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
+// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -37,6 +38,39 @@ const WAIT = Number(option('--attente') ?? 10) * 1000;
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
 const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
+
+/**
+ * Les captures déclarées d'avance (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) : pour chaque
+ * archipel tout construit, tout ce que montrent les lots de rendu et la revue d'ensemble du directeur artistique, de près
+ * et de loin (une île, l'archipel, la Carte), de jour et de nuit, en 3D et en 2D, en Contraste élevé et avec « Réduire
+ * les animations ». Le fichier : `<archipel>-<nom>.jpg`. Les captures de jour en 3D sont aussi celles des mesures.
+ * Un lot ne change pas cette liste : il refait les captures et les montre toutes.
+ */
+const CAPTURES = [
+  { nom: 'ile', vue: 'île', famille: 'jour' },
+  { nom: 'archipel', vue: 'archipel', famille: 'jour' },
+  { nom: 'carte', vue: 'carte', famille: 'jour' },
+  { nom: 'ile-nuit', vue: 'île', famille: 'nuit', nuit: true },
+  { nom: 'archipel-nuit', vue: 'archipel', famille: 'nuit', nuit: true },
+  { nom: 'carte-nuit', vue: 'carte', famille: 'nuit', nuit: true },
+  { nom: 'ile-2d', vue: 'île', famille: '2d', view: '2d' },
+  { nom: 'archipel-2d', vue: 'archipel', famille: '2d', view: '2d' },
+  { nom: 'carte-2d', vue: 'carte', famille: '2d', view: '2d' },
+  { nom: 'ile-2d-nuit', vue: 'île', famille: '2d', view: '2d', nuit: true },
+  { nom: 'archipel-2d-nuit', vue: 'archipel', famille: '2d', view: '2d', nuit: true },
+  { nom: 'carte-2d-nuit', vue: 'carte', famille: '2d', view: '2d', nuit: true },
+  { nom: 'ile-contraste', vue: 'île', famille: 'contraste', theme: 'contraste' },
+  { nom: 'archipel-contraste', vue: 'archipel', famille: 'contraste', theme: 'contraste' },
+  { nom: 'carte-contraste', vue: 'carte', famille: 'contraste', theme: 'contraste' },
+  { nom: 'ile-contraste-nuit', vue: 'île', famille: 'contraste', theme: 'contraste', nuit: true },
+  { nom: 'archipel-contraste-nuit', vue: 'archipel', famille: 'contraste', theme: 'contraste', nuit: true },
+  // « Réduire les animations » : deux captures à quelques secondes d'écart, qui doivent être identiques (rien ne bouge).
+  { nom: 'ile-reduit', vue: 'île', famille: 'reduit', reduceMotion: true, encore: 'ile-reduit-bis' },
+  { nom: 'archipel-reduit', vue: 'archipel', famille: 'reduit', reduceMotion: true, encore: 'archipel-reduit-bis' },
+];
+/** L'écart entre une capture et sa seconde (`encore`). */
+const ECART = 4000;
+const FAMILLES = option('--familles')?.split(',') ?? null;
 
 // ---------- Le poids de Three.js dans le paquet ----------
 
@@ -81,42 +115,49 @@ async function scenes() {
   const rows = [];
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
+    const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte' };
+    // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
-      { vue: 'île', go: `/aventure/${at}` },
-      { vue: 'archipel', go: '/aventure' },
-      { vue: 'carte', go: '/aventure/carte' },
+      ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
       ...(SHOTS
-        ? [
-            { vue: 'île', go: `/aventure/${at}`, time: NIGHT, name: 'nuit' },
-            { vue: 'archipel', go: '/aventure', time: NIGHT, name: 'nuit' },
-            { vue: 'île', go: `/aventure/${at}`, view: '2d', name: '2d' },
-            { vue: 'île', go: `/aventure/${at}`, view: '2d', time: NIGHT, name: '2d-nuit' },
-            { vue: 'archipel', go: '/aventure', view: '2d', name: '2d' },
-            { vue: 'archipel', go: '/aventure', view: '2d', time: NIGHT, name: '2d-nuit' },
-          ]
+        ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille))).map((c) => ({
+            vue: c.vue,
+            go: routes[c.vue],
+            time: c.nuit ? NIGHT : DAY,
+            view: c.view,
+            theme: c.theme,
+            reduceMotion: c.reduceMotion,
+            nom: c.nom,
+            encore: c.encore,
+          }))
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', name } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view }) => {
+        ({ village, progress, view, theme, reduceMotion }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(theme ? { theme } : {}), ...(reduceMotion ? { reduceMotion } : {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, at }, progress, view },
+        { village: { ...built, at }, progress, view, theme, reduceMotion },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
-      const file = SHOTS && join(SHOTS, `${a}-${vue.replace('î', 'i')}${name ? `-${name}` : ''}.jpg`);
-      if (name) {
-        // Les captures de nuit et de la 2D : pas de mesure, seulement l'image.
+      const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
+      if (!mesure) {
+        // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
         await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (encore) {
+          // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
+          await page.waitForTimeout(ECART);
+          await page.screenshot({ path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
+        }
         await page.close();
         continue;
       }
