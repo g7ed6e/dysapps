@@ -4,7 +4,7 @@
 // Si une empreinte change, c'est que le monde a changé ; un lot qui le veut (un lot de rendu, par exemple) met à jour
 // l'instantané avec `npx vitest run -u src/blocland/world/empreintes.test.ts` et le dit dans sa pull request.
 import { BIOMES, type BiomeId } from '../biomes';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './map';
 import { BRIDGES, getArchipelago, islandsOf, VOYAGES } from './archipelago';
 import { toutConstruit } from './budget';
 import { champDuSol, landMesh, poseDuDecor, type Facettes } from './landMesh';
@@ -111,19 +111,24 @@ describe('Empreintes de la grille (filet de la séparation du jeu et du rendu)',
     }
   }
 
-  it('la place des îles, des bornes, des lieux et du bonhomme', () => {
-    const places = BIOMES.map((b) => {
-      const id = b.id as BiomeId;
-      return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('ecole', id), placeDoor('trophees', id)];
+  // Coupées par archipel (socle de la piste Rendu) : un lot qui change un archipel ne régénère que ses empreintes.
+  for (const a of ARCHIPELAGO_IDS) {
+    it(`${a}, la place des îles, des bornes, des lieux et du bonhomme`, () => {
+      const places = BIOMES.filter((b) => archipelagoOfIsland(b.id as BiomeId) === a).map((b) => {
+        const id = b.id as BiomeId;
+        return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('ecole', id), placeDoor('trophees', id)];
+      });
+      expect(empreinte(places)).toMatchSnapshot();
     });
-    expect(empreinte(places)).toMatchSnapshot();
-  });
 
-  it('les ouvrages et les embarquements', () => {
-    const ouvrages = BRIDGES.map((b) => [b.id, bridgePath(b)]);
-    const embarquements = ARCHIPELAGO_IDS.map((a) => [a, boardingRoute(getArchipelago(a).port)]);
-    expect({ ouvrages: empreinte(ouvrages), embarquements: empreinte(embarquements), voyages: empreinte(VOYAGES) }).toMatchSnapshot();
-  });
+    it(`${a}, les ouvrages, l’embarquement et les voyages`, () => {
+      // Un ouvrage est à l'archipel de son île de départ ; un voyage à celui de son arrivée.
+      const ouvrages = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a).map((b) => [b.id, bridgePath(b)]);
+      const embarquement = boardingRoute(getArchipelago(a).port);
+      const voyages = VOYAGES.filter((v) => v.toClasse === a);
+      expect({ ouvrages: empreinte(ouvrages), embarquement: empreinte(embarquement), voyages: empreinte(voyages) }).toMatchSnapshot();
+    });
+  }
 
   // Les clés des cases des plans sont enregistrées dans les sauvegardes : elles ne changent jamais.
   it('les clés des cases de chaque plan (sauvegardes)', () => {
