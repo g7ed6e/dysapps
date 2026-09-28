@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes des personnages en facettes > le bonhomme 1`] = `
+{
+  "empreinte": "e32ed54d",
+  "triangles": 388,
+}
+`;
+
+exports[`Empreintes des personnages en facettes > les créatures, île par île 1`] = `
+{
+  "atelier": "260 4607bb4b",
+  "baie": "230 5096188a",
+  "belvedere": "224 adba3c4b",
+  "cabinet": "206 c5f61262",
+  "carrefour": "247 4bf20580",
+  "carriere": "250 ccc3658b",
+  "chateau": "314 b39aea84",
+  "comptoir": "232 ccd7add4",
+  "donnees": "234 7c7b6c6d",
+  "falaise": "262 2bc600fc",
+  "ferme": "250 b4fe0dda",
+  "foret": "204 37a0c5e3",
+  "forge": "200 e6a056c6",
+  "gare": "252 4c47009a",
+  "glacier": "238 d828b1c0",
+  "horloge": "272 037d62df",
+  "manoir": "272 9dda7b56",
+  "marais": "262 24a852bd",
+  "marche": "294 c0502db6",
+  "mine": "248 4a030de8",
+  "phare": "268 550c24b0",
+  "plaine": "236 399b4b22",
+  "riviere": "228 dd9021c1",
+  "studio": "270 d4d2c7a4",
+  "textes": "282 3b68d1cc",
+  "theatre": "226 ca1e41d6",
+  "tour": "242 1ed269d9",
+  "volcan": "226 9fcd940e",
+}
+`;

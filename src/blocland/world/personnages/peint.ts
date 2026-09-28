@@ -218,16 +218,20 @@ export function parFace(choix: (k: number, j: number) => Peindre): PeindreFuseau
   return Object.assign(f, { [PAR_FACE]: true });
 }
 
-/** Le devant d'un fuseau (tourné par `avant`) à la hauteur `y` : le `z` de sa face avant et sa demi-largeur. */
-export function devant(profil: Anneau[], n: number, y: number, z = 0): { z: number; demiLargeur: number } {
+/** L'anneau d'un profil à la hauteur `y` (entre deux anneaux, par interpolation ; au bord, le premier ou le dernier). */
+export function anneauA(profil: Anneau[], y: number): [number, number, number, number, number] {
   let k = 0;
   while (k + 2 < profil.length && profil[k + 1][0] < y) k++;
-  const [y0, rx0, rz0 = rx0, dz0 = 0] = profil[k];
-  const [y1, rx1, rz1 = rx1, dz1 = 0] = profil[k + 1];
+  const [y0, rx0, rz0 = rx0, dz0 = 0, dx0 = 0] = profil[k];
+  const [y1, rx1, rz1 = rx1, dz1 = 0, dx1 = 0] = profil[k + 1];
   const t = clamp((y - y0) / (y1 - y0), 0, 1);
-  const rx = rx0 + (rx1 - rx0) * t;
-  const rz = rz0 + (rz1 - rz0) * t;
-  const dz = dz0 + (dz1 - dz0) * t;
+  const l = (a: number, b: number) => a + (b - a) * t;
+  return [y, l(rx0, rx1), l(rz0, rz1), l(dz0, dz1), l(dx0, dx1)];
+}
+
+/** Le devant d'un fuseau (tourné par `avant`) à la hauteur `y` : le `z` de sa face avant et sa demi-largeur. */
+export function devant(profil: Anneau[], n: number, y: number, z = 0): { z: number; demiLargeur: number } {
+  const [, rx, rz, dz] = anneauA(profil, y);
   return { z: z + dz - rz * Math.cos(Math.PI / n), demiLargeur: rx * Math.sin(Math.PI / n) };
 }
 

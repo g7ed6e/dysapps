@@ -1,6 +1,10 @@
 import { AVATAR_PARTS } from '../../Avatar';
-import { BONHOMME, OEIL } from './couleurs';
+import { BIOMES, type BiomeId } from '../../biomes';
+import { ARCHIPELAGO_IDS } from '../archipels';
+import { BONHOMME, OEIL, OUTIL, TENUE } from './couleurs';
 import { bonhommePeint, TAILLE_DU_BONHOMME } from './bonhomme';
+import { creaturePeinte, ESPECES } from './creaturesPeintes';
+import { TAILLE_DE_CREATURE } from './gabarit';
 import { avant, devant, facette, fuseau, pave, peindrePersonnage, pose, repere, type Anneau, type FacettesDePersonnage, type Piece, type V3 } from './peint';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
@@ -207,4 +211,81 @@ describe('Le bonhomme en facettes', () => {
     expect(normalesCoherentes(f)).toBe(true);
     for (const i of f.table.keys()) expect(volume(f, (t) => f.pieces[t] === i && f.teintes[t] !== OEIL), f.table[i].nom).toBeGreaterThan(0);
   });
+});
+
+describe('Les créatures en facettes', () => {
+  const LUMINEUSES: BiomeId[] = ['phare', 'textes', 'forge'];
+  const MATIERES_D_OUTIL = new Set<number>([...Object.values(OUTIL), ...Object.values(TENUE)]);
+
+  it('chaque île a sa créature, une espèce par île', () => {
+    expect(Object.keys(ESPECES).sort()).toEqual(BIOMES.map((b) => b.id).sort());
+    expect(new Set(Object.values(ESPECES).map((e) => e.nom)).size).toBe(BIOMES.length);
+  });
+
+  it('tiennent dans leur budget : 2 500 triangles au plus par archipel, toutes ensemble', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(creaturePeinte(b.id)), 0);
+      expect(somme, a).toBeLessThanOrEqual(2_500);
+    }
+  });
+
+  for (const b of BIOMES)
+    describe(`${ESPECES[b.id]?.nom} (${b.id})`, () => {
+      const f = creaturePeinte(b.id);
+      const piece = (nom: string) => f.table.findIndex((p) => p.nom === nom);
+      const sansOutil = (t: number) => f.table[f.pieces[t]].nom !== 'outil';
+
+      it('debout, 1,3 fois le bonhomme (2,6 blocs à un dixième près), la tête au cinquième', () => {
+        const [bas, haut] = hauteurs(f, sansOutil);
+        expect(bas).toBeCloseTo(0, 6);
+        expect(Math.abs(haut - 1.3 * TAILLE_DU_BONHOMME)).toBeLessThanOrEqual(0.1 + 1e-9);
+        const [t0, t1] = hauteurs(f, (t) => f.pieces[t] === piece('tete'));
+        expect((t1 - t0) / TAILLE_DE_CREATURE).toBeCloseTo(1 / 5, 2);
+      });
+
+      it('a son corps, sa tête, son bras porteur et son outil de métier, pièces à part', () => {
+        for (const nom of ['corps', 'tete', 'bras', 'outil']) expect(f.pieces.includes(piece(nom)), nom).toBe(true);
+      });
+
+      it(b.id === 'phare' ? 'n’a pas d’yeux (sa tête est une lanterne)' : 'a deux petits yeux sombres, sans blanc ni sourire', () => {
+        const yeux = [...f.teintes.keys()].filter((t) => f.teintes[t] === OEIL);
+        if (b.id === 'phare') return expect(yeux).toEqual([]);
+        expect(yeux).toHaveLength(4);
+        for (const t of yeux) {
+          expect(f.table[f.pieces[t]].nom).toBe('yeux');
+          expect(f.normals[t * 9 + 2]).toBeCloseTo(-1, 6);
+        }
+        const cotes = yeux.map((t) => Math.sign(sommet(f, t, 0)[0] + sommet(f, t, 1)[0] + sommet(f, t, 2)[0]));
+        expect(cotes.filter((s) => s < 0)).toHaveLength(2);
+        // Les yeux sont petits : chacun moins de 5 centièmes de bloc de côté.
+        for (const t of yeux) for (let k = 0; k < 3; k++) expect(Math.abs(sommet(f, t, k)[1] - sommet(f, t, 0)[1])).toBeLessThan(0.05);
+      });
+
+      it('a trois couleurs : une dominante (et sa marque), une tenue, des outils de bois, de fer, de laiton, de lin ou de cuir', () => {
+        const de = (role: string) => new Set(f.palette.filter((p) => p.role === role).map((p) => p.couleur));
+        expect(de('dominante').size).toBeGreaterThanOrEqual(1);
+        expect(de('dominante').size).toBeLessThanOrEqual(2);
+        expect(de('tenue').size).toBe(1);
+        for (const c of de('outil')) expect(MATIERES_D_OUTIL.has(c), c.toString(16)).toBe(true);
+        expect([...de('yeux')].every((c) => c === OEIL)).toBe(true);
+      });
+
+      it(LUMINEUSES.includes(b.id) ? 'brille la nuit, d’une seule pièce' : 'ne brille pas', () => {
+        const lueurs = f.table.filter((p) => p.lueur);
+        expect(lueurs.map((p) => p.lueur)).toEqual(LUMINEUSES.includes(b.id) ? ['nuit'] : []);
+        const i = f.table.findIndex((p) => p.lueur);
+        for (let t = 0; t < nbTriangles(f); t++) expect(f.pieces[t] === i, `triangle ${t}`).toBe(f.palette.some((p) => p.role === 'lueur' && p.couleur === f.teintes[t]) && i >= 0);
+      });
+
+      it('a des facettes cohérentes et reste près de sa case (outil à part)', () => {
+        expect(normalesCoherentes(f)).toBe(true);
+        for (let t = 0; t < nbTriangles(f); t++) {
+          if (!sansOutil(t)) continue;
+          for (let k = 0; k < 3; k++) {
+            const [x, , z] = sommet(f, t, k);
+            expect(Math.max(Math.abs(x), Math.abs(z))).toBeLessThan(0.75);
+          }
+        }
+      });
+    });
 });
