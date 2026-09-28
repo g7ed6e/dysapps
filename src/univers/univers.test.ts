@@ -91,7 +91,7 @@ describe('les textes d’univers', () => {
   it('dans Archipéo, la réplique finale dit que la sentinelle se rallume, sans promettre qu’elle brille toute', () => {
     // On gagne le défi avant d'avoir tout réussi, et le rallumage se voit au village : « brille à nouveau » est à lui.
     for (const g of Object.values(textesDe('archipeo').gardiens)) {
-      expect(g.guardianSays.beaten).toMatch(/se rallument?[ .]/);
+      expect(g.guardianSays.beaten).toMatch(/se rallume(nt)?\b/);
       expect(g.guardianSays.beaten).not.toMatch(/brillent? à nouveau|^Tou(te)?s? /);
     }
   });
