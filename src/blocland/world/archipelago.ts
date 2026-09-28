@@ -6,11 +6,10 @@
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
-import { ARCHIPELAGO_IDS, MAP, archipelagoOfIsland, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
 import { plansFor, isPlanDone } from './plans';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
-export const ISLANDS = MAP;
 
 export type { ArchipelagoId };
 
