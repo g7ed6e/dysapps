@@ -123,7 +123,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
             [s * 0.75, 5.75],
             [s * 0.95, 6.3],
           ],
-          0.08,
+          0.08 * a.veines,
           a.lueur,
         );
     },
@@ -194,7 +194,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
             [-0.35, y],
             [0.35, y],
           ],
-          0.12,
+          0.12 * a.veines,
           a.lueur,
         );
     },
@@ -305,7 +305,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
           [-0.36, 5.4],
           [0.36, 5.4],
         ],
-        0.1,
+        0.1 * a.veines,
         a.orbite,
       );
     },

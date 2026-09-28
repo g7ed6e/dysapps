@@ -9,6 +9,7 @@ import { playDone, playNope, playPlace } from './sound';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import type { MonumentDef } from './world/monuments';
 import { monumentAnchor, origineDe } from './world/terrain';
+import { texteDuMonument, useTextes } from '../univers';
 
 export interface MonumentBuilder {
   monument: MonumentDef;
@@ -31,6 +32,7 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
   const { settings, speak } = useSettings();
   const { completeMonument } = useProgress();
   const haptics = useHaptics();
+  const { done } = texteDuMonument(useTextes(), monument);
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: monument.biome, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [monument.id]);
@@ -44,7 +46,7 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
     setBurst((b) => ({ seq: b.seq + 1, cell: { ile: monument.biome, local: { x: o.x + x - ile.x, y: o.y + y - ile.y, z: o.z + z - ile.z } }, color: BLOCKS[block].top }));
   };
   const finished = () => {
-    const msg = `${monument.name} : terminé ! ${monument.done} +${monument.reward.xp} XP.`;
+    const msg = `${monument.name} : terminé ! ${done} +${monument.reward.xp} XP.`;
     setNotice(msg);
     completeMonument(monument.reward.xp);
     sound(playDone);

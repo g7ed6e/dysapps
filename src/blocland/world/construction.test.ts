@@ -48,6 +48,7 @@ import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
 import { sansToursDuCoeur } from './construction';
 import { BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
+import { phareDuLarge } from './phareDuLarge';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -125,16 +126,24 @@ const AIRE_DE_LANTERNE = 5 * 0.3 * 0.3 + 5 * 0.18 * 0.18;
 function rangerLesLanternes(cubes: VoxelCube[], a: ArchipelagoId = '6e') {
   const phare = phareDeGrimoire(cubes, a);
   const ponts = pontsDePierreEtDeBois(cubes).remplacees;
-  const gardes = cubes.filter((c) => !c.quest && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !ponts.has(cle(c.x, c.y, c.z)));
+  const large = phareDuLarge(cubes).remplacees;
+  const gardes = cubes.filter((c) => !c.quest && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !ponts.has(cle(c.x, c.y, c.z)) && !large.has(cle(c.x, c.y, c.z)));
   const genres = genresDesBlocs(gardes);
   const lanternes = new Map<string, VoxelCube>();
   for (const [c, g] of genres) if (g === 'lanterne') lanternes.set(cle(c.x, c.y, c.z), c);
   return { pleins: gardes.filter((c) => !c.ghost && genres.get(c) !== 'lanterne'), lanternes };
 }
 
-/** Le triangle `i` d'un groupe est-il au phare de Grimoire, ou à un pont de pierre et de bois du 5e (des modèles, pas des blocs) ? */
+/**
+ * Le triangle `i` d'un groupe est-il au phare de Grimoire, au phare du large (DA-4) ou à un pont de pierre et de bois
+ * du 5e (des modèles, pas des blocs) ?
+ */
 const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: number) =>
-  Boolean((m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) || (groupe === 'opaque' && m.ponts && i >= m.ponts.opaque[0] && i < m.ponts.opaque[1]));
+  Boolean(
+    (m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) ||
+      (m.phareDuLarge && i >= m.phareDuLarge[groupe][0] && i < m.phareDuLarge[groupe][1]) ||
+      (groupe === 'opaque' && m.ponts && i >= m.ponts.opaque[0] && i < m.ponts.opaque[1]),
+  );
 /** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
 const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ? m.ponts.opaque[1] - m.ponts.opaque[0] : 0);
 

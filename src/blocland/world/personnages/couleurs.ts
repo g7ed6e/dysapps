@@ -29,14 +29,18 @@ export const VERRE_DE_FI = { jour: 0xd9c99a, nuit: LUEUR } as const satisfies Re
 
 /**
  * Le bonhomme, un collégien explorateur à la silhouette neutre (cheveux courts en bataille, veste à capuche, sac) :
- * veste pétrole, sac de cuir à rabat Sable, jean, cheveux châtain sombre.
+ * veste Nuit océan, sac de cuir à rabat Sable et bretelles de cuir sombre (plus de bande claire sur le torse), jean
+ * délavé clair, cheveux châtain sombre. Deux masses qui tranchent (revue d'ensemble du directeur artistique, DA-6) : la
+ * veste et les cheveux, sombres, se lisent à 3:1 au moins sur l'herbe du 6e et la roche du 5e, la veste aussi sur l'herbe du 5e ; le jean, clair, sur le
+ * basalte du 4e (world/personnages/peint.test.ts).
  */
 export const BONHOMME = {
-  veste: 0x1f4a5a,
+  veste: 0x142b38,
   sac: 0x8a5a32,
+  bretelles: 0x4e3320,
   rabat: 0xdaa66a,
-  jean: 0x3b5570,
-  cheveux: 0x4a3222,
+  jean: 0x8cadce,
+  cheveux: 0x3a2618,
   peau: 0xd6a27c,
   chaussures: 0x3a2a22,
 } as const satisfies Record<string, Couleur>;

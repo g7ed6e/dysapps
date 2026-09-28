@@ -16,8 +16,8 @@ import { rgb } from '../decor/pinceau';
 import { LUEUR } from './couleurs';
 export { allumageDuGardien } from './allumage';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './peint';
-import { couleursAllumees } from './sentinelle';
-import { sentinellePeinte } from './sentinellesPeintes';
+import { couleursAllumees, ECHELLE_DANS_LE_MONDE } from './sentinelle';
+import { sentinelleDuMonde } from './sentinellesPeintes';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -95,14 +95,14 @@ export function pointDePose(p: PersonnagePlace): V3 {
   return [p.origin.x + (x0 + x1) / 2, p.origin.z, p.origin.y + (y0 + y1) / 2];
 }
 
-/** Copie les triangles d'un modèle dans une fusion, déplacés de `o`, à partir du triangle `t0`. */
-function copier(dans: Fusion, f: FacettesDePersonnage, o: V3, t0: number): void {
+/** Copie les triangles d'un modèle dans une fusion, à l'échelle `k`, déplacés de `o`, à partir du triangle `t0`. */
+function copier(dans: Fusion, f: FacettesDePersonnage, o: V3, t0: number, k = 1): void {
   const n = f.positions.length;
   const b = t0 * 9;
   for (let i = 0; i < n; i += 3) {
-    dans.positions[b + i] = f.positions[i] + o[0];
-    dans.positions[b + i + 1] = f.positions[i + 1] + o[1];
-    dans.positions[b + i + 2] = f.positions[i + 2] + o[2];
+    dans.positions[b + i] = f.positions[i] * k + o[0];
+    dans.positions[b + i + 1] = f.positions[i + 1] * k + o[1];
+    dans.positions[b + i + 2] = f.positions[i + 2] * k + o[2];
   }
   dans.normals.set(f.normals, b);
   dans.colors.set(f.colors, b);
@@ -156,16 +156,19 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
   return { ...base, os, squelette, boites, lueur };
 }
 
-/** Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés). */
+/**
+ * Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés), à
+ * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case.
+ */
 export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens {
-  const modeles = places.map((p) => sentinellePeinte(p.id));
+  const modeles = places.map((p) => sentinelleDuMonde(p.id));
   const total = modeles.reduce((n, f) => n + f.pieces.length, 0);
   const base = vide(total);
   const lueur = new Float32Array(total * 3);
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
-    copier(base, f, pointDePose(p), t0);
+    copier(base, f, pointDePose(p), t0, ECHELLE_DANS_LE_MONDE);
     const brille = f.table.map((q) => q.lueur === 'allumage');
     for (let t = 0; t < f.pieces.length; t++) if (brille[f.pieces[t]]) lueur.fill(1, (t0 + t) * 3, (t0 + t + 1) * 3);
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
@@ -187,7 +190,7 @@ export function couleursDesGardiens(
 ): Float32Array {
   for (const p of f.plages) {
     if (seul && p.id !== seul) continue;
-    couleursAllumees(sentinellePeinte(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+    couleursAllumees(sentinelleDuMonde(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
   }
   return dans;
 }

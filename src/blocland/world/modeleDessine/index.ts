@@ -66,7 +66,8 @@ export function modelerLeSol(
     for (const c of list) if (c !== top && c.z < nouveauDessus) out.push(c);
     if (d > 0) {
       const dessous = list.filter((c) => c !== top).reduce<VoxelCube | undefined>((p, q) => (!p || q.z > p.z ? q : p), undefined) ?? top;
-      for (let z = top.z; z < nouveauDessus; z++) out.push({ ...dessous, z });
+      const flanc = m.flanc ? { ...dessous, texture: m.flanc } : dessous;
+      for (let z = top.z; z < nouveauDessus; z++) out.push({ ...flanc, z });
     }
     out.push(matiere === top.texture ? { ...top, z: nouveauDessus } : { ...top, z: nouveauDessus, texture: matiere });
   }

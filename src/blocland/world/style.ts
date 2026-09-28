@@ -16,8 +16,8 @@ export const STYLES: StyleSurface[] = ['a', 'b', 'c'];
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
-/** Un hasard reproductible par case entière, de 0 à 1. */
-function hash(i: number, j: number): number {
+/** Un hasard reproductible par case entière, de 0 à 1 (arithmétique entière : le même sur tout moteur). */
+export function hash(i: number, j: number): number {
   let h = Math.imul(i, 374761393) ^ Math.imul(j, 668265263);
   h = Math.imul(h ^ (h >>> 13), 1274126177);
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
