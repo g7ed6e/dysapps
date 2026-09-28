@@ -1,4 +1,4 @@
-import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
+import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './codeSecret';
 
 const suivre = (gestes: Geste[]) => gestes.reduce((pos, g) => avancer(pos, g), 0);
 const FLECHES: Geste[] = ['haut', 'haut', 'bas', 'bas', 'gauche', 'droite', 'gauche', 'droite'];
@@ -27,4 +27,12 @@ describe('la suite de gestes', () => {
     expect(gesteDeGlissement(90, 10)).toBe('droite');
     expect(gesteDeGlissement(5, 5)).toBe('toucher');
   });
+});
+
+it('lit un toucher selon l’endroit du logo', () => {
+  expect(gesteDeZone(50, 5, 100, 100)).toBe('haut');
+  expect(gesteDeZone(50, 95, 100, 100)).toBe('bas');
+  expect(gesteDeZone(5, 50, 100, 100)).toBe('gauche');
+  expect(gesteDeZone(95, 50, 100, 100)).toBe('droite');
+  expect(gesteDeZone(52, 48, 100, 100)).toBe('toucher');
 });

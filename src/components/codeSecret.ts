@@ -1,5 +1,5 @@
 // Une suite de gestes sur l'écran titre, la même au clavier et au doigt : haut, haut, bas, bas, gauche, droite,
-// gauche, droite, puis B et A (au doigt : deux touchers du logo). Un geste de travers remet la suite à zéro, sans rien dire.
+// gauche, droite, puis B et A (au doigt : deux touchers au centre du logo). Un geste de travers remet la suite à zéro, sans rien dire.
 export type Geste = 'haut' | 'bas' | 'gauche' | 'droite' | 'b' | 'a' | 'toucher';
 
 const SUITE: readonly (readonly Geste[])[] = [
@@ -38,6 +38,22 @@ export const SEUIL_GLISSEMENT = 40;
 /** Le geste d'un glissement du doigt, selon son déplacement (y vers le bas), ou `toucher` s'il est trop court. */
 export function gesteDeGlissement(dx: number, dy: number): Geste {
   if (Math.max(Math.abs(dx), Math.abs(dy)) < SEUIL_GLISSEMENT) return 'toucher';
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'droite' : 'gauche';
+  return dy > 0 ? 'bas' : 'haut';
+}
+
+/** La part du logo, au centre, où un toucher compte pour B et A ; autour, le bord touché donne la flèche. */
+export const CENTRE_DU_LOGO = 0.34;
+
+/**
+ * Le geste d'un toucher bref selon l'endroit du logo : le haut, le bas, la gauche ou la droite donnent la flèche, le
+ * centre donne `toucher`. Rien ne glisse : aucun navigateur ne le prend pour un défilement ou un rechargement.
+ */
+export function gesteDeZone(x: number, y: number, largeur: number, hauteur: number): Geste {
+  if (largeur <= 0 || hauteur <= 0) return 'toucher';
+  const dx = (x / largeur) * 2 - 1;
+  const dy = (y / hauteur) * 2 - 1;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < CENTRE_DU_LOGO) return 'toucher';
   if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'droite' : 'gauche';
   return dy > 0 ? 'bas' : 'haut';
 }
