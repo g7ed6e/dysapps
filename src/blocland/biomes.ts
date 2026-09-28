@@ -447,7 +447,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Conjugaison',
     subject: 'francais',
     classe: '5e',
-    description: 'Imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.',
+    description: 'Présent, imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.',
     block: 'tourbe',
     guardian: 'l’Hydre des marais',
     icon: 'footprints',
@@ -456,6 +456,7 @@ export const BIOMES: BiomeDef[] = [
       { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.', programme: ['c3.fr.langue.temps-a-memoriser', 'c4.fr.langue.valeurs-des-temps'] },
       { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.', programme: ['c4.fr.langue.temps-a-memoriser', 'c3.fr.langue.temps-a-memoriser'] },
       { id: 'roseaux', title: 'Roseaux du subjonctif', description: 'Le subjonctif présent, puis reconnaître le temps d’un verbe.', programme: ['c4.fr.langue.temps-a-memoriser', 'c4.fr.langue.morphologie-verbale', 'c3.fr.langue.reconnaitre-verbe'] },
+      { id: 'gue', title: 'Gué des temps', description: 'Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.', programme: ['c4.fr.langue.valeurs-des-temps', 'c4.fr.langue.temps-a-memoriser', 'c4.fr.langue.morphologie-verbale', 'c3.fr.langue.temps-a-memoriser'] },
     ],
   },
   {

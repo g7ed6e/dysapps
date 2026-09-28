@@ -1,0 +1,190 @@
+{
+  "id": "marais-gue-3",
+  "biome": "marais",
+  "type": "gue",
+  "level": 3,
+  "instruction": "Lis la phrase : que dit le temps du verbe ? La règle est affichée.",
+  "items": [
+    {
+      "key": "marais-gue-3-0",
+      "prompt": "« Un triangle a trois côtés. » Que dit ce présent ?",
+      "spoken": "Un triangle a trois côtés. Que dit ce présent ?",
+      "choices": ["toujours vrai", "maintenant", "habitude"],
+      "answer": "toujours vrai",
+      "hint": "Est-ce vrai seulement aujourd’hui ?",
+      "explanation": "Un triangle a trois côtés hier, aujourd’hui et demain : c’est toujours vrai. On l’appelle le présent de vérité générale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-1",
+      "prompt": "« Chut, le bébé dort ! » Que dit ce présent ?",
+      "spoken": "Chut, le bébé dort ! Que dit ce présent ?",
+      "choices": ["maintenant", "habitude", "toujours vrai"],
+      "answer": "maintenant",
+      "hint": "Pourquoi dit-on « chut » ?",
+      "explanation": "Le bébé dort au moment où l’on parle : c’est ce qui se passe maintenant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-2",
+      "prompt": "« Le mercredi, je vais au judo. » Que dit ce présent ?",
+      "spoken": "Le mercredi, je vais au judo. Que dit ce présent ?",
+      "choices": ["habitude", "toujours vrai", "maintenant"],
+      "answer": "habitude",
+      "hint": "« Le mercredi » : une seule fois, ou chaque semaine ?",
+      "explanation": "« Le mercredi » veut dire chaque mercredi : l’action se répète, c’est une habitude. Ce n’est pas vrai pour tout le monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-3",
+      "prompt": "« Il faisait nuit. Soudain, un chien aboya. » Que dit le verbe « aboya » ?",
+      "spoken": "Il faisait nuit. Soudain, un chien aboya. Que dit le verbe aboya ?",
+      "choices": ["action du récit", "décor", "habitude"],
+      "answer": "action du récit",
+      "hint": "Que veut dire « soudain » ?",
+      "explanation": "« Aboya » est au passé simple, après « soudain » : une action qui fait avancer le récit. « Il faisait nuit », c’est le décor.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-4",
+      "prompt": "« La cour était vide, le vent soufflait. » Que dit le verbe « soufflait » ?",
+      "spoken": "La cour était vide, le vent soufflait. Que dit le verbe soufflait ?",
+      "choices": ["décor", "action du récit", "habitude"],
+      "answer": "décor",
+      "hint": "Se passe-t-il quelque chose de nouveau, ou décrit-on le lieu ?",
+      "explanation": "« Soufflait » est à l’imparfait : il décrit le lieu, rien n’avance encore. C’est le décor.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-5",
+      "prompt": "« Chaque été, nous allions à la mer. » Que dit le verbe « allions » ?",
+      "spoken": "Chaque été, nous allions à la mer. Que dit le verbe allions ?",
+      "choices": ["habitude", "décor", "action du récit"],
+      "answer": "habitude",
+      "hint": "Que veut dire « chaque été » ?",
+      "explanation": "« Chaque été » : l’action se répète. L’imparfait dit ici une habitude du passé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-6",
+      "prompt": "« Tom souriait : il avait gagné le match. » Quelle action vient avant l’autre ?",
+      "spoken": "Tom souriait : il avait gagné le match. Quelle action vient avant l’autre ?",
+      "choices": ["gagner le match", "sourire"],
+      "answer": "gagner le match",
+      "hint": "Lequel des deux verbes est au plus-que-parfait ?",
+      "explanation": "« Avait gagné » est au plus-que-parfait : Tom a d’abord gagné, puis il souriait. L’ordre des mots n’est pas l’ordre des actions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "marais-gue-3-7",
+      "prompt": "« Je sortirai quand j’aurai fini mes devoirs. » Quelle action vient avant l’autre ?",
+      "spoken": "Je sortirai quand j’aurai fini mes devoirs. Quelle action vient avant l’autre ?",
+      "choices": ["finir mes devoirs", "sortir"],
+      "answer": "finir mes devoirs",
+      "hint": "Lequel des deux verbes est au futur antérieur ?",
+      "explanation": "« Aurai fini » est au futur antérieur : les devoirs seront finis avant la sortie. La phrase dit « sortirai » en premier, mais cette action vient après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le temps",
+          "lines": [
+            "Présent : ce qui se passe maintenant, une habitude, ou ce qui est toujours vrai.",
+            "Imparfait : le décor, ou une habitude du passé.",
+            "Passé simple : une action du récit, qui fait avancer l’histoire.",
+            "Plus-que-parfait et futur antérieur : l’action vient avant une autre."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "tourbe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
