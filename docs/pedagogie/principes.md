@@ -63,13 +63,14 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Pas de syllabes colorées sur l’anglais** : le découpage suit les règles du français et tromperait l’élève. Le texte anglais est marqué comme tel pour les lecteurs d’écran.
 - **Entendre avant d’écrire** : chaque mot anglais a son bouton Écouter ; au niveau « J’écris » du Vocabulaire, on entend le mot et on choisit son écriture ; la mission Ears de la Baie des mots lit le mot dès qu’il apparaît, rien n’est écrit avant.
 - **Le trou se lit « blank »** dans une phrase anglaise, comme en classe d’anglais : la voix anglaise ne dit pas « mot manquant ».
+- **Lire un document** (panneau, menu, horaire) : la question, en français, vient d’abord, en syllabes comme une consigne, et se lit avec la voix française (d’elle-même à chaque item si la lecture automatique est active) ; le document, en anglais, est encadré dessous, une ligne par information, jamais tout en capitales, sans syllabes, et se lit avec la voix anglaise à la demande. Le lexique affiché aide à lire, il ne recopie pas une réponse.
 
 ## Ce que travaille chaque île
 
 | Classe | Français | Maths | Anglais |
 | --- | --- | --- | --- |
 | 6e | Conscience phonologique (Forêt des sons), confusions de lettres (Mine des lettres), orthographe lexicale (Carrière des mots), orthographe grammaticale (Ferme des accords), fluence (Tour du lecteur) | Calcul mental et problèmes situés (Plaine des nombres), fractions (Rivière des fractions), décimaux (Volcan des décimaux) | Se présenter, nombres, heure, écoute (Baie des mots), to be, have got, présent simple (Horloge des verbes) |
-| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs et fractions (Glacier des relatifs), proportionnalité, échelles et ratio (Marché des proportions) | Courses, journée, écoute de phrases (Comptoir), -ing, prétérit, comparatifs (Manoir du passé) |
+| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs et fractions (Glacier des relatifs), proportionnalité, échelles et ratio (Marché des proportions) | Courses, journée, écoute de phrases, panneaux, menus et horaires (Comptoir), -ing, prétérit, comparatifs (Manoir du passé) |
 | 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | Répondre à une question entendue, some / any / much / many, prétérit irrégulier (Théâtre des voix), futur, modaux, present perfect (Gare du futur) |
 | 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), diagrammes, fréquences, statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | Comprendre un texte, connecteurs, faux amis (Studio des ondes), for / since, if, passif (Château des hypothèses) |
 

@@ -1,7 +1,8 @@
 import { createElement, useState } from 'react';
 import { Icon } from '../../components/Icon';
-import { RichText } from '../../components/math/RichText';
+import { RichText, frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
+import { Syllabified } from '../../components/Syllabified';
 import { langAttr } from '../../core/speech';
 import { AID_COMPONENTS, type AidData } from './maths';
 import type { ScreenProps } from './registry';
@@ -17,6 +18,8 @@ export function Aid({ aid }: { aid: AidData }) {
  * (grille de points, boîte de dix, droite par bonds…), des réponses rangées dans l'ordre croissant,
  * un indice sur demande. Champs de l'item : prompt, spoken, choices, answer, hint, explanation, aid, figure.
  * En anglais (`lang: 'en'`), l'énoncé et les réponses sont lus en voix anglaise ; l'indice et l'aide restent en français.
+ * Un item peut porter une question en français (`question`) : elle vient d'abord, lue en voix française, et l'énoncé
+ * devient un document à lire (panneau, menu, horaire), encadré, une ligne par « \n », lu dans sa langue.
  */
 export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
@@ -30,15 +33,37 @@ export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang
   const aid = item.aid as AidData | undefined;
   const figure = item.figure as AidData | undefined;
   const choicesLang = item.choicesLang === 'fr' ? 'fr' : lang;
+  const question = typeof item.question === 'string' ? item.question : '';
 
   return (
     <div className="panel question calcul">
-      <div className="question-head">
-        <p className="question-prompt calcul-prompt" lang={langAttr(lang)}>
-          <RichText text={prompt} lang={lang} />
-        </p>
-        <SpeakButton text={spoken} label="Écouter" lang={lang} />
-      </div>
+      {question ? (
+        <>
+          <div className="question-head">
+            <p className="question-prompt notice-question">
+              <Syllabified text={frenchTypography(question)} />
+            </p>
+            <SpeakButton text={frenchTypography(question)} label="Question" />
+          </div>
+          <div className="notice">
+            <ul className="notice-text" role="list" lang={langAttr(lang)}>
+              {prompt.split('\n').map((line, i) => (
+                <li key={i} className="notice-line">
+                  <RichText text={line} lang={lang} />
+                </li>
+              ))}
+            </ul>
+            <SpeakButton text={spoken} label="Écouter" lang={lang} />
+          </div>
+        </>
+      ) : (
+        <div className="question-head">
+          <p className="question-prompt calcul-prompt" lang={langAttr(lang)}>
+            <RichText text={prompt} lang={lang} />
+          </p>
+          <SpeakButton text={spoken} label="Écouter" lang={lang} />
+        </div>
+      )}
       {figure && <div className="calcul-figure">{<Aid aid={figure} />}</div>}
       {aid && (
         <div className="aid calcul-aid">

@@ -286,6 +286,16 @@ it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix
         if (String(it.prompt).includes('…')) expect(String(it.spoken)).toContain('blank');
         expect((it.aid as { kind: string }).kind).toBe('rule-card');
       }
+      if (it.question !== undefined) {
+        // Un document à lire (Notices) : la question en français, sans symbole à lire ; le document en anglais, lu en
+        // entier par `spoken`, sans symbole (pas de « £ », pas d'heure « 8:15 ») ; l'indice, lu en français, non plus.
+        expect(String(it.question), it.key).toMatch(/\?$/);
+        expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
+        expect(String(it.question), it.key).not.toContain("'");
+        expect(String(it.spoken), it.key).not.toMatch(/[£$€]|\d:\d/);
+        expect(String(it.hint), it.key).not.toMatch(/[£$€]|\d:\d/);
+        expect(String(it.prompt), it.key).not.toContain('…');
+      }
       if (screen === DicteeItem) {
         // Écoute d'abord : un mot ou une phrase à entendre ; on choisit son sens (en français) ou la bonne réplique
         // (en anglais, comme les Dialogues). Rien n'est écrit avant l'écoute : la réponse n'est pas le texte lu.
