@@ -306,7 +306,8 @@ svg {
 }
 .topbar-xp {
   flex: 1;
-  min-width: 0;
+  /* Jamais plus étroite que son écusson : sinon les boutons passent dessus. */
+  min-width: 2.6rem;
   max-width: 22rem;
   text-decoration: none;
   color: inherit;
@@ -342,6 +343,34 @@ svg {
   max-width: 60rem;
   margin: 0 auto;
   padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
+}
+/*
+ * La barre suit la place qu'elle a en rem, donc la taille du texte choisie dans les Réglages (jusqu'à 32 px en
+ * OpenDyslexic) : le nom de l'univers, puis les mots des boutons (qui gardent leur icône et leur nom lu), puis le
+ * logo (le bouton Menu y mène aussi) laissent leur place, pour que rien ne sorte de l'écran ni ne passe sur l'écusson.
+ */
+.topbar {
+  container: barre / inline-size;
+}
+@container barre (max-width: 60rem) {
+  .brand-name {
+    display: none;
+  }
+}
+@container barre (max-width: 48rem) {
+  .nav-label {
+    display: none;
+  }
+}
+@container barre (max-width: 16rem) {
+  .topbar .xp-info {
+    display: none;
+  }
+}
+@container barre (max-width: 13rem) {
+  .brand {
+    display: none;
+  }
 }
 @media (max-width: 640px) {
   .brand-name,
