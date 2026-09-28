@@ -750,7 +750,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Vocabulaire',
     subject: 'francais',
     classe: '4e',
-    description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, synonymes et registres.',
+    description: 'Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.',
     block: 'parchemin',
     guardian: 'le Hibou lexicographe',
     guardianSays: {
@@ -774,8 +774,8 @@ export const BIOMES: BiomeDef[] = [
     },
     exercises: [
       { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.', programme: ['c4.fr.langue.formation-des-mots'] },
-      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées.', programme: ['c4.fr.langue.sens-des-mots'] },
-      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.oral-ecrit', 'c3.fr.langue.synonymie'] },
+      { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées, puis le champ lexical.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.reseaux-de-mots'] },
+      { id: 'nuances', title: 'Nuances', description: 'Synonymes, antonymes, registres de langue, puis le degré d’intensité.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.reseaux-de-mots', 'c4.fr.langue.oral-ecrit', 'c3.fr.langue.synonymie'] },
     ],
   },
   {
