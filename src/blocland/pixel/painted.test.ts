@@ -255,7 +255,9 @@ it('les fenêtres, les lanternes et les contours des ouvrages : la teinte sombre
     for (const [mur, sol, min] of [['marbre', 'neige', 3], ['marbre', 'sable', 3], ['taille', 'pierre', 2]] as const) {
       const cote = P.matiere(mur, false).cote;
       const dessus = P.sol(sol, false).dessus;
-      const parSaClarte = a === '4e' ? contraste(cote, dessus) : 0;
+      // Au 4e seulement, la taille sur la pierre chaude : le contour sombre n'y donne que 1,33 : 1, mais le mur ressort par
+      // sa propre clarté (2,62 : 1, mieux que le contour des autres archipels, 2,2 : 1 ; référent dys, R4b-4e).
+      const parSaClarte = a === '4e' && mur === 'taille' ? contraste(cote, dessus) : 0;
       expect(Math.max(contraste(sombreDe(cote), dessus), parSaClarte), `${a} ${mur}/${sol}`).toBeGreaterThanOrEqual(min);
     }
   }
