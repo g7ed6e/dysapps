@@ -25,7 +25,7 @@
 import type { VoxelCube } from './cube';
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
-import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
+import { cielDe, couleurDeMatiere, laveQuiBrille, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
 import { decorPose } from './decor';
 import { bruit, FROID, FROID_SOUS } from './style';
@@ -702,7 +702,9 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
   const auNiveauDeLaMer = !AMBIENCE[a].sky;
   const sol = new Tampon();
   const lumineux = new Tampon();
-  const tampon = (m: string) => (m === 'lave' ? lumineux : sol);
+  // La lave brille (un second appel, sans lumière), sauf dans un archipel où le cratère est éteint (le 6e).
+  const brille = laveQuiBrille(a);
+  const tampon = (m: string) => (m === 'lave' && brille ? lumineux : sol);
 
   const facesVues = new Map<string, { dessus: Couleur; cote: Couleur }>();
   const faces = (m: string, muted: boolean): { dessus: Couleur; cote: Couleur } => {

@@ -12,12 +12,14 @@
 //   s'enfonce jusqu'au plus bas de son emprise, sur un pied élargi : il ne flotte jamais au bord d'une pente.
 // - Les cascades collent à la falaise de la case du bord, de la pente jusqu'à l'eau ; les écueils et les bancs
 //   affleurent à la surface de la mer.
-// - Rien ne bouge : « Réduire les animations » n'a rien à arrêter ici. La nuit vient de la lumière de la scène, comme
-//   pour le sol ; ce qui brille (lanternes, lave) est à part, sans ombre ni lumière.
+// - Seules les fumées bougent (./decor/fumee.ts, un maillage à part) ; « Réduire les animations » les fige dans la pose
+//   du lot R4. La nuit vient de la lumière de la scène, comme pour le sol ; ce qui brille (lanternes, lave) est à part,
+//   sans ombre ni lumière ; la lanterne du phare a en plus ses couleurs de nuit (claire de jour, elle brille la nuit).
 import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
 import { formeDe } from './decor/formes';
+import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
 import type { ArchipelagoId } from './map';
@@ -28,7 +30,7 @@ import type { Cell } from './view';
 
 export { ELAN, FAMILLES, FEUILLAGE, PIED, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
 export { ENFONCE } from './decor/communes';
-export { FUMEE } from './decor/fumee';
+export { FUMEE, poserLesFumees, type FumeeDuDecor } from './decor/fumee';
 export { FORMES } from './decor/formes';
 
 /** Un élément du décor : ses cubes dans le monde en blocs, et où il pousse. */
@@ -115,6 +117,8 @@ export interface MaillageDuDecor {
   decor: FacettesDuDecor;
   /** Ce qui brille (lanternes, lave), sans lumière : un second appel, seulement s'il y en a. */
   lueurs: FacettesDuDecor;
+  /** Les fumées, qui bougent : un troisième appel, seulement s'il y en a (./decor/fumee.ts). */
+  fumees: FumeeDuDecor;
   /** Les éléments dessinés, dans l'ordre de `elements`. */
   elements: ElementDeDecor[];
 }
@@ -132,6 +136,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
   const style = options.style ?? 'b';
   const P = new Pinceau();
   const L = new Pinceau();
+  const F = new Fumees();
   const vues = new Map<string, Faces>();
   /** Les couleurs d'un cube : sa matière dans la palette, sinon sa couleur (déjà délavée si l'île est fermée). */
   const facesDe = (texture: string | undefined, couleur: string, dessus: string | undefined, muted: boolean): Faces => {
@@ -185,15 +190,16 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     const hautDe = (pred: (c: VoxelCube) => boolean) => Math.max(...e.cubes.filter(pred).map((c) => c.z + 1), e.z);
     const premier = (pred: (c: VoxelCube) => boolean) => e.cubes.find(pred);
     const rot = hasard() * Math.PI * 2;
-    formeDe(e.genre)({ P, L, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
+    formeDe(e.genre)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
   });
-  return { decor: P.fin(), lueurs: L.fin(), elements };
+  return { decor: P.fin(), lueurs: L.fin(), fumees: F.fin(a), elements };
 }
 
 /** Triangles et appels de dessin d'un maillage du décor. */
 export function coutDuDecor(m: MaillageDuDecor): { triangles: number; drawCalls: number } {
-  const t = m.decor.elements.length + m.lueurs.elements.length;
-  return { triangles: t, drawCalls: (m.decor.elements.length ? 1 : 0) + (m.lueurs.elements.length ? 1 : 0) };
+  const f = m.fumees.facettes.elements.length;
+  const t = m.decor.elements.length + m.lueurs.elements.length + f;
+  return { triangles: t, drawCalls: (m.decor.elements.length ? 1 : 0) + (m.lueurs.elements.length ? 1 : 0) + (f ? 1 : 0) };
 }
 
 /**

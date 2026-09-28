@@ -10,6 +10,7 @@ import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerDecor } from './decor';
 import type { Large } from './large';
+import type { Lumiere } from './lumiere';
 import { meshOf } from './maillage';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 import { creerSol } from './sol';
@@ -40,13 +41,15 @@ interface Spark {
   born: number;
 }
 
-export function creerCubes(monde: Monde, large: Large, instant: Instant): Cubes {
+export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant: Instant): Cubes {
   const { scene, archipel, archipeo, surface } = monde;
   const terrain = new THREE.Group();
   scene.add(terrain);
   // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
   const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(), decorSignature: '' } : null;
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
+  // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
+  if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
   // Le contour de la case visée (mode chantier).
   const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
   hover.visible = false;
@@ -131,7 +134,9 @@ export function creerCubes(monde: Monde, large: Large, instant: Instant): Cubes 
       sparks.push({ mesh, velocity, born });
     },
     formeDEclat: sparkGeo,
-    animer: (_t, _dt, reduit) => {
+    animer: (t, dt, reduit) => {
+      // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
+      sol?.decor.animer(t, dt, reduit);
       if (reduit) return;
       // Éclats : petits cubes qui retombent et disparaissent.
       for (const s of [...sparks]) {
