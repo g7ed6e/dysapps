@@ -1,0 +1,1 @@
+**Le lot 6 se prépare en plusieurs fils.** Le cadrage d’Archipéo dit maintenant comment l’ouverture d’Archipéo se découpe : le réglage « Univers », les Gardiens qu’on rallume, les captures dans les deux univers, puis la bascule. Rien ne change encore dans l’application.

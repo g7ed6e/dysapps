@@ -252,6 +252,46 @@ Depuis le 28 septembre 2026, l’application a [plusieurs univers](univers.md) :
 
 La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plusieurs compétences) dépend d’abord du contenu : elle se cadre avec le directeur contenu pédagogique après le lot 8.
 
+### Les fils du lot 6
+
+Le lot 6 se mène en plusieurs fils, sur le modèle de ceux de la piste Rendu (un propriétaire par fichier, au plus trois fils de code en même temps, fusion sur le mot du mainteneur). Avis du directeur artistique et de l’expert frontend ; découpage décidé par le mainteneur le 28 septembre 2026.
+
+**Le principe : fusionner tôt, derrière une constante.** Les fils A et B fusionnent dans `main` dès qu’ils sont prêts, derrière une seule constante `UNIVERS_OUVERT`, fausse jusqu’à la bascule. Tant qu’elle est fausse, rien ne change pour l’élève : les captures restent identiques, les tests d’aujourd’hui passent, et les nouveaux tests essaient les deux valeurs. Aucune branche longue n’attend la fin des lots R. La bascule tient en une ligne, plus la documentation.
+
+| Fil | Quand | Ce qu’il fait | Fichiers qu’il écrit |
+| --- | --- | --- | --- |
+| **P. Les décisions** (sans code) | Dès maintenant | Les textes de Blocland qui changent (ci-dessous), proposés par le consultant de Blocland et tranchés par le directeur artistique ; le message unique qui présente Archipéo ; les textes « rallumer » ; l’intention du directeur artistique pour l’écran du défi et le moment du rallumage | Les cadrages |
+| **L’étiquette** | Juste avant la première pull request du fil A | `blocland-reference` sur `main`, où Blocland est encore intact ; le consultant de Blocland relit alors sa fiche | Aucun |
+| **A. Le réglage « Univers »** | Dès maintenant ; les aperçus fixes des univers après la revue d’ensemble | Le champ `univers` des réglages. Son premier choix est calculé par une fonction pure à partir de la progression enregistrée, puis figé au premier lancement. La section Univers remplace Expérimental, sans que les deux s’affichent jamais ensemble. Viennent aussi la confirmation, l’effet au retour au village, le titre selon l’univers et le message unique (sur le modèle « déjà dit » du mot de la baleine). Enfin, le rendu reçoit l’univers des réglages en mémoire, sans relire le stockage. | `core/settings.ts`, `SettingsContext.tsx`, `SettingsPage.tsx`, `blocland/rendu.ts` (sa signature ne change qu’après la fusion de R6), `TitleScreen.tsx`, `HomePage.tsx`, `WorldPage.tsx`, `Inventory.tsx`, `VoyagePage.tsx` (le fil de la séparation n’a rien avant le lot 6), la page des réglages du manuel |
+| **B1. Les Gardiens rallumés : les textes** | Dès maintenant | Une tranche de J8 avancée : les textes des Gardiens, des espèces et du mot de la baleine vont dans `src/univers/archipeo/` et `src/univers/blocland/`, sous le type `Record<BiomeId, …>`. Pour Blocland, c’est un déplacement pur des chaînes d’aujourd’hui : Blocland garde « vaincre », le Gardien vaincu et sa statue, et aucun de ses textes ne contient « rallum… ». Dans Archipéo, « rallumer » remplace « vaincre » et les espèces suivent R6 (Bloquette brebis, Grimoire tortue copiste, explorateur à silhouette neutre). `boss.ts` et `world/whale.ts` restent dans la couche jeu : ils rendent un état, et le composant choisit le texte. | `src/univers/`, `BossPage.tsx`, `IslandSheet.tsx`, `BiomePage.tsx`, `ShipSection.tsx`, `ArchipelsSheet.tsx`, `ProgressPage.tsx`, les textes de `world/whale.ts`, la page des Gardiens du manuel |
+| **B2. La sentinelle et l’écran du défi** | Après la fusion de R6 et l’intention du directeur artistique | La sentinelle se voit dès l’ouverture de l’île. L’écran du défi allume une veine par épreuve réussie, n’en éteint jamais sur un échec, et écrit « 2 épreuves sur 3 » (jamais la lueur seule). Le rallumage se fait au retour au village : fondu de 1,5 à 2 s, instantané avec « Réduire les animations », avec un cadrage sur la sentinelle, un mot et un son. Dans Blocland, rien ne change : le Gardien attend sur son îlot, puis devient statue ; ses empreintes et son plafond restent les mêmes. | `Guardians.tsx`, `three/personnages.ts`, l’écran du défi (repris de R6 à sa fusion) |
+| **Les retouches de la revue d’ensemble** | Après R4b-5e, R4b-3e et R6 | Des retouches ciblées, faites dans les fichiers de leurs propriétaires | Selon la retouche |
+| **C. Les captures et le manuel dans les deux univers** | Après les retouches | Les captures des deux univers, en 3D seulement, les aperçus fixes du réglage, `style.md` et `cadrage-blocland.md` | `scripts/docs/captures.mjs` (ajouts en fin de fichier), le reste du manuel |
+| **La bascule** | En dernier | `UNIVERS_OUVERT` devient vraie ; le drapeau `?rendu=archipeo` et la section Expérimental disparaissent | La constante |
+
+Ni Archipéo ni Blocland ne s’affichent en 2D (décidé par le mainteneur le 28 septembre 2026) : le fil qui retire la vue 2D des Réglages et des captures passe avant A, qui part de Réglages sans elle, et C ne fait pas de captures 2D. Les retouches de la 2D qu’avait signalées R6 (cibles à 48 px, bonhomme sous la barre du bas) attendent un univers en 2D.
+
+**Les rendez-vous.**
+
+1. À la fusion de R6, B2 démarre, et A peut changer la signature de `rendu.ts`.
+2. À la fusion de R4b-3e, le directeur artistique fait sa revue d’ensemble. Elle montre la sentinelle visible si B2 est prêt ; sinon, il la relit à part sur la planche d’un archipel, de jour et de nuit. Il relit l’écran du défi à part, avec le référent dys.
+3. Quand les retouches sont faites, C démarre.
+4. Quand C est fusionné, le référent dys vérifie ses points ouverts (voir le décor du lot R4) et relit chaque univers avec les réglages extrêmes. La bascule vient ensuite.
+
+**Les garde-fous** (expert frontend) :
+
+- Les réglages s’enregistrent dès l’ouverture de l’application. Tant que la constante est fausse, `univers` n’est donc pas écrit ; sinon, un appareil neuf resterait figé sur Archipéo à tort.
+- Un `univers` absent (version d’avant le lot 6) se distingue d’un univers inconnu, qui vaut Archipéo.
+- Un test vérifie qu’aucun texte « rallum… » n’est lu tant que la constante est fausse, et, après la bascule, qu’aucun texte de `src/univers/blocland/` n’en contient.
+
+**Décidé par le mainteneur le 28 septembre 2026 :**
+
+1. Ce découpage, avec la fusion tôt derrière la constante.
+2. Un appareil qui avait allumé la section Expérimental passe à Archipéo, sans le message unique : il l’a déjà choisi.
+3. Au lot 6, seuls ces textes de Blocland changent : son titre et sa phrase sur l’écran titre, « Carte de Blocland » partout où l’on lit « Carte d’Archipéo » (écrit par A, et par B1 dans `BiomePage.tsx`) et « Bienvenue à Blocland ». Les mots exacts sont proposés par le consultant de Blocland et validés par le directeur artistique. Tout le reste attend U4.
+4. Le lexique court et l’écran « L’île X s’appelle maintenant Y » passent à U4, puisqu’aucun nom d’île ne change au lot 6.
+5. Les textes des Gardiens, des espèces et du mot de la baleine vont dans `src/univers/` dès le fil B1 (une tranche de J8 avancée), sans objet `Habillage` ni couche stricte, qui restent à J6 et J7.
+
 ### Les risques
 
 - **Un monde hybride** : parade, le drapeau et l’ouverture en une fois (lot 6). Si la piste Rendu traîne, la piste Jeu continue : ses lots ne dépendent pas du rendu.
