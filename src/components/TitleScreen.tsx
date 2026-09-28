@@ -10,6 +10,7 @@ import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, UNIVERS, UNIVERS_OUVERT } from '.
 import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
 import { avancer, gesteDeGlissement, gesteDeTouche, LONGUEUR_SUITE, type Geste } from './codeSecret';
 import { Icon } from './Icon';
+import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 
@@ -121,10 +122,10 @@ export function TitleScreen() {
         {/* Sans l'icône qui retombe : le message tient à l'écran, même en grands caractères. */}
         <div className="title-card">
           <h1 id="titre-message-univers" className="title-message-heading">
-            <Syllabified text={MESSAGE_UNIVERS.titre} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.titre)} />
           </h1>
           <p className="title-message">
-            <Syllabified text={MESSAGE_UNIVERS.texte} />
+            <Syllabified text={frenchTypography(MESSAGE_UNIVERS.texte)} />
           </p>
           <SpeakButton text={MESSAGE_LU} />
           <div className="title-actions">

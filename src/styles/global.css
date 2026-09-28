@@ -1264,6 +1264,11 @@ button.app-card:active {
   color: var(--primary-text);
   font-weight: 700;
 }
+/* Sur le fond de la case choisie, les couleurs des syllabes (faites pour le fond de page) ne se lisent plus. */
+.option.selected .syl-0,
+.option.selected .syl-1 {
+  color: inherit;
+}
 /* Réglage « Univers » : une ligne par univers, icône, nom et phrase ; l'écoute à côté, hors de l'étiquette. */
 .univers-choices {
   display: grid;

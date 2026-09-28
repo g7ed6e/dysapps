@@ -44,7 +44,7 @@ it('sur un appareil resté dans Blocland, dit une seule fois le message qui pré
   const { unmount } = renderTitle();
   expect(screen.getByRole('dialog', { name: 'Blocland' })).toHaveTextContent('Chaque bloc construit ton monde.');
   await user.click(screen.getByRole('button', { name: /Jouer/ }));
-  expect(screen.getByRole('dialog', { name: /Un nouvel univers : Archipéo/ })).toHaveTextContent('Tes étoiles, tes blocs, tes plans et tes missions restent les mêmes.');
+  expect(screen.getByRole('dialog', { name: /Un nouvel univers\s:\sArchipéo/ })).toHaveTextContent('Tes étoiles, tes blocs, tes plans et tes missions restent les mêmes.');
   await user.click(screen.getByRole('button', { name: /Voir le réglage/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(screen.getByTestId('ici')).toHaveTextContent('/reglages {"section":"univers"}');
