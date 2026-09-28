@@ -16,10 +16,11 @@ src/
   styles/        thèmes (jetons de couleur et de forme), styles globaux
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
-design/          le dossier de game design et la planche d’Archipéo, la cible de la migration (voir cadrage-archipeo.md) ;
+design/          archipeo/ : le dossier de game design et la planche d’Archipéo (voir cadrage-archipeo.md) ;
+                 blocland/ : la fiche de l’univers Blocland (voir univers.md) ;
                  référence de conception, ni publiée ni embarquée dans l’application
-.claude/agents/  les cinq agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
-                 referent-dys et expert-frontend (voir contribuer.md)
+.claude/agents/  les sept agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
+                 referent-dys, expert-frontend, consultant-archipeo et consultant-blocland (voir contribuer.md)
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
                  construction et vérification de la documentation (docs/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)

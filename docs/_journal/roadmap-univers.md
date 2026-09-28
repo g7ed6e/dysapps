@@ -1,0 +1,1 @@
+Conception : une feuille de route, « Plusieurs univers », décrit comment l'élève pourra choisir dans les Réglages entre Archipéo et Blocland, le monde en blocs qui est gardé, chacun avec son récit, ses noms, son dessin et l'habillage de ses exercices, sans rien changer à ce qu'il apprend ni à sa progression. Rien ne change dans l'application.

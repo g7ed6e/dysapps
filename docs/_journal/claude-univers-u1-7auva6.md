@@ -1,0 +1,1 @@
+Outillage : deux agents consultants d'univers, l'un pour Archipéo, l'autre pour Blocland, travaillent sous l'autorité du directeur artistique ; toute pull request qui touche les noms, le récit ou le rendu d'un univers passe par son consultant. Une première fiche de l'univers Blocland décrit ses noms, son récit et son monde. Rien ne change dans l'application.
