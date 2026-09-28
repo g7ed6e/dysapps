@@ -208,7 +208,7 @@ Jusqu’à R4, un seul fil enchaînait les lots sur une seule branche : quand il
 
 Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de la baleine) : la marge est mince, et leur phare existe déjà. Les trois autres tiennent en 52 300 triangles et 24 appels ; leur enveloppe de décor laisse 4 000 à 6 500 triangles aux silhouettes. Un test du socle vérifie que la somme des enveloppes reste sous 60 000 et 40 ; chaque lot change son `it.todo` en plafond ; le test du budget complet devient vrai quand R4b, R5 et R6 sont fusionnés. Les appels comptés par le navigateur (`npm run rendu:mesures`) se vérifient dans chaque pull request.
 
-**La fiche de famille** (directeur artistique, écrite dans le socle avant le premier sous-lot) : le phare (proportions, deux bandes `#A8553A`, galerie `#553330`, toit conique, anneau `#3F8299`), un seul modèle construit en R4b-6e, que le 3e reprend en changeant la taille, le socle et le site et que R5 réutilise pour les plans du phare ; les toits, trois quarts d’ardoise et un quart de terre cuite ; les falaises et les strates réglées en R2, jamais redosées par archipel ; une seule règle de mouvement pour la fumée et la brume, coupées par « Réduire les animations » ; une seule couleur de nuit, les lueurs sous 5 % de l’image ; le soleil de face en haut à gauche, chaque archipel faisant son ambiance par la palette et la brume ; le « commun aux quatre » des fiches d’archipel (`design/archipeo/esquisses/fiches-archipels.md`). **Frontière R4b / R5** : R4b ne dessine que les repères qui ne sont pas des plans (volcan, grue du fond, brume, passerelle) et le phare partagé ; tout ce qui se construit en blocs (dont l’atelier du 4e) est à R5.
+**La fiche de famille** (directeur artistique, écrite dans le socle avant le premier sous-lot : voir [la fiche de famille](#la-fiche-de-famille)) : le phare (proportions, deux bandes `#A8553A`, galerie `#553330`, toit conique, anneau `#3F8299`), un seul modèle construit en R4b-6e, que le 3e reprend en changeant la taille, le socle et le site et que R5 réutilise pour les plans du phare ; les toits, trois quarts d’ardoise et un quart de terre cuite ; les falaises et les strates réglées en R2, jamais redosées par archipel ; une seule règle de mouvement pour la fumée et la brume, coupées par « Réduire les animations » ; une seule couleur de nuit, les lueurs sous 5 % de l’image ; le soleil de face en haut à gauche, chaque archipel faisant son ambiance par la palette et la brume ; le « commun aux quatre » des fiches d’archipel (`design/archipeo/esquisses/fiches-archipels.md`). **Frontière R4b / R5** : R4b ne dessine que les repères qui ne sont pas des plans (volcan, grue du fond, brume, passerelle) et le phare partagé ; tout ce qui se construit en blocs (dont l’atelier du 4e) est à R5.
 
 **Ce qui se juge ensemble.**
 
@@ -324,3 +324,95 @@ Construit derrière `?rendu=archipeo`, après trois préalables qui ne changent 
 - **Décision (R4, directeur artistique)** : décor en primitives peintes par sommet, fusionné en un ou deux appels, posé au milieu de sa case sur la pente. Les repères descendent avec la pente, enfoncés au plus bas de leur emprise sur un pied élargi de leur couleur, qui dépasse d’au plus 0,3 case. Cascades en lame d’eau collée à la falaise jusqu’à l’eau. Rebord plat pour tous les dessus qui tranchent. Délavé sur les îles fermées. Arbres à tronc court et feuillage rond d’environ 2,4 cases, avec une seconde boule sur les grands ; trois tailles (0,7, 1 et 1,3) ; deux verts, environ 60 % clair `#7FB24E` et 40 % profond `#3F7A3A`, le haut du feuillage à environ 1,15 fois la luminance de l’herbe et le bas à environ 0,7. Tronc du chêne géant à 45 % de sa hauteur au plus. Fumée claire en volutes qui grossissent de 35 % et s’inclinent au vent, immobile jusqu’à R4b. Écueils et bancs à 2 500 triangles au plus par archipel, sans changer leur nombre. Le décor du cœur des îles et les objets du quai passent en R5 ; les rochers de la Forge, le mouvement de la fumée (plus douce, et plus pâle la nuit) et le semis d’écueils du 4e sur la Carte, en R4b.
 - **Référent dys** : adapté, après deux ajustements dans ce lot (une cible sous un feuillage gagne le toucher ; l’île fermée délavée garde son étiquette « Fermée » et son chemin balisé). Avant le lot 6 : le toucher à travers une couronne vérifié au doigt sur tablette, le décor dans le thème Contraste élevé et avec « Réduire les animations », l’île fermée de nuit (seule l’étiquette porte l’état) et le manuel.
 
+
+### Le socle du rendu (lot S)
+
+Construit le 28 septembre 2026, sans aucun changement d’image : les empreintes de la grille (`world/empreintes.test.ts`) et celles du rendu (`world/empreintesDuRendu.test.ts`, nouvelles) ne bougent pas. Il prépare R4b, R5 et R6 pour qu’ils tournent en même temps sans écrire dans les mêmes fichiers.
+
+- **Le registre des reliefs** : `world/silhouettes/6e.ts`, `5e.ts`, `4e.ts`, `3e.ts`, un fichier par archipel, donnent le relief propre de chaque île (ses pics), écrit en repère d’île (en cases depuis le coin du cœur) ; `world/map.ts` le pose à la place de l’île. Chaque sous-lot de R4b n’écrit que le fichier de son archipel.
+- **Le registre des formes** : `FORMES[genre]` (`world/decor/formes.ts`) remplace le `switch` de `decorMesh.ts`. Les formes communes aux quatre archipels sont dans `world/decor/communes.ts`, les repères de chaque archipel dans `world/decor/6e.ts`…, la fumée (une seule règle) dans `world/decor/fumee.ts`, le pinceau et les primitives dans `world/decor/pinceau.ts`. Un décor bâti sans forme propre se dessine en boîtes. Dans le monde en blocs, `decor.ts` range de même ses formes par genre (`BLOCS_DU_DECOR`, `REPERES_EN_BLOCS`).
+- **L’ambiance d’un archipel** : `ambianceDe(archipel)` (`world/palette.ts`) rend tout ce qu’un sous-lot de R4b règle, et rien d’autre : le ciel et la lumière de jour, la brume de profondeur, le voile, les sols propres, la teinte de la mer. Un test vérifie les bornes de la fiche de famille.
+- **Le budget par poste** : `ENVELOPPES` et `enveloppeDe(poste, archipel)` (`world/budget.ts`) reprennent le tableau ci-dessus ; un test vérifie que leur somme tient dans 60 000 triangles et 40 appels (passage de la baleine compris), et chaque poste a son `it.todo` que son lot change en plafond.
+- **Les captures déclarées d’avance** : `CAPTURES` dans `scripts/rendu/mesures.mjs`, dix-sept par archipel (une île, l’archipel et la Carte, de jour et de nuit, en 3D et en 2D, en Contraste élevé et avec « Réduire les animations »), pour chaque lot et pour la revue d’ensemble ; `--familles nuit,2d` n’en refait que certaines.
+- **Les empreintes par archipel** : les empreintes du rendu sont rangées par archipel, pour qu’un sous-lot ne régénère que les siennes.
+
+#### La fiche de famille
+
+Cette fiche est la référence commune aux quatre sous-lots R4b, à R5 et à R6 : elle garde les quatre archipels dans une même famille sans en faire des jumeaux. Chaque règle dit qui la construit et qui la reprend. Un lot qui voudrait s’en écarter le dit dans sa sous-section, et la revue d’ensemble tranche. Les valeurs marquées « (DA, 28/09) » ont été fixées par le directeur artistique le 28 septembre 2026 ; les autres viennent des décisions (§5), des lots R1 à R4 et des fiches d’archipel. Où chaque valeur vit dans le code, l’artiste technique 3D le décide, avec une seule source lue par tous les lots.
+
+**1. Le phare.** Il n’existe qu’un modèle. R4b-6e le construit, avec la forme facettée de R4 (8 pans) ; R4b-3e le reprend ; R5 le réutilise pour les plans du phare, pièce par pièce, sans changer ni les proportions ni les couleurs. Ses proportions, en fraction de sa hauteur H au-dessus du socle (DA, 28/09) :
+
+- **Le fût**, tronconique, de 0 à 0,70 H, rayon bas r et rayon haut 0,75 r, crème `#E9E4D6`.
+- **Les deux bandes**, en terre cuite désaturée `#A8553A` (jamais en rouge vif), de 0,08 H chacune : de 0,30 à 0,38 H et de 0,50 à 0,58 H. Le fût reste crème entre elles et au-dessus.
+- **La galerie**, une dalle `#553330` posée à 0,70 H, épaisse de 0,03 H, qui dépasse le haut du fût de 0,25 case.
+- **La lanterne**, de 0,73 à 0,85 H, rayon 0,55 r : vitrée et claire de jour (le verre de la palette), elle brille la nuit dans les lueurs, en `#FFD866`. Ni faisceau ni rotation avant le lot 9. Sur une île fermée, elle reste éteinte et délavée, comme le reste du décor.
+- **Le toit**, conique, de 0,85 à 1,00 H, base de rayon 0,85 r qui dépasse la lanterne, en terre cuite `#A8553A`.
+- **Le socle**, en pierre, avec un anneau pétrole `#3F8299` de 0,15 case à la jonction du socle et du fût.
+- **Au 6e** : H = 8 cases, r = 1,0 case, sur un socle d’une case ; une emprise de 2 × 2 cases, sur un promontoire de la côte, lanterne tournée vers le large. C’est la seule verticale nette de l’archipel.
+- **Au 3e**, seuls la taille, le socle et le site changent (§5) : H = 11 cases, r = 1,2 case, sur un socle de salles de pierre de taille `#DBDADD`, trois cases de haut et 4 × 4 d’emprise, au sommet de l’île en gradins, au centre de la vue de l’archipel. Proportions, couleurs et bandes ne changent pas.
+- **Au 5e et au 4e**, aucun phare de ce modèle.
+
+**2. Les toits.** Trois sur quatre en ardoise, un sur quatre en terre cuite, dans les quatre archipels (§5). R5 construit la règle ; R4b la reprend pour les tours et les ruines qui ne sont pas des plans (sommets du 5e).
+
+- **L’ardoise** : `#2E505E` au 6e (ombre `#153448`), `#224C5F` au 5e, `#3E3636` au 4e ; au 3e, le dessus enneigé `#E5EBE3` et les rives en ardoise `#2E505E` (DA, 28/09).
+- **La terre cuite des toits**, `#C0764A`, la même partout (DA, 28/09). Celle du phare, `#A8553A`, n’entre pas dans le compte. Le rouge `#B04E3E` du bloc `toit` d’aujourd’hui disparaît du rendu Archipéo.
+- **La répartition** est stable par bâtiment : elle se déduit de l’identifiant de son plan ou de son nom de décor, jamais d’un tirage au rendu, de l’ordre de construction ni de ce qui est déjà bâti. Sur les plans d’un archipel, 20 à 30 % des toits sont en terre cuite ; deux toits voisins en terre cuite restent l’exception (DA, 28/09).
+
+**3. Les falaises et les strates.** Réglées en R2, jamais redosées par archipel. R4b écrit dans `landMesh.ts` pour ses reliefs (gradins du 5e et du 3e) et reprend ces valeurs sans les changer : taches de ±0,08 sur environ 9 blocs, sur les dessus seulement ; strates de ±0,05 par tranche de 2 blocs, ±0,03 au-dessus de 4 blocs, épaisseur tirée par île (2 à 3 blocs) ; nuance entre 0,82 et 1,08, une pente à l’ombre jamais plus sombre que 0,85 fois le dessus voisin ; côte basse à 0,2 au-dessus de l’eau, frange de sable de 0,55 case ; au pied des hautes colonnes, un pied d’un bloc et des éboulis. Un archipel change la couleur de sa roche (dans son entrée de `ambianceDe`), jamais l’amplitude, l’épaisseur ni le rythme des strates. Aucune falaise n’est un mur gris uniforme.
+
+**4. La fumée et la brume.** Une seule règle de mouvement, que R4b-6e construit et que reprennent R4b-4e (volcan, forge), R4b-5e (bancs), R4b-3e (nappes des sommets) et R5 (fumées du village et du port).
+
+- **La forme** reste celle de R4 : `FUMEE` (croissance 0,35, fondu 0,3, 3 volutes), la teinte `SMOKE` `#A9A4A0` éclaircie.
+- **Le mouvement de la fumée** (DA, 28/09) : les volutes montent et grossissent lentement, 6 s au moins d’une volute à la suivante ; elles dérivent sous un seul vent, dans la direction posée par R4, la même dans les quatre archipels ; aucune oscillation plus rapide qu’un cycle toutes les 5 s.
+- **Le mouvement de la brume** : les nappes respirent sur 15 s ou plus, comme aujourd’hui ; leur opacité varie de ±10 % au plus et elles glissent de 0,1 case par seconde au plus (DA, 28/09).
+- **La nuit**, la fumée prend `deNuit`, puis se fond à 50 % vers l’horizon de nuit (DA, 28/09) ; elle n’est jamais plus claire que la lueur d’horizon : pas de panache blanc sur un ciel sombre.
+- **« Réduire les animations »** fige la fumée dans la pose immobile de R4 et fige la brume. Rien ne disparaît, rien ne clignote.
+
+**5. La nuit.** Une seule couleur de nuit, `deNuit` (`palette.ts`), un bleu de crépuscule, jamais un noir. R4b, R5, R6 et la 2D la lisent ; aucun lot n’écrit sa propre nuit. Les entrées « nuit » des quatre palettes restent celles de R1 : elles ne sont pas un levier d’ambiance et ne se retouchent que dans la revue d’ensemble. Les lueurs passent par le pinceau des lueurs (lanternes, lave, lanterne du phare, fenêtres de R5 qui lisent le degré de nuit de `lumiere.ts`, lueurs de forge du 4e) ; toutes ensemble, elles couvrent moins de 5 % de l’image dans chaque capture de nuit (une île, l’archipel, la Carte).
+
+**6. Le soleil.** De face, en haut à gauche (`SOLEIL_DIRECTION`), le même dans les quatre archipels ; le contre-jour reste réservé aux illustrations (R1). Chaque archipel fait son ambiance par la palette et la brume seulement, dans son entrée de `ambianceDe(archipel)`.
+
+- **Ce que l’entrée peut changer** (bornes fixées par le DA le 28/09, vérifiées par `world/palette.test.ts`) : le ciel de jour (zénith, horizon, lueur) ; la teinte du soleil et sa force, entre 2,0 et 2,4 ; l’ambiance du ciel et du sol, de force entre 0,95 et 1,2 ; la mer ou le plancher de nuages ; la brume de profondeur, entre 60 et 120 pour le proche et entre 250 et 360 pour le loin ; le voile, sa teinte et une force de 0,12 au plus ; les couleurs de sol et de roche, les nuages et l’ardoise des toits.
+- **Ce qu’elle ne peut pas changer** : la direction du soleil, le vent, la nuit, les strates et la nuance, la règle de mouvement, le modèle du phare, les couleurs de la faune (baleine `#1E3A5C` à ventre crème, oiseaux blancs aux ailes grises) et la caméra.
+- La brume ne voile jamais un nom d’île ni l’île où se tient le bonhomme (DA-02).
+
+**7. Le commun aux quatre et les signatures.** Le commun, repris des fiches : ciel en dégradé et cumulus crème `#ECEEEE`, deux ou trois rangs de montagnes lointaines de plus en plus pâles (`#8B9F93`, puis `#B0CDD1`), mer de `#142B38` au loin à `#178078` près des côtes, falaises en strates, arbres en bouquets (trois tailles, deux verts `#7FB24E` et `#3F7A3A`), oiseaux et baleine de R3. Rien ne s’écrit dans la scène. Aucun archipel n’est jumeau d’un autre : chacun a au moins trois repères signatures qu’aucun autre ne porte, le seul élément partagé est le phare (6e et 3e), et sur la planche des quatre au même cadrage, en niveaux de gris, chaque archipel se reconnaît à sa silhouette seule (DA, 28/09).
+
+- **6e, Premiers Rivages** : le phare sur un promontoire, le village serré en terrasses, un ponton sur pilotis, un escalier de pierre vers une plage, le lagon `#1CB9CB`. Il ne prend au 4e ni son volcan fumant, ni ses échafaudages, ni sa grue.
+- **5e, Îles Brumeuses** : des masses rocheuses hautes en gradins, un pont entre deux masses, des tours et des ruines de pierre `#7D8A86` sur les sommets, des bancs de brume en couches sur l’eau (`#C5D9EB`, `#E5EBE3`), de la neige au loin seulement. Ni le phare du modèle, ni volcan, ni neige au premier plan.
+- **4e, Anciens Ateliers** : l’atelier-forteresse en chantier (construit par R5), les échafaudages, la grue de bois du fond et le volcan fumant, petit et lointain (R4b), les lueurs de forge. L’horizon ambré fait le couchant, jamais l’orange seul. Ni le phare, ni les bancs de brume du 5e.
+- **3e, Îles du Ciel** : le grand phare sur son socle de salles, l’île en gradins devant un massif enneigé continu, les toits enneigés, l’oiseau planeur, le plancher de nuages vers `#DDE3E8`. Ses nappes des sommets se fondent dans ce plancher, jamais en couches étagées comme au 5e. R4b-3e règle son ciel sur captures : la fiche demande un bleu franc, R1 l’a laissé lavande. Ni le village à colombages, ni le lagon du 6e.
+
+**Frontière R4b / R5** : R4b ne dessine que les repères qui ne sont pas des plans (volcan, grue du fond, brume, passerelle) et le phare partagé ; tout ce qui se construit en blocs est à R5, dont l’atelier du 4e.
+
+**8. Ce qui se juge dans la revue d’ensemble.** Les deux phares (mêmes proportions, bandes, galerie et anneau ; seuls la taille, le socle et le site changent). La lumière (les ombres tombent du même côté sur les quatre planches). La fumée et la brume (même rythme partout, figées avec « Réduire les animations »). La nuit (les quatre nuits de la même famille, les lueurs sous 5 %). Les toits (20 à 30 % en terre cuite par archipel). Les strates (même amplitude partout). Aucun archipel jumeau, vérifié en niveaux de gris. Les deux vues (la 2D peinte montre les mêmes silhouettes et les mêmes couleurs que la 3D). La lisibilité (Contraste élevé, étiquettes et consigne lisibles, DA-02). Le budget, mesuré par poste. L’avis du référent dys.
+
+**Questions ouvertes pour le mainteneur**, avec la recommandation du directeur artistique :
+
+1. **Le phare du 6e.** Aucun repère de phare n’existe aujourd’hui au 6e ; seul existe le plan « Le phare de Grimoire » (`tour-phare`, île de la Tour). Recommandation : ce plan porte le phare du 6e, dessiné par R5 avec le modèle ; sa restauration devient l’avant/après, et l’archipel n’a qu’un phare. R4b-6e construit alors le modèle sans le poser en repère. Le monument du 5e « Le phare du large » serait dessiné par R5 comme une tour à feu de pierre, sans bandes ni toit conique.
+2. **Le 5e : passerelle suspendue ou pont rigide ?** La ligne R4b de ce cadrage dit « passerelle suspendue » ; la fiche tirée du pack dit « pont court et rigide, de pierre et de bois ». Recommandation : la fiche, puisque la planche maître l’emporte.
+3. **Le volcan de l’île du Volcan (6e).** Il fume aujourd’hui, alors que la fiche du 6e dit « à éviter : volcan fumant », signature du 4e. Recommandation : au 6e, une fumée mince, sans lueur de lave, plus basse que le phare.
+
+### Les silhouettes des Premiers Rivages (R4b-6e)
+
+À écrire par le sous-lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+
+### Les silhouettes des Îles Brumeuses (R4b-5e)
+
+À écrire par le sous-lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+
+### Les silhouettes des Anciens Ateliers (R4b-4e)
+
+À écrire par le sous-lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+
+### Les silhouettes des Îles du Ciel (R4b-3e)
+
+À écrire par le sous-lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+
+### La construction du lot R5
+
+À écrire par le lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
+
+### Les personnages du lot R6
+
+À écrire par le lot : ce qui est construit, ses mesures par poste, la décision du directeur artistique et l’avis du référent dys.
