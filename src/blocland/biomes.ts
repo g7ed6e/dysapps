@@ -787,6 +787,7 @@ export const BIOMES: BiomeDef[] = [
       { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.', programme: ['c4.fr.lecture.controle', 'c3.fr.lecture.implicite'] },
       { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…', programme: ['c4.fr.lecture.procedes'] },
       { id: 'rouages', title: 'Rouages', description: 'Nature et fonction des mots, connecteurs logiques.', programme: ['c4.fr.langue.sujet-complements', 'c4.fr.langue.classes-de-mots', 'c4.fr.langue.coherence-textuelle', 'c3.fr.langue.nature-fonction', 'c3.fr.langue.classes-de-mots', 'c3.fr.langue.complements'] },
+      { id: 'voix', title: 'Voix des textes', description: 'Qui parle et comment ses paroles sont rapportées, voix active ou passive, subordonnées.', programme: ['c4.fr.langue.enonciation', 'c4.fr.langue.discours-rapporte', 'c4.fr.langue.passif', 'c4.fr.langue.subordonnees'] },
     ],
   },
   {

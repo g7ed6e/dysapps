@@ -1,0 +1,198 @@
+{
+  "id": "textes-voix-3",
+  "biome": "textes",
+  "type": "voix",
+  "level": 3,
+  "instruction": "Quelle subordonnée, et quel rôle pour le pronom relatif ? Le rappel est affiché.",
+  "items": [
+    {
+      "key": "textes-voix-3-0",
+      "prompt": "« Je lis le livre que tu m’as prêté. » Quelle subordonnée ?",
+      "spoken": "« Je lis le livre que tu m’as prêté. » Quelle subordonnée ?",
+      "choices": ["relative", "conjonctive", "interrogative indirecte"],
+      "answer": "relative",
+      "hint": "« Que » suit le nom « livre » : il le reprend.",
+      "explanation": "« Que tu m’as prêté » complète le nom « livre », son antécédent : subordonnée relative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-1",
+      "prompt": "« Je crois que tu as raison. » Quelle subordonnée ?",
+      "spoken": "« Je crois que tu as raison. » Quelle subordonnée ?",
+      "choices": ["conjonctive", "relative", "interrogative indirecte"],
+      "answer": "conjonctive",
+      "hint": "« Que » suit un verbe, « crois », et ne reprend aucun nom.",
+      "explanation": "« Que tu as raison » complète le verbe « crois » (je crois quoi ?) : subordonnée conjonctive, COD du verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-2",
+      "prompt": "« Je me demande où il est. » Quelle subordonnée ?",
+      "spoken": "« Je me demande où il est. » Quelle subordonnée ?",
+      "choices": ["interrogative indirecte", "relative", "conjonctive"],
+      "answer": "interrogative indirecte",
+      "hint": "C’est une question rapportée : « Où est-il ? »",
+      "explanation": "« Où il est » rapporte la question « Où est-il ? » après « je me demande » : subordonnée interrogative indirecte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-3",
+      "prompt": "« La ville où je suis né est au bord de la mer. » Quelle subordonnée ?",
+      "spoken": "« La ville où je suis né est au bord de la mer. » Quelle subordonnée ?",
+      "choices": ["relative", "interrogative indirecte", "conjonctive"],
+      "answer": "relative",
+      "hint": "« Où » suit le nom « ville » : il le reprend.",
+      "explanation": "« Où je suis né » complète le nom « ville », son antécédent : subordonnée relative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-4",
+      "prompt": "« J’ai retrouvé la clé que Léa cherchait. » Quel est l’antécédent de « que » ?",
+      "spoken": "« J’ai retrouvé la clé que Léa cherchait. » Quel est l’antécédent de « que » ?",
+      "choices": ["la clé", "Léa"],
+      "answer": "la clé",
+      "hint": "Léa cherchait quoi ?",
+      "explanation": "« Que » reprend « la clé », le nom placé juste avant lui : Léa cherchait la clé. Léa est le sujet de « cherchait ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-5",
+      "prompt": "« Le chien qui aboie est à Tom. » Fonction de « qui » ?",
+      "spoken": "« Le chien qui aboie est à Tom. » Fonction de « qui » ?",
+      "choices": ["sujet", "COD", "complément de lieu"],
+      "answer": "sujet",
+      "hint": "Qui est-ce qui aboie ?",
+      "explanation": "Dans la relative, « qui » reprend « le chien », et c’est le chien qui aboie : « qui » est sujet de « aboie ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-6",
+      "prompt": "« Le film que nous avons vu était long. » Fonction de « que » ?",
+      "spoken": "« Le film que nous avons vu était long. » Fonction de « que » ?",
+      "choices": ["COD", "sujet", "complément de lieu"],
+      "answer": "COD",
+      "hint": "Qui a vu ? Nous. Nous avons vu quoi ?",
+      "explanation": "Dans la relative, le sujet de « avons vu » est « nous » ; « que » reprend « le film », ce que nous avons vu : COD.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-voix-3-7",
+      "prompt": "« Le collège où j’étudie est neuf. » Fonction de « où » ?",
+      "spoken": "« Le collège où j’étudie est neuf. » Fonction de « où » ?",
+      "choices": ["complément de lieu", "sujet", "COD"],
+      "answer": "complément de lieu",
+      "hint": "J’étudie où ?",
+      "explanation": "« Où » reprend « le collège » et dit où j’étudie : complément circonstanciel de lieu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les subordonnées",
+          "lines": [
+            "Une subordonnée a son verbe conjugué ; elle dépend de la proposition principale.",
+            "Relative : complète un nom, son antécédent ; elle commence par qui, que, dont, où. Le livre que je lis.",
+            "Conjonctive : complète le verbe ; elle commence par que. Je crois que tu as raison.",
+            "Interrogative indirecte : une question rapportée, avec si, qui, où, quand. Je me demande où il est.",
+            "Fonction du pronom relatif : qui est sujet (le chien qui aboie), que est le plus souvent COD (le livre que je lis), où est complément de lieu ou de temps."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lentille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
