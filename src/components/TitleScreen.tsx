@@ -145,7 +145,7 @@ export function TitleScreen() {
       <div className="title-card">
         <img
           className="title-logo"
-          src={`${import.meta.env.BASE_URL}icon.svg`}
+          src={`${import.meta.env.BASE_URL}archipeo.svg`}
           alt=""
           width={160}
           height={160}

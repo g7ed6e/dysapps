@@ -194,7 +194,7 @@ Puis, le même jour :
 | Question | Décision |
 | --- | --- |
 | **5. Quand le réglage « Univers » arrive** | **Au lot 6**, quand Archipéo devient l’univers par défaut (*remplacé le soir même par la décision 7 : Blocland reste l’univers par défaut*). Un appareil qui a déjà une progression reste dans Blocland. Un seul message, lu à voix haute, lui présente Archipéo et le réglage. Blocland garde ses mots d’aujourd’hui jusqu’à U4. |
-| **6. Le nom de l’application** | **« Archipéo, par DysApps »** reste le nom de l’application installée. L’écran titre montre le nom de l’univers choisi. |
+| **6. Le nom de l’application** | L’application installée s’appelle **« DysApps »** (décision du mainteneur, 28 septembre 2026 au soir, qui remplace « Archipéo, par DysApps ») : un nom neutre entre les univers, avec une icône commune. L’écran titre montre le nom de l’univers choisi. |
 
 Puis, le même jour au soir :
 
