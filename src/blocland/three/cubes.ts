@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
-import { caseDeLaConstruction, maillageDeLaConstruction, piliersDe, signatureDeLaConstruction } from '../world/construction';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction } from '../world/construction';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
@@ -57,7 +57,10 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
   // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés.
   const materiaux = archipeo ? creerMateriaux(lumiere) : null;
-  const taille = materiaux ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), signature: '' } : null;
+  // Un maillage par île, gardé : poser un bloc ne refait que son île.
+  const taille = materiaux
+    ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), cache: cacheDeLaConstruction(), maillage: null as MaillageDeLaConstruction | null }
+    : null;
   if (taille) scene.add(taille.construction.group, taille.piliers.group);
   // Le contour de la case visée (mode chantier).
   const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
@@ -93,6 +96,12 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
         const picked = caseDuDecor(champ, decor, Boolean(hit.object.userData.lueur), hit.faceIndex);
         if (picked) return picked;
       }
+      // Le phare de Grimoire (R5) : la case de son plan la plus proche du point touché.
+      const groupe = hit.object.userData.groupe as string | undefined;
+      if (taille?.maillage && (groupe === 'opaque' || groupe === 'fenetres') && hit.faceIndex != null) {
+        const picked = caseDuPhare(taille.maillage, groupe, hit.faceIndex, hit.point, n);
+        if (picked) return picked;
+      }
       // Un cube, un bloc taillé ou une borne : le bloc derrière la facette, et la case devant (world/construction.ts).
       return caseDeLaConstruction(hit.point, n);
     },
@@ -113,11 +122,13 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
       // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.
       const construction = poseDuDecor(champ, reste);
-      const signatureTaillee = signatureDeLaConstruction(construction, auSol);
-      if (taille && signatureTaillee !== taille.signature) {
-        taille.construction.peindre(maillageDeLaConstruction(archipel, construction, auSol));
-        taille.piliers.poser(piliersDe(construction));
-        taille.signature = signatureTaillee;
+      if (taille) {
+        const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
+        if (change || !taille.maillage) {
+          taille.construction.peindre(maillage);
+          taille.piliers.poser(piliersDe(construction));
+          taille.maillage = maillage;
+        }
       }
       const signature = signatureDuChamp(champ);
       const style = styleDuMonde() === 'a' ? 'a' : 'b';

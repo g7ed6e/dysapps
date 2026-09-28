@@ -77,6 +77,7 @@ const CAPTURES = [
   { nom: 'chantier-nuit', vue: 'île', famille: 'chantier', partie: 'chantier', nuit: true },
   { nom: 'chantier-contraste', vue: 'île', famille: 'chantier', partie: 'chantier', theme: 'contraste' },
   { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
+  { nom: 'tour-debut', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-debut' },
   { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },
   { nom: 'tour-apres', vue: 'île', famille: 'chantier', ile: 'tour' },
   { nom: 'tour-nuit', vue: 'île', famille: 'chantier', ile: 'tour', nuit: true },
@@ -159,14 +160,15 @@ async function scenes() {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
       }
-    if (partie === 'tour-avant' || partie === 'tour-mi') {
+    if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('tour');
-      // Avant : aucun plan posé ; pendant : le premier posé, la moitié du deuxième.
-      const faits = partie === 'tour-avant' ? 0 : 1;
+      // Avant : aucun plan posé ; au début : la moitié du premier (les murs) ; pendant : le premier posé, la moitié du
+      // deuxième (le toit).
+      const faits = partie === 'tour-mi' ? 1 : 0;
       l.forEach((p, i) => {
         if (i >= faits) delete plans[p.id];
       });
-      if (faits < l.length && partie === 'tour-mi') {
+      if (faits < l.length && partie !== 'tour-avant') {
         const cells = planCells(l[faits]).map((c) => c.key);
         plans[l[faits].id] = cells.slice(0, Math.floor(cells.length / 2));
       }

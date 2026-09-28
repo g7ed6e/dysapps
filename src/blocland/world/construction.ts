@@ -19,13 +19,22 @@
 //   lueur `LUEUR`, chacune à son moment (`eclatDeFenetre`, un décalage par sommet) ; au plus `FENETRES_ALLUMEES` vitres
 //   par bâtiment, aucune sur une île fermée.
 //
+// Le phare de Grimoire (6e, décision 16) : chaque étape finie de son plan laisse la place à une pièce du phare de
+// référence (world/decor/phare.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
+//
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
-// redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin.
+// redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDuPhare`, la case du
+// plan sous le phare.
+//
+// Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
+// les trois groupes.
 import type { VoxelCube } from '../Voxel';
 import { mixColor } from './daylight';
-import { DELAVE, eclaircir, hex, rgb } from './decor/pinceau';
+import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
+import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
-import type { ArchipelagoId } from './map';
+import { islandDef, type ArchipelagoId } from './map';
+import { getPlan, planCells } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
@@ -70,6 +79,22 @@ export const ARETE: Couleur = 0x142b38;
 export const ARETE_FANTOME = 0.035;
 /** La toile du Bloc-Navire : le crème Brume. */
 export const TOILE_DU_NAVIRE: Couleur = BRUME;
+/**
+ * Le phare de Grimoire (décision 16 du cadrage) : le plan « Le phare de Grimoire » (les murs) donne, une fois fini, le
+ * fût du phare de référence et ses bandes (world/decor/phare.ts) ; le plan suivant (le toit) donne la galerie, la
+ * lanterne et le cône. Tant qu'une étape n'est pas finie, ses cases posées restent des blocs taillés, en crème (le fût)
+ * au lieu du verre provisoire.
+ */
+export const PHARE_DE_GRIMOIRE = {
+  archipel: '6e',
+  ile: 'tour',
+  etapes: [
+    { plan: 'tour-phare', pieces: ['anneau', 'fut'] },
+    { plan: 'tour-lanterne', pieces: ['galerie', 'lanterne', 'toit'] },
+  ],
+} as const satisfies { archipel: ArchipelagoId; ile: string; etapes: readonly { plan: string; pieces: readonly PieceDuPhare[] }[] };
+/** Le crème des cases posées du phare, tant que leur étape n'est pas finie. */
+export const CREME_DU_PHARE: Couleur = COULEURS_DU_PHARE.fut;
 
 // ---------- Les fonctions que le shader reprend ----------
 
@@ -190,6 +215,11 @@ export interface MaillageDeLaConstruction {
   opaque: GroupeOpaque;
   fantomes: GroupeDesFantomes;
   fenetres: GroupeDesFenetres;
+  /**
+   * Le phare de Grimoire, s'il a une pièce : ses triangles dans l'opaque et dans les fenêtres (de, à : indices de
+   * triangles), et les cases qu'il remplace, pour que le toucher les retrouve (`caseDuPhare`).
+   */
+  phare?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
 }
 
 export interface OptionsDeLaConstruction {
@@ -353,14 +383,91 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
 
 /**
  * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée) : pour la 2D peinte,
- * qui les allume selon le même `eclatDeFenetre` que la 3D. Les bornes n'en ont pas.
+ * qui les allume selon le même `eclatDeFenetre` que la 3D. Les bornes n'en ont pas, ni les cases que le phare de
+ * Grimoire remplace en 3D.
  */
 export function fenetresDe(cubes: VoxelCube[]): Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }> {
-  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol));
+  // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
+  const phare = phareDeGrimoire(cubes);
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
   const out = new Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>();
   for (const [c, g] of genres) if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
   return out;
+}
+
+/** Le phare de Grimoire dans un monde : les cases que le modèle remplace, celles encore en chantier, et sa pose. */
+export interface PhareDeGrimoire {
+  /** Les cases des étapes finies (clés `x,y,z`), que le modèle remplace. */
+  remplacees: Set<string>;
+  /** Les cases des étapes pas encore finies. */
+  enCours: Set<string>;
+  /** Les cases remplacées, pour le toucher. */
+  cellules: Cell[];
+  /** Où poser le modèle, et ses pièces (vides tant qu'aucune étape n'est finie). */
+  pose: PoseDuPhare;
+}
+
+/**
+ * Le phare de Grimoire, s'il est dans ce monde : ses étapes, finies ou non, lues sur les cubes (une étape est finie
+ * quand toutes ses cases sont posées). Posé au centre de l'emprise de la tour (ses murs), pied au sol. `null` hors du
+ * 6e ou tant que la tour n'a aucune case dans le monde (une île fermée ne montre pas ses plans ; l'île de la Tour
+ * n'existe qu'au 6e).
+ */
+export function phareDeGrimoire(cubes: VoxelCube[], a: ArchipelagoId = PHARE_DE_GRIMOIRE.archipel): PhareDeGrimoire | null {
+  const P = PHARE_DE_GRIMOIRE;
+  if (a !== P.archipel) return null;
+  const tour = new Map<string, VoxelCube>();
+  for (const c of cubes) if (c.tag === P.ile && !c.quest) tour.set(cle(c.x, c.y, c.z), c);
+  if (!tour.size) return null;
+  const def = islandDef(P.ile);
+  const remplacees = new Set<string>();
+  const enCours = new Set<string>();
+  const cellules: Cell[] = [];
+  const pieces = new Set<PieceDuPhare>();
+  let emprise: Cell[] | null = null;
+  let muted = false;
+  for (const e of P.etapes) {
+    const plan = getPlan(e.plan);
+    if (!plan) continue;
+    const cases = planCells(plan).map((c) => ({ x: def.core.x + c.x, y: def.core.y + c.y, z: def.altitude + c.z + 1 }));
+    emprise ??= cases;
+    const posees = cases.map((c) => tour.get(cle(c.x, c.y, c.z)));
+    // Une étape pas encore dans le monde (la précédente n'est pas finie) : les suivantes non plus.
+    if (posees.some((c) => !c)) break;
+    muted ||= posees.some((c) => c?.muted);
+    const finie = posees.every((c) => !c?.ghost);
+    for (const c of cases) (finie ? remplacees : enCours).add(cle(c.x, c.y, c.z));
+    if (finie) {
+      cellules.push(...cases);
+      for (const p of e.pieces) pieces.add(p);
+    }
+  }
+  if (!emprise || (!remplacees.size && !enCours.size)) return null;
+  return { remplacees, enCours, cellules, pose: poseDuPhare(a, emprise, pieces, muted) };
+}
+
+/** La pose du phare du 6e sur l'emprise de sa tour : au centre, pied au sol, sans socle. */
+function poseDuPhare(a: ArchipelagoId, emprise: Cell[], pieces: Set<PieceDuPhare>, muted: boolean): PoseDuPhare {
+  const xs = emprise.map((c) => c.x);
+  const ys = emprise.map((c) => c.y);
+  const pied = Math.min(...emprise.map((c) => c.z));
+  const { H, r, emprise: cote } = PHARES['6e'];
+  return {
+    cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2,
+    cz: (Math.min(...ys) + Math.max(...ys) + 1) / 2,
+    pied,
+    y: pied,
+    H,
+    r,
+    emprise: cote,
+    // Huit pans : deux faces à plat vers la caméra (face au sud et à l'est).
+    rot: Math.PI / 8,
+    pierre: couleurDeMatiere(a, 'pierre'),
+    verre: couleurDeMatiere(a, 'verre'),
+    muted,
+    pieces,
+  };
 }
 
 /** Un groupe en cours de remplissage. */
@@ -404,6 +511,26 @@ class Remplissage {
     }
     for (let i = 1; i + 1 < pts.length; i++) this.idx.push(base, base + i, base + i + 1);
   }
+  /**
+   * Des facettes déjà tracées (le phare, world/decor/phare.ts) : repère Three, couleurs linéaires, trois sommets par
+   * triangle ; `nuit` : prendre leurs couleurs de nuit. Rend l'intervalle de leurs triangles.
+   */
+  facettes(f: FacettesDuDecor, attr: { extra?: number; biseaux?: boolean; teinte?: number }): [number, number] {
+    const t0 = this.idx.length / 3;
+    const base = this.pos.length / 3;
+    const n = f.positions.length / 3;
+    for (let i = 0; i < n; i++) {
+      this.pos.push(f.positions[3 * i], f.positions[3 * i + 1], f.positions[3 * i + 2]);
+      this.nor.push(f.normals[3 * i], f.normals[3 * i + 1], f.normals[3 * i + 2]);
+      this.col.push(f.colors[3 * i], f.colors[3 * i + 1], f.colors[3 * i + 2]);
+      if (attr.extra !== undefined) this.extra.push(attr.extra);
+      if (attr.biseaux) this.bis.push(SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU);
+      if (attr.teinte !== undefined) this.tei.push(attr.teinte);
+      this.are.push(0);
+      this.idx.push(base + i);
+    }
+    return [t0, this.idx.length / 3];
+  }
   fin(): GroupeDeConstruction {
     return {
       positions: Float32Array.from(this.pos),
@@ -430,7 +557,9 @@ export function maillageDeLaConstruction(
   /** Les faces rentrent sous le biseau taillé ; le biseau peint ne change pas la géométrie. */
   const retrait = mode === 'taille' ? b : 0;
   const fusion = options.fusion ?? true;
-  const dessines = options.bornes ? cubes : cubes.filter((c) => !c.quest);
+  // Le phare de Grimoire : ses étapes finies laissent la place au modèle (dessiné à la fin).
+  const phare = options.navire ? null : phareDeGrimoire(cubes, a);
+  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !phare?.remplacees.has(cle(c.x, c.y, c.z)));
   const genres = genresDesBlocs(dessines);
   const decalages = decalagesDe(genres);
   // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
@@ -440,14 +569,20 @@ export function maillageDeLaConstruction(
 
   // Les couleurs d'un bloc, de jour.
   const vues = new Map<string, Faces>();
+  /** Une case posée du phare de Grimoire, dans une étape pas encore finie : du crème, au lieu du verre provisoire. */
+  const cremeDuPhare = (c: VoxelCube) => c.texture === 'verre' && phare !== null && phare.enCours.has(cle(c.x, c.y, c.z));
   const couleursDe = (c: VoxelCube): Faces => {
     const g = genres.get(c);
-    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.texture === 'toit' ? c.tag : ''}|${g}`;
+    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.texture === 'toit' ? c.tag : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
     if (c.texture === 'toit') f = couleursDuToit(a, c.tag, c.muted);
-    else if (g === 'vitre') {
+    else if (g === 'bloc' && cremeDuPhare(c)) {
+      const [teinte, force] = ambianceDe(a).voile;
+      const creme = mixColor(CREME_DU_PHARE, teinte, force);
+      f = delave({ dessus: creme, cote: eclaircir(creme, 0.9) });
+    } else if (g === 'vitre') {
       const v = couleurDeMatiere(a, 'verre');
       f = delave({ dessus: eclaircir(v.dessus, VITRE_DE_JOUR), cote: eclaircir(v.cote, VITRE_DE_JOUR) });
     } else if (c.texture === 'verre') {
@@ -486,7 +621,7 @@ export function maillageDeLaConstruction(
     Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
   /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
-  const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' ? 1 : 0);
+  const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) ? 1 : 0);
   /** L'arête entre les faces `d` et `e` d'un bloc est-elle biseautée ? */
   const biseaute = (c: VoxelCube, d: number, e: number) => taille(c) && visible(c, d) && visible(c, e);
 
@@ -799,14 +934,30 @@ export function maillageDeLaConstruction(
     }
   }
 
+  // ---- Le phare de Grimoire : les pièces des étapes finies, en facettes peintes (sa lanterne dans les fenêtres, allumée
+  // la première : elle suit la lueur, sans clignoter ; éteinte et délavée sur une île fermée).
+  let dessinDuPhare: MaillageDeLaConstruction['phare'];
+  if (phare?.pose.pieces?.size) {
+    const P = new Pinceau();
+    const L = new Pinceau();
+    dessinerPhare(P, L, phare.pose);
+    dessinDuPhare = {
+      opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }),
+      fenetres: F.facettes(L.fin(), { extra: 0 }),
+      cellules: phare.cellules,
+    };
+  }
+
   const opaque = O.fin();
   const f = F.fin();
   const g = G.fin();
-  return {
+  const m: MaillageDeLaConstruction = {
     opaque: { ...opaque, biseaux: Float32Array.from(O.bis), teintes: Float32Array.from(O.tei), aretes: Float32Array.from(O.are) },
     fenetres: { ...f, decalages: Float32Array.from(F.extra) },
     fantomes: { ...g, colors: new Float32Array(0), uvs: Float32Array.from(G.uv) },
   };
+  if (dessinDuPhare) m.phare = dessinDuPhare;
+  return m;
 }
 
 /** Triangles et appels de dessin de la construction (un appel par groupe non vide). */
@@ -843,6 +994,145 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
   else if (ax >= m) next.x += Math.sign(normale.x);
   else next.y += Math.sign(normale.z);
   return { cell, next };
+}
+
+/**
+ * La case touchée sur le phare de Grimoire (`groupe` : le maillage touché, `triangle` : l'indice du triangle) : la case
+ * remplacée la plus proche du point touché, et la case devant, du côté où la facette regarde le plus. `null` si le
+ * triangle n'est pas au phare.
+ */
+export function caseDuPhare(
+  m: MaillageDeLaConstruction,
+  groupe: 'opaque' | 'fenetres',
+  triangle: number,
+  point: { x: number; y: number; z: number },
+  normale: { x: number; y: number; z: number },
+): { cell: Cell; next: Cell } | null {
+  const p = m.phare;
+  if (!p) return null;
+  const [t0, t1] = p[groupe];
+  if (triangle < t0 || triangle >= t1 || !p.cellules.length) return null;
+  // Repère Three : le point (x, hauteur, y), un quart de case derrière la facette, comme `caseDeLaConstruction`.
+  const q = { x: point.x - normale.x * 0.25, y: point.z - normale.z * 0.25, z: point.y - normale.y * 0.25 };
+  let cell = p.cellules[0];
+  let d = Infinity;
+  for (const c of p.cellules) {
+    const e = (c.x + 0.5 - q.x) ** 2 + (c.y + 0.5 - q.y) ** 2 + (c.z + 0.5 - q.z) ** 2;
+    if (e < d) [cell, d] = [c, e];
+  }
+  const { next } = caseDeLaConstruction({ x: cell.x + 0.5, y: cell.z + 0.5, z: cell.y + 0.5 }, normale);
+  return { cell: { x: cell.x, y: cell.y, z: cell.z }, next: { x: next.x, y: next.y, z: next.z } };
+}
+
+// ---------- Un maillage par île ----------
+
+/** Les maillages déjà faits, un par île (les cubes d'une même étiquette `tag`), et leurs signatures. */
+export interface CacheDeLaConstruction {
+  iles: Map<string, { signature: string; maillage: MaillageDeLaConstruction }>;
+  /** Le nombre de cubes du sol : s'il change, tout est refait. */
+  sol: number;
+}
+
+export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1 });
+
+/**
+ * La construction d'un archipel, île par île : chaque île (les cubes d'une même étiquette) a son maillage, gardé tant
+ * que ses cubes ne changent pas ; ils sont mis bout à bout dans les trois groupes (toujours trois appels). Poser un bloc
+ * ne refait que son île. `refaites` : le nombre d'îles refaites ; `change` : faux si rien n'a changé.
+ */
+export function construireParIle(
+  a: ArchipelagoId,
+  cubes: VoxelCube[],
+  sol: VoxelCube[],
+  cache: CacheDeLaConstruction,
+): { maillage: MaillageDeLaConstruction; refaites: number; change: boolean } {
+  if (cache.sol !== sol.length) {
+    cache.iles.clear();
+    cache.sol = sol.length;
+  }
+  const parIle = new Map<string, VoxelCube[]>();
+  for (const c of cubes) {
+    const k = c.tag ?? '';
+    const l = parIle.get(k);
+    if (l) l.push(c);
+    else parIle.set(k, [c]);
+  }
+  let solParIle: Map<string, VoxelCube[]> | null = null;
+  let refaites = 0;
+  for (const k of [...cache.iles.keys()]) if (!parIle.has(k)) {
+    cache.iles.delete(k);
+    refaites++;
+  }
+  for (const [k, l] of parIle) {
+    const signature = signatureDeLaConstruction(l, []);
+    if (cache.iles.get(k)?.signature === signature) continue;
+    // Le sol sous l'île : seulement les cubes du sol sous un de ses blocs (le sol cache le dessous d'un bloc posé).
+    if (!solParIle) {
+      solParIle = new Map();
+      const index = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
+      for (const [ki, li] of parIle) {
+        const s: VoxelCube[] = [];
+        for (const c of li) {
+          const d = index.get(cle(c.x, c.y, c.z - 1));
+          if (d) s.push(d);
+        }
+        solParIle.set(ki, s);
+      }
+    }
+    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k)) });
+    refaites++;
+  }
+  return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };
+}
+
+/** Des maillages mis bout à bout : les trois groupes, indices décalés (et les triangles du phare avec eux). */
+export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaConstruction {
+  const joindre = <T extends GroupeDeConstruction>(groupes: T[], extras: (keyof T)[]): { g: GroupeDeConstruction & Record<string, Float32Array>; debuts: number[] } => {
+    const debuts: number[] = [];
+    let indices = 0;
+    for (const g of groupes) {
+      debuts.push(indices / 3);
+      indices += g.indices.length;
+    }
+    const cat = (k: keyof T) => {
+      const total = groupes.reduce((n, g) => n + (g[k] as Float32Array).length, 0);
+      const out = new Float32Array(total);
+      let o = 0;
+      for (const g of groupes) {
+        out.set(g[k] as Float32Array, o);
+        o += (g[k] as Float32Array).length;
+      }
+      return out;
+    };
+    const idx = new Uint32Array(indices);
+    let o = 0;
+    let base = 0;
+    for (const g of groupes) {
+      for (let i = 0; i < g.indices.length; i++) idx[o + i] = g.indices[i] + base;
+      o += g.indices.length;
+      base += g.positions.length / 3;
+    }
+    const g = { positions: cat('positions'), normals: cat('normals'), colors: cat('colors'), indices: idx } as GroupeDeConstruction & Record<string, Float32Array>;
+    for (const k of extras) g[k as string] = cat(k);
+    return { g, debuts };
+  };
+  const o = joindre(liste.map((m) => m.opaque), ['biseaux', 'teintes', 'aretes']);
+  const f = joindre(liste.map((m) => m.fenetres), ['decalages']);
+  const g = joindre(liste.map((m) => m.fantomes), ['uvs']);
+  const m: MaillageDeLaConstruction = {
+    opaque: o.g as unknown as GroupeOpaque,
+    fenetres: f.g as unknown as GroupeDesFenetres,
+    fantomes: g.g as unknown as GroupeDesFantomes,
+  };
+  liste.forEach((x, i) => {
+    if (!x.phare) return;
+    m.phare = {
+      opaque: [x.phare.opaque[0] + o.debuts[i], x.phare.opaque[1] + o.debuts[i]],
+      fenetres: [x.phare.fenetres[0] + f.debuts[i], x.phare.fenetres[1] + f.debuts[i]],
+      cellules: x.phare.cellules,
+    };
+  });
+  return m;
 }
 
 // ---------- Les bornes de mission (poste « Bornes ») ----------

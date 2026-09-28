@@ -188,7 +188,7 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     }
     triangles = 0;
   };
-  const ajouter = (g: GroupeDeConstruction, material: THREE.Material, attributs: Record<string, [Float32Array, number]>) => {
+  const ajouter = (g: GroupeDeConstruction, material: THREE.Material, attributs: Record<string, [Float32Array, number]>, groupe: string) => {
     if (!g.indices.length) return;
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(g.positions, 3));
@@ -198,7 +198,7 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     geo.setIndex(new THREE.BufferAttribute(g.positions.length / 3 < 65536 ? Uint16Array.from(g.indices) : g.indices, 1));
     geo.computeBoundingSphere();
     const mesh = new THREE.Mesh(geo, material);
-    mesh.userData = { construction: true };
+    mesh.userData = { construction: true, groupe };
     // Un seul maillage pour tout l'archipel : le tri par la vue ne ferait rien gagner.
     mesh.frustumCulled = false;
     triangles += g.indices.length / 3;
@@ -209,9 +209,9 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     group,
     peindre(m) {
       vider();
-      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1] });
-      ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] });
-      const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] });
+      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1] }, 'opaque');
+      ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
+      const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
       if (f) f.renderOrder = 1;
     },
     triangles: () => triangles,
