@@ -25,7 +25,6 @@ export function lireReglages(ouvert = UNIVERS_OUVERT): { settings: Settings; mes
   if (!ouvert || settings.univers !== undefined) return { settings, message: false };
   const { univers, message } = premierUnivers({
     progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})),
-    experimental: settings.renduArchipeo,
   });
   return { settings: { ...settings, univers }, message };
 }
