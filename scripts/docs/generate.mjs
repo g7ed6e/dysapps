@@ -131,6 +131,8 @@ const SCENE_NAME = {
   carte: 'carte à l’échelle (une distance)',
   cargaison: 'cargaison partagée selon un ratio (une part ou un total)',
   mat: 'mât tenu par un câble (un côté du triangle rectangle)',
+  route: 'traversée à vitesse constante (une distance, une vitesse ou une durée)',
+  ombre: 'ombre d’un bâton et d’un mât (une hauteur ou une ombre, par Thalès)',
 };
 
 /** Échappe le texte pour une cellule ou une ligne de tableau Markdown. */
