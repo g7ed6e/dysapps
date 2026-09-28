@@ -5,7 +5,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
-type Couche = 'regle' | 'grille' | 'commun' | 'dessin' | 'neutre';
+type Couche = 'regle' | 'grille' | 'commun' | 'univers' | 'dessin' | 'neutre';
 
 const SRC = join(__dirname, '..', '..');
 const BLOCLAND = join(SRC, 'blocland');
@@ -64,6 +64,16 @@ const GRILLE = [
   'world/personnages/gardiens',
 ];
 
+/**
+ * Ce qui change d'un univers à l'autre (J7, docs/conception/univers.md §5) : ses textes, son habillage, sa palette, son
+ * modelé dessiné. Le jeu, la grille et le contrat commun ne l'importent jamais : un univers habille le jeu sans le changer.
+ */
+function estUnivers(file: string): boolean {
+  const n = nom(file);
+  if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/univers';
+  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/habillage/') || n === 'world/palette' || n.startsWith('world/modeleDessine');
+}
+
 /** Le contrat commun des vues et sa simulation. */
 const COMMUN = ['world/view', 'world/scene'];
 
@@ -71,7 +81,8 @@ const PERMIS: Record<Couche, Couche[]> = {
   regle: ['regle', 'neutre'],
   grille: ['regle', 'grille', 'neutre'],
   commun: ['regle', 'grille', 'commun', 'neutre'],
-  dessin: ['regle', 'grille', 'commun', 'dessin', 'neutre'],
+  univers: ['regle', 'grille', 'commun', 'univers', 'neutre'],
+  dessin: ['regle', 'grille', 'commun', 'univers', 'dessin', 'neutre'],
   neutre: ['neutre'],
 };
 
@@ -94,6 +105,7 @@ function nom(file: string): string {
 
 function couche(file: string): Couche {
   if (file.endsWith('.json')) return 'neutre';
+  if (estUnivers(file)) return 'univers';
   const n = nom(file);
   if (!file.startsWith(BLOCLAND)) return n.startsWith('components/') ? 'dessin' : 'neutre';
   if (REGLES.includes(n)) return 'regle';
@@ -147,5 +159,12 @@ describe('Les couches du jeu', () => {
 
   it('chaque exception dit son motif', () => {
     expect(Object.entries(EXCEPTIONS).filter(([, motif]) => !motif)).toEqual([]);
+  });
+
+  it('les textes, l’habillage, la palette et le modelé de chaque univers sont dans la couche des univers', () => {
+    const univers = ['univers/index.ts', 'univers/blocland/index.ts', 'univers/communs.ts', 'core/univers.ts'].map((f) => join(SRC, f));
+    const dessin = ['habillage.ts', 'world/habillage/index.ts', 'world/habillage/archipeo.ts', 'world/palette.ts', 'world/modeleDessine/5e.ts'].map((f) => join(BLOCLAND, f));
+    expect([...univers, ...dessin].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
+    expect(PERMIS.regle.includes('univers') || PERMIS.grille.includes('univers') || PERMIS.commun.includes('univers')).toBe(false);
   });
 });
