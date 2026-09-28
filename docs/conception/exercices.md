@@ -85,6 +85,8 @@ Les formes d’items par type d’écran sont visibles sur la page de chaque îl
 | `carte` | `echelle` (`{ reel, unit }` pour « 1 cm pour 500 m », ou `{ fraction }` pour « 1/50 000 »), `carte` (en cm), `reel`, `unitReel` | Une carte avec deux îles, la distance mesurée entre elles, l’échelle dans un cartouche, et « en vrai » dessous. |
 | `cargaison` | `unit` (`"caisses"` ou `"kg"`), `ratio` (2 ou 3 nombres), `parts` (une cote par navire), `total` | Une rangée de cases égales par navire (autant que son terme du ratio), sa part au bout, une accolade et « en tout » dessous. Le ratio se lit « 2 pour 3 ». |
 | `mat` | `unit: "m"`, `hauteur`, `pied`, `cable` | Un mât vertical, le sol, le câble en hypoténuse et l’angle droit codé au pied du mât. |
+| `route` | `distance` (en km), `duree` (en minutes), `vitesse` (en km/h) | Deux îles, la route en pointillés et le bateau, la distance au-dessus, la durée dessous (« 1 h 30 min ») et la vitesse dans un cartouche (« 12 km/h »). Cherchée, la durée se donne en minutes. |
+| `ombre` | `unit: "m"`, `baton`, `ombreBaton`, `hauteur`, `ombre` | Un bâton et un mât verticaux, leurs ombres au sol qui finissent au même point, le rayon de soleil en pointillés qui passe par les deux sommets ; l’ombre du bâton cotée sur la première ligne, celle du mât sur la seconde. |
 
 La phrase lue par un lecteur d’écran (`aria-label`) est composée à partir des propriétés ; le « ? » s’y dit « inconnu ».
 

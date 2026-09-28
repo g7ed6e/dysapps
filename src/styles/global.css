@@ -3640,7 +3640,7 @@ button.island-quest:active {
   background: transparent;
 }
 
-/* ===== Schémas des problèmes situés (pont, quai, traversée) ===== */
+/* ===== Schémas des problèmes situés (pont, quai, traversée, carte, cargaison, mât, route, ombre) ===== */
 .scene-figure svg {
   width: 100%;
   max-width: 26rem;
@@ -3731,6 +3731,21 @@ button.island-quest:active {
 .scene-figure .cable {
   stroke: var(--violet);
   stroke-width: 3;
+}
+.scene-figure .shadow {
+  /* L'ombre, épaisse, se distingue du sol par son épaisseur : pleine encre pour garder le contraste. */
+  stroke: var(--ink);
+  stroke-width: 9;
+}
+.scene-figure .ray {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+}
+.scene-figure .sun {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 2;
 }
 :root[data-theme="contraste"] .scene-figure .cliff,
 :root[data-theme="contraste"] .scene-figure .island,

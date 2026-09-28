@@ -8,7 +8,7 @@ import type { ArchipelagoId } from '../map';
 import type { Faces } from '../palette';
 import type { TextureKind } from '../pixels';
 import { SMOKE } from '../decor';
-import { bouffees } from './fumee';
+import { bouffees, type Fumees, type OptionsDeFumee } from './fumee';
 import { boite, peintre, type Pinceau, type RGB } from './pinceau';
 
 /** Ce que reçoit toute forme du décor. */
@@ -16,6 +16,8 @@ export interface OutilsDeForme {
   /** Le pinceau du décor (un appel de dessin) et celui de ce qui brille (lanternes, lave). */
   P: Pinceau;
   L: Pinceau;
+  /** Les fumées, dans leur maillage à elles (elles bougent) : voir ./fumee.ts. */
+  F: Fumees;
   e: ElementDeDecor;
   a: ArchipelagoId;
   champ: ChampDuSol;
@@ -58,7 +60,7 @@ export interface OutilsDuRepere extends OutilsDeForme {
   deMatiere: (texture: TextureKind) => Faces;
   /** Les cubes de fumée de l'élément, et comment les dessiner (./fumee.ts). */
   fumee: VoxelCube[];
-  bouffees: (list: VoxelCube[]) => void;
+  bouffees: (list: VoxelCube[], options?: OptionsDeFumee) => void;
 }
 
 /**
@@ -80,7 +82,7 @@ export function enRepere(forme: (o: OutilsDuRepere) => void): Forme {
       pied: o.plusBas(e.x, e.y, w, e.z) - 0.3,
       Z: e.z,
       fumee,
-      bouffees: (list) => bouffees(o.P, list, o.hasard, o.rot, o.horizon),
+      bouffees: (list, options) => bouffees(o.F, list, o.hasard, o.rot, o.horizon, options),
       deMatiere: (texture) => {
         const c = e.cubes.find((q) => q.texture === texture);
         return c ? o.du(c) : o.matiere(texture, e.muted);

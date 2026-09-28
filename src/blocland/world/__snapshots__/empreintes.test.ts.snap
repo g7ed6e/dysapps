@@ -164,8 +164,8 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "cubes avec créatures": "0bd237b1",
   "décor posé sur la pente": "d2d741d1",
   "navire": "77ddaf3c",
-  "sol (facettes)": "e355361a",
-  "sol (lave)": "1e47a804",
+  "sol (facettes)": "c4f231e0",
+  "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "01acfcd0",
 }
 `;
@@ -177,8 +177,8 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "cubes avec créatures": "9b22a8c3",
   "décor posé sur la pente": "05a31a4b",
   "navire": "77ddaf3c",
-  "sol (facettes)": "d4d4c3bc",
-  "sol (lave)": "6ecbba2e",
+  "sol (facettes)": "f005abbc",
+  "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "b048ed98",
 }
 `;
@@ -190,8 +190,8 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "cubes avec créatures": "5f05f971",
   "décor posé sur la pente": "a946f05c",
   "navire": "1dcafcd1",
-  "sol (facettes)": "fcb03879",
-  "sol (lave)": "4df79818",
+  "sol (facettes)": "aa1cf39d",
+  "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "36d9103d",
 }
 `;

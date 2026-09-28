@@ -5,11 +5,13 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
+import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerDecor } from './decor';
 import type { Large } from './large';
+import type { Lumiere } from './lumiere';
 import { meshOf } from './maillage';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 import { creerSol } from './sol';
@@ -40,13 +42,15 @@ interface Spark {
   born: number;
 }
 
-export function creerCubes(monde: Monde, large: Large, instant: Instant): Cubes {
+export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant: Instant): Cubes {
   const { scene, archipel, archipeo, surface } = monde;
   const terrain = new THREE.Group();
   scene.add(terrain);
   // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
   const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(), decorSignature: '' } : null;
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
+  // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
+  if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
   // Le contour de la case visée (mode chantier).
   const hover = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0x1e6fd9 }));
   hover.visible = false;
@@ -92,11 +96,13 @@ export function creerCubes(monde: Monde, large: Large, instant: Instant): Cubes 
       }
       // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
       // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
-      const auSol: VoxelCube[] = [];
+      const surLeSol: VoxelCube[] = [];
       const autres: VoxelCube[] = [];
-      for (const c of cubes) (c.sol ? auSol : autres).push(c);
+      for (const c of cubes) (c.sol ? surLeSol : autres).push(c);
       // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
       const { elements, reste } = rangerLeDecor(autres);
+      // Le modelé dessiné d'Archipéo (U2) par-dessus le relief de marche, que la grille garde.
+      const auSol = modelerLeSol(archipel, surLeSol, reste);
       const champ = champDuSol(archipel, auSol, reste);
       // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
       for (const g of buildMesh(poseDuDecor(champ, reste), auSol)) terrain.add(meshOf(g, surface));
@@ -131,7 +137,9 @@ export function creerCubes(monde: Monde, large: Large, instant: Instant): Cubes 
       sparks.push({ mesh, velocity, born });
     },
     formeDEclat: sparkGeo,
-    animer: (_t, _dt, reduit) => {
+    animer: (t, dt, reduit) => {
+      // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
+      sol?.decor.animer(t, dt, reduit);
       if (reduit) return;
       // Éclats : petits cubes qui retombent et disparaissent.
       for (const s of [...sparks]) {

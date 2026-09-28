@@ -66,4 +66,21 @@ describe('Scene', () => {
       "Un mât vertical tenu par un câble tendu jusqu’au sol, un triangle rectangle au pied du mât. Hauteur du mât : 8 mètres. Du pied du mât au câble, au sol : 6 mètres. Longueur du câble : inconnu.",
     );
   });
+
+  it('dit la traversée à vitesse constante, la durée en heures et minutes', () => {
+    render(<Scene scene="route" distance={18} duree={90} vitesse="?" />);
+    expect(screen.getByRole('img')).toHaveAccessibleName(
+      'Une traversée en bateau d’une île à l’autre, à vitesse constante. Distance : 18 kilomètres. Durée : 1 heure 30 minutes. Vitesse : inconnue.',
+    );
+    expect(screen.getByText('durée : 1 h 30 min')).toBeInTheDocument();
+    expect(screen.getByText('vitesse : ?')).toHaveClass('ask');
+  });
+
+  it('dit le bâton, le mât et leurs ombres', () => {
+    render(<Scene scene="ombre" unit="m" baton={2} ombreBaton={3} hauteur="?" ombre={12} />);
+    expect(screen.getByRole('img')).toHaveAccessibleName(
+      'Un bâton et un mât, tous deux verticaux, et leurs ombres au sol qui finissent au même point : le haut du bâton et le haut du mât sont sur le même rayon de soleil. Bâton : 2 mètres, son ombre : 3 mètres. Mât : inconnu, son ombre : 12 mètres.',
+    );
+    expect(screen.getByText('?')).toHaveClass('ask');
+  });
 });
