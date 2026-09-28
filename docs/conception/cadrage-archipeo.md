@@ -160,6 +160,74 @@ Principe : **la grille reste, le cube disparaît.** Le paysage devient un mailla
 
 Entre ces lots s’intercalent, sans changement d’image, les étapes qui isolent la logique du jeu de son rendu : voir [Séparer le jeu du rendu](separation-jeu-rendu.md) (plan ; décisions du 28 septembre 2026).
 
+### Les fils de la piste Rendu (R4b, R5, R6)
+
+Jusqu’à R4, un seul fil enchaînait les lots sur une seule branche : quand il s’arrêtait, tout attendait derrière lui. Les trois lots qui restent se mènent **dans des fils séparés, en même temps**, après un socle commun. Plan proposé le 28 septembre 2026 avec l’artiste technique 3D (fichiers, budget) et le directeur artistique (ce qui se juge ensemble) ; il attend les décisions du mainteneur (en fin de section).
+
+**L’ordre.** Chaque ligne attend la fusion de la précédente ; les lots d’une même ligne tournent en même temps, chacun dans son fil et sa pull request.
+
+| Étape | Fils en parallèle | Ce qui s’y fait |
+| --- | --- | --- |
+| 1 | J3 puis J4 (fil de la séparation) ; **S. le socle du rendu** | S n’a aucun changement d’image : la fiche de famille (ci-dessous) ; un registre des reliefs, un fichier par archipel (`world/silhouettes/6e.ts`…) écrits en repère d’île ; un registre des formes de décor (`FORMES[genre]`) à la place du `switch` de `decor.ts`/`decorMesh.ts` ; `ambianceDe(archipel)` dans `palette.ts` ; les postes et enveloppes du budget (ci-dessous) ; les empreintes globales de J0 (la place des îles, les ouvrages) coupées par archipel ; toutes les captures jour et nuit déclarées d’avance dans `scripts/rendu/mesures.mjs` ; une sous-section vide par lot dans ce cadrage. Il ne touche ni `WorldCanvas.tsx`, ni `scene.ts`, ni `WorldPage.tsx`, ceux de J3 et J4. |
+| 2 | **D. La découpe de la scène 3D** (fil de la séparation, juste après J4) | `three/WorldCanvas.tsx` éclaté sans changement d’image : `three/cubes.ts`, `navire.ts`, `bornes.ts` (pour R5), `personnages.ts` (R6), `lumiere.ts`, `brume.ts` (R4b), `etiquettes.ts` (commun). Chaque module expose `animer(t, dt, reduit)` et `dispose()` ; la boucle d’animation ne fait plus qu’itérer, aucun lot ne la retouche. `lumiere.ts` expose le degré de nuit que R5 lit pour ses fenêtres. |
+| 3 | **J5. Chaque île dans son repère** (fil de la séparation) | Avancé avant R4b : découpé en quatre, R4b ferait attendre J5, donc R5 et R6. Les sous-lots écrivent ensuite directement en repère d’île. |
+| 4 | **R4b-6e**, **R5**, **R6** | Trois fils. R4b-6e règle la famille sur la Forêt et construit le phare de référence. |
+| 5 | **R4b-5e**, **R4b-4e** (et R5, R6 s’ils courent encore) | Le 5e et le 4e ne partagent aucun repère. |
+| 6 | **R4b-3e** | Reprend le phare du 6e (taille, socle, site), revoit le plancher de nuages (vers `#DDE3E8`). |
+| 7 | **La revue d’ensemble** du directeur artistique, puis le lot 6 | Voir plus bas. |
+
+**Qui possède quoi.** Un fichier n’a qu’un propriétaire à la fois ; un autre lot le lit sans l’écrire.
+
+| Fil | Fichiers qu’il écrit | Il lit sans écrire |
+| --- | --- | --- |
+| R4b (un sous-lot par archipel) | son fichier `world/silhouettes/<archipel>.ts`, ses lignes de `MAP` (`world/map.ts`), ses formes de décor, son entrée de `ambianceDe`, `landMesh.ts`, `seaDecor`/`mistPatches` de `terrain.ts`, `three/lumiere.ts`, `three/brume.ts`, `three/decor.ts` ; en 6e seulement : le mouvement de la fumée et de la brume (plus douce, plus pâle la nuit), le ventre des baleines la nuit (`world/faune.ts`) | `deNuit`, le registre des formes |
+| R5 | `three/cubes.ts`, `navire.ts`, `bornes.ts`, un maillage pur de la construction dans `world/`, les formes du quai et du cœur des îles (`world/decor/quai.ts`), `quaySpots`/`harbour` de `terrain.ts`, `VoxelCanvas.tsx`, les fenêtres de nuit en 2D (`pixel/paintedDraw.ts`) | le phare de R4b-6e (modèle partagé), le degré de nuit de `lumiere.ts`, `VEHICLE_DECK` |
+| R6 | `Avatar.ts`, `Creatures.tsx`, `Guardians.tsx`, `Creature3D.tsx`, `three/personnages.ts`, la partie créatures et îlots de `terrain.ts`, `pixel/characters.ts`, `paintedSprites.ts`, `WorldCanvas2D.tsx` (après J4), les personnages de nuit en 2D ; son premier commit sort les modèles des créatures et des Gardiens des composants React (repris de J5) | `deNuit`, `VEHICLE_DECK`, le sol des îlots |
+
+- **Le fil de la séparation** garde ce que J3 à J5 écrivent : `world/grille.ts` (la disposition en grille : place des îles, des bornes, des ouvrages, chemin du bonhomme, depuis J3), `world/scene.ts`, `WorldPage.tsx`, `world/view.ts` et le toucher des deux vues. Les lots R les lisent ; un lot qui a besoin d’y changer quelque chose le demande à ce fil.
+- **`palette.ts`** appartient à R4b ; R5 et R6 gardent leurs couleurs dans leurs modules.
+- **`budget.ts` et `budget.test.ts`** : le socle pose tous les postes ; chaque lot n’écrit que sa ligne d’enveloppe et son propre test.
+- **Les empreintes de J0** : un instantané ne se fusionne jamais à la main. Après s’être remis sur `main`, un fil reprend l’instantané de `main` et le régénère (`npx vitest run -u src/blocland/world/empreintes.test.ts`) ; sa pull request liste les empreintes qui changent, qui ne concernent que son archipel ou son poste.
+- **Ce cadrage** : chaque lot écrit dans sa sous-section, posée par le socle.
+
+**Le budget par poste** (triangles / appels de dessin, par archipel tout construit). Mesuré le 28 septembre 2026 après R4 : 66 672 triangles et 220 appels dans les Premiers Rivages, 44 300 à 45 200 et 180 à 182 ailleurs, dont 65 appels pour la construction et 54 à 92 pour les créatures et les Gardiens, encore en cubes.
+
+| Poste | Lot | Premiers Rivages | Les trois autres |
+| --- | --- | --- | --- |
+| Sol | R4b | 25 000 / 2 | 23 000 / 1 |
+| Mer | R4b | 5 000 / 1 | 5 000 / 1 |
+| Faune | R4b | 1 500 / 3 (+1 au passage de la baleine) | 1 500 / 3 (+1) |
+| Décor et repères signatures | R4b | 12 500 / 3 | 9 000 / 3 |
+| Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris) | R5 | 6 500 / 3 | 6 500 / 3 |
+| Bornes (instanciées) | R5 | 1 000 / 1 | 1 000 / 1 |
+| Navire | R5 | 1 000 / 3 | 1 000 / 3 |
+| Bonhomme | R6 | 800 / 2 | 800 / 2 |
+| Créatures | R6 | 2 500 / 1 | 2 500 / 1 |
+| Gardiens en sentinelles | R6 | 1 500 / 1 | 1 500 / 1 |
+| Dans la scène : étiquettes, flèche, fanion, balises | socle | 500 / 5 | 500 / 5 |
+
+Les Premiers Rivages tiennent en 57 800 triangles et 25 appels (26 au passage de la baleine) : la marge est mince, et leur phare existe déjà. Les trois autres tiennent en 52 300 triangles et 24 appels ; leur enveloppe de décor laisse 4 000 à 6 500 triangles aux silhouettes. Un test du socle vérifie que la somme des enveloppes reste sous 60 000 et 40 ; chaque lot change son `it.todo` en plafond ; le test du budget complet devient vrai quand R4b, R5 et R6 sont fusionnés. Les appels comptés par le navigateur (`npm run rendu:mesures`) se vérifient dans chaque pull request.
+
+**La fiche de famille** (directeur artistique, écrite dans le socle avant le premier sous-lot) : le phare (proportions, deux bandes `#A8553A`, galerie `#553330`, toit conique, anneau `#3F8299`), un seul modèle construit en R4b-6e, que le 3e reprend en changeant la taille, le socle et le site et que R5 réutilise pour les plans du phare ; les toits, trois quarts d’ardoise et un quart de terre cuite ; les falaises et les strates réglées en R2, jamais redosées par archipel ; une seule règle de mouvement pour la fumée et la brume, coupées par « Réduire les animations » ; une seule couleur de nuit, les lueurs sous 5 % de l’image ; le soleil de face en haut à gauche, chaque archipel faisant son ambiance par la palette et la brume ; le « commun aux quatre » des fiches d’archipel (`design/archipeo/esquisses/fiches-archipels.md`). **Frontière R4b / R5** : R4b ne dessine que les repères qui ne sont pas des plans (volcan, grue du fond, brume, passerelle) et le phare partagé ; tout ce qui se construit en blocs (dont l’atelier du 4e) est à R5.
+
+**Ce qui se juge ensemble.**
+
+- Chaque fil montre ses captures validées par le directeur artistique (branche `captures`, un dossier par lot : `r4b-6e/`, `r5/`, `r6/`…) et le verdict du référent dys, comme R1 à R4.
+- R6 se juge d’abord seul, sur le terrain et le décor de R4 (silhouettes, pas de gros yeux, sentinelle éteinte puis rallumée) ; son échelle et ses couleurs se valident dans la revue d’ensemble.
+- **La revue d’ensemble**, une seule, quand R4b, R5 et R6 sont fusionnés : une planche par archipel, tout construit et avant restauration, de près et de loin (une île, l’archipel, la Carte), de jour et de nuit, en 3D et en 2D, en Contraste élevé et avec « Réduire les animations » ; une planche des quatre archipels côte à côte au même cadrage (les deux phares, la lumière, la fumée, aucun archipel jumeau) ; le budget mesuré. Elle vaut la validation par archipel qu’attend le lot 6 ; ce qui en sort part en retouches ciblées, sans rouvrir de lot.
+- Rien ne sort du drapeau avant le lot 6, même un archipel prêt. Les teintes d’archipel et de matière n’entrent dans l’interface qu’avec la reprise de l’interface. « Rallumer » attend le lot 6.
+
+**Les règles des fils.** Au plus trois fils de rendu en même temps, plus celui de la séparation. Chaque fil part de `main` à jour, se remet sur `main` après chaque fusion d’un autre fil, garde sa pull request en brouillon jusqu’aux captures validées, et ne fusionne que sur le mot du mainteneur, en squash sans signature. Un fil qui doit écrire dans un fichier d’un autre lot écrit un nouveau fichier et le passe au propriétaire. Un fil arrêté ne bloque que son lot.
+
+**À décider par le mainteneur.**
+
+1. Ce découpage : un socle, puis R4b en quatre sous-lots (6e, puis 5e et 4e, puis 3e), R5 et R6 en parallèle.
+2. Avancer J5 avant R4b (recommandé : sinon J5 attend le dernier sous-lot, et R5 et R6 avec lui).
+3. Confier la découpe de la scène 3D au fil de la séparation, juste après J4, qui possède déjà ces lignes (recommandé).
+4. Donner à R6 la sortie des modèles des créatures et des Gardiens hors de React, prévue en J5 (recommandé : c’est son terrain).
+5. Le phare, modèle unique construit par R4b-6e et réutilisé par le 3e et par R5 (recommandé par le directeur artistique).
+6. Les enveloppes du budget ci-dessus.
+
 ### L’ouverture et la suite
 
 | Lot | Ce que l’élève voit | Dépend de | Taille |
