@@ -1,4 +1,4 @@
-# L’aventure Archipéo
+# L’aventure en blocs
 
 Archipéo, ce sont **quatre archipels** de blocs, un par classe : les Premiers Rivages (6e), les Îles Brumeuses (5e), les Anciens Ateliers (4e) et les Îles du Ciel (3e), soit vingt-huit îles. Le village est en ruine et l’élève est le bâtisseur : chaque exercice réussi rapporte des blocs, les blocs construisent des ouvrages entre les îles, reconstruisent les bâtiments des créatures et, au port, le **Bloc-Navire** qui mène à l’archipel suivant. Chaque île est un thème du programme, en français, en maths ou en anglais. Le détail du contenu de chaque île est dans [L’archipel](../pedagogie/archipel.md).
 

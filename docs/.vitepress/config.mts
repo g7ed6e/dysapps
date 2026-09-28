@@ -91,15 +91,15 @@ export default defineConfig({
   // « / » en local, « /dysapps/ » sur GitHub Pages (variable posée par la CI).
   base: process.env.BASE_PATH ?? '/',
   lang: 'fr-FR',
-  title: 'Documentation Archipéo',
-  titleTemplate: ':title · Documentation Archipéo',
-  description: 'Manuel et contenu pédagogique d’Archipéo, par DysApps : un jeu d’entraînement pour les élèves dys du collège.',
+  title: 'Documentation DysApps',
+  titleTemplate: ':title · Documentation DysApps',
+  description: 'Manuel et contenu pédagogique de DysApps : un jeu d’entraînement pour les élèves dys du collège.',
   cleanUrls: false,
   srcExclude: ['public/**'],
   lastUpdated: true,
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${process.env.BASE_PATH ?? '/'}icon.svg` }],
-    ['meta', { name: 'theme-color', content: '#13283d' }],
+    ['meta', { name: 'theme-color', content: '#5a3e26' }],
     ['meta', { name: 'referrer', content: 'no-referrer' }],
   ],
   markdown: { anchor: { slugify } },
@@ -114,7 +114,7 @@ export default defineConfig({
   },
   themeConfig: {
     logo: '/icon.svg',
-    siteTitle: 'Archipéo',
+    siteTitle: 'DysApps',
     nav: [{ text: 'Ouvrir l’application', link: nav.appUrl, target: '_blank', rel: 'noopener' }],
     sidebar,
     socialLinks: [{ icon: 'github', link: nav.repoUrl, ariaLabel: 'Code source sur GitHub' }],
@@ -143,7 +143,7 @@ export default defineConfig({
       text: 'Voir la source de cette page',
     },
     footer: {
-      message: `Archipéo, par DysApps · version ${version} · un jeu d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0 · police Montserrat © The Montserrat Project Authors, SIL Open Font License 1.1.`,
+      message: `DysApps · version ${version} · un jeu d’entraînement pour les élèves dys du collège · code source sous licence MIT · police Luciole © Laurent Bourcellier &amp; Jonathan Fabreguettes, CC BY 4.0 · police Archivo Black © The Archivo Black Project Authors, SIL Open Font License 1.1.`,
       copyright: 'Aucune donnée n’est collectée : ce site n’utilise ni cookie ni service externe.',
     },
     notFound: {
