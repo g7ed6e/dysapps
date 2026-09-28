@@ -4,6 +4,14 @@ export type ThemeChoice = 'creme' | 'nuit' | 'clair' | 'contraste';
 export type WorldViewChoice = '3d' | '2d' | 'liste';
 /** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
 export type StartChoice = 'village' | 'menu';
+/**
+ * Expérimental : la surface du rendu Archipéo en construction, les textures des blocs ou l'une des trois options de
+ * style du lot R1 (src/blocland/world/style.ts, où chaque lettre est décrite).
+ */
+export type StyleChoice = 'textures' | 'a' | 'b' | 'c';
+
+/** La clé des réglages dans le stockage de l'appareil. */
+export const SETTINGS_KEY = 'settings';
 
 export interface Settings {
   font: FontChoice;
@@ -30,6 +38,13 @@ export interface Settings {
   appBadge: boolean;
   /** Au démarrage (et à l'adresse d'accueil) : le village, ou le menu. */
   startIn: StartChoice;
+  /**
+   * Expérimental : le rendu Archipéo en construction (lots R0 à R7) à la place du monde en blocs, comme le drapeau
+   * `?rendu=archipeo`. Précurseur du réglage « Univers » du lot 6, qui le remplacera.
+   */
+  renduArchipeo: boolean;
+  /** Expérimental : la surface du rendu Archipéo, comme `?style=a|b|c` ; lue seulement avec `renduArchipeo`. */
+  styleArchipeo: StyleChoice;
 }
 
 /** Contraintes orthophoniques : taille ≥ 18 px, interlignage ≥ 1,5. */
@@ -53,6 +68,8 @@ export const DEFAULT_SETTINGS: Settings = {
   haptics: true,
   appBadge: true,
   startIn: 'village',
+  renduArchipeo: false,
+  styleArchipeo: 'textures',
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -71,6 +88,13 @@ export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
 export const START_LABELS: Record<StartChoice, string> = {
   village: 'Le village d’Archipéo',
   menu: 'Le menu',
+};
+
+export const STYLE_LABELS: Record<StyleChoice, string> = {
+  textures: 'Les textures des blocs',
+  a: 'Style a : aplats',
+  b: 'Style b : facettes et dégradés',
+  c: 'Style c : cubes adoucis',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -119,6 +143,8 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
+    renduArchipeo: s.renduArchipeo === true,
+    styleArchipeo: s.styleArchipeo in STYLE_LABELS ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
   };
 }
 

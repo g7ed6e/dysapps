@@ -24,3 +24,14 @@ it('lit l’option de style du lot R1, seulement avec le rendu Archipéo', () =>
   expect(styleDepuis('https://dysapps.fr/?rendu=archipeo&style=z#/aventure')).toBeNull();
   expect(styleDepuis('https://dysapps.fr/?style=a#/aventure')).toBeNull();
 });
+
+it('lit aussi les réglages expérimentaux ; l’adresse l’emporte sur eux', () => {
+  const archipeo = { renduArchipeo: true, styleArchipeo: 'textures' } as const;
+  expect(renduDepuis('https://dysapps.fr/#/aventure', archipeo)).toBe('archipeo');
+  expect(renduDepuis('https://dysapps.fr/#/aventure', { ...archipeo, renduArchipeo: false })).toBe('blocs');
+  expect(styleDepuis('https://dysapps.fr/#/aventure', archipeo)).toBeNull();
+  expect(styleDepuis('https://dysapps.fr/#/aventure', { ...archipeo, styleArchipeo: 'b' })).toBe('b');
+  expect(styleDepuis('https://dysapps.fr/?style=c#/aventure', { ...archipeo, styleArchipeo: 'b' })).toBe('c');
+  // Le style seul, sans le rendu Archipéo, ne change rien.
+  expect(styleDepuis('https://dysapps.fr/#/aventure', { renduArchipeo: false, styleArchipeo: 'a' })).toBeNull();
+});

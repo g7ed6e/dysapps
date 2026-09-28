@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type StartChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
+import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, STYLE_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type StartChoice, type StyleChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -187,6 +187,30 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.appBadge} onChange={(e) => update({ appBadge: e.target.checked })} />
             Pastille sur l’icône de l’appli quand des révisions attendent
           </label>
+        </fieldset>
+
+        {/* Précurseur du réglage « Univers » du lot 6 (docs/conception/univers.md, étape U3), qui le remplacera. */}
+        <fieldset className="panel">
+          <legend>Expérimental</legend>
+          <p>Le monde d’Archipéo est en train d’être redessiné. Ces options montrent le dessin en cours : il peut changer ou s’afficher moins bien. La progression ne change pas.</p>
+          <label className="toggle">
+            <input type="checkbox" checked={settings.renduArchipeo} onChange={(e) => update({ renduArchipeo: e.target.checked })} />
+            Le nouveau dessin du monde (expérimental)
+          </label>
+          {settings.renduArchipeo && (
+            <>
+              <p>Les couleurs des cubes (expérimental) :</p>
+              <div className="option-row">
+                {(Object.keys(STYLE_LABELS) as StyleChoice[]).map((styleArchipeo) => (
+                  <label key={styleArchipeo} className={`option${settings.styleArchipeo === styleArchipeo ? ' selected' : ''}`}>
+                    <input type="radio" name="styleArchipeo" value={styleArchipeo} checked={settings.styleArchipeo === styleArchipeo} onChange={() => update({ styleArchipeo })} />
+                    {STYLE_LABELS[styleArchipeo]}
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
+          <p>Le changement se voit à la prochaine ouverture du monde.</p>
         </fieldset>
 
         <fieldset className="panel">

@@ -1,0 +1,1 @@
+Réglages : une nouvelle section **Expérimental**, désactivée par défaut, permet d’essayer le nouveau dessin du monde d’Archipéo en construction, et de choisir les couleurs des cubes (les textures des blocs, ou les styles a, b et c). Ces options ne touchent pas à la progression ; elles préparent le choix de l’univers, qui les remplacera.
