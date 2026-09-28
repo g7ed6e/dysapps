@@ -193,9 +193,9 @@ export function WorldPage() {
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
-        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: i.etat.name } } : {}) })),
+        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.village.bridges, state.village.plans, state.progress],
+    [a, mapOpen, state.village.bridges, state.village.plans, state.progress, textes],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
@@ -619,7 +619,7 @@ export function WorldPage() {
     }
     const first = plansFor(id)[0];
     const home = first && isPlanDone(first, state.village.plans);
-    const lines = home && Math.random() < 0.5 ? [biome.creature.home] : biome.creature.lines;
+    const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
     const text = lines[Math.floor(Math.random() * lines.length)];
     setSaid({ id, text });
     if (settings.autoRead) speak(frenchTypography(text));
@@ -733,7 +733,7 @@ export function WorldPage() {
                             <button type="button" className="world-map-island" onClick={() => onIsland(b.id)}>
                               <span className="world-map-island-name">{b.nom}</span>
                               <span className={`island-state island-state-${st.id}`}>
-                                <Icon name={st.icon} /> {st.name}
+                                <Icon name={st.icon} /> {textes.etatsDIle[st.id]}
                               </span>
                             </button>
                           </li>

@@ -221,13 +221,8 @@ export interface ExerciseTypeDef {
 }
 
 export interface CreatureDef {
+  /** Son nom ; ce qu'elle dit est un texte d'univers, dans `src/univers/` (U4). */
   name: string;
-  /** Ce que dit la créature quand on arrive dans son biome. */
-  greeting: string;
-  /** Petites phrases quand on la touche dans le village. */
-  lines: string[];
-  /** Quand sa maison (premier plan de l'île) est terminée. */
-  home: string;
 }
 
 export type Classe = '6e' | '5e' | '4e' | '3e';
@@ -263,16 +258,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'bois',
     guardian: 'le Grand Chêne',
     icon: 'tree',
-    creature: {
-      name: 'Mousso',
-      greeting: 'Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
-      lines: [
-        'Tu entends ? Le vent coupe les mots en syllabes.',
-        'Ma cabane a besoin de bois. Viens chasser les sons !',
-        'Chaque arbre ici a poussé sur une rime.',
-      ],
-      home: 'J’habite ici maintenant ! Viens voir ma cabane quand tu veux.',
-    },
+    creature: { name: 'Mousso' },
     exercises: [
       { id: 'abattage', title: 'Abattage syllabique', description: 'Tape autant de coups que de syllabes.', programme: ['c3.fr.langue.phonemes-graphemes'] },
       { id: 'chasse-son', title: 'Chasse au son', description: 'Tape les mots où tu entends le son demandé.', programme: ['c3.fr.langue.phonemes-graphemes'] },
@@ -289,16 +275,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'pierre',
     guardian: 'le Golem de roche',
     icon: 'pickaxe',
-    creature: {
-      name: 'Tunel',
-      greeting: 'Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre.',
-      lines: [
-        'Un b, un d… regarde bien de quel côté est le ventre.',
-        'Ma forge attend sa poutre. Tu as du bois ?',
-        'Sous terre, on prend son temps. Moi aussi.',
-      ],
-      home: 'Ma forge ronfle à nouveau. Écoute : tac, tac, comme des syllabes.',
-    },
+    creature: { name: 'Tunel' },
     exercises: [
       { id: 'filon', title: 'Filon', description: 'Pioche seulement la lettre cible parmi b, d, p, q.', programme: ['c3.fr.langue.phonemes-graphemes'] },
       { id: 'oreille', title: 'Oreille du mineur', description: 'Écoute le mot, choisis le bon bloc : vin ou fin ?', programme: ['c3.fr.langue.phonemes-graphemes'] },
@@ -314,16 +291,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'sable',
     guardian: 'la Dune vivante',
     icon: 'mountain',
-    creature: {
-      name: 'Rouxel',
-      greeting: 'Hé, bâtisseur ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt ?',
-      lines: [
-        'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
-        'Mon four ! Il me faut du sable et deux pierres.',
-        'Le sable, ça vient des mots qu’on a beaucoup lus.',
-      ],
-      home: 'Le four est chaud ! Tu sens ? Ça sent le pain et les mots bien cuits.',
-    },
+    creature: { name: 'Rouxel' },
     exercises: [
       { id: 'mot-troue', title: 'Mot troué', description: 'Glisse le bloc de lettres qui manque.', programme: ['c3.fr.langue.regularites-orthographiques'] },
       { id: 'familles', title: 'Familles-craft', description: 'Assemble préfixe, racine et suffixe.', programme: ['c3.fr.langue.derivation-composition', 'c3.fr.langue.racines', 'c3.fr.langue.familles-champ-lexical'] },
@@ -340,16 +308,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'terre',
     guardian: 'le Taureau de terre',
     icon: 'wheat',
-    creature: {
-      name: 'Bloquette',
-      greeting: 'Meuh ! À la ferme, tout doit s’accorder. Trie bien les graines et je remplis tes sacs de terre.',
-      lines: [
-        'Meuh. Les vaches, au pluriel, prennent un s. Comme les murs.',
-        'Mon étable, c’est de la terre et quatre poteaux de bois.',
-        'Quand tout s’accorde, ça tient debout.',
-      ],
-      home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur.',
-    },
+    creature: { name: 'Bloquette' },
     exercises: [
       { id: 'enclos', title: 'Enclos', description: 'Glisse les sujets vers le bon verbe : singulier ou pluriel.', programme: ['c3.fr.langue.accord-sujet-verbe'] },
       { id: 'graines', title: 'Tri des graines', description: 'Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.', programme: ['c3.fr.langue.homophonie'] },
@@ -366,12 +325,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'verre',
     guardian: 'la Chouette de verre',
     icon: 'castle',
-    creature: {
-      name: 'Grimoire',
-      greeting: 'Hou hou. Chaque paragraphe que tu lis construit un étage de ma tour. Prends ton temps, je ne compte pas les secondes à voix haute.',
-      lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
-      home: 'Hou hou ! Mon phare est allumé. Regarde-le briller ce soir.',
-    },
+    creature: { name: 'Grimoire' },
     exercises: [{ id: 'ascension', title: 'Ascension', description: 'Lis un texte court, un paragraphe = un étage.', programme: ['c3.fr.lecture.fluidite'] }],
   },
   {
@@ -384,19 +338,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'brique',
     guardian: 'le Hanneton de bronze',
     icon: 'calculator',
-    creature: {
-      name: 'Coco',
-      greeting:
-        'Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
-      lines: [
-        'Compte mes points par cinq : deux rangées de cinq, ça fait dix.',
-        'Un nombre et son complément font toujours dix. Comme mes deux ailes.',
-        'Ma maison est en brique. Chaque calcul en pose une.',
-        'Depuis mon brin d’herbe, je vois le port : un pont, un quai, un bateau. Tout ça se mesure.',
-        'Le tour du quai, je l’ai fait à pied : tous les côtés, un par un, sans raccourci.',
-      ],
-      home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
-    },
+    creature: { name: 'Coco' },
     exercises: [
       { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.', programme: ['c3.ma.nombres.faits-numeriques'] },
       { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.', programme: ['c3.ma.nombres.calcul-mental'] },
@@ -419,17 +361,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'galet',
     guardian: 'le Brochet d’argent',
     icon: 'pizza',
-    creature: {
-      name: 'Nénu',
-      greeting:
-        'Coâ ! Bienvenue à la rivière. Ici, on coupe en parts égales et on regarde la figure avant de répondre. Chaque fraction lue, c’est un galet pour le village.',
-      lines: [
-        'Un nénuphar coupé en quatre : chaque part, c’est un quart.',
-        'Plus il y a de parts, plus chaque part est petite. Même pour les moucherons.',
-        'Ma hutte est en galets. Chaque fraction en apporte un.',
-      ],
-      home: 'Ma hutte de galets est finie ! Une moitié pour dormir, une moitié pour chanter.',
-    },
+    creature: { name: 'Nénu' },
     exercises: [
       { id: 'nenuphars', title: 'Nénuphars', description: 'Quelle fraction de la figure est coloriée ? Puis sur la droite.', programme: ['c3.ma.nombres.fractions-designations'] },
       { id: 'deux-rives', title: 'Deux rives', description: 'Compare deux fractions avec les barres sous les yeux.', programme: ['c3.ma.nombres.fractions-comparer'] },
@@ -446,17 +378,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'obsidienne',
     guardian: 'le Dragon de cendre',
     icon: 'flame',
-    creature: {
-      name: 'Lavi',
-      greeting:
-        'Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
-      lines: [
-        'La virgule, c’est la frontière : à gauche les unités, à droite les dixièmes.',
-        'Le plus long n’est pas le plus grand ! 3,5 bat 3,45.',
-        'Mon abri est en obsidienne, noire et brillante. Chaque nombre en apporte une.',
-      ],
-      home: 'Mon abri d’obsidienne est fini ! Il brille comme 1,0 : entier et sans un dixième qui manque.',
-    },
+    creature: { name: 'Lavi' },
     exercises: [
       { id: 'cratere', title: 'Cratère des rangs', description: 'Quel est le chiffre des dixièmes ? Puis la fraction décimale.', programme: ['c3.ma.nombres.decimaux-ecritures', 'c3.ma.nombres.calcul-mental'] },
       { id: 'coulee', title: 'Coulée de lave', description: 'Compare deux décimaux, tableau sous les yeux.', programme: ['c3.ma.nombres.decimaux-comparer'] },
@@ -473,18 +395,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'glace',
     guardian: 'le Mammouth de givre',
     icon: 'mountain',
-    creature: {
-      name: 'Frimas',
-      greeting:
-        'Salut, bâtisseur ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
-      lines: [
-        'Moins cinq, c’est plus petit que moins deux. Plus on va à gauche, plus il fait froid.',
-        'Soustraire, c’est ajouter l’opposé. Comme enlever un manteau.',
-        'Mon igloo est en glace. Chaque calcul en taille un bloc.',
-        'Un iceberg ne montre qu’une fraction de lui : le reste dort sous l’eau.',
-      ],
-      home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
-    },
+    creature: { name: 'Frimas' },
     exercises: [
       { id: 'thermometre', title: 'Thermomètre', description: 'Compare deux relatifs, puis lis un point sur la droite.', programme: ['c4.ma.a.relatifs', 'c4.ma.d.reperage'] },
       { id: 'banquise', title: 'Banquise', description: 'Additionne et soustrais des relatifs avec le bond sur la droite.', programme: ['c4.ma.a.calcul-relatifs'] },
@@ -502,19 +413,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'toile',
     guardian: 'le Colporteur',
     icon: 'ruler',
-    creature: {
-      name: 'Bazar',
-      greeting:
-        'Bienvenue au marché, bâtisseur ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
-      lines: [
-        'Trois pommes, six euros. Une pomme ? Passe par un seul, toujours.',
-        'Cinquante pour cent, c’est la moitié. Même pour les raisins.',
-        'Mon échoppe est en toile. Chaque compte juste en tend un morceau.',
-        'Deux navires, une cargaison : compte d’abord les parts, puis ce que vaut une part.',
-        'Sur ma carte, un centimètre, c’est tout un bout de mer. J’ai vérifié… deux fois.',
-      ],
-      home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
-    },
+    creature: { name: 'Bazar' },
     exercises: [
       {
         id: 'etals',
@@ -536,17 +435,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'panneau',
     guardian: 'le Sphinx des routes',
     icon: 'compass',
-    creature: {
-      name: 'Sema',
-      greeting:
-        'Salut, bâtisseur ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
-      lines: [
-        'Ses, ces, c’est, s’est : quatre routes, un seul bon chemin.',
-        'Remplace par « avait » : si ça marche, c’est « a » sans accent.',
-        'Ma cabane est faite de panneaux. Chaque bonne réponse en cloue un.',
-      ],
-      home: 'Ma cabane est finie ! Tous ses panneaux montrent la bonne direction.',
-    },
+    creature: { name: 'Sema' },
     exercises: [
       { id: 'panneaux', title: 'Panneaux', description: 'Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.', programme: ['c4.fr.langue.orthographe-lexicale', 'c3.fr.langue.homophonie'] },
       { id: 'aiguillage', title: 'Aiguillage', description: 'Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…', programme: ['c4.fr.langue.orthographe-lexicale', 'c3.fr.langue.homophonie'] },
@@ -563,17 +452,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'tourbe',
     guardian: 'l’Hydre des marais',
     icon: 'footprints',
-    creature: {
-      name: 'Kroa',
-      greeting:
-        'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
-      lines: [
-        'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
-        'Demain je nagerai. Si j’avais des ailes, je volerais.',
-        'Il faut que tu viennes voir ma hutte de tourbe.',
-      ],
-      home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
-    },
+    creature: { name: 'Kroa' },
     exercises: [
       { id: 'rives', title: 'Rives du passé', description: 'Imparfait ou passé composé, puis le passé simple du récit.', programme: ['c3.fr.langue.temps-a-memoriser', 'c4.fr.langue.valeurs-des-temps'] },
       { id: 'brume', title: 'Brume du futur', description: 'Futur ou conditionnel, puis les formes du futur.', programme: ['c4.fr.langue.temps-a-memoriser', 'c3.fr.langue.temps-a-memoriser'] },
@@ -590,17 +469,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'acier',
     guardian: 'le Titan d’acier',
     icon: 'zap',
-    creature: {
-      name: 'Braise',
-      greeting:
-        'Salut, bâtisseur ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
-      lines: [
-        '10⁶ : un million. Un 1 et six zéros, comme mes six enclumes.',
-        '2³, c’est 2 × 2 × 2 = 8. Pas 6 ! Le marteau compte trois coups.',
-        'Mon atelier est en acier. Chaque calcul en forge une plaque.',
-      ],
-      home: 'Mon atelier d’acier est fini ! Solide comme 10 puissance 10.',
-    },
+    creature: { name: 'Braise' },
     exercises: [
       { id: 'etincelles', title: 'Étincelles', description: 'Puissances de 10, puis notation scientifique.', programme: ['c4.ma.a.puissances', 'c4.ma.a.ecritures-ordres-de-grandeur'] },
       { id: 'enclume', title: 'Enclume', description: 'Puissances d’un nombre, puis produits et quotients de puissances.', programme: ['c4.ma.a.puissances'] },
@@ -617,17 +486,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'calque',
     guardian: 'le Golem des équations',
     icon: 'ruler',
-    creature: {
-      name: 'Ixe',
-      greeting:
-        'Bip. Bonjour, bâtisseur ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
-      lines: [
-        '3x + 5x = 8x. Trois blocs plus cinq blocs, huit blocs.',
-        'Une équation, c’est une balance : même geste des deux côtés.',
-        'Mon bureau est en calques. Chaque calcul en trace un.',
-      ],
-      home: 'Mon bureau de calques est fini ! Plan développé, réduit, résolu.',
-    },
+    creature: { name: 'Ixe' },
     exercises: [
       { id: 'reduire', title: 'Réduire', description: 'Regroupe les x et les nombres.', programme: ['c4.ma.a.reduire-developper'] },
       { id: 'developper', title: 'Développer', description: 'Distributivité simple, puis double, puis factoriser.', programme: ['c4.ma.a.reduire-developper'] },
@@ -644,17 +503,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'ardoise',
     guardian: 'le Bélier de granit',
     icon: 'mountain',
-    creature: {
-      name: 'Cléa',
-      greeting:
-        'Bêêê, bâtisseur ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
-      lines: [
-        'Les filles sont parties : avec être, le participe suit le sujet.',
-        'Qui est-ce qui grimpe ? Voilà le sujet, voilà l’accord.',
-        'Ma bergerie est en ardoise. Chaque accord en pose une.',
-      ],
-      home: 'Ma bergerie d’ardoise est finie ! Elle est solide, elles sont solides, tout est accordé.',
-    },
+    creature: { name: 'Cléa' },
     exercises: [
       { id: 'corde', title: 'Corde du participe', description: 'Participe passé avec être, avec avoir, puis avec le COD placé avant.', programme: ['c4.fr.langue.participe-passe', 'c3.fr.langue.attribut-participe-etre'] },
       { id: 'paroi', title: 'Paroi des adjectifs', description: 'Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.', programme: ['c4.fr.langue.accord-gn-complexe', 'c3.fr.langue.accord-gn'] },
@@ -671,17 +520,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'parchemin',
     guardian: 'le Hibou lexicographe',
     icon: 'library',
-    creature: {
-      name: 'Plume',
-      greeting:
-        'Bonjour, bâtisseur ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
-      lines: [
-        'Télé-phone : la voix, de loin. Deux morceaux, un mot.',
-        'Une pluie de cadeaux ne mouille pas : c’est le sens figuré.',
-        'Mon nid est en parchemins. Chaque mot en roule un.',
-      ],
-      home: 'Mon nid de parchemins est fini ! Au sens propre : il tient. Au figuré : c’est un trésor.',
-    },
+    creature: { name: 'Plume' },
     exercises: [
       { id: 'racines', title: 'Racines', description: 'Racines grecques et latines, puis préfixes et suffixes.', programme: ['c4.fr.langue.formation-des-mots'] },
       { id: 'sens', title: 'Sens', description: 'Sens propre ou sens figuré, expressions imagées, puis le champ lexical.', programme: ['c4.fr.langue.sens-des-mots', 'c4.fr.langue.reseaux-de-mots'] },
@@ -698,17 +537,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'marbre',
     guardian: 'le Sphinx de marbre',
     icon: 'compass',
-    creature: {
-      name: 'Théo',
-      greeting:
-        'Bonjour, bâtisseur ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
-      lines: [
-        'Trois, quatre, cinq : le plus vieux triangle rectangle du monde.',
-        'Deux droites parallèles, et les longueurs se multiplient par le même nombre.',
-        'Mon kiosque est en marbre. Chaque calcul en taille une colonne.',
-      ],
-      home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
-    },
+    creature: { name: 'Théo' },
     exercises: [
       { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât, enfin la réciproque : le triangle est-il rectangle ?', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
       { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton, enfin la réciproque : les droites sont-elles parallèles ?', programme: ['c4.ma.d.thales'] },
@@ -725,18 +554,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'quartz',
     guardian: 'le Comptable des étoiles',
     icon: 'star',
-    creature: {
-      name: 'Stat',
-      greeting:
-        'Hou ! Bienvenue à l’observatoire, bâtisseur. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
-      lines: [
-        'La moyenne : tout additionner, puis partager équitablement.',
-        'La médiane coupe la série rangée en deux moitiés.',
-        'Mon dôme est en quartz. Chaque calcul en polit une facette.',
-        'Dans mon carnet de relevés, chaque barre porte son effectif. Additionne-les tous : c’est l’effectif total.',
-      ],
-      home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
-    },
+    creature: { name: 'Stat' },
     exercises: [
       { id: 'moyenne', title: 'Moyenne', description: 'La moyenne, puis la médiane et l’étendue d’une petite série.', programme: ['c4.ma.b.indicateurs'] },
       { id: 'chances', title: 'Chances', description: 'Probabilités simples : sac de boules, dé.', programme: ['c4.ma.b.probabilites'] },
@@ -753,17 +571,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'prisme',
     guardian: 'le Dragon de lumière',
     icon: 'lightbulb',
-    creature: {
-      name: 'Fi',
-      greeting:
-        'Bonjour, bâtisseur ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
-      lines: [
-        'Entre x, sors f(x) : ma lumière fait pareil, elle transforme.',
-        'Linéaire : la droite passe par l’origine. Affine : elle est décalée de b.',
-        'Ma lanterne est en prismes. Chaque calcul en pose un.',
-      ],
-      home: 'Ma lanterne de prismes est finie ! f(nuit) = lumière.',
-    },
+    creature: { name: 'Fi' },
     exercises: [
       { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.', programme: ['c4.ma.b.image-antecedent'] },
       { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.', programme: ['c4.ma.b.lineaire-affine'] },
@@ -779,18 +587,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'lentille',
     guardian: 'le Grand Lecteur',
     icon: 'book',
-    creature: {
-      name: 'Astra',
-      greeting:
-        'Bonsoir, bâtisseur ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
-      lines: [
-        'Un parapluie fermé et des cheveux mouillés : le texte n’a pas dit « pluie », et pourtant.',
-        'Rapide comme l’éclair : le « comme » fait la comparaison.',
-        'Ma lanterne est en lentilles. Chaque lecture en polit une.',
-        'Il fait nuit sur l’observatoire. Qui fait nuit ? Ici, le « il » ne désigne personne.',
-      ],
-      home: 'Ma lanterne de lentilles est finie ! Elle grossit les mots pour mieux les lire.',
-    },
+    creature: { name: 'Astra' },
     exercises: [
       { id: 'inferences', title: 'Inférences', description: 'Ce que la phrase laisse comprendre sans le dire.', programme: ['c4.fr.lecture.controle', 'c3.fr.lecture.implicite'] },
       { id: 'figures', title: 'Figures', description: 'Comparaison, métaphore, personnification, hyperbole, litote…', programme: ['c4.fr.lecture.procedes'] },
@@ -808,17 +605,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'cabine',
     guardian: 'le Lion de pierre',
     icon: 'languages',
-    creature: {
-      name: 'Robin',
-      greeting:
-        'Hello, bâtisseur ! Dans la baie, on parle anglais. Écoute bien : le bouton Écouter lit chaque mot avec une voix anglaise. Chaque mot compris, c’est une cabine rouge pour le village.',
-      lines: [
-        'Thirteen ou thirty ? Écoute la fin : -teen, c’est de 13 à 19.',
-        'Hello pour arriver, goodbye pour partir.',
-        'Ma maison est une cabine rouge. Chaque bonne réponse en peint un carreau.',
-      ],
-      home: 'Ma cabine est finie ! On peut appeler jusqu’à Londres.',
-    },
+    creature: { name: 'Robin' },
     exercises: [
       { id: 'hello', title: 'Hello', description: 'Saluer, se présenter, les phrases de la classe.', programme: ['c3.en.dialoguer.contact-social', 'c3.en.ecouter.consignes'] },
       { id: 'numbers', title: 'Numbers', description: 'Les nombres (-teen ou -ty ?), l’heure et la date.', programme: ['c3.en.culture.vie-quotidienne', 'c3.en.langue.phonologie', 'c3.en.langue.phonie-graphie'] },
@@ -835,17 +622,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'cadran',
     guardian: 'le Coucou de bronze',
     icon: 'history',
-    creature: {
-      name: 'Tick',
-      greeting:
-        'Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village.',
-      lines: [
-        'He, she, it : un seul, alors is, has, et un s au verbe.',
-        'I am, you are, he is : tic, tac, toc.',
-        'Ma maison est une horloge. Chaque bonne réponse en fait tourner une aiguille.',
-      ],
-      home: 'Mon horloge est finie ! Elle sonne à chaque verbe juste.',
-    },
+    creature: { name: 'Tick' },
     exercises: [
       { id: 'to-be', title: 'To be', description: 'Am, is, are ; la négation et la question.', programme: ['c3.en.langue.groupe-verbal', 'c3.en.langue.phrase'] },
       { id: 'have-got', title: 'Have got', description: 'Have got ou has got, pour dire ce qu’on a.', programme: ['c3.en.langue.groupe-verbal'] },
@@ -862,18 +639,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'tuile',
     guardian: 'la Reine du marché',
     icon: 'languages',
-    creature: {
-      name: 'Pudding',
-      greeting:
-        'Hello, bâtisseur ! Au Comptoir, on achète, on compte, on raconte sa journée, en anglais. Écoute bien chaque phrase : la voix anglaise la lit pour toi. Chaque bonne réponse, c’est une tuile pour le village.',
-      lines: [
-        'Chips, ce sont des frites ; crisps, ce sont des chips !',
-        'How much is it? Ça veut dire : combien ça coûte ?',
-        'Ma boutique a un toit de tuiles. Chaque bonne réponse en pose une.',
-        'Ma boutique rouvre à 2 pm, donc à 14 h : pm, ça veut dire après midi !',
-      ],
-      home: 'Ma boutique est finie ! Open every day, même le dimanche.',
-    },
+    creature: { name: 'Pudding' },
     exercises: [
       { id: 'shopping', title: 'Shopping', description: 'Au magasin : quantités, prix, repas.', programme: ['c4.en.dialoguer.echanges-sociaux', 'c3.en.dialoguer.renseignements', 'c4.en.langue.lexique'] },
       { id: 'routine', title: 'Routine', description: 'La journée (get up, have breakfast…) et always, often, never.', programme: ['c4.en.langue.temps-verbaux', 'c3.en.culture.vie-quotidienne'] },
@@ -891,17 +657,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'lambris',
     guardian: 'le Spectre du manoir',
     icon: 'history',
-    creature: {
-      name: 'Moustache',
-      greeting:
-        'Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village.',
-      lines: [
-        'Look! The cat is sleeping : en ce moment, be + -ing.',
-        'Yesterday, I played : au passé, + ed.',
-        'Mon salon est tout en lambris. Chaque bonne réponse en cire un.',
-      ],
-      home: 'Mon salon est fini ! Il est bien plus beau qu’avant : more beautiful than before.',
-    },
+    creature: { name: 'Moustache' },
     exercises: [
       { id: 'ing', title: '-ing', description: 'Be + -ing (maintenant) ou présent simple (d’habitude).', programme: ['c4.en.langue.temps-verbaux'] },
       { id: 'preterit', title: 'Prétérit', description: 'Was, were, les verbes en -ed ; did pour la question et la négation.', programme: ['c4.en.langue.temps-verbaux'] },
@@ -918,17 +674,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'velours',
     guardian: 'le Masque',
     icon: 'languages',
-    creature: {
-      name: 'Puck',
-      greeting:
-        'Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village.',
-      lines: [
-        'Where = où, when = quand, why = pourquoi : écoute le premier mot.',
-        'Some pour dire oui, any pour la question et la négation.',
-        'Ma loge est en velours rouge. Chaque bonne réplique en coud un pan.',
-      ],
-      home: 'Ma loge est finie ! The show must go on.',
-    },
+    creature: { name: 'Puck' },
     exercises: [
       { id: 'dialogues', title: 'Dialogues', description: 'Écouter une question et choisir la bonne réponse.', programme: ['c4.en.ecouter.intervention-breve', 'c4.en.dialoguer.reagir', 'c3.en.dialoguer.reagir'] },
       { id: 'quantites', title: 'Quantités', description: 'Some, any, much, many, a few, a little, enough.', programme: ['c4.en.langue.groupe-nominal'] },
@@ -945,17 +691,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'rail',
     guardian: 'la Locomotive de fer',
     icon: 'history',
-    creature: {
-      name: 'Vapeur',
-      greeting:
-        'Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village.',
-      lines: [
-        'Will pour prédire, going to pour un projet.',
-        'Mustn’t, c’est interdit ; don’t have to, ce n’est pas obligé.',
-        'Mon abri est au bout du quai. Chaque bonne réponse pose un rail.',
-      ],
-      home: 'Mon abri est fini ! The next train will arrive on time.',
-    },
+    creature: { name: 'Vapeur' },
     exercises: [
       { id: 'futur', title: 'Futur', description: 'Will et be going to.', programme: ['c4.en.langue.temps-verbaux'] },
       { id: 'modaux', title: 'Modaux', description: 'Can, must, should, have to.', programme: ['c4.en.langue.modaux-passif'] },
@@ -972,17 +708,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'antenne',
     guardian: 'la Grande Antenne',
     icon: 'languages',
-    creature: {
-      name: 'Écho',
-      greeting:
-        'Hello, bâtisseur ! Au studio, on lit et on écoute des messages entiers : qui, quand, pourquoi ? Et attention aux faux amis : library n’est pas une librairie ! Chaque message compris, c’est une antenne pour le village.',
-      lines: [
-        'Actually, ça veut dire « en fait », pas « actuellement ».',
-        'Because pour la cause, so pour la conséquence, but pour l’opposition.',
-        'Ma régie est hérissée d’antennes. Chaque bonne réponse en dresse une.',
-      ],
-      home: 'Ma régie est finie ! On the air!',
-    },
+    creature: { name: 'Écho' },
     exercises: [
       { id: 'comprendre', title: 'Comprendre', description: 'Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.', programme: ['c4.en.lire.informations', 'c4.en.lire.recit'] },
       { id: 'connecteurs', title: 'Connecteurs', description: 'Because, so, but, although, however, unless…', programme: ['c4.en.langue.phrase-complexe'] },
@@ -999,17 +725,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'taille',
     guardian: 'le Dragon gallois',
     icon: 'castle',
-    creature: {
-      name: 'Knight',
-      greeting:
-        'Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village.',
-      lines: [
-        'For une durée, since un point de départ.',
-        'If I were a dragon, I would fly : si j’étais un dragon, je volerais.',
-        'Ma tour est en pierre de taille. Chaque bonne réponse en scelle une.',
-      ],
-      home: 'Ma tour est finie ! If I were you, I would climb to the top.',
-    },
+    creature: { name: 'Knight' },
     exercises: [
       { id: 'for-since', title: 'For / since', description: 'For, since, ago ; present perfect ou prétérit.', programme: ['c4.en.langue.temps-verbaux'] },
       { id: 'if', title: 'If', description: 'Si… : le réel (will) et l’imaginaire (would).', programme: ['c4.en.langue.phrase-complexe'] },
@@ -1028,18 +744,7 @@ export const BIOMES: BiomeDef[] = [
     block: 'dalle',
     guardian: 'la Diligence de cuivre',
     icon: 'languages',
-    creature: {
-      name: 'Lina',
-      greeting:
-        'Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village.',
-      lines: [
-        'Chaque année, je vole d’un pays à l’autre : les langues, ça me connaît.',
-        'Dans ta deuxième langue, le nom a souvent un petit mot devant. Apprends-les ensemble, comme deux cubes collés.',
-        'Un, deux, trois… Les nombres se posent comme des dalles : un par un, à voix haute.',
-        'Mon nid est sur la cheminée de l’auberge. Chaque bonne réponse pose une dalle devant la porte.',
-      ],
-      home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
-    },
+    creature: { name: 'Lina' },
     exercises: [
       // Les missions de chaque langue, dans le même ordre : la borne de même rang ouvre celle de la LV2 choisie.
       { id: 'es-hola', title: 'Hola', description: 'Se présenter : une question en espagnol, la bonne réponse (ser et tener).', programme: ['c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },

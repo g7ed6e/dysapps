@@ -4,6 +4,7 @@
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
 // artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/univers/index.ts).
 import { BLOCLAND } from '../blocland';
+import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
 
 const s = (n: number) => (n > 1 ? 's' : '');
@@ -253,6 +254,8 @@ export const ARCHIPEO = {
       },
     },
   },
+  creatures: REPLIQUES,
+  etatsDIle: ETATS_D_ILE,
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe',
