@@ -128,6 +128,9 @@ const SCENE_NAME = {
   pont: 'pont en travées (une longueur)',
   quai: 'quai à clôturer (un périmètre)',
   traversee: 'traversée en bateau (une durée ou un horaire)',
+  carte: 'carte à l’échelle (une distance)',
+  cargaison: 'cargaison partagée selon un ratio (une part ou un total)',
+  mat: 'mât tenu par un câble (un côté du triangle rectangle)',
 };
 
 /** Échappe le texte pour une cellule ou une ligne de tableau Markdown. */

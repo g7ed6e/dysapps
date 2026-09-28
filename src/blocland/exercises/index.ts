@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import type { ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
-import { PROBLEMES_EXERCISES } from './problemes';
+import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
 
 /** Ce qu'il faut d'un exercice pour les listes, les étoiles et le choix de la partie : sans ses items. */
 export type ExerciseMeta = Pick<ExerciseDef, 'id' | 'biome' | 'type' | 'level'>;
@@ -65,7 +65,7 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
 }));
 
 /** Les exercices écrits en code (générateurs, dérivés de la mission Homophones) : déjà là, rien à charger. */
-const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...PROBLEMES_EXERCISES, ...COLLEGE_EXERCISES, ...panneaux];
+const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...PROBLEMES_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES, ...panneaux];
 
 /**
  * L'ordre du catalogue : celui de la progression dans une île (il départage les variantes d'un même niveau et
@@ -79,7 +79,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont',
   'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'foret-rimes-oire', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
   'carriere-coffre-2', 'carriere-familles-1', 'carriere-familles-2', 'ferme-enclos-1', 'ferme-enclos-2',
-  'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
+  'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
   'carrefour-aiguillage-2', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',
   'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'falaise-corde-1', 'falaise-corde-2',
   'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'cabinet-racines-1',

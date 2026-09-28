@@ -10,7 +10,23 @@ export type SceneProps =
   /** Un quai rectangulaire vu du dessus, à clôturer ; l'entrée, s'il y en a une, reste sans clôture. */
   | { scene: 'quai'; unit: 'm'; longueur: Cote; largeur: Cote; entree?: number; perimetre?: Cote; ask: 'perimetre' }
   /** Une traversée en bateau d'une île à l'autre : heures en minutes depuis minuit, durée en minutes. */
-  | { scene: 'traversee'; depart: Cote; arrivee: Cote; duree: Cote };
+  | { scene: 'traversee'; depart: Cote; arrivee: Cote; duree: Cote }
+  /** Une carte à l'échelle : deux îles, la distance mesurée sur la carte (en cm), l'échelle, et la distance en vrai. */
+  | { scene: 'carte'; echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Cote; reel: Cote; unitReel: 'm' | 'km' }
+  /**
+   * Une cargaison partagée entre navires selon un ratio : une rangée de cases égales par navire, le total sous l'accolade.
+   * `null` : une quantité ni donnée ni cherchée, pas écrite (sinon on trouverait la réponse par une simple soustraction).
+   */
+  | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }
+  /** Un mât vertical tenu par un câble jusqu'au sol : un triangle rectangle, l'angle droit codé au pied du mât. */
+  | { scene: 'mat'; unit: 'm'; hauteur: Cote; pied: Cote; cable: Cote };
+
+/** 2250 → « 2 250 », 50000 → « 50 000 », 1.5 → « 1,5 » (écriture française, espace insécable entre les classes). */
+export function formatNombre(n: number): string {
+  const [int, dec] = String(n).split('.');
+  const grouped = int.length > 3 ? int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') : int;
+  return dec ? `${grouped},${dec}` : grouped;
+}
 
 /** 580 → « 9 h 40 », 605 → « 10 h 05 ». */
 export function formatHeure(min: number): string {
@@ -25,8 +41,9 @@ export function formatDuree(min: number): string {
   return m ? `${h} h ${m} min` : `${h} h`;
 }
 
-const cote = (c: Cote, unit: string) => (c === '?' ? '?' : `${c} ${unit}`);
-const spoken = (c: Cote, unit: string) => (c === '?' ? 'inconnu' : `${c} ${unit === 'm' ? 'mètres' : unit}`);
+const UNIT_SPOKEN: Record<string, string> = { m: 'mètres', km: 'kilomètres', cm: 'centimètres', kg: 'kilos' };
+const cote = (c: Cote, unit: string) => (c === '?' ? '?' : `${formatNombre(c)} ${unit}`);
+const spoken = (c: Cote, unit: string) => (c === '?' ? 'inconnu' : `${formatNombre(c)} ${UNIT_SPOKEN[unit] ?? unit}`);
 const cls = (c: Cote) => (c === '?' ? 'len ask' : 'len');
 
 /** Une cote tracée : un trait fléché aux deux bouts et son texte. */
@@ -169,13 +186,109 @@ function Traversee({ depart, arrivee, duree }: { depart: Cote; arrivee: Cote; du
   );
 }
 
-/** Le schéma de la situation : pont, quai ou traversée, à plat, la grandeur cherchée marquée « ? ». */
+function Carte({ echelle, carte, reel, unitReel }: { echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Cote; reel: Cote; unitReel: 'm' | 'km' }) {
+  const scale = 'fraction' in echelle ? `1/${formatNombre(echelle.fraction)}` : `1 cm pour ${formatNombre(echelle.reel)} ${echelle.unit}`;
+  const scaleSpoken = 'fraction' in echelle ? `1 sur ${formatNombre(echelle.fraction)}` : `1 centimètre pour ${spoken(echelle.reel, echelle.unit)}`;
+  const label = `Une carte avec deux îles. Échelle : ${scaleSpoken}. Sur la carte, entre les deux îles : ${spoken(carte, 'cm')}. En vrai : ${spoken(reel, unitReel)}.`;
+  return (
+    <svg viewBox="0 0 380 230" role="img" aria-label={label}>
+      <Arrow />
+      <rect x="8" y="8" width="364" height="160" rx="6" className="map" />
+      <ellipse cx="74" cy="84" rx="44" ry="30" className="island" />
+      <ellipse cx="306" cy="84" rx="44" ry="30" className="island" />
+      <Dim x1={74} x2={306} y={84} label={cote(carte, 'cm')} c={carte} above />
+      <circle cx="74" cy="84" r="4" className="dim-head" />
+      <circle cx="306" cy="84" r="4" className="dim-head" />
+      <rect x="80" y="126" width="220" height="32" rx="4" className="cartouche" />
+      <text x="190" y="149" textAnchor="middle" className="pt">
+        {scale}
+      </text>
+      <text x="190" y="206" textAnchor="middle" className={cls(reel)}>
+        {`en vrai : ${cote(reel, unitReel)}`}
+      </text>
+    </svg>
+  );
+}
+
+const SHIPS = ['A', 'B', 'C'];
+
+function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }) {
+  // Toutes les cases ont la même taille : c'est ce qui fait voir le partage en parts égales.
+  const box = Math.min(36, 120 / Math.max(...ratio));
+  const rowH = 44;
+  const [x0, y0] = [104, 20];
+  const h = y0 + ratio.length * rowH;
+  // Une largeur de texte estimée (police dys de 18 px) pour placer l'accolade après la plus longue cote ; le total s'écrit dessous.
+  const textW = (t: string) => t.length * 10.5;
+  const bx = Math.max(...ratio.map((r, i) => x0 + r * box + 10 + textW(parts[i] === null ? '' : cote(parts[i], unit)))) + 12;
+  const width = Math.max(380, bx + 24);
+  const label = `Une cargaison ${total === null ? '' : `de ${spoken(total, unit)} `}partagée entre ${ratio.length} navires dans le ratio ${ratio.length > 2 ? `${ratio.slice(0, -1).join(', ')} et ${ratio[ratio.length - 1]}` : ratio.join(' pour ')}. ${ratio
+    .map((r, i) => `Navire ${SHIPS[i]}, ${r} part${r > 1 ? 's' : ''}${parts[i] === null ? '' : ` : ${spoken(parts[i], unit)}`}`)
+    .join('. ')}.`;
+  return (
+    <svg viewBox={`0 0 ${Math.round(width)} ${h + 44}`} role="img" aria-label={label}>
+      {ratio.map((r, i) => {
+        const y = y0 + i * rowH;
+        return (
+          <g key={i}>
+            <text x={x0 - 12} y={y + 24} textAnchor="end" className="pt">
+              {`Navire ${SHIPS[i]}`}
+            </text>
+            {Array.from({ length: r }, (_, k) => (
+              <rect key={k} x={x0 + k * box} y={y + 4} width={box} height={28} className="crate" />
+            ))}
+            {parts[i] !== null && (
+              <text x={x0 + r * box + 10} y={y + 24} className={cls(parts[i])}>
+                {cote(parts[i], unit)}
+              </text>
+            )}
+          </g>
+        );
+      })}
+      {/* L'accolade du total, à droite de toutes les rangées ; sans total écrit, ni accolade ni « en tout ». */}
+      {total !== null && (
+        <path d={`M ${bx} ${y0 + 4} q 10 0 10 10 V ${(y0 + h) / 2 - 8} q 0 8 8 8 q -8 0 -8 8 V ${h - 18} q 0 10 -10 10`} className="brace" />
+      )}
+      {total !== null && (
+        <text x={width / 2} y={h + 30} textAnchor="middle" className={cls(total)}>
+          {`en tout : ${cote(total, unit)}`}
+        </text>
+      )}
+    </svg>
+  );
+}
+
+function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Cote; pied: Cote; cable: Cote }) {
+  const label = `Un mât vertical tenu par un câble tendu jusqu'au sol, un triangle rectangle au pied du mât. Hauteur du mât : ${spoken(hauteur, unit)}. Du pied du mât au câble, au sol : ${spoken(pied, unit)}. Longueur du câble : ${spoken(cable, unit)}.`;
+  return (
+    <svg viewBox="0 0 380 220" role="img" aria-label={label}>
+      <line x1="20" y1="180" x2="360" y2="180" className="ground" />
+      <rect x="96" y="28" width="12" height="152" className="mast" />
+      <line x1="108" y1="32" x2="300" y2="180" className="cable" />
+      <polyline points="108,160 128,160 128,180" className="right-mark" />
+      <text x="84" y="110" textAnchor="end" className={cls(hauteur)}>
+        {cote(hauteur, unit)}
+      </text>
+      <text x="204" y="208" textAnchor="middle" className={cls(pied)}>
+        {cote(pied, unit)}
+      </text>
+      <text x="222" y="92" className={cls(cable)}>
+        {cote(cable, unit)}
+      </text>
+    </svg>
+  );
+}
+
+/** Le schéma de la situation : pont, quai, traversée, carte, cargaison ou mât, à plat, la grandeur cherchée marquée « ? ». */
 export function Scene(props: SceneProps) {
   return (
     <figure className={`scene-figure scene-${props.scene}`}>
       {props.scene === 'pont' && <Pont {...props} />}
       {props.scene === 'quai' && <Quai {...props} />}
       {props.scene === 'traversee' && <Traversee {...props} />}
+      {props.scene === 'carte' && <Carte {...props} />}
+      {props.scene === 'cargaison' && <Cargaison {...props} />}
+      {props.scene === 'mat' && <Mat {...props} />}
     </figure>
   );
 }
