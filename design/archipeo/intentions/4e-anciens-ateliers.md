@@ -10,9 +10,10 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - **L’atelier-forteresse en chantier et ses échafaudages** (R5), le héros de l’archipel, sur l’île de l’Atelier (le port).
 - **La grue de bois** (R4b, île de l’Atelier, hors de la grille, de 120 à 150 triangles, sans appel de plus).
-  - Sur une case où l’on ne marche pas, au fond et à droite du cœur, hors du quai et de la route du navire.
-  - Mât en treillis `#884D40`, 11 cases de haut et 1 case de section.
-  - Flèche `#9C7C4B` de 6 cases, à 0,85 de la hauteur, tournée vers la zone des plans ; contre-flèche de 2 cases avec un contrepoids de pierre.
+  - Sur une case où l’on ne marche pas, sur le flanc droit du cœur, un peu en avant de la mi-profondeur (à 7 cases du bord avant : au milieu, le mât passait sous le bouton de l’archipel dans la vue de l’île ; écart validé par le directeur artistique le 28 septembre 2026), hors du quai et de la route du navire.
+  - Mât en treillis `#884D40`, 9 cases de haut et 1 case de section.
+  - Flèche `#9C7C4B` de 6 cases, à 0,7 de la hauteur, tournée vers le coin avant de la zone des plans ; contre-flèche de 2 cases avec un contrepoids de pierre.
+  - Décidé par le directeur artistique le 28 septembre 2026, sur les captures de R4b-4e : au fond, à 11 cases et 0,85, la flèche était à la hauteur des noms (posés à 12 cases au-dessus du cœur) et passait derrière celui de l’Atelier.
   - Câble et crochet immobiles. C’est la seule verticale fine de l’archipel.
 - **Le fourneau de la Forge** (R4b, dans l’emprise de 2 × 2 du haut-fourneau de Blocland).
   - Maçonnerie tronconique de pierre `#6F473D`, 5 cases de haut, de 1,7 à 1,2 case de section, deux cerclages de métal rouillé `#AF6C55`.
@@ -21,6 +22,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 - **Le volcan lointain** (R4b, par `lointain.ts`, environ 150 triangles).
   - Cône tronqué à 9 pans, roche `#6A5048`, de 15 à 18 blocs, de 80 à 120 cases derrière le bout droit de la crête.
   - Panache de 5 volutes, dans l’appel des fumées. Pas de lueur au cratère.
+  - Il se voit près du bord droit de la vue de l’archipel, sans passer sous les boutons de l’interface (R4b-4e : à `u` = 0,12, validé par le directeur artistique sur les captures le 28 septembre 2026).
   - Dans la vue de l’archipel, il paraît plus petit que la grue. Il se distingue du volcan du 6e (proche, une fumée mince sortie du flanc).
 - **Deux rangs de crêtes lointaines chaudes** (`#8A6E78`, puis `#C89A88`), pâlis par la brume.
 
@@ -34,7 +36,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 ## 4. Le décor à retirer ou à redessiner (Archipéo seulement, partie 1)
 
 - **Le haut-fourneau** (basalte, lave au sommet) devient le fourneau de maçonnerie. Il se lisait comme un second volcan, et sa fumée frôlait le nom « Forge des puissances ».
-- **Les aiguilles d’ardoise en mer** deviennent des écueils bas, une case au plus au-dessus de l’eau, de `#57504C` à `#3E3636`, avec de l’écume. Le semis sur la Carte est moins dense (reporté de R4).
+- **Les aiguilles d’ardoise en mer** deviennent des écueils bas, une case au plus au-dessus de l’eau, de `#57504C` à `#3E3636`, avec de l’écume. Le semis sur la Carte est moins dense (reporté de R4 ; toujours à faire après R4b-4e, qui ne change que la forme des écueils).
 - **Les rochers de la Forge** passent en pierre chaude (point 5, reporté de R4).
 - **Le commentaire de `palette.ts`** qui dit que le volcan du 4e « fume et rougeoie » se corrige : aucune lueur au cratère.
 - **La neige des pics de la Falaise** se peint en roche chaude claire (point 5) : pas de sommets blancs comme au 3e.
@@ -43,7 +45,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 
 - Le ciel de R1 reste : zénith `#355F98`, horizon `#D8B088`, lueur `#F2B878`, soleil `#FFD8A6` à 2,4, ambiance de force 1,0. Le couchant se fait par l’horizon ambré, jamais par le contre-jour ; on ne le pousse pas plus loin (l’orange est la couleur de l’anglais).
 - Brume de profondeur 90 / 300 et voile `#C48C5C` à 0,10 (inchangés).
-- Sols : herbe `#6F8A3A` / `#6A5040` ; roche `#7A7068` / `#57504C` ; neige `#9A8E84` / `#7A7068`.
+- Sols : herbe `#6F8A3A` / `#6A5040` ; roche `#7A7068` / `#57504C` ; neige `#CCBFB0` / `#9A8E84` (R4b-4e : `#9A8E84` passe aux côtés, pour qu’un mur de marbre se détache de la roche claire par son contour en 2D, 3:1 ; décidé par le directeur artistique le 28 septembre 2026 : ce beige chaud et clair ne se lit pas comme une neige blanche).
 - Mer `#21606E` (inchangée). Ardoise `#3E3636`.
 
 ## 6. La fumée

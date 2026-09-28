@@ -18,7 +18,9 @@
 import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
-import { formeDe } from './decor/formes';
+import { formeDe, LOINTAINS } from './decor/formes';
+import { decorHorsGrille, formeHorsGrille } from './decor/horsGrille';
+import { dessinerLointain } from './decor/lointain';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
@@ -26,6 +28,7 @@ import type { ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { kindOf, PROP_KINDS } from './props';
+import { worldBounds } from './terrain';
 import type { Cell } from './view';
 
 export { ELAN, FAMILLES, FEUILLAGE, PIED, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
@@ -48,6 +51,10 @@ export interface ElementDeDecor {
   emprise: number;
   /** Île fermée : couleurs délavées. */
   muted: boolean;
+  /** Posé hors de la grille (./decor/horsGrille.ts) : sans cubes, il ne se touche pas. */
+  horsGrille?: true;
+  /** Au loin, avec le lointain (le panache du volcan du 4e) : ses fumées se cachent sur la Carte avec lui. */
+  auLoin?: true;
 }
 
 /** Les genres dessinés en primitives : le décor rangé de la 2D (arbres, buissons, rochers…) et le décor bâti. */
@@ -121,6 +128,13 @@ export interface MaillageDuDecor {
   fumees: FumeeDuDecor;
   /** Les éléments dessinés, dans l'ordre de `elements`. */
   elements: ElementDeDecor[];
+  /**
+   * Le premier triangle du lointain dans `decor` (./decor/lointain.ts) : il vient après ceux des éléments, jusqu'au
+   * bout ; la vue 3D le cache sur la Carte et ne le touche pas. Sans lointain, le nombre de triangles du décor.
+   */
+  debutDuLointain: number;
+  /** De même dans `fumees` : le premier triangle des fumées au loin (le panache du volcan du 4e), caché sur la Carte. */
+  debutDesFumeesAuLoin: number;
 }
 
 /** Les options du décor : le style de surface (`a` : aplats, sans nuance ni variation ; `b` : la nuance retenue). */
@@ -132,7 +146,11 @@ export interface OptionsDuDecor {
  * Le décor d'un archipel en primitives, posé sur le champ du sol : un maillage pour tout le décor, un pour ce qui
  * brille. Les couleurs de la palette de l'archipel, de jour : la nuit vient de la lumière de la scène.
  */
-export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: ElementDeDecor[], options: OptionsDuDecor = {}): MaillageDuDecor {
+export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, poses: ElementDeDecor[], options: OptionsDuDecor = {}): MaillageDuDecor {
+  // Le décor posé dans la grille, puis celui d'Archipéo seul, hors de la grille (la grue du 4e…).
+  // Ce qui est au loin en dernier : ses fumées ferment le maillage des fumées, que la Carte coupe avant elles.
+  const horsGrille = decorHorsGrille(a, champ, poses);
+  const elements = [...poses, ...horsGrille.filter((e) => !e.auLoin), ...horsGrille.filter((e) => e.auLoin)];
   const style = options.style ?? 'b';
   const P = new Pinceau();
   const L = new Pinceau();
@@ -179,6 +197,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     return m;
   };
 
+  let debutDesFumeesAuLoin = -1;
   elements.forEach((e, i) => {
     P.element = i;
     L.element = i;
@@ -190,9 +209,16 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     const hautDe = (pred: (c: VoxelCube) => boolean) => Math.max(...e.cubes.filter(pred).map((c) => c.z + 1), e.z);
     const premier = (pred: (c: VoxelCube) => boolean) => e.cubes.find(pred);
     const rot = hasard() * Math.PI * 2;
-    formeDe(e.genre)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
+    if (e.auLoin && debutDesFumeesAuLoin < 0) debutDesFumeesAuLoin = F.P.triangles;
+    const forme = (e.horsGrille ? formeHorsGrille(a, e.genre) : undefined) ?? formeDe(e.genre, a);
+    forme({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
   });
-  return { decor: P.fin(), lueurs: L.fin(), fumees: F.fin(a), elements };
+  // Le lointain, derrière l'archipel, dans le même appel de dessin que le décor, après ses éléments (R4b-5e).
+  const debutDuLointain = P.triangles;
+  const lointain = LOINTAINS[a];
+  if (lointain) dessinerLointain(P, worldBounds(a), lointain);
+  const fumees = F.fin(a);
+  return { decor: P.fin(), lueurs: L.fin(), fumees, elements, debutDuLointain, debutDesFumeesAuLoin: debutDesFumeesAuLoin < 0 ? fumees.facettes.elements.length : debutDesFumeesAuLoin };
 }
 
 /** Triangles et appels de dessin d'un maillage du décor. */
@@ -210,7 +236,7 @@ export function caseDuDecor(champ: ChampDuSol, m: MaillageDuDecor, lueur: boolea
   const f = lueur ? m.lueurs : m.decor;
   const i = f.elements[triangle];
   const e = i === undefined ? undefined : m.elements[i];
-  if (!e) return null;
+  if (!e || e.horsGrille) return null;
   const col = colonneEn(champ, e.x, e.y);
   const z = col ? col.haut : e.z - 1;
   return { cell: { x: e.x, y: e.y, z }, next: { x: e.x, y: e.y, z: z + 1 } };

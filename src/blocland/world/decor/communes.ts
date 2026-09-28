@@ -6,7 +6,7 @@ import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, hauteurDuSol, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
 import { couleurDeMatiere, MATIERES, type Couleur, type Faces } from '../palette';
 import type { TextureKind } from '../pixels';
-import type { Forme } from './outils';
+import type { Forme, OutilsDeForme } from './outils';
 import { clamp, DELAVE, eclaircir, feuillage, icosaedre, octaedre, peintre, TAILLES, tronconique, type Pinceau, type V3 } from './pinceau';
 
 /** Combien s'enfonce le pied d'un élément sous le sol (il ne flotte jamais au-dessus d'une facette). */
@@ -77,7 +77,8 @@ const champignon: Forme = ({ P, e, cx, cz, base, rot, vari, du, matiere }) => {
   tronconique(P, cx, cz, base + 0.3, base + 0.54, 0.38, 0.16, 6, rot, peintre(f, base + 0.25, 0.3, vari()));
 };
 
-const rocher: Forme = ({ P, e, a, champ, cx, cz, base, hasard, rot, vari, du, hautDe }) => {
+const rocher: Forme = (o) => {
+  const { e, a, champ, hasard, du } = o;
   // Sur la roche, un rocher prend la roche de l'île (de 0,9 à 1,1 fois sa valeur) ; ailleurs, sa pierre.
   const col = colonneEn(champ, e.x, e.y);
   const sous = col?.matieres[col.matieres.length - 1];
@@ -85,12 +86,16 @@ const rocher: Forme = ({ P, e, a, champ, cx, cz, base, hasard, rot, vari, du, ha
   const r0 = surRoche ? couleurDeMatiere(a, sous as TextureKind) : du(e.cubes[0]);
   const k = 0.9 + 0.2 * hasard();
   const teinte = (c: Couleur) => mixColor(c, e.muted ? DELAVE[0] : c, e.muted ? DELAVE[1] : 0);
-  const f: Faces = surRoche ? { dessus: teinte(eclaircir(r0.dessus, k)), cote: teinte(r0.cote) } : r0;
+  dessinerRocher(o, surRoche ? { dessus: teinte(eclaircir(r0.dessus, k)), cote: teinte(r0.cote) } : r0);
+};
+
+/** Un rocher bosselé de ces couleurs, à sa place (le rocher commun, et ceux qu'un archipel repeint : ./4e.ts). */
+export function dessinerRocher({ P, e, cx, cz, base, hasard, rot, vari, hautDe }: OutilsDeForme, f: Faces): void {
   const haut = hautDe(() => true) - e.z;
   const r = haut >= 2 ? 0.66 : 0.5 + 0.08 * hasard();
   const sy = haut >= 2 ? 1.05 : 0.68;
   icosaedre(P, [cx, base + r * sy * 0.45, cz], r, sy, 0.18, hasard, peintre(f, base - 0.2, r * sy * 1.6, vari()), rot);
-};
+}
 
 const souche: Forme = ({ P, e, cx, cz, base, rot, vari, du }) => {
   const f = du(e.cubes[0]);

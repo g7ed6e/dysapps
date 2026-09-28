@@ -1,5 +1,6 @@
 // Les formes du décor propres aux Îles Brumeuses (5e) : leurs repères. Ce fichier appartient au sous-lot R4b-5e
 // (docs/conception/cadrage-archipeo.md §6).
+import type { Lointain } from './lointain';
 import { enRepere, type Forme } from './outils';
 import { octaedre, peintre, tronconique } from './pinceau';
 
@@ -30,3 +31,19 @@ const aiguilleDeGlace = enRepere(({ P, cx, cz, pied, Z, rot, deMatiere }) => {
 });
 
 export const FORMES_5E: Record<string, Forme> = { 'champignon-geant': champignonGeant, 'aiguille-de-glace': aiguilleDeGlace };
+
+/**
+ * Le lointain des Îles Brumeuses (intention du directeur artistique, design/archipeo/intentions/5e-iles-brumeuses.md
+ * §2) : des masses de roche en gradins, plus hautes que larges, au sommet plat et moussu, la plus au centre portant une
+ * tour carrée au toit d'ardoise ; derrière elles, une chaîne de cimes très pâles.
+ */
+export const LOINTAIN_5E: Lointain = {
+  graine: 'lointain-5e',
+  pieces: [
+    { genre: 'gradins', u: 0.1, recul: 62, haut: 19, rayon: 5.5, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a },
+    { genre: 'gradins', u: 0.42, recul: 85, haut: 24, rayon: 7, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a, tour: { cote: 2.5, haut: 5, pierre: 0x7d8a86, toit: 0x224c5f } },
+    { genre: 'gradins', u: 0.7, recul: 66, haut: 21, rayon: 6, marche: 2.5, retrait: 0.6, pans: 7, couleur: 0x6895ad, sommet: 0x6f8f6a },
+    { genre: 'gradins', u: 0.95, recul: 100, haut: 18, rayon: 5.5, marche: 2.5, retrait: 0.6, pans: 6, couleur: 0x6895ad, sommet: 0x6f8f6a },
+    { genre: 'cretes', u: -0.3, a: 1.3, recul: 125, haut: 22, cimes: 7, epaisseur: 24, couleur: 0xa9c4d4, sommet: 0xe6eef2, neige: 0.78 },
+  ],
+};
