@@ -72,12 +72,16 @@ export interface Disposition {
 export type Intention =
   | { genre: 'ile'; id: BiomeId }
   | { genre: 'borne'; ile: BiomeId; mission: string }
+  /** Un lieu du village (l'école, la salle des trophées) ou un monument (« monument:<id> »). */
   | { genre: 'lieu'; id: string; ile: BiomeId }
   | { genre: 'ouvrage'; id: string }
   | { genre: 'creature'; id: BiomeId; gardien: boolean }
   | { genre: 'navire'; port: BiomeId }
-  /** Une case d'un plan (en cases du plan, celles de la sauvegarde) et la case voisine, devant la face touchée. */
-  | { genre: 'case'; plan: string; case: Point; voisine: Point }
+  /**
+   * En chantier, une face touchée : le bloc touché et la case voisine, devant la face. En cases du monde jusqu'à J5, qui
+   * les donnera en cases du plan (celles de la sauvegarde).
+   */
+  | { genre: 'face'; case: Point; voisine: Point }
   /** En marche libre, le bonhomme est entré dans une autre île. */
   | { genre: 'entree'; ile: BiomeId }
   | { genre: 'fin-du-voyage' }

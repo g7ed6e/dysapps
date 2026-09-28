@@ -13,45 +13,39 @@ vi.mock('./three', () => ({
   VoxelCanvas: () => null,
   WorldCanvas: ({
     focus,
-    onPickIsland,
-    onPickVehicle,
+    onIntent,
     vehicle,
     archipelago,
     voyage,
-    onVoyageLegEnd,
-    onPickPlace,
   }: {
     focus: { island: string | null; spot?: { x: number; y: number } };
-    onPickIsland: (id: string) => void;
-    onPickVehicle: (port: string) => void;
+    onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
     voyage: { leg: string; stage: number; back: boolean } | null;
-    onVoyageLegEnd: () => void;
-    onPickPlace: (place: string, island: string) => void;
   }) => (
     <div>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="point">{focus.spot ? `${focus.spot.x},${focus.spot.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
       <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
-      <button type="button" onClick={onVoyageLegEnd}>
+      <button type="button" onClick={() => onIntent({ genre: 'fin-du-voyage' })}>
         Fin du temps
       </button>
       <p data-testid="navire">{vehicle ? `${vehicle.port} ${vehicle.cubes.filter((c) => c.ghost).length}` : 'aucun'}</p>
-      <button type="button" onClick={() => onPickIsland('foret')}>
+      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret' })}>
         Toucher la Forêt dans le monde
       </button>
-      <button type="button" onClick={() => onPickPlace('ecole', 'foret')}>
+      <button type="button" onClick={() => onIntent({ genre: 'lieu', id: 'ecole', ile: 'foret' })}>
         Toucher l’école dans le monde
       </button>
-      <button type="button" onClick={() => onPickPlace('monument:monument-observatoire', 'tour')}>
+      <button type="button" onClick={() => onIntent({ genre: 'lieu', id: 'monument:monument-observatoire', ile: 'tour' })}>
         Toucher l’observatoire dans le monde
       </button>
-      <button type="button" onClick={() => onPickPlace('trophees', 'foret')}>
+      <button type="button" onClick={() => onIntent({ genre: 'lieu', id: 'trophees', ile: 'foret' })}>
         Toucher la salle des trophées dans le monde
       </button>
-      <button type="button" onClick={() => vehicle && onPickVehicle(vehicle.port)}>
+      <button type="button" onClick={() => vehicle && onIntent({ genre: 'navire', port: vehicle.port })}>
         Toucher le Bloc-Navire
       </button>
     </div>

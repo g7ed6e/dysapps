@@ -69,8 +69,8 @@ const EXCEPTIONS: Record<string, string> = {
   'world/terrain → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
   'world/decor → Voxel': 'le type VoxelCube, rangé dans un composant ; le décor sorti de terrain.ts au lot R4 en hérite (J5)',
   'world/terrain → world/daylight': 'l’ambiance d’un archipel (le ciel), lue pour poser le décor (J5)',
-  'world/view → Voxel': 'le contrat des vues reçoit des cubes (J4)',
-  'world/scene → Voxel': 'la simulation lit les cubes (J4)',
+  'world/view → Voxel': 'le contrat des vues reçoit des cubes ; ils passent en ancrages avec le repère des îles (J5)',
+  'world/scene → Voxel': 'la simulation lit les cubes ; ils passent en ancrages avec le repère des îles (J5)',
 };
 
 /** Le nom court d'un module : chemin depuis src/ (ou depuis src/ hors de Blocland), sans extension. */

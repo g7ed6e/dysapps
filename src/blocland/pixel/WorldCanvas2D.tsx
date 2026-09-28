@@ -32,7 +32,7 @@ import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
-import type { Cell, WorldViewProps } from '../world/view';
+import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
 import { propsOf, type Prop, type Station } from '../world/props';
 import {
@@ -109,15 +109,8 @@ export default function WorldCanvas2D({
   focus,
   reduceMotion = false,
   vehicle = null,
-  onPickVehicle,
   voyage = null,
-  onVoyageLegEnd,
-  onVoyageSkip,
-  onPickIsland,
-  onPickBridge,
-  build,
   creatures = [],
-  onPickCreature,
   forceDay = false,
   marker = null,
   avatar,
@@ -125,15 +118,19 @@ export default function WorldCanvas2D({
   home,
   trail,
   quests,
-  onPickQuest,
-  onPickPlace,
   islandLabels,
   burst,
   freeWalk = false,
-  onWalkedInto,
   className,
   label,
+  onIntent,
+  chantier = false,
 }: WorldViewProps) {
+  // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
+  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip, onWalkedInto } = rappelsDeLaVue(
+    onIntent,
+    chantier,
+  );
   const host = useRef<HTMLDivElement>(null);
   // La 2D peinte, derrière le drapeau `?rendu=archipeo` (lot R7) ; sans lui, la 2D en pixels, inchangée.
   const [painted] = useState(() => renduDuMonde() === 'archipeo');
@@ -429,7 +426,8 @@ export default function WorldCanvas2D({
       running = true;
       frame = requestAnimationFrame(loop);
       const now = performance.now();
-      const dt = Math.min(0.1, (now - last) / 1000);
+      // Jamais négatif : une horloge qui recule (celle, figée, des captures de la documentation) retournerait la caméra.
+      const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
       last = now;
       const t = reduceMotion ? 0 : (now - t0) / 1000;
       const p = props.current;
