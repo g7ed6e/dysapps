@@ -7,6 +7,7 @@ import { rangerLeDecor } from '../decorMesh';
 import { origineDe, worldCubes } from '../terrain';
 import { islandsOf } from '../archipelago';
 import { MODELES, modelerLeSol } from '.';
+import type { Modele } from './types';
 
 const { progress, village } = toutConstruit();
 const monde = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
@@ -60,5 +61,26 @@ describe('Le modelé dessiné', () => {
     expect(montees).toBeGreaterThan(0);
     expect(descendues).toBeGreaterThan(0);
     expect(JSON.stringify(cubes)).toBe(avant);
+  });
+
+  it('un modelé peut changer la matière du dessus ; une hauteur qui n’est pas un nombre laisse la colonne', () => {
+    const { sol, reste } = monde('3e');
+    const ile = islandsOf('3e')[0].id;
+    const glace: Modele = { hauteur: (_x, _y, h) => h + 1, dessus: () => 'glace' };
+    const champ = champDuSol('3e', modelerLeSol('3e', sol, reste, { [ile]: glace }), reste);
+    const enGlace = (cs: { matieres: string[] }[]) => cs.filter((c) => c.matieres[c.matieres.length - 1] === 'glace').length;
+    expect(enGlace(champ.colonnes)).toBeGreaterThan(enGlace(champDuSol('3e', sol, reste).colonnes));
+    const rien = modelerLeSol('3e', sol, reste, { [ile]: { hauteur: () => Number.NaN } });
+    expect(champDuSol('3e', rien, reste).colonnes.map((c) => c.haut)).toEqual(champDuSol('3e', sol, reste).colonnes.map((c) => c.haut));
+  });
+
+  it('modeler tout un archipel reste rapide', () => {
+    const { sol, reste } = monde('5e');
+    const modeles = Object.fromEntries(islandsOf('5e').map((b) => [b.id, { hauteur: (_x: number, y: number, h: number) => (y >= 16 ? h + 2 : h) }]));
+    const t = performance.now();
+    modelerLeSol('5e', sol, reste, modeles);
+    const ms = performance.now() - t;
+    console.info(`modelerLeSol, 5e entier : ${ms.toFixed(1)} ms pour ${sol.length} cubes du sol`);
+    expect(ms).toBeLessThan(200);
   });
 });

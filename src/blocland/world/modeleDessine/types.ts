@@ -12,4 +12,9 @@ export interface Modele {
    * sont jamais modelées.
    */
   hauteur(x: number, y: number, h: number): number;
+  /**
+   * La matière du dessus d'une colonne modelée (une texture de ../pixels.ts, par exemple « neige » sur le gradin du haut),
+   * à partir de sa hauteur dessinée `h` et de sa matière de marche ; sans cette fonction, le dessus garde sa matière.
+   */
+  dessus?(x: number, y: number, h: number, matiere: string | undefined): string | undefined;
 }

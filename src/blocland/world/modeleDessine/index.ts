@@ -16,7 +16,8 @@ export type { Modele } from './types';
 /** Le modelé de chaque archipel, île par île. */
 export const MODELES: Record<ArchipelagoId, Partial<Record<BiomeId, Modele>>> = { '6e': MODELES_6E, '5e': MODELES_5E, '4e': MODELES_4E, '3e': MODELES_3E };
 
-const cle = (x: number, y: number) => `${x},${y}`;
+/** La clé d'une case (comme ../landMesh.ts : les coordonnées tiennent largement dans ± 16 000). */
+const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
 
 /**
  * Les cubes du sol d'un archipel (`c.sol`), modelés : chaque colonne libre d'une île qui a un modelé monte ou descend à
@@ -32,7 +33,7 @@ export function modelerLeSol(
   modeles: Partial<Record<BiomeId, Modele>> = MODELES[a],
 ): VoxelCube[] {
   if (!Object.keys(modeles).length) return sol;
-  const colonnes = new Map<string, VoxelCube[]>();
+  const colonnes = new Map<number, VoxelCube[]>();
   for (const c of sol) {
     const k = cle(c.x, c.y);
     const list = colonnes.get(k);
@@ -43,7 +44,7 @@ export function modelerLeSol(
   const out: VoxelCube[] = [];
   for (const [k, list] of colonnes) {
     const top = list.reduce((p, q) => (q.z > p.z ? q : p));
-    const m = top.tag ? modeles[top.tag as BiomeId] : undefined;
+    const m = top.tag && Object.hasOwn(modeles, top.tag) ? modeles[top.tag as BiomeId] : undefined;
     if (!m || posees.has(k) || top.texture === 'eau' || top.texture === 'lave') {
       out.push(...list);
       continue;
@@ -51,9 +52,13 @@ export function modelerLeSol(
     const o = origineDe(top.tag as BiomeId);
     const h = top.z - o.z;
     const bas = Math.min(...list.map((c) => c.z));
+    const x = top.x - o.x;
+    const y = top.y - o.y;
+    const voulue = m.hauteur(x, y, h);
     // Jamais sous le fond de la colonne : son cube du dessus reste au-dessus de son cube le plus bas.
-    const d = Math.max(Math.round(m.hauteur(top.x - o.x, top.y - o.y, h)) - h, bas - top.z + (list.length > 1 ? 1 : 0));
-    if (d === 0) {
+    const d = Number.isFinite(voulue) ? Math.max(Math.round(voulue) - h, bas - top.z + (list.length > 1 ? 1 : 0)) : 0;
+    const matiere = m.dessus?.(x, y, h + d, top.texture) ?? top.texture;
+    if (d === 0 && matiere === top.texture) {
       out.push(...list);
       continue;
     }
@@ -63,7 +68,7 @@ export function modelerLeSol(
       const dessous = list.filter((c) => c !== top).reduce<VoxelCube | undefined>((p, q) => (!p || q.z > p.z ? q : p), undefined) ?? top;
       for (let z = top.z; z < nouveauDessus; z++) out.push({ ...dessous, z });
     }
-    out.push({ ...top, z: nouveauDessus });
+    out.push(matiere === top.texture ? { ...top, z: nouveauDessus } : { ...top, z: nouveauDessus, texture: matiere });
   }
   return out;
 }
