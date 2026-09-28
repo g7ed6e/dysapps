@@ -22,6 +22,7 @@ La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumièr
 - **Le volcan lointain** (R4b, par `lointain.ts`, environ 150 triangles).
   - Cône tronqué à 9 pans, roche `#6A5048`, de 15 à 18 blocs, de 80 à 120 cases derrière le bout droit de la crête.
   - Panache de 5 volutes, dans l’appel des fumées. Pas de lueur au cratère.
+  - Il se voit près du bord droit de la vue de l’archipel, sans passer sous les boutons de l’interface (R4b-4e : à `u` = 0,12, validé par le directeur artistique sur les captures le 28 septembre 2026).
   - Dans la vue de l’archipel, il paraît plus petit que la grue. Il se distingue du volcan du 6e (proche, une fumée mince sortie du flanc).
 - **Deux rangs de crêtes lointaines chaudes** (`#8A6E78`, puis `#C89A88`), pâlis par la brume.
 
