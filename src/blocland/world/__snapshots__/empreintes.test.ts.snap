@@ -1,0 +1,267 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "e68cd060",
+  "cubes": "3cae03ab",
+  "cubes avec créatures": "5dccdcd4",
+  "décor posé sur la pente": "628be826",
+  "navire": "8b55e91e",
+  "sol (facettes)": "ab6cb767",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "62432c87",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "597685c8",
+  "cubes": "8a1fbf14",
+  "cubes avec créatures": "32da262d",
+  "décor posé sur la pente": "6f69cd42",
+  "navire": "8b55e91e",
+  "sol (facettes)": "89c356f7",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "aba18eb2",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "a0c175a3",
+  "cubes avec créatures": "a0c175a3",
+  "décor posé sur la pente": "9eda2499",
+  "navire": "4e3d19b2",
+  "sol (facettes)": "702a3d1d",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "8e1cddf9",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "c6e4923b",
+  "cubes": "23e62ae4",
+  "cubes avec créatures": "73794806",
+  "décor posé sur la pente": "42946e75",
+  "navire": "82282bda",
+  "sol (facettes)": "94457e30",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "2143bfc6",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "c513a2a1",
+  "cubes": "2087de03",
+  "cubes avec créatures": "7e35aa70",
+  "décor posé sur la pente": "c89f2f25",
+  "navire": "82282bda",
+  "sol (facettes)": "c7690ab0",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "5eab13cb",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "d7c90533",
+  "cubes avec créatures": "d7c90533",
+  "décor posé sur la pente": "c75e2b0e",
+  "navire": "be6f1058",
+  "sol (facettes)": "46c68c01",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "e9da4661",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "755b2620",
+  "cubes": "d93725ee",
+  "cubes avec créatures": "8378c477",
+  "décor posé sur la pente": "61cfa913",
+  "navire": "7a093947",
+  "sol (facettes)": "2510672d",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "e2a3482d",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "f537ee93",
+  "cubes": "5d000fb7",
+  "cubes avec créatures": "cc23501d",
+  "décor posé sur la pente": "3dcca9e8",
+  "navire": "7a093947",
+  "sol (facettes)": "6f5813ee",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "7778fdd8",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "f9ec9619",
+  "cubes avec créatures": "f9ec9619",
+  "décor posé sur la pente": "f5e71dc1",
+  "navire": "3d3b7c21",
+  "sol (facettes)": "237d77db",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "44b83e0e",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "a1c21415",
+  "cubes": "c0e712e8",
+  "cubes avec créatures": "1ebc979f",
+  "décor posé sur la pente": "b5c7cc8e",
+  "navire": "77ddaf3c",
+  "sol (facettes)": "5c1402c9",
+  "sol (lave)": "1e47a804",
+  "trajets depuis le port": "01acfcd0",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "f4009a06",
+  "cubes": "3458f508",
+  "cubes avec créatures": "6ae18fe5",
+  "décor posé sur la pente": "8526fb18",
+  "navire": "77ddaf3c",
+  "sol (facettes)": "8db64f1a",
+  "sol (lave)": "6ecbba2e",
+  "trajets depuis le port": "b048ed98",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "3e7cde82",
+  "cubes": "8ea26711",
+  "cubes avec créatures": "52221a13",
+  "décor posé sur la pente": "f551e57f",
+  "navire": "1dcafcd1",
+  "sol (facettes)": "1939eda9",
+  "sol (lave)": "4df79818",
+  "trajets depuis le port": "36d9103d",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > la place des îles, des bornes, des lieux et du bonhomme 1`] = `"3388ccdc"`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > les clés des cases de chaque plan (sauvegardes) 1`] = `
+{
+  "atelier-bureau": "2f052ce1",
+  "atelier-terrasse": "45911060",
+  "atelier-toit": "9180c499",
+  "baie-cabine": "2f052ce1",
+  "baie-quai": "45911060",
+  "baie-toit": "9180c499",
+  "belvedere-kiosque": "4522f510",
+  "belvedere-terrasse": "45911060",
+  "belvedere-toit": "2c3dabe6",
+  "cabinet-nid": "624bd1d4",
+  "cabinet-perchoir": "ad5408a7",
+  "cabinet-toit": "90d1b98d",
+  "carrefour-cabane": "2f052ce1",
+  "carrefour-rondpoint": "45911060",
+  "carrefour-toit": "9180c499",
+  "carriere-abri": "90d1b98d",
+  "carriere-cour": "ad5408a7",
+  "carriere-four": "624bd1d4",
+  "chateau-rempart": "bbf7ff7a",
+  "chateau-toit": "429001d9",
+  "chateau-tour": "150a97e9",
+  "comptoir-boutique": "edb84ad3",
+  "comptoir-terrasse": "ad5408a7",
+  "comptoir-toit": "b5db4e70",
+  "donnees-dome": "624bd1d4",
+  "donnees-terrasse": "ad5408a7",
+  "donnees-toit": "90d1b98d",
+  "falaise-bergerie": "4ef40037",
+  "falaise-enclos": "ad5408a7",
+  "falaise-toit": "fe05b13c",
+  "ferme-enclos": "61c6f4d4",
+  "ferme-etable": "18d8075b",
+  "ferme-toit": "429f7f59",
+  "foret-cabane": "2f052ce1",
+  "foret-cour": "45911060",
+  "foret-toit": "9180c499",
+  "forge-atelier": "2f052ce1",
+  "forge-cour": "45911060",
+  "forge-toit": "6d31d5ed",
+  "gare-abri": "edb84ad3",
+  "gare-quai": "ad5408a7",
+  "gare-toit": "b5db4e70",
+  "glacier-igloo": "624bd1d4",
+  "glacier-patinoire": "ad5408a7",
+  "glacier-toit": "90d1b98d",
+  "horloge-cour": "bbf7ff7a",
+  "horloge-toit": "f9b5a21c",
+  "horloge-tour": "150a97e9",
+  "manoir-jardin": "61c6f4d4",
+  "manoir-salon": "18d8075b",
+  "manoir-toit": "a804a7ad",
+  "marais-hutte": "4ef40037",
+  "marais-ponton": "ad5408a7",
+  "marais-toit": "fe05b13c",
+  "marche-echoppe": "edb84ad3",
+  "marche-etal": "ad5408a7",
+  "marche-toit": "b5db4e70",
+  "mine-cour": "45911060",
+  "mine-forge": "2f052ce1",
+  "mine-toit": "6d31d5ed",
+  "monument-amphitheatre": "115c8833",
+  "monument-etoiles": "ef9e075d",
+  "monument-kiosque": "2d6285b0",
+  "monument-moulin": "e5e8d2b5",
+  "monument-observatoire": "cc9502f3",
+  "monument-phare-large": "b3feb558",
+  "monument-temple": "0e1f4797",
+  "monument-viaduc": "e67f8392",
+  "navire-ballon": "980fbb57",
+  "navire-coque": "93407c1e",
+  "navire-reacteur": "d485b34c",
+  "phare-jetee": "bbf7ff7a",
+  "phare-lanterne": "150a97e9",
+  "phare-toit": "f9b5a21c",
+  "plaine-cour": "45911060",
+  "plaine-nid": "2f052ce1",
+  "plaine-toit": "9180c499",
+  "riviere-hutte": "4ef40037",
+  "riviere-ponton": "ad5408a7",
+  "riviere-toit": "fe05b13c",
+  "studio-regie": "2f052ce1",
+  "studio-terrasse": "45911060",
+  "studio-toit": "9180c499",
+  "textes-coupole": "bbf7ff7a",
+  "textes-lanterne": "150a97e9",
+  "textes-toit": "f9b5a21c",
+  "theatre-loge": "18d8075b",
+  "theatre-scene": "61c6f4d4",
+  "theatre-toit": "429f7f59",
+  "tour-lanterne": "f9b5a21c",
+  "tour-phare": "150a97e9",
+  "tour-quai": "bbf7ff7a",
+  "volcan-abri": "4ef40037",
+  "volcan-terrasse": "ad5408a7",
+  "volcan-toit": "fe05b13c",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > les ouvrages et les embarquements 1`] = `
+{
+  "embarquements": "7c46c40c",
+  "ouvrages": "d9be179b",
+  "voyages": "15afc321",
+}
+`;
