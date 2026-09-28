@@ -32,3 +32,8 @@ Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) po
 
 - Toute pull request qui touche l'interface, les textes affichés, le contenu, le monde (3D ou 2D), les sons, les animations ou les réglages passe par l'agent `referent-dys` avant d'être ouverte. Sa description donne son verdict (Adapté, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
 - Il rend un avis sans trancher : le game design reste au `directeur-artistique`, le contenu au `directeur-contenu-pedagogique`, le rendu à l'`artiste-technique-3d`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-dys.md`.
+
+## Relecture du code (systématique)
+
+- Toute pull request qui modifie du code (application, rendu, scripts, tests, configuration, CI, dépendances) passe par l'agent `expert-frontend` avant d'être ouverte. Il regarde d'abord la sécurité, puis la performance, puis la maintenabilité. Sa description donne son verdict (Conforme, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
+- Il rend un avis sans trancher : la technique du rendu reste à l'`artiste-technique-3d`, l'accessibilité dys au `referent-dys`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-code.md`.
