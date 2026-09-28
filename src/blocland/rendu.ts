@@ -8,7 +8,7 @@
 // Les mêmes choix se font aussi dans les Réglages, section « Expérimental » (réglages `renduArchipeo` et
 // `styleArchipeo`, éteints par défaut, enregistrés sur l'appareil) ; l'adresse l'emporte sur eux. Le réglage « Univers »
 // du lot 6 (src/core/univers.ts) les remplace à la bascule (`UNIVERS_OUVERT`) : l'univers choisit alors le rendu.
-import { DEFAULT_SETTINGS, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
+import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
 import { UNIVERS_OUVERT } from '../core/univers';
 import { STYLES, type StyleSurface } from './world/style';
@@ -48,24 +48,16 @@ export function mesuresDepuis(href: string): boolean {
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
 let lu: { brut: string | null; choix: ChoixExperimentaux } | null = null;
-let enMemoire: ChoixExperimentaux | null = null;
-
 /**
- * Les réglages de l'application, tenus en mémoire par `SettingsProvider` à chaque changement : le rendu les lit là,
- * sans relire le stockage. Le monde ne lit son rendu qu'à son ouverture (les Réglages sont une autre page) : un
- * changement d'univers se voit donc au retour au village, jamais au milieu d'une mission.
- */
-export function retenirReglages(choix: ChoixExperimentaux | null): void {
-  enMemoire = choix;
-}
-
-/**
- * Les réglages du rendu : ceux tenus en mémoire, sinon (hors de l'application, dans un test) ceux enregistrés sur
+ * Les réglages du rendu : ceux que `SettingsProvider` tient en mémoire (`reglagesCourants`), sans relire le stockage ;
+ * le monde ne lit son rendu qu'à son ouverture (les Réglages sont une autre page), un changement d'univers se voit donc
+ * au retour au village, jamais au milieu d'une mission. Sinon (hors de l'application, dans un test), ceux enregistrés sur
  * l'appareil, relus à chaque appel et décodés seulement quand ils ont changé : la 3D en demande à chaque mise à jour des
  * cubes.
  */
 function reglages(): ChoixExperimentaux {
-  if (enMemoire) return enMemoire;
+  const courants = reglagesCourants();
+  if (courants) return courants;
   if (typeof window === 'undefined') return SANS_REGLAGE;
   let brut: string | null = null;
   try {

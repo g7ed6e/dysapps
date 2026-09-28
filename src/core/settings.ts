@@ -162,6 +162,21 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
   };
 }
 
+let courants: Settings | null = null;
+
+/**
+ * Les réglages de l'application, tenus en mémoire par `SettingsProvider` (qui les pose avant le premier rendu de ses
+ * enfants, puis à chaque changement) : le rendu du monde les lit là, sans relire le stockage. `null` hors de
+ * l'application (un test, une page sans fournisseur).
+ */
+export function retenirReglages(settings: Settings | null): void {
+  courants = settings;
+}
+
+export function reglagesCourants(): Settings | null {
+  return courants;
+}
+
 /** Applique les réglages au document via des variables CSS et un attribut de thème. */
 export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = settings.theme;

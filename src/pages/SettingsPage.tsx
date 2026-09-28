@@ -29,11 +29,19 @@ export function SettingsPage() {
   useEffect(() => {
     if (universDemande) confirmRef.current?.focus();
   }, [universDemande]);
-  const section = (useLocation().state as { section?: string } | null)?.section;
-  // Venu du message unique (« Voir le réglage ») : la section Univers, sous les yeux.
+  const state: unknown = useLocation().state;
+  const section = typeof state === 'object' && state !== null && 'section' in state ? state.section : null;
+  // Venu du message unique (« Voir le réglage ») : la section Univers, sous les yeux, et le focus sur le choix en cours.
   useEffect(() => {
-    if (section === 'univers') universRef.current?.scrollIntoView({ block: 'start' });
+    if (section !== 'univers') return;
+    universRef.current?.scrollIntoView({ block: 'start' });
+    universRef.current?.querySelector<HTMLInputElement>('input:checked')?.focus();
   }, [section]);
+  // La confirmation fermée (changé ou annulé), le focus revient au choix en cours, jamais perdu.
+  const fermerConfirmation = () => {
+    setUniversDemande(null);
+    requestAnimationFrame(() => universRef.current?.querySelector<HTMLInputElement>('input:checked')?.focus());
+  };
 
   return (
     <>
@@ -244,12 +252,12 @@ export function SettingsPage() {
                     className="button primary"
                     onClick={() => {
                       update({ univers: universDemande });
-                      setUniversDemande(null);
+                      fermerConfirmation();
                     }}
                   >
                     {CONFIRMATION_UNIVERS.changer}
                   </button>
-                  <button type="button" className="button" onClick={() => setUniversDemande(null)}>
+                  <button type="button" className="button" onClick={fermerConfirmation}>
                     {CONFIRMATION_UNIVERS.annuler}
                   </button>
                 </div>
