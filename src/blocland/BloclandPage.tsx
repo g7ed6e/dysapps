@@ -23,6 +23,7 @@ import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
+import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { nextDestination } from './world/destination';
 import { islandState } from './world/islandState';
@@ -45,6 +46,7 @@ export function BloclandPage() {
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
   const destination = nextDestination(state);
+  const whale = useWhaleWord(state, here);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   return (
     <>
@@ -67,6 +69,8 @@ export function BloclandPage() {
           </Link>
         </p>
       </section>
+
+      {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
 
       {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
       <section className="panel home-resume" aria-label="Prochaine destination">

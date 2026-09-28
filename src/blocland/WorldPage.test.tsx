@@ -243,16 +243,23 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
   expect(screen.getByRole('dialog', { name: /Plaine des nombres/ })).toBeInTheDocument();
 });
 
-it('à la première arrivée dans un archipel, deux bulles d’accueil, une seule fois', () => {
+it('à la première arrivée dans un archipel, le mot de la baleine, en deux pages, une seule fois', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  const user = userEvent.setup();
   renderAt('/aventure');
   expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
-  expect(document.body.textContent).toContain('Bienvenue dans les Îles Brumeuses, l’archipel de 5e !');
-  // Déjà vu : plus de bulles.
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'archipel-5e': true, 'village-immersif': true }));
+  const word = await screen.findByRole('dialog', { name: 'Le mot de la baleine' }, { timeout: 3000 });
+  expect(word).toHaveTextContent('Te voilà dans les Îles Brumeuses');
+  await user.click(within(word).getByRole('button', { name: 'Suivant' }));
+  expect(word).toHaveTextContent('Le Bloc-Navire reste au port');
+  await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
+  expect(screen.queryByRole('dialog', { name: 'Le mot de la baleine' })).not.toBeInTheDocument();
+  // Déjà dit : la baleine ne le répète pas.
   document.body.innerHTML = '';
   renderAt('/aventure');
-  expect(document.body.textContent).not.toContain('Bienvenue dans les Îles Brumeuses');
+  await new Promise((r) => setTimeout(r, 1500));
+  expect(screen.queryByRole('dialog', { name: 'Le mot de la baleine' })).not.toBeInTheDocument();
 });
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et panneau) ; la croix ramène sur l’île du bonhomme', async () => {

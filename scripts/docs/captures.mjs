@@ -106,7 +106,7 @@ const COLLINES = { ...DONE6, blocland: { ...DONE6.blocland, village: { ...DONE6.
 
 const FOREST_QUEST = BIOMES.find((b) => b.id === 'foret').exercises[0].id;
 
-/** name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture. */
+/** name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce que la baleine a déjà dit. */
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
   { name: 'menu', state: MID, go: '/menu' },
@@ -122,6 +122,8 @@ const SHOTS = [
   { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
   { name: 'carte', state: MID, go: '/aventure/carte' },
   { name: 'archipels', state: MID, go: '/aventure/monde' },
+  // Le mot de la baleine : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
+  { name: 'baleine', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
   { name: 'ouvrages', state: MID, go: '/aventure/ferme', act: openFold('ouvrages') },
   { name: 'navire-chantier', state: MID, go: '/aventure/plaine', act: openFold('navire') },
   { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
@@ -257,7 +259,7 @@ async function take(shot) {
     // La partie s'écrit depuis une page statique du même site : l'appli, pas encore lancée, ne peut pas l'écraser.
     await page.goto(`${base}/icon.svg`);
     await page.evaluate(
-      ({ state, view, title, tutorial }) => {
+      ({ state, view, title, tutorial, whale }) => {
         localStorage.clear();
         sessionStorage.clear();
         if (!title) sessionStorage.setItem('dysapps:titre-vu', '1');
@@ -266,8 +268,10 @@ async function take(shot) {
         if (!tutorial) localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
         if (state?.blocland) localStorage.setItem('dysapps:blocland', JSON.stringify(state.blocland));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
+        // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
+        if (whale) localStorage.setItem('dysapps:baleine', JSON.stringify(whale));
       },
-      { state: shot.state ?? null, view: shot.view ?? '3d', title: Boolean(shot.title), tutorial: Boolean(shot.tutorial) },
+      { state: shot.state ?? null, view: shot.view ?? '3d', title: Boolean(shot.title), tutorial: Boolean(shot.tutorial), whale: shot.whale ?? null },
     );
     await page.goto(`${base}/#${shot.go}`);
     // Le monde 3D met quelques secondes à se construire (rendu logiciel, sans carte graphique).

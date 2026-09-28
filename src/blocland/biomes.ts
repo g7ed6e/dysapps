@@ -367,10 +367,10 @@ export const BIOMES: BiomeDef[] = [
   {
     id: 'plaine',
     name: 'Plaine des nombres',
-    module: 'Calcul mental',
+    module: 'Calcul et problèmes',
     subject: 'maths',
     classe: '6e',
-    description: 'Tables, compléments, doubles et moitiés, avec des aides visuelles toujours affichées.',
+    description: 'Tables, compléments, doubles et moitiés, puis les problèmes du port, avec des aides visuelles toujours affichées.',
     block: 'brique',
     guardian: 'le Hanneton de bronze',
     guardianSays: {
@@ -389,6 +389,8 @@ export const BIOMES: BiomeDef[] = [
         'Compte mes points par cinq : deux rangées de cinq, ça fait dix.',
         'Un nombre et son complément font toujours dix. Comme mes deux ailes.',
         'Ma maison est en brique. Chaque calcul en pose une.',
+        'Depuis mon brin d’herbe, je vois le port : un pont, un quai, un bateau. Tout ça se mesure.',
+        'Le tour du quai, je l’ai fait à pied : tous les côtés, un par un, sans raccourci.',
       ],
       home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
     },
@@ -396,6 +398,12 @@ export const BIOMES: BiomeDef[] = [
       { id: 'tables', title: 'Champ des tables', description: 'Une multiplication, et la grille de points pour la voir.', programme: ['c3.ma.nombres.faits-numeriques'] },
       { id: 'complements', title: 'Pont de dix', description: 'Trouve ce qui manque pour arriver à 10 ou à 100.', programme: ['c3.ma.nombres.calcul-mental'] },
       { id: 'doubles', title: 'Doubles et moitiés', description: 'Le double ou la moitié d’un nombre, en deux étapes.', programme: ['c3.ma.nombres.calcul-mental'] },
+      {
+        id: 'passeur',
+        title: 'Carnet du passeur',
+        description: 'Un pont, un quai, une traversée : lis le schéma, puis calcule la longueur, le tour ou l’heure.',
+        programme: ['c3.ma.nombres.problemes', 'c3.ma.grandeurs.perimetre', 'c3.ma.grandeurs.durees'],
+      },
     ],
   },
   {
@@ -506,7 +514,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Proportionnalité',
     subject: 'maths',
     classe: '5e',
-    description: 'Tableaux de proportionnalité, pourcentages, vitesses et échelles, avec le tableau toujours affiché.',
+    description: 'Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.',
     block: 'toile',
     guardian: 'le Colporteur',
     guardianSays: {
@@ -525,13 +533,20 @@ export const BIOMES: BiomeDef[] = [
         'Trois pommes, six euros. Une pomme ? Passe par un seul, toujours.',
         'Cinquante pour cent, c’est la moitié. Même pour les raisins.',
         'Mon échoppe est en toile. Chaque compte juste en tend un morceau.',
+        'Deux navires, une cargaison : compte d’abord les parts, puis ce que vaut une part.',
+        'Sur ma carte, un centimètre, c’est tout un bout de mer. J’ai vérifié… deux fois.',
       ],
       home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
     },
     exercises: [
-      { id: 'etals', title: 'Étals', description: 'Complète un tableau de proportionnalité.', programme: ['c4.ma.b.proportionnalite', 'c3.ma.nombres.proportionnalite'] },
+      {
+        id: 'etals',
+        title: 'Étals',
+        description: 'Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.',
+        programme: ['c4.ma.b.proportionnalite', 'c4.ma.b.ratio', 'c3.ma.nombres.proportionnalite'],
+      },
       { id: 'remises', title: 'Remises', description: 'Prends un pourcentage, puis applique une hausse ou une baisse.', programme: ['c4.ma.b.pourcentages-echelles', 'c3.ma.nombres.proportionnalite'] },
-      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle'] },
+      { id: 'balances', title: 'Balances', description: 'Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction.', programme: ['c4.ma.c.grandeurs-composees', 'c4.ma.b.pourcentages-echelles', 'c3.ma.espace.echelle'] },
     ],
   },
   {
@@ -767,7 +782,7 @@ export const BIOMES: BiomeDef[] = [
       home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
     },
     exercises: [
-      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
+      { id: 'pythagore', title: 'Pythagore', description: 'L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât.', programme: ['c4.ma.d.pythagore', 'c4.ma.a.carres-racine'] },
       { id: 'thales', title: 'Thalès', description: 'Une longueur manquante avec deux droites parallèles.', programme: ['c4.ma.d.thales'] },
       { id: 'trigo', title: 'Trigo', description: 'Cosinus, sinus ou tangente : le bon rapport.', programme: ['c4.ma.d.trigonometrie'] },
     ],

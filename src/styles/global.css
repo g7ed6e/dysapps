@@ -3188,7 +3188,8 @@ button.app-card:active {
 .world-overlay-bottom > * {
   pointer-events: auto;
 }
-.world-overlay-bottom .tutorial {
+.world-overlay-bottom .tutorial,
+.world-overlay-bottom .whale-word {
   margin: 0 auto;
   max-width: 26rem;
 }
@@ -3675,6 +3676,108 @@ button.island-quest:active {
   border: none;
   padding: 0;
   background: transparent;
+}
+
+/* ===== Schémas des problèmes situés (pont, quai, traversée) ===== */
+.scene-figure svg {
+  width: 100%;
+  max-width: 26rem;
+  display: block;
+  margin: 0 auto;
+}
+.scene-figure text {
+  font-family: var(--dys-font, inherit);
+  font-size: 18px;
+  fill: currentColor;
+}
+.scene-figure .pt {
+  font-weight: 700;
+}
+.scene-figure .ask {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.scene-figure .dim,
+.scene-figure .tick {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.scene-figure .dim-head {
+  fill: currentColor;
+}
+.scene-figure .cliff,
+.scene-figure .island {
+  fill: color-mix(in srgb, var(--green) 35%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .water {
+  fill: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+.scene-figure .deck,
+.scene-figure .quay {
+  fill: color-mix(in srgb, var(--sand) 55%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .pile {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.scene-figure .fence {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.scene-figure .route {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-dasharray: 8 7;
+}
+.scene-figure .boat {
+  fill: var(--ink);
+}
+.scene-figure .map {
+  fill: color-mix(in srgb, var(--cyan) 22%, var(--surface));
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .cartouche,
+.scene-figure .crate {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.scene-figure .crate {
+  fill: color-mix(in srgb, var(--sand) 55%, var(--surface));
+}
+.scene-figure .brace,
+.scene-figure .right-mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.scene-figure .ground {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.scene-figure .mast {
+  fill: var(--ink);
+}
+.scene-figure .cable {
+  stroke: var(--violet);
+  stroke-width: 3;
+}
+:root[data-theme="contraste"] .scene-figure .cliff,
+:root[data-theme="contraste"] .scene-figure .island,
+:root[data-theme="contraste"] .scene-figure .water,
+:root[data-theme="contraste"] .scene-figure .deck,
+:root[data-theme="contraste"] .scene-figure .quay,
+:root[data-theme="contraste"] .scene-figure .map,
+:root[data-theme="contraste"] .scene-figure .crate {
+  fill: var(--surface);
 }
 
 /* ===== Aides de 3e : figures et barres ===== */
@@ -4664,4 +4767,49 @@ button.island-quest {
 }
 .archipelago-map-place.mist .archipelago-map-label {
   fill: var(--muted);
+}
+
+/* ===== Le mot de la baleine (Archipéo, lot 5) : rare, aux grandes étapes, opaque et uni comme les autres panneaux ===== */
+.whale-word {
+  margin-bottom: 1.2rem;
+  border-color: var(--primary-bg);
+}
+.whale-word-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+.whale-icon {
+  width: 2.2rem;
+  height: auto;
+  flex: none;
+  color: var(--primary-bg);
+}
+.whale-word-text {
+  margin: 0 0 0.8rem;
+  max-width: none;
+}
+.whale-word-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+/* Les points de page (deux pages à l'arrivée) : la page en cours est pleine, les autres creuses. */
+.whale-word-dots {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-right: auto;
+}
+.whale-word-dots span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+.whale-word-dots span.on {
+  background: var(--primary-bg);
+  border-color: var(--primary-bg);
 }
