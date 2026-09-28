@@ -1,8 +1,12 @@
-import { BIOMES, BLOCKS } from '../biomes';
-import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, type BloclandState } from '../engine';
-import { PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
+import { BIOMES, BLOCKS, type BiomeId } from '../biomes';
+import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type BloclandState } from '../engine';
+import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
+import { toutConstruit } from './budget';
+import { dockOrigin } from './harbour';
+import { MONUMENTS } from './monuments';
+import { VEHICLE_STAGES } from './vehicle';
 import { groundHeight, islandOrigin, worldCubes } from './terrain';
-import { ARCHIPELAGO_IDS } from './map';
+import { ARCHIPELAGO_IDS, islandDef } from './map';
 
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
   // Le décor sans les créatures (elles se promènent) et sans les fantômes.
@@ -126,4 +130,26 @@ it('écrit une ligne de journal quand un plan est terminé', () => {
     if (r.ok) state = r.state;
   }
   expect(state.village.journal).toEqual([{ day: '2026-09-25', plan: plan.id }]);
+});
+
+describe('les origines figées des chantiers (séparation du jeu et du rendu, J1)', () => {
+  it('égales au calcul depuis le quai et l’îlot : les clés des sauvegardes ne changent pas', () => {
+    for (const port of Object.keys(ORIGINE_DU_QUAI) as BiomeId[]) {
+      const def = islandDef(port);
+      const o = dockOrigin(port);
+      expect(ORIGINE_DU_QUAI[port], port).toEqual({ x: o.x - def.core.x, y: o.y - def.core.y, z: o.z - def.altitude - 1 });
+    }
+    expect(Object.keys(ORIGINE_DU_QUAI).sort()).toEqual([...new Set(VEHICLE_STAGES.map((s) => s.biome))].sort());
+    for (const m of MONUMENTS) {
+      const def = islandDef(m.biome);
+      expect(ORIGINE_DES_MONUMENTS[m.id], m.id).toEqual({ x: m.islet.x + 1 - def.core.x, y: m.islet.y + 1 - def.core.y, z: 0 });
+    }
+    expect(Object.keys(ORIGINE_DES_MONUMENTS).sort()).toEqual(MONUMENTS.map((m) => m.id).sort());
+  });
+
+  it('une sauvegarde tout construite, relue, garde chacune de ses cases', () => {
+    const { progress, village } = toutConstruit();
+    const relue = sanitizeState(JSON.parse(JSON.stringify({ ...EMPTY_STATE, progress, village })));
+    for (const [id, keys] of Object.entries(village.plans)) expect(relue.village.plans[id], id).toEqual(keys);
+  });
 });

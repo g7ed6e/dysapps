@@ -3,13 +3,13 @@
 // (baies, caps), avec ses collines, ses pics, ses lacs, sa végétation. Les archipels occupent des bandes de y disjointes :
 // les Premiers Rivages (6e) au niveau de la mer, les Îles Brumeuses (5e), les Anciens Ateliers (4e) et les Îles du Ciel (3e),
 // chacun à son altitude, qui est une ambiance : les Îles du Ciel flottent au-dessus des nuages.
-import { BIOMES, type BiomeId, type Classe } from '../biomes';
+import type { BiomeId } from '../biomes';
+import { archipelagoOfIsland, type ArchipelagoId } from './archipels';
+
+export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
 
 export type RegionId = 'basses-terres' | 'marais' | 'feu' | 'montagne' | 'hauteurs';
 export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
-
-/** Un archipel par classe : la scène 3D, la Carte et la mer sont celles d'un archipel. */
-export type ArchipelagoId = Classe;
 
 export interface IslandDef {
   id: BiomeId;
@@ -74,16 +74,6 @@ export const MAP: IslandDef[] = [
   { id: 'studio', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
   { id: 'chateau', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
 ];
-
-/** La classe (l'archipel) d'une île. */
-export function archipelagoOfIsland(id: BiomeId): ArchipelagoId {
-  const biome = BIOMES.find((b) => b.id === id);
-  if (!biome) throw new Error(`Île inconnue : ${id}`);
-  return biome.classe;
-}
-
-/** Les archipels, du premier (le départ) au dernier. */
-export const ARCHIPELAGO_IDS: ArchipelagoId[] = ['6e', '5e', '4e', '3e'];
 
 /** Les îles d'un archipel, dans l'ordre de MAP. */
 export function mapOf(a: ArchipelagoId): IslandDef[] {
