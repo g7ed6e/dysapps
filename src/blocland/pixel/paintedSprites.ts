@@ -1,12 +1,15 @@
 // Le décor de la 2D peinte (lot R7), derrière `?rendu=archipeo` : les mêmes formes que les sprites en pixels
 // (./sprites.ts : même taille, même pied, même ombre), peintes en deux ou trois aplats de la matière (world/palette.ts) :
 // clair en haut à gauche, ombre bleutée en bas à droite, un contour dans la teinte sombre de la matière (jamais noir).
-// Aucun grain. Les personnages (bonhomme, créatures, Gardiens) ne sont pas ici : ils restent ceux de ./characters.ts.
+// Aucun grain. Les personnages (bonhomme, créatures, Gardiens en sentinelles, lot R6) sont rastérisés depuis leurs
+// modèles en facettes (./personnages.ts) ; leur canvas est fait ici (`spriteDePersonnage`), par palier de lumière.
 import { mixColor } from '../world/daylight';
 import type { TextureKind } from '../world/pixels';
 import { multiplie, type Faces } from '../world/palette';
 import { NUIT_OCEAN, depuisHex, rgba, type Peinture } from './painted';
 import type { SpriteKind } from './sprites';
+import type { Sprite } from './characters';
+import type { RasterDePersonnage } from './personnages';
 
 /** Les trois aplats et le contour d'une matière. */
 export interface Tons {
@@ -275,4 +278,39 @@ export function drawPaintedSprite(ctx: CanvasRenderingContext2D, kind: SpriteKin
   if (shadow && def.shadow) drawPaintedShadow(ctx, P, sx + s, sy, (def.shadow / 2) * s, 3 * s);
   const img = spriteCanvas(kind, muted, P);
   if (img) ctx.drawImage(img, Math.round(sx - def.ax * s), Math.round(sy - def.ay * s), Math.round(def.w * s), Math.round(def.h * s));
+}
+
+const personnages = new Map<string, Sprite | null>();
+
+/** La clé d'un personnage peint : lequel (et sa pose), l'archipel et le palier de lumière. */
+export const cleDuPersonnage = (cle: string, P: Peinture) => `${cle}:${P.cle}`;
+
+/**
+ * Le sprite d'un personnage peint (lot R6) : son raster (./personnages.ts) mis dans un canvas, une fois par personnage,
+ * pose et palier de lumière (la nuit en fait un autre). Le pied du sprite est celui du modèle.
+ */
+export function spriteDePersonnage(cle: string, P: Peinture, raster: () => RasterDePersonnage): Sprite | null {
+  const k = cleDuPersonnage(cle, P);
+  if (personnages.has(k)) return personnages.get(k)!;
+  const r = raster();
+  const canvas = document.createElement('canvas');
+  canvas.width = r.largeur;
+  canvas.height = r.hauteur;
+  const ctx = canvas.getContext('2d');
+  let out: Sprite | null = null;
+  if (ctx) {
+    const img = ctx.createImageData(r.largeur, r.hauteur);
+    for (let p = 0; p < r.pixels.length; p++) {
+      const c = r.pixels[p];
+      if (c < 0) continue;
+      img.data[p * 4] = (c >> 16) & 255;
+      img.data[p * 4 + 1] = (c >> 8) & 255;
+      img.data[p * 4 + 2] = c & 255;
+      img.data[p * 4 + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    out = { canvas, w: r.largeur, h: r.hauteur, ax: r.ax, ay: r.ay };
+  }
+  personnages.set(k, out);
+  return out;
 }
