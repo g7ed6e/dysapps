@@ -21,7 +21,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -42,7 +43,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -63,7 +65,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -84,7 +87,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -94,13 +98,13 @@
       "prompt": "Un « autographe », c’est …",
       "spoken": "Un « autographe », c’est  (mot manquant) ",
       "choices": [
-        "une signature écrite soi-même",
+        "une signature écrite de sa main",
         "une photo de soi",
         "un dessin automatique"
       ],
-      "answer": "une signature écrite soi-même",
+      "answer": "une signature écrite de sa main",
       "hint": "auto- = soi-même, -graphe = écrire.",
-      "explanation": "auto- (soi-même) + -graphe (écrire) : une signature.",
+      "explanation": "auto- (soi-même) + -graphe (écrire) : une signature écrite de sa main.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -109,7 +113,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -130,7 +135,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -151,7 +157,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }
@@ -172,7 +179,8 @@
             "télé- = loin (téléphone, télévision).",
             "-phone = son, voix. -graphe = écrire. -scope = regarder.",
             "bio- = vie. géo- = terre. -logie = étude, science.",
-            "auto- = soi-même. poly- = plusieurs. micro- = petit."
+            "auto- = soi-même. poly- = plusieurs. micro- = petit.",
+            "thermo- = chaleur. -mètre = mesure. -gone = angle."
           ]
         }
       }

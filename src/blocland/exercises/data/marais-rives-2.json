@@ -87,12 +87,12 @@
     },
     {
       "key": "marais-rives-2-4",
-      "prompt": "Quel temps est-ce ? « Il courut vers la rivière. »",
-      "spoken": "Quel temps est-ce ? « Il courut vers la rivière. »",
-      "choices": ["passé simple", "imparfait", "passé composé"],
-      "answer": "passé simple",
-      "hint": "-ut : passé simple de courir.",
-      "explanation": "« courut » se termine par -ut : passé simple.",
+      "prompt": "Il … vers la rivière.",
+      "spoken": "Il  (mot manquant)  vers la rivière.",
+      "choices": ["courut", "courait", "court"],
+      "answer": "courut",
+      "hint": "Courir, il : -ut.",
+      "explanation": "« courut » : passé simple, terminaison -ut.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -107,12 +107,12 @@
     },
     {
       "key": "marais-rives-2-5",
-      "prompt": "Quel temps est-ce ? « Les oiseaux chantaient. »",
-      "spoken": "Quel temps est-ce ? « Les oiseaux chantaient. »",
-      "choices": ["imparfait", "passé simple", "futur"],
-      "answer": "imparfait",
-      "hint": "-aient : imparfait.",
-      "explanation": "« chantaient » se termine par -aient : imparfait.",
+      "prompt": "Au matin, les chevaliers … la route.",
+      "spoken": "Au matin, les chevaliers  (mot manquant)  la route.",
+      "choices": ["prirent", "prenaient", "prennent"],
+      "answer": "prirent",
+      "hint": "Prendre, ils : -irent.",
+      "explanation": "« prirent » : passé simple, terminaison -irent.",
       "aid": {
         "kind": "rule-card",
         "props": {

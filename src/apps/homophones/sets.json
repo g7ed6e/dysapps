@@ -202,7 +202,7 @@
     "hint": "« ses » = les siens, les siennes. « ces » montre quelque chose : on peut ajouter « -là ».",
     "rules": {
       "ses": "« ses » = les siens, les siennes : c’est à lui ou à elle.",
-      "ces": "« ces » montre quelque chose : on peut dire « ces … -là »."
+      "ces": "« ces » montre quelque chose : on peut ajouter « -là » après le nom (ces nuages-là)."
     },
     "sentences": [
       {
@@ -218,7 +218,7 @@
         "answer": "ses"
       },
       {
-        "text": "Qui a laissé … chaussures ici ?",
+        "text": "À qui sont … chaussures-là ?",
         "answer": "ces"
       },
       {
@@ -226,7 +226,7 @@
         "answer": "ses"
       },
       {
-        "text": "Tu as vu … vidéos ? Elles sont drôles.",
+        "text": "J’adore … vidéos-là : elles sont drôles.",
         "answer": "ces"
       },
       {
@@ -297,7 +297,7 @@
     ],
     "hint": "Essaie avec « je me » ou « tu te ». Si ça marche, c’est « se ».",
     "rules": {
-      "se": "« se » va avec un verbe : on peut dire « je me… », « tu te… ».",
+      "se": "« se » va avec un verbe : on peut dire « je me lève », « tu te lèves ».",
       "ce": "« ce » accompagne un nom ou veut dire « cela »."
     },
     "sentences": [
@@ -445,7 +445,7 @@
     "hint": "« quand » = lorsque. « quant à » = en ce qui concerne. « qu’en » = que + en.",
     "rules": {
       "quand": "« quand » indique un moment : on peut dire « lorsque ».",
-      "quant": "« quant » s’emploie toujours avec « à » ou « aux » : « en ce qui concerne ».",
+      "quant": "« quant » s’emploie toujours avec « à », « au » ou « aux » : « en ce qui concerne ».",
       "qu’en": "« qu’en » = « que » + « en »."
     },
     "sentences": [
@@ -589,9 +589,9 @@
       "c’est",
       "s’est"
     ],
-    "hint": "« s’est » va avec un verbe comme « se lever » : on peut dire « je me suis… ». « c’est » = « cela est ».",
+    "hint": "« s’est » va avec un verbe comme « se lever » : il s’est levé, je me suis levé. « c’est » = « cela est ».",
     "rules": {
-      "s’est": "« s’est » : verbe pronominal au passé (on peut dire « je me suis… »).",
+      "s’est": "« s’est » : verbe pronominal au passé composé (il s’est levé, je me suis levé).",
       "c’est": "« c’est » = « cela est »."
     },
     "sentences": [

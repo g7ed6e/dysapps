@@ -117,12 +117,12 @@
     },
     {
       "key": "carrefour-aiguillage-2-5",
-      "prompt": "Je préfère … le bleu.",
-      "spoken": "Je préfère  (mot manquant)  le bleu.",
+      "prompt": "Prends une pomme … qu’un gâteau.",
+      "spoken": "Prends une pomme  (mot manquant)  qu’un gâteau.",
       "choices": ["plus tôt", "plutôt", "plus tot"],
       "answer": "plutôt",
       "hint": "« plutôt » = de préférence.",
-      "explanation": "Je préfère plutôt le bleu : de préférence.",
+      "explanation": "Prends une pomme plutôt qu’un gâteau : de préférence.",
       "aid": {
         "kind": "rule-card",
         "props": {

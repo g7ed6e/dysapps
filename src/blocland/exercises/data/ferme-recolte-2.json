@@ -63,11 +63,11 @@
     },
     {
       "key": "sont-arrives",
-      "prompt": "Ils sont arriv… en retard.",
-      "spoken": "Ils sont arriv(terminaison) en retard.",
+      "prompt": "Il est arriv… en retard.",
+      "spoken": "Il est arriv(terminaison) en retard.",
       "choices": ["é", "er", "ez"],
       "answer": "é",
-      "rule": "Après « sont », on peut dire « vendu » : c’est -é."
+      "rule": "Après « est », on peut dire « vendu » : c’est -é."
     }
   ],
   "feedback": {

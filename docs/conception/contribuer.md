@@ -55,6 +55,7 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 | [Cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), `design/archipeo/` | Directeur artistique | La cible de la migration et ce qui reste à décider |
 | [Cadrage du game design de Blocland](cadrage-blocland.md), [Style](style.md) | Directeur artistique | L’existant à faire migrer ; l’artiste technique 3D met `style.md` à jour quand un lot visuel est construit |
 | [Architecture](architecture.md), partie rendu (`world/`, `three/`, `pixel/`) | Artiste technique 3D | Comment le monde est dessiné, en 3D et en 2D |
+| [Séparer le jeu du rendu](separation-jeu-rendu.md) | Ceux qui écrivent le code ; l’artiste technique 3D pour la partie rendu | Le plan qui isole la logique du jeu de ses rendus, étape par étape |
 | Le manuel (`docs/manuel/`) | Celui qui change l’écran | Ce que l’élève voit aujourd’hui |
 | Les pages du contenu pédagogique | Le générateur | Produites depuis les données du jeu, jamais écrites à la main |
 

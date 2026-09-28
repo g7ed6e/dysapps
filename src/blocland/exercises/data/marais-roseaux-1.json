@@ -95,7 +95,7 @@
       "spoken": "Je souhaite qu’elle  (mot manquant)  .",
       "choices": ["vienne", "vient", "viendra"],
       "answer": "vienne",
-      "hint": "Formé sur « ils viennent » : que elle vienne.",
+      "hint": "Formé sur « ils viennent » : qu’elle vienne.",
       "explanation": "Après « je souhaite que » : subjonctif, « vienne ».",
       "aid": {
         "kind": "rule-card",
@@ -112,8 +112,8 @@
     },
     {
       "key": "marais-roseaux-1-5",
-      "prompt": "Pour que tu … , il faut t’entraîner.",
-      "spoken": "Pour que tu  (mot manquant)  , il faut t’entraîner.",
+      "prompt": "Pour que tu …, il faut t’entraîner.",
+      "spoken": "Pour que tu  (mot manquant) , il faut t’entraîner.",
       "choices": ["réussisses", "réussis", "réussiras"],
       "answer": "réussisses",
       "hint": "« Pour que » + subjonctif : que tu réussisses.",
@@ -154,8 +154,8 @@
     },
     {
       "key": "marais-roseaux-1-7",
-      "prompt": "Avant que vous … , fermez la porte.",
-      "spoken": "Avant que vous  (mot manquant)  , fermez la porte.",
+      "prompt": "Avant que vous …, je vous donne mon adresse.",
+      "spoken": "Avant que vous  (mot manquant) , je vous donne mon adresse.",
       "choices": ["partiez", "partez", "partirez"],
       "answer": "partiez",
       "hint": "« Avant que » + subjonctif : que vous partiez.",

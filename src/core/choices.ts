@@ -23,6 +23,64 @@ export function shuffled<T>(list: readonly T[], rng: Rng): T[] {
   return out;
 }
 
+/** Les règles d'un tirage de réponses chiffrées (voir `drawChoices`). */
+export interface DrawOptions {
+  /** L'écart d'un voisin (1 pour des entiers, 100 pour des millièmes quand on vise le dixième…). */
+  step?: number;
+  /** Un piège acceptable (positif, pas une cote déjà affichée…). */
+  ok?: (t: number) => boolean;
+  /** Un voisin acceptable ; par défaut, comme un piège. */
+  neighbourOk?: (t: number) => boolean;
+  /**
+   * `false` : aucun voisin (10⁵ n'a pas de « voisin » plausible, 100 001 n'est pas une erreur d'élève). La place de la
+   * réponse est alors tirée parmi celles que les pièges permettent.
+   */
+  neighbours?: boolean;
+}
+
+/**
+ * La bonne réponse et trois pièges, rangés dans l'ordre croissant, la place de la réponse tirée au hasard (1re à
+ * 4e) : on prend dans le vivier des vrais pièges autant de pièges plus petits que la place le demande, et les autres
+ * plus grands. S'il en manque d'un côté, on y met des voisins proches (un, deux ou trois crans de `step`), puis, s'il
+ * le faut, les pièges restants de l'autre côté. Aucun piège n'est inventé loin de la réponse.
+ * Pour les exercices générés, qui gardent ces choix tels quels pendant la partie (voir `blocland/exercises/shuffle.ts`).
+ */
+export function drawChoices(
+  answer: number,
+  traps: readonly number[],
+  rng: Rng,
+  { step = 1, ok = () => true, neighbourOk = ok, neighbours = true }: DrawOptions = {},
+): number[] {
+  // Arrondi qui efface les erreurs de virgule flottante (0,1 × 3).
+  const clean = (v: number) => Number(v.toFixed(6));
+  const pool = [...new Set(traps.map(clean))].filter((t) => Number.isFinite(t) && t !== answer && ok(t));
+  const below = shuffled(
+    pool.filter((t) => t < answer),
+    rng,
+  );
+  const above = shuffled(
+    pool.filter((t) => t > answer),
+    rng,
+  );
+  // Sans voisins, une place que les pièges permettent d'atteindre.
+  const lo = neighbours ? 0 : Math.max(0, 3 - above.length);
+  const hi = neighbours ? 3 : Math.max(lo, Math.min(3, below.length));
+  const wanted = lo + Math.floor(rng() * (hi - lo + 1));
+  const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
+  const accepted = neighbours ? neighbourOk : () => false;
+  const add = (t: number, accept: (t: number) => boolean) => {
+    if (picked.length < 3 && Number.isFinite(t) && t !== answer && !picked.includes(t) && accept(t)) picked.push(t);
+  };
+  const missing = (side: number) =>
+    side < 0 ? wanted - picked.filter((t) => t < answer).length : 3 - wanted - picked.filter((t) => t > answer).length;
+  // Le côté voulu d'abord : des voisins proches.
+  for (const side of [-1, 1]) for (let d = 1; d <= 3 && missing(side) > 0; d++) add(clean(answer + side * d * step), accepted);
+  // Puis les vrais pièges restants, de l'autre côté ; en dernier recours, des voisins un peu plus loin.
+  for (const t of [...below.slice(wanted), ...above.slice(3 - wanted)]) add(t, () => true);
+  for (let d = 1; picked.length < 3 && d <= 50; d++) for (const side of [-1, 1]) add(clean(answer + side * d * step), accepted);
+  return [answer, ...picked].sort((a, b) => a - b);
+}
+
 interface Parsed {
   value: number;
   decimals: number;
@@ -69,8 +127,11 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
   const round = (v: number) => Number(v.toFixed(decimals));
   const allowNegative = values.some((v) => v < 0);
   const allowZero = allowNegative || values.some((v) => v === 0);
+  // Une unité qui est un nom au pluriel (« caisses ») : pas de « 1 caisses ».
+  const countNoun = /\p{L}{3,}s$/u.test(unit.trim());
   const next = [...values];
-  const valid = (v: number) => (allowNegative || v > 0 || (allowZero && v === 0)) && v !== answer && !next.includes(v);
+  const valid = (v: number) =>
+    (allowNegative || v > 0 || (allowZero && v === 0)) && !(countNoun && Math.abs(v) <= 1) && v !== answer && !next.includes(v);
   const step = 10 ** -decimals;
   /** Le piège passé de l'autre côté : à la même distance, sinon un cran plus loin, sinon au rapport inverse (×2 → ÷2). */
   const mirror = (v: number): number | undefined => {

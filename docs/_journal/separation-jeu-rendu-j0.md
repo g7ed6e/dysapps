@@ -1,0 +1,1 @@
+Conception : première étape de la séparation du jeu et du rendu. Des tests prennent l’empreinte de tout ce que le monde en cases calcule (cubes, sol, créatures, navire, trajets, ouvrages, cases des plans) et vérifient que les règles du jeu ne dépendent pas du dessin ; les étapes suivantes pourront déplacer le code en prouvant que rien ne change. Rien ne change dans l’application.

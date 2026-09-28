@@ -24,7 +24,7 @@ function expected(id: string, prompt: string, choices: string[]): string {
     const pos = RANK[m[2]];
     return pos < 0 ? int[int.length + pos] : dec[pos];
   }
-  if ((m = p.match(/^Quel est le plus grand : ([\d,]+) ou ([\d,]+) \?$/))) {
+  if ((m = p.match(/^Quel est le plus grand : ([\d,]+) ou ([\d,]+) \? Ou sont-ils égaux \?$/))) {
     const [a, b] = [parseDecimal(m[1]), parseDecimal(m[2])];
     return a === b ? choices.find((c) => !/\d/.test(c))! : a > b ? m[1] : m[2];
   }

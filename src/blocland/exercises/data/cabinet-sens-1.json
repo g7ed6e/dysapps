@@ -107,11 +107,11 @@
     },
     {
       "key": "cabinet-sens-1-5",
-      "prompt": "« Casser sa tirelire » : quel sens ?",
-      "spoken": "« Casser sa tirelire » : quel sens ?",
+      "prompt": "« Il a cassé un verre » : quel sens ?",
+      "spoken": "« Il a cassé un verre » : quel sens ?",
       "choices": ["propre", "figuré"],
       "answer": "propre",
-      "hint": "On casse vraiment l’objet.",
+      "hint": "On casse vraiment le verre.",
       "explanation": "Action réelle et concrète : sens propre.",
       "aid": {
         "kind": "rule-card",
