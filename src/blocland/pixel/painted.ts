@@ -6,7 +6,7 @@
 import type { VoxelCube } from '../Voxel';
 import { mixColor } from '../world/daylight';
 import type { ArchipelagoId, Ground } from '../world/map';
-import { MATIERES, PALETTES, cielDe, couleurDeMatiere, couleurDuSol, luminance, multiplie, type Ciel, type Couleur, type Faces } from '../world/palette';
+import { MATIERES, cielDe, couleurDeMatiere, couleurDuSol, deNuit, luminance, multiplie, type Ciel, type Couleur, type Faces } from '../world/palette';
 import type { TextureKind } from '../world/pixels';
 import { FROID, FROID_SOUS, bruit } from '../world/style';
 import { CHUNK, type TileMap } from './oblique';
@@ -116,13 +116,6 @@ export interface Peinture {
   pied(c: Couleur): Couleur;
   /** Le haut d'une falaise, sous la lèvre : plus clair. */
   levre(c: Couleur): Couleur;
-}
-
-/** Une couleur sans matière, la nuit : sous la lune, relevée vers l'horizon de nuit (comme les surfaces de la palette). */
-export function deNuit(a: ArchipelagoId, c: Couleur, light: number): Couleur {
-  const n = PALETTES[a].nuit;
-  const nuit = mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3);
-  return mixColor(nuit, c, Math.min(1, Math.max(0, light)));
 }
 
 /**

@@ -306,17 +306,22 @@ export function multiplie(a: Couleur, b: Couleur): Couleur {
   return pack([(x[0] * y[0]) / 255, (x[1] * y[1]) / 255, (x[2] * y[2]) / 255]);
 }
 
-/** La nuit sur une surface : sous la lune, puis relevée vers l'horizon de nuit, pour rester un bleu, jamais un noir. */
-function deNuit(a: ArchipelagoId, c: Couleur): Couleur {
+/**
+ * Une couleur à un moment du jour, entre la nuit (0) et le jour (1) : la nuit, sous la lune, puis relevée vers l'horizon
+ * de nuit, pour rester un bleu, jamais un noir. La même pour la 3D (les surfaces de la palette) et la 2D peinte (les
+ * couleurs sans matière, pixel/painted.ts).
+ */
+export function deNuit(a: ArchipelagoId, c: Couleur, light = 0): Couleur {
   const n = PALETTES[a].nuit;
-  return mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3);
+  const nuit = mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3);
+  return mixColor(nuit, c, Math.min(1, Math.max(0, light)));
 }
 
 function surface(a: ArchipelagoId, f: Faces, light: number, lumineuse = false): Faces {
   const [teinte, force] = PALETTES[a].voile;
   const jour = (c: Couleur) => mixColor(c, teinte, force);
   const l = Math.min(1, Math.max(0, light));
-  const at = (c: Couleur) => (lumineuse ? jour(c) : mixColor(deNuit(a, jour(c)), jour(c), l));
+  const at = (c: Couleur) => (lumineuse ? jour(c) : deNuit(a, jour(c), l));
   return { dessus: at(f.dessus), cote: at(f.cote) };
 }
 
