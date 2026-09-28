@@ -12,6 +12,8 @@ import { Syllabified } from '../components/Syllabified';
 import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais'];
 
@@ -31,13 +33,14 @@ export function HomePage() {
   const destination = nextDestination(state);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.village.bridges).length;
+  const univers = UNIVERS[useUnivers()];
 
   return (
     <>
       <section className="hero hero-compact home-identity">
-        <h1 className="hero-title">Archipéo</h1>
+        <h1 className="hero-title">{univers.nom}</h1>
         <p className="hero-text">
-          <Syllabified text="Le savoir construit ton monde." />
+          <Syllabified text={univers.phrase} />
         </p>
         {firstTime && (
           <p className="hero-text">

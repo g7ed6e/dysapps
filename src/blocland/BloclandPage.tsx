@@ -28,6 +28,8 @@ import { ArchipelagoMap } from './ArchipelagoMap';
 import { nextDestination } from './world/destination';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -42,6 +44,7 @@ function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], c
 
 /** Carte de Blocland en vue simple : les quatre archipels, un par classe, et leurs îles. */
 export function BloclandPage() {
+  const univers = useUnivers();
   const { state } = useBlocland();
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
@@ -55,7 +58,7 @@ export function BloclandPage() {
       </Link>
       <section className="hero hero-blocland">
         <p className="hero-kicker">Aventure</p>
-        <h1 className="hero-title">Archipéo</h1>
+        <h1 className="hero-title">{UNIVERS[univers].nom}</h1>
         <p className="hero-text">
           <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis le Bloc-Navire t’emmène d’archipel en archipel." />
         </p>

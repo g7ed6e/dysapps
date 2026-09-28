@@ -7,7 +7,7 @@ Elle est tirée de deux états du dépôt :
 - **Blocland juste avant le lot 1** d’Archipéo, c’est-à-dire le parent de `07bb03a` (`git show 07bb03a^:<fichier>`) ;
 - **l’état actuel**, après les lots 1 à 5.
 
-L’étiquette git `blocland-reference` sera posée juste avant le lot 6. Elle fera foi pour le dessin, car `docs/conception/style.md` sera réécrit pour Archipéo. Cette fiche est à revoir à ce moment-là.
+L’étiquette git `blocland-reference` est posée sur `031b029`, le dernier commit de `main` avant le lot 6. Elle fait foi pour le dessin, car `docs/conception/style.md` sera réécrit pour Archipéo.
 
 ## 1. Les noms
 
@@ -36,6 +36,8 @@ Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocl
 | Bulles d’arrivée en 5e et en 4e | « Bienvenue dans les Collines du Large… quêtes, blocs, plans, Gardiens. » ; « Bienvenue dans les Monts de Feu… Ici, le haut-fourneau de la Forge chauffe jour et nuit. » | les nouveaux noms, « missions », et en 4e « les vieux ateliers attendent qu’on les rallume ». Ces premières bulles ne sont plus affichées depuis le lot 5 (le mot de la baleine les remplace) | `src/blocland/arrivals.ts`, `src/blocland/world/whale.ts` |
 | Étapes du Bloc-Navire | « … les Collines du Large t’attendent. » ; « … les Monts de Feu t’attendent. » | « … les Îles Brumeuses t’attendent. » ; « … les Anciens Ateliers t’attendent. » | `src/blocland/world/vehicle.ts` |
 | Monuments de 6e et de 4e | « … toutes les îles des Basses Terres. » (grand moulin) ; « Tous les Monts de Feu viendront au spectacle. » (amphithéâtre) | « … toutes les îles des Premiers Rivages. » ; « Tout le monde des Anciens Ateliers viendra au spectacle. » | `src/blocland/world/monuments.ts` |
+
+**Au lot 6** (fil A, derrière `UNIVERS_OUVERT`, donc visibles à la bascule seulement), quatre de ces textes reviennent dans Blocland, avec les mots validés par le directeur artistique (`src/core/univers.ts`) : le titre « Blocland » et sa phrase « Chaque bloc construit ton monde. » (écran titre et menu), le nom de l’aventure (titre de la vue simple, retours de l’école et des monuments), « Carte de Blocland » et « Bienvenue à Blocland ! ». L’écran titre garde l’icône de l’application. Le reste de ce tableau attend U4.
 
 Les autres « Blocland » remplacés par « Archipéo » au lot 1 :
 
@@ -112,4 +114,4 @@ Selon univers.md, §4 :
 À examiner, sans décision prise ici :
 
 - **« Knight »**, la créature du château d’anglais, porte un nom anglais. Il est à vérifier à l’oreille : la voix française le lit-elle bien, ou faut-il la voix anglaise (univers.md, §4.1) ?
-- **« Sans le drapeau `?rendu=archipeo` »** (§3) : cette mention est à revoir quand le réglage « Univers » remplacera le drapeau (U3).
+- **« Sans le drapeau `?rendu=archipeo` »** (§3) : à la bascule du lot 6, cette mention devient « quand l’univers choisi est Blocland » (le réglage « Univers » choisit le rendu, `src/blocland/rendu.ts`).

@@ -7,12 +7,15 @@ import { canLaunch } from './engine';
 import { VoyagePanel } from './VoyagePanel';
 import { ARCHIPELAGOS, getArchipelago, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
 import { stageTo } from './world/vehicle';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 /**
  * Le voyage en vue simple : `#/aventure/voyage/:vers` (la classe de l'archipel d'arrivée). Un premier voyage largue les
  * amarres (le voyage reste fait) ; vers un archipel déjà atteint, le bonhomme y va simplement. Puis le port d'arrivée.
  */
 export function VoyagePage() {
+  const univers = useUnivers();
   const { vers } = useParams();
   const navigate = useNavigate();
   const { state, launch, moveTo } = useBlocland();
@@ -34,7 +37,7 @@ export function VoyagePage() {
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte d’Archipéo
+        <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <VoyagePanel to={to} back={back} onArrive={arrive} />
     </>

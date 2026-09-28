@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, STYLE_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type StartChoice, type StyleChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
+import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
+import { CONFIRMATION_UNIVERS, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, type UniversChoice } from '../core/univers';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../core/appUpdate';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
@@ -18,6 +21,14 @@ export function SettingsPage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [typed, setTyped] = useState('');
   const appUpdate = useAppUpdate();
+  // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
+  const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);
+  const universRef = useRef<HTMLFieldSetElement>(null);
+  const section = (useLocation().state as { section?: string } | null)?.section;
+  // Venu du message unique (« Voir le réglage ») : la section Univers, sous les yeux.
+  useEffect(() => {
+    if (section === 'univers') universRef.current?.scrollIntoView({ block: 'start' });
+  }, [section]);
 
   return (
     <>
@@ -189,29 +200,77 @@ export function SettingsPage() {
           </label>
         </fieldset>
 
-        {/* Précurseur du réglage « Univers » du lot 6 (docs/conception/univers.md, étape U3), qui le remplacera. */}
-        <fieldset className="panel">
-          <legend>Expérimental</legend>
-          <p>Le monde d’Archipéo change de dessin. Ces options montrent le travail en cours. Il peut encore changer. Ta progression reste la même.</p>
-          <label className="toggle">
-            <input type="checkbox" checked={settings.renduArchipeo} onChange={(e) => update({ renduArchipeo: e.target.checked })} />
-            Essayer le nouveau dessin du monde
-          </label>
-          {settings.renduArchipeo && (
-            <fieldset className="settings-subgroup">
-              <legend>La surface du monde</legend>
-              <div className="option-row">
-                {(Object.keys(STYLE_LABELS) as StyleChoice[]).map((styleArchipeo) => (
-                  <label key={styleArchipeo} className={`option${settings.styleArchipeo === styleArchipeo ? ' selected' : ''}`}>
-                    <input type="radio" name="styleArchipeo" value={styleArchipeo} checked={settings.styleArchipeo === styleArchipeo} onChange={() => update({ styleArchipeo })} />
-                    {STYLE_LABELS[styleArchipeo]}
+        {/* La section Univers remplace Expérimental à la bascule du lot 6 (src/core/univers.ts) : jamais les deux ensemble. */}
+        {UNIVERS_OUVERT ? (
+          <fieldset className="panel" id="reglage-univers" ref={universRef}>
+            <legend>Univers</legend>
+            <p>L’univers change le dessin du monde et l’histoire. Ta progression reste la même.</p>
+            <div className="univers-choices">
+              {UNIVERS_IDS.map((u) => (
+                <div key={u} className={`option univers-choice${settings.univers === u ? ' selected' : ''}`}>
+                  <label>
+                    <input type="radio" name="univers" value={u} checked={settings.univers === u} onChange={() => setUniversDemande(u)} />
+                    <Icon name={UNIVERS[u].icone} size="1.6em" />
+                    <span className="univers-text">
+                      <strong>{UNIVERS[u].nom}</strong>
+                      <Syllabified text={UNIVERS[u].presentation} />
+                    </span>
                   </label>
-                ))}
+                  <SpeakButton text={`${UNIVERS[u].nom}. ${UNIVERS[u].presentation}`} compact />
+                </div>
+              ))}
+            </div>
+            {universDemande && universDemande !== settings.univers && (
+              <div className="univers-confirm" role="group" aria-labelledby="univers-confirm-titre">
+                <p id="univers-confirm-titre">
+                  <strong>{CONFIRMATION_UNIVERS.titre(universDemande)}</strong>
+                </p>
+                <p>
+                  <Syllabified text={CONFIRMATION_UNIVERS.texte} />
+                </p>
+                <SpeakButton text={`${CONFIRMATION_UNIVERS.titre(universDemande)} ${CONFIRMATION_UNIVERS.texte}`} />
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="button primary"
+                    onClick={() => {
+                      update({ univers: universDemande });
+                      setUniversDemande(null);
+                    }}
+                  >
+                    {CONFIRMATION_UNIVERS.changer}
+                  </button>
+                  <button type="button" className="button" onClick={() => setUniversDemande(null)}>
+                    {CONFIRMATION_UNIVERS.annuler}
+                  </button>
+                </div>
               </div>
-            </fieldset>
-          )}
-          <p>Le changement se voit à la prochaine ouverture du monde.</p>
-        </fieldset>
+            )}
+          </fieldset>
+        ) : (
+          <fieldset className="panel">
+            <legend>Expérimental</legend>
+            <p>Le monde d’Archipéo change de dessin. Ces options montrent le travail en cours. Il peut encore changer. Ta progression reste la même.</p>
+            <label className="toggle">
+              <input type="checkbox" checked={settings.renduArchipeo} onChange={(e) => update({ renduArchipeo: e.target.checked })} />
+              Essayer le nouveau dessin du monde
+            </label>
+            {settings.renduArchipeo && (
+              <fieldset className="settings-subgroup">
+                <legend>La surface du monde</legend>
+                <div className="option-row">
+                  {(Object.keys(STYLE_LABELS) as StyleChoice[]).map((styleArchipeo) => (
+                    <label key={styleArchipeo} className={`option${settings.styleArchipeo === styleArchipeo ? ' selected' : ''}`}>
+                      <input type="radio" name="styleArchipeo" value={styleArchipeo} checked={settings.styleArchipeo === styleArchipeo} onChange={() => update({ styleArchipeo })} />
+                      {STYLE_LABELS[styleArchipeo]}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            <p>Le changement se voit à la prochaine ouverture du monde.</p>
+          </fieldset>
+        )}
 
         <fieldset className="panel">
           <legend>Application</legend>

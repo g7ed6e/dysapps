@@ -7,6 +7,8 @@ import { BlockIcon } from './Voxel';
 import { KIND_NAME } from './world/archipelago';
 import { inventoryUses, whereToEarn, type Use } from './world/uses';
 import { VEHICLE_NAME } from './world/vehicle';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
@@ -200,12 +202,13 @@ export function InventorySheet({ onClose }: SheetProps) {
 
 /** La page « Mes blocs » en vue simple. */
 export function InventoryPage() {
+  const univers = useUnivers();
   const { state } = useBlocland();
   const total = inventoryUses(state).total;
   return (
     <>
       <Link to="/aventure" className="back-link">
-        <Icon name="back" /> Carte d’Archipéo
+        <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <h1 className="page-title">
         <Icon name="blocks" /> Mes blocs

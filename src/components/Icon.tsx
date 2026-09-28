@@ -1,7 +1,9 @@
 import {
+  Anchor,
   ArrowLeft,
   Blocks,
   BookOpen,
+  Box,
   Calculator,
   Castle,
   ChevronDown,
@@ -106,6 +108,8 @@ const ICONS = {
   volumeOff: VolumeX,
   zap: Zap,
   pause: Pause,
+  ancre: Anchor,
+  cube: Box,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;
