@@ -1,0 +1,153 @@
+/* =====================================================================
+   Blocland — l'habillage de l'interface (univers.md, décision 7)
+   Chaque élément est un bloc vu de face : un dessus et une face de côté, en aplats chauds (herbe, bois, terre,
+   or), coins presque droits, aucune texture ni biseau, rien derrière le texte. Seul ce qui se touche a une face
+   de côté et s'enfonce quand on appuie ; un panneau n'en a pas. Direction du consultant de Blocland, validée par
+   le directeur artistique le 28 septembre 2026. Rien n'est copié d'un autre jeu.
+   Ne change que l'habillage : la place des éléments, leurs mots, la taille des cibles et les règles dys sont
+   ceux de global.css. Actif quand l'univers affiché est Blocland (`data-univers`, posé par applySettings) ;
+   avant la bascule du lot 6, l'univers affiché reste Archipéo et cette feuille ne s'applique pas.
+   ===================================================================== */
+
+/* ===== Thème Crème ===== */
+:root[data-univers="blocland"] {
+  /* Titres courts et logotype : Archivo Black (SIL OFL 1.1, @fontsource), la police des titres de Blocland
+     avant le lot 2. Un seul poids. Le texte reste dans la police dys choisie. */
+  --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --display-weight: 400;
+
+  --bg: #f2ecdf;
+  --surface: #fffbf2;
+  --text: #2b2118;
+  --muted: #5c4a38;
+  --ink: #7a5a3c;
+  /* Action principale : l'herbe. Secondaire : le bois. */
+  --primary-bg: #3b7524;
+  --primary-text: #ffffff;
+  --secondary-bg: #ead9b8;
+  --secondary-text: #4a3320;
+  --accent: #3b7524;
+  /* L'or remplace le sable : en remplissage seulement, texte terre dessus. */
+  --sand: #e0b73f;
+  --on-sand: #2b2118;
+  --on-accent: #2b2118;
+  --star-off: #c9bba2;
+  /* La barre du haut : la terre, l'herbe au bord supérieur, sa face de côté en bas. */
+  --topbar-bg: #5a3e26;
+  --topbar-text: #f7f0e2;
+  --topbar-grass: #6cb33f;
+  --topbar-edge: #3e2a18;
+
+  /* Formes : des blocs. */
+  --radius: 4px;
+  --radius-control: 4px;
+  --radius-pill: 4px;
+  /* La face de côté de ce qui se touche, et l'appui qui l'enfonce (sans transition : instantané). */
+  --face: 4px;
+  --face-pressed: 1px;
+  --press: 3px;
+  --face-primary: #27501a;
+  --face-secondary: #9c7a48;
+}
+
+/* ===== Thème Nuit ===== */
+:root[data-univers="blocland"][data-theme="nuit"] {
+  --bg: #1c1813;
+  --surface: #2a231b;
+  --text: #f2ecdf;
+  --muted: #d2c3aa;
+  --ink: #9c8262;
+  --primary-bg: #8cc75c;
+  --primary-text: #16230e;
+  --secondary-bg: #3d3226;
+  --secondary-text: #f2ecdf;
+  --accent: #8cc75c;
+  --sand: #e0b73f;
+  --on-sand: #2b2118;
+  --star-off: #6e5d48;
+  --focus: #ffd54a;
+  --topbar-bg: #0e0b08;
+  --topbar-text: #f2ecdf;
+  --topbar-edge: #000000;
+  --face-primary: #4e7a2e;
+  /* Plus claire que le fond, pour se voir (3,2:1 sur le fond) : sans elle, une carte ressemble à un panneau. */
+  --face-secondary: #7a6450;
+}
+
+/* ===== Thème Clair : plat, des faces plus sobres ===== */
+:root[data-univers="blocland"][data-theme="clair"] {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --topbar-bg: #ffffff;
+  --topbar-text: #2b2118;
+  --topbar-edge: #d8ccb0;
+  --face: 3px;
+  /* Les faces du Crème, visibles sur le blanc (3,6:1 et plus). */
+  --face-primary: #27501a;
+  --face-secondary: #9c7a48;
+}
+
+/* ===== La barre du haut ===== */
+/* L'herbe se pose sous la zone sûre du téléphone (l'encoche), pas derrière elle. */
+:root[data-univers="blocland"] .topbar {
+  background:
+    linear-gradient(var(--topbar-grass), var(--topbar-grass)) 0 env(safe-area-inset-top) / 100% 4px no-repeat,
+    var(--topbar-bg);
+  border-bottom-color: var(--topbar-edge);
+}
+/* L'endroit où l'on est : l'or, et souligné, pour ne pas reposer sur la couleur seule. */
+:root[data-univers="blocland"] .nav-button.active {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* ===== Ce qui se touche : une face de côté, qui s'enfonce ===== */
+:root[data-univers="blocland"] .button,
+:root[data-univers="blocland"] .nav-button {
+  box-shadow: 0 var(--face) 0 var(--face-secondary);
+  transition: none;
+}
+:root[data-univers="blocland"] .button.primary {
+  box-shadow: 0 var(--face) 0 var(--face-primary);
+}
+:root[data-univers="blocland"] .back-link,
+:root[data-univers="blocland"] .option,
+:root[data-univers="blocland"] a.app-card,
+:root[data-univers="blocland"] button.app-card,
+:root[data-univers="blocland"] a.subject-card,
+:root[data-univers="blocland"] .adventure-card,
+:root[data-univers="blocland"] .biome-card,
+:root[data-univers="blocland"] .level-card,
+:root[data-univers="blocland"] a.island-quest,
+:root[data-univers="blocland"] button.island-quest {
+  box-shadow: 0 var(--face) 0 var(--face-secondary);
+  transition: none;
+}
+/* L'appui : le bloc descend de 3 px et sa face se réduit d'autant ; l'encombrement ne change pas. */
+:root[data-univers="blocland"] .button:active:not(:disabled),
+:root[data-univers="blocland"] .nav-button:active,
+:root[data-univers="blocland"] .back-link:active,
+:root[data-univers="blocland"] .option:active,
+:root[data-univers="blocland"] a.app-card:not(.locked):active,
+:root[data-univers="blocland"] button.app-card:active:not(:disabled):not(.locked),
+:root[data-univers="blocland"] a.subject-card:active,
+:root[data-univers="blocland"] .adventure-card:active,
+:root[data-univers="blocland"] .biome-card:active,
+:root[data-univers="blocland"] .level-card:active,
+:root[data-univers="blocland"] a.island-quest:active,
+:root[data-univers="blocland"] button.island-quest:active:not(:disabled) {
+  transform: translateY(var(--press));
+  box-shadow: 0 var(--face-pressed) 0 var(--face-secondary);
+}
+:root[data-univers="blocland"] .button.primary:active:not(:disabled) {
+  box-shadow: 0 var(--face-pressed) 0 var(--face-primary);
+}
+/* Fermé : pas de face, il ne s'enfonce pas (son libellé ou son cadenas dit pourquoi). */
+:root[data-univers="blocland"] .button:disabled,
+:root[data-univers="blocland"] .app-card.locked,
+:root[data-univers="blocland"] button.app-card:disabled,
+:root[data-univers="blocland"] button.island-quest:disabled {
+  box-shadow: none;
+  transform: none;
+}
