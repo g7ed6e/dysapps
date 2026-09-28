@@ -492,10 +492,6 @@ export function WorldPage() {
         // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
         if (island) builder.tryFill(i.case) || ship.tryFill(i.case) || openIsland(grille.ileEn(i.case));
         return;
-      case 'entree':
-        // En marche libre, le bonhomme est entré dans une autre île : elle devient la sienne si elle est ouverte.
-        if (isBiomeUnlocked(i.ile, state.village.bridges)) moveTo(i.ile);
-        return;
       case 'fin-du-voyage':
       case 'voyage-saute':
         return onLegEnd();
@@ -546,7 +542,6 @@ export function WorldPage() {
             islandLabels={voyage ? undefined : islandLabels}
             whalePass={whaleWord && !settings.reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             burst={burst}
-            freeWalk={settings.freeWalk}
             onIntent={onIntent}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"

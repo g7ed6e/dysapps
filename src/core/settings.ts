@@ -20,8 +20,6 @@ export interface Settings {
   reduceMotion: boolean;
   /** La vue de Blocland ; sans WebGL, le monde en 3D laisse la place à la liste, accessible. */
   worldView: WorldViewChoice;
-  /** Dans le monde en 2D, marcher case par case avec une croix de direction (toucher pour aller reste possible). */
-  freeWalk: boolean;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
   sounds: boolean;
   /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
@@ -50,7 +48,6 @@ export const DEFAULT_SETTINGS: Settings = {
   syllables: true,
   reduceMotion: false,
   worldView: '3d',
-  freeWalk: false,
   sounds: true,
   ambience: false,
   haptics: true,
@@ -117,7 +114,6 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
     reduceMotion: Boolean(s.reduceMotion),
     worldView: s.worldView in WORLD_VIEW_LABELS ? s.worldView : DEFAULT_SETTINGS.worldView,
-    freeWalk: Boolean(s.freeWalk),
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),

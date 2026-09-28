@@ -59,7 +59,7 @@ Sans WebGL, ou sur une tablette qui peine, Blocland retombait sur une liste d’
 - **Le même monde, les mêmes gestes** : les deux vues partagent le contrat (`world/view.ts`), la simulation (`world/scene.ts` : marche, promenades, voyage, toucher) et les textures (`world/pixels.ts`). Seul le dessin diffère.
 - **Sprites générés par le code** : le bonhomme en quatre directions, les créatures et les Gardiens tirés de leurs propres cubes pour garder leur silhouette.
 - **Direction artistique** (validée sur la Forêt, puis étendue aux quatre archipels) : les premiers essais ressemblaient à une carte de cubes vue du ciel. D’où une caméra rapprochée (environ 13 cases, sans sortir de l’île, comme dans un jeu d’aventure), des bords de sol qui débordent en frange, des falaises à strates, des tuiles dessinées pour la 2D, le décor en sprites et des ombres.
-- **Marche libre en option** (réglage « Marche libre », désactivé par défaut) : une croix de direction et un bouton « Entrer », case par case, jamais sur l’eau ni la lave, un bloc de dénivelé au plus. Aucun chronomètre ; toucher pour aller reste.
+- **Pas de marche libre** : une croix de direction et un bouton « Entrer », en option, ont existé ; le mainteneur les a retirés le 28 septembre 2026. En 2D comme en 3D, on touche une île, une borne, une créature ou un ouvrage, ou on utilise les flèches du clavier pour aller à l’île voisine.
 
 ## Les ouvrages
 
@@ -124,7 +124,6 @@ Au départ, la caméra libre était un choix assumé, sans avatar. Le bonhomme e
 
 - Un personnage en blocs, qui se tient sur l’île où l’on est et marche d’île en île le long des ouvrages construits (`avatarRoute()`), en suivant le sol. Vers une île fermée, il reste où il est.
 - La caméra le suit ; avec « réduire les animations », il apparaît à l’arrivée.
-- La marche libre n’existe qu’en 2D, en option ([La vue 2D oblique](#la-vue-2d-oblique)).
 
 Les règles des missions jouées depuis le monde (graine tirée au hasard, place de la réponse, montée de niveau sur une partie quasi parfaite) relèvent du moteur d’exercices : voir [Exercices](exercices.md).
 
