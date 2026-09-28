@@ -157,6 +157,8 @@ Principe : **la grille reste, le cube disparaît.** Le paysage devient un mailla
 | **R6. Les personnages** | Le bonhomme, les créatures redessinées et les Gardiens en sentinelles, en primitives peintes, pour la 3D et les sprites de la 2D. | M |
 | **R7. La 2D peinte** | La vue oblique garde sa projection et ses gestes, mais ses tuiles et sprites passent en aplats et dégradés sur la palette commune. **Construit** derrière le drapeau (voir [le style](style.md)). | L |
 
+Entre ces lots s’intercalent, sans changement d’image, les étapes qui isolent la logique du jeu de son rendu : voir [Séparer le jeu du rendu](separation-jeu-rendu.md) (plan, en attente de la décision du mainteneur).
+
 ### L’ouverture et la suite
 
 | Lot | Ce que l’élève voit | Dépend de | Taille |
