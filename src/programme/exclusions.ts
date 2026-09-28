@@ -55,7 +55,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.fr.langue.subordonnees': A_COUVRIR('Subordonnées et pronom relatif : prévus dans l’Observatoire des textes.'),
   'c4.fr.langue.ponctuation': A_COUVRIR('Rôle de la ponctuation : aucune mission ne l’aborde.'),
   'c4.fr.langue.passif': A_COUVRIR('Le passif : prévu dans l’Observatoire des textes.'),
-  'c4.fr.langue.reseaux-de-mots': A_COUVRIR('Champ lexical, intensité, généralité : prévus dans le Cabinet des mots.'),
   'c4.fr.langue.enonciation': A_COUVRIR('Situation d’énonciation : prévue dans l’Observatoire des textes (Voix des textes).'),
   // ---------- Cycle 4, maths ----------
   'c4.ma.a.fractions': A_COUVRIR('Égalité et comparaison de fractions au cycle 4 : prévues dans le Glacier des relatifs (Icebergs des fractions).'),

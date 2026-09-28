@@ -1,0 +1,1 @@
+Au Cabinet des mots, deux nouveaux niveaux : le champ lexical dans la mission Sens (trouver les mots qui parlent d’un même thème) et le degré d’intensité dans la mission Nuances (du mot le plus faible au plus fort, de « tiède » à « brûlant »).
