@@ -24,13 +24,18 @@
 // Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
 // ronde de pierre à feu ouvert (./phareDuLarge.ts), dans l'opaque (son feu dans les fenêtres).
 //
+// L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan dont le kit de l'archipel dessine la pièce
+// laisse sa case à cette pièce, dans l'opaque, à la fin. Au socle (7a), les kits sont vides : rien n'est remplacé.
+//
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
-// redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDuPhare`, la case du
-// plan sous le phare.
+// redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case
+// sous un modèle qui remplace des cubes : la case de la pièce d'architecture (toute la case, par la table triangle →
+// case), ou la case du plan la plus proche sous le phare.
 //
 // Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
 // les trois groupes.
 import type { VoxelCube } from '../Voxel';
+import { architectureDe, type Kit } from './architecture';
 import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
@@ -212,6 +217,18 @@ export interface GroupeOpaque extends GroupeDeConstruction {
   teintes: Float32Array;
   /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
   aretes: Float32Array;
+  /**
+   * Par sommet : le motif peint d'une pièce d'architecture (0 : aucun). Inerte au socle (lot 7a) : le colombage peint
+   * (7b) le lira dans le shader, sans un triangle de plus.
+   */
+  motifs: Float32Array;
+}
+
+/** Des triangles de l'opaque (de, à) qui remplacent des cases : la case de chaque triangle, pour le toucher. */
+export interface TrancheDesPieces {
+  opaque: [number, number];
+  /** La case du triangle `de + i` : `cases[3i]`, `cases[3i + 1]`, `cases[3i + 2]` (x, y, z). */
+  cases: Int32Array;
 }
 
 export interface MaillageDeLaConstruction {
@@ -220,13 +237,18 @@ export interface MaillageDeLaConstruction {
   fenetres: GroupeDesFenetres;
   /**
    * Le phare de Grimoire, s'il a une pièce : ses triangles dans l'opaque et dans les fenêtres (de, à : indices de
-   * triangles), et les cases qu'il remplace, pour que le toucher les retrouve (`caseDuPhare`).
+   * triangles), et les cases qu'il remplace, pour que le toucher les retrouve (`caseDeLaPiece`).
    */
   phare?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
-  /** Les ponts de pierre et de bois du 5e (./ponts.ts) : leur tranche du groupe opaque (triangles), dessinée à la fin. */
-  ponts?: { opaque: [number, number] };
+  /**
+   * Les ponts de pierre et de bois du 5e (./ponts.ts) : leur tranche du groupe opaque (triangles), une par île (mis bout
+   * à bout, les îles en donnent plusieurs).
+   */
+  ponts?: { opaque: [number, number] }[];
   /** Le phare du large du 5e (./phareDuLarge.ts), fini : comme `phare`, ses triangles et les cases du monument. */
   phareDuLarge?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
+  /** Les pièces d'architecture (./architecture/) : leurs triangles de l'opaque et la case de chacun, une tranche par île. */
+  pieces?: TrancheDesPieces[];
 }
 
 export interface OptionsDeLaConstruction {
@@ -242,8 +264,10 @@ export interface OptionsDeLaConstruction {
   fusion?: boolean;
   /** Dessiner aussi les bornes (sinon elles sont laissées au poste « Bornes », instanciées à part). */
   bornes?: boolean;
-  /** Les cubes du Bloc-Navire : sa toile prend le crème Brume. */
+  /** Les cubes du Bloc-Navire : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
+  /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
+  kit?: Kit;
 }
 
 /** Le genre d'un bloc dans la construction. */
@@ -517,9 +541,10 @@ class Remplissage {
   bis: number[] = [];
   tei: number[] = [];
   are: number[] = [];
+  mot: number[] = [];
   /** Un polygone convexe (3 ou 4 sommets), tourné vers `n` (coordonnées de grille), et ses attributs par sommet. */
-  poly(pts: V3[], n: V3, couleurs: Couleur[] | null, attr: { extra?: number; uvs?: [number, number][]; biseaux?: number[][]; teinte?: number; arete?: number } = {}): void {
-    const { extra, uvs, biseaux, teinte, arete = 0 } = attr;
+  poly(pts: V3[], n: V3, couleurs: Couleur[] | null, attr: { extra?: number; uvs?: [number, number][]; biseaux?: number[][]; teinte?: number; arete?: number; motif?: number } = {}): void {
+    const { extra, uvs, biseaux, teinte, arete = 0, motif = 0 } = attr;
     // Le sens : la normale du polygone doit suivre `n`.
     const [a, b, c] = pts;
     const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
@@ -544,6 +569,7 @@ class Remplissage {
       if (biseaux) this.bis.push(...biseaux[i]);
       if (teinte !== undefined) this.tei.push(teinte);
       this.are.push(arete);
+      this.mot.push(motif);
     }
     for (let i = 1; i + 1 < pts.length; i++) this.idx.push(base, base + i, base + i + 1);
   }
@@ -563,6 +589,7 @@ class Remplissage {
       if (attr.biseaux) this.bis.push(SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU);
       if (attr.teinte !== undefined) this.tei.push(attr.teinte);
       this.are.push(0);
+      this.mot.push(0);
       this.idx.push(base + i);
     }
     return [t0, this.idx.length / 3];
@@ -599,12 +626,17 @@ export function maillageDeLaConstruction(
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Le phare du large du 5e : fini, il laisse la place à son modèle (./phareDuLarge.ts).
   const large = options.navire ? null : phareDuLarge(cubes);
-  const remplace = (c: VoxelCube) => {
+  const parUnModele = (c: VoxelCube) => {
     const k = cle(c.x, c.y, c.z);
     return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
   };
-  const dessines = cubes.filter((c) => (options.bornes || !c.quest) && !remplace(c));
-  const genres = genresDesBlocs(dessines);
+  // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
+  // cases déjà prises par un modèle restent au modèle.
+  const archi = options.navire ? null : architectureDe(a, cubes, { exclure: parUnModele, kit: options.kit });
+  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
+  const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
+  // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre (comme en 2D).
+  const genres = genresDesBlocs(avantLesPieces);
   const decalages = decalagesDe(genres);
   // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
   const plein = new Map<string, VoxelCube>();
@@ -653,10 +685,17 @@ export function maillageDeLaConstruction(
   };
   const couleurDeFace = (c: VoxelCube, d: number) => (d === HAUT ? couleursDe(c).dessus : couleursDe(c).cote);
 
-  /** La face `d` du bloc est-elle visible ? Un bloc plein la cache ; le sol cache le dessous ; un fantôme ne cache rien. */
+  /** Le bit, dans le masque `couvre` d'une pièce (./architecture/pieces.ts), de la face de sa case tournée vers `d`. */
+  const FACE_DE_CASE = [1, 4, 2, 8, 16, 32];
+  /**
+   * La face `d` du bloc est-elle visible ? Un bloc plein la cache, ou une pièce d'architecture qui ferme la face de sa
+   * case tournée vers lui ; le sol cache le dessous ; un fantôme ne cache rien.
+   */
   const visible = (c: VoxelCube, d: number): boolean => {
     const [dx, dy, dz] = DIRS[d];
-    if (plein.has(cle(c.x + dx, c.y + dy, c.z + dz))) return false;
+    const voisine = cle(c.x + dx, c.y + dy, c.z + dz);
+    if (plein.has(voisine)) return false;
+    if (archi?.couvre.size && ((archi.couvre.get(voisine) ?? 0) & FACE_DE_CASE[d ^ 1])) return false;
     if (d === BAS && sous.has(cle(c.x, c.y, c.z - 1))) return false;
     return true;
   };
@@ -1032,7 +1071,7 @@ export function maillageDeLaConstruction(
   if (ponts?.ponts.length) {
     const P = new Pinceau();
     for (const p of ponts.ponts) dessinerPont(P, p);
-    dessinDesPonts = { opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }) };
+    dessinDesPonts = [{ opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }) }];
   }
 
   // ---- Le phare du large : la tour, sa corniche et son parapet dans l'opaque, son feu dans les fenêtres (allumé le
@@ -1049,17 +1088,38 @@ export function maillageDeLaConstruction(
     };
   }
 
+  // ---- Les pièces d'architecture (lot 7) : leurs facettes dans l'opaque, à la fin, aux couleurs de la matière du bloc
+  // qu'elles remplacent, avec sa teinte ; la case de chaque triangle, pour le toucher (toute la case).
+  let dessinDesPieces: MaillageDeLaConstruction['pieces'];
+  if (archi?.pieces.length) {
+    const t0 = O.idx.length / 3;
+    const cases: number[] = [];
+    const sansBiseau = mode === 'peint' ? [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU] : null;
+    for (const p of archi.pieces) {
+      const c = p.cube;
+      const couleurs = couleursDe(c);
+      const teinte = teinteDeCase(c.x, c.y, c.z);
+      for (const f of p.facettes) {
+        const col = f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
+        O.poly(f.points, f.normale, f.points.map(() => col), { biseaux: sansBiseau ? f.points.map(() => sansBiseau) : undefined, teinte, motif: f.motif ?? 0 });
+        for (let i = 2; i < f.points.length; i++) cases.push(c.x, c.y, c.z);
+      }
+    }
+    dessinDesPieces = [{ opaque: [t0, O.idx.length / 3], cases: Int32Array.from(cases) }];
+  }
+
   const opaque = O.fin();
   const f = F.fin();
   const g = G.fin();
   const m: MaillageDeLaConstruction = {
-    opaque: { ...opaque, biseaux: Float32Array.from(O.bis), teintes: Float32Array.from(O.tei), aretes: Float32Array.from(O.are) },
+    opaque: { ...opaque, biseaux: Float32Array.from(O.bis), teintes: Float32Array.from(O.tei), aretes: Float32Array.from(O.are), motifs: Float32Array.from(O.mot) },
     fenetres: { ...f, decalages: Float32Array.from(F.extra) },
     fantomes: { ...g, colors: new Float32Array(0), uvs: Float32Array.from(G.uv) },
   };
   if (dessinDuPhare) m.phare = dessinDuPhare;
   if (dessinDesPonts) m.ponts = dessinDesPonts;
   if (dessinDuLarge) m.phareDuLarge = dessinDuLarge;
+  if (dessinDesPieces) m.pieces = dessinDesPieces;
   return m;
 }
 
@@ -1100,17 +1160,29 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
 }
 
 /**
- * La case touchée sur le phare de Grimoire ou le phare du large (`groupe` : le maillage touché, `triangle` : l'indice du
- * triangle) : la case remplacée la plus proche du point touché, et la case devant, du côté où la facette regarde le
- * plus. `null` si le triangle n'est à aucun des deux phares.
+ * La case touchée sur un modèle qui remplace des cubes (`groupe` : le maillage touché, `triangle` : l'indice du
+ * triangle), et la case devant, du côté où la facette regarde le plus :
+ * - une pièce d'architecture (lot 7) : sa case, toute la case, lue dans la table triangle → case ;
+ * - le phare de Grimoire ou le phare du large : la case remplacée la plus proche du point touché.
+ * `null` si le triangle n'est à aucun d'eux (un bloc taillé : `caseDeLaConstruction`).
  */
-export function caseDuPhare(
+export function caseDeLaPiece(
   m: MaillageDeLaConstruction,
   groupe: 'opaque' | 'fenetres',
   triangle: number,
   point: { x: number; y: number; z: number },
   normale: { x: number; y: number; z: number },
 ): { cell: Cell; next: Cell } | null {
+  // Une pièce d'architecture : la case de son triangle.
+  if (groupe === 'opaque')
+    for (const t of m.pieces ?? []) {
+      if (triangle < t.opaque[0] || triangle >= t.opaque[1]) continue;
+      const i = 3 * (triangle - t.opaque[0]);
+      if (i + 2 >= t.cases.length) return null;
+      const cell = { x: t.cases[i], y: t.cases[i + 1], z: t.cases[i + 2] };
+      const { next } = caseDeLaConstruction({ x: cell.x + 0.5, y: cell.z + 0.5, z: cell.y + 0.5 }, normale);
+      return { cell, next: { x: next.x, y: next.y, z: next.z } };
+    }
   // Le phare de Grimoire, ou le phare du large : celui dont les triangles contiennent le triangle touché.
   const p = [m.phare, m.phareDuLarge].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
   if (!p) return null;
@@ -1187,7 +1259,10 @@ export function construireParIle(
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };
 }
 
-/** Des maillages mis bout à bout : les trois groupes, indices décalés (et les triangles des phares avec eux). */
+/**
+ * Des maillages mis bout à bout : les trois groupes, indices décalés, et avec eux les triangles des phares, les tranches
+ * des ponts et celles des pièces d'architecture (leur table triangle → case suit).
+ */
 export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaConstruction {
   const joindre = <T extends GroupeDeConstruction>(groupes: T[], extras: (keyof T)[]): { g: GroupeDeConstruction & Record<string, Float32Array>; debuts: number[] } => {
     const debuts: number[] = [];
@@ -1218,7 +1293,7 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
     for (const k of extras) g[k as string] = cat(k);
     return { g, debuts };
   };
-  const o = joindre(liste.map((m) => m.opaque), ['biseaux', 'teintes', 'aretes']);
+  const o = joindre(liste.map((m) => m.opaque), ['biseaux', 'teintes', 'aretes', 'motifs']);
   const f = joindre(liste.map((m) => m.fenetres), ['decalages']);
   const g = joindre(liste.map((m) => m.fantomes), ['uvs']);
   const m: MaillageDeLaConstruction = {
@@ -1236,6 +1311,9 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
         cellules: q.cellules,
       };
     }
+    const decaler = (t: [number, number]): [number, number] => [t[0] + o.debuts[i], t[1] + o.debuts[i]];
+    for (const p of x.ponts ?? []) (m.ponts ??= []).push({ opaque: decaler(p.opaque) });
+    for (const p of x.pieces ?? []) (m.pieces ??= []).push({ opaque: decaler(p.opaque), cases: p.cases });
   });
   return m;
 }

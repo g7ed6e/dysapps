@@ -2,7 +2,7 @@
 // la grille (la place des choses en cases) ne dépend pas du dessin ; le contrat commun des vues non plus. Les
 // dépendances à contresens d'aujourd'hui sont listées avec leur motif et l'étape qui les retire : une nouvelle fait
 // échouer le test, et une exception retirée du code doit l'être de la liste.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
 type Couche = 'regle' | 'grille' | 'commun' | 'univers' | 'dessin' | 'neutre';
@@ -132,6 +132,40 @@ function fichier(n: string): string {
   return f ?? join(BLOCLAND, `${n}.tsx`);
 }
 
+/**
+ * Les couches pures du rendu : calculées sans Three.js, sans React ni une vue (three/, pixel/, les composants), testées
+ * sous jsdom. Elles ne lisent que le monde (world/), aucun paquet.
+ */
+const PURES = [
+  // L'architecture modulaire d'Archipéo (lot 7) : voisinage, choix des pièces, pièces, kits.
+  'world/architecture',
+];
+
+/** Les fichiers (hors tests) d'un dossier, sous-dossiers compris. */
+function fichiersDe(dossier: string): string[] {
+  return readdirSync(dossier).flatMap((n) => {
+    const f = join(dossier, n);
+    if (statSync(f).isDirectory()) return fichiersDe(f);
+    return /\.tsx?$/.test(n) && !/\.test\.tsx?$/.test(n) ? [f] : [];
+  });
+}
+
+/** Ce qu'importe une couche pure hors du monde (world/, en .ts) : un paquet, une vue, un composant. */
+function impuretes(): string[] {
+  const out = new Set<string>();
+  const monde = join(BLOCLAND, 'world');
+  for (const d of PURES)
+    for (const f of fichiersDe(join(BLOCLAND, d))) {
+      if (f.endsWith('.tsx')) out.add(`${nom(f)} (un composant)`);
+      for (const m of readFileSync(f, 'utf8').matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)) {
+        const cible = resoudre(f, m[1]);
+        if (!cible) out.add(`${nom(f)} → ${m[1]}`);
+        else if (!cible.startsWith(monde + '/') || cible.endsWith('.tsx')) out.add(`${nom(f)} → ${nom(cible)}`);
+      }
+    }
+  return [...out].sort();
+}
+
 /** Les dépendances à contresens des règles, de la grille et du contrat commun, « a → b ». */
 function contresens(): string[] {
   const out = new Set<string>();
@@ -157,6 +191,11 @@ describe('Les couches du jeu', () => {
 
   it('chaque exception existe encore (sinon, la retirer de la liste)', () => {
     expect(Object.keys(EXCEPTIONS).filter((d) => !trouvees.includes(d))).toEqual([]);
+  });
+
+  it('les couches pures du rendu (l’architecture modulaire) ne lisent que le monde : ni Three.js, ni React, ni une vue', () => {
+    expect(PURES.every((d) => existsSync(join(BLOCLAND, d)) && fichiersDe(join(BLOCLAND, d)).length > 0)).toBe(true);
+    expect(impuretes()).toEqual([]);
   });
 
   it('chaque exception dit son motif', () => {

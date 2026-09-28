@@ -1,0 +1,1 @@
+Archipéo, lot 7a : le socle de l’architecture modulaire. Rien ne change à l’écran ; les bâtiments de l’univers Archipéo pourront bientôt montrer des murs, des colombages et des toits choisis selon les cases voisines, en commençant par les Premiers Rivages. Dans Blocland, rien ne change : les blocs posés restent des blocs.

@@ -64,7 +64,7 @@ Le phare du large et le kiosque à musique disent encore « entre les Collines �
 - les **monuments** (l’observatoire des baleines, le grand moulin, le phare du large, le viaduc, l’amphithéâtre, le temple de marbre…) et les **ouvrages** (pont, bac, sentier, escalier taillé, tunnel, col) ;
 - « bâtisseur » pour l’élève, « Gardien vaincu », la **statue** du Gardien vaincu.
 
-Archipéo prévoit d’autres changements, pas encore faits. Les Gardiens en sentinelles qu’on rallume (R6, lot 6) ne touchent pas Blocland (univers.md, §3). Le lot 8 le touche : le navire maritime change les cases d’un plan partagé, et les deux univers relisent la même sauvegarde migrée (univers.md, §3). En attendant, le village des Îles du Ciel s’arrête à « Développement » jusqu’au lot 8, dans Blocland aussi (`src/blocland/world/villageStage.ts`, `f288161`).
+Archipéo prévoit d’autres changements, pas encore faits. Les Gardiens en sentinelles qu’on rallume (R6, lot 6) ne touchent pas Blocland (univers.md, §3). L’architecture modulaire (lot 7 : murs, colombages, toits et pilotis choisis selon les cases voisines) ne touche pas Blocland non plus : ses blocs posés restent des cubes, au bloc près. Elle vit dans la construction taillée d’Archipéo (`world/architecture/`, appelée par `world/construction.ts`), que Blocland n’emprunte pas ; ses empreintes et son toucher ne changent pas (vérifié au socle 7a, le 28 septembre 2026). Le lot 8 le touche : le navire maritime change les cases d’un plan partagé, et les deux univers relisent la même sauvegarde migrée (univers.md, §3). En attendant, le village des Îles du Ciel s’arrête à « Développement » jusqu’au lot 8, dans Blocland aussi (`src/blocland/world/villageStage.ts`, `f288161`).
 
 ## 2. Le récit et le ton
 
