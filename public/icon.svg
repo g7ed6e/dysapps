@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<!-- Archipéo : un A ouvert, deux vagues à la place de la barre, une étoile au-dessus. Dessiné à la main, en code. -->
+<!-- DysApps : un « D » plein, crème sur bleu nuit, dessiné en code (pas de police). -->
 <rect width="512" height="512" rx="96" fill="#13283d"/>
-<g>
-<path d="M136 380 L256 120 L376 380" fill="none" stroke="#f3eee3" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M146 318 Q201 290 256 318 T366 318" fill="none" stroke="#4fb3a4" stroke-width="20" stroke-linecap="round"/>
-<path d="M146 352 Q201 324 256 352 T366 352" fill="none" stroke="#1f8aa3" stroke-width="20" stroke-linecap="round"/>
-<path d="M256 64 L262 80 L278 86 L262 92 L256 108 L250 92 L234 86 L250 80 Z" fill="#d9b26a"/>
-</g>
+<path fill="#f3eee3" fill-rule="evenodd" d="M152 112 H252 C348 112 400 176 400 256 C400 336 348 400 252 400 H152 Z M220 176 V336 H250 C300 336 332 304 332 256 C332 208 300 176 250 176 Z"/>
 </svg>
