@@ -63,6 +63,10 @@ export class Pinceau {
     }
     this.own.push(this.element);
   }
+  /** Le nombre de triangles tracés. */
+  get triangles(): number {
+    return this.own.length;
+  }
   quad(a: V3, b: V3, c: V3, d: V3, dedans: V3, peindre: Peindre): void {
     this.triangle(a, b, c, dedans, peindre);
     this.triangle(a, c, d, dedans, peindre);

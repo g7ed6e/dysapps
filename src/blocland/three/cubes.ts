@@ -52,7 +52,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   const terrain = new THREE.Group();
   scene.add(terrain);
   // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
-  const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(), decorSignature: '' } : null;
+  const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(instant), decorSignature: '' } : null;
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
   // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
   if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
