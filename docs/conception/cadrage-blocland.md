@@ -6,7 +6,7 @@ Ce document rassemble les décisions de game design en vigueur dans Blocland, pr
 
 Blocland reste un univers à part entière, à côté d’Archipéo ([Plusieurs univers](univers.md)). Ce document devient le cadrage de cet univers : l’agent `consultant-blocland` le tient, sous l’autorité du directeur artistique, avec la fiche de l’univers (`design/blocland/fiche.md`).
 
-**Blocland reste l’univers par défaut** (décision du mainteneur, 28 septembre 2026 au soir : les élèves sont très attachés au monde en blocs ; [Plusieurs univers](univers.md), décision 7). Archipéo se choisit dans les Réglages à partir du lot 6. L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs. Sa direction se propose et se valide avant d’être construite.
+**Blocland reste l’univers par défaut** (décision du mainteneur, 28 septembre 2026 au soir : les élèves sont très attachés au monde en blocs ; [Plusieurs univers](univers.md), décision 7). Archipéo se choisit dans les Réglages à partir du lot 6. L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs. Sa direction, proposée par le consultant et validée par le directeur artistique, est construite derrière la bascule du lot 6 : voir [Style](style.md#lhabillage-de-blocland).
 
 ## Ce qu’on garde absolument
 

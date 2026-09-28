@@ -1,4 +1,4 @@
-import { UNIVERS, UNIVERS_PAR_DEFAUT, type UniversChoice } from './univers';
+import { titreAffiche, UNIVERS, UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT, type UniversChoice } from './univers';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'creme' | 'nuit' | 'clair';
@@ -176,9 +176,13 @@ export function reglagesCourants(): Settings | null {
   return courants;
 }
 
-/** Applique les réglages au document via des variables CSS et un attribut de thème. */
-export function applySettings(settings: Settings, root: HTMLElement = document.documentElement): void {
+/**
+ * Applique les réglages au document via des variables CSS et des attributs : le thème, et l'univers affiché, qui
+ * choisit l'habillage de l'interface (styles/blocland.css ; Archipéo avant la bascule du lot 6).
+ */
+export function applySettings(settings: Settings, root: HTMLElement = document.documentElement, ouvert = UNIVERS_OUVERT): void {
   root.dataset.theme = settings.theme;
+  root.dataset.univers = titreAffiche(settings.univers, ouvert);
   root.dataset.syllables = String(settings.syllables);
   root.style.setProperty('--font-family', FONT_STACKS[settings.font]);
   root.style.setProperty('--font-size', `${settings.fontSize}px`);

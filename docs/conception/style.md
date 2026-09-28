@@ -30,6 +30,18 @@ Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent 
 - Il n’y a plus de police pixel. Toute étiquette qui porte un sens (« Nouvelle partie », « Aventure », « Niveau 6e », le nom d’une créature, le compteur du tutoriel, l’épreuve du Gardien, les dates du journal) est dans la police de lecture choisie, en gras, en casse normale, à 18 px au moins ; le nom « Archipéo » est dans la police des titres.
 - **Tout texte à lire** (consignes, phrases, corrections, panneaux) est dans la police dys choisie par l’élève : Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible ou Arial.
 
+## L’habillage de Blocland
+
+Blocland reste l’univers par défaut, et son interface a un habillage à lui ([Plusieurs univers](univers.md), décision 7). Il est construit dans `src/styles/blocland.css` et s’applique quand l’univers affiché est Blocland (attribut `data-univers` de la page, posé avec les réglages) : avant la bascule du lot 6, l’univers affiché reste Archipéo et l’interface reste celle décrite plus haut. Direction proposée par le consultant de Blocland et validée par le directeur artistique le 28 septembre 2026.
+
+- **Des blocs vus de face** : aplats chauds (herbe, bois, terre, or), coins de 4 px partout, bordures pleines de 2 px, aucune texture ni biseau, rien derrière le texte.
+- **Ce qui se touche a une face de côté** (une bande pleine de 4 px sous le bouton ou la carte, 3 px en Clair, toujours visible sur le fond : 3:1 au moins ; la face est plus sombre que le dessus, sauf en Nuit, où elle est plus claire pour se voir, exception validée par le directeur artistique) **et s’enfonce** de 3 px quand on appuie, sans transition et sans décaler la page. Un panneau n’en a pas ; un bouton fermé non plus.
+- **Action principale** en herbe `#3B7524` (face `#27501A`), texte blanc ; **secondaire** en bois `#EAD9B8` (face `#9C7A48`), texte `#4A3320`.
+- **Barre du haut** en terre `#5A3E26`, une bande d’herbe `#6CB33F` de 4 px au bord supérieur (sous la zone sûre du téléphone), un trait `#3E2A18` en bas ; l’endroit où l’on est sur un aplat d’or `#E0B73F`, souligné.
+- **Crème** : fond `#F2ECDF`, panneaux `#FFFBF2`, texte `#2B2118`, bordures `#7A5A3C`. **Nuit** : fond `#1C1813`, panneaux `#2A231B`, texte `#F2ECDF`, action principale `#8CC75C` (texte `#16230E`), barre `#0E0B08`, faces `#7A6450` (celle de l’action principale `#4E7A2E`), focus `#FFD54A`. **Clair** : fond `#F6F5F1`, panneaux et barre blancs, faces du Crème sur 3 px, sans ombre douce.
+- **Titres courts et logotype en Archivo Black** (SIL OFL 1.1, `@fontsource/archivo-black`, téléchargée seulement quand elle s’affiche), la police des titres de Blocland avant le lot 2. Le texte reste dans la police dys choisie.
+- **Rien d’emprunté** : ni boutons gris texturés à double biseau, ni police pixel, ni inventaire gris à cases (voir l’agent `consultant-blocland`).
+
 ## Textures
 
 Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/blocland/world/pixels.ts`, les mêmes pixels dans toutes les vues du monde), sans lissage : herbe sur terre, pierre mouchetée, planches, sable, verre, or, cristal, feuilles, tronc, puis les blocs des îles du collège (brique, galet, obsidienne, glace, toile, panneau, tourbe, acier, calque, ardoise, parchemin, marbre, quartz, prisme, lentille) et les blocs de finition (toit, porte, lanterne, barrière, escalier). Ciel bleu et nuages en cubes. Aucune image ni texture empruntée à un jeu existant.
