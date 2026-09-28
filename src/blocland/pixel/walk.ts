@@ -2,7 +2,7 @@
 // sol (jamais sur l'eau ni la lave), on ne monte ou ne descend que d'un bloc à la fois, et on ne traverse ni un arbre,
 // ni un rocher, ni un panneau, ni une créature. Rien n'est chronométré : chaque pas attend le geste suivant.
 import type { Cell } from '../world/view';
-import type { Prop, Station } from './props';
+import type { Prop, Station } from '../world/props';
 import type { Surface } from './surface';
 
 /** Les directions de la croix : x vers l'est, y vers le nord (le haut de l'écran). */
