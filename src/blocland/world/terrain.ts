@@ -28,8 +28,8 @@ import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts, shore
 import { villageStage } from './villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from './vehicle';
 import { groundLevelAt } from './ground';
-import { CREATURE_CUBES } from '../Creatures';
-import { GUARDIAN_CUBES } from '../Guardians';
+import { CREATURE_CUBES } from './personnages/creatures';
+import { GUARDIAN_CUBES } from './personnages/gardiens';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';

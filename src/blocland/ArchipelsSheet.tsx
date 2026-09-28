@@ -9,6 +9,7 @@ import { VillageStageLine } from './VillageStageLine';
 import { VoxelScene } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, archipelagoTitle, isArchipelagoReached, islandsOf, launchedCount, reachableIslands, remainingVoyages } from './world/archipelago';
 import { VEHICLE_NAME, beatenGuardians, stageTo, vehicleModel } from './world/vehicle';
+import { useTextes } from '../univers';
 
 interface Props {
   onClose: () => void;
@@ -22,6 +23,7 @@ interface Props {
  */
 export function ArchipelsSheet({ onClose, onGo }: Props) {
   const { state } = useBlocland();
+  const textes = useTextes();
   const bridges = state.village.bridges;
   const here = archipelagoOf(state.village.at ?? 'foret').classe;
   const open = reachableIslands(bridges);
@@ -57,7 +59,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
             if (left.length > 1) need = `Il faut d’abord ${VEHICLE_NAME} avec ${left.map((v) => stageTo(v.toClasse)?.short).join(', puis ')}. Commence au port, sur ${shipyard}.`;
             else if (launch?.ok) need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} est prêt sur ${shipyard} : embarque !`;
             else if (launch && !launch.ok && launch.reason === 'gardiens')
-              need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} a tous ses blocs sur ${shipyard} : encore ${launch.missing} Gardien${launch.missing > 1 ? 's' : ''} à vaincre.`;
+              need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} a tous ses blocs sur ${shipyard} : ${textes.libelles.encoreAFaire(launch.missing)}.`;
             else need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} se construit sur ${shipyard} : ${status.done} blocs posés sur ${status.total}.`;
           }
           const state3 = a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Dans la brume';
@@ -68,7 +70,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
                 <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{state3}</span>
               </div>
               <p className="archipel-card-line">
-                {islands.length} îles · {opened} ouverte{opened > 1 ? 's' : ''} · {guardians} Gardien{guardians > 1 ? 's' : ''} vaincu{guardians > 1 ? 's' : ''} sur {islands.length}
+                {islands.length} îles · {opened} ouverte{opened > 1 ? 's' : ''} · {textes.libelles.faitsSur(guardians, islands.length)}
               </p>
               {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="archipel-card-line" />}
               {a.classe === here && <VoxelScene cubes={vehicleModel(level)} s={5} pad={4} className="archipel-ship" label={`${VEHICLE_NAME}, amarré ici`} />}

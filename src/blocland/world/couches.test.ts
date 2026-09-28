@@ -58,6 +58,10 @@ const GRILLE = [
   'world/silhouettes/5e',
   'world/silhouettes/4e',
   'world/silhouettes/3e',
+  // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
+  'world/personnages/ascii',
+  'world/personnages/creatures',
+  'world/personnages/gardiens',
 ];
 
 /** Le contrat commun des vues et sa simulation. */
@@ -79,8 +83,6 @@ const EXCEPTIONS: Record<string, string> = {
   'biomes → components/Icon': 'le nom d’icône d’une île (un type seulement), un détail d’interface dans les données (J7)',
   'boss → exercises/registry': 'le défi du Gardien lit combien d’items montre chaque écran, rangé avec les écrans (J7)',
   'world/islandState → components/Icon': 'le nom d’icône d’un état d’île (un type seulement) (J7)',
-  'world/terrain → Creatures': 'les modèles des créatures, dans un composant React (R6, premier commit)',
-  'world/terrain → Guardians': 'les modèles des Gardiens, dans un composant React (R6, premier commit)',
 };
 
 /** Le nom court d'un module : chemin depuis src/ (ou depuis src/ hors de Blocland), sans extension. */

@@ -5,6 +5,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { Creature3D } from './Creature3D';
 import type { BiomeDef } from './biomes';
+import { useTextes } from '../univers';
 
 interface Props {
   biome: BiomeDef;
@@ -16,6 +17,7 @@ interface Props {
 /** La créature du biome parle : une bulle courte, lue à voix haute, relançable au haut-parleur. */
 export function CreatureBubble({ biome, text, autoSpeak = true }: Props) {
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const spoken = frenchTypography(text);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export function CreatureBubble({ biome, text, autoSpeak = true }: Props) {
 
   return (
     <div className="creature-bubble">
-      <Creature3D biome={biome.id} label={`${biome.creature.name}, ${biome.creature.species}`} className="creature-large" />
+      <Creature3D biome={biome.id} label={`${biome.creature.name}, ${textes.especes[biome.id]}`} className="creature-large" />
       <div className="creature-says" role="status" aria-live="polite">
         <p className="creature-name">{biome.creature.name}</p>
         <p className="creature-text">
