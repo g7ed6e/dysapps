@@ -55,6 +55,7 @@ export function TitleScreen() {
   const batisseur = blocland?.batisseur ?? false;
   const suite = useRef(0);
   const depart = useRef<{ id: number; x: number; y: number } | null>(null);
+  const logo = useRef<HTMLImageElement>(null);
   const geste = useEffectEvent((g: Geste) => {
     suite.current = avancer(suite.current, g);
     if (suite.current === LONGUEUR_SUITE) {
@@ -72,6 +73,22 @@ export function TitleScreen() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+  // Safari (iPhone, iPad) ne suit pas toujours `touch-action` ni `overscroll-behavior` : un glissement vers le bas sur
+  // le logo rechargerait la page (« tirer pour recharger »). Le toucher du logo est donc gardé par la page, sans écouteur
+  // passif ; les événements de pointeur, eux, arrivent toujours.
+  useEffect(() => {
+    const el = logo.current;
+    if (!open || !el) return;
+    const garder = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    el.addEventListener('touchstart', garder, { passive: false });
+    el.addEventListener('touchmove', garder, { passive: false });
+    return () => {
+      el.removeEventListener('touchstart', garder);
+      el.removeEventListener('touchmove', garder);
+    };
+  }, [open, message]);
   if (!open) return null;
   // Au doigt (ou à la souris), les gestes se font sur le logo : glisser pour les flèches, toucher pour B et A.
   // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
@@ -145,6 +162,7 @@ export function TitleScreen() {
     <div className="title-screen" role="dialog" aria-modal="true" aria-labelledby="titre-appli">
       <div className="title-card">
         <img
+          ref={logo}
           className="title-logo"
           src={`${import.meta.env.BASE_URL}${univers.logo}`}
           alt=""
