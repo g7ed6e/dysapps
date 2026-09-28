@@ -47,6 +47,7 @@ import { worldCubes } from './terrain';
 import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
 import { sansToursDuCoeur } from './construction';
 import { BRIDGES } from './archipelago';
+import { pontsDePierreEtDeBois } from './ponts';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -123,15 +124,19 @@ const AIRE_DE_LANTERNE = 5 * 0.3 * 0.3 + 5 * 0.18 * 0.18;
  */
 function rangerLesLanternes(cubes: VoxelCube[], a: ArchipelagoId = '6e') {
   const phare = phareDeGrimoire(cubes, a);
-  const gardes = cubes.filter((c) => !c.quest && !phare?.remplacees.has(cle(c.x, c.y, c.z)));
+  const ponts = pontsDePierreEtDeBois(cubes).remplacees;
+  const gardes = cubes.filter((c) => !c.quest && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !ponts.has(cle(c.x, c.y, c.z)));
   const genres = genresDesBlocs(gardes);
   const lanternes = new Map<string, VoxelCube>();
   for (const [c, g] of genres) if (g === 'lanterne') lanternes.set(cle(c.x, c.y, c.z), c);
   return { pleins: gardes.filter((c) => !c.ghost && genres.get(c) !== 'lanterne'), lanternes };
 }
 
-/** Le triangle `i` d'un groupe est-il au phare de Grimoire ? */
-const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: number) => Boolean(m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]);
+/** Le triangle `i` d'un groupe est-il au phare de Grimoire, ou à un pont de pierre et de bois du 5e (des modèles, pas des blocs) ? */
+const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: number) =>
+  Boolean((m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) || (groupe === 'opaque' && m.ponts && i >= m.ponts.opaque[0] && i < m.ponts.opaque[1]));
+/** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
+const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ? m.ponts.opaque[1] - m.ponts.opaque[0] : 0);
 
 /** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
 function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
@@ -162,9 +167,11 @@ describe('La construction taillée (lot R5)', () => {
         expect(cout.triangles, `${a} ${etat}`).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
         expect(cout.drawCalls, `${a} ${etat}`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
       }
-      // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste).
+      // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste), sans compter les ponts de
+      // pierre et de bois du 5e : un modèle qui remplace ses cubes de planches, dans l'enveloppe ci-dessus.
       const { cubes, sol } = monde(a);
-      expect(coutDeLaConstruction(maillageDeLaConstruction(a, cubes, sol)).triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      const m = maillageDeLaConstruction(a, cubes, sol);
+      expect(coutDeLaConstruction(m).triangles - auxPonts(m), a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
     }
   }, 60_000);
 
@@ -335,7 +342,10 @@ describe('La construction taillée (lot R5)', () => {
     const { cubes, sol } = monde('5e');
     const m = maillageDeLaConstruction('5e', cubes, sol);
     const c = m.opaque.colors;
-    for (let q = 0; q < m.opaque.positions.length / 3; q += 4)
+    // Les blocs seulement (quatre sommets et deux triangles par face) : les ponts de pierre et de bois, dessinés à la
+    // fin, sont des facettes peintes.
+    const fin = m.ponts ? m.ponts.opaque[0] * 2 : m.opaque.positions.length / 3;
+    for (let q = 0; q < fin; q += 4)
       for (let k = 1; k < 4; k++) for (let j = 0; j < 3; j++) expect(c[(q + k) * 3 + j]).toBe(c[q * 3 + j]);
     // Le biseau peint : quatre distances par sommet, bornées.
     expect(m.opaque.biseaux.length).toBe((m.opaque.positions.length / 3) * 4);
@@ -344,7 +354,7 @@ describe('La construction taillée (lot R5)', () => {
     // La teinte portée par sommet : 0 sur la grille, celle du bloc pour un objet du quai descendu d'une fraction.
     expect(m.opaque.teintes.length).toBe(m.opaque.positions.length / 3);
     expect([...m.opaque.teintes].every((t) => t === 0 || Math.abs(t - 1) <= TEINTE)).toBe(true);
-    expect([...m.opaque.teintes].filter((t) => t === 0).length).toBeGreaterThan(m.opaque.teintes.length * 0.9);
+    expect([...m.opaque.teintes.slice(0, fin)].filter((t) => t === 0).length).toBeGreaterThan(fin * 0.9);
   });
 
   it('les toits : ardoise de l’archipel, terre cuite sur une île sur quatre ou cinq (1 sur 3 accepté aux Îles du Ciel)', () => {
