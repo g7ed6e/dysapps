@@ -72,6 +72,7 @@ const LABELS: Record<string, string> = {
   graines: 'Tri des graines',
   recolte: 'Récolte',
   ascension: 'Ascension',
+  notices: 'Notices',
 };
 
 function labelOf(type: string): string {

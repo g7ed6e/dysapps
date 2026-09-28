@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
 import { CalculScreen } from './CalculScreen';
+import { autoReadText } from './lecture';
 import { DicteeItem } from './DicteeItem';
 import { QcmItem } from './QcmItem';
 import type { ScreenProps } from './registry';
@@ -57,6 +58,48 @@ it('calcul : énoncé et réponses en anglais, indice lu en français', async ()
   await user.click(screen.getByRole('button', { name: /Un indice/ }));
   await user.click(screen.getByRole('button', { name: /Écouter : Avec she/ }));
   expect(utterances.at(-1)).toEqual({ text: 'Avec she : has got.', lang: 'fr-FR' });
+});
+
+it('document : la question en français d’abord, le document en anglais, une ligne par information', async () => {
+  const user = userEvent.setup();
+  renderScreen(
+    CalculScreen,
+    {
+      question: 'Quel jour la piscine est-elle fermée ?',
+      prompt: 'Swimming pool\nClosed on Mondays',
+      spoken: 'Swimming pool. Closed on Mondays.',
+      choices: ['Le lundi', 'Le mardi'],
+      answer: 'Le lundi',
+      choicesLang: 'fr',
+    },
+    'en',
+  );
+  const question = document.querySelector('.notice-question')!;
+  expect(question.textContent?.replace(/\s/g, '')).toBe('Queljourlapiscineest-ellefermée?');
+  expect(question.closest('[lang="en"]')).toBeNull();
+  // La question est en français : découpée en syllabes, comme une consigne ; le document anglais ne l'est pas.
+  expect(question.querySelector('.syllables')).not.toBeNull();
+  // Le document est une liste : une information par élément, annoncée comme telle par un lecteur d'écran.
+  const lines = screen.getAllByRole('listitem');
+  expect(lines.map((l) => l.textContent)).toEqual(['Swimming pool', 'Closed on Mondays']);
+  expect(document.querySelector('.notice .syllables')).toBeNull();
+  expect(lines[0].closest('[lang="en"]')).not.toBeNull();
+  // La question précède le document.
+  expect(question.compareDocumentPosition(lines[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: /^Question/ }));
+  expect(utterances.at(-1)).toEqual({ text: 'Quel jour la piscine est-elle fermée\u00a0?', lang: 'fr-FR' });
+  await user.click(screen.getByRole('button', { name: /^Écouter/ }));
+  expect(utterances.at(-1)).toEqual({ text: 'Swimming pool. Closed on Mondays.', lang: 'en-GB' });
+});
+
+it('lecture automatique : la question d’un document suit la consigne au premier écran, puis vient seule ; jamais le document', () => {
+  const doc = [{ key: 'k', question: 'Quel jour la piscine est-elle fermée ?', prompt: 'Closed on Mondays', spoken: 'Closed on Mondays.' }];
+  expect(autoReadText('Lis la question.', doc)).toBe('Lis la question. Quel jour la piscine est-elle fermée\u00a0?');
+  expect(autoReadText(null, doc)).toBe('Quel jour la piscine est-elle fermée\u00a0?');
+  expect(autoReadText(null, doc)).not.toContain('Closed');
+  // Sans question, la consigne seule au premier écran, rien ensuite.
+  expect(autoReadText('Choisis le mot.', [{ key: 'k', prompt: 'She … a cat.' }])).toBe('Choisis le mot.');
+  expect(autoReadText(null, [{ key: 'k', prompt: 'She … a cat.' }])).toBe('');
 });
 
 it('dictée : le mot anglais est lu en voix anglaise dès l’affichage', () => {

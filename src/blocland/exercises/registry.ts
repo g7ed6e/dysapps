@@ -145,6 +145,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   shopping: { component: CalculScreen, batch: 1 },
   routine: { component: CalculScreen, batch: 1 },
   listening: { component: DicteeItem, batch: 1, speaksOnOpen: true },
+  notices: { component: CalculScreen, batch: 1 },
   ing: { component: CalculScreen, batch: 1 },
   preterit: { component: CalculScreen, batch: 1 },
   comparatifs: { component: CalculScreen, batch: 1 },

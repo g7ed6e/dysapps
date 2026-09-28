@@ -7,6 +7,7 @@ import { AppRoutes } from '../App';
 import { BloclandProvider } from './BloclandContext';
 import { loadAllExercises } from './exercises';
 import { runItems, runSeed } from './exercises/run';
+import { frenchTypography } from '../components/math/RichText';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -136,4 +137,53 @@ it('deuxième essai : juste au second coup, le point compte moitié', async () =
   // 5 points et demi sur 6, trois étoiles mais pas « sans faute ».
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].best).toBeCloseTo(5.5 / 6);
   expect(screen.queryByRole('heading', { name: 'Sans faute !' })).not.toBeInTheDocument();
+});
+
+describe('lecture automatique', () => {
+  // La synthèse vocale simulée : chaque phrase dite est notée.
+  const dit: string[] = [];
+  beforeEach(() => {
+    dit.length = 0;
+    class Utterance {
+      lang = '';
+      rate = 1;
+      voice: unknown = null;
+      constructor(public text: string) {}
+    }
+    vi.stubGlobal('SpeechSynthesisUtterance', Utterance);
+    vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  /** Répond juste à l'item affiché, puis passe au suivant : renvoie ce qui a été dit entre les deux écrans. */
+  async function suivant(user: ReturnType<typeof userEvent.setup>, answer: string) {
+    await user.click(screen.getByRole('button', { name: answer }));
+    const avant = dit.length;
+    await user.click(within(screen.getByRole('region', { name: 'Résultat' })).getByRole('button', { name: /Suivant/ }));
+    return dit.slice(avant);
+  }
+
+  it('sans question : la consigne seule à l’ouverture, rien de plus à l’item suivant', async () => {
+    const user = userEvent.setup();
+    renderAt('/aventure/foret/abattage');
+    await loaded();
+    expect(dit).toEqual([DEF.instruction]);
+    const [item] = runItems(DEF, runSeed(DEF));
+    expect(await suivant(user, item.answer as string)).toEqual([]);
+  }, 30_000);
+
+  it('document à lire : la consigne puis la question au premier écran, la question seule ensuite', async () => {
+    const user = userEvent.setup();
+    const notices = getExercise('comptoir-notices-1')!;
+    renderAt('/aventure/comptoir/notices');
+    await loaded();
+    const [first, second] = runItems(notices, runSeed(notices));
+    // Une seule phrase, avec l'espace insécable de la typographie française avant « ? ».
+    expect(dit).toEqual([`${frenchTypography(notices.instruction)} ${frenchTypography(first.question as string)}`]);
+    const lu = await suivant(user, first.answer as string);
+    expect(lu).toEqual([frenchTypography(second.question as string)]);
+    expect(lu[0]).not.toContain(frenchTypography(notices.instruction));
+    expect(lu[0]).not.toContain(second.prompt as string);
+  }, 30_000);
 });

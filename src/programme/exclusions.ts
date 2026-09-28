@@ -67,7 +67,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 4, anglais ----------
   'c4.en.ecouter.recit': A_COUVRIR('Suivre un récit à l’oral : les écoutes portent sur des phrases et des questions, pas sur un récit.'),
   'c4.en.ecouter.indices': A_COUVRIR('Identifier la situation d’énonciation à l’oral : aucune mission ne l’aborde.'),
-  'c4.en.lire.consignes-panneaux': A_COUVRIR('Consignes écrites, panneaux, lettre personnelle : prévus dans le Comptoir (Notices).'),
   'c4.en.parler.presenter-raconter': HORS(ORAL),
   'c4.en.ecrire.dictee-fiche': A_COUVRIR('Écrire sous la dictée au cycle 4 : le Vocabulaire du portail le fait au niveau A1 seulement.'),
   'c4.en.ecrire.recit': HORS(ECRITURE_LIBRE),

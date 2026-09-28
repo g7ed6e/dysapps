@@ -1,0 +1,247 @@
+{
+  "id": "comptoir-notices-1",
+  "biome": "comptoir",
+  "type": "notices",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "comptoir-notices-1-0",
+      "question": "Que dois-tu faire pour ouvrir cette porte ?",
+      "prompt": "Pull",
+      "spoken": "Pull.",
+      "choices": [
+        "Tirer la porte",
+        "Pousser la porte",
+        "Frapper à la porte"
+      ],
+      "answer": "Tirer la porte",
+      "hint": "Sur une porte, on lit l’un de deux mots contraires : push ou pull.",
+      "explanation": "pull = tirer : on tire la porte vers soi. Pousser se dit push.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-1",
+      "question": "Que demande ce panneau dans le parc ?",
+      "prompt": "Keep off the grass",
+      "spoken": "Keep off the grass.",
+      "choices": [
+        "Ne pas marcher sur la pelouse",
+        "Garder la pelouse propre",
+        "Rester sur la pelouse"
+      ],
+      "answer": "Ne pas marcher sur la pelouse",
+      "hint": "Regarde le petit mot après keep : off veut dire « loin de ».",
+      "explanation": "keep off the grass = ne pas aller sur la pelouse. keep seul veut dire garder ; avec off, il veut dire rester loin de.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-2",
+      "question": "Que veut dire ce panneau posé sur un banc ?",
+      "prompt": "Wet paint",
+      "spoken": "Wet paint.",
+      "choices": [
+        "Peinture fraîche",
+        "Banc mouillé par la pluie",
+        "Peinture à l’eau"
+      ],
+      "answer": "Peinture fraîche",
+      "hint": "paint, c’est la peinture. Et wet ?",
+      "explanation": "wet paint = peinture fraîche : la peinture n’est pas encore sèche. wet veut dire mouillé, pas encore sec.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-3",
+      "question": "Que veut dire ce panneau sur la machine à boissons ?",
+      "prompt": "Out of order",
+      "spoken": "Out of order.",
+      "choices": [
+        "En panne",
+        "En désordre",
+        "Commande terminée"
+      ],
+      "answer": "En panne",
+      "hint": "order ressemble à « ordre », mais out of order a un autre sens.",
+      "explanation": "out of order = en panne : la machine ne marche pas. Ce n’est pas « en désordre », et une commande se dit an order.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-4",
+      "question": "À quelle heure rouvre la boutique ?",
+      "prompt": "Closed for lunch\nBack at 2 pm",
+      "spoken": "Closed for lunch. Back at two p.m.",
+      "choices": [
+        "À 14 h",
+        "À 2 h",
+        "À 12 h"
+      ],
+      "answer": "À 14 h",
+      "hint": "pm veut dire « après midi ».",
+      "explanation": "back at 2 pm = de retour à 2 heures après midi, donc à 14 h (2 + 12). La boutique est fermée pendant le déjeuner : closed for lunch.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-5",
+      "question": "Où se trouve ce panneau ?",
+      "prompt": "School library\nPlease be quiet.",
+      "spoken": "School library. Please be quiet.",
+      "choices": [
+        "Dans la bibliothèque",
+        "Dans une librairie",
+        "Dans la cour"
+      ],
+      "answer": "Dans la bibliothèque",
+      "hint": "library ressemble à un mot français, mais c’est un faux ami.",
+      "explanation": "library = bibliothèque (une librairie se dit a bookshop). be quiet = reste calme, en silence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-6",
+      "question": "Que dois-tu faire ?",
+      "prompt": "Underline the verbs in the text.",
+      "spoken": "Underline the verbs in the text.",
+      "choices": [
+        "Souligner les verbes",
+        "Entourer les verbes",
+        "Recopier les verbes"
+      ],
+      "answer": "Souligner les verbes",
+      "hint": "Coupe le mot en deux : under (sous) et line (ligne).",
+      "explanation": "underline = souligner : tracer une ligne sous le mot. Entourer se dit circle, recopier se dit copy.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "comptoir-notices-1-7",
+      "question": "Avec quoi dois-tu écrire ?",
+      "prompt": "Do not use a pencil.\nWrite in blue or black pen.",
+      "spoken": "Do not use a pencil. Write in blue or black pen.",
+      "choices": [
+        "Avec un stylo bleu ou noir",
+        "Avec un crayon bleu ou noir",
+        "Avec un crayon à papier"
+      ],
+      "answer": "Avec un stylo bleu ou noir",
+      "hint": "do not veut dire « ne pas » : la première phrase interdit quelque chose.",
+      "explanation": "pen = stylo ; pencil = crayon. Do not use a pencil : n’écris pas au crayon. On écrit au stylo bleu ou noir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un panneau, une consigne",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas",
+            "closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais",
+            "Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon",
+            "am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "tuile",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

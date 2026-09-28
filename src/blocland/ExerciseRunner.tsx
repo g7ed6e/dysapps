@@ -23,6 +23,7 @@ import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { reviewKeys } from './review';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
+import { autoReadText } from './exercises/lecture';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { Stars } from './Stars';
@@ -85,11 +86,22 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   // La consigne est lue au début de la partie, sauf si l'écran lit déjà son mot (dictée) : les deux se couperaient.
   // Le Gardien a son propre texte d'accueil, et chaque manche affiche sa consigne.
   const ownConsigne = def.type !== 'boss';
+  // Un document à lire (Notices) : sa question en français est dite avec la consigne au premier écran, puis seule à
+  // chaque écran suivant ; le document anglais n'est lu qu'à la demande.
+  const autoRead = ownConsigne && settings.autoRead && !type?.speaksOnOpen;
   useEffect(() => {
-    if (ownConsigne && settings.autoRead && !type?.speaksOnOpen) speak(frenchTypography(def.instruction));
+    if (autoRead) speak(autoReadText(def.instruction, screens[0]));
     // Une lecture par partie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def.id]);
+  useEffect(() => {
+    if (!autoRead || index === 0) return;
+    // Seule une question se lit à chaque écran : un texte vide couperait une lecture en cours.
+    const text = autoReadText(null, items);
+    if (text) speak(text);
+    // Une lecture par écran.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   // Le bandeau de résultat ne cache pas la réponse.
   useSheetClearance(sectionRef, Boolean(answered) && !done);
