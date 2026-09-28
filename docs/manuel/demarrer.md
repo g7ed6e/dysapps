@@ -4,7 +4,7 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’Archipéo, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [Archipéo](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
+L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [L’aventure](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
 - **Menu** (adresse `#/menu`) : le menu principal, en page. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple). De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
@@ -15,7 +15,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’
   - en bas, les liens **Toutes les missions**, **Réglages** et **Revoir le tutoriel**.
 
   La première fois, à la place de « Reprendre l’aventure », la carte **Commencer ici** lance le Tutoriel. Sur téléphone, le bouton « Reprendre l’aventure » se voit sans faire défiler ; sur tablette, tout le menu tient presque sur un écran.
-- **Aventure** : Archipéo, le village à reconstruire. Son **école du village** ouvre aussi les missions du portail, qui y rapportent des blocs.
+- **Aventure** : Blocland, le village à reconstruire. Son **école du village** ouvre aussi les missions du portail, qui y rapportent des blocs.
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
@@ -59,15 +59,15 @@ Ce premier toucher sert aussi à **débloquer la voix et les sons** : les naviga
 
 Quand des items ratés reviennent (répétition espacée), le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-Dans le menu aussi, **Continuer** ramène à la dernière mission ouverte (du portail ou d’Archipéo ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+Dans le menu aussi, **Continuer** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
 2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; dans le menu du village, ligne « Tutoriel ») est une mission d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
-3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure Archipéo (voir [Archipéo](blocland.md)). Dans Archipéo, un tutoriel de huit bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
+3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure (voir [L’aventure](blocland.md)). Dans l’aventure, un tutoriel de huit bulles, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une flèche jaune indique où commencer, et le bouton dont parle une bulle est entouré de jaune.
 
-Les séances sont pensées **courtes** : une mission du portail dure une dizaine de questions ; dans Archipéo, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
+Les séances sont pensées **courtes** : une mission du portail dure une dizaine de questions ; dans l’aventure, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
 
 ## Les mises à jour
 

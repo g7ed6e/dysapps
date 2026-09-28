@@ -90,4 +90,4 @@ Le même jeu tient sur un téléphone en portrait : le monde en haut, le panneau
 
 La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
 
-![La vue simple : la page Archipéo, ses boutons Mes blocs, École du village, Monuments, et les îles en cartes.](/captures/vue-simple.jpg)
+![La vue simple : la page Blocland, ses boutons Mes blocs, École du village, Monuments, et les îles en cartes.](/captures/vue-simple.jpg)

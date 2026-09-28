@@ -1,1 +1,0 @@
-- L’écran titre, la barre du haut et l’habillage de l’interface sont ceux de Blocland, comme le monde : l’île en blocs, « Blocland » et le bouton vert. Archipéo ne se montre plus au démarrage ; il reste réservé à la bascule du lot 6, depuis les Réglages. Le retour vers la carte, depuis une île, dit « Carte de Blocland ».
