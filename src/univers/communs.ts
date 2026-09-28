@@ -14,7 +14,6 @@ export const ETATS_D_ILE: Record<IslandStateId, string> = {
 };
 
 /** Ce que disent les créatures, île par île. */
-
 export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   foret: {
     greeting: 'Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',

@@ -195,7 +195,7 @@ export function WorldPage() {
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.village.bridges, state.village.plans, state.progress],
+    [a, mapOpen, state.village.bridges, state.village.plans, state.progress, textes],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
