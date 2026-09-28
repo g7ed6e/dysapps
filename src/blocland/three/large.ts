@@ -3,7 +3,7 @@
 // profondeur et la faune en facettes, un appel de dessin par famille.
 import * as THREE from 'three';
 import { AMBIENCE, palette } from '../world/daylight';
-import { NUAGES, nuagesDe, oiseauxDe, poseDePassage, poseDeRonde, type PoseDeBaleine, type Ronde } from '../world/faune';
+import { NUAGES, nuagesDe, oiseauxDe, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type PoseDeBaleine, type Ronde } from '../world/faune';
 import type { ChampDuSol } from '../world/landMesh';
 import { signatureDesTerres, terresDeLaMer } from '../world/mer';
 import { cielDe, teinteSur } from '../world/palette';
@@ -182,7 +182,14 @@ export function creerLarge(
   foam.visible = false;
   if (!archipeo) scene.add(foam);
   // Archipéo (lot R3) : les baleines, les oiseaux et les nuages en facettes, un appel de dessin par famille.
-  const faune = archipeo ? creerFaune({ baleines: whales.length, oiseaux: birds.length, nuages: cloudAt.length }) : null;
+  // Aux Îles du Ciel, l'oiseau planeur (R4b-3e) : une instance de plus des oiseaux, la dernière, sans appel de dessin de plus.
+  const planeur = archipeo ? planeurDe(archipel, bounds) : null;
+  const faune = archipeo ? creerFaune({ baleines: whales.length, oiseaux: birds.length + (planeur ? 1 : 0), nuages: cloudAt.length }) : null;
+  const poserPlaneur = (t: number, reduit: boolean) => {
+    if (!planeur || !faune) return;
+    const p = poseDuPlaneur(planeur, t, reduit);
+    faune.poserOiseau(birds.length, p.x, p.y, p.z, p.cap, PLANEUR.ailes, p.echelle);
+  };
   if (faune) scene.add(faune.group);
   /** Pose un nuage d'Archipéo à sa place (le milieu de ses cubes d'avant), tourné d'un rien, chacun le sien. */
   const placeCloud = (i: number) => {
@@ -202,6 +209,7 @@ export function creerLarge(
       const o = birdAt(b, 0);
       faune.poserOiseau(i, o.x, o.y, o.z, o.cap, 0.6);
     });
+    poserPlaneur(0, true);
     whales.forEach((wh, i) => faune.poserBaleine(i, { ...poseDeRonde(wh, 0), queue: 0, souffle: 0 }));
     faune.fin();
   }
@@ -246,6 +254,7 @@ export function creerLarge(
       // La houle et l'écume d'Archipéo.
       mer?.temps(t);
       if (floorTex) floorTex.offset.set(t * 0.004, t * 0.002);
+      poserPlaneur(t, false);
       for (const [i, b] of birds.entries()) {
         const o = birdAt(b, t);
         // Archipéo : l'oiseau bat des ailes en s'écrasant en hauteur (ailes relevées, puis baissées).

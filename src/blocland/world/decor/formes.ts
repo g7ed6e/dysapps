@@ -6,7 +6,7 @@ import { FORMES_COMMUNES } from './communes';
 import { FORMES_6E } from './6e';
 import { FORMES_5E, LOINTAIN_5E, RETOUCHES_5E } from './5e';
 import { FORMES_4E, LOINTAIN_4E, RETOUCHES_4E } from './4e';
-import { FORMES_3E } from './3e';
+import { FORMES_3E, LOINTAIN_3E } from './3e';
 import type { Lointain } from './lointain';
 import { enBoites, type Forme } from './outils';
 import type { ArchipelagoId } from '../map';
@@ -28,4 +28,4 @@ export function formeDe(genre: string, a?: ArchipelagoId): Forme {
  * Le lointain de chaque archipel qui en a un (./lointain.ts) : chaque sous-lot décrit le sien dans son fichier et le
  * range ici par une seule ligne. Le 6e le reçoit à la revue d'ensemble seulement.
  */
-export const LOINTAINS: Readonly<Partial<Record<ArchipelagoId, Lointain>>> = { '5e': LOINTAIN_5E, '4e': LOINTAIN_4E };
+export const LOINTAINS: Readonly<Partial<Record<ArchipelagoId, Lointain>>> = { '5e': LOINTAIN_5E, '4e': LOINTAIN_4E, '3e': LOINTAIN_3E };

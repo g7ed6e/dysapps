@@ -15,9 +15,9 @@ L’accomplissement : on voit loin. En arrivant, l’élève voit au centre de l
   - Deux étages en gradins : des salles de 3 × 3 cases sur 2 de haut, puis une salle de 2 × 2 sur 1 de haut, soit 3 cases de haut. Des baies cintrées sombres, de la neige sur les terrasses.
   - Il couvre les deux cases bloquées aujourd’hui, et sinon seulement des cases où l’on ne marche pas. Jamais une case du cœur : un test le vérifie.
 - **Le massif enneigé continu** (R4b, par `lointain.ts`, de 800 à 1 500 triangles).
-  - Une crête irrégulière, au moins 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 20 à 30 blocs de haut.
+  - Une crête irrégulière, au moins 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 14 à 30 blocs de haut. Construit : deux rangs, 14 blocs à 80 cases et 18 blocs à 110 cases, cols hauts (0,55 à 0,75 de la hauteur) pour que la neige fasse une bande continue.
   - Roche `#7E8AA8`, ombres `#47598C`, neige `#E5EBE3` au-dessus de 55 % de la hauteur.
-  - Dans la vue de l’archipel, sa crête reste sous la galerie du phare.
+  - Dans la vue de l’archipel, la lanterne se détache sur la bande claire de l’horizon (plancher et ciel), jamais sur la roche du massif. Toute la crête tient dans le cadre, sous la barre du haut, avec du ciel au-dessus. En hauteur du monde, la lanterne est le point le plus haut des îles ; le massif est un fond. (Décision du directeur artistique du 28 septembre 2026, à la relecture de R4b-3e : « sa crête reste sous la galerie » n’est pas tenable avec la caméra du jeu, qui regarde vers le bas : tout objet lointain se projette au-dessus de la lanterne.)
 - **Le plancher de nuages** `#DDE3E8` (aujourd’hui `#E0E6F2`), un blanc bleuté, jamais sable.
 - **L’oiseau planeur** (R4b, dans `world/faune.ts`, un appel de dessin, 150 triangles au plus).
   - Un seul oiseau, de 3 cases d’envergure, ailes fixes, aux couleurs des oiseaux communs, qui tourne au-dessus du massif, derrière l’arc des îles, à hauteur de la galerie du phare, plus haut que tous les autres oiseaux, en 24 s au moins par tour, à vitesse constante, sans à-coups ni battement d’ailes.
@@ -66,7 +66,7 @@ Les nappes suivent `respirationDeLaBrume` et se figent d’un coup avec « Rédu
 - **Captures** : les 21 déclarées (l’île montrée est le Belvédère), l’arrivée en voyage, l’île du Phare de jour et de nuit, et les deux phares au même cadrage.
 - **Critères** :
   - La teinte de l’horizon et du voile est entre 195° et 215°.
-  - La lanterne du phare est le point le plus haut de la vue de l’archipel (l’oiseau planeur mis à part), sur le ciel.
+  - Dans la vue de l’archipel, la lanterne se détache sur la bande claire de l’horizon, jamais sur la roche du massif ; toute la crête tient dans le cadre (voir §2).
   - Le fût se lit en gris contre la neige et le plancher : un contraste d’au moins 1,3:1 avec son fond direct, sinon ce sont les bandes qui portent la silhouette.
   - Proportions et couleurs identiques au 6e.
   - Aucune case du cœur sous le socle.

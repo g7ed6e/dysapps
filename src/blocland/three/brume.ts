@@ -1,10 +1,11 @@
 // La brume de la scène 3D : le brouillard de profondeur (couleur d'horizon, qui suit le jour ; aucun sur la Carte, vue
 // de très haut), les nappes translucides sous les sommets des Îles du Ciel, qui respirent lentement, et dans Archipéo
-// les bancs de brume des Îles Brumeuses sur la mer libre (R4b-5e, world/decor/brume.ts), en un appel de dessin, qui
-// respirent selon la règle commune, à moitié sur la Carte, figés quand l'appareil demande moins d'animations (`reduit`).
+// les bancs de brume des Îles Brumeuses sur la mer libre (R4b-5e) ou les nappes des sommets des Îles du Ciel en une
+// seule couche (R4b-3e), tous deux de world/decor/brume.ts, en un appel de dessin, qui respirent selon la règle commune,
+// à moitié sur la Carte, figés quand l'appareil demande moins d'animations (`reduit`).
 import * as THREE from 'three';
 import { AMBIENCE, mixColor, palette } from '../world/daylight';
-import { bancsDeBrume } from '../world/decor/brume';
+import { brumeDArchipeo } from '../world/decor/brume';
 import { respirationDeLaBrume } from '../world/decor/fumee';
 import { cielDe } from '../world/palette';
 import { mistPatches } from '../world/terrain';
@@ -26,10 +27,11 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
   // Sa couleur : celle de l'horizon (Archipéo), ou du ciel.
   lumiere.suivre((jour) => fog.color.setHex(archipeo ? cielDe(archipel, jour).horizon : palette(jour, archipel).sky));
 
-  // La brume des sommets : une nappe translucide sous chaque île la plus haute (seulement sous les Îles du Ciel).
-  const mistMat = new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
+  // La brume des sommets : une nappe translucide sous chaque île la plus haute (seulement sous les Îles du Ciel), dans
+  // le monde en blocs ; Archipéo les dessine en un seul maillage, avec les bancs.
+  const mistMat = archipeo ? null : new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0.55, depthWrite: false });
   const mists: THREE.Mesh[] = [];
-  for (const m of mistPatches(archipel)) {
+  if (mistMat) for (const m of mistPatches(archipel)) {
     const mist = new THREE.Mesh(new THREE.PlaneGeometry(m.w, m.h), mistMat);
     mist.rotation.x = -Math.PI / 2;
     mist.position.set(m.x, m.z, m.y);
@@ -37,8 +39,9 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
     mists.push(mist);
   }
 
-  // Les bancs de brume (Archipéo, 5e) : sans lumière ; la nuit les assombrit vers le bleu de crépuscule.
-  const bancs = archipeo ? bancsDeBrume(archipel) : null;
+  // Les bancs de brume (Archipéo, 5e) ou les nappes des sommets (3e) : sans lumière ; la nuit les assombrit vers le bleu
+  // de crépuscule.
+  const bancs = archipeo ? brumeDArchipeo(archipel) : null;
   let banc: THREE.Mesh | null = null;
   const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, fog: false });
   if (bancs) {
@@ -76,8 +79,8 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
         banc.geometry.dispose();
       }
       bancMat.dispose();
-      mistMat.map?.dispose();
-      mistMat.dispose();
+      mistMat?.map?.dispose();
+      mistMat?.dispose();
     },
   };
 }
