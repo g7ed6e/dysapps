@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
 import type { BiomeId } from './biomes';
-import { CREATURE_CUBES, Creature } from './Creatures';
+import { Creature } from './Creatures';
+import { CREATURE_CUBES } from './world/personnages/creatures';
 import { VoxelCanvas, hasWebGL } from './three';
 
 interface Props {

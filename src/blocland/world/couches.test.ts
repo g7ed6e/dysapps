@@ -56,6 +56,10 @@ const GRILLE = [
   'world/silhouettes/5e',
   'world/silhouettes/4e',
   'world/silhouettes/3e',
+  // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
+  'world/personnages/ascii',
+  'world/personnages/creatures',
+  'world/personnages/gardiens',
 ];
 
 /** Le contrat commun des vues et sa simulation. */
@@ -80,8 +84,6 @@ const EXCEPTIONS: Record<string, string> = {
   'world/grille → Voxel': 'les types VoxelCube et VillagePlaceId, rangés dans un composant (J5)',
   'world/paths → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
   'world/terrain → Avatar': 'la place du bonhomme sur son île, AVATAR_HOME (J5)',
-  'world/terrain → Creatures': 'les modèles des créatures, dans un composant React (R6, premier commit)',
-  'world/terrain → Guardians': 'les modèles des Gardiens, dans un composant React (R6, premier commit)',
   'world/terrain → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
   'world/decor → Voxel': 'le type VoxelCube, rangé dans un composant ; le décor sorti de terrain.ts au lot R4 en hérite (J5)',
   'world/terrain → world/daylight': 'l’ambiance d’un archipel (le ciel), lue pour poser le décor (J5)',

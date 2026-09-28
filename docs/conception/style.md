@@ -74,7 +74,7 @@ Depuis le lot R7, la vue 2D est **peinte** avec le drapeau (`src/blocland/pixel/
 
 ## Univers et créatures
 
-Univers, créatures et Gardiens sont dessinés en cubes (`src/blocland/Voxel.tsx`, `Creatures.tsx`, `Guardians.tsx`, `Avatar.ts`) ; noms et personnages sont originaux. La liste des créatures et des Gardiens, île par île, est dans [L’archipel](../pedagogie/archipel.md).
+Univers, créatures et Gardiens sont dessinés en cubes (`src/blocland/Voxel.tsx`, `Avatar.ts`, les modèles de `world/personnages/`) ; noms et personnages sont originaux. La liste des créatures et des Gardiens, île par île, est dans [L’archipel](../pedagogie/archipel.md).
 
 ## Sons
 

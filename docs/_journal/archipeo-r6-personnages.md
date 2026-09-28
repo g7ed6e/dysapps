@@ -1,0 +1,1 @@
+Archipéo, lot R6 (les personnages), en cours : les modèles des créatures et des Gardiens sortent des composants de l’interface pour devenir de simples données, que le monde et chaque vue lisent. Rien ne change à l’écran.
