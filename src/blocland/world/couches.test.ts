@@ -35,13 +35,15 @@ const REGLES = [
   'world/architect',
   'world/monuments',
   'world/modele',
+  // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
+  'world/disposition',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
-const GRILLE = ['world/map', 'world/harbour', 'world/ground', 'world/paths', 'world/terrain', 'world/decor', 'world/whalePass'];
+const GRILLE = ['world/map', 'world/harbour', 'world/ground', 'world/paths', 'world/terrain', 'world/decor', 'world/whalePass', 'world/grille'];
 
 /** Le contrat commun des vues et sa simulation. */
-const COMMUN = ['world/view', 'world/scene', 'world/disposition'];
+const COMMUN = ['world/view', 'world/scene'];
 
 const PERMIS: Record<Couche, Couche[]> = {
   regle: ['regle', 'neutre'],
@@ -59,8 +61,8 @@ const EXCEPTIONS: Record<string, string> = {
   'biomes → components/Icon': 'le nom d’icône d’une île (un type seulement), un détail d’interface dans les données (J7)',
   'boss → exercises/registry': 'le défi du Gardien lit combien d’items montre chaque écran, rangé avec les écrans (J7)',
   'world/islandState → components/Icon': 'le nom d’icône d’un état d’île (un type seulement) (J7)',
+  'world/grille → Voxel': 'les types VoxelCube et VillagePlaceId, rangés dans un composant (J5)',
   'world/paths → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
-  'world/paths → world/view': 'les types Cell et CreaturePlacement, rangés dans le contrat des vues (J3)',
   'world/terrain → Avatar': 'la place du bonhomme sur son île, AVATAR_HOME (J5)',
   'world/terrain → Creatures': 'les modèles des créatures, dans un composant React (J5)',
   'world/terrain → Guardians': 'les modèles des Gardiens, dans un composant React (J5)',
