@@ -121,6 +121,15 @@ export function BossPage() {
         </>
       ) : (
         <>
+          {sent && def && (
+            // La règle du rallumage, au même endroit à chaque défi : avant l'arène, lue à la demande.
+            <div className="consigne arena-regle">
+              <p className="consigne-text">
+                <Syllabified text={def.instruction} />
+              </p>
+              <SpeakButton text={def.instruction} label="Consigne" compact />
+            </div>
+          )}
           <section
             className={`arena${sent ? ' arena-sentinelle' : ''}${beatenNow && !sent ? ' arena-beaten' : ''}`}
             aria-label={textes.libelles.arene(biome.guardian)}
