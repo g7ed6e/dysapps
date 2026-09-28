@@ -33,7 +33,7 @@ import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
 import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
-import { renduDuMonde } from './rendu';
+import { habillageDuMonde } from './habillage';
 import { useTextes } from '../univers';
 import {
   borneTouchee,
@@ -126,8 +126,8 @@ export function WorldPage() {
   // Gardien est là dès l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village,
   // éteint, pour se rallumer sous les yeux de l'élève.
   const textes = useTextes();
-  const [rendu] = useState(renduDuMonde);
-  const sentinelles = textes.sentinelles !== null && rendu === 'archipeo';
+  const [habillage] = useState(habillageDuMonde);
+  const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(

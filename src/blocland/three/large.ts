@@ -41,7 +41,8 @@ export function creerLarge(
   /** Le dernier passage de la baleine joué : gardé par la vue, pour ne pas le rejouer quand la scène est refaite. */
   passSeq: { current: number | null },
 ): Large {
-  const { scene, archipel, archipeo, etendue: bounds, centre: center, largeur: width } = monde;
+  const { scene, archipel, etendue: bounds, centre: center, largeur: width } = monde;
+  const peinte = monde.habillage.large === 'mer-et-faune';
   const ambience = AMBIENCE[archipel];
 
   // L'eau : un grand plan sous le niveau du sol, avec des crêtes pixel qui défilent.
@@ -62,11 +63,11 @@ export function creerLarge(
   water.rotation.x = -Math.PI / 2;
   water.position.set(center.x, WATER_LEVEL, center.y);
   // Les Îles du Ciel : pas de mer, un plancher de nuages qui dérive lentement sous les îles.
-  water.visible = !ambience.sky && !archipeo;
+  water.visible = !ambience.sky && !peinte;
   scene.add(water);
   // Archipéo (lot R3) : la mer en dégradé de profondeur, l'écume du rivage et la houle (ou le plancher de nuages), en
   // un appel de dessin ; peinte avec le terrain, quand la côte est connue.
-  const mer = archipeo ? creerMer(archipel, bounds, width * 4) : null;
+  const mer = peinte ? creerMer(archipel, bounds, width * 4) : null;
   if (mer) {
     mer.mesh.position.y = ambience.sky ? CLOUD_FLOOR : WATER_LEVEL;
     scene.add(mer.mesh);
@@ -82,7 +83,7 @@ export function creerLarge(
   const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
   cloudFloor.rotation.x = -Math.PI / 2;
   cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
-  cloudFloor.visible = ambience.sky && !archipeo;
+  cloudFloor.visible = ambience.sky && !peinte;
   scene.add(cloudFloor);
 
   // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
@@ -94,7 +95,7 @@ export function creerLarge(
     const low = ambience.sky && i >= CLOUDS.length;
     return { x: bounds.minX + fx * width, y: low ? 4 + (i % 3) : 12, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
   });
-  if (!archipeo) cloudSpots.forEach(([fx, fy, len], i) => {
+  if (!peinte) cloudSpots.forEach(([fx, fy, len], i) => {
     const cloud = new THREE.Group();
     for (let k = 0; k < len; k++) {
       const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
@@ -121,7 +122,7 @@ export function creerLarge(
     right.position.x = 0.25;
     group.add(left, right);
     // (Archipéo : les oiseaux sont des instances de la faune, plus bas ; le groupe ne sert qu'à garder leur vol.)
-    if (!archipeo) scene.add(group);
+    if (!peinte) scene.add(group);
     birds.push({
       group,
       wings: [left, right],
@@ -159,7 +160,7 @@ export function creerLarge(
     spout.visible = false;
     group.add(body, head, belly, fin, fluke, spout);
     // (Archipéo : les baleines sont des instances de la faune, plus bas.)
-    if (!archipeo) scene.add(group);
+    if (!peinte) scene.add(group);
     whales.push({ group, fluke, spout, skin: [body, head, fin, fluke], cx: spot.x, cy: spot.y, r: spot.r, phase: i * 2.1, speed: 0.12 + i * 0.03 });
   });
   // Le passage au large (le mot de la baleine) : la baleine qui passe prend une peau qui garde sa silhouette la nuit
@@ -180,11 +181,11 @@ export function creerLarge(
     foam.add(strip);
   }
   foam.visible = false;
-  if (!archipeo) scene.add(foam);
+  if (!peinte) scene.add(foam);
   // Archipéo (lot R3) : les baleines, les oiseaux et les nuages en facettes, un appel de dessin par famille.
   // Aux Îles du Ciel, l'oiseau planeur (R4b-3e) : une instance de plus des oiseaux, la dernière, sans appel de dessin de plus.
-  const planeur = archipeo ? planeurDe(archipel, bounds) : null;
-  const faune = archipeo ? creerFaune({ baleines: whales.length, oiseaux: birds.length + (planeur ? 1 : 0), nuages: cloudAt.length }) : null;
+  const planeur = peinte ? planeurDe(archipel, bounds) : null;
+  const faune = peinte ? creerFaune({ baleines: whales.length, oiseaux: birds.length + (planeur ? 1 : 0), nuages: cloudAt.length }) : null;
   const poserPlaneur = (t: number, reduit: boolean) => {
     if (!planeur || !faune) return;
     const p = poseDuPlaneur(planeur, t, reduit);
@@ -218,7 +219,7 @@ export function creerLarge(
 
   // L'eau (ou le plancher de nuages) et la faune suivent le jour.
   lumiere.suivre((jour) => {
-    if (archipeo) {
+    if (peinte) {
       const c = cielDe(archipel, jour);
       waterMat.color.setHex(teinteSur(c.mer, EAU_MOYENNE));
       if (ambience.sky) cloudFloorMat.color.setHex(c.mer);

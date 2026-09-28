@@ -48,16 +48,17 @@ interface Spark {
 }
 
 export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant: Instant): Cubes {
-  const { scene, archipel, archipeo, surface } = monde;
+  const { scene, archipel, surface } = monde;
+  const facettes = monde.habillage.sol === 'facettes';
   const terrain = new THREE.Group();
   scene.add(terrain);
   // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction) ; le décor en primitives (R4).
-  const sol = archipeo ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(instant), decorSignature: '' } : null;
+  const sol = facettes ? { en3D: creerSol(), champ: null as ChampDuSol | null, signature: '', decor: creerDecor(instant), decorSignature: '' } : null;
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
   // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
   if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
   // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés.
-  const materiaux = archipeo ? creerMateriaux(lumiere) : null;
+  const materiaux = facettes ? creerMateriaux(lumiere) : null;
   // Un maillage par île, gardé : poser un bloc ne refait que son île.
   const taille = materiaux
     ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), cache: cacheDeLaConstruction(), maillage: null as MaillageDeLaConstruction | null }
