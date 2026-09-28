@@ -18,7 +18,8 @@
 import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
-import { formeDe } from './decor/formes';
+import { formeDe, LOINTAINS } from './decor/formes';
+import { dessinerLointain } from './decor/lointain';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
@@ -26,6 +27,7 @@ import type { ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { kindOf, PROP_KINDS } from './props';
+import { worldBounds } from './terrain';
 import type { Cell } from './view';
 
 export { ELAN, FAMILLES, FEUILLAGE, PIED, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
@@ -121,6 +123,11 @@ export interface MaillageDuDecor {
   fumees: FumeeDuDecor;
   /** Les éléments dessinés, dans l'ordre de `elements`. */
   elements: ElementDeDecor[];
+  /**
+   * Le premier triangle du lointain dans `decor` (./decor/lointain.ts) : il vient après ceux des éléments, jusqu'au
+   * bout ; la vue 3D le cache sur la Carte et ne le touche pas. Sans lointain, le nombre de triangles du décor.
+   */
+  debutDuLointain: number;
 }
 
 /** Les options du décor : le style de surface (`a` : aplats, sans nuance ni variation ; `b` : la nuance retenue). */
@@ -192,7 +199,11 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     const rot = hasard() * Math.PI * 2;
     formeDe(e.genre)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
   });
-  return { decor: P.fin(), lueurs: L.fin(), fumees: F.fin(a), elements };
+  // Le lointain, derrière l'archipel, dans le même appel de dessin que le décor, après ses éléments (R4b-5e).
+  const debutDuLointain = P.triangles;
+  const lointain = LOINTAINS[a];
+  if (lointain) dessinerLointain(P, worldBounds(a), lointain);
+  return { decor: P.fin(), lueurs: L.fin(), fumees: F.fin(a), elements, debutDuLointain };
 }
 
 /** Triangles et appels de dessin d'un maillage du décor. */
