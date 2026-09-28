@@ -16,7 +16,7 @@ import { CreatureBubble } from './CreatureBubble';
 import { InventoryLink } from './Inventory';
 import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -160,7 +160,7 @@ export function BiomePage() {
         </h2>
       )}
       {!sansLv2 && (() => {
-        const ready = unlocked && isBossUnlocked(biome, state.progress);
+        const ready = unlocked && isBossOpen(biome, state.progress);
         const beaten = isBossBeaten(biome.id, state.progress);
         const boss = state.progress[`${biome.id}-gardien`];
         const content = (

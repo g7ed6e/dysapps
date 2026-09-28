@@ -4,7 +4,8 @@ import { questsToReview } from './review';
 import { subjectInfo, visibleSubjects } from '../apps/registry';
 import { bridgesOf, buildableBridges, grantAccess } from './world/archipelago';
 import { getBiome, missionsJouables } from './biomes';
-import { isBossUnlocked, typesWithContent } from './boss';
+import { bossId, guardianStatus, isBossUnlocked, typesWithContent } from './boss';
+import { exercisesOf } from './exercises';
 
 const relais = getBiome('relais')!;
 
@@ -56,6 +57,26 @@ it('« À revoir » ne propose que les missions de la LV2 choisie', () => {
     expect(types).toEqual(['de-hallo', 'de-zahlen', 'de-familie', 'de-der-die-das']);
     retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'aucune' });
     expect(questsToReview(spaced, bridges, '2026-09-28')).toEqual([]);
+  } finally {
+    retenirReglages(null);
+  }
+});
+
+it('la Diligence battue en espagnol reste vaincue quand l’élève passe à l’allemand ou à « Pas de LV2 »', () => {
+  const bridges = grantAccess([], ['relais']);
+  // Deux étoiles à chaque mission espagnole, puis le défi gagné.
+  const progress: Record<string, { stars: number }> = { [bossId('relais')]: { stars: 2 } };
+  for (const x of missionsJouables(relais, 'es')) progress[exercisesOf('relais', x.id)[0].id] = { stars: 2 };
+  try {
+    retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'es' });
+    expect(guardianStatus(relais, progress, bridges)).toBe('beaten');
+    // Les missions allemandes n'ont pas d'étoile : le défi n'est pas débloqué en allemand, mais la victoire reste.
+    retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'de' });
+    expect(isBossUnlocked(relais, progress)).toBe(false);
+    expect(guardianStatus(relais, progress, bridges)).toBe('beaten');
+    expect(guardianStatus(relais, progress, bridges, true)).toBe('beaten');
+    retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'aucune' });
+    expect(guardianStatus(relais, progress, bridges)).toBe('beaten');
   } finally {
     retenirReglages(null);
   }

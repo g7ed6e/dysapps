@@ -43,6 +43,14 @@ export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars
 }
 
 /**
+ * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (une revanche), même si une mission
+ * est arrivée depuis sur l'île sans étoile. Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
+ */
+export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
+  return typesWithContent(biome).length > 0 && (isBossBeaten(biome.id, progress) || isBossUnlocked(biome, progress));
+}
+
+/**
  * Où en est le Gardien d'une île : caché, en attente de son défi (une sentinelle éteinte, visible dès l'ouverture de
  * l'île, lot 6), prêt à le relever, ou vaincu.
  */

@@ -216,7 +216,7 @@ Le défi enchaîne **deux manches de chaque mission** de l’île, tirées au ha
 
 **L’îlot du Gardien** apparaît devant l’île dès que le Gardien accepte le défi : une petite île ronde au sol de son île (herbe, neige, basalte…), bordée de sable au bord de la mer, avec quelques touches de son décor. Au milieu, le Gardien se dresse sur une **arène** pavée de pierre, bordée de galet. Des **pas japonais**, pierres posées dans l’eau, relient l’îlot à la côte de l’île. Dans les archipels en altitude, l’îlot flotte sur sa roche, comme les îles.
 
-**Deux étoiles au défi** : Gardien vaincu. Blocs d’or, XP, succès, et le Gardien devient une statue de pierre sur son îlot, avec un bloc d’or posé sur un socle devant lui. On peut le réaffronter. Un Gardien vaincu le reste : si une mission arrive plus tard sur son île, il reste statue (ou sentinelle rallumée dans Archipéo), même avant les étoiles de cette mission. Vaincre un Gardien ouvre aussi les tunnels et les cols qui partent de son île, et compte pour le kit du Bloc-Navire de l’archipel.
+**Deux étoiles au défi** : Gardien vaincu. Blocs d’or, XP, succès, et le Gardien devient une statue de pierre sur son îlot, avec un bloc d’or posé sur un socle devant lui. On peut le réaffronter. Un Gardien vaincu le reste : si une mission arrive plus tard sur son île, il reste statue (ou sentinelle rallumée dans Archipéo), même avant les étoiles de cette mission, et on peut toujours le réaffronter. Vaincre un Gardien ouvre aussi les tunnels et les cols qui partent de son île, et compte pour le kit du Bloc-Navire de l’archipel.
 
 ### Les sentinelles d’Archipéo
 

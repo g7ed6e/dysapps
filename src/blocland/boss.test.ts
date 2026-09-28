@@ -2,7 +2,7 @@ import { BIOMES, getBiome, guardianTitle } from './biomes';
 import { EMPTY_STATE, type BloclandState, type ExerciseProgress } from './engine';
 import { exercisesOf, loadExercise } from './exercises';
 import { SCREEN_TYPES } from './exercises/registry';
-import { ROUNDS_PER_TYPE, bossDef, bossId, bossesBeaten, guardianStatus, isBossBeaten, isBossUnlocked, missingForBoss, typesWithContent } from './boss';
+import { ROUNDS_PER_TYPE, bossDef, bossId, bossesBeaten, guardianStatus, isBossBeaten, isBossOpen, isBossUnlocked, missingForBoss, typesWithContent } from './boss';
 
 /** Deux étoiles sur un exercice de chaque type du biome. */
 function starsEverywhere(biomeId: string, stars: 0 | 1 | 2 | 3 = 2): Record<string, ExerciseProgress> {
@@ -62,11 +62,14 @@ it('un Gardien vaincu le reste, même si une mission sans étoile arrive sur son
   expect(isBossUnlocked(foret, avantLaMission)).toBe(false);
   expect(guardianStatus(foret, avantLaMission, [])).toBe('beaten');
   expect(guardianStatus(foret, avantLaMission, [], true)).toBe('beaten');
+  // Et son défi reste ouvert : une revanche.
+  expect(isBossOpen(foret, avantLaMission)).toBe(true);
   // Sans victoire, les états ne changent pas.
   const sansVictoire = { ...avantLaMission };
   delete sansVictoire[bossId('foret')];
   expect(guardianStatus(foret, sansVictoire, [])).toBe('hidden');
   expect(guardianStatus(foret, sansVictoire, [], true)).toBe('waiting');
+  expect(isBossOpen(foret, sansVictoire)).toBe(false);
   expect(guardianStatus(foret, starsEverywhere('foret'), [])).toBe('ready');
 });
 
