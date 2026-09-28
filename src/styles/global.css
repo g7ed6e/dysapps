@@ -306,7 +306,8 @@ svg {
 }
 .topbar-xp {
   flex: 1;
-  min-width: 0;
+  /* Jamais plus étroite que son écusson : sinon les boutons passent dessus. */
+  min-width: 2.6rem;
   max-width: 22rem;
   text-decoration: none;
   color: inherit;
@@ -318,6 +319,7 @@ svg {
 }
 /* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
 .nav-button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -333,6 +335,16 @@ svg {
 .nav-button:active {
   background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
 }
+/* Le trait sous l'icône du bouton actif, quand le bouton n'a plus son mot (voir la barre plus bas). */
+.nav-button.active::after {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+}
 .nav-button.active {
   background: var(--sand);
   border-color: var(--sand);
@@ -343,17 +355,59 @@ svg {
   margin: 0 auto;
   padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
 }
-@media (max-width: 640px) {
-  .brand-name,
-  .nav-label {
+/*
+ * La barre suit la place qu'elle a en rem, donc la taille du texte choisie dans les Réglages (jusqu'à 32 px en
+ * OpenDyslexic) : le nom de l'univers, puis les mots des boutons (qui gardent leur icône et leur nom lu), puis le
+ * logo (le bouton Menu y mène aussi) laissent leur place, pour que rien ne sorte de l'écran ni ne passe sur l'écusson.
+ */
+.topbar {
+  container: barre / inline-size;
+}
+@container barre (max-width: 60rem) {
+  .brand-name {
     display: none;
   }
+}
+/* Jamais de mot coupé dans la jauge : le numéro de niveau part d'abord (il est dans l'écusson), puis le rôle ; la
+   jauge reste, et tout est sur la page Succès. */
+@container barre (max-width: 48rem) {
+  .nav-label,
+  .topbar .xp-lvl,
+  .topbar .xp-sep {
+    display: none;
+  }
+  /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
+  .nav-button.active::after {
+    content: '';
+  }
+}
+@container barre (max-width: 40rem) {
+  .topbar .xp-title {
+    display: none;
+  }
+}
+@container barre (max-width: 16rem) {
+  .topbar .xp-info {
+    display: none;
+  }
+}
+@container barre (max-width: 13rem) {
+  .brand {
+    display: none;
+  }
+}
+/* Les mots des boutons et le nom de l'univers suivent la place de la barre (plus haut) ; ici, ce qui tient à l'écran. */
+@media (max-width: 640px) {
   .topbar {
     gap: 0.6rem;
   }
   /* Le numéro de niveau est déjà dans l'écusson. */
-  .topbar .xp-lvl {
+  .topbar .xp-lvl,
+  .topbar .xp-sep {
     display: none;
+  }
+  .nav-button.active::after {
+    content: '';
   }
   .celebration {
     padding: 0.4rem 0.4rem 0.4rem 0.7rem;
