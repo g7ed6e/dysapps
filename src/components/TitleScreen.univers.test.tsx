@@ -6,8 +6,13 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS_KEY } from '../core/univers';
 
-// La bascule du lot 6, essayée d'avance : `UNIVERS_OUVERT` vraie.
-vi.mock('../core/univers', async (importOriginal) => ({ ...(await importOriginal<typeof import('../core/univers')>()), UNIVERS_OUVERT: true }));
+// La bascule du lot 6, essayée d'avance : `UNIVERS_OUVERT` vraie. L'écran titre voit aussi le message unique rallumé
+// (`PRESENTER_ARCHIPEO`) ; le premier univers, lui, garde la constante du module : il ne note jamais le message.
+vi.mock('../core/univers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../core/univers')>()),
+  UNIVERS_OUVERT: true,
+  PRESENTER_ARCHIPEO: true,
+}));
 
 function Where() {
   const { pathname, state } = useLocation();
@@ -38,8 +43,18 @@ it('montre le nom de l’univers choisi : Blocland sur un appareil neuf, sans me
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
-it('sur un appareil resté dans Blocland, dit une seule fois le message qui présente Archipéo', async () => {
+it('sur un appareil qui a une progression, ne présente pas Archipéo : il n’est pas mis en avant', async () => {
   saveJSON('progress', { xp: 40, totalAnswers: 10 });
+  const user = userEvent.setup();
+  renderTitle();
+  expect(screen.getByRole('dialog', { name: 'Blocland' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Jouer/ }));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+// Le message unique, éteint (`PRESENTER_ARCHIPEO`) : noté à dire comme s'il était rallumé.
+it('rallumé, dit une seule fois le message qui présente Archipéo', async () => {
+  saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
   const user = userEvent.setup();
   const { unmount } = renderTitle();
   expect(screen.getByRole('dialog', { name: 'Blocland' })).toHaveTextContent('Chaque bloc construit ton monde.');
@@ -57,8 +72,8 @@ it('sur un appareil resté dans Blocland, dit une seule fois le message qui pré
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
-it('« Rester dans Blocland » va où l’élève allait, sans nouveau toucher', async () => {
-  saveJSON('progress', { xp: 40, totalAnswers: 10 });
+it('rallumé, « Rester dans Blocland » va où l’élève allait, sans nouveau toucher', async () => {
+  saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
   const user = userEvent.setup();
   renderTitle();
   await user.click(screen.getByRole('button', { name: /Jouer/ }));
