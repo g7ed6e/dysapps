@@ -9,6 +9,9 @@ import type { PlanCell, PlanDef } from './plans';
 
 export const VEHICLE_NAME = 'le Bloc-Navire';
 
+/** Le sommet du mât : ce qui est au-dessus (le ballon) se balance à part de la coque, dans la vue 3D. */
+export const MAST_TOP = 7;
+
 export interface VehicleStage extends PlanDef {
   zone: 'port';
   /** Numéro de l'étape (1 à 3). */

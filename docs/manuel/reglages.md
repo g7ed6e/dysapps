@@ -66,6 +66,17 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
 
+## Expérimental
+
+![La section Expérimental des Réglages : la case « Essayer le nouveau dessin du monde » cochée, puis les quatre choix de la surface du monde.](/captures/reglages-experimental.jpg)
+
+Cette section rassemble des options **expérimentales**, désactivées par défaut. Elles montrent le nouveau dessin du monde d’Archipéo pendant qu’il se construit : il peut encore changer ou s’afficher moins bien. Elles ne touchent ni à la progression ni aux sauvegardes, et le changement se voit à la prochaine ouverture du monde.
+
+- **Essayer le nouveau dessin du monde** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; en 2D, la 2D peinte) au lieu du monde en blocs, qui reste disponible en décochant la case.
+- **La surface du monde**, affichée quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Couleurs unies** (une couleur par face), **Couleurs nuancées** (la couleur fondue en douceur, le style retenu pour Archipéo), **Coins arrondis** (la lumière arrondie sur les coins des cubes).
+
+Ces options préparent le choix de l’univers, qui arrivera dans les Réglages et les remplacera : on y choisira Archipéo ou Blocland, le monde en blocs. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
+
 ## Application
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).

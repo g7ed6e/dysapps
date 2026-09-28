@@ -141,45 +141,56 @@ export function ThalesFigure({ am, ab, an, ac }: { am: string; ab: string; an: s
   return (
     <figure className="thales-figure">
       <svg
-        viewBox="0 0 320 200"
+        viewBox="-70 0 390 210"
         role="img"
         aria-label={`Triangle ABC, M sur [AB], N sur [AC], (MN) parallèle à (BC). AM = ${am}, AB = ${ab}, AN = ${an}, AC = ${ac}`}
       >
-        <polygon points="40,180 300,180 40,20" className="tri" />
+        {/* A en haut, B et C en bas : M sur [AB] (le côté gauche), N sur [AC], (MN) parallèle à (BC). */}
+        <polygon points="40,20 40,180 300,180" className="tri" />
         <line x1="40" y1="100" x2="170" y2="100" className="par" />
         <line x1="40" y1="180" x2="300" y2="180" className="par" />
-        <text x="26" y="188" className="pt">
+        <text x="26" y="18" className="pt">
           A
         </text>
-        <text x="304" y="188" className="pt">
+        <text x="26" y="196" className="pt">
           B
         </text>
-        <text x="26" y="18" className="pt">
+        <text x="304" y="196" className="pt">
           C
-        </text>
-        <text x="176" y="96" className="pt">
-          N
         </text>
         <text x="26" y="104" className="pt">
           M
         </text>
-        <text x="24" y="145" textAnchor="middle" className="len" transform="rotate(-90 24 145)">{`AM = ${am}`}</text>
-        <text x="170" y="196" textAnchor="middle" className="len">{`AB = ${ab}`}</text>
-        <text x="110" y="92" textAnchor="middle" className="len">{`AN = ${an}`}</text>
-        <text x="190" y="60" textAnchor="middle" className="len hyp">{`AC = ${ac}`}</text>
+        <text x="176" y="96" className="pt">
+          N
+        </text>
+        <text x="48" y="90" className="len">{`AM = ${am}`}</text>
+        <text x="22" y="146" textAnchor="end" className="len">{`AB = ${ab}`}</text>
+        <text x="98" y="42" className="len">{`AN = ${an}`}</text>
+        {/* AC au milieu de tout le côté, pas le long de [NC] seul. */}
+        <text x="186" y="80" className="len hyp">{`AC = ${ac}`}</text>
       </svg>
     </figure>
   );
 }
 
-/** Petite série en barres, avec une valeur repère (moyenne, médiane) tracée. */
-export function BarList({ values, mark, markLabel }: { values: number[]; mark?: number; markLabel?: string }) {
+/**
+ * Petite série en barres, avec une valeur repère (moyenne, médiane) tracée. Avec `labels`, c'est un diagramme en
+ * barres : chaque barre porte le nom de sa réponse, puis son effectif écrit en chiffres.
+ */
+export function BarList({ values, labels: given, mark, markLabel }: { values: number[]; labels?: string[]; mark?: number; markLabel?: string }) {
   const max = Math.max(...values, mark ?? 0);
+  // Un nom par barre, ou aucun : une liste qui ne correspond pas donne l'aide sans noms.
+  const labels = given && given.length === values.length ? given : undefined;
+  const described = labels
+    ? `Diagramme en barres : ${values.map((v, i) => `${labels[i]}, ${v}`).join(' ; ')}`
+    : `${values.length} valeurs : ${values.join(', ')}`;
   return (
-    <figure className="bar-list">
-      <div role="img" aria-label={`${values.length} valeurs : ${values.join(', ')}${mark !== undefined ? ` ; ${markLabel} : ${mark}` : ''}`}>
+    <figure className={labels ? 'bar-list labelled' : 'bar-list'}>
+      <div role="img" aria-label={`${described}${mark !== undefined ? ` ; ${markLabel} : ${mark}` : ''}`}>
         {values.map((v, i) => (
           <div key={i} className="bar-row">
+            {labels && <span className="bar-label">{labels[i]}</span>}
             <span className="bar-value">{v}</span>
             <span className="bar" style={{ width: `${(v / max) * 100}%` }} />
           </div>

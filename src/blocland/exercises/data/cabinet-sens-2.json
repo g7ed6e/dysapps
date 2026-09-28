@@ -1,0 +1,214 @@
+{
+  "id": "cabinet-sens-2",
+  "biome": "cabinet",
+  "type": "sens",
+  "level": 2,
+  "instruction": "Champ lexical : trouve le mot qui parle du thème. La règle est affichée.",
+  "items": [
+    {
+      "key": "cabinet-sens-2-0",
+      "prompt": "Quel mot appartient au champ lexical de la mer ?",
+      "spoken": "Quel mot appartient au champ lexical de la mer ?",
+      "choices": [
+        "vague",
+        "sommet",
+        "prairie"
+      ],
+      "answer": "vague",
+      "hint": "Cherche ce qu’on voit depuis une plage.",
+      "explanation": "« vague » parle de la mer. « sommet » parle de la montagne, « prairie » de la campagne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-1",
+      "prompt": "Quel mot appartient au champ lexical de l’école ?",
+      "spoken": "Quel mot appartient au champ lexical de l’école ?",
+      "choices": [
+        "cartable",
+        "valise",
+        "panier"
+      ],
+      "answer": "cartable",
+      "hint": "Cherche ce qu’on emporte en classe.",
+      "explanation": "« cartable » parle de l’école. On emporte une valise en voyage, un panier au marché.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-2",
+      "prompt": "« tonnerre, éclair, averse » : quel est leur thème ?",
+      "spoken": "« tonnerre, éclair, averse » : quel est leur thème ?",
+      "choices": [
+        "l’orage",
+        "la fête",
+        "la mer"
+      ],
+      "answer": "l’orage",
+      "hint": "Regarde les trois mots ensemble.",
+      "explanation": "Tonnerre, éclair et averse parlent de l’orage : c’est leur champ lexical.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-3",
+      "prompt": "Quel mot appartient au champ lexical du pain ?",
+      "spoken": "Quel mot appartient au champ lexical du pain ?",
+      "choices": [
+        "boulanger",
+        "boucher",
+        "fleuriste"
+      ],
+      "answer": "boulanger",
+      "hint": "Qui fait le pain ?",
+      "explanation": "« boulanger » parle du pain. Le boucher et le fleuriste sont aussi des commerçants, mais ne font pas de pain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-4",
+      "prompt": "Quel verbe appartient au champ lexical du sport ?",
+      "spoken": "Quel verbe appartient au champ lexical du sport ?",
+      "choices": [
+        "courir",
+        "dessiner",
+        "chanter"
+      ],
+      "answer": "courir",
+      "hint": "Un champ lexical réunit aussi des verbes.",
+      "explanation": "« courir » parle du sport : un verbe peut faire partie d’un champ lexical.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-5",
+      "prompt": "« trembler, cauchemar, terrifié » : quel est leur thème ?",
+      "spoken": "« trembler, cauchemar, terrifié » : quel est leur thème ?",
+      "choices": [
+        "la peur",
+        "le sommeil",
+        "la colère"
+      ],
+      "answer": "la peur",
+      "hint": "Un seul mot ne suffit pas : regarde les trois.",
+      "explanation": "« cauchemar » fait penser au sommeil, mais les trois mots ensemble parlent de la peur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-6",
+      "prompt": "Quel adjectif appartient au champ lexical de l’hiver ?",
+      "spoken": "Quel adjectif appartient au champ lexical de l’hiver ?",
+      "choices": [
+        "glacial",
+        "brûlant",
+        "fleuri"
+      ],
+      "answer": "glacial",
+      "hint": "Pense au froid.",
+      "explanation": "« glacial » parle du froid de l’hiver. « brûlant » parle de l’été, « fleuri » du printemps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-sens-2-7",
+      "prompt": "Quel mot appartient au champ lexical du cinéma ?",
+      "spoken": "Quel mot appartient au champ lexical du cinéma ?",
+      "choices": [
+        "film",
+        "roman",
+        "chanson"
+      ],
+      "answer": "film",
+      "hint": "Que regarde-t-on sur le grand écran ?",
+      "explanation": "« film » parle du cinéma. Un roman se lit, une chanson s’écoute.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical",
+          "lines": [
+            "Champ lexical : tous les mots qui parlent d’un même thème (la mer : vague, sable, marée).",
+            "Ce sont des noms, des verbes ou des adjectifs (nager, salé).",
+            "Pour trouver le thème, demande-toi de quoi parlent les mots."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "parchemin",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

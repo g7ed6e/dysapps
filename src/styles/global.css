@@ -1269,6 +1269,15 @@ button.app-card:active {
   display: grid;
   gap: 0.8rem;
 }
+/* Un groupe de choix dans un encadré (Expérimental → La surface du monde) : sa légende, sans second cadre. */
+.settings fieldset.settings-subgroup {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.settings-subgroup legend {
+  padding: 0 0 0.4rem;
+}
 .settings legend {
   font-family: var(--display-font);
   font-weight: var(--display-weight);
@@ -3813,6 +3822,16 @@ button.island-quest:active {
 .bar-value {
   text-align: right;
   font-weight: 700;
+}
+/* Diagramme en barres : le nom de la réponse, son effectif, puis la barre. Une seule grille pour les quatre lignes :
+   la colonne des noms prend la largeur du plus long, sans couper un mot. */
+.bar-list.labelled [role="img"] {
+  grid-template-columns: max-content 2.5rem 1fr;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.bar-list.labelled .bar-row {
+  display: contents;
 }
 .bar-list .bar {
   display: block;

@@ -8,6 +8,7 @@ import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
+import { capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const OUT = join(root, 'docs', '_captures');
@@ -139,7 +140,16 @@ const SHOTS = [
   { name: 'quetes', state: MID, go: '/quetes' },
   { name: 'succes', state: MID, go: '/succes' },
   { name: 'reglages', state: MID, go: '/reglages' },
+  { name: 'reglages-experimental', state: MID, go: '/reglages', act: showExperimental },
 ];
+
+/** La section Expérimental des Réglages, le nouveau dessin coché : les choix de surface apparaissent. */
+async function showExperimental(page) {
+  await page.getByRole('checkbox', { name: 'Essayer le nouveau dessin du monde' }).check();
+  // Sous la barre du haut, qui reste en place.
+  await page.getByRole('group', { name: 'Expérimental' }).evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 110));
+  await page.waitForTimeout(300);
+}
 
 /** « Poser tout ce que j'ai » dans le panneau de l'île. */
 async function placeAll(page) {
@@ -254,6 +264,7 @@ async function take(shot) {
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   });
+  await page.addInitScript(figeable);
   if (process.env.CAPTURES_DEBUG) page.on('pageerror', (e) => console.error(`  (page) ${e.message}`));
   try {
     // La partie s'écrit depuis une page statique du même site : l'appli, pas encore lancée, ne peut pas l'écraser.
@@ -279,7 +290,7 @@ async function take(shot) {
     if (shot.act) await shot.act(page);
     const file = join(OUT, `${shot.name}.jpg`);
     // Le rendu logiciel de la 3D peut prendre plus de 30 s par image sur la CI.
-    await page.screenshot({ path: file, type: 'jpeg', quality: 82, timeout: 120_000 });
+    await capturer(page, { path: file, type: 'jpeg', quality: 82, timeout: 120_000 });
     console.log(`✓ ${shot.name} (${Math.round(statSync(file).size / 1024)} Ko)`);
     return null;
   } catch (e) {
