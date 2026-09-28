@@ -10,7 +10,7 @@ import { VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/personnages/gardiens';
 import type { Allumage } from './world/personnages/sentinelle';
 
-/** Le Gardien d'Archipéo en SVG (lot R6, dans l’univers Archipéo (voir rendu.ts)), chargé à la demande. */
+/** Le Gardien d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir habillage.ts), chargé à la demande. */
 const PersonnageSvg = lazy(() => import('./PersonnageSvg'));
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
@@ -34,9 +34,9 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
   const cubes = GUARDIAN_CUBES[biome];
-  // Le rendu d'Archipéo (univers Archipéo, voir rendu.ts) : le Gardien en sentinelle de pierre, éteinte, que le défi rallume
-  // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois vaincue ; sans le drapeau, en cubes, inchangé.
-  const [dessine] = useState(() => habillageDuMonde().figures === 'svg');
+  // Les figures de l'habillage (habillage.ts) : le Gardien en sentinelle de pierre, éteinte, que le défi rallume
+  // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois vaincue ; sinon en cubes, inchangé.
+  const [dessine] = useState(() => habillageDuMonde().figures === 'modeles');
   const allumage = donne ?? (mood === 'beaten' ? 1 : 0);
   const enCubes = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;
   // Le temps que la sentinelle arrive : sa place, vide, à sa taille (pas le Gardien en cubes, qui sauterait).

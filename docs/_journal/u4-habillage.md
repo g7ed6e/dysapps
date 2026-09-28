@@ -1,1 +1,1 @@
-Rien ne change à l’écran. En coulisses, chaque univers décrit désormais son propre dessin du monde (ciel, brume, mer, sol, personnages, 2D), au lieu que chaque partie demande « est-ce Archipéo ? ». C’est une étape vers un troisième univers.
+Rien ne change à l’écran. En coulisses, chaque univers décrit désormais son propre dessin du monde (ciel, brume, mer, sol, personnages, 2D) : chaque morceau du dessin lit celui de l’univers choisi.

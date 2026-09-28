@@ -147,9 +147,9 @@ export default function WorldCanvas2D({
     chantier,
   );
   const host = useRef<HTMLDivElement>(null);
-  // La 2D peinte, dans l’univers Archipéo (voir rendu.ts) (lot R7) ; sans lui, la 2D en pixels, inchangée.
+  // La 2D peinte (lot R7), avec l'habillage d'Archipéo (voir habillage.ts) ; sinon la 2D en pixels, inchangée.
   const [painted] = useState(() => habillageDuMonde().dessin2D === 'peint');
-  // Les personnages d'Archipéo (lot R6), chargés à la demande sous le drapeau ; tant qu'ils arrivent, rien n'est dessiné.
+  // Les personnages d'Archipéo (lot R6), chargés à la demande avec la 2D peinte ; tant qu'ils arrivent, rien n'est dessiné.
   // S'ils ne se chargent pas (réseau coupé, nouvelle version publiée), les personnages en pixels, plutôt que rien.
   const peints = useRef<typeof PersonnagesPeints | null>(null);
   const peintsEnEchec = useRef(false);

@@ -127,7 +127,7 @@ export function WorldPage() {
   // éteint, pour se rallumer sous les yeux de l'élève.
   const textes = useTextes();
   const [habillage] = useState(habillageDuMonde);
-  const sentinelles = textes.sentinelles !== null && habillage.sentinelles;
+  const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(

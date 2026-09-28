@@ -42,7 +42,7 @@ export function creerLarge(
   passSeq: { current: number | null },
 ): Large {
   const { scene, archipel, etendue: bounds, centre: center, largeur: width } = monde;
-  const peinte = monde.habillage.large === 'mer-peinte';
+  const peinte = monde.habillage.large === 'mer-et-faune';
   const ambience = AMBIENCE[archipel];
 
   // L'eau : un grand plan sous le niveau du sol, avec des crêtes pixel qui défilent.

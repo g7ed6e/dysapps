@@ -18,7 +18,6 @@ const NUIT_DES_BANCS = 0x5d7196;
 
 export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): PartieDeLaScene {
   const { scene, archipel, largeur } = monde;
-  // Les bancs et la brume de profondeur de la fiche de famille (Archipéo), ou les nappes et la brume du cadrage.
   const fiche = monde.habillage.brume === 'bancs';
   const ambience = AMBIENCE[archipel];
   const ciel = cielDe(archipel, 1);
