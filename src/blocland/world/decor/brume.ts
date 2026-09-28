@@ -205,7 +205,12 @@ export function nappesDesSommets(a: ArchipelagoId): BancsDeBrume | null {
   return out;
 }
 
-/** Les triangles des bancs de brume et des nappes des sommets d'un archipel (0 s'il n'en a pas). */
+/** La brume d'Archipéo d'un archipel, celle que dessine three/brume.ts : ses bancs (5e), sinon ses nappes (3e). */
+export function brumeDArchipeo(a: ArchipelagoId): BancsDeBrume | null {
+  return bancsDeBrume(a) ?? nappesDesSommets(a);
+}
+
+/** Les triangles de la brume d'Archipéo d'un archipel (0 s'il n'en a pas). */
 export function trianglesDeLaBrume(a: ArchipelagoId): number {
-  return ((bancsDeBrume(a)?.indices.length ?? 0) + (nappesDesSommets(a)?.indices.length ?? 0)) / 3;
+  return (brumeDArchipeo(a)?.indices.length ?? 0) / 3;
 }

@@ -4,7 +4,7 @@ import { BRIDGES } from '../archipelago';
 import { archipelagoOfIsland } from '../archipels';
 import { toutConstruit } from '../budget';
 import { maillageDuDecor, rangerLeDecor } from '../decorMesh';
-import { oiseauxDe, PLANEUR, planeurDe, poseDuPlaneur } from '../faune';
+import { ENVERGURE_DE_L_OISEAU, formeDOiseau, oiseauxDe, PLANEUR, planeurDe, poseDuPlaneur } from '../faune';
 import { champDuSol } from '../landMesh';
 import { inCore, islandDef, landCells, mapOf } from '../map';
 import { ambianceDe } from '../palette';
@@ -34,6 +34,7 @@ function triangles(f: { elements: ArrayLike<number>; positions: ArrayLike<number
 
 it('le socle de 3 × 3 couvre les cases du phare de Blocland, jamais une case du cœur, d’un ouvrage ou de ce qui est posé', () => {
   expect(SOCLE_3E.cote).toBe(PHARES['3e'].emprise);
+  expect(SOCLE_3E.bas + SOCLE_3E.haut).toBe(PHARES['3e'].socle);
   const { x0, y0 } = empriseDuSocle(phare);
   const bloquees = new Set(phare.cubes.map((c) => `${c.x},${c.y}`));
   const socle: string[] = [];
@@ -128,7 +129,7 @@ it('l’oiseau planeur : un seul, au-dessus du massif, jamais au-dessus d’une 
     expect(p.x).toBeGreaterThan(massifX[0]);
     expect(p.x).toBeLessThan(massifX[1]);
     // Au-dessus des cimes du premier rang, jamais dans l'axe de la lanterne (vue de la caméra, qui regarde au nord).
-    expect(p.y).toBeGreaterThan(massif.haut);
+    expect(p.y).toBeGreaterThan(Math.max(...LOINTAIN_3E.pieces.map((q) => q.haut)));
     expect(Math.abs(p.x - lanterne.x)).toBeGreaterThan(PLANEUR.envergure * 4);
   }
   // Plus haut que les autres oiseaux (leur altitude, plus 3 et la houle de leur vol).
@@ -141,7 +142,12 @@ it('l’oiseau planeur : un seul, au-dessus du massif, jamais au-dessus d’une 
   };
   expect(pas(1)).toBeCloseTo(pas(13), 6);
   expect(poseDuPlaneur(r, 3, true)).toEqual(poseDuPlaneur(r, 11, true));
-  expect(poseDuPlaneur(r, 0, false).echelle * 1.6).toBeCloseTo(PLANEUR.envergure, 5);
+  // Trois cases d'envergure : la forme de l'oiseau commun, mesurée, agrandie.
+  const f = formeDOiseau();
+  let [x0, x1] = [Infinity, -Infinity];
+  for (let k = 0; k < f.positions.length; k += 3) [x0, x1] = [Math.min(x0, f.positions[k]), Math.max(x1, f.positions[k])];
+  expect(x1 - x0).toBeCloseTo(ENVERGURE_DE_L_OISEAU, 5);
+  expect(poseDuPlaneur(r, 0, false).echelle * (x1 - x0)).toBeCloseTo(PLANEUR.envergure, 5);
 });
 
 it('l’ambiance du 3e : un bleu franc, le plancher de nuages d’un blanc bleuté', () => {

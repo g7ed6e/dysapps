@@ -20,7 +20,7 @@ const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);
 
 /**
- * L'emprise du socle : les cases du phare de Blocland (2 × 2) et une rangée et une colonne de plus, du côté opposé au
+ * L'emprise du socle du grand phare (sur l'île du Phare, la seule qui en a un) : les cases du phare de Blocland (2 × 2) et une rangée et une colonne de plus, du côté opposé au
  * cœur de l'île, pour ne jamais en couvrir une case (fiche, §2 ; test `3e.test.ts`). En cases du monde.
  */
 export function empriseDuSocle(e: { x: number; y: number; emprise: number }): { x0: number; y0: number } {

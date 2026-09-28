@@ -42,12 +42,12 @@ export function oiseauxDe(a: ArchipelagoId): { nombre: number; altitude: number 
  * île (le lot 9 y fera signaler la zone active par des oiseaux), jamais devant la lanterne du phare.
  *
  * - `u` : le centre de sa ronde le long de la largeur de l'archipel (0 à l'ouest, 1 à l'est), loin du phare (vers 0,5) ;
- * - `recul` : en cases au-delà du bord nord de l'archipel, au-dessus du premier rang du massif (world/decor/3e.ts) ;
- * - `hauteur` : à la hauteur de la galerie du grand phare, au-dessus des cimes du premier rang et des autres oiseaux.
+ * - `recul` : en cases au-delà du bord nord de l'archipel, au-dessus du massif, entre ses deux rangs (world/decor/3e.ts) ;
+ * - `hauteur` : à la hauteur de la galerie du grand phare, au-dessus des cimes des deux rangs et des autres oiseaux.
  */
 export const PLANEUR = { u: 0.2, recul: 95, rayon: 14, hauteur: 24, periode: 32, envergure: 3, ailes: 0.35 } as const;
 
-/** L'envergure de la forme de l'oiseau commun (`formeDOiseau`), en blocs. */
+/** L'envergure de la forme de l'oiseau commun (`formeDOiseau`), en blocs (vérifiée par `decor/3e.test.ts`). */
 export const ENVERGURE_DE_L_OISEAU = 1.6;
 
 /** L'oiseau planeur d'un archipel (seulement les Îles du Ciel) : sa ronde. */
