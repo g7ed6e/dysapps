@@ -19,7 +19,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
-Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, l’icône d’Archipéo sautille au-dessus de « Chargement… ».
+Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
 ![Le menu en page sur tablette : Archipéo, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
 
@@ -35,17 +35,25 @@ Archipéo est une application web installable (PWA). Une fois installée, elle s
 
 - **Android (Chrome)** : menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
-- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer Archipéo ».
+- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
 
-L’icône est un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues, avec une étoile de sable. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (l’icône sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
+L’icône de l’appli installée est un « D » crème sur fond bleu nuit, pour DysApps, la même quel que soit l’univers ; le « A » d’Archipéo reste sur l’écran titre. Installée, l’application s’ouvre comme une appli : un **écran de lancement** neutre (le « D » de DysApps sur fond crème, avec le nom DysApps sur Android) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
+
+### Quand l’icône change
+
+Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouveau nom d’elle-même. Cela dépend de l’appareil :
+
+- **Android (Chrome)** : Chrome vérifie l’icône et le nom quand on ouvre l’appli, au plus une fois par jour, après que l’élève a touché **Mettre à jour**. Le changement peut prendre jusqu’à un jour ; Android demande souvent de l’accepter. Avec un autre navigateur, l’icône peut rester l’ancienne : il faut alors réinstaller.
+- **Ordinateur (Chrome, Edge)** : le navigateur vérifie au lancement de l’appli, après la mise à jour, et peut demander de confirmer la nouvelle icône.
+- **iPhone, iPad (Safari)** et **Mac (Safari, « Ajouter au Dock »)** : l’icône (et, sur iPhone et iPad, l’écran de lancement) est photographiée à l’installation et ne change plus. Une appli installée avant l’arrivée du « D » garde donc l’écran de lancement d’Archipéo. Seule une réinstallation les change. Attention : sur iPhone et iPad, supprimer l’appli de l’écran d’accueil **efface sa progression**. Il faut donc l’enregistrer d’abord dans un fichier, puis la restaurer : Réglages, section « Réinstaller l’appli » (voir [Réglages](reglages.md#reinstaller-lappli)).
 
 > L’application était aussi publiée sur GitHub Pages, à l’adresse de cette documentation. Si elle y avait été installée, le raccourci ouvre désormais cette documentation : il suffit de réinstaller l’application depuis l’adresse ci-dessus. La progression enregistrée sur l’appareil dépend de l’adresse d’origine et n’est pas transférée.
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre l’icône, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le « A » d’Archipéo, « Archipéo » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
-![L'écran titre : l'icône, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
+![L'écran titre : le « A » d'Archipéo, « Archipéo » et le bouton Jouer.](/captures/titre.jpg)
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
@@ -75,8 +83,8 @@ Tout est enregistré **sur l’appareil**, dans le stockage local du navigateur 
 
 Conséquences pratiques :
 
-- Deux appareils ont deux progressions différentes.
-- Effacer les données du site dans le navigateur (ou désinstaller l’application) efface la progression.
+- Deux appareils ont deux progressions différentes. Pour passer de l’un à l’autre, **Réglages → Ma sauvegarde** enregistre la progression dans un fichier, puis la restaure sur l’autre appareil (voir [Réglages](reglages.md#ma-sauvegarde)).
+- Effacer les données du site dans le navigateur (ou désinstaller l’application) efface la progression, sauf si elle a été enregistrée dans un fichier.
 - Les navigations privées ne gardent rien après fermeture.
 
 Sur un appareil partagé entre plusieurs élèves, le plus simple est d’utiliser un profil de navigateur par élève.

@@ -71,7 +71,8 @@ Ces points ne sont pas des défauts constatés : ce sont les endroits où la mig
 
 - **Le monde en 3D** : trajets de caméra (voyage entre îles, arrivée sur une île), célébrations, eau et lumière qui bougent. Ils respectent « Réduire les animations », sans flash ni secousse.
 - **La couleur seule** : nouvelles couleurs des matières et des archipels, états d’île ; chaque information passe aussi par un mot, une forme ou une icône.
-- **Les titres en Montserrat grasse** : réservés aux titres courts, jamais en capitales, jamais pour une consigne.
+- **Les titres en Montserrat grasse** (Archipéo) **et en Archivo Black** (Blocland) : réservés aux titres courts, jamais en capitales, jamais pour une consigne.
+- **L’appui qui enfonce un bloc** (Blocland : 3 px, instantané, sans décaler la page) : un retour d’appui, pas une animation ; il reste avec « Réduire les animations ». À vérifier sur appareil : faire défiler une liste de cartes ne doit pas donner l’impression d’appuyer.
 - **Les gestes dans le monde** : poser un bloc, se déplacer, glisser un sujet vers un verbe ; chacun a une façon de faire par simple toucher.
 - **Les nouveaux mots de l’univers** (Expéditions, rôles, états d’île) : peu nombreux, stables, lus à voix haute, expliqués la première fois.
 - **Le RGAA 5 et l’application installée** : quand il paraîtra, relire ses nouveaux critères, surtout ceux des applications mobiles.

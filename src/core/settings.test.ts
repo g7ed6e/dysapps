@@ -71,6 +71,19 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-size')).toBe('24px');
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
+
+  it('pose l’univers affiché, qui choisit l’habillage : Archipéo avant la bascule, puis l’univers choisi', () => {
+    const root = document.createElement('div');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, false);
+    expect(root.dataset.univers).toBe('archipeo');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, true);
+    expect(root.dataset.univers).toBe('blocland');
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root, true);
+    expect(root.dataset.univers).toBe('archipeo');
+    // Un appareil sans univers enregistré s'habille comme l'univers par défaut.
+    applySettings(DEFAULT_SETTINGS, root, true);
+    expect(root.dataset.univers).toBe('blocland');
+  });
 });
 
 it('dit les espacements et la vitesse de la voix en mots, pas en nombres', () => {
