@@ -4,7 +4,7 @@ import { useSettings } from '../core/SettingsContext';
 import { useMoinsDAnimations } from '../core/mouvement';
 import type { BiomeId } from './biomes';
 import { Creature } from './Creatures';
-import { renduDuMonde } from './rendu';
+import { habillageDuMonde } from './habillage';
 import { CREATURE_CUBES } from './world/personnages/creatures';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 
@@ -22,11 +22,11 @@ export function Creature3D({ biome, label, className }: Props) {
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
   // Le rendu d'Archipéo (univers Archipéo, voir rendu.ts) : la créature en facettes ; sans lui, en cubes, inchangée.
-  const [archipeo] = useState(() => renduDuMonde() === 'archipeo');
+  const [svg] = useState(() => habillageDuMonde().figures === 'svg');
   const cubes = <Creature biome={biome} label={label} className={className} />;
   // Le temps que la créature en facettes arrive : sa place, vide, à sa taille (pas la créature en cubes, qui sauterait).
   const place = <span className={`creature ${className ?? ''}`.trim()} role="img" aria-label={label} />;
-  const flat = archipeo ? (
+  const flat = svg ? (
     <Suspense fallback={place}>
       <PersonnageSvg kind="creature" id={biome} label={label} className={className} />
     </Suspense>
@@ -38,7 +38,7 @@ export function Creature3D({ biome, label, className }: Props) {
   return (
     <ErrorBoundary fallback={flat}>
       <Suspense fallback={flat}>
-        {archipeo ? (
+        {svg ? (
           <PersonnageCanvas kind="creature" id={biome} autoRotate reduceMotion={reduceMotion} className={`creature-3d ${className ?? ''}`.trim()} label={label} />
         ) : (
           <VoxelCanvas

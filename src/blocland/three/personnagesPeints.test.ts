@@ -1,6 +1,7 @@
 // Les personnages d'Archipéo dans la scène 3D (lot R6) : sans WebGL (jsdom), on vérifie l'arbre de la scène, le toucher,
 // le matériau à lueur, « Réduire les animations » et la libération des ressources.
 import * as THREE from 'three';
+import { HABILLAGES } from '../habillage';
 import { toutConstruit } from '../world/budget';
 import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/personnages/fusions';
@@ -14,7 +15,7 @@ function monde(archipeo: boolean): Monde {
   return {
     scene: new THREE.Scene(),
     archipel: '6e',
-    archipeo,
+    habillage: HABILLAGES[archipeo ? 'archipeo' : 'blocland'],
     surface: null,
     etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 },
     centre: { x: 5, y: 5 },
