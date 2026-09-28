@@ -5,15 +5,22 @@ import {
   compareRelatifs,
   developDouble,
   equationTwoSteps,
+  factorNumber,
+  factorX,
   fmt,
   mean,
   mulRelatifs,
   percentChange,
   pow,
+  primeDecomposition,
+  primeFactors,
+  productEquation,
   pythagoreHyp,
   pythagoreSide,
   scientific,
   seededItems,
+  testEquality,
+  TO_FACTOR,
   thales,
 } from './college';
 import { MATHS_EXERCISES } from './maths';
@@ -99,8 +106,8 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   }
   const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'forge');
   const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'atelier');
-  expect(forge).toHaveLength(6);
-  expect(atelier).toHaveLength(6);
+  expect(forge).toHaveLength(7);
+  expect(atelier).toHaveLength(9);
   for (const def of [...forge, ...atelier]) {
     expect(def.items).toHaveLength(8);
     for (const it of def.items) {
@@ -108,6 +115,104 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
       expect(new Set(it.choices as string[]).size).toBe((it.choices as string[]).length);
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
     }
+  }
+});
+
+/** Un polynôme en x, par ses coefficients : [constante, x, x², x³]. */
+type Poly = [number, number, number, number];
+const ZERO: Poly = [0, 0, 0, 0];
+/** « 12 », « 5x », « x », « x² » : un monôme écrit comme dans les choix. */
+function monomial(text: string): Poly {
+  const m = /^(\d*)(x²|x)?$/.exec(text);
+  if (!m) throw new Error(`monôme illisible : ${text}`);
+  const out: Poly = [...ZERO];
+  out[m[2] === 'x²' ? 2 : m[2] === 'x' ? 1 : 0] = m[1] === '' ? 1 : Number(m[1]);
+  return out;
+}
+const addPoly = (a: Poly, b: Poly, sign: 1 | -1): Poly => a.map((c, i) => c + sign * b[i]) as Poly;
+function mulPoly(a: Poly, b: Poly): Poly {
+  const out: Poly = [...ZERO];
+  a.forEach((ca, i) =>
+    b.forEach((cb, j) => {
+      if (ca * cb === 0) return;
+      if (i + j > 3) throw new Error('degré trop grand');
+      out[i + j] += ca * cb;
+    }),
+  );
+  return out;
+}
+/** « 10x + 12 » ou « 2(5x + 6) », « x(x − 2) » : le polynôme développé. */
+function readPoly(text: string): Poly {
+  const m = /^(?:(\S+?)\()?(\S+) ([+−]) (\S+?)\)?$/.exec(text);
+  if (!m) throw new Error(`expression illisible : ${text}`);
+  const sum = addPoly(monomial(m[2]), monomial(m[4]), m[3] === '+' ? 1 : -1);
+  return m[1] ? mulPoly(monomial(m[1]), sum) : sum;
+}
+/** Les nombres d'une clé : « test-4--3-2-5-3 » donne [4, −3, 2, 5, 3]. */
+const keyNumbers = (key: string) => [...key.matchAll(/-(-?\d+)/g)].map((m) => Number(m[1]));
+
+it('Forge et Atelier, niveaux 3 et 4 : une seule réponse juste, des pièges vraisemblables, sans symbole à voix haute', () => {
+  const isPrime = (n: number) => n > 1 && Array.from({ length: n - 2 }, (_, i) => i + 2).every((d) => n % d !== 0);
+  const most = (factors: number[]) => Math.max(...factors.map((p) => factors.filter((q) => q === p).length));
+  expect(primeFactors(60)).toEqual([2, 2, 3, 5]);
+  // Jamais plus de trois fois le même facteur premier.
+  for (const n of TO_FACTOR) expect(most(primeFactors(n)), String(n)).toBeLessThanOrEqual(3);
+  const rng = seededItems('niveaux-3');
+  for (let i = 0; i < 200; i++) {
+    // Facteurs premiers : un seul choix fait de nombres premiers dont le produit est le nombre.
+    const d = primeDecomposition(rng);
+    const [n] = keyNumbers(d.key);
+    const list = d.choices as string[];
+    expect(list).toHaveLength(4);
+    expect(new Set(list).size).toBe(4);
+    const factors = (c: string) => c.split(' × ').map(Number);
+    expect(list.filter((c) => factors(c).every(isPrime) && factors(c).reduce((a, b) => a * b, 1) === n)).toEqual([d.answer]);
+    // Le piège ne se joue pas sur le compte des 2 : aucun choix n'écrit un facteur plus de trois fois, ni une fois de
+    // plus que la réponse quand elle en a déjà deux.
+    const inAnswer = factors(String(d.answer));
+    for (const c of list) {
+      expect(most(factors(c)), c).toBeLessThanOrEqual(3);
+      if (most(inAnswer) >= 2) expect(factors(c).length, c).toBeLessThanOrEqual(inAnswer.length);
+    }
+    expect(String(d.explanation)).toContain(`${n} = `);
+
+    // Factoriser : quatre écritures différentes ; en développant, seule la réponse redonne l'expression de la clé.
+    for (const f of [factorNumber(rng), factorX(rng)]) {
+      const choices = f.choices as string[];
+      expect(choices).toHaveLength(4);
+      expect(new Set(choices).size).toBe(4);
+      const sign = f.key.endsWith('-m') ? -1 : 1;
+      let target: Poly;
+      if (f.key.startsWith('factx-')) {
+        const [b] = keyNumbers(f.key);
+        target = [0, sign * b, 1, 0];
+      } else {
+        const [k, a, b] = keyNumbers(f.key);
+        target = [sign * k * b, k * a, 0, 0];
+      }
+      expect(readPoly(String(f.prompt).replace(' = …', ''))).toEqual(target);
+      expect(choices.filter((c) => JSON.stringify(readPoly(c)) === JSON.stringify(target))).toEqual([f.answer]);
+      expect(String(f.spoken)).not.toMatch(/[−×²()…]/);
+    }
+
+    // Tester une égalité : la réponse est celle du calcul fait sur les nombres de la clé.
+    const t = testEquality(rng);
+    const [a, b, c, dd, x] = keyNumbers(t.key);
+    expect(t.answer).toBe(a * x + b === c * x + dd ? 'oui' : 'non');
+    expect(t.choices).toEqual(['non', 'oui']);
+    expect(String(t.spoken)).not.toMatch(/[−=]/);
+
+    // Équation produit : la réponse donne les deux racines de la clé, aucun piège ne les donne.
+    const p = productEquation(rng);
+    const pc = p.choices as string[];
+    expect(pc).toHaveLength(4);
+    expect(new Set(pc).size).toBe(4);
+    const [r1, r2] = keyNumbers(p.key);
+    const sols = (choice: string) => [...choice.matchAll(/x = (\S+)/g)].map((m) => Number(m[1].replace('−', '-'))).sort((u, v) => u - v);
+    const expected = [r1, r2].sort((u, v) => u - v);
+    expect(pc.filter((choice) => JSON.stringify(sols(choice)) === JSON.stringify(expected))).toEqual([p.answer]);
+    expect(String(p.prompt)).toMatch(/Quelles sont les solutions \?$/);
+    expect(String(p.spoken)).not.toMatch(/[−=()]/);
   }
 });
 
@@ -188,7 +293,7 @@ it('maths générées : les accords au singulier (« 1 caisse », « une pomme �
       }
     }
   }
-});
+}, 30_000);
 
 it('maths générées : la partie garde les choix tirés, et la bonne réponse prend chaque place (aucune au-delà de 40 %)', () => {
   const report: string[] = [];

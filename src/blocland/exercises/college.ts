@@ -604,6 +604,74 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
   };
 };
 
+/** Les facteurs premiers de n, du plus petit au plus grand : 60 → [2, 2, 3, 5]. */
+export const primeFactors = (n: number): number[] => {
+  const out: number[] = [];
+  let rest = n;
+  for (let p = 2; rest > 1; p++) {
+    while (rest % p === 0) {
+      out.push(p);
+      rest /= p;
+    }
+  }
+  return out;
+};
+const product = (factors: number[]) => [...factors].sort((a, b) => a - b).join(' × ');
+
+/**
+ * Les nombres à décomposer : trois facteurs premiers ou plus, tous inférieurs ou égaux à 7 (les divisions se font de
+ * tête), jamais plus de trois fois le même facteur (pas 48 = 2 × 2 × 2 × 2 × 3 : on ne compte pas des 2 à l'œil).
+ */
+export const TO_FACTOR = [12, 18, 20, 24, 28, 30, 36, 40, 42, 45, 50, 54, 56, 60, 63, 70, 72, 75, 84, 90, 98, 100];
+
+/** Décomposer en produit de facteurs premiers, écrit en long (« 2 × 2 × 3 × 5 ») : pas d'exposant à déchiffrer. */
+export const primeDecomposition: ItemGenerator = (rng) => {
+  const n = TO_FACTOR[randomInt(0, TO_FACTOR.length - 1, rng)];
+  const f = primeFactors(n);
+  const answer = product(f);
+  const small = f[0];
+  const big = f[f.length - 1];
+  // Pièges, dans cet ordre : un facteur oublié, deux facteurs égaux restés ensemble (4, 9 ne sont pas premiers), la
+  // division arrêtée à la première étape (par le plus petit, puis par le plus grand), un facteur de trop. Le facteur de
+  // trop n'est proposé que si le plus petit facteur n'est écrit qu'une fois : le piège ne se joue jamais sur le nombre
+  // de 2 à compter. Deux pièges peuvent s'écrire pareil (45 : 9 × 5 est aussi l'arrêt par 5) : on garde les trois
+  // premiers différents, ici, sans compter sur le tri de `textChoices`.
+  const repeated = f.find((p, i) => f[i + 1] === p);
+  const candidates = [
+    product(f.slice(1)),
+    ...(repeated ? [product([repeated * repeated, ...f.filter((_, i) => i !== f.indexOf(repeated) && i !== f.indexOf(repeated) + 1)])] : []),
+    product([small, n / small]),
+    product([big, n / big]),
+    ...(f.filter((p) => p === small).length === 1 ? [product([...f, small])] : []),
+  ];
+  const traps = candidates.filter((t, i) => t !== answer && candidates.indexOf(t) === i).slice(0, 3);
+  // La chaîne des divisions : 60 = 2 × 30 = 2 × 2 × 15 = 2 × 2 × 3 × 5.
+  const steps = f.slice(0, -1).map((_, i) => {
+    const done = f.slice(0, i + 1);
+    return `${done.join(' × ')} × ${n / done.reduce((a, b) => a * b, 1)}`;
+  });
+  return {
+    key: `dfp-${n}`,
+    prompt: `${n} en facteurs premiers = …`,
+    spoken: `Décompose ${n} en produit de facteurs premiers.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `Divise ${n} par ${small} : ${n / small}. Continue avec ${n / small}, jusqu’à n’avoir que des nombres premiers.`,
+    explanation: `${n} = ${[...steps, answer].filter((s, i, all) => all.indexOf(s) === i).join(' = ')} : tous les facteurs sont premiers.`,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Facteurs premiers',
+        lines: [
+          'Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.',
+          'Chaque facteur doit être premier : 2, 3, 5, 7, 11, 13…',
+          '4, 6, 9, 10 ne sont pas premiers : on les décompose encore.',
+        ],
+      },
+    },
+  };
+};
+
 // ---------- Atelier du calcul littéral ----------
 
 const REDUCE_RULES = ['On additionne les x entre eux, et les nombres entre eux.', '3x + 5x = 8x (comme 3 pommes + 5 pommes).', 'x + x = 2x, mais x × x = x².'];
@@ -750,6 +818,144 @@ export const equationTwoSteps: ItemGenerator = (rng) => {
     hint: `D’abord ${b < 0 ? 'ajoute' : 'enlève'} ${Math.abs(b)} des deux côtés, puis divise par ${k}.`,
     explanation: `${fmt(r)} ${plus(-b)} = ${fmt(r - b)}, puis ${fmt(r - b)} ÷ ${k} = ${fmt(x)}.`,
     aid: { kind: 'rule-card', props: { title: 'Équation en deux étapes', lines: EQ_RULES } },
+  };
+};
+
+const FACT_RULES = [
+  'Factoriser, c’est le contraire de développer.',
+  '6x + 15 = 3 × 2x + 3 × 5 = 3(2x + 5).',
+  'x² + 4x = x × x + x × 4 = x(x + 4).',
+];
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+/** Factoriser par un nombre : 12x − 8 = 4(3x − 2). Le facteur est le plus grand : une seule écriture juste. */
+export const factorNumber: ItemGenerator = (rng) => {
+  let k = randomInt(2, 6, rng);
+  let a = randomInt(1, 5, rng);
+  let b = randomInt(1, 7, rng);
+  // Le facteur commun est bien k (a et b sans diviseur commun), et jamais l'exemple du rappel.
+  while (gcd(a, b) !== 1 || (k === 3 && a === 2 && b === 5)) {
+    k = randomInt(2, 6, rng);
+    a = randomInt(1, 5, rng);
+    b = randomInt(1, 7, rng);
+  }
+  const minus = rng() < 0.4;
+  const op = minus ? '−' : '+';
+  const expr = `${ax(k * a)} ${op} ${k * b}`;
+  const answer = `${k}(${ax(a)} ${op} ${b})`;
+  // Pièges : le second terme pas divisé, le premier pas divisé, le coefficient de x oublié, x mis en facteur alors qu'un terme n'en a pas,
+  // le facteur pris sur le premier terme seulement.
+  const traps = [
+    `${k}(${ax(a)} ${op} ${k * b})`,
+    `${k}(${ax(k * a)} ${op} ${b})`,
+    ...(a > 1 ? [`${k}(x ${op} ${b})`, `${k * a}(x ${op} ${b})`] : []),
+    `${k}x(${a} ${op} ${b})`,
+  ];
+  return {
+    key: `fact-${k}-${a}-${b}-${minus ? 'm' : 'p'}`,
+    prompt: `${expr} = …`,
+    spoken: `${k * a} x ${minus ? 'moins' : 'plus'} ${k * b}. Factorise.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `Cherche le nombre qui divise ${k * a} et ${k * b} : ${k * a} = ${k} × ${a} et ${k * b} = ${k} × ${b}.`,
+    explanation: `${ax(k * a)} = ${k} × ${ax(a)} et ${k * b} = ${k} × ${b} : le facteur commun est ${k}. Donc ${expr} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Factoriser', lines: FACT_RULES } },
+  };
+};
+
+/** Factoriser par x : x² + 5x = x(x + 5). */
+export const factorX: ItemGenerator = (rng) => {
+  let b = randomInt(2, 9, rng);
+  const minus = rng() < 0.4;
+  if (b === 4 && !minus) b = 7;
+  const op = minus ? '−' : '+';
+  const expr = `x² ${op} ${ax(b)}`;
+  const answer = `x(x ${op} ${b})`;
+  // Pièges : le x laissé dans la parenthèse (x² ou bx), le nombre qui garde le x, x² sorti à la place de x.
+  const traps = [`x(x² ${op} ${b})`, `x(x ${op} ${ax(b)})`, `${ax(b)}(x ${op} 1)`, `x²(1 ${op} ${b})`];
+  return {
+    key: `factx-${b}-${minus ? 'm' : 'p'}`,
+    prompt: `${expr} = …`,
+    spoken: `x au carré ${minus ? 'moins' : 'plus'} ${b} x. Factorise.`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: `x² = x × x et ${ax(b)} = x × ${b} : x est dans les deux termes.`,
+    explanation: `x² = x × x et ${ax(b)} = x × ${b} : le facteur commun est x. Donc ${expr} = ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Factoriser', lines: FACT_RULES } },
+  };
+};
+
+const TEST_RULES = [
+  'Tester une égalité : on remplace x par la valeur, de chaque côté.',
+  'Même résultat des deux côtés : l’égalité est vraie.',
+  'Deux résultats différents : elle est fausse pour cette valeur.',
+];
+/** « 2 x », « x » : le coefficient lu à voix haute. */
+const sayX = (a: number) => (a === 1 ? 'x' : `${a} x`);
+
+/** Tester une égalité pour une valeur de x : 4x − 5 = 2x + 1 pour x = 3 ? */
+export const testEquality: ItemGenerator = (rng) => {
+  const s = randomInt(-3, 6, rng);
+  const a = randomInt(2, 6, rng);
+  const c = randomInt(1, a - 1, rng);
+  const b = nonZero(-9, 9, rng);
+  const d = (a - c) * s + b;
+  const yes = rng() < 0.5;
+  // Une valeur fausse proche de la solution : une unité d'écart, ou le signe perdu.
+  const wrong = [s + 1, s - 1, ...(s !== 0 ? [-s] : [])];
+  const t = yes ? s : wrong[randomInt(0, wrong.length - 1, rng)];
+  const left = a * t + b;
+  const right = c * t + d;
+  const rhs = d === 0 ? ax(c) : `${ax(c)} ${plus(d)}`;
+  const sayRhs = d === 0 ? sayX(c) : `${sayX(c)} ${d < 0 ? 'moins' : 'plus'} ${Math.abs(d)}`;
+  return {
+    key: `test-${a}-${b}-${c}-${d}-${t}`,
+    prompt: `Pour x = ${fmt(t)}, l’égalité ${ax(a)} ${plus(b)} = ${rhs} est-elle vraie ?`,
+    spoken: `Pour x égale ${say(t)}, l’égalité ${sayX(a)} ${b < 0 ? 'moins' : 'plus'} ${Math.abs(b)} égale ${sayRhs} est-elle vraie ?`,
+    choices: ['non', 'oui'],
+    answer: yes ? 'oui' : 'non',
+    hint: `Remplace x par ${fmt(t)} à gauche, puis à droite, et compare les deux résultats.`,
+    explanation: `À gauche : ${a} × ${par(t)} ${plus(b)} = ${fmt(left)}. À droite : ${c} × ${par(t)}${d === 0 ? '' : ` ${plus(d)}`} = ${fmt(right)}. ${
+      yes ? 'Même résultat : oui, l’égalité est vraie.' : `${fmt(left)} n’est pas égal à ${fmt(right)} : non, elle est fausse pour x = ${fmt(t)}.`
+    }`,
+    aid: { kind: 'rule-card', props: { title: 'Tester une égalité', lines: TEST_RULES } },
+  };
+};
+
+const PRODUCT_RULES = [
+  'Un produit est nul si l’un de ses facteurs est nul.',
+  '(x − 2)(x + 1) = 0 : x − 2 = 0 ou x + 1 = 0.',
+  'Donc x = 2 ou x = −1 : le signe change.',
+];
+/** « x − 3 », « x + 5 », « x » (racine 0). */
+const factorOf = (r: number) => (r === 0 ? 'x' : r > 0 ? `(x − ${r})` : `(x + ${-r})`);
+const sayFactor = (r: number) => (r === 0 ? 'x' : `la parenthèse x ${r > 0 ? 'moins' : 'plus'} ${Math.abs(r)}`);
+const solveFactor = (r: number) => (r === 0 ? 'x = 0' : `${factorOf(r).replace(/[()]/g, '')} = 0, donc x = ${fmt(r)}`);
+const roots = (p: number, q: number) => (p === q ? `x = ${fmt(p)}` : `x = ${fmt(p)} ou x = ${fmt(q)}`);
+
+/** Équation produit : (x − 3)(x + 5) = 0, ou x(x − 4) = 0. */
+export const productEquation: ItemGenerator = (rng) => {
+  const withX = rng() < 0.3;
+  let r1 = withX ? 0 : nonZero(-7, 7, rng);
+  let r2 = nonZero(-7, 7, rng);
+  // Deux solutions différentes, de valeurs absolues différentes (sinon deux pièges de signe se confondraient),
+  // et jamais l'exemple du rappel.
+  while (Math.abs(r1) === Math.abs(r2) || (r1 === 2 && r2 === -1)) {
+    r1 = withX ? 0 : nonZero(-7, 7, rng);
+    r2 = nonZero(-7, 7, rng);
+  }
+  const answer = roots(r1, r2);
+  // Pièges : le signe gardé (x − 3 donne −3), un seul signe corrigé, la solution x = 0 oubliée.
+  const traps = withX ? [roots(0, -r2), `x = ${fmt(r2)}`, `x = ${fmt(-r2)}`] : [roots(-r1, -r2), roots(r1, -r2), roots(-r1, r2)];
+  return {
+    key: `prod-${r1}-${r2}`,
+    prompt: `${factorOf(r1)}${factorOf(r2)} = 0. Quelles sont les solutions ?`,
+    spoken: `${sayFactor(r1).replace(/^l/, 'L')}, fois ${sayFactor(r2)}, égale zéro. Quelles sont les solutions ?`,
+    choices: textChoices(answer, traps, rng),
+    answer,
+    hint: 'Un des deux facteurs vaut zéro : écris les deux petites équations et résous-les.',
+    explanation: `Soit ${solveFactor(r1)} ; soit ${solveFactor(r2)}. Solutions : ${answer}.`,
+    aid: { kind: 'rule-card', props: { title: 'Équation produit', lines: PRODUCT_RULES } },
   };
 };
 
@@ -1090,12 +1296,16 @@ const ENCLUME = 'Calcule la puissance : le nombre multiplié par lui-même, auta
 const ENCLUME_PROD = 'Même base : additionne les exposants pour un produit, soustrais-les pour un quotient.';
 const TREMPE = 'Trouve la racine carrée : le nombre qui, multiplié par lui-même, donne celui-ci.';
 const TREMPE_PRIME = 'Nombres premiers et diviseurs : la règle et les critères sont affichés.';
+const TREMPE_FACTEURS = 'Décompose le nombre en produit de facteurs premiers : divise par 2, puis 3, puis 5, puis 7.';
 const REDUIRE = 'Réduis l’expression : regroupe les x entre eux, puis les nombres entre eux.';
 const REDUIRE_MIXTE = 'Réduis l’expression : les x d’un côté, les nombres de l’autre, attention aux signes.';
 const DEVELOPPER = 'Développe : distribue le nombre à chaque terme de la parenthèse.';
 const DEVELOPPER_DOUBLE = 'Développe la double distributivité : chaque terme avec chaque terme, puis réduis.';
+const FACTORISER = 'Factorise : trouve ce qui est commun aux deux termes et mets-le devant la parenthèse.';
 const EQUILIBRE = 'Trouve x : fais la même opération des deux côtés de l’égalité.';
 const EQUILIBRE_DEUX = 'Trouve x en deux étapes : d’abord le nombre seul, puis divise.';
+const EQUILIBRE_TEST = 'Remplace x par sa valeur de chaque côté, puis compare les deux résultats.';
+const EQUILIBRE_PRODUIT = 'Un produit est nul si l’un de ses facteurs est nul : trouve les deux solutions.';
 
 const PYTHAGORE = 'Trouve l’hypoténuse : hypoténuse au carré égale la somme des carrés des deux autres côtés. La figure est codée.';
 const PYTHAGORE_COTE = 'Trouve un côté de l’angle droit : hypoténuse au carré moins l’autre côté au carré, puis racine carrée.';
@@ -1127,12 +1337,16 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'forge', type: 'enclume', level: 2, instruction: ENCLUME_PROD, generators: [productOfPowers], block: 'acier' }),
   defineData({ biome: 'forge', type: 'trempe', level: 1, instruction: TREMPE, generators: [squareRoot], block: 'acier' }),
   defineData({ biome: 'forge', type: 'trempe', level: 2, instruction: TREMPE_PRIME, generators: [primeOrDivisor], block: 'acier' }),
+  defineData({ biome: 'forge', type: 'trempe', level: 3, instruction: TREMPE_FACTEURS, generators: [primeDecomposition], block: 'acier' }),
   defineData({ biome: 'atelier', type: 'reduire', level: 1, instruction: REDUIRE, generators: [reduceSimple], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'reduire', level: 2, instruction: REDUIRE_MIXTE, generators: [reduceMixed], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'developper', level: 1, instruction: DEVELOPPER, generators: [developSimple], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'developper', level: 2, instruction: DEVELOPPER_DOUBLE, generators: [developDouble], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'developper', level: 3, instruction: FACTORISER, generators: [factorNumber, factorX], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 1, instruction: EQUILIBRE, generators: [equationOneStep], block: 'calque' }),
   defineData({ biome: 'atelier', type: 'equilibre', level: 2, instruction: EQUILIBRE_DEUX, generators: [equationTwoSteps], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 3, instruction: EQUILIBRE_TEST, generators: [testEquality], block: 'calque' }),
+  defineData({ biome: 'atelier', type: 'equilibre', level: 4, instruction: EQUILIBRE_PRODUIT, generators: [productEquation], block: 'calque' }),
   defineData({ biome: 'belvedere', type: 'pythagore', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'marbre' }),
   defineData({ biome: 'belvedere', type: 'pythagore', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'marbre' }),
   defineData({ biome: 'belvedere', type: 'thales', level: 1, instruction: THALES, generators: [thales], block: 'marbre' }),
