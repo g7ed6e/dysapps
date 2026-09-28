@@ -145,3 +145,15 @@ describe('les textes d’univers', () => {
     for (const g of Object.values(t.gardiens)) expect(Object.values(g.guardianSays).join()).not.toMatch(/à nouveau/);
   });
 });
+
+describe('les textes communs (J8, U4)', () => {
+  it('les répliques des créatures et les états d’île sont ceux d’avant, sans un mot changé, dans les deux univers', () => {
+    // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home).
+    for (const u of UNIVERS) {
+      const t = textesDe(u);
+      const r = Object.fromEntries(BIOMES.map((b) => [b.id, t.creatures[b.id]]));
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('66357170fd10e867d6031b966877c4e48b51fee89bf25abbd14c180780c40c07');
+      expect(t.etatsDIle).toEqual({ fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', restauree: 'Restaurée' });
+    }
+  });
+});
