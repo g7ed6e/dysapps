@@ -10,6 +10,10 @@
 // - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
 // - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
 //
+// Les modèles qui remplacent des cubes (le phare de Grimoire du 6e, les ponts de pierre et de bois et le phare du large
+// du 5e, DA-4) passent par les mêmes groupes : leur pierre dans les blocs, la lanterne ou le feu dans les fenêtres, qui
+// prend la lueur la nuit, fixe, sans pulser.
+//
 // Rien ne bouge image par image : les uniformes suivent la lumière (`lumiere.suivre`, chaque minute au plus).
 import * as THREE from 'three';
 import {
