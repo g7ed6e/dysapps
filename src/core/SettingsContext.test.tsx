@@ -17,8 +17,8 @@ it('fermé, n’écrit jamais l’univers : un appareil neuf ne reste pas figé 
   expect(loadJSON(MESSAGE_UNIVERS_KEY, null)).toBeNull();
 });
 
-it('ouvert, fige le premier univers : Archipéo pour un appareil neuf', () => {
-  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'archipeo' }, message: false });
+it('ouvert, fige le premier univers : Blocland pour un appareil neuf, sans message', () => {
+  expect(lireReglages(true)).toMatchObject({ settings: { univers: 'blocland' }, message: false });
 });
 
 it('ouvert, garde Blocland à un appareil qui a une progression, avec le message unique à dire', () => {

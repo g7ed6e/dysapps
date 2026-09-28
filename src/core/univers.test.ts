@@ -1,12 +1,13 @@
-import { aUneProgression, premierUnivers, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, titreAffiche } from './univers';
+import { aUneProgression, premierUnivers, UNIVERS, UNIVERS_IDS, UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT, titreAffiche } from './univers';
 
 it('reste fermé jusqu’à la bascule du lot 6', () => {
   expect(UNIVERS_OUVERT).toBe(false);
 });
 
 it('choisit le premier univers d’un appareil d’après sa progression', () => {
-  // Un appareil neuf : Archipéo.
-  expect(premierUnivers({ progression: false, experimental: false })).toEqual({ univers: 'archipeo', message: false });
+  // Un appareil neuf : Blocland, l'univers par défaut, sans message.
+  expect(UNIVERS_PAR_DEFAUT).toBe('blocland');
+  expect(premierUnivers({ progression: false, experimental: false })).toEqual({ univers: 'blocland', message: false });
   // Une progression : Blocland, avec le message unique qui présente Archipéo.
   expect(premierUnivers({ progression: true, experimental: false })).toEqual({ univers: 'blocland', message: true });
   // La section Expérimental allumée : l'élève a déjà choisi Archipéo, sans message.
@@ -28,7 +29,8 @@ it('garde les textes d’aujourd’hui tant que l’univers est fermé', () => {
   expect(titreAffiche('blocland', false)).toBe('archipeo');
   expect(titreAffiche(undefined, false)).toBe('archipeo');
   expect(titreAffiche('blocland', true)).toBe('blocland');
-  expect(titreAffiche(undefined, true)).toBe('archipeo');
+  expect(titreAffiche('archipeo', true)).toBe('archipeo');
+  expect(titreAffiche(undefined, true)).toBe('blocland');
 });
 
 it('donne à chaque univers un nom, une phrase, une icône distincte et ses textes', () => {
