@@ -292,6 +292,19 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
 const STEP = '#8f8f8f';
 
 /**
+ * Les ports d'attache d'une île (étape J5) : là où chacun de ses ouvrages la touche, la première case de l'ouvrage de
+ * son côté, dans le repère de l'île. Une côte dessinée par île (R4b) les lit pour laisser l'ouvrage aborder.
+ */
+export function portsDAttache(id: BiomeId): { ouvrage: string; local: { x: number; y: number; z: number } }[] {
+  const o = origineDe(id);
+  return bridgesOf(id).map((def) => {
+    const path = bridgePath(def);
+    const c = def.from === id ? path[0] : path[path.length - 1];
+    return { ouvrage: def.id, local: { x: c.x - o.x, y: c.y - o.y, z: c.z - o.z } };
+  });
+}
+
+/**
  * Le tracé d'un ouvrage entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
  * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
  * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Chaque case a son altitude (interpolée).
@@ -1403,6 +1416,43 @@ function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]):
   }
 }
 
+/** L'origine du repère d'une île : le coin de son cœur, à l'altitude de l'île (le point 0, 0, 0 de l'île). */
+export function origineDe(id: BiomeId): { x: number; y: number; z: number } {
+  const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  return { x: ox, y: oy, z: oz };
+}
+
+/**
+ * Les cubes d'une île dans son repère (étape J5) : le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
+ * Gardien, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
+ * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en cases du monde
+ * (une cascade ne tombe jamais sur la terre de l'île voisine) ; l'île y ajoute ses cubes.
+ */
+export function cubesDeLIle(
+  id: BiomeId,
+  progress: Record<string, { stars: number }>,
+  village: Village = { plans: {}, journal: [], bridges: [] },
+  withCreatures = true,
+  /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
+  trophies: (keyof typeof BLOCKS)[] = [],
+  voisins: Set<string> = new Set(),
+): VoxelCube[] {
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const cubes: VoxelCube[] = [];
+  poserLIle(BIOMES[index], index, progress, village, withCreatures, trophies, voisins, cubes);
+  const { ox, oy, oz } = islandOrigin(index);
+  for (const c of cubes) {
+    c.x -= ox;
+    c.y -= oy;
+    c.z -= oz;
+  }
+  return cubes;
+}
+
+/**
+ * Tous les cubes d'un archipel, en cases du monde : chaque île née dans son repère (`cubesDeLIle`) et posée à sa place
+ * par la grille, puis ce qui est entre les îles (le port, les îlots des monuments, la mer habillée, les ouvrages).
+ */
 export function worldCubes(
   a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
@@ -1414,151 +1464,176 @@ export function worldCubes(
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
   const placed = new Set<string>();
-  BIOMES.forEach((biome, index) => {
-    if (biome.classe !== a) return;
-    const def = islandDef(biome.id);
-    const { ox, oy, oz } = islandOrigin(index);
-    const unlocked = isBiomeUnlocked(biome.id, village.bridges);
-    const block = BLOCKS[biome.block];
-    const grassy =
-      biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
-    const h = (x: number, y: number) => groundHeight(index, x, y);
-    // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
-    // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
-    const taken = new Set<string>();
-    const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
-      taken.add(`${x},${y},${z}`);
-      placed.add(`${x},${y},${oz + z}`);
+  for (const biome of BIOMES) {
+    if (biome.classe !== a) continue;
+    const o = origineDe(biome.id);
+    for (const c of cubesDeLIle(biome.id, progress, village, withCreatures, trophies, placed)) {
+      c.x += o.x;
+      c.y += o.y;
+      c.z += o.z;
+      cubes.push(c);
+    }
+  }
+  return entreLesIles(a, village, cubes);
+}
+
+/** Une île posée en cases du monde, ajoutée à `cubes` ; `placed` : ce que la scène occupe déjà (l'île y ajoute les siens). */
+function poserLIle(
+  biome: (typeof BIOMES)[number],
+  index: number,
+  progress: Record<string, { stars: number }>,
+  village: Village,
+  withCreatures: boolean,
+  trophies: (keyof typeof BLOCKS)[],
+  placed: Set<string>,
+  cubes: VoxelCube[],
+): void {
+  const def = islandDef(biome.id);
+  const { ox, oy, oz } = islandOrigin(index);
+  const unlocked = isBiomeUnlocked(biome.id, village.bridges);
+  const block = BLOCKS[biome.block];
+  const grassy =
+    biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
+  const h = (x: number, y: number) => groundHeight(index, x, y);
+  // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
+  // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
+  const taken = new Set<string>();
+  const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
+    taken.add(`${x},${y},${z}`);
+    placed.add(`${x},${y},${oz + z}`);
+    cubes.push({
+      x,
+      y,
+      z: oz + z,
+      color: unlocked ? color : fade(color),
+      texture: TEXTURES[color],
+      tag: biome.id,
+      muted: unlocked ? undefined : true,
+      decor: decor ? `${biome.id}/${decor}` : undefined,
+      ...(sol ? { sol } : {}),
+    });
+  };
+  // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
+  const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);
+  // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
+  const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
+  // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
+  // … sauf sur les cases de l’école et de la salle des trophées (un feuillage voisin ne traverse pas leur toit).
+  const placesAt = placeCells(biome.id);
+  const putDecor: Put = (x, y, z, color, decor) =>
+    !placesAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) && put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
+  const land = landCells(def);
+  for (const c of land) {
+    if (!inCore(def, c.x, c.y)) continue;
+    const x = c.x - ox;
+    const y = c.y - oy;
+    for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS.terre.side);
+    const top = h(x, y);
+    if (top > 0) putSol(c.x, c.y, 0, BLOCKS.terre.side);
+    putSol(c.x, c.y, top, grassy ? GRASS : block.side);
+  }
+  // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
+  const scenery = landscape(def);
+  for (const c of scenery) {
+    for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
+    for (let z = 0; z < c.h; z++) putSol(c.x, c.y, z, underground(def, c, c.h - z));
+    putSol(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
+  }
+  DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
+  // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
+  for (const st of questStations(biome.id)) {
+    const quest = `${biome.id}:${st.typeId}`;
+    const base = h(st.x, st.y);
+    const tone = (c: string) => (unlocked ? c : fade(c));
+    const muted = unlocked ? undefined : true;
+    cubes.push({
+      x: ox + st.x,
+      y: oy + st.y,
+      z: oz + base + 1,
+      color: tone(block.side),
+      top: block.top,
+      texture: block.texture,
+      tag: biome.id,
+      quest,
+      muted,
+    });
+    cubes.push({
+      x: ox + st.x,
+      y: oy + st.y,
+      z: oz + base + 2,
+      color: tone('#3a4a6a'),
+      top: '#2f3d5c',
+      texture: 'borne',
+      tag: biome.id,
+      quest,
+      muted,
+    });
+    taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
+    taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
+  }
+  // L'école et la salle des trophées (sur l'île de l'école de l'archipel) : on les touche pour entrer, comme une borne.
+  for (const place of PLACE_IDS) {
+    const spot = placeSpot(place, biome.id);
+    if (!spot) continue;
+    const { at, size } = VILLAGE_PLACES[place];
+    // Le soubassement rattrape une marche du sol.
+    for (let dx = 0; dx < size.w; dx++)
+      for (let dy = 0; dy < size.d; dy++)
+        for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
+    for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
+      cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
+  }
+  landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
+  cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  for (const c of scenery) {
+    if (!c.decor || nearSentier(c.x, c.y)) continue;
+    const r = noise(def.seed + 5, c.x, c.y);
+    // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
+    // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
+    decorate(
+      (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor),
+      c.decor,
+      c.x,
+      c.y,
+      r,
+    );
+  }
+  // Une île en altitude flotte : sa roche s'amincit dessous.
+  if (def.altitude > 0)
+    for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+  // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais.
+  const guardian = guardianStatus(biome, progress, village.bridges);
+  if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes);
+  if (unlocked && withCreatures) {
+    const spot = creatureSpot(biome.id);
+    for (const c of CREATURE_CUBES[biome.id])
       cubes.push({
-        x,
-        y,
-        z: oz + z,
-        color: unlocked ? color : fade(color),
-        texture: TEXTURES[color],
+        x: ox + spot.x + c.x,
+        y: oy + spot.y + c.y,
+        z: oz + c.z + 1,
+        color: c.color,
         tag: biome.id,
-        muted: unlocked ? undefined : true,
-        decor: decor ? `${biome.id}/${decor}` : undefined,
-        ...(sol ? { sol } : {}),
       });
-    };
-    // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
-    const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);
-    // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
-    const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
-    // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
-    // … sauf sur les cases de l’école et de la salle des trophées (un feuillage voisin ne traverse pas leur toit).
-    const placesAt = placeCells(biome.id);
-    const putDecor: Put = (x, y, z, color, decor) =>
-      !placesAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) && put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
-    const land = landCells(def);
-    for (const c of land) {
-      if (!inCore(def, c.x, c.y)) continue;
-      const x = c.x - ox;
-      const y = c.y - oy;
-      for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS.terre.side);
-      const top = h(x, y);
-      if (top > 0) putSol(c.x, c.y, 0, BLOCKS.terre.side);
-      putSol(c.x, c.y, top, grassy ? GRASS : block.side);
-    }
-    // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
-    const scenery = landscape(def);
-    for (const c of scenery) {
-      for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
-      for (let z = 0; z < c.h; z++) putSol(c.x, c.y, z, underground(def, c, c.h - z));
-      putSol(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
-    }
-    DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
-    // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
-    for (const st of questStations(biome.id)) {
-      const quest = `${biome.id}:${st.typeId}`;
-      const base = h(st.x, st.y);
-      const tone = (c: string) => (unlocked ? c : fade(c));
-      const muted = unlocked ? undefined : true;
-      cubes.push({
-        x: ox + st.x,
-        y: oy + st.y,
-        z: oz + base + 1,
-        color: tone(block.side),
-        top: block.top,
-        texture: block.texture,
-        tag: biome.id,
-        quest,
-        muted,
-      });
-      cubes.push({
-        x: ox + st.x,
-        y: oy + st.y,
-        z: oz + base + 2,
-        color: tone('#3a4a6a'),
-        top: '#2f3d5c',
-        texture: 'borne',
-        tag: biome.id,
-        quest,
-        muted,
-      });
-      taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
-      taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
-    }
-    // L'école et la salle des trophées (sur l'île de l'école de l'archipel) : on les touche pour entrer, comme une borne.
-    for (const place of PLACE_IDS) {
-      const spot = placeSpot(place, biome.id);
-      if (!spot) continue;
-      const { at, size } = VILLAGE_PLACES[place];
-      // Le soubassement rattrape une marche du sol.
-      for (let dx = 0; dx < size.w; dx++)
-        for (let dy = 0; dy < size.d; dy++)
-          for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
-      for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
-        cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
-    }
-    landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
-    cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
-    for (const c of scenery) {
-      if (!c.decor || nearSentier(c.x, c.y)) continue;
-      const r = noise(def.seed + 5, c.x, c.y);
-      // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
-      // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-      decorate(
-        (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor),
-        c.decor,
-        c.x,
-        c.y,
-        r,
-      );
-    }
-    // Une île en altitude flotte : sa roche s'amincit dessous.
-    if (def.altitude > 0)
-      for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
-    // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais.
-    const guardian = guardianStatus(biome, progress, village.bridges);
-    if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes);
-    if (unlocked && withCreatures) {
-      const spot = creatureSpot(biome.id);
-      for (const c of CREATURE_CUBES[biome.id])
-        cubes.push({
-          x: ox + spot.x + c.x,
-          y: oy + spot.y + c.y,
-          z: oz + c.z + 1,
-          color: c.color,
-          tag: biome.id,
-        });
-    }
-    // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
-    if (unlocked) {
-      let ghostsShown = false;
-      for (const plan of plansFor(biome.id)) {
-        const done = new Set(village.plans[plan.id] ?? []);
-        const finished = isPlanDone(plan, village.plans);
-        if (!finished && ghostsShown) break;
-        if (!finished) ghostsShown = true;
-        for (const c of planCells(plan)) {
-          const bd = BLOCKS[c.block];
-          const built = done.has(c.key);
-          cubes.push({ x: ox + c.x, y: oy + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, ghost: !built });
-        }
+  }
+  // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
+  if (unlocked) {
+    let ghostsShown = false;
+    for (const plan of plansFor(biome.id)) {
+      const done = new Set(village.plans[plan.id] ?? []);
+      const finished = isPlanDone(plan, village.plans);
+      if (!finished && ghostsShown) break;
+      if (!finished) ghostsShown = true;
+      for (const c of planCells(plan)) {
+        const bd = BLOCKS[c.block];
+        const built = done.has(c.key);
+        cubes.push({ x: ox + c.x, y: oy + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, ghost: !built });
       }
     }
-  });
+  }
+}
+
+/** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
+function entreLesIles(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
   harbour(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
