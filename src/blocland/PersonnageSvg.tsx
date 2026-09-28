@@ -37,7 +37,7 @@ export default function PersonnageSvg({ kind, id, allumage, label, className }: 
           points={f.points.map(([px, py]) => `${px.toFixed(3)},${py.toFixed(3)}`).join(' ')}
           fill={f.couleur}
           stroke={f.couleur}
-          strokeWidth={0.006}
+          strokeWidth={0.025}
           strokeLinejoin="round"
         />
       ))}
