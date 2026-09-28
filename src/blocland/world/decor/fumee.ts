@@ -120,7 +120,7 @@ export class Fumees {
   }
 }
 
-/** Les options d'une fumée : le rayon de sa première volute, combien de volutes (deux au moins), le haut du pied (`bas`). */
+/** Les options d'une fumée : le rayon de sa première volute, combien de volutes (deux au moins ; sinon une par cube), le haut du pied (`bas`). */
 export interface OptionsDeFumee {
   rayon?: number;
   volutes?: number;
@@ -135,7 +135,7 @@ export function bouffees(F: Fumees, list: VoxelCube[], hasard: () => number, rot
   if (!list.length) return;
   const tri = [...list].sort((p, q) => p.z - q.z);
   // Deux volutes au moins : une volute seule ne grandirait jamais jusqu'à sa taille (elle naît et se dissout à la fois).
-  const n = Math.max(2, Math.min(tri.length, o.volutes ?? tri.length));
+  const n = Math.max(2, o.volutes ?? tri.length);
   const [d, f] = [tri[0], tri[tri.length - 1]];
   const k2 = Math.max(1, (tri.length - 1) * (tri.length - 1));
   const vx = (f.x - d.x) / k2;

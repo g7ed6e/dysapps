@@ -1,6 +1,6 @@
 import { toutConstruit } from '../budget';
 import { rangerLeDecor, maillageDuDecor } from '../decorMesh';
-import { champDuSol } from '../landMesh';
+import { champDuSol, hauteurDuSol } from '../landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../map';
 import { cielDe, luminance } from '../palette';
 import { islandCenter, worldCubes } from '../terrain';
@@ -111,6 +111,25 @@ it('au 6e, le volcan fume à peine : une fumée mince, plus basse que le phare (
     let haut = -Infinity;
     for (let i = 1; i < positions.length; i += 3) haut = Math.max(haut, positions[i]);
     expect(haut, `t=${t}`).toBeLessThan(sommetDuPhare);
+  }
+});
+
+it('au 6e, la fumée sort du flanc sud du cône, sous sa crête : jamais au-dessus du cratère, donc jamais derrière le nom de l’île', () => {
+  const { progress, village } = toutConstruit();
+  const cubes = worldCubes('6e', progress, village, false);
+  const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
+  const champ = champDuSol('6e', cubes.filter((c) => c.sol), reste);
+  const [x, , z] = decorDe('6e').fumees.panaches[0].chemin[0];
+  // La face du cône est juste au nord de la bouche.
+  const crete = hauteurDuSol(champ, x, z + 1)!;
+  expect(crete - hauteurDuSol(champ, x, z)!).toBeGreaterThanOrEqual(2);
+  for (const t of [0, 1.5, 3, 4.5, 6, 7.5, 9]) {
+    const { positions } = poser('6e', t, 1, false);
+    for (let i = 0; i < positions.length; i += 3) {
+      expect(positions[i + 1], `t=${t}`).toBeLessThan(crete);
+      // Devant la face (au sud) : on la voit toujours, la caméra regarde vers le nord.
+      expect(positions[i + 2], `t=${t}`).toBeLessThan(z + 1);
+    }
   }
 });
 
