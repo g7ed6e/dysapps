@@ -229,7 +229,8 @@ export const BLOCLAND = {
         miss: 'Ce n’est rien : cherche le petit mot (for, since, if, by…), relis la règle, et reprends.',
         beaten: 'Je replie mes ailes rouges. Le château est à toi… et à Knight.',
       },
-    },  },
+    },
+  },
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe cubique',
@@ -258,7 +259,8 @@ export const BLOCLAND = {
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',
     studio: 'chauve-souris animatrice radio',
-    chateau: 'petit chevalier',  },
+    chateau: 'petit chevalier',
+  },
   libelles: {
     dejaFait: 'Déjà vaincu. Une revanche ?',
     etoiles: 'Gardien vaincu',

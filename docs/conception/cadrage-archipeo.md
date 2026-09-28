@@ -296,9 +296,9 @@ Ni Archipéo ni Blocland ne s’affichent en 2D (décidé par le mainteneur le 2
 
 - Les espèces : taupe, renard, brebis (Bloquette), tortue copiste (Grimoire), automate dessinateur ; les autres ne changent pas ; une espèce n’appartient qu’à une créature.
 - Chaque épreuve ratée commence par « Rien ne s’éteint. », puis garde le conseil de méthode d’aujourd’hui.
-- Chaque épreuve réussie nomme la partie de la sentinelle qui s’allume (couronne, gemme, couches de pierre, collier, vitrail, ailes, flanc, ventre de braise, veines de givre, lanterne, coiffe, trois cous, cœur de forge, plateaux, cornes, livre, étoiles gravées, ailes de verre, pages, crinière, cadran, couronne, lanterne sous le voile, rampe, lampe, voyant, écu) : R6 et B2 la dessinent et y allument les veines.
-- La réplique finale dit que la sentinelle « se rallume », jamais « toutes » ni « brille à nouveau » : on réussit le défi avant d’avoir tout réussi, et « brille à nouveau » est réservé au mot du village (B2) et à la baleine (« Tous les Gardiens des … brillent à nouveau. J’ai vu leur lumière depuis le large. »).
-- Ni anglais ni « bâtisseur » dans les répliques des Gardiens ; « {Gardien} brille déjà » plutôt qu’un participe à accorder.
+- Chaque épreuve réussie nomme la partie de la sentinelle qui s’allume (couronne, gemme, couches de pierre, collier, vitrail, ailes, flanc, ventre de braise, veines de givre, lanterne, coiffe, trois cous, cœur de forge, plateaux, cornes, livre, coiffe, étoiles gravées, ailes de verre, pages, crinière, cadran, couronne, lanterne sous le voile, rampe, lampe, voyant, écu) : R6 et B2 la dessinent et y allument les veines.
+- La réplique finale dit que la sentinelle « se rallume », jamais qu’elle se rallume tout entière (« Toutes mes… ») ni qu’elle « brille à nouveau » : on réussit le défi avant d’avoir tout réussi, et « brille à nouveau » est réservé au mot du village (B2) et à la baleine (« Tous les Gardiens des … brillent à nouveau. J’ai vu leur lumière depuis le large. »).
+- Ni exclamation anglaise (Well done!, Splendid!, Bravo!) ni « bâtisseur » dans les répliques des Gardiens ; les mots anglais d’un conseil de méthode restent ; « {Gardien} brille déjà » plutôt qu’un participe à accorder.
 - Reste pour B2, avant la bascule : « Résistance du Gardien », « L’arène du Gardien », « n’accepte que les bâtisseurs entraînés » et le grognement d’une épreuve ratée, qui passent par les textes d’univers ; la jauge dit les épreuves réussies (« 2 épreuves sur 3 »).
 
 ### Les risques

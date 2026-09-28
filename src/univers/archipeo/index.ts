@@ -141,7 +141,7 @@ export const ARCHIPEO = {
     belvedere: {
       challenge: 'Le Sphinx de marbre parle : « Tu as mesuré tout mon belvédère. Montre-moi que tu trouves ce qui manque. »',
       guardianSays: {
-        hit: 'Une bande de ma coiffe s’allume. C’est juste.',
+        hit: 'Un angle droit s’allume sur ma coiffe. C’est juste.',
         miss: 'Rien ne s’éteint. Repère l’hypoténuse, écris l’égalité, et reprends.',
         beaten: 'Ma coiffe se rallume. Toutes les longueurs sont à toi, et à Théo.',
       },
@@ -197,8 +197,8 @@ export const ARCHIPEO = {
     manoir: {
       challenge: 'Le Spectre du manoir parle sous son voile : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
       guardianSays: {
-        hit: 'Ma lanterne brille un peu plus sous mon voile. C’est juste.',
-        miss: 'Rien ne s’éteint. Cherche le mot du temps (now, yesterday…), relis la règle, et reprends.',
+        hit: 'Ma lanterne s’allume un peu plus sous mon voile. C’est juste.',
+        miss: 'Rien ne s’éteint. Cherche le mot du temps, comme now ou yesterday, relis la règle, et reprends.',
         beaten: 'Ma lanterne se rallume sous mon voile. Le manoir est à toi, et à Moustache.',
       },
     },
@@ -214,14 +214,14 @@ export const ARCHIPEO = {
       challenge: 'La Locomotive de fer attend sur son rail : « Tu as pris tous mes trains. Montre-moi que tu sais où tu vas. »',
       guardianSays: {
         hit: 'Une lueur s’allume dans ma lampe. Tu es sur les bons rails.',
-        miss: 'Rien ne s’éteint. Cherche le petit mot (will, can, already…), relis la règle, et reprends.',
+        miss: 'Rien ne s’éteint. Cherche le petit mot, comme will, can ou already, relis la règle, et reprends.',
         beaten: 'Ma lampe se rallume. Les voies sont à toi, et à Vapeur.',
       },
     },
     studio: {
       challenge: 'La Grande Antenne grésille : « Tu as capté toutes mes ondes. Montre-moi que tu comprends chaque message. »',
       guardianSays: {
-        hit: 'Mon voyant brille un peu plus. Message bien reçu.',
+        hit: 'Mon voyant s’allume un peu plus. Message bien reçu.',
         miss: 'Rien ne s’éteint. Relis le texte, cherche l’indice, et reprends.',
         beaten: 'Mon voyant se rallume. Le studio est à toi, et à Écho.',
       },
@@ -230,7 +230,7 @@ export const ARCHIPEO = {
       challenge: 'Le Dragon gallois parle depuis son écu : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon écu. C’est juste.',
-        miss: 'Rien ne s’éteint. Cherche le petit mot (for, since, if, by…), relis la règle, et reprends.',
+        miss: 'Rien ne s’éteint. Cherche le petit mot, comme for, since, if ou by, relis la règle, et reprends.',
         beaten: 'Mon écu se rallume. Le château est à toi, et à Knight.',
       },
     },
@@ -268,8 +268,8 @@ export const ARCHIPEO = {
   libelles: {
     dejaFait: 'Déjà rallumé. Tu veux rejouer ?',
     etoiles: 'Gardien rallumé',
-    etoilesSur3: (etoiles) => `Gardien rallumé : ${etoiles} étoiles sur 3`,
-    resistance: (reste, total) => `${reste} épreuves sur ${total} avant de le rallumer`,
+    etoilesSur3: (etoiles) => `Gardien rallumé : ${etoiles} étoile${s(etoiles)} sur 3`,
+    resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour le rallumer`,
     dejaFaitArene: (gardien) => `${gardien} brille déjà. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
     navireAttend: (n) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}.`,

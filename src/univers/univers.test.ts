@@ -82,6 +82,15 @@ describe('les textes d’univers', () => {
     const archipeo = tousLesTextes(textesDe('archipeo')).join('\n');
     expect(archipeo).not.toMatch(/vainc|vainq|revanche|\bbat(s|tre|tu)\b|écroul/i);
     expect(archipeo).toMatch(/rallum/);
+    const l = textesDe('archipeo').libelles;
+    expect([l.etoilesSur3(1), l.etoilesSur3(2), l.resistance(1, 3), l.resistance(2, 3)]).toEqual([
+      'Gardien rallumé : 1 étoile sur 3',
+      'Gardien rallumé : 2 étoiles sur 3',
+      'Encore 1 épreuve sur 3 pour le rallumer',
+      'Encore 2 épreuves sur 3 pour le rallumer',
+    ]);
+    // Lu à voix haute : pas de points de suspension dans les textes neufs (Blocland garde les siens).
+    expect(Object.values(textesDe('archipeo').gardiens).flatMap((g) => Object.values(g.guardianSays).concat(g.challenge)).join('\n')).not.toMatch(/…/);
   });
 
   it('dans Archipéo, une épreuve ratée n’éteint rien, et le dit toujours de la même façon', () => {
