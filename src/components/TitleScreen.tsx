@@ -31,7 +31,7 @@ function messageADire(): boolean {
 const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
 
 /**
- * L'écran titre, une fois par lancement : le nom de l'univers et sa phrase sous l'icône de l'application, « Jouer » (le
+ * L'écran titre, une fois par lancement : le nom de l'univers et sa phrase sous le logo de l'univers, « Jouer » (le
  * village, derrière, est déjà là), et « Continuer » vers la dernière mission. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :
@@ -145,7 +145,7 @@ export function TitleScreen() {
       <div className="title-card">
         <img
           className="title-logo"
-          src={`${import.meta.env.BASE_URL}icon.svg`}
+          src={`${import.meta.env.BASE_URL}${univers.logo}`}
           alt=""
           width={160}
           height={160}
