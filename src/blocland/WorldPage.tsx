@@ -376,7 +376,8 @@ export function WorldPage() {
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
   const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [seTenir(at)], seq: 0 }));
-  // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche.
+  // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche. Une disposition
+  // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
   const repere = useMemo(() => dispositionEnGrille(a), [a]);
   const avatar = useMemo(() => ({ route: walk.route.map((p) => repere.versIle(p)), seq: walk.seq }), [walk, repere]);
 
@@ -457,8 +458,12 @@ export function WorldPage() {
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
   // Sur la Carte, elle marque la prochaine destination.
+  const flecheDuNavire = useMemo(
+    () => repere.versIle({ x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }, vehicle.port),
+    [repere, vehicle.origin.x, vehicle.origin.y, vehicle.origin.z, vehicle.port],
+  );
   const marker = shipyard
-    ? grille.versIle({ x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }, vehicle.port)
+    ? flecheDuNavire
     : mapOpen
       ? destination.island
       : !island && a === '6e' && Object.keys(state.progress).length === 0

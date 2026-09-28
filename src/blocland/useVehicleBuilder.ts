@@ -6,7 +6,6 @@ import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, typ
 import { playDone, playNope, playPlace } from './sound';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
-
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
 
@@ -24,8 +23,7 @@ export interface VehicleBuilder {
   fillNext: () => void;
   /** Pose d'un coup toutes les cases que l'inventaire permet. */
   fillAll: () => void;
-  /** Une case du monde touchée : pose si c'est une case du navire à construire ici. */
-  /** Poser le bloc d'une case du plan de l'île `ile` (cases de la sauvegarde), si c'est celle du chantier en cours. */
+  /** Une case touchée, en cases du plan de l'île `ile` : pose si c'est une case du navire à construire ici. */
   tryFill: (ile: BiomeId, cell: { x: number; y: number; z: number }) => boolean;
 }
 

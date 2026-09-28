@@ -30,6 +30,17 @@ describe('Chaque île dans son repère', () => {
     for (const c of planCells(plan)) expect(cubes.some((k) => k.x === c.x && k.y === c.y && k.z === c.z + 1)).toBe(true);
   });
 
+  it('une case de plan touchée revient à son île (versIle prend l’île la plus proche)', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const g = dispositionEnGrille(a);
+      for (const b of islandsOf(a)) {
+        const o = origineDe(b.id);
+        for (const plan of plansFor(b.id))
+          for (const c of planCells(plan)) expect(g.versIle({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z + 1 }).ile).toBe(b.id);
+      }
+    }
+  });
+
   it('un ancrage est dans le repère de son île, et versIle est l’inverse de versMonde', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const g = dispositionEnGrille(a);

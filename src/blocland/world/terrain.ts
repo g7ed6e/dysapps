@@ -1417,7 +1417,8 @@ export function origineDe(id: BiomeId): { x: number; y: number; z: number } {
 }
 
 /**
- * Les cubes d'une île dans son repère (étape J5) : le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
+ * Les cubes d'une île dans son repère (étape J5). Pour l'instant, l'île est calculée en cases du monde (map.ts place
+ * son cœur dans le monde) puis ramenée à son origine ; R4b et la suite écrivent en repère d'île. Le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
  * Gardien, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
  * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en cases du monde
  * (une cascade ne tombe jamais sur la terre de l'île voisine) ; l'île y ajoute ses cubes.
