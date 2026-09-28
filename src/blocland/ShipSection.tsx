@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, type BiomeDef, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, type BiomeDef, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { EarnLink } from './PlanSection';
@@ -36,7 +36,7 @@ export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<B
   const lacking = missing.filter(([b, n]) => (inventory[b] ?? 0) < n);
   if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
   const [block, n] = lacking[0];
-  return `${posed} · il manque ${n - (inventory[block] ?? 0)} ${BLOCKS[block].name.toLowerCase()}`;
+  return `${posed} · il manque ${blockCount(block, n - (inventory[block] ?? 0))}`;
 }
 
 /**
@@ -100,7 +100,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
                   <li key={block}>
                     <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                     <span>
-                      <strong>{n}</strong> {BLOCKS[block].name.toLowerCase()} · <EarnLink block={block} here={biome.id} />
+                      <strong>{n}</strong> {blockName(block, n)} · <EarnLink block={block} here={biome.id} />
                     </span>
                   </li>
                 ))}

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, getBiome } from './biomes';
+import { BLOCKS, blockName, getBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
 import { KIND_NAME } from './world/archipelago';
@@ -9,7 +9,6 @@ import { inventoryUses, whereToEarn, type Use } from './world/uses';
 import { VEHICLE_NAME } from './world/vehicle';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
-const name = (block: keyof typeof BLOCKS) => BLOCKS[block].name.toLowerCase();
 
 const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : use.kind === 'garder' ? 'flag' : use.kind === 'monument' ? 'castle' : 'hammer');
 const useKey = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
@@ -94,7 +93,7 @@ export function InventoryBody() {
             <li key={row.block} className="inventory-row">
               <span className="inventory-block">
                 <BlockIcon top={BLOCKS[row.block].top} side={BLOCKS[row.block].side} size={28} />
-                <strong>{row.count}</strong> {name(row.block)}
+                <strong>{row.count}</strong> {blockName(row.block, row.count)}
               </span>
               <span className="inventory-uses">
                 {row.uses.length === 0 ? (
@@ -148,7 +147,7 @@ export function InventoryBody() {
               <li key={m.block}>
                 <BlockIcon top={BLOCKS[m.block].top} side={BLOCKS[m.block].side} size={28} />
                 <span>
-                  <strong>{m.need}</strong> {name(m.block)} · à gagner dans{' '}
+                  <strong>{m.need}</strong> {blockName(m.block, m.need)} · à gagner dans{' '}
                   {m.island ? (
                     <Link to={`/aventure/${m.island}`}>{getBiome(m.island)?.name}</Link>
                   ) : (

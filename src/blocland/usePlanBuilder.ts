@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
@@ -107,7 +107,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
   // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
   const finished = (done: PlanDef) => {
     const chest = Object.entries(done.reward.chest)
-      .map(([b, n]) => `${n} ${BLOCKS[b as BlockId].name.toLowerCase()}`)
+      .map(([b, n]) => blockCount(b as BlockId, n))
       .join(', ');
     const msg = `${done.name} : terminé ! ${done.done} Coffre : ${chest}. +${done.reward.xp} XP.`;
     setNotice(msg);

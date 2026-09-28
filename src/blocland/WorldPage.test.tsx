@@ -269,7 +269,7 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(screen.getByRole('button', { name: 'Mes blocs' })).toHaveAttribute('aria-pressed', 'true');
   const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
   expect(sheet.textContent).toContain('6 blocs en poche');
-  expect(sheet.textContent).toContain('4 bois');
+  expect(sheet.textContent).toContain('4 blocs de bois');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('aucune');
   // Le bois sert au plan de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
   await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ }));

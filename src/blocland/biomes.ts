@@ -166,6 +166,31 @@ export function ofBlock(id: BlockId): string {
   return /^[aeiouyéèêh]/.test(name) ? `d’${name}` : `de ${name}`;
 }
 
+/**
+ * Les matières : on les compte en blocs, le nom reste au singulier (« 3 blocs de sable », « 2 blocs d’or ») ; au
+ * pluriel, « 3 sables » ou « 2 ors » sont rares, et « 3 verres » ou « 3 glaces » veulent dire autre chose (référent
+ * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
+ */
+const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
+  ['bois', 'pierre', 'sable', 'terre', 'verre', 'obsidienne', 'glace', 'toile', 'tourbe', 'acier', 'marbre', 'quartz', 'velours', 'lambris', 'or'],
+);
+
+/** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
+const PLURIELS: Partial<Record<BlockId, string>> = { cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille' };
+
+/** Ce qui suit le nombre, accordé : « toit », « toits », « bloc de sable », « blocs d’or », « cristaux ». */
+export function blockName(id: BlockId, n: number): string {
+  if (MATIERES.has(id)) return `${n > 1 ? 'blocs' : 'bloc'} ${ofBlock(id)}`;
+  const name = BLOCKS[id].name.toLowerCase();
+  if (n < 2) return name;
+  return PLURIELS[id] ?? (/[sxz]$/.test(name) ? name : `${name}s`);
+}
+
+/** Une quantité de blocs, accordée : « 5 toits », « 1 lanterne », « 16 blocs de bois ». */
+export function blockCount(id: BlockId, n: number): string {
+  return `${n} ${blockName(id, n)}`;
+}
+
 export interface ExerciseTypeDef {
   id: string;
   title: string;
