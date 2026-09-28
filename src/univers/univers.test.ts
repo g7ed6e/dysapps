@@ -42,7 +42,7 @@ describe('les textes d’univers', () => {
     // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous.
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
-    const APRES_LE_LOT_6 = new Set(['relais']);
+    const APRES_LE_LOT_6 = new Set(['relais', 'jardin']);
     const avant = Object.fromEntries(
       BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
         const g = t.gardiens[b.id];

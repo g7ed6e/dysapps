@@ -204,6 +204,14 @@ export const ARCHIPEO = {
         beaten: 'Ma boussole se rallume. Le Relais est à toi, et à Lina.',
       },
     },
+    jardin: {
+      challenge: 'Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien ce qu’on te dit. »',
+      guardianSays: {
+        hit: 'Un rayon s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Réécoute la phrase, relis la règle, et reprends.',
+        beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir murmure sous son voile : « Ma lanterne est éteinte. Tu as fouillé toutes mes pièces, raconte-moi aujourd’hui, hier, et ce qui est plus grand. »',
       guardianSays: {
@@ -270,6 +278,7 @@ export const ARCHIPEO = {
     horloge: 'hérisson horloger',
     comptoir: 'bouledogue marchand',
     relais: 'cigogne voyageuse',
+    jardin: 'écureuil cuisinier',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',

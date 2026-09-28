@@ -36,7 +36,8 @@ export type BiomeId =
   | 'gare'
   | 'studio'
   | 'chateau'
-  | 'relais';
+  | 'relais'
+  | 'jardin';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -69,6 +70,7 @@ export type BlockId =
   | 'or'
   | 'cristal'
   | 'dalle'
+  | 'osier'
   | 'toit'
   | 'porte'
   | 'lanterne'
@@ -87,6 +89,7 @@ export interface BlockDef {
 }
 
 export type BlockTexture =
+  | 'osier'
   | 'herbe'
   | 'terre'
   | 'pierre'
@@ -119,6 +122,7 @@ export type BlockTexture =
   | 'or'
   | 'cristal'
   | 'dalle'
+  | 'osier'
   | 'feuilles'
   | 'tronc'
   | 'nuage'
@@ -161,6 +165,9 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   cristal: { id: 'cristal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
   dalle: { id: 'dalle', name: 'Dalle', top: '#b8a07a', side: '#9a8462', texture: 'dalle' },
+  // Le bloc du Jardin des heures (LV2, 4e) : des brins d'osier tressés dessus-dessous, distincts des planches, de la dalle
+  // et du foin par le motif.
+  osier: { id: 'osier', name: 'Osier', top: '#a8955a', side: '#86743f', texture: 'osier' },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
   toit: { id: 'toit', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
   porte: { id: 'porte', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
@@ -207,7 +214,7 @@ export interface ExerciseTypeDef {
   /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). Au moins une. */
   programme: readonly ProgrammeId[];
   /**
-   * Une mission de LV2 (île `relais`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
+   * Une mission de LV2 (îles `relais`, `jardin`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
    * Réglages se jouent ; voir `missionsDe`.
    */
   lv2?: Lv2;
@@ -1043,6 +1050,39 @@ export const BIOMES: BiomeDef[] = [
       { id: 'de-zahlen', title: 'Zahlen', description: 'Les nombres entendus : -zehn ou -zig, 24 ou 42 ?', programme: ['c4.de.ecouter.intervention-breve', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-familie', title: 'Familie und Schule', description: 'La famille, les consignes de la classe, un panneau ; schon ou schön ?', programme: ['c4.de.lire.consignes-panneaux', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-der-die-das', title: 'Der, die, das', description: 'L’article du nom, toujours avec sa majuscule (das Mädchen).', programme: ['c4.de.langue.groupe-nominal'], lv2: 'de' },
+    ],
+  },
+  {
+    id: 'jardin',
+    name: 'Jardin des heures',
+    module: 'La journée, l’heure, les repas',
+    subject: 'lv2',
+    classe: '4e',
+    description: 'Dire l’heure, raconter sa journée, lire un horaire ou un menu : une journée au jardin, dans ta deuxième langue.',
+    block: 'osier',
+    guardian: 'le Soleil de cuivre',
+    icon: 'languages',
+    creature: {
+      name: 'Muscade',
+      greeting:
+        'Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée et on lit le menu, dans ta deuxième langue. La voix lit chaque mot pour toi. Chaque bonne réponse, c’est un bloc d’osier pour le village.',
+      lines: [
+        'Ma soupe mijote : ici, personne n’est pressé.',
+        'Je range mes noisettes par moment de la journée : celles du matin, celles du soir.',
+        'Mon panier d’osier se tresse brin par brin, comme une phrase : un mot après l’autre.',
+      ],
+      home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
+    },
+    exercises: [
+      // Même ordre dans les deux langues : la borne de même rang ouvre la mission de la LV2 choisie.
+      { id: 'es-hora', title: '¿Qué hora es?', description: 'L’heure entendue et lue : y cuarto, y media, menos cuarto.', programme: ['c4.es.ecouter.intervention-breve', 'c4.es.dialoguer.echanges-sociaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-mi-dia', title: 'Mi día', description: 'La journée : me levanto, se acuesta ; e devient ie, o devient ue.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.groupe-nominal', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-horario', title: 'Horarios y menús', description: 'Un emploi du temps, un horaire, un menu : la bonne ligne.', programme: ['c4.es.lire.informations', 'c4.es.culture.ecole-societe', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-ser-estar', title: 'Ser, estar, hay', description: 'Être (ser ou estar), il y a (hay), puis tener que, poder, querer.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'de-uhrzeit', title: 'Wie spät ist es?', description: 'L’heure entendue et lue : Viertel nach, Viertel vor, halb.', programme: ['c4.de.ecouter.intervention-breve', 'c4.de.dialoguer.echanges-sociaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-mein-tag', title: 'Mein Tag', description: 'La journée : le verbe en deuxième place, puis les verbes à particule.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-stundenplan', title: 'Stundenplan und Mensa', description: 'Un emploi du temps, un horaire, une carte : la bonne ligne.', programme: ['c4.de.lire.informations', 'c4.de.culture.ecole-societe', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-ich-kann', title: 'Ich esse, ich kann', description: 'L’accusatif (einen, den), puis können, müssen, wollen.', programme: ['c4.de.langue.groupe-nominal', 'c4.de.langue.lexique'], lv2: 'de' },
     ],
   },
 ];
