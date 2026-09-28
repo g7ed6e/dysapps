@@ -3,8 +3,9 @@
 // reprennent en changeant la taille, le socle et le site, et que R5 réutilise pour les plans du phare, pièce par pièce,
 // sans en changer ni les proportions ni les couleurs. Code pur : il trace dans les pinceaux qu'on lui donne.
 import { mixColor } from '../daylight';
-import type { Couleur, Faces } from '../palette';
-import { boite, clamp, DELAVE, lueur, peintre, tronconique, type Peindre, type Pinceau } from './pinceau';
+import { SOLEIL_DIRECTION, type Couleur, type Faces } from '../palette';
+import { lineaire } from '../landMesh';
+import { boite, clamp, DELAVE, lueur, peintre, rgb, tronconique, type Peindre, type Pinceau, type RGB } from './pinceau';
 
 /**
  * Les proportions du phare, en fraction de sa hauteur H au-dessus du socle (DA, 28/09) ; les rayons en fraction du
@@ -42,6 +43,16 @@ export const COULEURS_DU_PHARE = {
   /** La lanterne la nuit, dans les lueurs ; de jour, le verre de la palette. */
   lanterneNuit: 0xffd866,
 } as const;
+
+/**
+ * L'éclat du fût : sous la lumière de la scène, un crème peint tel quel se lit grège, et gris à l'ombre (relecture du
+ * DA, 28/09). Le fût est donc peint plus clair que blanc dans l'espace linéaire (×`ECLAT_DU_FUT`), sans assombrir son
+ * pied ni griser son ombre : à l'écran, environ `#DDD5C2` au soleil et `#B3AA97` à l'ombre, la note la plus claire du
+ * phare. La couleur de la fiche (`fut`) ne change pas.
+ */
+export const ECLAT_DU_FUT = 1.55;
+/** L'ombre du fût : plus claire (+`eclat`) et plus chaude (`chaleur` : plus de rouge, moins de bleu), à l'opposé du soleil. */
+export const OMBRE_DU_FUT = { eclat: 0.55, chaleur: 0.1 } as const;
 
 /** Le phare de chaque archipel qui en a un : seuls la taille, le socle et le site changent (H et r en cases). */
 export const PHARES = {
@@ -84,6 +95,24 @@ export function rayonDuFut(r: number, f: number): number {
 }
 
 const ombre = (c: Couleur): Faces => ({ dessus: c, cote: mixColor(c, 0x4a4c5a, 0.14) });
+/** Le soleil, normé : l'ombre du fût se réchauffe et s'éclaircit à l'opposé. */
+const SOLEIL = (() => {
+  const l = Math.hypot(...SOLEIL_DIRECTION);
+  return SOLEIL_DIRECTION.map((v) => v / l) as [number, number, number];
+})();
+/**
+ * Le crème du fût : sa couleur, plus claire que blanc (×`ECLAT_DU_FUT`), à toute hauteur ; sur les faces à l'ombre,
+ * un peu plus claire encore et plus chaude, pour que l'ombre reste un crème et jamais un gris neutre.
+ */
+const creme = (c: Couleur, muted: boolean): Peindre => {
+  const f = delave({ dessus: c, cote: c }, muted);
+  const k = rgb(f.dessus).map((v) => lineaire(v / 255) * ECLAT_DU_FUT) as RGB;
+  return (_, n) => {
+    const s = clamp((0.55 - (n[0] * SOLEIL[0] + n[1] * SOLEIL[1] + n[2] * SOLEIL[2])) / 0.8, 0, 1);
+    const g = 1 + OMBRE_DU_FUT.eclat * s;
+    return [k[0] * g * (1 + OMBRE_DU_FUT.chaleur * s), k[1] * g, k[2] * g * (1 - OMBRE_DU_FUT.chaleur * s)];
+  };
+};
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 
 /**
@@ -105,12 +134,14 @@ export function dessinerPhare(P: Pinceau, L: Pinceau, o: PoseDuPhare): void {
   }
   if (a('anneau')) tronconique(P, cx, cz, y, y + PHARE.anneau.hauteur, r + PHARE.anneau.debord, rayonDuFut(r, PHARE.anneau.hauteur / H) + PHARE.anneau.debord, n, rot, peint(COULEURS_DU_PHARE.anneau));
   if (a('fut')) {
-    // Le fût en tranches : crème, bande, crème, bande, crème ; un seul cône, des couleurs par tranche.
+    // Le fût en tranches : crème, bande, crème, bande, crème ; un seul cône, des couleurs par tranche. Sans galerie
+    // (un plan du phare en cours, R5), son haut est fermé : on ne voit jamais l'intérieur.
     const bornes = [PHARE.fut[0], ...PHARE.bandes.flat(), PHARE.fut[1]];
     for (let i = 0; i + 1 < bornes.length; i++) {
       const [f0, f1] = [bornes[i], bornes[i + 1]];
-      const c = i % 2 === 1 ? COULEURS_DU_PHARE.bande : COULEURS_DU_PHARE.fut;
-      tronconique(P, cx, cz, at(f0), at(f1), rayonDuFut(r, f0), rayonDuFut(r, f1), n, rot, peint(c), false);
+      const p = i % 2 === 1 ? peint(COULEURS_DU_PHARE.bande) : creme(COULEURS_DU_PHARE.fut, muted);
+      const ferme = i + 2 === bornes.length && !a('galerie');
+      tronconique(P, cx, cz, at(f0), at(f1), rayonDuFut(r, f0), rayonDuFut(r, f1), n, rot, p, ferme);
     }
   }
   if (a('galerie')) {

@@ -110,5 +110,6 @@ it('se dessine pièce par pièce (R5 : les plans du phare), sans changer ce qu�
     n += une.P.elements.length + une.L.elements.length;
     expect(une.P.elements.length + une.L.elements.length, p).toBeGreaterThan(0);
   }
-  expect(n).toBe(tout.P.elements.length + tout.L.elements.length);
+  // Le fût seul (sans galerie) a son haut fermé : un chapeau de plus.
+  expect(n).toBe(tout.P.elements.length + tout.L.elements.length + PHARE.pans - 2);
 });

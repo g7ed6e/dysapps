@@ -1239,6 +1239,8 @@ export default function WorldCanvas({
       const onMapNow = Boolean(mapRef.current) && !walking && !sailing;
       placeMarks(onMapNow, t);
       placeLabels(w.labels, onMapNow);
+      // Archipéo : les fumées bougent, la lanterne du phare suit la nuit (R4b-6e).
+      sol?.decor.animer(t, Math.max(0, light), reduceMotion);
       renderer.render(scene, camera);
       meter?.tick(renderer.info, nowMs);
     };
