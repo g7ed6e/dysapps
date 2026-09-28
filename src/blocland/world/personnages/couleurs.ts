@@ -28,3 +28,15 @@ export const BONHOMME = {
   peau: 0xd6a27c,
   chaussures: 0x3a2a22,
 } as const satisfies Record<string, Couleur>;
+
+/**
+ * Les sentinelles (les Gardiens de pierre) : la pierre éteinte et son lichen, la pierre rallumée, les orbites (qui ne
+ * s'allument jamais) et la cendre, ce que sont la flamme et les veines tant qu'elles sont éteintes (`LUEUR` rallumées).
+ */
+export const SENTINELLE = {
+  pierre: 0x8e8c84,
+  lichen: 0x7a8a6a,
+  rallumee: 0xb8b2a4,
+  orbite: 0x45423d,
+  cendre: 0x6b6862,
+} as const satisfies Record<string, Couleur>;

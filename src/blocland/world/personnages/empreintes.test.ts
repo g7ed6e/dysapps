@@ -1,4 +1,4 @@
-// Le filet des personnages en facettes (lot R6) : une empreinte du bonhomme et de chaque créature (sommets, normales,
+// Le filet des personnages en facettes (lot R6) : une empreinte du bonhomme, de chaque créature et de chaque sentinelle (sommets, normales,
 // couleurs, pièces et teintes, table des pièces). Un changement de modèle voulu les régénère avec
 // `npx vitest run -u src/blocland/world/personnages/empreintes.test.ts` et le dit dans sa pull request ; ailleurs,
 // elles ne doivent pas bouger.
@@ -6,6 +6,7 @@ import { BIOMES } from '../../biomes';
 import { bonhommePeint } from './bonhomme';
 import { creaturePeinte } from './creaturesPeintes';
 import type { FacettesDePersonnage } from './peint';
+import { sentinellePeinte } from './sentinellesPeintes';
 
 /** FNV-1a sur 32 bits : une empreinte courte et stable d'un texte. */
 function fnv(text: string): string {
@@ -30,6 +31,11 @@ describe('Empreintes des personnages en facettes', () => {
 
   it('les créatures, île par île', () => {
     const toutes = Object.fromEntries(BIOMES.map((b) => [b.id, `${creaturePeinte(b.id).pieces.length} ${empreinte(creaturePeinte(b.id))}`]));
+    expect(toutes).toMatchSnapshot();
+  });
+
+  it('les sentinelles, île par île (éteintes)', () => {
+    const toutes = Object.fromEntries(BIOMES.map((b) => [b.id, `${sentinellePeinte(b.id).pieces.length} ${empreinte(sentinellePeinte(b.id))}`]));
     expect(toutes).toMatchSnapshot();
   });
 });
