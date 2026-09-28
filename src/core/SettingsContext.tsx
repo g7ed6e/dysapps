@@ -51,7 +51,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => sanitizeSettings({ ...prev, ...patch }));
   }, []);
 
-  // « Affichage par défaut » garde l'univers : ce n'est pas un réglage d'affichage.
   // « Affichage par défaut » ne touche ni à l'univers ni à la LV2 : ce ne sont pas des réglages d'affichage.
   const reset = useCallback(
     () => setSettings((prev) => ({ ...DEFAULT_SETTINGS, lv2: prev.lv2, ...(prev.univers === undefined ? {} : { univers: prev.univers }) })),

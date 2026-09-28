@@ -16,9 +16,17 @@ export type Lang = 'fr' | 'en' | 'de' | 'es';
  */
 export const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES' };
 
-/** Une langue vivante lue par sa propre voix, ou `undefined` (le français, une valeur inconnue). */
-export function langueVivante(value: unknown): Exclude<Lang, 'fr'> | undefined {
-  return value !== 'fr' && typeof value === 'string' && Object.hasOwn(LOCALES, value) ? (value as Exclude<Lang, 'fr'>) : undefined;
+/** Une langue vivante lue par sa propre voix (pas le français). */
+export type LangueVivante = Exclude<Lang, 'fr'>;
+
+/** Vraie pour une langue vivante lue par sa propre voix ; fausse pour le français ou une valeur inconnue. */
+export function estLangueVivante(value: unknown): value is LangueVivante {
+  return value !== 'fr' && typeof value === 'string' && Object.hasOwn(LOCALES, value);
+}
+
+/** La langue vivante d'une valeur, ou `undefined` (le français, une valeur inconnue). */
+export function langueVivante(value: unknown): LangueVivante | undefined {
+  return estLangueVivante(value) ? value : undefined;
 }
 
 /** La voix d'une langue : l'accent attendu, installée sur l'appareil de préférence, sinon toute voix de la langue. */
@@ -46,6 +54,14 @@ export function hasVoice(lang: Lang): boolean | undefined {
   const voices = window.speechSynthesis.getVoices();
   if (voices.length === 0) return undefined;
   return pickVoice(voices, lang) !== undefined;
+}
+
+/** S'abonne à l'arrivée de la liste des voix (`voiceschanged`) ; renvoie de quoi se désabonner. */
+export function ecouterVoix(rappel: () => void): () => void {
+  if (!isSpeechAvailable()) return () => {};
+  const synthese = window.speechSynthesis;
+  synthese.addEventListener('voiceschanged', rappel);
+  return () => synthese.removeEventListener('voiceschanged', rappel);
 }
 
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {

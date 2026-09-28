@@ -50,7 +50,7 @@ Les mots et les phrases d’**anglais** sont lus avec une voix anglaise : britan
 
 Comme au collège, l’élève a une seule **deuxième langue vivante**, à partir de la 5e : **Espagnol** (le choix par défaut), **Allemand** ou **Pas de LV2**, pour un élève qui en est dispensé. Le choix est gardé sur l’appareil et se change à tout moment : ce qui est construit reste, et chaque langue garde ses étoiles. La langue non choisie n’apparaît nulle part.
 
-Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne ou allemande d’Allemagne si l’appareil en a une, sinon une autre voix de la langue. **Tester la voix espagnole** (ou **allemande**) lit une phrase d’exemple. Si l’appareil n’a aucune voix de cette langue, la page le dit : en installer une dans le système (rubrique Langue ou Synthèse vocale de l’appareil). **Affichage par défaut** ne change pas la LV2.
+Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne ou allemande d’Allemagne si l’appareil en a une, sinon une autre voix de la langue. **Tester la voix espagnole** (ou **allemande**) lit une phrase d’exemple. Si l’appareil n’a aucune voix de cette langue, la page le dit, avec un bouton pour l’écouter : les mots seraient lus avec un accent français, et il faut en installer une dans le système (rubrique Langue ou Synthèse vocale de l’appareil). **Affichage par défaut** ne change pas la LV2.
 
 Les missions de LV2 arrivent île par île, en commençant par la 5e.
 

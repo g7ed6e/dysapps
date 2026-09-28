@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { DEFAULT_SETTINGS, FONT_LABELS, LV2_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, STYLE_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type Lv2Choice, type StartChoice, type StyleChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
-import { hasVoice, isSpeechAvailable } from '../core/speech';
+import { isSpeechAvailable } from '../core/speech';
+import { useVoixDisponible } from '../core/useVoix';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -14,6 +15,9 @@ const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3,
 const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
 const REPO_URL = 'https://github.com/g7ed6e/dysapps';
 const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
+const LV2_TEXTE = 'À partir de la 5e. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque langue garde ses étoiles.';
+const sansVoixLv2 = (voix: string) =>
+  `Cet appareil n’a pas de voix ${voix} : les mots seraient lus avec un accent français. Ajoute une voix ${voix} dans les réglages de l’appareil, rubrique Langue ou Synthèse vocale.`;
 /** Une phrase de 5e dans chaque LV2, pour tester sa voix. */
 const SAMPLE_LV2: Record<Exclude<Lv2Choice, 'aucune'>, { text: string; voix: string }> = {
   es: { text: '¡Hola! Me llamo Robin. Tengo tres bloques azules.', voix: 'espagnole' },
@@ -27,6 +31,7 @@ export function SettingsPage() {
   const [typed, setTyped] = useState('');
   const appUpdate = useAppUpdate();
   const lv2 = settings.lv2 === 'aucune' ? null : settings.lv2;
+  const voixLv2 = useVoixDisponible(lv2);
   // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
   const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);
   const universRef = useRef<HTMLFieldSetElement>(null);
@@ -180,17 +185,21 @@ export function SettingsPage() {
             ))}
           </div>
           <p>
-            <Syllabified text="À partir de la 5e. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque langue garde ses étoiles." />
+            <Syllabified text={LV2_TEXTE} />
           </p>
+          <SpeakButton text={LV2_TEXTE} compact />
           {lv2 && isSpeechAvailable() && (
             <>
               <button type="button" className="button" onClick={() => speak(SAMPLE_LV2[lv2].text, undefined, lv2)}>
                 <Icon name="speaker" /> Tester la voix {SAMPLE_LV2[lv2].voix}
               </button>
-              {hasVoice(lv2) === false && (
-                <p className="settings-note">
-                  <Syllabified text={`Cet appareil n’a pas de voix ${SAMPLE_LV2[lv2].voix} : les mots seront lus avec une autre voix. Tu peux en ajouter une dans les réglages de l’appareil, rubrique Langue ou Synthèse vocale.`} />
-                </p>
+              {voixLv2 === false && (
+                <>
+                  <p className="settings-note">
+                    <Syllabified text={sansVoixLv2(SAMPLE_LV2[lv2].voix)} />
+                  </p>
+                  <SpeakButton text={sansVoixLv2(SAMPLE_LV2[lv2].voix)} compact />
+                </>
               )}
             </>
           )}
