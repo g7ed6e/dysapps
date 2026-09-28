@@ -14,6 +14,7 @@ import {
   couleurDuSol,
   deNuit,
   domeDuCiel,
+  laveQuiBrille,
   luminance,
   multiplie,
   teinteSur,
@@ -156,7 +157,8 @@ it('la nuit, les surfaces bleuissent sans jamais devenir noires ; les lanternes 
         const [r, g, b] = rgb(c);
         expect(Math.max(r, g, b), `${a} ${k}`).toBeGreaterThanOrEqual(0x20);
       }
-      if (k === 'lanterne' || k === 'lave') expect(nuit).toEqual(jour);
+      // La lave brille, sauf dans le cratère éteint des Premiers Rivages (R4b-6e), qui est un sol comme un autre.
+      if (k === 'lanterne' || (k === 'lave' && laveQuiBrille(a))) expect(nuit).toEqual(jour);
       else expect(luminance(nuit.dessus), `${a} ${k}`).toBeLessThan(luminance(jour.dessus) + 1e-6);
     }
     const [r, , b] = rgb(couleurDuSol(a, 'herbe', 0).dessus);

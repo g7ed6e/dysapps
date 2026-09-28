@@ -17,6 +17,8 @@ export interface FacettesDuDecor {
   colors: Float32Array;
   /** Pour chaque triangle, l'indice de son élément dans `elements` (le toucher y retrouve la case). */
   elements: Int32Array;
+  /** Les couleurs de nuit, si une facette en a de propres (la lanterne du phare, claire de jour, qui brille la nuit). */
+  colorsNuit?: Float32Array;
 }
 
 /** Une façon de peindre un sommet : sa position et la normale de sa facette. */
@@ -27,7 +29,11 @@ export class Pinceau {
   private nor: number[] = [];
   private col: number[] = [];
   private own: number[] = [];
+  private nuit: number[] = [];
+  private aUneNuit = false;
   element = 0;
+  /** Tant qu'il est posé, les facettes tracées ont aussi leurs couleurs de nuit (sinon, les mêmes que de jour). */
+  deNuit: Peindre | null = null;
   /** Un triangle ; `dedans` : un point à l'intérieur du volume (la facette regarde à l'opposé). */
   triangle(a: V3, b: V3, c: V3, dedans: V3, peindre: Peindre): void {
     const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
@@ -46,7 +52,10 @@ export class Pinceau {
       this.nor.push(n[0], n[1], n[2]);
       const k = peindre(p, n);
       this.col.push(k[0], k[1], k[2]);
+      const kn = this.deNuit ? this.deNuit(p, n) : k;
+      this.nuit.push(kn[0], kn[1], kn[2]);
     }
+    if (this.deNuit) this.aUneNuit = true;
     this.own.push(this.element);
   }
   quad(a: V3, b: V3, c: V3, d: V3, dedans: V3, peindre: Peindre): void {
@@ -54,7 +63,9 @@ export class Pinceau {
     this.triangle(a, c, d, dedans, peindre);
   }
   fin(): FacettesDuDecor {
-    return { positions: Float32Array.from(this.pos), normals: Float32Array.from(this.nor), colors: Float32Array.from(this.col), elements: Int32Array.from(this.own) };
+    const f: FacettesDuDecor = { positions: Float32Array.from(this.pos), normals: Float32Array.from(this.nor), colors: Float32Array.from(this.col), elements: Int32Array.from(this.own) };
+    if (this.aUneNuit) f.colorsNuit = Float32Array.from(this.nuit);
+    return f;
   }
 }
 

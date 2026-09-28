@@ -1,5 +1,5 @@
 // Les formes du décor propres aux Premiers Rivages (6e) : leurs repères. Ce fichier appartient au sous-lot R4b-6e
-// (docs/conception/cadrage-archipeo.md §6) ; le phare de référence s'y construira.
+// (docs/conception/cadrage-archipeo.md §6). Le phare de référence, commun au 6e et au 3e, est dans ./phare.ts.
 import { enRepere, type Forme } from './outils';
 import { feuillage, icosaedre, octaedre, peintre, boite, lueur, tronconique } from './pinceau';
 
@@ -17,8 +17,14 @@ const grandArbre = enRepere(({ P, cx, cz, base, pied, Z, rot, hasard, vert, deMa
   masse(cx + 1.05, Z + 7.1, cz - 0.7, 1.68, 0.85, rot + 2);
 });
 
-/** La fumée du Volcan : des volutes au-dessus du cratère. */
-const fumee = enRepere(({ e, fumee, bouffees }) => bouffees(fumee.length ? fumee : e.cubes));
+/**
+ * La fumée du Volcan : aux Premiers Rivages, une fumée mince, trois petites volutes au ras du cratère, plus basse que
+ * le phare (le volcan fumant est la signature du 4e ; recommandation du directeur artistique, fiche de famille).
+ */
+export const FUMEE_DU_VOLCAN = { rayon: 0.28, volutes: 3, auDessus: 1.2 } as const;
+const fumee = enRepere(({ e, fumee, bouffees, base }) =>
+  bouffees(fumee.length ? fumee : e.cubes, { rayon: FUMEE_DU_VOLCAN.rayon, volutes: FUMEE_DU_VOLCAN.volutes, bas: base + FUMEE_DU_VOLCAN.auDessus }),
+);
 
 /** La tour de guet de la Mine : une tour de pierre sur le pic, sa lanterne et sa bannière. */
 const tourDeGuet = enRepere(({ P, L, e, cx, cz, pied, Z, rot, matiere, deMatiere }) => {
