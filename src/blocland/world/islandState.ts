@@ -1,6 +1,6 @@
 // L'état d'une île sur la Carte, en quatre mots, déduit de la sauvegarde à chaque rendu et jamais enregistré : Fermée
 // (aucun chemin d'ouvrages n'y mène), À explorer (ouverte, aucune mission jouée), En chantier, Restaurée (ses trois
-// plans terminés). Chaque état a son icône et son mot : il ne se lit jamais à la seule couleur (DP-08).
+// plans terminés ; « Bâtie » dans Blocland). Chaque état a son icône et son mot : il ne se lit jamais à la seule couleur (DP-08).
 import type { BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { CATALOG } from '../exercises';

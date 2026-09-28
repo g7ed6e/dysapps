@@ -19,7 +19,7 @@ L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le me
   - **Fermée** (un cadenas) : aucun chemin d’ouvrages n’y mène encore ;
   - **À explorer** (une boussole) : ouverte, aucune mission jouée ;
   - **En chantier** (un marteau) : on y a joué, ses plans ne sont pas finis ;
-  - **Restaurée** (une coche) : ses trois plans sont terminés.
+  - **Bâtie** (une coche) : ses trois plans sont terminés. Dans Archipéo, le même état s’appelle « Restaurée ».
 
   L’état se déduit de la partie, rien n’est enregistré. Le panneau de la Carte dit la **prochaine destination** (la même que « Reprendre l’aventure » au menu), marquée dans le monde par la flèche jaune ; **Y aller** y envoie le bonhomme. Le pli **Les îles et leur état** redit la liste en mots, chaque île en bouton. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée affiche le chemin d’ouvrages à construire, balisé en jaune dans le monde.
 - **Les quatre archipels** (bouton de la Carte) : une carte dessinée des quatre archipels, en lecture seule, sur la route du Bloc-Navire. Ceux qu’on a atteints sont en îles pleines, celui où l’on est est entouré, les autres sont **dans la brume**. Dessous : où l’on est, les îles ouvertes et les Gardiens vaincus de chacun, ce qu’il faut pour aller plus loin, le navire tel qu’il est, et des boutons « Aller au port » ou « Voir le chantier ».
@@ -255,7 +255,7 @@ La baleine est la voix de l’archipel. Elle parle rarement, seulement aux **gra
 | La première fois, en 6e, après le tutoriel | « Je suis la baleine. Je passe au large quand tu fais quelque chose de grand. » |
 | L’arrivée dans un archipel par le Bloc-Navire | « Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles. », puis une seconde page sur le navire et le port |
 | Le dernier Gardien de l’archipel vaincu | « Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large. » |
-| L’île-port restaurée (ses plans terminés) | « Plaine des nombres est restaurée. Tu avances bien : chaque île restaurée rend l’archipel plus beau. » |
+| L’île-port bâtie (ses plans terminés) | « Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. » |
 | Le premier ouvrage construit dans l’archipel | « Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. » |
 
 Son mot s’ouvre dans le panneau **Le mot de la baleine**, en bas du monde, un instant après l’étape (jamais pendant une mission, un voyage ou le tutoriel). La caméra cadre l’île concernée, et la baleine passe au large de cette île : elle fait surface, souffle, puis replonge. Il n’y a pas de baleine dans les Îles du Ciel, ni en 2D, et quand l’appareil demande de réduire les animations, le panneau vient seul. Le texte est lu à voix haute si la lecture automatique est active, et le bouton Écouter le relit. L’arrivée a deux pages (**Suivant**, puis **J’ai compris**) ; les autres mots n’en ont qu’une. Échap ferme aussi le panneau. En vue simple, le mot s’affiche en tête de la page Blocland et des pages d’île.

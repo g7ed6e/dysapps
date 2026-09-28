@@ -24,7 +24,7 @@ it('les grandes étapes, de la plus grande à la plus petite', () => {
   const m = reachedWhaleMoments(state, '6e');
   expect(m.map((x) => x.kind)).toEqual(['arrivee', 'gardiens', 'port', 'ouvrage']);
   expect(pages(m[1])[0]).toBe('Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large.');
-  expect(pages(m[2])[0]).toMatch(/^Plaine des nombres est restaurée\./);
+  expect(pages(m[2])[0]).toMatch(/^Plaine des nombres est bâtie\./);
   // Le sentier de la Forêt ouvre la Mine ; le pont gratuit vers la Plaine ne compte pas.
   expect(m[3]).toMatchObject({ island: 'mine' });
   expect(pages(m[3])).toEqual(['Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.']);
