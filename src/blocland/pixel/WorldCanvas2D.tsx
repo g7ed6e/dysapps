@@ -5,7 +5,7 @@
 // Étape 4 : le Bloc-Navire (à quai, en chantier, en voyage).
 import { useEffect, useRef, useState } from 'react';
 import type { BiomeId } from '../biomes';
-import type { PlaceId } from '../Voxel';
+import type { PlaceId, VoxelCube } from '../Voxel';
 import { AMBIENCE, daylight, palette } from '../world/daylight';
 import { faceCanvas } from '../world/pixels';
 import {
@@ -49,6 +49,10 @@ import {
   type Sprite,
 } from './characters';
 import { drawSprite } from './sprites';
+import { renduDuMonde } from '../rendu';
+import { morceauxAPeindre, palierDe, peinture, type Peinture } from './painted';
+import { seaPattern } from './paintedDraw';
+import { drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
 import { blockedCells, cellAhead, stepFrom, type StepDir } from './walk';
@@ -63,6 +67,10 @@ const KEY_STEPS: Record<string, StepDir> = { ArrowUp: 'up', ArrowDown: 'down', A
 
 /** Morceaux de terrain dessinés au plus par image : le premier affichage reste fluide. */
 const CHUNKS_PER_FRAME = 8;
+/** La 2D peinte (lot R7) peint ses morceaux pixel par pixel : au plus ce temps par image, au moins un morceau. */
+const PAINT_MS_PER_FRAME = 12;
+/** Sous cette échelle (pixels d'écran par pixel de base), la 2D peinte efface les joints des ouvrages. */
+const LOIN_SOUS = 1.5;
 
 const hex = (n: number) => `#${n.toString(16).padStart(6, '0')}`;
 
@@ -127,6 +135,10 @@ export default function WorldCanvas2D({
   label,
 }: WorldViewProps) {
   const host = useRef<HTMLDivElement>(null);
+  // La 2D peinte, derrière le drapeau `?rendu=archipeo` (lot R7) ; sans lui, la 2D en pixels, inchangée.
+  const [painted] = useState(() => renduDuMonde() === 'archipeo');
+  // Le palier de lumière de la 2D peinte (la boucle le relit chaque image ; un changement repeint le terrain).
+  const palier = useRef(palierDe(forceDay ? 1 : daylight().light));
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
   const latest = { freeWalk, onWalkedInto, avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
@@ -136,6 +148,10 @@ export default function WorldCanvas2D({
     chunks: Map<string, HTMLCanvasElement | null>;
     tags: ReturnType<typeof cubeTags>;
     env: DrawEnv;
+    /** Les morceaux à dessiner : ceux du terrain, et en 2D peinte ceux où débordent les rives éclaircies. */
+    drawable: Set<string>;
+    /** En 2D peinte, les morceaux d'avant un changement de lumière, montrés le temps d'être repeints. */
+    stale: Map<string, HTMLCanvasElement | null>;
     /** Le décor en sprites. */
     props: Prop[];
     /** Les bornes de mission, en panneaux. */
@@ -154,22 +170,27 @@ export default function WorldCanvas2D({
   const [ahead, setAhead] = useState<'quest' | 'place' | 'creature' | null>(null);
   const enter = useRef<() => void>(() => {});
   // Le Bloc-Navire : ses tuiles (pour le toucher) et son image, dessinée une fois à chaque changement.
-  const ship = useRef<{ map: TileMap; image: ReturnType<typeof drawTileMap>; maxY: number } | null>(null);
+  const ship = useRef<{ map: TileMap; image: ReturnType<typeof drawTileMap>; maxY: number; cubes: VoxelCube[]; paint?: Peinture } | null>(null);
 
   // ---- Le terrain : la carte des tuiles, et ses morceaux redessinés à la demande
   useEffect(() => {
     const sky = AMBIENCE[archipelago].sky;
     // Le décor en sprites (arbres, buissons…) et les bornes en panneaux : leurs cubes quittent le terrain.
     const split = STYLE.sprites ? propsOf(cubes) : { props: [], stations: [], terrain: cubes };
+    const map = buildTiles(split.terrain, sky ? -Infinity : SEA_HIDES_BELOW);
+    const drawable = painted ? morceauxAPeindre(map, !sky) : new Set(map.chunks.keys());
     terrain.current = {
-      map: buildTiles(split.terrain, sky ? -Infinity : SEA_HIDES_BELOW),
+      map,
       chunks: new Map(),
+      drawable,
+      stale: new Map(),
       tags: cubeTags(cubes),
-      env: { surface: surfaceOf(cubes), style: STYLE, sea: !sky },
+      env: { surface: surfaceOf(cubes), style: STYLE, sea: !sky, painted: painted ? peinture(archipelago, palier.current) : undefined },
       props: split.props,
       stations: split.stations,
       places: new Map(cubes.filter((c) => c.place).map((c) => [`${c.x},${c.y}`, { place: c.place!, island: c.tag as BiomeId }])),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cubes, archipelago]);
 
   // ---- Les créatures et les Gardiens : leur promenade (world/scene.ts) et leur sprite, tiré de leurs cubes
@@ -197,9 +218,11 @@ export default function WorldCanvas2D({
       return;
     }
     const map = buildTiles(vehicle.cubes);
-    const image = drawTileMap(map, { surface: surfaceOf(vehicle.cubes), style: STYLE, sea: false });
-    ship.current = { map, image, maxY: Math.max(0, ...vehicle.cubes.map((c) => c.y)) };
-  }, [vehicle]);
+    const paint = painted ? peinture(archipelago, palier.current) : undefined;
+    const image = drawTileMap(map, { surface: surfaceOf(vehicle.cubes), style: STYLE, sea: false, painted: paint });
+    ship.current = { map, image, maxY: Math.max(0, ...vehicle.cubes.map((c) => c.y)), cubes: vehicle.cubes, paint };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vehicle, archipelago]);
 
   // ---- À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens
   useEffect(() => {
@@ -246,8 +269,17 @@ export default function WorldCanvas2D({
     if (!ctx) return;
     const ambience = AMBIENCE[archipelago];
     // La mer (ou le plancher de nuages des Îles du Ciel) : sa couleur, et sa texture qui ondule par-dessus.
-    const seaTexture = faceCanvas(ambience.sky ? 'nuage' : 'eau', 'top');
+    const seaTexture = painted ? null : faceCanvas(ambience.sky ? 'nuage' : 'eau', 'top');
     const sea = seaTexture ? ctx.createPattern(seaTexture, 'repeat') : null;
+    // En 2D peinte : la mer (ou les nuages) de la palette, et ses reflets rares, par palier de lumière.
+    const paintedSea = new Map<string, CanvasPattern | null>();
+    const paintedSeaOf = (P: Peinture) => {
+      if (!paintedSea.has(P.cle)) {
+        const img = seaPattern(P, ambience.sky);
+        paintedSea.set(P.cle, img ? ctx.createPattern(img, 'repeat') : null);
+      }
+      return paintedSea.get(P.cle)!;
+    };
 
     // Jour et nuit : la lumière suit l'heure réelle, relue chaque minute (figée avec « réduire les animations »).
     let light = props.current.forceDay ? 1 : daylight().light;
@@ -405,6 +437,20 @@ export default function WorldCanvas2D({
       if (!tm) return;
       const scr = screen();
       if (p.forceDay && light !== 1) light = 1;
+      // La 2D peinte : à un autre palier de lumière, le terrain et le navire se repeignent (morceau par morceau).
+      const P = tm.env.painted;
+      if (P && palierDe(light) !== P.palier) {
+        palier.current = palierDe(light);
+        tm.env = { ...tm.env, painted: peinture(archipelago, palier.current) };
+        for (const [k, img] of tm.chunks) tm.stale.set(k, img);
+        tm.chunks.clear();
+        const sh = ship.current;
+        if (sh?.paint) {
+          sh.paint = peinture(archipelago, palier.current);
+          sh.image = drawTileMap(sh.map, { surface: surfaceOf(sh.cubes), style: STYLE, sea: false, painted: sh.paint });
+        }
+      }
+      const paint = tm.env.painted;
 
       // Le Bloc-Navire : à quai, il tangue (ou plane, dans le ciel) ; en voyage, il suit sa trajectoire.
       let aboard = false;
@@ -483,6 +529,13 @@ export default function WorldCanvas2D({
         if (Math.abs(target.s - v.s) < 0.01) v.s = target.s;
       }
       const cam = view.current!;
+      // La 2D peinte vue de loin (la Carte, où l'on arrive) : les joints des ouvrages s'effacent ; en passant le seuil,
+      // le terrain se repeint (morceau par morceau, comme à un changement de lumière).
+      if (tm.env.painted && target.s < LOIN_SOUS !== Boolean(tm.env.loin)) {
+        tm.env = { ...tm.env, loin: target.s < LOIN_SOUS };
+        for (const [k, img] of tm.chunks) tm.stale.set(k, img);
+        tm.chunks.clear();
+      }
       // La taille des repères : celle de la vue, mais jamais minuscules (sur la Carte, vue de loin).
       const mark = Math.max(1.5 * cam.s, 3 * (window.devicePixelRatio || 1));
       const at = (x: number, y: number, z: number) => {
@@ -491,11 +544,28 @@ export default function WorldCanvas2D({
       };
 
       // La mer : sa couleur (selon l'heure), et sa texture qui dérive lentement.
-      const pal = palette(light, archipelago);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.imageSmoothingEnabled = false;
-      ctx.fillStyle = hex(ambience.sky ? pal.sky : pal.water);
-      ctx.fillRect(0, 0, scr.w, scr.h);
+      if (paint) {
+        // En 2D peinte : le large de la palette, et ses reflets longs et rares (figés avec « Réduire les animations »).
+        ctx.fillStyle = hex(paint.mer.large);
+        ctx.fillRect(0, 0, scr.w, scr.h);
+        const pattern = paintedSeaOf(paint);
+        if (pattern) {
+          const ox = scr.w / 2 - cam.cx * cam.s + t * 2 * cam.s;
+          const oy = scr.h / 2 - cam.cy * cam.s;
+          ctx.save();
+          ctx.translate(ox, oy);
+          ctx.scale(cam.s, cam.s);
+          ctx.fillStyle = pattern;
+          ctx.fillRect(-ox / cam.s, -oy / cam.s, scr.w / cam.s, scr.h / cam.s);
+          ctx.restore();
+        }
+      } else {
+        const pal = palette(light, archipelago);
+        ctx.fillStyle = hex(ambience.sky ? pal.sky : pal.water);
+        ctx.fillRect(0, 0, scr.w, scr.h);
+      }
       if (sea) {
         const ox = scr.w / 2 - cam.cx * cam.s + t * 3 * cam.s;
         const oy = scr.h / 2 - cam.cy * cam.s + t * 2 * cam.s;
@@ -513,16 +583,25 @@ export default function WorldCanvas2D({
       const br = toBase(cam, scr, scr.w, scr.h);
       const size = CHUNK * TILE;
       let drawn = 0;
+      // En 2D peinte, après un changement de lumière : les anciens morceaux hors de l'écran s'oublient.
+      if (tm.stale.size)
+        for (const k of tm.stale.keys()) {
+          const [cx, cy] = k.split(',').map(Number);
+          if (cx < Math.floor(tl.bx / size) || cx > Math.floor(br.bx / size) || cy < Math.floor(tl.by / size) || cy > Math.floor(br.by / size)) tm.stale.delete(k);
+        }
       for (let cy = Math.floor(tl.by / size); cy <= Math.floor(br.by / size); cy++) {
         for (let cx = Math.floor(tl.bx / size); cx <= Math.floor(br.bx / size); cx++) {
           const k = `${cx},${cy}`;
-          if (!tm.map.chunks.has(k)) continue;
+          if (!tm.drawable.has(k)) continue;
           if (!tm.chunks.has(k)) {
-            if (drawn >= CHUNKS_PER_FRAME) continue;
-            tm.chunks.set(k, drawChunk(tm.map, cx, cy, tm.env));
-            drawn++;
+            const busy = drawn >= CHUNKS_PER_FRAME || (paint && drawn > 0 && performance.now() - now > PAINT_MS_PER_FRAME);
+            if (!busy) {
+              tm.chunks.set(k, drawChunk(tm.map, cx, cy, tm.env));
+              tm.stale.delete(k);
+              drawn++;
+            } else if (!tm.stale.has(k)) continue;
           }
-          const img = tm.chunks.get(k);
+          const img = tm.chunks.get(k) ?? tm.stale.get(k);
           if (!img) continue;
           const x0 = Math.round((cx * size - cam.cx) * cam.s + scr.w / 2);
           const y0 = Math.round((cy * size - cam.cy) * cam.s + scr.h / 2);
@@ -538,13 +617,17 @@ export default function WorldCanvas2D({
         return b.bx > tl.bx - 4 * TILE && b.bx < br.bx + 4 * TILE && b.by > tl.by - TILE && b.by < br.by + 5 * TILE;
       };
       const standing: { depth: number; draw: () => void }[] = [];
+      // L'ombre au sol d'un panneau, d'une créature, du bonhomme : bleutée et adoucie en 2D peinte.
+      const shadow = (sx: number, sy: number, rx: number, ry: number) =>
+        paint ? drawPaintedShadow(ctx, paint, sx, sy, rx, ry) : drawShadow(ctx, sx, sy, rx, ry);
       for (const pr of tm.props) {
         if (!visibleAt(pr.x + 0.5, pr.y + 0.5, pr.z)) continue;
         standing.push({
           depth: pr.y - pr.z,
           draw: () => {
             const { sx, sy } = at(pr.x + 0.5, pr.y + 0.5, pr.z);
-            drawSprite(ctx, pr.kind, pr.muted, sx, sy, cam.s, STYLE.shadows);
+            if (paint) drawPaintedSprite(ctx, pr.kind, pr.muted, paint, sx, sy, cam.s, STYLE.shadows);
+            else drawSprite(ctx, pr.kind, pr.muted, sx, sy, cam.s, STYLE.shadows);
           },
         });
       }
@@ -559,7 +642,7 @@ export default function WorldCanvas2D({
             const { sx, sy } = at(st.x + 0.5, st.y + 0.75, st.z);
             const sign = signpostSprite(st.muted);
             if (!sign) return;
-            if (STYLE.shadows) drawShadow(ctx, sx + cam.s, sy, 6 * cam.s, 2 * cam.s);
+            if (STYLE.shadows) shadow(sx + cam.s, sy, 6 * cam.s, 2 * cam.s);
             const r = placeSprite(ctx, sign, sx, sy, cam.s);
             const [biome, typeId] = st.quest.split(':');
             newHits.push({ ...r, act: () => props.current.onPickQuest?.(biome as BiomeId, typeId) });
@@ -587,7 +670,7 @@ export default function WorldCanvas2D({
           depth: y - o.z,
           draw: () => {
             const { sx, sy } = at(x, y, o.z);
-            if (STYLE.shadows) drawShadow(ctx, sx + cam.s, sy, (sprite.w / 2.4) * cam.s, 3 * cam.s);
+            if (STYLE.shadows) shadow(sx + cam.s, sy, (sprite.w / 2.4) * cam.s, 3 * cam.s);
             const r = placeSprite(ctx, sprite, sx, sy - bob * TILE * cam.s, cam.s);
             const { id, kind } = wk.stroll;
             newHits.push({
@@ -657,7 +740,7 @@ export default function WorldCanvas2D({
             const step = moving ? Math.floor(t * 8) % 2 : 0;
             const sprite = avatarSprite(h.facing, step);
             if (!sprite) return;
-            if (STYLE.shadows) drawShadow(ctx, sx, sy, 6 * cam.s, 2 * cam.s);
+            if (STYLE.shadows) shadow(sx, sy, 6 * cam.s, 2 * cam.s);
             placeSprite(ctx, sprite, sx, sy - (moving ? (step ? 1 : 0) * cam.s : 0), cam.s);
             // Sur la Carte : un grand fanion au-dessus de lui (« tu es ici »).
             if (p.map) overlays.push(() => drawChevron(ctx, sx, sy - 24 * cam.s - Math.abs(Math.sin(t * 2.2)) * 3 * mark, 1.6 * mark));
@@ -707,8 +790,9 @@ export default function WorldCanvas2D({
         ctx.fillRect(Math.round(sx - cam.s), Math.round(sy - cam.s), Math.round(3 * cam.s), Math.round(3 * cam.s));
       }
 
-      // La nuit : un voile bleu nuit sur le monde (les repères restent vifs, par-dessus).
-      if (light < 1) {
+      // La nuit : un voile bleu nuit sur le monde (les repères restent vifs, par-dessus). La 2D peinte n'en a pas : ses
+      // couleurs sont déjà celles de la nuit de la palette.
+      if (light < 1 && !paint) {
         ctx.fillStyle = `rgba(16, 24, 64, ${((1 - light) * 0.5).toFixed(3)})`;
         ctx.fillRect(0, 0, scr.w, scr.h);
       }
