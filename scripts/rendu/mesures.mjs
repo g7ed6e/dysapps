@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,2d` n'en refait que certaines familles (jour, nuit, 2d, contraste, reduit, chantier, ponts). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -18,6 +18,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { build, createServer } from 'vite';
 import { chromium } from 'playwright-core';
+import { capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const TABLET = { width: 1024, height: 768 };
@@ -87,6 +88,13 @@ const CAPTURES = [
   { nom: 'phare-avant', vue: 'île', famille: 'chantier', ile: 'phare', partie: 'avant' },
   { nom: 'theatre', vue: 'île', famille: 'chantier', ile: 'theatre' },
   { nom: 'comptoir', vue: 'île', famille: 'chantier', ile: 'comptoir' },
+  // Les ponts de pierre et de bois du 5e : construits autour du Manoir ; à restaurer autour du Comptoir (Marché–Comptoir
+  // en entier, et Marché–Marais, le plus long, en haut à gauche).
+  { nom: 'ponts', vue: 'île', famille: 'ponts', ile: 'manoir' },
+  { nom: 'ponts-avant', vue: 'île', famille: 'ponts', ile: 'comptoir', sansPonts: ['marche-comptoir', 'marche-marais'] },
+  { nom: 'ponts-avant-contraste', vue: 'île', famille: 'ponts', ile: 'comptoir', sansPonts: ['marche-comptoir', 'marche-marais'], theme: 'contraste' },
+  { nom: 'ponts-apres', vue: 'île', famille: 'ponts', ile: 'comptoir' },
+  { nom: 'ponts-nuit', vue: 'île', famille: 'ponts', ile: 'manoir', nuit: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -202,6 +210,7 @@ async function scenes() {
             go: c.ile ? `/aventure/${c.ile}` : routes[c.vue],
             ile: c.ile,
             plans: c.partie ? plansDe(c.partie, c.ile) : null,
+            bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
             time: c.nuit ? NIGHT : DAY,
             view: c.view,
             theme: c.theme,
@@ -211,9 +220,10 @@ async function scenes() {
           }))
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans } of views) {
+    for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans, bridges } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
+      await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
         ({ village, progress, view, theme, reduceMotion }) => {
@@ -224,24 +234,24 @@ async function scenes() {
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), at: ile ?? at }, progress, view, theme, reduceMotion },
+        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress, view, theme, reduceMotion },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
-        await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
           const box = await page.locator('.voxel-canvas').boundingBox();
-          const png = box && (await page.screenshot({ type: 'png', clip: box, timeout: 90000 }));
+          const png = box && (await capturer(page, { type: 'png', clip: box, timeout: 90000 }));
           if (png) lueurs.push({ archipel: a, nom, vue, part: await partDeLueur(outil, png) });
         }
         if (encore) {
           // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
           await page.waitForTimeout(ECART);
-          await page.screenshot({ path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
+          await capturer(page, { path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
         }
         await page.close();
         continue;
@@ -253,7 +263,7 @@ async function scenes() {
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
         rows.push({ archipel: a, vue, ...s });
-        if (file) await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (file) await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
       } catch (e) {
         rows.push({ archipel: a, vue, erreur: e.message.split('\n')[0] });
       }
