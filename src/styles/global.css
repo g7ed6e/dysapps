@@ -292,6 +292,11 @@ svg {
   font-size: 1.3rem;
   line-height: 1;
 }
+.brand-logo {
+  display: block;
+  width: 2.3rem;
+  height: 2.3rem;
+}
 .brand-name {
   /* Le nom de l'application, dans la police des titres. */
   font-family: var(--display-font);
