@@ -66,7 +66,7 @@ export function BiomePage() {
       {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
       {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
 
-      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? biome.creature.greeting : lockedHint(state, biome.id)} />
+      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}

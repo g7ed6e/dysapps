@@ -143,7 +143,7 @@ export function BloclandPage() {
                         {owned} bloc{owned > 1 ? 's' : ''} {ofBlock(biome.block)}
                       </span>
                       <span className={`island-state island-state-${st.id}`}>
-                        <Icon name={st.icon} /> {st.name}
+                        <Icon name={st.icon} /> {textes.etatsDIle[st.id]}
                       </span>
                       {biome.id === a.port && (
                         <span className="tag">

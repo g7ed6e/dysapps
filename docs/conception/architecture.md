@@ -14,8 +14,9 @@ src/
   programme/     le référentiel des programmes officiels (cycles 3 et 4 : français, maths, anglais), les exclusions
                  motivées, la liste des mots-outils ; sert aux tests et à la documentation, pas à l'application
   styles/        thèmes (jetons de couleur et de forme), styles globaux
-  univers/       les textes de chaque univers (archipeo/, blocland/) : répliques des Gardiens, espèces des créatures,
-                 libellés des Gardiens, mot de la baleine
+  univers/       les textes de chaque univers (archipeo/, blocland/) : répliques des Gardiens et des créatures, espèces
+                 des créatures, libellés des Gardiens, mots des états d'île, mot de la baleine ; communs.ts : ceux
+                 que les deux univers partagent aujourd'hui
 docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
                  docs/_journal/ : fragments du journal des versions
 design/          archipeo/ : le dossier de game design et la planche d’Archipéo (voir cadrage-archipeo.md) ;
@@ -73,9 +74,9 @@ Tout l’état de Blocland est dans `localStorage` sous la clé `dysapps:bloclan
 
 ## Les univers (`src/univers/`)
 
-Les textes qui changent d’un univers à l’autre, sur le même jeu (lot 6, une tranche de l’étape J8 de la [feuille de route des univers](univers.md)) : `archipeo/index.ts` et `blocland/index.ts`, typés `TextesUnivers` (`types.ts`), chacun avec, par île (`Record<BiomeId, …>`), les répliques du Gardien pendant son défi et l’espèce de la créature, puis les libellés qui disent où en sont les Gardiens (vaincus dans Blocland, rallumés dans Archipéo) et le mot de la baleine (`baleine.ts` en fait les pages ; `world/whale.ts` ne dit que les étapes atteintes). Les noms des îles, des créatures et des Gardiens restent dans `biomes.ts` jusqu’à U4. Un univers à sentinelles (Archipéo) a aussi les textes de leur défi et de leur rallumage (`sentinelles`, `null` dans Blocland) : leur présence choisit l’écran du défi (`blocland/BossPage.tsx`), et, avec le rendu d’Archipéo, la sentinelle visible dès l’ouverture de l’île et le moment du rallumage au village (`blocland/Rallumage.tsx`, `blocland/world/rallumage.ts`).
+Les textes qui changent d’un univers à l’autre, sur le même jeu (lot 6, une tranche de l’étape J8 de la [feuille de route des univers](univers.md)) : `archipeo/index.ts` et `blocland/index.ts`, typés `TextesUnivers` (`types.ts`), chacun avec, par île (`Record<BiomeId, …>`), les répliques du Gardien pendant son défi, ce que dit la créature (`creatures` : à l’arrivée, au village, quand sa maison est finie) et l’espèce de la créature, le mot de chaque état d’île (`etatsDIle`, l’icône restant dans `world/islandState.ts`), puis les libellés qui disent où en sont les Gardiens (vaincus dans Blocland, rallumés dans Archipéo) et le mot de la baleine (`baleine.ts` en fait les pages ; `world/whale.ts` ne dit que les étapes atteintes). Les répliques des créatures et les mots des états d’île sont aujourd’hui les mêmes dans les deux univers : ils sont écrits une fois dans `communs.ts` (étape J8 de U4) et chaque univers les reprend. Les noms des îles, des créatures et des Gardiens restent dans `biomes.ts` jusqu’à la suite de U4. Un univers à sentinelles (Archipéo) a aussi les textes de leur défi et de leur rallumage (`sentinelles`, `null` dans Blocland) : leur présence choisit l’écran du défi (`blocland/BossPage.tsx`), et, avec le rendu d’Archipéo, la sentinelle visible dès l’ouverture de l’île et le moment du rallumage au village (`blocland/Rallumage.tsx`, `blocland/world/rallumage.ts`).
 
-`index.ts` : `useTextes()` rend les textes de l’univers choisi dans les réglages (`useUniversChoisi` de `core/SettingsContext.tsx`), Blocland par défaut, quel que soit le rendu. `univers.test.ts` vérifie que Blocland garde ses textes mot pour mot (une empreinte), que Blocland ne rallume jamais et qu’Archipéo ne fait jamais tomber un Gardien. Les pages générées de la documentation lisent les textes de l’univers affiché.
+`index.ts` : `useTextes()` rend les textes de l’univers choisi dans les réglages (`useUniversChoisi` de `core/SettingsContext.tsx`), Blocland par défaut, quel que soit le rendu. `univers.test.ts` vérifie que Blocland garde ses textes mot pour mot (une empreinte), que les répliques des créatures et les états d’île sont ceux d’avant J8 dans les deux univers, que Blocland ne rallume jamais et qu’Archipéo ne fait jamais tomber un Gardien. Les pages générées de la documentation lisent les textes de l’univers affiché.
 
 ## Tests
 

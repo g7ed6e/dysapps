@@ -145,3 +145,17 @@ describe('les textes d’univers', () => {
     for (const g of Object.values(t.gardiens)) expect(Object.values(g.guardianSays).join()).not.toMatch(/à nouveau/);
   });
 });
+
+describe('les textes communs (J8, U4)', () => {
+  it('les répliques des créatures et les états d’île sont ceux d’avant, sans un mot changé, dans les deux univers', () => {
+    // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
+    // avec la réplique d'Astra des Voix des textes (#203).
+    // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
+    for (const u of UNIVERS) {
+      const t = textesDe(u);
+      const r = Object.fromEntries(BIOMES.map((b) => [b.id, t.creatures[b.id]]));
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('4f1dd9f0202484ec1729227ee4229132ec290545a64489f7694dd6967b29532a');
+      expect(t.etatsDIle).toEqual({ fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', restauree: 'Restaurée' });
+    }
+  });
+});

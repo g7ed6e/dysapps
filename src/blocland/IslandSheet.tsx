@@ -54,7 +54,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = sansLv2 ? SANS_LV2 : unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
+  const greeting = sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id);
   const bossReady = unlocked && isBossUnlocked(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
