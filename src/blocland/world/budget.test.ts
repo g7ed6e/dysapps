@@ -1,4 +1,4 @@
-import { fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit } from './budget';
+import { APPEL_DU_PASSAGE, ENVELOPPES, enveloppeDe, fauneCost, merCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -57,3 +57,26 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
 // Quand le rendu Archipéo dessine aussi la mer, le décor, la construction et les personnages (lots R3 à R6), ce test
 // vérifie sur ses modèles, archipel par archipel : triangles ≤ RENDER_BUDGET.triangles et appels ≤ RENDER_BUDGET.drawCalls.
 it.todo('le rendu Archipéo tient le budget des tablettes : 60 000 triangles et 40 appels de dessin par archipel');
+
+describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage Archipéo §6)', () => {
+  const postes = Object.keys(ENVELOPPES) as Poste[];
+
+  it('la somme des enveloppes tient dans le budget des tablettes, dans chaque archipel, baleine comprise', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const somme = postes.reduce((t, p) => ({ triangles: t.triangles + enveloppeDe(p, a).triangles, drawCalls: t.drawCalls + enveloppeDe(p, a).drawCalls }), { triangles: 0, drawCalls: 0 });
+      expect(somme.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles);
+      expect(somme.drawCalls + APPEL_DU_PASSAGE, a).toBeLessThanOrEqual(RENDER_BUDGET.drawCalls);
+    }
+  });
+
+  it('les enveloppes décidées le 28 septembre 2026 : 57 800 triangles et 25 appels aux Premiers Rivages, 52 300 et 24 ailleurs', () => {
+    const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
+    const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
+    expect([total('6e'), appels('6e')]).toEqual([57_800, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([52_300, 24]);
+  });
+
+  // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
+  // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.
+  for (const p of postes) it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
+});
