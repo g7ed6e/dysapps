@@ -9,7 +9,7 @@
 // `styleArchipeo`, éteints par défaut, enregistrés sur l'appareil) ; l'adresse l'emporte sur eux. Le réglage « Univers »
 // du lot 6 (docs/conception/univers.md, étape U3) les remplacera.
 import { DEFAULT_SETTINGS, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
-import { loadJSON } from '../core/storage';
+import { loadJSON, STORAGE_PREFIX } from '../core/storage';
 import { STYLES, type StyleSurface } from './world/style';
 
 export type Rendu = 'blocs' | 'archipeo';
@@ -41,9 +41,23 @@ export function mesuresDepuis(href: string): boolean {
 
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
-/** Les réglages expérimentaux enregistrés sur l'appareil (lus à l'ouverture du monde : les Réglages sont une autre page). */
-const reglages = (): ChoixExperimentaux =>
-  typeof window === 'undefined' ? SANS_REGLAGE : sanitizeSettings(loadJSON(SETTINGS_KEY, DEFAULT_SETTINGS));
+let lu: { brut: string | null; choix: ChoixExperimentaux } | null = null;
+
+/**
+ * Les réglages expérimentaux enregistrés sur l'appareil (le monde les relit à son ouverture : les Réglages sont une autre
+ * page). Relus à chaque appel, décodés seulement quand ils ont changé : la 3D en demande à chaque mise à jour des cubes.
+ */
+function reglages(): ChoixExperimentaux {
+  if (typeof window === 'undefined') return SANS_REGLAGE;
+  let brut: string | null = null;
+  try {
+    brut = localStorage.getItem(`${STORAGE_PREFIX}${SETTINGS_KEY}`);
+  } catch {
+    return SANS_REGLAGE;
+  }
+  if (lu?.brut !== brut) lu = { brut, choix: sanitizeSettings(loadJSON(SETTINGS_KEY, DEFAULT_SETTINGS)) };
+  return lu.choix;
+}
 
 /** Le rendu du monde de cette page. */
 export const renduDuMonde = (): Rendu => renduDepuis(here(), reglages());

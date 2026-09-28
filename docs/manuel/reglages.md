@@ -68,12 +68,14 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 
 ## Expérimental
 
+![La section Expérimental des Réglages : la case « Essayer le nouveau dessin du monde » cochée, puis les quatre choix de la surface du monde.](/captures/reglages-experimental.jpg)
+
 Cette section rassemble des options **expérimentales**, désactivées par défaut. Elles montrent le nouveau dessin du monde d’Archipéo pendant qu’il se construit : il peut encore changer ou s’afficher moins bien. Elles ne touchent ni à la progression ni aux sauvegardes, et le changement se voit à la prochaine ouverture du monde.
 
-- **Le nouveau dessin du monde (expérimental)** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; en 2D, la 2D peinte) au lieu du monde en blocs.
-- **Les couleurs des cubes (expérimental)**, affiché quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Style a : aplats** (une couleur par face), **Style b : facettes et dégradés** (la couleur nuancée en douceur), **Style c : cubes adoucis** (la lumière arrondie sur les coins).
+- **Essayer le nouveau dessin du monde** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; en 2D, la 2D peinte) au lieu du monde en blocs, qui reste disponible en décochant la case.
+- **La surface du monde**, affichée quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Couleurs unies** (une couleur par face), **Couleurs nuancées** (la couleur fondue en douceur, le style retenu pour Archipéo), **Coins arrondis** (la lumière arrondie sur les coins des cubes).
 
-Ces options préparent le choix de l’univers, qui arrivera dans les Réglages et les remplacera. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
+Ces options préparent le choix de l’univers, qui arrivera dans les Réglages et les remplacera : on y choisira Archipéo ou Blocland, le monde en blocs. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
 
 ## Application
 

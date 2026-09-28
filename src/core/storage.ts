@@ -1,5 +1,6 @@
 // Petit utilitaire de persistance locale : tout reste sur l'appareil de l'élève.
-const PREFIX = 'dysapps:';
+export const STORAGE_PREFIX = 'dysapps:';
+const PREFIX = STORAGE_PREFIX;
 
 export function loadJSON<T>(key: string, fallback: T): T {
   try {

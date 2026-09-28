@@ -92,9 +92,9 @@ export const START_LABELS: Record<StartChoice, string> = {
 
 export const STYLE_LABELS: Record<StyleChoice, string> = {
   textures: 'Les textures des blocs',
-  a: 'Style a : aplats',
-  b: 'Style b : facettes et dégradés',
-  c: 'Style c : cubes adoucis',
+  a: 'Couleurs unies',
+  b: 'Couleurs nuancées',
+  c: 'Coins arrondis',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -144,7 +144,7 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     renduArchipeo: s.renduArchipeo === true,
-    styleArchipeo: s.styleArchipeo in STYLE_LABELS ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
+    styleArchipeo: Object.hasOwn(STYLE_LABELS, s.styleArchipeo) ? s.styleArchipeo : DEFAULT_SETTINGS.styleArchipeo,
   };
 }
 

@@ -192,14 +192,14 @@ export function SettingsPage() {
         {/* Précurseur du réglage « Univers » du lot 6 (docs/conception/univers.md, étape U3), qui le remplacera. */}
         <fieldset className="panel">
           <legend>Expérimental</legend>
-          <p>Le monde d’Archipéo est en train d’être redessiné. Ces options montrent le dessin en cours : il peut changer ou s’afficher moins bien. La progression ne change pas.</p>
+          <p>Le monde d’Archipéo change de dessin. Ces options montrent le travail en cours. Il peut encore changer. Ta progression reste la même.</p>
           <label className="toggle">
             <input type="checkbox" checked={settings.renduArchipeo} onChange={(e) => update({ renduArchipeo: e.target.checked })} />
-            Le nouveau dessin du monde (expérimental)
+            Essayer le nouveau dessin du monde
           </label>
           {settings.renduArchipeo && (
-            <>
-              <p>Les couleurs des cubes (expérimental) :</p>
+            <fieldset className="settings-subgroup">
+              <legend>La surface du monde</legend>
               <div className="option-row">
                 {(Object.keys(STYLE_LABELS) as StyleChoice[]).map((styleArchipeo) => (
                   <label key={styleArchipeo} className={`option${settings.styleArchipeo === styleArchipeo ? ' selected' : ''}`}>
@@ -208,7 +208,7 @@ export function SettingsPage() {
                   </label>
                 ))}
               </div>
-            </>
+            </fieldset>
           )}
           <p>Le changement se voit à la prochaine ouverture du monde.</p>
         </fieldset>

@@ -45,6 +45,7 @@ it('éteint les rendus expérimentaux par défaut et rejette les styles inconnus
   expect(sanitizeSettings({}).styleArchipeo).toBe('textures');
   expect(sanitizeSettings({ renduArchipeo: true, styleArchipeo: 'c' })).toMatchObject({ renduArchipeo: true, styleArchipeo: 'c' });
   expect(sanitizeSettings({ renduArchipeo: 'oui' as never, styleArchipeo: 'z' as never })).toMatchObject({ renduArchipeo: false, styleArchipeo: 'textures' });
+  expect(sanitizeSettings({ styleArchipeo: 'toString' as never }).styleArchipeo).toBe('textures');
 });
 
 it('respecte les minimums orthophoniques', () => {
