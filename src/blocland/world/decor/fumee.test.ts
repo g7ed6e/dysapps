@@ -93,9 +93,12 @@ it('la nuit, la fumée prend la couleur de nuit, fondue vers l’horizon : jamai
       }
     }
   }
-  const nuit = poser('4e', 0, 0, false).colors;
-  const plafond = luminance(cielDe('4e', 0).lueur);
-  for (let i = 0; i < nuit.length; i += 3) expect(lum(nuit, i)).toBeLessThanOrEqual(plafond + 1e-3);
+  // Les fumées posées la nuit, au 4e (le haut-fourneau) comme au 6e (le volcan) : jamais plus claires que la lueur d'horizon.
+  for (const a of ['4e', '6e'] as const) {
+    const nuit = poser(a, 0, 0, false).colors;
+    const plafond = luminance(cielDe(a, 0).lueur);
+    for (let i = 0; i < nuit.length; i += 3) expect(lum(nuit, i), a).toBeLessThanOrEqual(plafond + 1e-3);
+  }
   expect(lineaire(1)).toBe(1);
 });
 
