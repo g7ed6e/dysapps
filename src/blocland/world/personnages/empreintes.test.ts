@@ -3,8 +3,12 @@
 // `npx vitest run -u src/blocland/world/personnages/empreintes.test.ts` et le dit dans sa pull request ; ailleurs,
 // elles ne doivent pas bouger.
 import { BIOMES } from '../../biomes';
+import { toutConstruit } from '../budget';
+import { ARCHIPELAGO_IDS } from '../map';
+import { creaturePlacements, guardianPlacements } from '../terrain';
 import { bonhommePeint } from './bonhomme';
 import { creaturePeinte } from './creaturesPeintes';
+import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion, type Fusion } from './fusions';
 import type { FacettesDePersonnage } from './peint';
 import { sentinellePeinte } from './sentinellesPeintes';
 
@@ -24,6 +28,12 @@ function empreinte(f: FacettesDePersonnage): string {
   return fnv([arrondi(f.positions), arrondi(f.normals), arrondi(f.colors), f.pieces.join(','), f.teintes.join(','), JSON.stringify(f.table), JSON.stringify(f.palette)].join('|'));
 }
 
+/** Empreinte d'une fusion : ses tableaux arrondis au dix-millième, ses os (ou ses lueurs) et ses plages. */
+function empreinteDeFusion(f: Fusion, extra: ArrayLike<number>): string {
+  const arrondi = (a: Float32Array) => Array.from(a, (x) => Math.round(x * 1e4)).join(',');
+  return `${trianglesDeLaFusion(f)} ${fnv([arrondi(f.positions), arrondi(f.normals), arrondi(f.colors), Array.from(extra).join(','), JSON.stringify(f.plages)].join('|'))}`;
+}
+
 describe('Empreintes des personnages en facettes', () => {
   it('le bonhomme', () => {
     expect({ triangles: bonhommePeint().pieces.length, empreinte: empreinte(bonhommePeint()) }).toMatchSnapshot();
@@ -37,5 +47,18 @@ describe('Empreintes des personnages en facettes', () => {
   it('les sentinelles, île par île (éteintes)', () => {
     const toutes = Object.fromEntries(BIOMES.map((b) => [b.id, `${sentinellePeinte(b.id).pieces.length} ${empreinte(sentinellePeinte(b.id))}`]));
     expect(toutes).toMatchSnapshot();
+  });
+
+  it('les fusions, archipel par archipel (tout construit)', () => {
+    const { progress, village } = toutConstruit();
+    const toutes = Object.fromEntries(
+      ARCHIPELAGO_IDS.map((a) => {
+        const c = fusionDesCreatures(creaturePlacements(a, village.bridges));
+        const g = fusionDesGardiens(guardianPlacements(a, progress, village.bridges));
+        return [a, { creatures: `${empreinteDeFusion(c, c.os)} ${fnv(JSON.stringify(c.squelette))}`, gardiens: empreinteDeFusion(g, g.lueur) }];
+      }),
+    );
+    const b = fusionDuBonhomme();
+    expect({ ...toutes, bonhomme: `${empreinteDeFusion(b, b.os)} ${fnv(JSON.stringify(b.squelette))}` }).toMatchSnapshot();
   });
 });

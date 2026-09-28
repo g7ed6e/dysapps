@@ -18,6 +18,7 @@ import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
 import { VEHICLE_STAGES } from './vehicle';
+import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -159,6 +160,22 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
   return {
     triangles: familles.reduce((s, f) => s + f.n * f.t, 0),
     drawCalls: familles.filter((f) => f.n > 0).length,
+  };
+}
+
+/**
+ * Les personnages d'Archipéo (lot R6) dans un archipel tout construit : le bonhomme, les créatures fusionnées et les
+ * Gardiens en sentinelles fusionnés (./personnages/fusions.ts), un appel de dessin chacun.
+ */
+export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creatures' | 'gardiens', { triangles: number; drawCalls: number }> {
+  const { progress, village } = toutConstruit();
+  const creatures = fusionDesCreatures(creaturePlacements(a, village.bridges));
+  const gardiens = fusionDesGardiens(guardianPlacements(a, progress, village.bridges));
+  const appel = (n: number) => (n > 0 ? 1 : 0);
+  return {
+    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
+    creatures: { triangles: trianglesDeLaFusion(creatures), drawCalls: appel(trianglesDeLaFusion(creatures)) },
+    gardiens: { triangles: trianglesDeLaFusion(gardiens), drawCalls: appel(trianglesDeLaFusion(gardiens)) },
   };
 }
 

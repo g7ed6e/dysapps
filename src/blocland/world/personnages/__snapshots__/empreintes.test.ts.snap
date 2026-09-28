@@ -40,6 +40,28 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 }
 `;
 
+exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
+{
+  "3e": {
+    "creatures": "1667 c6b1ce20 3d8fa5cd",
+    "gardiens": "1331 875aa579",
+  },
+  "4e": {
+    "creatures": "1528 ea5d735f c5257533",
+    "gardiens": "1258 e4b24e6b",
+  },
+  "5e": {
+    "creatures": "1605 c8ec5616 50e4196b",
+    "gardiens": "1453 65c1acf2",
+  },
+  "6e": {
+    "creatures": "2488 758f2b69 4c8615d7",
+    "gardiens": "1726 f28c997c",
+  },
+  "bonhomme": "472 3df78282 1032f390",
+}
+`;
+
 exports[`Empreintes des personnages en facettes > les sentinelles, île par île (éteintes) 1`] = `
 {
   "atelier": "230 15752aea",
