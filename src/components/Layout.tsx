@@ -5,6 +5,8 @@ import { BandeauBatisseur } from './BandeauBatisseur';
 import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
 import { useProgress } from '../core/ProgressContext';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 import { moinsDAnimations } from '../core/mouvement';
 import { XpBar } from './XpBar';
 import { Celebrations } from './Celebrations';
@@ -36,6 +38,8 @@ export function Layout() {
 
 function Shell() {
   const { progress } = useProgress();
+  const universId = useUnivers();
+  const univers = UNIVERS[universId];
   const { pathname } = useLocation();
   // Pendant une partie : ni barre du haut ni onglets, seulement le bouton Pause (mode concentration).
   const focus = useFocusActive();
@@ -74,11 +78,16 @@ function Shell() {
       </a>
       {!focus && (
         <header className="topbar">
-          <Link to="/" className="brand" aria-label="Accueil Archipéo">
-            <span className="brand-mark" aria-hidden="true">
-              A
-            </span>
-            <span className="brand-name">Archipéo</span>
+          <Link to="/" className="brand" aria-label={`Accueil ${univers.nom}`}>
+            {/* Archipéo garde son initiale sur le sable ; Blocland a son logo, l'île en blocs. */}
+            {universId === 'archipeo' ? (
+              <span className="brand-mark" aria-hidden="true">
+                A
+              </span>
+            ) : (
+              <img className="brand-logo" src={`${import.meta.env.BASE_URL}${univers.logo}`} alt="" width={37} height={37} />
+            )}
+            <span className="brand-name">{univers.nom}</span>
           </Link>
           <Link to="/succes" className="topbar-xp" aria-label="Voir mon rôle et mes succès">
             <XpBar xp={progress.xp} />

@@ -1,0 +1,1 @@
+Blocland a son logo : une île flottante en blocs, avec son grand chêne et la mer. Il remplacera le « A » d’Archipéo sur l’écran titre et dans la barre du haut quand Blocland sera l’univers affiché, à la bascule du lot 6. Rien ne change encore à l’écran.

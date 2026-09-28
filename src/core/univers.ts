@@ -21,6 +21,8 @@ export interface UniversInfo {
   /** La phrase sous le titre. */
   phrase: string;
   icone: AnyIconName;
+  /** Le logo de l'écran titre et de la barre du haut, dans public/ (l'icône de l'appli installée est commune). */
+  logo: string;
   /** La présentation dans les Réglages, lue à voix haute. */
   presentation: string;
   /** Le retour vers la Carte (l'élision d'Archipéo ne se calcule pas). */
@@ -34,6 +36,7 @@ export const UNIVERS: Record<UniversChoice, UniversInfo> = {
     nom: 'Archipéo',
     phrase: 'Le savoir construit ton monde.',
     icone: 'ancre',
+    logo: 'icon.svg',
     presentation: 'Une aventure en mer : ton savoir reconstruit l’archipel.',
     carte: 'Carte d’Archipéo',
     bienvenue: 'Bienvenue dans Archipéo ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
@@ -42,6 +45,7 @@ export const UNIVERS: Record<UniversChoice, UniversInfo> = {
     nom: 'Blocland',
     phrase: 'Chaque bloc construit ton monde.',
     icone: 'cube',
+    logo: 'blocland.svg',
     presentation: 'Un monde en cubes, où tu reconstruis le village bloc par bloc.',
     carte: 'Carte de Blocland',
     bienvenue: 'Bienvenue à Blocland ! Le village est en ruine : c’est toi qui le reconstruis, île par île.',
