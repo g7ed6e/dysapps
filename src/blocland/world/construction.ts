@@ -295,6 +295,18 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
   return out;
 }
 
+/**
+ * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée) : pour la 2D peinte,
+ * qui les allume selon le même `eclatDeFenetre` que la 3D. Les bornes n'en ont pas.
+ */
+export function fenetresDe(cubes: VoxelCube[]): Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }> {
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol));
+  const decalages = decalagesDe(genres);
+  const out = new Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>();
+  for (const [c, g] of genres) if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
+  return out;
+}
+
 /** Un groupe en cours de remplissage. */
 class Remplissage {
   pos: number[] = [];

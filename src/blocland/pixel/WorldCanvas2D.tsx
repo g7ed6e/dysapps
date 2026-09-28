@@ -52,6 +52,7 @@ import { drawSprite } from './sprites';
 import { renduDuMonde } from '../rendu';
 import { morceauxAPeindre, palierDe, peinture, type Peinture } from './painted';
 import { seaPattern } from './paintedDraw';
+import { fenetresDe } from '../world/construction';
 import { drawPaintedShadow, drawPaintedSprite } from './paintedSprites';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
@@ -183,7 +184,14 @@ export default function WorldCanvas2D({
       drawable,
       stale: new Map(),
       tags: cubeTags(cubes),
-      env: { surface: surfaceOf(cubes), style: STYLE, sea: !sky, painted: painted ? peinture(archipelago, palier.current) : undefined },
+      env: {
+        surface: surfaceOf(cubes),
+        style: STYLE,
+        sea: !sky,
+        painted: painted ? peinture(archipelago, palier.current) : undefined,
+        // Les vitres et les lanternes qui s'allument la nuit (lot R5).
+        fenetres: painted ? fenetresDe(cubes) : undefined,
+      },
       props: split.props,
       stations: split.stations,
       places: new Map(cubes.filter((c) => c.place).map((c) => [`${c.x},${c.y}`, { place: c.place!, island: c.tag as BiomeId }])),

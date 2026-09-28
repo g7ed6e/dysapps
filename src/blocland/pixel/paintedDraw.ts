@@ -4,7 +4,9 @@
 // fantômes par-dessus. Les couleurs viennent de ./painted.ts ; la géométrie des cases est celle de ./oblique.ts, la même
 // qu'en pixels : les cases, les gestes et le toucher ne changent pas.
 import type { VoxelCube } from '../Voxel';
+import { eclatDeFenetre, LUEUR, VITRE_DE_JOUR } from '../world/construction';
 import { mixColor } from '../world/daylight';
+import type { Faces } from '../world/palette';
 import type { DrawEnv } from './draw';
 import { plateauBorder } from './draw';
 import { CHUNK, TILE, type Face, type Tile, type TileMap } from './oblique';
@@ -49,12 +51,28 @@ const COLONNES = new Set<Material>(['basalte', 'lave', 'glace']);
 /** Les sols dont le bord déborde sur la falaise (le gazon, la neige, la mousse). */
 const LEVRE = new Set<Material>(['herbe', 'neige', 'mousse']);
 
+/**
+ * Les couleurs d'un cube : celles de la peinture, sauf pour une vitre ou une lanterne (lot R5), qui s'allume selon le
+ * degré de nuit du palier, comme en 3D : une vitre sombre de jour, la lueur `LUEUR` la nuit, chacune à son moment.
+ */
+function facesDe(cube: VoxelCube, env: DrawEnv, P: Peinture): Faces {
+  const fenetre = env.fenetres?.get(cube);
+  if (!fenetre) return P.faces(cube);
+  const muted = Boolean(cube.muted);
+  const jour: Faces =
+    fenetre.genre === 'vitre'
+      ? (({ dessus, cote }) => ({ dessus: nuancer(dessus, VITRE_DE_JOUR), cote: nuancer(cote, VITRE_DE_JOUR) }))(P.matiere('verre', muted))
+      : P.matiere('lanterne', muted);
+  const e = eclatDeFenetre(1 - P.light, fenetre.decalage);
+  return e > 0 ? { dessus: mixColor(jour.dessus, LUEUR, e), cote: mixColor(jour.cote, LUEUR, e) } : jour;
+}
+
 /** Le dessus d'une case : l'aplat de son sol, ses grandes taches, et les franges en festons du sol voisin qui mord. */
 function paintTop(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: number, env: DrawEnv, P: Peinture) {
   const m = materialOf(cube);
   const ground = m !== 'autre';
   const muted = Boolean(cube.muted);
-  const f = P.faces(cube);
+  const f = facesDe(cube, env, P);
   const base = ground ? P.froid(f.dessus, cube.z + 1) : f.dessus;
   const bites: { d: Dir; color: number }[] = [];
   if (ground && env.style.edges)
@@ -116,7 +134,7 @@ function paintFront(b: Pixels, cube: VoxelCube, x0: number, y0: number, gy0: num
   const m = materialOf(cube);
   const ground = m !== 'autre';
   const muted = Boolean(cube.muted);
-  const f = P.faces(cube);
+  const f = facesDe(cube, env, P);
   const col = columnAt(env.surface, cube.x, cube.y);
   const zt = Math.max(cube.z, col?.z ?? cube.z);
   const summit = cube.z === zt;

@@ -13,7 +13,7 @@ import { VEHICLE_NAME, VEHICLE_STAGES, guardiansText, stageAt } from './world/ve
 interface Props {
   biome: BiomeDef;
   builder: VehicleBuilder;
-  /** En 3D, on peut aussi toucher les cases bleues du navire au quai. */
+  /** En 3D, on peut aussi toucher les cases transparentes du navire au quai. */
   in3d?: boolean;
   /** Embarquer vers un archipel (le suivant, ou un archipel déjà atteint pour y revenir). */
   onBoard: (to: ArchipelagoId, back: boolean) => void;
@@ -111,7 +111,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             </p>
             {!status.complete && (
               <>
-                {in3d && <p className="view-note">Touche une case bleue du Bloc-Navire, au quai, ou utilise le bouton.</p>}
+                {in3d && <p className="view-note">Touche une case transparente du Bloc-Navire, au quai, ou utilise le bouton.</p>}
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>
