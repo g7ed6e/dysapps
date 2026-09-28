@@ -172,6 +172,12 @@ const DEFS: Record<SpriteKind, SpriteDef> = {
   },
 };
 
+/** La taille d'un sprite, son pied et son ombre (la 2D peinte, ./paintedSprites.ts, garde les mêmes). */
+export function spriteBox(kind: SpriteKind): { w: number; h: number; ax: number; ay: number; shadow: number } {
+  const { w, h, ax, ay, shadow } = DEFS[kind];
+  return { w, h, ax, ay, shadow };
+}
+
 const cache = new Map<string, HTMLCanvasElement | null>();
 
 /** Délave une couleur (île verrouillée), comme la 3D. */

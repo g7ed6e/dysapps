@@ -3,7 +3,7 @@
 // Three.js dans le paquet de l'application. `npm run rendu:mesures` ; `npm run rendu:mesures -- --sans-poids` saute le
 // build. Chromium en rendu logiciel (SwiftShader) : les appels et les triangles ne dépendent pas de la carte graphique,
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
-// `--captures <dossier>` enregistre en plus les captures de ces scènes (3D de jour et de nuit, 2D), pour comparer un lot
+// `--captures <dossier>` enregistre en plus les captures de ces scènes (3D et 2D, de jour et de nuit), pour comparer un lot
 // de rendu à l'état d'avant ; elles ne sont pas versionnées. `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel.
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
@@ -87,6 +87,9 @@ async function scenes() {
             { vue: 'île', go: `/aventure/${at}`, time: NIGHT, name: 'nuit' },
             { vue: 'archipel', go: '/aventure', time: NIGHT, name: 'nuit' },
             { vue: 'île', go: `/aventure/${at}`, view: '2d', name: '2d' },
+            { vue: 'île', go: `/aventure/${at}`, view: '2d', time: NIGHT, name: '2d-nuit' },
+            { vue: 'archipel', go: '/aventure', view: '2d', name: '2d' },
+            { vue: 'archipel', go: '/aventure', view: '2d', time: NIGHT, name: '2d-nuit' },
           ]
         : []),
     ];

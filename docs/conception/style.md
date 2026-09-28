@@ -45,7 +45,9 @@ Les élèves voient le monde en blocs décrit ici. Le rendu d’Archipéo se con
 - **un soleil chaud et une ambiance froide** (la lune, froide, la nuit) : les faces au soleil sont dorées, les faces à l’ombre bleutées ;
 - une ambiance par archipel : ciel d’été franc des Premiers Rivages, brume froide et plus proche des Îles Brumeuses, horizon couleur de poussière des Anciens Ateliers, ciel pâle et lavande des Îles du Ciel, sur leur plancher de nuages.
 
-Les cubes et leurs textures ne changent pas encore ; `?style=a|b|c` les peint de la palette selon les trois options de style du cadrage, pour les comparer. La vue 2D et la vue simple ne changent pas.
+Les cubes et leurs textures ne changent pas encore ; `?style=a|b|c` les peint de la palette selon les trois options de style du cadrage, pour les comparer. La vue simple ne change pas.
+
+Depuis le lot R7, la vue 2D est **peinte** avec le drapeau (`src/blocland/pixel/painted.ts`, `paintedDraw.ts`, `paintedSprites.ts`) : mêmes cases, mêmes gestes, mais toutes les couleurs viennent de la palette commune, par archipel, de jour et de nuit. Les dessus sont des aplats nuancés en grandes taches ; les falaises sont un dégradé, clair sous la lèvre et bleuté au pied, en strates larges ; les sols voisins se mordent en festons ; l’écume est une bande de Brume ; la mer s’éclaircit près des rives. Un ouvrage (mur, toit, plancher) tient sur une seule teinte par face, avec sa matière en joints larges (rangs de tuiles, lames de bois, briques et pierres en quinconce), un cadre sombre aux vitres et aux lanternes, et un contour de sa teinte sombre qui le détache d’un sol clair. Le décor garde ses formes, en trois aplats de sa matière. La nuit n’est plus un voile : la 2D prend les couleurs de nuit de la palette. Une île verrouillée se délave vers la Brume ; un fantôme reste bleuté, au pointillé blanc et Nuit océan. La lumière se lit en cinq paliers : un changement de palier repeint le terrain, morceau par morceau. Sans le drapeau, la 2D reste en pixel art, inchangée.
 
 ## Univers et créatures
 
