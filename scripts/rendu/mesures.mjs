@@ -18,6 +18,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { build, createServer } from 'vite';
 import { chromium } from 'playwright-core';
+import { capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const TABLET = { width: 1024, height: 768 };
@@ -214,6 +215,7 @@ async function scenes() {
     for (const { vue, go, time = DAY, view = '3d', theme, reduceMotion, nom, encore, mesure, ile, plans } of views) {
       const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
       await page.clock.setFixedTime(time);
+      await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
         ({ village, progress, view, theme, reduceMotion }) => {
@@ -231,17 +233,17 @@ async function scenes() {
       if (!mesure) {
         // Les autres captures (nuit, 2D, Contraste élevé, animations réduites) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
-        await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
           const box = await page.locator('.voxel-canvas').boundingBox();
-          const png = box && (await page.screenshot({ type: 'png', clip: box, timeout: 90000 }));
+          const png = box && (await capturer(page, { type: 'png', clip: box, timeout: 90000 }));
           if (png) lueurs.push({ archipel: a, nom, vue, part: await partDeLueur(outil, png) });
         }
         if (encore) {
           // L'heure est figée (`setFixedTime`), mais les animations tournent : sans le réglage, l'image aurait bougé.
           await page.waitForTimeout(ECART);
-          await page.screenshot({ path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
+          await capturer(page, { path: join(SHOTS, `${a}-${encore}.jpg`), type: 'jpeg', quality: 85, timeout: 90000 });
         }
         await page.close();
         continue;
@@ -253,7 +255,7 @@ async function scenes() {
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
         rows.push({ archipel: a, vue, ...s });
-        if (file) await page.screenshot({ path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        if (file) await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
       } catch (e) {
         rows.push({ archipel: a, vue, erreur: e.message.split('\n')[0] });
       }
