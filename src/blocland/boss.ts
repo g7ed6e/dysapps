@@ -50,12 +50,14 @@ export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 
 /**
  * Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. Avec
- * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente.
+ * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente. Un Gardien vaincu le reste : une
+ * mission ajoutée plus tard à son île, encore sans étoile, ne le cache ni ne l'éteint.
  */
 export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {
   if (!isBiomeUnlocked(biome.id, bridges)) return 'hidden';
+  if (isBossBeaten(biome.id, progress)) return 'beaten';
   if (!isBossUnlocked(biome, progress)) return sentinelles ? 'waiting' : 'hidden';
-  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
+  return 'ready';
 }
 
 /** Les missions du biome où il manque encore des étoiles (pour l'expliquer à l'élève). */
