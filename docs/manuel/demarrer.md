@@ -19,7 +19,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village** d’
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
-Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, l’icône d’Archipéo sautille au-dessus de « Chargement… ».
+Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée) ; dans le village, le bouton ⏸ et le bouton retour ouvrent le menu du village. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
 ![Le menu en page sur tablette : Archipéo, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
 
@@ -37,7 +37,7 @@ Archipéo est une application web installable (PWA). Une fois installée, elle s
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
 - **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
 
-L’icône de l’appli installée est un « D » crème sur fond bleu nuit, pour DysApps, la même quel que soit l’univers ; le « A » d’Archipéo reste sur l’écran titre. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (l’icône sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
+L’icône de l’appli installée est un « D » crème sur fond bleu nuit, pour DysApps, la même quel que soit l’univers ; le « A » d’Archipéo reste sur l’écran titre. Installée, l’application s’ouvre comme une appli : un **écran de lancement** neutre (le « D » de DysApps sur fond crème, avec le nom DysApps sur Android) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
 ### Quand l’icône change
 
