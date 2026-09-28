@@ -174,14 +174,23 @@ export function ThalesFigure({ am, ab, an, ac }: { am: string; ab: string; an: s
   );
 }
 
-/** Petite série en barres, avec une valeur repère (moyenne, médiane) tracée. */
-export function BarList({ values, mark, markLabel }: { values: number[]; mark?: number; markLabel?: string }) {
+/**
+ * Petite série en barres, avec une valeur repère (moyenne, médiane) tracée. Avec `labels`, c'est un diagramme en
+ * barres : chaque barre porte le nom de sa réponse, puis son effectif écrit en chiffres.
+ */
+export function BarList({ values, labels: given, mark, markLabel }: { values: number[]; labels?: string[]; mark?: number; markLabel?: string }) {
   const max = Math.max(...values, mark ?? 0);
+  // Un nom par barre, ou aucun : une liste qui ne correspond pas donne l'aide sans noms.
+  const labels = given && given.length === values.length ? given : undefined;
+  const described = labels
+    ? `Diagramme en barres : ${values.map((v, i) => `${labels[i]}, ${v}`).join(' ; ')}`
+    : `${values.length} valeurs : ${values.join(', ')}`;
   return (
-    <figure className="bar-list">
-      <div role="img" aria-label={`${values.length} valeurs : ${values.join(', ')}${mark !== undefined ? ` ; ${markLabel} : ${mark}` : ''}`}>
+    <figure className={labels ? 'bar-list labelled' : 'bar-list'}>
+      <div role="img" aria-label={`${described}${mark !== undefined ? ` ; ${markLabel} : ${mark}` : ''}`}>
         {values.map((v, i) => (
           <div key={i} className="bar-row">
+            {labels && <span className="bar-label">{labels[i]}</span>}
             <span className="bar-value">{v}</span>
             <span className="bar" style={{ width: `${(v / max) * 100}%` }} />
           </div>
