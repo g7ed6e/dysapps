@@ -55,16 +55,26 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
 ## Animations et vue du monde
 
 - **Réduire les animations** : fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Utile pour les élèves sensibles au mouvement ou pour les appareils lents.
-- **Vue du monde** : trois choix.
+- **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
-  - **Le monde en 2D (expérimental)** : le même monde en pixels, vu de dessus en oblique, plus léger pour les appareils modestes (voir [Archipéo](blocland.md)).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
-  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Archipéo montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles ».
+  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), Archipéo montre le même monde en 2D, en pixels, vu de dessus en oblique ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
+
+## Expérimental
+
+![La section Expérimental des Réglages : la case « Essayer le nouveau dessin du monde » cochée, puis les quatre choix de la surface du monde.](/captures/reglages-experimental.jpg)
+
+Cette section rassemble des options **expérimentales**, désactivées par défaut. Elles montrent le nouveau dessin du monde d’Archipéo pendant qu’il se construit : il peut encore changer ou s’afficher moins bien. Elles ne touchent ni à la progression ni aux sauvegardes, et le changement se voit à la prochaine ouverture du monde.
+
+- **Essayer le nouveau dessin du monde** : le monde est dessiné avec le rendu d’Archipéo en construction (ciel, mer, relief à facettes, décor, constructions taillées ; sur un appareil sans WebGL, la 2D peinte) au lieu du monde en blocs, qui reste disponible en décochant la case.
+- **La surface du monde**, affichée quand le nouveau dessin est activé : **Les textures des blocs** (par défaut), **Couleurs unies** (une couleur par face), **Couleurs nuancées** (la couleur fondue en douceur, le style retenu pour Archipéo), **Coins arrondis** (la lumière arrondie sur les coins des cubes).
+
+Ces options préparent le choix de l’univers, qui arrivera dans les Réglages et les remplacera : on y choisira Archipéo ou Blocland, le monde en blocs. Pour les développeurs, l’adresse `/?rendu=archipeo#/aventure` (et `&style=a`, `b` ou `c`) fait la même chose et l’emporte sur les Réglages.
 
 ## Application
 

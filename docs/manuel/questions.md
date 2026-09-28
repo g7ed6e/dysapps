@@ -44,7 +44,7 @@ Elle utilise la synthèse vocale du navigateur. Vérifier le volume et le mode s
 Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, espacement des lettres et des mots, thème. Voir [Réglages et accessibilité](reglages.md).
 
 **Les animations gênent ou l’appareil est lent.**
-Activer « Réduire les animations ». Si la 3D reste lourde, choisir dans « Vue du monde » le monde en 2D (plus léger) ou la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
+Activer « Réduire les animations ». Si la 3D reste lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.

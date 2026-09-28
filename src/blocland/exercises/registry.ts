@@ -128,6 +128,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   thales: { component: CalculScreen, batch: 1 },
   trigo: { component: CalculScreen, batch: 1 },
   moyenne: { component: CalculScreen, batch: 1 },
+  releves: { component: CalculScreen, batch: 1 },
   chances: { component: CalculScreen, batch: 1 },
   images: { component: CalculScreen, batch: 1 },
   droites: { component: CalculScreen, batch: 1 },

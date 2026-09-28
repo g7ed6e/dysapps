@@ -133,14 +133,22 @@ const SHOTS = [
   { name: 'monument', state: MID, go: '/aventure/monument-observatoire' },
   { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
   { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
-  { name: 'vue-2d', state: MID, view: '2d', go: '/aventure/foret', act: closeSheet },
   { name: 'vue-simple', state: MID, view: 'liste', go: '/aventure' },
   { name: 'telephone-village', state: MID, go: '/aventure/foret', size: PHONE },
   { name: 'telephone-quete', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
   { name: 'quetes', state: MID, go: '/quetes' },
   { name: 'succes', state: MID, go: '/succes' },
   { name: 'reglages', state: MID, go: '/reglages' },
+  { name: 'reglages-experimental', state: MID, go: '/reglages', act: showExperimental },
 ];
+
+/** La section Expérimental des Réglages, le nouveau dessin coché : les choix de surface apparaissent. */
+async function showExperimental(page) {
+  await page.getByRole('checkbox', { name: 'Essayer le nouveau dessin du monde' }).check();
+  // Sous la barre du haut, qui reste en place.
+  await page.getByRole('group', { name: 'Expérimental' }).evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 110));
+  await page.waitForTimeout(300);
+}
 
 /** « Poser tout ce que j'ai » dans le panneau de l'île. */
 async function placeAll(page) {

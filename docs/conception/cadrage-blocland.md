@@ -50,9 +50,11 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 **La Carte** montre l’archipel vu du ciel, avec un fanion sur le bonhomme. Toucher une île ouverte y envoie le bonhomme ; toucher une île fermée montre le chemin d’ouvrages qui reste à construire (`remainingPath()`), balisé en jaune dans le monde. On ne se perd jamais. Depuis le lot 4b d’Archipéo, elle porte l’état de chaque île en icône et en mot (`world/islandState.ts` : Fermée, À explorer, En chantier, Restaurée, déduits de la sauvegarde), dit la prochaine destination (`world/destination.ts`, la même qu’au menu) et la marque de la flèche jaune. « Les quatre archipels » s’ouvre sur une carte dessinée en SVG, en lecture seule, où les archipels non atteints sont dans la brume : c’est un repère, pas un lieu où l’on va.
 
-**Trois vues au choix** (réglage « Vue du monde ») : le monde en 3D, le monde en 2D, la liste des îles. Sans WebGL, la 3D laisse la place à la 2D ; la liste ne reste que pour un appareil qui ne sait rien dessiner.
+**Deux vues au choix** (réglage « Vue du monde ») : le monde en 3D, la liste des îles. Le monde en 2D a quitté le réglage le 28 septembre 2026 (décision du mainteneur : Blocland n’est pas en 2D, voir [les univers](univers.md)) ; sans WebGL, la 3D laisse encore la place à la 2D, et la liste reste pour un appareil qui ne sait rien dessiner.
 
 ## La vue 2D oblique
+
+Depuis le 28 septembre 2026 (décision du mainteneur), cette vue n’est plus un choix des Réglages : elle reste le repli d’un appareil sans WebGL. Les décisions ci-dessous décrivent son dessin, figé avec le reste de Blocland.
 
 Sans WebGL, ou sur une tablette qui peine, Blocland retombait sur une liste d’îles : il manquait une vue légère qui garde l’aventure.
 
@@ -131,6 +133,6 @@ Les règles des missions jouées depuis le monde (graine tirée au hasard, place
 
 ## À venir
 
-- **La vue 2D** : retirer la mention « expérimental » du réglage après un essai en classe.
+- ~~**La vue 2D** : retirer la mention « expérimental » du réglage après un essai en classe.~~ Sans objet : la 2D a quitté le réglage le 28 septembre 2026.
 - **Le premier voyage** : écouter les retours des enfants sur le nombre de Gardiens exigés (3, 2, 2) et la taille du premier chantier, à régler dans `world/vehicle.ts`.
 - **Le village au démarrage** : observer combien d’élèves entrent à l’école depuis le monde et combien repassent le réglage « Au démarrage » sur « Le menu ».

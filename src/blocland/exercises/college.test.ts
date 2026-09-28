@@ -19,6 +19,7 @@ import {
   pythagoreHyp,
   pythagoreSide,
   RECIPROQUE_PYTHAGORE_CHOICES,
+  SURVEYS,
   reciprocalPythagore,
   reciprocalThales,
   scientific,
@@ -473,4 +474,106 @@ it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’éno
   }
   // Les pièges annoncés sont bien là, souvent.
   for (const [trap, count] of Object.entries(seen)) expect(count, trap).toBeGreaterThan(100);
+});
+
+it('Relevés : la réponse se lit ou se calcule depuis le diagramme ou le tableau, une seule juste, et les pièges des élèves', () => {
+  const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
+  const phraseOf = new Map(SURVEYS.flatMap((s) => s.answers.map(([label, phrase]) => [phrase, label] as const)));
+  const frac = (c: string) => {
+    const [n, d] = c.split('/').map(Number);
+    return n / d;
+  };
+  const pct = (c: string) => Number(c.replace(' %', '').replace(',', '.'));
+  const seen = { wrongBar: 0, forgotBar: 0, added: 0, wrongRow: 0, forgotRow: 0, inverted: 0, countAsPercent: 0, times10: 0, notTimes100: 0 };
+  // Des fréquences où les choix ne donnent pas l'effectif total : un autre dénominateur est proposé.
+  let otherTotal = 0;
+  let level2 = 0;
+  // Avec un total imposé, la dernière barre n'est pas toujours la plus grande : la réponse qui complète est tirée.
+  let lastIsMax = 0;
+  let withTotal = 0;
+  for (let s = 0; s < 200; s++) {
+    for (const level of [1, 2, 3]) {
+      const def = byId(`donnees-releves-${level}`);
+      expect(def.instruction).not.toMatch(/[/×÷=%]/);
+      for (const item of def.generate!(`${def.id}#releve${s}`)) {
+        const prompt = String(item.prompt);
+        const list = (item.choices as string[]).map(String);
+        // Lu « en troisième » ; au niveau 3, l'effectif total est dit en phrase.
+        expect(String(item.spoken)).toBe(
+          prompt.replace('Enquête en 3e', 'Enquête en troisième').replace(/Effectif total : (\d+)\./, 'L’effectif total est $1.'),
+        );
+        expect(prompt, prompt).not.toMatch(/[/×÷−+=…]|%/);
+        expect(String(item.spoken)).not.toMatch(/\b3e\b/);
+        expect((item.aid as { kind: string }).kind).toBe('rule-card');
+        expect(list, prompt).toHaveLength(4);
+        expect(new Set(list).size).toBe(4);
+        expect(list).toContain(item.answer);
+        expect(prompt).toMatch(/^Enquête en 3e : (le sport préféré|le trajet jusqu’au collège|le fruit préféré à la cantine|la matière préférée)\. /);
+        const figure = item.figure as { kind: string; props: { values?: number[]; labels?: string[]; cols?: string[]; rows?: [string, number][] } };
+        const rows: [string, number][] =
+          level === 2 ? figure.props.rows! : figure.props.labels!.map((l, i) => [l, figure.props.values![i]] as [string, number]);
+        expect(figure.kind).toBe(level === 2 ? 'ratio-table' : 'bar-list');
+        expect(rows).toHaveLength(4);
+        const values = rows.map(([, n]) => n);
+        expect(new Set(values).size).toBe(4);
+        for (const n of values) expect(n).toBeGreaterThanOrEqual(2);
+        const total = values.reduce((a, b) => a + b, 0);
+        if (level > 1) {
+          withTotal++;
+          if (values[3] === Math.max(...values)) lastIsMax++;
+        }
+        const count = (label: string) => rows.find(([l]) => l === label)![1];
+        // La question : la dernière phrase (la première dit l'enquête ; au niveau 3, la deuxième donne l'effectif total).
+        const question = prompt.split('. ').at(-1)!;
+        if (level === 3) expect(prompt).toContain(`. Effectif total : ${rows.reduce((a, [, n]) => a + n, 0)}. `);
+        const asked = /(?:ont choisi|viennent) (.+?)(?:, en pourcentage)? \?$/.exec(question)?.[1];
+        if (level === 1) {
+          const nums = list.map(Number);
+          expect(nums).toEqual([...nums].sort((a, b) => a - b));
+          const gap = /de plus pour « (.+) » que pour « (.+) » \?$/.exec(question);
+          if (gap) {
+            const [big, small] = [count(gap[1]), count(gap[2])];
+            expect(big).toBeGreaterThan(small);
+            expect(item.answer).toBe(String(big - small));
+            if (list.includes(String(big + small))) seen.added++;
+          } else if (prompt.includes('effectif total')) {
+            expect(item.answer).toBe(String(total));
+            if (values.some((n) => list.includes(String(total - n)))) seen.forgotBar++;
+          } else {
+            const n = count(phraseOf.get(asked!)!);
+            expect(item.answer).toBe(String(n));
+            if (values.some((m) => m !== n && list.includes(String(m)))) seen.wrongBar++;
+          }
+          continue;
+        }
+        const n = count(phraseOf.get(asked!)!);
+        if (level === 2) {
+          expect([16, 18, 20, 24, 30]).toContain(total);
+          expect(item.answer).toBe(`${n}/${total}`);
+          const vals = list.map(frac);
+          expect(vals).toEqual([...vals].sort((a, b) => a - b));
+          // Une seule fraction égale à la fréquence : pas la même écrite autrement.
+          expect(vals.filter((v) => Math.abs(v - n / total) < 1e-9)).toHaveLength(1);
+          if (values.some((m) => m !== n && list.includes(`${m}/${total}`))) seen.wrongRow++;
+          if (values.some((m) => m !== n && list.includes(`${n}/${total - m}`))) seen.forgotRow++;
+          if (list.includes(`${total}/${n}`)) seen.inverted++;
+          level2++;
+          if (list.some((c) => !c.endsWith(`/${total}`))) otherTotal++;
+        } else {
+          expect([20, 25, 50]).toContain(total);
+          const p = (n * 100) / total;
+          expect(item.answer).toBe(`${p} %`);
+          const vals = list.map(pct);
+          expect(vals).toEqual([...vals].sort((a, b) => a - b));
+          if (list.includes(`${n} %`)) seen.countAsPercent++;
+          if (vals.includes(p / 10)) seen.times10++;
+          if (vals.includes(p / 100)) seen.notTimes100++;
+        }
+      }
+    }
+  }
+  // Les pièges annoncés sont bien là, souvent.
+  for (const [trap, n] of Object.entries(seen)) expect(n, trap).toBeGreaterThan(80);
+  expect(otherTotal / level2).toBeGreaterThan(0.6);
+  expect(lastIsMax / withTotal).toBeLessThan(0.4);
 });
