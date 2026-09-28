@@ -54,6 +54,8 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 ## La vue 2D oblique
 
+Depuis le 28 septembre 2026 (décision du mainteneur), cette vue n’est plus un choix des Réglages : elle reste le repli d’un appareil sans WebGL. Les décisions ci-dessous décrivent son dessin, figé avec le reste de Blocland.
+
 Sans WebGL, ou sur une tablette qui peine, Blocland retombait sur une liste d’îles : il manquait une vue légère qui garde l’aventure.
 
 - **Perspective oblique en pixel art** : on voit le dessus des cases, et chaque dénivelé montre une face avant, comme une falaise. C’est une inspiration de point de vue ; formes, textures et personnages restent les nôtres.

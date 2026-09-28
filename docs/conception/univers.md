@@ -42,7 +42,7 @@ Le réglage « Vue du monde » garde une sortie de secours, commune à tous les 
 
 - **La liste des îles** (la vue simple). C’est la preuve que tout se joue sans dessin, et le refuge d’un appareil qui ne sait pas dessiner.
 
-**Ni Archipéo ni Blocland ne sont en 2D** (décision du mainteneur, 28 septembre 2026). Le choix « Le monde en 2D » a quitté le réglage, et les captures ne font plus de 2D : un appareil qui l’avait choisi retrouve le monde en 3D. Le code de la vue 2D (`src/blocland/pixel/`, la 2D peinte de R7 comprise) reste en place : il sert encore de repli à un appareil sans WebGL, et il servira de base à un univers dessiné en 2D, comme le Carnet d’expédition envisagé au §6.2. Les captures en 2D reviendront avec cet univers.
+**Ni Archipéo ni Blocland ne sont en 2D** (décision du mainteneur, 28 septembre 2026). Le choix « Le monde en 2D » a quitté le réglage, et les captures ne font plus de 2D : un appareil qui l’avait choisi retrouve le monde en 3D. Le code de la vue 2D (`src/blocland/pixel/`, la 2D peinte de R7 comprise) reste en place : il sert encore de repli à un appareil sans WebGL, et il servira de base à un univers dessiné en 2D, s’il en vient un (étape U6). Les captures en 2D reviendront avec cet univers.
 
 Basculer de vue ne change donc jamais d’univers. Seul le réglage « Univers » le fait.
 
@@ -53,7 +53,7 @@ Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur tr
 - **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Il fait d’Archipéo l’univers par défaut. Le drapeau `?rendu=archipeo` devient le réglage « Univers » (§7, décision 5). « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
 - **Le budget.** Le monde en blocs ne tient pas celui d’Archipéo sur tablette : 66 672 triangles et 220 appels de dessin aux Premiers Rivages, mesurés après R4, pour 60 000 et 40. Blocland garde son propre plafond de non-régression (80 000 et 240, `budget.test.ts`). Sur un appareil lent, il a « Réduire les animations » et la liste des îles. Le budget d’Archipéo ne change pas.
 - **La maintenance.** L’artiste technique 3D le chiffre : garder deux familles de rendu, c’est tester chaque partie de la scène dans les deux univers.
-  - Parade : Blocland est **figé dans son dessin**. Il ne reçoit aucun lot R. Il suit les règles du jeu partagé, avec ses empreintes et ses captures d’aujourd’hui.
+  - Parade : Blocland est **figé dans son dessin**. Il ne reçoit aucun lot R. Il suit les règles du jeu partagé, avec ses empreintes et ses captures d’aujourd’hui (sauf la 2D, arrêtée le 28 septembre 2026).
   - Figé dans son dessin ne veut pas dire figé dans son accessibilité : toute correction d’accessibilité (mode concentration, « Réduire les animations », contraste, cibles) s’applique aussi à Blocland.
   - Chaque lot de jeu qui suit (7 à 10) dit ce qu’il devient dans Blocland. Le lot 8 d’abord : le navire maritime y change les cases d’un plan partagé, et les deux univers relisent la même sauvegarde migrée.
 
