@@ -4,7 +4,7 @@
 import { ARCHIPEO } from './archipeo';
 import { BLOCLAND } from './blocland';
 import { useUniversChoisi } from '../core/SettingsContext';
-import { UNIVERS_OUVERT } from '../core/univers';
+import { UNIVERS_OUVERT, UNIVERS_PAR_DEFAUT } from '../core/univers';
 import type { TextesUnivers, UniversId } from './types';
 
 export type { TextesUnivers, UniversId } from './types';
@@ -15,11 +15,11 @@ export { UNIVERS_OUVERT };
 const TEXTES: Record<UniversId, TextesUnivers> = { archipeo: ARCHIPEO, blocland: BLOCLAND };
 
 /**
- * L'univers dont l'élève lit les textes : celui qu'il a choisi une fois l'univers ouvert (Archipéo s'il n'a rien
- * choisi), Blocland avant.
+ * L'univers dont l'élève lit les textes : celui qu'il a choisi une fois l'univers ouvert (l'univers par défaut,
+ * Blocland, s'il n'a rien choisi), Blocland avant.
  */
 export function universAffiche(choisi?: UniversId, ouvert: boolean = UNIVERS_OUVERT): UniversId {
-  return ouvert ? (choisi ?? 'archipeo') : 'blocland';
+  return ouvert ? (choisi ?? UNIVERS_PAR_DEFAUT) : 'blocland';
 }
 
 export function textesDe(univers: UniversId): TextesUnivers {

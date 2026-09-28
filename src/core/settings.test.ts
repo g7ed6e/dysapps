@@ -90,11 +90,11 @@ it('s’ouvre sur le village par défaut, et lit le choix « Au démarrage »', 
   expect(sanitizeSettings({ startIn: 'plage' as never }).startIn).toBe('village');
 });
 
-it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vaut Archipéo', () => {
+it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vaut l’univers par défaut', () => {
   expect('univers' in sanitizeSettings({})).toBe(false);
   expect(sanitizeSettings({ univers: 'blocland' }).univers).toBe('blocland');
   expect(sanitizeSettings({ univers: 'archipeo' }).univers).toBe('archipeo');
-  expect(sanitizeSettings({ univers: 'atlantide' as never }).univers).toBe('archipeo');
-  expect(sanitizeSettings({ univers: 'toString' as never }).univers).toBe('archipeo');
+  expect(sanitizeSettings({ univers: 'atlantide' as never }).univers).toBe('blocland');
+  expect(sanitizeSettings({ univers: 'toString' as never }).univers).toBe('blocland');
   expect('univers' in DEFAULT_SETTINGS).toBe(false);
 });

@@ -27,7 +27,8 @@ it('remplace la section Expérimental par la section Univers', () => {
   renderPage();
   expect(screen.getByRole('group', { name: 'Univers' })).toBeInTheDocument();
   expect(screen.queryByRole('group', { name: 'Expérimental' })).not.toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: /^Archipéo/ })).toBeChecked();
+  // Un appareil neuf est dans Blocland, l'univers par défaut.
+  expect(screen.getByRole('radio', { name: /^Blocland/ })).toBeChecked();
 });
 
 it('change d’univers seulement après la confirmation, qui dit ce qui reste', async () => {
