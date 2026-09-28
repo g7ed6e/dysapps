@@ -330,7 +330,7 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Application</legend>
-          <p className="settings-version">Archipéo, par DysApps. Version {APP_VERSION}.</p>
+          <p className="settings-version">DysApps, version {APP_VERSION}.</p>
           {appUpdate.ready ? (
             <button type="button" className="button primary" onClick={() => void applyUpdate()}>
               Mettre à jour maintenant

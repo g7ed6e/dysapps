@@ -85,9 +85,9 @@ export default defineConfig({
         // L'identité de l'appli installée : Chrome et Edge la déduisaient de start_url, on l'écrit pour qu'elle ne
         // bouge plus. Elle ne doit jamais changer, sinon les appareils voient une autre appli (sans ses données).
         id: base,
-        name: 'Archipéo – Entraînement collège',
-        short_name: 'Archipéo',
-        description: 'Le savoir construit ton monde : français, maths et anglais pour les élèves dys du collège, par DysApps',
+        name: 'DysApps',
+        short_name: 'DysApps',
+        description: 'Français, maths et anglais pour les élèves dys du collège, dans le monde de ton choix',
         lang: 'fr',
         theme_color: '#13283d',
         background_color: '#f3eee3',

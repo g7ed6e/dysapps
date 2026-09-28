@@ -35,7 +35,7 @@ Archipéo est une application web installable (PWA). Une fois installée, elle s
 
 - **Android (Chrome)** : menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».
 - **iPhone, iPad (Safari)** : bouton Partager, puis « Sur l’écran d’accueil ».
-- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer Archipéo ».
+- **Ordinateur (Chrome, Edge)** : icône d’installation à droite de la barre d’adresse, ou menu puis « Installer DysApps ».
 
 L’icône est un « A » ouvert crème sur fond bleu nuit, posé sur deux vagues, avec une étoile de sable. Installée, l’application s’ouvre comme une appli : un **écran de lancement** (l’icône sur fond crème) le temps du chargement, sur Android comme sur iPhone et iPad, puis l’écran titre. Elle occupe tout l’écran, encoche et coins arrondis compris ; la page ne rebondit pas, ne se recharge pas en tirant vers le bas et ne zoome pas au double toucher (le zoom à deux doigts reste possible).
 
