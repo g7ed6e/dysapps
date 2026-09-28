@@ -25,8 +25,11 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
   // 18 200 à 25 200 triangles depuis le lot R3 (27 500 à 38 900 en cubes), en un appel (deux dans les Premiers Rivages,
   // pour la lave du volcan).
   for (const a of ARCHIPELAGO_IDS) {
-    const { sol, mer, faune, triangles, drawCalls } = sceneCostArchipeo(a);
+    const { sol, mer, faune, decor, triangles, drawCalls } = sceneCostArchipeo(a);
     expect(sol.drawCalls, a).toBeLessThanOrEqual(2);
+    // Lot R4 : tout le décor (arbres, rochers, repères, cascades, habillage de la mer) en un appel, deux avec ses lueurs.
+    expect(decor.drawCalls, a).toBeLessThanOrEqual(2);
+    expect(decor.triangles, a).toBeLessThanOrEqual(15_000);
     expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
     // que le monde en blocs.

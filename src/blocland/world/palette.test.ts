@@ -1,4 +1,4 @@
-import { AMBIENCE, palette } from './daylight';
+import { AMBIENCE, mixColor, palette } from './daylight';
 import { ARCHIPELAGO_IDS, type Ground } from './map';
 import {
   ANNEAUX_DU_CIEL,
@@ -10,6 +10,7 @@ import {
   couleurDeMatiere,
   couleurDuCiel,
   couleurDuSol,
+  deNuit,
   domeDuCiel,
   luminance,
   multiplie,
@@ -158,6 +159,25 @@ it('la nuit, les surfaces bleuissent sans jamais devenir noires ; les lanternes 
     }
     const [r, , b] = rgb(couleurDuSol(a, 'herbe', 0).dessus);
     expect(b, a).toBeGreaterThan(r);
+  }
+});
+
+it('une seule nuit pour la 3D et la 2D : la formule d’avant, de la nuit au plein jour, sans rien changer', () => {
+  // La formule que la 2D peinte recopiait (pixel/painted.ts, jusqu'au lot R4), et celle des surfaces de la palette.
+  const avant2D = (a: (typeof ARCHIPELAGO_IDS)[number], c: number, light: number) => {
+    const n = PALETTES[a].nuit;
+    return mixColor(mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3), c, Math.min(1, Math.max(0, light)));
+  };
+  const avant3D = (a: (typeof ARCHIPELAGO_IDS)[number], c: number) => mixColor(multiplie(c, PALETTES[a].nuit.ambianceCiel), PALETTES[a].nuit.horizon, 0.3);
+  for (const a of ARCHIPELAGO_IDS)
+    for (let c = 0; c <= 0xffffff; c += 0x0b1d27) {
+      expect(deNuit(a, c)).toBe(avant3D(a, c));
+      for (const light of [-1, 0, 0.25, 0.5, 0.75, 1, 2]) expect(deNuit(a, c, light)).toBe(avant2D(a, c, light));
+    }
+  // Et la palette lit la même : une surface à mi-jour est le mélange de sa nuit et de son jour.
+  for (const a of ARCHIPELAGO_IDS) {
+    const jour = couleurDuSol(a, 'herbe', 1).dessus;
+    expect(couleurDuSol(a, 'herbe', 0.5).dessus).toBe(mixColor(deNuit(a, jour), jour, 0.5));
   }
 });
 

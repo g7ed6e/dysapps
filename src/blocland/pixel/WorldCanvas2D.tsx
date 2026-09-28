@@ -34,7 +34,7 @@ import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import type { Cell, WorldViewProps } from '../world/view';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
-import { propsOf, type Prop, type Station } from './props';
+import { propsOf, type Prop, type Station } from '../world/props';
 import {
   avatarSprite,
   drawChevron,

@@ -38,7 +38,7 @@ const REGLES = [
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
-const GRILLE = ['world/map', 'world/harbour', 'world/ground', 'world/paths', 'world/terrain', 'world/whalePass'];
+const GRILLE = ['world/map', 'world/harbour', 'world/ground', 'world/paths', 'world/terrain', 'world/decor', 'world/whalePass'];
 
 /** Le contrat commun des vues et sa simulation. */
 const COMMUN = ['world/view', 'world/scene', 'world/disposition'];
@@ -65,6 +65,7 @@ const EXCEPTIONS: Record<string, string> = {
   'world/terrain → Creatures': 'les modèles des créatures, dans un composant React (J5)',
   'world/terrain → Guardians': 'les modèles des Gardiens, dans un composant React (J5)',
   'world/terrain → Voxel': 'le type VoxelCube, rangé dans un composant (J5)',
+  'world/decor → Voxel': 'le type VoxelCube, rangé dans un composant ; le décor sorti de terrain.ts au lot R4 en hérite (J5)',
   'world/terrain → world/daylight': 'l’ambiance d’un archipel (le ciel), lue pour poser le décor (J5)',
   'world/view → Voxel': 'le contrat des vues reçoit des cubes (J4)',
   'world/scene → Voxel': 'la simulation lit les cubes (J4)',

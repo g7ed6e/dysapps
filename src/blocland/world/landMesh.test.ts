@@ -522,3 +522,59 @@ describe('le budget du terrain', () => {
     expect(trianglesDuSol(mesh)).toBeGreaterThan(1000);
   }, 30_000);
 });
+
+it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la roche descend jusqu’à elle, on y marche à plat', async () => {
+  // Lot R4 (décision du directeur artistique au lot R3). Comme la vue 3D : le décor en primitives ne fige pas sa case.
+  const { rangerLeDecor } = await import('./decorMesh');
+  const { islandDef, CORE } = await import('./map');
+  const { progress, village } = toutConstruit();
+  const cubes = worldCubes('4e', progress, village, false);
+  const sol = cubes.filter((c) => c.sol);
+  const champ = champDuSol('4e', sol, rangerLeDecor(cubes.filter((c) => !c.sol)).reste);
+  const { core } = islandDef('forge');
+  const dalle = champ.colonnes.filter((c) => c.x >= core.x && c.x < core.x + CORE && c.y >= core.y && c.y < core.y + CORE);
+  const matiere = (c: { matieres: string[] }) => c.matieres[c.matieres.length - 1];
+  const laDalle = matiere(dalle[0]);
+  const dessus = (c: { matieres: string[] }) => couleurDeMatiere('4e', matiere(c) as never).dessus;
+  let rebord = 0;
+  for (const c of dalle) {
+    if (matiere(c) !== laDalle) continue;
+    const L = c.haut + 1;
+    // Plate jusqu'à son bord : un coin ne monte vers la roche que si la dalle elle-même y monte (un gradin de la dalle).
+    const autour = (k: number) =>
+      [
+        [-1, -1],
+        [0, -1],
+        [-1, 0],
+        [0, 0],
+      ].map(([ox, oy]) => colonneEn(champ, c.x + [0, 1, 1, 0][k] + ox, c.y + [0, 0, 1, 1][k] + oy));
+    const aPlat = [0, 1, 2, 3].map((k) => autour(k).every((v) => !v || v.haut === c.haut || matiere(v) !== laDalle));
+    for (let k = 0; k < 4; k++) if (aPlat[k]) expect(c.coins[k], `${c.x},${c.y} coin ${k}`).toBe(L);
+    if (aPlat.every(Boolean))
+      for (const [u, v] of [
+        [0.5, 0.5],
+        [0.05, 0.05],
+        [0.95, 0.3],
+        [0.2, 0.97],
+      ]) {
+        expect(hauteurDuSol(champ, c.x + u, c.y + v)).toBeCloseTo(L, 6);
+        expect(piedsSur(champ, c.x + u, c.y + v, L)).toBeCloseTo(L, 6);
+      }
+    // Les voisines d'un bloc plus hautes qui tranchent (la roche) descendent jusqu'à elle sur le bord commun.
+    for (const [dx, dy, k0, k1, j0, j1] of [
+      [1, 0, 1, 2, 0, 3],
+      [-1, 0, 0, 3, 1, 2],
+      [0, 1, 3, 2, 0, 1],
+      [0, -1, 0, 1, 3, 2],
+    ]) {
+      const v = colonneEn(champ, c.x + dx, c.y + dy);
+      if (!v || v.haut !== c.haut + 1 || v.fixe || ecartDeCouleur(dessus(c), dessus(v)) <= CONTRASTE) continue;
+      rebord++;
+      expect([v.coins[j0], v.coins[j1]], `${v.x},${v.y}`).toEqual([c.coins[k0], c.coins[k1]]);
+    }
+    // Toucher le bord de la dalle redonne sa case.
+    const h = hauteurDuSol(champ, c.x + 0.97, c.y + 0.03)!;
+    expect(pickCell(champ, { x: c.x + 0.97, y: h, z: c.y + 0.03 }, { x: 0, y: 1, z: 0 })?.cell).toEqual({ x: c.x, y: c.y, z: c.haut });
+  }
+  expect(rebord).toBeGreaterThan(20);
+});

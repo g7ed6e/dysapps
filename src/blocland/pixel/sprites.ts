@@ -1,8 +1,11 @@
 // Les sprites du décor, dessinés pixel par pixel en code (formes simples, contour sombre, lumière en haut à gauche) :
 // arbres ronds, sapins, buissons, fleurs, champignons, rochers, souches, roseaux, cristaux. Rien d'emprunté.
 
-export const SPRITE_KINDS = ['arbre', 'sapin', 'buisson', 'fleur', 'champignon', 'rocher', 'souche', 'roseau', 'cristal'] as const;
-export type SpriteKind = (typeof SPRITE_KINDS)[number];
+import { PROP_KINDS, type PropKind } from '../world/props';
+
+/** Un sprite par genre de décor rangé (world/props.ts). */
+export const SPRITE_KINDS = PROP_KINDS;
+export type SpriteKind = PropKind;
 
 interface SpriteDef {
   w: number;

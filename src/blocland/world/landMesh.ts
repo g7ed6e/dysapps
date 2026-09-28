@@ -7,6 +7,8 @@
 //   coins : ils suivent la moyenne des voisines d'au plus un bloc d'écart, ce qui change une marche d'un bloc en pente
 //   douce ; un écart de deux blocs ou plus reste une falaise. Chaque case est coupée en deux triangles, le long de sa
 //   diagonale la plus plate (au hasard si les deux se valent) : pas de motif qui répète la grille.
+// - Deux dessus voisins qui tranchent, d'un bloc d'écart (une dalle claire contre la roche) : le plus bas reste plat
+//   jusqu'à son bord, le plus haut descend jusqu'à lui (le rebord plat de la dalle, lot R4).
 // - Une case où quelque chose est posé (borne, maison, plan, pont, monument), ou contre laquelle s'appuie ce qui est
 //   au-dessus de l'eau (un pont, une cascade), reste plate à sa hauteur : rien ne flotte au-dessus d'une pente. Les lacs
 //   et la lave restent plats aussi. Une case où seul un décor est posé descend au bas de la pente si son socle en
@@ -25,6 +27,7 @@ import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
+import { decorPose } from './decor';
 import { bruit, FROID, FROID_SOUS } from './style';
 import type { Cell } from './view';
 
@@ -213,13 +216,27 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
     }
     if (c.z !== col.haut + 1) continue;
     col.fixe = true;
-    if (c.decor && !c.ghost) {
+    if (decorPose(c.decor) && !c.ghost) {
       const set = decors.get(col) ?? new Set<string>();
-      set.add(c.decor);
+      set.add(c.decor!);
       decors.set(col, set);
     } else autreChose.add(col);
   }
   const auNiveauDeLaMer = !AMBIENCE[a].sky;
+  // Deux dessus voisins qui tranchent (une dalle claire contre la roche, voir `CONTRASTE`) : la couleur de leur dessus,
+  // de jour, sans le délavé (la forme ne change pas quand une île s'ouvre). Le sable a sa frange, le liquide reste plat.
+  const dessus = new Map<Colonne, Couleur>();
+  const dessusDe = (c: Colonne): Couleur => {
+    let d = dessus.get(c);
+    if (d === undefined) {
+      const m = c.matieres[c.matieres.length - 1];
+      d = m in MATIERES ? couleurDeMatiere(a, m as TextureKind).dessus : parseInt(m.slice(1), 16);
+      dessus.set(c, d);
+    }
+    return d;
+  };
+  const sableOuLiquide = (c: Colonne) => c.liquide || c.matieres[c.matieres.length - 1] === 'sable';
+  const tranchent = (p: Colonne, q: Colonne) => !sableOuLiquide(p) && !sableOuLiquide(q) && ecartDeCouleur(dessusDe(p), dessusDe(q)) > CONTRASTE;
   /** La hauteur d'un coin du dessus, la case figée ou non. */
   const coinDuDessus = (col: Colonne, k: number, libre: boolean): number => {
     const L = col.haut + 1;
@@ -227,11 +244,15 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
     const voisines = autourDuCoin(champ, col, k);
     // La côte basse d'une île au niveau de la mer descend jusqu'à l'eau ; plus haute, elle s'arrondit d'un bloc.
     if (voisines.some((v) => !v)) return auNiveauDeLaMer && L <= 2 ? RIVAGE : L - 1;
+    // Le rebord plat d'une dalle : contre une voisine plus basse d'un bloc qui tranche, le coin descend jusqu'à elle
+    // (la roche descend jusqu'à la dalle) ; contre une voisine plus haute qui tranche, il ne monte pas vers elle (la
+    // dalle reste plate jusqu'à son bord).
+    if (voisines.some((v) => v!.haut + 1 === L - 1 && tranchent(col, v!))) return L - 1;
     let s = 0;
     let n = 0;
     for (const v of voisines) {
       const lv = v!.haut + 1;
-      if (Math.abs(lv - L) > 1) continue;
+      if (Math.abs(lv - L) > 1 || (lv > L && tranchent(col, v!))) continue;
       s += lv;
       n++;
     }
@@ -599,7 +620,8 @@ const LINEAIRE = Float32Array.from({ length: 4097 }, (_, i) => {
   const v = i / 4096;
   return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
 });
-const lineaire = (v: number) => LINEAIRE[Math.round(clamp(v, 0, 1) * 4096)];
+/** Une composante sRGB (0..1) dans l'espace linéaire de Three.js. */
+export const lineaire = (v: number) => LINEAIRE[Math.round(clamp(v, 0, 1) * 4096)];
 
 /** La nuance d'un sommet (option b sur les facettes) : plus sombre vers la mer, des taches sur les dessus. */
 export function nuanceDuSol(x: number, y: number, z: number, dessus: boolean, altitude: number): number {

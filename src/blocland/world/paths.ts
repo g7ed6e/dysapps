@@ -3,6 +3,7 @@
 // contourne les arbres, les rochers, les bornes, les maisons et les créatures. Code pur : la grille vient des cubes du
 // monde, le chemin est un plus court chemin (huit directions), redressé en lignes droites là où le sol est plat et libre.
 import type { VoxelCube } from '../Voxel';
+import { decorPose } from './decor';
 import type { Cell, CreaturePlacement } from './view';
 
 /** Le décor qu'on enjambe (bas, au ras du sol) ; le reste barre le passage. */
@@ -30,7 +31,7 @@ const key = (x: number, y: number) => `${x},${y}`;
 export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = []): WalkGround {
   const top = new Map<string, { z: number; liquid: boolean }>();
   for (const c of cubes) {
-    if (c.ghost || c.decor) continue;
+    if (c.ghost || decorPose(c.decor)) continue;
     const k = key(c.x, c.y);
     const cur = top.get(k);
     if (!cur || c.z > cur.z) top.set(k, { z: c.z, liquid: c.texture === 'eau' || c.texture === 'lave' });
@@ -39,7 +40,7 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
   // Une borne de mission, même basse, ne se piétine pas ; l'école non plus.
   for (const c of cubes) if ((c.quest || c.place) && !c.ghost) blocked.add(key(c.x, c.y));
   for (const c of cubes) {
-    if (c.ghost || !c.decor || LOW.has(decorKind(c.decor))) continue;
+    if (c.ghost || !decorPose(c.decor) || LOW.has(decorKind(c.decor!))) continue;
     const k = key(c.x, c.y);
     const ground = top.get(k);
     // Le corps occupe les deux blocs au-dessus du sol : un feuillage plus haut laisse passer dessous.

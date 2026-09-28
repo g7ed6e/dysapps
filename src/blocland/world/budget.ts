@@ -3,7 +3,7 @@
 // scène (terrain, créatures, Gardiens, Bloc-Navire, bonhomme) tels que la vue 3D les dessine : un appel de dessin par
 // groupe de `buildMesh`. La mer, les nuages, les baleines, les oiseaux, les étiquettes et les repères de borne s'y
 // ajoutent dans le navigateur : `npm run rendu:mesures` mesure la scène entière. `sceneCostArchipeo()` compte en plus,
-// pour le rendu Archipéo, le sol (R2), la mer et la faune (R3). Vérifié par world/budget.test.ts.
+// pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES } from '../biomes';
 import { CATALOG } from '../exercises';
@@ -15,6 +15,7 @@ import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
+import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
 import { VEHICLE_STAGES } from './vehicle';
 
@@ -60,20 +61,33 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 }
 
 /**
+ * Un archipel tout construit comme le rendu Archipéo le range : le sol (en facettes), le décor en primitives (lot R4),
+ * qui ne fige plus sa case, et le reste (en cubes).
+ */
+function archipelArchipeo(a: ArchipelagoId) {
+  const { progress, village } = toutConstruit();
+  const cubes = worldCubes(a, progress, village, false);
+  const ground = cubes.filter((c) => c.sol);
+  const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
+  return { ground, elements, reste, champ: champDuSol(a, ground, reste) };
+}
+
+/**
  * Le sol et la roche d'un archipel tout construit dans le rendu Archipéo (lot R2) : le maillage à facettes de
  * ./landMesh.ts, un appel de dessin (deux s'il y a de la lave).
  */
 export function solCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const { progress, village } = toutConstruit();
-  const cubes = worldCubes(a, progress, village, false);
-  const m = landMesh(
-    champDuSol(
-      a,
-      cubes.filter((c) => c.sol),
-      cubes.filter((c) => !c.sol),
-    ),
-  );
+  const m = landMesh(archipelArchipeo(a).champ);
   return { triangles: trianglesDuSol(m), drawCalls: appelsDuSol(m) };
+}
+
+/**
+ * Le décor d'Archipéo (lot R4) : arbres, rochers, repères, cascades et habillage de la mer en primitives, un appel de
+ * dessin (deux s'il y a des lanternes ou de la lave).
+ */
+export function decorCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  const { champ, elements } = archipelArchipeo(a);
+  return coutDuDecor(maillageDuDecor(a, champ, elements));
 }
 
 /** La mer d'Archipéo (lot R3) : la grille de ./mer.ts, jusqu'à l'horizon, en un appel de dessin. */
@@ -101,8 +115,8 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 
 /**
  * Les modèles de la scène d'un archipel tout construit dans le rendu Archipéo, lot par lot : le sol en facettes (R2),
- * la mer et la faune (R3), et tout le reste encore en blocs (construction, décor, créatures, Gardiens, navire,
- * bonhomme). `triangles` et `drawCalls` comptent tout.
+ * la mer et la faune (R3), le décor en primitives (R4), et tout le reste encore en blocs (construction, objets du quai,
+ * créatures, Gardiens, navire, bonhomme). `triangles` et `drawCalls` comptent tout.
  */
 export function sceneCostArchipeo(a: ArchipelagoId): {
   triangles: number;
@@ -110,22 +124,23 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
   sol: { triangles: number; drawCalls: number };
   mer: { triangles: number; drawCalls: number };
   faune: { triangles: number; drawCalls: number };
+  decor: { triangles: number; drawCalls: number };
 } {
   const sol = solCost(a);
-  const { progress, village } = toutConstruit();
-  const cubes = worldCubes(a, progress, village, false);
-  const ground = cubes.filter((c) => c.sol);
-  const autres = cubes.filter((c) => !c.sol);
-  // Comme la vue 3D : le décor d'une case descendue au bas de sa pente descend avec elle.
-  const rest = buildMesh(poseDuDecor(champDuSol(a, ground, autres), autres), ground);
+  const decor = decorCost(a);
+  const { ground, reste, champ } = archipelArchipeo(a);
+  // Comme la vue 3D : le décor resté en cubes d'une case descendue au bas de sa pente descend avec elle.
+  const rest = buildMesh(poseDuDecor(champ, reste), ground);
   const models = sceneModels(a).map((m) => (m.name === 'terrain' ? { ...m, groups: rest } : m));
   const mer = merCost(a);
   const faune = fauneCost(a);
+  const parts = [sol, mer, faune, decor];
   return {
-    triangles: sol.triangles + mer.triangles + faune.triangles + models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
-    drawCalls: sol.drawCalls + mer.drawCalls + faune.drawCalls + models.reduce((n, m) => n + m.groups.length, 0),
+    triangles: parts.reduce((n, p) => n + p.triangles, 0) + models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
+    drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) + models.reduce((n, m) => n + m.groups.length, 0),
     sol,
     mer,
     faune,
+    decor,
   };
 }
