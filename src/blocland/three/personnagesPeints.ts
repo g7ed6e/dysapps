@@ -178,25 +178,35 @@ export function habiller(
   let promeneurs: Promeneur[] = [];
   // Les sentinelles posées, et le rallumage en cours (lot 6) : le Gardien, le début et la durée de son fondu.
   let sentinelles: { f: FusionDesGardiens; g: THREE.BufferGeometry; placements: PersonnagePlace[] } | null = null;
-  let fondu: { id: BiomeId; t0: number; duree: number; fini: boolean } | null = null;
+  let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
   /** Le degré de chaque Gardien : celui de son placement, et celui du fondu pour le Gardien qui se rallume. */
   const degresDe = (gardiens: { id: BiomeId }[]): Partial<Record<BiomeId, number>> => {
     const degres: Partial<Record<BiomeId, number>> = Object.fromEntries(gardiens.map((c) => [c.id, allumageDuGardien(c)]));
     if (fondu && fondu.id in degres) {
-      const u = fondu.duree > 0 ? Math.min(1, (performance.now() - fondu.t0) / fondu.duree) : 1;
+      const u = fondu.dureeMs > 0 ? Math.min(1, (performance.now() - fondu.t0) / fondu.dureeMs) : 1;
       degres[fondu.id] = Math.max(degres[fondu.id] ?? 0, u * u * (3 - 2 * u));
     }
     return degres;
   };
-  /** Repeint les sentinelles à leurs degrés (le fondu, image par image). */
-  const repeindre = () => {
+  /**
+   * Repeint les sentinelles à leurs degrés. Avec `seul` (le fondu, image par image), seul ce Gardien est repeint, et
+   * seule sa plage part vers la carte graphique.
+   */
+  const repeindre = (seul?: BiomeId) => {
     if (!sentinelles) return;
     const { f, g, placements } = sentinelles;
     const degres = degresDe(placements);
-    couleursDesGardiens(f, degres, g.getAttribute('color').array as Float32Array<ArrayBuffer>);
-    lueursDesGardiens(f, degres, g.getAttribute('lueur').array as Float32Array<ArrayBuffer>);
-    g.getAttribute('color').needsUpdate = true;
-    g.getAttribute('lueur').needsUpdate = true;
+    const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
+    const lueurs = g.getAttribute('lueur') as THREE.BufferAttribute;
+    couleursDesGardiens(f, degres, couleurs.array as Float32Array<ArrayBuffer>, seul);
+    lueursDesGardiens(f, degres, lueurs.array as Float32Array<ArrayBuffer>, seul);
+    const plage = seul ? f.plages.find((p) => p.id === seul) : undefined;
+    if (plage) {
+      couleurs.addUpdateRange(plage.debut * 9, (plage.fin - plage.debut) * 9);
+      lueurs.addUpdateRange(plage.debut * 12, (plage.fin - plage.debut) * 12);
+    }
+    couleurs.needsUpdate = true;
+    lueurs.needsUpdate = true;
   };
 
   const vider = () => {
@@ -296,8 +306,8 @@ export function habiller(
       matBonhomme.lisere.value = nuit;
       // Le fondu du rallumage, jusqu'à son terme (d'un coup quand l'appareil demande moins d'animations : durée nulle).
       if (fondu && !fondu.fini) {
-        repeindre();
-        fondu.fini = performance.now() - fondu.t0 >= fondu.duree;
+        repeindre(fondu.id);
+        fondu.fini = performance.now() - fondu.t0 >= fondu.dureeMs;
       }
       if (reduit) return;
       for (const q of promeneurs) {
@@ -307,9 +317,9 @@ export function habiller(
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
       }
     },
-    rallumer: (id, duree) => {
+    rallumer: (id, dureeMs) => {
       if (id === (fondu?.id ?? null)) return;
-      fondu = id ? { id, t0: performance.now(), duree, fini: false } : null;
+      fondu = id ? { id, t0: performance.now(), dureeMs, fini: false } : null;
       repeindre();
     },
     dispose: () => {

@@ -46,7 +46,7 @@ export function BossPage() {
   // Les épreuves réussies qu'il faut : les mêmes 70 % que la victoire.
   const needed = Math.ceil(total * 0.7);
   const def = useMemo(
-    () => (loaded && sent && biome ? { ...loaded, instruction: sent.consigne(guardianTitle(biome), total, needed) } : (loaded ?? undefined)),
+    () => (loaded && sent ? { ...loaded, instruction: sent.consigne } : (loaded ?? undefined)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [loaded, sent],
   );
@@ -65,8 +65,9 @@ export function BossPage() {
     setPlayed(0);
     setMood('idle');
     setLine(null);
-    // Pas de tambour pour une sentinelle : rien ne se combat.
+    // Pas de tambour pour une sentinelle : rien ne se combat. Sa règle est lue au lancement, comme une consigne.
     if (def && !sent) sound(playDrum);
+    if (def && sent && settings.autoRead) speak(frenchTypography(def.instruction));
     // Au lancement et à chaque revanche.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def]);
@@ -101,8 +102,9 @@ export function BossPage() {
       <Link to={`/aventure/${biome.id}`} className="back-link">
         <Icon name="back" /> {biome.name}
       </Link>
-      <h1 className={`page-title biome-title biome-${biome.id}`}>
-        <Icon name={sent ? 'flame' : 'shield'} /> {guardianTitle(biome)}
+      <h1 className={`page-title biome-title biome-${biome.id}${sent ? ' defi-titre' : ''}`}>
+        {/* Archipéo : le nom de l'écran (« Le défi du Grand Chêne ») ; le nom du Gardien est dans l'arène. */}
+        <Icon name={sent ? 'flame' : 'shield'} /> {sent ? textes.libelles.arene(biome.guardian) : guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
         <Loading />
@@ -216,6 +218,7 @@ export function BossPage() {
             def={def}
             onReplay={() => setRun((r) => r + 1)}
             onRound={onRound}
+            etapesNeutres={Boolean(sent)}
             onComplete={(c) => {
               if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
                 beatBoss();

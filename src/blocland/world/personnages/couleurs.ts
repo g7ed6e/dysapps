@@ -44,11 +44,13 @@ export const BONHOMME = {
 /**
  * Les sentinelles (les Gardiens de pierre) : la pierre éteinte et son lichen, la pierre rallumée, les orbites (qui ne
  * s'allument jamais) et la cendre, ce que sont la flamme et les veines tant qu'elles sont éteintes (`LUEUR` rallumées).
+ * Rallumée, la pierre se réchauffe jusqu'au Sable (#DAA66A, DA lot 6) : « brille à nouveau » se lit à la distance de
+ * la vue d'archipel, sans lueur au sol ni halo, et ne se confond plus avec la pierre grise aux veines dorées du défi.
  */
 export const SENTINELLE = {
   pierre: 0x8e8c84,
   lichen: 0x7a8a6a,
-  rallumee: 0xb8b2a4,
+  rallumee: 0xdaa66a,
   orbite: 0x45423d,
   cendre: 0x6b6862,
 } as const satisfies Record<string, Couleur>;

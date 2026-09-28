@@ -31,7 +31,7 @@ import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
-import { RallumagePanel, useRallumage } from './Rallumage';
+import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
 import { renduDuMonde } from './rendu';
 import { useTextes } from '../univers';
@@ -524,6 +524,26 @@ export function WorldPage() {
     if (moment.phase === 'camera') direLeRallumage(moment.id);
     finirLeRallumage(moment.id);
   };
+  /** « Passer » (ou Échap, ou Entrée) : ce moment et ceux qui suivent, toutes les sentinelles allumées tout de suite. */
+  const passerLesRallumages = () => {
+    if (!moment) return;
+    if (moment.phase === 'camera') direLeRallumage(moment.id);
+    for (const id of rallumage.enAttente) rallumage.noterVu(id);
+    setMoment(null);
+  };
+  useEffect(() => {
+    if (!moment) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' && e.key !== 'Enter') return;
+      // Entrée sur un bouton (« Écouter », « J’ai compris ») garde son rôle.
+      if (e.key === 'Enter' && (e.target as Element | null)?.closest?.('button, a, input, select, textarea')) return;
+      e.preventDefault();
+      passerLesRallumages();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moment?.seq, rallumage.enAttente.join()]);
 
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
@@ -605,7 +625,7 @@ export function WorldPage() {
 
   return (
     <div className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
-      <div className="world-stage" onPointerDownCapture={moment ? sauterLeRallumage : undefined}>
+      <div className="world-stage" onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
             archipelago={a}
@@ -625,7 +645,7 @@ export function WorldPage() {
             quests={quests}
             islandLabels={voyage ? undefined : islandLabels}
             whalePass={whaleWord && !reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
-            rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, duree: DEROULE.fondu } : null}
+            rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, dureeMs: DEROULE.fondu } : null}
             burst={burst}
             onIntent={onIntent}
             chantier={Boolean(island)}
@@ -750,6 +770,12 @@ export function WorldPage() {
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
         <div className="world-overlay-bottom">
+          {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
+          {moment && !motRallume && (
+            <button type="button" className="button rallumage-passer" onClick={passerLesRallumages}>
+              <Icon name="play" /> Passer
+            </button>
+          )}
           {motRallume ? (
             <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} />
           ) : (

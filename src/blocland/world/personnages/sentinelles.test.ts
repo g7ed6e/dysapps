@@ -66,11 +66,11 @@ describe('L’allumage des sentinelles', () => {
     expect(allumage(SENTINELLE.pierre, 0)).toBe(0x8e8c84);
     expect(allumage(SENTINELLE.lichen, 0)).toBe(0x7a8a6a);
     expect(allumage(LUEUR, 0)).toBe(SENTINELLE.cendre);
-    expect(allumage(SENTINELLE.pierre, 1)).toBe(0xb8b2a4);
-    expect(allumage(SENTINELLE.lichen, 1)).toBe(0xb8b2a4);
+    expect(allumage(SENTINELLE.pierre, 1)).toBe(0xdaa66a);
+    expect(allumage(SENTINELLE.lichen, 1)).toBe(0xdaa66a);
     expect(allumage(LUEUR, 1)).toBe(0xffd866);
     expect(allumage(SENTINELLE.pierre, -1)).toBe(0x8e8c84);
-    expect(allumage(SENTINELLE.pierre, 2)).toBe(0xb8b2a4);
+    expect(allumage(SENTINELLE.pierre, 2)).toBe(0xdaa66a);
   });
 
   it('monte sans à-coup entre les deux, et laisse les orbites sombres à tous les degrés', () => {
@@ -113,7 +113,7 @@ describe('L’allumage des sentinelles', () => {
         if (f.teintes[t] === SENTINELLE.orbite) expect(couleurDe(allumees, t, k)).toEqual(couleurDe(f.colors, t, k));
         if (f.teintes[t] === SENTINELLE.pierre && ny > 0.999) {
           expect(couleurDe(f.colors, t, k)).toEqual(lin(0x8e8c84).map(Math.fround));
-          expect(couleurDe(allumees, t, k)).toEqual(lin(0xb8b2a4).map(Math.fround));
+          expect(couleurDe(allumees, t, k)).toEqual(lin(0xdaa66a).map(Math.fround));
         }
       }
     }

@@ -259,7 +259,7 @@ const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
 
 /**
  * La couleur d'une teinte de sentinelle au degré d'allumage `degre` (0 : éteinte, 1 : rallumée) : la pierre passe de
- * #8E8C84 (et son lichen) à #B8B2A4, la flamme et les veines de la cendre à la lueur ; les orbites ne changent pas.
+ * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur ; les orbites ne changent pas.
  */
 export function allumage(c: Couleur, degre: number): Couleur {
   const de = ALLUMAGE.get(c);

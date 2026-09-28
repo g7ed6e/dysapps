@@ -57,8 +57,8 @@ export interface LibellesGardiens {
  * éteintes : la jauge compte les épreuves réussies, jamais celles qui restent, et le seuil est écrit.
  */
 export interface TextesSentinelles {
-  /** La consigne du défi, qui en dit la règle (`gardien` : son nom, avec sa majuscule ; `n` : les réussites qu'il faut). */
-  consigne: (gardien: string, total: number, n: number) => string;
+  /** La consigne du défi, qui en dit la règle (le nombre d'épreuves et le seuil sont sur la jauge). */
+  consigne: string;
   /** Le nom de la jauge. */
   jauge: string;
   /** Le compte de la jauge, écrit sous son nom (« 2 sur 7 »). */

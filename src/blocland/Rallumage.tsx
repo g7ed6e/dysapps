@@ -2,7 +2,7 @@
 // village ; la caméra glisse alors vers sa sentinelle, qui se rallume en fondu, avec une cloche et un mot. Une fois par
 // Gardien et par appareil (comme le mot de la baleine), jamais dans la sauvegarde. Dans un univers sans sentinelles
 // (Blocland), rien ne se montre : les Gardiens vaincus sont notés vus, pour qu'un passage à Archipéo n'en rejoue aucun.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type PointerEvent } from 'react';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -51,6 +51,18 @@ export function useRallumage(progress: Record<string, { stars: number }>, a: Arc
     setTick((t) => t + 1);
   };
   return { enAttente, noterVu };
+}
+
+/**
+ * Le toucher qui saute le moment, n'importe où sur la scène (sauf sur « Passer », qui passe tous les moments). Il
+ * s'arrête là : le même toucher n'ouvre pas une île et ne fait pas marcher le bonhomme sur le canvas.
+ */
+export function toucherQuiSaute(sauter: () => void) {
+  return (e: PointerEvent) => {
+    if ((e.target as Element).closest?.('.rallumage-passer')) return;
+    e.stopPropagation();
+    sauter();
+  };
 }
 
 interface PanelProps {

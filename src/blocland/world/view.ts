@@ -106,10 +106,10 @@ export interface WorldViewProps {
   whalePass?: { island: BiomeId; seq: number } | null;
   /**
    * Le moment du rallumage (lot 6) : la sentinelle de ce Gardien, encore éteinte dans son placement, se rallume en
-   * fondu, en `duree` millisecondes, et reste allumée tant que le moment dure. La 2D n'a pas de fondu : elle montre la
+   * fondu, en `dureeMs` millisecondes, et reste allumée tant que le moment dure. La 2D n'a pas de fondu : elle montre la
    * sentinelle allumée quand son placement l'est.
    */
-  rallumage?: { id: BiomeId; seq: number; duree: number } | null;
+  rallumage?: { id: BiomeId; seq: number; dureeMs: number } | null;
   burst?: Burst;
   className?: string;
   label: string;

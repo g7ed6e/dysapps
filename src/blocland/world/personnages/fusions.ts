@@ -176,24 +176,46 @@ export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens 
 
 /**
  * Les couleurs des Gardiens d'une fusion, chacun à son degré d'allumage (0 : éteint, 1 : rallumé ; 0 s'il n'est pas
- * donné), écrites dans `dans` s'il est donné (l'attribut de couleur de la vue, sans allocation à chaque image).
+ * donné), écrites dans `dans` s'il est donné (l'attribut de couleur de la vue, sans allocation à chaque image). Avec
+ * `seul`, seul ce Gardien est repeint (le fondu du rallumage, image par image) : le reste de `dans` ne change pas.
  */
-export function couleursDesGardiens(f: FusionDesGardiens, degres: Partial<Record<BiomeId, number>>, dans = new Float32Array(f.colors.length)): Float32Array {
-  for (const p of f.plages) couleursAllumees(sentinellePeinte(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+export function couleursDesGardiens(
+  f: FusionDesGardiens,
+  degres: Partial<Record<BiomeId, number>>,
+  dans = new Float32Array(f.colors.length),
+  seul?: BiomeId,
+): Float32Array {
+  for (const p of f.plages) {
+    if (seul && p.id !== seul) continue;
+    couleursAllumees(sentinellePeinte(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+  }
   return dans;
 }
 
 /**
  * Ce qui brille chez les Gardiens d'une fusion (quatre nombres par sommet, comme `FusionDesCreatures.lueur`) : la
- * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; le reste suit la lumière.
+ * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; le reste suit la lumière. Avec
+ * `seul`, comme pour `couleursDesGardiens`, seule la plage de ce Gardien est réécrite.
  */
-export function lueursDesGardiens(f: FusionDesGardiens, degres: Partial<Record<BiomeId, number>>, dans = new Float32Array((f.colors.length / 3) * 4)): Float32Array {
-  dans.fill(0);
-  const k = rgb(LUEUR).map((v) => lineaire(v / 255));
+export function lueursDesGardiens(
+  f: FusionDesGardiens,
+  degres: Partial<Record<BiomeId, number>>,
+  dans = new Float32Array((f.colors.length / 3) * 4),
+  seul?: BiomeId,
+): Float32Array {
+  const [r, g, b] = rgb(LUEUR).map((v) => lineaire(v / 255));
   for (const p of f.plages) {
+    if (seul && p.id !== seul) continue;
+    dans.fill(0, p.debut * 12, p.fin * 12);
     const d = Math.min(1, Math.max(0, degres[p.id] ?? 0));
     if (!d) continue;
-    for (let v = p.debut * 3; v < p.fin * 3; v++) if (f.lueur[v]) dans.set([k[0], k[1], k[2], d], v * 4);
+    for (let v = p.debut * 3; v < p.fin * 3; v++) {
+      if (!f.lueur[v]) continue;
+      dans[v * 4] = r;
+      dans[v * 4 + 1] = g;
+      dans[v * 4 + 2] = b;
+      dans[v * 4 + 3] = d;
+    }
   }
   return dans;
 }

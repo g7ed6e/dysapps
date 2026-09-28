@@ -386,7 +386,7 @@ export default function WorldCanvas({
 
   // ---- Le moment du rallumage (lot 6) : la sentinelle se rallume en fondu, d'un coup avec moins d'animations
   useEffect(() => {
-    world.current?.personnages.rallumer(rallumage?.id ?? null, reduceMotion ? 0 : (rallumage?.duree ?? 0));
+    world.current?.personnages.rallumer(rallumage?.id ?? null, reduceMotion ? 0 : (rallumage?.dureeMs ?? 0));
     // Un moment par `seq`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallumage?.id, rallumage?.seq]);

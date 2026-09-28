@@ -93,6 +93,21 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
     for (let v = 0; v < f.lueur.length; v++) expect(l[v * 4 + 3], `${v}`).toBe(v >= debut * 3 && v < fin * 3 && f.lueur[v] ? 1 : 0);
   });
 
+  it('le fondu ne repeint que le Gardien qui se rallume (seul) : les autres gardent leurs couleurs et leurs lueurs', () => {
+    const places = guardianPlacements('6e', progress, village.bridges);
+    const f = fusionDesGardiens(places);
+    const [a, b] = places.map((p) => p.id);
+    const tout = { [a]: 1, [b]: 1 };
+    const couleurs = new Float32Array(f.colors.length);
+    const lueurs = new Float32Array((f.colors.length / 3) * 4);
+    couleursDesGardiens(f, tout, couleurs);
+    lueursDesGardiens(f, tout, lueurs);
+    couleursDesGardiens(f, { [a]: 0, [b]: 0 }, couleurs, a);
+    lueursDesGardiens(f, { [a]: 0, [b]: 0 }, lueurs, a);
+    expect(couleurs).toEqual(couleursDesGardiens(f, { [a]: 0, [b]: 1 }));
+    expect(lueurs).toEqual(lueursDesGardiens(f, { [a]: 0, [b]: 1 }));
+  });
+
   it('le bonhomme : un os par pièce, les mêmes que ses pièces', () => {
     const f = fusionDuBonhomme();
     const m = bonhommePeint();

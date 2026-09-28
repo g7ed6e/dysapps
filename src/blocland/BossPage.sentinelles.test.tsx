@@ -70,6 +70,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   expect(document.body.textContent).toContain(`Il en faut ${needed} pour la rallumer.`);
   // La consigne dit la règle.
   expect(document.body.textContent).toContain('Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien.');
+  expect(screen.getByRole('heading', { level: 1, name: /Le défi du Grand Chêne/ })).toBeInTheDocument();
   expect(drum).not.toHaveBeenCalled();
 
   // Une épreuve ratée : rien ne s'allume, rien ne s'éteint, aucun son.

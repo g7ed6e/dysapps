@@ -1029,6 +1029,16 @@ button.app-card:active {
 .quiz-steps li.current {
   background: var(--sand);
 }
+/* Le défi d'une sentinelle (lot 6) : les écrans passés en Brume, l'écran en cours à son contour épais ; seules les
+   pastilles de la jauge disent les réussites. */
+.quiz-steps-neutres li.done {
+  background: #e5ebe3;
+  border-color: var(--ink);
+}
+.quiz-steps-neutres li.current {
+  background: transparent;
+  border-width: calc(var(--border-width) * 2);
+}
 .question-count {
   display: inline-block;
   padding: 0 0.7rem;
@@ -4766,4 +4776,14 @@ button.island-quest {
 .whale-word-dots span.on {
   background: var(--primary-bg);
   border-color: var(--primary-bg);
+}
+
+/* Le moment du rallumage (lot 6) : « Passer » saute tous les moments restants. */
+/* Le titre du défi (Archipéo) laisse la place du bouton Pause, fixé en haut à droite : il revient à la ligne avant lui. */
+.defi-titre {
+  padding-right: calc(56px + 0.6rem);
+}
+.rallumage-passer {
+  min-height: 48px;
+  justify-self: end;
 }

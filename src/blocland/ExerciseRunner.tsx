@@ -36,6 +36,8 @@ interface Props {
   onComplete?: (completion: Completion) => void;
   /** Appelé à chaque écran répondu (le Gardien réagit). */
   onRound?: (round: { index: number; total: number; correct: boolean }) => void;
+  /** La barre des écrans ne dit que où l'on en est, jamais une réussite (le défi d'une sentinelle, lot 6). */
+  etapesNeutres?: boolean;
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -52,7 +54,7 @@ export function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []
  * Lanceur d'exercice générique : la consigne reste écrite au-dessus de l'item (et lue à voix haute au début),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
-export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Props) {
+export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etapesNeutres = false }: Props) {
   const { state, complete, pauseAfterNext, continueSession } = useBlocland();
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
@@ -288,7 +290,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound }: Pr
           {def.instruction}
         </h2>
       )}
-      <ol className="quiz-steps" aria-label={`Écran ${index + 1} sur ${screens.length}`}>
+      <ol className={`quiz-steps${etapesNeutres ? ' quiz-steps-neutres' : ''}`} aria-label={`Écran ${index + 1} sur ${screens.length}`}>
         {screens.map((s, i) => (
           <li key={s[0].key} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />
         ))}

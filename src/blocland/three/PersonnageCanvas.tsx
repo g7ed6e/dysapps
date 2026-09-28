@@ -50,9 +50,12 @@ export default function PersonnageCanvas({
   const host = useRef<HTMLDivElement>(null);
   const { pierre, lueurs } = degresDAllumage(allumage);
   // L'allumage demandé et son fondu, lus par la scène sans la refaire ; `relancer` repart la boucle d'une scène immobile.
+  // (Écrit dans un effet, jamais pendant le rendu ; déclaré avant celui de la scène, qui le lit à sa création.)
   const demande = useRef({ pierre, lueurs, fondu });
-  demande.current = { pierre, lueurs, fondu };
   const relancer = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    demande.current = { pierre, lueurs, fondu };
+  }, [pierre, lueurs, fondu]);
 
   useEffect(() => {
     const el = host.current;
@@ -84,10 +87,18 @@ export default function PersonnageCanvas({
       const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
       const lueur = g.getAttribute('lueur') as THREE.BufferAttribute;
       couleursAllumees(f, d, couleurs.array as Float32Array<ArrayBuffer>);
-      (lueur.array as Float32Array).fill(0);
+      const l = lueur.array as Float32Array;
+      l.fill(0);
       if (d.lueurs > 0)
-        for (let t = 0; t < f.pieces.length; t++)
-          if (f.table[f.pieces[t]].lueur === 'allumage') for (let s = 0; s < 3; s++) (lueur.array as Float32Array).set([k[0], k[1], k[2], d.lueurs], (t * 3 + s) * 4);
+        for (let t = 0; t < f.pieces.length; t++) {
+          if (f.table[f.pieces[t]].lueur !== 'allumage') continue;
+          for (let v = t * 3; v < t * 3 + 3; v++) {
+            l[v * 4] = k[0];
+            l[v * 4 + 1] = k[1];
+            l[v * 4 + 2] = k[2];
+            l[v * 4 + 3] = d.lueurs;
+          }
+        }
       couleurs.needsUpdate = true;
       lueur.needsUpdate = true;
     };
