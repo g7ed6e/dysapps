@@ -906,6 +906,35 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   return spots;
 }
 
+const libreCache = new Map<ArchipelagoId, (x: number, y: number) => boolean>();
+/**
+ * La mer libre : à cinq cases au moins de toute terre, de tout îlot, de tout ouvrage, du quai et des ronds des
+ * baleines. L'habillage de la mer s'y sème (`seaDecor`) ; les bancs de brume du 5e s'y posent (world/decor/brume.ts).
+ */
+export function merLibre(a: ArchipelagoId): (x: number, y: number) => boolean {
+  const known = libreCache.get(a);
+  if (known) return known;
+  const solid = new Set<string>();
+  for (const def of mapOf(a)) {
+    for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
+    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
+    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
+  }
+  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
+    for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
+  const dock = dockBox(getArchipelago(a).port);
+  for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
+  // Les îlots des monuments.
+  for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${m.islet.x + x},${m.islet.y + y}`);
+  const whales = whaleSpots(a);
+  const free = (x: number, y: number) => {
+    for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
+    return whales.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 4);
+  };
+  libreCache.set(a, free);
+  return free;
+}
+
 const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
@@ -921,24 +950,8 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
     seaCache.set(a, []);
     return [];
   }
-  const solid = new Set<string>();
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
-  }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
-    for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
-  const dock = dockBox(getArchipelago(a).port);
-  for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
-  // Les îlots des monuments.
-  for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${m.islet.x + x},${m.islet.y + y}`);
-  const whales = whaleSpots(a);
   const b = worldBounds(a);
-  const free = (x: number, y: number) => {
-    for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
-    return whales.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 4);
-  };
+  const free = merLibre(a);
   const cubes = semerLaMer(a, b, free);
   seaCache.set(a, cubes);
   return cubes;

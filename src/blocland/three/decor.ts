@@ -5,6 +5,7 @@
 // fumées à la nuit. Ils ne recopient que ce que calcule le code pur (world/decor/fumee.ts). Le lointain (R4b-5e,
 // world/decor/lointain.ts) est au bout du maillage du décor : caché sur la Carte, jamais touché.
 import * as THREE from 'three';
+import { SANS_ELEMENT } from '../world/decor/lointain';
 import { poserLesFumees, type FacettesDuDecor, type MaillageDuDecor } from '../world/decorMesh';
 
 export interface DecorEn3D {
@@ -79,13 +80,15 @@ export function creerDecor(instant?: InstantDuDecor): DecorEn3D {
       const decor = ajouter(m.decor, mat, false);
       if (decor && m.debutDuLointain < m.decor.elements.length) {
         lointain = { geo: decor.geometry, debut: m.debutDuLointain, cache: false };
-        // Le lointain ne se touche pas : un toucher qui le traverse va à ce qu'il y a derrière (la mer, rien).
-        const debut = m.debutDuLointain;
+      }
+      if (decor && m.decor.elements.includes(SANS_ELEMENT)) {
+        // Le lointain et les ornements ne se touchent pas : un toucher qui les traverse va à ce qu'il y a derrière.
+        const sans = m.decor.elements;
         const lancer = decor.raycast.bind(decor);
         decor.raycast = (raycaster, intersects) => {
           const avant = intersects.length;
           lancer(raycaster, intersects);
-          for (let i = intersects.length - 1; i >= avant; i--) if ((intersects[i].faceIndex ?? 0) >= debut) intersects.splice(i, 1);
+          for (let i = intersects.length - 1; i >= avant; i--) if (sans[intersects[i].faceIndex ?? 0] === SANS_ELEMENT) intersects.splice(i, 1);
         };
       }
       const l = ajouter(m.lueurs, brille, true);

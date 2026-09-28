@@ -93,13 +93,20 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // La mer : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
     teinteDeMer: 0x1a7486,
   },
-  // Les Îles Brumeuses : plus froid, plus pâle, la brume plus proche ; l'herbe tire vers le vert d'eau.
+  // Les Îles Brumeuses (R4b-5e, design/archipeo/intentions/5e-iles-brumeuses.md §5) : une lumière diffuse de matin
+  // froid, un ciel pâle, la brume plus proche. La neige du sol se peint en roche claire et froide : la seule glace
+  // blanche est la calotte du Glacier (world/decor/5e.ts).
   '5e': {
-    jour: { zenith: 0x5b8cb8, horizon: 0xbccfd6, lueur: 0xdde6e4, soleil: 0xfff0d8, soleilForce: 2.1, ambianceCiel: 0xc8d9e6, ambianceSol: 0x60808a, ambianceForce: 1.15, mer: 0x2e7f94 },
+    jour: { zenith: 0x6f9fc2, horizon: 0xc5d9eb, lueur: 0xe5ebe3, soleil: 0xf4f2ea, soleilForce: 2.0, ambianceCiel: 0xd2e2ee, ambianceSol: 0x64848e, ambianceForce: 1.2, mer: 0x2e7f94 },
     nuit: { zenith: 0x203764, horizon: 0x47648f, lueur: 0x5f79a1, soleil: 0xa9c0e6, soleilForce: 1.05, ambianceCiel: 0x7a93c4, ambianceSol: 0x2f4366, ambianceForce: 1.25, mer: 0x2a5684 },
     brume: [70, 260],
-    voile: [0xa4bcc4, 0.1],
-    sols: { herbe: { dessus: 0x6f9f6a, cote: 0x7a6a56 } },
+    voile: [0xa9c2cc, 0.11],
+    sols: {
+      herbe: { dessus: 0x5a7e50, cote: 0x6a6a5a },
+      roche: { dessus: 0x8c9894, cote: 0x6a7f86 },
+      neige: { dessus: 0xb9c4c4, cote: 0x93a2a4 },
+      glace: { dessus: 0xc9d8dc, cote: 0x9fb4ba },
+    },
     nuages: AMBIENCE['5e'].sky,
     // La mer : la « mer rare » de la fiche, plus froide.
     teinteDeMer: 0x23789c,

@@ -18,8 +18,8 @@
 import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
-import { formeDe, LOINTAINS } from './decor/formes';
-import { dessinerLointain } from './decor/lointain';
+import { formeDe, LOINTAINS, ORNEMENTS } from './decor/formes';
+import { dessinerLointain, SANS_ELEMENT } from './decor/lointain';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
@@ -197,8 +197,14 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, elements: E
     const hautDe = (pred: (c: VoxelCube) => boolean) => Math.max(...e.cubes.filter(pred).map((c) => c.z + 1), e.z);
     const premier = (pred: (c: VoxelCube) => boolean) => e.cubes.find(pred);
     const rot = hasard() * Math.PI * 2;
-    formeDe(e.genre)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
+    formeDe(e.genre, a)({ P, L, F, e, a, champ, style, cx, cz, base, hasard, rot, vari, du, matiere, sol, plusBas, hautDe, premier, vertDe, horizon });
   });
+  // Les ornements (R4b-5e) : hors de la grille, sans élément, dans le même appel de dessin.
+  const ornement = ORNEMENTS[a];
+  if (ornement) {
+    P.element = SANS_ELEMENT;
+    ornement({ P, a, champ, elements, sol, style });
+  }
   // Le lointain, derrière l'archipel, dans le même appel de dessin que le décor, après ses éléments (R4b-5e).
   const debutDuLointain = P.triangles;
   const lointain = LOINTAINS[a];

@@ -254,3 +254,26 @@ export function boite(P: Pinceau, x0: number, y0: number, z0: number, x1: number
   P.quad(p(x0, y0, z0), p(x0, y0, z1), p(x0, y1, z1), p(x0, y1, z0), c, peindre);
   P.quad(p(x1, y0, z0), p(x1, y0, z1), p(x1, y1, z1), p(x1, y1, z0), c, peindre);
 }
+
+/**
+ * Un pavé de `w` × `d` cases, de `h` de haut, posé en (`cx`, `y0`, `cz`), tourné de `rot` autour de la verticale et
+ * penché de `penche` radians (de côté, autour de son pied) ; `chapeau` : avec son dessus. Sans fond.
+ */
+export function pave(P: Pinceau, cx: number, y0: number, cz: number, w: number, d: number, h: number, rot: number, penche: number, peindre: Peindre, chapeau = true): V3[] {
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
+  const cp = Math.cos(penche);
+  const sp = Math.sin(penche);
+  const coin = (u: number, v: number, y: number): V3 => {
+    // Penché autour de l'axe local des v, au pied : le haut part vers les u.
+    const lu = u * cp + y * sp;
+    const ly = -u * sp + y * cp;
+    return [cx + lu * cos - v * sin, y0 + ly, cz + lu * sin + v * cos];
+  };
+  const bas = [coin(-w / 2, -d / 2, 0), coin(w / 2, -d / 2, 0), coin(w / 2, d / 2, 0), coin(-w / 2, d / 2, 0)];
+  const haut = [coin(-w / 2, -d / 2, h), coin(w / 2, -d / 2, h), coin(w / 2, d / 2, h), coin(-w / 2, d / 2, h)];
+  const dedans = coin(0, 0, h / 2);
+  for (let i = 0; i < 4; i++) P.quad(bas[i], bas[(i + 1) % 4], haut[(i + 1) % 4], haut[i], dedans, peindre);
+  if (chapeau) P.quad(haut[0], haut[1], haut[2], haut[3], dedans, peindre);
+  return haut;
+}

@@ -144,44 +144,45 @@ function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): 
 function gradins(P: Pinceau, e: Etendue, m: MasseEnGradins, hasard: () => number): void {
   const [cx, cz] = ancre(e, m);
   const rot = hasard() * Math.PI * 2;
-  // Chaque pan garde son irrégularité d'une marche à l'autre : des verticales massives, pas une pyramide.
-  const forme = Array.from({ length: m.pans }, () => 0.8 + 0.4 * hasard());
+  // Chaque pan a son rayon, et chaque marche ne recule que sur certains pans : des falaises droites d'un côté, des
+  // gradins de l'autre, des verticales massives et irrégulières, jamais une pièce montée.
+  const base = Array.from({ length: m.pans }, () => m.rayon * (0.8 + 0.4 * hasard()));
+  let rayons = [...base];
   const marches = Math.max(1, Math.round(m.haut / m.marche));
   const peindre = peinture(m.couleur, m.sommet, m.haut);
-  let y0 = PIED;
-  let r = m.rayon;
-  const anneau = (y: number, rayon: number): V3[] =>
-    forme.map((k, i) => {
+  // Le retrait de chaque marche, borné pour que le sommet garde plus de la moitié de la base : une masse aux flancs
+  // presque droits, jamais une pointe en obus.
+  const retrait = Math.min(m.retrait * 1.6, (m.rayon * (1 - SOMMET_DES_GRADINS) * 1.6) / Math.max(1, marches - 1));
+  const anneau = (y: number, r: number[]): V3[] =>
+    r.map((rayon, i) => {
       const a = rot + (i / m.pans) * Math.PI * 2;
-      return [cx + rayon * k * Math.cos(a), y, cz + rayon * k * Math.sin(a)];
+      return [cx + rayon * Math.cos(a), y, cz + rayon * Math.sin(a)];
     });
+  let y0 = PIED;
   for (let s = 0; s < marches; s++) {
-    const y1 = s === marches - 1 ? m.haut : (m.haut * (s + 1)) / marches + (hasard() - 0.5) * 0.6;
-    const bas = anneau(y0, r);
-    const haut = anneau(y1, r);
+    const y1 = s === marches - 1 ? m.haut : Math.min(m.haut - 1, (m.haut * (s + 1)) / marches + (hasard() - 0.5) * m.marche * 0.5);
+    const bas = anneau(y0, rayons);
+    const haut = anneau(y1, rayons);
     const dedans: V3 = [cx, (y0 + y1) / 2, cz];
     for (let i = 0; i < m.pans; i++) {
       const j = (i + 1) % m.pans;
       P.quad(bas[i], bas[j], haut[j], haut[i], dedans, peindre);
     }
-    // Le retrait de chaque marche, borné pour que le sommet garde plus de la moitié de la base : une masse aux flancs
-    // presque droits, jamais une pointe en obus.
-    const retrait = Math.min(m.retrait, (m.rayon * (1 - SOMMET_DES_GRADINS)) / Math.max(1, marches - 1));
-    const rn = s === marches - 1 ? 0 : r - retrait * (0.7 + 0.6 * hasard());
-    if (rn > 0) {
-      // Le replat de la marche, entre ce pan et le suivant, en retrait.
+    if (s < marches - 1) {
+      // Le replat de la marche : certains pans reculent, d'autres restent à l'aplomb.
+      const suivants = rayons.map((r, i) => (hasard() < 0.45 ? r : Math.max(base[i] * SOMMET_DES_GRADINS, r - retrait * (0.5 + hasard()))));
       const dedansReplat: V3 = [cx, y1 - 1, cz];
-      const suivant = anneau(y1, rn);
+      const suivant = anneau(y1, suivants);
       for (let i = 0; i < m.pans; i++) {
         const j = (i + 1) % m.pans;
         P.quad(haut[i], haut[j], suivant[j], suivant[i], dedansReplat, peindre);
       }
+      rayons = suivants;
     } else {
       // Le sommet plat.
       for (let i = 1; i + 1 < m.pans; i++) P.triangle(haut[0], haut[i], haut[i + 1], [cx, y1 - 1, cz], peindre);
     }
     y0 = y1;
-    r = rn;
   }
   if (m.tour) {
     const t = m.tour;

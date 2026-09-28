@@ -16,6 +16,7 @@ import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
+import { trianglesDeLaBrume } from './decor/brume';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, trianglesDe } from './faune';
 import { VEHICLE_STAGES } from './vehicle';
 
@@ -136,7 +137,10 @@ export function solCost(a: ArchipelagoId): { triangles: number; drawCalls: numbe
  */
 export function decorCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { champ, elements } = archipelArchipeo(a);
-  return coutDuDecor(maillageDuDecor(a, champ, elements));
+  const decor = coutDuDecor(maillageDuDecor(a, champ, elements));
+  // Les bancs de brume (R4b-5e) : dans l'enveloppe du décor, un appel de dessin.
+  const brume = trianglesDeLaBrume(a);
+  return { triangles: decor.triangles + brume, drawCalls: decor.drawCalls + (brume ? 1 : 0) };
 }
 
 /** La mer d'Archipéo (lot R3) : la grille de ./mer.ts, jusqu'à l'horizon, en un appel de dessin. */

@@ -1,0 +1,108 @@
+import { toutConstruit } from '../budget';
+import { rangerLeDecor, maillageDuDecor, type ElementDeDecor } from '../decorMesh';
+import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
+import { ALTITUDE } from '../map';
+import { luminance } from '../palette';
+import { merLibre, worldCubes } from '../terrain';
+import { bancsDeBrume, COUCHES_5E } from './brume';
+import { SANS_ELEMENT } from './lointain';
+import { COULEURS_5E } from './5e';
+import { respirationDeLaBrume } from './fumee';
+
+const { progress, village } = toutConstruit();
+const cubes = worldCubes('5e', progress, village, false);
+const sol = cubes.filter((c) => c.sol);
+const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
+const champ = champDuSol('5e', sol, reste);
+const m = maillageDuDecor('5e', champ, elements);
+
+/** Les triangles d'un élément (ou de `SANS_ELEMENT`), projetés sur le sol : trois sommets (x, z) chacun. */
+function triangles(i: number): [number, number][][] {
+  const out: [number, number][][] = [];
+  const f = m.decor;
+  for (let t = 0; t < f.elements.length; t++)
+    if (f.elements[t] === i)
+      out.push([0, 1, 2].map((k) => [f.positions[t * 9 + k * 3], f.positions[t * 9 + k * 3 + 2]] as [number, number]));
+  return out;
+}
+
+/** Un point (x, z) est-il sous un des triangles ? */
+function couvert(tris: [number, number][][], x: number, z: number): boolean {
+  const signe = (p: [number, number], a: [number, number], b: [number, number]) => (p[0] - b[0]) * (a[1] - b[1]) - (a[0] - b[0]) * (p[1] - b[1]);
+  return tris.some(([a, b, c]) => {
+    const d1 = signe([x, z], a, b);
+    const d2 = signe([x, z], b, c);
+    const d3 = signe([x, z], c, a);
+    return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+  });
+}
+
+const repere = (genre: string): [ElementDeDecor, number] => {
+  const i = elements.findIndex((e) => e.genre === genre);
+  expect(i, genre).toBeGreaterThanOrEqual(0);
+  return [elements[i], i];
+};
+
+it('un repère d’Archipéo couvre toutes les cases que bloque celui de Blocland (règle 1 du directeur artistique)', () => {
+  for (const genre of ['champignon-geant', 'aiguille-de-glace']) {
+    const [e, i] = repere(genre);
+    const tris = triangles(i);
+    const cases = new Set(e.cubes.map((c) => `${c.x},${c.y}`));
+    for (const k of cases) {
+      const [x, y] = k.split(',').map(Number);
+      expect(couvert(tris, x + 0.5, y + 0.5), `${genre} : ${k}`).toBe(true);
+    }
+  }
+});
+
+it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives du Marais fait environ 3,5 cases et penche', () => {
+  const haut = (i: number) => {
+    let h = -Infinity;
+    const f = m.decor;
+    for (let t = 0; t < f.elements.length; t++) if (f.elements[t] === i) for (let k = 0; k < 3; k++) h = Math.max(h, f.positions[t * 9 + k * 3 + 1]);
+    return h;
+  };
+  const [aiguille, ia] = repere('aiguille-de-glace');
+  const pied = Math.min(...aiguille.cubes.map((c) => c.z));
+  expect(haut(ia) - pied).toBeLessThanOrEqual(2.5);
+  const [marais, im] = repere('champignon-geant');
+  const h = haut(im) - Math.min(...marais.cubes.map((c) => c.z));
+  expect(h).toBeGreaterThan(3.5);
+  expect(h).toBeLessThan(5.5);
+});
+
+it('les ornements (tour en ruine, calotte) et le lointain ne se touchent pas ; la calotte est la seule glace blanche, au plus haut pic du Glacier', () => {
+  const sans = triangles(SANS_ELEMENT);
+  expect(sans.length).toBeGreaterThan(m.decor.elements.length - m.debutDuLointain);
+  // La calotte : le point le plus haut du Glacier en est couvert.
+  let pic = champ.colonnes[0];
+  for (const c of champ.colonnes) if (c.ile === 'glacier' && (pic.ile !== 'glacier' || c.haut > pic.haut)) pic = c;
+  expect(couvert(sans, pic.x + 0.5, pic.y + 0.5)).toBe(true);
+  // La neige du sol se peint en roche claire : jamais aussi claire que la glace de la calotte.
+  expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(0xb9c4c4));
+});
+
+it('les bancs de brume : sur la mer libre seulement, jamais sur une île ni le quai, toujours sous le sol des îles', () => {
+  const b = bancsDeBrume('5e')!;
+  const libre = merLibre('5e');
+  for (let v = 0; v < b.positions.length / 3; v++) {
+    const [x, y, z] = [b.positions[v * 3], b.positions[v * 3 + 1], b.positions[v * 3 + 2]];
+    expect(y).toBeLessThan(ALTITUDE['5e']);
+    expect(y).toBeGreaterThan(NIVEAU_EAU);
+    // Un sommet visible (d'opacité non nulle) est sur la mer libre, jamais sur une case de terre.
+    if (b.colors[v * 4 + 3] > 0) {
+      expect(libre(x, z), `${x},${z}`).toBe(true);
+      expect(colonneEn(champ, Math.floor(x), Math.floor(z))).toBeUndefined();
+    }
+  }
+  // La couche du bas à 0,6 d'opacité au plus ; de `#C5D9EB` en bas à `#E5EBE3` en haut.
+  expect(COUCHES_5E[0].opacite).toBeLessThanOrEqual(0.6);
+  expect(COUCHES_5E.map((c) => c.hauteur)).toEqual([...COUCHES_5E.map((c) => c.hauteur)].sort((p, q) => p - q));
+  expect([COUCHES_5E[0].couleur, COUCHES_5E.at(-1)!.couleur]).toEqual([0xc5d9eb, 0xe5ebe3]);
+});
+
+it('seules les Îles Brumeuses ont des bancs de brume ; ils respirent, et « Réduire les animations » les fige d’un coup', () => {
+  expect(bancsDeBrume('6e')).toBeNull();
+  expect(respirationDeLaBrume(0, 3, false)).not.toEqual(respirationDeLaBrume(0, 7, false));
+  expect(respirationDeLaBrume(0, 3, true)).toEqual(respirationDeLaBrume(0, 7, true));
+});
