@@ -93,16 +93,22 @@ function normalOf(a: [number, number, number], b: [number, number, number], c: [
 /** Le verre laisse voir les faces des blocs opaques derrière lui. */
 const seeThrough = (c: VoxelCube | undefined) => c?.texture === 'verre';
 
-/** Construit les groupes de faces visibles d'un ensemble de cubes. */
-export function buildMesh(cubes: VoxelCube[]): MeshGroup[] {
+/**
+ * Construit les groupes de faces visibles d'un ensemble de cubes. `sol` (rendu Archipéo, lot R2) : les cubes du sol,
+ * dessinés à part en facettes (./landMesh.ts) ; ils ne sont pas dessinés ici, mais le dessous d'un cube posé sur eux
+ * reste caché (la case où quelque chose est posé reste plate, à la hauteur du dessus du cube de sol).
+ */
+export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[] {
   const byPos = new Map<string, VoxelCube>();
   for (const c of cubes) byPos.set(key(c.x, c.y, c.z), c);
+  const ground = new Set(sol.map((c) => key(c.x, c.y, c.z)));
   const groups = new Map<string, MeshGroup>();
   for (const c of cubes) {
     for (const { d, face } of DIRS) {
       const neighbour = byPos.get(key(c.x + d[0], c.y + d[1], c.z + d[2]));
       // Un fantôme ne cache jamais une face, et garde toutes les siennes.
       if (neighbour && !neighbour.ghost && !c.ghost && !(seeThrough(neighbour) && !seeThrough(c))) continue;
+      if (face === 'bottom' && !c.ghost && ground.has(key(c.x, c.y, c.z - 1))) continue;
       const gkey = (c.muted ? 'muted:' : '') + (c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${face}` : `tint:${c.color}`);
       let g = groups.get(gkey);
       if (!g) {

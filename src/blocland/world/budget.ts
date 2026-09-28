@@ -8,6 +8,7 @@ import { BIOMES } from '../biomes';
 import { CATALOG } from '../exercises';
 import { BRIDGES, VOYAGES } from './archipelago';
 import type { ArchipelagoId } from './map';
+import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { buildMesh, faceCount, type MeshGroup } from './mesher';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
@@ -52,5 +53,42 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
   return {
     triangles: models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
     drawCalls: models.reduce((n, m) => n + m.groups.length, 0),
+  };
+}
+
+/**
+ * Le sol et la roche d'un archipel tout construit dans le rendu Archipéo (lot R2) : le maillage à facettes de
+ * ./landMesh.ts, un appel de dessin (deux s'il y a de la lave).
+ */
+export function solCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  const { progress, village } = toutConstruit();
+  const cubes = worldCubes(a, progress, village, false);
+  const m = landMesh(
+    champDuSol(
+      a,
+      cubes.filter((c) => c.sol),
+      cubes.filter((c) => !c.sol),
+    ),
+  );
+  return { triangles: trianglesDuSol(m), drawCalls: appelsDuSol(m) };
+}
+
+/**
+ * Les modèles de la scène d'un archipel tout construit dans le rendu Archipéo, lot par lot : aujourd'hui (R2) le sol
+ * en facettes, et tout le reste encore en blocs (construction, décor, créatures, Gardiens, navire, bonhomme).
+ */
+export function sceneCostArchipeo(a: ArchipelagoId): { triangles: number; drawCalls: number; sol: { triangles: number; drawCalls: number } } {
+  const sol = solCost(a);
+  const { progress, village } = toutConstruit();
+  const cubes = worldCubes(a, progress, village, false);
+  const ground = cubes.filter((c) => c.sol);
+  const autres = cubes.filter((c) => !c.sol);
+  // Comme la vue 3D : le décor d'une case descendue au bas de sa pente descend avec elle.
+  const rest = buildMesh(poseDuDecor(champDuSol(a, ground, autres), autres), ground);
+  const models = sceneModels(a).map((m) => (m.name === 'terrain' ? { ...m, groups: rest } : m));
+  return {
+    triangles: sol.triangles + models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
+    drawCalls: sol.drawCalls + models.reduce((n, m) => n + m.groups.length, 0),
+    sol,
   };
 }

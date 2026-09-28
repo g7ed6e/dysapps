@@ -45,7 +45,14 @@ Les élèves voient le monde en blocs décrit ici. Le rendu d’Archipéo se con
 - **un soleil chaud et une ambiance froide** (la lune, froide, la nuit) : les faces au soleil sont dorées, les faces à l’ombre bleutées ;
 - une ambiance par archipel : ciel d’été franc des Premiers Rivages, brume froide et plus proche des Îles Brumeuses, horizon couleur de poussière des Anciens Ateliers, ciel pâle et lavande des Îles du Ciel, sur leur plancher de nuages.
 
-Les cubes et leurs textures ne changent pas encore ; `?style=a|b|c` les peint de la palette selon les trois options de style du cadrage, pour les comparer. La vue simple ne change pas.
+Depuis le lot R2, **le terrain n’est plus en cubes** : le sol et la roche des îles, des îlots des Gardiens et des îlots des monuments deviennent un maillage à facettes tiré de la grille de hauteurs (`src/blocland/world/landMesh.ts`) :
+
+- une marche d’un bloc devient une pente douce, une marche de deux blocs ou plus reste une falaise, peinte en strates de deux blocs ;
+- une case où quelque chose est posé (borne, maison, plan, décor, pont, monument) reste plate à sa hauteur : ce qui se construit case par case ne flotte jamais sur une pente ;
+- la côte descend jusqu’à l’eau et se teinte de sable au bord de la mer ; sous les îles en altitude, la roche s’amincit en facettes ;
+- les couleurs sont celles de la palette, nuancées selon l’option (b) retenue au lot R1 : plus sombres vers la mer, de larges taches sur les dessus, les couleurs voisines mêlées aux coins, pour que la grille ne se lise pas en damier.
+
+La construction, le décor, les créatures et le bonhomme restent en cubes (lots R4 à R6) ; `?style=a|b|c` les peint de la palette selon les trois options de style du cadrage. La vue simple ne change pas.
 
 Depuis le lot R7, la vue 2D est **peinte** avec le drapeau (`src/blocland/pixel/painted.ts`, `paintedDraw.ts`, `paintedSprites.ts`) : mêmes cases, mêmes gestes, mais toutes les couleurs viennent de la palette commune, par archipel, de jour et de nuit. Les dessus sont des aplats nuancés en grandes taches ; les falaises sont un dégradé, clair sous la lèvre et bleuté au pied, en strates larges ; les sols voisins se mordent en festons ; l’écume est une bande de Brume ; la mer s’éclaircit près des rives. Un ouvrage (mur, toit, plancher) tient sur une seule teinte par face, avec sa matière en joints larges (rangs de tuiles, lames de bois, briques et pierres en quinconce), un cadre sombre aux vitres et aux lanternes, et un contour de sa teinte sombre qui le détache d’un sol clair. Le décor garde ses formes, en trois aplats de sa matière. La nuit n’est plus un voile : la 2D prend les couleurs de nuit de la palette. Une île verrouillée se délave vers la Brume ; un fantôme reste bleuté, au pointillé blanc et Nuit océan. La lumière se lit en cinq paliers : un changement de palier repeint le terrain, morceau par morceau. Sans le drapeau, la 2D reste en pixel art, inchangée.
 

@@ -41,3 +41,15 @@ it('laisse voir à travers le verre', () => {
   const groups = buildMesh([cube(0, 0, 0), cube(1, 0, 0, 'verre')]);
   expect(faceCount(groups)).toBe(11);
 });
+
+it('rendu Archipéo : un cube posé sur le sol en facettes garde son dessous caché, sans dessiner le sol', () => {
+  const sol = [{ x: 0, y: 0, z: 0, color: '#6cb33f', texture: 'herbe', sol: true as const }];
+  const borne = [{ x: 0, y: 0, z: 1, color: '#3a4a6a', texture: 'borne' }];
+  const alone = buildMesh(borne);
+  const posed = buildMesh(borne, sol);
+  expect(faceCount(alone)).toBe(6);
+  expect(faceCount(posed)).toBe(5);
+  expect(posed.some((g) => g.face === 'bottom')).toBe(false);
+  // Un fantôme garde toutes ses faces.
+  expect(faceCount(buildMesh([{ ...borne[0], ghost: true }], sol))).toBe(6);
+});

@@ -38,6 +38,8 @@ import { passPhase, passingWhale, whalePassRoute, type WhaleRoute } from '../wor
 import { playWhaleBlow } from '../sound';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe, type Surface } from './surface';
+import { champDuSol, landMesh, pickCell, piedsSur, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
+import { creerSol, type SolEn3D } from './sol';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
@@ -152,6 +154,8 @@ function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh {
 interface Walker {
   group: THREE.Group;
   stroll: Stroll;
+  /** Le milieu de son emprise, par rapport à sa place (pour la poser sur le sol en pente). */
+  centre: { x: number; y: number };
 }
 
 interface Spark {
@@ -219,6 +223,8 @@ export default function WorldCanvas({
     vehicle: { group: THREE.Group; hull: THREE.Group; balloon: THREE.Group };
     /** L'option de style de surface (lot R1), ou `null` : les textures des blocs. */
     surface: Surface | null;
+    /** Le terrain à facettes d'Archipéo (lot R2), ou `null` dans le monde en blocs : son champ, pour le toucher et la marche. */
+    sol: { en3D: SolEn3D; champ: ChampDuSol | null; signature: string } | null;
   } | null>(null);
   const pickRef = useRef(onPickIsland);
   pickRef.current = onPickIsland;
@@ -590,6 +596,9 @@ export default function WorldCanvas({
 
     const terrain = new THREE.Group();
     scene.add(terrain);
+    // Archipéo (lot R2) : le sol et la roche en facettes, à part des cubes (construction, décor).
+    const sol = archipeo ? { en3D: creerSol(), champ: null, signature: '' } : null;
+    if (sol) scene.add(sol.en3D.group);
     const creaturesGroup = new THREE.Group();
     scene.add(creaturesGroup);
     // Le Bloc-Navire : un groupe à part, amarré au quai, qui tangue ; le ballon pivote au sommet du mât.
@@ -631,6 +640,7 @@ export default function WorldCanvas({
       walk: null,
       vehicle: { group: vehicleGroup, hull: hullGroup, balloon: balloonGroup },
       surface,
+      sol,
     };
 
     // Toucher une île, une face ou une créature : un tap, pas un glissé.
@@ -642,7 +652,7 @@ export default function WorldCanvas({
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
       const creature = ray.intersectObjects([...creaturesGroup.children, ...questMarksGroup.children, vehicleGroup], true)[0];
-      const ground = ray.intersectObjects(terrain.children, false)[0];
+      const ground = ray.intersectObjects(sol ? [...terrain.children, ...sol.en3D.group.children] : terrain.children, false)[0];
       if (creature && (!ground || creature.distance < ground.distance)) return { creature, hit: undefined };
       return { creature: undefined, hit: ground };
     };
@@ -680,6 +690,12 @@ export default function WorldCanvas({
     /** Bloc touché et case voisine devant la face, en coordonnées de grille (x, y, z = hauteur). */
     const cellsOf = (hit: THREE.Intersection) => {
       const n = hit.face?.normal ?? new THREE.Vector3(0, 1, 0);
+      // Le sol à facettes (lot R2) : le point touché et la normale de la facette redonnent la case (world/landMesh.ts).
+      const champ = world.current?.sol?.champ;
+      if (hit.object.userData.sol && champ) {
+        const picked = pickCell(champ, hit.point, n);
+        if (picked) return picked;
+      }
       const inside = hit.point.clone().addScaledVector(n, -0.5);
       const outside = hit.point.clone().addScaledVector(n, 0.5);
       const cell = { x: Math.floor(inside.x), y: Math.floor(inside.z), z: Math.floor(inside.y) };
@@ -928,7 +944,8 @@ export default function WorldCanvas({
         limbs.arms[1].rotation.x = -swing;
         limbs.legs[0].rotation.x = -swing;
         limbs.legs[1].rotation.x = swing;
-        w.avatar.position.set(pose.x + 0.5, pose.z, pose.y + 0.5);
+        // Sur le sol à facettes, posé sur la pente (jamais dedans) ; sur un pont ou dans le monde en blocs, à sa hauteur.
+        w.avatar.position.set(pose.x + 0.5, piedsSur(w.sol?.champ ?? null, pose.x + 0.5, pose.y + 0.5, pose.z), pose.y + 0.5);
         // Il regarde là où il va. Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on
         // tourne de atan2(-dx, -dy).
         if (pose.facing) heading = Math.atan2(-pose.facing.dx, -pose.facing.dy);
@@ -1126,9 +1143,11 @@ export default function WorldCanvas({
           balloonGroup.rotation.x = Math.sin(t * 0.9) * 0.03;
         }
         // Créatures : petit balancement, et un pas de temps en temps.
-        for (const { group, stroll } of w.walkers) {
+        for (const { group, stroll, centre } of w.walkers) {
           const { dx, dy, bob } = strollAt(stroll, now, t);
-          group.position.set(stroll.origin.x + dx, stroll.origin.z + bob, stroll.origin.y + dy);
+          const x = stroll.origin.x + dx;
+          const y = stroll.origin.y + dy;
+          group.position.set(x, piedsSur(w.sol?.champ ?? null, x + centre.x, y + centre.y, stroll.origin.z) + bob, y);
         }
         // Éclats : petits cubes qui retombent et disparaissent.
         for (const s of [...w.sparks]) {
@@ -1172,6 +1191,7 @@ export default function WorldCanvas({
       hover.geometry.dispose();
       (hover.material as THREE.Material).dispose();
       for (const m of terrain.children) (m as THREE.Mesh).geometry.dispose();
+      sol?.en3D.dispose();
       creaturesGroup.traverse((o) => {
         if (o instanceof THREE.Mesh) o.geometry.dispose();
       });
@@ -1210,7 +1230,25 @@ export default function WorldCanvas({
       w.terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
-    for (const g of buildMesh(cubes)) w.terrain.add(meshOf(g, w.surface));
+    if (!w.sol) {
+      for (const g of buildMesh(cubes)) w.terrain.add(meshOf(g, w.surface));
+      return;
+    }
+    // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
+    // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
+    const sol: typeof cubes = [];
+    const autres: typeof cubes = [];
+    for (const c of cubes) (c.sol ? sol : autres).push(c);
+    const champ = champDuSol(archipelago, sol, autres);
+    // Le décor d'une case descendue au bas de sa pente descend avec elle (world/landMesh.ts).
+    for (const g of buildMesh(poseDuDecor(champ, autres), sol)) w.terrain.add(meshOf(g, w.surface));
+    const signature = signatureDuChamp(champ);
+    if (signature !== w.sol.signature) {
+      w.sol.en3D.peindre(landMesh(champ, { style: styleDuMonde() === 'a' ? 'a' : 'b' }));
+      w.sol.signature = signature;
+    }
+    w.sol.champ = champ;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cubes]);
 
   // ---- Créatures : un groupe chacune, positionné sur son île, animé dans la boucle
@@ -1228,9 +1266,14 @@ export default function WorldCanvas({
       const group = new THREE.Group();
       group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
       for (const g of buildMesh(c.cubes)) group.add(meshOf(g, w.surface));
-      group.position.set(c.origin.x, c.origin.z, c.origin.y);
+      // Le milieu de son emprise au sol : c'est là qu'on lit la hauteur du sol à facettes.
+      const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((k) => k.z)));
+      const centre = pieds.length
+        ? { x: (Math.min(...pieds.map((q) => q.x)) + Math.max(...pieds.map((q) => q.x)) + 1) / 2, y: (Math.min(...pieds.map((q) => q.y)) + Math.max(...pieds.map((q) => q.y)) + 1) / 2 }
+        : { x: 0.5, y: 0.5 };
+      group.position.set(c.origin.x, piedsSur(w.sol?.champ ?? null, c.origin.x + centre.x, c.origin.y + centre.y, c.origin.z), c.origin.y);
       w.creatures.add(group);
-      return { group, stroll: strolls[i] };
+      return { group, stroll: strolls[i], centre };
     });
   }, [creatures]);
 

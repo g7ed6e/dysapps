@@ -1115,16 +1115,18 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[]): void {
   const at = new Map(cells.map((c) => [`${c.x},${c.y}`, c]));
   const block = (x: number, y: number, z: number, color: string, top?: string) =>
     cubes.push({ x, y, z, color, top, texture: TEXTURES[color], tag });
+  // Le sol et la roche de l'îlot : en facettes dans le rendu Archipéo.
+  const sol = (x: number, y: number, z: number, color: string) => cubes.push({ x, y, z, color, texture: TEXTURES[color], tag, sol: true });
   const ground = isletGround(def);
   const sandy = gz === 0 && def.region !== 'feu';
   for (const c of cells) {
-    for (let d = 1; d <= DEPTH; d++) block(c.x, c.y, gz - d, BLOCKS.terre.side);
+    for (let d = 1; d <= DEPTH; d++) sol(c.x, c.y, gz - d, BLOCKS.terre.side);
     // L'arène : pierre au milieu, galet sur son pourtour ; autour, le sol de l'île, et du sable au bord de la mer.
     const rim = c.arena && [`${c.x - 1},${c.y}`, `${c.x + 1},${c.y}`, `${c.x},${c.y - 1}`, `${c.x},${c.y + 1}`].some((k) => !at.get(k)?.arena);
     const top = c.arena ? (rim ? BLOCKS.galet.side : BLOCKS.pierre.side) : c.shore && sandy ? BLOCKS.sable.side : ground;
-    block(c.x, c.y, gz, top);
+    sol(c.x, c.y, gz, top);
   }
-  if (gz > 0) for (const t of taperLayers(cells)) block(t.x, t.y, gz - DEPTH - t.d, BLOCKS.pierre.side);
+  if (gz > 0) for (const t of taperLayers(cells)) sol(t.x, t.y, gz - DEPTH - t.d, BLOCKS.pierre.side);
   // Quelques touches du décor de l'île, hors de l'arène et loin des pieds du Gardien.
   const kinds = [...new Set(landscape(def).map((c) => c.decor).filter((k): k is Decor => !!k && SMALL_DECOR.includes(k)))];
   if (kinds.length === 0) kinds.push('rocher');
@@ -1968,11 +1970,12 @@ function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]):
         land.push({ x: m.islet.x + dx, y: m.islet.y + dy });
       }
     for (const c of land) {
-      cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place });
+      cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place, sol: true });
       const bottom = sky ? alt - DEPTH : -DEPTH;
-      for (let z = alt - 1; z >= bottom; z--) cubes.push({ x: c.x, y: c.y, z, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place });
+      for (let z = alt - 1; z >= bottom; z--) cubes.push({ x: c.x, y: c.y, z, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place, sol: true });
     }
-    if (sky) for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place });
+    if (sky)
+      for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place, sol: true });
     const done = new Set(village.plans[m.id] ?? []);
     const o = monumentAnchor(m);
     for (const c of planCells(m)) {
@@ -2005,7 +2008,7 @@ export function worldCubes(
     // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
     // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
     const taken = new Set<string>();
-    const putWorld = (x: number, y: number, z: number, color: string, decor?: string) => {
+    const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
       taken.add(`${x},${y},${z}`);
       placed.add(`${x},${y},${oz + z}`);
       cubes.push({
@@ -2017,8 +2020,11 @@ export function worldCubes(
         tag: biome.id,
         muted: unlocked ? undefined : true,
         decor: decor ? `${biome.id}/${decor}` : undefined,
+        ...(sol ? { sol } : {}),
       });
     };
+    // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
+    const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);
     // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
     const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
     // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
@@ -2031,17 +2037,17 @@ export function worldCubes(
       if (!inCore(def, c.x, c.y)) continue;
       const x = c.x - ox;
       const y = c.y - oy;
-      for (let d = 1; d <= DEPTH; d++) put(x, y, -d, BLOCKS.terre.side);
+      for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS.terre.side);
       const top = h(x, y);
-      if (top > 0) put(x, y, 0, BLOCKS.terre.side);
-      put(x, y, top, grassy ? GRASS : block.side);
+      if (top > 0) putSol(c.x, c.y, 0, BLOCKS.terre.side);
+      putSol(c.x, c.y, top, grassy ? GRASS : block.side);
     }
     // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
     const scenery = landscape(def);
     for (const c of scenery) {
-      for (let d = 1; d <= DEPTH; d++) putWorld(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
-      for (let z = 0; z < c.h; z++) putWorld(c.x, c.y, z, underground(def, c, c.h - z));
-      putWorld(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
+      for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
+      for (let z = 0; z < c.h; z++) putSol(c.x, c.y, z, underground(def, c, c.h - z));
+      putSol(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
     }
     DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
     // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
@@ -2104,7 +2110,7 @@ export function worldCubes(
     }
     // Une île en altitude flotte : sa roche s'amincit dessous.
     if (def.altitude > 0)
-      for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putWorld(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+      for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
     // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais.
     const guardian = guardianStatus(biome, progress, village.bridges);
     if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes);
