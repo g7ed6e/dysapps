@@ -1519,8 +1519,8 @@ export function worldCubes(
       for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
         cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
     }
-    landmark(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color));
-    cascades(def, scenery, (x, y, z, color) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color));
+    landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
+    cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
     for (const c of scenery) {
       if (!c.decor || nearSentier(c.x, c.y)) continue;
       const r = noise(def.seed + 5, c.x, c.y);

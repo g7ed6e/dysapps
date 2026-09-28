@@ -25,6 +25,7 @@ import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, MATIERES, SOLEIL_DIRECTION, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
+import { decorPose } from './props';
 import { bruit, FROID, FROID_SOUS } from './style';
 import type { Cell } from './view';
 
@@ -213,9 +214,9 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
     }
     if (c.z !== col.haut + 1) continue;
     col.fixe = true;
-    if (c.decor && !c.ghost) {
+    if (decorPose(c.decor) && !c.ghost) {
       const set = decors.get(col) ?? new Set<string>();
-      set.add(c.decor);
+      set.add(c.decor!);
       decors.set(col, set);
     } else autreChose.add(col);
   }

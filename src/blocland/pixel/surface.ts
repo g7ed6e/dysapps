@@ -1,6 +1,7 @@
 // Le sol vu de dessus, case par case : la hauteur et la matière du bloc le plus haut de chaque colonne (sans le
 // décor ni les fantômes). La 2D s'en sert pour les bords entre deux sols, les rebords de falaise et les ombres.
 import type { VoxelCube } from '../Voxel';
+import { decorPose } from '../world/props';
 
 /** Les matières dessinées exprès pour la 2D ; `autre` garde la texture du bloc (planches, briques…). */
 export type Material = 'herbe' | 'mousse' | 'sable' | 'terre' | 'pierre' | 'basalte' | 'eau' | 'lave' | 'glace' | 'neige' | 'autre';
@@ -41,7 +42,7 @@ export type Surface = Map<string, Column>;
 export function surfaceOf(cubes: VoxelCube[]): Surface {
   const out: Surface = new Map();
   for (const c of cubes) {
-    if (c.ghost || c.decor) continue;
+    if (c.ghost || decorPose(c.decor)) continue;
     const k = `${c.x},${c.y}`;
     const cur = out.get(k);
     if (!cur || c.z > cur.z) out.set(k, { z: c.z, material: materialOf(c) });

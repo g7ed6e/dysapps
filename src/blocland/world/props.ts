@@ -1,6 +1,7 @@
 // Le décor rangé : les cubes d'un même élément (un arbre, un buisson…) deviennent un seul objet, posé à sa place (la 2D
 // le dessine en sprite, pixel/). Calcul pur, sans Three.js ni canvas : le terrain garde ses autres cubes.
 import type { VoxelCube } from '../Voxel';
+import { DECOR_BATI } from './decor';
 
 /** Les genres de décor rangés en objets (les sprites de la 2D) ; les autres restent des cubes. */
 export const PROP_KINDS = ['arbre', 'sapin', 'buisson', 'fleur', 'champignon', 'rocher', 'souche', 'roseau', 'cristal'] as const;
@@ -30,6 +31,14 @@ export interface Station {
 export function kindOf(decor: string): string {
   const name = decor.slice(decor.lastIndexOf('/') + 1).replace(/^cœur:/, '');
   return name.slice(0, name.indexOf('@'));
+}
+
+/**
+ * Un décor posé sur le sol (un arbre, un buisson, un objet du quai), par son nom ; pas un décor bâti (`DECOR_BATI` :
+ * repère, cascade, écueil, banc), que le sol porte comme une construction.
+ */
+export function decorPose(decor: string | undefined): boolean {
+  return decor !== undefined && decor !== '' && !DECOR_BATI.has(kindOf(decor));
 }
 
 /**
