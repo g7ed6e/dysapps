@@ -6,7 +6,7 @@ import { STATUES_6E } from './statues/6e';
 import { STATUES_5E } from './statues/5e';
 import { STATUES_4E } from './statues/4e';
 import { STATUES_3E } from './statues/3e';
-import { sentinelleEnFacettes, type Statue } from './sentinelle';
+import { EPAISSEUR_DES_VEINES_DANS_LE_MONDE, sentinelleEnFacettes, type Statue } from './sentinelle';
 import type { FacettesDePersonnage } from './peint';
 
 export const STATUES = { ...STATUES_6E, ...STATUES_5E, ...STATUES_4E, ...STATUES_3E } as Record<BiomeId, Statue>;
@@ -36,8 +36,25 @@ export function sentinelleAuDefi(id: BiomeId): FacettesDePersonnage {
   if (!s?.tour) return sentinellePeinte(id);
   let f = auDefi.get(id);
   if (!f) {
-    f = sentinelleEnFacettes(s, 'defi');
+    f = sentinelleEnFacettes(s, { ou: 'defi' });
     auDefi.set(id, f);
+  }
+  return f;
+}
+
+const cacheDuMonde = new Map<BiomeId, FacettesDePersonnage>();
+
+/**
+ * La sentinelle d'une île telle que le monde la pose (DA-5) : le même modèle, ses veines élargies pour qu'elles restent
+ * aussi épaisses une fois la statue ramenée à `ECHELLE_DANS_LE_MONDE` (../fusions.ts). Calculée une fois.
+ */
+export function sentinelleDuMonde(id: BiomeId): FacettesDePersonnage {
+  let f = cacheDuMonde.get(id);
+  if (!f) {
+    const s = STATUES[id];
+    if (!s) throw new Error(`Pas de sentinelle pour ${id}`);
+    f = sentinelleEnFacettes(s, { veines: EPAISSEUR_DES_VEINES_DANS_LE_MONDE });
+    cacheDuMonde.set(id, f);
   }
   return f;
 }

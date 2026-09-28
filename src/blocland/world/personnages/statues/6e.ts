@@ -152,7 +152,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
             [0, y0 + 0.14],
             [0.32, y1 - 0.12],
           ],
-          0.08,
+          0.08 * a.veines,
           a.lueur,
         );
     },
@@ -198,7 +198,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [-0.5, 3.5],
           [-0.42, 2.8],
         ],
-        0.07,
+        0.07 * a.veines,
         a.lueur,
       );
       veineSur(
@@ -209,7 +209,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [0.2, 4.72],
           [0.55, 5.2],
         ],
-        0.07,
+        0.07 * a.veines,
         a.lueur,
       );
     },
@@ -246,7 +246,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
             [w, y - 0.04],
           ],
           // Au moins 0,12 de large (référent dys, 28/09) : plus fine, la veine se perdait sur le grès, éteinte ou non.
-          0.12,
+          0.12 * a.veines,
           a.lueur,
           { x: c[4] },
         );
@@ -344,7 +344,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [0, 1.7],
           [0, 5.9],
         ],
-        0.09,
+        0.09 * a.veines,
         a.lueur,
       );
       veineSur(
@@ -355,7 +355,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [-0.45, 5.92],
           [0.45, 5.92],
         ],
-        0.08,
+        0.08 * a.veines,
         a.lueur,
       );
     },
@@ -391,7 +391,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [0, 5.2],
           [-0.08, 6.1],
         ],
-        0.16,
+        0.16 * a.veines,
         a.lueur,
       );
       veineSur(
@@ -402,7 +402,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
           [-0.24, 3.4],
           [-0.2, 4.2],
         ],
-        0.12,
+        0.12 * a.veines,
         a.lueur,
       );
     },
@@ -411,7 +411,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     nom: 'le Dragon de cendre',
     allume: 'son ventre de braise',
     sculpture: (T, a) => dragonAssis(surLeSocle(T, 1, 7 / HAUTEUR_DU_DRAGON), a, 'repliees'),
-    veines: (T, a) => ventreDuDragon(surLeSocle(T, 1, 7 / HAUTEUR_DU_DRAGON), a.lueur),
+    veines: (T, a) => ventreDuDragon(surLeSocle(T, 1, 7 / HAUTEUR_DU_DRAGON), a),
   },
   baie: {
     nom: 'le Lion de pierre',

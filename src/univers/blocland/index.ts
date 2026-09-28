@@ -288,6 +288,7 @@ export const BLOCLAND = {
     arene: () => 'L’arène du Gardien',
   },
   sentinelles: null,
+  monuments: {},
   baleine: {
     arrivee: {
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',

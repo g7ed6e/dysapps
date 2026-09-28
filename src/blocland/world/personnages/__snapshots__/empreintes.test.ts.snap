@@ -2,7 +2,7 @@
 
 exports[`Empreintes des personnages en facettes > le bonhomme 1`] = `
 {
-  "empreinte": "cb0448e1",
+  "empreinte": "2c9c7d03",
   "triangles": 472,
 }
 `;
@@ -45,21 +45,21 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
 {
   "3e": {
     "creatures": "1667 f3c57bc1 3d8fa5cd",
-    "gardiens": "1331 875aa579",
+    "gardiens": "1331 cff72e77",
   },
   "4e": {
     "creatures": "1528 ea5d735f c5257533",
-    "gardiens": "1258 e4b24e6b",
+    "gardiens": "1258 77be2995",
   },
   "5e": {
     "creatures": "1863 fcf6beec 20c93da6",
-    "gardiens": "1791 7f0fdf9f",
+    "gardiens": "1791 a16b0e9e",
   },
   "6e": {
     "creatures": "2488 cae52569 4c8615d7",
-    "gardiens": "1726 42877540",
+    "gardiens": "1726 106135e3",
   },
-  "bonhomme": "472 3df78282 1032f390",
+  "bonhomme": "472 045a95c7 1032f390",
 }
 `;
 
@@ -100,25 +100,25 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
 exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, de jour et de nuit 1`] = `
 {
   "bonhomme": {
-    "down:0": "16×37 7c2d8c28 16×37 d018d216",
-    "down:1": "16×39 9c766bc9 16×39 6ba036d6",
-    "left:0": "12×38 34578de0 12×38 b9db9a06",
-    "left:1": "20×38 fe7d8313 20×38 59312225",
-    "right:0": "12×38 780c714e 12×38 406cbce2",
-    "right:1": "19×36 1c5ce59e 19×36 fbe18061",
-    "up:0": "16×37 4dc94462 16×37 03ba87dc",
-    "up:1": "16×40 a6d052e1 16×40 16aa14eb",
+    "down:0": "16×37 e811ed29 16×37 d6003df7",
+    "down:1": "16×39 755d1bc5 16×39 7e2fc2e0",
+    "left:0": "14×38 61a0a64e 14×38 7ca3e03a",
+    "left:1": "20×38 2da1cbb0 20×38 49c1c092",
+    "right:0": "14×38 60bc599f 14×38 d738ab8d",
+    "right:1": "19×36 b313078c 19×36 cf597ba7",
+    "up:0": "16×37 22cd2899 16×37 a1635a59",
+    "up:1": "16×40 494fe969 16×40 7ad3c6dd",
   },
   "creatures": {
     "atelier": "23×48 58f841fd 23×48 9bd01a3c",
     "baie": "23×45 205ba7ad 23×45 85c680e1",
-    "belvedere": "14×52 03c2df01 14×52 de9fe825",
+    "belvedere": "14×52 03c2df01 14×52 a574a2e4",
     "cabinet": "19×45 9dc12274 19×45 f2a9e541",
     "carrefour": "28×50 1a9b025b 28×50 80a39d40",
     "carriere": "20×48 e774dc31 20×48 44bd02c2",
-    "chateau": "23×47 c77fef69 23×47 0f7aaca2",
+    "chateau": "23×47 c77fef69 23×47 992d5a5e",
     "comptoir": "22×43 7d8353be 22×43 0842457c",
-    "donnees": "18×53 a7b21e9a 18×53 1aabb4b6",
+    "donnees": "18×53 a7b21e9a 18×53 b5244347",
     "falaise": "17×54 b46acd51 17×54 dc386234",
     "ferme": "22×47 c93d5210 22×47 17f30d20",
     "foret": "22×47 bcfc8922 22×47 7b533dce",
@@ -130,12 +130,12 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "marais": "27×49 8ad728be 27×49 bf55245b",
     "marche": "29×43 5f21a36b 29×43 74d3cf29",
     "mine": "21×44 f02b0dbd 21×44 a05ac383",
-    "phare": "16×51 33e0ba1e 16×51 b48b53c7",
+    "phare": "16×51 33e0ba1e 16×51 d2e5cbc6",
     "plaine": "22×46 e333e6f8 22×46 f20a8a29",
     "relais": "18×46 e275354c 18×46 a3ab921b",
     "riviere": "17×51 7f59a03a 17×51 d2a7aa79",
-    "studio": "18×47 f5ec9c68 18×47 9b1829b7",
-    "textes": "21×46 50387ec6 21×46 20f6108f",
+    "studio": "18×47 f5ec9c68 18×47 b43cb06f",
+    "textes": "21×46 50387ec6 21×46 30d2b90f",
     "theatre": "25×48 9bf9197e 25×48 1b988905",
     "tour": "25×44 ccf2e092 25×44 72251ba8",
     "volcan": "21×47 903b26fc 21×47 889a9e39",
@@ -143,13 +143,13 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
   "sentinelles": {
     "atelier": "78×150 efb1ab42 78×150 28084310",
     "baie": "60×150 2eeea8b3 60×150 7b545c2f",
-    "belvedere": "60×152 cd56bccd 60×152 732b0238",
+    "belvedere": "60×152 cd56bccd 60×152 bba6f497",
     "cabinet": "60×150 37c2ca1b 60×150 c1e060f9",
     "carrefour": "60×149 ec647687 60×149 5c3dcf3a",
     "carriere": "60×151 6b94f0f6 60×151 d5344936",
-    "chateau": "60×153 42f957ef 60×153 2f69d3d1",
+    "chateau": "60×153 42f957ef 60×153 a4f52add",
     "comptoir": "60×148 e7fc1f7d 60×148 4eaf05f5",
-    "donnees": "60×151 1431300c 60×151 238068ba",
+    "donnees": "60×151 1431300c 60×151 0cdffec2",
     "falaise": "60×144 05c4966d 60×144 c3046d7d",
     "ferme": "62×140 8b7d7ffc 62×140 aa44cc62",
     "foret": "60×155 25d90147 60×155 9e44ba79",
@@ -161,12 +161,12 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "marais": "64×147 27d215d2 64×147 d1ba2de7",
     "marche": "60×155 6db97013 60×155 bb2aab93",
     "mine": "62×153 bd5e2f7a 62×153 e30a7c77",
-    "phare": "64×153 f0721f1d 64×153 eaabd0c0",
+    "phare": "64×153 f0721f1d 64×153 ab565e59",
     "plaine": "66×150 0a4affd0 66×150 31d83b14",
     "relais": "60×124 8907dc31 60×124 ea30a62e",
     "riviere": "60×151 7ea9caab 60×151 140a8663",
-    "studio": "60×151 1a8b21d5 60×151 22abb7a8",
-    "textes": "60×154 0a774855 60×154 ef0c50d8",
+    "studio": "60×151 1a8b21d5 60×151 cf79152e",
+    "textes": "60×154 0a774855 60×154 f519c5b3",
     "theatre": "60×152 82db63f4 60×152 34c08293",
     "tour": "60×156 1a46e652 60×156 c943766e",
     "volcan": "60×153 2fc2c293 60×153 eb94a62e",

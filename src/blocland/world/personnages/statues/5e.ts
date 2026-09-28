@@ -178,7 +178,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
             [s * 0.28, 7.1],
             [s * 0.18, 6.8],
           ],
-          0.07,
+          0.07 * a.veines,
           a.lueur,
         );
       veineSur(
@@ -190,7 +190,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
           [0.08, 2.2],
           [-0.05, 3.1],
         ],
-        0.07,
+        0.07 * a.veines,
         a.lueur,
         { x: -0.7, z: -0.6 },
       );
@@ -310,7 +310,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
             [s * 0.47, 5.5],
             [s * 0.45, 6.7],
           ],
-          0.1,
+          0.1 * a.veines,
           a.lueur,
         );
       veineSur(
@@ -321,7 +321,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
           [-0.38, 7.55],
           [0.38, 7.55],
         ],
-        0.1,
+        0.1 * a.veines,
         a.lueur,
       );
     },

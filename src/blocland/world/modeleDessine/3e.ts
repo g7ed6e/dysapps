@@ -1,6 +1,92 @@
 // Le modelé dessiné des Îles du Ciel (3e), île par île, en repère d'île (./types.ts). Ce fichier appartient au sous-lot
 // R4b-3e (docs/conception/cadrage-archipeo.md §6). Une île absente garde son relief de marche.
+//
+// L'intention du directeur artistique (design/archipeo/intentions/3e-iles-du-ciel.md §3) : l'Observatoire des textes,
+// juste derrière le grand phare, reçoit trois gradins réguliers sur l'anneau du fond (2 blocs chacun, en retrait de
+// 1,5 case, neige sur celui du haut) ; le Belvédère perd ses deux pics, jumeaux de ceux du Glacier et de la Falaise, pour
+// un dôme bas en gradins de 6 blocs. L'île du Phare n'a pas de gradins (son anneau ne fait que 3 cases : ses gradins sont
+// le socle du phare) ; les autres îles restent basses et arrondies. Comme au 5e, ni le cœur, ni la première rangée de
+// l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les bornes, les plans et le chemin restent où ils sont.
 import type { BiomeId } from '../../biomes';
+import { BRIDGES } from '../archipelago';
+import { archipelagoOfIsland } from '../archipels';
+import { CORE, islandDef, landCells } from '../map';
+import { bridgePath, origineDe } from '../terrain';
 import type { Modele } from './types';
 
-export const MODELES_3E: Partial<Record<BiomeId, Modele>> = {};
+/** La hauteur d'un gradin (en blocs), son retrait sur le précédent (en cases), et la distance gardée aux ouvrages. */
+export const GRADINS_3E = { marche: 2, retrait: 1.5, gradins: 3 } as const;
+const ABORDS = 3;
+
+/** Le dôme du Belvédère : son centre (en repère d'île, entre ses deux anciens pics), ses demi-axes et sa hauteur. */
+export const DOME_DU_BELVEDERE = { x: 8.5, y: 20, rx: 10, ry: 4, h: 6 } as const;
+
+/** Les cases de l'île (en repère d'île) et un test « près d'un ouvrage » (à `ABORDS` cases). */
+function repere(id: BiomeId) {
+  const o = origineDe(id);
+  const cases = landCells(islandDef(id)).map((c) => ({ x: c.x - o.x, y: c.y - o.y }));
+  const abords: { x: number; y: number }[] = [];
+  for (const b of BRIDGES) if ((b.from === id || b.to === id) && archipelagoOfIsland(b.from) === '3e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
+  const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
+  return { cases, pres };
+}
+
+/**
+ * Les gradins de l'Observatoire des textes : chaque gradin recule de 1,5 case sur le précédent, depuis la première
+ * rangée derrière le cœur et depuis les deux flancs de l'île ; le plus haut est enneigé.
+ */
+function gradinsDesTextes(): Modele {
+  const { cases, pres } = repere('textes');
+  const G = GRADINS_3E;
+  // Les bords de chaque rangée, pour le retrait sur les flancs.
+  const bords = new Map<number, [number, number]>();
+  for (const c of cases) {
+    const b = bords.get(c.y);
+    bords.set(c.y, b ? [Math.min(b[0], c.x), Math.max(b[1], c.x)] : [c.x, c.x]);
+  }
+  const niveau = (x: number, y: number) => {
+    const dy = y - CORE;
+    const [x0, x1] = bords.get(y) ?? [x, x];
+    const cote = Math.min(x - x0, x1 - x);
+    const k = (d: number) => Math.floor(d / G.retrait) + 1;
+    return Math.min(G.gradins, k(dy - 1), k(cote));
+  };
+  return {
+    hauteur(x, y, h) {
+      if (y - CORE < 1 || pres(x, y)) return h;
+      return Math.max(h, G.marche * niveau(x, y));
+    },
+    dessus(x, y, dh, matiere) {
+      if (y - CORE < 1 || pres(x, y)) return matiere;
+      const n = niveau(x, y);
+      return n >= G.gradins ? 'neige' : n >= 1 && dh >= G.marche ? 'roche' : matiere;
+    },
+  };
+}
+
+/**
+ * Le dôme du Belvédère : à la place de ses deux pics, un dôme bas en gradins de 2 blocs, 6 au sommet, enneigé en haut,
+ * de roche dessous. Seul l'anneau du fond bouge ; ailleurs, l'île garde ses collines basses.
+ */
+function domeDuBelvedere(): Modele {
+  const { pres } = repere('belvedere');
+  const D = DOME_DU_BELVEDERE;
+  const dome = (x: number, y: number) => {
+    const d = ((x - D.x) / D.rx) ** 2 + ((y - D.y) / D.ry) ** 2;
+    return Math.floor((D.h * Math.max(0, 1 - d)) / GRADINS_3E.marche + 0.5) * GRADINS_3E.marche;
+  };
+  return {
+    hauteur(x, y, h) {
+      if (y - CORE < 1 || pres(x, y)) return h;
+      // Un pic (plus haut que les collines, 2 blocs au plus) redescend sur le dôme ; ailleurs, le dôme monte le sol.
+      return h > 2 ? Math.max(2, dome(x, y)) : Math.max(h, dome(x, y));
+    },
+    dessus(x, y, dh, matiere) {
+      if (y - CORE < 1 || pres(x, y)) return matiere;
+      if (dh >= D.h) return 'neige';
+      return matiere === 'neige' ? 'roche' : matiere;
+    },
+  };
+}
+
+export const MODELES_3E: Partial<Record<BiomeId, Modele>> = { textes: gradinsDesTextes(), belvedere: domeDuBelvedere() };

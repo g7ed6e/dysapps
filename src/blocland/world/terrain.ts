@@ -650,10 +650,14 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
   return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
 }
 
-/** Le milieu de l'îlot du Gardien, en cases du monde, à mi-hauteur de sa sentinelle (la caméra la cadre là, lot 6). */
+/**
+ * Le milieu de l'îlot du Gardien, en cases du monde, sous la mi-hauteur de sa sentinelle : la caméra du rallumage vise
+ * un bloc au-dessus (lot 6), au milieu d'une sentinelle de 5,2 blocs posée sur l'îlot (DA-5 :
+ * world/personnages/sentinelle.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux ensemble).
+ */
 export function bossIsletCenter(id: BiomeId): { x: number; y: number; z: number } {
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 4 };
+  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 2.6 };
 }
 
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */

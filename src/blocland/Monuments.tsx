@@ -16,6 +16,7 @@ import { ARCHIPELAGOS, archipelagoTitle, getArchipelago, isArchipelagoReached } 
 import { MONUMENTS, monumentsOf, type MonumentDef } from './world/monuments';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { texteDuMonument, useTextes } from '../univers';
 
 export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
@@ -37,11 +38,12 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const { monument, status } = builder;
   const open = useMonumentOpen(monument);
   const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
+  const texte = texteDuMonument(useTextes(), monument);
   return (
     <div className="monument">
       <p className="island-sheet-says">
-        <Syllabified text={monument.description} />
-        <SpeakButton text={monument.description} label="Écouter" compact />
+        <Syllabified text={texte.description} />
+        <SpeakButton text={texte.description} label="Écouter" compact />
       </p>
       {!open ? (
         <p className="plan-done">
@@ -68,7 +70,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
           </p>
           {status.complete ? (
             <p className="plan-done">
-              <Icon name="star" /> Terminé ! <Syllabified text={monument.done} />
+              <Icon name="star" /> Terminé ! <Syllabified text={texte.done} />
             </p>
           ) : (
             <>

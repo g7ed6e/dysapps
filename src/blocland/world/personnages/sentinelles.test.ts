@@ -3,8 +3,23 @@ import { ARCHIPELAGO_IDS } from '../archipels';
 import { lineaire } from '../landMesh';
 import { LUEUR, SENTINELLE } from './couleurs';
 import type { FacettesDePersonnage, V3 } from './peint';
-import { allumage, couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, FOYER, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE } from './sentinelle';
-import { sentinelleAuDefi, sentinellePeinte, STATUES } from './sentinellesPeintes';
+import { toutConstruit } from '../budget';
+import { GRUE } from '../decor/4e';
+import { PHARES } from '../decor/phare';
+import { bossIsletCenter, guardianPlacements } from '../terrain';
+import { fusionDesGardiens, pointDePose } from './fusions';
+import {
+  allumage,
+  couleursAllumees,
+  DEMI_LARGEUR_DE_SENTINELLE,
+  ECHELLE_DANS_LE_MONDE,
+  EPAISSEUR_DES_VEINES_DANS_LE_MONDE,
+  FOYER,
+  HAUT_DU_SOCLE,
+  HAUTEUR_DANS_LE_MONDE,
+  HAUTEUR_DE_SENTINELLE,
+} from './sentinelle';
+import { sentinelleAuDefi, sentinelleDuMonde, sentinellePeinte, STATUES } from './sentinellesPeintes';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
 
@@ -241,4 +256,48 @@ describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligenc
       const socle = (g: typeof f) => Array.from(g.positions).filter((_, j) => g.pieces[Math.floor(j / 9)] === g.table.findIndex((p) => p.nom === 'socle'));
       expect(socle(f)).toEqual(socle(monde));
     });
+});
+
+describe('Les sentinelles dans le monde (revue d’ensemble du directeur artistique, DA-5)', () => {
+  const { progress, village } = toutConstruit();
+
+  it('font environ 5 blocs socle compris (la Diligence, basse, à l’échelle), plus basses que le phare de Grimoire (6 cases) et que la grue de l’Atelier (9)', () => {
+    expect(HAUTEUR_DANS_LE_MONDE).toBeGreaterThanOrEqual(4.8);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThanOrEqual(5.4);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(PHARES['6e'].H);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(GRUE.hauteur);
+    for (const a of ARCHIPELAGO_IDS) {
+      const places = guardianPlacements(a, progress, village.bridges);
+      const f = fusionDesGardiens(places);
+      places.forEach((p, i) => {
+        const pied = pointDePose(p)[1];
+        let haut = -Infinity;
+        for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
+        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
+        const basse = BASSES[p.id];
+        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
+        expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
+      });
+    }
+  });
+
+  it('gardent des veines aussi épaisses à l’écran : élargies d’autant que la statue rapetisse, sans un triangle de plus', () => {
+    expect(EPAISSEUR_DES_VEINES_DANS_LE_MONDE * ECHELLE_DANS_LE_MONDE).toBeCloseTo(1, 9);
+    for (const b of BIOMES) {
+      const [defi, monde] = [sentinellePeinte(b.id), sentinelleDuMonde(b.id)];
+      expect(monde.pieces.length, b.id).toBe(defi.pieces.length);
+      expect(Array.from(monde.teintes), b.id).toEqual(Array.from(defi.teintes));
+      expect(normalesCoherentes(monde), b.id).toBe(true);
+    }
+  });
+
+  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du point de l’îlot', () => {
+    for (const b of BIOMES.filter((x) => x.classe === '6e')) {
+      const g = guardianPlacements('6e', progress, village.bridges).find((p) => p.id === b.id);
+      if (!g) continue;
+      const pied = pointDePose(g)[1];
+      expect(bossIsletCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
+    }
+  });
 });

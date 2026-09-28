@@ -1,6 +1,6 @@
 // Le gabarit des sentinelles d'Archipéo (lot R6) : les Gardiens deviennent des statues de pierre éteintes que la
-// réussite rallume. Chacune se dresse sur le même socle octogonal, huit blocs de haut socle compris, cinq cases de large
-// au plus, le visage vers −Z ; une flamme facettée dort dans le foyer, au pied de la statue, et une à trois lueurs
+// réussite rallume. Chacune se dresse sur le même socle octogonal, huit blocs de haut socle compris (environ cinq dans
+// le monde, `ECHELLE_DANS_LE_MONDE`), cinq cases de large au plus, le visage vers −Z ; une flamme facettée dort dans le foyer, au pied de la statue, et une à trois lueurs
 // courent sur la pierre (ce qui s'allume sur chaque île : nervures, gemme, strates…). Rien ne bouge : pas de
 // respiration, pas de geste ; seul le degré d'allumage change, de 0 (éteinte) à 1 (rallumée), et les orbites restent
 // sombres à tous les degrés.
@@ -13,15 +13,30 @@ import { clamp, rgb } from '../decor/pinceau';
 import { LUEUR, SENTINELLE } from './couleurs';
 import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
 
-/** La hauteur d'une sentinelle, socle compris, et celle du socle, en blocs. */
+/** La hauteur d'une sentinelle, socle compris, et celle du socle, en blocs (le modèle, tel que le montre l'écran du défi). */
 export const HAUTEUR_DE_SENTINELLE = 8;
 export const HAUT_DU_SOCLE = 1;
+/**
+ * Dans le monde, une sentinelle est à cette échelle (revue d'ensemble du directeur artistique, DA-5) : environ 5 blocs
+ * socle compris (5,2), toujours plus basse que le phare de Grimoire (6 cases) et que la grue de l'Atelier (9) ; ses
+ * veines gardent leur largeur (`EPAISSEUR_DES_VEINES_DANS_LE_MONDE`). L'écran du défi montre le modèle à sa taille.
+ */
+export const ECHELLE_DANS_LE_MONDE = 0.65;
+export const HAUTEUR_DANS_LE_MONDE = HAUTEUR_DE_SENTINELLE * ECHELLE_DANS_LE_MONDE;
+/** Les veines d'une sentinelle du monde, élargies d'autant qu'elle rapetisse : à l'écran, elles restent aussi épaisses. */
+export const EPAISSEUR_DES_VEINES_DANS_LE_MONDE = 1 / ECHELLE_DANS_LE_MONDE;
 /** La demi-largeur permise (cinq cases de large au plus). */
 export const DEMI_LARGEUR_DE_SENTINELLE = 2.5;
 
-/** Ce qu'une statue reçoit pour se dessiner : les couleurs de la pierre, prises à la demande. */
+/**
+ * Ce qu'une statue reçoit pour se dessiner : les couleurs de la pierre, prises à la demande, et `veines`, la largeur de
+ * ses veines en part de celle du dessin (chaque appel à `veine` ou `veineSur` multiplie sa largeur par elle).
+ */
 export class Atelier {
-  constructor(readonly pot: Pot) {}
+  constructor(
+    readonly pot: Pot,
+    readonly veines = 1,
+  ) {}
   get pierre(): Peindre {
     return this.pot(SENTINELLE.pierre, 'dominante');
   }
@@ -312,9 +327,12 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
 
 // ---------- La sentinelle entière ----------
 
-/** Les quatre pièces d'une sentinelle. */
-export function piecesDeSentinelle(s: Statue, ou: OuSeMontre = 'monde'): Piece[] {
-  const a = (pot: Pot) => new Atelier(pot);
+/**
+ * Les quatre pièces d'une sentinelle ; `ou` : où elle se montre (une statue longue, `tour`, s'y tourne) ; `veines` : la
+ * largeur de ses veines, en part de celle du dessin.
+ */
+export function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSeMontre; veines?: number } = {}): Piece[] {
+  const a = (pot: Pot) => new Atelier(pot, veines);
   const tour = s.tour?.[ou] ?? 0;
   const tourne = repere([0, 0, 0], 0, tour, 0);
   const R = (T: Trace): Trace => (tour ? pose(T, tourne) : T);
@@ -326,8 +344,12 @@ export function piecesDeSentinelle(s: Statue, ou: OuSeMontre = 'monde'): Piece[]
   ];
 }
 
-/** Une sentinelle en facettes, éteinte (ses couleurs au degré 0 ; `couleursAllumees` donne les autres). */
-export function sentinelleEnFacettes(s: Statue, ou: OuSeMontre = 'monde'): FacettesDePersonnage {
-  const f = peindrePersonnage(piecesDeSentinelle(s, ou));
+/**
+ * Une sentinelle en facettes, éteinte (ses couleurs au degré 0 ; `couleursAllumees` donne les autres). `ou` : où elle se
+ * montre ; `veines` : la largeur de ses veines, en part de celle du dessin (`EPAISSEUR_DES_VEINES_DANS_LE_MONDE` pour une
+ * sentinelle du monde).
+ */
+export function sentinelleEnFacettes(s: Statue, options: { ou?: OuSeMontre; veines?: number } = {}): FacettesDePersonnage {
+  const f = peindrePersonnage(piecesDeSentinelle(s, options));
   return { ...f, colors: couleursAllumees(f, 0) };
 }
