@@ -21,9 +21,9 @@ Chaque écran tient sans défiler :
 
 Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
-![Le mode concentration : seulement la consigne, le mot « papillon », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
+![Le mode concentration : seulement la consigne, le mot « village », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
 
-![La même question sur téléphone.](/captures/telephone-quete.jpg)
+![Une question d'Abattage syllabique sur téléphone : « papillon », et ses réponses.](/captures/telephone-quete.jpg)
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;

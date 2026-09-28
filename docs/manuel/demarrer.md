@@ -25,7 +25,7 @@ Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons d
 
 ![Le menu sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
-![Sur téléphone : la barre du haut réduite (logo, menu, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
+![Sur téléphone : la barre du haut réduite (logo, rôle, accueil, réglages), le monde et le panneau d'île en dessous.](/captures/telephone-village.jpg)
 
 Pendant une partie, l’écran se vide pour laisser toute la place à la question : voir [le mode concentration](quetes.md#le-mode-concentration).
 

@@ -1,8 +1,8 @@
 # Style « monde en blocs »
 
-Le monde (3D et 2D) suit un style de monde en blocs, dessiné par le code et jamais emprunté. Par défaut, l’interface qui l’entoure prend l’habillage de Blocland (plus bas, « L’habillage de Blocland ») ; celle d’Archipéo, choisie dans les Réglages, est faite de panneaux sobres, opaques et géométriques, dans la palette de la planche. Rien ne gêne la lecture : le texte à lire reste sur un fond uni, dans la police dys choisie.
+Le monde se dessine en 3D, par le code, sans rien emprunter. Dans Blocland, l’univers par défaut, il suit un style de monde en blocs ; dans Archipéo, choisi dans les Réglages, il a son propre rendu (plus bas, « Le rendu d’Archipéo »). La 2D ne se choisit plus : elle ne sert que sur un appareil sans 3D. Par défaut, l’interface qui l’entoure prend l’habillage de Blocland (plus bas, « L’habillage de Blocland ») ; celle d’Archipéo, choisie dans les Réglages, est faite de panneaux sobres, opaques et géométriques, dans la palette de la planche. Rien ne gêne la lecture : le texte à lire reste sur un fond uni, dans la police dys choisie.
 
-Cette page décrit le style en ligne aujourd’hui. Le jeu migre vers Archipéo : la cible et les écarts sont dans le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md).
+Cette page décrit le style en ligne aujourd’hui, dans les deux univers ([Plusieurs univers](univers.md)). Ce qui reste à faire pour Archipéo est dans le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), celui de Blocland dans le [cadrage de Blocland](cadrage-blocland.md).
 
 ## Repères visuels
 
@@ -26,8 +26,8 @@ Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent 
 
 ## Polices
 
-- La police **des titres** (Montserrat grasse, embarquée par `@fontsource/montserrat`, aucune ressource externe) ne sert qu’aux titres courts et au logotype.
-- Il n’y a plus de police pixel. Toute étiquette qui porte un sens (« Nouvelle partie », « Aventure », « Niveau 6e », le nom d’une créature, le compteur du tutoriel, l’épreuve du Gardien, les dates du journal) est dans la police de lecture choisie, en gras, en casse normale, à 18 px au moins ; le nom « Archipéo » est dans la police des titres.
+- La police **des titres** ne sert qu’aux titres courts et au logotype : Archivo Black dans Blocland (plus bas), Montserrat grasse dans Archipéo, embarquées par `@fontsource`, sans aucune ressource externe.
+- Il n’y a plus de police pixel. Toute étiquette qui porte un sens (« Nouvelle partie », « Aventure », « Niveau 6e », le nom d’une créature, le compteur du tutoriel, l’épreuve du Gardien, les dates du journal) est dans la police de lecture choisie, en gras, en casse normale, à 18 px au moins ; le nom de l’univers est dans la police des titres.
 - **Tout texte à lire** (consignes, phrases, corrections, panneaux) est dans la police dys choisie par l’élève : Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible ou Arial.
 
 ## L’habillage de Blocland
@@ -49,9 +49,9 @@ Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/bloc
 
 Les textures ne servent plus qu’à dessiner le monde ; dans l’interface, un bloc (inventaire, plans, récompenses) est un petit cube dessiné par le code. L’habillage (page, boutons, bandeaux, cartes) n’en a plus, ni biseau ni cadre crénelé, et aucune n’est **jamais placée derrière du texte**.
 
-## En construction : le rendu Archipéo
+## Le rendu d’Archipéo
 
-Les élèves voient le monde en blocs décrit ici. Les élèves qui choisissent Archipéo dans les Réglages voient son rendu (voir le [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md), piste Rendu). Depuis le lot R1, il a en 3D :
+Dans Blocland, le monde est en blocs, comme décrit plus haut. L’élève qui choisit Archipéo dans les Réglages voit le rendu d’Archipéo, construit lot par lot (piste Rendu du [cadrage « De Blocland à Archipéo »](cadrage-archipeo.md)) ; le rendu du monde de chaque univers se règle dans `src/blocland/world/habillage/`. Depuis le lot R1, il a en 3D :
 
 - **une palette commune** (`src/blocland/world/palette.ts`) : par archipel, le ciel, la mer, la lumière, et une couleur de dessus et de côté pour chaque sol et chaque matière, de jour et de nuit ; les nuits restent un bleu de crépuscule, jamais un noir ;
 - **un ciel en dôme dégradé**, du zénith à l’horizon, avec une lueur claire sur la ligne d’horizon ; **une brume de profondeur** de la couleur de l’horizon, qui fond les îles lointaines dans le ciel, jamais les noms d’îles ;
@@ -72,14 +72,14 @@ Depuis le lot R3, **la mer et la faune** sont peintes aussi (`src/blocland/world
 - **une houle légère** : de grandes facettes irrégulières, soulevées de quelques centimètres au large et calmes près des côtes, qui prennent la lumière chacune à sa façon ;
 - aux Îles du Ciel, le même principe fait le plancher de nuages : bleuté sous les îles, blanc au loin, une houle plus ample et plus lente, sans écume ;
 - les baleines, les oiseaux et les nuages sont des formes facettées peintes par sommet : la baleine bleu profond (`#1E3A5C`) au ventre crème, avec sa queue qui bat et son souffle couleur Brume ; des oiseaux blancs aux ailes grises, le bout plus sombre, qui battent des ailes ; des cumulus crème au dessous bleuté ;
-- « Réduire les animations » fige la houle, l’écume, les oiseaux (ailes à plat), les nuages et les baleines (queue droite, sans souffle) : les formes restent, rien ne bouge.
+- quand l’appareil demande de réduire les animations, la houle, l’écume, les oiseaux (ailes à plat), les nuages et les baleines (queue droite, sans souffle) se figent : les formes restent, rien ne bouge.
 
 Depuis le lot R4, **le décor** est peint aussi (`src/blocland/world/decorMesh.ts`) :
 
 - les arbres, les sapins, les buissons, les fleurs, les champignons, les rochers, les souches, les roseaux et les cristaux deviennent des volumes simples à facettes : un tronc court à cinq pans sous un feuillage rond et bosselé, deux ou trois cônes pour un sapin, un rocher bosselé et aplati ; chacun est posé au milieu de sa case, sur la pente ; la couleur vient de la palette de l’archipel, plus sombre au pied, plus claire sur le dessus, avec une petite variation d’un élément à l’autre ;
 - les repères gardent leur silhouette de loin (le chêne géant, le champignon géant, l’aiguille de glace, le haut-fourneau et sa fumée, la tour de guet, le grand phare) en troncs de cône et volumes ronds ; ils s’enfoncent au plus bas de leur emprise, sur un pied élargi, et ne flottent jamais au bord d’une pente ; la lave brille d’elle-même, la nuit comme le jour ;
 - les cascades collent à la falaise de la case du bord, en lame d’eau rayée de clair, jusqu’à une tache d’écume ; en mer, les écueils affleurent en rochers bosselés (des aiguilles d’ardoise aux Anciens Ateliers), les bancs en taches plates au ras de l’eau ;
-- rien n’y bouge : « Réduire les animations » n’a rien à y arrêter ; une île fermée délave son décor comme son sol.
+- rien n’y bouge : réduire les animations n’a rien à y arrêter ; une île fermée délave son décor comme son sol.
 
 Depuis le lot R5, **la construction est taillée** (`src/blocland/world/construction.ts`, `toits.ts`, `three/construction.ts`) : les bâtiments des plans, les ouvrages, les monuments, le quai, le décor resté en blocs au cœur des îles et le Bloc-Navire se lisent toujours en blocs posés, mais peints de la palette :
 
@@ -91,15 +91,15 @@ Depuis le lot R5, **la construction est taillée** (`src/blocland/world/construc
 - le plan « Le phare de Grimoire » prend, étape par étape, le modèle du phare d’Archipéo (fût crème à deux bandes, galerie, lanterne, toit conique) ; aux Îles du Ciel, il n’y a qu’un phare, le grand ;
 - les bornes de mission sont des piliers de pierre à tête chanfreinée ; la voile du Bloc-Navire devient crème.
 
-Les créatures et le bonhomme restent en cubes (lot R6) ; `?style=a|b|c` peint les cubes restants de la palette selon les trois options de style du cadrage. La vue simple ne change pas.
+La vue simple ne change pas. Sur le serveur de développement seulement, `?style=a|b|c` peint les cubes restants selon les trois options de style du cadrage (l’option (b) est celle d’Archipéo).
 
-Depuis le lot R7, la vue 2D est **peinte** avec le drapeau (`src/blocland/pixel/painted.ts`, `paintedDraw.ts`, `paintedSprites.ts`) : mêmes cases, mêmes gestes, mais toutes les couleurs viennent de la palette commune, par archipel, de jour et de nuit. Les dessus sont des aplats nuancés en grandes taches ; les falaises sont un dégradé, clair sous la lèvre et bleuté au pied, en strates larges ; les sols voisins se mordent en festons ; l’écume est une bande de Brume ; la mer s’éclaircit près des rives. Un ouvrage (mur, toit, plancher) tient sur une seule teinte par face, avec sa matière en joints larges (rangs de tuiles, lames de bois, briques et pierres en quinconce), un cadre sombre aux vitres et aux lanternes (qui s’allument la nuit comme en 3D, depuis le lot R5), et un contour de sa teinte sombre qui le détache d’un sol clair. Le décor garde ses formes, en trois aplats de sa matière. La nuit n’est plus un voile : la 2D prend les couleurs de nuit de la palette. Une île verrouillée se délave vers la Brume ; un fantôme reste bleuté, au pointillé blanc et Nuit océan. La lumière se lit en cinq paliers : un changement de palier repeint le terrain, morceau par morceau. Sans le drapeau, la 2D reste en pixel art, inchangée.
+Depuis le lot R7, la 2D d’Archipéo (sur un appareil sans 3D) est **peinte** (`src/blocland/pixel/painted.ts`, `paintedDraw.ts`, `paintedSprites.ts`) : mêmes cases, mêmes gestes, mais toutes les couleurs viennent de la palette commune, par archipel, de jour et de nuit. Les dessus sont des aplats nuancés en grandes taches ; les falaises sont un dégradé, clair sous la lèvre et bleuté au pied, en strates larges ; les sols voisins se mordent en festons ; l’écume est une bande de Brume ; la mer s’éclaircit près des rives. Un ouvrage (mur, toit, plancher) tient sur une seule teinte par face, avec sa matière en joints larges (rangs de tuiles, lames de bois, briques et pierres en quinconce), un cadre sombre aux vitres et aux lanternes (qui s’allument la nuit comme en 3D, depuis le lot R5), et un contour de sa teinte sombre qui le détache d’un sol clair. Le décor garde ses formes, en trois aplats de sa matière. La nuit n’est plus un voile : la 2D prend les couleurs de nuit de la palette. Une île verrouillée se délave vers la Brume ; un fantôme reste bleuté, au pointillé blanc et Nuit océan. La lumière se lit en cinq paliers : un changement de palier repeint le terrain, morceau par morceau. Celle de Blocland reste en pixel art.
 
-## Univers et créatures
+## Créatures et Gardiens
 
-Univers, créatures et Gardiens sont dessinés en cubes (`src/blocland/Voxel.tsx`, `Avatar.ts`, les modèles de `world/personnages/`) ; noms et personnages sont originaux. La liste des créatures et des Gardiens, île par île, est dans [L’archipel](../pedagogie/archipel.md).
+Dans Blocland, créatures et Gardiens sont dessinés en cubes, et un Gardien vaincu devient une statue de pierre sur son île (`src/blocland/Voxel.tsx`, `Avatar.ts`, les modèles de `world/personnages/`) ; noms et personnages sont originaux. La liste des créatures et des Gardiens, île par île, est dans [L’archipel](../pedagogie/archipel.md).
 
-Depuis le lot R6, derrière le drapeau, **les personnages** sont peints (`src/blocland/world/personnages/`) : le bonhomme, une créature par île et les Gardiens en sentinelles de pierre, en quelques volumes à facettes. En 3D, ils ont deux petits yeux sombres ; ce qui brille la nuit (la lanterne de Fi, au verre ambre le jour, l’abdomen d’Astra, la braise de Braise) ne s’assombrit pas ; un Gardien vaincu est rallumé (pierre claire `#B8B2A4`, flamme et veines `#FFD866`), les autres restent éteints (pierre `#8E8C84` et lichen `#7A8A6A`, flamme en pierre sombre `#6B6862`) ; les orbites (`#45423D`) ne s’allument jamais. La nuit, en 3D, le bonhomme et les créatures (pas les sentinelles) gardent un voile de nuit plus léger que le sol et prennent au bord de leur silhouette, surtout vers le haut, le même **liseré clair et froid** (`#B8CCE0`) qu’en 2D ; il est fixe, il ne clignote pas. En 2D peinte :
+Dans Archipéo, depuis le lot R6, **les personnages** sont peints (`src/blocland/world/personnages/`) : le bonhomme, une créature par île et les Gardiens en sentinelles de pierre, en quelques volumes à facettes. En 3D, ils ont deux petits yeux sombres ; ce qui brille la nuit (la lanterne de Fi, au verre ambre le jour, l’abdomen d’Astra, la braise de Braise) ne s’assombrit pas ; un Gardien vaincu est rallumé (pierre claire `#B8B2A4`, flamme et veines `#FFD866`), les autres restent éteints (pierre `#8E8C84` et lichen `#7A8A6A`, flamme en pierre sombre `#6B6862`) ; les orbites (`#45423D`) ne s’allument jamais. La nuit, en 3D, le bonhomme et les créatures (pas les sentinelles) gardent un voile de nuit plus léger que le sol et prennent au bord de leur silhouette, surtout vers le haut, le même **liseré clair et froid** (`#B8CCE0`) qu’en 2D ; il est fixe, il ne clignote pas. En 2D peinte :
 
 - les yeux du bonhomme et des créatures font **un pixel de large sur deux de haut**, debout, séparés de deux pixels de peau, sans pont sombre entre eux ; les orbites des sentinelles gardent deux pixels au moins ;
 - la silhouette est bordée d’un pixel dans la teinte sombre de sa dominante, jamais noire ; **la nuit, le bord du côté éclairé (en haut à gauche) devient un liseré clair et froid** (`#B8CCE0`) d’un pixel, qui détache le personnage du sol sombre ;

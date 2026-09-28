@@ -118,7 +118,8 @@ const SHOTS = [
   { name: 'plan-en-cours', state: EARLY, go: '/aventure/foret', act: closeSheet },
   { name: 'plan-termine', state: CABANE_READY, go: '/aventure/foret', act: placeAll },
   { name: 'quete-ile', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, wait: 2500 },
-  { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500 },
+  // Le bandeau de correction monte du bas de l'écran : il faut l'attendre en entier.
+  { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500, after: 1500 },
   { name: 'quete-fin', go: '/app/demo', act: playWell, wait: 1500 },
   { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
   { name: 'carte', state: MID, go: '/aventure/carte' },
@@ -141,6 +142,23 @@ const SHOTS = [
   { name: 'reglages', state: MID, go: '/reglages' },
   { name: 'reglages-univers', state: MID, go: '/reglages', act: showUnivers },
 ];
+
+/**
+ * Les réglages extrêmes (rendez-vous 4 du lot 6, référent dys) : OpenDyslexic en 32 px, interlignage et espacements
+ * au plus grand, sans voix, et l'appareil qui demande de réduire les animations. Ces captures ne vont pas au manuel :
+ * elles ne se prennent que nommées (`npm run docs:captures -- extreme-carte-nuit`), pour une relecture.
+ */
+const EXTREMES = { font: 'opendyslexic', fontSize: 32, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5, autoRead: false };
+const extreme = (name, theme, shot) => ({ ...shot, name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme }, reduit: true, surDemande: true });
+SHOTS.push(
+  extreme('quete-correction', 'creme', SHOTS.find((s) => s.name === 'quete-correction')),
+  extreme('telephone-quete', 'creme', SHOTS.find((s) => s.name === 'telephone-quete')),
+  extreme('carte', 'nuit', SHOTS.find((s) => s.name === 'carte')),
+  extreme('telephone-village', 'nuit', SHOTS.find((s) => s.name === 'telephone-village')),
+  extreme('gardien', 'clair', SHOTS.find((s) => s.name === 'gardien')),
+  extreme('quete-fin', 'clair', SHOTS.find((s) => s.name === 'quete-fin')),
+  extreme('vue-simple', 'creme', SHOTS.find((s) => s.name === 'vue-simple')),
+);
 
 /** La section Univers des Réglages : Blocland, coché, puis Archipéo. */
 async function showUnivers(page) {
@@ -233,7 +251,7 @@ const browser = await chromium.launch({
 });
 mkdirSync(OUT, { recursive: true });
 let failed = 0;
-for (const shot of SHOTS.filter((s) => only.length === 0 || only.includes(s.name))) {
+for (const shot of SHOTS.filter((s) => (only.length === 0 && !s.surDemande) || only.includes(s.name))) {
   // Sur une machine lente (la CI, sans carte graphique), une capture du monde 3D peut dépasser le délai : on la
   // reprend une fois avant de la compter en échec.
   let error = null;
@@ -250,7 +268,7 @@ for (const shot of SHOTS.filter((s) => only.length === 0 || only.includes(s.name
 
 /** Prend une capture ; rend le message d'erreur, ou null si elle est prise. */
 async function take(shot) {
-  const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1, reducedMotion: shot.reduit ? 'reduce' : 'no-preference' });
   await page.clock.setFixedTime(DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
   await page.addInitScript(() => {
@@ -268,24 +286,25 @@ async function take(shot) {
     // La partie s'écrit depuis une page statique du même site : l'appli, pas encore lancée, ne peut pas l'écraser.
     await page.goto(`${base}/icon.svg`);
     await page.evaluate(
-      ({ state, view, title, tutorial, whale }) => {
+      ({ state, view, settings, title, tutorial, whale }) => {
         localStorage.clear();
         sessionStorage.clear();
         if (!title) sessionStorage.setItem('dysapps:titre-vu', '1');
-        // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde.
-        localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
+        // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde et les réglages extrêmes.
+        localStorage.setItem('dysapps:settings', JSON.stringify({ ...settings, worldView: view }));
         if (!tutorial) localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
         if (state?.blocland) localStorage.setItem('dysapps:blocland', JSON.stringify(state.blocland));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
         if (whale) localStorage.setItem('dysapps:baleine', JSON.stringify(whale));
       },
-      { state: shot.state ?? null, view: shot.view ?? '3d', title: Boolean(shot.title), tutorial: Boolean(shot.tutorial), whale: shot.whale ?? null },
+      { state: shot.state ?? null, view: shot.view ?? '3d', settings: shot.settings ?? {}, title: Boolean(shot.title), tutorial: Boolean(shot.tutorial), whale: shot.whale ?? null },
     );
     await page.goto(`${base}/#${shot.go}`);
     // Le monde 3D met quelques secondes à se construire (rendu logiciel, sans carte graphique).
     await page.waitForTimeout(shot.wait ?? 6000);
     if (shot.act) await shot.act(page);
+    if (shot.after) await page.waitForTimeout(shot.after);
     const file = join(OUT, `${shot.name}.jpg`);
     // Le rendu logiciel de la 3D peut prendre plus de 30 s par image sur la CI.
     await capturer(page, { path: file, type: 'jpeg', quality: 82, timeout: 120_000 });

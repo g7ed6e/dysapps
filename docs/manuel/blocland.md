@@ -131,7 +131,7 @@ Chaque île a **trois plans** enchaînés, qui bâtissent la maison de la créat
 
 ![La cabane de Mousso en cours : les murs posés en bois, le reste en fantômes bleutés.](/captures/plan-en-cours.jpg)
 
-![Un plan terminé : la phrase de la créature, le coffre (porte, lanternes, tuiles) et l'XP, le succès Bâtisseur.](/captures/plan-termine.jpg)
+![Un plan terminé : la phrase de la créature, le coffre (pierre, porte, lanternes, toits), l'XP, et la bulle « Le village passe à l'état Réactivation (2 sur 5) ».](/captures/plan-termine.jpg)
 
 Chaque île a sa forme de bâtiment :
 
@@ -166,7 +166,7 @@ L’état se lit aussi en mots, jamais par la couleur seule : « Le village : Re
 
 Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les emploient : de grands ouvrages classés, **deux par archipel**, chacun sur son **îlot au large** d’une île, dessiné en fantômes bleutés dès qu’on arrive dans l’archipel.
 
-![L'observatoire des baleines sur son îlot, à moitié construit, et son panneau : 60 sur 116 blocs posés.](/captures/monument.jpg)
+![L'observatoire des baleines sur son îlot, en chantier, et son panneau : 50 sur 116 blocs posés.](/captures/monument.jpg)
 
 | Archipel | Monuments |
 | --- | --- |

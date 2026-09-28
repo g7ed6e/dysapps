@@ -10,7 +10,7 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de huit bulles, lues à voix haute, présente les lieux. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
-![Première visite du village en 3D : la Forêt des sons au centre, Mousso, les bornes de mission, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
+![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
 Toucher l'île ouvre son **panneau** : Mousso se présente (sa phrase est lue, syllabes en couleurs), puis le **prochain objectif** et la liste des missions de l'île.
 
@@ -20,7 +20,7 @@ Toucher l'île ouvre son **panneau** : Mousso se présente (sa phrase est lue, s
 
 L'élève touche la mission **Abattage syllabique**. L'écran se vide : il ne reste que la consigne, le mot et les réponses (le [mode concentration](quetes.md#le-mode-concentration)). Le mot est lu à voix haute ; le bouton **Écouter** le relit autant qu'on veut.
 
-![Une question d'Abattage syllabique : « papillon », et trois grosses réponses 1, 2, 3.](/captures/quete-ile.jpg)
+![Une question d'Abattage syllabique : « village », et trois grosses réponses 1, 2, 3.](/captures/quete-ile.jpg)
 
 Une erreur n'est jamais punie. La correction s'affiche en bas, sans cacher la question : la bonne réponse est cochée en vert, la réponse touchée marquée d'une croix, en orangé, et une ligne rappelle la règle. L'erreur rapporte quand même un point d'effort.
 
@@ -38,7 +38,7 @@ Avec les blocs gagnés, l'élève revient sur l'île. Le premier plan, **la caba
 
 **Poser tout ce que j'ai** pose d'un coup tous les blocs en poche. Le dernier bloc termine le bâtiment : Mousso remercie (lu à voix haute), le **coffre** donne les blocs de finition du plan suivant (la porte, les lanternes, les tuiles du toit) et de l'XP. Le plan suivant, le toit, s'affiche aussitôt.
 
-![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 blocs de pierre, 1 porte, 3 lanternes, 18 toits, +40 XP ; le succès Bâtisseur.](/captures/plan-termine.jpg)
+![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 blocs de pierre, 1 porte, 3 lanternes, 18 toits, +40 XP ; le village passe en Réactivation, 2 sur 5.](/captures/plan-termine.jpg)
 
 ## Ouvrir les îles
 
@@ -48,11 +48,11 @@ Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. L
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 
-![Mes blocs : « Tu peux construire », avec les plans de trois îles, le Bloc-Navire, deux monuments et deux ouvrages.](/captures/mes-blocs.jpg)
+![Mes blocs : « Tu peux construire », avec les plans de quatre îles, le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
 
 La **Carte** montre tout l'archipel vu d'en haut : le fanion jaune marque l'élève, les îles pâles sont encore fermées.
 
-![La Carte des Premiers Rivages : les îles ouvertes en couleurs, leurs noms, les ouvrages construits, et le fanion jaune sur la Forêt.](/captures/carte.jpg)
+![La Carte des Premiers Rivages : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la flèche jaune sur la Forêt des sons, et en haut la prochaine destination avec Y aller.](/captures/carte.jpg)
 
 ## Le Gardien, le navire, l'école
 
@@ -72,7 +72,7 @@ L'**école du village** ouvre les missions du portail (français, maths, anglais
 
 Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, sur leur îlot au large. L'observatoire des baleines est à moitié construit.
 
-![L'observatoire des baleines, à moitié construit sur son îlot : la plateforme de galets, la tour de brique, et en fantômes le belvédère ; le panneau montre 60 sur 116 blocs posés.](/captures/monument.jpg)
+![L'observatoire des baleines en chantier sur son îlot : la plateforme de galets posée, la tour de brique commencée, le reste en fantômes ; le panneau montre 50 sur 116 blocs posés.](/captures/monument.jpg)
 
 ## Les Premiers Rivages reconstruits
 
