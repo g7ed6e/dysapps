@@ -105,7 +105,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(c.triangles).toBeLessThanOrEqual(enveloppeDe(p, '5e').triangles);
         expect(c.drawCalls).toBeLessThanOrEqual(enveloppeDe(p, '5e').drawCalls);
       }, 30_000);
-      it.todo(`R4b : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe aux Anciens Ateliers et aux Îles du Ciel`);
+      it.todo(`R4b-3e : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe aux Îles du Ciel`);
     } else it.todo(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`);
   }
   // R4b-4e : les quatre postes de R4b aux Anciens Ateliers (grue, fourneau, lointain et fumées compris).
