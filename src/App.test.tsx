@@ -20,9 +20,9 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est le menu d’Archipéo : le village, les trois Expéditions, puis Missions et Réglages', () => {
+it('l’accueil est le menu de Blocland : le village, les trois Expéditions, puis Missions et Réglages', () => {
   renderAt('/');
-  expect(screen.getByRole('heading', { name: 'Archipéo', level: 1 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
   expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais']);
@@ -76,7 +76,7 @@ it('liste les missions d’anglais du portail', () => {
   expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Verbes irréguliers/ })).toBeInTheDocument();
   // Les îles d'anglais de Blocland, avec leur classe : la Baie et l'Horloge, derrière la Ferme et la Forêt.
-  expect(screen.getByRole('heading', { name: /Dans Archipéo/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Dans Blocland/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Baie des mots.*Niveau 6e/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Horloge des verbes.*Ouvrage à construire.*Niveau 6e/ })).toBeInTheDocument();
 });
@@ -178,7 +178,7 @@ it('affiche le record d’une mission tous modes confondus', () => {
 it('ouvre la carte de Blocland puis un biome, dont la créature donne la mission', async () => {
   const user = userEvent.setup();
   renderAt('/aventure');
-  expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
   // Le nom commence par le nom du biome ; les cartes verrouillées citent aussi le biome précédent.
   await user.click(screen.getByRole('link', { name: /^Forêt des sons/ }));
   expect(screen.getByRole('heading', { name: /Forêt des sons/ })).toBeInTheDocument();
@@ -201,13 +201,13 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
-  await user.click(screen.getByRole('link', { name: /Carte d’Archipéo/ }));
-  expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
+  await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });
 
 it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {
   renderAt('/aventure/carte');
-  expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Forêt des sons/ })).toBeInTheDocument();
   // Comme la Carte : la prochaine destination, l'état de chaque île en mot, les archipels non atteints dans la brume.
   expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/aventure/foret');
@@ -218,7 +218,7 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   expect(screen.getByRole('dialog', { name: 'Le mot de la baleine' })).toHaveTextContent('Je suis la baleine');
   document.body.innerHTML = '';
   renderAt('/aventure/monde');
-  expect(screen.getByRole('heading', { name: 'Archipéo' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });
 
 it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {

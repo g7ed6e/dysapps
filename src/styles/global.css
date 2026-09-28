@@ -306,7 +306,8 @@ svg {
 }
 .topbar-xp {
   flex: 1;
-  min-width: 0;
+  /* Jamais plus étroite que son écusson : sinon les boutons passent dessus. */
+  min-width: 2.6rem;
   max-width: 22rem;
   text-decoration: none;
   color: inherit;
@@ -318,6 +319,7 @@ svg {
 }
 /* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
 .nav-button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -333,6 +335,16 @@ svg {
 .nav-button:active {
   background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
 }
+/* Le trait sous l'icône du bouton actif, quand le bouton n'a plus son mot (voir la barre plus bas). */
+.nav-button.active::after {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+}
 .nav-button.active {
   background: var(--sand);
   border-color: var(--sand);
@@ -343,17 +355,63 @@ svg {
   margin: 0 auto;
   padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
 }
-@media (max-width: 640px) {
-  .brand-name,
+/*
+ * La barre suit la place qu'elle a en rem, donc la taille du texte choisie dans les Réglages (jusqu'à 32 px en
+ * OpenDyslexic) : le nom de l'univers, puis les mots des boutons (qui gardent leur icône et leur nom lu), puis le
+ * logo (le bouton Menu y mène aussi) laissent leur place, pour que rien ne sorte de l'écran ni ne passe sur l'écusson.
+ */
+.topbar {
+  container: barre / inline-size;
+}
+@container barre (max-width: 60rem) {
+  .brand-name {
+    display: none;
+  }
+}
+/* Dans la barre, le titre de la jauge passe à la ligne plutôt que de couper un mot (« Architecte de l'archipel »). */
+.topbar .xp-title {
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.2;
+}
+/* Jamais de mot coupé dans la jauge : sous 56rem, tout son titre part (niveau et rôle) ; l'insigne et la jauge
+   restent, et tout est sur la page Succès. */
+@container barre (max-width: 48rem) {
   .nav-label {
     display: none;
   }
+  /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
+  .nav-button.active::after {
+    content: '';
+  }
+}
+@container barre (max-width: 56rem) {
+  .topbar .xp-title {
+    display: none;
+  }
+}
+@container barre (max-width: 16rem) {
+  .topbar .xp-info {
+    display: none;
+  }
+}
+@container barre (max-width: 13rem) {
+  .brand {
+    display: none;
+  }
+}
+/* Les mots des boutons et le nom de l'univers suivent la place de la barre (plus haut) ; ici, ce qui tient à l'écran. */
+@media (max-width: 640px) {
   .topbar {
     gap: 0.6rem;
   }
   /* Le numéro de niveau est déjà dans l'écusson. */
-  .topbar .xp-lvl {
+  .topbar .xp-lvl,
+  .topbar .xp-sep {
     display: none;
+  }
+  .nav-button.active::after {
+    content: '';
   }
   .celebration {
     padding: 0.4rem 0.4rem 0.4rem 0.7rem;
@@ -677,10 +735,10 @@ button.app-card:active {
   padding: 0.1rem 0.9rem;
   position: relative;
   z-index: 1;
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  /* Un mot qui porte un sens : la police de lecture, en gras (principes dys), pas celle des titres. */
+  font-family: var(--font-family);
+  font-weight: 700;
   font-size: 1.2rem;
-  letter-spacing: 0.04em;
   line-height: 1.45;
   color: var(--on-sand);
   background: var(--sand);
@@ -985,14 +1043,12 @@ button.app-card:active {
   line-height: 1.35;
 }
 .celebration-kicker {
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  font-weight: 700;
   font-size: 1.15rem;
-  letter-spacing: 0.06em;
 }
+/* Le nom du rôle ou du succès : seul endroit où il s'écrit, donc dans la police de lecture choisie, en gras. */
 .celebration-text strong {
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
+  font-weight: 700;
 }
 .celebration p {
   margin: 0;
@@ -1227,15 +1283,6 @@ button.app-card:active {
   display: grid;
   gap: 0.8rem;
 }
-/* Un groupe de choix dans un encadré (Expérimental → La surface du monde) : sa légende, sans second cadre. */
-.settings fieldset.settings-subgroup {
-  border: 0;
-  padding: 0;
-  min-width: 0;
-}
-.settings-subgroup legend {
-  padding: 0 0 0.4rem;
-}
 .settings legend {
   font-family: var(--display-font);
   font-weight: var(--display-weight);
@@ -1304,6 +1351,30 @@ button.app-card:active {
   width: 1.2rem;
   height: 1.2rem;
   accent-color: var(--primary-bg);
+}
+/*
+ * Le rond d'une option, dessiné (DA-15) : le rond du navigateur prenait la couleur du fond de la case choisie et ne
+ * se voyait plus coché. Il suit la couleur du texte de sa case, sur tous les thèmes et dans les deux univers, et
+ * grandit avec la taille du texte. Coché, un point plein dans l'anneau : il se lit sans la couleur.
+ */
+.option input[type='radio'] {
+  appearance: none;
+  flex-shrink: 0;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin: 0;
+  border: 0.15rem solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+}
+.option input[type='radio']:checked {
+  background: radial-gradient(circle, currentColor 0 42%, transparent 48%);
+}
+/* Couleurs forcées (contraste élevé de l'appareil) : le fond dessiné s'efface ; le rond du système revient. */
+@media (forced-colors: active) {
+  .option input[type='radio'] {
+    appearance: auto;
+  }
 }
 .font-atkinson {
   font-family: "Atkinson Hyperlegible", sans-serif;

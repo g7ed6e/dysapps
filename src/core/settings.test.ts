@@ -49,12 +49,11 @@ it('convertit l’ancien interrupteur « vues en 3D »', () => {
   expect('view3d' in sanitizeSettings({ view3d: false })).toBe(false);
 });
 
-it('éteint les rendus expérimentaux par défaut et rejette les styles inconnus', () => {
-  expect(sanitizeSettings({}).renduArchipeo).toBe(false);
-  expect(sanitizeSettings({}).styleArchipeo).toBe('textures');
-  expect(sanitizeSettings({ renduArchipeo: true, styleArchipeo: 'c' })).toMatchObject({ renduArchipeo: true, styleArchipeo: 'c' });
-  expect(sanitizeSettings({ renduArchipeo: 'oui' as never, styleArchipeo: 'z' as never })).toMatchObject({ renduArchipeo: false, styleArchipeo: 'textures' });
-  expect(sanitizeSettings({ styleArchipeo: 'toString' as never }).styleArchipeo).toBe('textures');
+it('oublie les réglages de l’ancienne section Expérimental (lot 6) : l’univers choisit le rendu', () => {
+  const s = sanitizeSettings({ renduArchipeo: true, styleArchipeo: 'c' } as never);
+  expect('renduArchipeo' in s).toBe(false);
+  expect('styleArchipeo' in s).toBe(false);
+  expect('univers' in s).toBe(false);
 });
 
 it('respecte les minimums orthophoniques', () => {
@@ -72,16 +71,14 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
 
-  it('pose l’univers affiché, qui choisit l’habillage : Archipéo avant la bascule, puis l’univers choisi', () => {
+  it('pose l’univers affiché, qui choisit l’habillage : l’univers choisi, Blocland par défaut', () => {
     const root = document.createElement('div');
-    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, false);
-    expect(root.dataset.univers).toBe('archipeo');
-    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root, true);
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root);
     expect(root.dataset.univers).toBe('blocland');
-    applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root, true);
+    applySettings({ ...DEFAULT_SETTINGS, univers: 'archipeo' }, root);
     expect(root.dataset.univers).toBe('archipeo');
     // Un appareil sans univers enregistré s'habille comme l'univers par défaut.
-    applySettings(DEFAULT_SETTINGS, root, true);
+    applySettings(DEFAULT_SETTINGS, root);
     expect(root.dataset.univers).toBe('blocland');
   });
 });

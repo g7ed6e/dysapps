@@ -6,11 +6,10 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS_KEY } from '../core/univers';
 
-// La bascule du lot 6, essayée d'avance : `UNIVERS_OUVERT` vraie. L'écran titre voit aussi le message unique rallumé
-// (`PRESENTER_ARCHIPEO`) ; le premier univers, lui, garde la constante du module : il ne note jamais le message.
+// L'écran titre voit le message unique rallumé (`PRESENTER_ARCHIPEO`) ; le premier univers, lui, garde la constante du
+// module : il ne note jamais le message.
 vi.mock('../core/univers', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../core/univers')>()),
-  UNIVERS_OUVERT: true,
   PRESENTER_ARCHIPEO: true,
 }));
 

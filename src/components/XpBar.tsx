@@ -10,7 +10,9 @@ export function XpBar({ xp, large = false }: { xp: number; large?: boolean }) {
       <RoleBadge tier={info.tier} />
       <div className="xp-info">
         <span className="xp-title">
-          <span className="xp-lvl">Niv. {info.level}</span> · {info.title}
+          <span className="xp-lvl">Niv. {info.level}</span>
+          <span className="xp-sep"> · </span>
+          {info.title}
         </span>
         <div
           className="xp-track"

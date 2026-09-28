@@ -14,7 +14,7 @@ La progression est celle du navigateur. Le plus simple est un profil de navigate
 **Peut-on transférer la progression sur un autre appareil ?**
 Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre progression.
 
-**Par où commencer dans Archipéo ?**
+**Par où commencer dans l’aventure ?**
 Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une flèche jaune flotte au-dessus de la Forêt tant qu’aucune mission n’a été jouée. Le tutoriel de trois bulles se rejoue avec le bouton « Revoir l’aide ».
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
@@ -44,7 +44,7 @@ Elle utilise la synthèse vocale du navigateur. Vérifier le volume et le mode s
 Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, espacement des lettres et des mots, thème. Voir [Réglages et accessibilité](reglages.md).
 
 **Les animations gênent ou l’appareil est lent.**
-Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». Archipéo suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)). Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
+Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». L’appli suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)). Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, le monde en 2D s’affiche de lui-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.

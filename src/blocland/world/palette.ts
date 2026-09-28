@@ -1,5 +1,5 @@
 // La palette d'Archipéo (lot R1 de la piste Rendu, docs/conception/cadrage-archipeo.md) : les couleurs du monde peint,
-// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit derrière le drapeau `?rendu=archipeo`, la 2D
+// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendu.ts), la 2D
 // peinte la lira au lot R7 ; le monde en blocs garde `AMBIENCE` et `palette()` de ./daylight, inchangés.
 //
 // - Le ciel : un dôme dégradé du zénith à l'horizon, avec une lueur juste au-dessus de la ligne d'horizon. La brume

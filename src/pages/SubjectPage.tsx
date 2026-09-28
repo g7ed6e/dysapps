@@ -3,6 +3,8 @@ import { SUBJECTS, type Subject } from '../apps/registry';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/univers';
 import { biomesOf, type Classe } from '../blocland/biomes';
 import { useBlocland } from '../blocland/BloclandContext';
 import { Creature } from '../blocland/Creatures';
@@ -12,6 +14,7 @@ import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked }
 export function SubjectPage() {
   const { subject } = useParams();
   const { state } = useBlocland();
+  const univers = useUnivers();
   if (!subject || !(subject in SUBJECTS)) return <NotFoundPage />;
   const info = SUBJECTS[subject as Subject];
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
@@ -34,7 +37,7 @@ export function SubjectPage() {
       {biomesOf(subject as Subject).length > 0 && (
         <>
           <h2 className="section-title">
-            <Icon name="map" /> Dans Archipéo
+            <Icon name="map" /> Dans {UNIVERS[univers].nom}
           </h2>
           <p className="section-intro">
             Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque mission réussie donne des blocs pour le village.

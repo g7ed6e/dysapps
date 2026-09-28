@@ -77,7 +77,7 @@ export default function WorldCanvas({
     chantier,
   );
   const host = useRef<HTMLDivElement>(null);
-  // Le rendu du monde (drapeau `?rendu=archipeo`), lu une fois pour la vie du composant.
+  // Le rendu du monde (celui de l'univers, voir rendu.ts), lu une fois pour la vie du composant.
   const rendu = useRef(renduDuMonde()).current;
   const world = useRef<Scene3D | null>(null);
   const pickRef = useRef(onPickIsland);

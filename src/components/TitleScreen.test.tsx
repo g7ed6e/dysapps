@@ -28,7 +28,7 @@ it('s’ouvre au lancement ; « Jouer » débloque la voix et ne revient plus de
   vi.stubGlobal('SpeechSynthesisUtterance', class { volume = 1; constructor(public text: string) {} });
   const user = userEvent.setup();
   const { unmount } = renderTitle();
-  expect(screen.getByRole('dialog', { name: 'Archipéo' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'Blocland' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Jouer/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   // Une phrase vide et silencieuse, dite pendant le toucher : la voix est débloquée.

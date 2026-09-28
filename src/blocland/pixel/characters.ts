@@ -1,7 +1,7 @@
 // Les personnages et les repères de la 2D, dessinés en code : le bonhomme (4 directions, 2 pas), les créatures et les
 // Gardiens (tirés de leurs propres cubes, en petits pixels), les panneaux des bornes de mission, et les repères jaunes.
 // Chaque sprite a un contour sombre d'un pixel, comme le décor. Rien d'emprunté.
-// Derrière `?rendu=archipeo` (lot R6), les personnages sont ceux d'Archipéo (./personnagesPeints.ts, chargé à la demande).
+// Dans l’univers Archipéo (lot R6), les personnages sont ceux d'Archipéo (./personnagesPeints.ts, chargé à la demande).
 import { shade, type VoxelCube } from '../Voxel';
 import { buildTiles } from './oblique';
 

@@ -1,4 +1,4 @@
-// Le dessin de la 2D peinte (lot R7), derrière `?rendu=archipeo` : chaque morceau de terrain est peint pixel par pixel
+// Le dessin de la 2D peinte (lot R7), dans l’univers Archipéo (voir rendu.ts) : chaque morceau de terrain est peint pixel par pixel
 // dans une image (aplats de la palette, grandes taches, falaises en dégradé et en strates larges, franges en festons,
 // écume, bandes claires de la mer près des rives), puis les traits (rebords, arêtes), les ombres bleutées et les
 // fantômes par-dessus. Les couleurs viennent de ./painted.ts ; la géométrie des cases est celle de ./oblique.ts, la même
