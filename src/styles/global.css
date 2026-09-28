@@ -1029,6 +1029,16 @@ button.app-card:active {
 .quiz-steps li.current {
   background: var(--sand);
 }
+/* Le défi d'une sentinelle (lot 6) : les écrans passés en Brume, l'écran en cours à son contour épais ; seules les
+   pastilles de la jauge disent les réussites. */
+.quiz-steps-neutres li.done {
+  background: #e5ebe3;
+  border-color: var(--ink);
+}
+.quiz-steps-neutres li.current {
+  background: transparent;
+  border-width: calc(var(--border-width) * 2);
+}
 .question-count {
   display: inline-block;
   padding: 0 0.7rem;
@@ -2985,6 +2995,36 @@ button.app-card:active {
   background: var(--sand);
   transition: width 0.6s ease;
 }
+/* Archipéo (lot 6) : la jauge du défi d'une sentinelle, une pastille par épreuve ; pleine (Sable, une petite flamme)
+   pour une réussite, vide pour une épreuve ratée ou pas encore jouée, sans croix ni rouge. */
+.arena-pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.arena-pastille {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fbf6ea;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.arena-pastille.on {
+  border-color: #142b38;
+  background: #daa66a;
+  color: #142b38;
+}
+.arena-seuil {
+  margin: 0;
+  font-weight: 700;
+  max-width: none;
+}
+.arena-seuil .syl-0,
+.arena-seuil .syl-1 {
+  color: inherit;
+}
 .arena-line {
   margin: 0;
   font-weight: 700;
@@ -4736,4 +4776,14 @@ button.island-quest {
 .whale-word-dots span.on {
   background: var(--primary-bg);
   border-color: var(--primary-bg);
+}
+
+/* Le moment du rallumage (lot 6) : « Passer » saute tous les moments restants. */
+/* Le titre du défi (Archipéo) laisse la place du bouton Pause, fixé en haut à droite : il revient à la ligne avant lui. */
+.defi-titre {
+  padding-right: calc(56px + 0.6rem);
+}
+.rallumage-passer {
+  min-height: 48px;
+  justify-self: end;
 }

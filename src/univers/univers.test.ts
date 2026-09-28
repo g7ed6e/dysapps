@@ -18,6 +18,12 @@ function tousLesTextes(t: TextesUnivers): string[] {
     out.push(l.navireGardiens(n, 2, 'Premiers Rivages', 'la voile'), l.navireGardiens(0, n, 'Premiers Rivages', 'la voile'));
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens('Premiers Rivages'), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
+  out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
+  const d = t.sentinelles;
+  if (d) {
+    out.push(d.consigne, d.jauge, d.seuil(5, false), d.seuil(5, true), d.rallume('Le Grand Chêne'));
+    for (const n of [0, 1, 2]) out.push(d.compte(n, 7), d.jaugeLue(n, 7, 5));
+  }
   return out;
 }
 
@@ -116,5 +122,32 @@ describe('les textes d’univers', () => {
       const arrivee = { id: `archipel-${a.classe}`, kind: 'arrivee' as const, archipelago: a.classe, island: a.port };
       expect(pagesBaleine(arrivee, textesDe('archipeo'))).toEqual(pagesBaleine(arrivee, textesDe('blocland')));
     }
+  });
+
+  it('Blocland garde son arène : pas de sentinelles, et ses mots du défi d’avant le lot 6', () => {
+    const t = textesDe('blocland');
+    expect(t.sentinelles).toBeNull();
+    expect([t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), t.libelles.arene('le Grand Chêne')]).toEqual([
+      'Le Gardien accepte ton défi !',
+      'Prêt à t’affronter',
+      'Le Grand Chêne n’accepte que les bâtisseurs entraînés. Obtiens 2 étoiles dans chaque mission, puis reviens.',
+      'L’arène du Gardien',
+    ]);
+  });
+
+  it('Archipéo : le défi d’une sentinelle compte les réussites, écrit le seuil, et ne combat jamais', () => {
+    const t = textesDe('archipeo');
+    const d = t.sentinelles!;
+    expect(t.libelles.arene('le Grand Chêne')).toBe('Le défi du Grand Chêne');
+    expect(t.libelles.arene('la Dune vivante')).toBe('Le défi de la Dune vivante');
+    expect(t.libelles.arene('l’Hydre des marais')).toBe('Le défi de l’Hydre des marais');
+    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il en faut 5 pour la rallumer.', 'C’est assez pour la rallumer.']);
+    expect([d.jaugeLue(1, 7, 5), d.jaugeLue(2, 7, 5)]).toEqual(['1 épreuve réussie sur 7, il en faut 5', '2 épreuves réussies sur 7, il en faut 5']);
+    expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne brille à nouveau.');
+    expect(tousLesTextes(t).join('\n')).not.toMatch(/bâtisseur|affront|arène/);
+    const neufs = [t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), d.consigne, d.seuil(5, true)];
+    expect(neufs.join('\n')).not.toMatch(/!/);
+    // « brille à nouveau » : au village et à la baleine seulement.
+    for (const g of Object.values(t.gardiens)) expect(Object.values(g.guardianSays).join()).not.toMatch(/à nouveau/);
   });
 });

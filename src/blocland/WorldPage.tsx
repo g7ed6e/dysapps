@@ -31,6 +31,10 @@ import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
+import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
+import { DEROULE } from './world/rallumage';
+import { renduDuMonde } from './rendu';
+import { useTextes } from '../univers';
 import {
   borneTouchee,
   capVers,
@@ -118,10 +122,24 @@ export function WorldPage() {
   const archipelago = archipelagoOf(at);
   const a: ArchipelagoId = archipelago.classe;
   const trophyBlocks = useMemo(() => trophies(progress.badges), [progress.badges]);
-  const cubes = useMemo(() => worldCubes(a, state.progress, state.village, false, trophyBlocks), [a, state.progress, state.village, trophyBlocks]);
+  // Les sentinelles (lot 6) : dans un univers qui en a, et quand le monde les dessine (le rendu Archipéo), chaque
+  // Gardien est là dès l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village,
+  // éteint, pour se rallumer sous les yeux de l'élève.
+  const textes = useTextes();
+  const [rendu] = useState(renduDuMonde);
+  const sentinelles = textes.sentinelles !== null && rendu === 'archipeo';
+  const rallumage = useRallumage(state.progress, a, sentinelles);
+  const eteints = rallumage.enAttente.join();
+  const cubes = useMemo(
+    () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles),
+    [a, state.progress, state.village, trophyBlocks, sentinelles],
+  );
   const creatures = useMemo(
-    () => [...creaturePlacements(a, state.village.bridges), ...guardianPlacements(a, state.progress, state.village.bridges)],
-    [a, state.progress, state.village.bridges],
+    () => [
+      ...creaturePlacements(a, state.village.bridges),
+      ...guardianPlacements(a, state.progress, state.village.bridges, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false } : c)),
+    ],
+    [a, state.progress, state.village.bridges, sentinelles, eteints],
   );
   // La disposition en grille (world/grille.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
   // qui suit le sol et contourne arbres, bornes, maisons et créatures.
@@ -188,7 +206,8 @@ export function WorldPage() {
   // Le mot de la baleine : aux grandes étapes de l'archipel, une fois le tutoriel fermé et hors voyage. Il attend un
   // instant (la fin d'une pose, d'une arrivée), puis la caméra cadre l'île concernée et la baleine passe au large.
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
-  const whale = useWhaleWord(state, a, tutoDone);
+  // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
+  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
@@ -452,6 +471,80 @@ export function WorldPage() {
     whale.close();
     setWhaleOpen(null);
   };
+  // Le moment du rallumage (lot 6) : hors voyage et sans panneau plein, une sentinelle après l'autre (trois au plus).
+  // La caméra glisse vers elle, puis elle se rallume en fondu avec une cloche (une par retour) et son mot ; la vue reste
+  // un instant, et l'élève reprend la main. Un toucher saute le moment : la sentinelle est allumée tout de suite.
+  const [moment, setMoment] = useState<{ id: BiomeId; phase: 'camera' | 'fondu'; seq: number } | null>(null);
+  const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
+  const clocheDuRetour = useRef(false);
+  const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
+  useEffect(() => {
+    if (!aRallumer || moment) return;
+    const timer = window.setTimeout(
+      () => {
+        setMoment((m) => ({ id: aRallumer, phase: 'camera', seq: (m?.seq ?? 0) + 1 }));
+        const spot = grille.placeDe({ genre: 'gardien', id: aRallumer });
+        setFocus((f) => ({ island: aRallumer, ...(spot ? { spot } : {}), seq: f.seq + 1 }));
+      },
+      clocheDuRetour.current ? DEROULE.entreDeux : DEROULE.attente,
+    );
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aRallumer, moment]);
+  const direLeRallumage = (id: BiomeId) => {
+    setMotRallume(id);
+    if (!clocheDuRetour.current && settings.sounds) playBell();
+    clocheDuRetour.current = true;
+  };
+  const finirLeRallumage = (id: BiomeId) => {
+    rallumage.noterVu(id);
+    setMoment(null);
+  };
+  useEffect(() => {
+    if (!moment) return;
+    const timer =
+      moment.phase === 'camera'
+        ? window.setTimeout(
+            () => {
+              setMoment({ ...moment, phase: 'fondu' });
+              direLeRallumage(moment.id);
+            },
+            reduceMotion ? 0 : DEROULE.camera,
+          )
+        : window.setTimeout(() => finirLeRallumage(moment.id), reduceMotion ? DEROULE.reste : DEROULE.fondu + DEROULE.reste);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moment?.seq, moment?.phase]);
+  // Plus rien à rallumer : la prochaine fois, une cloche de nouveau.
+  useEffect(() => {
+    if (!rallumage.enAttente.length && !moment) clocheDuRetour.current = false;
+  }, [rallumage.enAttente.length, moment]);
+  const sauterLeRallumage = () => {
+    if (!moment) return;
+    if (moment.phase === 'camera') direLeRallumage(moment.id);
+    finirLeRallumage(moment.id);
+  };
+  /** « Passer » (ou Échap, ou Entrée) : ce moment et ceux qui suivent, toutes les sentinelles allumées tout de suite. */
+  const passerLesRallumages = () => {
+    if (!moment) return;
+    if (moment.phase === 'camera') direLeRallumage(moment.id);
+    for (const id of rallumage.enAttente) rallumage.noterVu(id);
+    setMoment(null);
+  };
+  useEffect(() => {
+    if (!moment) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' && e.key !== 'Enter') return;
+      // Entrée sur un bouton (« Écouter », « J’ai compris ») garde son rôle.
+      if (e.key === 'Enter' && (e.target as Element | null)?.closest?.('button, a, input, select, textarea')) return;
+      e.preventDefault();
+      passerLesRallumages();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moment?.seq, rallumage.enAttente.join()]);
+
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
 
@@ -532,7 +625,7 @@ export function WorldPage() {
 
   return (
     <div className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
-      <div className="world-stage">
+      <div className="world-stage" onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
             archipelago={a}
@@ -552,6 +645,7 @@ export function WorldPage() {
             quests={quests}
             islandLabels={voyage ? undefined : islandLabels}
             whalePass={whaleWord && !reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
+            rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, dureeMs: DEROULE.fondu } : null}
             burst={burst}
             onIntent={onIntent}
             chantier={Boolean(island)}
@@ -676,7 +770,17 @@ export function WorldPage() {
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
         <div className="world-overlay-bottom">
-          {whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} />}
+          {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
+          {moment && !motRallume && (
+            <button type="button" className="button rallumage-passer" onClick={passerLesRallumages}>
+              <Icon name="play" /> Passer
+            </button>
+          )}
+          {motRallume ? (
+            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} />
+          ) : (
+            whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} />
+          )}
           <Tutorial
             id="village-immersif"
             replay={replay}

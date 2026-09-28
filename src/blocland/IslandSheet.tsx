@@ -171,7 +171,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
               </span>
               <span className="island-quest-text">
                 <span className="island-quest-title">{guardianTitle(biome)}</span>
-                <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : 'Le Gardien accepte ton défi !'}</span>
+                <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : textes.libelles.defiPret}</span>
               </span>
               {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label={textes.libelles.etoiles} />}
             </Link>

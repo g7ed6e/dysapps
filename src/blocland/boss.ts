@@ -40,11 +40,19 @@ export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars
   return typesWithContent(biome).every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
 }
 
-export type GuardianStatus = 'hidden' | 'ready' | 'beaten';
+/**
+ * Où en est le Gardien d'une île : caché, en attente de son défi (une sentinelle éteinte, visible dès l'ouverture de
+ * l'île, lot 6), prêt à le relever, ou vaincu.
+ */
+export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 
-/** Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. */
-export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[]): GuardianStatus {
-  if (!isBiomeUnlocked(biome.id, bridges) || !isBossUnlocked(biome, progress)) return 'hidden';
+/**
+ * Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. Avec
+ * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente.
+ */
+export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {
+  if (!isBiomeUnlocked(biome.id, bridges)) return 'hidden';
+  if (!isBossUnlocked(biome, progress)) return sentinelles ? 'waiting' : 'hidden';
   return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
 }
 

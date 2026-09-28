@@ -152,7 +152,7 @@ export function BiomePage() {
             {beaten && boss ? (
               <Stars count={boss.stars} label={textes.libelles.etoilesSur3(boss.stars)} />
             ) : ready ? (
-              <span className="tag tag-new">Prêt à t’affronter</span>
+              <span className="tag tag-new">{textes.libelles.defiPretCourt}</span>
             ) : (
               <span className="tag">
                 <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}

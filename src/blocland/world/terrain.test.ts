@@ -247,6 +247,34 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(cells.find((c) => c.x === gold.x && c.y === gold.y)!.guardian).toBe(false);
 });
 
+it('avec les sentinelles (Archipéo, lot 6), l’îlot et le Gardien sont là dès l’ouverture de l’île, sans pas japonais tant que le défi n’est pas prêt', async () => {
+  const { typesWithContent } = await import('../boss');
+  const { exercisesOf } = await import('../exercises');
+  const { getBiome } = await import('../biomes');
+  const ready: Record<string, { stars: number }> = {};
+  for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
+  const galets = (cubes: ReturnType<typeof worldCubes>) =>
+    bossIsletSteps('foret').filter((s) => cubes.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).length;
+  // La Forêt est ouverte dès le début : sa sentinelle attend, éteinte, sur son îlot, sans chemin.
+  const [g] = guardianPlacements('6e', {}, [], true);
+  expect(g).toMatchObject({ id: 'foret', kind: 'guardian', beaten: false });
+  const attend = worldCubes('6e', {}, undefined, false, [], true);
+  const cells = bossIsletCells('foret');
+  expect(attend.filter((c) => c.tag === 'foret' && c.z === 0 && cells.some((k) => k.x === c.x && k.y === c.y))).toHaveLength(cells.length);
+  expect(galets(attend)).toBe(0);
+  // Une île fermée n'a pas de sentinelle.
+  const { isBiomeUnlocked } = await import('./archipelago');
+  const ouvertes = BIOMES.filter((b) => b.classe === '6e' && isBiomeUnlocked(b.id, [])).map((b) => b.id);
+  expect(ouvertes.length).toBeLessThan(BIOMES.filter((b) => b.classe === '6e').length);
+  expect(guardianPlacements('6e', {}, [], true).map((p) => p.id)).toEqual(ouvertes);
+  // Le défi prêt : le chemin s'ouvre, comme sans sentinelles.
+  expect(galets(worldCubes('6e', ready, undefined, false, [], true))).toBe(bossIsletSteps('foret').length);
+  // L'îlot de la Forêt est alors le même qu'avant le lot 6 (l'îlot de la Plaine, qui attend, peut couvrir un arbre voisin).
+  const front = bossIsletOrigin(0).y;
+  const foret = (cubes: ReturnType<typeof worldCubes>) => cubes.filter((c) => c.tag === 'foret' && c.y < front + ISLET_H + ISLET_GAP);
+  expect(foret(worldCubes('6e', ready, undefined, false, [], true))).toEqual(foret(worldCubes('6e', ready)));
+});
+
 it('chaque îlot porte tout son Gardien, a ses pas japonais, et flotte sur sa roche en altitude', async () => {
   const { typesWithContent } = await import('../boss');
   const { exercisesOf } = await import('../exercises');

@@ -6,7 +6,7 @@ import type { BiomeId } from '../../biomes';
 import { clamp } from '../decor/pinceau';
 import { creaturePeinte } from './creaturesPeintes';
 import type { FacettesDePersonnage } from './peint';
-import { couleursAllumees } from './sentinelle';
+import { couleursAllumees, type Allumage } from './sentinelle';
 import { sentinellePeinte } from './sentinellesPeintes';
 
 /** Le modèle d'un personnage montré hors du monde : la créature d'une île, ou son Gardien en sentinelle. */
@@ -17,8 +17,8 @@ export interface OptionsDuPortrait {
   angle?: number;
   /** La plongée : l'inclinaison de la vue vers le bas, en radians. */
   plongee?: number;
-  /** Pour une sentinelle : son degré d'allumage (0 : éteinte, 1 : rallumée). */
-  allumage?: number;
+  /** Pour une sentinelle : son degré d'allumage (0 : éteinte, 1 : rallumée), ou celui de sa pierre et de ses lueurs. */
+  allumage?: Allumage;
 }
 
 export interface Portrait {

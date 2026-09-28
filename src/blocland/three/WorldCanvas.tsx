@@ -53,6 +53,7 @@ export default function WorldCanvas({
   quests: questsEnAncrages,
   islandLabels,
   whalePass = null,
+  rallumage = null,
   burst: burstEnAncrage,
   className,
   label,
@@ -382,6 +383,13 @@ export default function WorldCanvas({
   useEffect(() => {
     world.current?.personnages.poserLesCreatures(creatures);
   }, [creatures]);
+
+  // ---- Le moment du rallumage (lot 6) : la sentinelle se rallume en fondu, d'un coup avec moins d'animations
+  useEffect(() => {
+    world.current?.personnages.rallumer(rallumage?.id ?? null, reduceMotion ? 0 : (rallumage?.dureeMs ?? 0));
+    // Un moment par `seq`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rallumage?.id, rallumage?.seq]);
 
   // ---- Le Bloc-Navire : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
   useEffect(() => {

@@ -15,8 +15,11 @@ import {
   lueursDesGardiens,
   pointDePose,
   type Fusion,
+  type FusionDesGardiens,
   type Os,
+  type PersonnagePlace,
 } from '../world/personnages/fusions';
+import type { BiomeId } from '../biomes';
 import { startStrolls, strollAt, type Stroll } from '../world/scene';
 import { LISERE_DE_NUIT } from '../world/personnages/couleurs';
 import type { Lumiere } from './lumiere';
@@ -173,6 +176,38 @@ export function habiller(
   matGardiens.force.value = 1;
   let maillages: THREE.Mesh[] = [];
   let promeneurs: Promeneur[] = [];
+  // Les sentinelles posées, et le rallumage en cours (lot 6) : le Gardien, le début et la durée de son fondu.
+  let sentinelles: { f: FusionDesGardiens; g: THREE.BufferGeometry; placements: PersonnagePlace[] } | null = null;
+  let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
+  /** Le degré de chaque Gardien : celui de son placement, et celui du fondu pour le Gardien qui se rallume. */
+  const degresDe = (gardiens: { id: BiomeId }[]): Partial<Record<BiomeId, number>> => {
+    const degres: Partial<Record<BiomeId, number>> = Object.fromEntries(gardiens.map((c) => [c.id, allumageDuGardien(c)]));
+    if (fondu && fondu.id in degres) {
+      const u = fondu.dureeMs > 0 ? Math.min(1, (performance.now() - fondu.t0) / fondu.dureeMs) : 1;
+      degres[fondu.id] = Math.max(degres[fondu.id] ?? 0, u * u * (3 - 2 * u));
+    }
+    return degres;
+  };
+  /**
+   * Repeint les sentinelles à leurs degrés. Avec `seul` (le fondu, image par image), seul ce Gardien est repeint, et
+   * seule sa plage part vers la carte graphique.
+   */
+  const repeindre = (seul?: BiomeId) => {
+    if (!sentinelles) return;
+    const { f, g, placements } = sentinelles;
+    const degres = degresDe(placements);
+    const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
+    const lueurs = g.getAttribute('lueur') as THREE.BufferAttribute;
+    couleursDesGardiens(f, degres, couleurs.array as Float32Array<ArrayBuffer>, seul);
+    lueursDesGardiens(f, degres, lueurs.array as Float32Array<ArrayBuffer>, seul);
+    const plage = seul ? f.plages.find((p) => p.id === seul) : undefined;
+    if (plage) {
+      couleurs.addUpdateRange(plage.debut * 9, (plage.fin - plage.debut) * 9);
+      lueurs.addUpdateRange(plage.debut * 12, (plage.fin - plage.debut) * 12);
+    }
+    couleurs.needsUpdate = true;
+    lueurs.needsUpdate = true;
+  };
 
   const vider = () => {
     for (const m of maillages) {
@@ -182,6 +217,7 @@ export function habiller(
     }
     maillages = [];
     promeneurs = [];
+    sentinelles = null;
     for (const c of [...creatures.children]) creatures.remove(c);
   };
 
@@ -239,7 +275,7 @@ export function habiller(
           const dy = piedsSur(champ(), o[0], o[2], o[1]) - o[1];
           if (dy) for (let k = f.plages[i].debut * 9 + 1; k < f.plages[i].fin * 9; k += 3) f.positions[k] += dy;
         });
-        const degres = Object.fromEntries(gardiens.map((c) => [c.id, allumageDuGardien(c)]));
+        const degres = degresDe(gardiens);
         const g = geometrieDe(f, lueursDesGardiens(f, degres));
         // Le cast est sûr : `geometrieDe` fait l'attribut `color` d'un Float32Array neuf (une copie de `f.colors`, que les
         // couleurs allumées réécrivent sans toucher au modèle), que `getAttribute` rend typé en `TypedArray`.
@@ -247,6 +283,7 @@ export function habiller(
         const mesh = new THREE.Mesh(g, matGardiens.materiau);
         scene.add(mesh);
         maillages.push(mesh);
+        sentinelles = { f, g, placements: gardiens };
         // Les sentinelles ne bougent pas : leurs boîtes non plus.
         gardiens.forEach((c, i) => {
           const { debut, fin } = f.plages[i];
@@ -267,6 +304,11 @@ export function habiller(
       // Le liseré froid des vivants, la nuit (les sentinelles n'en ont pas : leur pierre se lit sans).
       matCreatures.lisere.value = nuit;
       matBonhomme.lisere.value = nuit;
+      // Le fondu du rallumage, jusqu'à son terme (d'un coup quand l'appareil demande moins d'animations : durée nulle).
+      if (fondu && !fondu.fini) {
+        repeindre(fondu.id);
+        fondu.fini = performance.now() - fondu.t0 >= fondu.dureeMs;
+      }
       if (reduit) return;
       for (const q of promeneurs) {
         const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);
@@ -274,6 +316,11 @@ export function habiller(
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
       }
+    },
+    rallumer: (id, dureeMs) => {
+      if (id === (fondu?.id ?? null)) return;
+      fondu = id ? { id, t0: performance.now(), dureeMs, fini: false } : null;
+      repeindre();
     },
     dispose: () => {
       vider();

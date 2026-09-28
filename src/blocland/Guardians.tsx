@@ -8,6 +8,7 @@ import { renduDuMonde } from './rendu';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 import { VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/personnages/gardiens';
+import type { Allumage } from './world/personnages/sentinelle';
 
 /** Le Gardien d'Archipéo en SVG (lot R6, derrière `?rendu=archipeo`), chargé à la demande. */
 const PersonnageSvg = lazy(() => import('./PersonnageSvg'));
@@ -20,17 +21,23 @@ interface Props {
   mood?: GuardianMood;
   /** Change à chaque réaction, pour rejouer l'animation. */
   seq?: number;
+  /**
+   * La sentinelle d'Archipéo : son allumage, donné par le défi (lot 6), et la durée de son fondu en secondes ; sans lui,
+   * elle s'allume d'un coup quand l'humeur devient « beaten ».
+   */
+  allumage?: Allumage;
+  fondu?: number;
 }
 
 /** Le Gardien en 3D (respiration), en SVG sans WebGL ; l'humeur anime le cadre (s'incline, gronde, s'écroule). */
-export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
+export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: donne, fondu = 0 }: Props) {
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
   const cubes = GUARDIAN_CUBES[biome];
-  // Le rendu d'Archipéo (drapeau `?rendu=archipeo`) : le Gardien en sentinelle de pierre, éteinte, rallumée (1) une
-  // fois vaincu, d'un coup, sans fondu ; sans le drapeau, en cubes, inchangé.
+  // Le rendu d'Archipéo (drapeau `?rendu=archipeo`) : le Gardien en sentinelle de pierre, éteinte, que le défi rallume
+  // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois vaincue ; sans le drapeau, en cubes, inchangé.
   const [archipeo] = useState(() => renduDuMonde() === 'archipeo');
-  const allumage = mood === 'beaten' ? 1 : 0;
+  const allumage = donne ?? (mood === 'beaten' ? 1 : 0);
   const enCubes = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;
   // Le temps que la sentinelle arrive : sa place, vide, à sa taille (pas le Gardien en cubes, qui sauterait).
   const place = <span className="creature guardian-svg" role="img" aria-label={label} />;
@@ -46,6 +53,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0 }: Props) {
       kind="guardian"
       id={biome}
       allumage={allumage}
+      fondu={fondu}
       reduceMotion={reduceMotion}
       cameraDirection={[-0.55, -0.85]}
       elevation={0.35}
