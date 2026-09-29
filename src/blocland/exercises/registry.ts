@@ -171,4 +171,13 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'es-numeros': { component: CalculScreen, batch: 1 },
   'es-familia': { component: CalculScreen, batch: 1 },
   'es-el-la': { component: CalculScreen, batch: 1 },
+  // LV2 du Jardin des heures (4e) : l'heure entendue puis une scène, la journée, un document à lire, la grammaire.
+  'de-uhrzeit': { component: CalculScreen, batch: 1 },
+  'de-mein-tag': { component: CalculScreen, batch: 1 },
+  'de-stundenplan': { component: CalculScreen, batch: 1 },
+  'de-ich-kann': { component: CalculScreen, batch: 1 },
+  'es-hora': { component: CalculScreen, batch: 1 },
+  'es-mi-dia': { component: CalculScreen, batch: 1 },
+  'es-horario': { component: CalculScreen, batch: 1 },
+  'es-ser-estar': { component: CalculScreen, batch: 1 },
 };

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { EnCasesDuMonde } from '../world/view';
-import { creerBornes } from './bornes';
+import { creerBornes, pileDEtoiles } from './bornes';
 import type { Instant, Monde } from './partie';
 
 /** Les repères d'une île : un à faire (qui rebondit), un gagné (qui tourne), un chemin, et le fanion sur la Carte. */
@@ -45,4 +45,30 @@ it('sans le réglage, ils bougent', () => {
   const avant = JSON.stringify(pose());
   b.animer!(2.1, 0.016, false);
   expect(JSON.stringify(pose())).not.toBe(avant);
+});
+
+it('les étoiles gagnées d’une borne : une pile en un seul maillage (un appel de dessin), autant de cubes que d’étoiles', () => {
+  const scene = new THREE.Scene();
+  const b = creerBornes({ scene } as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
+  type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
+  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
+  b.poserLesMissions([mission('volcan:a', 0, 3), mission('volcan:b', 3, 1)]);
+  const [trois, une] = b.missions.children;
+  expect(trois.children).toHaveLength(1);
+  expect(une.children).toHaveLength(1);
+  const cubes = (g: THREE.Object3D) => ((g.children[0] as THREE.Mesh).geometry.getAttribute('position').count / 36);
+  expect(cubes(trois)).toBe(3);
+  expect(cubes(une)).toBe(1);
+  // La pile monte de 0,6 par étoile, comme avant.
+  const box = new THREE.Box3().setFromObject(trois.children[0]);
+  expect(box.max.y - box.min.y).toBeCloseTo(1.2 + 0.45, 3);
+  b.dispose();
+});
+
+it('pileDEtoiles : une géométrie neuve à chaque appel (vider la dispose sans toucher aux autres)', () => {
+  const a = pileDEtoiles(2);
+  const c = pileDEtoiles(2);
+  expect(a).not.toBe(c);
+  a.dispose();
+  expect(c.getAttribute('position').count).toBe(72);
 });

@@ -86,7 +86,8 @@ it('chaque élément du décor est posé sur la pente, au milieu de sa case, san
       const pts = sommets(maillage, i);
       if (!pts.length) return;
       const bas = Math.min(...pts.map((p) => p[1]));
-      if (e.genre === 'fumee' || e.genre === 'ecueil' || e.genre === 'banc' || e.genre === 'cascade') return;
+      // (Le ponton du Jardin descend la falaise jusqu'à l'eau.)
+      if (e.genre === 'fumee' || e.genre === 'ecueil' || e.genre === 'banc' || e.genre === 'cascade' || e.genre === 'ponton') return;
       if (!surTerre(champ, e)) return;
       const w = e.emprise;
       // Le pied touche le sol (ou s'y enfonce), au plus bas de son emprise pour un repère de plusieurs cases. Le grand

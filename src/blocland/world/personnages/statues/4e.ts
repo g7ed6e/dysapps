@@ -1,9 +1,36 @@
 // Les Gardiens des Anciens Ateliers (4e) en sentinelles de pierre (lot R6), d'après l'intention du directeur
-// artistique : la statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
+// artistique : la statue et ce qui s'allume. Sept îles (le Jardin des heures, LV2, en plus) pour 1 800 triangles,
+// socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../gabarit';
 import { devant, facette, fuseau, pave, pose, type Anneau, type Trace, type V3 } from '../peint';
-import { bandeauDuSocle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
+import { bandeauDuSocle, dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
+
+/**
+ * Le Soleil de cuivre (DA, LV2-4, retouches du consultant Archipéo adoptées par le DA le 28/09) : un disque de cuivre
+ * patiné, debout, et ses huit rayons droits, égaux et pointus (jamais un rouage : ni dents carrées, ni alternance de
+ * longs et de courts, ni anneau au bord). Le disque, plus petit que les rayons ne sont longs, à dix-huit pans. Sans
+ * mât : il repose sur la pointe de son rayon du bas, enfoncée dans un berceau de pierre sur le socle ; toute la
+ * sentinelle tient dans les cinq cases, et sous 5,2 blocs dans le monde (environ 4). `enfonce` : ce que la pointe du bas
+ * entre dans le berceau.
+ */
+export const SOLEIL_DE_CUIVRE = { rayon: 1.15, pans: 18, bout: 2.4, base: 0.26, berceau: 1.3, enfonce: 0.22, epaisseur: 0.25, rayons: 8 } as const;
+const CENTRE_DU_SOLEIL = SOLEIL_DE_CUIVRE.berceau + SOLEIL_DE_CUIVRE.bout - SOLEIL_DE_CUIVRE.enfonce;
+/** Les directions des rayons : le haut, puis de 45° en 45°. */
+const DIRECTIONS_DES_RAYONS = Array.from({ length: SOLEIL_DE_CUIVRE.rayons }, (_, k): [number, number] => {
+  const a = Math.PI / 2 + (k / SOLEIL_DE_CUIVRE.rayons) * Math.PI * 2;
+  return [Math.cos(a), Math.sin(a)];
+});
+/** Le tour qui montre de face, à une caméra venue de (`dx`, `dz`), une statue plate dessinée face à −Z. */
+const deFacePour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
+/**
+ * Le tour du Soleil (DA, LV2-4) : un disque se lit mal par la tranche. Dans le monde, vers le milieu des caméras qui le
+ * regardent, mesurées de son îlot : celle du bonhomme sur le Jardin (72° à l'est du sud), celle du bonhomme sur le
+ * Théâtre (20 à 42°) et celle qui glisse vers lui au rallumage (85°) (three/camera.ts, `VIEW`, `ISLAND_VIEW`,
+ * `viewYaw`) : tourné de 52°, aucune ne le voit à plus de 33° de face. Au défi, sa caméra de trois quarts
+ * (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]) le voit à 33° : il y reste droit.
+ */
+export const TOURS_DU_SOLEIL = { monde: deFacePour(Math.sin((52 * Math.PI) / 180), -Math.cos((52 * Math.PI) / 180)), defi: 0 };
 
 const TORSE_DU_TITAN: Anneau[] = [
   [2.8, 1.25, 0.8],
@@ -311,6 +338,52 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     },
     // La rampe, allumée sur tout l'avant du socle (la face du devant et ses deux voisines).
     veines: (T, a) => bandeauDuSocle(T, [6, 7, 0], 0.64, 0.82, a.lueur),
+  },
+  jardin: {
+    // Le Soleil de cuivre (DA, LV2-4) : un disque de cuivre patiné, sans visage ni lueur orange, ses huit rayons droits
+    // et pointus. Ce qui se rallume est commun à tous les Gardiens : le fil de ses rayons, plus clair à chaque épreuve
+    // réussie du défi, et, à la victoire, toute la statue en Sable. Sans mât.
+    nom: 'le Soleil de cuivre',
+    allume: 'ses rayons',
+    tour: TOURS_DU_SOLEIL,
+    sculpture: (T, a) => {
+      const S = SOLEIL_DE_CUIVRE;
+      const c = CENTRE_DU_SOLEIL;
+      // Le berceau de pierre, sur le socle, où s'enfonce la pointe du rayon du bas.
+      pave(T, -0.55, 1, -0.4, 0.55, S.berceau, 0.4, a.pierre);
+      // Le disque : dix-huit pans, patiné au milieu (le vert-de-gris, en lichen), le bord de cuivre en pierre.
+      const disque = Array.from({ length: S.pans }, (_, i): [number, number] => {
+        const t = Math.PI / 2 + (i / S.pans) * Math.PI * 2;
+        return [S.rayon * Math.cos(t), c + S.rayon * Math.sin(t)];
+      });
+      dalle(T, disque, -S.epaisseur, S.epaisseur, a.pierre);
+      plaque(T, 0, c, S.rayon * 0.72, S.rayon * 0.72, S.pans, a.lichen, () => -S.epaisseur);
+      // Les rayons : des triangles pointus, tous égaux, du bord du disque (un peu dedans) jusqu'à la pointe.
+      for (const [dx, dy] of DIRECTIONS_DES_RAYONS) {
+        const [px, py] = [-dy, dx];
+        const pt = (r: number, w: number): [number, number] => [r * dx + w * px, c + r * dy + w * py];
+        const r0 = S.rayon - 0.15;
+        dalle(T, [pt(r0, -S.base), pt(S.bout, 0), pt(r0, S.base)], -S.epaisseur * 0.8, S.epaisseur * 0.8, a.pierre);
+      }
+    },
+    veines: (T, a) => {
+      const S = SOLEIL_DE_CUIVRE;
+      const c = CENTRE_DU_SOLEIL;
+      // Le fil de chaque rayon : il part du cœur du disque (les huit s'y rejoignent, une seule lueur en étoile) et court
+      // sur la face avant du rayon presque jusqu'à la pointe, effilé comme lui, sans jamais le déborder (à mi-largeur du
+      // rayon au plus). Pas d'anneau au bord du disque : il ferait une roue dentée.
+      const [zd, zr] = [-S.epaisseur - 0.03, -S.epaisseur * 0.8 - 0.014];
+      const r0 = S.rayon - 0.15;
+      const demi = (r: number) => (S.base * (S.bout - r)) / (S.bout - r0);
+      const [coeur, ra, rb] = [0.3, S.rayon, S.bout - 0.25];
+      const [ha, hb] = [Math.min(0.05 * a.veines, demi(ra) * 0.5), Math.min(0.012 * a.veines, demi(rb) * 0.5)];
+      for (const [dx, dy] of DIRECTIONS_DES_RAYONS) {
+        const [px, py] = [-dy, dx];
+        const p = (r: number, w: number, z: number): V3 => [r * dx + w * px, c + r * dy + w * py, z];
+        facette(T, [p(coeur, -ha, zd), p(ra, -ha, zd), p(ra, ha, zd), p(coeur, ha, zd)], [0, c, zd + 1], a.lueur);
+        facette(T, [p(ra, -ha, zr), p(rb, -hb, zr), p(rb, hb, zr), p(ra, ha, zr)], [0, c, zr + 1], a.lueur);
+      }
+    },
   },
   gare: {
     nom: 'la Locomotive',

@@ -41,12 +41,12 @@
       "spoken": "setenta y seis",
       "choices": [
         "66",
-        "67",
-        "76"
+        "76",
+        "77"
       ],
       "answer": "76",
       "hint": "set- (comme siete, 7) ou ses- (comme seis, 6) ? La dizaine vient d’abord.",
-      "explanation": "setenta y seis = 76 : setenta (70, set- comme siete), puis y, puis seis (6).",
+      "explanation": "setenta y seis = 76 : setenta (70, set- comme siete), puis y, puis seis (6). 66 se dit sesenta y seis, 77 setenta y siete.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -153,16 +153,16 @@
     },
     {
       "key": "relais-es-numeros-2-5",
-      "prompt": "ochenta",
-      "spoken": "ochenta",
+      "prompt": "dieciocho",
+      "spoken": "dieciocho",
       "choices": [
         "8",
         "18",
         "80"
       ],
-      "answer": "80",
-      "hint": "Écoute la fin : -enta, ce sont les dizaines.",
-      "explanation": "ochenta = 80 : -enta, c’est une dizaine. 8 se dit ocho, 18 dieciocho.",
+      "answer": "18",
+      "hint": "dieci- veut dire « dix et… ».",
+      "explanation": "dieciocho = « dix et huit » = 18. 8 se dit ocho, 80 ochenta.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -211,16 +211,16 @@
     },
     {
       "key": "relais-es-numeros-2-7",
-      "prompt": "cincuenta y cinco",
-      "spoken": "cincuenta y cinco",
+      "prompt": "cincuenta y ocho",
+      "spoken": "cincuenta y ocho",
       "choices": [
-        "15",
-        "50",
-        "55"
+        "58",
+        "80",
+        "85"
       ],
-      "answer": "55",
+      "answer": "58",
       "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
-      "explanation": "cincuenta y cinco = 55 : cincuenta (50), puis y, puis cinco (5). 15 se dit quince.",
+      "explanation": "cincuenta y ocho = 58 : cincuenta (50), puis y, puis ocho (8). 80 se dit ochenta, 85 ochenta y cinco.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -139,6 +139,8 @@ export const BRIDGES: BridgeDef[] = [
   // Les îles d'anglais, aux deux bouts de la crête : un pont depuis la Forge, un depuis le Cabinet.
   b('forge', 'gare', 'pont', 6),
   b('cabinet', 'theatre', 'pont', 6),
+  // La LV2, en bout de chemin : un pont depuis le Théâtre vers le Jardin des heures, à l'est ; rien n'en dépend.
+  b('theatre', 'jardin', 'pont', 6),
   // Îles du Ciel (3e) : le Phare est le port ; un col à garde-fou vers l'Observatoire des textes (le Gardien du Phare).
   b('phare', 'belvedere', 'pont', 5),
   b('phare', 'donnees', 'pont', 5),
@@ -255,6 +257,7 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'antenne',
   'taille',
   'dalle',
+  'osier',
   'or',
   'cristal',
 ];

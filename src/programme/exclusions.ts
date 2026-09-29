@@ -12,8 +12,8 @@ const ORAL = 'Production orale : hors de ce que peut faire une application sans 
 const ECRITURE_LIBRE = 'Production écrite libre : l’application propose des réponses à choisir, pas de rédaction.';
 
 // LV2 (allemand, espagnol). Ce qui est prévu, étape par étape (docs/conception/cadrage-contenu.md, « LV2 ») : l’île de 5e
-// (le Relais des voyageurs) est faite, niveaux 1 et 2 (LV2-2, LV2-3) ; restent LV2-4, île de 4e, et LV2-5, île de 3e.
-const LV2_4 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 4e (LV2-4 du cadrage du contenu) : ${quoi}.`);
+// (le Relais des voyageurs, LV2-2 et LV2-3) et l’île de 4e (le Jardin des heures, LV2-4) sont faites ; reste LV2-5, île
+// de 3e. Le passif (`langue.modaux-passif`) reste hors du niveau A2 visé : un manque sans exclusion, les modaux sont faits.
 const LV2_5 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 3e (LV2-5 du cadrage du contenu) : ${quoi}.`);
 const LV2_LANGAGES = A_COUVRIR('Médias, chansons et cinéma : rien ne s’emprunte, et aucune étape du cadrage LV2 (LV2-2 à LV2-5) ne les prévoit ; à reprendre après LV2-5.');
 
@@ -78,28 +78,20 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.en.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, allemand (LV2) ----------
   'c4.de.ecouter.recit': LV2_5('suivre un petit récit entendu'),
-  'c4.de.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
-  'c4.de.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
   'c4.de.lire.recit': LV2_5('lire un petit texte suivi'),
   'c4.de.parler.presenter-raconter': HORS(ORAL),
   'c4.de.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.de.culture.langages': LV2_LANGAGES,
-  'c4.de.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays germanophones'),
   'c4.de.culture.voyages-rencontres': LV2_5('voyages et villes des pays germanophones'),
-  'c4.de.langue.modaux-passif': LV2_4('verbes de modalité (können, müssen, wollen) ; le passif reste hors du niveau A2 visé en fin de 3e'),
   'c4.de.langue.phrase-complexe': LV2_5('subordonnées en weil et dass'),
   'c4.de.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, espagnol (LV2) ----------
   'c4.es.ecouter.recit': LV2_5('suivre un petit récit entendu'),
-  'c4.es.ecouter.indices': LV2_4('reconnaître à l’oral où l’on est et qui parle (repas, magasin, horaire)'),
-  'c4.es.lire.informations': LV2_4('trouver une information dans un horaire, un menu, une annonce'),
   'c4.es.lire.recit': LV2_5('lire un petit texte suivi'),
   'c4.es.parler.presenter-raconter': HORS(ORAL),
   'c4.es.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.es.culture.langages': LV2_LANGAGES,
-  'c4.es.culture.ecole-societe': LV2_4('la journée, l’école et les loisirs des pays hispanophones'),
   'c4.es.culture.voyages-rencontres': LV2_5('voyages et villes des pays hispanophones'),
-  'c4.es.langue.modaux-passif': LV2_4('obligation et possibilité (tener que, poder) ; le passif reste hors du niveau A2 visé en fin de 3e'),
   'c4.es.langue.phrase-complexe': LV2_5('phrases reliées par porque, cuando, pero'),
   'c4.es.langue.phonologie': HORS(ORAL),
 };

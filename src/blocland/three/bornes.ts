@@ -19,6 +19,33 @@ export interface Bornes extends PartieDeLaScene {
 }
 
 /**
+ * Les étoiles gagnées d'une borne : `n` petits cubes d'or empilés, tournés d'un huitième de tour, en une seule géométrie
+ * (un appel de dessin par borne, pas un par étoile : quatre bornes de trois étoiles coûtaient douze appels).
+ */
+export function pileDEtoiles(n: number): THREE.BufferGeometry {
+  // Un cube sans indices (36 sommets), recopié `n` fois, monté de 0,6 à chaque étoile (sans l'utilitaire de fusion de
+  // Three.js, qui pèserait 4 Ko dans le paquet pour ce seul usage).
+  const cube = new THREE.BoxGeometry(0.45, 0.45, 0.45).rotateY(Math.PI / 4).toNonIndexed();
+  const p = cube.getAttribute('position').array as Float32Array;
+  const nrm = cube.getAttribute('normal').array as Float32Array;
+  const positions = new Float32Array(p.length * n);
+  const normals = new Float32Array(nrm.length * n);
+  for (let k = 0; k < n; k++) {
+    for (let i = 0; i < p.length; i += 3) {
+      positions[k * p.length + i] = p[i];
+      positions[k * p.length + i + 1] = p[i + 1] + k * 0.6;
+      positions[k * p.length + i + 2] = p[i + 2];
+    }
+    normals.set(nrm, k * nrm.length);
+  }
+  cube.dispose();
+  const pile = new THREE.BufferGeometry();
+  pile.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  pile.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+  return pile;
+}
+
+/**
  * Les repères ; `bonhomme` rend le bonhomme, que le fanion surmonte (il est créé après les repères ; la fonction n'est
  * appelée qu'à l'animation).
  */
@@ -97,14 +124,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
           g.add(m);
           g.userData.bob = true;
           g.userData.base = base;
-        } else {
-          for (let k = 0; k < q.state; k++) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 0.45), gold);
-            m.position.y = k * 0.6;
-            m.rotation.y = Math.PI / 4;
-            g.add(m);
-          }
-        }
+        } else g.add(new THREE.Mesh(pileDEtoiles(q.state), gold));
         g.position.set(q.cell.x + 0.5, base, q.cell.y + 0.5);
         questMarksGroup.add(g);
       });
