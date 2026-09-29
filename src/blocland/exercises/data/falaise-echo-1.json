@@ -1,0 +1,198 @@
+{
+  "id": "falaise-echo-1",
+  "biome": "falaise",
+  "type": "echo",
+  "level": 1,
+  "instruction": "Choisis la bonne forme du verbe pronominal. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-echo-1-0",
+      "prompt": "Nous … souvenons de ce voyage.",
+      "spoken": "Nous (mot manquant) souvenons de ce voyage.",
+      "choices": ["nous", "se", "vous"],
+      "answer": "nous",
+      "hint": "Qui se souvient ? Cherche le pronom de la même personne.",
+      "explanation": "Avec nous, le pronom est aussi nous : nous nous souvenons. « Se » va avec il ou ils, « vous » avec vous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-1",
+      "prompt": "Tu … méfies trop des chiens.",
+      "spoken": "Tu (mot manquant) méfies trop des chiens.",
+      "choices": ["te", "se", "me"],
+      "answer": "te",
+      "hint": "Relis la liste des pronoms : lequel va avec tu ?",
+      "explanation": "Avec tu, le pronom est te : tu te méfies. « Se » va avec il ou ils, « me » avec je.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-2",
+      "prompt": "Vous … moquez toujours de moi !",
+      "spoken": "Vous (mot manquant) moquez toujours de moi !",
+      "choices": ["vous", "se", "nous"],
+      "answer": "vous",
+      "hint": "Qui se moque ? Cherche le pronom de la même personne.",
+      "explanation": "Avec vous, le pronom est aussi vous : vous vous moquez. On écrit deux fois vous : le sujet, puis le pronom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-3",
+      "prompt": "Hier, le chat … enfui par la fenêtre.",
+      "spoken": "Hier, le chat (mot manquant) enfui par la fenêtre.",
+      "choices": ["s’est", "s’a", "a"],
+      "answer": "s’est",
+      "hint": "Aux temps composés, quel auxiliaire prend un verbe pronominal ?",
+      "explanation": "S’enfuir est pronominal : il se conjugue avec être, et garde son pronom. Le chat s’est enfui. Jamais avoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-4",
+      "prompt": "Pendant l’orage, les oiseaux … envolés.",
+      "spoken": "Pendant l’orage, les oiseaux (mot manquant) envolés.",
+      "choices": ["se sont", "s’ont", "ont"],
+      "answer": "se sont",
+      "hint": "Quel est l’infinitif ? Et quel auxiliaire aux temps composés ?",
+      "explanation": "S’envoler est pronominal : l’auxiliaire être, et le pronom se. Les oiseaux se sont envolés. Jamais avoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-5",
+      "prompt": "Léo, …, le bus arrive !",
+      "spoken": "Léo, (mot manquant), le bus arrive !",
+      "choices": ["dépêche-toi", "te dépêche", "dépêches-toi"],
+      "answer": "dépêche-toi",
+      "hint": "C’est un ordre : où se place le pronom ? Et avec tu, un verbe en -er prend-il un s ?",
+      "explanation": "À l’impératif, le pronom passe après le verbe, avec un trait d’union : dépêche-toi. Verbe en -er : pas de s avec tu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-6",
+      "prompt": "Il est tard : je … .",
+      "spoken": "Il est tard : je (mot manquant).",
+      "choices": ["m’en vais", "m’en vas", "m’en va"],
+      "answer": "m’en vais",
+      "hint": "S’en aller se conjugue comme aller : que dit-on avec je, au présent ?",
+      "explanation": "S’en aller se conjugue comme aller : je vais, donc je m’en vais. « Vas » va avec tu (tu t’en vas), « va » avec il (il s’en va).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-1-7",
+      "prompt": "Après le goûter, les invités … .",
+      "spoken": "Après le goûter, les invités (mot manquant).",
+      "choices": ["s’en sont allés", "se sont en allés", "s’en ont allés"],
+      "answer": "s’en sont allés",
+      "hint": "Où se place « en » : avant ou après l’auxiliaire ? Et quel auxiliaire ?",
+      "explanation": "« En » reste collé au pronom, avant l’auxiliaire être : les invités s’en sont allés. On ne sépare pas « s’en ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes pronominaux",
+          "lines": [
+            "Le pronom a la même personne que le sujet.",
+            "je me, tu te, il se, nous nous, vous vous, ils se.",
+            "Aux temps composés, toujours l’auxiliaire être (nous nous sommes trompés).",
+            "À l’impératif, le pronom passe après le verbe (lève-toi, levons-nous).",
+            "S’en aller : « en » reste collé au pronom (tu t’en vas, elle s’en est allée)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien conjugué !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

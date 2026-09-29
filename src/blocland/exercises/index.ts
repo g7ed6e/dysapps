@@ -82,7 +82,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
   'carrefour-aiguillage-2', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',
   'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'marais-gue-1', 'marais-gue-2', 'marais-gue-3', 'falaise-corde-1', 'falaise-corde-2',
-  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'cabinet-racines-1',
+  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'falaise-echo-1', 'falaise-echo-2', 'falaise-echo-3', 'cabinet-racines-1',
   'cabinet-racines-2', 'cabinet-sens-1', 'cabinet-sens-2', 'cabinet-nuances-1', 'cabinet-nuances-2',
   'textes-inferences-1', 'textes-inferences-2',
   'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'textes-voix-1', 'textes-voix-2', 'textes-voix-3', 'baie-hello-1', 'baie-hello-2',
