@@ -3,8 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
-import { ProgressProvider } from './core/ProgressContext';
+import { ProgressProvider, useProgress } from './core/ProgressContext';
 import { BloclandProvider } from './blocland/BloclandContext';
+
+/** Dit si les bandeaux de récompense sont retenus (DA-9). */
+function Retenus() {
+  return <p data-testid="retenus">{useProgress().celebrationsHeld ? 'oui' : 'non'}</p>;
+}
 
 function renderAt(path: string) {
   return render(
@@ -13,6 +18,7 @@ function renderAt(path: string) {
         <BloclandProvider>
           <MemoryRouter initialEntries={[path]}>
             <AppRoutes />
+            <Retenus />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -20,12 +26,13 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est le menu de Blocland : le village, les trois Expéditions, puis Missions et Réglages', () => {
+it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais', '/matiere/lv2']);
+  expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
   const links = screen.getByRole('link', { name: /Toutes les missions/ }).closest('p')!;
@@ -203,6 +210,16 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+});
+
+it('en vue simple, les bandeaux de récompense attendent que le mot de la baleine soit fermé (DA-9)', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/carte');
+  const word = screen.getByRole('dialog', { name: 'Le mot de la baleine' });
+  expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+  while (within(word).queryByRole('button', { name: 'Suivant' })) await user.click(within(word).getByRole('button', { name: 'Suivant' }));
+  await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
+  expect(screen.getByTestId('retenus')).toHaveTextContent('non');
 });
 
 it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {

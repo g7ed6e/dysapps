@@ -1,6 +1,6 @@
 // L'état d'une île sur la Carte, en quatre mots, déduit de la sauvegarde à chaque rendu et jamais enregistré : Fermée
 // (aucun chemin d'ouvrages n'y mène), À explorer (ouverte, aucune mission jouée), En chantier, Restaurée (ses trois
-// plans terminés). Chaque état a son icône et son mot : il ne se lit jamais à la seule couleur (DP-08).
+// plans terminés ; « Bâtie » dans Blocland). Chaque état a son icône et son mot : il ne se lit jamais à la seule couleur (DP-08).
 import type { BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { CATALOG } from '../exercises';
@@ -10,17 +10,17 @@ import { isPlanDone, plansFor } from './plans';
 
 export type IslandStateId = 'fermee' | 'a-explorer' | 'en-chantier' | 'restauree';
 
+/** Un état d'île et son icône ; son mot est un texte d'univers (`etatsDIle`, src/univers/, U4). */
 export interface IslandStateDef {
   id: IslandStateId;
-  name: string;
   icon: AnyIconName;
 }
 
 export const ISLAND_STATES: Record<IslandStateId, IslandStateDef> = {
-  fermee: { id: 'fermee', name: 'Fermée', icon: 'lock' },
-  'a-explorer': { id: 'a-explorer', name: 'À explorer', icon: 'compass' },
-  'en-chantier': { id: 'en-chantier', name: 'En chantier', icon: 'hammer' },
-  restauree: { id: 'restauree', name: 'Restaurée', icon: 'check' },
+  fermee: { id: 'fermee', icon: 'lock' },
+  'a-explorer': { id: 'a-explorer', icon: 'compass' },
+  'en-chantier': { id: 'en-chantier', icon: 'hammer' },
+  restauree: { id: 'restauree', icon: 'check' },
 };
 
 /** Aucune mission de l'île n'a encore été jouée. */

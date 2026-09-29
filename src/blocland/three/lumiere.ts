@@ -17,17 +17,18 @@ export interface Lumiere extends PartieDeLaScene {
 }
 
 export function creerLumiere(monde: Monde, camera: THREE.Camera, derniers: { readonly current: Derniers }): Lumiere {
-  const { scene, archipel, archipeo, largeur } = monde;
+  const { scene, archipel, largeur } = monde;
+  const degrade = monde.habillage.ciel === 'degrade';
   const day = palette(1, archipel);
   // Archipéo (lot R1) : un dôme dégradé, un soleil chaud et une ambiance froide.
   const ciel = cielDe(archipel, 1);
-  scene.background = new THREE.Color(archipeo ? ciel.horizon : day.sky);
-  const dome = archipeo ? creerDome(ciel, largeur * 4) : null;
+  scene.background = new THREE.Color(degrade ? ciel.horizon : day.sky);
+  const dome = degrade ? creerDome(ciel, largeur * 4) : null;
   if (dome) scene.add(dome.mesh);
-  const hemi = archipeo ? new THREE.HemisphereLight(ciel.ambianceCiel, ciel.ambianceSol, ciel.ambianceForce) : new THREE.HemisphereLight(0xffffff, day.ground, day.ambient);
+  const hemi = degrade ? new THREE.HemisphereLight(ciel.ambianceCiel, ciel.ambianceSol, ciel.ambianceForce) : new THREE.HemisphereLight(0xffffff, day.ground, day.ambient);
   scene.add(hemi);
-  const sun = archipeo ? new THREE.DirectionalLight(ciel.soleil, ciel.soleilForce) : new THREE.DirectionalLight(day.sun, day.sunIntensity);
-  if (archipeo) sun.position.set(...SOLEIL_DIRECTION);
+  const sun = degrade ? new THREE.DirectionalLight(ciel.soleil, ciel.soleilForce) : new THREE.DirectionalLight(day.sun, day.sunIntensity);
+  if (degrade) sun.position.set(...SOLEIL_DIRECTION);
   else sun.position.set(40, 60, 20);
   scene.add(sun);
 
@@ -38,7 +39,7 @@ export function creerLumiere(monde: Monde, camera: THREE.Camera, derniers: { rea
     const target = derniers.current.forceDay ? 1 : daylight().light;
     if (target === light) return;
     light = target;
-    if (archipeo) {
+    if (degrade) {
       // Le ciel et la lumière suivent le jour.
       const c = cielDe(archipel, light);
       (scene.background as THREE.Color).setHex(c.horizon);

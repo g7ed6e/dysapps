@@ -168,6 +168,11 @@ export function reglagesCourants(): Settings | null {
   return courants;
 }
 
+/** La LV2 des réglages en mémoire ; hors de l'application (un test, le générateur), celle par défaut. */
+export function lv2Courante(): Lv2Choice {
+  return courants?.lv2 ?? DEFAULT_SETTINGS.lv2;
+}
+
 /**
  * Applique les réglages au document via des variables CSS et des attributs : le thème, et l'univers affiché, qui
  * choisit l'habillage de l'interface (styles/blocland.css).

@@ -5,8 +5,8 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses). `--rendu archipeo` mesure le rendu en construction (le drapeau
-// `?rendu=archipeo`), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
@@ -29,6 +29,9 @@ const option = (name) => {
   const i = process.argv.indexOf(name);
   return i >= 0 ? process.argv[i + 1] : null;
 };
+/** Avec `--rendu archipeo`, l'univers d'Archipéo est aussi choisi dans les Réglages : sans lui, les textes (défi, bulle, panneaux) restent ceux de Blocland, l'univers par défaut. */
+const UNIVERS_DES_TEXTES = option('--rendu') === 'archipeo' ? 'archipeo' : undefined;
+
 /** Le drapeau de rendu et l'option de style, avant le `#` de l'adresse. */
 const QUERY = (() => {
   const q = new URLSearchParams();
@@ -94,6 +97,62 @@ const CAPTURES = [
   { nom: 'marais-nuit', vue: 'île', famille: 'brumeuses', ile: 'marais', nuit: true },
   { nom: 'carrefour', vue: 'île', famille: 'brumeuses', ile: 'carrefour' },
   { nom: 'glacier', vue: 'île', famille: 'brumeuses', ile: 'glacier' },
+  // Le Relais des voyageurs (LV2, 5e) : l'île et son pont depuis le Comptoir, de jour et de nuit ; son chantier (le
+  // dernier plan, la fontaine, en fantômes) ; le pont à construire (le Relais pas encore ouvert).
+  { nom: 'relais', vue: 'île', famille: 'relais', ile: 'relais' },
+  { nom: 'relais-nuit', vue: 'île', famille: 'relais', ile: 'relais', nuit: true },
+  { nom: 'relais-chantier', vue: 'île', famille: 'relais', ile: 'relais', partie: 'chantier' },
+  { nom: 'relais-pont-avant', vue: 'île', famille: 'relais', ile: 'comptoir', sansPonts: ['comptoir-relais'] },
+  // Le Jardin des heures (LV2, 4e) : l'archipel élargi, avec une LV2 et avec « Pas de LV2 » (le Jardin fermé, sans
+  // pont), le bonhomme sur le Théâtre, son voisin, en tablette paysage, en 1280 × 800 et en portrait (`taille`, `lv2`) ;
+  // l'île de jour et de nuit ; son Gardien au défi (le Soleil de cuivre).
+  { nom: 'jardin-archipel', vue: 'archipel', famille: 'jardin', ile: 'theatre' },
+  { nom: 'jardin-archipel-sans-lv2', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'] },
+  { nom: 'jardin-archipel-1280x800', vue: 'archipel', famille: 'jardin', ile: 'theatre', taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-sans-lv2-1280x800', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'], taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-800x1280', vue: 'archipel', famille: 'jardin', ile: 'theatre', taille: { width: 800, height: 1280 } },
+  { nom: 'jardin-archipel-sans-lv2-800x1280', vue: 'archipel', famille: 'jardin', ile: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'], taille: { width: 800, height: 1280 } },
+  // (Depuis le Jardin, le bonhomme sur son île : son étiquette et celle du Théâtre, côte à côte.)
+  { nom: 'jardin-archipel-depuis-le-jardin', vue: 'archipel', famille: 'jardin', ile: 'jardin' },
+  { nom: 'jardin-archipel-depuis-le-jardin-1280x800', vue: 'archipel', famille: 'jardin', ile: 'jardin', taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-archipel-depuis-le-jardin-800x1280', vue: 'archipel', famille: 'jardin', ile: 'jardin', taille: { width: 800, height: 1280 } },
+  // (Et avec « Pas de LV2 », le Jardin fermé, sans pont : sa vue d'île, le bonhomme resté sur le Théâtre, `depuis`.)
+  { nom: 'jardin-sans-lv2', vue: 'île', famille: 'jardin', ile: 'jardin', depuis: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'] },
+  { nom: 'jardin-sans-lv2-1280x800', vue: 'île', famille: 'jardin', ile: 'jardin', depuis: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'], taille: { width: 1280, height: 800 } },
+  { nom: 'jardin-sans-lv2-800x1280', vue: 'île', famille: 'jardin', ile: 'jardin', depuis: 'theatre', lv2: 'aucune', sansPonts: ['theatre-jardin'], sansIles: ['jardin'], taille: { width: 800, height: 1280 } },
+  { nom: 'jardin', vue: 'île', famille: 'jardin', ile: 'jardin' },
+  { nom: 'jardin-nuit', vue: 'île', famille: 'jardin', ile: 'jardin', nuit: true },
+  { nom: 'jardin-defi', vue: 'défi', famille: 'jardin', ile: 'jardin' },
+  // De près (famille `jardin-pres` ; `recadre` : la vue prise une fois et demie plus fine, ou `finesse` fois, puis recadrée, en pixels CSS) : Muscade dans la vue de son île,
+  // et sa bulle (le défi pas encore ouvert) ; le ponton et son échelle, depuis l'archipel vu du Jardin.
+  { nom: 'jardin-muscade', vue: 'île', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 190, y: 220, width: 240, height: 180 } },
+  // (`fige` : l'appareil demande moins d'animations, la créature de la bulle ne tourne pas : elle se montre de face.)
+  { nom: 'jardin-muscade-bulle', vue: 'bulle', famille: 'jardin-pres', ile: 'jardin', sansEtoiles: true, fige: true },
+  { nom: 'jardin-ponton', vue: 'archipel', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 150, y: 480, width: 300, height: 225 } },
+  // (Le Soleil sur son îlot, au même recadrage que la sentinelle de l'Atelier à côté de sa grue, `sentinelle-grue` :
+  // aucune vue ne montre les deux à la fois, sauf la Carte, où ils sont trop petits.)
+  // (L'osier de près, pour le moiré : la serre et la bordure du potager, à deux distances, la vue de l'île et celle de
+  // l'archipel depuis le Jardin, recadrées sans agrandir (`finesse` 1 : les pixels de l'écran, tels que l'élève les voit).)
+  { nom: 'jardin-osier-ile', vue: 'île', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 60, y: 380, width: 320, height: 200 }, finesse: 1 },
+  { nom: 'jardin-osier-archipel', vue: 'archipel', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 230, y: 320, width: 260, height: 180 }, finesse: 1 },
+  { nom: 'jardin-soleil', vue: 'archipel', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 620, y: 380, width: 360, height: 270 } },
+  // La revue d'ensemble du directeur artistique (28/09) : le phare du large du 5e, de jour et de nuit (`lieu` : la vue
+  // d'un monument, dans l'archipel `archipel`, le bonhomme sur l'île `ile`) ; une sentinelle de près, à côté du phare de
+  // la Tour (6e, la Plaine et l'arbre voisin de son îlot) et de la grue de l'Atelier (4e), de jour et de nuit.
+  { nom: 'phare-large', vue: 'île', famille: 'revue', ile: 'glacier', lieu: 'monument-phare-large' },
+  { nom: 'phare-large-nuit', vue: 'île', famille: 'revue', ile: 'glacier', lieu: 'monument-phare-large', nuit: true },
+  { nom: 'sentinelle', vue: 'île', famille: 'revue', ile: 'plaine' },
+  { nom: 'sentinelle-nuit', vue: 'île', famille: 'revue', ile: 'plaine', nuit: true },
+  { nom: 'sentinelle-grue', vue: 'île', famille: 'revue', ile: 'atelier' },
+  // Les repères des Îles du Ciel (R4b-3e) : le grand phare sur son socle, de jour et de nuit, les gradins de
+  // l'Observatoire des textes.
+  { nom: 'phare-du-ciel', vue: 'île', famille: 'ciel', ile: 'phare' },
+  { nom: 'phare-du-ciel-nuit', vue: 'île', famille: 'ciel', ile: 'phare', nuit: true },
+  { nom: 'textes', vue: 'île', famille: 'ciel', ile: 'textes' },
+  // La vue de l'archipel depuis l'île du Phare : le phare au centre de l'arc, devant le massif (une vue de l'archipel
+  // avec `ile` y place le bonhomme).
+  { nom: 'archipel-phare', vue: 'archipel', famille: 'ciel', ile: 'phare' },
+  { nom: 'archipel-phare-nuit', vue: 'archipel', famille: 'ciel', ile: 'phare', nuit: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -144,6 +203,27 @@ async function weights() {
 }
 
 // ---------- Les appels de dessin et les triangles ----------
+
+/**
+ * Une partie sans les îles `iles` : ni leurs étoiles, ni leurs plans (clés « <île>-… »). Sans elles, le jeu ne rouvre pas
+ * l'île au chargement (`sansPonts` peut alors retirer le pont qui y mène : une île où l'on a joué reste ouverte).
+ */
+function sansLesIles(parCle, iles) {
+  if (!iles?.length) return parCle;
+  return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
+}
+
+/**
+ * L'adresse d'une capture déclarée : le défi de chaque île (`parIle`), la vue d'un monument (`lieu`), une île ou le défi
+ * de son Gardien (`ile`), sinon la route de la vue, le bonhomme là où la partie le pose (`routes`).
+ */
+function routeDe(c, parIle, routes) {
+  if (parIle) return `/aventure/${parIle}/gardien`;
+  if (c.lieu) return `/aventure/${c.lieu}`;
+  if (c.ile && c.vue === 'île') return `/aventure/${c.ile}`;
+  if (c.ile && (c.vue === 'défi' || c.vue === 'bulle')) return `/aventure/${c.ile}/gardien`;
+  return routes[c.vue];
+}
 
 async function scenes() {
   // Le build a passé le processus en production : le compteur ne s'exposerait pas (import.meta.env.DEV).
@@ -206,40 +286,53 @@ async function scenes() {
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({
               vue: c.vue,
-              go: parIle ? `/aventure/${parIle}/gardien` : c.ile ? `/aventure/${c.ile}` : routes[c.vue],
+              go: routeDe(c, parIle, routes),
               ile: c.ile,
               plans: c.partie ? plansDe(c.partie, c.ile) : null,
               bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
               time: c.nuit ? NIGHT : DAY,
               view: c.view,
               sansEtoiles: c.sansEtoiles,
+              lv2: c.lv2,
+              taille: c.taille,
+              recadre: c.recadre,
+              sansIles: c.sansIles,
+              depuis: c.depuis,
+              fige: c.fige,
+              finesse: c.finesse,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges } of views) {
-      const page = await browser.newPage({ viewport: TABLET, deviceScaleFactor: 1 });
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse } of views) {
+      const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view }) => {
+        ({ village, progress, view, univers, lv2 }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
-        { village: { ...built, ...(plans ? { plans } : {}), ...(bridges ? { bridges } : {}), at: ile ?? at }, progress: sansEtoiles ? {} : progress, view },
+        {
+          village: { ...built, plans: sansLesIles(plans ?? built.plans, sansIles), ...(bridges ? { bridges } : {}), at: depuis ?? ile ?? at },
+          progress: sansEtoiles ? {} : sansLesIles(progress, sansIles),
+          view,
+          univers: UNIVERS_DES_TEXTES,
+          lv2,
+        },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
         await page.waitForTimeout(8000);
-        await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
+        await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
           const box = await page.locator('.voxel-canvas').boundingBox();

@@ -23,7 +23,7 @@ import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { reviewKeys } from './review';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
-import { autoReadText } from './exercises/lecture';
+import { autoReadText, dicteeAutoText } from './exercises/lecture';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { Stars } from './Stars';
@@ -89,14 +89,31 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   // Un document à lire (Notices) : sa question en français est dite avec la consigne au premier écran, puis seule à
   // chaque écran suivant ; le document anglais n'est lu qu'à la demande.
   const autoRead = ownConsigne && settings.autoRead && !type?.speaksOnOpen;
+  // Une dictée à choix en langue vivante (LV2) : son mot est dit dans la voix de la langue, après la consigne au premier
+  // écran, puis seul à chaque écran suivant.
+  // La consigne finie, le mot suit, sauf si l'élève a quitté le premier écran ou lancé une autre lecture entre-temps (une
+  // lecture coupée finit aussi, en erreur).
+  const premierEcran = useRef(true);
   useEffect(() => {
-    if (autoRead) speak(autoReadText(def.instruction, screens[0]));
+    premierEcran.current = index === 0 && !done;
+  }, [index, done]);
+  useEffect(() => () => void (premierEcran.current = false), []);
+  useEffect(() => {
+    if (!autoRead) return;
+    const dictee = dicteeAutoText(screens[0], def.lang);
+    const ensuite = () => {
+      const synthese = window.speechSynthesis;
+      if (premierEcran.current && !synthese.speaking && !synthese.pending) speak(dictee, undefined, def.lang);
+    };
+    speak(autoReadText(def.instruction, screens[0]), dictee ? ensuite : undefined);
     // Une lecture par partie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def.id]);
   useEffect(() => {
     if (!autoRead || index === 0) return;
-    // Seule une question se lit à chaque écran : un texte vide couperait une lecture en cours.
+    // Seule une question ou un mot de dictée se lit à chaque écran : un texte vide couperait une lecture en cours.
+    const dictee = dicteeAutoText(items, def.lang);
+    if (dictee) return speak(dictee, undefined, def.lang);
     const text = autoReadText(null, items);
     if (text) speak(text);
     // Une lecture par écran.

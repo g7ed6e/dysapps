@@ -382,6 +382,36 @@ const KNIGHT = fromLayers(
   { K: '#2a2622', B: '#2f5aa8', Y: '#f2c944', S: '#b8c0c8', R: '#c0392b' },
 );
 
+// Lina : une cigogne voyageuse, corps blanc, bouts d'ailes et queue noirs, long bec et hautes pattes orange, sans coiffe.
+const LINA = fromLayers(
+  [
+    ['.....', '.O.O.', '.....', '.....', '.....'],
+    ['.....', '.O.O.', '.....', '.....', '.....'],
+    ['.WWW.', 'KWWWK', 'KWWWK', '.KWK.', '..K..'],
+    ['.WWW.', 'KWWWK', 'KWWWK', '.WWW.', '.....'],
+    ['..O..', '..W..', '..W..', '.....', '.....'],
+    ['.EOE.', '.WWW.', '.....', '.....', '.....'],
+    ['.WWW.', '.WWW.', '.....', '.....', '.....'],
+  ],
+  { W: '#f6f1e6', K: '#1f1a16', O: '#e8732e', E: '#1f1a16' },
+);
+
+// Muscade : un écureuil cuisinier châtain, tablier crème uni, louche de bois à la main, queue en panache qui monte
+// derrière la tête, son bout plus clair ; pas de toque. Entre les yeux, le museau clair (nez compris, au ton du museau).
+const MUSCADE = fromLayers(
+  [
+    ['.C.C.', '.CCC.', '.....', '.....', '.....'],
+    ['LWWW.', 'CCCCC', '.CCC.', '..T..', '.....'],
+    ['LWWW.', 'CCCCC', '.CCC.', '.TTT.', '.....'],
+    ['LCCC.', 'CCCCC', '.CCC.', '.TTT.', '..T..'],
+    ['.EME.', 'CCCCC', '.CCC.', '.....', '.TTT.'],
+    ['.CCC.', 'CCCCC', '.....', '.....', '.TTT.'],
+    ['.C.C.', '.....', '.....', '.TTT.', '.ttt.'],
+    ['.....', '.....', '..t..', '.tt..', '.....'],
+  ],
+  { C: '#8a4a26', T: '#9a5a32', t: '#c79a6a', W: '#efe4c8', L: '#8a6236', E: '#1f1a16', M: '#c89a72' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -407,6 +437,8 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   horloge: TICK,
   comptoir: PUDDING,
   manoir: MOUSTACHE,
+  relais: LINA,
+  jardin: MUSCADE,
   theatre: PUCK,
   gare: VAPEUR,
   studio: ECHO,

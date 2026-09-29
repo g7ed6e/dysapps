@@ -1,5 +1,6 @@
 // Les textes de Blocland : ceux d'avant le lot 6, déplacés sans un mot changé (Blocland garde « vaincre », le Gardien
 // vaincu et sa statue). Leur invariance est vérifiée par src/univers/univers.test.ts.
+import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
 
 const s = (n: number) => (n > 1 ? 's' : '');
@@ -190,6 +191,22 @@ export const BLOCLAND = {
         beaten: 'Je range ma couronne. Le Comptoir est à toi… et à Pudding.',
       },
     },
+    relais: {
+      challenge: 'La Diligence de cuivre s’arrête devant l’auberge : « Tu as accueilli tous mes voyageurs. Montre-moi que tu comprends ce qu’ils te disent. »',
+      guardianSays: {
+        hit: 'Hue ! Juste. Mes roues tournent rond.',
+        miss: 'Ce n’est rien : réécoute le mot, relis la règle, et reprends.',
+        beaten: 'Je dételle mes chevaux. Le Relais est à toi… et à Lina.',
+      },
+    },
+    jardin: {
+      challenge: 'Le Soleil de cuivre se lève au-dessus du jardin : « Tu as suivi toute ma journée, du matin au soir. Montre-moi que tu sais dire l’heure et raconter ta journée. »',
+      guardianSays: {
+        hit: 'Juste. Je descends un peu vers le soir.',
+        miss: 'Ce n’est rien : réécoute la phrase, relis la règle, et reprends.',
+        beaten: 'Je me couche… en pierre, pour ton village. Le Jardin est à toi… et à Muscade.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
       guardianSays: {
@@ -231,6 +248,10 @@ export const BLOCLAND = {
       },
     },
   },
+  creatures: REPLIQUES,
+  // Les îles de Blocland ne sont pas en ruine : on les bâtit. « Restaurée » reste le mot d'Archipéo (DP-01, DP-02) ;
+  // l'identifiant, l'icône et la place ne changent pas (décision du mainteneur, 28 septembre 2026).
+  etatsDIle: { ...ETATS_D_ILE, restauree: 'Bâtie' },
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe cubique',
@@ -255,6 +276,8 @@ export const BLOCLAND = {
     baie: 'rouge-gorge des quais',
     horloge: 'hérisson horloger',
     comptoir: 'bouledogue marchand',
+    relais: 'cigogne voyageuse',
+    jardin: 'écureuil cuisinier',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',
@@ -279,6 +302,7 @@ export const BLOCLAND = {
     arene: () => 'L’arène du Gardien',
   },
   sentinelles: null,
+  monuments: {},
   baleine: {
     arrivee: {
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
@@ -287,7 +311,7 @@ export const BLOCLAND = {
       '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} ont reconnu ton savoir. Je l’ai vu depuis le large.`,
-    port: (ile) => `${ile} est restaurée. Tu avances bien : chaque île restaurée rend l’archipel plus beau.`,
+    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
     ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
   },
 } satisfies TextesUnivers;

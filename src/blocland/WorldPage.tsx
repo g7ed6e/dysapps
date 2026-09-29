@@ -33,7 +33,7 @@ import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
 import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
-import { renduDuMonde } from './rendu';
+import { habillageDuMonde } from './habillage';
 import { useTextes } from '../univers';
 import {
   borneTouchee,
@@ -76,6 +76,7 @@ import { stageTo } from './world/vehicle';
 import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
+import { useHoldCelebrations } from '../components/Celebrations';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -126,13 +127,15 @@ export function WorldPage() {
   // Gardien est là dès l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village,
   // éteint, pour se rallumer sous les yeux de l'élève.
   const textes = useTextes();
-  const [rendu] = useState(renduDuMonde);
-  const sentinelles = textes.sentinelles !== null && rendu === 'archipeo';
+  const [habillage] = useState(habillageDuMonde);
+  const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
     () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles),
-    [a, state.progress, state.village, trophyBlocks, sentinelles],
+    // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2],
   );
   const creatures = useMemo(
     () => [
@@ -169,7 +172,8 @@ export function WorldPage() {
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
-  const modele = useMemo(() => modeleDuMonde(state, a), [a, state]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const modele = useMemo(() => modeleDuMonde(state, a), [a, state, settings.lv2]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -190,9 +194,9 @@ export function WorldPage() {
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
-        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: i.etat.name } } : {}) })),
+        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.village.bridges, state.village.plans, state.progress],
+    [a, mapOpen, state.village.bridges, state.village.plans, state.progress, textes],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
@@ -243,6 +247,11 @@ export function WorldPage() {
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
+  // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
+  const revoirAide = () => {
+    setTutoDone(false);
+    setReplay((n) => n + 1);
+  };
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
   // Bloc-Navire sur le port.
@@ -478,6 +487,10 @@ export function WorldPage() {
   const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
+  // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
+  // voyage), et aussi pendant l'instant qui précède le mot ou le rallumage attendu : il ne tombe jamais sur la phrase que
+  // l'élève lit, ni ne s'affiche pour être caché aussitôt (DA-9).
+  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume);
   useEffect(() => {
     if (!aRallumer || moment) return;
     const timer = window.setTimeout(
@@ -616,7 +629,7 @@ export function WorldPage() {
     }
     const first = plansFor(id)[0];
     const home = first && isPlanDone(first, state.village.plans);
-    const lines = home && Math.random() < 0.5 ? [biome.creature.home] : biome.creature.lines;
+    const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
     const text = lines[Math.floor(Math.random() * lines.length)];
     setSaid({ id, text });
     if (settings.autoRead) speak(frenchTypography(text));
@@ -730,7 +743,7 @@ export function WorldPage() {
                             <button type="button" className="world-map-island" onClick={() => onIsland(b.id)}>
                               <span className="world-map-island-name">{b.nom}</span>
                               <span className={`island-state island-state-${st.id}`}>
-                                <Icon name={st.icon} /> {st.name}
+                                <Icon name={st.icon} /> {textes.etatsDIle[st.id]}
                               </span>
                             </button>
                           </li>
@@ -857,7 +870,7 @@ export function WorldPage() {
               <Icon name="moon" />
             </button>
           )}
-          <button type="button" className="button" onClick={() => setReplay((n) => n + 1)} aria-label="Revoir l’aide">
+          <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
             <Icon name="help" />
           </button>
         </nav>
@@ -883,7 +896,7 @@ export function WorldPage() {
           onClose={() => navigate('/aventure')}
           onHelp={() => {
             navigate('/aventure');
-            setReplay((n) => n + 1);
+            revoirAide();
           }}
         />
       ) : (

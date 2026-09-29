@@ -306,6 +306,28 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(3, 9, h(3, 9) + 1, BLOCKS.lambris.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
+  relais: (put, h) => {
+    // Un poteau indicateur de bois, deux planches à deux hauteurs (deux routes) ; un montoir de dalles ; une botte de foin.
+    for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, TRUNK);
+    put(10, 3, h(10, 3) + 3, BLOCKS.bois.side);
+    put(8, 3, h(8, 3) + 2, BLOCKS.bois.side);
+    put(11, 5, h(11, 5) + 1, BLOCKS.dalle.side);
+    put(3, 9, h(3, 9) + 1, HAY);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
+  jardin: (put, h) => {
+    // Un carré potager bordé d'osier (des rangs de feuilles dedans), un poteau-lanterne éteint à côté (sa tête d'ardoise :
+    // la nuit, le jardin garde ses lueurs sous 3 % de l'image, DA, LV2-4) ; un panier d'osier posé au sol, une pierre.
+    for (let x = 8; x <= 11; x++)
+      for (let y = 2; y <= 4; y++) {
+        const bord = x === 8 || x === 11 || y === 2 || y === 4;
+        put(x, y, h(x, y) + 1, bord ? BLOCKS.osier.side : LEAF);
+      }
+    for (let z = 1; z <= 2; z++) put(6, 3, h(6, 3) + z, TRUNK);
+    put(6, 3, h(6, 3) + 3, BLOCKS.ardoise.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS.osier.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
   theatre: (put, h) => {
     // Une petite scène : deux colonnes de rideau pourpre, une frise au-dessus, deux lanternes de rampe devant.
     for (const px of [8, 10]) for (let z = 1; z <= 3; z++) put(px, 3, h(px, 3) + z, BLOCKS.velours.side);
@@ -405,9 +427,9 @@ export const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
 /**
  * Le décor bâti : nommé comme le reste du décor (ses cubes se rangent ensemble), mais le sol le porte comme une
  * construction : la marche ne l'enjambe pas et le compte dans la hauteur du sol, la pente ne l'abaisse pas, la 2D le
- * dessine en cubes. Les repères, les cascades et l'habillage de la mer (écueils et bancs).
+ * dessine en cubes. Les repères, les cascades, l'habillage de la mer (écueils et bancs) et le ponton du Jardin des heures.
  */
-export const DECOR_BATI: ReadonlySet<string> = new Set<string>([...REPERES, 'cascade', 'ecueil', 'banc']);
+export const DECOR_BATI: ReadonlySet<string> = new Set<string>([...REPERES, 'cascade', 'ecueil', 'banc', 'ponton']);
 
 /** Le genre d'un élément de décor d'après son nom (« foret/cœur:arbre@8,2 » : un arbre). */
 export function kindOf(decor: string): string {
@@ -563,6 +585,48 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
     named: (x, y) => (id = `${kind}@${x},${y}`),
     put: (x, y, z, color) => place(x, y, z, color, id),
   });
+}
+
+/** L'épaisseur de terre sous le sol d'une île, en blocs (`DEPTH` de ./terrain.ts, qui importe ce fichier ; un test les tient ensemble). */
+export const DEPTH_DU_SOL = 2;
+
+/** Les îles qui ont un ponton et sa barque, sur leur rivage est (DA, LV2-4 : le Jardin des heures). */
+export const PONTON_SUR: readonly BiomeId[] = ['jardin'];
+
+/**
+ * Le ponton et sa barque : sur le rivage est de l'île (+x), au milieu du cœur à trois cases près, une échelle qui
+ * descend la falaise jusqu'à l'eau, un tablier de planches au ras de l'eau vers le large, et, à son bout, une barque
+ * (son fond, la proue et la poupe relevées). Archipéo le redessine (./decor/4e.ts, `RETOUCHES_4E`). Nom de décor : « ponton@x,y » (la case du rivage). `place` travaille
+ * en coordonnées du monde, z relatif au sol de l'île (la mer est à −altitude).
+ */
+export function pontonEtBarque(def: IslandDef, scenery: LandCell[], place: Put): void {
+  if (!PONTON_SUR.includes(def.id)) return;
+  const milieu = def.core.y + CORE / 2;
+  const libre = (x: number, y: number) => !isLand(def, x, y);
+  let rive: LandCell | null = null;
+  for (const c of scenery) {
+    if (c.h < 0 || c.ground === 'eau' || c.ground === 'lave' || c.x < def.core.x + CORE || Math.abs(c.y - milieu) > 3) continue;
+    // De l'eau devant (deux cases vers le large, sur quatre rangs) : le tablier et la barque y tiennent.
+    let large = true;
+    for (let dx = 1; dx <= 2 && large; dx++) for (let dy = 0; dy <= 3; dy++) if (!libre(c.x + dx, c.y + dy)) large = false;
+    if (!large) continue;
+    if (!rive || c.x > rive.x || (c.x === rive.x && Math.abs(c.y - milieu) < Math.abs(rive.y - milieu))) rive = c;
+  }
+  if (!rive) return;
+  const { x, y, h } = rive;
+  const id = `ponton@${x},${y}`;
+  const put = (px: number, py: number, pz: number, color: string) => place(px, py, pz, color, id);
+  const mer = -def.altitude - 1;
+  // L'échelle, de l'eau au haut du rivage, contre la falaise : sous l'île en altitude, qui flotte, un pilier de pierre
+  // descend du rivage jusqu'à l'eau, où l'échelle s'appuie sur toute sa hauteur (DA, LV2-4). Le tablier, deux cases au
+  // ras de l'eau (dans les deux cases de marge de l'archipel, `worldBounds`).
+  for (let z = mer; z < Math.min(0, h) - DEPTH_DU_SOL; z++) put(x, y, z, BLOCKS.pierre.side);
+  for (let z = mer + 1; z <= h; z++) put(x + 1, y, z, BLOCKS.escalier.side);
+  for (let dx = 1; dx <= 2; dx++) put(x + dx, y, mer, BLOCKS.bois.side);
+  // La barque, amarrée au bout du tablier, le long de la falaise : son fond, la proue et la poupe relevées.
+  for (let dy = 1; dy <= 3; dy++) put(x + 2, y + dy, mer, TRUNK);
+  put(x + 2, y + 1, mer + 1, BLOCKS.bois.side);
+  put(x + 2, y + 3, mer + 1, BLOCKS.bois.side);
 }
 
 /**

@@ -8,6 +8,7 @@ import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/phare';
 import { COULEURS_4E } from './decor/4e';
+import { empriseDuSocle, SOCLE_3E } from './decor/3e';
 import { eclaircir, hex } from './decor/pinceau';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
@@ -85,12 +86,15 @@ it('chaque élément du décor est posé sur la pente, au milieu de sa case, san
       const pts = sommets(maillage, i);
       if (!pts.length) return;
       const bas = Math.min(...pts.map((p) => p[1]));
-      if (e.genre === 'fumee' || e.genre === 'ecueil' || e.genre === 'banc' || e.genre === 'cascade') return;
+      // (Le ponton du Jardin descend la falaise jusqu'à l'eau.)
+      if (e.genre === 'fumee' || e.genre === 'ecueil' || e.genre === 'banc' || e.genre === 'cascade' || e.genre === 'ponton') return;
       if (!surTerre(champ, e)) return;
       const w = e.emprise;
-      // Le pied touche le sol (ou s'y enfonce), au plus bas de son emprise pour un repère de plusieurs cases.
+      // Le pied touche le sol (ou s'y enfonce), au plus bas de son emprise pour un repère de plusieurs cases. Le grand
+      // phare des Îles du Ciel se pose sur l'emprise de son socle, plus large que le phare de Blocland (R4b-3e).
+      const socle = a === '3e' && e.genre === 'grand-phare' ? { ...empriseDuSocle(e), w: SOCLE_3E.cote } : { x0: e.x, y0: e.y, w };
       let solBas = Infinity;
-      for (const u of [0.1, 0.5, 0.9]) for (const v of [0.1, 0.5, 0.9]) solBas = Math.min(solBas, hauteurDuSol(champ, e.x + u * w, e.y + v * w) ?? Infinity);
+      for (const u of [0.1, 0.5, 0.9]) for (const v of [0.1, 0.5, 0.9]) solBas = Math.min(solBas, hauteurDuSol(champ, socle.x0 + u * socle.w, socle.y0 + v * socle.w) ?? Infinity);
       // (Un buisson de deux cases : chacune sur son sol.)
       const cases = e.genre === 'buisson' ? e.cubes : [{ x: e.x, y: e.y }];
       const sol = !DECOR_BATI.has(e.genre) ? Math.min(...cases.map((c) => hauteurDuSol(champ, c.x + 0.5, c.y + 0.5) ?? Infinity)) : solBas;
@@ -120,7 +124,8 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(-0.45);
   }
   const cascades = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
-  expect(cascades.length).toBe(3);
+  // Trois, et celle du Relais des voyageurs (LV2), qui a son lac.
+  expect(cascades.length).toBe(4);
   for (const { e, i } of cascades) {
     const pts = sommets(maillage, i);
     const col = colonneEn(champ, e.x, e.y)!;

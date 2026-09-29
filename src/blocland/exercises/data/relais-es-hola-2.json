@@ -1,0 +1,242 @@
+{
+  "id": "relais-es-hola-2",
+  "biome": "relais",
+  "type": "es-hola",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.es.dialoguer.reagir"
+  ],
+  "items": [
+    {
+      "key": "relais-es-hola-2-0",
+      "prompt": "¿Te gusta el fútbol?",
+      "spoken": "Te gusta el fútbol?",
+      "choices": [
+        "Sí, me gusta mucho.",
+        "Sí, me gustan mucho.",
+        "Sí, te gusta mucho."
+      ],
+      "answer": "Sí, me gusta mucho.",
+      "hint": "el fútbol : un seul sport, au singulier. Et tu réponds pour toi.",
+      "explanation": "« ¿Te gusta el fútbol? » = Tu aimes le football ? Un nom au singulier : me gusta. Te gusta veut dire « tu aimes » : on répond pour soi, avec me.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-1",
+      "prompt": "¿Te gustan los perros?",
+      "spoken": "Te gustan los perros?",
+      "choices": [
+        "Sí, me gustan.",
+        "Sí, me gusta.",
+        "Sí, me gusto."
+      ],
+      "answer": "Sí, me gustan.",
+      "hint": "los perros : plusieurs chiens, au pluriel.",
+      "explanation": "« ¿Te gustan los perros? » = Tu aimes les chiens ? los perros est au pluriel : me gustan. Pour dire « j’aime », on dit me gusta ou me gustan, jamais me gusto.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-2",
+      "prompt": "¿Vamos al parque?",
+      "spoken": "Vamos al parque?",
+      "choices": [
+        "¡Vale, vamos!",
+        "Bien, gracias.",
+        "De nada."
+      ],
+      "answer": "¡Vale, vamos!",
+      "hint": "On te propose d’aller au parc : tu acceptes.",
+      "explanation": "« ¿Vamos al parque? » = On va au parc ? ¡Vale! = d’accord : ¡Vale, vamos! Bien, gracias répond à ¿Qué tal? ; de nada répond à gracias.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-3",
+      "prompt": "¡Muchas gracias por el regalo!",
+      "spoken": "Muchas gracias por el regalo!",
+      "choices": [
+        "De nada.",
+        "Por favor.",
+        "¡Hasta luego!"
+      ],
+      "answer": "De nada.",
+      "hint": "On te dit merci pour le cadeau.",
+      "explanation": "« ¡Muchas gracias! » = Merci beaucoup ! On répond De nada (de rien). Por favor veut dire s’il te plaît ; ¡Hasta luego!, à plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-4",
+      "prompt": "¡Hoy es mi cumpleaños!",
+      "spoken": "Hoy es mi cumpleaños!",
+      "choices": [
+        "¡Feliz cumpleaños!",
+        "¡Buen provecho!",
+        "¡Qué pena!"
+      ],
+      "answer": "¡Feliz cumpleaños!",
+      "hint": "hoy = aujourd’hui ; el cumpleaños = l’anniversaire.",
+      "explanation": "C’est son anniversaire : ¡Feliz cumpleaños! (joyeux anniversaire). ¡Buen provecho! se dit avant de manger ; ¡Qué pena!, quand c’est dommage.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-5",
+      "prompt": "¡Ay, perdón!",
+      "spoken": "Ay, perdón!",
+      "choices": [
+        "No pasa nada.",
+        "De nada.",
+        "¡Qué bien!"
+      ],
+      "answer": "No pasa nada.",
+      "hint": "Quelqu’un s’excuse : tu le rassures.",
+      "explanation": "« Perdón » = pardon. On rassure : No pasa nada (ce n’est pas grave). De nada répond à gracias, pas à perdón ; ¡Qué bien! veut dire « super ! ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-6",
+      "prompt": "¿Quieres un zumo de naranja?",
+      "spoken": "Quieres un zumo de naranja?",
+      "choices": [
+        "Sí, por favor.",
+        "Sí, de nada.",
+        "Bien, gracias."
+      ],
+      "answer": "Sí, por favor.",
+      "hint": "On te propose un jus d’orange : tu acceptes poliment.",
+      "explanation": "« ¿Quieres un zumo? » = Tu veux un jus ? On accepte avec Sí, por favor (oui, s’il te plaît). Sí, avec accent, veut dire oui ; de nada répond à gracias.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "relais-es-hola-2-7",
+      "prompt": "Me gusta mucho el chocolate. ¿Y a ti?",
+      "spoken": "Me gusta mucho el chocolate. Y a ti?",
+      "choices": [
+        "¡A mí también!",
+        "¡A ti también!",
+        "Sí, me gustan."
+      ],
+      "answer": "¡A mí también!",
+      "hint": "¿Y a ti? = Et à toi ? Tu réponds pour toi.",
+      "explanation": "« ¿Y a ti? » = Et toi, tu aimes ? On répond A mí también (moi aussi) : mí, avec accent, veut dire moi. A ti, c’est toi ; el chocolate est au singulier, donc pas gustan.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "me gusta + un nom au singulier : me gusta la música.",
+            "me gustan + un nom au pluriel : me gustan los gatos.",
+            "Pour soi, me gusta ; pour toi, te gusta. Moi aussi : a mí también.",
+            "vale = d’accord ; por favor = s’il te plaît ; de nada = de rien.",
+            "no pasa nada = ce n’est pas grave ; qué pena = dommage.",
+            "feliz cumpleaños = joyeux anniversaire ; buen provecho = bon appétit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

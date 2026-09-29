@@ -1,8 +1,8 @@
 // Le bonhomme d'Archipéo en facettes peintes (lot R6) : l'avatar de l'élève, un collégien explorateur à la silhouette
 // neutre, deux blocs de haut, la tête à 1/5,5 de sa taille (un collégien, pas un adulte : tête un peu forte, jambes
 // courtes, poignets en haut des cuisses, bras légèrement écartés). Cheveux courts en bataille, veste à capuche, sac à
-// dos de cuir (la planche maître) : ses deux bretelles Sable se voient de face, son rabat Sable de trois quarts et de dos.
-// Jean. Les six pièces portent les noms de celles du bonhomme en blocs (../../Avatar.ts) et pivotent aux mêmes
+// dos de cuir (la planche maître), en volume : ses deux bretelles de cuir sombre se voient de face, le sac de trois quarts
+// face, son rabat Sable de trois quarts et de dos. Jean délavé clair. Les six pièces portent les noms de celles du bonhomme en blocs (../../Avatar.ts) et pivotent aux mêmes
 // articulations (cou, hanches, épaules) : la marche (`walkPose`) les anime de la même façon.
 import { BONHOMME as C, OEIL } from './couleurs';
 import { devant, fuseau, parFace, pave, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace } from './peint';
@@ -81,13 +81,17 @@ function corps(T: Trace, pot: Pot): void {
     6,
     veste,
   );
-  // Le sac à dos de cuir et son rabat Sable, qui en couvre le haut (de trois quarts et de dos).
-  const rabat = pot(C.rabat, 'outil');
-  pave(T, -0.16, 0.96, 0.125, 0.16, 1.42, 0.3, pot(C.sac, 'outil'));
-  pave(T, -0.166, 1.26, 0.119, 0.166, 1.46, 0.306, rabat);
-  // Les deux bretelles Sable (0,06 bloc de large) : du bas de la poitrine, par-dessus l'épaule, jusqu'au haut du sac.
+  // Le sac à dos de cuir, en volume (DA-6) : plus large et plus profond que le dos, il déborde du torse et se lit de
+  // trois quarts face ; deux poches sur ses flancs ; son rabat Sable en couvre le haut (de trois quarts et de dos).
+  const sac = pot(C.sac, 'outil');
+  pave(T, -0.2, 0.94, 0.11, 0.2, 1.46, 0.4, sac);
+  for (const c of [-1, 1]) pave(T, c > 0 ? 0.2 : -0.25, 1.0, 0.17, c > 0 ? 0.25 : -0.2, 1.24, 0.35, sac);
+  pave(T, -0.206, 1.3, 0.104, 0.206, 1.5, 0.412, pot(C.rabat, 'outil'));
+  // Les deux bretelles de cuir sombre (0,06 bloc de large) : du bas de la poitrine, par-dessus l'épaule, jusqu'au haut
+  // du sac. Plus de Sable devant : aucune bande claire au milieu du torse.
+  const bretelles = pot(C.bretelles, 'outil');
   const avant = (y: number): [number, number] => [y, devant(TORSE, 8, y).z - 0.004];
-  for (const c of [-1, 1]) sangle(T, c * 0.09, [avant(1.2), avant(1.46), [1.625, -0.07], [1.625, 0.08], [1.44, 0.16]], 0.06, 0.03, rabat);
+  for (const c of [-1, 1]) sangle(T, c * 0.09, [avant(1.18), avant(1.46), [1.625, -0.02], [1.5, 0.12]], 0.06, 0.03, bretelles);
 }
 
 const TETE: Anneau[] = [

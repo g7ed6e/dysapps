@@ -1,0 +1,247 @@
+{
+  "id": "relais-es-familia-1",
+  "biome": "relais",
+  "type": "es-familia",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la question, puis la phrase ou le panneau en espagnol, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "relais-es-familia-1-0",
+      "question": "Qui est Pablo pour Lucía ?",
+      "prompt": "Me llamo Lucía. Pablo es mi hermano.",
+      "spoken": "Me llamo Lucía. Pablo es mi hermano.",
+      "choices": [
+        "Son frère",
+        "Son père",
+        "Son camarade"
+      ],
+      "answer": "Son frère",
+      "hint": "Cherche le mot juste après mi.",
+      "explanation": "mi hermano = mon frère : Pablo est le frère de Lucía.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-1",
+      "question": "Qui est Marta pour Hugo ?",
+      "prompt": "Soy Hugo. Marta es mi compañera de clase.",
+      "spoken": "Soy Hugo. Marta es mi compañera de clase.",
+      "choices": [
+        "Sa camarade de classe",
+        "Sa sœur",
+        "Sa professeure"
+      ],
+      "answer": "Sa camarade de classe",
+      "hint": "Regarde le lexique : compañera.",
+      "explanation": "mi compañera de clase = ma camarade de classe (ñ se dit « gn » : compagnera).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-2",
+      "question": "Que demande la professeure ?",
+      "prompt": "¡Abrid los libros!",
+      "spoken": "Abrid los libros!",
+      "choices": [
+        "Ouvrir les livres",
+        "Fermer les livres",
+        "Prendre les cahiers"
+      ],
+      "answer": "Ouvrir les livres",
+      "hint": "los libros, ce sont les livres. Et abrir ?",
+      "explanation": "abrir = ouvrir : ¡Abrid los libros! = Ouvrez les livres ! Fermer se dit cerrar.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-3",
+      "question": "Que demande le professeur ?",
+      "prompt": "¡Escuchad!",
+      "spoken": "Escuchad!",
+      "choices": [
+        "Écouter",
+        "Écrire",
+        "Lire"
+      ],
+      "answer": "Écouter",
+      "hint": "Regarde le lexique : escuchar, escribir, leer.",
+      "explanation": "escuchar = écouter : ¡Escuchad! = Écoutez ! Écrire se dit escribir, lire se dit leer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-4",
+      "question": "De qui dit-on qu’il est sympathique ?",
+      "prompt": "Tú eres muy simpático.",
+      "spoken": "Tú eres muy simpático.",
+      "choices": [
+        "De toi",
+        "De ton frère",
+        "De son père"
+      ],
+      "answer": "De toi",
+      "hint": "Après tú vient un verbe (eres) : tú veut dire toi.",
+      "explanation": "tú, avec accent, veut dire toi : Tú eres muy simpático = Tu es très sympathique. Sans accent, tu veut dire ton, ta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-5",
+      "question": "De qui dit-on qu’il est sympathique ?",
+      "prompt": "Tu hermano es muy simpático.",
+      "spoken": "Tu hermano es muy simpático.",
+      "choices": [
+        "De ton frère",
+        "De toi",
+        "De mon frère"
+      ],
+      "answer": "De ton frère",
+      "hint": "Après tu vient un nom (hermano) : tu veut dire ton.",
+      "explanation": "tu, sans accent, veut dire ton, ta : tu hermano = ton frère. Avec accent, tú veut dire toi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-6",
+      "question": "Que demande ce panneau de la bibliothèque ?",
+      "prompt": "Biblioteca\nSilencio, por favor.",
+      "spoken": "Biblioteca. Silencio, por favor.",
+      "choices": [
+        "Ne pas faire de bruit",
+        "Rendre les livres",
+        "Fermer la porte"
+      ],
+      "answer": "Ne pas faire de bruit",
+      "hint": "por favor = s’il vous plaît. Et silencio ?",
+      "explanation": "silencio = silence : Silencio, por favor = Silence, s’il vous plaît.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-familia-1-7",
+      "question": "Combien de frères et sœurs a Diego ?",
+      "prompt": "Me llamo Diego. Tengo dos hermanas y un hermano.",
+      "spoken": "Me llamo Diego. Tengo dos hermanas y un hermano.",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "3",
+      "hint": "Compte les sœurs (hermanas), puis le frère (hermano).",
+      "explanation": "dos hermanas (2 sœurs) y un hermano (1 frère) : 3 en tout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La familia y el colegio",
+          "lines": [
+            "el padre (le père), la madre (la mère), el hermano (le frère), la hermana (la sœur)",
+            "mi hermano (mon frère), el compañero, la compañera (le, la camarade) : ñ se dit « gn »",
+            "el colegio (l’école), el profesor, la profesora, el libro (le livre), la biblioteca",
+            "En clase : leer (lire), escribir (écrire), escuchar (écouter), abrir (ouvrir) ; por favor = s’il vous plaît",
+            "tu = ton, ta ; tú, avec accent = toi. Écoute la phrase : un nom après tu, un verbe après tú."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

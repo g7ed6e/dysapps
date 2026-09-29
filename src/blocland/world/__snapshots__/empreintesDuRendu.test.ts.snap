@@ -2,40 +2,40 @@
 
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 3e 1`] = `
 {
-  "ambiance": "f6a53a7b",
-  "décor (lueurs)": "1509bf4b",
-  "décor (primitives)": "b468d3d4",
-  "décor (style a)": "b9788815",
-  "modelé dessiné": "1fbf5e2c",
+  "ambiance": "3723da9c",
+  "décor (lueurs)": "a1ce44cb",
+  "décor (primitives)": "0f7eedeb",
+  "décor (style a)": "db6f4006",
+  "modelé dessiné": "6210e53d",
   "relief": "c1cbbf83",
 }
 `;
 
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 4e 1`] = `
 {
-  "ambiance": "d386f044",
+  "ambiance": "0c250908",
   "décor (lueurs)": "1a36ccfb",
-  "décor (primitives)": "85d44f4d",
-  "décor (style a)": "aa409932",
-  "modelé dessiné": "a3fe320f",
-  "relief": "6e338bb4",
+  "décor (primitives)": "1b7309a9",
+  "décor (style a)": "8d3f6848",
+  "modelé dessiné": "a9b9a14b",
+  "relief": "3b011e0d",
 }
 `;
 
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] = `
 {
-  "ambiance": "a4c2039a",
+  "ambiance": "2d58e328",
   "décor (lueurs)": "13fe3a3b",
-  "décor (primitives)": "995087a3",
-  "décor (style a)": "e5056491",
-  "modelé dessiné": "af10ba99",
-  "relief": "8faeaccf",
+  "décor (primitives)": "a4ae4124",
+  "décor (style a)": "c421c37e",
+  "modelé dessiné": "76bff7bc",
+  "relief": "02c949ef",
 }
 `;
 
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] = `
 {
-  "ambiance": "4ff40dbf",
+  "ambiance": "b592b556",
   "décor (lueurs)": "9c445ce7",
   "décor (primitives)": "71fddefa",
   "décor (style a)": "eb419ee0",

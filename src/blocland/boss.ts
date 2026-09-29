@@ -1,6 +1,6 @@
 // Le Gardien d'un biome : un défi qui enchaîne des manches de chaque mission du biome, au niveau de l'élève.
 // Logique pure : déblocage, construction du défi, état « vaincu ».
-import { BIOMES, guardianTitle, type BiomeDef, type BiomeId } from './biomes';
+import { BIOMES, guardianTitle, missionsJouables, type BiomeDef, type BiomeId } from './biomes';
 import { levelFor, type BloclandState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, loadExercise, pickExercise } from './exercises';
@@ -30,14 +30,24 @@ export interface BossRound extends ExerciseItem {
   wrong: string;
 }
 
-/** Les types de missions du biome qui ont du contenu. */
+/** Les types de missions du biome qui ont du contenu (sur l'île de la LV2 : celles de la langue choisie). */
 export function typesWithContent(biome: BiomeDef): string[] {
-  return biome.exercises.filter((x) => exercisesOf(biome.id, x.id).length > 0).map((x) => x.id);
+  return missionsJouables(biome).filter((x) => exercisesOf(biome.id, x.id).length > 0).map((x) => x.id);
 }
 
 /** Le Gardien accepte le défi quand chaque mission du biome a au moins deux étoiles. */
 export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
-  return typesWithContent(biome).every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
+  const types = typesWithContent(biome);
+  // Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
+  return types.length > 0 && types.every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
+}
+
+/**
+ * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (une revanche), même si une mission
+ * est arrivée depuis sur l'île sans étoile. Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
+ */
+export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
+  return typesWithContent(biome).length > 0 && (isBossBeaten(biome.id, progress) || isBossUnlocked(biome, progress));
 }
 
 /**
@@ -48,17 +58,19 @@ export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 
 /**
  * Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. Avec
- * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente.
+ * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente. Un Gardien vaincu le reste : une
+ * mission ajoutée plus tard à son île, encore sans étoile, ne le cache ni ne l'éteint.
  */
 export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {
   if (!isBiomeUnlocked(biome.id, bridges)) return 'hidden';
+  if (isBossBeaten(biome.id, progress)) return 'beaten';
   if (!isBossUnlocked(biome, progress)) return sentinelles ? 'waiting' : 'hidden';
-  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
+  return 'ready';
 }
 
 /** Les missions du biome où il manque encore des étoiles (pour l'expliquer à l'élève). */
 export function missingForBoss(biome: BiomeDef, progress: Record<string, { stars: number }>): string[] {
-  return biome.exercises
+  return missionsJouables(biome)
     .filter((x) => typesWithContent(biome).includes(x.id))
     .filter((x) => !exercisesOf(biome.id, x.id).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK))
     .map((x) => x.title);

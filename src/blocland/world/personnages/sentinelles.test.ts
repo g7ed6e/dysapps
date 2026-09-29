@@ -3,8 +3,23 @@ import { ARCHIPELAGO_IDS } from '../archipels';
 import { lineaire } from '../landMesh';
 import { LUEUR, SENTINELLE } from './couleurs';
 import type { FacettesDePersonnage, V3 } from './peint';
-import { allumage, couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, FOYER, HAUTEUR_DE_SENTINELLE } from './sentinelle';
-import { sentinellePeinte, STATUES } from './sentinellesPeintes';
+import { toutConstruit } from '../budget';
+import { GRUE } from '../decor/4e';
+import { PHARES } from '../decor/phare';
+import { bossIsletCenter, guardianPlacements } from '../terrain';
+import { fusionDesGardiens, pointDePose } from './fusions';
+import {
+  allumage,
+  couleursAllumees,
+  DEMI_LARGEUR_DE_SENTINELLE,
+  ECHELLE_DANS_LE_MONDE,
+  EPAISSEUR_DES_VEINES_DANS_LE_MONDE,
+  FOYER,
+  HAUT_DU_SOCLE,
+  HAUTEUR_DANS_LE_MONDE,
+  HAUTEUR_DE_SENTINELLE,
+} from './sentinelle';
+import { sentinelleAuDefi, sentinelleDuMonde, sentinellePeinte, STATUES } from './sentinellesPeintes';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
 
@@ -58,8 +73,15 @@ function lueurs(f: FacettesDePersonnage): number {
   return new Set(ts.map((_, i) => racine(i))).size;
 }
 
-/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne. */
-const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio'];
+/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil de cuivre. */
+const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin'];
+/**
+ * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
+ * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
+ */
+const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5], jardin: [5.8, 6.3] };
+/** Les sentinelles basses plus longues que hautes. */
+const LONGUES: BiomeId[] = ['relais'];
 
 describe('L’allumage des sentinelles', () => {
   it('éteinte (0) et rallumée (1), exactement les couleurs du directeur artistique', () => {
@@ -149,7 +171,9 @@ describe('Les Gardiens en sentinelles', () => {
       const f = sentinellePeinte(b.id);
       const nom = (t: number) => f.table[f.pieces[t]].nom;
 
-      it('huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
+      const basse = BASSES[b.id];
+      const longue = LONGUES.includes(b.id);
+      it(basse ? `basse${longue ? ' et plus longue que haute' : ''}, les pieds en 0 ; cinq cases de large au plus` : 'huit blocs de haut, socle compris, les pieds en 0 ; cinq cases de large au plus', () => {
         let [bas, haut] = [Infinity, -Infinity];
         for (let i = 0; i < f.positions.length; i += 3) {
           bas = Math.min(bas, f.positions[i + 1]);
@@ -158,7 +182,21 @@ describe('Les Gardiens en sentinelles', () => {
           expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
         }
         expect(bas).toBeCloseTo(0, 6);
-        expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
+        if (!basse) return expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
+        expect(haut).toBeGreaterThanOrEqual(basse[0]);
+        expect(haut).toBeLessThanOrEqual(basse[1]);
+        if (!longue) return;
+        // Sa longueur, le long de son grand axe (tourné de son `tour` dans le monde).
+        const tour = STATUES[b.id].tour?.monde ?? 0;
+        let [gauche, droite] = [Infinity, -Infinity];
+        for (let t = 0; t < nbTriangles(f); t++)
+          if (nom(t) === 'sculpture')
+            for (let k = 0; k < 3; k++) {
+              const [x, , z] = sommet(f, t, k);
+              const l = x * Math.cos(tour) - z * Math.sin(tour);
+              [gauche, droite] = [Math.min(gauche, l), Math.max(droite, l)];
+            }
+        expect(droite - gauche).toBeGreaterThan(haut - HAUT_DU_SOCLE);
       });
 
       it('quatre pièces figées ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
@@ -185,7 +223,9 @@ describe('Les Gardiens en sentinelles', () => {
         expect(orbites.length).toBeGreaterThanOrEqual(2);
         for (const t of orbites) {
           expect(nom(t)).toBe('sculpture');
-          expect(f.normals[t * 9 + 2]).toBeLessThan(-0.95);
+          // Vers −Z, tournées avec la statue quand elle se tourne pour se montrer de profil (`tour`).
+          const tour = STATUES[b.id].tour?.monde ?? 0;
+          expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
         }
       });
 
@@ -199,4 +239,88 @@ describe('Les Gardiens en sentinelles', () => {
         expect(normalesCoherentes(f)).toBe(true);
       });
     });
+});
+
+describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
+  const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
+  it('la Diligence, et le Soleil de cuivre, un disque qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['jardin', 'relais']));
+
+  it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
+    const f = sentinellePeinte('jardin');
+    const sculpture = f.table.findIndex((p) => p.nom === 'sculpture');
+    // La patine du disque, sur la sculpture (le socle a sa mousse, qui ne tourne pas).
+    const lichen = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.lichen && f.pieces[t] === sculpture);
+    expect(lichen.length).toBeGreaterThan(0);
+    for (const deg of [20, 42, 72, 85]) {
+      const [cx, cz] = [Math.sin((deg * Math.PI) / 180), -Math.cos((deg * Math.PI) / 180)];
+      for (const t of lichen) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(Math.cos((34 * Math.PI) / 180));
+    }
+    for (let i = 0; i < f.positions.length; i += 3) {
+      expect(Math.abs(f.positions[i])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+      expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+    }
+  });
+
+  for (const b of tournees.filter((x) => x.id === 'relais'))
+    it(`${STATUES[b.id].nom} : au défi, sa portière face à la caméra de trois quarts, dans les cinq cases ; le socle ne tourne pas`, () => {
+      const f = sentinelleAuDefi(b.id);
+      const monde = sentinellePeinte(b.id);
+      expect(f).not.toBe(monde);
+      expect(f.pieces.length).toBe(monde.pieces.length);
+      // La caméra du défi (Guardians.tsx, `cameraDirection`), vue de dessus.
+      const [cx, cz] = [-0.55, -0.85].map((v) => v / Math.hypot(0.55, 0.85));
+      const orbites = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.orbite);
+      expect(orbites.length).toBeGreaterThanOrEqual(2);
+      for (const t of orbites) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+      for (let i = 0; i < f.positions.length; i += 3) {
+        expect(Math.abs(f.positions[i])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+        expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+      }
+      const socle = (g: typeof f) => Array.from(g.positions).filter((_, j) => g.pieces[Math.floor(j / 9)] === g.table.findIndex((p) => p.nom === 'socle'));
+      expect(socle(f)).toEqual(socle(monde));
+    });
+});
+
+describe('Les sentinelles dans le monde (revue d’ensemble du directeur artistique, DA-5)', () => {
+  const { progress, village } = toutConstruit();
+
+  it('font environ 5 blocs socle compris (la Diligence, basse, à l’échelle), plus basses que le phare de Grimoire (6 cases) et que la grue de l’Atelier (9)', () => {
+    expect(HAUTEUR_DANS_LE_MONDE).toBeGreaterThanOrEqual(4.8);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThanOrEqual(5.4);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(PHARES['6e'].H);
+    expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(GRUE.hauteur);
+    for (const a of ARCHIPELAGO_IDS) {
+      const places = guardianPlacements(a, progress, village.bridges);
+      const f = fusionDesGardiens(places);
+      places.forEach((p, i) => {
+        const pied = pointDePose(p)[1];
+        let haut = -Infinity;
+        for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
+        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
+        const basse = BASSES[p.id];
+        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
+        expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
+      });
+    }
+  });
+
+  it('gardent des veines aussi épaisses à l’écran : élargies d’autant que la statue rapetisse, sans un triangle de plus', () => {
+    expect(EPAISSEUR_DES_VEINES_DANS_LE_MONDE * ECHELLE_DANS_LE_MONDE).toBeCloseTo(1, 9);
+    for (const b of BIOMES) {
+      const [defi, monde] = [sentinellePeinte(b.id), sentinelleDuMonde(b.id)];
+      expect(monde.pieces.length, b.id).toBe(defi.pieces.length);
+      expect(Array.from(monde.teintes), b.id).toEqual(Array.from(defi.teintes));
+      expect(normalesCoherentes(monde), b.id).toBe(true);
+    }
+  });
+
+  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du point de l’îlot', () => {
+    for (const b of BIOMES.filter((x) => x.classe === '6e')) {
+      const g = guardianPlacements('6e', progress, village.bridges).find((p) => p.id === b.id);
+      if (!g) continue;
+      const pied = pointDePose(g)[1];
+      expect(bossIsletCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
+    }
+  });
 });

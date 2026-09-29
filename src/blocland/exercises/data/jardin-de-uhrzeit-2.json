@@ -1,0 +1,250 @@
+{
+  "id": "jardin-de-uhrzeit-2",
+  "biome": "jardin",
+  "type": "de-uhrzeit",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Cette fois, une scène de la journée : lis la question, puis appuie sur Écouter pour entendre la phrase en allemand. Le lexique est affiché.",
+  "programme": [
+    "c4.de.ecouter.indices"
+  ],
+  "items": [
+    {
+      "key": "jardin-de-uhrzeit-2-0",
+      "question": "Où est-on ?",
+      "prompt": "Guten Abend! Einen Tisch für zwei?",
+      "spoken": "Guten Abend! Einen Tisch für zwei?",
+      "choices": [
+        "Au restaurant",
+        "À la gare",
+        "Au collège"
+      ],
+      "answer": "Au restaurant",
+      "hint": "Cherche le mot Tisch dans le lexique.",
+      "explanation": "einen Tisch für zwei = une table pour deux : on est au restaurant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-1",
+      "question": "Qui parle ?",
+      "prompt": "Ruhe, bitte! Nehmt eure Hefte heraus.",
+      "spoken": "Ruhe, bitte! Nehmt eure Hefte heraus.",
+      "choices": [
+        "Un professeur",
+        "Un serveur",
+        "Un vendeur"
+      ],
+      "answer": "Un professeur",
+      "hint": "Regarde le lexique : nehmt heraus.",
+      "explanation": "Ruhe, bitte! = du calme, s’il vous plaît ; nehmt eure Hefte heraus = sortez vos cahiers. C’est un professeur qui parle à sa classe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-2",
+      "question": "Où est-on ?",
+      "prompt": "Der Zug nach Berlin fährt von Gleis zwei ab.",
+      "spoken": "Der Zug nach Berlin fährt von Gleis zwei ab.",
+      "choices": [
+        "À la gare",
+        "À l’arrêt de bus",
+        "À la piscine"
+      ],
+      "answer": "À la gare",
+      "hint": "Regarde le lexique : der Zug, das Gleis.",
+      "explanation": "der Zug fährt von Gleis zwei ab = le train part de la voie 2 : on est à la gare.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-3",
+      "question": "Qui parle ?",
+      "prompt": "Das macht vier Euro fünfzig, bitte.",
+      "spoken": "Das macht vier Euro fünfzig, bitte.",
+      "choices": [
+        "Un vendeur",
+        "Un professeur",
+        "Un élève"
+      ],
+      "answer": "Un vendeur",
+      "hint": "Qui dit un prix ?",
+      "explanation": "Das macht vier Euro fünfzig = ça fait 4 euros 50 : c’est un prix, donc un vendeur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-4",
+      "question": "À quel moment de la journée est-on ?",
+      "prompt": "Gute Nacht! Ich gehe ins Bett.",
+      "spoken": "Gute Nacht! Ich gehe ins Bett.",
+      "choices": [
+        "Le soir",
+        "Le matin",
+        "À midi"
+      ],
+      "answer": "Le soir",
+      "hint": "Regarde le lexique : Gute Nacht.",
+      "explanation": "Gute Nacht = bonne nuit ; ich gehe ins Bett = je vais au lit. C’est le soir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-5",
+      "question": "Où est-on ?",
+      "prompt": "Zwei Karten für den Film um acht, bitte.",
+      "spoken": "Zwei Karten für den Film um acht, bitte.",
+      "choices": [
+        "Au cinéma",
+        "Au restaurant",
+        "À la gare"
+      ],
+      "answer": "Au cinéma",
+      "hint": "Regarde le lexique : die Karte.",
+      "explanation": "zwei Karten = deux billets ; für den Film um acht = pour le film de 20 h. On est au cinéma.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-6",
+      "question": "Qui parle ?",
+      "prompt": "Mama, was gibt es zum Abendessen?",
+      "spoken": "Mama, was gibt es zum Abendessen?",
+      "choices": [
+        "Un enfant à sa mère",
+        "Un serveur à un client",
+        "Un professeur à un élève"
+      ],
+      "answer": "Un enfant à sa mère",
+      "hint": "Écoute le premier mot de la phrase.",
+      "explanation": "Mama = maman ; was gibt es zum Abendessen? = qu’est-ce qu’il y a pour le dîner ? C’est un enfant qui parle à sa mère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-uhrzeit-2-7",
+      "question": "Où est-on ?",
+      "prompt": "Zuerst die Zwiebel schneiden, dann in die Pfanne.",
+      "spoken": "Zuerst die Zwiebel schneiden, dann in die Pfanne.",
+      "choices": [
+        "Dans une cuisine",
+        "Dans une classe",
+        "Dans un magasin"
+      ],
+      "answer": "Dans une cuisine",
+      "hint": "Cherche die Zwiebel et die Pfanne dans le lexique.",
+      "explanation": "die Zwiebel schneiden = couper l’oignon ; in die Pfanne = dans la poêle. On prépare un plat : on est dans une cuisine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Wer spricht? Wo sind wir?",
+          "lines": [
+            "der Tisch = la table ; die Karte = le billet",
+            "der Zug fährt ab = le train part ; das Gleis = la voie",
+            "nehmt heraus = sortez (à toute la classe) ; das Heft = le cahier",
+            "Gute Nacht = bonne nuit ; das Abendessen = le dîner",
+            "die Zwiebel = l’oignon ; die Pfanne = la poêle"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compris !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "osier",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

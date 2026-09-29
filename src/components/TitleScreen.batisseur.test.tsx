@@ -76,3 +76,27 @@ it('le toucher du logo ne fait pas défiler ni recharger la page', () => {
     expect(toucher.defaultPrevented).toBe(true);
   }
 });
+
+it('au doigt, sans glisser : toucher les bords du logo puis deux fois son centre', () => {
+  const { container } = renderTitle();
+  const logo = container.querySelector('.title-logo')!;
+  logo.getBoundingClientRect = () => ({ left: 0, top: 0, width: 160, height: 160, right: 160, bottom: 160, x: 0, y: 0, toJSON: () => ({}) });
+  const toucher = (x: number, y: number) => {
+    fireEvent.pointerDown(logo, { clientX: x, clientY: y });
+    fireEvent.pointerUp(logo, { clientX: x, clientY: y });
+  };
+  for (const [x, y] of [[80, 10], [80, 10], [80, 150], [80, 150], [10, 80], [150, 80], [10, 80], [150, 80], [80, 80], [80, 80]]) toucher(x, y);
+  expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
+});
+
+it('la croix masque le bandeau', async () => {
+  const user = userEvent.setup();
+  renderTitle();
+  await user.keyboard(`${FLECHES}ba`);
+  document.body.insertAdjacentHTML('beforeend', '<main id="contenu" tabindex="-1"></main>');
+  await user.click(screen.getByRole('button', { name: 'Masquer ce bandeau' }));
+  expect(document.getElementById('contenu')).toHaveFocus();
+  document.getElementById('contenu')?.remove();
+  expect(screen.queryByRole('button', { name: /Quitter/ })).not.toBeInTheDocument();
+  expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
+});

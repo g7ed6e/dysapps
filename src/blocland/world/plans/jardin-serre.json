@@ -1,0 +1,13 @@
+{
+  "id": "jardin-serre",
+  "biome": "jardin",
+  "name": "La serre du jardin",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "or": 2,
+      "cristal": 2
+    }
+  },
+  "done": "Une serre, une barrière, une marche… Mon jardin est complet. À table, bâtisseur !"
+}

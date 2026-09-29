@@ -54,7 +54,7 @@ export function dragonAssis(T: Trace, a: Atelier, ailes: 'repliees' | 'deployees
 }
 
 /** Le ventre du dragon : trois chevrons de braise. */
-export function ventreDuDragon(T: Trace, pe: Peindre): void {
+export function ventreDuDragon(T: Trace, a: Atelier): void {
   for (const y of [1.25, 1.95, 2.65])
     veineSur(
       T,
@@ -65,8 +65,8 @@ export function ventreDuDragon(T: Trace, pe: Peindre): void {
         [0, y - 0.1],
         [0.48, y + 0.16],
       ],
-      0.1,
-      pe,
+      0.1 * a.veines,
+      a.lueur,
     );
 }
 

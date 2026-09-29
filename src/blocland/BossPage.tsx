@@ -13,7 +13,7 @@ import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipel
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
+import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
@@ -31,7 +31,7 @@ export function BossPage() {
   const textes = useTextes();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossUnlocked(biome, state.progress));
+  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossOpen(biome, state.progress));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Le défi est tiré au lancement (et à chaque « Rejouer »), pas à chaque changement de progression.
   // Son contenu est chargé à la demande : `undefined` le temps de l'avoir, `null` si le Gardien n'est pas accessible.

@@ -19,7 +19,7 @@ import { landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { Couleur } from '../palette';
 import { rgb } from './pinceau';
-import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, whaleSpots, worldBounds } from '../terrain';
+import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, mistPatches, whaleSpots, worldBounds } from '../terrain';
 
 /** Une couche de brume : sa hauteur au-dessus de l'eau, sa couleur, son opacité la plus forte et la part de la mer qu'elle couvre. */
 export interface CoucheDeBrume {
@@ -156,7 +156,61 @@ export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
   return out;
 }
 
-/** Les triangles des bancs de brume d'un archipel (0 s'il n'en a pas). */
+/**
+ * Les nappes des sommets des Îles du Ciel (sous-lot R4b-3e ; fiche du 3e, §4 et §6) : une seule couche plate sous chaque
+ * île, sous son sol (`mistPatches`), qui s'efface vers ses bords et se fond dans le plancher de nuages. Jamais des
+ * couches étagées comme au 5e. Un disque de `PANS` pans par île, deux anneaux : environ 300 triangles en tout.
+ */
+export const NAPPES_3E = { couleur: 0xe6ecf0, opacite: 0.5, pans: 16, anneau: 0.6 } as const;
+
+const nappesCache = new Map<ArchipelagoId, BancsDeBrume | null>();
+
+/** Les nappes des sommets d'un archipel (Archipéo), dans le format des bancs (un appel de dessin), ou `null`. */
+export function nappesDesSommets(a: ArchipelagoId): BancsDeBrume | null {
+  const connu = nappesCache.get(a);
+  if (connu !== undefined) return connu;
+  const patches = mistPatches(a);
+  if (!patches.length) {
+    nappesCache.set(a, null);
+    return null;
+  }
+  const N = NAPPES_3E;
+  const lin = rgb(N.couleur).map((v) => lineaire(v / 255));
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  for (const m of patches) {
+    const sommet = (x: number, z: number, alpha: number) => {
+      positions.push(x, m.z, z);
+      colors.push(lin[0], lin[1], lin[2], alpha);
+      return positions.length / 3 - 1;
+    };
+    const centre = sommet(m.x, m.y, N.opacite);
+    const anneau = (k: number, alpha: number) =>
+      Array.from({ length: N.pans }, (_, i) => {
+        const a = (i / N.pans) * Math.PI * 2;
+        return sommet(m.x + (Math.cos(a) * m.w * k) / 2, m.y + (Math.sin(a) * m.h * k) / 2, alpha);
+      });
+    const dedans = anneau(N.anneau, N.opacite);
+    const dehors = anneau(1, 0);
+    for (let i = 0; i < N.pans; i++) {
+      const j = (i + 1) % N.pans;
+      // Vus d'en haut (la normale vers le ciel).
+      indices.push(centre, dedans[j], dedans[i]);
+      indices.push(dedans[i], dedans[j], dehors[j], dedans[i], dehors[j], dehors[i]);
+    }
+  }
+  const out: BancsDeBrume = { positions: Float32Array.from(positions), colors: Float32Array.from(colors), indices: Uint32Array.from(indices) };
+  nappesCache.set(a, out);
+  return out;
+}
+
+/** La brume d'Archipéo d'un archipel, celle que dessine three/brume.ts : ses bancs (5e), sinon ses nappes (3e). */
+export function brumeDArchipeo(a: ArchipelagoId): BancsDeBrume | null {
+  return bancsDeBrume(a) ?? nappesDesSommets(a);
+}
+
+/** Les triangles de la brume d'Archipéo d'un archipel (0 s'il n'en a pas). */
 export function trianglesDeLaBrume(a: ArchipelagoId): number {
-  return (bancsDeBrume(a)?.indices.length ?? 0) / 3;
+  return (brumeDArchipeo(a)?.indices.length ?? 0) / 3;
 }

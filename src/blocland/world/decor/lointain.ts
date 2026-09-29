@@ -9,7 +9,7 @@
 // - Tout est hors de la grille : rien n'y marche, rien ne s'y touche (les triangles n'ont pas d'élément, `SANS_ELEMENT`),
 //   et la vue 3D les cache sur la Carte. La 2D ne le montre pas.
 // - Tout va dans le pinceau du décor, après ses éléments : aucun appel de dessin de plus.
-import type { Couleur } from '../palette';
+import { SOLEIL_DIRECTION, type Couleur } from '../palette';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
 import { clamp, hasardDe, rgb, type Peindre, type Pinceau, type RGB, type V3 } from './pinceau';
 
@@ -39,6 +39,15 @@ export interface RangDeCretes extends Place {
   /** Les cimes pâles : cette couleur au-dessus de `neige` (une part de la hauteur de chaque cime). */
   sommet?: Couleur;
   neige?: number;
+  /**
+   * La limite de la neige franche (le massif du 3e) : les versants sont coupés à la hauteur `neige`, roche dessous, neige
+   * dessus, sans dégradé entre les deux. Sans elle, la couleur passe de l'une à l'autre le long du versant.
+   */
+  neigeFranche?: boolean;
+  /** L'ombre de la roche : les versants tournés à l'opposé du soleil tirent vers cette couleur. */
+  ombre?: Couleur;
+  /** La hauteur des cols entre les cimes, en part de `haut` (de 0,35 à 0,55 par défaut) : plus haut, une crête continue. */
+  cols?: [number, number];
 }
 
 /** Une masse en gradins : des marches de `marche` blocs, en retrait de `retrait` cases, un sommet plat. */
@@ -109,6 +118,47 @@ function peinture(couleur: Couleur, sommet: Couleur | undefined, seuil: number):
   };
 }
 
+/** Le soleil, normé : les versants qui s'en détournent prennent l'ombre de la roche (`RangDeCretes.ombre`). */
+const SOLEIL = (() => {
+  const l = Math.hypot(...SOLEIL_DIRECTION);
+  return SOLEIL_DIRECTION.map((v) => v / l) as [number, number, number];
+})();
+
+/** Une peinture qui tire vers `ombre` sur les faces à l'opposé du soleil (jusqu'à `force`). */
+function ombree(peindre: Peindre, ombre: Couleur, force = 0.55): Peindre {
+  const o = lin(ombre);
+  return (p, n) => {
+    const c = peindre(p, n);
+    const s = force * clamp((0.35 - (n[0] * SOLEIL[0] + n[1] * SOLEIL[1] + n[2] * SOLEIL[2])) / 0.9, 0, 1);
+    return [c[0] + (o[0] - c[0]) * s, c[1] + (o[1] - c[1]) * s, c[2] + (o[2] - c[2]) * s];
+  };
+}
+
+/**
+ * Un polygone convexe coupé par le plan horizontal `y` : la part dessous peinte de `dessous`, la part dessus de `dessus`,
+ * chacune en éventail (la limite de la neige franche).
+ */
+function coupe(P: Pinceau, pts: V3[], y: number, dedans: V3, dessous: Peindre, dessus: Peindre): void {
+  const bas: V3[] = [];
+  const haut: V3[] = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % pts.length];
+    (a[1] < y ? bas : haut).push(a);
+    if (a[1] < y !== b[1] < y) {
+      const t = (y - a[1]) / (b[1] - a[1]);
+      const m: V3 = [a[0] + (b[0] - a[0]) * t, y, a[2] + (b[2] - a[2]) * t];
+      bas.push(m);
+      haut.push(m);
+    }
+  }
+  for (const [poly, peindre] of [
+    [bas, dessous],
+    [haut, dessus],
+  ] as const)
+    for (let i = 1; i + 1 < poly.length; i++) P.triangle(poly[0], poly[i], poly[i + 1], dedans, peindre);
+}
+
 /** Le point d'une place : au-dessus de la mer, en repère Three (X = x, Y = hauteur, Z = y). */
 function ancre(e: Etendue, p: Place): [number, number] {
   return [e.minX + p.u * (e.maxX - e.minX), e.maxY + p.recul];
@@ -119,16 +169,20 @@ function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): 
   const x1 = e.minX + r.a * (e.maxX - e.minX);
   // Le profil : des cimes et des cols, de hauteurs irrégulières ; le rang descend dans la mer à ses deux bouts.
   const n = r.cimes * 2 + 1;
+  const cols = r.cols ?? [0.35, 0.55];
   const profil: { x: number; y: number; dz: number }[] = [];
   for (let i = 0; i <= n; i++) {
     const t = i / n;
     const bout = i === 0 || i === n;
     const cime = i % 2 === 1;
-    const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (0.35 + 0.2 * hasard());
+    const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (cols[0] + (cols[1] - cols[0]) * hasard());
     profil.push({ x: x0 + (x1 - x0) * (t + (bout ? 0 : (hasard() - 0.5) * 0.4 / n)), y: h, dz: (hasard() - 0.5) * r.epaisseur * 0.3 });
   }
   const seuil = r.haut * (r.neige ?? 1.01);
-  const peindre = peinture(r.couleur, r.sommet, seuil);
+  const avecOmbre = (p: Peindre) => (r.ombre === undefined ? p : ombree(p, r.ombre));
+  const peindre = avecOmbre(peinture(r.couleur, r.sommet, seuil));
+  const roche = avecOmbre(peinture(r.couleur, undefined, seuil));
+  const neige = peinture(r.sommet ?? r.couleur, undefined, seuil);
   const avant = z - r.epaisseur / 2;
   const arriere = z + r.epaisseur / 2;
   for (let i = 0; i < n; i++) {
@@ -138,6 +192,11 @@ function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): 
     const cb: V3 = [b.x, b.y, z + b.dz];
     const dedans: V3 = [(a.x + b.x) / 2, PIED, z];
     // Le versant avant, que voit la caméra, et le versant arrière (vu en voyage, de côté).
+    if (r.neigeFranche) {
+      coupe(P, [[a.x, PIED, avant], [b.x, PIED, avant], cb, ca], seuil, dedans, roche, neige);
+      coupe(P, [[a.x, PIED, arriere], [b.x, PIED, arriere], cb, ca], seuil, dedans, roche, neige);
+      continue;
+    }
     P.quad([a.x, PIED, avant], [b.x, PIED, avant], cb, ca, dedans, peindre);
     P.quad([a.x, PIED, arriere], [b.x, PIED, arriere], cb, ca, dedans, peindre);
   }

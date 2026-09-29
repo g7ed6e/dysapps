@@ -74,6 +74,12 @@ import comptoirTerrasse from './plans/comptoir-terrasse.json';
 import manoirSalon from './plans/manoir-salon.json';
 import manoirToit from './plans/manoir-toit.json';
 import manoirJardin from './plans/manoir-jardin.json';
+import relaisAuberge from './plans/relais-auberge.json';
+import relaisEcurie from './plans/relais-ecurie.json';
+import relaisFontaine from './plans/relais-fontaine.json';
+import jardinCuisine from './plans/jardin-cuisine.json';
+import jardinTonnelle from './plans/jardin-tonnelle.json';
+import jardinSerre from './plans/jardin-serre.json';
 import theatreLoge from './plans/theatre-loge.json';
 import theatreToit from './plans/theatre-toit.json';
 import theatreScene from './plans/theatre-scene.json';
@@ -188,12 +194,18 @@ const PLAN_FILES = [
   manoirSalon,
   manoirToit,
   manoirJardin,
+  relaisAuberge,
+  relaisEcurie,
+  relaisFontaine,
   theatreLoge,
   theatreToit,
   theatreScene,
   gareAbri,
   gareToit,
   gareQuai,
+  jardinCuisine,
+  jardinTonnelle,
+  jardinSerre,
   studioRegie,
   studioToit,
   studioTerrasse,

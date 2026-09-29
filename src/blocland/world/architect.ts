@@ -1,5 +1,5 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
-// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque) et du bloc de l'île. Les cases sont relatives à la zone des
+// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -25,7 +25,9 @@ export type BuildingStyle =
   | { kind: 'dome'; cap?: BlockId }
   | { kind: 'echoppe' }
   | { kind: 'hutte' }
-  | { kind: 'kiosque' };
+  | { kind: 'kiosque' }
+  | { kind: 'relais' }
+  | { kind: 'jardin' };
 
 /** La forme du bâtiment de chaque île (son nom et ses phrases sont dans plans/*.json). */
 export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
@@ -47,6 +49,7 @@ export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   marais: { kind: 'hutte' },
   comptoir: { kind: 'echoppe' },
   manoir: { kind: 'maison', w: 5, chimney: 2 },
+  relais: { kind: 'relais' },
   // Anciens Ateliers (4e)
   atelier: { kind: 'maison' },
   forge: { kind: 'maison', chimney: 2 },
@@ -54,6 +57,7 @@ export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   cabinet: { kind: 'dome' },
   theatre: { kind: 'maison', w: 5 },
   gare: { kind: 'echoppe' },
+  jardin: { kind: 'jardin' },
   // Îles du Ciel (3e)
   phare: { kind: 'tour', top: 'phare' },
   belvedere: { kind: 'kiosque' },
@@ -260,6 +264,106 @@ function kiosque(b: BlockId): Stages {
   return [walls, roof, yard(b, 2, 2)];
 }
 
+/**
+ * Le relais de diligence (le Relais des voyageurs, LV2 5e) : trois plans, trois choses qu'on reconnaît (DA, LV2-2).
+ * L'auberge : une maison de quatre sur trois à gauche, une porte, trois fenêtres. L'écurie : le toit à deux pans de
+ * l'auberge et sa cheminée haute (le nid de Lina), et, à droite, un appentis ouvert sur deux poteaux, sous un toit plus
+ * bas, une mangeoire entre eux. La fontaine : devant l'écurie, un bassin de dalles et sa colonne, et devant l'auberge une
+ * barrière à portillon, deux lanternes et une marche. Ni drapeau ni colombage.
+ */
+function relais(b: BlockId): Stages {
+  const x0 = 0;
+  const y0 = 2;
+  const w = 4;
+  const d = 3;
+  const h = 3;
+  const doorX = 1;
+  const windows: [number, number, number][] = [
+    [2, y0, 1],
+    [x0, y0 + 1, 1],
+    [x0 + w - 1, y0 + 1, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: 'porte' }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  // Le toit de l'auberge : deux pans et le faîte, qui débordent d'une case sur l'écurie ; les pignons ; la cheminée.
+  for (let x = x0; x <= x0 + w; x++) {
+    roof.push({ x, y: y0, z: h, block: 'toit' }, { x, y: y0 + d - 1, z: h, block: 'toit' }, { x, y: y0 + 1, z: h + 1, block: 'toit' });
+  }
+  roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });
+  for (let z = h + 1; z <= h + 2; z++) roof.push({ x: 1, y: y0 + d - 1, z, block: b });
+  // L'écurie : deux poteaux, une mangeoire entre eux, un toit d'un cran plus bas que celui de l'auberge.
+  for (let z = 0; z < 2; z++) roof.push({ x: 5, y: y0, z, block: b }, { x: 5, y: y0 + d - 1, z, block: b });
+  roof.push({ x: 5, y: y0 + 1, z: 0, block: 'barriere' });
+  for (let y = y0; y < y0 + d; y++) roof.push({ x: 4, y, z: 2, block: 'toit' }, { x: 5, y, z: 2, block: 'toit' });
+  // La cour : la barrière et son portillon devant la porte, deux lanternes, la marche ; la fontaine devant l'écurie.
+  const yard: ArchCell[] = [
+    { x: 0, y: 0, z: 0, block: 'barriere' },
+    { x: 2, y: 0, z: 0, block: 'barriere' },
+    { x: 0, y: 0, z: 1, block: 'lanterne' },
+    { x: 2, y: 0, z: 1, block: 'lanterne' },
+    { x: doorX, y: 1, z: 0, block: 'escalier' },
+  ];
+  for (const [x, y] of [
+    [3, 0],
+    [4, 0],
+    [5, 0],
+    [3, 1],
+    [5, 1],
+  ])
+    yard.push({ x, y, z: 0, block: b });
+  yard.push({ x: 4, y: 1, z: 0, block: b }, { x: 4, y: 1, z: 1, block: b });
+  return [without(walls, [[doorX, y0, 0], ...windows]), roof, yard];
+}
+
+/**
+ * Le jardin (le Jardin des heures, LV2 4e) : trois plans, trois choses qu'on reconnaît (DA, LV2-4). La cuisine : une
+ * maison d'osier de quatre sur trois à gauche, une porte, deux fenêtres. La tonnelle : le toit à deux pans de la cuisine
+ * et sa cheminée d'ardoise (la soupe de Muscade), et, à droite, un portique à angles droits sur quatre poteaux d'osier,
+ * son linteau fermé, une table longue de planches dessous ; ni vigne ni treille. La serre : devant, basse (deux blocs), un soubassement
+ * d'osier et des vitres de calque (le verre dépoli de l'Atelier, qui se gagne au 4e) ; devant la cuisine, une barrière
+ * à portillon et une marche. Ni drapeau, ni colombage, ni horloge.
+ */
+function jardin(b: BlockId): Stages {
+  const x0 = 0;
+  const y0 = 2;
+  const w = 4;
+  const d = 3;
+  const h = 3;
+  const doorX = 1;
+  // (La fenêtre de devant à côté de la porte : la serre, devant le coin droit, la masquerait.)
+  const windows: [number, number, number][] = [
+    [2, y0, 1],
+    [x0, y0 + 1, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: 'porte' }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  // Le toit de la cuisine : deux pans et le faîte, les pignons d'osier ; la cheminée d'ardoise sur le pan de derrière.
+  for (let x = x0; x < x0 + w; x++) {
+    roof.push({ x, y: y0, z: h, block: 'toit' }, { x, y: y0 + d - 1, z: h, block: 'toit' }, { x, y: y0 + 1, z: h + 1, block: 'toit' });
+  }
+  roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });
+  for (let z = h + 1; z <= h + 2; z++) roof.push({ x: 1, y: y0 + d - 1, z, block: 'ardoise' });
+  // La tonnelle : quatre poteaux de deux blocs, un portique au-dessus, à angles droits, qui court de devant à derrière
+  // (le linteau fermé, relu par le consultant Blocland) ; la table longue dessous, en travers, en planches.
+  for (const x of [4, 5]) {
+    for (const y of [y0, y0 + d - 1]) for (let z = 0; z < 2; z++) roof.push({ x, y, z, block: b });
+    for (let y = y0; y < y0 + d; y++) roof.push({ x, y, z: 2, block: b });
+    roof.push({ x, y: y0 + 1, z: 0, block: 'bois' });
+  }
+  // La serre, devant la tonnelle : un soubassement d'osier, des vitres de calque ; devant la cuisine, la barrière et son
+  // portillon, la marche. Pas de lanterne dans la cour : la nuit, seules les deux fenêtres de la cuisine s'allument (DA,
+  // LV2-4 : le jardin sous 3 % de lueur ; avec une lanterne sur le portillon, la vue de l'île en avait 3,02 %).
+  const yard: ArchCell[] = [
+    { x: 0, y: 0, z: 0, block: 'barriere' },
+    { x: 2, y: 0, z: 0, block: 'barriere' },
+    { x: doorX, y: 1, z: 0, block: 'escalier' },
+  ];
+  for (let x = 3; x <= 5; x++) for (let y = 0; y <= 1; y++) yard.push({ x, y, z: 0, block: b }, { x, y, z: 1, block: 'calque' });
+  return [without(walls, [[doorX, y0, 0], ...windows]), roof, yard];
+}
+
 /** Les trois étapes du bâtiment d'une île. */
 export function buildingStages(biome: BiomeId, block: BlockId): Stages {
   const style = BUILDING_OF[biome];
@@ -276,6 +380,10 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return hutte(block);
     case 'kiosque':
       return kiosque(block);
+    case 'relais':
+      return relais(block);
+    case 'jardin':
+      return jardin(block);
   }
 }
 

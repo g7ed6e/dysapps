@@ -2,7 +2,8 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple. Le décor (arbres, décor du cœur,
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
-import { BIOMES, BLOCKS, type BiomeDef, type BiomeId } from '../biomes';
+import { BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
+import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { walkPath, type WalkGround } from './paths';
 import {
@@ -54,6 +55,7 @@ import {
   cascades,
   decorate,
   landmark,
+  pontonEtBarque,
   semerLaMer,
   type Put,
 } from './decor';
@@ -111,6 +113,8 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.rail.side]: 'rail',
   [BLOCKS.antenne.side]: 'antenne',
   [BLOCKS.taille.side]: 'taille',
+  [BLOCKS.dalle.side]: 'dalle',
+  [BLOCKS.osier.side]: 'osier',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -207,10 +211,20 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
 /**
  * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
  * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
+ *
+ * L'île de la LV2 (le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
+ * LV2-4) : avec « Pas de LV2 », la vue reste celle d'avant l'île ; avec une LV2, elle ne l'accueillerait que si son
+ * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
+ * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
+ * 65 à 340 px ; au 5e, celle du Relais aussi) : cadrage d'avant, sans entre-deux. Depuis l'île de la LV2, la voisine compte.
  */
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
-  for (const b of bridgesOf(home)) ids.add(otherEnd(b, home));
+  for (const b of bridgesOf(home)) {
+    const other = otherEnd(b, home);
+    if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
+    ids.add(other);
+  }
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -286,7 +300,7 @@ export const QUEST_ROW = 1;
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
-  return biome.exercises.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
+  return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
 const STEP = '#8f8f8f';
@@ -560,7 +574,8 @@ export const CREATURE_STEPS: [number, number][] = [
   [-1, 1],
 ];
 
-const creatureSpots = new Map<BiomeId, CreatureSpot>();
+// Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
+const creatureSpots = new Map<string, CreatureSpot>();
 
 export interface CreatureSpot {
   x: number;
@@ -575,7 +590,8 @@ export interface CreatureSpot {
  * d'où elle peut se promener ; sinon elle reste immobile.
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
-  const known = creatureSpots.get(id);
+  const cle = `${id}:${lv2Courante()}`;
+  const known = creatureSpots.get(cle);
   if (known) return known;
   const index = BIOMES.findIndex((b) => b.id === id);
   const def = islandDef(id);
@@ -613,7 +629,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     }
   }
   const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
-  creatureSpots.set(id, spot);
+  creatureSpots.set(cle, spot);
   return spot;
 }
 
@@ -646,10 +662,14 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
   return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
 }
 
-/** Le milieu de l'îlot du Gardien, en cases du monde, à mi-hauteur de sa sentinelle (la caméra la cadre là, lot 6). */
+/**
+ * Le milieu de l'îlot du Gardien, en cases du monde, sous la mi-hauteur de sa sentinelle : la caméra du rallumage vise
+ * un bloc au-dessus (lot 6), au milieu d'une sentinelle de 5,2 blocs posée sur l'îlot (DA-5 :
+ * world/personnages/sentinelle.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux ensemble).
+ */
 export function bossIsletCenter(id: BiomeId): { x: number; y: number; z: number } {
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 4 };
+  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 2.6 };
 }
 
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
@@ -1506,8 +1526,16 @@ function poserLIle(
   const { ox, oy, oz } = islandOrigin(index);
   const unlocked = isBiomeUnlocked(biome.id, village.bridges);
   const block = BLOCKS[biome.block];
+  // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
+  // à la serre.
   const grassy =
-    biome.id === 'foret' || biome.id === 'ferme' || biome.id === 'plaine' || biome.id === 'riviere' || biome.id === 'marche' || biome.id === 'carrefour';
+    biome.id === 'foret' ||
+    biome.id === 'ferme' ||
+    biome.id === 'plaine' ||
+    biome.id === 'riviere' ||
+    biome.id === 'marche' ||
+    biome.id === 'carrefour' ||
+    biome.id === 'jardin';
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
@@ -1599,6 +1627,7 @@ function poserLIle(
   }
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
   for (const c of scenery) {
     if (!c.decor || nearSentier(c.x, c.y)) continue;
     const r = noise(def.seed + 5, c.x, c.y);
@@ -1656,11 +1685,16 @@ function entreLesIles(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): V
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).
   for (const c of seaDecor(a)) cubes.push(c);
   // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
+  // Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : il n'est pas proposé (`buildableBridges`), rien ne
+  // l'annonce (DA, 28/09, LV2-4). Un pont déjà construit reste : la sauvegarde de l'élève ne perd rien.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
+  const sansLv2 = lv2Courante() === 'aucune';
+  const versLaLv2 = (def: BridgeDef) => [def.from, def.to].some((id) => BIOMES.find((x) => x.id === id)?.subject === 'lv2');
   for (const def of BRIDGES) {
     if (archipelagoOfIsland(def.from) !== a) continue;
     const state = bridgeState(def, village.bridges);
-    if (state !== 'far') bridge(def, cubes, state === 'buildable', occupied);
+    if (state === 'far' || (state !== 'built' && sansLv2 && versLaLv2(def))) continue;
+    bridge(def, cubes, state === 'buildable', occupied);
   }
   return cubes;
 }

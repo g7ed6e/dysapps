@@ -57,7 +57,7 @@ export interface Burst {
 export interface IslandLabel {
   id: BiomeId;
   text: string;
-  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée), dessiné en icône et en mot sous le nom. */
+  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers : textes.etatsDIle), dessiné en icône et en mot sous le nom. */
   state?: { id: IslandStateId; name: string };
 }
 

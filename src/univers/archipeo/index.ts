@@ -4,6 +4,7 @@
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
 // artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/univers/index.ts).
 import { BLOCLAND } from '../blocland';
+import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
 
 const s = (n: number) => (n > 1 ? 's' : '');
@@ -101,7 +102,7 @@ export const ARCHIPEO = {
       },
     },
     marais: {
-      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du passé, du futur et du doute. »',
+      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. »',
       guardianSays: {
         hit: 'Une écaille de mes cous s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche l’indice de temps dans la phrase, et reprends.',
@@ -196,6 +197,22 @@ export const ARCHIPEO = {
         beaten: 'Ma couronne se rallume. Le Comptoir est à toi, et à Pudding.',
       },
     },
+    relais: {
+      challenge: 'La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale chez mes voyageurs : écoute bien ce qu’ils te disent. »',
+      guardianSays: {
+        hit: 'Une pointe de ma rose des vents s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Réécoute le mot, relis la règle, et reprends.',
+        beaten: 'Ma boussole se rallume. Le Relais est à toi, et à Lina.',
+      },
+    },
+    jardin: {
+      challenge: 'Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien, et raconte-moi ta journée. »',
+      guardianSays: {
+        hit: 'Mes rayons brillent un peu plus. C’est juste.',
+        miss: 'Rien ne s’éteint. Réécoute la phrase, relis la règle, et reprends.',
+        beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir murmure sous son voile : « Ma lanterne est éteinte. Tu as fouillé toutes mes pièces, raconte-moi aujourd’hui, hier, et ce qui est plus grand. »',
       guardianSays: {
@@ -237,6 +254,8 @@ export const ARCHIPEO = {
       },
     },
   },
+  creatures: REPLIQUES,
+  etatsDIle: ETATS_D_ILE,
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe',
@@ -261,6 +280,8 @@ export const ARCHIPEO = {
     baie: 'rouge-gorge des quais',
     horloge: 'hérisson horloger',
     comptoir: 'bouledogue marchand',
+    relais: 'cigogne voyageuse',
+    jardin: 'écureuil cuisinier',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',
@@ -290,12 +311,19 @@ export const ARCHIPEO = {
     consigne: 'Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien. Prends ton temps, personne ne compte les secondes.',
     jauge: 'Épreuves réussies',
     compte: (reussies, total) => `${reussies} sur ${total}`,
-    seuil: (n, assez) => (assez ? 'C’est assez pour la rallumer.' : `Il en faut ${n} pour la rallumer.`),
+    seuil: (n, assez) => (assez ? 'C’est assez pour rallumer sa lumière.' : `Il faut ${n} épreuves réussies pour rallumer sa lumière.`),
     jaugeLue: (reussies, total, n) => `${reussies} épreuve${s(reussies)} réussie${s(reussies)} sur ${total}, il en faut ${n}`,
     rallume: (gardien) => `${gardien} brille à nouveau.`,
   },
   baleine: {
     ...BLOCLAND.baleine,
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
+  },
+  // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
+  monuments: {
+    'monument-phare-large': {
+      description: 'Une haute tour ronde de pierre grise. À son sommet, un feu brûle pour guider les navires dans la brume.',
+      done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
+    },
   },
 } satisfies TextesUnivers;

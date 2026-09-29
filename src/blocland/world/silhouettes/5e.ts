@@ -15,4 +15,6 @@ export const SILHOUETTES_5E = {
   marais: { pics: [] },
   comptoir: { pics: [] },
   manoir: { pics: [] },
+  // Le Relais des voyageurs (LV2) : une île plate, au bout de la ligne ; son relief dessiné est dans ../modeleDessine/5e.ts.
+  relais: { pics: [] },
 } satisfies Record<string, Silhouette>;

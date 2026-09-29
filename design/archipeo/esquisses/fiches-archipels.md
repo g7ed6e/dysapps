@@ -45,6 +45,8 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **À éviter** : des pitons en obus lisses ; une brume plate ou sombre ; la neige au premier plan.
 - **Composition** : la brume remplit le bas jusqu'à y 65 % ; une masse à gauche (x 0-40 %) monte à y 10 % ; une autre à droite (x 55-85 %) porte une tour à y 20 % ; le pont les relie à y 40 % ; une troisième, plus petite, émerge au centre-bas ; au fond des silhouettes décolorées.
 
+- **Le Relais des voyageurs (LV2)** : une escale au bout du chemin, par un pont depuis le Comptoir ; l’auberge de Lina, l’écurie et la fontaine sur des dalles chaudes `#B8A07A` (côté `#9A8462`) ; un ponton à l’est et une girouette derrière l’auberge. Lina : cigogne blanche, bec et pattes orange, pointes d’ailes fer. La Diligence de cuivre : caisse sur quatre roues, de profil, boussole de laiton sur un mât au-dessus du siège.
+
 ## 4e — Les Anciens Ateliers
 
 - **Intention** : la maîtrise ; un grand atelier ancien qu'on remet en marche.
@@ -55,6 +57,7 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **Lumière** : couchant en contre-jour, soleil bas à droite, bords des volumes éclairés.
 - **À éviter** : une ruine sinistre, un ciel rouge sang, l'orange comme seul code du 4e (c'est l'orange de l'anglais).
 - **Composition** : horizon à 60 % ; l'atelier sur x 15-75 %, jusqu'à y 8 % ; la grue à x 85 % ; au premier plan un feuillage à gauche et un quai de pierre en bas à droite ; le cône du volcan petit, à x 90 %, dans la brume chaude.
+- **Le Jardin des heures (LV2)** : un jardin au bout de la crête, par un pont depuis le Théâtre ; la cuisine de Muscade, la tonnelle et la serre, basses, sur un sol d’herbe, en pierre chaude, bois et ardoise `#3E3636` ; un ponton bas avec une barque ; aucune verticale. Muscade : écureuil châtain, tablier crème, louche de bois, queue en panache. Le Soleil de cuivre : disque patiné sur son socle, huit rayons droits et pointus, égaux, jamais un rouage ; au défi, leurs fils se rallument avec les réussites, et la pierre passe au Sable `#DAA66A` à la victoire. Barque sans mât ni voile.
 
 ## 3e — Les Îles du Ciel, puis L'Horizon (lot 8)
 

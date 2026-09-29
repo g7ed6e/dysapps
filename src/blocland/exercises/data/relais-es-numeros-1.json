@@ -1,0 +1,239 @@
+{
+  "id": "relais-es-numeros-1",
+  "biome": "relais",
+  "type": "es-numeros",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.",
+  "items": [
+    {
+      "key": "relais-es-numeros-1-0",
+      "prompt": "dos",
+      "spoken": "dos",
+      "choices": [
+        "2",
+        "12",
+        "20"
+      ],
+      "answer": "2",
+      "hint": "Écoute la fin : -ce, c’est de 11 à 15 ; -nte ou -enta, ce sont les dizaines.",
+      "explanation": "dos = 2 : un mot tout court. doce = 12, veinte = 20.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-1",
+      "prompt": "catorce",
+      "spoken": "catorce",
+      "choices": [
+        "4",
+        "14",
+        "40"
+      ],
+      "answer": "14",
+      "hint": "Écoute la fin : -ce (de 11 à 15) ou -enta (les dizaines) ?",
+      "explanation": "catorce = 14 : -ce, c’est de 11 à 15. 4 se dit cuatro, 40 cuarenta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-2",
+      "prompt": "cuarenta",
+      "spoken": "cuarenta",
+      "choices": [
+        "4",
+        "14",
+        "40"
+      ],
+      "answer": "40",
+      "hint": "Écoute la fin : -ce (de 11 à 15) ou -enta (les dizaines) ?",
+      "explanation": "cuarenta = 40 : -enta, ce sont les dizaines. 14 se dit catorce.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-3",
+      "prompt": "sesenta",
+      "spoken": "sesenta",
+      "choices": [
+        "6",
+        "60",
+        "70"
+      ],
+      "answer": "60",
+      "hint": "ses- (comme seis, 6) ou set- (comme siete, 7) ?",
+      "explanation": "sesenta = 60 : ses-, comme seis (6). 70 se dit setenta, comme siete.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-4",
+      "prompt": "setenta",
+      "spoken": "setenta",
+      "choices": [
+        "7",
+        "60",
+        "70"
+      ],
+      "answer": "70",
+      "hint": "ses- (comme seis, 6) ou set- (comme siete, 7) ?",
+      "explanation": "setenta = 70 : set-, comme siete (7). 60 se dit sesenta, comme seis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-5",
+      "prompt": "quince",
+      "spoken": "quince",
+      "choices": [
+        "5",
+        "15",
+        "50"
+      ],
+      "answer": "15",
+      "hint": "Écoute la fin : -ce (de 11 à 15) ou -enta (les dizaines) ?",
+      "explanation": "quince = 15 : -ce, c’est de 11 à 15. 5 se dit cinco, 50 cincuenta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-6",
+      "prompt": "treinta y cinco",
+      "spoken": "treinta y cinco",
+      "choices": [
+        "35",
+        "50",
+        "53"
+      ],
+      "answer": "35",
+      "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
+      "explanation": "treinta y cinco = 35 : la dizaine (treinta), puis y, puis l’unité (cinco). 50 se dit cincuenta, 53 cincuenta y tres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "relais-es-numeros-1-7",
+      "prompt": "dieciséis",
+      "spoken": "dieciséis",
+      "choices": [
+        "16",
+        "60",
+        "106"
+      ],
+      "answer": "16",
+      "hint": "dieci- veut dire « dix et… ».",
+      "explanation": "dieciséis = « dix et six » = 16, un seul nombre : on n’écrit pas 10 puis 6 (106). 60 se dit sesenta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números",
+          "lines": [
+            "1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve, 10 diez",
+            "11 once, 12 doce, 13 trece, 14 catorce, 15 quince ; 16 à 19 : dieci- (dieciséis, diecisiete…)",
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta, 70 setenta",
+            "Écoute le début : ses- (sesenta, 60) ou set- (setenta, 70) ?",
+            "35 = treinta y cinco : la dizaine, puis y, puis l’unité."
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "dalle",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
