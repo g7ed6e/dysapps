@@ -3513,19 +3513,23 @@ button.island-quest:active {
   font-size: 0.9rem;
 }
 @media (max-width: 640px) {
-  /* Sur téléphone, les boutons tiennent sur une ligne qui défile au besoin : aucun n'est coupé hors de l'écran. */
+  /*
+   * Sur téléphone, les boutons passent à la ligne quand ils ne tiennent pas sur une seule (grand texte) : aucun ne sort
+   * de l'écran, et aucun ne se cache derrière un défilement qu'on ne voit pas (DA-24).
+   */
   .world-bar {
-    flex-wrap: nowrap;
-    justify-content: safe center;
     gap: 0.3rem;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
   .world-bar .button {
     flex: 0 0 auto;
     min-width: 48px;
     white-space: nowrap;
     padding: 0.2rem 0.4rem;
+  }
+  /* Les icônes seules gardent leur taille de bouton : le grand texte grossit le compte des blocs, pas les dessins. */
+  .world-bar .button svg {
+    width: min(1.2em, 28px);
+    height: min(1.2em, 28px);
   }
   /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les six boutons tiennent sur la largeur. */
   .world-bar-text {
@@ -4397,6 +4401,9 @@ button.island-quest:active {
 .title-tagline {
   margin: 0 0 0.6rem;
   max-width: none;
+}
+.content:focus {
+  outline: none;
 }
 .title-batisseur {
   margin: 0 0 0.6rem;

@@ -1,6 +1,8 @@
-# Documentation Archipéo
+# Documentation DysApps
 
-<p class="lead"><strong>Archipéo</strong>, par DysApps, est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
+![Le logo de Blocland : une île en blocs sur la mer, avec son grand chêne](/blocland.svg){.bl-logo}
+
+<p class="lead"><strong>DysApps</strong> est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle s’installe comme une application (PWA) et fonctionne hors ligne après la première visite.
 
@@ -11,7 +13,7 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 <ul class="cards">
 <li><a href="manuel/demarrer.html"><strong>Démarrer</strong>Installer l’application, la première séance, les mises à jour.</a></li>
 <li><a href="manuel/partie.html"><strong>Une partie commentée</strong>Le jeu en images : de la première mission aux Premiers Rivages reconstruits.</a></li>
-<li><a href="manuel/blocland.html"><strong>L’aventure</strong>Quatre archipels, vingt-huit îles à ouvrir, des missions, des blocs, des plans et des Gardiens.</a></li>
+<li><a href="manuel/blocland.html"><strong>L’aventure</strong>Quatre archipels, trente îles à ouvrir, des missions, des blocs, des plans et des Gardiens.</a></li>
 <li><a href="manuel/reglages.html"><strong>Réglages et accessibilité</strong>Police, taille, thèmes, lecture à voix haute, syllabes, animations.</a></li>
 <li><a href="pedagogie/archipel.html"><strong>Le contenu, île par île</strong>Ce que travaille chaque mission, avec ses consignes et ses items.</a></li>
 <li><a href="pedagogie/principes.html"><strong>Principes dys</strong>Les règles que respecte chaque exercice, et pourquoi.</a></li>

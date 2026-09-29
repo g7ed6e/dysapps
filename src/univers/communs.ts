@@ -1,6 +1,7 @@
 // Les textes communs aux deux univers d'aujourd'hui (étape J8 de U4, docs/conception/univers.md §5), déplacés sans un
 // mot changé : les répliques des créatures (de src/blocland/biomes.ts) et le mot de chaque état d'île (de
-// src/blocland/world/islandState.ts). Chaque univers les reprend dans ses textes ; il pourra les remplacer.
+// src/blocland/world/islandState.ts). Chaque univers les reprend dans ses textes ; il peut les remplacer (Blocland
+// remplace « Restaurée » par « Bâtie »).
 import type { BiomeId } from '../blocland/biomes';
 import type { IslandStateId } from '../blocland/world/islandState';
 import type { TextesCreature } from './types';
@@ -128,6 +129,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
       'Demain je nagerai. Si j’avais des ailes, je volerais.',
       'Il faut que tu viennes voir ma hutte de tourbe.',
+      'Quand l’eau aura baissé, je passerai le gué.',
     ],
     home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
   },
@@ -304,5 +306,16 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Mon nid est sur la cheminée de l’auberge. Chaque bonne réponse pose une dalle devant la porte.',
     ],
     home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
+  },
+  jardin: {
+    greeting:
+      'Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village.',
+    lines: [
+      'Ma soupe mijote : ici, personne n’est pressé.',
+      'Je range mes noisettes par moment de la journée : celles du matin, celles du soir.',
+      'Mon panier d’osier se tresse brin par brin, comme une phrase : un mot après l’autre.',
+      'Quand tu écoutes l’heure, cherche le petit mot près du nombre : il dit s’il faut ajouter ou enlever des minutes.',
+    ],
+    home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
   },
 };

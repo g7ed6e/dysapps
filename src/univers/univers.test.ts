@@ -42,7 +42,7 @@ describe('les textes d’univers', () => {
     // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous.
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
-    const APRES_LE_LOT_6 = new Set(['relais']);
+    const APRES_LE_LOT_6 = new Set(['relais', 'jardin']);
     const avant = Object.fromEntries(
       BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
         const g = t.gardiens[b.id];
@@ -135,7 +135,7 @@ describe('les textes d’univers', () => {
     expect(t.libelles.arene('le Grand Chêne')).toBe('Le défi du Grand Chêne');
     expect(t.libelles.arene('la Dune vivante')).toBe('Le défi de la Dune vivante');
     expect(t.libelles.arene('l’Hydre des marais')).toBe('Le défi de l’Hydre des marais');
-    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il en faut 5 pour la rallumer.', 'C’est assez pour la rallumer.']);
+    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il faut 5 épreuves réussies pour rallumer sa lumière.', 'C’est assez pour rallumer sa lumière.']);
     expect([d.jaugeLue(1, 7, 5), d.jaugeLue(2, 7, 5)]).toEqual(['1 épreuve réussie sur 7, il en faut 5', '2 épreuves réussies sur 7, il en faut 5']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne brille à nouveau.');
     expect(tousLesTextes(t).join('\n')).not.toMatch(/bâtisseur|affront|arène/);
@@ -147,15 +147,21 @@ describe('les textes d’univers', () => {
 });
 
 describe('les textes communs (J8, U4)', () => {
-  it('les répliques des créatures et les états d’île sont ceux d’avant, sans un mot changé, dans les deux univers', () => {
+  it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
-    // avec la réplique d'Astra des Voix des textes (#203).
+    // avec la réplique d'Astra des Voix des textes (#203) et celle de Kroa du Gué des temps.
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
-      const r = Object.fromEntries(BIOMES.map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('4f1dd9f0202484ec1729227ee4229132ec290545a64489f7694dd6967b29532a');
-      expect(t.etatsDIle).toEqual({ fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', restauree: 'Restaurée' });
+      // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('bbb8a7032310ed2adf12a8c4f14f49d85de00f09389682ad762c92a193757762');
     }
+  });
+
+  it('les états d’île : Archipéo restaure ses îles, Blocland les bâtit ; les trois autres mots sont communs', () => {
+    const communs = { fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier' };
+    expect(textesDe('archipeo').etatsDIle).toEqual({ ...communs, restauree: 'Restaurée' });
+    expect(textesDe('blocland').etatsDIle).toEqual({ ...communs, restauree: 'Bâtie' });
   });
 });

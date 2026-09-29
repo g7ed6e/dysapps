@@ -6,7 +6,7 @@ import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, hauteurDuSol, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
 import { couleurDeMatiere, MATIERES, type Couleur, type Faces } from '../palette';
 import type { TextureKind } from '../pixels';
-import type { Forme, OutilsDeForme } from './outils';
+import { enBoites, type Forme, type OutilsDeForme } from './outils';
 import { clamp, DELAVE, eclaircir, feuillage, icosaedre, octaedre, peintre, TAILLES, tronconique, type Pinceau, type V3 } from './pinceau';
 
 /** Combien s'enfonce le pied d'un élément sous le sol (il ne flotte jamais au-dessus d'une facette). */
@@ -234,4 +234,8 @@ function laCascade(P: Pinceau, champ: ChampDuSol, e: ElementDeDecor, eau: Faces,
 }
 
 /** Les formes communes, par genre. */
-export const FORMES_COMMUNES: Record<string, Forme> = { arbre, sapin, buisson, fleur, champignon, rocher, souche, roseau, cristal, ecueil, banc, cascade };
+/**
+ * Les formes communes. Le ponton (et sa barque) n'est aujourd'hui qu'au Jardin des heures, que le 4e redessine
+ * (`RETOUCHES_4E`) : ailleurs, ses cubes en boîtes.
+ */
+export const FORMES_COMMUNES: Record<string, Forme> = { arbre, sapin, buisson, fleur, champignon, rocher, souche, roseau, cristal, ecueil, banc, cascade, ponton: enBoites };

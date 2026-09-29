@@ -1,0 +1,255 @@
+{
+  "id": "jardin-de-stundenplan-1",
+  "biome": "jardin",
+  "type": "de-stundenplan",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis la question, puis trouve la bonne ligne du document en allemand. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "jardin-de-stundenplan-1-0",
+      "question": "Le lundi, quel cours as-tu à 8 h ?",
+      "prompt": "Montag\n8:00 Mathe\n8:45 Deutsch\n9:30 Pause\n9:50 Englisch",
+      "spoken": "Montag. Acht Uhr, Mathe. Acht Uhr fünfundvierzig, Deutsch. Neun Uhr dreißig, Pause. Neun Uhr fünfzig, Englisch.",
+      "choices": [
+        "Maths",
+        "Allemand",
+        "Anglais"
+      ],
+      "answer": "Maths",
+      "hint": "Trouve la ligne qui commence par 8 h, puis lis la matière.",
+      "explanation": "8:00 Mathe : à 8 h, tu as maths. Deutsch (l’allemand) est à 8 h 45, Englisch (l’anglais) à 9 h 50.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-1",
+      "question": "Le mardi, à quelle heure est la récréation ?",
+      "prompt": "Dienstag\n7:55 Erdkunde\n8:40 Biologie\n9:25 Pause\n9:45 Kunst",
+      "spoken": "Dienstag. Sieben Uhr fünfundfünfzig, Erdkunde. Acht Uhr vierzig, Biologie. Neun Uhr fünfundzwanzig, Pause. Neun Uhr fünfundvierzig, Kunst.",
+      "choices": [
+        "8 h 40",
+        "9 h 25",
+        "9 h 45"
+      ],
+      "answer": "9 h 25",
+      "hint": "Cherche le mot Pause, puis lis l’heure de sa ligne.",
+      "explanation": "die Pause = la récréation : sa ligne dit 9:25, donc 9 h 25. À 9 h 45, c’est Kunst.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-2",
+      "question": "Quels jours as-tu sport ?",
+      "prompt": "Mein Stundenplan\nMathe: Montag und Donnerstag\nSport: Dienstag und Freitag\nMusik: Mittwoch",
+      "spoken": "Mein Stundenplan. Mathe, Montag und Donnerstag. Sport, Dienstag und Freitag. Musik, Mittwoch.",
+      "choices": [
+        "Le mardi et le vendredi",
+        "Le jeudi et le vendredi",
+        "Le lundi et le jeudi"
+      ],
+      "answer": "Le mardi et le vendredi",
+      "hint": "Trouve la ligne Sport. Attention : Dienstag ou Donnerstag ?",
+      "explanation": "Sport : Dienstag und Freitag, le mardi et le vendredi. Dienstag = mardi ; Donnerstag = jeudi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-3",
+      "question": "À quelle heure le bus arrive-t-il au collège ?",
+      "prompt": "Bus 7 zur Schule\nab Bahnhof: 7:20\nan Schule: 7:45",
+      "spoken": "Bus sieben zur Schule. Ab Bahnhof, sieben Uhr zwanzig. An Schule, sieben Uhr fünfundvierzig.",
+      "choices": [
+        "7 h 00",
+        "7 h 20",
+        "7 h 45"
+      ],
+      "answer": "7 h 45",
+      "hint": "ab ou an ? Cherche le mot qui veut dire « arrivée ».",
+      "explanation": "an = arrivée : le bus arrive au collège à 7 h 45. ab = départ : il part de la gare à 7 h 20. 7, c’est le numéro du bus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-4",
+      "question": "Le vendredi, à quelle heure ferme la bibliothèque ?",
+      "prompt": "Bibliothek\nMontag bis Donnerstag: 9:00 bis 17:00\nFreitag: 9:00 bis 14:00\nSamstag und Sonntag: geschlossen",
+      "spoken": "Bibliothek. Montag bis Donnerstag, neun bis siebzehn Uhr. Freitag, neun bis vierzehn Uhr. Samstag und Sonntag, geschlossen.",
+      "choices": [
+        "9 h 00",
+        "14 h 00",
+        "17 h 00"
+      ],
+      "answer": "14 h 00",
+      "hint": "Trouve la ligne Freitag, puis lis l’heure après bis.",
+      "explanation": "Freitag = vendredi : 9:00 bis 14:00, la bibliothèque ferme à 14 h. 17 h, c’est du lundi au jeudi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-5",
+      "question": "Quel jour le secrétariat est-il fermé ?",
+      "prompt": "Sekretariat\nMontag, Dienstag, Donnerstag: 8:00 bis 12:00\nMittwoch: geschlossen\nFreitag: 8:00 bis 11:00",
+      "spoken": "Sekretariat. Montag, Dienstag, Donnerstag, acht bis zwölf Uhr. Mittwoch, geschlossen. Freitag, acht bis elf Uhr.",
+      "choices": [
+        "Le mercredi",
+        "Le mardi",
+        "Le jeudi"
+      ],
+      "answer": "Le mercredi",
+      "hint": "Cherche le mot geschlossen, puis lis le jour de sa ligne.",
+      "explanation": "geschlossen = fermé : Mittwoch, le mercredi. Dienstag, c’est mardi ; Donnerstag, jeudi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-6",
+      "question": "Qui enseigne l’anglais ?",
+      "prompt": "Lehrer der Klasse 8b\nEnglisch: Frau Keller\nDeutsch: Herr Braun\nMusik: Frau Yilmaz",
+      "spoken": "Lehrer der Klasse acht b. Englisch, Frau Keller. Deutsch, Herr Braun. Musik, Frau Yilmaz.",
+      "choices": [
+        "Madame Keller",
+        "Monsieur Braun",
+        "Madame Yilmaz"
+      ],
+      "answer": "Madame Keller",
+      "hint": "Trouve la ligne Englisch.",
+      "explanation": "Englisch = l’anglais : Frau Keller, madame Keller. Herr Braun enseigne Deutsch, l’allemand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "jardin-de-stundenplan-1-7",
+      "question": "Le vendredi, à quelle heure finissent les cours ?",
+      "prompt": "Unterricht\nMontag bis Donnerstag: 7:50 bis 15:15\nFreitag: 7:50 bis 12:55",
+      "spoken": "Unterricht. Montag bis Donnerstag, sieben Uhr fünfzig bis fünfzehn Uhr fünfzehn. Freitag, sieben Uhr fünfzig bis zwölf Uhr fünfundfünfzig.",
+      "choices": [
+        "12 h 55",
+        "15 h 15",
+        "16 h 30"
+      ],
+      "answer": "12 h 55",
+      "hint": "Trouve la ligne Freitag, puis lis l’heure après bis.",
+      "explanation": "Freitag : 7:50 bis 12:55, les cours finissent à 12 h 55. En Allemagne, les cours finissent souvent tôt certains jours.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Einen Stundenplan lesen",
+          "lines": [
+            "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
+            "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
+            "die Pause = la récréation ; der Unterricht = les cours",
+            "Deutsch = l’allemand ; Erdkunde = la géographie ; Kunst = le dessin",
+            "ab = départ ; an = arrivée ; geschlossen = fermé ; bis = jusqu’à",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "osier",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

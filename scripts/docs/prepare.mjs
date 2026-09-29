@@ -81,6 +81,7 @@ export async function prepareDocs() {
   const pub = join(SRC, 'public');
   mkdirSync(pub, { recursive: true });
   cpSync(join(root, 'public', 'icon.svg'), join(pub, 'icon.svg'));
+  cpSync(join(root, 'public', 'blocland.svg'), join(pub, 'blocland.svg'));
   cpSync(join(root, 'public', 'fonts', 'luciole'), join(pub, 'fonts', 'luciole'), { recursive: true });
   cpSync(join(THEME, 'sw.js'), join(pub, 'sw.js'));
   // Les captures d'écran du jeu : servies sous /captures/. Elles ne sont pas dans le dépôt ; la CI les fait

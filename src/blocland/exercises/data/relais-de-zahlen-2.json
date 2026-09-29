@@ -11,13 +11,13 @@
       "prompt": "siebenundsechzig",
       "spoken": "siebenundsechzig",
       "choices": [
-        "60",
         "67",
+        "70",
         "76"
       ],
       "answer": "67",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
-      "explanation": "siebenundsechzig = « sept et soixante » = 67 : l’unité (sieben) d’abord, la dizaine (sechzig) ensuite.",
+      "explanation": "siebenundsechzig = « sept et soixante » = 67 : l’unité (sieben) d’abord, la dizaine (sechzig) ensuite. 70 se dit siebzig, 76 sechsundsiebzig.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -66,16 +66,16 @@
     },
     {
       "key": "relais-de-zahlen-2-2",
-      "prompt": "fünfundachtzig",
-      "spoken": "fünfundachtzig",
+      "prompt": "achtundfünfzig",
+      "spoken": "achtundfünfzig",
       "choices": [
+        "50",
         "58",
-        "80",
         "85"
       ],
-      "answer": "85",
+      "answer": "58",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
-      "explanation": "fünfundachtzig = « cinq et quatre-vingts » = 85 : l’unité (fünf) d’abord, la dizaine (achtzig) ensuite.",
+      "explanation": "achtundfünfzig = « huit et cinquante » = 58 : l’unité (acht) d’abord, la dizaine (fünfzig) ensuite. 85 se dit fünfundachtzig.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -182,16 +182,16 @@
     },
     {
       "key": "relais-de-zahlen-2-6",
-      "prompt": "sechzig",
-      "spoken": "sechzig",
+      "prompt": "sechsundzwanzig",
+      "spoken": "sechsundzwanzig",
       "choices": [
-        "6",
-        "16",
-        "60"
+        "20",
+        "26",
+        "62"
       ],
-      "answer": "60",
-      "hint": "Écoute la fin : -zehn (de 13 à 19) ou -zig (les dizaines) ?",
-      "explanation": "sechzig = 60 : -zig, c’est une dizaine. 16 se dit sechzehn, 6 sechs.",
+      "answer": "26",
+      "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
+      "explanation": "sechsundzwanzig = « six et vingt » = 26 : l’unité (sechs) d’abord, la dizaine (zwanzig) ensuite. 62 se dit zweiundsechzig.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -211,16 +211,16 @@
     },
     {
       "key": "relais-de-zahlen-2-7",
-      "prompt": "zweiundfünfzig",
-      "spoken": "zweiundfünfzig",
+      "prompt": "siebenundvierzig",
+      "spoken": "siebenundvierzig",
       "choices": [
-        "25",
-        "50",
-        "52"
+        "47",
+        "70",
+        "74"
       ],
-      "answer": "52",
+      "answer": "47",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
-      "explanation": "zweiundfünfzig = « deux et cinquante » = 52 : l’unité (zwei) d’abord, la dizaine (fünfzig) ensuite. 25 se dit fünfundzwanzig.",
+      "explanation": "siebenundvierzig = « sept et quarante » = 47 : l’unité (sieben) d’abord, la dizaine (vierzig) ensuite. 70 se dit siebzig, 74 vierundsiebzig.",
       "aid": {
         "kind": "rule-card",
         "props": {
