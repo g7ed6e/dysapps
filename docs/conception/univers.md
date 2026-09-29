@@ -171,7 +171,7 @@ Le choix se fait **dans les Réglages** (décision du mainteneur). Le risque pri
 - **Trois univers au plus**, chacun avec une icône, un libellé court, une phrase lue à voix haute et un aperçu fixe, sans animation. Rien ne se choisit à la couleur seule.
 - **Réversible et sans perte.** Une confirmation dit ce qui change (les noms, le récit, le dessin) et ce qui ne change pas (étoiles, blocs, plans, missions). Après un changement, un écran de passage dit « L’île X s’appelle maintenant Y » ; cette liste se relit ensuite depuis le lexique de l’univers. Cet écran et le lexique arrivent avec U4 : au lot 6, aucun nom d’île ne change.
 - **Les repères stables du §4** sous chaque nom d’île.
-- **Un lexique court par univers**, une dizaine de mots au plus. Chacun est expliqué et lu à voix haute la première fois.
+- **Un lexique court par univers**, une dizaine de mots au plus. Chacun est expliqué et lu à voix haute la première fois. Celui de Blocland porte « Bâtie » (une île aux trois plans terminés), qui se dit « Restaurée » dans Archipéo (décidé par le mainteneur le 28 septembre 2026).
 - **Aucun texte ne présente un univers comme une aide « pour les dys ».** C’est une affinité, pas une adaptation.
 - **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, voix coupée, « Réduire les animations » de l’appareil ; le Contraste élevé quand il revient, au lot 11 du cadrage Archipéo) et en vue simple. Les invariants du §4 entrent dans les [principes dys](../pedagogie/principes.md) quand U4 les vérifie par des tests.
 

@@ -249,7 +249,9 @@ export const BLOCLAND = {
     },
   },
   creatures: REPLIQUES,
-  etatsDIle: ETATS_D_ILE,
+  // Les îles de Blocland ne sont pas en ruine : on les bâtit. « Restaurée » reste le mot d'Archipéo (DP-01, DP-02) ;
+  // l'identifiant, l'icône et la place ne changent pas (décision du mainteneur, 28 septembre 2026).
+  etatsDIle: { ...ETATS_D_ILE, restauree: 'Bâtie' },
   especes: {
     foret: 'golem de mousse',
     mine: 'taupe cubique',
@@ -309,7 +311,7 @@ export const BLOCLAND = {
       '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} ont reconnu ton savoir. Je l’ai vu depuis le large.`,
-    port: (ile) => `${ile} est restaurée. Tu avances bien : chaque île restaurée rend l’archipel plus beau.`,
+    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
     ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
   },
 } satisfies TextesUnivers;
