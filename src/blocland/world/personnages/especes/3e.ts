@@ -4,7 +4,8 @@
 import type { BiomeId } from '../../../biomes';
 import { TENUE, VERRE_DE_FI } from '../couleurs';
 import { COU, disque, jalon, manche, pointe, SOMMET_DE_TETE, type Espece } from '../gabarit';
-import { fuseau, pave, pose, repere } from '../peint';
+import { devant, fuseau, pave, pose, repere } from '../peint';
+import { tube } from '../sentinelle';
 
 export const ESPECES_3E = {
   belvedere: {
@@ -246,6 +247,58 @@ export const ESPECES_3E = {
           6,
           k.fer,
         ),
+    },
+  },
+  refuge: {
+    // La loutre factrice du Refuge des carnets (DA, LV2-5) : brun-gris (plus sombre que Tunel, plus chaud que Vapeur),
+    // la gorge et le museau crème, sans masque ni moustaches ; la tête plate et large, deux petites oreilles rondes sur
+    // les côtés ; une sacoche de cuir fauve unie en bandoulière (ni casquette, ni uniforme, ni cor, ni jaune) ; la queue
+    // épaisse à la base, en pointe, posée au sol derrière elle, vers la droite (ni panache, ni queue qui monte). Dans la
+    // main, une lettre sans rien d'écrit dessus.
+    nom: 'Timbre',
+    metier: 'factrice',
+    dominante: 0x5c4a3e,
+    marque: { couleur: 0xe2d4b6, ou: ['poitrine', 'museau'] },
+    tenue: { couleur: 0xa8703a, vetements: [] },
+    silhouette: { largeur: 0.27, profondeur: 0.24, jambes: 0.6, tete: 0.32, teteProfondeur: 0.25, crane: 1 },
+    museau: { forme: 'museau', long: 0.08, r: 0.11, y: 2.14 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.33, 2.36, 0.04], 0, 0, (c * Math.PI) / 2)), 0, 0.07, 0.04, k.dom, 4);
+    },
+    corps: (T, k) => {
+      // La queue : de la base du dos, posée au sol, vers l'arrière et la droite ; épaisse, puis en pointe.
+      fuseau(
+        pose(T, repere([0.1, 0.1, 0.12], Math.PI / 2, 0.7, 0)),
+        [
+          [0, 0.12, 0.09],
+          [0.3, 0.13, 0.08],
+          [0.52, 0.09, 0.06],
+          [0.74, 0, 0],
+        ],
+        5,
+        k.dom,
+      );
+      // La sacoche, sur la hanche gauche, et sa bandoulière, de l'épaule droite à la sacoche, en travers du devant.
+      pave(T, -0.44, 0.72, -0.15, -0.27, 1.02, 0.13, k.tenue);
+      const z = (y: number) => devant(k.torse, 8, y).z - 0.02;
+      tube(
+        T,
+        [
+          [0.24, 1.78, z(1.78) + 0.04],
+          [0.02, 1.42, z(1.42)],
+          [-0.22, 1.08, z(1.08) + 0.03],
+          [-0.33, 1.0, -0.05],
+        ],
+        0.028,
+        3,
+        k.tenue,
+        0.5,
+      );
+    },
+    outil: {
+      // Une lettre, pliée, sans rien d'écrit (aucun motif qu'on puisse lire).
+      pose: [0, 0, 0],
+      dessiner: (T, k) => pave(T, -0.02, -0.16, -0.12, 0.02, 0.02, 0.12, k.lin),
     },
   },
 } satisfies Partial<Record<BiomeId, Espece>>;

@@ -148,6 +148,8 @@ export const BRIDGES: BridgeDef[] = [
   // Les îles d'anglais, aux deux bouts de l'arc : un pont depuis le Belvédère, un depuis l'Observatoire des données.
   b('belvedere', 'studio', 'pont', 7),
   b('donnees', 'chateau', 'pont', 7),
+  // La LV2, en bout de chemin : un pont depuis le Château vers le Refuge des carnets, à l'est ; rien n'en dépend.
+  b('chateau', 'refuge', 'pont', 7),
 ];
 
 /**
@@ -258,6 +260,7 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   'taille',
   'dalle',
   'osier',
+  'bardeau',
   'or',
   'cristal',
 ];

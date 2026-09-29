@@ -159,9 +159,10 @@ export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
 /**
  * Les nappes des sommets des Îles du Ciel (sous-lot R4b-3e ; fiche du 3e, §4 et §6) : une seule couche plate sous chaque
  * île, sous son sol (`mistPatches`), qui s'efface vers ses bords et se fond dans le plancher de nuages. Jamais des
- * couches étagées comme au 5e. Un disque de `PANS` pans par île, deux anneaux : environ 300 triangles en tout.
+ * couches étagées comme au 5e. Un disque de `pans` pans par île, deux anneaux : environ 300 triangles en tout (sept îles
+ * depuis le Refuge des carnets, LV2-5 : quatorze pans au lieu de seize, 294 triangles).
  */
-export const NAPPES_3E = { couleur: 0xe6ecf0, opacite: 0.5, pans: 16, anneau: 0.6 } as const;
+export const NAPPES_3E = { couleur: 0xe6ecf0, opacite: 0.5, pans: 14, anneau: 0.6 } as const;
 
 const nappesCache = new Map<ArchipelagoId, BancsDeBrume | null>();
 

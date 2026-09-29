@@ -115,6 +115,7 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.taille.side]: 'taille',
   [BLOCKS.dalle.side]: 'dalle',
   [BLOCKS.osier.side]: 'osier',
+  [BLOCKS.bardeau.side]: 'bardeau',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -1527,7 +1528,7 @@ function poserLIle(
   const unlocked = isBiomeUnlocked(biome.id, village.bridges);
   const block = BLOCKS[biome.block];
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
-  // à la serre.
+  // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs.
   const grassy =
     biome.id === 'foret' ||
     biome.id === 'ferme' ||
@@ -1535,7 +1536,8 @@ function poserLIle(
     biome.id === 'riviere' ||
     biome.id === 'marche' ||
     biome.id === 'carrefour' ||
-    biome.id === 'jardin';
+    biome.id === 'jardin' ||
+    biome.id === 'refuge';
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.

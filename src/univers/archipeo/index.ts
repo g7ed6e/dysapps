@@ -213,6 +213,14 @@ export const ARCHIPEO = {
         beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
       },
     },
+    refuge: {
+      challenge: 'Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
+      guardianSays: {
+        hit: 'Le bord de mes ailes brille un peu plus. C’est juste.',
+        miss: 'Rien ne s’éteint. Lis bien la question, relis la règle, et reprends.',
+        beaten: 'Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir murmure sous son voile : « Ma lanterne est éteinte. Tu as fouillé toutes mes pièces, raconte-moi aujourd’hui, hier, et ce qui est plus grand. »',
       guardianSays: {
@@ -282,6 +290,7 @@ export const ARCHIPEO = {
     comptoir: 'bouledogue marchand',
     relais: 'cigogne voyageuse',
     jardin: 'écureuil cuisinier',
+    refuge: 'loutre factrice',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',

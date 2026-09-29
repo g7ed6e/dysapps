@@ -28,8 +28,8 @@ function avecLv2<T>(lv2: Lv2Choice, f: () => T): T {
   }
 }
 
-it('les îles de la LV2 : le Relais au 5e, le Jardin des heures au 4e', () => {
-  expect(LV2.sort()).toEqual(['jardin', 'relais']);
+it('les îles de la LV2 : le Relais au 5e, le Jardin des heures au 4e, le Refuge des carnets au 3e', () => {
+  expect(LV2.sort()).toEqual(['jardin', 'refuge', 'relais']);
 });
 
 it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d’avant) ; depuis elle, la voisine compte', () => {
@@ -57,9 +57,10 @@ it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d�
 });
 
 describe('avec « Pas de LV2 », ni pont ni amorce vers l’île de la LV2', () => {
-  const cas: [BiomeId, BiomeId, '5e' | '4e'][] = [
+  const cas: [BiomeId, BiomeId, '5e' | '4e' | '3e'][] = [
     ['comptoir', 'relais', '5e'],
     ['theatre', 'jardin', '4e'],
+    ['chateau', 'refuge', '3e'],
   ];
   for (const [voisine, ile, a] of cas) {
     const id = `${voisine}-${ile}`;

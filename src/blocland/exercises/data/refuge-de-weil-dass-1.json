@@ -1,0 +1,231 @@
+{
+  "id": "refuge-de-weil-dass-1",
+  "biome": "refuge",
+  "type": "de-weil-dass",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis la question en allemand, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "refuge-de-weil-dass-1-0",
+      "prompt": "Warum fährst du nach Bonn?",
+      "spoken": "Warum fährst du nach Bonn?",
+      "choices": [
+        "Weil meine Tante dort wohnt.",
+        "Weil meine Tante wohnt dort.",
+        "Dass meine Tante dort wohnt."
+      ],
+      "answer": "Weil meine Tante dort wohnt.",
+      "hint": "Warum? appelle weil. Et après weil, où va le verbe ?",
+      "explanation": "Weil meine Tante dort wohnt = parce que ma tante habite là-bas. Après weil, le verbe (wohnt) va à la fin. dass veut dire que.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-1",
+      "prompt": "Wie ist das Wetter morgen?",
+      "spoken": "Wie ist das Wetter morgen?",
+      "choices": [
+        "Ich glaube, dass es regnet.",
+        "Ich glaube, dass regnet es.",
+        "Ich glaube, weil es regnet."
+      ],
+      "answer": "Ich glaube, dass es regnet.",
+      "hint": "ich glaube = je crois. Je crois que : dass, puis le verbe à la fin.",
+      "explanation": "Ich glaube, dass es regnet = je crois qu’il pleut. Après dass, le verbe (regnet) va à la fin. weil voudrait dire parce que.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-2",
+      "prompt": "Warum lernst du Deutsch?",
+      "spoken": "Warum lernst du Deutsch?",
+      "choices": [
+        "Weil ich nach Berlin fahre.",
+        "Weil ich fahre nach Berlin.",
+        "Dass ich nach Berlin fahre."
+      ],
+      "answer": "Weil ich nach Berlin fahre.",
+      "hint": "Warum? appelle weil. Et après weil, où va le verbe ?",
+      "explanation": "Weil ich nach Berlin fahre = parce que je vais à Berlin. Après weil, le verbe (fahre) va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-3",
+      "prompt": "Warum bist du müde?",
+      "spoken": "Warum bist du müde?",
+      "choices": [
+        "Weil ich schlecht geschlafen habe.",
+        "Weil ich habe schlecht geschlafen.",
+        "Dass ich schlecht geschlafen habe."
+      ],
+      "answer": "Weil ich schlecht geschlafen habe.",
+      "hint": "müde = fatigué. Après weil, le verbe conjugué (habe) va tout à la fin.",
+      "explanation": "Weil ich schlecht geschlafen habe = parce que j’ai mal dormi. Après weil, le verbe conjugué (habe) va tout à la fin, après le participe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-4",
+      "prompt": "Was sagt deine Mutter?",
+      "spoken": "Was sagt deine Mutter?",
+      "choices": [
+        "Sie sagt, dass es spät ist.",
+        "Sie sagt, dass es ist spät.",
+        "Sie sagt, weil es spät ist."
+      ],
+      "answer": "Sie sagt, dass es spät ist.",
+      "hint": "sie sagt = elle dit. Elle dit que : dass, puis le verbe à la fin.",
+      "explanation": "Sie sagt, dass es spät ist = elle dit qu’il est tard. Après dass, le verbe (ist) va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-5",
+      "prompt": "Warum nimmst du den Bus?",
+      "spoken": "Warum nimmst du den Bus?",
+      "choices": [
+        "Weil der Zug Verspätung hat.",
+        "Weil der Zug hat Verspätung.",
+        "Dass der Zug Verspätung hat."
+      ],
+      "answer": "Weil der Zug Verspätung hat.",
+      "hint": "Verspätung haben = être en retard. Après weil, le verbe va à la fin.",
+      "explanation": "Weil der Zug Verspätung hat = parce que le train est en retard. Après weil, le verbe (hat) va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-6",
+      "prompt": "Kommt Lisa mit?",
+      "spoken": "Kommt Lisa mit?",
+      "choices": [
+        "Ich glaube, dass sie mitkommt.",
+        "Ich glaube, dass sie kommt mit.",
+        "Ich glaube, weil sie mitkommt."
+      ],
+      "answer": "Ich glaube, dass sie mitkommt.",
+      "hint": "Après dass, le verbe va à la fin, et sa particule (mit) reste collée.",
+      "explanation": "Ich glaube, dass sie mitkommt = je crois qu’elle vient avec nous. Après dass, le verbe va à la fin, collé à sa particule : mitkommt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "refuge-de-weil-dass-1-7",
+      "prompt": "Warum bist du froh?",
+      "spoken": "Warum bist du froh?",
+      "choices": [
+        "Weil meine Freundin kommt.",
+        "Weil kommt meine Freundin.",
+        "Dass meine Freundin kommt."
+      ],
+      "answer": "Weil meine Freundin kommt.",
+      "hint": "froh = content. Warum? appelle weil, et le verbe va à la fin.",
+      "explanation": "Weil meine Freundin kommt = parce que mon amie vient. Après weil, le verbe (kommt) va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "weil, dass : le verbe à la fin",
+          "lines": [
+            "weil = parce que ; dass = que",
+            "Après weil ou dass, le verbe conjugué va à la fin.",
+            "Ich bleibe zu Hause, weil ich krank bin.",
+            "Ich weiß, dass du Hunger hast.",
+            "Warum? = pourquoi ? On répond avec weil."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "bardeau",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

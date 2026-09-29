@@ -77,6 +77,71 @@ const ECU: [number, number][] = (
 ).map(([x, y]) => [x, BAS_DE_L_ECU + y]);
 const ECU_Z = [-1.2, -0.98] as const;
 
+/**
+ * Le Papillon de cuivre (DA, LV2-5) : les ailes, vues de face, en contours convexes (x, y), l'aile droite depuis sa
+ * racine contre le corps (x = 0). L'aile du haut, plus grande, monte en V franc : sa pointe, à 8 blocs (le haut de la
+ * sentinelle), bien au-dessus des épaules (`EPAULE`) ; l'aile du bas, petite, pend près du corps (pas une croix vue de
+ * face). `ouverture` : l'angle dont chaque aile recule vers l'arrière depuis sa racine (un livre à peine ouvert vers
+ * l'élève : d'en haut, un V, jamais un trait) ; `epaisseur` : la demi-épaisseur des ailes.
+ */
+export const PAPILLON_DE_CUIVRE = {
+  haute: [
+    [0, 3.9],
+    [1.6, 4.2],
+    [2.3, 6.2],
+    [2.2, 8.0],
+    [0, 5.1],
+  ] as [number, number][],
+  basse: [
+    [0, 2.4],
+    [0.65, 2.0],
+    [1.2, 2.9],
+    [1.1, 3.62],
+    [0, 3.55],
+  ] as [number, number][],
+  racine: 0.14,
+  ouverture: 0.25,
+  epaisseur: 0.07,
+  epaule: 4.9,
+} as const;
+
+/** Le tour qui montre de face, à une caméra venue de (`dx`, `dz`), une statue plate dessinée face à −Z. */
+const deFacePour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
+/**
+ * Le tour du Papillon (DA, LV2-5) : des ailes plates se lisent mal par la tranche. Dans le monde, vers le milieu des
+ * caméras qui le regardent, mesurées de son îlot : celle du bonhomme sur le Refuge (77° à l'est du sud), celle du
+ * bonhomme sur le Château (19°) et celle qui glisse vers lui au rallumage (85°) (three/camera.ts, `VIEW`,
+ * `ISLAND_VIEW`, `viewYaw`, comme pour le Soleil de cuivre au Jardin) : tourné de 52°, aucune ne le voit à plus de 33°
+ * de face. Au défi, sa caméra de trois quarts le voit à 33° : il y reste droit.
+ */
+export const ANGLE_DU_PAPILLON = 52;
+export const TOURS_DU_PAPILLON = { monde: deFacePour(Math.sin((ANGLE_DU_PAPILLON * Math.PI) / 180), -Math.cos((ANGLE_DU_PAPILLON * Math.PI) / 180)), defi: 0 };
+
+/** Le corps du Papillon : une colonne mince, du socle à la tête, sans visage. */
+const CORPS_DU_PAPILLON: Anneau[] = [
+  [1, 0.24],
+  [1.5, 0.19],
+  [4.6, 0.2],
+  [5.5, 0.17],
+];
+const TETE_DU_PAPILLON: Anneau[] = [
+  [5.45, 0.2],
+  [5.75, 0.27],
+  [6.1, 0.2],
+];
+
+/** Le repère d'une aile (`cote` : −1 à gauche, 1 à droite) : sa racine contre le corps, reculée de `ouverture`. */
+const repereDAile = (cote: -1 | 1) => repere([cote * PAPILLON_DE_CUIVRE.racine, 0, 0], 0, cote * PAPILLON_DE_CUIVRE.ouverture, 0);
+
+/** Un contour d'aile, en miroir pour l'aile gauche (dans l'ordre qui garde la face avant vers −Z). */
+const contourDAile = (c: [number, number][], cote: -1 | 1): [number, number][] => (cote === 1 ? c : c.map(([x, y]): [number, number] => [-x, y]).reverse());
+
+/** Un contour rentré vers son centre (le fil, un peu en dedans du bord ; la patine, au milieu). */
+function rentre(c: [number, number][], k: number): [number, number][] {
+  const [cx, cy] = [c.reduce((s, p) => s + p[0], 0) / c.length, c.reduce((s, p) => s + p[1], 0) / c.length];
+  return c.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
+}
+
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   belvedere: {
     nom: 'le Sphinx de marbre',
@@ -383,6 +448,85 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         a.lueur,
         z,
       );
+    },
+  },
+  refuge: {
+    // Le Papillon de cuivre (DA, LV2-5) : une statue de cuivre patiné, sans visage ni lueur orange, sans mât ; deux paires
+    // d'ailes (celles du haut plus grandes, en V franc face à la caméra), un corps en colonne, deux antennes courtes. Il
+    // ne vole pas et n'a aucune animation propre. Ce qui se rallume est commun à tous les Gardiens : le fil qui suit le
+    // contour de ses ailes (jamais des nervures en rayons), plus clair à chaque épreuve réussie, et, à la victoire, toute
+    // la statue en Sable.
+    nom: 'le Papillon de cuivre',
+    allume: 'le bord de ses ailes',
+    tour: TOURS_DU_PAPILLON,
+    sculpture: (T, a) => {
+      const P = PAPILLON_DE_CUIVRE;
+      fuseau(T, CORPS_DU_PAPILLON, 6, a.pierre, { bas: false });
+      fuseau(T, TETE_DU_PAPILLON, 6, a.pierre);
+      // Les antennes : deux tiges courtes qui s'écartent, un petit bouton au bout.
+      for (const c of [-1, 1]) {
+        tube(
+          T,
+          [
+            [c * 0.08, 6.0, 0],
+            [c * 0.3, 6.55, 0.02],
+            [c * 0.5, 6.95, 0.05],
+          ],
+          [0.045, 0.04, 0.035],
+          4,
+          a.pierre,
+        );
+        fuseau(
+          T,
+          [
+            [6.9, 0.06],
+            [7.02, 0.08],
+            [7.14, 0],
+          ],
+          4,
+          a.pierre,
+          { x: c * 0.52, z: 0.05 },
+        );
+      }
+      for (const c of [-1, 1] as const) {
+        const R = pose(T, repereDAile(c));
+        // Les ailes, pleines, d'une faible épaisseur ; la patine (le vert-de-gris) au milieu de celles du haut.
+        for (const aile of [P.haute, P.basse]) dalle(R, contourDAile(aile, c), -P.epaisseur, P.epaisseur, a.pierre);
+        const patine = contourDAile(rentre(P.haute, 0.55), c);
+        facette(
+          R,
+          patine.map(([x, y]): V3 => [x, y, -P.epaisseur - 0.01]),
+          [0, 6, 1],
+          a.lichen,
+        );
+      }
+    },
+    veines: (T, a) => {
+      const P = PAPILLON_DE_CUIVRE;
+      const l = 0.07 * a.veines;
+      // Le fil du corps, du bas de l'aile du bas jusqu'à la racine de celle du haut : il relie les quatre fils des ailes
+      // (une seule lueur, jamais des rayons).
+      veine(
+        T,
+        [
+          [0, 2.3],
+          [0, 5.2],
+        ],
+        l,
+        a.lueur,
+        (y) => devant(y < 5.45 ? CORPS_DU_PAPILLON : TETE_DU_PAPILLON, 6, y).z,
+      );
+      // Le fil de chaque aile, un peu en dedans de son bord, de sa racine à sa racine (le contour, pas des nervures).
+      for (const c of [-1, 1] as const) {
+        const R = pose(T, repereDAile(c));
+        for (const aile of [P.haute, P.basse]) {
+          // (Le long de la racine, le fil reste contre le corps, qu'il rejoint.)
+          const dedans = rentre(aile, 0.86).map(([x, y], i): [number, number] => [aile[i][0] === 0 ? 0 : x, y]);
+          const bord = contourDAile(dedans, c);
+          const trace: [number, number][] = [...bord, bord[0]];
+          veine(R, trace, l, a.lueur, () => -P.epaisseur - 0.005);
+        }
+      }
     },
   },
 };

@@ -1,0 +1,247 @@
+{
+  "id": "refuge-de-unterwegs-2",
+  "biome": "refuge",
+  "type": "de-unterwegs",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis la question, puis lis le document en allemand pour comparer. La règle est affichée.",
+  "items": [
+    {
+      "key": "refuge-de-unterwegs-2-0",
+      "question": "Lis les deux phrases. Lequel est le plus rapide, ou vont-ils aussi vite ?",
+      "prompt": "Der Bus ist billiger als der Zug.\nAber der Zug ist schneller.",
+      "spoken": "Der Bus ist billiger als der Zug. Aber der Zug ist schneller.",
+      "choices": [
+        "Le train",
+        "Le bus",
+        "Aussi vite"
+      ],
+      "answer": "Le train",
+      "hint": "schneller = plus rapide. Lis la 2e ligne.",
+      "explanation": "Aber der Zug ist schneller = mais le train est plus rapide. Le bus est moins cher (billiger), mais plus lent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-1",
+      "question": "Lis la phrase. Quelle ville est la plus grande, ou sont-elles pareilles ?",
+      "prompt": "Berlin ist größer als Hamburg.",
+      "spoken": "Berlin ist größer als Hamburg.",
+      "choices": [
+        "Berlin",
+        "Hambourg",
+        "Pareilles"
+      ],
+      "answer": "Berlin",
+      "hint": "größer als = plus grand que.",
+      "explanation": "Berlin ist größer als Hamburg = Berlin est plus grande que Hambourg. Pareilles se dirait so groß wie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-2",
+      "question": "Lis la phrase. Qui est le plus âgé, ou ont-ils le même âge ?",
+      "prompt": "Mein Bruder ist älter als meine Cousine.",
+      "spoken": "Mein Bruder ist älter als meine Cousine.",
+      "choices": [
+        "Le frère",
+        "La cousine",
+        "Le même âge"
+      ],
+      "answer": "Le frère",
+      "hint": "älter als = plus âgé que.",
+      "explanation": "Mein Bruder ist älter als meine Cousine = mon frère est plus âgé que ma cousine. alt : älter, avec un Umlaut.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-3",
+      "question": "Regarde le tableau. Quelle phrase est vraie ?",
+      "prompt": "Zug A: 3 Stunden\nZug B: 4 Stunden",
+      "spoken": "Zug A, drei Stunden. Zug B, vier Stunden.",
+      "choices": [
+        "Zug A ist schneller als Zug B.",
+        "Zug A ist langsamer als Zug B.",
+        "Zug A ist so schnell wie Zug B."
+      ],
+      "answer": "Zug A ist schneller als Zug B.",
+      "hint": "die Stunde = l’heure. Quel train met le moins de temps ?",
+      "explanation": "3 heures pour le train A, 4 pour le train B : Zug A ist schneller als Zug B, il est plus rapide. langsamer = plus lent ; so schnell wie = aussi rapide que.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "de"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-4",
+      "question": "Lis les deux phrases. Lequel est le moins cher, ou est-ce le même prix ?",
+      "prompt": "Das Flugzeug ist teurer als der Zug.\nDer Zug ist langsamer als das Flugzeug.",
+      "spoken": "Das Flugzeug ist teurer als der Zug. Der Zug ist langsamer als das Flugzeug.",
+      "choices": [
+        "Le train",
+        "L’avion",
+        "Le même prix"
+      ],
+      "answer": "Le train",
+      "hint": "Attention : la phrase dit plus cher, la question demande le moins cher. das Flugzeug = l’avion.",
+      "explanation": "Das Flugzeug ist teurer als der Zug = l’avion est plus cher que le train : le train est le moins cher. Il est plus lent (langsamer), mais moins cher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-5",
+      "question": "Regarde le tableau. Quelle phrase est vraie ?",
+      "prompt": "Pizzeria Roma: 4 Sterne\nPizzeria Napoli: 2 Sterne",
+      "spoken": "Pizzeria Roma, vier Sterne. Pizzeria Napoli, zwei Sterne.",
+      "choices": [
+        "Roma ist besser als Napoli.",
+        "Roma ist guter als Napoli.",
+        "Roma ist schlechter als Napoli."
+      ],
+      "answer": "Roma ist besser als Napoli.",
+      "hint": "Plus d’étoiles, c’est mieux. Et gut devient besser.",
+      "explanation": "4 étoiles contre 2 : Roma ist besser als Napoli. gut devient besser, jamais guter. schlechter = moins bon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "de"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-6",
+      "question": "Lis la phrase. Qui est le plus grand, ou sont-ils pareils ?",
+      "prompt": "Tim ist so groß wie sein Vater.",
+      "spoken": "Tim ist so groß wie sein Vater.",
+      "choices": [
+        "Pareils",
+        "Tim",
+        "Son père"
+      ],
+      "answer": "Pareils",
+      "hint": "so groß wie = aussi grand que.",
+      "explanation": "Tim ist so groß wie sein Vater = Tim est aussi grand que son père : ils sont pareils. Plus grand se dirait größer als.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "fr"
+    },
+    {
+      "key": "refuge-de-unterwegs-2-7",
+      "question": "Regarde le tableau. Quelle phrase est vraie ?",
+      "prompt": "Köln: 1 Million Einwohner\nBonn: 300 000 Einwohner",
+      "spoken": "Köln, eine Million Einwohner. Bonn, dreihunderttausend Einwohner.",
+      "choices": [
+        "Köln ist größer als Bonn.",
+        "Köln ist kleiner als Bonn.",
+        "Köln ist so groß wie Bonn."
+      ],
+      "answer": "Köln ist größer als Bonn.",
+      "hint": "die Einwohner = les habitants. Quelle ville en a le plus ?",
+      "explanation": "1 million d’habitants à Köln (Cologne), 300 000 à Bonn : Köln ist größer als Bonn. kleiner = plus petit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vergleichen",
+          "lines": [
+            "schneller als = plus rapide que ; langsamer als = plus lent que",
+            "billiger als = moins cher que ; teurer als = plus cher que",
+            "so groß wie = aussi grand que (pareil)",
+            "groß : größer ; alt : älter (avec Umlaut)",
+            "gut : besser ; Hamburg = Hambourg"
+          ]
+        }
+      },
+      "choicesLang": "de"
+    }
+  ],
+  "feedback": {
+    "correct": "Bien comparé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "bardeau",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

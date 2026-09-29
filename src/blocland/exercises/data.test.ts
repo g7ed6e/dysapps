@@ -340,10 +340,35 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       if (it.question !== undefined) {
         expect(String(it.question), it.key).toMatch(/\?$/);
         expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
-        expect(it.choicesLang, it.key).toBe('fr');
+        // Des réponses en français, sauf « Quelle phrase est vraie ? » (Refuge) : des phrases de la langue, dites exprès.
+        expect(['fr', def.lang], it.key).toContain(it.choicesLang);
       }
     }
   }
+});
+
+it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
+  // Jamais strictement la plus longue ; et, parmi les items dont les choix n'ont pas tous la même longueur, au moins la
+  // moitié où elle est plus courte qu'un piège. Hors listes rangées (heures, nombres). Le Refuge des carnets d'abord :
+  // le Relais et le Jardin ont des items où la réponse est la plus longue, à reprendre à part (cadrage du contenu).
+  const fautes: string[] = [];
+  for (const def of EXERCISES.filter((e) => e.biome === 'refuge')) {
+    let inegaux = 0;
+    let plusCourte = 0;
+    for (const it of def.items) {
+      const choices = (it.choices as unknown[]).map(String);
+      if (choices.every((c) => parseHour(c) !== undefined || parseNumber(c) !== undefined)) continue;
+      const answer = String(it.answer);
+      const pieges = choices.filter((c) => c !== answer).map((c) => c.length);
+      if (answer.length > Math.max(...pieges)) fautes.push(`${it.key} : la réponse est la plus longue`);
+      if (new Set(choices.map((c) => c.length)).size === 1) continue;
+      inegaux++;
+      if (answer.length < Math.max(...pieges)) plusCourte++;
+    }
+    if (plusCourte < Math.ceil(inegaux / 2)) fautes.push(`${def.id} : plus courte ${plusCourte} fois sur ${inegaux}`);
+  }
+  expect(EXERCISES.some((e) => e.biome === 'refuge')).toBe(true);
+  expect(fautes).toEqual([]);
 });
 
 it('des choix qui sont tous des nombres de même unité sont rangés : sinon la réponse garde la place que lui donne le fichier', () => {

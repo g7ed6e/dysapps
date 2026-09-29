@@ -1,0 +1,12 @@
+{
+  "id": "refuge-poste",
+  "biome": "refuge",
+  "name": "La poste de Timbre",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "taille": 3
+    }
+  },
+  "done": "Les murs de ma poste ! Merci, bâtisseur. Les lettres des voyageurs auront bientôt leur casier."
+}

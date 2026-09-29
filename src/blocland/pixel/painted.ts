@@ -244,7 +244,7 @@ export const SURFACE_DE_TEXTURE: Record<string, Material> = {
  * de bois, les joints larges des briques et des pierres taillées. Des bandes de deux pixels au moins, 11 % plus
  * sombres, jamais un grain ; comptées en pixels de l'écran, elles courent d'une case à l'autre sans rupture.
  */
-export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | 'dalles' | 'tresse' | null;
+export type Motif = 'lames' | 'rangs' | 'briques' | 'pierres' | 'dalles' | 'tresse' | 'ecailles' | null;
 
 export function motifDe(texture: string | undefined): Motif {
   if (texture === 'planches' || texture === 'lambris' || texture === 'barriere' || texture === 'escalier' || texture === 'porte') return 'lames';
@@ -253,6 +253,7 @@ export function motifDe(texture: string | undefined): Motif {
   if (texture === 'taille' || texture === 'marbre') return 'pierres';
   if (texture === 'dalle') return 'dalles';
   if (texture === 'osier') return 'tresse';
+  if (texture === 'bardeau') return 'ecailles';
   return null;
 }
 
@@ -272,6 +273,12 @@ export function nuanceDuMotif(motif: Motif, gx: number, gy: number): number {
   // L'osier du Jardin : des brins de deux pixels, un joint de deux, et un montant de deux pixels tous les huit, qui passe
   // devant un rang sur deux, en quinconce (dessus-dessous).
   if (motif === 'tresse') return mod(gy, 4) >= 2 || mod(gx + (mod(Math.floor(gy / 4), 2) ? 4 : 0), 8) >= 6 ? JOINT : 1;
+  // Le bardeau du Refuge : des rangs de quatre pixels, des bardeaux de huit décalés de quatre d'un rang à l'autre, le
+  // bas de chaque rang en joint, et ses deux coins coupés un pixel plus haut (le bas arrondi).
+  if (motif === 'ecailles') {
+    const u = mod(gx + (mod(Math.floor(gy / 4), 2) ? 4 : 0), 8);
+    return mod(gy, 4) === 3 || (mod(gy, 4) === 2 && (u === 0 || u === 7)) ? JOINT : 1;
+  }
   if (motif === 'pierres') return mod(gy, 16) >= 14 || mod(gx + (mod(Math.floor(gy / 16), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   return 1;
 }
