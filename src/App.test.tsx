@@ -3,8 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
-import { ProgressProvider } from './core/ProgressContext';
+import { ProgressProvider, useProgress } from './core/ProgressContext';
 import { BloclandProvider } from './blocland/BloclandContext';
+
+/** Dit si les bandeaux de récompense sont retenus (DA-9). */
+function Retenus() {
+  return <p data-testid="retenus">{useProgress().celebrationsHeld ? 'oui' : 'non'}</p>;
+}
 
 function renderAt(path: string) {
   return render(
@@ -13,6 +18,7 @@ function renderAt(path: string) {
         <BloclandProvider>
           <MemoryRouter initialEntries={[path]}>
             <AppRoutes />
+            <Retenus />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -204,6 +210,16 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+});
+
+it('en vue simple, les bandeaux de récompense attendent que le mot de la baleine soit fermé (DA-9)', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/carte');
+  const word = screen.getByRole('dialog', { name: 'Le mot de la baleine' });
+  expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+  while (within(word).queryByRole('button', { name: 'Suivant' })) await user.click(within(word).getByRole('button', { name: 'Suivant' }));
+  await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
+  expect(screen.getByTestId('retenus')).toHaveTextContent('non');
 });
 
 it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {

@@ -2,7 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
-import { ProgressProvider } from '../core/ProgressContext';
+import { ProgressProvider, useProgress } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
 import { WorldPage } from './WorldPage';
 import { BADGES } from '../core/progress';
@@ -57,6 +57,11 @@ function Where() {
   return <p data-testid="adresse">{useLocation().pathname}</p>;
 }
 
+/** Dit si les bandeaux de récompense sont retenus (DA-9). */
+function Retenus() {
+  return <p data-testid="retenus">{useProgress().celebrationsHeld ? 'oui' : 'non'}</p>;
+}
+
 function renderAt(path: string) {
   return render(
     <SettingsProvider>
@@ -67,6 +72,7 @@ function renderAt(path: string) {
               <Route path="/aventure/:biomeId?" element={<WorldPage />} />
             </Routes>
             <Where />
+            <Retenus />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -256,6 +262,32 @@ it('à la première arrivée dans un archipel, le mot de la baleine, en deux pag
   renderAt('/aventure');
   await new Promise((r) => setTimeout(r, 1500));
   expect(screen.queryByRole('dialog', { name: 'Le mot de la baleine' })).not.toBeInTheDocument();
+});
+
+it('les bandeaux de récompense attendent que le mot de la baleine à l’arrivée soit fermé (DA-9)', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  const word = await screen.findByRole('dialog', { name: 'Le mot de la baleine' }, { timeout: 3000 });
+  await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('oui'));
+  await user.click(within(word).getByRole('button', { name: 'Suivant' }));
+  await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
+  expect(screen.getByTestId('retenus')).toHaveTextContent('non');
+});
+
+it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quand on revoit l’aide (DA-9)', async () => {
+  const user = userEvent.setup();
+  const premier = renderAt('/aventure');
+  expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+  premier.unmount();
+  // Tutoriel vu, mot d'arrivée de la baleine déjà dit : plus rien n'est ouvert.
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  renderAt('/aventure/foret');
+  await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'));
+  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
+  expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
 });
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et panneau) ; la croix ramène sur l’île du bonhomme', async () => {
