@@ -4166,7 +4166,8 @@ button.island-quest:active {
 }
 .graph svg {
   width: 100%;
-  max-width: 24rem;
+  /* Bornée par la hauteur de l'écran : sur une tablette à l'horizontale, le graphique laisse place à la règle et aux réponses. */
+  max-width: min(24rem, 45vh);
   display: block;
   margin: 0 auto;
   color: var(--text);
@@ -4174,7 +4175,7 @@ button.island-quest:active {
 .graph .graph-grid {
   stroke: currentColor;
   stroke-width: 1;
-  opacity: 0.2;
+  opacity: 0.3;
 }
 .graph .graph-axis {
   stroke: currentColor;
@@ -4186,7 +4187,7 @@ button.island-quest:active {
 .graph text {
   fill: currentColor;
   font-family: var(--font-family);
-  font-size: 18px;
+  font-size: 21px;
   paint-order: stroke;
   stroke: var(--surface);
   stroke-width: 4px;
@@ -4194,6 +4195,15 @@ button.island-quest:active {
 }
 .graph .graph-name {
   font-weight: 700;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux nombres des axes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.graph .graph-tick,
+.graph .graph-name {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.graph .graph-tick-bg {
+  fill: var(--surface);
 }
 .graph .graph-line {
   stroke: var(--violet);
@@ -4213,7 +4223,27 @@ button.island-quest:active {
 }
 .graph figcaption {
   margin-top: 0.3rem;
-  text-align: center;
+  text-align: left;
+}
+/* Sur un écran large, le graphique et la règle côte à côte : la question, le graphique, la règle et les réponses tiennent
+   mieux dans la hauteur d'une tablette à l'horizontale. La règle garde au moins 20rem (à la taille de texte choisie) :
+   sinon, elle passe sous le graphique, comme sur un téléphone. Les autres écrans de calcul ne changent pas. */
+@media (min-width: 800px) {
+  .panel.calcul:has(> .calcul-figure .graph) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.2rem;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > * {
+    flex: 1 1 100%;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-figure {
+    flex: 0 0 auto;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid {
+    flex: 1 1 20rem;
+  }
 }
 
 /* ===== Le plan dans le panneau d'île ===== */

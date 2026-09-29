@@ -39,7 +39,9 @@ describe('les textes d’univers', () => {
 
   it('Blocland garde les textes d’avant le lot 6, sans un mot changé', () => {
     // L'empreinte des textes des Gardiens et des espèces tels qu'ils étaient dans biomes.ts avant le lot 6 : un mot
-    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous.
+    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous. Une seule
+    // exception voulue : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
+    // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique).
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
     const APRES_LE_LOT_6 = new Set(['relais', 'jardin']);
@@ -49,7 +51,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('5757c1cdbaeadc6823a5125f2a7b0625926ee012352f821b3c4256a23f511eb2');
+    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('1eb585bd9341642adde5c716aea62190f69bf7f14d947830898933e80b94d7a0');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà vaincu. Une revanche ?',
@@ -155,7 +157,7 @@ describe('les textes communs (J8, U4)', () => {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
       const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('cee5f5db0cdf7f6ac89ec92e9d9dcf6d057631c3cb3667354184514d7a249129');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('d64da2645fb9dbf5737474b77b4e51e0e024b81a048bee4643a45f4edc007690');
     }
   });
 

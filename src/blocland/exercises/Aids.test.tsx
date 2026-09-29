@@ -39,13 +39,17 @@ describe('Graph', () => {
     expect(graphSegment({ a: 0, b: 6, ...FRAME })).toBeNull();
   });
 
-  it('dit le repère et les points de la droite, et nomme les axes en toutes lettres', () => {
+  it('dit le repère et les points de la droite, et nomme les axes', () => {
     const { container } = render(<Graph a={-2} b={1} {...FRAME} />);
     expect(screen.getByRole('img')).toHaveAccessibleName(
       'Graphique de la fonction f dans un repère : x de −4 à 4, f(x) de −4 à 4, une graduation par unité. ' +
         'La droite de f passe par les points (−1 ; 3), (0 ; 1), (1 ; −1), (2 ; −3).',
     );
-    expect(screen.getByText('Axe horizontal : les nombres x. Axe vertical : leurs images f(x). La droite épaisse est celle de f.')).toBeInTheDocument();
+    expect(screen.getByText('La droite épaisse est celle de f.')).toBeInTheDocument();
+    // Les axes sont nommés sur le graphique.
+    expect([...container.querySelectorAll('.graph-name')].map((t) => t.textContent)).toEqual(['x', 'f(x)']);
+    // Le 0 de l'origine a un fond plein : ni l'axe ni la droite ne le barrent.
+    expect(container.querySelectorAll('.graph-tick-bg')).toHaveLength(1);
     // Une graduation par unité, chaque nombre écrit une fois (0 une seule fois, à l'origine), avec le vrai signe moins.
     const ticks = [...container.querySelectorAll('.graph-tick')].map((t) => t.textContent);
     expect(ticks).toHaveLength(17);

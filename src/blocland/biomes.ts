@@ -576,7 +576,7 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.', programme: ['c4.ma.b.image-antecedent'] },
       { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.', programme: ['c4.ma.b.lineaire-affine'] },
-      { id: 'faisceaux', title: 'Faisceaux', description: 'Lis le graphique d’une fonction : une image, un antécédent, puis l’ordonnée à l’origine et le coefficient directeur.', programme: ['c4.ma.b.image-antecedent', 'c4.ma.b.lineaire-affine'] },
+      { id: 'faisceaux', title: 'Faisceaux', description: 'Sur le graphique : une image, un antécédent, puis la droite.', programme: ['c4.ma.b.image-antecedent', 'c4.ma.b.lineaire-affine'] },
     ],
   },
   {

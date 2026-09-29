@@ -633,7 +633,8 @@ it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadri
           if (list.includes(fmt(f(x + 1))) || list.includes(fmt(f(x - 1)))) seen.neighbour++;
           if (list.includes(fmt(answer + 1)) || list.includes(fmt(answer - 1))) seen.graduation++;
         } else if (level === 2) {
-          const y = num(/^(?:f\(x\) = (\S+)\. x = …|Antécédent de (\S+) par f = …)$/.exec(prompt)!.slice(1).find(Boolean)!);
+          // Une seule écriture, un seul signe égal sur la ligne.
+          const y = num(/^Antécédent de (\S+) par f = …$/.exec(prompt)![1]);
           expect(f(answer)).toBe(y);
           expect(inFrame(answer, y)).toBe(true);
           if (list.includes(fmt(f(y)))) seen.swapped++;

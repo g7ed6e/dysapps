@@ -4,6 +4,7 @@ import { drawChoices } from '../../core/choices';
 import { fractionWords } from '../../core/fractions';
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
+import { GRAPH_FRAME } from './Aids';
 import { seeded } from './maths';
 
 export const seededItems = seeded;
@@ -2015,8 +2016,7 @@ export const linearOrAffine: ItemGenerator = (rng) => {
 
 // ---------- Phare des fonctions : lire un graphique (Faisceaux) ----------
 
-/** Le cadre des graphiques : x et f(x) de −4 à 4, une graduation par unité. */
-export const GRAPH_FRAME = { xMin: -4, xMax: 4, yMin: -4, yMax: 4 } as const;
+export { GRAPH_FRAME };
 /** Un point lu reste dans le cadre, à au moins une graduation du bord. */
 const inside = (v: number) => Math.abs(v) <= 3;
 /** Un nombre que l'on peut lire sur un axe du graphique. */
@@ -2071,7 +2071,7 @@ export const READ_ANTECEDENT_RULES = [
 export const READ_LINE_RULES = [
   'f(x) = ax + b : b est l’ordonnée à l’origine, a le coefficient directeur.',
   'b : là où la droite coupe l’axe vertical, au point où x = 0.',
-  'a : x augmente de 1, compte de combien la droite monte ou descend.',
+  'a : quand x augmente de 1, compte les carreaux que la droite monte ou descend.',
   'La droite monte : a est positif. Elle descend : a est négatif.',
 ];
 
@@ -2111,11 +2111,11 @@ export const graphImage: ItemGenerator = (rng) => {
 /** Lire un antécédent sur le graphique. */
 export const graphAntecedent: ItemGenerator = (rng) => {
   const { a, b, x, y } = drawReading(rng, false);
-  const notation = rng() < 0.5;
   return {
     key: `graph-ant-${a}-${b}-${x}`,
-    prompt: notation ? `f(x) = ${fmt(y)}. x = …` : `Antécédent de ${fmt(y)} par f = …`,
-    spoken: notation ? `Lis sur le graphique : f de x égale ${say(y)}. Combien vaut x ?` : `Lis sur le graphique : quel est l’antécédent de ${say(y)} par f ?`,
+    // Une seule écriture : « f(x) = 3. x = … » mettrait deux signes égal sur une ligne.
+    prompt: `Antécédent de ${fmt(y)} par f = …`,
+    spoken: `Lis sur le graphique : quel est l’antécédent de ${say(y)} par f ?`,
     choices: graphChoices(
       x,
       [
@@ -2195,7 +2195,7 @@ export const graphLine: ItemGenerator = (rng) => {
       true,
     ),
     answer: fmt(a),
-    hint: 'Pars d’un point de la droite, fais augmenter x de 1, puis compte les carreaux jusqu’à la droite, en haut ou en bas.',
+    hint: `Pars du point ${point(from, p)}, fais augmenter x de 1 (un carreau), puis compte les carreaux jusqu’à la droite, en haut ou en bas.`,
     explanation: `De ${point(from, p)} à ${point(from + 1, q)}, x augmente de 1 et f(x) ${a > 0 ? 'monte' : 'descend'} de ${Math.abs(a)} : le coefficient directeur est ${fmt(a)}. Ici, ${expr}.`,
     figure,
     aid,
@@ -2254,7 +2254,7 @@ const ANTECEDENT = 'Trouve l’antécédent : résous l’équation f(x) égale 
 const DROITES = 'Coefficient directeur, fonction linéaire ou affine : la règle est affichée.';
 const FAISCEAUX = 'Lis l’image sur le graphique : pars du nombre sur l’axe horizontal, puis lis l’axe vertical.';
 const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du nombre sur l’axe vertical, puis lis l’axe horizontal.';
-const FAISCEAUX_DROITE = 'Lis la droite : l’ordonnée à l’origine sur l’axe vertical, le coefficient directeur en comptant les carreaux.';
+const FAISCEAUX_DROITE = 'Lis sur la droite : l’ordonnée à l’origine sur l’axe vertical, le coefficient directeur en comptant les carreaux.';
 
 export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'glacier', type: 'thermometre', level: 1, instruction: THERMO, generators: [compareRelatifs], block: 'glace' }),

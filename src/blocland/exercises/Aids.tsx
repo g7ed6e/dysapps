@@ -209,8 +209,22 @@ export function BarList({ values, labels: given, mark, markLabel }: { values: nu
 /** « −3 » avec le vrai signe moins. */
 const signed = (v: number) => (v < 0 ? `−${-v}` : String(v));
 
+/** Le cadre d'un graphique : de xMin à xMax sur l'axe horizontal, de yMin à yMax sur l'axe vertical, entiers. */
+export interface GraphFrame {
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
+}
+
+/** Le cadre des graphiques du Phare : x et f(x) de −4 à 4, une graduation par unité (défini ici seulement). */
+export const GRAPH_FRAME: GraphFrame = { xMin: -4, xMax: 4, yMin: -4, yMax: 4 };
+
+/** Une droite y = ax + b dans son cadre. */
+type FramedLine = { a: number; b: number } & GraphFrame;
+
 /** Les points du quadrillage par où passe la droite y = ax + b, dans le cadre (x entier, y entier). */
-export function graphPoints({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: number; xMin: number; xMax: number; yMin: number; yMax: number }): [number, number][] {
+export function graphPoints({ a, b, xMin, xMax, yMin, yMax }: FramedLine): [number, number][] {
   const out: [number, number][] = [];
   for (let x = xMin; x <= xMax; x++) {
     const y = a * x + b;
@@ -220,7 +234,7 @@ export function graphPoints({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: nu
 }
 
 /** Le morceau de la droite y = ax + b qui tient dans le cadre (deux extrémités), ou `null` si elle n'y passe pas. */
-export function graphSegment({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: number; xMin: number; xMax: number; yMin: number; yMax: number }): [[number, number], [number, number]] | null {
+export function graphSegment({ a, b, xMin, xMax, yMin, yMax }: FramedLine): [[number, number], [number, number]] | null {
   let lo = xMin;
   let hi = xMax;
   if (a === 0) {
@@ -240,10 +254,18 @@ export function graphSegment({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: n
 /**
  * Le graphique d'une fonction affine f(x) = ax + b dans un repère : un quadrillage discret d'une graduation par unité,
  * les deux axes fléchés, tous les nombres écrits le long des axes, la droite épaisse et ses points aux intersections du
- * quadrillage (on ne lit jamais entre deux graduations). La légende dit les axes en toutes lettres ; la description
- * donne aux lecteurs d'écran le repère et les points de la droite, ceux que l'on voit.
+ * quadrillage (on ne lit jamais entre deux graduations). La légende nomme la droite ; la description donne aux lecteurs
+ * d'écran le repère et les points de la droite, ceux que l'on voit.
  */
-export function Graph({ a, b, xMin = -4, xMax = 4, yMin = -4, yMax = 4, name = 'f' }: { a: number; b: number; xMin?: number; xMax?: number; yMin?: number; yMax?: number; name?: string }) {
+export function Graph({
+  a,
+  b,
+  xMin = GRAPH_FRAME.xMin,
+  xMax = GRAPH_FRAME.xMax,
+  yMin = GRAPH_FRAME.yMin,
+  yMax = GRAPH_FRAME.yMax,
+  name = 'f',
+}: { a: number; b: number; name?: string } & Partial<GraphFrame>) {
   const cell = 36;
   const left = 34;
   const top = 30;
@@ -290,20 +312,22 @@ export function Graph({ a, b, xMin = -4, xMax = 4, yMin = -4, yMax = 4, name = '
         ))}
         {/* Les nombres par-dessus la droite (leur halo la coupe) ; sur l'axe horizontal, tous centrés sous leur graduation, à
             pas égal, 0 compris : écrit à part, près d'un −1, il se lirait « −10 ». Le 0 n'est pas répété sur l'axe vertical. */}
+        {/* Le 0 de l'origine sur un fond plein : ni l'axe vertical ni la droite ne le barrent. */}
+        {x0 === 0 && y0 === 0 && <rect x={X(0) - 10} y={Y(0) + 5} width="20" height="24" className="graph-tick-bg" />}
         {xs.map((v) => (
-          <text key={`lx${v}`} x={X(v)} y={Y(y0) + 22} textAnchor="middle" className="graph-tick">
+          <text key={`lx${v}`} x={X(v)} y={Y(y0) + 24} textAnchor="middle" className="graph-tick">
             {signed(v)}
           </text>
         ))}
         {ys
           .filter((v) => !(v === 0 && x0 === 0 && y0 === 0))
           .map((v) => (
-            <text key={`ly${v}`} x={X(x0) - 7} y={Y(v) + 6} textAnchor="end" className="graph-tick">
+            <text key={`ly${v}`} x={X(x0) - 6} y={Y(v) + 7} textAnchor="end" className="graph-tick">
               {signed(v)}
             </text>
           ))}
       </svg>
-      <figcaption>{`Axe horizontal : les nombres x. Axe vertical : leurs images ${name}(x). La droite épaisse est celle de ${name}.`}</figcaption>
+      <figcaption>{`La droite épaisse est celle de ${name}.`}</figcaption>
     </figure>
   );
 }
