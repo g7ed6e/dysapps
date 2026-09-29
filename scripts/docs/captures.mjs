@@ -162,6 +162,17 @@ SHOTS.push(
   extreme('vue-simple', 'creme'),
 );
 
+/**
+ * Archipéo, choisi dans les Réglages (lot 6 C) : la section « Les sentinelles d'Archipéo » du manuel. La même partie
+ * que la capture de Blocland, pour que les deux se comparent.
+ */
+// Le nom écrit en entier : prepare.mjs lit les `name: '…'` pour savoir quelles captures le manuel peut citer.
+const archipeo = ({ base, name }) => ({ ...deBase(base), name, settings: { univers: 'archipeo' } });
+SHOTS.push(
+  archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
+  archipeo({ base: 'collines-du-large', name: 'archipeo-collines-du-large' }),
+);
+
 /** La section Univers des Réglages : Blocland, coché, puis Archipéo. */
 async function showUnivers(page) {
   // Sous la barre du haut, qui reste en place.
