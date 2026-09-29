@@ -11,7 +11,7 @@ Blocland reste un univers à part entière, à côté d’Archipéo ([Plusieurs 
 ## Ce qu’on garde absolument
 
 - **Rien à lire dans le monde** (3D ou 2D). Tout ce qui se lit est dans un panneau HTML, en police dys, lu à voix haute. Les seules exceptions sont les étiquettes des noms d’îles, dans la police de lecture, sur fond clair.
-- **Pas de chrono, pas de classement, pas de perte.** Rien ne se retire à l’élève : un bloc gagné reste gagné, un voyage fait reste fait, une île où l’on a joué reste ouverte. Une sauvegarde ancienne est toujours migrée sans perte (les blocs posés qui ne servent plus reviennent dans l’inventaire).
+- **Pas de chrono, pas de classement, pas de perte.** Rien ne se retire à l’élève : un bloc gagné reste gagné, un voyage fait reste fait, une île où l’on a joué reste ouverte, un Gardien vaincu reste vaincu, même quand une mission arrive plus tard sur son île : sa statue reste, sa revanche reste ouverte, et ses étoiles et ce qu’il a ouvert (tunnels, cols, kit du Bloc-Navire) ne se retirent pas. Une sauvegarde ancienne est toujours migrée sans perte (les blocs posés qui ne servent plus reviennent dans l’inventaire).
 - **Pas de réflexe.** Aucun geste ne demande de la vitesse ni de la précision ; toucher pour aller reste toujours possible.
 - **Sessions courtes.** On peut passer deux minutes au village, poser trois blocs et repartir. Une pause est proposée après dix minutes (`SESSION_MAX_MINUTES`), sans rien bloquer.
 - **« Réduire les animations »** remplace toute animation : ciel figé, créatures immobiles, pas de particules, caméra sans trajet, voyage en écran fixe, changement d’archipel sans fondu.
@@ -126,7 +126,7 @@ Retour des joueurs : « trop de blocs qui s’accumulent, on ne sait pas quoi en
 - **La baleine** (lot 5 d’Archipéo) parle aux grandes étapes d’un archipel seulement : l’arrivée (en 6e, sa présentation après le tutoriel), le dernier Gardien vaincu, l’île-port bâtie, le premier ouvrage payé. Les étapes se déduisent de la sauvegarde (`world/whale.ts`) ; le « déjà dit » est noté par appareil (`baleine` dans le stockage local ; l’arrivée garde la clé de l’ancienne bulle `archipel-5e`…), jamais dans la sauvegarde. Une seule parle à la fois, la plus grande. Son panneau remplace les bulles d’arrivée des créatures-port ; une baleine du décor passe au large de l’île concernée (`whalePass` du contrat des vues), sauf avec « Réduire les animations ».
 - **Les baleines** (quatre, au large) et les **oiseaux** font vivre la mer et le ciel ; chaque archipel a son ambiance (mer tempérée, turquoise et glace, bleu profond et ardoise, plancher de nuages sans baleine).
 - **Les sons** sont générés par le code (Web Audio, aucun fichier). Par défaut, seuls les sons d’action ; l’ambiance est un réglage à activer. Jamais de son pendant la lecture à voix haute.
-- **Les Gardiens** attendent sur un îlot devant leur île, relié par des pas japonais ; vaincus, ils deviennent une statue. Jamais d’arbre sur l’îlot : il cacherait le Gardien.
+- **Les Gardiens** attendent sur un îlot devant leur île, relié par des pas japonais ; vaincus, ils deviennent une statue, qui le reste même si une mission arrive ensuite sur leur île. Jamais d’arbre sur l’îlot : il cacherait le Gardien.
 
 ## Le bonhomme
 

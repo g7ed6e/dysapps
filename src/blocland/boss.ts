@@ -43,6 +43,14 @@ export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars
 }
 
 /**
+ * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (une revanche), même si une mission
+ * est arrivée depuis sur l'île sans étoile. Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
+ */
+export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
+  return typesWithContent(biome).length > 0 && (isBossBeaten(biome.id, progress) || isBossUnlocked(biome, progress));
+}
+
+/**
  * Où en est le Gardien d'une île : caché, en attente de son défi (une sentinelle éteinte, visible dès l'ouverture de
  * l'île, lot 6), prêt à le relever, ou vaincu.
  */
@@ -50,12 +58,14 @@ export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 
 /**
  * Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. Avec
- * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente.
+ * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente. Un Gardien vaincu le reste : une
+ * mission ajoutée plus tard à son île, encore sans étoile, ne le cache ni ne l'éteint.
  */
 export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {
   if (!isBiomeUnlocked(biome.id, bridges)) return 'hidden';
+  if (isBossBeaten(biome.id, progress)) return 'beaten';
   if (!isBossUnlocked(biome, progress)) return sentinelles ? 'waiting' : 'hidden';
-  return isBossBeaten(biome.id, progress) ? 'beaten' : 'ready';
+  return 'ready';
 }
 
 /** Les missions du biome où il manque encore des étoiles (pour l'expliquer à l'élève). */

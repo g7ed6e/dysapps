@@ -81,3 +81,17 @@ it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async (
   expect(gauge()).toHaveAttribute('aria-valuenow', String(max - 1));
   expect(document.body.textContent).toMatch(/Mes branches tremblent/);
 });
+
+it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission de son île n’a pas encore d’étoile', async () => {
+  // La victoire, puis une mission sans étoile (comme une mission arrivée après coup sur l'île).
+  const progress = { ...ready('foret'), 'foret-gardien': { stars: 2, attempts: 1, best: 0.9 } } as Record<string, unknown>;
+  delete progress[exercisesOf('foret', 'rimes')[0].id];
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress }));
+  renderAt('/aventure/foret');
+  expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress }));
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  expect(document.body.textContent).not.toMatch(/Il te manque encore des étoiles/);
+  expect(screen.getAllByText(/Épreuve : /).length).toBeGreaterThan(0);
+}, 30_000);
