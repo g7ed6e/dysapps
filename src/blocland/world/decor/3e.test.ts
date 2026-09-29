@@ -9,7 +9,7 @@ import { champDuSol } from '../landMesh';
 import { inCore, islandDef, landCells, mapOf } from '../map';
 import { ambianceDe } from '../palette';
 import { bridgePath, worldBounds, worldCubes } from '../terrain';
-import { empriseDuSocle, LOINTAIN_3E, SOCLE_3E } from './3e';
+import { empriseDuSocle, GRAND_PHARE_3E, LOINTAIN_3E, SOCLE_3E } from './3e';
 import { nappesDesSommets, NAPPES_3E } from './brume';
 import { MOUVEMENT_DE_LA_BRUME } from './fumee';
 import type { RangDeCretes } from './lointain';
@@ -77,6 +77,32 @@ it('le grand phare : le modèle de référence à H = 11 sur un socle de 3 cases
   let ailleurs = -Infinity;
   for (let t = 0; t < m.decor.elements.length; t++) if (m.decor.elements[t] >= 0 && m.decor.elements[t] !== i) for (let k = 0; k < 3; k++) ailleurs = Math.max(ailleurs, m.decor.positions[t * 9 + k * 3 + 1]);
   expect(ailleurs).toBeLessThan(haut);
+});
+
+it('le grand phare que la caméra et les étiquettes gardent en vue (DA-17, DA-18) est celui qui est dessiné', () => {
+  const { x0, y0 } = empriseDuSocle(phare);
+  expect(GRAND_PHARE_3E.x).toBe(x0 + SOCLE_3E.cote / 2);
+  expect(GRAND_PHARE_3E.y).toBe(y0 + SOCLE_3E.cote / 2);
+  const pts = triangles(m.decor).flat();
+  expect(GRAND_PHARE_3E.haut).toBeCloseTo(Math.max(...pts.map((p) => p[1])), 5);
+  expect(GRAND_PHARE_3E.pied).toBeCloseTo(Math.min(...pts.map((p) => p[1])), 1);
+  expect(GRAND_PHARE_3E.rayon).toBe(PHARES['3e'].r);
+});
+
+it('le retrait du socle : un bandeau de neige à l’arête de la terrasse, un joint d’ombre au pied de la salle du haut', () => {
+  const socle = phare.z + SOCLE_3E.bas;
+  const { x0, y0 } = empriseDuSocle(phare);
+  const tris = triangles(m.decor);
+  // Des faces verticales débordent à peine du mur de la salle du bas, juste sous l'arête de la terrasse.
+  const bandeau = tris.filter((t) => t.every((p) => p[1] >= socle - 0.2 && p[1] <= socle + 0.05) && t.some((p) => p[0] < x0 || p[2] < y0));
+  expect(bandeau.length).toBeGreaterThan(0);
+  // Aucune ne sort de l'emprise de plus d'un vingtième de case.
+  for (const p of tris.flat()) {
+    expect(p[0]).toBeGreaterThanOrEqual(x0 - 0.05);
+    expect(p[2]).toBeGreaterThanOrEqual(y0 - 0.05);
+    expect(p[0]).toBeLessThanOrEqual(x0 + SOCLE_3E.cote + 0.05);
+    expect(p[2]).toBeLessThanOrEqual(y0 + SOCLE_3E.cote + 0.05);
+  }
 });
 
 it('le massif enneigé : continu, 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 14 à 30 blocs, neige franche au-dessus de 55 %', () => {

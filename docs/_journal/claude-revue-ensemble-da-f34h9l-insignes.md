@@ -1,0 +1,1 @@
+Blocland : l’insigne de rôle devient un bloc de matériau, du plus modeste au plus précieux : terre pour l’Explorateur, bois pour le Cartographe, pierre pour le Bâtisseur, herbe pour le Navigateur, or pour l’Architecte de l’archipel. Le pictogramme du rôle et son nom écrit à côté ne changent pas. Archipéo garde son hexagone.

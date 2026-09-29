@@ -11,9 +11,9 @@ Chaque écran tient sans défiler :
 1. **La consigne ou l’énoncé** est lue à voix haute dès qu’elle apparaît (désactivable dans les réglages) et relançable avec le bouton 🔊. Les symboles sont lus en mots : « 7 fois 8 », « 3 quarts ».
 2. **Les réponses** sont des boutons larges. En maths, les quatre réponses sont rangées dans l’ordre croissant, mais la bonne n’a pas de place favorite : d’une question à l’autre, elle est la plus petite, la plus grande ou entre les deux. Les pièges viennent des erreurs fréquentes (oubli de retenue, table voisine, « 3,45 > 3,5 »).
 3. **Le joker** donne un indice avant de répondre, ou après une erreur : une astuce (« remplace par *avait* ») et, en maths, une aide visuelle (grille de points, boîte de dix, droite par bonds, tableau de numération, barres de fractions).
-4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Après une première erreur, « Presque ! » s’affiche avec l’indice, la réponse tentée est barrée et l’on réessaie (avec deux choix seulement, la correction vient tout de suite, car le second essai donnerait la réponse). Après la deuxième, « Pas cette fois » donne la bonne réponse et un point d’effort. Les mots du résultat sont peu nombreux, courts et en minuscules : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois ».
+4. **La correction** s’affiche dans un bandeau fixe en bas de l’écran, qui ne cache pas la question (l’écran défile juste ce qu’il faut pour garder visibles l’énoncé, la réponse touchée et la bonne réponse) : la bonne réponse et une explication d’une ligne qui rappelle la règle. Aux grandes tailles de texte, quand ce bandeau ne laisserait plus la place à la question, il suit la question dans la page, qui défile d’un seul tenant : l’écran montre les réponses marquées et le début de la correction, et seul le bouton « Suivante » reste en bas. Après une première erreur, « Presque ! » s’affiche avec l’indice, la réponse tentée est barrée et l’on réessaie (avec deux choix seulement, la correction vient tout de suite, car le second essai donnerait la réponse). Après la deuxième, « Pas cette fois » donne la bonne réponse et un point d’effort. Les mots du résultat sont peu nombreux, courts et en minuscules : « Bravo ! », « Juste ! », « Presque ! », « Pas cette fois ».
 5. **Au clavier** (ordinateur), les touches **1 à 9** touchent la 1re à la 9e réponse, **Entrée** passe à la question suivante. C’est aussi vrai dans l’aventure, où les chiffres cochent les cartes d’un tri et Entrée valide.
-6. **Les succès** gagnés pendant la mission (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question.
+6. **Les succès** gagnés pendant la mission (« Succès débloqué », « Niveau supérieur ! ») s’affichent au bilan, jamais par-dessus une question. Dans le monde et en vue simple, ils attendent de même que le panneau ouvert soit fermé : le tutoriel, le mot de la baleine, le rallumage d’une sentinelle ou le voyage.
 
 ![Une correction : « Pas cette fois », la bonne réponse cochée en vert, la réponse touchée en orangé, et l'astuce en une ligne.](/captures/quete-correction.jpg)
 
@@ -21,9 +21,9 @@ Chaque écran tient sans défiler :
 
 Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
-![Le mode concentration : seulement la consigne, le mot « papillon », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
+![Le mode concentration : seulement la consigne, le mot « village », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
 
-![La même question sur téléphone.](/captures/telephone-quete.jpg)
+![Une question d'Abattage syllabique sur téléphone : « papillon », et ses réponses.](/captures/telephone-quete.jpg)
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;

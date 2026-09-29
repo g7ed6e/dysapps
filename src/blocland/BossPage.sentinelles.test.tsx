@@ -66,7 +66,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   expect(gauge()).toHaveAttribute('aria-valuenow', '0');
   expect(gauge()).toHaveAttribute('aria-valuetext', `0 épreuve réussie sur ${total}, il en faut ${needed}`);
   expect(screen.getByText(`0 sur ${total}`)).toBeInTheDocument();
-  expect(document.body.textContent).toContain(`Il en faut ${needed} pour la rallumer.`);
+  expect(document.body.textContent).toContain(`Il faut ${needed} épreuves réussies pour rallumer sa lumière.`);
   // La consigne dit la règle.
   expect(document.body.textContent).toContain('Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien.');
   expect(screen.getByRole('heading', { level: 1, name: /Le défi du Grand Chêne/ })).toBeInTheDocument();

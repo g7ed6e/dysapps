@@ -14,7 +14,7 @@ import type { PlanBuilder } from './usePlanBuilder';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { getArchipelago, type ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossUnlocked, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
@@ -54,8 +54,8 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = sansLv2 ? SANS_LV2 : unlocked ? biome.creature.greeting : lockedHint(state, biome.id);
-  const bossReady = unlocked && isBossUnlocked(biome, state.progress);
+  const greeting = sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id);
+  const bossReady = unlocked && isBossOpen(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
   const [bossSaid, setBossSaid] = useState<string | null>(null);

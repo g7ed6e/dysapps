@@ -16,11 +16,25 @@ import { aRallumer, gardiensRallumes, vusSansMoment, type RallumagesVus } from '
 
 const STORAGE_KEY = 'rallumage';
 
+/**
+ * Ce que l'appareil a vu depuis le chargement de la page. Quand rien ne s'écrit (sauvegarde gelée, navigation privée,
+ * quota), un Gardien vu le reste jusqu'au prochain chargement : sans cela, son moment revient en boucle.
+ */
+const vusEnMemoire: RallumagesVus = {};
+
+function lireVus(): RallumagesVus {
+  return { ...loadJSON<RallumagesVus>(STORAGE_KEY, {}), ...vusEnMemoire };
+}
+
 function noterVus(ids: BiomeId[]): void {
   if (!ids.length) return;
-  const vus = loadJSON<RallumagesVus>(STORAGE_KEY, {});
-  for (const id of ids) vus[id] = true;
-  saveJSON(STORAGE_KEY, vus);
+  for (const id of ids) vusEnMemoire[id] = true;
+  saveJSON(STORAGE_KEY, lireVus());
+}
+
+/** Pour les tests : la page n'est pas rechargée entre deux cas. */
+export function oublierRallumagesEnMemoire(): void {
+  for (const id of Object.keys(vusEnMemoire)) delete vusEnMemoire[id as BiomeId];
 }
 
 /**
@@ -36,7 +50,7 @@ export function useRallumage(progress: Record<string, { stars: number }>, a: Arc
     }
     return 0;
   });
-  const vus = useMemo(() => loadJSON<RallumagesVus>(STORAGE_KEY, {}), [tick, progress]);
+  const vus = useMemo(() => lireVus(), [tick, progress]);
   const sansMoment = vusSansMoment(progress, a, vus, actif);
   useEffect(() => {
     if (!sansMoment.length) return;
@@ -68,10 +82,12 @@ export function toucherQuiSaute(sauter: () => void) {
 interface PanelProps {
   id: BiomeId;
   onClose: () => void;
+  /** Le texte continue sous les boutons (la bulle défile, grand texte) : un trait pointillé et un chevron le disent. */
+  aSuivre?: boolean;
 }
 
 /** Le mot du rallumage, à la place du mot de la baleine : « Le Grand Chêne brille à nouveau. », lu à voix haute. */
-export function RallumagePanel({ id, onClose }: PanelProps) {
+export function RallumagePanel({ id, onClose, aSuivre = false }: PanelProps) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
   const biome = getBiome(id);
@@ -93,7 +109,8 @@ export function RallumagePanel({ id, onClose }: PanelProps) {
       <p className="whale-word-text">
         <Icon name="flame" /> <Syllabified text={text} />
       </p>
-      <div className="whale-word-actions">
+      <div className={`whale-word-actions${aSuivre ? ' a-suivre' : ''}`}>
+        {aSuivre && <Icon name="chevronDown" className="whale-word-suite" />}
         <SpeakButton text={text} />
         <button type="button" className="button primary" onClick={onClose}>
           J’ai compris

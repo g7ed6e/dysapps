@@ -11,8 +11,10 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 export type Couverture = 'ardoise' | 'terre-cuite';
 
 /**
- * Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. Le Relais
- * des voyageurs (LV2, 5e), voisin du Comptoir, reste d'ardoise : jamais deux voisins en terre cuite.
+ * Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles
+ * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
+ * voisins en terre cuite), et le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 ; le 4e garde
+ * une île de terre cuite sur six.
  */
 export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'mine', 'comptoir', 'theatre', 'belvedere'];
 

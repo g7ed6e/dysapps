@@ -16,4 +16,6 @@ export const SILHOUETTES_4E = {
   cabinet: { pics: [] },
   theatre: { pics: [] },
   gare: { pics: [] },
+  // Le Jardin des heures (LV2) : une île plate, au bout est de la crête, sans pic (aucune verticale à côté de la grue).
+  jardin: { pics: [] },
 } satisfies Record<string, Silhouette>;

@@ -1,0 +1,1 @@
+Dans Archipéo, aux Îles du Ciel, le grand phare reste dans le cadre : à l’arrivée, sa lanterne se découpe sur le ciel ; depuis son île, il est entier à côté du panneau, et les noms des îles ne le recouvrent plus. Une bande de neige montre la terrasse de son socle.

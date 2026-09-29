@@ -5,6 +5,9 @@
 // - Des nombres : ils restent rangés dans l'ordre croissant (règle dys : on compare, on ne cherche pas). Des entiers
 //   qui se suivent (« 2, 3, 4 syllabes ») forment une fenêtre qu'on décale (1-2-3, 2-3-4, 3-4-5). Sinon, on fait passer
 //   un piège de l'autre côté de la réponse, à la même distance (réponse 56, piège 54 → 58), jusqu'à la place visée.
+// - Des heures « H h MM » : rangées dans l'ordre de la journée, sans heure piège inventée. La réponse a donc la place
+//   de son rang, toujours la même d'une partie à l'autre : la place visée ne s'applique pas.
+// - Une date ou un nombre qui ne commence pas la chaîne (« le 20 juin ») est un mot : on n'invente pas de « 38 juin ».
 
 type Rng = () => number;
 type Choice = string | number;
@@ -81,14 +84,14 @@ export function drawChoices(
   return [answer, ...picked].sort((a, b) => a - b);
 }
 
-interface Parsed {
+export interface Parsed {
   value: number;
   decimals: number;
   unit: string;
 }
 
 /** « −1 200,5 cm » → { value: -1200.5, decimals: 1, unit: ' cm' } ; undefined si ce n'est pas un nombre. */
-function parseNumber(c: Choice): Parsed | undefined {
+export function parseNumber(c: Choice): Parsed | undefined {
   if (typeof c === 'number') return Number.isFinite(c) ? { value: c, decimals: (String(c).split('.')[1] ?? '').length, unit: '' } : undefined;
   const m = /^\s*([-−]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:[.,](\d+))?([^\d/]*)$/.exec(c);
   if (!m) return undefined;
@@ -114,7 +117,7 @@ function sorted(values: number[]): boolean {
 }
 
 /** Des nombres rangés : la réponse amenée à la place `target` (ou au plus près), la liste toujours croissante. */
-function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: number, rng: Rng): Choice[] {
+function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: number, rng: Rng, pieges: Pieges): Choice[] {
   const values = parsed.map((p) => p.value);
   const answer = values[at];
   const unit = parsed[0].unit;
@@ -123,6 +126,8 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
     const start = Math.max(Math.min(1, values[0]), answer - target);
     return values.map((_, i) => formatLike(start + i, choices, unit, 0));
   }
+  // Des pièges écrits exprès (13 contre 30, à l'oreille) : on ne les remplace pas par des nombres calculés.
+  if (pieges === 'du-fichier') return choices;
   const decimals = Math.max(...parsed.map((p) => p.decimals));
   const round = (v: number) => Number(v.toFixed(decimals));
   const allowNegative = values.some((v) => v < 0);
@@ -155,13 +160,32 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
   return [...next].sort((a, b) => a - b).map((v) => (v === answer ? choices[at] : formatLike(v, choices, unit, decimals)));
 }
 
-/** Les choix d'une question, la bonne réponse visée à la place `target`. */
-export function placeAnswer(choices: Choice[], answer: unknown, target: number, rng: Rng): Choice[] {
+/** « 9 h 45 » → 585 (minutes depuis minuit) ; undefined si ce n'est pas une heure écrite « H h MM ». */
+export function parseHour(c: Choice): number | undefined {
+  const m = /^(\d{1,2}) h (\d{2})$/.exec(String(c));
+  return m ? Number(m[1]) * 60 + Number(m[2]) : undefined;
+}
+
+/**
+ * Comment traiter une liste de nombres rangés : `calcules` fait passer un piège de l'autre côté de la réponse (un
+ * calcul, où tout nombre voisin est un piège plausible) ; `du-fichier` garde les pièges écrits, et la réponse la
+ * place de son rang (des nombres entendus, où le piège est le nombre qui sonne pareil).
+ */
+export type Pieges = 'calcules' | 'du-fichier';
+
+/** Les choix d'une question, la bonne réponse visée à la place `target` (sauf des heures : la place de leur rang). */
+export function placeAnswer(choices: Choice[], answer: unknown, target: number, rng: Rng, pieges: Pieges = 'calcules'): Choice[] {
   const at = choices.findIndex((c) => String(c) === String(answer));
+  // Des heures (« 9 h 45 ») : rangées dans l'ordre de la journée, comme des nombres ; on n'invente pas d'heure piège,
+  // la réponse garde donc la place que lui donne ce rang.
+  const hours = choices.map(parseHour);
+  if (hours.every((h): h is number => h !== undefined)) {
+    return choices.map((c, i) => [c, hours[i]] as const).sort((a, b) => a[1] - b[1]).map(([c]) => c);
+  }
   const parsed = choices.map(parseNumber);
   if (parsed.every((p): p is Parsed => p !== undefined && p.unit === parsed[0]!.unit)) {
     // Une liste de nombres que l'auteur n'a pas rangée reste telle quelle.
-    return at >= 0 && sorted(parsed.map((p) => p.value)) ? placeNumber(choices, parsed, at, target, rng) : choices;
+    return at >= 0 && sorted(parsed.map((p) => p.value)) ? placeNumber(choices, parsed, at, target, rng, pieges) : choices;
   }
   if (at < 0) return shuffled(choices, rng);
   const others = shuffled(
@@ -173,7 +197,7 @@ export function placeAnswer(choices: Choice[], answer: unknown, target: number, 
 }
 
 /** Une série de questions, la bonne réponse de chacune à une place tirée au hasard, les places réparties. */
-export function placeChoices<T extends object>(list: readonly T[], rng: Rng): T[] {
+export function placeChoices<T extends object>(list: readonly T[], rng: Rng, pieges: Pieges = 'calcules'): T[] {
   const items = list as readonly (T & WithChoices)[];
   const sizes = items.map((item) => (Array.isArray(item.choices) && item.choices.length >= 2 ? item.choices.length : 0));
   const targets = new Map<number, number[]>();
@@ -187,6 +211,6 @@ export function placeChoices<T extends object>(list: readonly T[], rng: Rng): T[
   return items.map((item, i) => {
     const n = sizes[i];
     if (n === 0) return item;
-    return { ...item, choices: placeAnswer(item.choices as Choice[], item.answer, targets.get(n)!.shift()!, rng) };
+    return { ...item, choices: placeAnswer(item.choices as Choice[], item.answer, targets.get(n)!.shift()!, rng, pieges) };
   });
 }

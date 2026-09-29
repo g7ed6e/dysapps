@@ -485,6 +485,25 @@ const DILIGENCE = fromLayers(
   { C: '#b87333', c: '#8a5226', K: '#2a2622', E: '#f5d63d', M: '#1f1a16', R: '#6f4d2a', L: '#4a3a2a', B: '#c9a24a', N: '#c0392b' },
 );
 
+// Le Soleil de cuivre (DA, LV2-4) : un corps carré de cuivre, huit rayons droits d'un cube (les quatre droits, et les
+// quatre en biais, en marches), deux yeux en cubes, sans bouche, ni couronne, ni moustache. Sans pied (il faisait des
+// jambes) : posé sur une dalle pleine d'un cube, sous le corps ; les rayons du bas en biais ne touchent pas le sol.
+const SOLEIL = fromLayers(
+  [
+    ['..ccccc..', '..ccccc..', '..ccccc..'],
+    ['.........', 'C...C...C', '.........'],
+    ['.........', '.C..C..C.', '.........'],
+    ['..CCCCC..', '..ccccc..', '..ccccc..'],
+    ['..CCCCC..', '..ccccc..', '..ccccc..'],
+    ['..CCCCC..', 'CCcccccCC', '..ccccc..'],
+    ['..CKCKC..', '..ccccc..', '..ccccc..'],
+    ['..CCCCC..', '..ccccc..', '..ccccc..'],
+    ['.........', '.C..C..C.', '.........'],
+    ['.........', 'C...C...C', '.........'],
+  ],
+  { C: '#b87333', c: '#8a5226', K: '#2a2622' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -511,6 +530,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   comptoir: REINE,
   manoir: SPECTRE,
   relais: DILIGENCE,
+  jardin: SOLEIL,
   theatre: MASQUE,
   gare: LOCOMOTIVE,
   studio: ANTENNE,

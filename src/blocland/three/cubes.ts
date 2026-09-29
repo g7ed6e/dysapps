@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
-import { cacheDeLaConstruction, caseDeLaConstruction, caseDuPhare, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
@@ -98,10 +98,10 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
         const picked = caseDuDecor(champ, decor, Boolean(hit.object.userData.lueur), hit.faceIndex);
         if (picked) return picked;
       }
-      // Le phare de Grimoire (R5) : la case de son plan la plus proche du point touché.
+      // Un modèle qui remplace des cubes : la case de la pièce d'architecture (lot 7), ou la case du plan sous le phare.
       const groupe = hit.object.userData.groupe as string | undefined;
       if (taille?.maillage && (groupe === 'opaque' || groupe === 'fenetres') && hit.faceIndex != null) {
-        const picked = caseDuPhare(taille.maillage, groupe, hit.faceIndex, hit.point, n);
+        const picked = caseDeLaPiece(taille.maillage, groupe, hit.faceIndex, hit.point, n);
         if (picked) return picked;
       }
       // Un cube, un bloc taillé ou une borne : le bloc derrière la facette, et la case devant (world/construction.ts).

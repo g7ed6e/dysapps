@@ -27,12 +27,13 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
+import { lecteurDeZones } from '../zonesCouvertes';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
 import { propsOf, type Prop, type Station } from '../world/props';
 import {
@@ -435,8 +436,17 @@ export default function WorldCanvas2D({
 
     const t0 = performance.now();
     let last = t0;
-    // Sur la Carte, l'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
-    let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
+    // L'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
+    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[] } | null = null;
+    // Sans page autour (un aperçu), la bande des boutons du bas (72 px) reste réservée.
+    const lireZones = lecteurDeZones(
+      el,
+      () => {
+        const bande = 72 * Math.min(window.devicePixelRatio || 1, 3);
+        return [{ x: canvas.width / 2, y: canvas.height - bande / 2, w: canvas.width, h: bande }];
+      },
+      () => canvas.width / Math.max(1, el.clientWidth),
+    );
     const loop = () => {
       if (!visible || document.hidden) {
         running = false;
@@ -803,7 +813,7 @@ export default function WorldCanvas2D({
       }
       // Le nom des îles ouvertes, sur l'île, en police de lecture (18 px à l'écran au moins) ; sur la Carte, toutes les
       // îles avec leur état (icône et mot, 16 px), écartées pour qu'aucune étiquette n'en cache une autre (celles des îles
-      // fermées s'écartent d'abord), et hors de la bande des boutons du bas (72 px).
+      // fermées s'écartent d'abord), et hors de l'interface posée sur la scène ; entières ou pas du tout (DA-10).
       // Sur la Carte, le fanion du bonhomme et la grande flèche de la destination, vus d'une vue (`c`) : la flèche pose
       // sa pointe sur l'île et s'écarte de côté si le fanion est tout près (le bonhomme sur la même île).
       const dprMarks = Math.min(window.devicePixelRatio || 1, 3);
@@ -839,23 +849,29 @@ export default function WorldCanvas2D({
         };
         // L'écart se calcule pour le cadrage où la vue arrive (une fois, gardé tant qu'il ne change pas) : pendant
         // qu'elle glisse, les étiquettes suivent leur île sans sauter d'une place à l'autre.
-        let offsets: LabelOffset[] | null = null;
-        if (p.map) {
-          const marks = `${mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}`;
-          const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}`;
-          if (labelLayout?.key !== key) {
-            const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state) }));
-            // La flèche de la destination et le fanion du bonhomme restent visibles : aucune étiquette ne se pose dessus.
-            const { arrow, beacon } = mapMarks(target);
-            const obstacles = [arrow, beacon].filter((b): b is LabelBox => b !== null);
-            labelLayout = { key, offsets: layoutLabels(boxes, 6 * dpr, { w: scr.w, h: scr.h - 72 * dpr }, list.map((l) => (l.state?.id === 'fermee' ? 0.5 : 1)), obstacles) };
-          }
-          offsets = labelLayout.offsets;
+        // L'interface posée sur la scène (le panneau de la Carte, les boutons) : aucune étiquette dessous (DA-10). Sur la
+        // Carte, les étiquettes s'écartent aussi les unes des autres, de la flèche et du fanion ; ailleurs, seules celles
+        // posées sur l'interface ou coupées par le bord bougent, comme en 3D.
+        const { zones, bulles, cle: zonesCle } = lireZones();
+        const marks = p.map ? `${mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}` : 'monde';
+        const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}@${zonesCle}`;
+        if (labelLayout?.key !== key) {
+          const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state) }));
+          // L'île elle-même (son étiquette se pose dessus, 14 px plus bas) : si l'interface la couvre, son nom ne désigne rien.
+          const iles = boxes.map((b) => ({ x: b.x, y: b.y - 14 * dpr }));
+          const cadre = { w: scr.w, h: scr.h };
+          // Sur la Carte : la prochaine destination d'abord, une île fermée en dernier ; la flèche et le fanion restent
+          // visibles. Entière ou absente : celle qui ne trouve pas de place libre près de son île ne se dessine pas à moitié.
+          const marques = p.map ? mapMarks(target) : null;
+          const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : [];
+          const carte = p.map ? { weights: list.map((l) => (l.id === mapArrowIsland ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)) } : null;
+          labelLayout = { key, ...placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 * dpr }, carte) };
         }
+        const { offsets, visibles } = labelLayout;
         list.forEach((l, i) => {
+          if (!visibles[i]) return;
           const a = anchor(l, cam);
-          const o = offsets?.[i];
-          drawIslandLabel(ctx, l.text, a.x + (o?.dx ?? 0), a.y + (o?.dy ?? 0), px, l.state);
+          drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state);
         });
       }
       if (mapArrowIsland) {

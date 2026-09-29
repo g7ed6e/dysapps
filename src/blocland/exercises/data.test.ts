@@ -1,9 +1,11 @@
 import { BIOMES, BLOCKS } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
+import { piegesDe } from './shuffle';
 import { CalculScreen } from './CalculScreen';
 import { DicteeItem } from './DicteeItem';
 import { fillTemplate } from './types';
+import { parseHour, parseNumber, placeAnswer, type Parsed } from '../../core/choices';
 import { COFFRE_HORS_LISTE, motDictable, motsOutilsDictables } from '../../programme/motsOutils';
 
 const EXERCISES = await loadAllExercises();
@@ -253,7 +255,7 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
       .map((e) => e.id)
       .sort(),
   ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `carrefour-panneaux-${s}`).sort());
-  expect(defs.length).toBe(35);
+  expect(defs.length).toBe(44);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);
@@ -325,9 +327,16 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       expect(String(it.explanation).length).toBeGreaterThan(5);
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
       for (const text of [it.question, it.prompt, it.spoken, it.hint, it.explanation, ...choices]) if (text !== undefined) expect(String(text), it.key).not.toContain("'");
-      // Pas encore de phrase à trou en LV2 (le mot lu pour le trou n'est pas décidé) ; ¿ et ¡ s'affichent, jamais lus.
-      expect(String(it.prompt), it.key).not.toContain('…');
+      // ¿ et ¡ s'affichent, jamais lus. Pas de phrase à trou lue en LV2 (le mot lu pour le trou n'est pas décidé) : un
+      // trou n'y sert qu'à la dictée à choix, un seul par item, et la voix dit le mot ou la phrase en entier.
       expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
+      const prompt = String(it.prompt);
+      if (prompt.includes('…')) {
+        expect(def.programme?.some((id) => id.endsWith('.ecrire.dictee-fiche')), `${def.id} : un trou, seulement en dictée`).toBe(true);
+        expect(prompt.split('…').length, it.key).toBe(2);
+        expect(it.question, it.key).toBeUndefined();
+        expect(String(it.spoken), it.key).toBe(prompt.replace('…', String(it.answer)).replace(/[¿¡]/g, ''));
+      }
       if (it.question !== undefined) {
         expect(String(it.question), it.key).toMatch(/\?$/);
         expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
@@ -335,4 +344,85 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       }
     }
   }
+});
+
+it('des choix qui sont tous des nombres de même unité sont rangés : sinon la réponse garde la place que lui donne le fichier', () => {
+  const desordre: string[] = [];
+  for (const def of EXERCISES)
+    for (const it of def.items) {
+      const choices = it.choices;
+      if (!Array.isArray(choices) || choices.length < 2) continue;
+      const lus = choices.map(parseNumber);
+      if (!lus.every((l): l is Parsed => l !== undefined) || new Set(lus.map((l) => l.unit)).size > 1) continue;
+      if (!lus.every((l, i) => i === 0 || l.value > lus[i - 1].value)) desordre.push(`${def.id} ${it.key}`);
+    }
+  expect(desordre).toEqual([]);
+});
+
+it('hors maths, placer les choix n’en invente aucun (pas de « 38 juin ») : seuls les calculs ont des pièges calculés', () => {
+  const inventes: string[] = [];
+  for (const def of EXERCISES) {
+    if (piegesDe(def) === 'calcules') continue;
+    for (const it of def.items) {
+      const choices = it.choices;
+      if (!Array.isArray(choices) || choices.length < 2) continue;
+      // Des entiers qui se suivent (« 2, 3, 4 syllabes ») : une fenêtre qu'on décale, voulue.
+      const n = choices.map(parseNumber);
+      if (n.every((l): l is Parsed => l !== undefined && l.decimals === 0) && n.every((l, i) => i === 0 || l.value === n[i - 1].value + 1)) continue;
+      for (let place = 0; place < choices.length; place++)
+        for (const tirage of [0, 0.5, 0.99]) {
+          const places = placeAnswer(choices, it.answer, place, () => tirage, 'du-fichier').map(String).sort();
+          if (places.join('|') !== choices.map(String).sort().join('|')) inventes.push(`${def.id} ${it.key}`);
+        }
+    }
+  }
+  expect([...new Set(inventes)]).toEqual([]);
+});
+
+it('des choix qui sont des heures s’écrivent « H h MM » et sont rangés dans l’ordre de la journée, en partie aussi', () => {
+  // « 5 h » à côté de « 5 h 30 » : une seule écriture, « 5 h 00 ». Une liste « 5 h, 17 h » reste une liste de nombres.
+  const heure = /^\d{1,2} h( \d{2})?$/;
+  const fautes: string[] = [];
+  const rng = () => 0.99;
+  for (const def of EXERCISES)
+    for (const it of def.items) {
+      const choices = it.choices;
+      if (!Array.isArray(choices) || choices.length < 2 || !choices.every((c) => heure.test(String(c)))) continue;
+      if (!choices.some((c) => / \d{2}$/.test(String(c)))) continue;
+      const minutes = choices.map(parseHour);
+      if (!minutes.every((m): m is number => m !== undefined)) fautes.push(`${def.id} ${it.key} : « H h MM »`);
+      else if (!minutes.every((m, i) => i === 0 || m > minutes[i - 1])) fautes.push(`${def.id} ${it.key} : pas rangés`);
+      else if (placeAnswer(choices, it.answer, 0, rng).join() !== choices.join()) fautes.push(`${def.id} ${it.key} : déplacés en partie`);
+    }
+  expect(fautes).toEqual([]);
+});
+
+it('hors maths, la bonne réponse d’une liste rangée (nombres, heures) change de rang d’un item à l’autre', () => {
+  // Ses pièges sont ceux du fichier : la réponse garde la place de son rang. Sur une série, aucun rang ne revient plus
+  // de ⌈items / choix⌉ + 1 fois (3 / 3 / 2 visé sur 8 items à trois choix). Les fenêtres d'entiers qui se suivent
+  // (« 2, 3, 4 syllabes ») se décalent en partie : hors du compte.
+  const trop: string[] = [];
+  for (const def of EXERCISES) {
+    if (piegesDe(def) !== 'du-fichier') continue;
+    const rangs = new Map<number, number[]>();
+    for (const it of def.items) {
+      const choices = it.choices;
+      if (!Array.isArray(choices) || choices.length < 2) continue;
+      const heures = choices.map(parseHour);
+      const n = choices.map(parseNumber);
+      const enHeures = heures.every((h): h is number => h !== undefined);
+      const enNombres = n.every((l): l is Parsed => l !== undefined && l.unit === n[0]!.unit);
+      if (!enHeures && !enNombres) continue;
+      if (!enHeures && n.every((l, i) => l!.decimals === 0 && (i === 0 || l!.value === n[i - 1]!.value + 1))) continue;
+      const rang = choices.findIndex((c) => String(c) === String(it.answer));
+      const compte = rangs.get(choices.length) ?? Array(choices.length).fill(0);
+      compte[rang]++;
+      rangs.set(choices.length, compte);
+    }
+    for (const [taille, compte] of rangs) {
+      const total = compte.reduce((a, b) => a + b, 0);
+      if (Math.max(...compte) > Math.ceil(total / taille) + 1) trop.push(`${def.id} : ${compte.join(' / ')}`);
+    }
+  }
+  expect(trop).toEqual([]);
 });

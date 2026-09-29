@@ -73,7 +73,7 @@ export function SettingsPage() {
             {(Object.keys(FONT_LABELS) as FontChoice[]).map((font) => (
               <label key={font} className={`option font-${font}${settings.font === font ? ' selected' : ''}`}>
                 <input type="radio" name="font" value={font} checked={settings.font === font} onChange={() => update({ font })} />
-                {FONT_LABELS[font]}
+                <span>{nomCoupable(FONT_LABELS[font])}</span>
               </label>
             ))}
           </div>
@@ -416,4 +416,12 @@ function Slider({ label, value, min, max, step, display, onChange }: SliderProps
       />
     </label>
   );
+}
+
+/**
+ * Le nom d'une police, avec l'endroit où il peut passer à la ligne sans trait d'union (DA-16) : en grand texte sur
+ * téléphone, « OpenDyslexic » et « Hyperlegible » sont plus larges que la case, et se coupaient au hasard.
+ */
+function nomCoupable(nom: string) {
+  return nom.split(/(?=Dyslexic|legible)/).map((part, i) => (i === 0 ? part : [<wbr key={i} />, part]));
 }

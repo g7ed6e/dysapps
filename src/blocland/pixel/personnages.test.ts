@@ -88,8 +88,8 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   // Le Comptable (Données) a les orbites sous le bord de son chapeau : d'en haut, en 2D comme en 3D, on ne les voit pas.
   const SOUS_LE_CHAPEAU = ['donnees'];
   const avecOrbites = BIOMES.filter((b) => sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux') && !SOUS_LE_CHAPEAU.includes(b.id)).map((b) => b.id);
-  it('les sentinelles sans orbites sont celles qui n’ont pas de visage (Locomotive, Spectre, Antenne)', () => {
-    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['gare', 'manoir', 'studio']);
+  it('les sentinelles sans orbites sont celles qui n’ont pas de visage (Locomotive, Spectre, Antenne, Soleil de cuivre)', () => {
+    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['gare', 'jardin', 'manoir', 'studio']);
   });
   it.each(avecOrbites)('sentinelle %s : ses orbites se voient, d’au moins 2 × 2 pixels', (id) => {
     const r = rasterDuModele(sentinellePeinte(id), { archipel: archipelDe(id), light: 1, allumage: 0 });

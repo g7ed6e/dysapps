@@ -114,7 +114,7 @@ function Shell() {
       <AppUpdateBanner />
       <BandeauBatisseur />
       <Celebrations />
-      <main id="contenu" className="content" ref={main}>
+      <main id="contenu" className="content" ref={main} tabIndex={-1}>
         {/* Une page qui échoue n'emporte pas la barre du haut ; changer de page efface l'erreur
             (sans démonter la page : le monde en 3D reste le même d'une île à l'autre). */}
         <ErrorBoundary resetKey={pathname}>

@@ -20,6 +20,7 @@ describe('L’habillage du monde', () => {
       dessin2D: 'pixels',
       figures: 'cubes',
       defi: 'arene',
+      reperes: 'libres',
     });
   });
 
@@ -35,6 +36,7 @@ describe('L’habillage du monde', () => {
       dessin2D: 'peint',
       figures: 'modeles',
       defi: 'sentinelle',
+      reperes: 'cadres',
     });
   });
 });

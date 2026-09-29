@@ -17,7 +17,7 @@ export interface IleDuModele {
   id: BiomeId;
   nom: string;
   ouverte: boolean;
-  /** Fermée, À explorer, En chantier, Restaurée. */
+  /** Fermée, À explorer, En chantier, Restaurée (Bâtie dans Blocland) : le mot vient de textes.etatsDIle. */
   etat: IslandStateDef;
 }
 

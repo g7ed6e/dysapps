@@ -3,8 +3,19 @@
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
 import type { BiomeId } from '../blocland/biomes';
 import type { ArchipelagoId } from '../blocland/world/archipelago';
+import type { IslandStateId } from '../blocland/world/islandState';
 
 export type { UniversChoice as UniversId } from '../core/univers';
+
+/** Ce que dit la créature d'une île. */
+export interface TextesCreature {
+  /** Quand on arrive dans son île. */
+  greeting: string;
+  /** Petites phrases quand on la touche dans le village. */
+  lines: string[];
+  /** Quand sa maison (premier plan de l'île) est terminée. */
+  home: string;
+}
 
 /** Ce que dit un Gardien pendant son défi. */
 export interface TextesGardien {
@@ -91,6 +102,10 @@ export interface TextesMonument {
 
 export interface TextesUnivers {
   gardiens: Record<BiomeId, TextesGardien>;
+  /** Ce que dit la créature de chaque île. */
+  creatures: Record<BiomeId, TextesCreature>;
+  /** Le mot de chaque état d'île (« En chantier »). */
+  etatsDIle: Record<IslandStateId, string>;
   /** L'espèce de la créature de chaque île (« golem de mousse »), après son nom. */
   especes: Record<BiomeId, string>;
   libelles: LibellesGardiens;

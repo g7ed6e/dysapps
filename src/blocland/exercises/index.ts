@@ -81,11 +81,11 @@ const ORDER: (string | ExerciseDef[])[] = [
   'carriere-coffre-2', 'carriere-familles-1', 'carriere-familles-2', 'ferme-enclos-1', 'ferme-enclos-2',
   'ferme-recolte-1', 'ferme-recolte-2', MATHS_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
   'carrefour-aiguillage-2', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',
-  'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'falaise-corde-1', 'falaise-corde-2',
-  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'cabinet-racines-1',
+  'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'marais-gue-1', 'marais-gue-2', 'marais-gue-3', 'falaise-corde-1', 'falaise-corde-2',
+  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'falaise-echo-1', 'falaise-echo-2', 'falaise-echo-3', 'cabinet-racines-1',
   'cabinet-racines-2', 'cabinet-sens-1', 'cabinet-sens-2', 'cabinet-nuances-1', 'cabinet-nuances-2',
   'textes-inferences-1', 'textes-inferences-2',
-  'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'baie-hello-1', 'baie-hello-2',
+  'textes-figures-1', 'textes-figures-2', 'textes-rouages-1', 'textes-rouages-2', 'textes-voix-1', 'textes-voix-2', 'textes-voix-3', 'baie-hello-1', 'baie-hello-2',
   'baie-numbers-1', 'baie-numbers-2', 'baie-ears-1', 'baie-ears-2', 'horloge-to-be-1', 'horloge-to-be-2',
   'horloge-have-got-1', 'horloge-have-got-2', 'horloge-present-simple-1', 'horloge-present-simple-2',
   'comptoir-shopping-1', 'comptoir-shopping-2', 'comptoir-routine-1', 'comptoir-routine-2', 'comptoir-listening-1',
@@ -97,8 +97,15 @@ const ORDER: (string | ExerciseDef[])[] = [
   'studio-faux-amis-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
   'chateau-passif-1', 'chateau-passif-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
-  'relais-de-hallo-1', 'relais-de-zahlen-1', 'relais-de-familie-1', 'relais-de-der-die-das-1',
-  'relais-es-hola-1', 'relais-es-numeros-1', 'relais-es-familia-1', 'relais-es-el-la-1',
+  'relais-de-hallo-1', 'relais-de-hallo-2', 'relais-de-zahlen-1', 'relais-de-zahlen-2', 'relais-de-familie-1',
+  'relais-de-familie-2', 'relais-de-der-die-das-1', 'relais-de-der-die-das-2', 'relais-es-hola-1', 'relais-es-hola-2',
+  'relais-es-numeros-1', 'relais-es-numeros-2', 'relais-es-familia-1', 'relais-es-familia-2', 'relais-es-el-la-1',
+  'relais-es-el-la-2',
+  // LV2 (Jardin des heures, 4e) : de même, l’allemand puis l’espagnol.
+  'jardin-de-uhrzeit-1', 'jardin-de-uhrzeit-2', 'jardin-de-mein-tag-1', 'jardin-de-mein-tag-2', 'jardin-de-stundenplan-1',
+  'jardin-de-stundenplan-2', 'jardin-de-ich-kann-1', 'jardin-de-ich-kann-2', 'jardin-es-hora-1', 'jardin-es-hora-2',
+  'jardin-es-mi-dia-1', 'jardin-es-mi-dia-2', 'jardin-es-horario-1', 'jardin-es-horario-2', 'jardin-es-ser-estar-1',
+  'jardin-es-ser-estar-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });

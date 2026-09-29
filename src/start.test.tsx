@@ -8,7 +8,7 @@ import { TitleScreen } from './components/TitleScreen';
 import { rememberPlace } from './core/lastPlace';
 
 // Un appareil qui sait dessiner le monde, et un monde factice (le vrai est testé à part).
-vi.mock('./blocland/useImmersive', () => ({ useImmersive: () => true, useWorldView: () => '3d' }));
+vi.mock('./blocland/useImmersive', () => ({ useImmersive: () => true }));
 vi.mock('./blocland/WorldPage', () => ({ WorldPage: () => <p>Le village</p> }));
 
 function Where() {

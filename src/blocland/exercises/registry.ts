@@ -112,6 +112,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   rives: { component: CalculScreen, batch: 1 },
   brume: { component: CalculScreen, batch: 1 },
   roseaux: { component: CalculScreen, batch: 1 },
+  gue: { component: CalculScreen, batch: 1 },
   etincelles: { component: CalculScreen, batch: 1 },
   enclume: { component: CalculScreen, batch: 1 },
   trempe: { component: CalculScreen, batch: 1 },
@@ -121,6 +122,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   corde: { component: CalculScreen, batch: 1 },
   paroi: { component: CalculScreen, batch: 1 },
   sommet: { component: CalculScreen, batch: 1 },
+  echo: { component: CalculScreen, batch: 1 },
   racines: { component: CalculScreen, batch: 1 },
   sens: { component: CalculScreen, batch: 1 },
   nuances: { component: CalculScreen, batch: 1 },
@@ -135,6 +137,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   inferences: { component: CalculScreen, batch: 1 },
   figures: { component: CalculScreen, batch: 1 },
   rouages: { component: CalculScreen, batch: 1 },
+  voix: { component: CalculScreen, batch: 1 },
   // Anglais (lang: 'en') : les phrases à trou et les nombres sur l'écran à règle, l'écoute sur la dictée.
   hello: { component: CalculScreen, batch: 1 },
   numbers: { component: CalculScreen, batch: 1 },
@@ -170,4 +173,13 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'es-numeros': { component: CalculScreen, batch: 1 },
   'es-familia': { component: CalculScreen, batch: 1 },
   'es-el-la': { component: CalculScreen, batch: 1 },
+  // LV2 du Jardin des heures (4e) : l'heure entendue puis une scène, la journée, un document à lire, la grammaire.
+  'de-uhrzeit': { component: CalculScreen, batch: 1 },
+  'de-mein-tag': { component: CalculScreen, batch: 1 },
+  'de-stundenplan': { component: CalculScreen, batch: 1 },
+  'de-ich-kann': { component: CalculScreen, batch: 1 },
+  'es-hora': { component: CalculScreen, batch: 1 },
+  'es-mi-dia': { component: CalculScreen, batch: 1 },
+  'es-horario': { component: CalculScreen, batch: 1 },
+  'es-ser-estar': { component: CalculScreen, batch: 1 },
 };

@@ -1,8 +1,9 @@
-/* Documentation Archipéo : le thème VitePress aux couleurs de l'interface d'Archipéo (src/styles/global.css) :
-   bleu nuit, bleu pétrole, vert d'eau, sable et crème. Le thème clair suit le thème Crème de l'application,
-   le thème sombre suit son thème Nuit. Titres courts et logotype en Montserrat grasse (embarquée, voir index.ts),
-   tout texte à lire en Luciole, jamais sous 18 px. Une couleur ne porte jamais seule un sens.
-   Aucune ressource externe. */
+/* Documentation DysApps : le thème VitePress à l'habillage de Blocland, l'univers par défaut de l'application
+   (src/styles/blocland.css, « L'habillage de Blocland » dans docs/conception/style.md) : des blocs vus de face,
+   en aplats chauds (herbe, bois, terre, or), coins de 4 px, et une face de côté sous ce qui se touche.
+   Le thème clair suit le thème Crème de Blocland, le thème sombre son thème Nuit. Titres courts et logotype en
+   Archivo Black (embarquée, voir index.ts), tout texte à lire en Luciole, jamais sous 18 px. Une couleur ne porte
+   jamais seule un sens. Aucune ressource externe. */
 
 @font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
@@ -10,93 +11,95 @@
 @font-face { font-family: 'Luciole'; src: url('/fonts/luciole/Luciole-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
 
 :root {
-  /* La palette de la planche (mêmes valeurs que l'application). */
-  --arch-nuit: #13283d;
-  --arch-nuit-profond: #0a1824;
-  --arch-petrole: #0e5a6e;
-  --arch-petrole-fonce: #0e4a5b;
-  --arch-eau: #237a70;
-  --arch-eau-clair: #4fb3a4;
-  --arch-sable: #d9b26a;
-  --arch-creme: #f3eee3;
-  --arch-display-font: 'Montserrat', 'Arial Black', Arial, sans-serif;
+  /* La palette de Blocland (mêmes valeurs que l'application). */
+  --bl-herbe: #6cb33f;
+  --bl-terre: #5a3e26;
+  --bl-terre-face: #3e2a18;
+  --bl-or: #e0b73f;
+  --bl-face: #9c7a48;
+  --bl-display-font: 'Archivo Black', 'Arial Black', Arial, sans-serif;
 
   --vp-font-family-base: 'Luciole', 'Atkinson Hyperlegible', Arial, sans-serif;
 
-  /* Thème clair = Crème : fond crème froid, pages sur le panneau clair, texte bleu nuit, liens bleu pétrole. */
-  --vp-c-brand-1: #0e5a6e;
-  --vp-c-brand-2: #0e4a5b;
-  --vp-c-brand-3: #0e5a6e;
-  --vp-c-brand-soft: rgba(35, 122, 112, 0.14);
-  --vp-c-bg: #fffcf5;
-  --vp-c-bg-alt: #f3eee3;
-  --vp-c-bg-elv: #fffcf5;
-  --vp-c-bg-soft: #efe8da;
-  --vp-c-text-1: #13283d;
-  --vp-c-text-2: #3f5566;
-  --vp-c-text-3: #566e7d;
-  --vp-c-divider: #ddd4c2;
-  --vp-c-gutter: #ddd4c2;
-  --vp-c-border: #566e7d;
-  --vp-c-default-soft: #efe8da;
-  --vp-c-tip-1: #1d6b45;
-  --vp-c-tip-2: #1d6b45;
-  --vp-c-tip-3: #1d6b45;
-  --vp-c-tip-soft: #dcefe3;
+  /* Thème clair = Crème : fond crème, pages sur le panneau clair, texte terre sombre, liens herbe. */
+  /* Un peu plus foncé que l'herbe de l'application : le code en ligne (lien sur fond bois) garde 5:1. */
+  --vp-c-brand-1: #356b20;
+  --vp-c-brand-2: #27501a;
+  --vp-c-brand-3: #356b20;
+  --vp-c-brand-soft: rgba(59, 117, 36, 0.14);
+  --vp-c-bg: #fffbf2;
+  --vp-c-bg-alt: #f2ecdf;
+  --vp-c-bg-elv: #fffbf2;
+  --vp-c-bg-soft: #efe5d2;
+  --vp-c-text-1: #2b2118;
+  --vp-c-text-2: #5c4a38;
+  --vp-c-text-3: #6e5a45;
+  --vp-c-divider: #dccdb2;
+  --vp-c-gutter: #dccdb2;
+  --vp-c-border: #7a5a3c;
+  --vp-c-default-soft: #efe5d2;
+  --vp-c-tip-1: #2f6a1c;
+  --vp-c-tip-2: #2f6a1c;
+  --vp-c-tip-3: #2f6a1c;
+  --vp-c-tip-soft: #e1eed3;
   --vp-c-warning-1: #8a4a10;
   --vp-c-warning-2: #8a4a10;
   --vp-c-warning-3: #8a4a10;
   --vp-c-warning-soft: #f8e8d2;
-  --vp-custom-block-info-bg: #dcebea;
-  --vp-button-brand-bg: #0e5a6e;
-  --vp-button-brand-hover-bg: #0e4a5b;
-  --vp-button-brand-active-bg: #0e4a5b;
+  --vp-custom-block-info-bg: #efe3cc;
+  --vp-button-brand-bg: #3b7524;
+  --vp-button-brand-hover-bg: #27501a;
+  --vp-button-brand-active-bg: #27501a;
   --vp-button-brand-text: #ffffff;
   --vp-button-brand-hover-text: #ffffff;
   --vp-button-brand-active-text: #ffffff;
-  --vp-local-search-highlight-bg: #d9b26a;
-  --vp-local-search-highlight-text: #13283d;
-  --vp-sidebar-bg-color: #f3eee3;
-  --vp-nav-bg-color: #13283d;
+  --vp-local-search-highlight-bg: #e0b73f;
+  --vp-local-search-highlight-text: #2b2118;
+  --vp-sidebar-bg-color: #f2ecdf;
+  --vp-nav-bg-color: var(--bl-terre);
 }
 
-/* Thème sombre = Nuit : bleu de nuit, jamais un noir ; liens vert d'eau, action principale sable. */
+/* Thème sombre = Nuit : un brun de nuit, jamais un noir ; liens et action principale en herbe claire,
+   faces plus claires que le fond pour se voir (exception validée par le directeur artistique) ; la barre et sa
+   face reprennent celles de l'application (terre presque noire, face noire). */
 .dark {
-  --arch-sable: #e2b865;
-  --vp-c-brand-1: #4fb3a4;
-  --vp-c-brand-2: #6cc4b6;
-  --vp-c-brand-3: #e2b865;
-  --vp-c-brand-soft: rgba(79, 179, 164, 0.16);
-  --vp-c-bg: #0e1f2e;
-  --vp-c-bg-alt: #0a1824;
-  --vp-c-bg-elv: #16304a;
-  --vp-c-bg-soft: #16304a;
-  --vp-c-text-1: #f3eee3;
-  --vp-c-text-2: #b8c7d2;
-  --vp-c-text-3: #7f9bb0;
-  --vp-c-divider: #24425c;
-  --vp-c-gutter: #0a1824;
-  --vp-c-border: #7f9bb0;
-  --vp-c-default-soft: #16304a;
-  --vp-c-tip-1: #7fd6a8;
-  --vp-c-tip-2: #7fd6a8;
-  --vp-c-tip-3: #7fd6a8;
-  --vp-c-tip-soft: #163a2d;
+  --bl-face: #7a6450;
+  --bl-terre: #0e0b08;
+  --bl-terre-face: #000000;
+  --vp-c-brand-1: #8cc75c;
+  --vp-c-brand-2: #a3d47a;
+  --vp-c-brand-3: #8cc75c;
+  --vp-c-brand-soft: rgba(140, 199, 92, 0.16);
+  --vp-c-bg: #1c1813;
+  --vp-c-bg-alt: #15120e;
+  --vp-c-bg-elv: #2a231b;
+  --vp-c-bg-soft: #2a231b;
+  --vp-c-text-1: #f2ecdf;
+  --vp-c-text-2: #d2c3aa;
+  --vp-c-text-3: #b3a288;
+  --vp-c-divider: #3d3226;
+  --vp-c-gutter: #15120e;
+  --vp-c-border: #9c8262;
+  --vp-c-default-soft: #2a231b;
+  --vp-c-tip-1: #a3d47a;
+  --vp-c-tip-2: #a3d47a;
+  --vp-c-tip-3: #a3d47a;
+  --vp-c-tip-soft: #25331a;
   --vp-c-warning-1: #f2b27a;
   --vp-c-warning-2: #f2b27a;
   --vp-c-warning-3: #f2b27a;
   --vp-c-warning-soft: #3d2a18;
-  --vp-custom-block-info-bg: #1d4a5e;
-  --vp-button-brand-bg: #e2b865;
-  --vp-button-brand-hover-bg: #ecc983;
-  --vp-button-brand-active-bg: #e2b865;
-  --vp-button-brand-text: #13283d;
-  --vp-button-brand-hover-text: #13283d;
-  --vp-button-brand-active-text: #13283d;
-  --vp-local-search-highlight-bg: #e2b865;
-  --vp-local-search-highlight-text: #13283d;
-  --vp-sidebar-bg-color: #0a1824;
-  --vp-nav-bg-color: #13283d;
+  --vp-custom-block-info-bg: #3d3226;
+  --vp-button-brand-bg: #8cc75c;
+  --vp-button-brand-hover-bg: #a3d47a;
+  --vp-button-brand-active-bg: #8cc75c;
+  --vp-button-brand-text: #16230e;
+  --vp-button-brand-hover-text: #16230e;
+  --vp-button-brand-active-text: #16230e;
+  --vp-local-search-highlight-bg: #e0b73f;
+  --vp-local-search-highlight-text: #2b2118;
+  --vp-sidebar-bg-color: #15120e;
+  --vp-nav-bg-color: var(--bl-terre);
 }
 
 /* Lisibilité dys : 18 px minimum, interlignage généreux, même sur téléphone. */
@@ -116,71 +119,92 @@
   font-size: 16px;
 }
 
-/* Titres courts dans la police des titres : le titre de la page et ceux des grandes parties.
-   Les titres plus fins (h3 et suivants) restent dans la police de lecture, en gras. */
+/* Titres courts dans la police des titres : le titre de la page et ceux des grandes parties, en Archivo Black
+   (un seul poids). Les titres plus fins (h3 et suivants) restent dans la police de lecture, en gras. */
 .vp-doc h1,
 .vp-doc h2 {
-  font-family: var(--arch-display-font);
-  font-weight: 700;
+  font-family: var(--bl-display-font);
+  font-weight: 400;
   letter-spacing: 0;
 }
 .vp-doc h2 {
   border-top-color: var(--vp-c-divider);
 }
 
-/* Barre du haut : un aplat bleu nuit, comme dans l'application, à toutes les largeurs et dans les deux thèmes. */
-.VPNavBar,
+/* Barre du haut : la terre, une bande d'herbe de 4 px au bord supérieur, sa face de côté en bas, comme dans
+   l'application, à toutes les largeurs (la nuit, une terre sombre, l'herbe reste). */
+.VPNavBar {
+  background-color: var(--vp-nav-bg-color) !important;
+  background-image: linear-gradient(var(--bl-herbe), var(--bl-herbe));
+  background-size: 100% 4px;
+  background-repeat: no-repeat;
+  --vp-c-text-1: #f7f0e2;
+  --vp-c-text-2: #e3d6c0;
+  --vp-c-brand-1: #e0b73f;
+  --vp-c-bg-alt: #6e4f33;
+  --vp-c-divider: #7a5a3c;
+  --vp-c-gutter: #7a5a3c;
+  --vp-c-default-soft: #6e4f33;
+  --vp-c-border: #c9b08a;
+  /* Le menu « … » de la barre (tablette) : en terre, pour que son texte crème se lise. */
+  --vp-c-bg-elv: #6e4f33;
+  --vp-input-switch-bg-color: #6e4f33;
+  border-bottom: 4px solid var(--bl-terre-face) !important;
+}
+.dark .VPNavBar {
+  --vp-c-bg-alt: #2a231b;
+  --vp-c-default-soft: #2a231b;
+  --vp-c-divider: #3d3226;
+  --vp-c-gutter: #3d3226;
+  --vp-c-border: #9c8262;
+  --vp-c-bg-elv: #2a231b;
+  --vp-input-switch-bg-color: #2a231b;
+}
+/* Le fond des blocs de la barre (titre, contenu) laisse voir la bande d'herbe au-dessus d'eux. */
 .VPNavBar .title,
 .VPNavBar .content-body,
 .VPNavBar.has-sidebar .title,
 .VPNavBar:not(.has-sidebar):not(.home.top) .content-body {
-  background-color: var(--vp-nav-bg-color) !important;
+  background-color: transparent !important;
 }
-.VPNavBar {
-  --vp-c-text-1: #f3eee3;
-  --vp-c-text-2: #d5dde3;
-  --vp-c-brand-1: #e2b865;
-  --vp-c-bg-alt: #1d3a55;
-  --vp-c-divider: #2f4d66;
-  --vp-c-gutter: #2f4d66;
-  --vp-c-default-soft: #1d3a55;
-  --vp-c-border: #7f9bb0;
-  --vp-c-bg-elv: #16304a;
-  --vp-input-switch-bg-color: #1d3a55;
-  border-bottom-color: #566e7d !important;
-}
-.VPNavBar .divider-line {
-  background-color: #566e7d !important;
+/* La face de côté de 4 px fait déjà le trait sous la barre. */
+.VPNavBar .divider {
+  display: none;
 }
 .VPNavBarTitle.has-sidebar .title,
 .VPNavBar .title {
   border-bottom-color: transparent !important;
 }
-/* Le nom du site : « Archipéo » dans la police des titres, « Documentation » dans la police de lecture. */
+/* Le nom du site : « DysApps » dans la police des titres, « Documentation » dans la police de lecture. */
 .VPNavBar .title {
-  font-family: var(--arch-display-font);
-  font-weight: 700;
+  font-family: var(--bl-display-font);
+  font-weight: 400;
   font-size: 18px;
 }
 .VPNavBar .title .logo {
-  border-radius: 7px;
+  border-radius: 4px;
 }
-.VPNavBar .title .arch-sous-titre {
+.VPNavBar .title .bl-sous-titre {
   margin-left: 0.4em;
   font-family: var(--vp-font-family-base);
   font-weight: 400;
-  color: #d5dde3;
+  color: #e3d6c0;
 }
 /* Les menus déroulants de la barre gardent les couleurs de la page. */
 .VPNavBar .VPFlyout .menu,
 .VPNavBar .VPMenu {
   --vp-c-text-1: inherit;
 }
+/* Le bouton de recherche : un bloc de bois, coins de 4 px. */
+.VPNavBar .DocSearch-Button,
+.VPNavBarSearch .DocSearch-Button {
+  border-radius: 4px;
+}
 
-/* Sommaire : la page où l'on est, sur un liseré de sable (couleur doublée du texte en gras). */
+/* Sommaire : la page où l'on est, sur un liseré d'or (couleur doublée du texte en gras). */
 .VPSidebarItem.is-active > .item > .indicator {
-  background-color: var(--arch-sable);
-  width: 3px;
+  background-color: var(--bl-or);
+  width: 4px;
 }
 .VPSidebarItem.is-active > .item .text {
   font-weight: 700;
@@ -189,14 +213,21 @@
   color: var(--vp-c-text-1);
 }
 
-/* Accueil : paragraphe d'introduction et cartes « Par où commencer » (panneaux à angles de 12 px, liseré de sable). */
+/* Accueil : le logo de Blocland, le paragraphe d'introduction et les cartes « Par où commencer ». Les cartes sont
+   des blocs : coins de 4 px, une face de côté de 4 px, qui s'enfonce de 3 px quand on appuie, sans transition. */
+.vp-doc .bl-logo {
+  display: block;
+  width: 128px;
+  height: 128px;
+  margin: 0 0 1rem;
+}
 .vp-doc .lead {
   font-size: 1.15em;
 }
 .vp-doc .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem;
+  gap: 1.2rem 1rem;
   margin: 1.2rem 0;
   padding: 0;
   list-style: none;
@@ -211,13 +242,19 @@
   color: var(--vp-c-text-1);
   text-decoration: none;
   background: var(--vp-c-bg-alt);
-  border: 2px solid var(--vp-c-divider);
-  border-top: 4px solid var(--arch-sable);
-  border-radius: 12px;
+  border: 2px solid var(--vp-c-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 0 var(--bl-face);
+}
+.dark .vp-doc .cards a {
+  background: var(--vp-c-bg-elv);
 }
 .vp-doc .cards a:hover {
   border-color: var(--vp-c-brand-1);
-  border-top-color: var(--arch-sable);
+}
+.vp-doc .cards a:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--bl-face);
 }
 .vp-doc .cards a strong {
   display: block;
@@ -226,9 +263,17 @@
   color: var(--vp-c-brand-1);
 }
 
-/* Encadrés : angles de 12 px, comme les panneaux de l'application. */
-.vp-doc .custom-block {
-  border-radius: 12px;
+/* Boutons, encadrés, blocs de code et champs : coins de 4 px, comme les blocs de l'application. */
+.vp-doc .custom-block,
+.vp-doc div[class*='language-'] {
+  border-radius: 4px;
+}
+.VPButton,
+.VPSwitch,
+.VPSwitch .check,
+.VPLocalSearchBox .shell,
+.VPLocalSearchBox .search-bar {
+  border-radius: 4px !important;
 }
 
 /* Les captures d'écran du jeu (docs/_captures/) : un cadre, pour les détacher de la page ; celles du téléphone,
@@ -237,7 +282,7 @@
   display: block;
   margin: 1rem auto;
   border: 2px solid var(--vp-c-divider);
-  border-radius: 12px;
+  border-radius: 4px;
 }
 .vp-doc img[src*="/captures/telephone-"] {
   max-width: min(100%, 300px);

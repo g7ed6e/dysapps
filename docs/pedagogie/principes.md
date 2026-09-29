@@ -14,10 +14,10 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 
 ## Une chose à la fois
 
-- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne cache ni la question, ni la réponse touchée, ni la bonne réponse.
+- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne cache ni la question, ni la réponse touchée, ni la bonne réponse. Aux grandes tailles de texte, quand ce bandeau ne laisserait plus la place à la question, il suit la question dans la page, qui défile d’un seul tenant ; seul le bouton « Suivante » reste en bas de l’écran.
 - **Une consigne unique** par exercice, la même pour tous les items, **toujours écrite** à l’écran en plus d’être lue : en classe sans casque, ou la voix coupée, l’élève sait quoi faire.
 - **Réponses en ordre stable** : en maths, rangées dans l’ordre croissant ; en français, mélangées à l’affichage mais jamais déplacées après un clic.
-- **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance.
+- **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance. Ailleurs, des nombres ou des heures à choisir (un nombre entendu en anglais ou en LV2, une heure) restent rangés avec les pièges écrits pour eux (13 contre 30, qui se ressemblent à l’oreille) : la réponse a la place de son rang, et on n’invente jamais un nombre ni une date.
 - **Cibles tactiles larges** (au moins 48 px), un geste par action ; l’appui long n’est jamais la seule façon de faire.
 - **Au clavier aussi** : touches 1 à 9 pour répondre, Entrée pour continuer (utile avec une dyspraxie associée).
 - **Des résultats en étoiles et en mots** (« 7 sur 8 du premier coup »), jamais en pourcentage ; **des réglages en mots** (« Plus large »), jamais en em.
@@ -68,7 +68,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 ## La LV2 : les mêmes deux voix
 
 - **Allemand ou espagnol, comme l’anglais** : consigne, joker, indice et correction en français avec la voix française ; les mots et les phrases de la LV2 lus avec une **voix allemande d’Allemagne** ou **espagnole d’Espagne** (une autre voix de la langue si l’appareil n’en a pas, jamais la voix française). Si l’appareil n’a aucune voix de la langue, les Réglages le disent, et le message se lit à voix haute.
-- **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais.
+- **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais : à la dictée à choix, la lecture automatique dit le mot dès l’ouverture de l’écran.
 - **Un signe qui change le sens** (schon/schön, tu/tú, si/sí) se travaille avec le son et dans une phrase, jamais sur la forme seule ; ¿ et ¡ s’affichent mais ne se lisent pas.
 
 ## Ce que travaille chaque île
@@ -76,9 +76,9 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 | Classe | Français | Maths | Anglais |
 | --- | --- | --- | --- |
 | 6e | Conscience phonologique (Forêt des sons), confusions de lettres (Mine des lettres), orthographe lexicale (Carrière des mots), orthographe grammaticale (Ferme des accords), fluence (Tour du lecteur) | Calcul mental et problèmes situés (Plaine des nombres), fractions (Rivière des fractions), décimaux (Volcan des décimaux) | Se présenter, nombres, heure, écoute (Baie des mots), to be, have got, présent simple (Horloge des verbes) |
-| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison (Marais des temps) | Nombres relatifs et fractions (Glacier des relatifs), proportionnalité, échelles et ratio (Marché des proportions) | Courses, journée, écoute de phrases, panneaux, menus et horaires (Comptoir), -ing, prétérit, comparatifs (Manoir du passé) |
-| 4e | Accords (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | Répondre à une question entendue, some / any / much / many, prétérit irrégulier (Théâtre des voix), futur, modaux, present perfect (Gare du futur) |
-| 3e | Lecture fine et grammaire (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), diagrammes, fréquences, statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | Comprendre un texte, connecteurs, faux amis (Studio des ondes), for / since, if, passif (Château des hypothèses) |
+| 5e | Homophones grammaticaux (Carrefour des homophones), conjugaison et valeurs des temps (Marais des temps) | Nombres relatifs et fractions (Glacier des relatifs), proportionnalité, échelles et ratio (Marché des proportions) | Courses, journée, écoute de phrases, panneaux, menus et horaires (Comptoir), -ing, prétérit, comparatifs (Manoir du passé) |
+| 4e | Accords, verbes pronominaux et apposition (Falaise des accords), vocabulaire (Cabinet des mots) | Puissances et racines (Forge des puissances), calcul littéral et équations (Atelier du calcul littéral) | Répondre à une question entendue, some / any / much / many, prétérit irrégulier (Théâtre des voix), futur, modaux, present perfect (Gare du futur) |
+| 3e | Lecture fine, grammaire, énonciation, discours rapporté, passif et subordonnées (Observatoire des textes) | Pythagore, Thalès, trigonométrie (Belvédère de Thalès), diagrammes, fréquences, statistiques et probabilités (Observatoire des données), fonctions (Phare des fonctions) | Comprendre un texte, connecteurs, faux amis (Studio des ondes), for / since, if, passif (Château des hypothèses) |
 
 Le détail (créature, Gardien, missions, consignes, items, aides, récompenses) est dans [L’archipel](archipel.md) et sur la page de chaque île. Les deux missions d’anglais du portail (Vocabulaire, Verbes irréguliers) sont décrites dans [Anglais du portail](anglais-portail.md) ; les îles d’anglais, deux par archipel, sont décrites dans [L’archipel](archipel.md) et dans le [cadrage du contenu](../conception/cadrage-contenu.md).
 

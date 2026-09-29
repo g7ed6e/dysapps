@@ -2,10 +2,10 @@
 // la grille (la place des choses en cases) ne dépend pas du dessin ; le contrat commun des vues non plus. Les
 // dépendances à contresens d'aujourd'hui sont listées avec leur motif et l'étape qui les retire : une nouvelle fait
 // échouer le test, et une exception retirée du code doit l'être de la liste.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
-type Couche = 'regle' | 'grille' | 'commun' | 'dessin' | 'neutre';
+type Couche = 'regle' | 'grille' | 'commun' | 'univers' | 'dessin' | 'neutre';
 
 const SRC = join(__dirname, '..', '..');
 const BLOCLAND = join(SRC, 'blocland');
@@ -64,6 +64,16 @@ const GRILLE = [
   'world/personnages/gardiens',
 ];
 
+/**
+ * Ce qui change d'un univers à l'autre (J7, docs/conception/univers.md §5) : ses textes, son habillage, sa palette, son
+ * modelé dessiné. Le jeu, la grille et le contrat commun ne l'importent jamais : un univers habille le jeu sans le changer.
+ */
+function estUnivers(file: string): boolean {
+  const n = nom(file);
+  if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/univers';
+  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/habillage/') || n === 'world/palette' || n === 'world/modeleDessine' || n.startsWith('world/modeleDessine/');
+}
+
 /** Le contrat commun des vues et sa simulation. */
 const COMMUN = ['world/view', 'world/scene'];
 
@@ -71,7 +81,10 @@ const PERMIS: Record<Couche, Couche[]> = {
   regle: ['regle', 'neutre'],
   grille: ['regle', 'grille', 'neutre'],
   commun: ['regle', 'grille', 'commun', 'neutre'],
-  dessin: ['regle', 'grille', 'commun', 'dessin', 'neutre'],
+  // Un univers habille le dessin et peut donc le lire (sa palette lit l'heure, son habillage le rendu choisi). Seuls les
+  // règles, la grille et le contrat commun sont parcourus : ce qui compte ici, c'est qu'aucun d'eux n'importe un univers.
+  univers: ['regle', 'grille', 'commun', 'univers', 'dessin', 'neutre'],
+  dessin: ['regle', 'grille', 'commun', 'univers', 'dessin', 'neutre'],
   neutre: ['neutre'],
 };
 
@@ -94,6 +107,7 @@ function nom(file: string): string {
 
 function couche(file: string): Couche {
   if (file.endsWith('.json')) return 'neutre';
+  if (estUnivers(file)) return 'univers';
   const n = nom(file);
   if (!file.startsWith(BLOCLAND)) return n.startsWith('components/') ? 'dessin' : 'neutre';
   if (REGLES.includes(n)) return 'regle';
@@ -116,6 +130,40 @@ function resoudre(from: string, spec: string): string | null {
 function fichier(n: string): string {
   const f = [`${n}.ts`, `${n}.tsx`, `${n}/index.ts`].map((x) => join(BLOCLAND, x)).find((x) => existsSync(x));
   return f ?? join(BLOCLAND, `${n}.tsx`);
+}
+
+/**
+ * Les couches pures du rendu : calculées sans Three.js, sans React ni une vue (three/, pixel/, les composants), testées
+ * sous jsdom. Elles ne lisent que le monde (world/), aucun paquet.
+ */
+const PURES = [
+  // L'architecture modulaire d'Archipéo (lot 7) : voisinage, choix des pièces, pièces, kits.
+  'world/architecture',
+];
+
+/** Les fichiers (hors tests) d'un dossier, sous-dossiers compris. */
+function fichiersDe(dossier: string): string[] {
+  return readdirSync(dossier).flatMap((n) => {
+    const f = join(dossier, n);
+    if (statSync(f).isDirectory()) return fichiersDe(f);
+    return /\.tsx?$/.test(n) && !/\.test\.tsx?$/.test(n) ? [f] : [];
+  });
+}
+
+/** Ce qu'importe une couche pure hors du monde (world/, en .ts) : un paquet, une vue, un composant. */
+function impuretes(): string[] {
+  const out = new Set<string>();
+  const monde = join(BLOCLAND, 'world');
+  for (const d of PURES)
+    for (const f of fichiersDe(join(BLOCLAND, d))) {
+      if (f.endsWith('.tsx')) out.add(`${nom(f)} (un composant)`);
+      for (const m of readFileSync(f, 'utf8').matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)) {
+        const cible = resoudre(f, m[1]);
+        if (!cible) out.add(`${nom(f)} → ${m[1]}`);
+        else if (!cible.startsWith(monde + '/') || cible.endsWith('.tsx')) out.add(`${nom(f)} → ${nom(cible)}`);
+      }
+    }
+  return [...out].sort();
 }
 
 /** Les dépendances à contresens des règles, de la grille et du contrat commun, « a → b ». */
@@ -145,7 +193,19 @@ describe('Les couches du jeu', () => {
     expect(Object.keys(EXCEPTIONS).filter((d) => !trouvees.includes(d))).toEqual([]);
   });
 
+  it('les couches pures du rendu (l’architecture modulaire) ne lisent que le monde : ni Three.js, ni React, ni une vue', () => {
+    expect(PURES.every((d) => existsSync(join(BLOCLAND, d)) && fichiersDe(join(BLOCLAND, d)).length > 0)).toBe(true);
+    expect(impuretes()).toEqual([]);
+  });
+
   it('chaque exception dit son motif', () => {
     expect(Object.entries(EXCEPTIONS).filter(([, motif]) => !motif)).toEqual([]);
+  });
+
+  it('les textes, l’habillage, la palette et le modelé de chaque univers sont dans la couche des univers', () => {
+    const univers = ['univers/index.ts', 'univers/blocland/index.ts', 'univers/communs.ts', 'core/univers.ts'].map((f) => join(SRC, f));
+    const habillages = ['habillage.ts', 'world/habillage/index.ts', 'world/habillage/blocland.ts', 'world/habillage/archipeo.ts', 'world/palette.ts', 'world/modeleDessine/5e.ts'].map((f) => join(BLOCLAND, f));
+    expect([...univers, ...habillages].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
+    expect(PERMIS.regle.includes('univers') || PERMIS.grille.includes('univers') || PERMIS.commun.includes('univers')).toBe(false);
   });
 });

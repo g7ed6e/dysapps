@@ -29,7 +29,7 @@ L’accomplissement : on voit loin. En arrivant, l’élève voit au centre de l
 ## 3. Le relief (partie 2, après U2)
 
 - **L’île du Phare** : aucun gradin possible (son anneau ne fait que 3 cases). Ses gradins sont le socle.
-- **L’Observatoire des textes** (juste derrière) reçoit trois gradins réguliers sur l’anneau du fond : 2 blocs chacun, en retrait de 1,5 case, neige sur celui du haut. Ils sont derrière son cœur et ne cachent jamais sa borne ni son nom.
+- **L’Observatoire des textes** (juste derrière) reçoit trois gradins réguliers sur l’anneau du fond : 2 blocs chacun, en retrait de 1,5 case, neige sur celui du haut. Ils sont derrière son cœur et ne cachent jamais ses quatre bornes, leurs étiquettes ni son nom. Aucune borne n’est au pied d’un gradin.
 - **Le Belvédère** perd ses deux pics, jumeaux de ceux du Glacier et de la Falaise, pour un dôme bas en gradins de 6 blocs.
 - **Les autres îles** restent basses et arrondies.
 - **En gris**, la silhouette tient à une pyramide régulière coiffée d’une verticale fine, une bande blanche continue au fond et un bas clair.
