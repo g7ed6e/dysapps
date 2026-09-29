@@ -24,8 +24,6 @@ import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
-import { WorldCanvas2D } from './pixel';
-import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
@@ -98,8 +96,6 @@ export function WorldPage() {
   const { settings, speak } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
-  // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
-  const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'carte';
@@ -601,7 +597,7 @@ export function WorldPage() {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
     openIsland(id);
   };
-  // Ce que l'élève fait dans le monde, en 3D comme en 2D : la vue renvoie une intention, la page décide.
+  // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide.
   const onIntent = (i: Intention) => {
     switch (i.genre) {
       case 'ile':
@@ -653,7 +649,7 @@ export function WorldPage() {
     >
       <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
-          <View
+          <WorldCanvas
             archipelago={a}
             cubes={cubes}
             creatures={creatures}
@@ -676,7 +672,7 @@ export function WorldPage() {
             onIntent={onIntent}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
