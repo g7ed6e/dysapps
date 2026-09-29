@@ -27,6 +27,7 @@ import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
+import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
@@ -253,6 +254,7 @@ export function WorldPage() {
   );
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
+  const stageRef = useRef<HTMLDivElement>(null);
   // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
   const revoirAide = () => {
     setTutoDone(false);
@@ -491,6 +493,9 @@ export function WorldPage() {
   // un instant, et l'élève reprend la main. Un toucher saute le moment : la sentinelle est allumée tout de suite.
   const [moment, setMoment] = useState<{ id: BiomeId; phase: 'camera' | 'fondu'; seq: number } | null>(null);
   const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
+  // La bulle du bas défile (grand texte, téléphone) : dit s'il reste du texte sous ses boutons (DA-25).
+  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(whaleWord?.id ?? motRallume);
+  usePlaceDesBulles(stageRef, !!voyage);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -643,8 +648,10 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
-      <div className="world-stage" onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
+    <div
+      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume ? ' bulle-ouverte' : ''}`}
+    >
+      <div className="world-stage" ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
             archipelago={a}
@@ -706,7 +713,8 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {mapOpen && (
+          {/* Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25). */}
+          {mapOpen && !whaleWord && !motRallume && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               {mapTarget && remaining.length ? (
                 <>
@@ -791,7 +799,7 @@ export function WorldPage() {
           )}
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
-        <div className="world-overlay-bottom">
+        <div className="world-overlay-bottom" ref={bullesRef}>
           {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
           {moment && !motRallume && (
             <button type="button" className="button rallumage-passer" onClick={passerLesRallumages}>
@@ -799,9 +807,9 @@ export function WorldPage() {
             </button>
           )}
           {motRallume ? (
-            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} />
+            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (
-            whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} />
+            whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} aSuivre={bullesSuite} />
           )}
           <Tutorial
             id="village-immersif"

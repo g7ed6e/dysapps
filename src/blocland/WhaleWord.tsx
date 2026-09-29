@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
@@ -77,10 +78,12 @@ interface Props {
   word: WhaleMoment;
   onClose: () => void;
   className?: string;
+  /** Le texte continue sous les boutons (la bulle défile, grand texte) : un trait pointillé et un chevron le disent. */
+  aSuivre?: boolean;
 }
 
 /** Le panneau « Le mot de la baleine » : une ou deux pages lues à voix haute, fermé par « J'ai compris » ou Échap. */
-export function WhaleWordPanel({ word, onClose, className = '' }: Props) {
+export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false }: Props) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
   // Un bandeau de récompense attend que le mot soit fermé, dans le monde comme en vue simple (DA-9).
@@ -110,7 +113,8 @@ export function WhaleWordPanel({ word, onClose, className = '' }: Props) {
       <p className="whale-word-text">
         <Syllabified text={text} />
       </p>
-      <div className="whale-word-actions">
+      <div className={`whale-word-actions${aSuivre ? ' a-suivre' : ''}`}>
+        {aSuivre && <Icon name="chevronDown" className="whale-word-suite" />}
         <SpeakButton text={text} />
         {pages.length > 1 && (
           <span className="whale-word-dots" aria-label={`Page ${page + 1} sur ${pages.length}`}>

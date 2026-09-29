@@ -3263,20 +3263,83 @@ button.app-card:active {
   position: absolute;
   left: 0.6rem;
   right: 0.6rem;
-  bottom: 4.6rem;
+  /* Juste au-dessus de la barre du bas, et jamais sur ce qui occupe le haut (mesurés par usePlaceDesBulles, DA-25). */
+  bottom: calc(var(--barre-h, 4rem) + 0.6rem);
   display: grid;
   gap: 0.5rem;
   pointer-events: none;
-  max-height: 45%;
+  max-height: min(45%, calc(100% - var(--barre-h, 4rem) - var(--haut-h, 0px) - 1.2rem));
   overflow: auto;
+}
+/*
+ * Le mot de la baleine ou du rallumage attend « J’ai compris », et en grand texte toute bulle : ils prennent la place
+ * qu'il leur faut entre le haut et la barre, pour se lire sans défiler, ou presque.
+ */
+.bulle-ouverte .world-overlay-bottom,
+:root[data-texte="grand"] .world-overlay-bottom {
+  max-height: calc(100% - var(--barre-h, 4rem) - var(--haut-h, 0px) - 1.2rem);
+}
+/* Si la bulle défile quand même, ses boutons restent en vue, collés en bas. */
+.world-overlay-bottom :is(.whale-word-actions, .tutorial-actions) {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+}
+/* Le texte continue sous les boutons : un trait pointillé au-dessus d'eux et un chevron le disent (comme sur la Carte). */
+.whale-word-actions.a-suivre {
+  border-top: var(--border-width) dashed currentColor;
+  padding-top: 0.4rem;
+}
+.whale-word-suite {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+}
+/*
+ * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine dessinée s'efface (décorative), Écouter
+ * garde son icône seule (son nom reste lu par les lecteurs d'écran) : les boutons prennent moins de place.
+ */
+@media (max-width: 640px) {
+  /* Une chose à la fois : tant que la bulle attend « J’ai compris », la barre du bas s'efface et lui laisse sa place. */
+  :root[data-texte="grand"] .bulle-ouverte .world-bar {
+    display: none;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-icon {
+    display: none;
+  }
+  /* Le trait pointillé seul dit la suite, comme sur la Carte : un chevron à côté d'Écouter en icône se prendrait pour un bouton. */
+  :root[data-texte="grand"] .whale-word-suite {
+    display: none;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .speak-button > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .speak-button {
+    min-width: 48px;
+    padding-inline: 0.5rem;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .button.primary {
+    padding-inline: 0.6rem;
+  }
 }
 .world-overlay-bottom > * {
   pointer-events: auto;
+  /* Jamais plus large que la place : une bulle en grand texte revient à la ligne au lieu de sortir de l'écran. */
+  min-width: 0;
 }
 .world-overlay-bottom .tutorial,
 .world-overlay-bottom .whale-word {
   margin: 0 auto;
   max-width: 26rem;
+}
+/* Sa marge du bas ferait défiler la bulle pour rien : au-dessus de la barre, elle n'en a pas besoin. */
+.world-overlay-bottom .whale-word {
+  margin-bottom: 0;
 }
 /* L'élément dont parle une bulle d'aide : un contour jaune qui pulse. */
 .tuto-target {
