@@ -13,4 +13,5 @@ export const HABILLAGE_ARCHIPEO = {
   dessin2D: 'peint',
   figures: 'modeles',
   defi: 'sentinelle',
+  reperes: 'cadres',
 } as const satisfies Readonly<Habillage> & { univers: 'archipeo' };

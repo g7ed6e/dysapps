@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLabels, separateMark, type LabelBox } from './labelLayout';
+import { ecarterDesObstacles, layoutLabels, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -98,5 +98,49 @@ describe("l'étiquette d'une île", () => {
     const plain = measureIslandLabel(ctx, 'Mine', 40);
     const withState = measureIslandLabel(ctx, 'Mine', 40, { id: 'a-explorer', name: 'À explorer' });
     expect(withState.w).toBeGreaterThan(plain.w);
+  });
+});
+
+describe('ecarterDesObstacles', () => {
+  const phare: LabelBox = { x: 370, y: 230, w: 30, h: 200 };
+
+  it('ne bouge pas les étiquettes qui ne couvrent aucun obstacle', () => {
+    const boxes: LabelBox[] = [
+      { x: 540, y: 227, w: 200, h: 32 },
+      { x: 800, y: 140, w: 200, h: 32 },
+    ];
+    expect(ecarterDesObstacles(boxes, [phare], 6)).toEqual([
+      { dx: 0, dy: 0 },
+      { dx: 0, dy: 0 },
+    ]);
+  });
+
+  it('écarte de la colonne d’un grand repère l’étiquette qui la touche, au plus près, sans la poser sur une autre', () => {
+    const boxes: LabelBox[] = [
+      { x: 393, y: 118, w: 240, h: 32 },
+      { x: 560, y: 150, w: 200, h: 32 },
+    ];
+    const out = ecarterDesObstacles(boxes, [phare], 6, { w: 1024, h: 616 });
+    expect(out[1]).toEqual({ dx: 0, dy: 0 });
+    const moved = { ...boxes[0], x: boxes[0].x + out[0].dx, y: boxes[0].y + out[0].dy };
+    expect(overlaps(moved, phare)).toBe(false);
+    expect(overlaps(moved, boxes[1])).toBe(false);
+    // Au-dessus de son île : elle ne descend pas plus bas que nécessaire.
+    expect(Math.hypot(out[0].dx, out[0].dy)).toBeLessThan(160);
+  });
+
+  it('fait rentrer dans le cadre une étiquette coupée par son bord, pas celle d’une île hors du cadre', () => {
+    const bounds = { w: 1024, h: 616 };
+    const out = ecarterDesObstacles(
+      [
+        { x: 1000, y: 245, w: 200, h: 32 },
+        { x: 1300, y: 245, w: 200, h: 32 },
+      ],
+      [phare],
+      6,
+      bounds,
+    );
+    expect(out[0]).toEqual({ dx: 1024 - 100 - 6 - 1000, dy: 0 });
+    expect(out[1]).toEqual({ dx: 0, dy: 0 });
   });
 });

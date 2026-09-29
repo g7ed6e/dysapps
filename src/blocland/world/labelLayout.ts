@@ -104,6 +104,45 @@ export function layoutLabels(boxes: LabelBox[], gap = 4, bounds?: { w: number; h
 }
 
 /**
+ * Hors de la Carte (où les étiquettes restent au-dessus de leur île sans s'écarter les unes des autres) : le décalage
+ * des seules étiquettes qui couvrent un obstacle (Archipéo : la colonne d'un grand repère, le grand phare des Îles du
+ * Ciel, DA-17). Chacune prend la place voisine la plus proche qui ne couvre plus aucun obstacle, sans se poser sur une
+ * autre étiquette ni sortir du cadre si elle peut l'éviter ; les autres ne bougent pas. Avec `bounds`, une étiquette
+ * coupée par le bord du cadre (son centre dedans) y rentre d'abord tout entière ; celle d'une île hors du cadre y reste.
+ */
+export function ecarterDesObstacles(boxes: LabelBox[], obstacles: LabelBox[], gap = 4, bounds?: { w: number; h: number }): LabelOffset[] {
+  const rentree = (b: LabelBox): LabelBox =>
+    bounds && b.x >= 0 && b.x <= bounds.w && b.y >= 0 && b.y <= bounds.h
+      ? { ...b, x: clamp(b.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap), y: clamp(b.y, b.h / 2 + gap, bounds.h - b.h / 2 - gap) }
+      : b;
+  const placed = boxes.map(rentree);
+  return boxes.map((given, i) => {
+    const b = placed[i];
+    const retrait = { dx: b.x - given.x, dy: b.y - given.y };
+    if (!obstacles.some((o) => overlap(b, o, gap) > 0)) return retrait;
+    let best: LabelOffset = { dx: 0, dy: 0 };
+    let bestCost = Infinity;
+    for (const [fx, fy] of TRIES) {
+      const t = { dx: fx * b.w, dy: fy * b.h };
+      const at = { x: b.x + t.dx, y: b.y + t.dy, w: b.w, h: b.h };
+      let cost = 0;
+      for (const o of obstacles) cost += overlap(at, o, gap) * 100;
+      placed.forEach((p, j) => {
+        if (j !== i) cost += overlap(at, p, gap);
+      });
+      if (bounds) cost += outside(at, bounds) * 3;
+      if (cost < bestCost) {
+        best = t;
+        bestCost = cost;
+        if (cost === 0) break;
+      }
+    }
+    placed[i] = { x: b.x + best.dx, y: b.y + best.dy, w: b.w, h: b.h };
+    return { dx: retrait.dx + best.dx, dy: retrait.dy + best.dy };
+  });
+}
+
+/**
  * Deux repères de la Carte trop proches (la flèche de la destination et le fanion du bonhomme, sur la même île) : le
  * décalage à donner au premier pour qu'il s'écarte du second, toujours de côté (les deux pointent vers le bas, l'un
  * au-dessus de l'autre ils se confondraient). L'écart vertical compte triple ; en deçà de `min`, la flèche glisse

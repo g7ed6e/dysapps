@@ -16,6 +16,25 @@ export const COULEURS_3E = { pierre: 0xdbdadd, ombre: 0x5a7ba5, neige: 0xe5ebe3,
 /** Le socle de salles : 3 × 3 cases sur 2 de haut, puis une salle de 2 × 2 sur 1 de haut (fiche, §2). */
 export const SOCLE_3E = { cote: 3, bas: 2, haut: 1, salle: 2 } as const;
 
+/**
+ * Le retrait du socle (DA-18, revue d'ensemble) : de loin, les deux salles de même pierre se fondaient en un seul bloc.
+ * L'arête de la terrasse porte un bandeau de neige (`bandeau` de haut, en cases), le pied de la salle du haut un joint
+ * d'ombre (`joint` de haut, la pierre mêlée à son ombre à `ombre`) ; les deux débordent de `decolle` pour ne pas se
+ * confondre avec le mur (ni scintiller contre lui). Les mesures de la fiche (3 × 3 sur 2, 2 × 2 sur 1) ne changent pas.
+ */
+export const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.03 } as const;
+
+/**
+ * Le grand phare, tel que la caméra et les étiquettes d'Archipéo le gardent en vue (world/cadrage.ts, DA-17, DA-18) :
+ * le centre de son socle en cases du monde (`x`, `y`), le bas de son socle et le haut de son toit, le rayon de son toit
+ * (en cases). Le test `3e.test.ts` le tient égal au phare dessiné. `pivot` : dans la vue de l'archipel depuis l'île du
+ * Phare (l'arrivée), la caméra passe plein sud au lieu du sud-sud-est, pour que la lanterne se découpe sur le ciel et
+ * le massif, et non plus sur l'île de l'Observatoire des textes, juste derrière elle ; depuis cette île des textes,
+ * dont le phare est au premier plan, le même pivot l'écarte du cœur de l'île, sa lanterne sur le ciel (radians,
+ * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare).
+ */
+export const GRAND_PHARE_3E = { ile: 'phare', x: 75.5, y: 929.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
+
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);
 
@@ -85,6 +104,12 @@ const grandPhare = enRepere(({ P, L, e, Z, plusBas, matiere }) => {
   const m = (c - SOCLE_3E.salle) / 2;
   const haut2 = haut1 + SOCLE_3E.haut;
   salle(P, x0 + m, y0 + m, x0 + c - m, y0 + c - m, haut1 - 0.05, haut2, 2, pierre, neige, baie);
+  // Le retrait, lisible de loin (DA-18) : un bandeau de neige à l'arête de la terrasse, et un joint d'ombre au pied de
+  // la salle du haut, à peine décollés des murs (`RETRAIT_3E`).
+  const { bandeau, joint, decolle: d } = RETRAIT_3E;
+  boite(P, x0 - d, haut1 - bandeau, y0 - d, x0 + c + d, haut1 + d, y0 + c + d, neige);
+  const sombre = peintre(uni(mixColor(COULEURS_3E.pierre, COULEURS_3E.ombre, RETRAIT_3E.ombre), e.muted), Z, 1);
+  boite(P, x0 + m - d, haut1 - 0.05, y0 + m - d, x0 + c - m + d, haut1 + joint, y0 + c - m + d, sombre);
   const { H, r } = PHARES['3e'];
   dessinerPhare(P, L, {
     cx: x0 + c / 2,
