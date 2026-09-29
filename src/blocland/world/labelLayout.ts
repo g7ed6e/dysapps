@@ -175,8 +175,7 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
     const ile = { ...(iles?.[i] ?? b), w: 1, h: 1 };
     if (outside(ile, bounds) > 0 || zones.some((z) => overlap(ile, z, 0) > 0)) continue;
     const at = { ...b, x: b.x + o.dx, y: b.y + o.dy };
-    const loin = (r: LabelBox, p: { x: number; y: number } = ile) =>
-      Math.hypot(Math.max(0, Math.abs(p.x - r.x) - r.w / 2), Math.max(0, Math.abs(p.y - r.y) - r.h / 2));
+    const loin = (r: LabelBox, p: { x: number; y: number } = ile) => distanceA(r, p);
     if (loin(at) > loin(b) + ECART_MAX * b.h || !entiere(b, o, zones, bounds) || vues.some((v) => overlap(at, v, 0) > 0)) continue;
     // Écartée, elle ne se pose jamais plus près d'une autre île que de la sienne : on lirait le nom sur la mauvaise île.
     if ((o.dx || o.dy) && iles?.some((p, j) => j !== i && loin(at, p) < loin(at) && loin(b, p) >= loin(b))) continue;
@@ -192,7 +191,7 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
  * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
  * `carte`, les unes des autres aussi (voir `layoutLabels`) ; sans, seules celles posées dessus ou coupées par le bord
  * bougent (voir `ecarterDesObstacles`). Puis `montrees` dit lesquelles se montrent (`bulles` : les bulles passagères,
- * qui cachent sans pousser).
+ * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île.
  */
 export function placerEtiquettes(
   boxes: LabelBox[],
@@ -211,7 +210,89 @@ export function placerEtiquettes(
     : ecarterDesObstacles(sous, [...obstacles, ...zones], gap, bounds);
   const offsets: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
   gardees.forEach((i, k) => (offsets[i] = placees[k]));
-  return { offsets, visibles: montrees(boxes, offsets, [...zones, ...bulles], bounds, carte?.weights, iles) };
+  const couvert = [...zones, ...bulles];
+  const visibles = montrees(boxes, offsets, couvert, bounds, carte?.weights, iles);
+  // Avant de renoncer à un nom dont l'île se voit : les places simples autour d'elle, dessus, dessous, à gauche, à
+  // droite (DA-31), sans trait de rappel ni place plus loin. La plus lourde d'abord ; une place prise n'en change pas
+  // tant que le cadrage ne bouge pas (le calcul ne dépend que de lui). Sur la Carte, le nom de la destination ne se
+  // retire jamais pour un autre : il prend sa place simple, et le nom plus léger qui l'occupait cherche la sienne.
+  const poids = (i: number) => (carte ? carte.weights[i] : 1);
+  const lourd = carte ? Math.max(1, ...gardees.map(poids)) : Infinity;
+  const destination = carte && lourd > 1 ? gardees.find((i) => poids(i) >= lourd) : undefined;
+  const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], obstacles);
+  const vues = new Map<number, LabelBox>();
+  boxes.forEach((b, i) => {
+    if (!visibles[i]) return;
+    const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
+    // Un autre nom posé sur l'île de destination ou contre sa flèche s'y lirait : il cherche une autre place.
+    if (garde && poids(i) < lourd && overlap(at, garde, 0) > 0) visibles[i] = false;
+    else vues.set(i, at);
+  });
+  const autour = gardees.filter((i) => !visibles[i]).sort((a, b) => poids(b) - poids(a) || a - b);
+  // La boucle finit : seuls les noms du poids le plus lourd chassent, et seulement des noms strictement plus légers,
+  // qui ne chassent pas ; un nom qui chasse n'est donc jamais remis dans la file.
+  for (let i = autour.shift(); i !== undefined; i = autour.shift()) {
+    const b = boxes[i];
+    const ile = iles[i];
+    const chasse = poids(i) >= lourd && lourd > 1;
+    // Dessus et dessous passent un repère posé sur l'île (la flèche de la destination, le fanion) plutôt que d'y renoncer.
+    const passe = (y: number, sens: 1 | -1) => {
+      const gene = obstacles.filter((v) => overlap({ ...b, x: ile.x, y }, v, gap) > 0);
+      if (!gene.length) return y;
+      return sens < 0 ? Math.min(...gene.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...gene.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
+    };
+    const places = [
+      { x: ile.x, y: passe(ile.y - b.h / 2 - gap, -1) },
+      { x: ile.x, y: passe(ile.y + b.h / 2 + gap, 1) },
+      { x: ile.x - b.w / 2 - gap, y: ile.y },
+      { x: ile.x + b.w / 2 + gap, y: ile.y },
+    ];
+    // La destination essaie d'abord les places libres, puis celles qu'un nom plus léger occupe.
+    for (const pousser of chasse ? [false, true] : [false]) {
+      const p = places.find((p, k) => {
+        const at = { ...b, x: p.x, y: p.y };
+        if (!entiere(b, { dx: p.x - b.x, dy: p.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0)) return false;
+        if ([...vues].some(([j, v]) => overlap(at, v, gap) > 0 && !(pousser && poids(j) < poids(i)))) return false;
+        if (garde && !chasse && overlap(at, garde, gap) > 0) return false;
+        // Posé sur la flèche, le nom de la destination se lit sur son île, même au-dessus d'une île voisine.
+        if (chasse && k === 0) return true;
+        return !iles.some((q, j) => j !== i && distanceA(at, q) < distanceA(at, ile));
+      });
+      if (!p) continue;
+      const at = { ...b, x: p.x, y: p.y };
+      for (const [j, v] of [...vues]) {
+        if (overlap(at, v, gap) <= 0) continue;
+        vues.delete(j);
+        visibles[j] = false;
+        offsets[j] = { dx: 0, dy: 0 };
+        autour.push(j);
+      }
+      offsets[i] = { dx: p.x - b.x, dy: p.y - b.y };
+      visibles[i] = true;
+      vues.set(i, at);
+      break;
+    }
+  }
+  return { offsets, visibles };
+}
+
+/**
+ * Sur la Carte, la garde de la destination : son île (à l'écran, le point sous son nom) et la flèche posée au-dessus,
+ * où seul son nom se pose (DA-31). Les repères pris en compte sont ceux qui descendent vers l'île, à moins de trois
+ * hauteurs au-dessus d'elle ; la garde descend de 32 px sous l'île, et fait au moins 72 px de large.
+ */
+function gardeDeLaDestination(ile: { x: number; y: number }, obstacles: LabelBox[]): LabelBox {
+  const fleches = obstacles.filter((v) => v.y <= ile.y && ile.y - v.y < 3 * v.h && Math.abs(v.x - ile.x) < v.w / 2 + 36);
+  const x0 = Math.min(ile.x - 36, ...fleches.map((v) => v.x - v.w / 2));
+  const x1 = Math.max(ile.x + 36, ...fleches.map((v) => v.x + v.w / 2));
+  const y0 = Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2));
+  const y1 = ile.y + 32;
+  return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
+}
+
+/** La distance d'un point à une étiquette (nulle s'il est dessous). */
+function distanceA(r: LabelBox, p: { x: number; y: number }): number {
+  return Math.hypot(Math.max(0, Math.abs(p.x - r.x) - r.w / 2), Math.max(0, Math.abs(p.y - r.y) - r.h / 2));
 }
 
 /**

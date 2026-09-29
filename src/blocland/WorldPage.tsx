@@ -27,6 +27,7 @@ import { WorldCanvas } from './three';
 import { WorldCanvas2D } from './pixel';
 import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
+import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
@@ -248,7 +249,7 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
-  const [destinationRef, destinationSuite] = useASuivre<HTMLParagraphElement>(
+  const [destinationRef, destinationSuite] = useASuivre<HTMLSpanElement>(
     // La phrase n'existe que sans chemin à construire : la clé change quand elle apparaît.
     mapOpen && !(mapTarget && remaining.length) ? destinationText : null,
   );
@@ -496,6 +497,7 @@ export function WorldPage() {
   // La bulle du bas défile (grand texte, téléphone) : dit s'il reste du texte sous ses boutons (DA-25).
   const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(whaleWord?.id ?? motRallume);
   usePlaceDesBulles(stageRef, !!voyage);
+  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -733,12 +735,13 @@ export function WorldPage() {
                 </>
               ) : (
                 <>
-                  <p className={`world-map-destination${destinationSuite ? ' a-suivre' : ''}`} ref={destinationRef}>
+                  {/* Écouter hors de la fenêtre qui défile : en grand texte, elle ne montre que des lignes entières (DA-31). */}
+                  <p className={`world-map-destination${destinationSuite ? ' a-suivre' : ''}`}>
                     <span className="world-map-speak">
                       <SpeakButton text={destinationText} compact />
                       {destinationSuite && <Icon name="chevronDown" className="world-map-suite" />}
                     </span>
-                    <span>
+                    <span className="world-map-texte" ref={destinationRef}>
                       <Syllabified text={destinationText} />
                     </span>
                   </p>
@@ -751,7 +754,8 @@ export function WorldPage() {
                     </button>
                   </p>
                   {/* Les îles et leur état, en mots : ce que la Carte dessine sur chaque île, lisible sans la voir. */}
-                  <details className="world-map-islands">
+                  {/* À l'ouverture, le titre du pli vient en haut du panneau, entier (DA-31). */}
+                  <details className="world-map-islands" onToggle={(e) => e.currentTarget.open && titreDuPliEnHaut(e.currentTarget)}>
                     <summary>Les îles et leur état</summary>
                     <ul>
                       {modele.iles.map((b) => {
@@ -937,4 +941,10 @@ export function WorldPage() {
       )}
     </div>
   );
+}
+
+/** Le pli ouvert : son titre en haut du panneau qui le porte, sans faire défiler la page (DA-31). */
+function titreDuPliEnHaut(pli: HTMLElement) {
+  const panneau = pli.closest<HTMLElement>('.world-overlay-top');
+  if (panneau) panneau.scrollTop += pli.getBoundingClientRect().top - panneau.getBoundingClientRect().top;
 }
