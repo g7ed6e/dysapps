@@ -85,3 +85,25 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   expect(gauge().querySelectorAll('.arena-pastille.on')).toHaveLength(0);
   expect(gauge().querySelectorAll('.arena-pastille')).toHaveLength(total);
 });
+
+const pli = () => screen.getByRole('region', { name: 'Le défi du Grand Chêne' }).querySelector('.arena-regle details') as HTMLDetailsElement;
+
+it('la règle est un pli dans l’arène : sa phrase courte toujours lue, ouvert au premier défi (DA-28)', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');
+  expect(pli().textContent).toContain('Chaque épreuve réussie allume une partie de sa lumière');
+  expect(pli().open).toBe(true);
+});
+
+it('déjà affronté (une partie enregistrée, même perdue), le pli de la règle est fermé et sa phrase courte reste (DA-28)', async () => {
+  localStorage.setItem(
+    'dysapps:blocland',
+    JSON.stringify({ progress: { ...ready('foret'), 'foret-gardien': { stars: 0, attempts: 1, best: 0.4 } } }),
+  );
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  expect(pli().open).toBe(false);
+  expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');
+});
