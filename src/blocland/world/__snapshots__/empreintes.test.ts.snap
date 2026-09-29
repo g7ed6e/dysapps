@@ -98,7 +98,7 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 }
 `;
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"5c25cd0b"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"87edbec2"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
@@ -111,35 +111,35 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "497998fe",
-  "cubes": "8708c55a",
-  "cubes avec créatures": "8ffb6fab",
-  "décor posé sur la pente": "f03df343",
+  "cubes": "3944a2d6",
+  "cubes avec créatures": "2c666cc5",
+  "décor posé sur la pente": "34984bd9",
   "navire": "7a093947",
   "sol (facettes)": "6c3879ea",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "80d28c12",
+  "trajets depuis le port": "2371cee9",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "8887cfb9",
-  "cubes": "dabbead7",
-  "cubes avec créatures": "dded0b1a",
-  "décor posé sur la pente": "b0ac172a",
+  "cubes": "877b7d33",
+  "cubes avec créatures": "8f6a821c",
+  "décor posé sur la pente": "b682eaf0",
   "navire": "7a093947",
   "sol (facettes)": "0dc6856d",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "d75073ea",
+  "trajets depuis le port": "167166af",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "3453e61b",
-  "cubes avec créatures": "3453e61b",
-  "décor posé sur la pente": "8150d3c7",
+  "cubes": "2d2c75da",
+  "cubes avec créatures": "2d2c75da",
+  "décor posé sur la pente": "e61185a4",
   "navire": "3d3b7c21",
   "sol (facettes)": "3db8ca9e",
   "sol (lave)": "13fe3a3b",
