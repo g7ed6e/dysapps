@@ -1,1 +1,1 @@
-Le manuel montre Archipéo, choisi dans les Réglages : le défi d’un Gardien à rallumer et une île des Îles Brumeuses avec son rendu.
+Le manuel montre Archipéo, choisi dans les Réglages : le défi d’un Gardien à rallumer et une île des Îles Brumeuses avec son rendu. Le lot 6 est fini : les deux univers sont décrits et relus aux plus grands réglages de texte.
