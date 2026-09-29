@@ -168,7 +168,7 @@ Le choix se fait **dans les Réglages** (décision du mainteneur). Le risque pri
 
 - **Une section « Univers » des Réglages**, qu’un adulte ouvre aussi en deux touchers.
 - **Jamais pendant une mission.** Le changement prend effet au retour au village.
-- **Trois univers au plus**, chacun avec une icône, un libellé court, une phrase lue à voix haute et un aperçu fixe, sans animation. Rien ne se choisit à la couleur seule.
+- **Trois univers au plus**, chacun avec une icône, un libellé court, une phrase lue à voix haute et un aperçu fixe, sans animation. Rien ne se choisit à la couleur seule. Les aperçus fixes sont reportés après les lots 8 et 8b (mainteneur, 29 septembre 2026 : « aperçus reportés après lot 8/8b ») : un bel aperçu d’Archipéo le mettrait en avant (décision 9) ; d’ici là, l’icône, la phrase lue et la confirmation, qu’on peut défaire, suffisent.
 - **Réversible et sans perte.** Une confirmation dit ce qui change (les noms, le récit, le dessin) et ce qui ne change pas (étoiles, blocs, plans, missions). Après un changement, un écran de passage dit « L’île X s’appelle maintenant Y » ; cette liste se relit ensuite depuis le lexique de l’univers. Cet écran et le lexique arrivent avec U4 : au lot 6, aucun nom d’île ne change.
 - **Les repères stables du §4** sous chaque nom d’île.
 - **Un lexique court par univers**, une dizaine de mots au plus. Chacun est expliqué et lu à voix haute la première fois.
