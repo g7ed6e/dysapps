@@ -77,7 +77,7 @@ import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
-import { useASuivre } from './useASuivre';
+import { useASuivre } from '../components/useASuivre';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -190,7 +190,6 @@ export function WorldPage() {
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
-  const [destinationRef, destinationSuite] = useASuivre<HTMLParagraphElement>(mapOpen ? destinationText : null);
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
   const islandLabels = useMemo(
@@ -248,6 +247,10 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
+  const [destinationRef, destinationSuite] = useASuivre<HTMLParagraphElement>(
+    // La phrase n'existe que sans chemin à construire : la clé change quand elle apparaît.
+    mapOpen && !(mapTarget && remaining.length) ? destinationText : null,
+  );
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).

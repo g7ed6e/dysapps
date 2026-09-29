@@ -17,7 +17,8 @@ export function useASuivre<T extends HTMLElement>(cle: unknown) {
     check();
     el.addEventListener('scroll', check, { passive: true });
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
-    // La fenêtre, et ce qu'elle contient : le texte change de hauteur quand la police arrive.
+    // La fenêtre, et ce qu'elle contient : le texte change de hauteur quand la police arrive. Les enfants sont ceux du
+    // moment ; un enfant remplacé n'est plus suivi, mais le défilement et `cle` suffisent à recalculer.
     for (const node of [el, ...el.children]) observer?.observe(node);
     return () => {
       el.removeEventListener('scroll', check);

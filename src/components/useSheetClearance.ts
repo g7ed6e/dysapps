@@ -90,9 +90,13 @@ export function useSheetClearance(sectionRef: RefObject<HTMLElement | null>, ope
       }
     }
 
-    // L'appareil tourné : le choix entre fixe et dans la page se refait, sans faire défiler.
+    // L'appareil tourné : le choix entre fixe et dans la page se refait, sans faire défiler. Seulement si la largeur
+    // change : sur téléphone, la barre d'adresse qui se replie en défilant change la hauteur, et le bandeau sauterait.
     let frame = 0;
+    let largeur = window.innerWidth;
     const onResize = () => {
+      if (window.innerWidth === largeur) return;
+      largeur = window.innerWidth;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(place);
     };
