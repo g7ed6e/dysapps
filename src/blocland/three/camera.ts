@@ -2,6 +2,7 @@
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
+import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
 import { islandCenter, viewYaw, viewZone } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 
@@ -33,6 +34,7 @@ export interface Camera extends PartieDeLaScene {
 
 export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avatar: THREE.Object3D, derniers: { readonly current: Derniers }, instant: Instant): Camera {
   const { etendue: bounds, centre: center } = monde;
+  const reperes = monde.habillage.reperes === 'cadres';
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
    * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
@@ -74,9 +76,24 @@ export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avata
       const need = (Math.max(ex / Math.max(0.6, aspect), ey * 1.1) * 0.5) / Math.tan((20 * Math.PI) / 180);
       d = Math.min(FOLLOW_MAX, Math.max(FOLLOW_DISTANCE, need * 0.8)) * portrait;
     }
+    // Archipéo : un grand repère de la vue (le grand phare des Îles du Ciel) reste dans le cadre : la cible glisse vers
+    // lui et la caméra recule un peu (world/cadrage.ts). Pas sur une place précise de l'île (`spot`).
+    const repere = reperes && !spot && (island || zone) ? repereDeLaVue(island, island ? null : zone) : null;
+    let pivot = 0;
+    if (repere) {
+      // Depuis l'île même du repère, ou une île d'où la vue pivote pour lui (world/cadrage.ts), la cible ne glisse pas :
+      // le pivot suffit, et l'île de la vue reste au premier plan.
+      const pivote = zone !== null && (zone === repere.ile || repere.pivot?.[zone] !== undefined);
+      const k = island ? CADRAGE_DU_REPERE.ile : pivote ? null : CADRAGE_DU_REPERE.zone;
+      if (k) {
+        c = { x: c.x + k.vers * (repere.x - c.x), y: c.y + k.vers * (repere.y - c.y), z: c.z };
+        d *= k.recul;
+      }
+      if (!island && zone) pivot = repere.pivot?.[zone] ?? 0;
+    }
     // Le pivot vers le cœur du continent : la direction de vue tourne autour de la verticale.
     // (pivot positif : la caméra passe à l'ouest et regarde vers l'est, d'où le signe).
-    const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0);
+    const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0) + pivot;
     const dx = v.dx * Math.cos(yaw) - v.dy * Math.sin(yaw);
     const dy = v.dx * Math.sin(yaw) + v.dy * Math.cos(yaw);
     const target = new THREE.Vector3(c.x, c.z + 1, c.y);

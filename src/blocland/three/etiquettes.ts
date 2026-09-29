@@ -1,10 +1,12 @@
 // Les étiquettes de la scène 3D : le nom des îles ouvertes (et leur état sur la Carte), toujours face à l'écran, de
 // taille fixe, par-dessus le relief ; et sur la Carte, la flèche de la prochaine destination. Sur la Carte, les
 // étiquettes s'écartent les unes des autres, de la flèche et du fanion du bonhomme, pour que rien n'en cache rien.
+// Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { reperesDe } from '../world/cadrage';
+import { ecarterDesObstacles, layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import type { WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
@@ -110,6 +112,26 @@ export function creerEtiquettes(
     const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
     mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
   };
+  // Archipéo : les grands repères de l'archipel (world/cadrage.ts), qu'aucune étiquette ne couvre, hors de la Carte
+  // aussi (DA-17). Blocland n'en a pas : ses étiquettes restent au-dessus de leur île.
+  const reperes = monde.habillage.reperes === 'cadres' ? reperesDe(monde.archipel) : [];
+  const repereBas = new THREE.Vector3();
+  const repereHaut = new THREE.Vector3();
+  /** La colonne de chaque repère à l'écran, vue par `cam` : du pied au sommet, large de son diamètre (et d'une marge). */
+  const colonnes = (cam: THREE.PerspectiveCamera, W: number, H: number): LabelBox[] =>
+    reperes.flatMap((r) => {
+      repereBas.set(r.x, r.pied, r.y);
+      repereHaut.set(r.x, r.haut, r.y);
+      const loin = cam.position.distanceTo(repereHaut);
+      const a = toScreen(repereBas, cam, W, H);
+      if (labelAt.z > 1) return [];
+      const b = toScreen(repereHaut, cam, W, H);
+      if (labelAt.z > 1) return [];
+      const parPx = H / (2 * loin * Math.tan((cam.fov * Math.PI) / 360));
+      return [{ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: 2 * r.rayon * parPx + 8, h: Math.abs(a.y - b.y) }];
+    });
+  /** Ce que visait la caméra au dernier écart hors de la Carte (Archipéo, grands repères). */
+  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[] };
   const placeLabels = (spread: boolean) => {
     const sprites = labelsGroup.children as THREE.Sprite[];
     if (!sprites.length) return;
@@ -117,14 +139,27 @@ export function creerEtiquettes(
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     for (const s of sprites) s.scale.set(s.userData.px.w * perPx, s.userData.px.h * perPx, 1);
-    if (!spread) {
+    if (!spread && !reperes.length) {
       if (labelLayout) for (const s of sprites) s.center.set(0.5, 0.5);
       labelLayout = null;
       return;
     }
+    // Hors de la Carte, rien d'autre que la caméra visée, la taille et les étiquettes ne change l'écart : la clé ne se
+    // refait que si l'un d'eux a bougé (pas de chaîne construite à chaque image).
+    if (!spread && labelLayout && vise.n === sprites.length && vise.w === W && vise.h === H && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
     const av = bonhomme().position;
-    const marks = `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}`;
+    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : 'reperes';
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}`;
+    // Sur la Carte, l'écart est autre : au retour, il se refait.
+    if (spread) vise.n = -1;
+    else {
+      vise.pos.copy(camGoal.pos);
+      vise.target.copy(camGoal.target);
+      vise.w = W;
+      vise.h = H;
+      vise.n = sprites.length;
+      vise.ids = sprites.map((s) => s.id);
+    }
     if (labelLayout?.key !== key) {
       goalCamera.copy(camera);
       goalCamera.position.copy(camGoal.pos);
@@ -134,6 +169,13 @@ export function creerEtiquettes(
         labelAt.copy(s.position).project(goalCamera);
         return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: s.userData.px.w, h: s.userData.px.h };
       });
+      if (!spread) {
+        // Hors de la Carte : seules les étiquettes posées sur un grand repère s'en écartent, et celles que coupe le bord
+        // du cadre y rentrent.
+        labelLayout = { key, offsets: ecarterDesObstacles(boxes, colonnes(goalCamera, W, H), 6, { w: W, h: H - LABEL_RESERVE }) };
+        labelLayout.offsets.forEach((o, i) => sprites[i].center.set(0.5 - o.dx / sprites[i].userData.px.w, 0.5 + o.dy / sprites[i].userData.px.h));
+        return;
+      }
       // Une île fermée pèse moins : c'est son étiquette qui s'écarte d'abord.
       const weights = sprites.map((s) => (s.userData.fermee ? 0.5 : 1));
       // La flèche de la destination et le fanion du bonhomme restent visibles : aucune étiquette ne se pose dessus.
