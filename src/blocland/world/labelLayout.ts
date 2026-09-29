@@ -143,6 +143,78 @@ export function ecarterDesObstacles(boxes: LabelBox[], obstacles: LabelBox[], ga
 }
 
 /**
+ * Une étiquette se montre entière ou pas du tout (DA-10) : posée avec son décalage, elle se cache si l'interface
+ * (`zones`) en couvre un morceau ou si elle déborde du cadre ; sinon elle se lit en entier.
+ */
+export function entiere(box: LabelBox, o: LabelOffset, zones: LabelBox[], bounds: { w: number; h: number }): boolean {
+  const at = { x: box.x + o.dx, y: box.y + o.dy, w: box.w, h: box.h };
+  return outside(at, bounds) < 1 && !zones.some((z) => overlap(at, z, 0) > 0);
+}
+
+/**
+ * Une étiquette écartée qui s'éloigne de son île de plus que cela (en hauteurs d'étiquette, en plus de la distance où elle
+ * flotte d'ordinaire au-dessus d'elle) ne désigne plus l'île.
+ */
+const ECART_MAX = 1.5;
+
+/**
+ * Les étiquettes à montrer : entières (voir `entiere`), près de leur île, sans se couvrir l'une l'autre. Une étiquette
+ * dont l'île (`iles`, à l'écran ; sinon sa place voulue) est sous l'interface ou hors du cadre, ou que l'écart éloigne
+ * de son île de plus d'`ECART_MAX` hauteurs, ne se montre pas : un nom loin de son île ne désigne rien. Quand deux se
+ * chevauchent encore après l'écart, la plus lourde (`weights` : la prochaine destination, puis une île ouverte, puis une
+ * île fermée), puis la première, reste. Une étiquette écartée plus près d'une autre île que de la sienne ne se montre
+ * pas non plus.
+ */
+export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: LabelBox[], bounds: { w: number; h: number }, weights?: number[], iles?: { x: number; y: number }[]): boolean[] {
+  const ordre = boxes.map((_, i) => i).sort((a, b) => (weights ? weights[b] - weights[a] : 0) || a - b);
+  const vues: LabelBox[] = [];
+  const out = boxes.map(() => false);
+  for (const i of ordre) {
+    const b = boxes[i];
+    const o = offsets[i];
+    const ile = { ...(iles?.[i] ?? b), w: 1, h: 1 };
+    if (outside(ile, bounds) > 0 || zones.some((z) => overlap(ile, z, 0) > 0)) continue;
+    const at = { ...b, x: b.x + o.dx, y: b.y + o.dy };
+    const loin = (r: LabelBox, p: { x: number; y: number } = ile) =>
+      Math.hypot(Math.max(0, Math.abs(p.x - r.x) - r.w / 2), Math.max(0, Math.abs(p.y - r.y) - r.h / 2));
+    if (loin(at) > loin(b) + ECART_MAX * b.h || !entiere(b, o, zones, bounds) || vues.some((v) => overlap(at, v, 0) > 0)) continue;
+    // Écartée, elle ne se pose jamais plus près d'une autre île que de la sienne : on lirait le nom sur la mauvaise île.
+    if ((o.dx || o.dy) && iles?.some((p, j) => j !== i && loin(at, p) < loin(at) && loin(b, p) >= loin(b))) continue;
+    out[i] = true;
+    vues.push(at);
+  }
+  return out;
+}
+
+/**
+ * Le placement des étiquettes d'une vue (3D ou 2D, DA-10) : celles dont l'île est sous l'interface ou hors du cadre ne
+ * se montreront pas, et sont retirées avant l'écart pour ne pas pousser les autres ; les autres s'écartent de
+ * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
+ * `carte`, les unes des autres aussi (voir `layoutLabels`) ; sans, seules celles posées dessus ou coupées par le bord
+ * bougent (voir `ecarterDesObstacles`). Puis `montrees` dit lesquelles se montrent (`bulles` : les bulles passagères,
+ * qui cachent sans pousser).
+ */
+export function placerEtiquettes(
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
+  carte: { weights: number[] } | null,
+): { offsets: LabelOffset[]; visibles: boolean[] } {
+  const { zones, bulles, obstacles, bounds, gap } = vue;
+  const gardees = boxes.map((_, i) => i).filter((i) => {
+    const ile = { ...iles[i], w: 1, h: 1 };
+    return outside(ile, bounds) === 0 && !zones.some((z) => overlap(ile, z, 0) > 0);
+  });
+  const sous = gardees.map((i) => boxes[i]);
+  const placees = carte
+    ? layoutLabels(sous, gap, bounds, gardees.map((i) => carte.weights[i]), [...obstacles, ...zones])
+    : ecarterDesObstacles(sous, [...obstacles, ...zones], gap, bounds);
+  const offsets: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
+  gardees.forEach((i, k) => (offsets[i] = placees[k]));
+  return { offsets, visibles: montrees(boxes, offsets, [...zones, ...bulles], bounds, carte?.weights, iles) };
+}
+
+/**
  * Deux repères de la Carte trop proches (la flèche de la destination et le fanion du bonhomme, sur la même île) : le
  * décalage à donner au premier pour qu'il s'écarte du second, toujours de côté (les deux pointent vers le bas, l'un
  * au-dessus de l'autre ils se confondraient). L'écart vertical compte triple ; en deçà de `min`, la flèche glisse

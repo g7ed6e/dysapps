@@ -287,6 +287,17 @@ it('sur la Carte, le panneau de la prochaine destination attend que le mot de la
   expect(document.body.textContent).toMatch(/Prochaine destination/);
 });
 
+it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Pause, les bulles (DA-10)', () => {
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  renderAt('/aventure');
+  const scene = document.querySelector('[data-scene]')!;
+  expect(scene.querySelector('[data-couvre="bouton"][data-tuto="menu"]')).not.toBeNull();
+  expect(scene.querySelector('.world-overlay-top[data-couvre="scene"]')).not.toBeNull();
+  expect(scene.querySelector('.world-overlay-bottom[data-couvre="bulle"]')).not.toBeNull();
+  expect(within(scene.querySelector<HTMLElement>('[data-couvre="scene"][aria-label="Village"]')!).getByRole('button', { name: /Carte/ })).toBeInTheDocument();
+});
+
 it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quand on revoit l’aide (DA-9)', async () => {
   const user = userEvent.setup();
   const premier = renderAt('/aventure');
