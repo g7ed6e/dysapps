@@ -4398,6 +4398,9 @@ button.island-quest:active {
   margin: 0 0 0.6rem;
   max-width: none;
 }
+.content:focus {
+  outline: none;
+}
 .title-batisseur {
   margin: 0 0 0.6rem;
   padding: 0.3rem 0.8rem;

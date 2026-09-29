@@ -93,7 +93,10 @@ it('la croix masque le bandeau', async () => {
   const user = userEvent.setup();
   renderTitle();
   await user.keyboard(`${FLECHES}ba`);
+  document.body.insertAdjacentHTML('beforeend', '<main id="contenu" tabindex="-1"></main>');
   await user.click(screen.getByRole('button', { name: 'Masquer ce bandeau' }));
+  expect(document.getElementById('contenu')).toHaveFocus();
+  document.getElementById('contenu')?.remove();
   expect(screen.queryByRole('button', { name: /Quitter/ })).not.toBeInTheDocument();
   expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
 });

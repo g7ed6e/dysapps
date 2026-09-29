@@ -25,7 +25,16 @@ export function BandeauBatisseur() {
       <button type="button" className="button" onClick={quitter}>
         <Icon name="back" /> Quitter le mode bâtisseur
       </button>
-      <button type="button" className="button" onClick={() => setMasque(true)} aria-label="Masquer ce bandeau">
+      <button
+        type="button"
+        className="button"
+        onClick={() => {
+          setMasque(true);
+          // Le bouton disparaît : le focus va au contenu plutôt que de retomber au début de la page.
+          document.getElementById('contenu')?.focus();
+        }}
+        aria-label="Masquer ce bandeau"
+      >
         <Icon name="close" />
       </button>
     </div>
