@@ -651,7 +651,7 @@ export function WorldPage() {
     <div
       className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume ? ' bulle-ouverte' : ''}`}
     >
-      <div className="world-stage" ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
+      <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <View
             archipelago={a}
@@ -695,6 +695,7 @@ export function WorldPage() {
             type="button"
             className="button world-menu-button"
             data-tuto="menu"
+            data-couvre="bouton"
             aria-label="Menu"
             aria-pressed={menuOpen}
             aria-controls={menuOpen ? 'panneau-menu' : undefined}
@@ -703,7 +704,7 @@ export function WorldPage() {
             <Icon name="pause" />
           </button>
         )}
-        <div className="world-overlay-top">
+        <div className="world-overlay-top" data-couvre="scene">
           {voyage?.mode === 'cinema' && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
               <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
@@ -799,7 +800,7 @@ export function WorldPage() {
           )}
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
-        <div className="world-overlay-bottom" ref={bullesRef}>
+        <div className="world-overlay-bottom" data-couvre="bulle" ref={bullesRef}>
           {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
           {moment && !motRallume && (
             <button type="button" className="button rallumage-passer" onClick={passerLesRallumages}>
@@ -828,7 +829,7 @@ export function WorldPage() {
             ]}
           />
           </div>
-        <nav className="world-bar" aria-label="Village">
+        <nav className="world-bar" data-couvre="scene" aria-label="Village">
           {island && !voyage && (
             <button
               type="button"
