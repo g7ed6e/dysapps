@@ -41,13 +41,18 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(29);
+  expect(BRIDGES).toHaveLength(30);
   expect(VOYAGES.map((v) => v.id)).toEqual(['voyage-5e', 'voyage-4e', 'voyage-3e']);
-  expect(BIOMES.length).toBe(29);
+  expect(BIOMES.length).toBe(30);
   // Le Relais des voyageurs (LV2) est en bout de chemin : un seul ouvrage y mène, depuis le Comptoir.
   expect(BRIDGES.filter((b) => b.from === 'relais' || b.to === 'relais').map((b) => b.id)).toEqual(['comptoir-relais']);
   expect(isBiomeUnlocked('relais', ['voyage-5e', 'marche-comptoir', 'comptoir-relais'])).toBe(true);
   expect(isBiomeUnlocked('relais', ['voyage-5e', 'marche-comptoir'])).toBe(false);
+  // Le Jardin des heures (LV2, 4e) aussi : un seul ouvrage, depuis le Théâtre.
+  expect(BRIDGES.filter((b) => b.from === 'jardin' || b.to === 'jardin').map((b) => b.id)).toEqual(['theatre-jardin']);
+  const versLeTheatre = ['voyage-5e', 'voyage-4e', 'atelier-falaise', 'falaise-cabinet', 'cabinet-theatre'];
+  expect(isBiomeUnlocked('jardin', [...versLeTheatre, 'theatre-jardin'])).toBe(true);
+  expect(isBiomeUnlocked('jardin', versLeTheatre)).toBe(false);
 });
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {

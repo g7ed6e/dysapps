@@ -374,8 +374,9 @@ describe('La construction taillée (lot R5)', () => {
       const iles = [...new Set(cubes.filter((c) => c.texture === 'toit').map((c) => c.tag!))];
       const part = iles.filter((i) => toitDe(i) === 'terre-cuite').length / iles.length;
       // Aux Îles Brumeuses, le Relais des voyageurs (LV2) reste d'ardoise à côté du Comptoir : jamais deux voisins en terre
-      // cuite (DA, LV2-2) ; une île sur six.
-      expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' ? 1 / 6 : 0.2);
+      // cuite (DA, LV2-2) ; une île sur six. Aux Anciens Ateliers, le Jardin des heures (LV2) reste d'ardoise à côté du
+      // Théâtre, hors du compte (DA, LV2-4) : une île sur six.
+      expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' || a === '4e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }
     expect(TERRE_CUITE_SUR).toHaveLength(5);

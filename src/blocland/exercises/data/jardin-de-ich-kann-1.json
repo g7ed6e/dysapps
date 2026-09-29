@@ -1,0 +1,239 @@
+{
+  "id": "jardin-de-ich-kann-1",
+  "biome": "jardin",
+  "type": "de-ich-kann",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "jardin-de-ich-kann-1-0",
+      "prompt": "Was isst du?",
+      "spoken": "Was isst du?",
+      "choices": [
+        "Ich esse einen Apfel.",
+        "Ich esse ein Apfel.",
+        "Ich esse eine Apfel."
+      ],
+      "answer": "Ich esse einen Apfel.",
+      "hint": "der Apfel est masculin. Que devient ein ?",
+      "explanation": "der Apfel (la pomme) est masculin : à l’accusatif, ein devient einen. Ich esse einen Apfel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-1",
+      "prompt": "Was trinkst du?",
+      "spoken": "Was trinkst du?",
+      "choices": [
+        "Ich trinke einen Saft.",
+        "Ich trinke ein Saft.",
+        "Ich trinke eine Saft."
+      ],
+      "answer": "Ich trinke einen Saft.",
+      "hint": "der Saft est masculin. Que devient ein ?",
+      "explanation": "der Saft (le jus) est masculin : ein devient einen. Ich trinke einen Saft.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-2",
+      "prompt": "Was möchtest du?",
+      "spoken": "Was möchtest du?",
+      "choices": [
+        "Ich möchte ein Stück Kuchen.",
+        "Ich möchte einen Stück Kuchen.",
+        "Ich möchte eine Stück Kuchen."
+      ],
+      "answer": "Ich möchte ein Stück Kuchen.",
+      "hint": "das Stück est neutre. Est-ce que ein change ?",
+      "explanation": "das Stück (le morceau) est neutre : ein ne change pas. Ich möchte ein Stück Kuchen (un morceau de gâteau).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-3",
+      "prompt": "Was brauchst du?",
+      "spoken": "Was brauchst du?",
+      "choices": [
+        "Ich brauche eine Gabel.",
+        "Ich brauche einen Gabel.",
+        "Ich brauche ein Gabel."
+      ],
+      "answer": "Ich brauche eine Gabel.",
+      "hint": "die Gabel est féminin. Est-ce que eine change ?",
+      "explanation": "die Gabel (la fourchette) est féminin : eine ne change pas. Ich brauche eine Gabel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-4",
+      "prompt": "Wie fährst du zur Schule?",
+      "spoken": "Wie fährst du zur Schule?",
+      "choices": [
+        "Ich nehme den Bus.",
+        "Ich nehme der Bus.",
+        "Ich nehme die Bus."
+      ],
+      "answer": "Ich nehme den Bus.",
+      "hint": "der Bus est masculin. Que devient der ?",
+      "explanation": "der Bus est masculin : à l’accusatif, der devient den. Ich nehme den Bus (je prends le bus).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-5",
+      "prompt": "Hast du ein Haustier?",
+      "spoken": "Hast du ein Haustier?",
+      "choices": [
+        "Ja, ich habe einen Hund.",
+        "Ja, ich habe ein Hund.",
+        "Ja, ich habe eine Hund."
+      ],
+      "answer": "Ja, ich habe einen Hund.",
+      "hint": "der Hund est masculin. Que devient ein ?",
+      "explanation": "das Haustier (l’animal) est neutre, mais der Hund (le chien) est masculin : ein devient einen. Ja, ich habe einen Hund.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-6",
+      "prompt": "Was kochst du heute?",
+      "spoken": "Was kochst du heute?",
+      "choices": [
+        "Ich koche eine Suppe.",
+        "Ich koche einen Suppe.",
+        "Ich koche ein Suppe."
+      ],
+      "answer": "Ich koche eine Suppe.",
+      "hint": "die Suppe est féminin. Est-ce que eine change ?",
+      "explanation": "die Suppe (la soupe) est féminin : eine ne change pas. Ich koche eine Suppe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "jardin-de-ich-kann-1-7",
+      "prompt": "Wo ist der Teller?",
+      "spoken": "Wo ist der Teller?",
+      "choices": [
+        "Ich sehe den Teller nicht.",
+        "Ich sehe der Teller nicht.",
+        "Ich sehe das Teller nicht."
+      ],
+      "answer": "Ich sehe den Teller nicht.",
+      "hint": "der Teller est masculin. Que devient der ?",
+      "explanation": "der Teller (l’assiette) est masculin : après sehen, der devient den. Ich sehe den Teller nicht (je ne vois pas l’assiette).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der Akkusativ",
+          "lines": [
+            "Le COD est à l’accusatif : après essen, haben, nehmen, sehen.",
+            "Masculin : der devient den, ein devient einen.",
+            "Féminin (die, eine) et neutre (das, ein) : rien ne change.",
+            "der Löffel : Ich brauche einen Löffel.",
+            "Masculins : der Apfel, der Saft, der Bus, der Hund, der Teller",
+            "Féminins : die Gabel, die Suppe. Neutre : das Stück (le morceau)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "osier",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

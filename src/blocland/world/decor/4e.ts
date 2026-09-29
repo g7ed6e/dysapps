@@ -13,13 +13,15 @@ import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
 import { CORE, MAP } from '../map';
 import type { Couleur, Faces } from '../palette';
+import type { TextureKind } from '../pixels';
 import { PLAN_ZONE } from '../plans';
 import { worldBounds } from '../terrain';
 import { dessinerRocher, FORMES_COMMUNES } from './communes';
 import type { Cone, Etendue, Lointain } from './lointain';
 import { bouffees } from './fumee';
+import { dessinerPonton } from './ponton';
 import { enRepere, type Forme } from './outils';
-import { DELAVE, eclaircir, hex, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { boite, DELAVE, eclaircir, hex, icosaedre, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de l'intention du directeur artistique. */
 export const COULEURS_4E = {
@@ -305,6 +307,106 @@ const grue: Forme = ({ P, e, cx, cz, sol }) => {
   tronconique(P, ch[0], ch[2], yC, yC + 0.4, 0.05, 0.22, 4, 0, peintre(faces('#5A5550', e.muted), yC, 0.5));
 };
 
+// ---------- Le ponton du Jardin des heures et sa barque ----------
+
+/**
+ * La barque du Jardin (DA, LV2-4) : amarrée au ponton, le long de la falaise (vers +y, comme ses cubes), basse sur l'eau,
+ * sans mât ni voile (aucune verticale : la grue reste la seule du 4e). Une coque à six pans en plan, du bois de la grue,
+ * pointue aux deux bouts, son dedans de planches et un banc.
+ */
+export const BARQUE = { long: 2.2, large: 0.36, bord: 0.3, fond: 0.12, depuis: 0.75 } as const;
+
+function barque(P: Pinceau, xc: number, cz: number, muted: boolean): void {
+  const B = BARQUE;
+  const [z0, z1] = [cz + B.depuis, cz + B.depuis + B.long];
+  const [y0, y1] = [NIVEAU_EAU - B.fond, NIVEAU_EAU + B.bord];
+  // Le plan de la coque (x, z) : la proue et la poupe en pointe, les flancs droits ; le fond, plus étroit.
+  const plan = (k: number): [number, number][] => [
+    [xc, z0],
+    [xc + B.large * k, z0 + 0.45],
+    [xc + B.large * k, z1 - 0.5],
+    [xc, z1],
+    [xc - B.large * k, z1 - 0.5],
+    [xc - B.large * k, z0 + 0.45],
+  ];
+  const haut = plan(1);
+  const bas = plan(0.62);
+  const zm = (z0 + z1) / 2;
+  const dedans: V3 = [xc, (y0 + y1) / 2, zm];
+  const coque = peintre(faces(COULEURS_4E.mat, muted), y0, y1 - y0);
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    P.quad([bas[i][0], y0, bas[i][1]], [bas[j][0], y0, bas[j][1]], [haut[j][0], y1, haut[j][1]], [haut[i][0], y1, haut[i][1]], dedans, coque);
+  }
+  // Le dedans, un peu sous le plat-bord, et le banc.
+  const planche = peintre(faces(COULEURS_4E.fleche, muted), y0, y1 - y0);
+  const y = y1 - 0.06;
+  for (let i = 1; i + 1 < 6; i++) P.triangle([haut[0][0], y, haut[0][1]], [haut[i][0], y, haut[i][1]], [haut[i + 1][0], y, haut[i + 1][1]], [xc, y - 1, zm], planche);
+  boite(P, xc - B.large + 0.04, y, zm - 0.12, xc + B.large - 0.04, y1 + 0.02, zm + 0.12, planche);
+}
+
+/**
+ * Le contrefort du ponton (retouche du directeur artistique, 29/09) : sous le rivage, l'île flotte ; la falaise descend
+ * jusqu'à l'eau, où l'échelle s'appuie sur toute sa hauteur. Pas une colonne : la matière et les facettes de la falaise
+ * (la roche sous la case du rivage), des arêtes cassées, plus large au pied qu'en haut, arrêté une marche sous le bord de
+ * l'herbe ; sa face vers le large reste
+ * plane, droite, un peu en retrait de celle de la falaise (pas de faces confondues), l'échelle debout devant. Au pied,
+ * un éboulis de trois rochers bas, hors du tablier et de la barque.
+ */
+export const CONTREFORT = { face: 0.47, haut: 0.55, pied: 1.05, recul: [0.55, 1.15], rochers: 3 } as const;
+
+function contrefort(o: Parameters<Forme>[0]): void {
+  const { P, e, cx, cz, base, hasard, champ, matiere } = o;
+  const C = CONTREFORT;
+  const col = colonneEn(champ, e.x, e.y);
+  const roche = (col?.matieres[0] ?? 'pierre') as TextureKind;
+  // Son haut, une marche sous le bord de l'herbe (le dessus de la colonne du rivage, ou le sol au milieu de la case s'il
+  // est plus bas) : il reste sous le rivage, jamais une verticale de plus au-dessus de lui.
+  const bord = Math.min(base, col ? col.haut + 1 : base);
+  const [y0, y1] = [NIVEAU_EAU - 0.3, bord - 1];
+  const peindre = peintre(matiere(roche, e.muted), NIVEAU_EAU, base - NIVEAU_EAU);
+  const xe = cx + C.face;
+  // Trois anneaux (le pied, le milieu, le haut) de six sommets : deux sur la face plane du large, derrière l'échelle,
+  // quatre qui se cassent vers l'île et s'écartent vers le pied.
+  const anneau = (t: number, y: number): V3[] => {
+    const demi = C.pied + (C.haut - C.pied) * t;
+    const recul = C.recul[1] + (C.recul[0] - C.recul[1]) * t;
+    const j = () => (hasard() - 0.5) * 0.24;
+    return [
+      [xe, y, cz - 0.38],
+      [xe, y, cz + 0.38],
+      [xe - 0.35 + j(), y, cz + demi + j()],
+      [cx + 0.5 - recul + j(), y, cz + demi * 0.45 + j()],
+      [cx + 0.5 - recul + j(), y, cz - demi * 0.45 + j()],
+      [xe - 0.35 + j(), y, cz - demi + j()],
+    ];
+  };
+  const anneaux = [anneau(0, y0), anneau(0.45, y0 + (y1 - y0) * 0.4), anneau(1, y1)];
+  for (let k = 0; k + 1 < anneaux.length; k++) {
+    const [bas, haut] = [anneaux[k], anneaux[k + 1]];
+    const dedans: V3 = [cx, (bas[0][1] + haut[0][1]) / 2, cz];
+    for (let i = 0; i < 6; i++) {
+      const n = (i + 1) % 6;
+      P.quad(bas[i], bas[n], haut[n], haut[i], dedans, peindre);
+    }
+  }
+  // L'éboulis : trois rochers bas au pied, du côté de l'île et sur les flancs (jamais sous le tablier ni la barque).
+  const places: [number, number, number][] = [
+    [cx - 0.75, cz + 1.05, 0.42],
+    [cx - 0.1, cz - 1.2, 0.38],
+    [cx + 0.2, cz + 1.25, 0.3],
+  ];
+  for (const [x, z, r] of places.slice(0, C.rochers)) icosaedre(P, [x, NIVEAU_EAU + 0.02, z], r, 0.55, 0.2, hasard, peindre, hasard() * Math.PI);
+}
+
+/** Le ponton du Jardin : celui du Relais (./ponton.ts), sur son contrefort, et sa barque amarrée à deux cases du rivage, comme ses cubes. */
+const pontonDuJardin: Forme = (o) => {
+  const { P, e, cx, cz, base } = o;
+  contrefort(o);
+  dessinerPonton(P, cx, cz, base, e.muted);
+  barque(P, cx + 2, cz, e.muted);
+};
+
 // ---------- Le lointain : le volcan du fond et deux rangs de crêtes ----------
 
 /**
@@ -373,5 +475,5 @@ export const FORMES_HORS_GRILLE_4E: Record<string, Forme> = { grue, panache };
 /** Les repères du 4e. */
 export const FORMES_4E: Record<string, Forme> = { 'haut-fourneau': fourneau };
 
-/** Les genres communs que le 4e redessine. */
-export const RETOUCHES_4E: Record<string, Forme> = { ecueil, rocher };
+/** Les genres communs que le 4e redessine (le ponton : celui du Jardin des heures, avec sa barque). */
+export const RETOUCHES_4E: Record<string, Forme> = { ecueil, rocher, ponton: pontonDuJardin };
