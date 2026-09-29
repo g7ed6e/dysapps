@@ -9,6 +9,7 @@ import { ARCHIPELAGOS, getArchipelago, isArchipelagoReached, type ArchipelagoId 
 import { stageTo } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { useHoldCelebrations } from '../components/Celebrations';
 
 /**
  * Le voyage en vue simple : `#/aventure/voyage/:vers` (la classe de l'archipel d'arrivée). Un premier voyage largue les
@@ -18,6 +19,8 @@ export function VoyagePage() {
   const univers = useUnivers();
   const { vers } = useParams();
   const navigate = useNavigate();
+  // Pendant le voyage, un bandeau de récompense attend l'arrivée (DA-9).
+  useHoldCelebrations(true);
   const { state, launch, moveTo } = useBlocland();
   const { launchVoyage } = useProgress();
   const to = ARCHIPELAGOS.find((a) => a.classe === vers)?.classe as ArchipelagoId | undefined;

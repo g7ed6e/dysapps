@@ -293,5 +293,5 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Bouton Carte | L’archipel vu du ciel, l’état de chaque île, la prochaine destination (« Y aller ») et le bouton « Les quatre archipels » |
 | Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
 | Bouton Forcer le jour (la nuit) | Repasse en plein jour |
-| Bouton Revoir l’aide | Rejoue le tutoriel de huit bulles (le village, les îles, les missions, le panneau, l’école et la salle des trophées, les ouvrages, le Bloc-Navire, le menu), affichées en bas de l’écran pour laisser voir l’île et la flèche ; le bouton dont parle une bulle (Carte, Blocs, École, Menu) est entouré d’un contour jaune qui clignote |
+| Bouton Revoir l’aide | Rejoue le tutoriel de huit bulles (le village, les îles, les missions, le panneau, l’école et la salle des trophées, les ouvrages, le Bloc-Navire, le menu), affichées en bas de l’écran pour laisser voir l’île et la flèche ; le bouton dont parle une bulle (Carte, Blocs, École, Menu) est entouré d’un contour jaune qui clignote ; comme la première fois, le mot de la baleine, le rallumage d’une sentinelle et les bandeaux de succès attendent que le tutoriel soit fermé |
 | Bouton retour du téléphone, dans le village | Ouvre le menu du village ; un second retour quitte (ou revient à la page d’avant) |

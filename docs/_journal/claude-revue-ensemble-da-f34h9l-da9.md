@@ -1,0 +1,1 @@
+Un bandeau « Succès débloqué » ou « Niveau supérieur ! » attend que le panneau ouvert soit fermé (tutoriel, mot de la baleine, rallumage d’une sentinelle, voyage), dans le monde comme en vue simple : il ne tombe plus sur la phrase que l’élève lit. Dans les deux univers.
