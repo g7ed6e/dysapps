@@ -244,9 +244,10 @@ export function graphSegment({ a, b, xMin, xMax, yMin, yMax }: FramedLine): [[nu
 
 /**
  * Le graphique d'une fonction affine f(x) = ax + b dans un repère : un quadrillage discret d'une graduation par unité,
- * les deux axes fléchés, tous les nombres écrits le long des axes, la droite épaisse et ses points aux intersections du
- * quadrillage (on ne lit jamais entre deux graduations). La légende nomme la droite ; la description donne aux lecteurs
- * d'écran le repère et les points de la droite, ceux que l'on voit.
+ * les deux axes fléchés à 0, un petit trait à chaque graduation, la droite épaisse et ses points aux intersections du
+ * quadrillage (on ne lit jamais entre deux graduations). Les nombres sont écrits dans les marges, hors du quadrillage :
+ * ceux de x en bas, ceux de f(x) à gauche. La droite et ses points restent dans le cadre : ils ne touchent jamais un
+ * nombre. La légende nomme la droite ; la description donne aux lecteurs d'écran le repère et les points de la droite.
  */
 export function Graph({
   a,
@@ -258,8 +259,10 @@ export function Graph({
   name = 'f',
 }: { a: number; b: number; name?: string } & Partial<GraphFrame>) {
   const cell = 36;
-  const left = 34;
+  const left = 42;
   const top = 30;
+  const right = 34;
+  const bottom = 34;
   const w = (xMax - xMin) * cell;
   const h = (yMax - yMin) * cell;
   const X = (v: number) => left + (v - xMin) * cell;
@@ -277,7 +280,7 @@ export function Graph({
     `une graduation par unité. La droite de ${name} passe par les points ${points.map(([x, y]) => `(${signed(x)} ; ${signed(y)})`).join(', ')}.`;
   return (
     <figure className="graph">
-      <svg viewBox={`0 0 ${left + w + 34} ${top + h + 26}`} role="img" aria-label={label}>
+      <svg viewBox={`0 0 ${left + w + right} ${top + h + bottom}`} role="img" aria-label={label}>
         <defs>
           <marker id="graph-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 10 z" className="graph-arrow" />
@@ -291,6 +294,13 @@ export function Graph({
         ))}
         <line x1={X(xMin)} y1={Y(y0)} x2={X(xMax) + 20} y2={Y(y0)} className="graph-axis" markerEnd="url(#graph-arrow)" />
         <line x1={X(x0)} y1={Y(yMin)} x2={X(x0)} y2={Y(yMax) - 20} className="graph-axis" markerEnd="url(#graph-arrow)" />
+        {/* Un petit trait à chaque graduation, sur les deux axes. */}
+        {xs.map((v) => (
+          <line key={`tx${v}`} x1={X(v)} y1={Y(y0) - 5} x2={X(v)} y2={Y(y0) + 5} className="graph-axis-tick" />
+        ))}
+        {ys.map((v) => (
+          <line key={`ty${v}`} x1={X(x0) - 5} y1={Y(v)} x2={X(x0) + 5} y2={Y(v)} className="graph-axis-tick" />
+        ))}
         <text x={X(xMax) + 22} y={Y(y0) - 8} textAnchor="end" className="graph-name">
           x
         </text>
@@ -301,22 +311,18 @@ export function Graph({
         {points.map(([x, y]) => (
           <circle key={`p${x}`} cx={X(x)} cy={Y(y)} r="5" className="graph-point" />
         ))}
-        {/* Les nombres par-dessus la droite (leur halo la coupe) ; sur l'axe horizontal, tous centrés sous leur graduation, à
-            pas égal, 0 compris : écrit à part, près d'un −1, il se lirait « −10 ». Le 0 n'est pas répété sur l'axe vertical. */}
-        {/* Le 0 de l'origine sur un fond plein : ni l'axe vertical ni la droite ne le barrent. */}
-        {x0 === 0 && y0 === 0 && <rect x={X(0) - 10} y={Y(0) + 5} width="20" height="24" className="graph-tick-bg" />}
+        {/* Les nombres dans les marges, hors du cadre où passent la droite et ses points : ceux de x sous le cadre, centrés
+            sous leur graduation, à pas égal ; ceux de f(x) à gauche du cadre, en face de leur ligne. */}
         {xs.map((v) => (
-          <text key={`lx${v}`} x={X(v)} y={Y(y0) + 24} textAnchor="middle" className="graph-tick">
+          <text key={`lx${v}`} x={X(v)} y={Y(yMin) + 26} textAnchor="middle" className="graph-tick">
             {signed(v)}
           </text>
         ))}
-        {ys
-          .filter((v) => !(v === 0 && x0 === 0 && y0 === 0))
-          .map((v) => (
-            <text key={`ly${v}`} x={X(x0) - 6} y={Y(v) + 7} textAnchor="end" className="graph-tick">
-              {signed(v)}
-            </text>
-          ))}
+        {ys.map((v) => (
+          <text key={`ly${v}`} x={X(xMin) - 9} y={Y(v) + 7} textAnchor="end" className="graph-tick">
+            {signed(v)}
+          </text>
+        ))}
       </svg>
       <figcaption>{`La droite épaisse est celle de ${name}.`}</figcaption>
     </figure>

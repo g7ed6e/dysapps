@@ -48,14 +48,27 @@ describe('Graph', () => {
     expect(screen.getByText('La droite épaisse est celle de f.')).toBeInTheDocument();
     // Les axes sont nommés sur le graphique.
     expect([...container.querySelectorAll('.graph-name')].map((t) => t.textContent)).toEqual(['x', 'f(x)']);
-    // Le 0 de l'origine a un fond plein : ni l'axe ni la droite ne le barrent.
-    expect(container.querySelectorAll('.graph-tick-bg')).toHaveLength(1);
-    // Une graduation par unité, chaque nombre écrit une fois (0 une seule fois, à l'origine), avec le vrai signe moins.
-    const ticks = [...container.querySelectorAll('.graph-tick')].map((t) => t.textContent);
-    expect(ticks).toHaveLength(17);
-    expect(ticks.filter((t) => t === '0')).toHaveLength(1);
+    // Un petit trait à chaque graduation des deux axes.
+    expect(container.querySelectorAll('.graph-axis-tick')).toHaveLength(18);
+    // Une graduation par unité : les neuf nombres de x et les neuf de f(x), avec le vrai signe moins.
+    const tickNodes = [...container.querySelectorAll('.graph-tick')];
+    const ticks = tickNodes.map((t) => t.textContent);
+    expect(ticks).toHaveLength(18);
+    expect(ticks.filter((t) => t === '0')).toHaveLength(2);
     expect(ticks).toContain('−4');
     expect(ticks.join()).not.toContain('-');
+    // Les nombres sont dans les marges, hors du cadre où passent la droite et ses points (rayon 5, trait de 4) : ceux de x
+    // sous le cadre (le haut des chiffres, à 21 unités, est à 16 au-dessus de la ligne d'écriture), ceux de f(x) à sa gauche.
+    const grid = [...container.querySelectorAll('.graph-grid')].map((l) => ['x1', 'y1', 'x2', 'y2'].map((k) => Number(l.getAttribute(k))));
+    const frameLeft = Math.min(...grid.map(([x1, , x2]) => Math.min(x1, x2)));
+    const frameBottom = Math.max(...grid.map(([, y1, , y2]) => Math.max(y1, y2)));
+    const at = (t: Element, k: string) => Number(t.getAttribute(k));
+    const [bottomRow, leftColumn] = [tickNodes.slice(0, 9), tickNodes.slice(9)];
+    for (const t of bottomRow) expect(at(t, 'y') - 16).toBeGreaterThan(frameBottom + 5);
+    for (const t of leftColumn) {
+      expect(t.getAttribute('text-anchor')).toBe('end');
+      expect(at(t, 'x')).toBeLessThan(frameLeft - 5);
+    }
     expect(container.querySelectorAll('.graph-point')).toHaveLength(4);
     expect(container.querySelectorAll('.graph-line')).toHaveLength(1);
     // Rien d'animé.

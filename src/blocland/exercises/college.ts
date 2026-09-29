@@ -2055,16 +2055,16 @@ function drawReading(rng: Rng, imageNotZero: boolean): { a: number; b: number; x
 const point = (x: number, y: number) => `(${fmt(x)} ; ${fmt(y)})`;
 
 export const READ_IMAGE_RULES = [
-  'L’image de x se lit sur l’axe vertical, celui de f(x).',
-  'Pars de x sur l’axe horizontal, monte ou descends jusqu’à la droite.',
-  'Puis va à l’horizontale jusqu’à l’axe vertical et lis le nombre.',
+  'L’image de x se lit sur l’axe vertical ; ses nombres sont écrits à gauche.',
+  'Pars de x, écrit en bas, monte ou descends jusqu’à la droite.',
+  'Puis va à l’horizontale et lis le nombre en face, à gauche.',
   'Le point (5 ; 7) veut dire : l’image de 5 est 7, f(5) = 7.',
 ];
 
 export const READ_ANTECEDENT_RULES = [
-  'L’antécédent se lit sur l’axe horizontal, celui des x.',
-  'Pars du nombre sur l’axe vertical, va à l’horizontale jusqu’à la droite.',
-  'Puis monte ou descends jusqu’à l’axe horizontal et lis le nombre.',
+  'L’antécédent se lit sur l’axe horizontal ; ses nombres sont écrits en bas.',
+  'Pars du nombre écrit à gauche, va à l’horizontale jusqu’à la droite.',
+  'Puis monte ou descends et lis le nombre en face, en bas.',
   'Le point (5 ; 7) veut dire : 5 est un antécédent de 7.',
 ];
 
@@ -2101,7 +2101,7 @@ export const graphImage: ItemGenerator = (rng) => {
       rng,
     ),
     answer: fmt(y),
-    hint: `Pars de ${fmt(x)} sur l’axe horizontal, monte ou descends jusqu’à la droite, puis lis l’axe vertical.`,
+    hint: `Pars de ${fmt(x)}, écrit en bas, monte ou descends jusqu’à la droite, puis lis le nombre en face, à gauche.`,
     explanation: `La droite passe par le point ${point(x, y)} : pour x = ${fmt(x)}, on lit ${fmt(y)} sur l’axe vertical. L’image de ${fmt(x)} est ${fmt(y)}.`,
     figure: graphFigure(a, b),
     aid: { kind: 'rule-card', props: { title: 'Lire une image', lines: READ_IMAGE_RULES } },
@@ -2130,7 +2130,7 @@ export const graphAntecedent: ItemGenerator = (rng) => {
       rng,
     ),
     answer: fmt(x),
-    hint: `Pars de ${fmt(y)} sur l’axe vertical, va à l’horizontale jusqu’à la droite, puis lis l’axe horizontal.`,
+    hint: `Pars de ${fmt(y)}, écrit à gauche, va à l’horizontale jusqu’à la droite, puis lis le nombre en face, en bas.`,
     explanation: `La droite passe par le point ${point(x, y)} : pour f(x) = ${fmt(y)}, on lit ${fmt(x)} sur l’axe horizontal. L’antécédent de ${fmt(y)} est ${fmt(x)}.`,
     figure: graphFigure(a, b),
     aid: { kind: 'rule-card', props: { title: 'Lire un antécédent', lines: READ_ANTECEDENT_RULES } },
@@ -2252,8 +2252,8 @@ const RELEVES_POURCENTAGE = 'Donne la fréquence en pourcentage : l’effectif d
 const IMAGES = 'Calcule l’image : remplace x par le nombre dans la formule. Le tableau de valeurs t’aide.';
 const ANTECEDENT = 'Trouve l’antécédent : résous l’équation f(x) égale le nombre donné.';
 const DROITES = 'Coefficient directeur, fonction linéaire ou affine : la règle est affichée.';
-const FAISCEAUX = 'Lis l’image sur le graphique : pars du nombre sur l’axe horizontal, puis lis l’axe vertical.';
-const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du nombre sur l’axe vertical, puis lis l’axe horizontal.';
+const FAISCEAUX = 'Lis l’image sur le graphique : pars du nombre écrit en bas, puis lis le nombre en face, à gauche.';
+const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du nombre écrit à gauche, puis lis le nombre en face, en bas.';
 const FAISCEAUX_DROITE = 'Lis sur la droite : l’ordonnée à l’origine sur l’axe vertical, le coefficient directeur en comptant les carreaux.';
 
 export const COLLEGE_EXERCISES: ExerciseDef[] = [

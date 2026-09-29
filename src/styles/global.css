@@ -4202,8 +4202,9 @@ button.island-quest:active {
   letter-spacing: 0;
   word-spacing: 0;
 }
-.graph .graph-tick-bg {
-  fill: var(--surface);
+.graph .graph-axis-tick {
+  stroke: currentColor;
+  stroke-width: 2;
 }
 .graph .graph-line {
   stroke: var(--violet);
