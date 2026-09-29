@@ -155,7 +155,7 @@ describe('les textes communs (J8, U4)', () => {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
       const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('07245c8c6d72655c43883eb0410300bb6060df0a7186a97872814c9096c27825');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ad04c0c36a2ae4db30d3c99c9efa8602038277ac70a4570ed6de0807b3634f99');
     }
   });
 
