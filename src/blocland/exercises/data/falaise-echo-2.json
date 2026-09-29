@@ -1,0 +1,214 @@
+{
+  "id": "falaise-echo-2",
+  "biome": "falaise",
+  "type": "echo",
+  "level": 2,
+  "instruction": "Accorde le participe passé du verbe pronominal. La règle est affichée.",
+  "items": [
+    {
+      "key": "falaise-echo-2-0",
+      "prompt": "Hier soir, mes sœurs se sont … tôt.",
+      "spoken": "Hier soir, mes sœurs se sont (mot manquant) tôt.",
+      "choices": [
+        "couchées",
+        "couché",
+        "couchés"
+      ],
+      "answer": "couchées",
+      "hint": "Y a-t-il un COD après le verbe ? Sinon, cherche le sujet.",
+      "explanation": "Pas de COD après le verbe : le participe s’accorde avec le sujet, mes sœurs, au féminin pluriel. Elles se sont couchées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-1",
+      "prompt": "Léa s’est … les cheveux ce matin.",
+      "spoken": "Léa s’est (mot manquant) les cheveux ce matin.",
+      "choices": [
+        "lavé",
+        "lavée",
+        "lavés"
+      ],
+      "answer": "lavé",
+      "hint": "Léa lave quoi ? Regarde ce qui suit le verbe.",
+      "explanation": "Léa lave les cheveux : c’est un COD, placé après le verbe. Pas d’accord : Léa s’est lavé les cheveux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-2",
+      "prompt": "Les garçons se sont … dans la forêt.",
+      "spoken": "Les garçons se sont (mot manquant) dans la forêt.",
+      "choices": [
+        "perdus",
+        "perdu",
+        "perdues"
+      ],
+      "answer": "perdus",
+      "hint": "Y a-t-il un COD après le verbe ? Sinon, cherche le sujet.",
+      "explanation": "Pas de COD après le verbe : accord avec le sujet, les garçons, au masculin pluriel. Ils se sont perdus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-3",
+      "prompt": "Mes cousines se sont … au téléphone pendant une heure.",
+      "spoken": "Mes cousines se sont (mot manquant) au téléphone pendant une heure.",
+      "choices": [
+        "parlé",
+        "parlées",
+        "parlés"
+      ],
+      "answer": "parlé",
+      "hint": "Parle-t-on quelqu’un, ou parle-t-on à quelqu’un ?",
+      "explanation": "On parle à quelqu’un : « se » veut dire « à elles », ce n’est pas un COD. Pas d’accord : elles se sont parlé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-4",
+      "prompt": "Ma grand-mère s’est … le poignet en tombant.",
+      "spoken": "Ma grand-mère s’est (mot manquant) le poignet en tombant.",
+      "choices": [
+        "cassé",
+        "cassée",
+        "cassés"
+      ],
+      "answer": "cassé",
+      "hint": "Regarde ce qui suit le verbe : y a-t-il un COD ?",
+      "explanation": "Le poignet est un COD, placé après le verbe : pas d’accord. Ma grand-mère s’est cassé le poignet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-5",
+      "prompt": "Avant le match, les deux équipes se sont … .",
+      "spoken": "Avant le match, les deux équipes se sont (mot manquant).",
+      "choices": [
+        "saluées",
+        "salué",
+        "salués"
+      ],
+      "answer": "saluées",
+      "hint": "Salue-t-on quelqu’un, ou salue-t-on à quelqu’un ?",
+      "explanation": "On salue quelqu’un, sans à, et aucun COD ne suit le verbe : accord avec le sujet, les équipes, au féminin pluriel. Elles se sont saluées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-6",
+      "prompt": "Les enfants se sont … les dents.",
+      "spoken": "Les enfants se sont (mot manquant) les dents.",
+      "choices": [
+        "brossé",
+        "brossés",
+        "brossées"
+      ],
+      "answer": "brossé",
+      "hint": "Les enfants brossent quoi ? Regarde ce qui suit le verbe.",
+      "explanation": "Les dents sont un COD, placé après le verbe : pas d’accord, ni avec les enfants, ni avec les dents. Ils se sont brossé les dents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "falaise-echo-2-7",
+      "prompt": "Julie s’est … dans le train.",
+      "spoken": "Julie s’est (mot manquant) dans le train.",
+      "choices": [
+        "endormie",
+        "endormi",
+        "endormis"
+      ],
+      "answer": "endormie",
+      "hint": "Y a-t-il un COD après le verbe ? Sinon, cherche le sujet.",
+      "explanation": "Pas de COD après le verbe : accord avec le sujet, Julie, au féminin singulier. Elle s’est endormie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le participe passé des verbes pronominaux",
+          "lines": [
+            "Le plus souvent, le participe s’accorde avec le sujet : elles s’étaient assises.",
+            "Un COD placé après le verbe : pas d’accord (tu t’es coupé le doigt).",
+            "Se sourire, se téléphoner : on sourit ou on téléphone à quelqu’un. Pas d’accord."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "ardoise",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

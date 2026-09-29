@@ -499,7 +499,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Accords',
     subject: 'francais',
     classe: '4e',
-    description: 'Participe passé, adjectifs, sujet caché : accorder sans se tromper, la règle sous les yeux.',
+    description: 'Participe passé, adjectifs, sujet caché, verbes pronominaux : accorder sans se tromper, la règle sous les yeux.',
     block: 'ardoise',
     guardian: 'le Bélier de granit',
     icon: 'mountain',
@@ -508,6 +508,7 @@ export const BIOMES: BiomeDef[] = [
       { id: 'corde', title: 'Corde du participe', description: 'Participe passé avec être, avec avoir, puis avec le COD placé avant.', programme: ['c4.fr.langue.participe-passe', 'c3.fr.langue.attribut-participe-etre'] },
       { id: 'paroi', title: 'Paroi des adjectifs', description: 'Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.', programme: ['c4.fr.langue.accord-gn-complexe', 'c3.fr.langue.accord-gn'] },
       { id: 'sommet', title: 'Sommet du sujet', description: 'Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.', programme: ['c4.fr.langue.accord-verbe-complexe'] },
+      { id: 'echo', title: 'Écho des pronominaux', description: 'Les verbes pronominaux, puis l’accord de leur participe passé, puis le groupe apposé.', programme: ['c4.fr.langue.morphologie-verbale', 'c4.fr.langue.participe-passe'] },
     ],
   },
   {
