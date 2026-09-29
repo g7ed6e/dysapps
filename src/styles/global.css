@@ -5066,7 +5066,18 @@ fieldset {
   /* Quête : le bouton Écouter au-dessus de la consigne, qui a toute la largeur. */
   :root[data-texte="grand"] .consigne {
     flex-direction: column-reverse;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+  :root[data-texte="grand"] .consigne > .speak-button {
+    align-self: flex-start;
+  }
+  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite ; les suivantes ont
+     toute la largeur. */
+  :root[data-texte="grand"] .app-shell.focus .page-title::before {
+    content: "";
+    float: right;
+    width: calc(56px + 0.6rem);
+    height: 1lh;
   }
   /* Les titres coulent comme le texte : l'icône en tête de la première ligne, les mots passent à la ligne dessous. */
   :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) {
@@ -5102,21 +5113,46 @@ fieldset {
     padding-left: 6px;
     padding-right: 6px;
   }
+  /* Ce qui s'écrit plus grand que le texte (titre de page, énoncé, calcul, document, blocs de lettres) revient à la
+     taille du texte : un mot y tient entier sur la ligne. */
+  :root[data-texte="grand"] :is(.page-title, .question-prompt, .calcul-prompt, .notice-text, .letter-block, .enclos-pen) {
+    font-size: max(1rem, min(1.3rem, 8vw));
+  }
+  /* Les réponses courtes : côte à côte tant qu'elles tiennent, chacune à sa largeur, sinon une par ligne. */
+  :root[data-texte="grand"] .choices.short {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .choices.short > .choice {
+    flex: 1 1 auto;
+  }
+  :root[data-texte="grand"] .enclos-pens {
+    flex-wrap: wrap;
+  }
+  /* L'aide (règle en liste) : retraits fixes. */
+  :root[data-texte="grand"] .aid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  :root[data-texte="grand"] .rule-card {
+    padding: 8px;
+  }
+  :root[data-texte="grand"] .rule-card ul {
+    padding-left: 20px;
+  }
   /* Le mot d'un item (à découper, à écouter) reste entier : jamais plus grand qu'il ne faut pour tenir sur la ligne,
      jamais plus petit que le texte (32 px au plus grand). */
   :root[data-texte="grand"] .item-word {
     font-size: max(1rem, min(1.6rem, 8.5vw));
   }
-  /* Quatre mots à trier : une carte par ligne, pour que chaque mot tienne entier dans sa carte. */
-  :root[data-texte="grand"] .word-cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
   /* « Question 1 / 4 » et le bouton Écouter : sur deux lignes s'ils ne tiennent pas côte à côte. */
   :root[data-texte="grand"] .question-head {
     flex-wrap: wrap;
   }
+  /* « Question » reste entier : « 1 / 4 » passe à la ligne s'il le faut, jamais une lettre seule. */
   :root[data-texte="grand"] .question-count {
     padding: 0 8px;
+    overflow-wrap: normal;
   }
   /* Réglages : des cases moins rembourrées, et la valeur d'un curseur sous son nom quand les deux ne tiennent pas. */
   :root[data-texte="grand"] .option {
@@ -5145,8 +5181,11 @@ fieldset {
   :root[data-texte="grand"] .settings-steps ul {
     padding-left: 20px;
   }
+  /* Les titres de groupe (« Espacements ») en trois quarts du texte, jamais sous 18 px : ils tiennent entiers sur
+     la ligne. */
   :root[data-texte="grand"] .settings legend {
     padding: 0 4px;
+    font-size: max(18px, 0.75rem);
   }
   :root[data-texte="grand"] .slider-label {
     flex-wrap: wrap;
@@ -5181,6 +5220,15 @@ fieldset {
   :root[data-texte="grand"] .island-quest {
     padding: 8px 10px;
   }
+}
+/* En grand texte, les cartes de mots à trier (Chasse au son, Rimes) ont chacune au moins onze lettres de large :
+   deux par ligne sur tablette, une sur téléphone ; un mot tient entier dans sa carte. */
+:root[data-texte="grand"] .word-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11em), 1fr));
+}
+/* De même pour les réponses longues : au moins 14 rem de large, pour qu'un mot comme « bibliothèque » tienne. */
+:root[data-texte="grand"] .choices:not(.short) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
 }
 /* En grand texte, les bulles posées sur le monde ne sont jamais plus larges que lui. */
 :root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
