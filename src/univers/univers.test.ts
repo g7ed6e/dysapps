@@ -149,13 +149,13 @@ describe('les textes d’univers', () => {
 describe('les textes communs (J8, U4)', () => {
   it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
-    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230) et celle de Cléa de l’Écho des pronominaux.
+    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238) et celle de Fi des Faisceaux.
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
       const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ad04c0c36a2ae4db30d3c99c9efa8602038277ac70a4570ed6de0807b3634f99');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('cee5f5db0cdf7f6ac89ec92e9d9dcf6d057631c3cb3667354184514d7a249129');
     }
   });
 

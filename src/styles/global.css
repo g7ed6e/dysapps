@@ -4158,6 +4158,63 @@ button.island-quest:active {
   background: var(--yellow);
   border-style: dashed;
 }
+/* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
+   du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
+   d'animé. */
+.graph {
+  margin: 0;
+}
+.graph svg {
+  width: 100%;
+  max-width: 24rem;
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.graph .graph-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.2;
+}
+.graph .graph-axis {
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.graph .graph-arrow {
+  fill: currentColor;
+}
+.graph text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  font-size: 18px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.graph .graph-name {
+  font-weight: 700;
+}
+.graph .graph-line {
+  stroke: var(--violet);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.graph .graph-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+:root[data-theme="nuit"] .graph .graph-line {
+  stroke: var(--yellow);
+}
+:root[data-theme="nuit"] .graph .graph-point {
+  fill: var(--yellow);
+}
+.graph figcaption {
+  margin-top: 0.3rem;
+  text-align: center;
+}
 
 /* ===== Le plan dans le panneau d'île ===== */
 .plan-section {

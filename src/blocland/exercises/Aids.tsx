@@ -205,3 +205,105 @@ export function BarList({ values, labels: given, mark, markLabel }: { values: nu
     </figure>
   );
 }
+
+/** « −3 » avec le vrai signe moins. */
+const signed = (v: number) => (v < 0 ? `−${-v}` : String(v));
+
+/** Les points du quadrillage par où passe la droite y = ax + b, dans le cadre (x entier, y entier). */
+export function graphPoints({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: number; xMin: number; xMax: number; yMin: number; yMax: number }): [number, number][] {
+  const out: [number, number][] = [];
+  for (let x = xMin; x <= xMax; x++) {
+    const y = a * x + b;
+    if (Number.isInteger(y) && y >= yMin && y <= yMax) out.push([x, y]);
+  }
+  return out;
+}
+
+/** Le morceau de la droite y = ax + b qui tient dans le cadre (deux extrémités), ou `null` si elle n'y passe pas. */
+export function graphSegment({ a, b, xMin, xMax, yMin, yMax }: { a: number; b: number; xMin: number; xMax: number; yMin: number; yMax: number }): [[number, number], [number, number]] | null {
+  let lo = xMin;
+  let hi = xMax;
+  if (a === 0) {
+    if (b < yMin || b > yMax) return null;
+  } else {
+    const [p, q] = [(yMin - b) / a, (yMax - b) / a].sort((u, v) => u - v);
+    lo = Math.max(lo, p);
+    hi = Math.min(hi, q);
+  }
+  if (lo > hi) return null;
+  return [
+    [lo, a * lo + b],
+    [hi, a * hi + b],
+  ];
+}
+
+/**
+ * Le graphique d'une fonction affine f(x) = ax + b dans un repère : un quadrillage discret d'une graduation par unité,
+ * les deux axes fléchés, tous les nombres écrits le long des axes, la droite épaisse et ses points aux intersections du
+ * quadrillage (on ne lit jamais entre deux graduations). La légende dit les axes en toutes lettres ; la description
+ * donne aux lecteurs d'écran le repère et les points de la droite, ceux que l'on voit.
+ */
+export function Graph({ a, b, xMin = -4, xMax = 4, yMin = -4, yMax = 4, name = 'f' }: { a: number; b: number; xMin?: number; xMax?: number; yMin?: number; yMax?: number; name?: string }) {
+  const cell = 36;
+  const left = 34;
+  const top = 30;
+  const w = (xMax - xMin) * cell;
+  const h = (yMax - yMin) * cell;
+  const X = (v: number) => left + (v - xMin) * cell;
+  const Y = (v: number) => top + (yMax - v) * cell;
+  // Les axes passent par 0, ou longent le bord du cadre quand 0 n'y est pas.
+  const x0 = Math.min(Math.max(0, xMin), xMax);
+  const y0 = Math.min(Math.max(0, yMin), yMax);
+  const frame = { a, b, xMin, xMax, yMin, yMax };
+  const points = graphPoints(frame);
+  const segment = graphSegment(frame);
+  const xs = Array.from({ length: xMax - xMin + 1 }, (_, i) => xMin + i);
+  const ys = Array.from({ length: yMax - yMin + 1 }, (_, i) => yMin + i);
+  const label =
+    `Graphique de la fonction ${name} dans un repère : x de ${signed(xMin)} à ${signed(xMax)}, ${name}(x) de ${signed(yMin)} à ${signed(yMax)}, ` +
+    `une graduation par unité. La droite de ${name} passe par les points ${points.map(([x, y]) => `(${signed(x)} ; ${signed(y)})`).join(', ')}.`;
+  return (
+    <figure className="graph">
+      <svg viewBox={`0 0 ${left + w + 34} ${top + h + 26}`} role="img" aria-label={label}>
+        <defs>
+          <marker id="graph-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="graph-arrow" />
+          </marker>
+        </defs>
+        {xs.map((v) => (
+          <line key={`gx${v}`} x1={X(v)} y1={Y(yMax)} x2={X(v)} y2={Y(yMin)} className="graph-grid" />
+        ))}
+        {ys.map((v) => (
+          <line key={`gy${v}`} x1={X(xMin)} y1={Y(v)} x2={X(xMax)} y2={Y(v)} className="graph-grid" />
+        ))}
+        <line x1={X(xMin)} y1={Y(y0)} x2={X(xMax) + 20} y2={Y(y0)} className="graph-axis" markerEnd="url(#graph-arrow)" />
+        <line x1={X(x0)} y1={Y(yMin)} x2={X(x0)} y2={Y(yMax) - 20} className="graph-axis" markerEnd="url(#graph-arrow)" />
+        <text x={X(xMax) + 22} y={Y(y0) - 8} textAnchor="end" className="graph-name">
+          x
+        </text>
+        <text x={X(x0) + 8} y={Y(yMax) - 12} className="graph-name">
+          {`${name}(x)`}
+        </text>
+        {segment && <line x1={X(segment[0][0])} y1={Y(segment[0][1])} x2={X(segment[1][0])} y2={Y(segment[1][1])} className="graph-line" />}
+        {points.map(([x, y]) => (
+          <circle key={`p${x}`} cx={X(x)} cy={Y(y)} r="5" className="graph-point" />
+        ))}
+        {/* Les nombres par-dessus la droite (leur halo la coupe) ; sur l'axe horizontal, tous centrés sous leur graduation, à
+            pas égal, 0 compris : écrit à part, près d'un −1, il se lirait « −10 ». Le 0 n'est pas répété sur l'axe vertical. */}
+        {xs.map((v) => (
+          <text key={`lx${v}`} x={X(v)} y={Y(y0) + 22} textAnchor="middle" className="graph-tick">
+            {signed(v)}
+          </text>
+        ))}
+        {ys
+          .filter((v) => !(v === 0 && x0 === 0 && y0 === 0))
+          .map((v) => (
+            <text key={`ly${v}`} x={X(x0) - 7} y={Y(v) + 6} textAnchor="end" className="graph-tick">
+              {signed(v)}
+            </text>
+          ))}
+      </svg>
+      <figcaption>{`Axe horizontal : les nombres x. Axe vertical : leurs images ${name}(x). La droite épaisse est celle de ${name}.`}</figcaption>
+    </figure>
+  );
+}

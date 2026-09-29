@@ -568,7 +568,7 @@ export const BIOMES: BiomeDef[] = [
     module: 'Fonctions',
     subject: 'maths',
     classe: '3e',
-    description: 'Image, antécédent, fonction linéaire ou affine : le tableau de valeurs toujours affiché.',
+    description: 'Image, antécédent, fonction linéaire ou affine, lecture d’un graphique : le tableau de valeurs ou le graphique toujours affiché.',
     block: 'prisme',
     guardian: 'le Dragon de lumière',
     icon: 'lightbulb',
@@ -576,6 +576,7 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       { id: 'images', title: 'Images', description: 'L’image d’un nombre, puis son antécédent.', programme: ['c4.ma.b.image-antecedent'] },
       { id: 'droites', title: 'Droites', description: 'Coefficient directeur, fonction linéaire ou affine.', programme: ['c4.ma.b.lineaire-affine'] },
+      { id: 'faisceaux', title: 'Faisceaux', description: 'Lis le graphique d’une fonction : une image, un antécédent, puis l’ordonnée à l’origine et le coefficient directeur.', programme: ['c4.ma.b.image-antecedent', 'c4.ma.b.lineaire-affine'] },
     ],
   },
   {

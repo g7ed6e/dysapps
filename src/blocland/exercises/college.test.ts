@@ -8,6 +8,13 @@ import {
   factorNumber,
   factorX,
   fmt,
+  GRAPH_FRAME,
+  graphAntecedent,
+  graphImage,
+  graphLine,
+  READ_ANTECEDENT_RULES,
+  READ_IMAGE_RULES,
+  READ_LINE_RULES,
   mean,
   mulRelatifs,
   NOT_RIGHT,
@@ -576,4 +583,90 @@ it('Relevés : la réponse se lit ou se calcule depuis le diagramme ou le tablea
   for (const [trap, n] of Object.entries(seen)) expect(n, trap).toBeGreaterThan(80);
   expect(otherTotal / level2).toBeGreaterThan(0.6);
   expect(lastIsMax / withTotal).toBeLessThan(0.4);
+});
+
+it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadrillage, une seule juste, et les pièges des élèves', () => {
+  const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
+  const num = (c: string) => Number(c.replace('−', '-'));
+  const seen = { swapped: 0, start: 0, neighbour: 0, graduation: 0, otherAxis: 0, arrival: 0, intercept: 0 };
+  for (let s = 0; s < 200; s++) {
+    for (const level of [1, 2, 3]) {
+      const def = byId(`phare-faisceaux-${level}`);
+      expect(def.instruction).not.toMatch(/[/×÷=…]/);
+      for (const item of def.generate!(`${def.id}#graphe${s}`)) {
+        const prompt = String(item.prompt);
+        const spoken = String(item.spoken);
+        const list = (item.choices as string[]).map(String);
+        const values = list.map(num);
+        // Lu à voix haute sans symbole ni parenthèse : « f de moins 2 ».
+        expect(spoken, spoken).not.toMatch(/[/×÷−=()…]|\d\s*-/);
+        expect(spoken).toMatch(/^Lis sur le graphique : /);
+        expect(list, prompt).toHaveLength(4);
+        expect(new Set(list).size).toBe(4);
+        expect(list).toContain(item.answer);
+        expect(values).toEqual([...values].sort((p, q) => p - q));
+        for (const v of values) expect(Number.isInteger(v)).toBe(true);
+        // Chaque choix se lit sur un axe du graphique ; un coefficient directeur se compte en carreaux, jamais nul.
+        const coefficient = prompt.startsWith('Coefficient');
+        for (const v of values) expect(Math.abs(v), prompt).toBeLessThanOrEqual(coefficient ? 5 : 4);
+        if (coefficient) expect(values).not.toContain(0);
+        // Jamais un piège qui ne diffère de la réponse que par le signe.
+        const answerValue = num(String(item.answer));
+        if (answerValue !== 0) expect(values, prompt).not.toContain(-answerValue);
+        const figure = item.figure as { kind: string; props: { a: number; b: number; xMin: number; xMax: number; yMin: number; yMax: number } };
+        expect(figure.kind).toBe('graph');
+        const { a, b, ...frame } = figure.props;
+        expect(frame).toEqual(GRAPH_FRAME);
+        expect(Number.isInteger(a) && Number.isInteger(b) && a !== 0).toBe(true);
+        const aid = item.aid as { kind: string; props: { lines: string[] } };
+        expect(aid.kind).toBe('rule-card');
+        expect(aid.props.lines).toEqual([READ_IMAGE_RULES, READ_ANTECEDENT_RULES, READ_LINE_RULES][level - 1]);
+        const answer = num(String(item.answer));
+        const f = (x: number) => a * x + b;
+        const inFrame = (x: number, y: number) => x >= frame.xMin && x <= frame.xMax && y >= frame.yMin && y <= frame.yMax;
+        if (level === 1) {
+          const x = num(/^(?:f\((\S+)\) = …|Image de (\S+) par f = …)$/.exec(prompt)!.slice(1).find(Boolean)!);
+          expect(answer).toBe(f(x));
+          expect(inFrame(x, answer)).toBe(true);
+          if (list.includes(fmt((x - b) / a))) seen.swapped++;
+          if (list.includes(fmt(x))) seen.start++;
+          if (list.includes(fmt(f(x + 1))) || list.includes(fmt(f(x - 1)))) seen.neighbour++;
+          if (list.includes(fmt(answer + 1)) || list.includes(fmt(answer - 1))) seen.graduation++;
+        } else if (level === 2) {
+          const y = num(/^(?:f\(x\) = (\S+)\. x = …|Antécédent de (\S+) par f = …)$/.exec(prompt)!.slice(1).find(Boolean)!);
+          expect(f(answer)).toBe(y);
+          expect(inFrame(answer, y)).toBe(true);
+          if (list.includes(fmt(f(y)))) seen.swapped++;
+          if (list.includes(fmt(y))) seen.start++;
+        } else if (prompt.startsWith('Ordonnée')) {
+          expect(answer).toBe(b);
+          expect(b).not.toBe(0);
+          if (Number.isInteger(-b / a) && list.includes(fmt(-b / a))) seen.otherAxis++;
+        } else {
+          expect(prompt).toBe('Coefficient directeur = …');
+          expect(answer).toBe(a);
+          // Le pas se lit entre deux points de la droite, dans le cadre.
+          expect(inFrame(0, f(0)) && (inFrame(1, f(1)) || inFrame(-1, f(-1)))).toBe(true);
+          if (list.includes(fmt(b)) && b !== a) seen.intercept++;
+          if (list.includes(fmt(f(1))) && f(1) !== a) seen.arrival++;
+        }
+      }
+    }
+  }
+  // Les pièges annoncés sont bien là, souvent.
+  for (const [trap, n] of Object.entries(seen)) expect(n, trap).toBeGreaterThan(80);
+});
+
+it('Faisceaux : les générateurs donnent des points entiers et des lectures dans le cadre', () => {
+  const rng = seededItems('faisceaux');
+  for (let i = 0; i < 300; i++) {
+    for (const item of [graphImage(rng), graphAntecedent(rng), graphLine(rng)]) {
+      const { a, b } = (item.figure as { props: { a: number; b: number } }).props;
+      expect(Math.abs(a)).toBeGreaterThanOrEqual(1);
+      expect(Math.abs(a)).toBeLessThanOrEqual(3);
+      expect(Math.abs(b)).toBeLessThanOrEqual(3);
+      expect(item.choices).toContain(item.answer);
+      expect(JSON.parse(JSON.stringify(item))).toEqual(item);
+    }
+  }
 });
