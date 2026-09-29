@@ -160,6 +160,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Les filles sont parties : avec être, le participe suit le sujet.',
       'Qui est-ce qui grimpe ? Voilà le sujet, voilà l’accord.',
       'Ma bergerie est en ardoise. Chaque accord en pose une.',
+      'Nous nous accrochons, vous vous accrochez : le pronom fait écho au sujet.',
     ],
     home: 'Ma bergerie d’ardoise est finie ! Elle est solide, elles sont solides, tout est accordé.',
   },

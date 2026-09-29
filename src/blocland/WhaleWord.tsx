@@ -10,6 +10,7 @@ import type { BloclandState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import type { ArchipelagoId } from './world/archipelago';
 import { reachedWhaleMoments, type WhaleMoment } from './world/whale';
+import { useHoldCelebrations } from '../components/Celebrations';
 
 // Ce que la baleine a déjà dit, par appareil (comme les tutoriels), jamais dans la sauvegarde. L'arrivée dans un
 // archipel garde la clé de l'ancienne bulle d'accueil, dans les tutoriels : qui l'a vue ne l'entend pas deux fois.
@@ -82,6 +83,8 @@ interface Props {
 export function WhaleWordPanel({ word, onClose, className = '' }: Props) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
+  // Un bandeau de récompense attend que le mot soit fermé, dans le monde comme en vue simple (DA-9).
+  useHoldCelebrations(true);
   const pages = pagesBaleine(word, textes);
   const [page, setPage] = useState(0);
   const text = pages[page] ?? pages[0];

@@ -3,6 +3,7 @@ import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { langueVivante } from '../../core/speech';
+import { useTextes } from '../../univers';
 import { BIOMES } from '../biomes';
 import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';
@@ -13,6 +14,8 @@ import { fillTemplate, type ExerciseItem } from './types';
  */
 export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenProps) {
   const round = items[0];
+  // Une sentinelle se rallume : la flamme de son défi remplace le bouclier de l'arène (DA-8).
+  const sentinelle = useTextes().sentinelles !== null;
   const type = SCREEN_TYPES[String(round.screenType)];
   const subItems = (Array.isArray(round.items) ? round.items : []) as ExerciseItem[];
   if (!type) return <p className="intro">Cette manche n’est pas disponible.</p>;
@@ -37,7 +40,7 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
   return (
     <div className="boss-round">
       <p className="boss-round-title">
-        <Icon name="shield" /> Épreuve : {labelOf(String(round.screenType))}
+        <Icon name={sentinelle ? 'flame' : 'shield'} /> Épreuve : {labelOf(String(round.screenType))}
       </p>
       {typeof round.instruction === 'string' && round.instruction && (
         <div className="consigne">

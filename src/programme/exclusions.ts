@@ -58,7 +58,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.fr.lecture.genres-epoques': A_COUVRIR('Situer une œuvre dans son époque : la mission Lecture identifie les genres, pas les contextes.'),
   'c4.fr.ecriture.rediger': HORS(ECRITURE_LIBRE),
   'c4.fr.culture.entrees': HORS('Lecture d’œuvres complètes en classe : hors de ce qu’une application d’entraînement propose.'),
-  'c4.fr.langue.fonctions-etendues': A_COUVRIR('La phrase impersonnelle est reconnue dans Voix des textes ; attribut du COD, expansions du nom et apposition : prévus dans un niveau de plus des Rouages (Observatoire des textes).'),
+  'c4.fr.langue.fonctions-etendues': A_COUVRIR('La phrase impersonnelle est reconnue dans Voix des textes, l’apposition dans Écho des pronominaux (Falaise des accords, niveau 3) ; attribut du COD et expansions du nom : prévus dans un niveau de plus des Rouages (Observatoire des textes).'),
   'c4.fr.langue.types-formes': A_COUVRIR('Les formes passive et impersonnelle sont reconnues dans Voix des textes ; les types de phrase et les formes négative et exclamative ne sont pas encore travaillés en 3e : prévus dans l’Observatoire des textes.'),
   'c4.fr.langue.phrase-complexe': A_COUVRIR('Les subordonnées sont reconnues dans Voix des textes ; phrase simple et complexe, juxtaposition et coordination, compter les propositions : prévus dans l’Observatoire des textes.'),
   'c4.fr.langue.ponctuation': A_COUVRIR('Rôle de la ponctuation : aucune mission ne l’aborde.'),

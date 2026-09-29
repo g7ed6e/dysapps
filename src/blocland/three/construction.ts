@@ -203,7 +203,8 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     group,
     peindre(m) {
       vider();
-      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1] }, 'opaque');
+      // `motif` : le motif peint d'une pièce d'architecture (lot 7), inerte au socle (7a) : le shader ne le lit pas encore.
+      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque');
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
       if (f) f.renderOrder = 1;
