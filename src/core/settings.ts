@@ -174,6 +174,15 @@ export function lv2Courante(): Lv2Choice {
 }
 
 /**
+ * Un texte grand (DA-16) : les lettres, espacement compris, sont nettement plus larges qu'avec les réglages par défaut
+ * (20 px, lettres à 0,03 em). Sur téléphone, les titres et les en-têtes se disposent alors autrement pour tenir dans
+ * la largeur de l'écran (`data-texte="grand"`, styles/global.css) ; aux réglages par défaut, rien ne change.
+ */
+export function texteGrand(settings: Pick<Settings, 'fontSize' | 'letterSpacing'>): boolean {
+  return settings.fontSize * (0.6 + settings.letterSpacing) > 15;
+}
+
+/**
  * Applique les réglages au document via des variables CSS et des attributs : le thème, et l'univers affiché, qui
  * choisit l'habillage de l'interface (styles/blocland.css).
  */
@@ -181,6 +190,7 @@ export function applySettings(settings: Settings, root: HTMLElement = document.d
   root.dataset.theme = settings.theme;
   root.dataset.univers = universAffiche(settings.univers);
   root.dataset.syllables = String(settings.syllables);
+  root.dataset.texte = texteGrand(settings) ? 'grand' : 'normal';
   root.style.setProperty('--font-family', FONT_STACKS[settings.font]);
   root.style.setProperty('--font-size', `${settings.fontSize}px`);
   root.style.setProperty('--line-height', String(settings.lineHeight));
