@@ -82,10 +82,12 @@ export function toucherQuiSaute(sauter: () => void) {
 interface PanelProps {
   id: BiomeId;
   onClose: () => void;
+  /** Le texte continue sous les boutons (la bulle défile, grand texte) : un trait pointillé et un chevron le disent. */
+  aSuivre?: boolean;
 }
 
 /** Le mot du rallumage, à la place du mot de la baleine : « Le Grand Chêne brille à nouveau. », lu à voix haute. */
-export function RallumagePanel({ id, onClose }: PanelProps) {
+export function RallumagePanel({ id, onClose, aSuivre = false }: PanelProps) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
   const biome = getBiome(id);
@@ -107,7 +109,8 @@ export function RallumagePanel({ id, onClose }: PanelProps) {
       <p className="whale-word-text">
         <Icon name="flame" /> <Syllabified text={text} />
       </p>
-      <div className="whale-word-actions">
+      <div className={`whale-word-actions${aSuivre ? ' a-suivre' : ''}`}>
+        {aSuivre && <Icon name="chevronDown" className="whale-word-suite" />}
         <SpeakButton text={text} />
         <button type="button" className="button primary" onClick={onClose}>
           J’ai compris
