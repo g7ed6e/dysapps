@@ -206,9 +206,9 @@ export const ARCHIPEO = {
       },
     },
     jardin: {
-      challenge: 'Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien ce qu’on te dit. »',
+      challenge: 'Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien, et raconte-moi ta journée. »',
       guardianSays: {
-        hit: 'Un rayon s’allume. C’est juste.',
+        hit: 'Mes rayons brillent un peu plus. C’est juste.',
         miss: 'Rien ne s’éteint. Réécoute la phrase, relis la règle, et reprends.',
         beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
       },
@@ -311,7 +311,7 @@ export const ARCHIPEO = {
     consigne: 'Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien. Prends ton temps, personne ne compte les secondes.',
     jauge: 'Épreuves réussies',
     compte: (reussies, total) => `${reussies} sur ${total}`,
-    seuil: (n, assez) => (assez ? 'C’est assez pour la rallumer.' : `Il en faut ${n} pour la rallumer.`),
+    seuil: (n, assez) => (assez ? 'C’est assez pour rallumer sa lumière.' : `Il faut ${n} épreuves réussies pour rallumer sa lumière.`),
     jaugeLue: (reussies, total, n) => `${reussies} épreuve${s(reussies)} réussie${s(reussies)} sur ${total}, il en faut ${n}`,
     rallume: (gardien) => `${gardien} brille à nouveau.`,
   },

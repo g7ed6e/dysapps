@@ -135,7 +135,7 @@ describe('les textes d’univers', () => {
     expect(t.libelles.arene('le Grand Chêne')).toBe('Le défi du Grand Chêne');
     expect(t.libelles.arene('la Dune vivante')).toBe('Le défi de la Dune vivante');
     expect(t.libelles.arene('l’Hydre des marais')).toBe('Le défi de l’Hydre des marais');
-    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il en faut 5 pour la rallumer.', 'C’est assez pour la rallumer.']);
+    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il faut 5 épreuves réussies pour rallumer sa lumière.', 'C’est assez pour rallumer sa lumière.']);
     expect([d.jaugeLue(1, 7, 5), d.jaugeLue(2, 7, 5)]).toEqual(['1 épreuve réussie sur 7, il en faut 5', '2 épreuves réussies sur 7, il en faut 5']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne brille à nouveau.');
     expect(tousLesTextes(t).join('\n')).not.toMatch(/bâtisseur|affront|arène/);

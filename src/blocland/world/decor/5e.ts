@@ -9,13 +9,14 @@ import { NIVEAU_EAU, type ChampDuSol, type Colonne } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
 import { enRepere, type Forme } from './outils';
+import { COULEURS_DU_PONTON, dessinerPonton } from './ponton';
 import { boite, DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de la fiche : la pierre des tours, l'ardoise, la mousse des roches, la glace de la calotte. */
 export const COULEURS_5E = { pierre: 0x7d8a86, ardoise: 0x224c5f, mousse: 0x5a7e50, roche: 0x6a7f86, glace: 0xe5ebe3, glaceCote: 0xc9d8dc, ecume: 0xe8eeec, roseau: 0x8a8a5a } as const;
 
-/** Le Relais des voyageurs (DA, LV2-2) : le bois du ponton et le fer de la girouette. */
-export const COULEURS_DU_RELAIS = { planche: 0x9c7c4b, poteau: 0x6e5234, fer: 0x3a4148 } as const;
+/** Le Relais des voyageurs (DA, LV2-2) : le bois du ponton (./ponton.ts) et le fer de la girouette. */
+export const COULEURS_DU_RELAIS = { ...COULEURS_DU_PONTON, fer: 0x3a4148 } as const;
 
 /** Les deux faces d'une couleur de la fiche : un dessus un peu plus clair ; délavées si l'île est fermée. */
 function faces(c: Couleur, muted: boolean, dessus = eclaircir(c, 1.12)): Faces {
@@ -135,26 +136,6 @@ function tourEnRuine(P: Pinceau, cx: number, cz: number, base: number, rot: numb
 function calotte(P: Pinceau, x: number, y: number, z: number, muted: boolean, hasard: () => number): void {
   const f = faces(COULEURS_5E.glaceCote, muted, COULEURS_5E.glace);
   icosaedre(P, [x, y + 0.25, z], 1.25, 0.62, 0.2, hasard, peintre(f, y - 0.4, 1.3), hasard() * Math.PI);
-}
-
-/** Le ponton du Relais (et celui du Jardin des heures, ./4e.ts) : un tablier de planches au ras de l'eau, vers le large (+x), sur quatre pieux, une échelle au rivage. */
-export const PONTON = { long: 3.2, large: 1.1, dessus: NIVEAU_EAU + 0.5, planche: 0.14, pieu: 0.09 } as const;
-
-export function dessinerPonton(P: Pinceau, cx: number, cz: number, base: number, muted: boolean): void {
-  const planche = peintre(faces(COULEURS_DU_RELAIS.planche, muted), PONTON.dessus - 0.2, 0.3);
-  const bois = peintre(faces(COULEURS_DU_RELAIS.poteau, muted), NIVEAU_EAU - 0.3, base - NIVEAU_EAU);
-  const x0 = cx + 0.5;
-  const x1 = x0 + PONTON.long;
-  const [z0, z1] = [cz - PONTON.large / 2, cz + PONTON.large / 2];
-  boite(P, x0 - 0.05, PONTON.dessus - PONTON.planche, z0, x1, PONTON.dessus, z1, planche);
-  for (const x of [x0 + 1.2, x1 - 0.15]) for (const z of [z0, z1]) tronconique(P, x, z, NIVEAU_EAU - 0.3, PONTON.dessus + 0.35, PONTON.pieu, PONTON.pieu * 0.8, 4, Math.PI / 4, bois);
-  // L'échelle, du tablier au haut du rivage : deux montants, trois barreaux.
-  const [e0, e1] = [PONTON.dessus, base];
-  for (const z of [cz - 0.25, cz + 0.25]) boite(P, x0 + 0.02, e0, z - 0.04, x0 + 0.1, e1 + 0.3, z + 0.04, bois);
-  for (let i = 1; i <= 3; i++) {
-    const y = e0 + ((e1 - e0) * i) / 4;
-    boite(P, x0 + 0.03, y - 0.03, cz - 0.25, x0 + 0.09, y + 0.03, cz + 0.25, bois);
-  }
 }
 
 /** La girouette du Relais : un mât de fer, les quatre branches du vent, une cigogne découpée qui tourne au sommet. */

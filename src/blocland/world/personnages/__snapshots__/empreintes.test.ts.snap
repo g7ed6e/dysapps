@@ -50,7 +50,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
   },
   "4e": {
     "creatures": "1819 be23f192 459914ca",
-    "gardiens": "1526 6d872af5",
+    "gardiens": "1516 3450516e",
   },
   "5e": {
     "creatures": "1863 fcf6beec 20c93da6",
@@ -82,7 +82,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "gare": "268 ad1ed548",
   "glacier": "324 c03d8f81",
   "horloge": "172 899e1347",
-  "jardin": "268 2c14b9d0",
+  "jardin": "258 1f00506c",
   "manoir": "198 eb770b39",
   "marais": "265 5cb2305e",
   "marche": "250 ab64a85d",
@@ -160,7 +160,7 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "gare": "60×151 10be724c 60×151 1f21e9ae",
     "glacier": "60×143 522988e0 60×143 44c6e011",
     "horloge": "60×151 2f27f604 60×151 561f4bfb",
-    "jardin": "80×123 1ba6dd67 80×123 54218c03",
+    "jardin": "60×123 5e72a2d4 60×123 bf0ba5ca",
     "manoir": "60×151 e01d4cd3 60×151 e8e8ff19",
     "marais": "64×147 27d215d2 64×147 d1ba2de7",
     "marche": "60×155 6db97013 60×155 bb2aab93",

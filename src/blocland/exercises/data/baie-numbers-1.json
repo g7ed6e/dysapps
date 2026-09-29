@@ -116,16 +116,16 @@
     },
     {
       "key": "baie-numbers-1-4",
-      "prompt": "twelve",
-      "spoken": "twelve",
+      "prompt": "two",
+      "spoken": "two",
       "choices": [
         "2",
         "12",
         "20"
       ],
-      "answer": "12",
-      "hint": "Twelve n’a ni -teen ni -ty : relis la ligne 11, 12 de la règle.",
-      "explanation": "twelve = 12 (et twenty = 20).",
+      "answer": "2",
+      "hint": "Écoute la fin : -teen (de 13 à 19), -ty (20, 30, 40…), ou un mot tout court ?",
+      "explanation": "two = 2 : un mot tout court. twelve = 12 et twenty = 20 commencent aussi par tw.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -143,16 +143,16 @@
     },
     {
       "key": "baie-numbers-1-5",
-      "prompt": "eighteen",
-      "spoken": "eighteen",
+      "prompt": "eight",
+      "spoken": "eight",
       "choices": [
         "8",
         "18",
         "80"
       ],
-      "answer": "18",
-      "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
-      "explanation": "eighteen = 18 : -teen, c’est de 13 à 19.",
+      "answer": "8",
+      "hint": "Écoute la fin : -teen (de 13 à 19), -ty (20, 30, 40…), ou un mot tout court ?",
+      "explanation": "eight = 8. eighteen = 18 (-teen), eighty = 80 (-ty).",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -170,16 +170,16 @@
     },
     {
       "key": "baie-numbers-1-6",
-      "prompt": "forty",
-      "spoken": "forty",
+      "prompt": "fourteen",
+      "spoken": "fourteen",
       "choices": [
         "4",
         "14",
         "40"
       ],
-      "answer": "40",
+      "answer": "14",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
-      "explanation": "forty = 40 : -ty, ce sont les dizaines (sans u : forty).",
+      "explanation": "fourteen = 14 : -teen, c’est de 13 à 19. 40 se dit forty, sans u.",
       "aid": {
         "kind": "rule-card",
         "props": {

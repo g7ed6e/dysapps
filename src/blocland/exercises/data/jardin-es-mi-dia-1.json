@@ -4,7 +4,7 @@
   "type": "es-mi-dia",
   "level": 1,
   "lang": "es",
-  "instruction": "Lis la question en espagnol et appuie sur Écouter pour l’entendre, puis choisis la réponse à la question. La règle est affichée.",
+  "instruction": "Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.",
   "items": [
     {
       "key": "jardin-es-mi-dia-1-0",

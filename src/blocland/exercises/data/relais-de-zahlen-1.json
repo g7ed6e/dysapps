@@ -151,13 +151,13 @@
       "prompt": "vierundzwanzig",
       "spoken": "vierundzwanzig",
       "choices": [
-        "20",
         "24",
+        "40",
         "42"
       ],
       "answer": "24",
       "hint": "Écoute la fin : -zehn (de 13 à 19) ou -zig (20, 30, 40…) ? Avec und, l’unité vient d’abord.",
-      "explanation": "vierundzwanzig = « quatre et vingt » = 24 : l’unité (vier) vient d’abord, la dizaine (zwanzig) ensuite.",
+      "explanation": "vierundzwanzig = « quatre et vingt » = 24 : l’unité (vier) vient d’abord, la dizaine (zwanzig) ensuite. 40 se dit vierzig, 42 zweiundvierzig.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -243,9 +243,25 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence seule', () => expect(tournees.map((b) => b.id)).toEqual(['relais']));
+  it('la Diligence, et le Soleil de cuivre, un disque qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['jardin', 'relais']));
 
-  for (const b of tournees)
+  it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
+    const f = sentinellePeinte('jardin');
+    const sculpture = f.table.findIndex((p) => p.nom === 'sculpture');
+    // La patine du disque, sur la sculpture (le socle a sa mousse, qui ne tourne pas).
+    const lichen = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.lichen && f.pieces[t] === sculpture);
+    expect(lichen.length).toBeGreaterThan(0);
+    for (const deg of [20, 42, 72, 85]) {
+      const [cx, cz] = [Math.sin((deg * Math.PI) / 180), -Math.cos((deg * Math.PI) / 180)];
+      for (const t of lichen) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(Math.cos((34 * Math.PI) / 180));
+    }
+    for (let i = 0; i < f.positions.length; i += 3) {
+      expect(Math.abs(f.positions[i])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+      expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+    }
+  });
+
+  for (const b of tournees.filter((x) => x.id === 'relais'))
     it(`${STATUES[b.id].nom} : au défi, sa portière face à la caméra de trois quarts, dans les cinq cases ; le socle ne tourne pas`, () => {
       const f = sentinelleAuDefi(b.id);
       const monde = sentinellePeinte(b.id);

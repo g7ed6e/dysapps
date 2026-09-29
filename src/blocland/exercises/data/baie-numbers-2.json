@@ -11,9 +11,9 @@
       "prompt": "It’s half past three.",
       "spoken": "It’s half past three.",
       "choices": [
-        "3 h 30",
+        "2 h 30",
         "3 h 15",
-        "2 h 30"
+        "3 h 30"
       ],
       "answer": "3 h 30",
       "hint": "Past = après l’heure, to = avant l’heure.",
@@ -38,9 +38,9 @@
       "prompt": "It’s quarter past six.",
       "spoken": "It’s quarter past six.",
       "choices": [
+        "5 h 45",
         "6 h 15",
-        "6 h 45",
-        "5 h 45"
+        "6 h 45"
       ],
       "answer": "6 h 15",
       "hint": "Past = après l’heure, to = avant l’heure.",
@@ -92,11 +92,11 @@
       "prompt": "It’s five o’clock.",
       "spoken": "It’s five o’clock.",
       "choices": [
-        "5 h",
+        "5 h 00",
         "5 h 30",
         "12 h 05"
       ],
-      "answer": "5 h",
+      "answer": "5 h 00",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "five o’clock = 5 h pile.",
       "aid": {
@@ -119,8 +119,8 @@
       "prompt": "It’s ten past seven.",
       "spoken": "It’s ten past seven.",
       "choices": [
-        "7 h 10",
         "6 h 50",
+        "7 h 10",
         "10 h 07"
       ],
       "answer": "7 h 10",
@@ -173,11 +173,11 @@
       "prompt": "It’s the third of May.",
       "spoken": "It’s the third of May.",
       "choices": [
-        "3 mai",
-        "13 mai",
-        "30 mai"
+        "le 3 mai",
+        "le 13 mai",
+        "le 30 mai"
       ],
-      "answer": "3 mai",
+      "answer": "le 3 mai",
       "hint": "Écoute le jour : third, thirteenth ou thirtieth ?",
       "explanation": "the third of May = le 3 mai (third = troisième).",
       "aid": {
@@ -200,11 +200,11 @@
       "prompt": "It’s the twentieth of June.",
       "spoken": "It’s the twentieth of June.",
       "choices": [
-        "2 juin",
-        "12 juin",
-        "20 juin"
+        "le 2 juin",
+        "le 12 juin",
+        "le 20 juin"
       ],
-      "answer": "20 juin",
+      "answer": "le 20 juin",
       "hint": "Écoute le jour : twentieth, twelfth ou second ?",
       "explanation": "the twentieth of June = le 20 juin (twentieth = vingtième).",
       "aid": {

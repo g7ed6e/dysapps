@@ -397,19 +397,19 @@ const LINA = fromLayers(
 );
 
 // Muscade : un écureuil cuisinier châtain, tablier crème uni, louche de bois à la main, queue en panache qui monte
-// derrière la tête ; pas de toque.
+// derrière la tête, son bout plus clair ; pas de toque. Entre les yeux, le museau clair (nez compris, au ton du museau).
 const MUSCADE = fromLayers(
   [
     ['.C.C.', '.CCC.', '.....', '.....', '.....'],
     ['LWWW.', 'CCCCC', '.CCC.', '..T..', '.....'],
     ['LWWW.', 'CCCCC', '.CCC.', '.TTT.', '.....'],
     ['LCCC.', 'CCCCC', '.CCC.', '.TTT.', '..T..'],
-    ['.ENE.', 'CCCCC', '.CCC.', '.....', '.TTT.'],
+    ['.EME.', 'CCCCC', '.CCC.', '.....', '.TTT.'],
     ['.CCC.', 'CCCCC', '.....', '.....', '.TTT.'],
-    ['.C.C.', '.....', '.....', '.TTT.', '.TTT.'],
-    ['.....', '.....', '..T..', '.TT..', '.....'],
+    ['.C.C.', '.....', '.....', '.TTT.', '.ttt.'],
+    ['.....', '.....', '..t..', '.tt..', '.....'],
   ],
-  { C: '#8a4a26', T: '#9a5a32', W: '#efe4c8', L: '#8a6236', E: '#1f1a16', N: '#1f1a16' },
+  { C: '#8a4a26', T: '#9a5a32', t: '#c79a6a', W: '#efe4c8', L: '#8a6236', E: '#1f1a16', M: '#c89a72' },
 );
 
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {

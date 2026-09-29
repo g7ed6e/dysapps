@@ -11,9 +11,9 @@
       "prompt": "Son las tres y cuarto.",
       "spoken": "Son las tres y cuarto.",
       "choices": [
+        "2 h 45",
         "3 h 15",
-        "3 h 45",
-        "2 h 45"
+        "3 h 45"
       ],
       "answer": "3 h 15",
       "hint": "Comme en français : y cuarto, et quart ; menos cuarto, moins le quart.",
@@ -40,8 +40,8 @@
       "prompt": "Son las ocho y media.",
       "spoken": "Son las ocho y media.",
       "choices": [
-        "8 h 30",
         "8 h 15",
+        "8 h 30",
         "8 h 45"
       ],
       "answer": "8 h 30",
@@ -69,13 +69,13 @@
       "prompt": "Son las diez menos cuarto.",
       "spoken": "Son las diez menos cuarto.",
       "choices": [
+        "9 h 15",
         "9 h 45",
-        "10 h 15",
-        "10 h 45"
+        "10 h 15"
       ],
       "answer": "9 h 45",
       "hint": "menos, c’est moins : on retire un quart d’heure à 10 h.",
-      "explanation": "Comme en français : las diez menos cuarto = 10 h moins le quart = 9 h 45. 10 h 15 se dirait las diez y cuarto.",
+      "explanation": "Comme en français : las diez menos cuarto = 10 h moins le quart = 9 h 45. 10 h 15 se dirait las diez y cuarto ; 9 h 15, las nueve y cuarto.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -133,7 +133,7 @@
       ],
       "answer": "4 h 50",
       "hint": "menos : on retire 10 minutes à 5 h.",
-      "explanation": "las cinco menos diez = 5 h moins dix = 4 h 50. 5 h 10 se dirait las cinco y diez.",
+      "explanation": "las cinco menos diez = 5 h moins dix = 4 h 50. 5 h 10 se dirait las cinco y diez ; 5 h 50, las seis menos diez.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -157,12 +157,12 @@
       "spoken": "Son las doce en punto.",
       "choices": [
         "2 h 00",
-        "12 h 00",
-        "12 h 30"
+        "11 h 00",
+        "12 h 00"
       ],
       "answer": "12 h 00",
       "hint": "doce ou dos ? Et en punto, c’est pile.",
-      "explanation": "Son las doce en punto = 12 h pile : doce = 12, dos = 2. en punto veut dire pile.",
+      "explanation": "Son las doce en punto = 12 h pile : doce = 12, dos = 2, once = 11. en punto veut dire pile.",
       "aid": {
         "kind": "rule-card",
         "props": {

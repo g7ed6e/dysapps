@@ -13,14 +13,15 @@ import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
 import { CORE, MAP } from '../map';
 import type { Couleur, Faces } from '../palette';
+import type { TextureKind } from '../pixels';
 import { PLAN_ZONE } from '../plans';
 import { worldBounds } from '../terrain';
 import { dessinerRocher, FORMES_COMMUNES } from './communes';
 import type { Cone, Etendue, Lointain } from './lointain';
 import { bouffees } from './fumee';
-import { dessinerPonton } from './5e';
+import { dessinerPonton } from './ponton';
 import { enRepere, type Forme } from './outils';
-import { boite, DELAVE, eclaircir, hex, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { boite, DELAVE, eclaircir, hex, icosaedre, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de l'intention du directeur artistique. */
 export const COULEURS_4E = {
@@ -344,8 +345,64 @@ function barque(P: Pinceau, xc: number, cz: number, muted: boolean): void {
   boite(P, xc - B.large + 0.04, y, zm - 0.12, xc + B.large - 0.04, y1 + 0.02, zm + 0.12, planche);
 }
 
-/** Le ponton du Jardin : celui du Relais (./5e.ts), et sa barque amarrée à deux cases du rivage, comme ses cubes. */
-const pontonDuJardin: Forme = ({ P, e, cx, cz, base }) => {
+/**
+ * Le contrefort du ponton (retouche du directeur artistique, 29/09) : sous le rivage, l'île flotte ; la falaise descend
+ * jusqu'à l'eau, où l'échelle s'appuie sur toute sa hauteur. Pas une colonne : la matière et les facettes de la falaise
+ * (la roche sous la case du rivage), des arêtes cassées, plus large au pied qu'en haut, arrêté une marche sous le bord de
+ * l'herbe ; sa face vers le large reste
+ * plane, droite, un peu en retrait de celle de la falaise (pas de faces confondues), l'échelle debout devant. Au pied,
+ * un éboulis de trois rochers bas, hors du tablier et de la barque.
+ */
+export const CONTREFORT = { face: 0.47, haut: 0.55, pied: 1.05, recul: [0.55, 1.15], rochers: 3 } as const;
+
+function contrefort(o: Parameters<Forme>[0]): void {
+  const { P, e, cx, cz, base, hasard, champ, matiere } = o;
+  const C = CONTREFORT;
+  const col = colonneEn(champ, e.x, e.y);
+  const roche = (col?.matieres[0] ?? 'pierre') as TextureKind;
+  // Son haut, une marche sous le bord de l'herbe (le dessus de la colonne du rivage, ou le sol au milieu de la case s'il
+  // est plus bas) : il reste sous le rivage, jamais une verticale de plus au-dessus de lui.
+  const bord = Math.min(base, col ? col.haut + 1 : base);
+  const [y0, y1] = [NIVEAU_EAU - 0.3, bord - 1];
+  const peindre = peintre(matiere(roche, e.muted), NIVEAU_EAU, base - NIVEAU_EAU);
+  const xe = cx + C.face;
+  // Trois anneaux (le pied, le milieu, le haut) de six sommets : deux sur la face plane du large, derrière l'échelle,
+  // quatre qui se cassent vers l'île et s'écartent vers le pied.
+  const anneau = (t: number, y: number): V3[] => {
+    const demi = C.pied + (C.haut - C.pied) * t;
+    const recul = C.recul[1] + (C.recul[0] - C.recul[1]) * t;
+    const j = () => (hasard() - 0.5) * 0.24;
+    return [
+      [xe, y, cz - 0.38],
+      [xe, y, cz + 0.38],
+      [xe - 0.35 + j(), y, cz + demi + j()],
+      [cx + 0.5 - recul + j(), y, cz + demi * 0.45 + j()],
+      [cx + 0.5 - recul + j(), y, cz - demi * 0.45 + j()],
+      [xe - 0.35 + j(), y, cz - demi + j()],
+    ];
+  };
+  const anneaux = [anneau(0, y0), anneau(0.45, y0 + (y1 - y0) * 0.4), anneau(1, y1)];
+  for (let k = 0; k + 1 < anneaux.length; k++) {
+    const [bas, haut] = [anneaux[k], anneaux[k + 1]];
+    const dedans: V3 = [cx, (bas[0][1] + haut[0][1]) / 2, cz];
+    for (let i = 0; i < 6; i++) {
+      const n = (i + 1) % 6;
+      P.quad(bas[i], bas[n], haut[n], haut[i], dedans, peindre);
+    }
+  }
+  // L'éboulis : trois rochers bas au pied, du côté de l'île et sur les flancs (jamais sous le tablier ni la barque).
+  const places: [number, number, number][] = [
+    [cx - 0.75, cz + 1.05, 0.42],
+    [cx - 0.1, cz - 1.2, 0.38],
+    [cx + 0.2, cz + 1.25, 0.3],
+  ];
+  for (const [x, z, r] of places.slice(0, C.rochers)) icosaedre(P, [x, NIVEAU_EAU + 0.02, z], r, 0.55, 0.2, hasard, peindre, hasard() * Math.PI);
+}
+
+/** Le ponton du Jardin : celui du Relais (./ponton.ts), sur son contrefort, et sa barque amarrée à deux cases du rivage, comme ses cubes. */
+const pontonDuJardin: Forme = (o) => {
+  const { P, e, cx, cz, base } = o;
+  contrefort(o);
   dessinerPonton(P, cx, cz, base, e.muted);
   barque(P, cx + 2, cz, e.muted);
 };

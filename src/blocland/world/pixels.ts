@@ -110,31 +110,29 @@ function dalle(fond: string, clair: [number, number, number]): Painter {
 type TonsDOsier = { clair: string; brin: string; ombre: string; joint: string };
 
 /**
- * De l'osier tressé : des brins horizontaux de deux pixels (le haut clair, le bas ombré), un joint sombre d'un pixel entre
- * deux rangs, et des montants de deux pixels tous les quatre pixels, qui passent devant le brin un rang sur deux, en
- * quinconce (dessus-dessous). Le montant a son ombre à droite, le brin la sienne en bas : une seule teinte, le relief
- * seul fait le motif (pas un damier de deux teintes ; il se lit aussi en gris). `bord` : les trois rangs du haut sont le
- * bord du panier, un brin tordu (des diagonales), sur le côté du bloc. Sans hasard : la même texture sur chaque face.
+ * De l'osier tressé, calé sur la vue peinte (pixel/painted.ts, motif `tresse`) : des rangs de quatre pixels, un brin de
+ * deux (le haut clair) et un joint sombre de deux, et un montant de deux pixels tous les huit, en quinconce d'un rang à
+ * l'autre (décalé de quatre), dans l'ombre : le brin s'y enfonce derrière lui (dessus-dessous). Une seule teinte, le relief seul fait
+ * le motif ; le joint est environ deux fois plus sombre que le brin (contraste de 2:1, il se lit aussi en gris), pas plus :
+ * au-delà, de loin, la tresse moirait. La dernière ligne est un joint : d'un bloc à l'autre, jamais de bande claire.
+ * `bord` : sur le côté, les quatre lignes du haut sont le bord du panier, un brin tordu (des diagonales) sur un joint.
+ * Sans hasard : la même texture sur chaque face.
  */
 function osier(t: TonsDOsier, bord = false): Painter {
   const [clair, brin, ombre, joint] = [hex(t.clair), hex(t.brin), hex(t.ombre), hex(t.joint)];
   return (x, y) => {
-    if (bord && y < 3) {
-      // Le bord : un brin tordu, en diagonales de trois pixels, souligné d'un joint.
-      if (y === 2) return joint;
-      return (x + y) % 3 === 0 ? ombre : y === 0 ? clair : brin;
+    if (bord && y < 4) {
+      // Le bord : un brin tordu, en diagonales de quatre pixels, souligné d'un joint.
+      if (y === 3) return joint;
+      return (x + y) % 4 === 0 ? ombre : y === 0 ? clair : brin;
     }
-    const v = bord ? y - 3 : y;
-    const rang = Math.floor(v / 3);
-    const dans = v % 3;
-    const colonne = Math.floor(x / 4);
-    const montant = x % 4 < 2;
-    // Le montant passe devant le brin un rang sur deux, en quinconce ; ailleurs, le brin passe devant.
-    if (montant && (colonne + rang) % 2 === 0) return x % 4 === 0 ? brin : ombre;
-    if (dans === 2) return joint;
-    // Le brin s'enfonce contre le montant qui le couvre (un pixel plus sombre à ses deux bouts).
-    const contre = (x % 4 === 2 && (colonne + rang) % 2 === 0) || (x % 4 === 3 && (colonne + rang) % 2 === 1);
-    return dans === 0 && !contre ? clair : contre ? ombre : brin;
+    const rang = Math.floor(y / 4);
+    const dans = y % 4;
+    if (dans >= 2) return joint;
+    // Le montant, tous les huit pixels, décalé de quatre un rang sur deux (là où la vue peinte met son joint) : le brin
+    // passe derrière lui, dans son ombre.
+    if ((x + (rang % 2 ? 4 : 0)) % 8 >= 6) return ombre;
+    return dans === 0 ? clair : brin;
   };
 }
 
@@ -305,8 +303,8 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   // tordu d'un panier en haut. Un miel d'olive, plus vert que les planches, plus sombre que le foin et que la dalle : le
   // motif porte la différence (brins horizontaux et montants en quinconce, sans grain).
   osier: {
-    top: osier({ clair: '#c2ad6c', brin: '#a8955a', ombre: '#8c7a44', joint: '#5c4e2a' }),
-    side: osier({ clair: '#a2905a', brin: '#86743f', ombre: '#6e5e32', joint: '#463b1e' }, true),
+    top: osier({ clair: '#c2ad6c', brin: '#a8955a', ombre: '#8c7a44', joint: '#6f623b' }),
+    side: osier({ clair: '#a2905a', brin: '#86743f', ombre: '#6e5e32', joint: '#534826' }, true),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

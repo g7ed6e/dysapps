@@ -11,13 +11,13 @@
       "prompt": "Es ist Viertel nach drei.",
       "spoken": "Es ist Viertel nach drei.",
       "choices": [
-        "3 h 15",
-        "3 h 45",
-        "2 h 45"
+        "2 h 15",
+        "2 h 45",
+        "3 h 15"
       ],
       "answer": "3 h 15",
       "hint": "nach ou vor ? nach ajoute des minutes, vor en retire.",
-      "explanation": "Viertel nach drei = le quart après 3 h = 3 h 15. 2 h 45 se dirait Viertel vor drei.",
+      "explanation": "Viertel nach drei = le quart après 3 h = 3 h 15. Seul halb compte vers l’heure suivante : 2 h 15 se dirait Viertel nach zwei, 2 h 45 Viertel vor drei.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -40,8 +40,8 @@
       "spoken": "Es ist halb fünf.",
       "choices": [
         "4 h 30",
-        "5 h 30",
-        "5 h"
+        "5 h 00",
+        "5 h 30"
       ],
       "answer": "4 h 30",
       "hint": "halb compte vers l’heure suivante : la demie avant 5 h.",
@@ -67,13 +67,13 @@
       "prompt": "Es ist Viertel vor zehn.",
       "spoken": "Es ist Viertel vor zehn.",
       "choices": [
+        "9 h 15",
         "9 h 45",
-        "10 h 15",
-        "10 h 45"
+        "10 h 15"
       ],
       "answer": "9 h 45",
       "hint": "vor, c’est avant : on retire un quart d’heure à 10 h.",
-      "explanation": "Viertel vor zehn = le quart avant 10 h = 9 h 45. 10 h 15 se dirait Viertel nach zehn.",
+      "explanation": "Viertel vor zehn = le quart avant 10 h = 9 h 45. 10 h 15 se dirait Viertel nach zehn ; 9 h 15, Viertel nach neun.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -123,13 +123,13 @@
       "prompt": "Es ist fünf vor sieben.",
       "spoken": "Es ist fünf vor sieben.",
       "choices": [
+        "6 h 05",
         "6 h 55",
-        "7 h 05",
-        "7 h 55"
+        "7 h 05"
       ],
       "answer": "6 h 55",
       "hint": "vor : on retire 5 minutes à 7 h.",
-      "explanation": "fünf vor sieben = cinq minutes avant 7 h = 6 h 55. 7 h 05 se dirait fünf nach sieben.",
+      "explanation": "fünf vor sieben = cinq minutes avant 7 h = 6 h 55. 7 h 05 se dirait fünf nach sieben ; 6 h 05, fünf nach sechs.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -151,9 +151,9 @@
       "prompt": "Es ist halb zwölf.",
       "spoken": "Es ist halb zwölf.",
       "choices": [
+        "1 h 30",
         "11 h 30",
-        "12 h 30",
-        "1 h 30"
+        "12 h 30"
       ],
       "answer": "11 h 30",
       "hint": "halb compte vers l’heure suivante. Et zwölf, c’est 12.",

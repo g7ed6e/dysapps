@@ -8,16 +8,16 @@
   "items": [
     {
       "key": "relais-es-numeros-1-0",
-      "prompt": "doce",
-      "spoken": "doce",
+      "prompt": "dos",
+      "spoken": "dos",
       "choices": [
         "2",
         "12",
         "20"
       ],
-      "answer": "12",
-      "hint": "doce ou dos ? Écoute la fin : -ce, c’est de 11 à 15.",
-      "explanation": "doce = 12. dos = 2, veinte = 20.",
+      "answer": "2",
+      "hint": "Écoute la fin : -ce, c’est de 11 à 15 ; -nte ou -enta, ce sont les dizaines.",
+      "explanation": "dos = 2 : un mot tout court. doce = 12, veinte = 20.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,13 +173,13 @@
       "prompt": "treinta y cinco",
       "spoken": "treinta y cinco",
       "choices": [
-        "30",
         "35",
+        "50",
         "53"
       ],
       "answer": "35",
       "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
-      "explanation": "treinta y cinco = 35 : la dizaine (treinta), puis y, puis l’unité (cinco).",
+      "explanation": "treinta y cinco = 35 : la dizaine (treinta), puis y, puis l’unité (cinco). 50 se dit cincuenta, 53 cincuenta y tres.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -200,13 +200,13 @@
       "prompt": "dieciséis",
       "spoken": "dieciséis",
       "choices": [
-        "6",
         "16",
-        "60"
+        "60",
+        "106"
       ],
       "answer": "16",
       "hint": "dieci- veut dire « dix et… ».",
-      "explanation": "dieciséis = « dix et six » = 16. 60 se dit sesenta.",
+      "explanation": "dieciséis = « dix et six » = 16, un seul nombre : on n’écrit pas 10 puis 6 (106). 60 se dit sesenta.",
       "aid": {
         "kind": "rule-card",
         "props": {

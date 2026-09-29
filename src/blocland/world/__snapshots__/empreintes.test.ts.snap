@@ -62,11 +62,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "5045d2ad",
-  "cubes": "e81967d7",
-  "cubes avec créatures": "dfe824f1",
-  "décor posé sur la pente": "18cbee50",
+  "cubes": "536afc56",
+  "cubes avec créatures": "d855ac04",
+  "décor posé sur la pente": "fae8e9a1",
   "navire": "82282bda",
-  "sol (facettes)": "72602bd4",
+  "sol (facettes)": "19188630",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "360612fd",
 }
@@ -74,12 +74,12 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "e3f17bb2",
-  "cubes": "83fd3cfa",
-  "cubes avec créatures": "37ab8cdf",
-  "décor posé sur la pente": "a253ce6b",
+  "créatures et Gardiens": "3ff8a13c",
+  "cubes": "b21f6ab8",
+  "cubes avec créatures": "7909833b",
+  "décor posé sur la pente": "8e1467b5",
   "navire": "82282bda",
-  "sol (facettes)": "a81dbbe9",
+  "sol (facettes)": "b6990642",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "4e254ca1",
 }
@@ -88,11 +88,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "1059c913",
-  "cubes avec créatures": "1059c913",
-  "décor posé sur la pente": "f78e5522",
+  "cubes": "1ff203de",
+  "cubes avec créatures": "1ff203de",
+  "décor posé sur la pente": "b74c29fd",
   "navire": "be6f1058",
-  "sol (facettes)": "1d75d0d6",
+  "sol (facettes)": "e0175f5a",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "37e85cba",
 }
@@ -247,8 +247,8 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "horloge-toit": "f9b5a21c",
   "horloge-tour": "150a97e9",
   "jardin-cuisine": "15d8c36b",
-  "jardin-serre": "e2cfda8f",
-  "jardin-tonnelle": "fe2d31cb",
+  "jardin-serre": "6e1e2183",
+  "jardin-tonnelle": "3c61837a",
   "manoir-jardin": "61c6f4d4",
   "manoir-salon": "18d8075b",
   "manoir-toit": "a804a7ad",

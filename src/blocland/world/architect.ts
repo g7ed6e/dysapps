@@ -320,9 +320,9 @@ function relais(b: BlockId): Stages {
  * Le jardin (le Jardin des heures, LV2 4e) : trois plans, trois choses qu'on reconnaît (DA, LV2-4). La cuisine : une
  * maison d'osier de quatre sur trois à gauche, une porte, deux fenêtres. La tonnelle : le toit à deux pans de la cuisine
  * et sa cheminée d'ardoise (la soupe de Muscade), et, à droite, un portique à angles droits sur quatre poteaux d'osier,
- * ouvert au milieu, une table longue dessous ; ni vigne ni treille. La serre : devant, basse (deux blocs), un soubassement
+ * son linteau fermé, une table longue de planches dessous ; ni vigne ni treille. La serre : devant, basse (deux blocs), un soubassement
  * d'osier et des vitres de calque (le verre dépoli de l'Atelier, qui se gagne au 4e) ; devant la cuisine, une barrière
- * à portillon, une lanterne et une marche. Ni drapeau, ni colombage, ni horloge.
+ * à portillon et une marche. Ni drapeau, ni colombage, ni horloge.
  */
 function jardin(b: BlockId): Stages {
   const x0 = 0;
@@ -345,21 +345,19 @@ function jardin(b: BlockId): Stages {
   }
   roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });
   for (let z = h + 1; z <= h + 2; z++) roof.push({ x: 1, y: y0 + d - 1, z, block: 'ardoise' });
-  // La tonnelle : quatre poteaux de deux blocs, deux traverses au-dessus (devant et derrière), le milieu ouvert ; la
-  // table longue dessous, en travers.
+  // La tonnelle : quatre poteaux de deux blocs, un portique au-dessus, à angles droits, qui court de devant à derrière
+  // (le linteau fermé, relu par le consultant Blocland) ; la table longue dessous, en travers, en planches.
   for (const x of [4, 5]) {
-    for (const y of [y0, y0 + d - 1]) {
-      for (let z = 0; z < 2; z++) roof.push({ x, y, z, block: b });
-      roof.push({ x, y, z: 2, block: b });
-    }
-    roof.push({ x, y: y0 + 1, z: 0, block: 'barriere' });
+    for (const y of [y0, y0 + d - 1]) for (let z = 0; z < 2; z++) roof.push({ x, y, z, block: b });
+    for (let y = y0; y < y0 + d; y++) roof.push({ x, y, z: 2, block: b });
+    roof.push({ x, y: y0 + 1, z: 0, block: 'bois' });
   }
   // La serre, devant la tonnelle : un soubassement d'osier, des vitres de calque ; devant la cuisine, la barrière et son
-  // portillon, une lanterne (une seule : le poteau-lanterne du potager éclaire déjà le jardin la nuit), la marche.
+  // portillon, la marche. Pas de lanterne dans la cour : la nuit, seules les deux fenêtres de la cuisine s'allument (DA,
+  // LV2-4 : le jardin sous 3 % de lueur ; avec une lanterne sur le portillon, la vue de l'île en avait 3,02 %).
   const yard: ArchCell[] = [
     { x: 0, y: 0, z: 0, block: 'barriere' },
     { x: 2, y: 0, z: 0, block: 'barriere' },
-    { x: 0, y: 0, z: 1, block: 'lanterne' },
     { x: doorX, y: 1, z: 0, block: 'escalier' },
   ];
   for (let x = 3; x <= 5; x++) for (let y = 0; y <= 1; y++) yard.push({ x, y, z: 0, block: b }, { x, y, z: 1, block: 'calque' });

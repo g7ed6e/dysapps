@@ -24,7 +24,6 @@
         "props": {
           "title": "Leer un menú",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "el menú del día = le menu du jour ; infantil = pour enfants",
             "primer plato = l’entrée ; segundo plato = le plat principal",
             "el postre = le dessert ; el helado = la glace ; la fresa = la fraise",
@@ -53,7 +52,6 @@
         "props": {
           "title": "Leer un menú",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "el menú del día = le menu du jour ; infantil = pour enfants",
             "primer plato = l’entrée ; segundo plato = le plat principal",
             "el postre = le dessert ; el helado = la glace ; la fresa = la fraise",
@@ -82,7 +80,6 @@
         "props": {
           "title": "Leer un menú",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "el menú del día = le menu du jour ; infantil = pour enfants",
             "primer plato = l’entrée ; segundo plato = le plat principal",
             "el postre = le dessert ; el helado = la glace ; la fresa = la fraise",
@@ -111,7 +108,6 @@
         "props": {
           "title": "Leer un menú",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "el menú del día = le menu du jour ; infantil = pour enfants",
             "primer plato = l’entrée ; segundo plato = le plat principal",
             "el postre = le dessert ; el helado = la glace ; la fresa = la fraise",
@@ -140,7 +136,6 @@
         "props": {
           "title": "Leer horarios",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "cerrado = fermé ; la entrada = le billet",
             "el polideportivo = le centre sportif ; el baloncesto = le basket",
             "la comida = le déjeuner ; la merienda = le goûter ; la cena = le dîner",
@@ -168,7 +163,6 @@
         "props": {
           "title": "Leer horarios",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "cerrado = fermé ; la entrada = le billet",
             "el polideportivo = le centre sportif ; el baloncesto = le basket",
             "la comida = le déjeuner ; la merienda = le goûter ; la cena = le dîner",
@@ -196,7 +190,6 @@
         "props": {
           "title": "Leer horarios",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "cerrado = fermé ; la entrada = le billet",
             "el polideportivo = le centre sportif ; el baloncesto = le basket",
             "la comida = le déjeuner ; la merienda = le goûter ; la cena = le dîner",
@@ -224,7 +217,6 @@
         "props": {
           "title": "Leer horarios",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "cerrado = fermé ; la entrada = le billet",
             "el polideportivo = le centre sportif ; el baloncesto = le basket",
             "la comida = le déjeuner ; la merienda = le goûter ; la cena = le dîner",

@@ -6,7 +6,7 @@ Voir d’abord `commun.md`. Îles : Forge des puissances, Atelier du calcul litt
 
 La maîtrise : un grand atelier ancien qu’on remet en marche, dans une lumière de fin de journée. En arrivant, l’élève comprend qu’ici on construit du lourd : une grue au-dessus du chantier, un fourneau qui rougeoie, et au loin un petit volcan qui fume tranquillement. C’est chaleureux et actif, jamais une ruine sinistre.
 
-En bout de crête, à l’est du Théâtre, le Jardin des heures (LV2-4) est l’île de la deuxième langue : plate, verte et basse, en bout de chemin, elle ne vole pas la vedette à l’Atelier.
+Après le Théâtre, au bout de la crête, le Jardin des heures (LV2-4) est l’île de la deuxième langue : plate, verte et basse, en bout de chemin, elle ne vole pas la vedette à l’Atelier.
 
 ## 2. Les repères signatures
 
@@ -77,7 +77,9 @@ En bout de crête, à l’est du Théâtre, le Jardin des heures (LV2-4) est l�
   - Avec « Réduire les animations » (la préférence de l’appareil), rien ne bouge. Plus de capture dédiée depuis le 28 septembre 2026 : la vidéo sur tablette le montre.
   - Le test en gris est réussi, d’abord sans R5, puis à la revue d’ensemble.
   - Le budget est tenu, par poste.
-  - Avec le Jardin des heures (LV2-4), l’archipel s’élargit d’environ 18 % : vue de l’archipel avec une LV2 et avec « Pas de LV2 » (Jardin fermé), le Jardin de jour et de nuit, en 1024 × 768, 1280 × 800 et 800 × 1280 ; aucune étiquette ne passe sous un bouton ni sur celle du Théâtre, la grue reste la seule verticale.
+  - Avec le Jardin des heures (LV2-4) : vue de l’archipel avec une LV2 et avec « Pas de LV2 » (Jardin fermé, sans pont, cadrage d’avant), le Jardin de jour et de nuit, en 1024 × 768, 1280 × 800 et 800 × 1280 ; aucune étiquette ne passe sous un bouton ni sur celle du Théâtre, la grue reste la seule verticale.
+  - Le Soleil de cuivre se voit entier, au-dessus des boutons, dans les trois formats.
+  - Une capture montre la grue et le Soleil ensemble.
 
 ## 9. L’enveloppe du décor (9 000 triangles, 3 appels)
 

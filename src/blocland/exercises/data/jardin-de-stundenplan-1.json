@@ -4,7 +4,7 @@
   "type": "de-stundenplan",
   "level": 1,
   "lang": "de",
-  "instruction": "Lis la question, puis trouve la bonne ligne de l’emploi du temps ou de l’horaire en allemand. Le lexique est affiché.",
+  "instruction": "Lis la question, puis trouve la bonne ligne du document en allemand. Le lexique est affiché.",
   "items": [
     {
       "key": "jardin-de-stundenplan-1-0",
@@ -24,7 +24,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -42,8 +41,8 @@
       "prompt": "Dienstag\n7:55 Erdkunde\n8:40 Biologie\n9:25 Pause\n9:45 Kunst",
       "spoken": "Dienstag. Sieben Uhr fünfundfünfzig, Erdkunde. Acht Uhr vierzig, Biologie. Neun Uhr fünfundzwanzig, Pause. Neun Uhr fünfundvierzig, Kunst.",
       "choices": [
-        "9 h 25",
         "8 h 40",
+        "9 h 25",
         "9 h 45"
       ],
       "answer": "9 h 25",
@@ -54,7 +53,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -84,7 +82,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -114,7 +111,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -144,7 +140,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -174,7 +169,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -204,7 +198,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",
@@ -234,7 +227,6 @@
         "props": {
           "title": "Einen Stundenplan lesen",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "Montag, Dienstag, Mittwoch = lundi, mardi, mercredi",
             "Donnerstag, Freitag, Samstag = jeudi, vendredi, samedi",
             "die Pause = la récréation ; der Unterricht = les cours",

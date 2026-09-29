@@ -316,15 +316,15 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
   jardin: (put, h) => {
-    // Un carré potager bordé d'osier (des rangs de feuilles dedans), un poteau-lanterne à côté ; un panier d'osier posé
-    // au sol, une pierre.
+    // Un carré potager bordé d'osier (des rangs de feuilles dedans), un poteau-lanterne éteint à côté (sa tête d'ardoise :
+    // la nuit, le jardin garde ses lueurs sous 3 % de l'image, DA, LV2-4) ; un panier d'osier posé au sol, une pierre.
     for (let x = 8; x <= 11; x++)
       for (let y = 2; y <= 4; y++) {
         const bord = x === 8 || x === 11 || y === 2 || y === 4;
         put(x, y, h(x, y) + 1, bord ? BLOCKS.osier.side : LEAF);
       }
     for (let z = 1; z <= 2; z++) put(6, 3, h(6, 3) + z, TRUNK);
-    put(6, 3, h(6, 3) + 3, BLOCKS.lanterne.side);
+    put(6, 3, h(6, 3) + 3, BLOCKS.ardoise.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.osier.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
@@ -587,6 +587,9 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
   });
 }
 
+/** L'épaisseur de terre sous le sol d'une île, en blocs (`DEPTH` de ./terrain.ts, qui importe ce fichier ; un test les tient ensemble). */
+export const DEPTH_DU_SOL = 2;
+
 /** Les îles qui ont un ponton et sa barque, sur leur rivage est (DA, LV2-4 : le Jardin des heures). */
 export const PONTON_SUR: readonly BiomeId[] = ['jardin'];
 
@@ -614,8 +617,10 @@ export function pontonEtBarque(def: IslandDef, scenery: LandCell[], place: Put):
   const id = `ponton@${x},${y}`;
   const put = (px: number, py: number, pz: number, color: string) => place(px, py, pz, color, id);
   const mer = -def.altitude - 1;
-  // L'échelle, contre la falaise, de l'eau au haut du rivage ; le tablier, deux cases au ras de l'eau (dans les deux cases
-  // de marge de l'archipel, `worldBounds`).
+  // L'échelle, de l'eau au haut du rivage, contre la falaise : sous l'île en altitude, qui flotte, un pilier de pierre
+  // descend du rivage jusqu'à l'eau, où l'échelle s'appuie sur toute sa hauteur (DA, LV2-4). Le tablier, deux cases au
+  // ras de l'eau (dans les deux cases de marge de l'archipel, `worldBounds`).
+  for (let z = mer; z < Math.min(0, h) - DEPTH_DU_SOL; z++) put(x, y, z, BLOCKS.pierre.side);
   for (let z = mer + 1; z <= h; z++) put(x + 1, y, z, BLOCKS.escalier.side);
   for (let dx = 1; dx <= 2; dx++) put(x + dx, y, mer, BLOCKS.bois.side);
   // La barque, amarrée au bout du tablier, le long de la falaise : son fond, la proue et la poupe relevées.

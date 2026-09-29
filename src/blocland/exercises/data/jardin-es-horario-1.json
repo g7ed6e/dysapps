@@ -4,7 +4,7 @@
   "type": "es-horario",
   "level": 1,
   "lang": "es",
-  "instruction": "Lis la question, puis trouve la bonne ligne de l’emploi du temps ou de l’horaire en espagnol. Le lexique est affiché.",
+  "instruction": "Lis la question, puis trouve la bonne ligne du document en espagnol. Le lexique est affiché.",
   "items": [
     {
       "key": "jardin-es-horario-1-0",
@@ -24,7 +24,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -39,22 +38,21 @@
     {
       "key": "jardin-es-horario-1-1",
       "question": "Le mardi, à quelle heure est la récréation ?",
-      "prompt": "Martes\n8:30 Geografía\n9:25 Ciencias\n10:20 Recreo\n10:50 Música",
-      "spoken": "Martes. A las ocho y treinta, geografía. A las nueve y veinticinco, ciencias. A las diez y veinte, recreo. A las diez y cincuenta, música.",
+      "prompt": "Martes\n8:30 Geografía\n9:25 Recreo\n9:45 Ciencias\n10:40 Música",
+      "spoken": "Martes. A las ocho y treinta, geografía. A las nueve y veinticinco, recreo. A las nueve y cuarenta y cinco, ciencias. A las diez y cuarenta, música.",
       "choices": [
-        "10 h 20",
         "9 h 25",
-        "10 h 50"
+        "9 h 45",
+        "10 h 40"
       ],
-      "answer": "10 h 20",
+      "answer": "9 h 25",
       "hint": "Cherche le mot Recreo, puis lis l’heure de sa ligne.",
-      "explanation": "el recreo = la récréation : sa ligne dit 10:20, donc 10 h 20. À 10 h 50, c’est Música.",
+      "explanation": "el recreo = la récréation : sa ligne dit 9:25, donc 9 h 25. À 9 h 45, c’est Ciencias.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -84,7 +82,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -114,7 +111,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -144,7 +140,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -174,7 +169,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -204,7 +198,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",
@@ -222,8 +215,8 @@
       "prompt": "Horario del instituto\nentrada: 8:30\nsalida: 14:30",
       "spoken": "Horario del instituto. Entrada, a las ocho y treinta. Salida, a las catorce y treinta.",
       "choices": [
-        "14 h 30",
         "8 h 30",
+        "14 h 30",
         "16 h 30"
       ],
       "answer": "14 h 30",
@@ -234,7 +227,6 @@
         "props": {
           "title": "Leer un horario",
           "lines": [
-            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
             "lunes, martes, miércoles = lundi, mardi, mercredi",
             "jueves, viernes, sábado, domingo = jeudi, vendredi, samedi, dimanche",
             "Lengua = l’espagnol ; Educación Física = le sport",

@@ -7,7 +7,7 @@ import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
 import { CORE, MAP } from '../map';
 import { PLAN_ZONE } from '../plans';
 import { worldBounds, worldCubes } from '../terrain';
-import { COULEURS_4E, cratereDuVolcan, ECUEIL_BAS, FOURNEAU, GRUE, LOINTAIN_4E, VOLCAN_DU_FOND } from './4e';
+import { CONTREFORT, COULEURS_4E, cratereDuVolcan, ECUEIL_BAS, FOURNEAU, GRUE, LOINTAIN_4E, VOLCAN_DU_FOND } from './4e';
 import { BORNES_DU_LOINTAIN } from './lointain';
 import { hex } from './pinceau';
 
@@ -162,7 +162,17 @@ it('le ponton du Jardin des heures (LV2) : sur son rivage est, au ras de l’eau
   const sol = colonneEn(monde.champ, e.x, e.y)!.haut + 1;
   expect(Math.max(...pts.map((p) => p[1]))).toBeLessThanOrEqual(sol + 0.5);
   expect(Math.min(...pts.map((p) => p[1]))).toBeLessThan(NIVEAU_EAU);
-  const barque = pts.filter((p) => p[2] > e.y + 0.5 + 0.7);
+  // (La barque, à deux cases du rivage, au large du contrefort de pierre qui porte l'échelle.)
+  const barque = pts.filter((p) => p[0] > e.x + 1.5 && p[2] > e.y + 0.5 + 0.7);
   expect(barque.length).toBeGreaterThan(0);
   for (const p of barque) expect(p[1]).toBeLessThanOrEqual(NIVEAU_EAU + 0.35);
+  // L'échelle s'appuie sur un contrefort de pierre, de l'eau jusque sous le rivage, juste derrière elle (côté île).
+  // Il prend la roche de la falaise, s'élargit vers le pied, et s'arrête une marche sous le bord de l'herbe.
+  const face = e.x + 0.5 + CONTREFORT.face;
+  const contrefort = pts.filter((p) => p[0] <= face + 1e-3 && p[0] >= e.x + 0.5 - CONTREFORT.recul[1] - 0.2 && p[1] > NIVEAU_EAU - 0.35 && p[1] < sol - 0.5);
+  expect(Math.min(...contrefort.map((p) => p[1]))).toBeLessThan(NIVEAU_EAU);
+  const haut = Math.max(...contrefort.map((p) => p[1]));
+  expect(haut).toBeGreaterThan(sol - 2.01);
+  expect(haut).toBeLessThanOrEqual(sol - 1 + 1e-6);
+  expect(CONTREFORT.pied).toBeGreaterThan(CONTREFORT.haut);
 });

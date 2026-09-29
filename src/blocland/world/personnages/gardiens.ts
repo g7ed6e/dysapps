@@ -486,10 +486,11 @@ const DILIGENCE = fromLayers(
 );
 
 // Le Soleil de cuivre (DA, LV2-4) : un corps carré de cuivre, huit rayons droits d'un cube (les quatre droits, et les
-// quatre en biais, en marches), deux yeux en cubes, sans bouche, ni couronne, ni moustache ; posé sur un pied.
+// quatre en biais, en marches), deux yeux en cubes, sans bouche, ni couronne, ni moustache. Sans pied (il faisait des
+// jambes) : posé sur une dalle pleine d'un cube, sous le corps ; les rayons du bas en biais ne touchent pas le sol.
 const SOLEIL = fromLayers(
   [
-    ['...ccc...', '...ccc...', '...ccc...'],
+    ['..ccccc..', '..ccccc..', '..ccccc..'],
     ['.........', 'C...C...C', '.........'],
     ['.........', '.C..C..C.', '.........'],
     ['..CCCCC..', '..ccccc..', '..ccccc..'],

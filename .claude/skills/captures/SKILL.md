@@ -10,7 +10,7 @@ Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite d
 ## Quel script
 
 - **Le manuel** (`docs/_captures/`, jamais commitées) : `npm run docs:captures -- <nom> [<nom>…]`, les noms de `SHOTS` dans `scripts/docs/captures.mjs`. Ne refaire que les écrans qui changent ; la CI refait tout sur `main`.
-- **Un lot de rendu** : `npm run rendu:mesures -- --sans-poids --captures <dossier> --archipel <6e|5e|4e|3e> --familles <liste>`, les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs` (familles : jour, nuit, contraste, reduit, chantier, ponts, et celles que les lots ajoutent ; plus de famille 2d : ni Archipéo ni Blocland n'ont de 2D au choix, elle reviendra avec un univers dessiné en 2D). Ajouter `--rendu archipeo` pour le rendu Archipéo.
+- **Un lot de rendu** : `npm run rendu:mesures -- --sans-poids --captures <dossier> --archipel <6e|5e|4e|3e> --familles <liste>`, les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs` (familles : jour, nuit, contraste, reduit, chantier, ponts, et celles que les lots ajoutent, comme relais, jardin et jardin-pres, les vues de près recadrées ; plus de famille 2d : ni Archipéo ni Blocland n'ont de 2D au choix, elle reviendra avec un univers dessiné en 2D). Ajouter `--rendu archipeo` pour le rendu Archipéo.
   - Toujours `--sans-poids` sauf si le poids de Three.js est demandé : il lance un build complet.
   - Toujours `--archipel` quand le lot ne touche qu'un archipel : les quatre archipels, c'est environ 120 vues.
   - `--familles` : seulement celles que le lot change ; les trois vues de jour (les mesures) se font toujours.
