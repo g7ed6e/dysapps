@@ -309,6 +309,7 @@ export const ARCHIPEO = {
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
   sentinelles: {
     consigne: 'Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien. Prends ton temps, personne ne compte les secondes.',
+    regle: 'Une épreuve ratée n’éteint rien.',
     jauge: 'Épreuves réussies',
     compte: (reussies, total) => `${reussies} sur ${total}`,
     seuil: (n, assez) => (assez ? 'C’est assez pour rallumer sa lumière.' : `Il faut ${n} épreuves réussies pour rallumer sa lumière.`),

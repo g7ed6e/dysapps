@@ -13,7 +13,7 @@ import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipel
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_BEAT, bossDef, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
@@ -33,6 +33,8 @@ export function BossPage() {
   const biome = getBiome(biomeId);
   const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossOpen(biome, state.progress));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
+  // Jamais affronté : aucune partie de son défi n'est encore enregistrée. Lu à l'arrivée, pas à la fin de la partie.
+  const [regleOuverte, setRegleOuverte] = useState(() => (biome ? !state.progress[bossId(biome.id)] : false));
   // Le défi est tiré au lancement (et à chaque « Rejouer »), pas à chaque changement de progression.
   // Son contenu est chargé à la demande : `undefined` le temps de l'avoir, `null` si le Gardien n'est pas accessible.
   const loaded = useLoaded(
@@ -123,31 +125,26 @@ export function BossPage() {
         </>
       ) : (
         <>
-          {sent && def && (
-            // La règle du rallumage, au même endroit à chaque défi : avant l'arène, lue à la demande.
-            <div className="consigne arena-regle">
-              <p className="consigne-text">
-                <Syllabified text={def.instruction} />
-              </p>
-              <SpeakButton text={def.instruction} label="Consigne" compact />
-            </div>
-          )}
           <section
             className={`arena${sent ? ' arena-sentinelle' : ''}${beatenNow && !sent ? ' arena-beaten' : ''}`}
             aria-label={textes.libelles.arene(biome.guardian)}
           >
-            {sent ? (
-              // La sentinelle ne bouge pas : seules ses lueurs montent, une épreuve réussie après l'autre (jamais
-              // éteintes par un échec), et la pierre s'éclaircit à la victoire.
-              <Guardian3D
-                biome={biome.id}
-                label={`${guardianTitle(biome)}, le Gardien de l’île`}
-                allumage={{ pierre: beatenNow ? 1 : 0, lueurs: beatenNow ? 1 : lueursDuDefi(won, needed) }}
-                fondu={beatenNow ? FONDU.victoire : FONDU.reussite}
-              />
-            ) : (
-              <Guardian3D biome={biome.id} label={`${guardianTitle(biome)}, le Gardien du biome`} mood={mood} seq={seq} />
-            )}
+            {/* La vitrine : le décor (le dégradé de l'arène) derrière le Gardien seul, jamais sous un texte (DA-26). */}
+            <div className="arena-vitrine">
+              {sent ? (
+                // La sentinelle ne bouge pas : seules ses lueurs montent, une épreuve réussie après l'autre (jamais
+                // éteintes par un échec), et la pierre s'éclaircit à la victoire.
+                <Guardian3D
+                  biome={biome.id}
+                  label={`${guardianTitle(biome)}, le Gardien de l’île`}
+                  allumage={{ pierre: beatenNow ? 1 : 0, lueurs: beatenNow ? 1 : lueursDuDefi(won, needed) }}
+                  fondu={beatenNow ? FONDU.victoire : FONDU.reussite}
+                />
+              ) : (
+                <Guardian3D biome={biome.id} label={`${guardianTitle(biome)}, le Gardien du biome`} mood={mood} seq={seq} />
+              )}
+            </div>
+            {/* Le texte de l'arène sur un panneau uni, clair, collé à la vitrine (DA-26). */}
             <div className="arena-info">
               <p className="arena-name">{guardianTitle(biome)}</p>
               {sent ? (
@@ -175,6 +172,22 @@ export function BossPage() {
                   <p className="arena-seuil">
                     <Syllabified text={sent.seuil(needed, won >= needed)} />
                   </p>
+                  {/* La règle du rallumage, à côté de la jauge qu'elle explique : sa phrase courte toujours lue, la règle
+                      entière dans un pli ouvert au premier défi contre ce Gardien ; le haut-parleur la lit en entier (DA-28). */}
+                  <div className="arena-regle">
+                    <details open={regleOuverte} onToggle={(e) => setRegleOuverte(e.currentTarget.open)}>
+                      <summary>
+                        <span className="arena-regle-chevron" aria-hidden="true">
+                          <Icon name={regleOuverte ? 'chevronDown' : 'chevronRight'} />
+                        </span>
+                        <Syllabified text={sent.regle} />
+                      </summary>
+                      <p>
+                        <Syllabified text={def.instruction} />
+                      </p>
+                    </details>
+                    <SpeakButton text={def.instruction} label="La règle" compact />
+                  </div>
                 </>
               ) : (
                 <>
