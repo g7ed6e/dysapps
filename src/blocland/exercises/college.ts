@@ -4,7 +4,7 @@ import { drawChoices } from '../../core/choices';
 import { fractionWords } from '../../core/fractions';
 import { randomInt, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
-import { GRAPH_FRAME } from './Aids';
+import { GRAPH_FRAME } from './graph';
 import { seeded } from './maths';
 
 export const seededItems = seeded;

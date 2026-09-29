@@ -1,5 +1,7 @@
 // Aides visuelles des îles du collège, dessinées à partir de données (voir maths.ts / college.ts).
 
+import { GRAPH_FRAME, type GraphFrame } from './graph';
+
 /** Droite graduée d'entiers (relatifs compris), avec des points marqués et, au besoin, un bond. */
 export function NumberLineInt({ min, max, points = [], jump }: { min: number; max: number; points?: number[]; jump?: [number, number] }) {
   const n = max - min;
@@ -208,17 +210,6 @@ export function BarList({ values, labels: given, mark, markLabel }: { values: nu
 
 /** « −3 » avec le vrai signe moins. */
 const signed = (v: number) => (v < 0 ? `−${-v}` : String(v));
-
-/** Le cadre d'un graphique : de xMin à xMax sur l'axe horizontal, de yMin à yMax sur l'axe vertical, entiers. */
-export interface GraphFrame {
-  xMin: number;
-  xMax: number;
-  yMin: number;
-  yMax: number;
-}
-
-/** Le cadre des graphiques du Phare : x et f(x) de −4 à 4, une graduation par unité (défini ici seulement). */
-export const GRAPH_FRAME: GraphFrame = { xMin: -4, xMax: 4, yMin: -4, yMax: 4 };
 
 /** Une droite y = ax + b dans son cadre. */
 type FramedLine = { a: number; b: number } & GraphFrame;

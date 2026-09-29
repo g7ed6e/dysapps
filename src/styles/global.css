@@ -4241,7 +4241,8 @@ button.island-quest:active {
     flex: 1 1 100%;
   }
   .panel.calcul:has(> .calcul-figure .graph) > .calcul-figure {
-    flex: 0 1 auto;
+    /* La largeur du graphique, fixée : un SVG sans largeur propre n'a pas la même taille d'un navigateur à l'autre. */
+    flex: 0 1 min(24rem, 45vh);
     min-width: 0;
   }
   .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid {
