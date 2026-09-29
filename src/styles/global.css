@@ -214,10 +214,13 @@ svg {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+/* Caché au-dessus de la page de toute sa hauteur, quelle qu'elle soit : en grand texte, il tient sur deux lignes et
+   un décalage fixe le laissait dépasser sous la barre du haut (DA-16). */
 .skip-link {
   position: absolute;
   left: 1rem;
-  top: -4rem;
+  top: 0;
+  transform: translateY(-100%);
   background: var(--yellow);
   color: var(--on-accent);
   padding: 0.5rem 1rem;
@@ -227,6 +230,7 @@ svg {
 }
 .skip-link:focus {
   top: 1rem;
+  transform: none;
 }
 
 /* ===== Panneaux : opaques, angles de 12 px, bordure pleine, sans ombre sur la page ===== */
@@ -247,7 +251,8 @@ svg {
 .grid {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  /* Jamais plus large que l'écran, même quand 15rem dépasse sa largeur (grand texte sur téléphone, DA-16). */
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
@@ -907,7 +912,7 @@ button.app-card:active {
 }
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(8.5rem, 100%), 1fr));
   gap: 0.8rem;
   margin: 1.2rem 0 0;
 }
@@ -1152,7 +1157,7 @@ button.app-card:active {
 }
 .choices {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
   gap: 1rem;
 }
 .choice {
@@ -2063,6 +2068,36 @@ button.app-card:active {
     transform: translateY(100%);
   }
 }
+/* DA-23 : aux grandes tailles de texte, le bandeau ne tient plus en bas de l'écran (useSheetClearance). Il suit alors
+   la question dans la page, qui défile d'un seul tenant : rien ne passe sur la question ni sur la correction. Seul le
+   bouton pour continuer reste collé en bas de l'écran ; la place qu'il prend est réservée sous le bandeau. */
+.quiz[data-bandeau="page"] .result-sheet {
+  position: static;
+  margin-top: 1.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  padding-bottom: 0.9rem;
+  animation: none;
+}
+.quiz[data-bandeau="page"] .result-sheet-inner {
+  max-height: none;
+}
+.quiz[data-bandeau="page"] .result-sheet-body {
+  overflow: visible;
+}
+.quiz[data-bandeau="page"] .result-sheet .next-button {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 12px calc(0.4rem + env(safe-area-inset-bottom));
+  border-radius: var(--radius) var(--radius) 0 0;
+  /* Un libellé d'une ligne : l'interligne de lecture doublerait la hauteur du bouton, prise sur la question. */
+  line-height: 1.3;
+}
 /* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte (sur téléphone, il attend à la fin du
    texte : collé, il cacherait un tiers de l'écran). */
 .sticky-actions {
@@ -2226,7 +2261,7 @@ button.app-card:active {
 .biome-map {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
@@ -3262,7 +3297,8 @@ button.app-card:active {
 /* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
 .world-map-line {
   display: block;
-  max-width: 34rem;
+  /* Jamais plus large que la place au-dessus du monde (grand texte sur téléphone, DA-16). */
+  max-width: min(34rem, 100%);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
@@ -3281,8 +3317,61 @@ button.app-card:active {
   align-items: flex-start;
   gap: 0.6rem;
 }
-.world-map-destination > button {
+.world-map-speak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex: none;
+}
+/* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
+   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
+   archipels » restent sous elle, toujours visibles. */
+:root[data-texte="grand"] .world-map-line {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+}
+:root[data-texte="grand"] .world-map-line > * {
+  flex: none;
+}
+:root[data-texte="grand"] .world-map-line > button {
+  align-self: flex-start;
+}
+:root[data-texte="grand"] .world-map-destination {
+  max-height: 3lh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+:root[data-texte="grand"] .world-map-destination.a-suivre {
+  border-bottom: var(--border-width) dashed currentColor;
+}
+:root[data-texte="grand"] .world-map-speak {
+  align-self: stretch;
+}
+/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
+   (trois quarts du texte, jamais sous 18 px), marges fixes. */
+@media (min-width: 641px) {
+  :root[data-texte="grand"] .world-map-line {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  :root[data-texte="grand"] .world-map-actions {
+    gap: 8px;
+  }
+  :root[data-texte="grand"] .world-map-actions .button {
+    font-size: 0.75em;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+.world-map-suite {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  width: 1.4em;
+  height: 1.4em;
 }
 .world-map-actions {
   display: flex;
@@ -3298,7 +3387,7 @@ button.app-card:active {
 }
 .world-map-islands ul {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   gap: 0.3rem 1rem;
   margin: 0 0 0.4rem;
   padding: 0;
@@ -4639,7 +4728,7 @@ button.island-quest:active {
 /* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
   margin-top: 0.4rem;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
 }
 .home-menu .menu-tile {
   flex-direction: row;
@@ -4951,4 +5040,197 @@ button.island-quest {
 .rallumage-passer {
   min-height: 48px;
   justify-self: end;
+}
+
+/* ===== DA-16 : grand texte sur téléphone, rien ne sort de l'écran (WCAG 1.4.10) ===== */
+/* En dernier recours seulement, un mot plus long que la ligne se coupe plutôt que de sortir de l'écran. */
+body {
+  overflow-wrap: break-word;
+}
+/* Un groupe de réglages ne s'élargit pas au mot le plus long de ses options. */
+fieldset {
+  min-inline-size: 0;
+}
+@media (max-width: 640px) {
+  /* En grand texte, une case (grille ou rangée) peut devenir plus étroite que son mot le plus long au lieu de pousser
+     l'écran. Sans spécificité (0,0,0) : un minimum écrit ailleurs (cible tactile de 48 px) reste le plus fort. */
+  :where(:root[data-texte="grand"] body *) {
+    min-width: 0;
+  }
+  /* Les étiquettes courtes dont le texte est posé à même une rangée (bouton, case à cocher, légende) : un mot plus
+     long que toute la ligne s'y coupe au lieu de sortir de l'écran. Les consignes et les textes à lire gardent
+     `break-word`, qui ne coupe un mot que s'il ne tient sur aucune ligne. */
+  :root[data-texte="grand"] :is(.button, .speak-button, .toggle, .option, .tag, legend, summary, .page-title, .section-title, .hero-title, .island-sheet-title, .island-quest-title) {
+    overflow-wrap: anywhere;
+  }
+  /* Quête : le bouton Écouter au-dessus de la consigne, qui a toute la largeur. */
+  :root[data-texte="grand"] .consigne {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  :root[data-texte="grand"] .consigne > .speak-button {
+    align-self: flex-start;
+  }
+  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite ; les suivantes ont
+     toute la largeur. */
+  :root[data-texte="grand"] .app-shell.focus .page-title::before {
+    content: "";
+    float: right;
+    width: calc(56px + 0.6rem);
+    height: 1lh;
+  }
+  /* Les titres coulent comme le texte : l'icône en tête de la première ligne, les mots passent à la ligne dessous. */
+  :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) {
+    display: block;
+  }
+  :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) > svg {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-right: 0.3em;
+  }
+  /* Panneau d'île : la créature et la croix sur une ligne, le nom de l'île et son module sur toute la largeur dessous. */
+  :root[data-texte="grand"] .island-sheet-head {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  :root[data-texte="grand"] .island-sheet-titles {
+    order: 1;
+    flex-basis: 100%;
+  }
+  :root[data-texte="grand"] .island-quest {
+    flex-wrap: wrap;
+  }
+  /* Une mission : l'icône et les étoiles (ou « Nouveau ») sur une ligne, le nom et la phrase sur toute la largeur
+     dessous. */
+  :root[data-texte="grand"] .island-quest-text {
+    order: 1;
+    flex-basis: 100%;
+  }
+  /* Les boutons : marges fixes, et l'icône au-dessus du libellé quand les deux ne tiennent pas sur la ligne, pour
+     qu'un mot (« Construire ») ne se coupe pas. */
+  :root[data-texte="grand"] .button {
+    flex-wrap: wrap;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  /* Ce qui s'écrit plus grand que le texte (titre de page, énoncé, calcul, document, blocs de lettres) revient à la
+     taille du texte : un mot y tient entier sur la ligne. */
+  :root[data-texte="grand"] :is(.page-title, .question-prompt, .calcul-prompt, .notice-text, .letter-block, .enclos-pen) {
+    font-size: max(1rem, min(1.3rem, 8vw));
+  }
+  /* Les réponses courtes : côte à côte tant qu'elles tiennent, chacune à sa largeur, sinon une par ligne. */
+  :root[data-texte="grand"] .choices.short {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .choices.short > .choice {
+    flex: 1 1 auto;
+  }
+  :root[data-texte="grand"] .enclos-pens {
+    flex-wrap: wrap;
+  }
+  /* L'aide (règle en liste) : retraits fixes. */
+  :root[data-texte="grand"] .aid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  :root[data-texte="grand"] .rule-card {
+    padding: 8px;
+  }
+  :root[data-texte="grand"] .rule-card ul {
+    padding-left: 20px;
+  }
+  /* Le mot d'un item (à découper, à écouter) reste entier : jamais plus grand qu'il ne faut pour tenir sur la ligne,
+     jamais plus petit que le texte (32 px au plus grand). */
+  :root[data-texte="grand"] .item-word {
+    font-size: max(1rem, min(1.6rem, 8.5vw));
+  }
+  /* « Question 1 / 4 » et le bouton Écouter : sur deux lignes s'ils ne tiennent pas côte à côte. */
+  :root[data-texte="grand"] .question-head {
+    flex-wrap: wrap;
+  }
+  /* « Question » reste entier : « 1 / 4 » passe à la ligne s'il le faut, jamais une lettre seule. */
+  :root[data-texte="grand"] .question-count {
+    padding: 0 8px;
+    overflow-wrap: normal;
+  }
+  /* Réglages : des cases moins rembourrées, et la valeur d'un curseur sous son nom quand les deux ne tiennent pas. */
+  :root[data-texte="grand"] .option {
+    padding: 6px 10px;
+  }
+  /* Le choix de l'univers : le rond et l'icône sur une ligne, le nom et la phrase sur toute la largeur dessous. */
+  :root[data-texte="grand"] .option.univers-choice,
+  :root[data-texte="grand"] .univers-choice label {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .univers-choice label,
+  :root[data-texte="grand"] .univers-text {
+    flex-basis: 100%;
+  }
+  :root[data-texte="grand"] .toggle input {
+    flex-shrink: 0;
+  }
+  /* Une case à cocher, un choix : la case au-dessus de son libellé s'il ne tient pas à côté. */
+  :root[data-texte="grand"] :is(.toggle, .option) {
+    flex-wrap: wrap;
+  }
+  /* Les étapes numérotées : un retrait fixe, le numéro reste dans le panneau. */
+  :root[data-texte="grand"] .settings-steps {
+    padding-left: 30px;
+  }
+  :root[data-texte="grand"] .settings-steps ul {
+    padding-left: 20px;
+  }
+  /* Les titres de groupe (« Espacements ») en trois quarts du texte, jamais sous 18 px : ils tiennent entiers sur
+     la ligne. */
+  :root[data-texte="grand"] .settings legend {
+    padding: 0 4px;
+    font-size: max(18px, 0.75rem);
+  }
+  :root[data-texte="grand"] .slider-label {
+    flex-wrap: wrap;
+    gap: 0 1rem;
+  }
+  /* La Carte : le bouton Écouter au-dessus de la phrase, qui a toute la largeur ; l'état d'une île sous son nom. */
+  :root[data-texte="grand"] .world-map-destination {
+    flex-direction: column;
+  }
+  /* Le trait pointillé seul dit la suite : au-dessus de la phrase, le chevron la montrerait à l'envers. */
+  :root[data-texte="grand"] .world-map-suite {
+    display: none;
+  }
+  :root[data-texte="grand"] .world-map-island {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .question-head .question-count {
+    white-space: normal;
+  }
+  /* Les marges intérieures en rem grandissaient avec le texte et mangeaient la moitié de la largeur : fixes ici. */
+  :root[data-texte="grand"] .content {
+    padding-left: calc(12px + env(safe-area-inset-left));
+    padding-right: calc(12px + env(safe-area-inset-right));
+  }
+  :root[data-texte="grand"] .panel {
+    padding: 14px;
+  }
+  :root[data-texte="grand"] .island-sheet {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  :root[data-texte="grand"] .island-quest {
+    padding: 8px 10px;
+  }
+}
+/* En grand texte, les cartes de mots à trier (Chasse au son, Rimes) ont chacune au moins onze lettres de large :
+   deux par ligne sur tablette, une sur téléphone ; un mot tient entier dans sa carte. */
+:root[data-texte="grand"] .word-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11em), 1fr));
+}
+/* De même pour les réponses longues : au moins 14 rem de large, pour qu'un mot comme « bibliothèque » tienne. */
+:root[data-texte="grand"] .choices:not(.short) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+/* En grand texte, les bulles posées sur le monde ne sont jamais plus larges que lui. */
+:root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
+  grid-template-columns: minmax(0, 1fr);
 }
