@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { toutConstruit } from './budget';
-import { caseDuPhare, maillageDeLaConstruction, miseBoutABout, type GroupeDeConstruction, type MaillageDeLaConstruction } from './construction';
+import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, type GroupeDeConstruction, type MaillageDeLaConstruction } from './construction';
 import { Pinceau } from './decor/pinceau';
 import { getMonument, MONUMENTS } from './monuments';
 import { planCells } from './plans';
@@ -116,14 +116,14 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
         expect(t1).toBeGreaterThan(t0);
         for (let t = t0; t < t1; t++) {
           const { point, normale } = triangle(x[groupe], t);
-          const r = caseDuPhare(x, groupe, t, point, normale);
+          const r = caseDeLaPiece(x, groupe, t, point, normale);
           expect(r, `${groupe} ${t}`).not.toBeNull();
           expect(cles.has(`${r!.cell.x},${r!.cell.y},${r!.cell.z}`), `${groupe} ${t}`).toBe(true);
           // La case voisine est à un pas de la case touchée.
           expect(Math.abs(r!.next.x - r!.cell.x) + Math.abs(r!.next.y - r!.cell.y) + Math.abs(r!.next.z - r!.cell.z)).toBe(1);
         }
         // Hors de son dessin, rien : le triangle juste avant (l'autre île, une fois mis bout à bout).
-        if (t0 > 0) expect(caseDuPhare(x, groupe, t0 - 1, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
+        if (t0 > 0) expect(caseDeLaPiece(x, groupe, t0 - 1, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
       }
     };
     verifier(mm);

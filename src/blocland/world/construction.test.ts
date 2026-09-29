@@ -6,7 +6,7 @@ import {
   ALLUMAGE,
   cacheDeLaConstruction,
   caseDeLaConstruction,
-  caseDuPhare,
+  caseDeLaPiece,
   construireParIle,
   CREME_DU_PHARE,
   coutDeLaConstruction,
@@ -142,10 +142,10 @@ const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: 
   Boolean(
     (m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) ||
       (m.phareDuLarge && i >= m.phareDuLarge[groupe][0] && i < m.phareDuLarge[groupe][1]) ||
-      (groupe === 'opaque' && m.ponts && i >= m.ponts.opaque[0] && i < m.ponts.opaque[1]),
+      (groupe === 'opaque' && (m.ponts ?? []).some((p) => i >= p.opaque[0] && i < p.opaque[1])),
   );
 /** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
-const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ? m.ponts.opaque[1] - m.ponts.opaque[0] : 0);
+const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
 
 /** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
 function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
@@ -352,7 +352,7 @@ describe('La construction taillée (lot R5)', () => {
     const c = m.opaque.colors;
     // Les blocs seulement (quatre sommets et deux triangles par face) : les ponts de pierre et de bois, dessinés à la
     // fin, sont des facettes peintes.
-    const fin = m.ponts ? m.ponts.opaque[0] * 2 : m.opaque.positions.length / 3;
+    const fin = m.ponts ? m.ponts[0].opaque[0] * 2 : m.opaque.positions.length / 3;
     for (let q = 0; q < fin; q += 4)
       for (let k = 1; k < 4; k++) for (let j = 0; j < 3; j++) expect(c[(q + k) * 3 + j]).toBe(c[q * 3 + j]);
     // Le biseau peint : quatre distances par sommet, bornées.
@@ -631,7 +631,7 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
       const [t0, t1] = m.phare![groupe];
       const faces = triangles(g);
       for (let i = t0; i < t1; i++) {
-        const r = caseDuPhare(m, groupe, i, faces[i].centre, faces[i].n)!;
+        const r = caseDeLaPiece(m, groupe, i, faces[i].centre, faces[i].n)!;
         expect(r, `${groupe} ${i}`).not.toBeNull();
         expect(cles.has(cle(r.cell.x, r.cell.y, r.cell.z))).toBe(true);
         // Au plus à une case et demie du point touché.
@@ -640,7 +640,7 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
       }
     }
     // Hors du phare : rien.
-    expect(caseDuPhare(m, 'opaque', m.phare!.opaque[1], { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
+    expect(caseDeLaPiece(m, 'opaque', m.phare!.opaque[1], { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
   }, 30_000);
 
   it('dans l’enveloppe de la construction du 6e, à chaque étape (6 500 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
