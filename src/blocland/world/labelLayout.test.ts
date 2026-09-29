@@ -235,4 +235,59 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
     expect(visibles).toEqual([false, true]);
     expect(offsets[1]).toEqual({ dx: 0, dy: 0 });
   });
+
+  it('avant de renoncer à un nom, essaie les places simples autour de son île : dessus, dessous, à gauche, à droite (DA-31)', () => {
+    // L'étiquette posée par l'écart sur une autre étiquette, trop loin : elle trouve place juste sous son île.
+    const pose: LabelBox = { x: 500, y: 500, w: 200, h: 40 };
+    const gene: LabelBox = { x: 500, y: 420, w: 200, h: 40 };
+    const { offsets, visibles } = placerEtiquettes([gene, pose], [{ x: 500, y: 440 }, { x: 500, y: 520 }], { zones: [], bulles: [], obstacles: [], bounds: cadre, gap: 6 }, null);
+    expect(visibles).toEqual([true, true]);
+    expect(offsets[1]).toEqual({ dx: 0, dy: 0 });
+    // Posée sur une autre, plus lourde (la première) : le dessus de son île est pris, elle passe juste dessous.
+    const r = placerEtiquettes(
+      [gene, { x: 500, y: 425, w: 200, h: 40 }],
+      [{ x: 500, y: 440 }, { x: 500, y: 445 }],
+      { zones: [], bulles: [], obstacles: [], bounds: cadre, gap: 6 },
+      null,
+    );
+    expect(r.visibles).toEqual([true, true]);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 445 + 20 + 6 - 425 });
+  });
+  it('sur la Carte, ne retire jamais le nom de la destination : il prend sa place simple et pousse un nom plus léger (DA-31)', () => {
+    // Une bulle cache le nom de la destination et le dessus de son île ; le dessous est pris par un nom plus léger.
+    const bulle: LabelBox = { x: 500, y: 340, w: 400, h: 60 };
+    const boxes: LabelBox[] = [
+      { x: 500, y: 430, w: 200, h: 40 },
+      { x: 500, y: 370, w: 200, h: 40 },
+    ];
+    const iles = [{ x: 500, y: 470 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [bulle], obstacles: [], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles).toEqual([true, true]);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 400 + 26 - 370 });
+    expect(r.offsets[0]).toEqual({ dx: 0, dy: 470 + 26 - 430 });
+  });
+  it('sur la Carte, le nom de la destination se pose sur sa flèche même au-dessus d’une île voisine (DA-31)', () => {
+    // Une bulle cache sa place ; juste au-dessus de la flèche, une île voisine : le nom s'y pose quand même, sur la
+    // flèche qui le relie à son île, plutôt que dessous.
+    const bulle: LabelBox = { x: 500, y: 270, w: 400, h: 40 };
+    const fleche: LabelBox = { x: 500, y: 376, w: 36, h: 48 };
+    const boxes: LabelBox[] = [{ x: 850, y: 650, w: 200, h: 40 }, { x: 500, y: 270, w: 200, h: 40 }];
+    const iles = [{ x: 500, y: 330 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [bulle], obstacles: [fleche], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles[1]).toBe(true);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 352 - 20 - 6 - 270 });
+  });
+  it('sur la Carte, un autre nom ne se pose jamais sur l’île de destination ni contre sa flèche (DA-31)', () => {
+    // Le nom de la Falaise, juste sous la flèche de la destination : il passe sous sa propre île, plus bas.
+    const fleche: LabelBox = { x: 500, y: 376, w: 36, h: 48 };
+    const boxes: LabelBox[] = [{ x: 500, y: 420, w: 200, h: 40 }, { x: 500, y: 340, w: 200, h: 40 }];
+    const iles = [{ x: 500, y: 440 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [fleche], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles).toEqual([true, true]);
+    const falaise = boxes[0].y + r.offsets[0].dy;
+    expect(falaise - boxes[0].h / 2).toBeGreaterThanOrEqual(400 + 32 + 6);
+    // Sans place libre hors de la garde (le bas du cadre), il se cache.
+    const bas = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [fleche], bounds: { w: 1024, h: 470 }, gap: 6 }, { weights: [1, 2] });
+    expect(bas.visibles).toEqual([false, true]);
+  });
 });
