@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useOptionalBlocland } from '../blocland/BloclandContext';
 import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
@@ -10,15 +11,22 @@ function quitter() {
   window.location.reload();
 }
 
-/** La bande du mode bâtisseur, sous l'en-tête tant qu'il est ouvert, avec un seul bouton pour en sortir. */
+/**
+ * La bande du mode bâtisseur, sous l'en-tête tant qu'il est ouvert : un bouton pour en sortir, une croix pour la masquer.
+ * Masquée, elle ne revient plus ; relancer l'appli (ou recharger la page) quitte aussi le mode.
+ */
 export function BandeauBatisseur() {
-  if (!useOptionalBlocland()?.batisseur) return null;
+  const [masque, setMasque] = useState(false);
+  if (!useOptionalBlocland()?.batisseur || masque) return null;
   return (
     <div className="update-banner">
       <span>{BANDEAU_BATISSEUR}</span>
       <SpeakButton text={BANDEAU_BATISSEUR} />
       <button type="button" className="button" onClick={quitter}>
-        <Icon name="close" /> Quitter le mode bâtisseur
+        <Icon name="back" /> Quitter le mode bâtisseur
+      </button>
+      <button type="button" className="button" onClick={() => setMasque(true)} aria-label="Masquer ce bandeau">
+        <Icon name="close" />
       </button>
     </div>
   );

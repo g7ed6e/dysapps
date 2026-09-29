@@ -88,3 +88,12 @@ it('au doigt, sans glisser : toucher les bords du logo puis deux fois son centre
   for (const [x, y] of [[80, 10], [80, 10], [80, 150], [80, 150], [10, 80], [150, 80], [10, 80], [150, 80], [80, 80], [80, 80]]) toucher(x, y);
   expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
 });
+
+it('la croix masque le bandeau', async () => {
+  const user = userEvent.setup();
+  renderTitle();
+  await user.keyboard(`${FLECHES}ba`);
+  await user.click(screen.getByRole('button', { name: 'Masquer ce bandeau' }));
+  expect(screen.queryByRole('button', { name: /Quitter/ })).not.toBeInTheDocument();
+  expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
+});
