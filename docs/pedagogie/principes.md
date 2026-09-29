@@ -14,7 +14,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 
 ## Une chose à la fois
 
-- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne cache ni la question, ni la réponse touchée, ni la bonne réponse.
+- **Un item par écran** (ou quatre mots à trier sur un seul écran), l’écran tient sans défiler, la correction s’affiche dans un bandeau fixe qui ne cache ni la question, ni la réponse touchée, ni la bonne réponse. Aux grandes tailles de texte, quand ce bandeau ne laisserait plus la place à la question, il suit la question dans la page, qui défile d’un seul tenant ; seul le bouton « Suivante » reste en bas de l’écran.
 - **Une consigne unique** par exercice, la même pour tous les items, **toujours écrite** à l’écran en plus d’être lue : en classe sans casque, ou la voix coupée, l’élève sait quoi faire.
 - **Réponses en ordre stable** : en maths, rangées dans l’ordre croissant ; en français, mélangées à l’affichage mais jamais déplacées après un clic.
 - **Place de la réponse imprévisible** : on ne gagne pas en retenant « c’est le premier bouton ». Sur une partie, la bonne réponse occupe chaque place autant de fois, et d’une partie à l’autre elle change de place. En maths, l’ordre croissant est gardé : ce sont les pièges qui passent de l’autre côté de la réponse, à la même distance. Ailleurs, des nombres ou des heures à choisir (un nombre entendu en anglais ou en LV2, une heure) restent rangés avec les pièges écrits pour eux (13 contre 30, qui se ressemblent à l’oreille) : la réponse a la place de son rang, et on n’invente jamais un nombre ni une date.

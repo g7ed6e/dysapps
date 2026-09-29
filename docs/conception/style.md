@@ -30,6 +30,14 @@ Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent 
 - Il n’y a plus de police pixel. Toute étiquette qui porte un sens (« Nouvelle partie », « Aventure », « Niveau 6e », le nom d’une créature, le compteur du tutoriel, l’épreuve du Gardien, les dates du journal) est dans la police de lecture choisie, en gras, en casse normale, à 18 px au moins ; le nom de l’univers est dans la police des titres.
 - **Tout texte à lire** (consignes, phrases, corrections, panneaux) est dans la police dys choisie par l’élève : Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible ou Arial.
 
+## En grand texte
+
+Quand les lettres sont nettement plus larges qu’avec les réglages par défaut (24 px et plus, ou l’espacement des lettres au plus large), la page porte l’attribut `data-texte="grand"` (`texteGrand` dans `src/core/settings.ts`) ; aux réglages par défaut, rien ne change.
+
+- **Sur téléphone**, rien ne sort de l’écran : les titres coulent comme le texte, l’icône en tête ; dans le panneau d’une île, la créature et la croix sont sur une ligne, le nom de l’île dessous ; une icône, une case à cocher ou un bouton Écouter passe au-dessus de son texte quand les deux ne tiennent pas côte à côte ; les marges intérieures sont fixes. Un mot ne se coupe que s’il est plus long que toute la ligne.
+- **Le bandeau de correction** suit la question dans la page quand, fixé en bas, il ne laisserait plus la place à l’énoncé et aux réponses : l’écran montre les réponses marquées et le début du résultat, et seul « Suivante » reste en bas.
+- **Le panneau de la Carte** montre la phrase dans une fenêtre de trois lignes entières, qui défile s’il y a une suite (un chevron et un trait pointillé le disent) ; « Y aller » et « Les quatre archipels » restent visibles dessous, sur une rangée quand la largeur le permet.
+
 ## L’habillage de Blocland
 
 Blocland reste l’univers par défaut, et son interface a un habillage à lui ([Plusieurs univers](univers.md), décision 7). Il est construit dans `src/styles/blocland.css` et s’applique quand l’univers affiché est Blocland (attribut `data-univers` de la page, posé avec les réglages), c’est-à-dire par défaut ; l’interface décrite plus haut est celle d’Archipéo, quand l’élève l’a choisi dans les Réglages. Direction proposée par le consultant de Blocland et validée par le directeur artistique le 28 septembre 2026.

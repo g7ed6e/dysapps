@@ -2095,6 +2095,8 @@ button.app-card:active {
   min-width: 0;
   padding: 0.4rem 12px calc(0.4rem + env(safe-area-inset-bottom));
   border-radius: var(--radius) var(--radius) 0 0;
+  /* Un libellé d'une ligne : l'interligne de lecture doublerait la hauteur du bouton, prise sur la question. */
+  line-height: 1.3;
 }
 /* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte (sur téléphone, il attend à la fin du
    texte : collé, il cacherait un tiers de l'écran). */
@@ -3315,42 +3317,61 @@ button.app-card:active {
   align-items: flex-start;
   gap: 0.6rem;
 }
-.world-map-destination > button {
-  flex: none;
-}
-/* Quand la Carte n'a pas la place (grand texte), la phrase défile dans le panneau ; les boutons « Y aller »
-   et « Les quatre archipels » restent toujours visibles sous elle, jamais coupés au bas du panneau. */
-.world-overlay-top:has(> .world-map-line) {
+.world-map-speak {
   display: flex;
   flex-direction: column;
-}
-.world-overlay-top:has(> .world-map-line) > * {
+  align-items: center;
   flex: none;
 }
-.world-overlay-top > .world-map-line {
+/* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
+   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
+   archipels » restent sous elle, toujours visibles. */
+:root[data-texte="grand"] .world-map-line {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 0;
-  flex: 0 1 auto;
-  min-height: 0;
 }
-/* Chaque ligne du panneau garde sa place comme en bloc : pleine largeur, le bouton seul à gauche. */
-.world-map-line > * {
+:root[data-texte="grand"] .world-map-line > * {
   flex: none;
 }
-.world-map-line > button {
+:root[data-texte="grand"] .world-map-line > button {
   align-self: flex-start;
 }
-.world-map-line > .world-map-destination,
-.world-map-line > .world-map-islands[open] {
-  flex: 0 1 auto;
-  /* Au moins une ligne et demie : la ligne coupée montre qu'il y a la suite. */
-  min-height: 3rem;
-  min-height: 1.5lh;
+:root[data-texte="grand"] .world-map-destination {
+  max-height: 3lh;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+:root[data-texte="grand"] .world-map-destination.a-suivre {
+  border-bottom: var(--border-width) dashed currentColor;
+}
+:root[data-texte="grand"] .world-map-speak {
+  align-self: stretch;
+}
+/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
+   (trois quarts du texte, jamais sous 18 px), marges fixes. */
+@media (min-width: 641px) {
+  :root[data-texte="grand"] .world-map-line {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  :root[data-texte="grand"] .world-map-actions {
+    gap: 8px;
+  }
+  :root[data-texte="grand"] .world-map-actions .button {
+    font-size: 0.75em;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+.world-map-suite {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  width: 1.4em;
+  height: 1.4em;
 }
 .world-map-actions {
   display: flex;
@@ -5032,14 +5053,20 @@ fieldset {
 }
 @media (max-width: 640px) {
   /* En grand texte, une case (grille ou rangée) peut devenir plus étroite que son mot le plus long au lieu de pousser
-     l'écran. Sans spécificité : un minimum écrit ailleurs (cible tactile de 48 px) reste le plus fort. */
-  :where(:root[data-texte="grand"]) body * {
+     l'écran. Sans spécificité (0,0,0) : un minimum écrit ailleurs (cible tactile de 48 px) reste le plus fort. */
+  :where(:root[data-texte="grand"] body *) {
     min-width: 0;
   }
-  /* Un mot plus long que toute la ligne (« OpenDyslexic » en 32 px) se coupe, même seul dans sa case ; les autres
-     passent à la ligne entiers, comme d'habitude. */
-  :root[data-texte="grand"] body {
+  /* Les étiquettes courtes dont le texte est posé à même une rangée (bouton, case à cocher, légende) : un mot plus
+     long que toute la ligne s'y coupe au lieu de sortir de l'écran. Les consignes et les textes à lire gardent
+     `break-word`, qui ne coupe un mot que s'il ne tient sur aucune ligne. */
+  :root[data-texte="grand"] :is(.button, .speak-button, .toggle, .option, .tag, legend, summary, .page-title, .section-title, .hero-title, .island-sheet-title, .island-quest-title) {
     overflow-wrap: anywhere;
+  }
+  /* Quête : le bouton Écouter au-dessus de la consigne, qui a toute la largeur. */
+  :root[data-texte="grand"] .consigne {
+    flex-direction: column-reverse;
+    align-items: flex-start;
   }
   /* Les titres coulent comme le texte : l'icône en tête de la première ligne, les mots passent à la ligne dessous. */
   :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) {
@@ -5059,17 +5086,67 @@ fieldset {
     order: 1;
     flex-basis: 100%;
   }
-  /* Une mission : l'étiquette « Nouveau » passe sous le nom quand elle ne tient plus à côté. */
   :root[data-texte="grand"] .island-quest {
     flex-wrap: wrap;
   }
+  /* Une mission : l'icône et les étoiles (ou « Nouveau ») sur une ligne, le nom et la phrase sur toute la largeur
+     dessous. */
   :root[data-texte="grand"] .island-quest-text {
-    flex: 1 1 0;
-    min-width: min(100%, 6em);
+    order: 1;
+    flex-basis: 100%;
+  }
+  /* Les boutons : marges fixes, et l'icône au-dessus du libellé quand les deux ne tiennent pas sur la ligne, pour
+     qu'un mot (« Construire ») ne se coupe pas. */
+  :root[data-texte="grand"] .button {
+    flex-wrap: wrap;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  /* Le mot d'un item (à découper, à écouter) reste entier : jamais plus grand qu'il ne faut pour tenir sur la ligne,
+     jamais plus petit que le texte (32 px au plus grand). */
+  :root[data-texte="grand"] .item-word {
+    font-size: max(1rem, min(1.6rem, 8.5vw));
+  }
+  /* Quatre mots à trier : une carte par ligne, pour que chaque mot tienne entier dans sa carte. */
+  :root[data-texte="grand"] .word-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* « Question 1 / 4 » et le bouton Écouter : sur deux lignes s'ils ne tiennent pas côte à côte. */
+  :root[data-texte="grand"] .question-head {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .question-count {
+    padding: 0 8px;
   }
   /* Réglages : des cases moins rembourrées, et la valeur d'un curseur sous son nom quand les deux ne tiennent pas. */
   :root[data-texte="grand"] .option {
     padding: 6px 10px;
+  }
+  /* Le choix de l'univers : le rond et l'icône sur une ligne, le nom et la phrase sur toute la largeur dessous. */
+  :root[data-texte="grand"] .option.univers-choice,
+  :root[data-texte="grand"] .univers-choice label {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .univers-choice label,
+  :root[data-texte="grand"] .univers-text {
+    flex-basis: 100%;
+  }
+  :root[data-texte="grand"] .toggle input {
+    flex-shrink: 0;
+  }
+  /* Une case à cocher, un choix : la case au-dessus de son libellé s'il ne tient pas à côté. */
+  :root[data-texte="grand"] :is(.toggle, .option) {
+    flex-wrap: wrap;
+  }
+  /* Les étapes numérotées : un retrait fixe, le numéro reste dans le panneau. */
+  :root[data-texte="grand"] .settings-steps {
+    padding-left: 30px;
+  }
+  :root[data-texte="grand"] .settings-steps ul {
+    padding-left: 20px;
+  }
+  :root[data-texte="grand"] .settings legend {
+    padding: 0 4px;
   }
   :root[data-texte="grand"] .slider-label {
     flex-wrap: wrap;
@@ -5078,6 +5155,10 @@ fieldset {
   /* La Carte : le bouton Écouter au-dessus de la phrase, qui a toute la largeur ; l'état d'une île sous son nom. */
   :root[data-texte="grand"] .world-map-destination {
     flex-direction: column;
+  }
+  /* Le trait pointillé seul dit la suite : au-dessus de la phrase, le chevron la montrerait à l'envers. */
+  :root[data-texte="grand"] .world-map-suite {
+    display: none;
   }
   :root[data-texte="grand"] .world-map-island {
     flex-wrap: wrap;
@@ -5101,8 +5182,7 @@ fieldset {
     padding: 8px 10px;
   }
 }
-/* Les bulles posées sur le monde ne sont jamais plus larges que lui. */
-.world-overlay-top,
-.world-overlay-bottom {
+/* En grand texte, les bulles posées sur le monde ne sont jamais plus larges que lui. */
+:root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
   grid-template-columns: minmax(0, 1fr);
 }

@@ -77,6 +77,7 @@ import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
+import { useASuivre } from './useASuivre';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -188,6 +189,8 @@ export function WorldPage() {
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
+  const [destinationRef, destinationSuite] = useASuivre<HTMLParagraphElement>(mapOpen ? destinationText : null);
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
   const islandLabels = useMemo(
@@ -718,8 +721,11 @@ export function WorldPage() {
                 </>
               ) : (
                 <>
-                  <p className="world-map-destination">
-                    <SpeakButton text={destinationText} compact />
+                  <p className={`world-map-destination${destinationSuite ? ' a-suivre' : ''}`} ref={destinationRef}>
+                    <span className="world-map-speak">
+                      <SpeakButton text={destinationText} compact />
+                      {destinationSuite && <Icon name="chevronDown" className="world-map-suite" />}
+                    </span>
                     <span>
                       <Syllabified text={destinationText} />
                     </span>
