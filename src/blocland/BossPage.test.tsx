@@ -65,6 +65,20 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   expect(screen.getByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
 });
 
+it('devant « Épreuve », un bouclier dans Blocland, la flamme de la sentinelle dans Archipéo (DA-8)', async () => {
+  const icone = () => screen.getAllByText(/Épreuve : /)[0].querySelector('svg')?.getAttribute('class') ?? '';
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  const blocland = renderAt('/aventure/foret/gardien');
+  await loaded();
+  expect(icone()).toMatch(/shield/);
+  blocland.unmount();
+  localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  expect(icone()).toMatch(/flame/);
+  expect(icone()).not.toMatch(/shield/);
+});
+
 it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
