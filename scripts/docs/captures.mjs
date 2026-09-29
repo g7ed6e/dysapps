@@ -172,6 +172,14 @@ SHOTS.push(
   archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
   archipeo({ base: 'collines-du-large', name: 'archipeo-collines-du-large' }),
 );
+// Les réglages extrêmes dans Archipéo (rendez-vous 4 du lot 6, référent dys) : sur demande seulement, comme ceux de Blocland.
+const extremeArchipeo = (base, theme) => ({ ...extreme(base, theme), name: `extreme-archipeo-${base}-${theme}`, settings: { ...EXTREMES, theme, univers: 'archipeo' } });
+SHOTS.push(
+  extremeArchipeo('gardien', 'clair'),
+  extremeArchipeo('carte', 'nuit'),
+  extremeArchipeo('telephone-village', 'nuit'),
+  extremeArchipeo('collines-du-large', 'creme'),
+);
 
 /** La section Univers des Réglages : Blocland, coché, puis Archipéo. */
 async function showUnivers(page) {
