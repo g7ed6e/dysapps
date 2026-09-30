@@ -259,6 +259,7 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 | [Observatoire des textes](https://g7ed6e.github.io/dysapps/pedagogie/iles/textes.html) (Français) | Astra | luciole lectrice | luciole lectrice | Le Grand Lecteur |
 | [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/studio.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
 | [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/chateau.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
+| [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/refuge.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
 
@@ -307,4 +308,12 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 | Au défi | Le Dragon gallois se pose sur le donjon : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. » | Le Dragon gallois dit à voix basse : « Mon bouclier est éteint. Tu as franchi tous mes remparts, lis les phrases les plus longues à ton rythme. » |
 | À la fin | Je replie mes ailes rouges. Le château est à toi… et à Knight. | Mon bouclier se rallume. Le château est à toi, et à Knight. |
 | Knight à l’arrivée | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. |
+
+### Le Papillon de cuivre, Refuge des carnets
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Papillon de cuivre attend devant le refuge : « Tu as rencontré tous les voyageurs du refuge. Montre-moi que tu comprends leurs voyages. » | Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. » |
+| À la fin | Je me pose… en pierre, pour ton village. Le refuge est à toi… et à Timbre. | Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre. |
+| Timbre à l’arrivée | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. |
 
