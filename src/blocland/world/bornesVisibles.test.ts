@@ -9,7 +9,7 @@ import { maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { champDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS } from './map';
 import { modelerLeSol } from './modeleDessine';
-import { islandCenter, origineDe, questStations, VUE_DE_L_ILE, versLaCamera, viewYaw, worldCubes } from './terrain';
+import { cameraDeLIle, origineDe, questStations, versLaCamera, worldCubes } from './terrain';
 
 /** Distance du rayon (origine `o`, direction `d`) au triangle `i` de `p`, ou −1 s'il ne le coupe pas (Möller–Trumbore). */
 function coupe(o: number[], d: number[], p: Float32Array, i: number): number {
@@ -46,17 +46,17 @@ it('rendu Archipéo : aucun triangle du décor (arbres, rochers, repères, lueur
         const o = origineDe(b.id);
         const socles = new Map(cubes.filter((c) => c.quest?.startsWith(`${b.id}:`)).map((c) => [`${c.x},${c.y}`, c.z]));
         // La caméra de la vue de l'île (three/camera.ts), sans le glissement vers un grand repère : de loin (rayons
-        // parallèles, comme `cacheUneBorne`) et de sa place, à 30 cases du centre de l'île.
+        // parallèles, comme `cacheUneBorne`) et de sa place (repère Three : X = x, Y = hauteur, Z = y).
         const vers = versLaCamera(b.id);
-        const c = islandCenter(b.id);
-        const yaw = -viewYaw(b.id);
-        const { dx, dy, up } = VUE_DE_L_ILE;
-        const camera = [c.x + 30 * (dx * Math.cos(yaw) - dy * Math.sin(yaw)), c.z + 1 + 30 * up, c.y + 30 * (dx * Math.sin(yaw) + dy * Math.cos(yaw))];
+        const cam = cameraDeLIle(b.id);
+        const camera = [cam.x, cam.z, cam.y];
         const cachent: string[] = [];
         for (const st of questStations(b.id)) {
           const bx = o.x + st.x;
           const by = o.y + st.y;
-          const base = socles.get(`${bx},${by}`)! - 1;
+          const socle = socles.get(`${bx},${by}`);
+          expect(socle, `${b.id}, borne ${st.typeId}`).toBeDefined();
+          const base = socle! - 1;
           // Seuls les triangles proches de la borne et au-dessus de son sol peuvent la cacher.
           const proches = facettes.map(([nom, f]) => {
             const t: number[] = [];

@@ -6,14 +6,14 @@ import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
 import type { ArchipelagoId } from '../world/archipelago';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
 import { mapOf } from '../world/map';
-import { islandCenter, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
+import { DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
 /** Vue d'une île : plus haute, pour voir le plan au fond (world/terrain.ts : les bornes y restent visibles). */
 export const ISLAND_VIEW = VUE_DE_L_ILE;
-const ISLAND_DISTANCE = 30;
+const ISLAND_DISTANCE = DISTANCE_DE_LA_VUE_DE_L_ILE;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines (bornes du cadrage de zone). */
 const FOLLOW_DISTANCE = 50;
 const FOLLOW_MAX = 64;
@@ -264,8 +264,8 @@ export function creerCamera(
     const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0) + pivot;
     const dx = v.dx * Math.cos(yaw) - v.dy * Math.sin(yaw);
     const dy = v.dx * Math.sin(yaw) + v.dy * Math.cos(yaw);
-    const target = new THREE.Vector3(c.x, c.z + 1, c.y);
-    const pos = new THREE.Vector3(c.x + d * dx, c.z + 1 + d * v.up, c.y + d * dy);
+    const target = new THREE.Vector3(c.x, c.z + VISEE_AU_DESSUS_DU_SOL, c.y);
+    const pos = new THREE.Vector3(c.x + d * dx, c.z + VISEE_AU_DESSUS_DU_SOL + d * v.up, c.y + d * dy);
     return { target, pos };
   };
 
