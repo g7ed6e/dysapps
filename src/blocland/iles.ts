@@ -825,7 +825,7 @@ export const ILES = [
       {
         "id": "inferences",
         "title": "Inférences",
-        "description": "Ce que le texte laisse comprendre sans le dire, et lire un document qui mêle un texte et un tableau.",
+        "description": "Ce que le texte laisse comprendre sans le dire, et lire un court document (menu, horaire, article, mot aux familles).",
         "programme": [
           "c4.fr.lecture.controle",
           "c4.fr.lecture.documents",

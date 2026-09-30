@@ -14,7 +14,7 @@ créature : Astra
 
 ## Inférences · `inferences`
 
-- description : Ce que le texte laisse comprendre sans le dire, et lire un document qui mêle un texte et un tableau.
+- description : Ce que le texte laisse comprendre sans le dire, et lire un court document (menu, horaire, article, mot aux familles).
 - compétences : c4.fr.lecture.controle · c4.fr.lecture.documents · c3.fr.lecture.implicite
 - bravo : Bien lu !
 - erreur : {explanation}
@@ -32,7 +32,7 @@ Pour tous les items :
 - aide « Lire entre les lignes » :
   - Une inférence : ce que le texte ne dit pas mais laisse comprendre.
   - Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.
-  - Vérifie : ton idée est-elle possible avec TOUS les indices ?
+  - Vérifie : ton idée est-elle possible avec tous les indices ?
 
 1. énoncé : « Léa secoue son parapluie sur le paillasson. Dehors, en plein après-midi, les voitures roulent phares allumés. » Quel temps fait-il ?
    - lu : « Léa secoue son parapluie sur le paillasson. Dehors, en plein après-midi, les voitures roulent phares allumés. » Quel temps fait-il ?
@@ -143,39 +143,38 @@ Pour tous les items :
 
 ### Niveau 3 · `textes-inferences-3`
 
-- consigne : Lis la question, puis cherche la réponse dans le texte et dans le tableau. Le rappel est affiché.
+- consigne : Lis la question, puis cherche la réponse dans les lignes du document. Le rappel est affiché.
 
 Pour tous les items :
 - aide « Lire un document » :
-  - Un document peut mêler un texte et un tableau : lis les deux.
-  - Lis la question, puis cherche la phrase ou la ligne qui y répond.
-  - Relie-les : le texte explique, le tableau donne les chiffres.
-  - Qui a écrit le document, et pour qui ? Regarde le titre et la signature.
+  - Lis la question, puis cherche la ligne qui y répond.
+  - Relie les lignes : une phrase explique, une autre donne le chiffre.
+  - Qui a écrit le document ? Regarde la première et la dernière ligne.
 
-1. énoncé : "Le club lecture du collège\nLe club se retrouve le jeudi midi, au CDI.\nCette année, les inscriptions ont augmenté.\nInscrits l’an dernier : 9\nInscrits cette année : 14"
-   - question : Combien d’élèves de plus se sont inscrits cette année ?
-   - lu : Le club lecture du collège. Le club se retrouve le jeudi midi, au CDI. Cette année, les inscriptions ont augmenté. Inscrits l’an dernier, 9. Inscrits cette année, 14.
-   - choix : 5 élèves · 9 élèves · 14 élèves
-   - réponse : 5 élèves
-   - indice : Compare les deux lignes du tableau : de combien le nombre a-t-il augmenté ?
-   - explication : Le texte dit que les inscriptions ont augmenté ; le tableau donne 9 puis 14. De 9 à 14, il y a 5 élèves de plus. 9 et 14 sont les nombres d’inscrits, pas la différence.
+1. énoncé : "Le club lecture du collège\nLe club accueille les élèves de 4e et de 3e.\nÉlèves de 4e inscrits : 14\nÉlèves de 3e inscrits : 9"
+   - question : Y a-t-il plus d’élèves de 4e ou plus d’élèves de 3e au club ?
+   - lu : Le club lecture du collège. Le club accueille les élèves de quatrième et de troisième. Élèves de quatrième inscrits, 14. Élèves de troisième inscrits, 9.
+   - choix : plus d’élèves de 3e · autant des deux · plus d’élèves de 4e
+   - réponse : plus d’élèves de 4e
+   - indice : Compare les nombres des deux dernières lignes.
+   - explication : Il y a 14 élèves de 4e et 9 élèves de 3e : 14 est plus grand que 9, il y a donc plus d’élèves de 4e. La 3e vient en dernier, mais ce n’est pas le plus grand nombre.
 2. énoncé : "Menu de la cantine\nLe mardi, le repas est végétarien : sans viande ni poisson.\nLundi : poulet et riz\nMardi : omelette et pâtes\nJeudi : poisson et purée"
    - question : Que mange-t-on le jour du repas végétarien ?
    - lu : Menu de la cantine. Le mardi, le repas est végétarien, sans viande ni poisson. Lundi, poulet et riz. Mardi, omelette et pâtes. Jeudi, poisson et purée.
    - choix : du poisson et de la purée · une omelette et des pâtes · du poulet et du riz
    - réponse : une omelette et des pâtes
-   - indice : Le texte dit quel jour ; le tableau dit ce qu’on mange ce jour-là.
-   - explication : Le texte dit que le repas végétarien est le mardi ; la ligne Mardi du tableau donne omelette et pâtes. Le poisson n’est pas végétarien : le texte le dit, sans viande ni poisson.
+   - indice : Une ligne dit quel jour ; une autre dit ce qu’on mange ce jour-là.
+   - explication : La deuxième ligne dit que le repas végétarien est le mardi, et la ligne Mardi donne omelette et pâtes. Le poisson n’est pas végétarien : le document dit sans viande ni poisson.
 3. énoncé : "Piscine municipale\nLe mercredi, la piscine ferme plus tôt pour le nettoyage.\nLundi, mardi, jeudi, vendredi : de 12 h à 20 h\nMercredi : de 12 h à 17 h\nSamedi : de 9 h à 18 h"
    - question : Jusqu’à quelle heure peut-on nager le mercredi ?
    - lu : Piscine municipale. Le mercredi, la piscine ferme plus tôt pour le nettoyage. Lundi, mardi, jeudi, vendredi, de 12 heures à 20 heures. Mercredi, de 12 heures à 17 heures. Samedi, de 9 heures à 18 heures.
    - choix : 17 h · 18 h · 20 h
    - réponse : 17 h
    - indice : Cherche la ligne qui commence par Mercredi.
-   - explication : La ligne Mercredi dit de 12 h à 17 h : la piscine ferme plus tôt, comme l’annonce le texte. 20 h est l’heure des autres jours, 18 h celle du samedi.
-4. énoncé : "Sortie au musée des sciences\nLa sortie aura lieu le vendredi 12 juin. Prévoyez un pique-nique.\nDépart : 8 h 30, devant le collège\nRetour : 16 h 45, devant le collège\nLa vie scolaire"
+   - explication : La ligne Mercredi dit de 12 h à 17 h : la piscine ferme plus tôt, comme l’annonce la deuxième ligne. 20 h est l’heure des autres jours, 18 h celle du samedi.
+4. énoncé : "Sortie au musée des sciences, le vendredi 12 juin\nPrévoyez un pique-nique.\nDépart : 8 h 30\nRetour : 16 h 45\nLa vie scolaire"
    - question : Qui a écrit ce document ?
-   - lu : Sortie au musée des sciences. La sortie aura lieu le vendredi 12 juin. Prévoyez un pique-nique. Départ, 8 heures 30, devant le collège. Retour, 16 heures 45, devant le collège. La vie scolaire.
+   - lu : Sortie au musée des sciences, le vendredi 12 juin. Prévoyez un pique-nique. Départ, 8 heures 30. Retour, 16 heures 45. La vie scolaire.
    - choix : les familles · la vie scolaire du collège · le musée des sciences
    - réponse : la vie scolaire du collège
    - indice : Regarde la dernière ligne : c’est la signature.
@@ -185,29 +184,29 @@ Pour tous les items :
    - lu : Le journal du collège, numéro de mars. Tournoi de handball, la troisième B gagne la finale ! Buts marqués en finale. Troisième B, 18. Troisième A, 15.
    - choix : une affiche qui annonce le tournoi · un article du journal du collège · un mot aux familles
    - réponse : un article du journal du collège
-   - indice : Regarde le titre du document : d’où vient-il ? Et raconte-t-il un match à venir ou un match joué ?
-   - explication : Le titre dit « Le journal du collège » et le texte raconte un match déjà joué, avec son score : c’est un article. Une affiche annoncerait le tournoi avant qu’il ait lieu.
+   - indice : Regarde la première ligne : d’où vient le document ?
+   - explication : La première ligne dit « Le journal du collège », et il raconte un match déjà joué, avec le score : c’est un article. Une affiche annoncerait le tournoi avant qu’il ait lieu.
 6. énoncé : "Sondage : le sport préféré des élèves de 3e\nCette année, le football n’est plus en tête.\nFootball : 11 élèves\nBadminton : 13 élèves\nNatation : 6 élèves"
    - question : Quel sport est en tête cette année ?
    - lu : Sondage, le sport préféré des élèves de troisième. Cette année, le football n’est plus en tête. Football, 11 élèves. Badminton, 13 élèves. Natation, 6 élèves.
    - choix : le football · la natation · le badminton
    - réponse : le badminton
-   - indice : Cherche le plus grand nombre du tableau.
-   - explication : Le plus grand nombre est 13, pour le badminton : il est en tête, et le texte le confirme, le football n’est plus premier. Le football est en haut du tableau, mais avec 11 élèves seulement.
-7. énoncé : "La sortie en forêt\nNous partirons le jour le plus chaud de la semaine.\nLundi : 12 degrés\nMardi : 15 degrés\nMercredi : 9 degrés\nJeudi : 14 degrés"
+   - indice : Cherche le plus grand nombre dans les lignes.
+   - explication : Le plus grand nombre est 13, pour le badminton : il est en tête, comme le dit la deuxième ligne. Le football vient en premier dans la liste, mais avec 11 élèves seulement.
+7. énoncé : "La sortie en forêt\nNous partirons le jour le plus chaud de la semaine.\nLundi : 12 degrés\nMardi : 15 degrés\nJeudi : 14 degrés"
    - question : Quel jour aura lieu la sortie en forêt ?
-   - lu : La sortie en forêt. Nous partirons le jour le plus chaud de la semaine. Lundi, 12 degrés. Mardi, 15 degrés. Mercredi, 9 degrés. Jeudi, 14 degrés.
+   - lu : La sortie en forêt. Nous partirons le jour le plus chaud de la semaine. Lundi, 12 degrés. Mardi, 15 degrés. Jeudi, 14 degrés.
    - choix : jeudi · lundi · mardi
    - réponse : mardi
-   - indice : Le texte dit : le jour le plus chaud. Cherche la plus haute température.
+   - indice : La deuxième ligne dit : le jour le plus chaud. Cherche la plus haute température.
    - explication : Le jour le plus chaud a la plus haute température : 15 degrés, le mardi. Jeudi est proche, avec 14 degrés, mais un peu moins chaud.
-8. énoncé : "Vente de gâteaux\nL’argent de la vente paiera le car du voyage de fin d’année.\nPart de gâteau : 1 euro\nCrêpe : 2 euros\nJus de fruits : 1 euro"
+8. énoncé : "Vente de gâteaux\nL’argent de la vente paiera le car du voyage de fin d’année.\nCrêpe : 3 euros\nPart de gâteau : 2 euros\nJus de fruits : 1 euro"
    - question : Tu prends une crêpe et un jus de fruits. Combien paies-tu ?
-   - lu : Vente de gâteaux. L’argent de la vente paiera le car du voyage de fin d’année. Part de gâteau, 1 euro. Crêpe, 2 euros. Jus de fruits, 1 euro.
-   - choix : 2 euros · 3 euros · 4 euros
-   - réponse : 3 euros
+   - lu : Vente de gâteaux. L’argent de la vente paiera le car du voyage de fin d’année. Crêpe, 3 euros. Part de gâteau, 2 euros. Jus de fruits, 1 euro.
+   - choix : 3 euros · 4 euros · 6 euros
+   - réponse : 4 euros
    - indice : Trouve le prix de la crêpe, puis celui du jus de fruits, et ajoute-les.
-   - explication : La crêpe coûte 2 euros et le jus de fruits 1 euro : 2 plus 1, cela fait 3 euros. 2 euros, c’est la crêpe seule.
+   - explication : La crêpe coûte 3 euros et le jus de fruits 1 euro : 3 plus 1, cela fait 4 euros. 3 euros, c’est la crêpe seule ; 6 euros, c’est tout ce qui est vendu.
 
 ## Figures · `figures`
 
@@ -237,12 +236,12 @@ Pour tous les items :
    - choix : comparaison · métaphore · personnification
    - réponse : métaphore
    - indice : Cherche un mot-outil comme « comme » ou « pareil à ». Y en a-t-il un ?
-   - explication : Le garçon EST une girouette, sans mot-outil : c’est une métaphore. Avec « comme une girouette », ce serait une comparaison.
+   - explication : On dit que le garçon « est » une girouette, sans mot-outil : c’est une métaphore. Avec « comme une girouette », ce serait une comparaison.
 2. énoncé : « Le matin, la cour de récréation est une fourmilière. »
    - lu : « Le matin, la cour de récréation est une fourmilière. »
    - choix : personnification · comparaison · métaphore
    - réponse : métaphore
-   - indice : La cour EST une fourmilière : y a-t-il un mot-outil ?
+   - indice : On dit que la cour « est » une fourmilière : y a-t-il un mot-outil ?
    - explication : L’image rapproche la cour pleine d’élèves d’une fourmilière, sans mot-outil : métaphore.
 3. énoncé : « Mon vieux vélo se plaint à chaque coup de pédale. »
    - lu : « Mon vieux vélo se plaint à chaque coup de pédale. »
@@ -350,8 +349,8 @@ Pour tous les items :
   - Type déclaratif : on donne une information. Le bus arrive.
   - Type interrogatif : on pose une question. Le bus arrive-t-il ?
   - Type impératif : on donne un ordre ou un conseil. Prends le bus.
-  - Forme négative : ne pas, ne jamais, ne plus. Forme exclamative : une émotion, avec un point d’exclamation.
-  - Une question peut ne rien demander : « Qui n’aime pas les vacances ? » veut dire que tout le monde les aime.
+  - Forme affirmative ou négative : ne… pas, ne… jamais, ne… plus.
+  - Forme exclamative : une émotion, avec un point d’exclamation.
 
 1. énoncé : « Range ta chambre avant le dîner. » Quel est le type de la phrase ?
    - lu : « Range ta chambre avant le dîner. » Quel est le type de la phrase ?
@@ -393,7 +392,7 @@ Pour tous les items :
    - lu : « Qui n’aime pas les vacances ? » Que veut dire cette question ?
    - choix : tout le monde aime les vacances · personne n’aime les vacances · on cherche qui n’aime pas les vacances
    - réponse : tout le monde aime les vacances
-   - indice : Attend-on vraiment une réponse ? Regarde la dernière ligne du rappel.
+   - indice : Attend-on vraiment une réponse à cette question ?
    - explication : Cette question n’attend pas de réponse : elle veut dire que tout le monde aime les vacances. C’est une façon plus forte de l’affirmer.
 8. énoncé : « Ne cours pas dans le couloir. » Quel est le type de la phrase ?
    - lu : « Ne cours pas dans le couloir. » Quel est le type de la phrase ?
@@ -423,11 +422,11 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Nature des mots » :
-  - Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).
-  - « le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.
-  - « que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.
-  - Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).
-  - Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand).
+  - Déterminant : devant un nom (le, mes, leurs).
+  - Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.
+  - « que » : après un nom, pronom relatif ; après un verbe, conjonction.
+  - Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).
+  - Conjonction : relie deux mots ou deux propositions (et, mais, que, quand).
 
 1. énoncé : Dans « Je le vois chaque matin », « le » est …
    - choix : un déterminant · un pronom · un nom
@@ -462,7 +461,7 @@ Pour tous les items :
 7. énoncé : Dans « Mes amis arrivent », « mes » est …
    - choix : un déterminant · un pronom · un verbe
    - réponse : un déterminant
-   - indice : Quel mot suit « mes » ? Ne le confonds pas avec « met », du verbe mettre.
+   - indice : Quel mot suit « mes » ?
    - explication : « mes » accompagne le nom « amis » : déterminant possessif. « Met », sans s, est le verbe mettre (il met son manteau).
 8. énoncé : Dans « Elle chante vraiment bien », « bien » est …
    - choix : un adjectif · un adverbe · un nom
@@ -472,27 +471,28 @@ Pour tous les items :
 
 ### Niveau 2 · `textes-rouages-2`
 
-- consigne : Quelle est la fonction du groupe entre guillemets ? Le rappel est affiché.
+- consigne : Quelle est la fonction du mot ou du groupe demandé ? Le rappel est affiché.
 
 Pour tous les items :
 - aide « Fonctions dans la phrase » :
-  - Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?
-  - Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).
-  - Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.
-  - Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport).
+  - COD (complément d’objet direct) : on demande « quoi ? » après le verbe.
+  - COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».
+  - Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).
+  - Épithète : adjectif collé au nom, sans verbe entre eux.
+  - Complément du nom : relié au nom par de, à, en.
 
 1. énoncé : « Léa mange une pomme. » Fonction de « une pomme » ?
    - lu : « Léa mange une pomme. » Fonction de « une pomme » ?
    - choix : COD · sujet · COI
    - réponse : COD
    - indice : Léa mange quoi ?
-   - explication : « mange quoi ? une pomme » : complément d’objet direct.
+   - explication : « mange quoi ? une pomme » : COD, complément d’objet direct.
 2. énoncé : « Il parle à sa sœur. » Fonction de « à sa sœur » ?
    - lu : « Il parle à sa sœur. » Fonction de « à sa sœur » ?
    - choix : COI · COD · attribut du sujet
    - réponse : COI
    - indice : Il parle à qui ?
-   - explication : « parle à qui ? » : complément d’objet indirect.
+   - explication : « parle à qui ? à sa sœur » : COI, complément d’objet indirect.
 3. énoncé : « Demain, nous partons. » Fonction de « demain » ?
    - lu : « Demain, nous partons. » Fonction de « demain » ?
    - choix : complément circonstanciel · sujet · COD
@@ -510,19 +510,19 @@ Pour tous les items :
    - choix : épithète · attribut du COD · COD
    - réponse : attribut du COD
    - indice : Remplace « ce film » par « le ». Le mot « ennuyeux » part-il avec lui, ou reste-t-il ?
-   - explication : « Mes amis le trouvent ennuyeux » : « le » remplace le COD « ce film », et « ennuyeux » reste à part. Après « trouver », il dit comment est le COD : attribut du COD.
+   - explication : Dans « Mes amis le trouvent ennuyeux », « le » remplace le COD « ce film » et « ennuyeux » reste. Après « trouver », il dit comment est le film : attribut du COD.
 6. énoncé : « J’ai oublié mon sac de sport. » Fonction de « de sport » ?
    - lu : « J’ai oublié mon sac de sport. » Fonction de « de sport » ?
    - choix : COI · complément circonstanciel · complément du nom
    - réponse : complément du nom
    - indice : « de sport » complète-t-il le verbe, ou le nom « sac » ?
-   - explication : « de sport » précise le nom « sac » : quel sac ? un sac de sport. C’est un complément du nom. Il commence par « de », mais il ne complète pas le verbe : ce n’est pas un COI.
+   - explication : « de sport » précise le nom « sac » (quel sac ? un sac de sport) : complément du nom. Il commence par « de », mais il ne complète pas le verbe : ce n’est pas un COI.
 7. énoncé : « Nous avons adopté un chat noir. » Fonction de « noir » ?
    - lu : « Nous avons adopté un chat noir. » Fonction de « noir » ?
    - choix : attribut du sujet · épithète · attribut du COD
    - réponse : épithète
    - indice : Remplace « un chat noir » par « l’ » : « Nous l’avons adopté ». Que devient « noir » ?
-   - explication : « Nous l’avons adopté » : « l’ » remplace tout le groupe « un chat noir », « noir » part avec lui. L’adjectif est collé au nom, sans verbe entre eux : épithète.
+   - explication : Dans « Nous l’avons adopté », « l’ » remplace tout le groupe « un chat noir » : « noir » part avec lui. Collé au nom, sans verbe entre eux, l’adjectif est épithète.
 8. énoncé : « Dans la forêt sombre guette un loup affamé. » Fonction de « un loup affamé » ?
    - lu : « Dans la forêt sombre guette un loup affamé. » Fonction de « un loup affamé » ?
    - choix : COD · sujet · complément circonstanciel
@@ -539,19 +539,19 @@ Pour tous les items :
   - Une proposition : un verbe conjugué et les mots qui dépendent de lui.
   - Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.
   - Juxtaposées : reliées par une virgule ou un point-virgule.
-  - Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).
+  - Coordonnées : reliées par mais, ou, et, donc, or, ni, car.
   - Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si.
 
 1. énoncé : « Le réveil sonne, Léa se lève et elle ouvre les volets. » Combien de propositions ?
    - lu : « Le réveil sonne, Léa se lève et elle ouvre les volets. » Combien de propositions ?
-   - choix : 1 · 2 · 3
-   - réponse : 3
+   - choix : une proposition · deux propositions · trois propositions
+   - réponse : trois propositions
    - indice : Compte les verbes conjugués.
    - explication : Trois verbes conjugués (sonne, se lève, ouvre) : trois propositions. La phrase est complexe.
 2. énoncé : « Mon frère et ma sœur regardent un film. » Combien de propositions ?
    - lu : « Mon frère et ma sœur regardent un film. » Combien de propositions ?
-   - choix : 1 · 2 · 3
-   - réponse : 1
+   - choix : une proposition · deux propositions · trois propositions
+   - réponse : une proposition
    - indice : Compte les verbes conjugués, pas les sujets.
    - explication : Un seul verbe conjugué, « regardent », avec deux noms pour sujet : une proposition, c’est une phrase simple. « Et » relie ici deux noms, pas deux propositions.
 3. énoncé : « Il pleut, nous restons à la maison. » Comment les deux propositions sont-elles reliées ?
@@ -586,8 +586,8 @@ Pour tous les items :
    - explication : Les deux faits s’opposent : il fait froid, et pourtant Tom sort sans manteau. L’opposition se dit par « mais ».
 8. énoncé : « Le film que nous avons vu était long. » Combien de propositions ?
    - lu : « Le film que nous avons vu était long. » Combien de propositions ?
-   - choix : 1 · 2 · 3
-   - réponse : 2
+   - choix : une proposition · deux propositions · trois propositions
+   - réponse : deux propositions
    - indice : Compte les verbes conjugués : « avons vu » compte pour un seul.
    - explication : Deux verbes conjugués, « avons vu » et « était » : deux propositions. La relative « que nous avons vu » est glissée au milieu de la principale « le film était long ».
 

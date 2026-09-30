@@ -63,7 +63,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Pas de syllabes colorées sur l’anglais** : le découpage suit les règles du français et tromperait l’élève. Le texte anglais est marqué comme tel pour les lecteurs d’écran.
 - **Entendre avant d’écrire** : chaque mot anglais a son bouton Écouter ; au niveau « J’écris » du Vocabulaire, on entend le mot et on choisit son écriture ; la mission Ears de la Baie des mots lit le mot dès qu’il apparaît, rien n’est écrit avant.
 - **Le trou se lit « blank »** dans une phrase anglaise, comme en classe d’anglais : la voix anglaise ne dit pas « mot manquant ».
-- **Lire un document** (panneau, menu, horaire) : la question, en français, vient d’abord, en syllabes comme une consigne, et se lit avec la voix française (d’elle-même à chaque item si la lecture automatique est active) ; le document, en anglais, est encadré dessous, une ligne par information, jamais tout en capitales, sans syllabes, et se lit avec la voix anglaise à la demande. Le lexique affiché aide à lire, il ne recopie pas une réponse.
+- **Lire un document** (panneau, menu, horaire) : la question, en français, vient d’abord, en syllabes comme une consigne, et se lit avec la voix française (d’elle-même à chaque item si la lecture automatique est active) ; le document, en anglais, est encadré dessous, une ligne par information, jamais tout en capitales, sans syllabes, et se lit avec la voix anglaise à la demande. Le lexique affiché aide à lire, il ne recopie pas une réponse. Un document en français (l’Observatoire des textes, en 3e) se présente de la même façon, mais il est le texte à lire : il se découpe en syllabes et se lit avec la voix française.
 
 ## La LV2 : les mêmes deux voix
 

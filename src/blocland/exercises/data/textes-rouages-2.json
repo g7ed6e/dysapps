@@ -3,7 +3,7 @@
   "biome": "textes",
   "type": "rouages",
   "level": 2,
-  "instruction": "Quelle est la fonction du groupe entre guillemets ? Le rappel est affiché.",
+  "instruction": "Quelle est la fonction du mot ou du groupe demandé ? Le rappel est affiché.",
   "items": [
     {
       "key": "textes-rouages-2-0",
@@ -16,16 +16,17 @@
       ],
       "answer": "COD",
       "hint": "Léa mange quoi ?",
-      "explanation": "« mange quoi ? une pomme » : complément d’objet direct.",
+      "explanation": "« mange quoi ? une pomme » : COD, complément d’objet direct.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -41,16 +42,17 @@
       ],
       "answer": "COI",
       "hint": "Il parle à qui ?",
-      "explanation": "« parle à qui ? » : complément d’objet indirect.",
+      "explanation": "« parle à qui ? à sa sœur » : COI, complément d’objet indirect.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -72,10 +74,11 @@
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -97,10 +100,11 @@
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -116,16 +120,17 @@
       ],
       "answer": "attribut du COD",
       "hint": "Remplace « ce film » par « le ». Le mot « ennuyeux » part-il avec lui, ou reste-t-il ?",
-      "explanation": "« Mes amis le trouvent ennuyeux » : « le » remplace le COD « ce film », et « ennuyeux » reste à part. Après « trouver », il dit comment est le COD : attribut du COD.",
+      "explanation": "Dans « Mes amis le trouvent ennuyeux », « le » remplace le COD « ce film » et « ennuyeux » reste. Après « trouver », il dit comment est le film : attribut du COD.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -141,16 +146,17 @@
       ],
       "answer": "complément du nom",
       "hint": "« de sport » complète-t-il le verbe, ou le nom « sac » ?",
-      "explanation": "« de sport » précise le nom « sac » : quel sac ? un sac de sport. C’est un complément du nom. Il commence par « de », mais il ne complète pas le verbe : ce n’est pas un COI.",
+      "explanation": "« de sport » précise le nom « sac » (quel sac ? un sac de sport) : complément du nom. Il commence par « de », mais il ne complète pas le verbe : ce n’est pas un COI.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -166,16 +172,17 @@
       ],
       "answer": "épithète",
       "hint": "Remplace « un chat noir » par « l’ » : « Nous l’avons adopté ». Que devient « noir » ?",
-      "explanation": "« Nous l’avons adopté » : « l’ » remplace tout le groupe « un chat noir », « noir » part avec lui. L’adjectif est collé au nom, sans verbe entre eux : épithète.",
+      "explanation": "Dans « Nous l’avons adopté », « l’ » remplace tout le groupe « un chat noir » : « noir » part avec lui. Collé au nom, sans verbe entre eux, l’adjectif est épithète.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }
@@ -197,10 +204,11 @@
         "props": {
           "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
-            "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
-            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
+            "COD (complément d’objet direct) : on demande « quoi ? » après le verbe.",
+            "COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».",
+            "Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).",
+            "Épithète : adjectif collé au nom, sans verbe entre eux.",
+            "Complément du nom : relié au nom par de, à, en."
           ]
         }
       }

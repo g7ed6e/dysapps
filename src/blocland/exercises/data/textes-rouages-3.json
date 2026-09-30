@@ -10,11 +10,11 @@
       "prompt": "« Le réveil sonne, Léa se lève et elle ouvre les volets. » Combien de propositions ?",
       "spoken": "« Le réveil sonne, Léa se lève et elle ouvre les volets. » Combien de propositions ?",
       "choices": [
-        "1",
-        "2",
-        "3"
+        "une proposition",
+        "deux propositions",
+        "trois propositions"
       ],
-      "answer": "3",
+      "answer": "trois propositions",
       "hint": "Compte les verbes conjugués.",
       "explanation": "Trois verbes conjugués (sonne, se lève, ouvre) : trois propositions. La phrase est complexe.",
       "aid": {
@@ -25,7 +25,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -36,11 +36,11 @@
       "prompt": "« Mon frère et ma sœur regardent un film. » Combien de propositions ?",
       "spoken": "« Mon frère et ma sœur regardent un film. » Combien de propositions ?",
       "choices": [
-        "1",
-        "2",
-        "3"
+        "une proposition",
+        "deux propositions",
+        "trois propositions"
       ],
-      "answer": "1",
+      "answer": "une proposition",
       "hint": "Compte les verbes conjugués, pas les sujets.",
       "explanation": "Un seul verbe conjugué, « regardent », avec deux noms pour sujet : une proposition, c’est une phrase simple. « Et » relie ici deux noms, pas deux propositions.",
       "aid": {
@@ -51,7 +51,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -77,7 +77,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -103,7 +103,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -129,7 +129,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -155,7 +155,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -181,7 +181,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }
@@ -192,11 +192,11 @@
       "prompt": "« Le film que nous avons vu était long. » Combien de propositions ?",
       "spoken": "« Le film que nous avons vu était long. » Combien de propositions ?",
       "choices": [
-        "1",
-        "2",
-        "3"
+        "une proposition",
+        "deux propositions",
+        "trois propositions"
       ],
-      "answer": "2",
+      "answer": "deux propositions",
       "hint": "Compte les verbes conjugués : « avons vu » compte pour un seul.",
       "explanation": "Deux verbes conjugués, « avons vu » et « était » : deux propositions. La relative « que nous avons vu » est glissée au milieu de la principale « le film était long ».",
       "aid": {
@@ -207,7 +207,7 @@
             "Une proposition : un verbe conjugué et les mots qui dépendent de lui.",
             "Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.",
             "Juxtaposées : reliées par une virgule ou un point-virgule.",
-            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car (mais : opposition, car : cause, donc : conséquence).",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car.",
             "Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si."
           ]
         }

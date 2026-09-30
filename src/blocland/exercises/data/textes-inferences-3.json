@@ -3,30 +3,29 @@
   "biome": "textes",
   "type": "inferences",
   "level": 3,
-  "instruction": "Lis la question, puis cherche la réponse dans le texte et dans le tableau. Le rappel est affiché.",
+  "instruction": "Lis la question, puis cherche la réponse dans les lignes du document. Le rappel est affiché.",
   "items": [
     {
       "key": "textes-inferences-3-0",
-      "prompt": "Le club lecture du collège\nLe club se retrouve le jeudi midi, au CDI.\nCette année, les inscriptions ont augmenté.\nInscrits l’an dernier : 9\nInscrits cette année : 14",
-      "question": "Combien d’élèves de plus se sont inscrits cette année ?",
-      "spoken": "Le club lecture du collège. Le club se retrouve le jeudi midi, au CDI. Cette année, les inscriptions ont augmenté. Inscrits l’an dernier, 9. Inscrits cette année, 14.",
+      "prompt": "Le club lecture du collège\nLe club accueille les élèves de 4e et de 3e.\nÉlèves de 4e inscrits : 14\nÉlèves de 3e inscrits : 9",
+      "question": "Y a-t-il plus d’élèves de 4e ou plus d’élèves de 3e au club ?",
+      "spoken": "Le club lecture du collège. Le club accueille les élèves de quatrième et de troisième. Élèves de quatrième inscrits, 14. Élèves de troisième inscrits, 9.",
       "choices": [
-        "5 élèves",
-        "9 élèves",
-        "14 élèves"
+        "plus d’élèves de 3e",
+        "autant des deux",
+        "plus d’élèves de 4e"
       ],
-      "answer": "5 élèves",
-      "hint": "Compare les deux lignes du tableau : de combien le nombre a-t-il augmenté ?",
-      "explanation": "Le texte dit que les inscriptions ont augmenté ; le tableau donne 9 puis 14. De 9 à 14, il y a 5 élèves de plus. 9 et 14 sont les nombres d’inscrits, pas la différence.",
+      "answer": "plus d’élèves de 4e",
+      "hint": "Compare les nombres des deux dernières lignes.",
+      "explanation": "Il y a 14 élèves de 4e et 9 élèves de 3e : 14 est plus grand que 9, il y a donc plus d’élèves de 4e. La 3e vient en dernier, mais ce n’est pas le plus grand nombre.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
@@ -42,17 +41,16 @@
         "du poulet et du riz"
       ],
       "answer": "une omelette et des pâtes",
-      "hint": "Le texte dit quel jour ; le tableau dit ce qu’on mange ce jour-là.",
-      "explanation": "Le texte dit que le repas végétarien est le mardi ; la ligne Mardi du tableau donne omelette et pâtes. Le poisson n’est pas végétarien : le texte le dit, sans viande ni poisson.",
+      "hint": "Une ligne dit quel jour ; une autre dit ce qu’on mange ce jour-là.",
+      "explanation": "La deuxième ligne dit que le repas végétarien est le mardi, et la ligne Mardi donne omelette et pâtes. Le poisson n’est pas végétarien : le document dit sans viande ni poisson.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
@@ -69,25 +67,24 @@
       ],
       "answer": "17 h",
       "hint": "Cherche la ligne qui commence par Mercredi.",
-      "explanation": "La ligne Mercredi dit de 12 h à 17 h : la piscine ferme plus tôt, comme l’annonce le texte. 20 h est l’heure des autres jours, 18 h celle du samedi.",
+      "explanation": "La ligne Mercredi dit de 12 h à 17 h : la piscine ferme plus tôt, comme l’annonce la deuxième ligne. 20 h est l’heure des autres jours, 18 h celle du samedi.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
     },
     {
       "key": "textes-inferences-3-3",
-      "prompt": "Sortie au musée des sciences\nLa sortie aura lieu le vendredi 12 juin. Prévoyez un pique-nique.\nDépart : 8 h 30, devant le collège\nRetour : 16 h 45, devant le collège\nLa vie scolaire",
+      "prompt": "Sortie au musée des sciences, le vendredi 12 juin\nPrévoyez un pique-nique.\nDépart : 8 h 30\nRetour : 16 h 45\nLa vie scolaire",
       "question": "Qui a écrit ce document ?",
-      "spoken": "Sortie au musée des sciences. La sortie aura lieu le vendredi 12 juin. Prévoyez un pique-nique. Départ, 8 heures 30, devant le collège. Retour, 16 heures 45, devant le collège. La vie scolaire.",
+      "spoken": "Sortie au musée des sciences, le vendredi 12 juin. Prévoyez un pique-nique. Départ, 8 heures 30. Retour, 16 heures 45. La vie scolaire.",
       "choices": [
         "les familles",
         "la vie scolaire du collège",
@@ -101,10 +98,9 @@
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
@@ -120,17 +116,16 @@
         "un mot aux familles"
       ],
       "answer": "un article du journal du collège",
-      "hint": "Regarde le titre du document : d’où vient-il ? Et raconte-t-il un match à venir ou un match joué ?",
-      "explanation": "Le titre dit « Le journal du collège » et le texte raconte un match déjà joué, avec son score : c’est un article. Une affiche annoncerait le tournoi avant qu’il ait lieu.",
+      "hint": "Regarde la première ligne : d’où vient le document ?",
+      "explanation": "La première ligne dit « Le journal du collège », et il raconte un match déjà joué, avec le score : c’est un article. Une affiche annoncerait le tournoi avant qu’il ait lieu.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
@@ -146,69 +141,66 @@
         "le badminton"
       ],
       "answer": "le badminton",
-      "hint": "Cherche le plus grand nombre du tableau.",
-      "explanation": "Le plus grand nombre est 13, pour le badminton : il est en tête, et le texte le confirme, le football n’est plus premier. Le football est en haut du tableau, mais avec 11 élèves seulement.",
+      "hint": "Cherche le plus grand nombre dans les lignes.",
+      "explanation": "Le plus grand nombre est 13, pour le badminton : il est en tête, comme le dit la deuxième ligne. Le football vient en premier dans la liste, mais avec 11 élèves seulement.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
     },
     {
       "key": "textes-inferences-3-6",
-      "prompt": "La sortie en forêt\nNous partirons le jour le plus chaud de la semaine.\nLundi : 12 degrés\nMardi : 15 degrés\nMercredi : 9 degrés\nJeudi : 14 degrés",
+      "prompt": "La sortie en forêt\nNous partirons le jour le plus chaud de la semaine.\nLundi : 12 degrés\nMardi : 15 degrés\nJeudi : 14 degrés",
       "question": "Quel jour aura lieu la sortie en forêt ?",
-      "spoken": "La sortie en forêt. Nous partirons le jour le plus chaud de la semaine. Lundi, 12 degrés. Mardi, 15 degrés. Mercredi, 9 degrés. Jeudi, 14 degrés.",
+      "spoken": "La sortie en forêt. Nous partirons le jour le plus chaud de la semaine. Lundi, 12 degrés. Mardi, 15 degrés. Jeudi, 14 degrés.",
       "choices": [
         "jeudi",
         "lundi",
         "mardi"
       ],
       "answer": "mardi",
-      "hint": "Le texte dit : le jour le plus chaud. Cherche la plus haute température.",
+      "hint": "La deuxième ligne dit : le jour le plus chaud. Cherche la plus haute température.",
       "explanation": "Le jour le plus chaud a la plus haute température : 15 degrés, le mardi. Jeudi est proche, avec 14 degrés, mais un peu moins chaud.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }
     },
     {
       "key": "textes-inferences-3-7",
-      "prompt": "Vente de gâteaux\nL’argent de la vente paiera le car du voyage de fin d’année.\nPart de gâteau : 1 euro\nCrêpe : 2 euros\nJus de fruits : 1 euro",
+      "prompt": "Vente de gâteaux\nL’argent de la vente paiera le car du voyage de fin d’année.\nCrêpe : 3 euros\nPart de gâteau : 2 euros\nJus de fruits : 1 euro",
       "question": "Tu prends une crêpe et un jus de fruits. Combien paies-tu ?",
-      "spoken": "Vente de gâteaux. L’argent de la vente paiera le car du voyage de fin d’année. Part de gâteau, 1 euro. Crêpe, 2 euros. Jus de fruits, 1 euro.",
+      "spoken": "Vente de gâteaux. L’argent de la vente paiera le car du voyage de fin d’année. Crêpe, 3 euros. Part de gâteau, 2 euros. Jus de fruits, 1 euro.",
       "choices": [
-        "2 euros",
         "3 euros",
-        "4 euros"
+        "4 euros",
+        "6 euros"
       ],
-      "answer": "3 euros",
+      "answer": "4 euros",
       "hint": "Trouve le prix de la crêpe, puis celui du jus de fruits, et ajoute-les.",
-      "explanation": "La crêpe coûte 2 euros et le jus de fruits 1 euro : 2 plus 1, cela fait 3 euros. 2 euros, c’est la crêpe seule.",
+      "explanation": "La crêpe coûte 3 euros et le jus de fruits 1 euro : 3 plus 1, cela fait 4 euros. 3 euros, c’est la crêpe seule ; 6 euros, c’est tout ce qui est vendu.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lire un document",
           "lines": [
-            "Un document peut mêler un texte et un tableau : lis les deux.",
-            "Lis la question, puis cherche la phrase ou la ligne qui y répond.",
-            "Relie-les : le texte explique, le tableau donne les chiffres.",
-            "Qui a écrit le document, et pour qui ? Regarde le titre et la signature."
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
           ]
         }
       }

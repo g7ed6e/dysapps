@@ -16,7 +16,7 @@
       ],
       "answer": "métaphore",
       "hint": "Cherche un mot-outil comme « comme » ou « pareil à ». Y en a-t-il un ?",
-      "explanation": "Le garçon EST une girouette, sans mot-outil : c’est une métaphore. Avec « comme une girouette », ce serait une comparaison.",
+      "explanation": "On dit que le garçon « est » une girouette, sans mot-outil : c’est une métaphore. Avec « comme une girouette », ce serait une comparaison.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -40,7 +40,7 @@
         "métaphore"
       ],
       "answer": "métaphore",
-      "hint": "La cour EST une fourmilière : y a-t-il un mot-outil ?",
+      "hint": "On dit que la cour « est » une fourmilière : y a-t-il un mot-outil ?",
       "explanation": "L’image rapproche la cour pleine d’élèves d’une fourmilière, sans mot-outil : métaphore.",
       "aid": {
         "kind": "rule-card",
