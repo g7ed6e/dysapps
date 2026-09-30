@@ -579,7 +579,7 @@ Construit le 28 septembre 2026, derrière le drapeau. Cases, identifiants et sau
 
 ### L’architecture modulaire du lot 7
 
-Tranché le 28 septembre 2026 par le directeur artistique (avis « Aligné »), avec le consultant d’Archipéo et l’artiste technique 3D. Archipéo seulement : Blocland garde ses blocs posés, la 2D garde ses blocs taillés (écart accepté par le directeur artistique, confirmé par le mainteneur le 30 septembre 2026 : elle n’est plus que le repli d’un appareil sans WebGL). Les cases des plans, les identifiants et les sauvegardes ne changent pas.
+Tranché le 28 septembre 2026 par le directeur artistique (avis « Aligné »), avec le consultant d’Archipéo et l’artiste technique 3D. Archipéo seulement : Blocland garde ses blocs posés, la 2D garde ses blocs taillés (écart accepté par le directeur artistique, confirmé par le mainteneur le 30 septembre 2026 ; la 2D n’est ni au choix ni un repli d’un appareil sans WebGL, décision du 29 septembre 2026). Les cases des plans, les identifiants et les sauvegardes ne changent pas.
 
 - **La règle** lit tout le plan, fantômes compris : la pièce d’une case (mur seul, bout, droit, angle, té, croix ; toit) se choisit d’après ses voisines, si bien qu’un mur ne change pas de forme quand on pose la case d’à côté.
 - **Un mur sans toit dans le plan** porte un chaperon, jamais un toit ajouté.
