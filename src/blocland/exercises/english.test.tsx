@@ -114,3 +114,21 @@ it('sans langue : rien ne change (français)', () => {
   // Le mot français, lui, est bien découpé en syllabes.
   expect(document.querySelector('.syllables')).not.toBeNull();
 });
+
+it('document en français (Observatoire des textes) : le document est le texte à lire, découpé en syllabes', () => {
+  renderScreen(
+    CalculScreen,
+    {
+      question: 'Quel jour le club se réunit-il ?',
+      prompt: 'Club lecture du CDI\nLe mardi à midi',
+      spoken: 'Club lecture du CDI. Le mardi à midi.',
+      choices: ['le mardi', 'le jeudi'],
+      answer: 'le mardi',
+    },
+    undefined,
+  );
+  const lines = screen.getAllByRole('listitem');
+  expect(lines.map((l) => l.textContent?.replace(/\s/g, ''))).toEqual(['ClublectureduCDI', 'Lemardiàmidi']);
+  expect(lines.every((l) => l.querySelector('.syllables'))).toBe(true);
+  expect(document.querySelector('[lang="en"]')).toBeNull();
+});
