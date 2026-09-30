@@ -19,4 +19,4 @@ Les décisions prises avant cette page restent dans les tableaux où elles ont �
 | Date | Décision | Fiche | Lot |
 | --- | --- | --- | --- |
 | 30 septembre 2026 | Le game design se tient dans cette section, et chaque changement passe par une fiche GD-n | — | — |
-| 30 septembre 2026 | Le caractère de Blocland : le chantier du bâtisseur. Les créatures des îles-écoles parlent aux grandes étapes à la place de la baleine, les archipels reprennent leurs noms de Blocland, les rôles deviennent des métiers du chantier, un geste et un son de pose propres à Blocland | [GD-1](propositions/GD-1.md) | U4 (noms, voix, rôles) ; lot à ouvrir pour le geste et le son (dégel ciblé du dessin) |
+| 30 septembre 2026 | Le caractère de Blocland : le chantier du bâtisseur. Les créatures des îles-écoles parlent aux grandes étapes à la place de la baleine, les archipels reprennent leurs noms de Blocland, les rôles deviennent des métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte), un geste et un son de pose propres à Blocland | [GD-1](propositions/GD-1.md) | U4 (noms, voix, rôles) ; lot à ouvrir pour le geste et le son (dégel ciblé du dessin) |

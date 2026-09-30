@@ -21,7 +21,7 @@ Le caractère de Blocland se bâtit autour du **chantier du bâtisseur** ([GD-1]
 
 - aux quatre grandes étapes d’un archipel, c’est la créature de l’île-école qui parle (Mousso, Bazar, Ixe, Fi), avec son portrait ; les baleines restent au large, sans parler ;
 - les archipels reprennent leurs noms d’origine : les Basses Terres, les Collines du Large, les Monts de Feu, les Îles du Ciel ; « Le village de Blocland » ; l’écran « L’archipel X s’appelle maintenant Y » (U4) ;
-- les rôles deviennent des métiers du chantier (proposition du consultant : Apprenti, Maçon, Bâtisseur, Maître bâtisseur, Architecte ; à valider), sur les mêmes seuils ;
+- les rôles deviennent des métiers, de la construction à l’ingénierie : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte, sur les mêmes seuils ;
 - un geste de pose (un bloc qui tombe et se pose, à la fin d’un plan et à l’écran titre) et un son de pose propres à Blocland, par un dégel ciblé du dessin.
 
 ## Questions ouvertes
