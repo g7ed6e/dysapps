@@ -33,6 +33,26 @@
       ]
     },
     {
+      "title": "Pilotage",
+      "pages": [
+        "pilotage/chantiers.md"
+      ]
+    },
+    {
+      "title": "Game design",
+      "pages": [
+        "game-design/index.md",
+        "game-design/personnages.md",
+        "game-design/blocland.md",
+        "game-design/archipeo.md",
+        "game-design/decisions.md",
+        {
+          "dir": "game-design/propositions",
+          "title": "Propositions"
+        }
+      ]
+    },
+    {
       "title": "Conception",
       "pages": [
         "conception/architecture.md",

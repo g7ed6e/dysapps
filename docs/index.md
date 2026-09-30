@@ -34,4 +34,4 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 | Un élève | [Démarrer](manuel/demarrer.md), [Les missions](manuel/quetes.md), [L’aventure](manuel/blocland.md) |
 | Un parent ou un enseignant | [Réglages et accessibilité](manuel/reglages.md), [Progression et récompenses](manuel/progression.md), [Questions fréquentes](manuel/questions.md) |
 | Un orthophoniste ou un enseignant spécialisé | [Principes dys](pedagogie/principes.md), [L’archipel](pedagogie/archipel.md), [Barème et succès](pedagogie/bareme.md) |
-| Un contributeur | [Architecture](conception/architecture.md), [Format des exercices](conception/exercices.md), [Contribuer](conception/contribuer.md) |
+| Un contributeur | [État des chantiers](pilotage/chantiers.md), [Le game design](game-design/index.md), [Architecture](conception/architecture.md), [Format des exercices](conception/exercices.md), [Contribuer](conception/contribuer.md) |
