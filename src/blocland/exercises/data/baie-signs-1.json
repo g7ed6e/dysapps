@@ -1,0 +1,255 @@
+{
+  "id": "baie-signs-1",
+  "biome": "baie",
+  "type": "signs",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis l’étiquette ou la carte en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "baie-signs-1-0",
+      "prompt": "Art room\nFirst floor",
+      "question": "À quel étage est la salle d’arts plastiques ?",
+      "image": "🎨",
+      "spoken": "Art room. First floor.",
+      "choices": [
+        "Au rez-de-chaussée",
+        "Au premier étage",
+        "Au troisième étage"
+      ],
+      "choicesLang": "fr",
+      "answer": "Au premier étage",
+      "hint": "Lis la deuxième ligne : first ou third ?",
+      "explanation": "first floor = le premier étage (first = premier). Le troisième étage se dit third floor, le rez-de-chaussée ground floor.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-1",
+      "prompt": "Happy birthday, Emma!\nYou are twelve today.",
+      "question": "Quel âge a Emma aujourd’hui ?",
+      "image": "🎂",
+      "spoken": "Happy birthday, Emma! You are twelve today.",
+      "choices": [
+        "2 ans",
+        "12 ans",
+        "20 ans"
+      ],
+      "choicesLang": "fr",
+      "answer": "12 ans",
+      "hint": "two, twelve et twenty commencent tous par tw : lis le mot jusqu’au bout.",
+      "explanation": "twelve = 12. two = 2 et twenty = 20 commencent aussi par tw.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-2",
+      "prompt": "Horse: Lucky\nIt likes apples.",
+      "question": "Qu’est-ce que Lucky aime manger ?",
+      "image": "🐴",
+      "spoken": "Horse: Lucky. It likes apples.",
+      "choices": [
+        "Des ananas",
+        "Des carottes",
+        "Des pommes"
+      ],
+      "choicesLang": "fr",
+      "answer": "Des pommes",
+      "hint": "Lis la deuxième ligne : le dernier mot est un fruit.",
+      "explanation": "apples = des pommes. L’ananas se dit pineapple, les carottes carrots.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-3",
+      "prompt": "Lost cat\nIt is black and white.",
+      "question": "De quelle couleur est le chat perdu ?",
+      "image": "🐾",
+      "spoken": "Lost cat. It is black and white.",
+      "choices": [
+        "Noir et blanc",
+        "Bleu et blanc",
+        "Noir et marron"
+      ],
+      "choicesLang": "fr",
+      "answer": "Noir et blanc",
+      "hint": "black et blue commencent tous les deux par bl : regarde la fin du mot.",
+      "explanation": "black = noir, white = blanc. Bleu se dit blue, marron brown.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-4",
+      "prompt": "Me with my grandma\nat the beach",
+      "question": "Avec qui l’enfant est-il sur la photo ?",
+      "image": "📸",
+      "spoken": "Me with my grandma at the beach.",
+      "choices": [
+        "Son grand-père",
+        "Sa grand-mère",
+        "Sa mère"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sa grand-mère",
+      "hint": "Regarde le mot après my : grandma ou grandpa ?",
+      "explanation": "grandma = la grand-mère (grandpa = le grand-père, mum = la mère). with my grandma = avec ma grand-mère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-5",
+      "prompt": "Class 6B\nTeacher: Mr Green",
+      "question": "Qui est le professeur de la classe ?",
+      "image": "🏫",
+      "spoken": "Class six B. Teacher: Mister Green.",
+      "choices": [
+        "Madame Green",
+        "Mademoiselle Green",
+        "Monsieur Green"
+      ],
+      "choicesLang": "fr",
+      "answer": "Monsieur Green",
+      "hint": "Mr ou Mrs ? Regarde s’il y a un s.",
+      "explanation": "Mr = Monsieur. Mrs = Madame, Miss = Mademoiselle. teacher = le professeur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-6",
+      "prompt": "Happy Mother’s Day!\nLove, Leo",
+      "question": "À qui Leo écrit-il cette carte ?",
+      "image": "💐",
+      "spoken": "Happy Mother’s Day! Love, Leo.",
+      "choices": [
+        "À sa mère",
+        "À son père",
+        "À son frère"
+      ],
+      "choicesLang": "fr",
+      "answer": "À sa mère",
+      "hint": "mother, father et brother finissent tous par -ther : regarde le début du mot.",
+      "explanation": "mother = la mère : Mother’s Day, c’est la fête des mères. father = le père, brother = le frère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    },
+    {
+      "key": "baie-signs-1-7",
+      "prompt": "Mum, I’m at Tom’s house.\nSee you later! Ella",
+      "question": "Où est Ella ?",
+      "image": "📝",
+      "spoken": "Mum, I’m at Tom’s house. See you later! Ella.",
+      "choices": [
+        "À la maison",
+        "Au parc",
+        "Chez Tom"
+      ],
+      "choicesLang": "fr",
+      "answer": "Chez Tom",
+      "hint": "À qui est la maison ? Regarde le prénom juste avant house.",
+      "explanation": "at Tom’s house = chez Tom, dans la maison de Tom. Être à la maison, chez soi, se dit at home.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une étiquette, une carte",
+          "lines": [
+            "Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.",
+            "black = noir, blue = bleu, white = blanc, brown = marron",
+            "mother = mère, father = père, brother = frère, grandma = grand-mère",
+            "Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième",
+            "two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "cabine",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

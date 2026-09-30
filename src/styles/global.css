@@ -3849,10 +3849,21 @@ button.island-quest:active {
   background: var(--surface);
 }
 .notice-text {
+  flex: 1;
   margin: 0;
   padding: 0;
   list-style: none;
   font-size: 1.4rem;
+}
+/* L'image qui accompagne un document (Signs) : devant lui, en emoji couleur, même pile de polices que .word-picto. */
+.notice-picto {
+  flex: none;
+  font-size: 2.6rem;
+  line-height: 1;
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    "Twemoji Mozilla", sans-serif;
+  font-variant-emoji: emoji;
 }
 /* Une ligne trop longue passe à la ligne en retrait : la suite ne se prend pas pour une nouvelle information. */
 .notice-line {
@@ -3867,6 +3878,10 @@ button.island-quest:active {
 @media (max-width: 640px) {
   .notice-text {
     font-size: 1.2rem;
+  }
+  /* Sur un téléphone, l'image laisse sa largeur au texte : la taille des pictogrammes de la Chasse au son. */
+  .notice-picto {
+    font-size: 2rem;
   }
 }
 .calcul-help {

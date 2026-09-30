@@ -45,7 +45,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.ma.espace.relations': A_COUVRIR('Perpendicularité, parallélisme, symétrie axiale : pas encore de figure dessinée pour cela.'),
   // ---------- Cycle 3, anglais ----------
   'c3.en.ecouter.histoire': A_COUVRIR('Suivre une histoire simple à l’oral : les écoutes de la Baie des mots portent sur des mots, pas sur un récit.'),
-  'c3.en.lire.textes-courts': A_COUVRIR('Lire un texte court avec un visuel en 6e : la seule mission de lecture est en 3e (Studio des ondes) ; une mission de la Baie des mots est prévue.'),
   'c3.en.parler.reproduire-presenter': HORS(ORAL),
   'c3.en.ecrire.phrases': HORS(ECRITURE_LIBRE),
   'c3.en.culture.reperes': A_COUVRIR('Repères géographiques, historiques et culturels des pays anglophones : aucune mission ne les aborde.'),
