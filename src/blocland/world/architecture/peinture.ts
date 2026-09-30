@@ -8,7 +8,7 @@
 //   le soubassement, une haute sous la tête ; des décharges seulement aux bouts et aux angles d'une façade, une par
 //   panneau, aucune sur un mur droit, et seulement au rez (sur le soubassement) : sobre, lisible de loin ; le
 //   remplissage crème nettement majoritaire ;
-// - aucun motif qui ressemble à une lettre : toutes les décharges montent vers la droite, vues du dehors, et une seule
+// - aucun motif qui ressemble à une lettre : toutes les décharges montent dans le même sens, vues du dehors, et une seule
 //   rangée par façade, si bien que deux décharges ne forment jamais un chevron (V, Λ) ni une croix, pas même autour
 //   d'un angle ou d'un étage à l'autre ; au plus une par panneau ;
 // - de loin, les traits fins s'effacent jusqu'au mur crème uni, sans moiré ; le soubassement et le chaperon, larges,
@@ -98,9 +98,12 @@ const DX = [1, 0, -1, 0];
 const DY = [0, 1, 0, -1];
 
 /**
- * Le sens d'une décharge sur la face du côté `cote` : elle monte vers la droite, vue du dehors. La droite d'une face de
- * normale n (vue du dehors, le haut en z) est (−n) × z = (−n.y, n.x). Le shader lit la face selon u : la y de la grille
- * pour une face de normale x, la x pour une face de normale y.
+ * Le sens d'une décharge sur la face du côté `cote` : le même sur toutes les faces, vues du dehors. Le calcul se fait
+ * dans la grille : la droite d'une face de normale n (vue du dehors, le haut en z) y est (−n) × z = (−n.y, n.x), et la
+ * décharge monte vers elle. Mais la scène est le miroir de la grille (X = x, Y = z, Z = y, world/mesher.ts) : à l'écran,
+ * toutes montent vers la gauche. Le sens importe peu ; qu'il soit le même partout fait qu'aucune décharge ne répond à
+ * une autre en chevron. Le shader lit la face selon u : la y de la grille pour une face de normale x, la x pour une face
+ * de normale y.
  */
 export function sensDeLaDecharge(cote: number): number {
   const droite = cote % 2 === 0 ? DX[cote] : -DY[cote];
@@ -189,7 +192,7 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     float bois_ = bandeDuMotif(min(fu, 1.0 - fu), P, du);
     if ((m & ${MOTIF.sabliereBasse}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (S + 0.5 * B)), 0.5 * B, dv));
     if ((m & ${MOTIF.sabliereHaute}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (1.0 - 0.5 * B)), 0.5 * B, dv));
-    if ((m & ${MOTIF.montante | MOTIF.descendante}) != 0) {
+    if (false) {
       // Le panneau : entre les poteaux, et entre ce qui le borde en bas et en haut ; la décharge, à son jeu de l'un et
       // de l'autre (elle ne touche que les poteaux).
       const float J = ${COLOMBAGE.jeu.toFixed(4)};

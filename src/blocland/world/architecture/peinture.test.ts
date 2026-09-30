@@ -71,8 +71,9 @@ describe('Les murs peints', () => {
     expect([0, 1, 2, 3].map((c) => aDesDecharges(bout[c]))).toEqual([false, true, false, true]);
   });
 
-  it('toutes les décharges montent vers la droite, vues du dehors : au plus une par panneau, jamais un chevron', () => {
-    // La droite d'une face de normale n, vue du dehors : (−n.y, n.x). Le shader lit u selon y (normale x) ou x (normale y).
+  it('toutes les décharges montent dans le même sens, vues du dehors : au plus une par panneau, jamais un chevron', () => {
+    // La droite d'une face de normale n, vue du dehors, dans la grille : (−n.y, n.x) (à l'écran, miroir de la grille, la
+    // gauche). Le shader lit u selon y (normale x) ou x (normale y).
     expect([0, 1, 2, 3].map(sensDeLaDecharge)).toEqual([MOTIF.montante, MOTIF.descendante, MOTIF.descendante, MOTIF.montante]);
     for (let m = 0; m < 1024; m++) {
       const d = decharge(m | MOTIF.colombage);
@@ -104,15 +105,19 @@ describe('Les murs peints', () => {
     let proche = Infinity;
     for (const a of bouts) for (const b of bouts) if (a.id !== b.id) proche = Math.min(proche, Math.hypot(a.p[0] - b.p[0], a.p[1] - b.p[1], a.p[2] - b.p[2]));
     // Au plus près, à un angle : la tête de l'une et le pied de l'autre sur le même poteau, l'une en haut, l'autre en bas
-    // (toutes montent vers la droite) ; entre elles, la hauteur du panneau moins deux jeux, bien plus que leurs deux
+    // (toutes montent dans le même sens) ; entre elles, la hauteur du panneau moins deux jeux, bien plus que leurs deux
     // demi-largeurs.
     expect(proche).toBeGreaterThan(0.3);
   }, 30_000);
 
-  it('une décharge ne touche que les poteaux : un jour la sépare de chaque sablière et du chaperon (aucun angle aigu, pas de « < » ni de V)', () => {
+  it('une décharge ne touche que les poteaux : un jour la sépare de chaque sablière, du chaperon et des bords de la case (aucun angle aigu, pas de « < » ni de V)', () => {
     const C = COLOMBAGE;
-    // Les pièces de bois et de pierre horizontales d'un panneau, en hauteur (v) : [bas, haut] de chaque bande.
+    // Les pièces de bois et de pierre horizontales d'un panneau, en hauteur (v) : [bas, haut] de chaque bande. Les bords
+    // de la case aussi : sur un chantier, un fantôme au-dessus laisse voir le haut de la case comme une arête (la
+    // relecture du directeur artistique, 30/09, sur `archi-fantome-pres`).
     const bandes = (m: number): [number, number][] => [
+      [0, 0],
+      [1, 1],
       ...(m & MOTIF.sabliereBasse ? [[C.soubassement, C.soubassement + C.sabliere] as [number, number]] : []),
       ...(m & MOTIF.sabliereHaute ? [[1 - C.sabliere, 1] as [number, number]] : []),
       ...(m & MOTIF.chaperon ? [[1 - C.chaperon, 1] as [number, number]] : []),
