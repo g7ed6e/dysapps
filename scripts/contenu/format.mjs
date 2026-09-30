@@ -268,6 +268,17 @@ export function lireIle(md, fichier = 'md') {
     ex.items = ex.items.map((propre, n) =>
       ordonnerItem({ key: `${ex.id}-${n}`, ...structuredClone(mission.items), ...structuredClone(pourTousNiveau), ...propre }),
     );
+    // Une clé par défaut (le rang) peut retomber sur une clé écrite à la main : deux items partageraient alors
+    // la même répétition espacée.
+    const vus = new Map();
+    ex.items.forEach((it, n) => {
+      if (vus.has(it.key)) {
+        throw new Error(
+          `${fichier}, ${ex.id} : les items ${vus.get(it.key) + 1} et ${n + 1} ont la même clé « ${it.key} » ; donner à l’item nouveau une clé à lui (« - clé : … »)`,
+        );
+      }
+      vus.set(it.key, n);
+    });
     exercices.push(ex);
     ex = null;
   };

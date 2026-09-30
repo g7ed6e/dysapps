@@ -72,6 +72,12 @@ describe('le format Markdown du contenu', () => {
     expect(clesDeplacees(avant, apres)).toEqual(['e-2']);
     expect(clesDeplacees(avant, { items: [...avant.items, { key: 'e-2', word: 'lapin' }] })).toEqual([]);  });
 
+  it('refuse deux items qui auraient la même clé', () => {
+    // A, N, B, C : B et C ont repris leurs anciennes clés, N reçoit la clé par défaut x-1, déjà prise par B.
+    const md = ['---', 'île : baie', '---', '## X · `x`', '### Niveau 1 · `baie-x-1`', '', '1. mot : A', '2. mot : N', '3. clé : baie-x-1-1', '   - mot : B', '4. clé : baie-x-1-2', '   - mot : C', ''].join('\n');
+    expect(() => lireIle(md, 'baie.md')).toThrow('les items 2 et 3 ont la même clé « baie-x-1-1 »');
+  });
+
   it('laisse corriger la faute d’un item sans changer sa place', () => {
     const avant = { items: [{ key: 'e-0', word: 'chta' }, { key: 'e-1', word: 'chien' }] };
     expect(clesDeplacees(avant, { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'chien' }] })).toEqual([]);

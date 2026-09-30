@@ -24,7 +24,7 @@ if (process.argv.includes('--check')) {
   const erreurs = [];
   for (const p of perimes.filter(existsSync)) {
     const deplacees = clesDeplacees(JSON.parse(readFileSync(p, 'utf8')), JSON.parse(sortie.get(p)));
-    if (deplacees.length) erreurs.push(`${court(p)} : les clés ${deplacees.join(', ')} désigneraient d'autres items qu'avant. Un item s'ajoute à la fin ; pour en insérer ou en retirer un au milieu, écrire « - clé : » avec l'ancienne clé sur les items qui suivent.`);
+    if (deplacees.length) erreurs.push(`${court(p)} : les clés ${deplacees.join(', ')} désigneraient d'autres items qu'avant. Un item s'ajoute à la fin ; pour en insérer ou en retirer un au milieu, écrire « - clé : » avec l'ancienne clé sur les items qui suivent, et une clé nouvelle sur l'item ajouté.`);
   }
   if (erreurs.length) {
     for (const e of erreurs) console.error(`✗ ${e}`);
