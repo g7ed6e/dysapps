@@ -70,7 +70,7 @@ Tous les lots R sont construits : R0 à R7, S, les quatre R4b (6e, 5e, 4e, 3e), 
 | DA-1 (fumée plus grise), DA-2 (fourneau du 4e), DA-13 (lointain du 6e, facultatif), DA-12 (capture du pont Marché–Marais) | À faire, en dernier |
 | DA-33 (à la revanche, « brille déjà » alors que la sentinelle repart éteinte) | À valider par le directeur artistique |
 
-Restes de R6 (cadrage Archipéo, les personnages) : espèces et répliques propres à Archipéo (encore communes), miniature en cubes du panneau d’île, créatures un peu moins contrastées de nuit.
+Restes de R6 (cadrage Archipéo, les personnages) : répliques des créatures, mot de la baleine et une partie des espèces propres à Archipéo (encore communs), miniature en cubes du panneau d’île, créatures un peu moins contrastées de nuit.
 
 ### Séparer le jeu du rendu (J)
 
@@ -99,6 +99,11 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 Le plan C-1 à C-15 est dans le [cadrage du contenu](../conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). Aucune étape n’est commencée ; **C-1 attend le mot du mainteneur**. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
 
 Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
+
+## Les défauts relevés en consolidant
+
+- Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).
+- La baleine nomme l’île sans article : « Plaine des nombres est bâtie », « Un chemin s’ouvre vers Mine des lettres » (`src/univers/baleine.ts`).
 
 ## Les incohérences à reprendre dans les cadrages
 

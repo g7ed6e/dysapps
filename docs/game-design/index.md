@@ -70,7 +70,7 @@ La liste complète, île par île, avec ce qui change d’un univers à l’autr
 
 **Questions ouvertes.**
 - Qui parle aux grandes étapes dans Blocland, à la place de la baleine, et pour dire quoi ?
-- Les espèces et les répliques propres à Archipéo (encore communes, reste de R6).
+- Les répliques des créatures, le mot de la baleine et une partie des espèces, encore communs aux deux univers (reste de R6) ; les répliques des Gardiens sont déjà propres à chaque univers.
 
 ## Récompenses et célébrations
 
