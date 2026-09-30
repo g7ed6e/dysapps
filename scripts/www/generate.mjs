@@ -136,6 +136,7 @@ const AID_NAME = {
   graph: 'graphique d’une fonction (repère gradué de 1 en 1, la droite et ses points aux intersections du quadrillage)',
   'column-operation': 'opération posée en colonnes (chiffre sous chiffre, virgule sous virgule)',
   'long-division': 'division posée en potence',
+  'class-table': 'tableau de numération par classes (unités, mille, millions, milliards)',
   'value-table': 'tableau de valeurs',
   scene: 'schéma de la situation',
 };

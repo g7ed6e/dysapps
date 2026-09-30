@@ -3,7 +3,7 @@
 module : Nombres décimaux
 matière : maths
 classe : 6e
-description : Lire, comparer et placer des nombres à virgule, le tableau de numération toujours affiché.
+description : Lire, comparer et placer des nombres à virgule, puis les grands nombres, le tableau de numération toujours affiché.
 bloc : obsidienne
 gardien : le Dragon de cendre
 icône : flame
@@ -23,15 +23,22 @@ créature : Lavi
 
 > Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
 
-- description : Compare deux décimaux, tableau sous les yeux.
+- description : Compare deux décimaux, puis range-les et trouve un nombre entre deux, tableau sous les yeux.
 - compétences : c3.ma.nombres.decimaux-comparer
 
 ## Pente graduée · `pente`
 
 > Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
 
-- description : Repère un décimal sur la droite, puis complète jusqu’à 1.
-- compétences : c3.ma.nombres.decimaux-comparer · c3.ma.nombres.calcul-mental
+- description : Repère un décimal sur la droite, complète jusqu’à 1, puis encadre une fraction entre deux entiers.
+- compétences : c3.ma.nombres.decimaux-comparer · c3.ma.nombres.calcul-mental · c3.ma.nombres.fractions-comparer
+
+## Nombres géants · `geants`
+
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
+- description : Lis et écris les grands nombres, classe par classe, jusqu’aux milliards.
+- compétences : c3.ma.nombres.grands-entiers
 
 ## Les plans
 

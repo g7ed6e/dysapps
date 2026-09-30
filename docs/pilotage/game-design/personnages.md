@@ -93,7 +93,7 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. » | Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, regarde bien où se place la virgule. » |
+| Au défi | Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. » | Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. » |
 | À la fin | Grrr. Tu lis les rangs mieux que mes flammes. Le volcan est à toi… et à Lavi. | Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi. |
 | Lavi à l’arrivée | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. |
 

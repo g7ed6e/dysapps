@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { ColumnOperation, Graph, LongDivision, RuleCard, graphPoints, graphSegment } from './Aids';
+import { ClassTable, ColumnOperation, Graph, LongDivision, RuleCard, graphPoints, graphSegment } from './Aids';
 import { AID_COMPONENTS } from './maths';
 
 const FRAME = { xMin: -4, xMax: 4, yMin: -4, yMax: 4 };
@@ -150,5 +150,43 @@ describe('RuleCard', () => {
   it('lie la ponctuation haute à son mot : les deux-points ne passent jamais seuls en début de ligne', () => {
     const { container } = render(<RuleCard title="Soustraction posée" lines={['Chiffre du haut trop petit : ajoute 10 en haut.']} />);
     expect(container.querySelector('li')?.textContent).toBe('Chiffre du haut trop petit\u00a0: ajoute 10 en haut.');
+  });
+});
+
+describe('Tableau de numération par classes', () => {
+  it('est une aide connue de l’écran de calcul', () => {
+    expect(AID_COMPONENTS['class-table']).toBe(ClassTable);
+  });
+
+  const texts = (container: HTMLElement, selector: string) => [...container.querySelectorAll(selector)].map((e) => e.textContent);
+
+  it('range le nombre un chiffre par case, classe par classe, un trait épais devant chaque classe sauf la première', () => {
+    const { container } = render(<ClassTable value="1035264" />);
+    screen.getByRole('img', { name: 'Tableau de numération par classes : classe des millions, 1 ; classe des mille, 035 ; classe des unités, 264.' });
+    expect(texts(container, '.class-name')).toEqual(['millions', 'mille', 'unités']);
+    expect(texts(container, '.class-rank')).toEqual(['C', 'D', 'U', 'C', 'D', 'U', 'C', 'D', 'U']);
+    expect(texts(container, '.class-digit')).toEqual(['', '', '1', '0', '3', '5', '2', '6', '4']);
+    // Une classe par bloc, le trait des classes devant la 2e et la 3e.
+    const blocks = [...container.querySelectorAll('.class-block')];
+    expect(blocks.map((b) => b.classList.contains('class-start'))).toEqual([false, true, true]);
+    expect(blocks.map((b) => b.querySelectorAll('.class-digit').length)).toEqual([3, 3, 3]);
+  });
+
+  it('écrit chaque classe en lettres au-dessus de trois cases vides, jusqu’aux milliards', () => {
+    const { container } = render(<ClassTable words={['trois', 'quarante', '', 'six cents']} />);
+    screen.getByRole('img', {
+      name: 'Tableau de numération par classes, à remplir : trois dans la classe des milliards, quarante dans la classe des millions, rien dans la classe des mille, six cents dans la classe des unités.',
+    });
+    // Chaque mot dans le bloc de sa classe : il ne peut pas passer dans la classe voisine.
+    const blocks = [...container.querySelectorAll('.class-block')];
+    expect(blocks.map((b) => [b.querySelector('.class-name')!.textContent, b.querySelector('.class-word')!.textContent])).toEqual([
+      ['milliards', 'trois'],
+      ['millions', 'quarante'],
+      ['mille', ''],
+      ['unités', 'six cents'],
+    ]);
+    const boxes = [...container.querySelectorAll('.class-box')];
+    expect(boxes).toHaveLength(12);
+    expect(boxes.every((td) => td.textContent === '')).toBe(true);
   });
 });
