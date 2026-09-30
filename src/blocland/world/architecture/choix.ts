@@ -79,9 +79,16 @@ function rotationVers(reference: number, masque: number): Rotation | null {
 const PAR_MASQUE: readonly { forme: Forme; rotation: Rotation }[] = (() => {
   const out: { forme: Forme; rotation: Rotation }[] = [];
   for (let m = 0; m < 16; m++) {
-    const f = FORMES.find((x) => rotationVers(x.cotes, m) !== null);
-    if (!f) throw new Error(`Masque sans forme : ${m}`);
-    out.push({ forme: f.forme, rotation: rotationVers(f.cotes, m)! });
+    let trouvee: { forme: Forme; rotation: Rotation } | null = null;
+    for (const f of FORMES) {
+      const rotation = rotationVers(f.cotes, m);
+      if (rotation !== null) {
+        trouvee = { forme: f.forme, rotation };
+        break;
+      }
+    }
+    if (!trouvee) throw new Error(`Masque sans forme : ${m}`);
+    out.push(trouvee);
   }
   return out;
 })();
