@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lion). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -213,6 +213,16 @@ const CAPTURES = [
   { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
   { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
   { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
+  // Le Lion de pierre redessiné (Baie des mots, 6e ; la vue de son île ne montre pas son îlot) : au défi, éteint ; puis
+  // l'archipel vu depuis la Baie, et de près (recadré), rallumé (tout construit) et éteint (`debout` : son défi pas encore
+  // gagné), de jour et de nuit.
+  { nom: 'lion-defi', vue: 'défi', famille: 'lion', ile: 'baie' },
+  { nom: 'lion-archipel', vue: 'archipel', famille: 'lion', ile: 'baie' },
+  { nom: 'lion-archipel-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', nuit: true },
+  { nom: 'lion-pres', vue: 'archipel', famille: 'lion', ile: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
+  { nom: 'lion-pres-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
+  { nom: 'lion-pres-eteint', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
+  { nom: 'lion-pres-eteint-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

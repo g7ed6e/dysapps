@@ -141,9 +141,10 @@ function unit(a: V3): V3 {
 
 /**
  * Un tube le long d'une ligne brisée (cou, corne, défense, trompe, queue) : un anneau à `n` pans par point, de rayon
- * `rayons[i]` (un rayon nul fait une pointe), fermé aux deux bouts. `aplati` écrase la section (1 : ronde).
+ * `rayons[i]` (un rayon nul fait une pointe), fermé aux deux bouts. `aplati` écrase la section (1 : ronde). `faces`
+ * peint face par face (segment `i` depuis le premier point, face `j`) ; `pe` peint les bouts (et tout, sans `faces`).
  */
-export function tube(T: Trace, points: V3[], rayons: number | number[], n: number, pe: Peindre, aplati = 1): void {
+export function tube(T: Trace, points: V3[], rayons: number | number[], n: number, pe: Peindre, aplati = 1, faces?: (i: number, j: number) => Peindre): void {
   const m = points.length;
   const R = typeof rayons === 'number' ? points.map(() => rayons) : rayons;
   const tang = points.map((_, i) => unit(sub(points[Math.min(i + 1, m - 1)], points[Math.max(i - 1, 0)])));
@@ -163,9 +164,10 @@ export function tube(T: Trace, points: V3[], rayons: number | number[], n: numbe
     const [A, B, d] = [anneaux[i], anneaux[i + 1], milieu(i)];
     for (let j = 0; j < n; j++) {
       const jj = (j + 1) % n;
-      if (R[i] <= 1e-9) T.triangle(points[i], B[jj], B[j], d, pe);
-      else if (R[i + 1] <= 1e-9) T.triangle(A[j], A[jj], points[i + 1], d, pe);
-      else T.quad(A[j], A[jj], B[jj], B[j], d, pe);
+      const f = faces?.(i, j) ?? pe;
+      if (R[i] <= 1e-9) T.triangle(points[i], B[jj], B[j], d, f);
+      else if (R[i + 1] <= 1e-9) T.triangle(A[j], A[jj], points[i + 1], d, f);
+      else T.quad(A[j], A[jj], B[jj], B[j], d, f);
     }
   }
   if (R[0] > 1e-9) facette(T, anneaux[0], milieu(0), pe);

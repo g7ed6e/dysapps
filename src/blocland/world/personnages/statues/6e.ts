@@ -5,6 +5,7 @@ import { pointe } from '../gabarit';
 import { devant, fuseau, pave, type Anneau } from '../peint';
 import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinelle';
 import { deTroisQuarts, dragonAssis, surLeSocle, ventreDuDragon, HAUTEUR_DU_DRAGON } from './communes';
+import { sculptureDuLion, veinesDuLion } from './lion';
 
 const TRONC: Anneau[] = [
   [1, 0.85],
@@ -92,27 +93,6 @@ const DORSALE: [number, number][] = [
   [1.05, 2.3],
   [1.0, 3.25],
   [0.72, 3.55],
-];
-
-/** La tête du Lion, décalée vers la gauche de son corps couché. */
-const X_DU_LION = -0.75;
-const CRINIERE: Anneau[] = [
-  [5.7, 0.95, 0.8, -0.55],
-  [7.0, 1.05, 0.9, -0.6],
-  [8, 0.5, 0.45, -0.55],
-];
-const MUFLE: Anneau[] = [
-  [5.95, 0.36, 0.3, -1.35],
-  [6.75, 0.5, 0.36, -1.35],
-  [7.2, 0.38, 0.3, -1.3],
-];
-/** Le quai du Lion, avant d'être tourné : x0, z0, x1, z1. */
-const QUAI = [-1.6, -1.2, 1.3, 0.8] as const;
-/** La lanterne du Lion (×1,9), posée sur le quai. */
-const LANTERNE_DU_LION: Anneau[] = [
-  [3.9, 0.38],
-  [5.1, 0.47],
-  [5.7, 0],
 ];
 
 const TOUR_DU_COUCOU: Anneau[] = [
@@ -415,38 +395,9 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
   },
   baie: {
     nom: 'le Lion de pierre',
-    allume: 'la lanterne devant ses pattes',
-    sculpture: (T, a) => {
-      // Couché de trois-quarts sur son quai, les pattes devant lui ; seule la tête se tourne vers l'élève.
-      const C = deTroisQuarts(T, X_DU_LION);
-      pave(C, QUAI[0], 1, QUAI[1], QUAI[2], 3.9, QUAI[3], a.pierre);
-      tube(
-        C,
-        [
-          [1.3, 4.6, 0.15],
-          [-0.3, 4.75, 0],
-        ],
-        [0.7, 0.85],
-        6,
-        a.pierre,
-      );
-      for (const s of [-1, 1])
-        tube(
-          C,
-          [
-            [X_DU_LION + s * 0.45, 4.15, -0.1],
-            [X_DU_LION + s * 0.45, 4.15, -0.62],
-          ],
-          0.25,
-          3,
-          a.pierre,
-        );
-      fuseau(T, CRINIERE, 6, a.moussue((k, j) => k === 1 && (j === 1 || j === 3)), { x: X_DU_LION, bas: false });
-      fuseau(T, MUFLE, 5, a.pierre, { x: X_DU_LION, bas: false });
-      orbites(T, a, X_DU_LION, 6.62, devant(MUFLE, 5, 6.62).z, 0.18, 0.12);
-    },
-    // La lanterne, près de deux fois plus grande, posée sur le quai devant les pattes.
-    veines: (T, a) => fuseau(deTroisQuarts(T, X_DU_LION), LANTERNE_DU_LION, 4, a.lueur, { x: X_DU_LION, z: -0.9 }),
+    allume: 'les arêtes de sa crinière',
+    sculpture: sculptureDuLion,
+    veines: veinesDuLion,
   },
   horloge: {
     nom: 'le Coucou',
