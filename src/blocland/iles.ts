@@ -814,7 +814,7 @@ export const ILES = [
     "module": "Lecture fine et grammaire",
     "subject": "francais",
     "classe": "3e",
-    "description": "Lire entre les lignes, reconnaître les figures de style, la nature et la fonction des mots, et qui parle dans un texte.",
+    "description": "Lire entre les lignes et lire un document, reconnaître les figures de style et les types de phrase, analyser la phrase et ses mots, et savoir qui parle dans un texte.",
     "block": "lentille",
     "guardian": "le Grand Lecteur",
     "icon": "book",
@@ -825,27 +825,31 @@ export const ILES = [
       {
         "id": "inferences",
         "title": "Inférences",
-        "description": "Ce que la phrase laisse comprendre sans le dire.",
+        "description": "Ce que le texte laisse comprendre sans le dire, et lire un court document (menu, horaire, article, mot aux familles).",
         "programme": [
           "c4.fr.lecture.controle",
+          "c4.fr.lecture.documents",
           "c3.fr.lecture.implicite"
         ]
       },
       {
         "id": "figures",
         "title": "Figures",
-        "description": "Comparaison, métaphore, personnification, hyperbole, litote…",
+        "description": "Figures de style, types et formes de phrase : les reconnaître et dire l’effet qu’ils produisent.",
         "programme": [
-          "c4.fr.lecture.procedes"
+          "c4.fr.lecture.procedes",
+          "c4.fr.langue.types-formes"
         ]
       },
       {
         "id": "rouages",
         "title": "Rouages",
-        "description": "Nature et fonction des mots, connecteurs logiques.",
+        "description": "Nature et fonction des mots, phrase simple et phrase complexe, connecteurs logiques.",
         "programme": [
           "c4.fr.langue.sujet-complements",
+          "c4.fr.langue.fonctions-etendues",
           "c4.fr.langue.classes-de-mots",
+          "c4.fr.langue.phrase-complexe",
           "c4.fr.langue.coherence-textuelle",
           "c3.fr.langue.nature-fonction",
           "c3.fr.langue.classes-de-mots",
