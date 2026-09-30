@@ -14,10 +14,10 @@
         "l’arbre",
         "libre"
       ],
+      "choicesLang": "fr",
       "answer": "trois",
       "hint": "La langue entre les dents : th.",
-      "explanation": "three = trois (tree = l’arbre, free = libre).",
-      "choicesLang": "fr"
+      "explanation": "three = trois (tree = l’arbre, free = libre)."
     },
     {
       "key": "baie-ears-2-1",
@@ -27,10 +27,10 @@
         "trois",
         "libre"
       ],
+      "choicesLang": "fr",
       "answer": "l’arbre",
       "hint": "Pas de th : la langue reste derrière les dents.",
-      "explanation": "tree = l’arbre (three = trois).",
-      "choicesLang": "fr"
+      "explanation": "tree = l’arbre (three = trois)."
     },
     {
       "key": "baie-ears-2-2",
@@ -40,10 +40,10 @@
         "chaud",
         "le cœur"
       ],
+      "choicesLang": "fr",
       "answer": "le chapeau",
       "hint": "Un « a » bref et ouvert.",
-      "explanation": "hat = le chapeau (hot = chaud, heart = le cœur).",
-      "choicesLang": "fr"
+      "explanation": "hat = le chapeau (hot = chaud, heart = le cœur)."
     },
     {
       "key": "baie-ears-2-3",
@@ -53,10 +53,10 @@
         "le chapeau",
         "le cœur"
       ],
+      "choicesLang": "fr",
       "answer": "chaud",
       "hint": "Un « o » bref.",
-      "explanation": "hot = chaud (hat = le chapeau).",
-      "choicesLang": "fr"
+      "explanation": "hot = chaud (hat = le chapeau)."
     },
     {
       "key": "baie-ears-2-4",
@@ -66,10 +66,10 @@
         "l’abeille",
         "le lit"
       ],
+      "choicesLang": "fr",
       "answer": "la plage",
       "hint": "Un « i » long, puis « tch ».",
-      "explanation": "beach = la plage (bee = l’abeille, bed = le lit).",
-      "choicesLang": "fr"
+      "explanation": "beach = la plage (bee = l’abeille, bed = le lit)."
     },
     {
       "key": "baie-ears-2-5",
@@ -79,10 +79,10 @@
         "la plage",
         "le lit"
       ],
+      "choicesLang": "fr",
       "answer": "l’abeille",
       "hint": "Un seul son : un « i » long.",
-      "explanation": "bee = l’abeille (beach = la plage).",
-      "choicesLang": "fr"
+      "explanation": "bee = l’abeille (beach = la plage)."
     },
     {
       "key": "baie-ears-2-6",
@@ -92,10 +92,10 @@
         "l’étain",
         "la chose"
       ],
+      "choicesLang": "fr",
       "answer": "mince",
       "hint": "Th au début, « n » à la fin.",
-      "explanation": "thin = mince (tin = l’étain, thing = la chose).",
-      "choicesLang": "fr"
+      "explanation": "thin = mince (tin = l’étain, thing = la chose)."
     },
     {
       "key": "baie-ears-2-7",
@@ -105,10 +105,10 @@
         "mince",
         "l’évier"
       ],
+      "choicesLang": "fr",
       "answer": "la chose",
       "hint": "Th au début, « ng » à la fin.",
-      "explanation": "thing = la chose (thin = mince, sink = l’évier).",
-      "choicesLang": "fr"
+      "explanation": "thing = la chose (thin = mince, sink = l’évier)."
     }
   ],
   "feedback": {
