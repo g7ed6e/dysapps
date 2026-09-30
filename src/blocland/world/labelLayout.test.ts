@@ -317,3 +317,16 @@ describe('hors de la Carte, les étiquettes tenues (« Commence ici », le bonho
     expect(dessous.visibles[0]).toBe(false);
   });
 });
+
+describe('une étiquette tenue ne se pose pas sur un grand repère', () => {
+  it('forcée, elle cède la place à un obstacle qu’elle couvrirait', () => {
+    const cadre = { w: 1000, h: 600 };
+    const boxes: LabelBox[] = [100, 110, 120, 150, 60].map((y, i) => ({ x: [470, 500, 530, 500, 500][i], y, w: 220, h: 37 }));
+    const iles = boxes.map((b) => ({ x: b.x, y: b.y + 25 }));
+    // Une colonne de repère partout autour du troisième nom, sauf sur son île : aucune place ne l'évite.
+    const colonne = { x: 530, y: 60, w: 1000, h: 110 };
+    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [colonne], bounds: cadre, gap: 6 }, null, [2]);
+    const at = { ...boxes[2], x: boxes[2].x + offsets[2].dx, y: boxes[2].y + offsets[2].dy };
+    if (visibles[2]) expect(overlaps(at, colonne)).toBe(false);
+  });
+});

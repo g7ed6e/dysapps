@@ -362,13 +362,13 @@ describe('le Papillon de cuivre en cubes (Blocland)', () => {
     for (const q of g) expect(g.some((r) => r.x === 10 - q.x && r.z === q.z && r.color === q.color), `${q.x},${q.z}`).toBe(true);
   });
 
-  it('pas un chandelier : chaque aile du haut finit par un sommet de deux cubes, seules les antennes ont une pointe fine', () => {
+  it('moins de pointes : en haut, chaque aile touche la pointe de son antenne, sans cube vide entre elles', () => {
     const zMax = Math.max(...g.map((q) => q.z));
     const sommet = g.filter((q) => q.z === zMax).map((q) => q.x).sort((a, b) => a - b);
-    // Les deux antennes (x 3 et 7) et, de chaque côté, deux cubes d’aile côte à côte (x 0-1 et 9-10), séparés des antennes par un vide.
-    expect(sommet).toEqual([0, 1, 3, 7, 9, 10]);
-    for (const x of [0, 10]) expect(en(x, zMax - 1), `sous le sommet ${x}`).toBeDefined();
-    for (const x of [2, 8]) expect(en(x, zMax), `entre antenne et aile ${x}`).toBeUndefined();
+    // L'antenne (x 3 et 7) et l'aile (x 0 à 2, 8 à 10) forment une seule rangée de chaque côté ; la tête reste dégagée.
+    expect(sommet).toEqual([0, 1, 2, 3, 7, 8, 9, 10]);
+    for (const x of [4, 5, 6]) expect(en(x, zMax), `au-dessus de la tête ${x}`).toBeUndefined();
+    for (const x of [3, 7]) expect(en(x, 7), `à côté de la tête ${x}`).toBeUndefined();
   });
 });
 

@@ -145,15 +145,24 @@ export function creerEtiquettes(
    */
   const ilesTenues = (sprites: THREE.Sprite[]): number => {
     let f = 0;
-    if (fleche.userData.on && fleche.userData.island) f = sprites.findIndex((s) => s.userData.id === fleche.userData.island) + 1;
+    if (fleche.userData.on && fleche.userData.island)
+      for (let i = 0; i < sprites.length; i++)
+        if (sprites[i].userData.id === fleche.userData.island) {
+          f = i + 1;
+          break;
+        }
     let b = 0;
     const av = bonhomme();
     if (av.visible) {
       let bestD = Infinity;
-      sprites.forEach((s, i) => {
-        const d = (s.position.x - av.position.x) ** 2 + (s.position.z - av.position.z) ** 2;
-        if (d < bestD) [b, bestD] = [i + 1, d];
-      });
+      for (let i = 0; i < sprites.length; i++) {
+        const p = sprites[i].position;
+        const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
+        if (d < bestD) {
+          b = i + 1;
+          bestD = d;
+        }
+      }
     }
     return f * 1024 + b;
   };
