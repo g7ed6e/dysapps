@@ -1,11 +1,21 @@
 ---
 île : theatre
+module : Compréhension, quantités, prétérit irrégulier
+matière : anglais
+classe : 4e
+description : Répondre à une question entendue, dire combien, raconter au passé : l’anglais sur scène.
+bloc : velours
+gardien : le Masque
+icône : languages
+créature : Puck
 ---
 
 # Théâtre des voix
 
 ## Dialogues · `dialogues`
 
+- description : Écouter une question et choisir la bonne réponse.
+- compétences : c4.en.ecouter.intervention-breve · c4.en.dialoguer.reagir · c3.en.dialoguer.reagir
 - langue : en
 - consigne : Écoute la question en anglais, puis choisis la bonne réponse.
 - bravo : Bonne réplique !
@@ -99,6 +109,8 @@ Pour tous les items :
 
 ## Quantités · `quantites`
 
+- description : Some, any, much, many, a few, a little, enough.
+- compétences : c4.en.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -214,6 +226,8 @@ Pour tous les items :
 
 ## Prétérit irrégulier · `preterit-irregulier`
 
+- description : Went, saw, bought : les verbes irréguliers au passé.
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

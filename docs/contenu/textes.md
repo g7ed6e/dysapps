@@ -1,11 +1,21 @@
 ---
 île : textes
+module : Lecture fine et grammaire
+matière : francais
+classe : 3e
+description : Lire entre les lignes, reconnaître les figures de style, la nature et la fonction des mots, et qui parle dans un texte.
+bloc : lentille
+gardien : le Grand Lecteur
+icône : book
+créature : Astra
 ---
 
 # Observatoire des textes
 
 ## Inférences · `inferences`
 
+- description : Ce que la phrase laisse comprendre sans le dire.
+- compétences : c4.fr.lecture.controle · c3.fr.lecture.implicite
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lentille
@@ -133,6 +143,8 @@ Pour tous les items :
 
 ## Figures · `figures`
 
+- description : Comparaison, métaphore, personnification, hyperbole, litote…
+- compétences : c4.fr.lecture.procedes
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lentille
@@ -263,6 +275,8 @@ Pour tous les items :
 
 ## Rouages · `rouages`
 
+- description : Nature et fonction des mots, connecteurs logiques.
+- compétences : c4.fr.langue.sujet-complements · c4.fr.langue.classes-de-mots · c4.fr.langue.coherence-textuelle · c3.fr.langue.nature-fonction · c3.fr.langue.classes-de-mots · c3.fr.langue.complements
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lentille
@@ -386,6 +400,8 @@ Pour tous les items :
 
 ## Voix des textes · `voix`
 
+- description : Qui parle et comment ses paroles sont rapportées, voix active ou passive, subordonnées.
+- compétences : c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.subordonnees
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lentille

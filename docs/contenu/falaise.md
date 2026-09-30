@@ -1,11 +1,21 @@
 ---
 île : falaise
+module : Accords
+matière : francais
+classe : 4e
+description : Participe passé, adjectifs, sujet caché, verbes pronominaux : accorder sans se tromper, la règle sous les yeux.
+bloc : ardoise
+gardien : le Bélier de granit
+icône : mountain
+créature : Cléa
 ---
 
 # Falaise des accords
 
 ## Corde du participe · `corde`
 
+- description : Participe passé avec être, avec avoir, puis avec le COD placé avant.
+- compétences : c4.fr.langue.participe-passe · c3.fr.langue.attribut-participe-etre
 - bravo : Bien accordé !
 - erreur : {explanation}
 - bloc gagné : ardoise
@@ -122,6 +132,8 @@ Pour tous les items :
 
 ## Paroi des adjectifs · `paroi`
 
+- description : Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.
+- compétences : c4.fr.langue.accord-gn-complexe · c3.fr.langue.accord-gn
 - bravo : Bien accordé !
 - erreur : {explanation}
 - bloc gagné : ardoise
@@ -238,6 +250,8 @@ Pour tous les items :
 
 ## Sommet du sujet · `sommet`
 
+- description : Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.
+- compétences : c4.fr.langue.accord-verbe-complexe
 - bravo : Bien accordé !
 - erreur : {explanation}
 - bloc gagné : ardoise
@@ -353,6 +367,8 @@ Pour tous les items :
 
 ## Écho des pronominaux · `echo`
 
+- description : Les verbes pronominaux, puis l’accord de leur participe passé, puis le groupe apposé.
+- compétences : c4.fr.langue.morphologie-verbale · c4.fr.langue.participe-passe
 - erreur : {explanation}
 - bloc gagné : ardoise
 - blocs : 4

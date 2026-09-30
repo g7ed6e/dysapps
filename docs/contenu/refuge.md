@@ -1,11 +1,25 @@
 ---
 île : refuge
+module : Le voyage, le récit, relier ses idées
+matière : lv2
+classe : 3e
+description : Raconter un voyage au passé, lire les carnets des voyageurs, comparer, relier deux idées : dans ta deuxième langue.
+bloc : bardeau
+gardien : le Papillon de cuivre
+icône : languages
+créature : Timbre
 ---
 
 # Refuge des carnets
 
+> Île de la LV2 (allemand ou espagnol), à partir de la 5e : une seule île par archipel, la même pour les deux langues, en bout de chemin (rien n’en dépend). Seules changent les missions, choisies par la LV2 des Réglages, et la voix.
+> Les missions de chaque langue sont dans le même ordre : la borne de même rang ouvre la mission de la LV2 choisie.
+
 ## ¿Adónde fuiste? · `es-viaje`
 
+- description : Le voyage au passé : fui, visitó ; puis hier ou demain, ir a + infinitif.
+- compétences : c4.es.langue.temps-verbaux · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - bravo : Bien répondu !
 - erreur : {explanation}
@@ -145,6 +159,9 @@ Pour tous les items :
 
 ## Historias de viaje · `es-relato`
 
+- description : Une petite histoire de voyage, puis l’ordre de l’histoire : primero, luego, al final.
+- compétences : c4.es.lire.recit · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - consigne : Lis la question, puis lis l’histoire en espagnol. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
 - bravo : Bien lu !
@@ -294,6 +311,9 @@ Pour tous les items :
 
 ## Países y ciudades · `es-paises`
 
+- description : Les documents du voyage, puis comparer : más, menos, tan… como.
+- compétences : c4.es.culture.voyages-rencontres · c4.es.lire.informations · c4.es.langue.groupe-nominal · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - erreur : {explanation}
 - bloc gagné : bardeau
@@ -453,6 +473,9 @@ Pour tous les items :
 
 ## Porque, cuando, pero · `es-porque`
 
+- description : Relier deux idées, puis les faux amis.
+- compétences : c4.es.langue.phrase-complexe · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - erreur : {explanation}
 - bloc gagné : bardeau
@@ -588,6 +611,9 @@ Pour tous les items :
 
 ## Wohin bist du gefahren? · `de-reise`
 
+- description : Le Perfekt avec haben, puis haben ou sein.
+- compétences : c4.de.langue.temps-verbaux · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - bravo : Bien répondu !
 - erreur : {explanation}
@@ -721,6 +747,9 @@ Pour tous les items :
 
 ## Reisegeschichten · `de-geschichte`
 
+- description : Une petite histoire de voyage, puis l’ordre de l’histoire : zuerst, dann, am Ende.
+- compétences : c4.de.lire.recit · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - consigne : Lis la question, puis lis l’histoire en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
 - bravo : Bien lu !
@@ -870,6 +899,9 @@ Pour tous les items :
 
 ## Unterwegs · `de-unterwegs`
 
+- description : Mit + datif, puis comparer : größer als, so… wie.
+- compétences : c4.de.culture.voyages-rencontres · c4.de.lire.informations · c4.de.langue.groupe-nominal · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - erreur : {explanation}
 - bloc gagné : bardeau
@@ -1020,6 +1052,9 @@ Pour tous les items :
 
 ## Weil und dass · `de-weil-dass`
 
+- description : Weil et dass : le verbe à la fin ; puis les faux amis.
+- compétences : c4.de.langue.phrase-complexe · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - erreur : {explanation}
 - bloc gagné : bardeau

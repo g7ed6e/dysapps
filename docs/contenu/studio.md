@@ -1,11 +1,21 @@
 ---
 île : studio
+module : Compréhension, connecteurs, faux amis
+matière : anglais
+classe : 3e
+description : Comprendre un petit texte, relier ses idées, se méfier des faux amis : l’anglais de la radio.
+bloc : antenne
+gardien : la Grande Antenne
+icône : languages
+créature : Écho
 ---
 
 # Studio des ondes
 
 ## Comprendre · `comprendre`
 
+- description : Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.
+- compétences : c4.en.lire.informations · c4.en.lire.recit
 - langue : en
 - consigne : Lis le petit texte en anglais, puis choisis la bonne réponse à la question. La règle est affichée.
 - bravo : Message reçu !
@@ -127,6 +137,8 @@ Pour tous les items :
 
 ## Connecteurs · `connecteurs`
 
+- description : Because, so, but, although, however, unless…
+- compétences : c4.en.langue.phrase-complexe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien relié !
@@ -235,6 +247,8 @@ Pour tous les items :
 
 ## Faux amis · `faux-amis`
 
+- description : Actually, library, sensible : des mots qui ressemblent au français, mais trompent.
+- compétences : c4.en.langue.lexique
 - langue : en
 - consigne : Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.
 - bravo : Pas piégé !

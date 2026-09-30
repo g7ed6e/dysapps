@@ -1,11 +1,21 @@
 ---
 île : cabinet
+module : Vocabulaire
+matière : francais
+classe : 4e
+description : Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.
+bloc : parchemin
+gardien : le Hibou lexicographe
+icône : library
+créature : Plume
 ---
 
 # Cabinet des mots
 
 ## Racines · `racines`
 
+- description : Racines grecques et latines, puis préfixes et suffixes.
+- compétences : c4.fr.langue.formation-des-mots
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : parchemin
@@ -130,6 +140,8 @@ Pour tous les items :
 
 ## Sens · `sens`
 
+- description : Sens propre ou sens figuré, expressions imagées, puis le champ lexical.
+- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.reseaux-de-mots
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : parchemin
@@ -256,6 +268,8 @@ Pour tous les items :
 
 ## Nuances · `nuances`
 
+- description : Synonymes, antonymes, registres de langue, puis le degré d’intensité.
+- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.reseaux-de-mots · c4.fr.langue.oral-ecrit · c3.fr.langue.synonymie
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : parchemin

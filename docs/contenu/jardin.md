@@ -1,11 +1,25 @@
 ---
 île : jardin
+module : La journée, l’heure, les repas
+matière : lv2
+classe : 4e
+description : Dire l’heure, raconter sa journée, lire un horaire ou un menu : une journée au jardin, dans ta deuxième langue.
+bloc : osier
+gardien : le Soleil de cuivre
+icône : languages
+créature : Muscade
 ---
 
 # Jardin des heures
 
+> Île de la LV2 (allemand ou espagnol), à partir de la 5e : une seule île par archipel, la même pour les deux langues, en bout de chemin (rien n’en dépend). Seules changent les missions, choisies par la LV2 des Réglages, et la voix.
+> Les missions de chaque langue sont dans le même ordre : la borne de même rang ouvre la mission de la LV2 choisie.
+
 ## ¿Qué hora es? · `es-hora`
 
+- description : L’heure entendue : y cuarto, menos cuarto ; puis où est-on, qui parle ?
+- compétences : c4.es.ecouter.intervention-breve · c4.es.dialoguer.echanges-sociaux · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - bravo : Bien compris !
 - erreur : {explanation}
@@ -153,6 +167,9 @@ Pour tous les items :
 
 ## Mi día · `es-mi-dia`
 
+- description : La journée : me levanto, se ducha ; puis e devient ie, o devient ue.
+- compétences : c4.es.langue.temps-verbaux · c4.es.langue.groupe-nominal · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - consigne : Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.
 - bravo : Bien répondu !
@@ -286,6 +303,9 @@ Pour tous les items :
 
 ## Horarios y menús · `es-horario`
 
+- description : Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.
+- compétences : c4.es.lire.informations · c4.es.culture.ecole-societe · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - bravo : Bien lu !
 - erreur : {explanation}
@@ -475,6 +495,9 @@ Pour tous les items :
 
 ## Ser, estar, hay · `es-ser-estar`
 
+- description : Être (ser ou estar), il y a (hay), puis tener que, poder, querer.
+- compétences : c4.es.langue.temps-verbaux · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - consigne : Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.
 - bravo : Bien répondu !
@@ -609,6 +632,9 @@ Pour tous les items :
 
 ## Wie spät ist es? · `de-uhrzeit`
 
+- description : L’heure entendue : Viertel nach, halb ; puis où est-on, qui parle ?
+- compétences : c4.de.ecouter.intervention-breve · c4.de.dialoguer.echanges-sociaux · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - bravo : Bien compris !
 - erreur : {explanation}
@@ -755,6 +781,9 @@ Pour tous les items :
 
 ## Mein Tag · `de-mein-tag`
 
+- description : La journée : le verbe en deuxième place, puis la particule à la fin.
+- compétences : c4.de.langue.temps-verbaux · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - consigne : Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.
 - bravo : Bien répondu !
@@ -887,6 +916,9 @@ Pour tous les items :
 
 ## Stundenplan und Mensa · `de-stundenplan`
 
+- description : Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.
+- compétences : c4.de.lire.informations · c4.de.culture.ecole-societe · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - bravo : Bien lu !
 - erreur : {explanation}
@@ -1080,6 +1112,9 @@ Pour tous les items :
 
 ## Ich esse, ich kann · `de-ich-kann`
 
+- description : L’accusatif (einen, den), puis können, müssen, wollen.
+- compétences : c4.de.langue.groupe-nominal · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - consigne : Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.
 - bravo : Bien répondu !

@@ -19,10 +19,10 @@ if (process.argv.includes('--check')) {
     for (const p of enTrop) console.error(`✗ ${court(p)} ne vient d'aucun niveau de docs/contenu/ : npm run contenu le supprime`);
     process.exit(1);
   }
-  console.log(`✓ ${sortie.size} exercices à jour (${iles.size} îles en Markdown)`);
+  console.log(`✓ ${sortie.size} fichiers à jour (${iles.size} îles en Markdown)`);
 } else {
   const erreurs = [];
-  for (const p of perimes.filter(existsSync)) {
+  for (const p of perimes.filter((q) => q.startsWith(DATA) && existsSync(q))) {
     const deplacees = clesDeplacees(JSON.parse(readFileSync(p, 'utf8')), JSON.parse(sortie.get(p)));
     const remplacees = clesRemplacees(JSON.parse(readFileSync(p, 'utf8')), JSON.parse(sortie.get(p)));
     if (remplacees.length) console.warn(`! ${court(p)} : clés remplacées (${remplacees.join(', ')}) ; ces items repartent de zéro pour l'élève. Pour une coquille corrigée, garder l'ancienne clé avec « - clé : ».`);
@@ -34,5 +34,5 @@ if (process.argv.includes('--check')) {
   }
   for (const p of perimes) writeFileSync(p, sortie.get(p));
   for (const p of enTrop) rmSync(p);
-  console.log(`✓ ${perimes.length} exercices écrits, ${enTrop.length} supprimés (${iles.size} îles en Markdown)`);
+  console.log(`✓ ${perimes.length} fichiers écrits, ${enTrop.length} supprimés (${iles.size} îles en Markdown)`);
 }

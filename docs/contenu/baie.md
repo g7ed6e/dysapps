@@ -1,11 +1,21 @@
 ---
 île : baie
+module : Vocabulaire et écoute
+matière : anglais
+classe : 6e
+description : Se présenter, compter, dire l’heure, reconnaître un mot à l’oreille : l’anglais de tous les jours.
+bloc : cabine
+gardien : le Lion de pierre
+icône : languages
+créature : Robin
 ---
 
 # Baie des mots
 
 ## Hello · `hello`
 
+- description : Saluer, se présenter, les phrases de la classe.
+- compétences : c3.en.dialoguer.contact-social · c3.en.ecouter.consignes
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -123,6 +133,8 @@ Pour tous les items :
 
 ## Numbers · `numbers`
 
+- description : Les nombres (-teen ou -ty ?), l’heure et la date.
+- compétences : c3.en.culture.vie-quotidienne · c3.en.langue.phonologie · c3.en.langue.phonie-graphie
 - langue : en
 - bravo : Bien compté !
 - erreur : {explanation}
@@ -259,6 +271,8 @@ Pour tous les items :
 
 ## Ears · `ears`
 
+- description : Écouter un mot anglais et trouver son sens (house ou horse ?).
+- compétences : c3.en.ecouter.mots-familiers · c3.en.langue.phonie-graphie
 - langue : en
 - consigne : Écoute le mot anglais, puis choisis ce qu’il veut dire.
 - bravo : Bien entendu !

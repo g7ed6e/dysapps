@@ -1,11 +1,21 @@
 ---
 île : comptoir
+module : Vocabulaire et compréhension
+matière : anglais
+classe : 5e
+description : Faire ses courses, raconter sa journée, comprendre une phrase entendue, lire un panneau ou un horaire : l’anglais du quotidien.
+bloc : tuile
+gardien : la Reine du marché
+icône : languages
+créature : Pudding
 ---
 
 # Comptoir
 
 ## Shopping · `shopping`
 
+- description : Au magasin : quantités, prix, repas.
+- compétences : c4.en.dialoguer.echanges-sociaux · c3.en.dialoguer.renseignements · c4.en.langue.lexique
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -123,6 +133,8 @@ Pour tous les items :
 
 ## Routine · `routine`
 
+- description : La journée (get up, have breakfast…) et always, often, never.
+- compétences : c4.en.langue.temps-verbaux · c3.en.culture.vie-quotidienne
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -232,6 +244,8 @@ Pour tous les items :
 
 ## Listening · `listening`
 
+- description : Écouter une phrase et trouver son sens.
+- compétences : c4.en.ecouter.intervention-breve
 - langue : en
 - consigne : Écoute la phrase en anglais, puis choisis ce qu’elle veut dire.
 - bravo : Bien entendu !
@@ -328,6 +342,8 @@ Pour tous les items :
 
 ## Notices · `notices`
 
+- description : Lire un panneau, une consigne, un menu ou un horaire, et y trouver ce qu’on cherche.
+- compétences : c4.en.lire.consignes-panneaux · c4.en.lire.informations · c4.en.langue.lexique
 - langue : en
 - bravo : Bien lu !
 - erreur : {explanation}

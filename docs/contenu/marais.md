@@ -1,11 +1,21 @@
 ---
 île : marais
+module : Conjugaison
+matière : francais
+classe : 5e
+description : Présent, imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.
+bloc : tourbe
+gardien : l’Hydre des marais
+icône : footprints
+créature : Kroa
 ---
 
 # Marais des temps
 
 ## Rives du passé · `rives`
 
+- description : Imparfait ou passé composé, puis le passé simple du récit.
+- compétences : c3.fr.langue.temps-a-memoriser · c4.fr.langue.valeurs-des-temps
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : tourbe
@@ -122,6 +132,8 @@ Pour tous les items :
 
 ## Brume du futur · `brume`
 
+- description : Futur ou conditionnel, puis les formes du futur.
+- compétences : c4.fr.langue.temps-a-memoriser · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : tourbe
@@ -207,6 +219,8 @@ Pour tous les items :
 
 ## Roseaux du subjonctif · `roseaux`
 
+- description : Le subjonctif présent, puis reconnaître le temps d’un verbe.
+- compétences : c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale · c3.fr.langue.reconnaitre-verbe
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : tourbe
@@ -330,6 +344,8 @@ Pour tous les items :
 
 ## Gué des temps · `gue`
 
+- description : Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.
+- compétences : c4.fr.langue.valeurs-des-temps · c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : tourbe

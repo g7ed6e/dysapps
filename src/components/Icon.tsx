@@ -55,7 +55,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-const ICONS = {
+export const ICONS = {
   back: ArrowLeft,
   chevronDown: ChevronDown,
   chevronRight: ChevronRight,

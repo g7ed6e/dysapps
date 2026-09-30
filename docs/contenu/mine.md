@@ -1,11 +1,21 @@
 ---
 île : mine
+module : Confusions de lettres
+matière : francais
+classe : 6e
+description : b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.
+bloc : pierre
+gardien : le Golem de roche
+icône : pickaxe
+créature : Tunel
 ---
 
 # Mine des lettres
 
 ## Filon · `filon`
 
+- description : Pioche seulement la lettre cible parmi b, d, p, q.
+- compétences : c3.fr.langue.phonemes-graphemes
 - bravo : Bien piochée !
 - erreur : C’était un {letter}, pas un {target} : {tip}.
 - bloc gagné : pierre
@@ -157,6 +167,8 @@ Pour tous les items :
 
 ## Oreille du mineur · `oreille`
 
+- description : Écoute le mot, choisis le bon bloc : vin ou fin ?
+- compétences : c3.fr.langue.phonemes-graphemes
 - par partie : 6
 - bravo : Bonne oreille !
 - erreur : Tu as choisi {chosen}. C’était {word} : {hint}

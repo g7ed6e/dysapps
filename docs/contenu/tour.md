@@ -1,11 +1,21 @@
 ---
 île : tour
+module : Fluence de lecture
+matière : francais
+classe : 6e
+description : Lire à voix haute, étage par étage.
+bloc : verre
+gardien : la Chouette de verre
+icône : castle
+créature : Grimoire
 ---
 
 # Tour du lecteur
 
 ## Ascension · `ascension`
 
+- description : Lis un texte court, un paragraphe = un étage.
+- compétences : c3.fr.lecture.fluidite
 - bravo : Tour terminée. Chaque paragraphe lu est un étage de plus.
 - erreur : ""
 - bloc gagné : verre

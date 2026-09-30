@@ -1,18 +1,30 @@
 # Le contenu en Markdown
 
-Ce dossier est la source du contenu des îles : un fichier par île (`<île>.md`, l’identifiant de l’île). `npm run contenu` en produit les JSON du jeu (`src/blocland/exercises/data/<exercice>.json`), qu’on n’édite plus à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). Toutes les îles qui ont des exercices y sont (étape M2) ; les noms des îles et des missions, les plans des bâtiments et les missions du portail suivront (étapes M3 à M5 : `docs/pilotage/chantiers.md`).
+Ce dossier est la source des îles : un fichier par île (`<île>.md`, l’identifiant de l’île), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts` et `src/blocland/exercises/data/<exercice>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). Les pages du site, les plans des bâtiments et les missions du portail suivront (étapes M4 et M5 : `docs/pilotage/chantiers.md`).
 
 ## Le format
 
 ```md
 ---
-île : baie
+île : baie                                    ← l’en-tête : l’identifiant de l’île, puis ce qu’elle est
+module : Vocabulaire et écoute
+matière : anglais
+classe : 6e
+description : Se présenter, compter, dire l’heure, …
+bloc : cabine
+gardien : le Lion de pierre
+icône : languages
+créature : Robin
 ---
 
-# Baie des mots                               ← titre libre
+# Baie des mots                               ← le nom de l’île
+
+> Une note pour qui écrit, que le jeu ne lit pas.
 
 ## Hello · `hello`                            ← une mission : son titre, puis son identifiant
 
+- description : Saluer, se présenter, …        ← la mission : ce qu’elle fait faire, les compétences du programme
+- compétences : c3.en.dialoguer.contact-social   qu’elle travaille (et `lv2 : es` ou `de` sur l’île de la LV2)
 - langue : en                                 ← champs communs à tous les niveaux de la mission
 - consigne : Choisis le mot qui complète la phrase en anglais.
 
@@ -29,7 +41,8 @@ Pour tous les items :                         ← champs communs à tous les ite
 ```
 
 - **Identifiants** : ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>`, ou ce que dit `clé des items` (plus bas) ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`) ou dans la colonne `clé`. Avec la clé par défaut, un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
-- **Titres** : le titre de l’île et ceux des missions ne sont pas encore lus par le jeu (ils le seront à l’étape M3) ; aujourd’hui, les noms affichés viennent de `src/blocland/biomes.ts`.
+- **L’île** : l’en-tête donne `module`, `matière` (`francais`, `maths`, `anglais` ou `lv2`), `classe` (`6e` à `3e`, qui est aussi l’archipel), `description`, `bloc` (un bloc de `BLOCKS`, `src/blocland/biomes.ts`), `gardien` (avec son article : « le Grand Chêne »), `icône` et `créature` (son nom) ; le titre `# …` est son nom. Ce qu’ils disent et leur espèce sont des textes d’univers, dans `src/univers/`. Les tests (`src/blocland/biomes.test.ts`) vérifient la matière, la classe, le bloc, l’icône et les compétences.
+- **Une mission** : son titre et son identifiant dans `## …`, puis `description`, `compétences` (au moins une, identifiants de `src/programme/` ; une île de 6e ne cite que le cycle 3, une île de 5e à 3e au moins une compétence du cycle 4) et, sur l’île de la LV2, `lv2` (qui va avec la `langue` de ses niveaux : `es` ou `de`). L’identifiant d’une mission est unique dans tout le jeu, et une île porte au plus quatre missions jouables (l’île de la LV2 en a quatre par langue) ; `biomes.test.ts` le vérifie. Une mission sans niveau a ses exercices produits par le code (les maths : `maths.ts`, `college.ts`, `problemes.ts` ; le Tri des graines, les panneaux) : une note « > » le rappelle sous son titre.
 - **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`. Le barème (`blocs`, `XP`, `monte à`, `descend à`) reste écrit ici, niveau par niveau.
 - **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, et `aide « titre » :` suivie de ses lignes en sous-liste. Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
 - **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul. S’y écrivent aussi les deux règles qui évitent de recopier :
@@ -68,8 +81,8 @@ Plusieurs exercices d’une mission peuvent porter le même numéro de niveau (l
 
 **Une clé écrite à la main** s’invente en minuscules avec des tirets, depuis le mot ou le sujet de l’item (`le-chien`, `va-manger`), et ne change plus ensuite, même si elle garde une ancienne graphie (`aujourd'hui`, avec l’apostrophe droite, dans la Carrière) : la corriger ferait oublier l’item à la répétition espacée.
 
-**Hors du Markdown** (jusqu’à l’étape M3) : un niveau nouveau se déclare aussi dans `ORDER` (`src/blocland/exercises/index.ts`), et sa quête cite ses compétences dans `programme` (`src/blocland/biomes.ts`). Une mission nouvelle (un nouveau `type`) a aussi besoin de son écran dans `SCREEN_TYPES` (`src/blocland/exercises/registry.ts`). Les tests le rappellent si l’un manque.
+**Hors du Markdown** : un niveau nouveau se déclare aussi dans `ORDER` (`src/blocland/exercises/index.ts`). Une mission nouvelle (un nouveau `type`) a aussi besoin de son écran dans `SCREEN_TYPES` (`src/blocland/exercises/registry.ts`). Les tests le rappellent si l’un manque.
 
-## Passer une île en Markdown
+## Ajouter une île
 
-`node scripts/contenu/importer.mjs <île>` (pour une île nouvelle écrite d’abord en JSON) écrit `<île>.md` depuis ses JSON, après avoir vérifié que le Markdown redonne exactement les mêmes exercices ; puis `npm run contenu` réécrit ses JSON depuis le Markdown.
+Écrire `<île>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/blocland/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).
