@@ -22,6 +22,8 @@ import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
+import { AssemblageSheet } from './Assemblage';
+import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -110,12 +112,14 @@ export function WorldPage() {
   const menuOpen = biomeId === 'menu';
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophees';
-  // Le lieu du village ouvert (l'école ou la salle des trophées) : le bonhomme marche jusqu'à sa porte.
-  const placeOpen = schoolOpen ? 'ecole' : trophiesOpen ? 'trophees' : null;
+  // Le lieu où l'on assemble les blocs (GD-2), à côté de l'école.
+  const assemblageOpen = biomeId === 'assemblage';
+  // Le lieu du village ouvert (l'école, la salle des trophées ou le lieu où l'on assemble) : le bonhomme marche jusqu'à sa porte.
+  const placeOpen = schoolOpen ? 'ecole' : trophiesOpen ? 'trophees' : assemblageOpen ? 'assemblage' : null;
   // Les monuments : leur liste, ou un monument (son îlot au large, où la caméra va).
   const monumentsOpen = biomeId === 'monuments';
   const monument = biomeId ? getMonument(biomeId) : undefined;
-  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || monumentsOpen || Boolean(monument);
+  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.village.at ?? 'foret';
@@ -131,7 +135,7 @@ export function WorldPage() {
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
-    () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles),
+    () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles, habillage.atelier),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`).
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2],
@@ -607,7 +611,9 @@ export function WorldPage() {
       case 'borne':
         return onPickQuest(i.ile, i.mission);
       case 'lieu':
-        return navigate(i.id === 'ecole' ? SCHOOL_PATH : i.id === 'trophees' ? TROPHIES_PATH : `/aventure/${i.id.slice('monument:'.length)}`);
+        return navigate(
+          i.id === 'ecole' ? SCHOOL_PATH : i.id === 'trophees' ? TROPHIES_PATH : i.id === 'assemblage' ? ASSEMBLAGE_PATH : `/aventure/${i.id.slice('monument:'.length)}`,
+        );
       case 'ouvrage':
         return onPickBridge(i.id);
       case 'creature':
@@ -905,6 +911,8 @@ export function WorldPage() {
         <SchoolSheet onClose={() => openIsland(at)} />
       ) : trophiesOpen ? (
         <TrophySheet onClose={() => openIsland(at)} />
+      ) : assemblageOpen ? (
+        <AssemblageSheet onClose={() => openIsland(at)} />
       ) : monumentsOpen ? (
         <MonumentsSheet onClose={() => openIsland(at)} />
       ) : monument ? (

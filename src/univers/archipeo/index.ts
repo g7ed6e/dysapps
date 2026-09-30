@@ -6,6 +6,7 @@
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
+import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 /** « de » devant un nom avec son article : « du Grand Chêne », « de la Dune vivante », « de l’Hydre des marais ». */
@@ -336,4 +337,7 @@ export const ARCHIPEO = {
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },
+  // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
+  blocs: nomsAssembles('archipeo'),
+  assemblage: lieuDAssemblage('archipeo'),
 } satisfies TextesUnivers;

@@ -112,6 +112,10 @@ Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le
 
 En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » ; rien n’entre dans le dépôt avant sa validation. Décidé le 30 septembre 2026 : la règle « aucun modèle ni texture importé » s’ouvre, avec un cadre (une fiche par asset : outil, prompt, licence ; le budget de l’archipel ; servi depuis l’appli, hors ligne ; validé par le directeur artistique et le référent dys). Le cadre reste à écrire dans le [cadrage Archipéo](../conception/cadrage-archipeo.md) avec le flux. En cours : comment générer les images et les modèles 3D ; proposition d’un banc d’essai sur un seul asset, jugé sur le rendu, le poids et le coût. Blocland reste dessiné par le code.
 
+### Combiner les blocs (GD-2)
+
+Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Construit** par sa pull request (brouillon). Le lieu suivra l’école et la salle des trophées quand elles prendront le kit d’architecture modulaire (après le 7b).
+
 ## Les défauts relevés en consolidant
 
 - Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).

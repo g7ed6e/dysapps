@@ -45,7 +45,7 @@ import { dessinerPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
-import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
+import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
 import type { Cell } from './view';
@@ -218,8 +218,9 @@ export interface GroupeOpaque extends GroupeDeConstruction {
   /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
   aretes: Float32Array;
   /**
-   * Par sommet : le motif peint d'une pièce d'architecture (0 : aucun). Inerte au socle (lot 7a) : le colombage peint
-   * (7b) le lira dans le shader, sans un triangle de plus.
+   * Par sommet : le motif peint (0 : aucun). Celui d'une pièce d'architecture est inerte au socle (lot 7a) : le
+   * colombage peint (7b) le lira dans le shader, sans un triangle de plus. Celui d'un bloc assemblé (GD-2,
+   * `MOTIF_ASSEMBLE`, 11 à 14) est peint par le shader (`MOTIF_GLSL`).
    */
   motifs: Float32Array;
 }
@@ -351,6 +352,111 @@ vec3 biseauPeint(vec3 c, float k, float force) {
   return mix(c, fort, k);
 }
 `;
+
+// ---------- Les motifs des blocs assemblés (GD-2) ----------
+
+/**
+ * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, que le lot 7 réserve au colombage des pièces
+ * d'architecture : les blocs assemblés prennent 11 à 14, loin de ses premiers numéros). Il se peint dans le shader,
+ * sans un triangle de plus, par-dessus la couleur de fond du bloc (world/palette.ts, `MATIERES`) : deux blocs ne se
+ * distinguent jamais par la couleur seule. Un bloc délavé (île fermée) n'a pas de motif.
+ */
+export const MOTIF_ASSEMBLE = { poutre: 11, vitrail: 12, engrenage: 13, miroir: 14 } as const;
+export type BlocAssemble = keyof typeof MOTIF_ASSEMBLE;
+
+/** Les mesures des motifs, en part de case, depuis le milieu de la face (le même dessin en JS et en GLSL). */
+export const MESURES_DES_MOTIFS = {
+  /** Le madrier : deux veines en long, et un collier à mi-hauteur ; sur le dessus, un cerne. */
+  poutre: { veines: [-0.22, 0.18], veine: 0.025, collier: 0.09, cerne: 0.28, epaisseurDuCerne: 0.035 },
+  /** Le hublot : un disque de verre dans son bord sombre, un reflet en haut à gauche. */
+  vitrail: { bord: 0.35, verre: 0.3, reflet: [-0.1, 0.1, 0.07] },
+  /** La poulie : la roue, sa gorge, son axe. */
+  engrenage: { roue: 0.38, gorge: 0.26, epaisseurDeGorge: 0.035, axe: 0.07 },
+  /** La loupe : l'anneau, le verre, l'éclat, et le manche vers le coin bas-droit. */
+  miroir: { anneau: 0.32, verre: 0.23, eclat: [-0.08, 0.08, 0.06], manche: [0.2, -0.2, 0.46, -0.46], epaisseurDuManche: 0.05 },
+} as const;
+
+/** Le détail peint au point (`u`, `v`) d'une face d'un bloc assemblé, de −0,5 à 0,5 depuis son milieu (`v` monte sur un côté) ; `null` : son fond. */
+export function detailDuMotif(bloc: BlocAssemble, u: number, v: number, dessus: boolean): string | null {
+  const r = Math.hypot(u, v);
+  if (bloc === 'poutre') {
+    const M = MESURES_DES_MOTIFS.poutre;
+    if (dessus) return Math.abs(r - M.cerne) < M.epaisseurDuCerne ? 'veine' : null;
+    if (Math.abs(v) < M.collier) return 'collier';
+    return M.veines.some((x) => Math.abs(u - x) < M.veine) ? 'veine' : null;
+  }
+  if (bloc === 'vitrail') {
+    const M = MESURES_DES_MOTIFS.vitrail;
+    if (Math.hypot(u - M.reflet[0], v - M.reflet[1]) < M.reflet[2]) return 'reflet';
+    return r < M.verre ? 'verre' : r < M.bord ? 'bord' : null;
+  }
+  if (bloc === 'engrenage') {
+    const M = MESURES_DES_MOTIFS.engrenage;
+    if (r < M.axe || Math.abs(r - M.gorge) < M.epaisseurDeGorge) return 'gorge';
+    return r < M.roue ? 'roue' : null;
+  }
+  const M = MESURES_DES_MOTIFS.miroir;
+  if (Math.hypot(u - M.eclat[0], v - M.eclat[1]) < M.eclat[2]) return 'eclat';
+  if (r < M.verre) return 'verre';
+  if (r < M.anneau) return 'laiton';
+  const [ax, ay, bx, by] = M.manche;
+  const t = Math.min(1, Math.max(0, ((u - ax) * (bx - ax) + (v - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
+  return Math.hypot(u - ax - (bx - ax) * t, v - ay - (by - ay) * t) < M.epaisseurDuManche ? 'laiton' : null;
+}
+
+const glslLin = (c: Couleur) => {
+  const [r, g, b] = rgb(c).map((v) => srgbVersLineaire(v / 255).toFixed(4));
+  return `vec3(${r}, ${g}, ${b})`;
+};
+const f3 = (v: number) => v.toFixed(3);
+
+/**
+ * Les motifs en GLSL : `motifAssemble(c, m, pos, n)` peint le motif `m` (0 : aucun) sur la couleur linéaire `c`, à la
+ * position `pos` d'une face de normale `n` (repère Three). Bords adoucis sur un pixel ; de loin, quand une case tient en
+ * moins de 12 pixels, le motif s'efface vers le fond (rien sous 6 pixels) : jamais de moiré. Les dérivées se prennent
+ * avant tout branchement.
+ */
+export const MOTIF_GLSL = (() => {
+  const D = DETAILS_ASSEMBLES;
+  const P = MESURES_DES_MOTIFS;
+  return `
+float dansLeMotif(float d, float fw) { return 1.0 - smoothstep(-fw, fw, d); }
+vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n) {
+  vec3 an = abs(n);
+  bool dessus = an.y > 0.5;
+  vec2 q = an.x > 0.5 ? pos.zy : (dessus ? pos.xz : pos.xy);
+  vec2 fq = fwidth(q);
+  float fw = max(max(fq.x, fq.y), 1e-5);
+  if (m < 10.5) return c;
+  float k = clamp((1.0 / fw - 6.0) / 6.0, 0.0, 1.0);
+  vec2 p = fract(q) - 0.5;
+  float r = length(p);
+  if (m < 11.5) {
+    if (dessus) return mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(abs(r - ${f3(P.poutre.cerne)}) - ${f3(P.poutre.epaisseurDuCerne)}, fw) * k);
+    float v = min(abs(p.x - (${f3(P.poutre.veines[0])})), abs(p.x - ${f3(P.poutre.veines[1])})) - ${f3(P.poutre.veine)};
+    c = mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(v, fw) * k);
+    return mix(c, ${glslLin(D.poutre.collier)}, dansLeMotif(abs(p.y) - ${f3(P.poutre.collier)}, fw) * k);
+  }
+  if (m < 12.5) {
+    c = mix(c, ${glslLin(D.vitrail.bord)}, dansLeMotif(r - ${f3(P.vitrail.bord)}, fw) * k);
+    c = mix(c, ${glslLin(D.vitrail.verre)}, dansLeMotif(r - ${f3(P.vitrail.verre)}, fw) * k);
+    return mix(c, ${glslLin(D.vitrail.reflet)}, dansLeMotif(length(p - vec2(${f3(P.vitrail.reflet[0])}, ${f3(P.vitrail.reflet[1])})) - ${f3(P.vitrail.reflet[2])}, fw) * k);
+  }
+  if (m < 13.5) {
+    c = mix(c, ${glslLin(D.engrenage.roue)}, dansLeMotif(r - ${f3(P.engrenage.roue)}, fw) * k);
+    c = mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(abs(r - ${f3(P.engrenage.gorge)}) - ${f3(P.engrenage.epaisseurDeGorge)}, fw) * k);
+    return mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(r - ${f3(P.engrenage.axe)}, fw) * k);
+  }
+  vec2 a = vec2(${f3(P.miroir.manche[0])}, ${f3(P.miroir.manche[1])});
+  vec2 ab = vec2(${f3(P.miroir.manche[2])}, ${f3(P.miroir.manche[3])}) - a;
+  float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
+  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(length(p - a - ab * t) - ${f3(P.miroir.epaisseurDuManche)}, fw) * k);
+  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(r - ${f3(P.miroir.anneau)}, fw) * k);
+  c = mix(c, ${glslLin(D.miroir.verre)}, dansLeMotif(r - ${f3(P.miroir.verre)}, fw) * k);
+  return mix(c, ${glslLin(D.miroir.eclat)}, dansLeMotif(length(p - vec2(${f3(P.miroir.eclat[0])}, ${f3(P.miroir.eclat[1])})) - ${f3(P.miroir.eclat[2])}, fw) * k);
+}
+`;
+})();
 
 /**
  * Le genre de chaque bloc : une vitre est une lanterne ou un verre pris dans un mur (deux blocs pleins de part et
@@ -703,6 +809,8 @@ export function maillageDeLaConstruction(
   const teinteDe = (c: VoxelCube) =>
     Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
+  /** Le motif d'un bloc assemblé (GD-2), peint par le shader ; aucun sur une île fermée. */
+  const motifDe = (c: VoxelCube) => (!c.muted && genres.get(c) === 'bloc' && c.texture && c.texture in MOTIF_ASSEMBLE ? MOTIF_ASSEMBLE[c.texture as BlocAssemble] : 0);
   /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
   const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) ? 1 : 0);
   /** L'arête entre les faces `d` et `e` d'un bloc est-elle biseautée ? */
@@ -741,6 +849,7 @@ export function maillageDeLaConstruction(
     extra?: number,
     teinte?: number,
     arete = 0,
+    motif = 0,
   ) => {
     const k = axeDe(d);
     const [i, j] = tangents(k);
@@ -760,7 +869,7 @@ export function maillageDeLaConstruction(
       coins.map(([u, v]) => point(k, plan, i, u, j, v)),
       DIRS[d],
       [col, col, col, col],
-      { extra, arete, teinte: R === O ? teinte : undefined, biseaux: peint ? coins.map(([u, v]) => [dist(u - u0, r[0]), dist(u1 - u, r[1]), dist(v - v0, r[2]), dist(v1 - v, r[3])]) : undefined },
+      { extra, arete, motif, teinte: R === O ? teinte : undefined, biseaux: peint ? coins.map(([u, v]) => [dist(u - u0, r[0]), dist(u1 - u, r[1]), dist(v - v0, r[2]), dist(v1 - v, r[3])]) : undefined },
     );
   };
 
@@ -839,6 +948,7 @@ export function maillageDeLaConstruction(
     couleur: Couleur;
     teinte: number;
     arete: number;
+    motif: number;
     /** Retraits du biseau : côté u−, u+, v−, v+. */
     r: [boolean, boolean, boolean, boolean];
     fait: boolean;
@@ -865,7 +975,7 @@ export function maillageDeLaConstruction(
       const pk = `g|${d}|${plan}`;
       let p = plans.get(pk);
       if (!p) plans.set(pk, (p = new Map()));
-      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: FANTOME, teinte: 0, arete: 0, r: SANS_BORDS, fait: false });
+      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: FANTOME, teinte: 0, arete: 0, motif: 0, r: SANS_BORDS, fait: false });
     }
   }
   for (const c of dessines) {
@@ -889,13 +999,13 @@ export function maillageDeLaConstruction(
       ];
       if (g !== 'bloc' || !fusion) {
         // Une face seule : les vitres et les lanternes ont chacune leur décalage.
-        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c));
+        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c), motifDe(c));
         continue;
       }
       const pk = `o|${d}|${plan}`;
       let p = plans.get(pk);
       if (!p) plans.set(pk, (p = new Map()));
-      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), arete: areteDe(c), r, fait: false });
+      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), arete: areteDe(c), motif: motifDe(c), r, fait: false });
     }
   }
 
@@ -909,7 +1019,7 @@ export function maillageDeLaConstruction(
       if (s.fait) continue;
       const at = (u: number, v: number) => {
         const x = cases.get(`${u},${v}`);
-        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete ? x : undefined;
+        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete && x.motif === s.motif ? x : undefined;
       };
       // Le long de u : même couleur, mêmes retraits en v.
       let u1 = s.u;
@@ -946,7 +1056,7 @@ export function maillageDeLaConstruction(
           if (c) c.fait = true;
         }
       if (groupe === 'g') fantome(d, plan, s.u, u1 + 1, s.v, v1 + 1);
-      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete);
+      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete, s.motif);
     }
   }
 

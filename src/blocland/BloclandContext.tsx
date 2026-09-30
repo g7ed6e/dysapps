@@ -3,6 +3,7 @@ import { gelerSauvegarde, loadJSON, removeKey, saveJSON } from '../core/storage'
 import { bacASable, remplir } from './batisseur';
 import {
   EMPTY_STATE,
+  assembleBlock,
   buildBridge as buildBridgePure,
   completeExercise,
   completePortalQuest,
@@ -13,13 +14,14 @@ import {
   recordFluence as recordFluencePure,
   sanitizeState,
   todayISO,
+  type AssembleResult,
   type BloclandState,
   type Completion,
   type FillResult,
   type LaunchResult,
   type PortalCompletion,
 } from './engine';
-import type { BiomeId } from './biomes';
+import type { BiomeId, BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
@@ -46,6 +48,8 @@ interface BloclandContextValue {
   recordFluence: (textId: string, seconds: number) => { previous: number | null };
   /** Pose le bloc attendu à une cellule d'un plan. */
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
+  /** Assemble un bloc (GD-2), avec les blocs de l'inventaire. */
+  assemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
   /** Le bonhomme va sur une île ouverte. */
@@ -106,6 +110,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }
     return r;
   }, []);
+  const assemble = useCallback((bloc: BlockId) => {
+    const r = assembleBlock(stateRef.current, bloc);
+    if (!r.ok) return r;
+    const next = batisseurRef.current ? remplir(r.state) : r.state;
+    stateRef.current = next;
+    setState(next);
+    return { ...r, state: next };
+  }, []);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
     const next = batisseurRef.current ? remplir(r.state) : r.state;
@@ -161,6 +173,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       continueSession,
       recordFluence,
       fillPlan,
+      assemble,
       buildBridge,
       moveTo,
       launch,
@@ -168,7 +181,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       batisseur,
       ouvrirBatisseur,
     }),
-    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
+    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, assemble, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

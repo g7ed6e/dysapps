@@ -33,6 +33,10 @@ export type TextureKind =
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'poutre'
+  | 'vitrail'
+  | 'engrenage'
+  | 'miroir'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -157,6 +161,89 @@ function bardeau(t: TonsDuBardeau): Painter {
     const u = (x + (Math.floor(y / 4) % 2 ? 4 : 0)) % 8;
     if (v === 2 && (u <= 1 || u >= 6)) return joint;
     return bois;
+  };
+}
+
+// ---------- Les blocs assemblés (GD-2) : chacun son motif, jamais la couleur seule ----------
+
+/** Un mélange de deux couleurs RGB (t = 0 : la première). */
+const vers = (a: [number, number, number], b: [number, number, number], t: number): [number, number, number] => [
+  a[0] + (b[0] - a[0]) * t,
+  a[1] + (b[1] - a[1]) * t,
+  a[2] + (b[2] - a[2]) * t,
+];
+
+/**
+ * La poutre (Blocland) : un rondin équarri clair. Sur le côté, le fil du bois en long (deux fibres qui ondulent d'un
+ * pixel), les deux arêtes équarries plus sombres, et deux chevilles de 2 × 2 en diagonale ; sur le dessus, le bois de
+ * bout : des cernes carrés autour du cœur. Sans hasard : la même texture sur chaque face.
+ */
+function poutre(face: 'top' | 'side'): Painter {
+  const [clair, fil, arete, cheville] = [hex('#dcba86'), hex('#bf955e'), hex('#a47a46'), hex('#5e4026')];
+  if (face === 'top')
+    return (x, y) => {
+      const d = Math.max(Math.abs(x - 7.5), Math.abs(y - 7.5));
+      if (d > 7) return arete;
+      if (d < 1) return cheville;
+      return Math.floor(d) === 3 || Math.floor(d) === 5 ? fil : clair;
+    };
+  return (x, y) => {
+    if (x === 0 || x === 15) return arete;
+    if ((x === 4 || x === 5) && (y === 3 || y === 4)) return cheville;
+    if ((x === 10 || x === 11) && (y === 11 || y === 12)) return cheville;
+    const onde = y % 8 < 4 ? 0 : 1;
+    return x === 2 + onde || x === 8 + onde || x === 13 - onde ? fil : clair;
+  };
+}
+
+/**
+ * Le vitrail (Blocland) : neuf carreaux de 4 × 4 de quatre couleurs (bleu, rouge, jaune, vert), sertis d'un plomb gris
+ * foncé d'un pixel (tous les cinq pixels), le coin haut-gauche de chaque carreau éclairé. Le bord du bloc est un plomb :
+ * d'un bloc à l'autre, les sertis se suivent.
+ */
+function vitrail(): Painter {
+  const plomb = hex('#3a3f47');
+  const carreaux = ['#5f9fd8', '#d0594f', '#f0c64a', '#6cb870'].map(hex);
+  const blanc: [number, number, number] = [255, 255, 255];
+  return (x, y) => {
+    if (x % 5 === 0 || y % 5 === 0) return plomb;
+    const c = carreaux[(Math.floor(x / 5) + 2 * Math.floor(y / 5)) % 4];
+    return x % 5 === 1 && y % 5 === 1 ? vers(c, blanc, 0.45) : c;
+  };
+}
+
+/**
+ * L'engrenage (Blocland) : une roue dentée claire (huit dents) sur un fond d'ardoise, cerclée d'un gris moyen, un moyeu
+ * sombre au milieu. Le fond garde le grain de l'ardoise.
+ */
+function engrenage(): Painter {
+  const [roue, cercle, moyeu] = [hex('#d2d8de'), hex('#9aa3ac'), hex('#2f353c')];
+  const fond = grain('#4a525c', '#56606b');
+  return (x, y, r) => {
+    const dx = x - 7.5;
+    const dy = y - 7.5;
+    const d = Math.hypot(dx, dy);
+    const dent = Math.floor(((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI)) * 16 + 0.5) % 2 === 0;
+    if (d < 1.6) return moyeu;
+    if (d <= 3.2) return roue;
+    if (d <= 4) return cercle;
+    if (d <= 5 || (d <= 7 && dent)) return roue;
+    return fond(x, y, r);
+  };
+}
+
+/**
+ * Le miroir (Blocland) : un disque clair cerclé d'un anneau violet pâle, sur un fond violet sombre ; un reflet blanc en
+ * diagonale sur le disque, son bas à droite un peu ombré.
+ */
+function miroir(): Painter {
+  const [fond, anneau, disque, ombre, reflet] = [hex('#5a4f72'), hex('#c4b2e4'), hex('#e6f0f7'), hex('#cbd9e4'), hex('#ffffff')];
+  return (x, y) => {
+    const d = Math.hypot(x - 7.5, y - 7.5);
+    if (d > 7.2) return fond;
+    if (d > 5.6) return anneau;
+    if (x - y >= -1 && x - y <= 0 && d < 4.5 && x < 8) return reflet;
+    return x + y > 18 ? ombre : disque;
   };
 }
 
@@ -337,6 +424,12 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
     top: bardeau({ bois: '#96724e', joint: '#4e3826' }),
     side: bardeau({ bois: '#7c5c3e', joint: '#402e20' }),
   },
+  // Les blocs assemblés (GD-2), chacun son motif : la poutre (un rondin équarri, ses chevilles), le vitrail (des
+  // carreaux sertis de plomb), l'engrenage (une roue dentée sur l'ardoise), le miroir (un disque clair cerclé de violet).
+  poutre: { top: poutre('top'), side: poutre('side') },
+  vitrail: { top: vitrail(), side: vitrail() },
+  engrenage: { top: engrenage(), side: engrenage() },
+  miroir: { top: miroir(), side: miroir() },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),
     side: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#d4a820', '#eac03c')(x, y, r)),

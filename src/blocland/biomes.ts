@@ -2,7 +2,8 @@
 import type { Subject } from '../apps/registry';
 import type { ProgrammeId } from '../programme';
 import type { AnyIconName } from '../components/Icon';
-import { lv2Courante, type Lv2Choice } from '../core/settings';
+import { lv2Courante, universCourant, type Lv2Choice } from '../core/settings';
+import { nomAssemble } from './world/assemblage';
 import { ILES } from './iles';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
@@ -77,6 +78,10 @@ export type BlockId =
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'poutre'
+  | 'vitrail'
+  | 'engrenage'
+  | 'miroir'
   | 'toit'
   | 'porte'
   | 'lanterne'
@@ -92,6 +97,8 @@ export interface BlockDef {
   /** Texture pixel du bloc en 3D (voir three/textures.ts). */
   texture: BlockTexture;
   rare?: boolean;
+  /** Un bloc assemblé (GD-2) : il ne se gagne nulle part, il s'assemble dans le lieu du village prévu pour ça. */
+  assemble?: boolean;
 }
 
 export type BlockTexture =
@@ -129,6 +136,10 @@ export type BlockTexture =
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'poutre'
+  | 'vitrail'
+  | 'engrenage'
+  | 'miroir'
   | 'feuilles'
   | 'tronc'
   | 'nuage'
@@ -177,6 +188,12 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
   // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
   bardeau: { id: 'bardeau', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
+  // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assemblage.ts). Leur nom
+  // ici est celui de Blocland ; chaque univers donne le sien, écrit dans docs/contenu/assemblage.md.
+  poutre: { id: 'poutre', name: 'Poutre', top: '#dcba86', side: '#c49a64', texture: 'poutre', assemble: true },
+  vitrail: { id: 'vitrail', name: 'Vitrail', top: '#5f9fd8', side: '#d0594f', texture: 'vitrail', assemble: true },
+  engrenage: { id: 'engrenage', name: 'Engrenage', top: '#d2d8de', side: '#4f5864', texture: 'engrenage', assemble: true },
+  miroir: { id: 'miroir', name: 'Miroir', top: '#e6f0f7', side: '#8a7aa8', texture: 'miroir', assemble: true },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
   toit: { id: 'toit', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
   porte: { id: 'porte', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
@@ -185,9 +202,14 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   escalier: { id: 'escalier', name: 'Escalier', top: '#c29a5f', side: '#8a6a3c', texture: 'escalier' },
 };
 
+/** Le nom d'un bloc dans l'univers affiché, avec sa majuscule : « Poutre » dans Blocland, « Madrier » dans Archipéo. */
+export function nomDuBloc(id: BlockId): string {
+  return nomAssemble(id, universCourant())?.nom ?? BLOCKS[id].name;
+}
+
 /** « de bois », « d’or », « d’escalier » : le nom du bloc avec la bonne élision. */
 export function ofBlock(id: BlockId): string {
-  const name = BLOCKS[id].name.toLowerCase();
+  const name = nomDuBloc(id).toLowerCase();
   return /^[aeiouyéèêh]/.test(name) ? `d’${name}` : `de ${name}`;
 }
 
@@ -201,14 +223,15 @@ const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
-const PLURIELS: Partial<Record<BlockId, string>> = { bardeau: 'bardeaux', cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille' };
+const PLURIELS: Partial<Record<BlockId, string>> = { bardeau: 'bardeaux', cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille', vitrail: 'vitraux' };
 
 /** Ce qui suit le nombre, accordé : « toit », « toits », « bloc de sable », « blocs d’or », « cristaux ». */
 export function blockName(id: BlockId, n: number): string {
   if (MATIERES.has(id)) return `${n > 1 ? 'blocs' : 'bloc'} ${ofBlock(id)}`;
-  const name = BLOCKS[id].name.toLowerCase();
+  const autre = nomAssemble(id, universCourant());
+  const name = (autre?.nom ?? BLOCKS[id].name).toLowerCase();
   if (n < 2) return name;
-  return PLURIELS[id] ?? (/[sxz]$/.test(name) ? name : `${name}s`);
+  return (autre ? autre.pluriel : PLURIELS[id]) ?? (/[sxz]$/.test(name) ? name : `${name}s`);
 }
 
 /** Une quantité de blocs, accordée : « 5 toits », « 1 lanterne », « 16 blocs de bois ». */

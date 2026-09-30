@@ -2,7 +2,7 @@
 // triangle → case, les faces que ferme une pièce, et la mise bout à bout des îles.
 import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
-import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
+import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, MOTIF_ASSEMBLE, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
 import { worldCubes } from '../terrain';
 import { boiteDansLaCase, FORMES, type DessinDePiece, type IdDePiece, type Kit } from '.';
 
@@ -61,7 +61,9 @@ describe('Les pièces d’architecture dans la construction', () => {
     const m = maillageDeLaConstruction('6e', tous.filter((c) => c.tag === ile));
     expect(m.pieces).toBeUndefined();
     expect(m.opaque.motifs.length).toBe(m.opaque.positions.length / 3);
-    expect([...m.opaque.motifs].every((v) => v === 0)).toBe(true);
+    // Aucun motif de pièce ; seuls les blocs assemblés (GD-2) portent le leur (MOTIF_ASSEMBLE).
+    const assembles = new Set<number>(Object.values(MOTIF_ASSEMBLE));
+    expect([...m.opaque.motifs].every((v) => v === 0 || assembles.has(v))).toBe(true);
   }, 30_000);
 
   it('les blocs posés du kit deviennent pièces ; chaque triangle rend sa case, toute la case ; le fantôme reste un fantôme', () => {

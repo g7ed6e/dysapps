@@ -326,6 +326,13 @@ export const MATIERES: Record<TextureKind, Faces> = {
   // Le bardeau du Refuge : un bois brun chaud, entre les planches et le lambris, moins orangé que le cuivre, plus
   // sombre et plus rouge que la dalle ; jamais le gris de la pierre, de l'ardoise ou de la roche du massif.
   bardeau: { dessus: 0x9e7a56, cote: 0x7e5e40 },
+  // Les blocs assemblés (GD-2) : la couleur de fond de chaque bloc ; son motif (world/construction.ts, `MOTIF_ASSEMBLE`)
+  // le peint par-dessus, avec les couleurs de `DETAILS_ASSEMBLES`. Le madrier, un bois de charpente plus clair que les
+  // planches ; le hublot, son cadre jaune ; la poulie, sa chape brune ; la loupe, sur une pierre mauve pâle.
+  poutre: { dessus: 0xe2c592, cote: 0xd0ae78 },
+  vitrail: { dessus: 0xecc95a, cote: 0xd9b440 },
+  engrenage: { dessus: 0x8c6644, cote: 0x74543a },
+  miroir: { dessus: 0xdcd0e8, cote: 0xc3b3d6 },
   or: { dessus: 0xf0c84a, cote: 0xcca22e },
   cristal: { dessus: 0x88e8e0, cote: 0x4cbdb6 },
   feuilles: { dessus: 0x5e9a3e, cote: 0x4a8434 },
@@ -344,6 +351,19 @@ export const MATIERES: Record<TextureKind, Faces> = {
   marche: { dessus: 0xa29d92, cote: 0x8a867d },
   borne: { dessus: 0x3a4a6a, cote: 0x2f3d5c },
 };
+
+/**
+ * Les détails peints des blocs assemblés (GD-2, Archipéo), par-dessus leur fond (`MATIERES`) : le madrier, ses veines et
+ * son collier gris ; le hublot, son disque de verre bleuté et son reflet ; la poulie, sa roue d'acier et sa gorge ; la
+ * loupe, son anneau et son manche de laiton, son verre bleu et son éclat mauve. Deux blocs ne se distinguent jamais par
+ * la couleur seule : chacun a sa forme (world/construction.ts, `MOTIF_GLSL`).
+ */
+export const DETAILS_ASSEMBLES = {
+  poutre: { veine: 0xb58e5c, collier: 0x767e88 },
+  vitrail: { verre: 0x5b90b4, reflet: 0xeef8fc, bord: 0x9a7a26 },
+  engrenage: { roue: 0xc2cad2, gorge: 0x535c66 },
+  miroir: { laiton: 0xb8862c, verre: 0x5f9ccc, eclat: 0xecd8ff },
+} as const;
 
 /** Ce qui brille d'elle-même garde sa couleur, de jour comme de nuit (lanternes, lave). */
 const LUMINEUSES = new Set<TextureKind>(['lanterne', 'lave']);

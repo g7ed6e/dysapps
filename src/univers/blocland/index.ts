@@ -2,6 +2,7 @@
 // vaincu et sa statue). Leur invariance est vérifiée par src/univers/univers.test.ts.
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
+import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 
@@ -312,6 +313,9 @@ export const BLOCLAND = {
   },
   sentinelles: null,
   monuments: {},
+  // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
+  blocs: nomsAssembles('blocland'),
+  assemblage: lieuDAssemblage('blocland'),
   baleine: {
     arrivee: {
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',

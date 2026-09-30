@@ -48,6 +48,7 @@ export async function generatePages() {
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
+    const recettesMod = await load('/src/blocland/world/recettes.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
@@ -70,6 +71,7 @@ export async function generatePages() {
       VOYAGES: archMod.VOYAGES,
       VEHICLE_STAGES: vehicleMod.VEHICLE_STAGES,
       MONUMENTS: monumentsMod.MONUMENTS,
+      ASSEMBLAGE: recettesMod.ASSEMBLAGE,
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -860,6 +862,17 @@ function ouvragesPage(d) {
     '## Les monuments',
     '',
     `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent comme un plan, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    '',    `Chaque monument demande aussi quelques **blocs assemblés** : un par archipel, qu’aucune île ne donne. On les assemble sur l’île de l’école, ${d.ASSEMBLAGE.lieu.blocland.a} dans Blocland (${d.ASSEMBLAGE.lieu.archipeo.a} dans Archipéo), avec des blocs de deux îles de l’archipel.`,
+    '',
+    table(
+      ['Archipel', 'Bloc assemblé', 'Recette', 'Nom dans Archipéo'],
+      d.ASSEMBLAGE.recettes.map((r) => [
+        `Les ${d.ARCHIPELAGOS.find((a) => a.classe === r.archipelago).name}`,
+        r.noms.blocland.nom,
+        r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et '),
+        r.noms.archipeo.nom,
+      ]),
+    ),
     '',
     table(
       ['Archipel', 'Monument', 'Au large de', 'Blocs', 'XP'],

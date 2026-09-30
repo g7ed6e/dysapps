@@ -122,6 +122,15 @@ Les tests de chaque mission (`src/apps/<mission>/data.test.*`, lancés par `npm 
 - **lecture** : au moins 10 vers ou phrases par texte, 5 questions par texte, 3 choix différents dont la réponse, la bonne réponse pas toujours à la même place, un passage `lignes` qui tient dans le texte ;
 - **vocabulaire** : au moins 8 mots par thème, sans doublon, et deux pièges par mot.
 
+## L’assemblage des blocs
+
+`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../pilotage/game-design/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`. Deux tableaux :
+
+- **« ## Le lieu »** : une rangée par univers (`` `blocland` ``, `` `archipeo` ``), avec le nom du lieu (le titre de sa page), où il est (« à la Fabrique ») et la phrase lue sous le titre.
+- **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`bois × 2 · pierre × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).
+
+Les cases des monuments qui demandent ces blocs restent dans le code (`src/blocland/world/monuments.ts`).
+
 ## Ajouter une île
 
 Écrire `<île>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/blocland/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).

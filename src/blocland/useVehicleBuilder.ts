@@ -6,7 +6,8 @@ import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, typ
 import { playDone, playNope, playPlace } from './sound';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
-import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
+import { placeAll, type Burst } from './usePlanBuilder';
+import { allerChercher } from './world/uses';
 import { useHaptics } from '../core/haptics';
 
 export interface VehicleBuilder {
@@ -52,7 +53,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!stage) return;
     const r = fillPlan(stage, x, y, z);
     if (!r.ok) {
-      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : va dans ${whereToEarn(r.block)}.`);
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : ${allerChercher(r.block)}.`);
       else if (r.reason === 'deja-pose') setNotice('Ce bloc du Bloc-Navire est déjà posé.');
       sound(playNope);
       return;

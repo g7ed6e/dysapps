@@ -20,6 +20,7 @@ import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { SchoolPage } from './blocland/School';
+import { AssemblagePage } from './blocland/Assemblage';
 import { MonumentPage, MonumentsPage } from './blocland/Monuments';
 import { useMonumentBuilder } from './blocland/useMonumentBuilder';
 import { getMonument, type MonumentDef } from './blocland/world/monuments';
@@ -90,6 +91,8 @@ function IslandEntry() {
   if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
   if (biomeId === 'ecole') return <SchoolPage />;
+  // Le lieu où l'on assemble les blocs (GD-2) : un panneau dans le monde, une page en vue simple.
+  if (biomeId === 'assemblage') return <AssemblagePage />;
   // Les monuments : des panneaux dans le monde, des pages en vue simple.
   if (biomeId === 'monuments') return <MonumentsPage />;
   const monument = biomeId ? getMonument(biomeId) : undefined;

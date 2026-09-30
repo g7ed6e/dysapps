@@ -103,7 +103,7 @@ describe('La disposition en grille', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
       const school = getArchipelago(a).school;
-      for (const place of ['ecole', 'trophees'] as VillagePlaceId[])
+      for (const place of ['ecole', 'trophees', 'assemblage'] as VillagePlaceId[])
         for (const from of islandsOf(a)) {
           const door = placeDoor(place, school);
           const route = avatarRoute(from.id, school, village.bridges, ground);

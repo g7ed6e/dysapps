@@ -207,6 +207,17 @@ const CAPTURES = [
   { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
   { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
   { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
+  // L'assemblage des blocs (GD-2) : le lieu où l'on assemble, sur l'île de l'école (la Fabrique ou la Halle aux
+  // matériaux, selon le rendu), et les blocs assemblés sur les monuments de chaque archipel, de près (`finesse` 2).
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'foret', finesse: 2 },
+  { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-observatoire', finesse: 2 },
+  { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-moulin', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'marche', finesse: 2 },
+  { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'marche', lieu: 'monument-kiosque', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'atelier', finesse: 2 },
+  { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'monument-viaduc', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'phare', finesse: 2 },
+  { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'phare', lieu: 'monument-etoiles', finesse: 2 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

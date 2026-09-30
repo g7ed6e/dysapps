@@ -2,6 +2,7 @@
 // dessin. Des données seulement, sans React ni Three.js ; aucune règle du jeu ni aucune disposition ne l'importe
 // (world/couches.test.ts, couche « univers »).
 import type { UniversId } from '../../../univers/types';
+import type { Atelier } from '../terrain';
 
 export interface Habillage {
   univers: UniversId;
@@ -34,4 +35,10 @@ export interface Habillage {
    * étiquettes s'en écartent ; ou le cadrage de la zone seul.
    */
   reperes: 'cadres' | 'libres';
+  /**
+   * Le lieu où l'on assemble les blocs (GD-2), sur l'île de l'école : la Fabrique (une halle de brique à toit plat, sa
+   * cheminée, une potence de rondins), ou la Halle aux matériaux (une halle basse en bois sur un socle de pierre, un
+   * toit à deux pentes, une potence de bois). Même place, même porte : seule la silhouette change (world/terrain.ts).
+   */
+  atelier: Atelier;
 }

@@ -21,6 +21,7 @@ import {
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
 import { getMonument } from './world/monuments';
+import { assemblables, recetteDe } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
 export interface ExerciseProgress {
@@ -307,6 +308,22 @@ export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: 
   };
 }
 
+export type AssembleResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' };
+
+/**
+ * Assemble un bloc (GD-2) : retire les ingrédients de la recette et ajoute le bloc assemblé. Un seul à la fois, et
+ * rien ne se perd : sans assez de blocs, l'inventaire ne bouge pas.
+ */
+export function assembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+  const recette = recetteDe(bloc);
+  if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
+  if (assemblables(state.inventory, recette) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.inventory };
+  for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) - i.n;
+  inventory[bloc] = (inventory[bloc] ?? 0) + 1;
+  return { state: { ...state, inventory }, ok: true };
+}
+
 /** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
 export function nextFillable(state: BloclandState, plan: PlanDef): { x: number; y: number; z: number } | null {
   const done = new Set(state.village.plans[plan.id] ?? []);
@@ -493,7 +510,8 @@ function playedToday(
   let chestBlock: BlockId | undefined;
   let chests = state.chests;
   if (streak.chest) {
-    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare);
+    // Ni les blocs rares, ni les blocs assemblés (GD-2), qu'on ne gagne jamais tout faits.
+    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
     chestBlock = common[Math.floor(rng() * common.length)];
     inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
     chests += 1;

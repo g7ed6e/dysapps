@@ -10,6 +10,8 @@ import type { PlanBuilder } from './usePlanBuilder';
 import { BlockIcon } from './Voxel';
 import { getPlan } from './world/plans';
 import { earnIsland, whereToEarn } from './world/uses';
+import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { useTextes } from '../univers';
 
 interface Props {
   biome: BiomeDef;
@@ -24,6 +26,13 @@ interface Props {
 
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou le coffre d'un plan. */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
+  const lieu = useTextes().assemblage;
+  if (BLOCKS[block].assemble)
+    return (
+      <>
+        à assembler <Link to={ASSEMBLAGE_PATH}>{lieu.a}</Link>
+      </>
+    );
   const island = earnIsland(block);
   if (!island) return <>à gagner dans {whereToEarn(block)}</>;
   if (island.id === here) return <>à gagner ici, dans les missions</>;

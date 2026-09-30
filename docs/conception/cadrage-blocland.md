@@ -103,6 +103,7 @@ Une fois les bâtiments et les ouvrages faits, les blocs s’accumulaient sans u
 - Un plan comme les autres, sans coffre ni condition : 60 à 125 blocs de plusieurs îles de son archipel.
 - Il n’ouvre rien et ne bloque rien : on le construit à son rythme. De l’XP, et le succès Patrimoine au premier.
 - Mes blocs y renvoie un bloc qu’aucun plan ni le navire n’attend.
+- Chacun demande aussi 4 à 8 **blocs assemblés** de son archipel, aux endroits qui comptent ([GD-2](../pilotage/game-design/propositions/GD-2.md)) : Poutre (6e), Vitrail (5e), Engrenage (4e), Miroir (3e). Aucune île ne les donne ; on les assemble à la **Fabrique**, un troisième lieu de l’île de l’école à côté de l’école et de la salle des trophées, avec trois blocs de deux îles de l’archipel, un à la fois, sur une recette fixe et toujours affichée (`world/assemblage.ts`). Recettes et noms (du lieu et des blocs, propres à chaque univers) : `docs/contenu/assemblage.md`. Une case déjà posée reste posée.
 
 ## Le Bloc-Navire et le voyage
 

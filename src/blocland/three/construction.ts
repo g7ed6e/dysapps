@@ -2,11 +2,11 @@
 // world/construction.ts, trois appels de dessin. Les couleurs sont portées par les sommets ; trois matériaux, faits une
 // fois par scène et libérés avec elle, les complètent dans le shader (`onBeforeCompile`) :
 //
-// - les blocs : la teinte de chaque bloc (± 4 %, tirée de sa case), et le biseau peint, une lumière qui accroche les
-//   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit :
-//   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
-//   16 pixels, elle s'efface, pour ne pas scintiller) ; le verre hors d'un mur, cerné
-//   d'une arête fine par case ;
+// - les blocs : la teinte de chaque bloc (± 4 %, tirée de sa case), le motif des blocs assemblés (GD-2, `MOTIF_GLSL`,
+//   effacé de loin comme le biseau), et le biseau peint, une lumière qui accroche les arêtes saillantes sur une bande de
+//   `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit : +22 %, et +14 niveaux au moins sur
+//   une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de 16 pixels, elle s'efface, pour ne
+//   pas scintiller) ; le verre hors d'un mur, cerné d'une arête fine par case ;
 // - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
 // - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
 //
@@ -26,6 +26,7 @@ import {
   ECLAT_GLSL,
   FANTOME,
   LUEUR,
+  MOTIF_GLSL,
   opaciteDesFantomes,
   TEINTE_GLSL,
   type GroupeDeConstruction,
@@ -50,22 +51,24 @@ export function creerMateriaux(lumiere: Lumiere | null): MateriauxDeConstruction
     s.vertexShader = s.vertexShader
       .replace(
         '#include <common>',
-        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;',
+        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nattribute float motif;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nvarying float vMotif;',
       )
       // La case d'un sommet : un quart de case derrière sa face (world/construction.ts, `caseDeLaConstruction`).
       .replace(
         '#include <begin_vertex>',
-        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;',
+        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;\nvMotif = motif;',
       );
     s.fragmentShader = s.fragmentShader
       .replace(
         '#include <common>',
-        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\n${TEINTE_GLSL}\n${BISEAU_GLSL}`,
+        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nvarying float vMotif;\n${TEINTE_GLSL}\n${BISEAU_GLSL}\n${MOTIF_GLSL}`,
       )
       .replace(
         '#include <color_fragment>',
         `#include <color_fragment>
 diffuseColor.rgb *= vTeinte > 0.0 ? pow(vTeinte, 2.2) : teinteDeCase(floor(vCase));
+// Le motif d'un bloc assemblé (GD-2) : peint sur son fond, avant le biseau (0 : aucun).
+diffuseColor.rgb = motifAssemble(diffuseColor.rgb, vMotif, vPos, vN);
 {
   // Le biseau peint : 1 au bord saillant, 0 au-delà de la bande. La bande garde au moins un pixel et demi (jamais un
   // fil qui scintille) ; de loin, quand une case tient en moins de 16 pixels, elle s'efface (rien sous 8 pixels).
@@ -203,7 +206,8 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     group,
     peindre(m) {
       vider();
-      // `motif` : le motif peint d'une pièce d'architecture (lot 7), inerte au socle (7a) : le shader ne le lit pas encore.
+      // `motif` : le motif peint d'un bloc assemblé (GD-2, 11 à 14), que le shader peint ; celui d'une pièce
+      // d'architecture (lot 7) reste inerte au socle (7a).
       ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque');
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');

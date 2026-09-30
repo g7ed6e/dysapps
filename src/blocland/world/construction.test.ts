@@ -66,7 +66,8 @@ function monde(a: ArchipelagoId, etat: Etat = 'tout') {
       const l = plansFor(b.id);
       if (l.length) delete plans[l[l.length - 1].id];
     }
-  const tous = worldCubes(a, progress, { ...village, plans }, false);
+  // Le rendu Archipéo : la Halle aux matériaux (GD-2) à la place de la Fabrique.
+  const tous = worldCubes(a, progress, { ...village, plans }, false, [], false, 'halle');
   const sol = tous.filter((c) => c.sol);
   const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
   m = { cubes: poseDuDecor(champDuSol(a, sol, reste), reste), sol };

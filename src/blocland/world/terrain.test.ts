@@ -10,6 +10,7 @@ import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
 import { walkGround, walkPath } from './paths';
 import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbour';
 import { VEHICLE_STAGES } from './vehicle';
+import { recetteDeLArchipel } from './assemblage';
 import {
   avatarHome,
   avatarRoute,
@@ -40,6 +41,8 @@ import {
   TROPHY_SLOTS,
   trophyModel,
   VILLAGE_PLACES,
+  ASSEMBLAGE_SIZE,
+  atelierModel,
   seaDecor,
   vehiclePlacement,
   VIEW_YAW_MAX,
@@ -699,15 +702,16 @@ it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étap
   expect(vehiclePlacement('3e', {}, village(['voyage-5e', 'voyage-4e', 'voyage-3e'])).afloat).toBe(false);
 });
 
-it('l’école et la salle des trophées : sur l’île de l’école de chaque archipel, libres, leur porte accessible, les ouvrages aussi', () => {
-  for (const a of ARCHIPELAGOS) {
+it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’île de l’école de chaque archipel, libres, leur porte accessible, les ouvrages aussi', () => {
+  for (const [a, atelier] of ARCHIPELAGOS.flatMap((x) => (['fabrique', 'halle'] as const).map((t) => [x, t] as const))) {
     const island = a.school;
     expect(a.starts).toContain(island);
-    const cubes = worldCubes(a.classe, {}, village(everything), true, ['or', 'cristal', 'quartz']);
+    const cubes = worldCubes(a.classe, {}, village(everything), true, ['or', 'cristal', 'quartz'], false, atelier);
     const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
     const ground = walkGround(cubes, creaturePlacements(a.classe, everything));
-    for (const place of ['ecole', 'trophees'] as const) {
+    for (const place of ['ecole', 'trophees', 'assemblage'] as const) {
       const cells = cubes.filter((c) => c.place === place);
+      expect(cells.length, place).toBeGreaterThan(0);
       // Rien que sur l'île de l'école.
       expect(new Set(cells.map((c) => c.tag))).toEqual(new Set([island]));
       const spot = placeSpot(place, island)!;
@@ -715,6 +719,9 @@ it('l’école et la salle des trophées : sur l’île de l’école de chaque 
       for (const c of cells) {
         const lx = c.x - ox;
         const ly = c.y - oy;
+        // Dans son emprise (les autres lieux, le décor et la créature s'en écartent).
+        const { at, size } = VILLAGE_PLACES[place];
+        expect(lx >= at.x && lx < at.x + size.w && ly >= at.y && ly < at.y + size.d, `${place} ${lx},${ly}`).toBe(true);
         // Dans le cœur, hors de la zone des plans, loin des bornes (et de leur marge) ; la rangée de devant reste libre.
         expect(lx >= 0 && lx < CORE && ly >= 0 && ly < CORE).toBe(true);
         expect(lx >= PLAN_ZONE.x && lx < PLAN_ZONE.x + PLAN_ZONE.w && ly >= PLAN_ZONE.y && ly < PLAN_ZONE.y + PLAN_ZONE.h).toBe(false);
@@ -741,7 +748,42 @@ it('l’école et la salle des trophées : sur l’île de l’école de chaque 
   }
   // Ailleurs, rien.
   expect(placeSpot('ecole', 'mine')).toBeNull();
-  expect(allCubes({}, village(everything)).filter((c) => c.place === 'ecole' || c.place === 'trophees').every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
+  expect(allCubes({}, village(everything)).filter((c) => c.place === 'ecole' || c.place === 'trophees' || c.place === 'assemblage').every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
+});
+
+it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d’Archipéo, même emprise, même porte ouverte, le bloc de l’archipel suspendu', () => {
+  for (const a of ARCHIPELAGOS) {
+    const recette = recetteDeLArchipel(a.classe)!;
+    for (const atelier of ['fabrique', 'halle'] as const) {
+      const m = atelierModel(atelier, a.classe);
+      const at = (x: number, y: number, z: number) => m.find((c) => c.x === x && c.y === y && c.z === z)?.block;
+      // Aucune case en double, toutes dans l'emprise.
+      expect(new Set(m.map((c) => `${c.x},${c.y},${c.z}`)).size).toBe(m.length);
+      expect(m.every((c) => c.x >= 0 && c.x < ASSEMBLAGE_SIZE.w && c.y >= 0 && c.y < ASSEMBLAGE_SIZE.d && c.z >= 1)).toBe(true);
+      // La grande porte ouverte, en face de la case où le bonhomme s'arrête : la cour et la porte sont libres.
+      const door = VILLAGE_PLACES.assemblage.door;
+      for (const [y, z] of [[0, 1], [0, 2], [1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]]) expect(at(door, y, z), `${y},${z}`).toBeUndefined();
+      expect(at(door, 4, 1)).toBeDefined();
+      // Le bloc assemblé de l'archipel, suspendu sous le bras de la potence (rien dessous), et les blocs de sa recette.
+      expect(at(0, 0, 2)).toBe(recette.bloc);
+      expect(at(0, 0, 1)).toBeUndefined();
+      expect(at(0, 0, 4)).toBe(at(0, 1, 4));
+      for (const i of recette.ingredients) expect(m.some((c) => c.y < 2 && c.block === i.bloc), i.bloc).toBe(true);
+      // Ce qui change d'un univers à l'autre : la brique, le toit plat et la cheminée ; le bois sur la pierre et les deux pentes.
+      if (atelier === 'fabrique') {
+        expect(at(0, 2, 1)).toBe('brique');
+        expect(m.filter((c) => c.z === 4 && c.y >= 2).every((c) => c.block === 'taille')).toBe(true);
+        expect(at(2, 4, 6)).toBe('pierre');
+        expect(at(0, 1, 1)).toBe('poutre');
+      } else {
+        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'bois']);
+        expect(at(1, 2, 4)).toBe('toit');
+        expect(at(0, 2, 4)).toBeUndefined();
+        expect(at(0, 1, 1)).toBe('bois');
+        expect(m.some((c) => c.z > 4)).toBe(false);
+      }
+    }
+  }
 });
 
 it('la salle des trophées a une place par succès', () => {

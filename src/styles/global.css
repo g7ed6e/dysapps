@@ -5681,3 +5681,47 @@ fieldset {
 :root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* Le lieu où l'on assemble les blocs (GD-2) : une carte par recette, les blocs à donner en vignettes, un bouton. */
+.assemblage-recette {
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+}
+.assemblage-recette .island-sheet-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0;
+}
+.assemblage-archipel {
+  font-weight: 400;
+  font-size: 0.9em;
+}
+.assemblage-phrase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-ingredients,
+.assemblage-manque {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.assemblage-ingredients li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-vignettes {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+.assemblage-recette .button.primary {
+  min-height: 48px;
+}
