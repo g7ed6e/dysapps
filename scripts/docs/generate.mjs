@@ -297,7 +297,7 @@ function programmesPage(d) {
     '',
     ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
-    'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi. La procédure pour étendre le référentiel à une autre matière est dans [Le référentiel des programmes](../conception/programmes.md).',
+    'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',
   );
   return { path: 'pedagogie/programmes.md', title: 'Programmes officiels', body: lines.join('\n') };

@@ -25,7 +25,7 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`docs/.vitepress/theme/`, décrit dans [Style](style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run docs:build` écrit `dist-docs/` :
 
-1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/`, `docs/_journal/` et `docs/.vitepress/`) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. `scripts/docs/journal.mjs` assemble le journal des versions à partir des fragments de `docs/_journal/` (voir [Version](#version)). Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
+1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/`, `docs/_journal/`, `docs/.vitepress/` et `docs/conception/` : le site s’adresse aux élèves et aux adultes qui les accompagnent) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
 2. La configuration construit le sommaire depuis `docs/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
 3. VitePress construit le site ; à la fin, chaque page reçoit sa politique de sécurité du contenu en `<meta>`, avec l’empreinte des scripts en ligne de VitePress.
 
@@ -62,7 +62,7 @@ La version n’est écrite dans aucun fichier (`package.json` n’en a pas) : `s
 
 Deux pull requests menées en parallèle ne touchent donc aucun numéro commun et n’ont plus à se rebaser pour la version. Le journal suit le même principe : chaque pull request ajoute un fragment `docs/_journal/<nom>.md` (sans titre), et `scripts/docs/journal.mjs` le place sous le titre `## <version> — <date>` du commit de `main` qui l’a ajouté. Les entrées antérieures (0.14.0 et avant) sont dans `docs/_journal/historique.md`.
 
-La version est affichée dans les réglages de l’application et dans le pied de page de la documentation, et le [journal des versions](../journal.md) décrit chaque publication. La CI refuse une pull request sans fragment de journal.
+La version est affichée dans les réglages de l’application et dans le pied de page de la documentation ; le journal des versions n’est pas publié (`npm run journal:show` l’affiche). La CI refuse une pull request sans fragment de journal.
 
 ## Dépendances
 

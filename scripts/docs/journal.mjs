@@ -1,4 +1,4 @@
-// Le journal des versions (docs/journal.md) est produit au build, sans titre de version écrit à la main :
+// Le journal des versions n'est pas publié sur le site (réservé à l'équipe) : `npm run journal:show` l'affiche. Il se fait sans titre de version écrit à la main :
 // chaque pull request ajoute un fragment docs/_journal/<nom>.md (le texte de son entrée, sans titre), et la version
 // d'un fragment est celle du commit de main qui l'a ajouté (scripts/version.mjs). Deux pull requests ajoutent
 // deux fichiers différents : elles ne se gênent jamais. Les entrées d'avant les fragments sont dans
@@ -6,6 +6,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { versionOf } from '../version.mjs';
 
 export const JOURNAL_DIR = 'docs/_journal';
@@ -55,7 +56,7 @@ export function journalEntries(cwd = process.cwd()) {
   return [...byVersion.values()].sort((a, b) => minor(b.version) - minor(a.version));
 }
 
-/** La page docs/journal.md. */
+/** Le journal assemblé (`npm run journal:show`), non publié. */
 export function journalPage(cwd = process.cwd()) {
   const entries = journalEntries(cwd).map(({ version, date, bodies }) => {
     const title = version ? `## ${version} — ${frenchDate(date)}` : '## À paraître';
@@ -66,3 +67,6 @@ export function journalPage(cwd = process.cwd()) {
     .trim();
   return { path: 'journal.md', title: 'Journal des versions', body: [INTRO, ...entries, history].join('\n\n') + '\n' };
 }
+
+// npm run journal:show : le journal assemblé, avec ses versions.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) console.log(journalPage().body);

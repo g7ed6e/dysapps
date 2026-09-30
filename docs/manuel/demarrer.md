@@ -75,7 +75,7 @@ L’application se met à jour toute seule. Quand une nouvelle version est prêt
 
 Si une page affiche **« Cette page n’a pas pu s’ouvrir »**, l’application a sans doute été mise à jour pendant la séance : le bouton **Recharger** la rouvre. La progression est gardée.
 
-Dans **Réglages → Application**, la version installée est affichée, et un bouton **Vérifier les mises à jour** permet de ne pas attendre. Chaque publication porte un numéro nouveau, décrit dans le [journal des versions](../journal.md).
+Dans **Réglages → Application**, la version installée est affichée, et un bouton **Vérifier les mises à jour** permet de ne pas attendre. Chaque publication porte un numéro nouveau.
 
 ## Où sont mes données ?
 

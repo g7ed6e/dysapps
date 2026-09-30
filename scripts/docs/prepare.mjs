@@ -1,13 +1,13 @@
 // Prépare les sources du site de documentation pour VitePress (docs/.vitepress/config.mts) :
-// les pages Markdown de docs/ (sauf docs/_theme/, docs/_journal/ et docs/.vitepress/) plus les pages générées depuis
-// les données du jeu (scripts/docs/generate.mjs) et le journal des versions (scripts/docs/journal.mjs),
+// les pages Markdown de docs/ (sauf docs/_theme/, docs/_journal/, docs/.vitepress/ et docs/conception/, qui ne sont pas
+// publiés : le site s'adresse aux élèves et aux adultes qui les accompagnent, pas aux contributeurs) plus les pages générées depuis
+// les données du jeu (scripts/docs/generate.mjs) ; le journal des versions (docs/_journal/) n'est pas publié,
 // copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
 // Aucune ressource externe.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, posix, relative } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { generatePages } from './generate.mjs';
-import { journalPage } from './journal.mjs';
 
 const root = process.cwd();
 export const DOCS = join(root, 'docs');
@@ -18,11 +18,14 @@ const CAPTURES = join(DOCS, '_captures');
 const PLACEHOLDER_JPEG =
   '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
 
+/** Les dossiers de docs/ qui ne sont pas publiés : les documents de conception, pour les contributeurs. */
+const NON_PUBLIES = new Set(['conception']);
+
 function walk(dir, list = []) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      if (name.startsWith('_') || name.startsWith('.')) continue;
+      if (name.startsWith('_') || name.startsWith('.') || NON_PUBLIES.has(relative(DOCS, full))) continue;
       walk(full, list);
     } else if (extname(name) === '.md') list.push(full);
   }
@@ -45,8 +48,6 @@ function gitDate(relPath) {
 
 const GAME_NOTE =
   'Cette page est produite à chaque publication à partir des données du jeu (`scripts/docs/generate.mjs`) : elle décrit exactement la version en ligne.';
-const JOURNAL_NOTE =
-  'Cette page est assemblée à chaque publication à partir des fragments de `docs/_journal/` (un par pull request) ; les numéros de version viennent de l’historique git (`scripts/version.mjs`).';
 
 /**
  * Écrit .docs-src/ et renvoie les pages : { path, title, generated, updated }.
@@ -61,7 +62,7 @@ export async function prepareDocs() {
       const body = readFileSync(full, 'utf8');
       return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('docs', path)) };
     });
-  const generated = [...(await generatePages()).map((p) => ({ ...p, note: GAME_NOTE })), { ...journalPage(root), note: JOURNAL_NOTE }].map((p) => ({
+  const generated = (await generatePages()).map((p) => ({ ...p, note: GAME_NOTE })).map((p) => ({
     ...p,
     generated: true,
     updated: today,
