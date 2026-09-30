@@ -297,7 +297,7 @@ function programmesPage(d) {
     '',
     ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
-    'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi. La procédure pour étendre le référentiel à une autre matière est dans [Le référentiel des programmes](../conception/programmes.md).',
+    'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',
   );
   return { path: 'pedagogie/programmes.md', title: 'Programmes officiels', body: lines.join('\n') };
@@ -544,6 +544,108 @@ function islandPage(b, d) {
     '',
   );
   return { path: `pedagogie/iles/${b.id}.md`, title: b.name, body: lines.join('\n') };
+}
+
+/**
+ * La page « Personnages et Gardiens » du pilotage (pilotage/game-design/personnages.md, hors du site de documentation,
+ * qui s'adresse aux élèves et aux adultes qui les accompagnent) : `npm run pilotage:personnages`.
+ */
+export async function generatePersonnages() {
+  const server = await createServer({
+    configFile: false,
+    root,
+    logLevel: 'error',
+    appType: 'custom',
+    server: { middlewareMode: true, hmr: false, watch: null },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    plugins: [exerciseMeta()],
+  });
+  try {
+    const load = (p) => server.ssrLoadModule(p);
+    const [biomesMod, archMod, universMod, universCore] = await Promise.all([
+      load('/src/blocland/biomes.ts'),
+      load('/src/blocland/world/archipelago.ts'),
+      load('/src/univers/index.ts'),
+      load('/src/core/univers.ts'),
+    ]);
+    return personnagesPage({
+      BIOMES: biomesMod.BIOMES,
+      ARCHIPELAGOS: archMod.ARCHIPELAGOS,
+      UNIVERS: universCore.UNIVERS,
+      TEXTES_DE: { blocland: universMod.textesDe('blocland'), archipeo: universMod.textesDe('archipeo') },
+    });
+  } finally {
+    await server.close();
+  }
+}
+
+/** Les personnages : la baleine, puis une créature et un Gardien par île, avec ce qui change d'un univers à l'autre. */
+function personnagesPage(d) {
+  const { BIOMES, TEXTES_DE, UNIVERS } = d;
+  const bl = TEXTES_DE.blocland;
+  const ar = TEXTES_DE.archipeo;
+  for (const [u, t] of Object.entries(TEXTES_DE))
+    for (const b of BIOMES)
+      if (!t.gardiens[b.id] || !t.creatures[b.id] || !t.especes[b.id]) throw new Error(`generate.mjs : textes de ${u} incomplets pour l’île ${b.id}`);
+  // Les exemples du mot de la baleine : le premier archipel, son île-port, la première île ouverte par un ouvrage.
+  const premier = d.ARCHIPELAGOS[0];
+  const nom = (id) => BIOMES.find((b) => b.id === id).name;
+  const port = nom(premier.port);
+  const ouverte = nom(BIOMES.find((b) => b.classe === premier.classe && !premier.starts.includes(b.id)).id);
+  const lines = [
+    '# Personnages et Gardiens',
+    '',
+    '<!-- Page produite par `npm run pilotage:personnages` : ne pas l’écrire à la main. -->',
+    '',
+    'Cette page est produite à partir des données du jeu (`src/blocland/biomes.ts` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
+    '',
+    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans ${UNIVERS.blocland.nom}, on **vainc** le Gardien, qui devient une statue ; dans ${UNIVERS.archipeo.nom}, c’est une sentinelle de pierre éteinte que l’élève **rallume**. La **baleine** parle rarement, aux grandes étapes d’un archipel, dans les deux univers.`,
+    '',
+    '## La baleine',
+    '',
+    table(
+      ['Moment', UNIVERS.blocland.nom, UNIVERS.archipeo.nom],
+      [
+        ...CLASSES.map((c) => [`Arrivée en ${c}`, bl.baleine.arrivee[c], ar.baleine.arrivee[c]]),
+        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(premier.name), ar.baleine.gardiens(premier.name)],
+        ['Île-port terminée (exemple)', bl.baleine.port(port), ar.baleine.port(port)],
+        ['Premier ouvrage payé (exemple)', bl.baleine.ouvrage(ouverte), ar.baleine.ouvrage(ouverte)],
+      ],
+    ),
+    '',
+  ];
+  for (const a of d.ARCHIPELAGOS) {
+    const list = BIOMES.filter((b) => b.classe === a.classe);
+    lines.push(`## Les ${a.name} (${a.classe})`, '');
+    lines.push(
+      table(
+        ['Île', 'Créature', `Espèce (${UNIVERS.blocland.nom})`, `Espèce (${UNIVERS.archipeo.nom})`, 'Gardien'],
+        list.map((b) => [
+          `[${b.name}](https://g7ed6e.github.io/dysapps/pedagogie/iles/${b.id}.html) (${SUBJECT_NAME[b.subject]})`,
+          b.creature.name,
+          bl.especes[b.id],
+          ar.especes[b.id],
+          capFirst(b.guardian),
+        ]),
+      ),
+      '',
+    );
+    for (const b of list) {
+      lines.push(`### ${capFirst(b.guardian)}, ${b.name}`, '');
+      lines.push(
+        table(
+          ['', UNIVERS.blocland.nom, UNIVERS.archipeo.nom],
+          [
+            ['Au défi', bl.gardiens[b.id].challenge, ar.gardiens[b.id].challenge],
+            ['À la fin', bl.gardiens[b.id].guardianSays.beaten, ar.gardiens[b.id].guardianSays.beaten],
+            [`${b.creature.name} à l’arrivée`, bl.creatures[b.id].greeting, ar.creatures[b.id].greeting],
+          ],
+        ),
+        '',
+      );
+    }
+  }
+  return `${lines.join('\n')}\n`;
 }
 
 function homophonesPage(d) {

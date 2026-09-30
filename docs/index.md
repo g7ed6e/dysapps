@@ -17,7 +17,6 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 <li><a href="manuel/reglages.html"><strong>Réglages et accessibilité</strong>Police, taille, thèmes, lecture à voix haute, syllabes, animations.</a></li>
 <li><a href="pedagogie/archipel.html"><strong>Le contenu, île par île</strong>Ce que travaille chaque mission, avec ses consignes et ses items.</a></li>
 <li><a href="pedagogie/principes.html"><strong>Principes dys</strong>Les règles que respecte chaque exercice, et pourquoi.</a></li>
-<li><a href="conception/contribuer.html"><strong>Contribuer</strong>Ajouter un exercice, une île, et tenir cette documentation à jour.</a></li>
 </ul>
 
 ## En deux mots
@@ -34,4 +33,3 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 | Un élève | [Démarrer](manuel/demarrer.md), [Les missions](manuel/quetes.md), [L’aventure](manuel/blocland.md) |
 | Un parent ou un enseignant | [Réglages et accessibilité](manuel/reglages.md), [Progression et récompenses](manuel/progression.md), [Questions fréquentes](manuel/questions.md) |
 | Un orthophoniste ou un enseignant spécialisé | [Principes dys](pedagogie/principes.md), [L’archipel](pedagogie/archipel.md), [Barème et succès](pedagogie/bareme.md) |
-| Un contributeur | [Architecture](conception/architecture.md), [Format des exercices](conception/exercices.md), [Contribuer](conception/contribuer.md) |

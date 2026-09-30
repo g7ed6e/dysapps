@@ -1,1 +1,0 @@
-Archipéo, lot 7 : deux choix du mainteneur sont inscrits dans le cadrage. Les bâtiments du 6e peuvent prendre un peu du budget de dessin du navire pour être plus détaillés, et le monde en 2D, qui ne sert plus que sur un appareil sans 3D, garde ses blocs. Rien ne change à l’écran.

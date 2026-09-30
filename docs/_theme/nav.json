@@ -31,30 +31,6 @@
         "pedagogie/ouvrages.md",
         "pedagogie/bareme.md"
       ]
-    },
-    {
-      "title": "Conception",
-      "pages": [
-        "conception/architecture.md",
-        "conception/style.md",
-        "conception/exercices.md",
-        "conception/programmes.md",
-        "conception/deploiement.md",
-        "conception/contribuer.md",
-        "conception/bonnes-pratiques-dys.md",
-        "conception/bonnes-pratiques-code.md",
-        "conception/cadrage-contenu.md",
-        "conception/cadrage-blocland.md",
-        "conception/cadrage-archipeo.md",
-        "conception/separation-jeu-rendu.md",
-        "conception/univers.md"
-      ]
-    },
-    {
-      "title": "Versions",
-      "pages": [
-        "journal.md"
-      ]
     }
   ]
 }

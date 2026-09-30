@@ -1,1 +1,0 @@
-Sur téléphone en grand texte, les boutons de la barre du bas du village qui ne tiennent pas sur la largeur (École, « ? ») passent sur une deuxième ligne au lieu de sortir de l’écran. Dans les deux univers.

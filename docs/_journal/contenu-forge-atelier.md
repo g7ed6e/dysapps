@@ -1,1 +1,0 @@
-À la Forge des puissances et à l’Atelier du calcul littéral, quatre nouveaux niveaux : décomposer un nombre en produit de facteurs premiers (Trempe), factoriser par un nombre ou par x (Développer), tester une égalité pour une valeur de x (Équilibre, niveau 3) puis résoudre une équation produit (Équilibre, niveau 4). La règle reste affichée, et la correction refait le calcul.

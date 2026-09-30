@@ -1,1 +1,0 @@
-Conception : chaque île du monde est désormais calculée dans son propre repère, puis posée à sa place ; les lots du rendu d'Archipéo écrivent ainsi le relief, la côte, les personnages et la construction île par île. Rien ne change dans l'application.

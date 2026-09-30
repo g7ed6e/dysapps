@@ -1,1 +1,0 @@
-Aux plus grandes tailles de texte, rien ne sort plus de l’écran du téléphone, la correction d’une question suit la question dans la page avec « Suivante » toujours en bas, et le panneau de la Carte garde ses boutons visibles.

@@ -1,1 +1,0 @@
-**Le bonhomme marche au même pas partout.** Il ne file plus à toute vitesse en traversant une île pour ralentir ensuite sur les ponts, les sentiers et la jetée du Bloc-Navire : son pas est régulier d’un bout à l’autre du trajet, et il regarde toujours devant lui.

@@ -1,1 +1,0 @@
-Plan de la migration vers Archipéo : le lot R4 (le décor) commence par trois préalables sans changement d’image, dessine le décor en un seul maillage comme le sol, et la scène 3D est découpée en modules avant le lot R5.
