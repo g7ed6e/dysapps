@@ -3,97 +3,97 @@
   "biome": "foret",
   "type": "chasse-son",
   "level": 2,
-  "instruction": "Tape les mots où tu entends le son [in], comme dans lapin. Puis valide.",
   "target": "in",
+  "instruction": "Tape les mots où tu entends le son [in], comme dans lapin. Puis valide.",
   "items": [
     {
       "key": "pain",
       "word": "pain",
       "image": "🍞",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "bonbon",
       "word": "bonbon",
       "image": "🍬",
-      "correct": false,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": false
     },
     {
       "key": "main",
       "word": "main",
       "image": "✋",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "sapin",
       "word": "sapin",
       "image": "🌲",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "enfant",
       "word": "enfant",
       "image": "🧒",
-      "correct": false,
-      "heard": "[an]"
+      "heard": "[an]",
+      "correct": false
     },
     {
       "key": "jardin",
       "word": "jardin",
       "image": "🏡",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "lune",
       "word": "lune",
       "image": "🌙",
-      "correct": false,
-      "heard": "[u]"
+      "heard": "[u]",
+      "correct": false
     },
     {
       "key": "matin",
       "word": "matin",
       "image": "🌅",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "chemin",
       "word": "chemin",
       "image": "🏞️",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "pomme",
       "word": "pomme",
       "image": "🍎",
-      "correct": false,
-      "heard": "[o]"
+      "heard": "[o]",
+      "correct": false
     },
     {
       "key": "requin",
       "word": "requin",
       "image": "🦈",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     },
     {
       "key": "pinceau",
       "word": "pinceau",
       "image": "🎨",
-      "correct": true,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Bravo, tu entends bien [in] !",
-    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [in] !"
   },
   "reward": {
     "block": "bois",

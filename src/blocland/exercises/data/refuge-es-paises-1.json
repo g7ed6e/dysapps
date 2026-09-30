@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "refuge-es-paises-1-0",
-      "question": "Tu prends l’avion pour Lima. À quelle heure arrives-tu ?",
       "prompt": "Tarjeta de embarque\nVuelo 214: Madrid - Lima\nSalida: 10:15\nLlegada: 15:40",
+      "question": "Tu prends l’avion pour Lima. À quelle heure arrives-tu ?",
       "spoken": "Tarjeta de embarque. Vuelo doscientos catorce, de Madrid a Lima. Salida, a las diez y quince. Llegada, a las quince y cuarenta.",
       "choices": [
         "3 h 40",
         "10 h 15",
         "15 h 40"
       ],
+      "choicesLang": "fr",
       "answer": "15 h 40",
       "hint": "L’arrivée se dit la llegada.",
       "explanation": "Llegada: 15:40 = l’arrivée est à 15 h 40. 10 h 15, c’est le départ (salida) de Madrid. À Lima, capitale du Pérou, on parle espagnol.",
@@ -31,19 +32,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-1",
-      "question": "Inés t’écrit en décembre. Quelle saison est-ce pour elle ?",
       "prompt": "¡Hola!\nEstoy en Buenos Aires con mis tíos.\nEn diciembre aquí es verano.\n¡Hace mucho calor!\nUn beso, Inés",
+      "question": "Inés t’écrit en décembre. Quelle saison est-ce pour elle ?",
       "spoken": "Hola! Estoy en Buenos Aires con mis tíos. En diciembre aquí es verano. Hace mucho calor! Un beso, Inés.",
       "choices": [
         "L’été",
         "L’hiver",
         "Le printemps"
       ],
+      "choicesLang": "fr",
       "answer": "L’été",
       "hint": "Cherche la ligne qui commence par En diciembre. hace calor = il fait chaud.",
       "explanation": "En diciembre aquí es verano = en décembre, ici, c’est l’été. En Argentine, au sud de l’équateur, les saisons sont inversées : il fait chaud en décembre.",
@@ -59,19 +60,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-2",
-      "question": "Tu prends le train de 9 h 40. De quel quai part-il ?",
       "prompt": "Salidas\nTren a Córdoba: 9:05, andén 3\nTren a Málaga: 9:40, andén 6",
+      "question": "Tu prends le train de 9 h 40. De quel quai part-il ?",
       "spoken": "Salidas. Tren a Córdoba, a las nueve y cinco, andén tres. Tren a Málaga, a las nueve y cuarenta, andén seis.",
       "choices": [
         "Quai 3",
         "Quai 6",
         "Quai 9"
       ],
+      "choicesLang": "fr",
       "answer": "Quai 6",
       "hint": "Trouve la ligne où il y a 9:40, puis cherche le mot andén.",
       "explanation": "Tren a Málaga: 9:40, andén 6 = le train de 9 h 40 part du quai 6. Le quai 3 est celui du train de 9 h 05.",
@@ -87,19 +88,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-3",
-      "question": "Diego est ton correspondant. Dans quel pays vit-il ?",
       "prompt": "¡Hola! Me llamo Diego.\nVivo en Quito, la capital de Ecuador.\nHablo español.",
+      "question": "Diego est ton correspondant. Dans quel pays vit-il ?",
       "spoken": "Hola! Me llamo Diego. Vivo en Quito, la capital de Ecuador. Hablo español.",
       "choices": [
         "En Équateur",
         "Au Venezuela",
         "En Espagne"
       ],
+      "choicesLang": "fr",
       "answer": "En Équateur",
       "hint": "Lis la 2e ligne : vivo = j’habite.",
       "explanation": "Vivo en Quito, la capital de Ecuador = j’habite à Quito, la capitale de l’Équateur. Diego parle espagnol, mais il ne vit pas en Espagne.",
@@ -115,19 +116,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-4",
-      "question": "Regarde ta carte d’embarquement. À quelle heure part ton avion ?",
       "prompt": "Tarjeta de embarque\nVuelo 530: Madrid - México\nEmbarque: 15:45\nSalida: 16:25\nLlegada: 21:10",
+      "question": "Regarde ta carte d’embarquement. À quelle heure part ton avion ?",
       "spoken": "Tarjeta de embarque. Vuelo quinientos treinta, de Madrid a México. Embarque, a las quince y cuarenta y cinco. Salida, a las dieciséis y veinticinco. Llegada, a las veintiuna y diez.",
       "choices": [
         "15 h 45",
         "16 h 25",
         "21 h 10"
       ],
+      "choicesLang": "fr",
       "answer": "16 h 25",
       "hint": "Le départ se dit la salida.",
       "explanation": "Salida: 16:25 = l’avion part à 16 h 25. À 15 h 45, on monte dans l’avion (embarque) ; à 21 h 10, il arrive (llegada).",
@@ -143,19 +144,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-5",
-      "question": "Tu visites la ville. Quel jour le musée est-il fermé ?",
       "prompt": "Museo de la Ciudad\nAbierto de martes a domingo\nLunes: cerrado\nEntrada: 5 euros",
+      "question": "Tu visites la ville. Quel jour le musée est-il fermé ?",
       "spoken": "Museo de la Ciudad. Abierto de martes a domingo. Lunes, cerrado. Entrada, cinco euros.",
       "choices": [
         "Le lundi",
         "Le mardi",
         "Le dimanche"
       ],
+      "choicesLang": "fr",
       "answer": "Le lundi",
       "hint": "Cherche le mot cerrado (fermé).",
       "explanation": "Lunes: cerrado = le lundi, c’est fermé. Le musée est ouvert (abierto) du mardi au dimanche.",
@@ -171,19 +172,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-6",
-      "question": "Marta t’écrit du Pérou. Quelles langues parle-t-on là-bas ?",
       "prompt": "¡Hola, Nico!\nEstoy en Cusco, en Perú.\nAquí hablan español y quechua.\nUn abrazo, Marta",
+      "question": "Marta t’écrit du Pérou. Quelles langues parle-t-on là-bas ?",
       "spoken": "Hola, Nico! Estoy en Cusco, en Perú. Aquí hablan español y quechua. Un abrazo, Marta.",
       "choices": [
         "Espagnol et quechua",
         "Espagnol et anglais",
         "Seulement le quechua"
       ],
+      "choicesLang": "fr",
       "answer": "Espagnol et quechua",
       "hint": "Cherche le mot hablan (ils parlent).",
       "explanation": "Aquí hablan español y quechua = ici, on parle espagnol et quechua. Le quechua est une langue des Andes, parlée depuis très longtemps au Pérou.",
@@ -199,19 +200,19 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-1-7",
-      "question": "Pablo vient te chercher à la gare. Comment le reconnaître ?",
       "prompt": "¡Hola! Soy Pablo.\nTe espero en la estación.\nLlevo una gorra roja.",
+      "question": "Pablo vient te chercher à la gare. Comment le reconnaître ?",
       "spoken": "Hola! Soy Pablo. Te espero en la estación. Llevo una gorra roja.",
       "choices": [
         "Une casquette rouge",
         "Un sac rouge",
         "Une casquette bleue"
       ],
+      "choicesLang": "fr",
       "answer": "Une casquette rouge",
       "hint": "Lis la dernière ligne : llevo = je porte ; roja = rouge.",
       "explanation": "Llevo una gorra roja = je porte une casquette rouge. una gorra = une casquette.",
@@ -227,13 +228,12 @@
             "vivo = j’habite ; 18:50 = 18 h 50"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {
-    "correct": "Bien lu !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
   },
   "reward": {
     "block": "bardeau",

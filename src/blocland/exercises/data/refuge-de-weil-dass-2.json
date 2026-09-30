@@ -15,6 +15,7 @@
         "devenu",
         "écrit"
       ],
+      "choicesLang": "fr",
       "answer": "reçu",
       "hint": "der Brief = la lettre. Ce mot ressemble à un mot anglais, mais il ne veut pas dire la même chose.",
       "explanation": "bekommen = recevoir : j’ai reçu une lettre. Devenir se dit werden ; en anglais, become.",
@@ -30,8 +31,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-1",
@@ -42,6 +42,7 @@
         "aussi",
         "encore"
       ],
+      "choicesLang": "fr",
       "answer": "donc",
       "hint": "Lis le début : es ist spät = il est tard.",
       "explanation": "also = donc : il est tard, donc nous rentrons. Aussi se dit auch.",
@@ -57,8 +58,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-2",
@@ -69,6 +69,7 @@
         "stock",
         "magasin"
       ],
+      "choicesLang": "fr",
       "answer": "étage",
       "hint": "wir wohnen = nous habitons. im dritten = au troisième.",
       "explanation": "der Stock = l’étage : nous habitons au troisième étage. Le stock d’un magasin se dit das Lager.",
@@ -84,8 +85,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-3",
@@ -96,6 +96,7 @@
         "chauve",
         "lentement"
       ],
+      "choicesLang": "fr",
       "answer": "bientôt",
       "hint": "Ce mot ressemble à un mot anglais, mais il ne veut pas dire la même chose.",
       "explanation": "bald = bientôt : le train arrive bientôt. En anglais, bald veut dire chauve.",
@@ -111,8 +112,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-4",
@@ -123,6 +123,7 @@
         "rapidement",
         "enfin"
       ],
+      "choicesLang": "fr",
       "answer": "presque",
       "hint": "fertig = prêt. Ce mot ressemble à un mot anglais.",
       "explanation": "fast = presque : je suis presque prêt. Rapide se dit schnell ; en anglais, fast veut dire rapide.",
@@ -138,8 +139,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-5",
@@ -150,6 +150,7 @@
         "art",
         "œuvre"
       ],
+      "choicesLang": "fr",
       "answer": "sorte",
       "hint": "welche = quelle. von Musik = de musique.",
       "explanation": "die Art = la sorte : quelle sorte de musique aimes-tu ? L’art se dit die Kunst.",
@@ -165,8 +166,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-6",
@@ -177,6 +177,7 @@
         "tablette tactile",
         "boisson"
       ],
+      "choicesLang": "fr",
       "answer": "comprimé",
       "hint": "Kopfschmerzen = le mal de tête. Que prend-on contre le mal de tête ?",
       "explanation": "die Tablette = le comprimé, contre le mal de tête. La tablette tactile se dit das Tablet.",
@@ -192,8 +193,7 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-weil-dass-2-7",
@@ -204,6 +204,7 @@
         "un cadeau",
         "un régal"
       ],
+      "choicesLang": "fr",
       "answer": "du poison",
       "hint": "Schokolade = le chocolat ; Hunde = les chiens. Ce mot ressemble à un mot anglais.",
       "explanation": "das Gift = le poison : le chocolat est un poison pour les chiens. Un cadeau se dit ein Geschenk ; en anglais, a gift.",
@@ -219,13 +220,12 @@
             "das Gymnasium = l’école qui mène au bac (pas le gymnase)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {
-    "correct": "Pas piégé !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Pas piégé !"
   },
   "reward": {
     "block": "bardeau",

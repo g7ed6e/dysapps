@@ -7,131 +7,195 @@
   "items": [
     {
       "key": "parapluie",
-      "word": "parapluie",
       "prompt": "parapluie",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "pa-ra-pluie"
+      "word": "parapluie",
+      "heard": "pa-ra-pluie",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
     },
     {
       "key": "chocolat",
-      "word": "chocolat",
       "prompt": "chocolat",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "cho-co-lat"
+      "word": "chocolat",
+      "heard": "cho-co-lat",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
     },
     {
       "key": "éléphant",
-      "word": "éléphant",
       "prompt": "éléphant",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "é-lé-phant"
+      "word": "éléphant",
+      "heard": "é-lé-phant",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
     },
     {
       "key": "dinosaure",
-      "word": "dinosaure",
       "prompt": "dinosaure",
-      "choices": ["2", "3", "4"],
-      "answer": "3",
-      "heard": "di-no-saure"
+      "word": "dinosaure",
+      "heard": "di-no-saure",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
     },
     {
       "key": "télévision",
-      "word": "télévision",
       "prompt": "télévision",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "té-lé-vi-sion"
+      "word": "télévision",
+      "heard": "té-lé-vi-sion",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "bibliothèque",
-      "word": "bibliothèque",
       "prompt": "bibliothèque",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "bi-bli-o-thèque"
+      "word": "bibliothèque",
+      "heard": "bi-bli-o-thèque",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "hippopotame",
-      "word": "hippopotame",
       "prompt": "hippopotame",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "hip-po-po-tame"
+      "word": "hippopotame",
+      "heard": "hip-po-po-tame",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "aspirateur",
-      "word": "aspirateur",
       "prompt": "aspirateur",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "as-pi-ra-teur"
+      "word": "aspirateur",
+      "heard": "as-pi-ra-teur",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "extraordinaire",
-      "word": "extraordinaire",
       "prompt": "extraordinaire",
-      "choices": ["3", "4", "5"],
-      "answer": "5",
-      "heard": "ex-tra-or-di-naire"
+      "word": "extraordinaire",
+      "heard": "ex-tra-or-di-naire",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "5"
     },
     {
       "key": "anniversaire",
-      "word": "anniversaire",
       "prompt": "anniversaire",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "an-ni-ver-saire"
+      "word": "anniversaire",
+      "heard": "an-ni-ver-saire",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "réfrigérateur",
-      "word": "réfrigérateur",
       "prompt": "réfrigérateur",
-      "choices": ["3", "4", "5"],
-      "answer": "5",
-      "heard": "ré-fri-gé-ra-teur"
+      "word": "réfrigérateur",
+      "heard": "ré-fri-gé-ra-teur",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "5"
     },
     {
       "key": "calculatrice",
-      "word": "calculatrice",
       "prompt": "calculatrice",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "cal-cu-la-trice"
+      "word": "calculatrice",
+      "heard": "cal-cu-la-trice",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "ordinateur",
-      "word": "ordinateur",
       "prompt": "ordinateur",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "or-di-na-teur"
+      "word": "ordinateur",
+      "heard": "or-di-na-teur",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "locomotive",
-      "word": "locomotive",
       "prompt": "locomotive",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "lo-co-mo-tive"
+      "word": "locomotive",
+      "heard": "lo-co-mo-tive",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "hélicoptère",
-      "word": "hélicoptère",
       "prompt": "hélicoptère",
-      "choices": ["3", "4", "5"],
-      "answer": "4",
-      "heard": "hé-li-cop-tère"
+      "word": "hélicoptère",
+      "heard": "hé-li-cop-tère",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
     },
     {
       "key": "imagination",
-      "word": "imagination",
       "prompt": "imagination",
-      "choices": ["3", "4", "5"],
-      "answer": "5",
-      "heard": "i-ma-gi-na-tion"
+      "word": "imagination",
+      "heard": "i-ma-gi-na-tion",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "5"
     }
   ],
   "perRun": 8,

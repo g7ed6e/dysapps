@@ -224,8 +224,8 @@
     }
   ],
   "feedback": {
-    "correct": "Bon article !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bon article !"
   },
   "reward": {
     "block": "dalle",

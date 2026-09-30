@@ -7,197 +7,198 @@
   "items": [
     {
       "key": "géographie",
-      "word": "géographie",
       "prompt": "géographie",
+      "word": "géographie",
+      "heard": "gé-o-gra-phie",
       "choices": [
         "3",
         "4",
         "5"
       ],
-      "answer": "4",
-      "heard": "gé-o-gra-phie"
+      "answer": "4"
     },
     {
       "key": "orthographe",
-      "word": "orthographe",
       "prompt": "orthographe",
+      "word": "orthographe",
+      "heard": "or-tho-graphe",
       "choices": [
         "2",
         "3",
         "4"
       ],
-      "answer": "3",
-      "heard": "or-tho-graphe"
+      "answer": "3"
     },
     {
       "key": "vocabulaire",
-      "word": "vocabulaire",
       "prompt": "vocabulaire",
+      "word": "vocabulaire",
+      "heard": "vo-ca-bu-laire",
       "choices": [
         "3",
         "4",
         "5"
       ],
-      "answer": "4",
-      "heard": "vo-ca-bu-laire"
+      "answer": "4"
     },
     {
       "key": "conjugaison",
-      "word": "conjugaison",
       "prompt": "conjugaison",
+      "word": "conjugaison",
+      "heard": "con-ju-gai-son",
       "choices": [
         "3",
         "4",
         "5"
       ],
-      "answer": "4",
-      "heard": "con-ju-gai-son"
+      "answer": "4"
     },
     {
       "key": "électricité",
-      "word": "électricité",
       "prompt": "électricité",
+      "word": "électricité",
+      "heard": "é-lec-tri-ci-té",
       "choices": [
         "4",
         "5",
         "6"
       ],
-      "answer": "5",
-      "heard": "é-lec-tri-ci-té"
+      "answer": "5"
     },
     {
       "key": "multiplication",
-      "word": "multiplication",
       "prompt": "multiplication",
+      "word": "multiplication",
+      "heard": "mul-ti-pli-ca-tion",
       "choices": [
         "4",
         "5",
         "6"
       ],
-      "answer": "5",
-      "heard": "mul-ti-pli-ca-tion"
+      "answer": "5"
     },
     {
       "key": "dictionnaire",
-      "word": "dictionnaire",
       "prompt": "dictionnaire",
+      "word": "dictionnaire",
+      "heard": "dic-tion-naire",
       "choices": [
         "2",
         "3",
         "4"
       ],
-      "answer": "3",
-      "heard": "dic-tion-naire"
+      "answer": "3"
     },
     {
       "key": "Méditerranée",
-      "word": "Méditerranée",
       "prompt": "Méditerranée",
+      "word": "Méditerranée",
+      "heard": "mé-di-ter-ra-née",
       "choices": [
         "4",
         "5",
         "6"
       ],
-      "answer": "5",
-      "heard": "mé-di-ter-ra-née"
+      "answer": "5"
     },
     {
       "key": "préhistoire",
-      "word": "préhistoire",
       "prompt": "préhistoire",
+      "word": "préhistoire",
+      "heard": "pré-his-toire",
       "choices": [
         "2",
         "3",
         "4"
       ],
-      "answer": "3",
-      "heard": "pré-his-toire"
+      "answer": "3"
     },
     {
       "key": "encyclopédie",
-      "word": "encyclopédie",
       "prompt": "encyclopédie",
+      "word": "encyclopédie",
+      "heard": "en-cy-clo-pé-die",
       "choices": [
         "4",
         "5",
         "6"
       ],
-      "answer": "5",
-      "heard": "en-cy-clo-pé-die"
+      "answer": "5"
     },
     {
       "key": "parallélogramme",
-      "word": "parallélogramme",
       "prompt": "parallélogramme",
+      "word": "parallélogramme",
+      "heard": "pa-ral-lé-lo-gramme",
       "choices": [
         "4",
         "5",
         "6"
       ],
-      "answer": "5",
-      "heard": "pa-ral-lé-lo-gramme"
+      "answer": "5"
     },
     {
       "key": "astronaute",
-      "word": "astronaute",
       "prompt": "astronaute",
+      "word": "astronaute",
+      "heard": "as-tro-naute",
       "choices": [
         "2",
         "3",
         "4"
       ],
-      "answer": "3",
-      "heard": "as-tro-naute"
+      "answer": "3"
     },
     {
       "key": "information",
-      "word": "information",
       "prompt": "information",
+      "word": "information",
+      "heard": "in-for-ma-tion",
       "choices": [
         "3",
         "4",
         "5"
       ],
-      "answer": "4",
-      "heard": "in-for-ma-tion"
+      "answer": "4"
     },
     {
       "key": "biodiversité",
-      "word": "biodiversité",
       "prompt": "biodiversité",
+      "word": "biodiversité",
+      "heard": "bi-o-di-ver-si-té",
       "choices": [
         "5",
         "6",
         "7"
       ],
-      "answer": "6",
-      "heard": "bi-o-di-ver-si-té"
+      "answer": "6"
     },
     {
       "key": "mathématiques",
-      "word": "mathématiques",
       "prompt": "mathématiques",
+      "word": "mathématiques",
+      "heard": "ma-thé-ma-tiques",
       "choices": [
         "3",
         "4",
         "5"
       ],
-      "answer": "4",
-      "heard": "ma-thé-ma-tiques"
+      "answer": "4"
     },
     {
       "key": "expérience",
-      "word": "expérience",
       "prompt": "expérience",
+      "word": "expérience",
+      "heard": "ex-pé-rience",
       "choices": [
         "2",
         "3",
         "4"
       ],
-      "answer": "3",
-      "heard": "ex-pé-rience"
+      "answer": "3"
     }
   ],
+  "perRun": 8,
   "feedback": {
     "correct": "Bien entendu !",
     "wrong": "On entend {heard} : {answer}, c’est le nombre de syllabes."
@@ -210,6 +211,5 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  },
-  "perRun": 8
+  }
 }

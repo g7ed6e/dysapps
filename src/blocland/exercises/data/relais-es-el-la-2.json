@@ -240,8 +240,8 @@
     }
   ],
   "feedback": {
-    "correct": "Bon pluriel !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bon pluriel !"
   },
   "reward": {
     "block": "dalle",

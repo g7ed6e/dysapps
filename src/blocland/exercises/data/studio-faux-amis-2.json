@@ -15,6 +15,7 @@
         "la bibliothèque",
         "le cahier"
       ],
+      "choicesLang": "fr",
       "answer": "la librairie",
       "hint": "Bookshop = book (livre) + shop (magasin).",
       "explanation": "a bookshop = une librairie (library = bibliothèque).",
@@ -30,8 +31,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-1",
@@ -42,6 +42,7 @@
         "le luxe",
         "la lumière"
       ],
+      "choicesLang": "fr",
       "answer": "les bagages",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "luggage = les bagages.",
@@ -57,8 +58,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-2",
@@ -69,6 +69,7 @@
         "une nouvelle",
         "un journal"
       ],
+      "choicesLang": "fr",
       "answer": "un roman",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "a novel = un roman (une nouvelle = a short story).",
@@ -84,8 +85,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-3",
@@ -96,6 +96,7 @@
         "niaise",
         "neuve"
       ],
+      "choicesLang": "fr",
       "answer": "belle",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "nice = joli, sympa : a nice car, une belle voiture.",
@@ -111,8 +112,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-4",
@@ -123,6 +123,7 @@
         "couramment",
         "en fait"
       ],
+      "choicesLang": "fr",
       "answer": "actuellement",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "currently = actuellement (actually = en fait).",
@@ -138,8 +139,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-5",
@@ -150,6 +150,7 @@
         "supporter (subir)",
         "surveiller"
       ],
+      "choicesLang": "fr",
       "answer": "soutenir",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "to support = soutenir (supporter quelqu’un de pénible = to stand).",
@@ -165,8 +166,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-6",
@@ -177,6 +177,7 @@
         "réaliser (fabriquer)",
         "rêver"
       ],
+      "choicesLang": "fr",
       "answer": "se rendre compte",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "to realise = se rendre compte (réaliser un projet = to carry out).",
@@ -192,8 +193,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-2-7",
@@ -204,6 +204,7 @@
         "les pamplemousses",
         "les grappes"
       ],
+      "choicesLang": "fr",
       "answer": "les raisins",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "grapes = les raisins (une grappe = a bunch ; grapefruit = pamplemousse).",
@@ -219,8 +220,7 @@
             "nice = sympa, joli"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

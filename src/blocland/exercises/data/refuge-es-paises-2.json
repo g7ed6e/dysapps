@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "refuge-es-paises-2-0",
-      "question": "Lis les deux phrases. Lequel est le moins cher, ou est-ce le même prix ?",
       "prompt": "El tren es más caro que el autobús.\nEl autobús es más lento que el tren.",
+      "question": "Lis les deux phrases. Lequel est le moins cher, ou est-ce le même prix ?",
       "spoken": "El tren es más caro que el autobús. El autobús es más lento que el tren.",
       "choices": [
         "Le bus",
         "Le train",
         "Le même prix"
       ],
+      "choicesLang": "fr",
       "answer": "Le bus",
       "hint": "Attention : la phrase dit plus cher, la question demande le moins cher. caro = cher.",
       "explanation": "El tren es más caro que el autobús = le train est plus cher que le bus : le bus est le moins cher. Il est plus lent (más lento), mais moins cher.",
@@ -31,19 +32,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-2-1",
-      "question": "Regarde le tableau. Quelle phrase est vraie ?",
       "prompt": "De Madrid a Sevilla\nTren: 2 h 30, 60 euros\nAutobús: 6 h, 25 euros",
+      "question": "Regarde le tableau. Quelle phrase est vraie ?",
       "spoken": "De Madrid a Sevilla. Tren, dos horas y media, sesenta euros. Autobús, seis horas, veinticinco euros.",
       "choices": [
         "El tren es más rápido que el autobús.",
         "El tren es más lento que el autobús.",
         "El tren es menos caro que el autobús."
       ],
+      "choicesLang": "es",
       "answer": "El tren es más rápido que el autobús.",
       "hint": "Moins d’heures, c’est plus rapide ; moins d’euros, c’est moins cher.",
       "explanation": "2 h 30 en train, 6 h en bus : el tren es más rápido. Mais il coûte 60 euros : il est más caro, pas menos caro.",
@@ -59,19 +60,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "es"
+      }
     },
     {
       "key": "refuge-es-paises-2-2",
-      "question": "Lis la phrase. Le musée et le zoo coûtent-ils le même prix ?",
       "prompt": "El museo es tan caro como el zoo.",
+      "question": "Lis la phrase. Le musée et le zoo coûtent-ils le même prix ?",
       "spoken": "El museo es tan caro como el zoo.",
       "choices": [
         "Oui, le même prix",
         "Non, le musée est plus cher",
         "Non, le zoo est plus cher"
       ],
+      "choicesLang": "fr",
       "answer": "Oui, le même prix",
       "hint": "tan… como = aussi… que.",
       "explanation": "El museo es tan caro como el zoo = le musée est aussi cher que le zoo : c’est le même prix. Plus cher se dirait más caro que.",
@@ -87,19 +88,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-2-3",
-      "question": "Regarde le tableau. Quelle phrase est vraie ?",
       "prompt": "Tren A: 3 horas\nTren B: 3 horas",
+      "question": "Regarde le tableau. Quelle phrase est vraie ?",
       "spoken": "Tren A, tres horas. Tren B, tres horas.",
       "choices": [
         "El tren A es tan rápido como el B.",
         "El tren A es más rápido que el B.",
         "El tren A es menos rápido que el B."
       ],
+      "choicesLang": "es",
       "answer": "El tren A es tan rápido como el B.",
       "hint": "Les deux trains mettent-ils le même temps ?",
       "explanation": "3 horas pour les deux : ils vont aussi vite. On le dit avec tan… como : el tren A es tan rápido como el B.",
@@ -115,19 +116,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "es"
+      }
     },
     {
       "key": "refuge-es-paises-2-4",
-      "question": "Lis la phrase. Quelle ville est la plus grande, ou sont-elles pareilles ?",
       "prompt": "Lima es más grande que Quito.",
+      "question": "Lis la phrase. Quelle ville est la plus grande, ou sont-elles pareilles ?",
       "spoken": "Lima es más grande que Quito.",
       "choices": [
         "Lima",
         "Quito",
         "Pareilles"
       ],
+      "choicesLang": "fr",
       "answer": "Lima",
       "hint": "más grande que = plus grand que.",
       "explanation": "Lima es más grande que Quito = Lima est plus grande que Quito. Lima est la capitale du Pérou, Quito celle de l’Équateur.",
@@ -143,19 +144,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-2-5",
-      "question": "Lis la phrase. Lequel est le plus lent, ou vont-ils aussi vite ?",
       "prompt": "El avión es más rápido que el barco.",
+      "question": "Lis la phrase. Lequel est le plus lent, ou vont-ils aussi vite ?",
       "spoken": "El avión es más rápido que el barco.",
       "choices": [
         "Le bateau",
         "L’avion",
         "Aussi vite"
       ],
+      "choicesLang": "fr",
       "answer": "Le bateau",
       "hint": "Attention : la phrase dit plus rapide, la question demande le plus lent. el barco = le bateau.",
       "explanation": "El avión es más rápido que el barco = l’avion est plus rapide que le bateau : le bateau est le plus lent.",
@@ -171,19 +172,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-paises-2-6",
-      "question": "Regarde les prix. Quelle phrase est vraie ?",
       "prompt": "Hotel Sol: 90 euros\nHotel Luna: 50 euros",
+      "question": "Regarde les prix. Quelle phrase est vraie ?",
       "spoken": "Hotel Sol, noventa euros. Hotel Luna, cincuenta euros.",
       "choices": [
         "El Sol es más caro que el Luna.",
         "El Sol es más barato que el Luna.",
         "El Sol es tan caro como el Luna."
       ],
+      "choicesLang": "es",
       "answer": "El Sol es más caro que el Luna.",
       "hint": "Compare les prix : 90 ou 50 euros ?",
       "explanation": "90 euros au Sol, 50 au Luna : el Sol es más caro que el Luna, il est plus cher. Barato = pas cher.",
@@ -199,19 +200,19 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "es"
+      }
     },
     {
       "key": "refuge-es-paises-2-7",
-      "question": "Lis les deux phrases. Lequel est le plus rapide, ou vont-ils aussi vite ?",
       "prompt": "El tren es tan rápido como el avión.\nPero el tren es más barato.",
+      "question": "Lis les deux phrases. Lequel est le plus rapide, ou vont-ils aussi vite ?",
       "spoken": "El tren es tan rápido como el avión. Pero el tren es más barato.",
       "choices": [
         "Ils vont aussi vite",
         "Le train va plus vite",
         "L’avion va plus vite"
       ],
+      "choicesLang": "fr",
       "answer": "Ils vont aussi vite",
       "hint": "tan… como = aussi… que. Lis la 1re ligne.",
       "explanation": "El tren es tan rápido como el avión = le train est aussi rapide que l’avion : ils vont aussi vite. Mais le train est moins cher (más barato).",
@@ -227,13 +228,12 @@
             "grande = grand ; Sevilla = Séville"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {
-    "correct": "Bien comparé !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bien comparé !"
   },
   "reward": {
     "block": "bardeau",

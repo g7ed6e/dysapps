@@ -239,8 +239,8 @@
     }
   ],
   "feedback": {
-    "correct": "Bien écrit !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bien écrit !"
   },
   "reward": {
     "block": "dalle",

@@ -7,85 +7,116 @@
   "items": [
     {
       "key": "vin",
+      "sentence": "Un verre de vin.",
       "word": "vin",
-      "choices": ["vin", "fin"],
+      "choices": [
+        "vin",
+        "fin"
+      ],
       "answer": "vin",
-      "hint": "le v vibre dans la gorge, comme dans vélo.",
-      "sentence": "Un verre de vin."
+      "hint": "le v vibre dans la gorge, comme dans vélo."
     },
     {
       "key": "poule",
+      "sentence": "La poule pond un œuf.",
       "word": "poule",
-      "choices": ["poule", "boule"],
+      "choices": [
+        "poule",
+        "boule"
+      ],
       "answer": "poule",
-      "hint": "le p souffle sans vibrer, comme dans papa.",
-      "sentence": "La poule pond un œuf."
+      "hint": "le p souffle sans vibrer, comme dans papa."
     },
     {
       "key": "bain",
+      "sentence": "Je prends un bain.",
       "word": "bain",
-      "choices": ["bain", "pain"],
+      "choices": [
+        "bain",
+        "pain"
+      ],
       "answer": "bain",
-      "hint": "le b vibre, comme dans bébé.",
-      "sentence": "Je prends un bain."
+      "hint": "le b vibre, comme dans bébé."
     },
     {
       "key": "dent",
+      "sentence": "Une dent qui bouge.",
       "word": "dent",
-      "choices": ["dent", "temps"],
+      "choices": [
+        "dent",
+        "temps"
+      ],
       "answer": "dent",
-      "hint": "le d vibre, comme dans doigt.",
-      "sentence": "Une dent qui bouge."
+      "hint": "le d vibre, comme dans doigt."
     },
     {
       "key": "gâteau",
+      "sentence": "Un gâteau au chocolat.",
       "word": "gâteau",
-      "choices": ["gâteau", "cadeau"],
+      "choices": [
+        "gâteau",
+        "cadeau"
+      ],
       "answer": "gâteau",
-      "hint": "le g vibre, comme dans gomme.",
-      "sentence": "Un gâteau au chocolat."
+      "hint": "le g vibre, comme dans gomme."
     },
     {
       "key": "chou",
+      "sentence": "Un chou vert.",
       "word": "chou",
-      "choices": ["chou", "joue"],
+      "choices": [
+        "chou",
+        "joue"
+      ],
       "answer": "chou",
-      "hint": "le ch souffle sans vibrer, comme dans chat.",
-      "sentence": "Un chou vert."
+      "hint": "le ch souffle sans vibrer, comme dans chat."
     },
     {
       "key": "banc",
+      "sentence": "Un banc dans le parc.",
       "word": "banc",
-      "choices": ["banc", "panc"],
+      "choices": [
+        "banc",
+        "panc"
+      ],
       "answer": "banc",
-      "hint": "le b vibre dans la gorge, comme dans bateau.",
-      "sentence": "Un banc dans le parc."
+      "hint": "le b vibre dans la gorge, comme dans bateau."
     },
     {
       "key": "fil",
+      "sentence": "Un fil de laine.",
       "word": "fil",
-      "choices": ["fil", "vil"],
+      "choices": [
+        "fil",
+        "vil"
+      ],
       "answer": "fil",
-      "hint": "le f souffle sans vibrer, comme dans feu.",
-      "sentence": "Un fil de laine."
+      "hint": "le f souffle sans vibrer, comme dans feu."
     },
     {
       "key": "tas",
+      "sentence": "Un tas de sable.",
       "word": "tas",
-      "choices": ["tas", "das"],
+      "choices": [
+        "tas",
+        "das"
+      ],
       "answer": "tas",
-      "hint": "le t claque sans vibrer, comme dans table.",
-      "sentence": "Un tas de sable."
+      "hint": "le t claque sans vibrer, comme dans table."
     },
     {
       "key": "bulle",
+      "sentence": "Une bulle de savon.",
       "word": "bulle",
-      "choices": ["bulle", "pulle"],
+      "choices": [
+        "bulle",
+        "pulle"
+      ],
       "answer": "bulle",
-      "hint": "le b vibre dans la gorge, comme dans ballon.",
-      "sentence": "Une bulle de savon."
+      "hint": "le b vibre dans la gorge, comme dans ballon."
     }
   ],
+  "perRun": 6,
   "feedback": {
     "correct": "Bonne oreille !",
     "wrong": "Tu as choisi {chosen}. C’était {word} : {hint}"
@@ -98,6 +129,5 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  },
-  "perRun": 6
+  }
 }

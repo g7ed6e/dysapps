@@ -8,8 +8,8 @@
   "items": [
     {
       "key": "comptoir-notices-2-0",
-      "question": "Tu as envie de frites. Que commandes-tu ?",
       "prompt": "Snack bar\nTomato soup: £2.50\nCheese sandwich: £3.00\nChips: £1.50\nCrisps: £0.80",
+      "question": "Tu as envie de frites. Que commandes-tu ?",
       "spoken": "Snack bar. Tomato soup, two pounds fifty. Cheese sandwich, three pounds. Chips, one pound fifty. Crisps, eighty pence.",
       "choices": [
         "Chips",
@@ -34,14 +34,15 @@
     },
     {
       "key": "comptoir-notices-2-1",
-      "question": "Qu’est-ce qu’on mange en plat principal ?",
       "prompt": "Lunch menu\nStarter: vegetable soup\nMain course: chicken and rice\nDessert: apple pie\nDrink: water or orange juice",
+      "question": "Qu’est-ce qu’on mange en plat principal ?",
       "spoken": "Lunch menu. Starter, vegetable soup. Main course, chicken and rice. Dessert, apple pie. Drink, water or orange juice.",
       "choices": [
         "Du poulet avec du riz",
         "Une soupe de légumes",
         "Une tarte aux pommes"
       ],
+      "choicesLang": "fr",
       "answer": "Du poulet avec du riz",
       "hint": "main veut dire « principal » ; course, c’est un plat du repas.",
       "explanation": "main course = le plat principal : chicken and rice, du poulet avec du riz. starter = l’entrée (la soupe), dessert = le dessert (la tarte).",
@@ -56,19 +57,19 @@
             "Faux amis : chips = des frites ; crisps = des chips"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-2",
-      "question": "Combien de boules de glace as-tu pour 2 livres 50 ?",
       "prompt": "Ice creams\nOne scoop: £1.50\nTwo scoops: £2.50\nThree scoops: £3.20",
+      "question": "Combien de boules de glace as-tu pour 2 livres 50 ?",
       "spoken": "Ice creams. One scoop, one pound fifty. Two scoops, two pounds fifty. Three scoops, three pounds twenty.",
       "choices": [
         "Deux boules",
         "Une boule",
         "Trois boules"
       ],
+      "choicesLang": "fr",
       "answer": "Deux boules",
       "hint": "Cherche dans le menu le prix de 2 livres 50, puis lis le début de sa ligne.",
       "explanation": "Two scoops: £2.50, deux boules pour 2 livres 50. a scoop = une boule de glace.",
@@ -83,19 +84,19 @@
             "Faux amis : chips = des frites ; crisps = des chips"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-3",
-      "question": "Le samedi, à quelle heure part le premier bus ?",
       "prompt": "Bus 12 to the town centre\nMonday to Friday: 7:45, 8:15, 8:45\nSaturday: 9:30, 11:30\nSunday: no buses",
+      "question": "Le samedi, à quelle heure part le premier bus ?",
       "spoken": "Bus twelve to the town centre. Monday to Friday, seven forty-five, eight fifteen, eight forty-five. Saturday, nine thirty, eleven thirty. Sunday, no buses.",
       "choices": [
         "7 h 45",
         "9 h 30",
         "11 h 30"
       ],
+      "choicesLang": "fr",
       "answer": "9 h 30",
       "hint": "Trouve d’abord la ligne qui commence par Saturday.",
       "explanation": "Saturday = samedi : le premier bus du samedi part à 9:30, donc à 9 h 30. 7:45, c’est du lundi au vendredi ; 11:30, c’est le dernier bus du samedi.",
@@ -110,19 +111,19 @@
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-4",
-      "question": "Le dimanche, quand passent les trains ?",
       "prompt": "Trains to London\nWeekdays: every 30 minutes\nWeekends: every hour",
+      "question": "Le dimanche, quand passent les trains ?",
       "spoken": "Trains to London. Weekdays, every thirty minutes. Weekends, every hour.",
       "choices": [
         "Toutes les heures",
         "Toutes les 30 minutes",
         "Une fois par jour"
       ],
+      "choicesLang": "fr",
       "answer": "Toutes les heures",
       "hint": "Le dimanche, est-ce un jour de semaine ou le week-end ?",
       "explanation": "Le dimanche, c’est le week-end : weekends, every hour, un train toutes les heures. weekdays = les jours de semaine, du lundi au vendredi.",
@@ -137,19 +138,19 @@
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-5",
-      "question": "Quel jour la piscine est-elle fermée ?",
       "prompt": "Swimming pool\nOpen Tuesday to Sunday, 10 am to 6 pm\nClosed on Mondays",
+      "question": "Quel jour la piscine est-elle fermée ?",
       "spoken": "Swimming pool. Open Tuesday to Sunday, ten a.m. to six p.m. Closed on Mondays.",
       "choices": [
         "Le lundi",
         "Le mardi",
         "Le jeudi"
       ],
+      "choicesLang": "fr",
       "answer": "Le lundi",
       "hint": "closed veut dire fermé : cherche la ligne qui commence par Closed.",
       "explanation": "closed on Mondays = fermé le lundi. De Tuesday (mardi) à Sunday (dimanche), la piscine est ouverte, le jeudi (Thursday) aussi.",
@@ -164,19 +165,19 @@
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-6",
-      "question": "Jusqu’à quelle heure peux-tu entrer dans le musée ?",
       "prompt": "Museum\nOpen every day: 9 am to 5 pm\nLast entry: 4:30 pm",
+      "question": "Jusqu’à quelle heure peux-tu entrer dans le musée ?",
       "spoken": "Museum. Open every day, nine a.m. to five p.m. Last entry, four thirty p.m.",
       "choices": [
         "4 h 30",
         "16 h 30",
         "17 h 00"
       ],
+      "choicesLang": "fr",
       "answer": "16 h 30",
       "hint": "last veut dire « dernier » et entry « entrée ».",
       "explanation": "last entry = la dernière entrée : 4:30 pm, soit 16 h 30 (pm : on ajoute 12). Le musée ferme à 5 pm, 17 h, mais on n’entre plus après 16 h 30.",
@@ -191,19 +192,19 @@
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "comptoir-notices-2-7",
-      "question": "Le jeudi, à quelle heure est la première séance ?",
       "prompt": "Cinema, screen 2\nMonday to Thursday: 5:30 pm, 8 pm\nFriday to Sunday: 2:30 pm, 5:30 pm, 8 pm",
+      "question": "Le jeudi, à quelle heure est la première séance ?",
       "spoken": "Cinema, screen two. Monday to Thursday, five thirty p.m., eight p.m. Friday to Sunday, two thirty p.m., five thirty p.m., eight p.m.",
       "choices": [
         "5 h 30",
         "14 h 30",
         "17 h 30"
       ],
+      "choicesLang": "fr",
       "answer": "17 h 30",
       "hint": "Thursday, c’est jeudi (Tuesday, c’est mardi). Trouve la bonne ligne.",
       "explanation": "Thursday = jeudi : sur la ligne Monday to Thursday, la première séance est à 5:30 pm, soit 17 h 30 (pm : on ajoute 12). 2:30 pm, c’est du vendredi au dimanche.",
@@ -218,8 +219,7 @@
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

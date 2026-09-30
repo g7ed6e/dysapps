@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "jardin-es-horario-1-0",
-      "question": "Le lundi, quel cours as-tu à 9 h ?",
       "prompt": "Lunes\n9:00 Matemáticas\n10:00 Lengua\n11:00 Recreo\n11:30 Inglés",
+      "question": "Le lundi, quel cours as-tu à 9 h ?",
       "spoken": "Lunes. A las nueve, matemáticas. A las diez, lengua. A las once, recreo. A las once y treinta, inglés.",
       "choices": [
         "Maths",
         "Espagnol",
         "Anglais"
       ],
+      "choicesLang": "fr",
       "answer": "Maths",
       "hint": "Trouve la ligne qui commence par 9 h, puis lis la matière.",
       "explanation": "9:00 Matemáticas : à 9 h, tu as maths. Lengua (l’espagnol) est à 10 h, Inglés (l’anglais) à 11 h 30.",
@@ -32,19 +33,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-1",
-      "question": "Le mardi, à quelle heure est la récréation ?",
       "prompt": "Martes\n8:30 Geografía\n9:25 Recreo\n9:45 Ciencias\n10:40 Música",
+      "question": "Le mardi, à quelle heure est la récréation ?",
       "spoken": "Martes. A las ocho y treinta, geografía. A las nueve y veinticinco, recreo. A las nueve y cuarenta y cinco, ciencias. A las diez y cuarenta, música.",
       "choices": [
         "9 h 25",
         "9 h 45",
         "10 h 40"
       ],
+      "choicesLang": "fr",
       "answer": "9 h 25",
       "hint": "Cherche le mot Recreo, puis lis l’heure de sa ligne.",
       "explanation": "el recreo = la récréation : sa ligne dit 9:25, donc 9 h 25. À 9 h 45, c’est Ciencias.",
@@ -61,19 +62,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-2",
-      "question": "Quels jours as-tu sport ?",
       "prompt": "Mi horario\nMatemáticas: lunes y jueves\nEducación Física: martes y viernes\nMúsica: miércoles",
+      "question": "Quels jours as-tu sport ?",
       "spoken": "Mi horario. Matemáticas, lunes y jueves. Educación Física, martes y viernes. Música, miércoles.",
       "choices": [
         "Le mardi et le vendredi",
         "Le mercredi et le vendredi",
         "Le lundi et le jeudi"
       ],
+      "choicesLang": "fr",
       "answer": "Le mardi et le vendredi",
       "hint": "Le sport, c’est Educación Física. Attention : martes ou miércoles ?",
       "explanation": "Educación Física (le sport) : martes y viernes, le mardi et le vendredi. martes = mardi ; miércoles = mercredi.",
@@ -90,19 +91,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-3",
-      "question": "À quelle heure le bus arrive-t-il au collège ?",
       "prompt": "Autobús 5: al instituto\nsale de la plaza: 7:50\nllega al instituto: 8:20",
+      "question": "À quelle heure le bus arrive-t-il au collège ?",
       "spoken": "Autobús cinco, al instituto. Sale de la plaza a las siete y cincuenta. Llega al instituto a las ocho y veinte.",
       "choices": [
         "5 h 00",
         "7 h 50",
         "8 h 20"
       ],
+      "choicesLang": "fr",
       "answer": "8 h 20",
       "hint": "sale ou llega ? Cherche le mot qui veut dire « arrive ».",
       "explanation": "llega = arrive : le bus arrive au collège à 8 h 20. sale = part : il part de la place à 7 h 50. 5, c’est le numéro du bus.",
@@ -119,19 +120,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-4",
-      "question": "Le vendredi, à quelle heure ferme la bibliothèque ?",
       "prompt": "Biblioteca\nde lunes a jueves: de 9:00 a 17:00\nviernes: de 9:00 a 14:00\nsábado y domingo: cerrado",
+      "question": "Le vendredi, à quelle heure ferme la bibliothèque ?",
       "spoken": "Biblioteca. De lunes a jueves, de nueve a diecisiete. Viernes, de nueve a catorce. Sábado y domingo, cerrado.",
       "choices": [
         "9 h 00",
         "14 h 00",
         "17 h 00"
       ],
+      "choicesLang": "fr",
       "answer": "14 h 00",
       "hint": "Trouve la ligne viernes, puis lis la deuxième heure.",
       "explanation": "viernes = vendredi : de 9:00 a 14:00, la bibliothèque ferme à 14 h. 17 h, c’est du lundi au jeudi.",
@@ -148,19 +149,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-5",
-      "question": "Quel jour le secrétariat est-il fermé ?",
       "prompt": "Secretaría\nlunes, martes y jueves: de 9:00 a 13:00\nmiércoles: cerrado\nviernes: de 9:00 a 12:00",
+      "question": "Quel jour le secrétariat est-il fermé ?",
       "spoken": "Secretaría. Lunes, martes y jueves, de nueve a trece. Miércoles, cerrado. Viernes, de nueve a doce.",
       "choices": [
         "Le mercredi",
         "Le mardi",
         "Le jeudi"
       ],
+      "choicesLang": "fr",
       "answer": "Le mercredi",
       "hint": "Cherche le mot cerrado, puis lis le jour de sa ligne.",
       "explanation": "cerrado = fermé : miércoles, le mercredi. martes, c’est mardi ; jueves, jeudi.",
@@ -177,19 +178,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-6",
-      "question": "Qui enseigne l’anglais ?",
       "prompt": "Profesores de la clase\nInglés: señora Ruiz\nLengua: señor Gómez\nMúsica: señora Vidal",
+      "question": "Qui enseigne l’anglais ?",
       "spoken": "Profesores de la clase. Inglés, señora Ruiz. Lengua, señor Gómez. Música, señora Vidal.",
       "choices": [
         "Madame Ruiz",
         "Monsieur Gómez",
         "Madame Vidal"
       ],
+      "choicesLang": "fr",
       "answer": "Madame Ruiz",
       "hint": "Trouve la ligne Inglés.",
       "explanation": "Inglés = l’anglais : señora Ruiz, madame Ruiz. Monsieur Gómez enseigne Lengua, l’espagnol.",
@@ -206,19 +207,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-1-7",
-      "question": "À quelle heure finissent les cours ?",
       "prompt": "Horario del instituto\nentrada: 8:30\nsalida: 14:30",
+      "question": "À quelle heure finissent les cours ?",
       "spoken": "Horario del instituto. Entrada, a las ocho y treinta. Salida, a las catorce y treinta.",
       "choices": [
         "8 h 30",
         "14 h 30",
         "16 h 30"
       ],
+      "choicesLang": "fr",
       "answer": "14 h 30",
       "hint": "La fin des cours, c’est la sortie : cherche salida.",
       "explanation": "salida = la sortie : les cours finissent à 14 h 30. entrada, c’est l’arrivée. En Espagne, on déjeune souvent après les cours.",
@@ -235,8 +236,7 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

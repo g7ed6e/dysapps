@@ -9,7 +9,11 @@
       "key": "falaise-echo-3-0",
       "prompt": "« Mon voisin, un pompier, a éteint le feu. » Quel groupe est apposé ?",
       "spoken": "Mon voisin, un pompier, a éteint le feu. Quel groupe est apposé ?",
-      "choices": ["un pompier", "mon voisin", "le feu"],
+      "choices": [
+        "un pompier",
+        "mon voisin",
+        "le feu"
+      ],
       "answer": "un pompier",
       "hint": "Enlève un groupe : la phrase reste-t-elle juste ?",
       "explanation": "Un pompier est entre deux virgules et précise mon voisin. Sans lui, la phrase reste juste : Mon voisin a éteint le feu.",
@@ -30,7 +34,11 @@
       "key": "falaise-echo-3-1",
       "prompt": "« Assise sur le banc, Léa lit un roman. » Quel groupe est apposé ?",
       "spoken": "Assise sur le banc, Léa lit un roman. Quel groupe est apposé ?",
-      "choices": ["assise sur le banc", "sur le banc", "un roman"],
+      "choices": [
+        "assise sur le banc",
+        "sur le banc",
+        "un roman"
+      ],
       "answer": "assise sur le banc",
       "hint": "Cherche la virgule, puis enlève un groupe : la phrase reste-t-elle juste ?",
       "explanation": "Le groupe apposé va du début de la phrase jusqu’à la virgule : assise sur le banc. Il précise Léa. Sur le banc n’en est qu’une partie.",
@@ -51,7 +59,11 @@
       "key": "falaise-echo-3-2",
       "prompt": "« Trempé par la pluie, le chien de Tom se secoue. » Quel nom le groupe apposé précise-t-il ?",
       "spoken": "Trempé par la pluie, le chien de Tom se secoue. Quel nom le groupe apposé précise-t-il ?",
-      "choices": ["le chien", "Tom", "la pluie"],
+      "choices": [
+        "le chien",
+        "Tom",
+        "la pluie"
+      ],
       "answer": "le chien",
       "hint": "Le groupe apposé est en tête de phrase : relis la règle.",
       "explanation": "En tête de phrase, le groupe apposé précise le sujet : c’est le chien qui se secoue, et qui est trempé. Tom est tout près, mais ce n’est pas lui.",
@@ -72,7 +84,11 @@
       "key": "falaise-echo-3-3",
       "prompt": "« Le frère de Léa, un bon nageur, gagne toutes les courses. » Quel nom le groupe apposé précise-t-il ?",
       "spoken": "Le frère de Léa, un bon nageur, gagne toutes les courses. Quel nom le groupe apposé précise-t-il ?",
-      "choices": ["le frère", "Léa", "les courses"],
+      "choices": [
+        "le frère",
+        "Léa",
+        "les courses"
+      ],
       "answer": "le frère",
       "hint": "Qui gagne les courses ? C’est de lui que parle le groupe apposé.",
       "explanation": "Un bon nageur, c’est le frère de Léa : c’est lui qui gagne. Le groupe apposé suit le mot Léa, mais il ne la précise pas.",
@@ -93,7 +109,11 @@
       "key": "falaise-echo-3-4",
       "prompt": "…, les joueuses quittent le terrain.",
       "spoken": "(mot manquant), les joueuses quittent le terrain.",
-      "choices": ["Épuisées", "Épuisés", "Épuisée"],
+      "choices": [
+        "Épuisées",
+        "Épuisés",
+        "Épuisée"
+      ],
       "answer": "Épuisées",
       "hint": "En tête de phrase, quel nom ce mot précise-t-il ? Masculin ou féminin, singulier ou pluriel ?",
       "explanation": "En tête de phrase, l’adjectif apposé précise le sujet, les joueuses, au féminin pluriel : épuisées.",
@@ -114,7 +134,11 @@
       "key": "falaise-echo-3-5",
       "prompt": "…, la voiture de mes parents démarre enfin.",
       "spoken": "(mot manquant), la voiture de mes parents démarre enfin.",
-      "choices": ["Réparée", "Réparés", "Réparé"],
+      "choices": [
+        "Réparée",
+        "Réparés",
+        "Réparé"
+      ],
       "answer": "Réparée",
       "hint": "Qu’est-ce qui démarre ? Relis la règle sur la tête de phrase.",
       "explanation": "Le participe apposé en tête précise le sujet, la voiture, au féminin singulier : réparée. Ce ne sont pas les parents qu’on a réparés.",
@@ -135,7 +159,11 @@
       "key": "falaise-echo-3-6",
       "prompt": "Mes grands-parents, … de nous voir, nous attendent sur le quai.",
       "spoken": "Mes grands-parents, (mot manquant) de nous voir, nous attendent sur le quai.",
-      "choices": ["ravis", "ravi", "ravies"],
+      "choices": [
+        "ravis",
+        "ravi",
+        "ravies"
+      ],
       "answer": "ravis",
       "hint": "Qui est content de nous voir ? Masculin ou féminin, singulier ou pluriel ?",
       "explanation": "L’adjectif apposé précise mes grands-parents, au masculin pluriel : ravis.",
@@ -156,7 +184,11 @@
       "key": "falaise-echo-3-7",
       "prompt": "Ces histoires, … par mon grand-père, me font toujours rire.",
       "spoken": "Ces histoires, (mot manquant) par mon grand-père, me font toujours rire.",
-      "choices": ["racontées", "raconté", "racontés"],
+      "choices": [
+        "racontées",
+        "raconté",
+        "racontés"
+      ],
       "answer": "racontées",
       "hint": "Que raconte mon grand-père ? Cherche le nom avant la première virgule.",
       "explanation": "Le participe apposé précise ces histoires, au féminin pluriel : racontées. Mon grand-père est tout près, mais ce n’est pas lui qu’on raconte.",
@@ -175,8 +207,8 @@
     }
   ],
   "feedback": {
-    "correct": "Bien vu !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bien vu !"
   },
   "reward": {
     "block": "ardoise",

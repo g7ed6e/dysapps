@@ -3,8 +3,8 @@
   "biome": "mine",
   "type": "filon",
   "level": 1,
-  "instruction": "Pioche seulement les blocs avec la lettre d. Laisse passer les autres.",
   "target": "d",
+  "instruction": "Pioche seulement les blocs avec la lettre d. Laisse passer les autres.",
   "items": [
     {
       "key": "0-d",

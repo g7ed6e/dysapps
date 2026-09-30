@@ -33,7 +33,7 @@ Une `Question` porte l’énoncé (`prompt`, et `spokenPrompt` quand il contient
 
 Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`) : un fichier JSON dans `src/blocland/exercises/data/`, ou un objet produit par un générateur (`maths.ts`, `college.ts`).
 
-Les îles déjà passées en Markdown (`docs/contenu/<île>.md`, voir le [README](../contenu/README.md) de ce dossier) s’écrivent là, jamais dans leurs JSON : `npm run contenu` produit les JSON de ces îles, et la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). Les autres îles s’écrivent encore en JSON, le temps de la migration.
+Les exercices des îles s’écrivent en Markdown dans `docs/contenu/<île>.md` (format et modèles par écran : le [README](../contenu/README.md) de ce dossier), jamais dans leurs JSON : `npm run contenu` produit les JSON, et la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`).
 
 Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en garde que l’index (`id`, `biome`, `type`, `level` : le catalogue `CATALOG` de `index.ts`, extrait au build par le plugin `scripts/exerciseMeta.mjs`), qui suffit aux listes de missions, aux étoiles et au choix de la partie. Le contenu (consigne, items, corrections) est chargé par `loadExercise(id)` au lancement d’une partie ou d’un Gardien. Le service worker met tous ces fichiers en cache à l’installation : ils restent disponibles hors ligne. Les exercices écrits en code (générateurs, tri des graines, panneaux) sont toujours là.
 
@@ -96,7 +96,7 @@ La phrase lue par un lecteur d’écran (`aria-label`) est composée à partir d
 
 ## Ajouter un exercice à une mission existante
 
-1. Écrire le niveau dans `docs/contenu/<île>.md` si l’île y est déjà, puis lancer `npm run contenu` ; sinon, écrire le JSON dans `src/blocland/exercises/data/` en suivant un exercice voisin du même `type`.
+1. Écrire le niveau dans `docs/contenu/<île>.md`, en suivant le modèle de son écran (un niveau voisin du même `type`), puis lancer `npm run contenu`. Pour une île qui n’a pas encore d’exercice, créer `docs/contenu/<île>.md` avec son en-tête (`île : <id>`).
 2. Ajouter son `id` à `ORDER` dans `src/blocland/exercises/index.ts`, à sa place dans la progression de l’île : cet ordre départage les variantes d’un même niveau et ordonne la page de l’île. Il n’y a rien à importer : le fichier est trouvé par son dossier.
 3. Lancer `npm test` : `data.test.ts` vérifie que chaque fichier de `data/` a sa place dans `ORDER`, puis le format et les règles du type.
 4. Vérifier la page de l’île dans la documentation (`npm run www:build`) : l’exercice y apparaît avec sa consigne et ses items.

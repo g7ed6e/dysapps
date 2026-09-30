@@ -34,14 +34,15 @@
     },
     {
       "key": "refuge-es-viaje-1-1",
-      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "prompt": "Pablo visitó un museo.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "spoken": "Pablo visitó un museo.",
       "choices": [
         "Il a visité un musée.",
         "Je visite un musée.",
         "Il va visiter un musée."
       ],
+      "choicesLang": "fr",
       "answer": "Il a visité un musée.",
       "hint": "Écoute où la voix appuie : sur -tó, à la fin. C’est déjà fait.",
       "explanation": "visitó : la voix appuie sur -tó, à la fin, et l’accent l’écrit : c’est hier, il a visité. visito, la voix sur -si- = je visite ; va a visitar = il va visiter.",
@@ -57,8 +58,7 @@
             "ayer = hier ; el verano pasado = l’été dernier"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-viaje-1-2",
@@ -88,14 +88,15 @@
     },
     {
       "key": "refuge-es-viaje-1-3",
-      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "prompt": "Viajo a Madrid en tren.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "spoken": "Viajo a Madrid en tren.",
       "choices": [
         "Je voyage en train.",
         "Il a voyagé en train.",
         "Tu as voyagé en train."
       ],
+      "choicesLang": "fr",
       "answer": "Je voyage en train.",
       "hint": "Écoute où la voix appuie : sur via-, au début, ou sur -jó, à la fin ?",
       "explanation": "viajo : la voix appuie sur via-, et le o n’a pas d’accent : c’est aujourd’hui, je voyage. viajó, la voix sur -jó = il a voyagé ; viajaste = tu as voyagé.",
@@ -111,8 +112,7 @@
             "ayer = hier ; el verano pasado = l’été dernier"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-viaje-1-4",
@@ -142,14 +142,15 @@
     },
     {
       "key": "refuge-es-viaje-1-5",
-      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "prompt": "Mi hermana viajó a Lima.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
       "spoken": "Mi hermana viajó a Lima.",
       "choices": [
         "Ma sœur a voyagé à Lima.",
         "Ma sœur voyage à Lima.",
         "Ma sœur va voyager à Lima."
       ],
+      "choicesLang": "fr",
       "answer": "Ma sœur a voyagé à Lima.",
       "hint": "Écoute où la voix appuie : sur -jó, à la fin.",
       "explanation": "viajó : la voix appuie sur -jó, à la fin : c’est hier, elle a voyagé. Mi hermana viaja = ma sœur voyage ; va a viajar = elle va voyager.",
@@ -165,8 +166,7 @@
             "ayer = hier ; el verano pasado = l’été dernier"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-viaje-1-6",

@@ -9,63 +9,63 @@
     {
       "key": "mémoire",
       "word": "mémoire",
+      "ending": "[oir]",
       "image": "🧠",
-      "correct": true,
-      "ending": "[oir]"
+      "correct": true
     },
     {
       "key": "voiture",
       "word": "voiture",
+      "ending": "[ure]",
       "image": "🚗",
-      "correct": false,
-      "ending": "[ure]"
+      "correct": false
     },
     {
       "key": "tiroir",
       "word": "tiroir",
+      "ending": "[oir]",
       "image": "🗄️",
-      "correct": true,
-      "ending": "[oir]"
+      "correct": true
     },
     {
       "key": "horaire",
       "word": "horaire",
+      "ending": "[ère]",
       "image": "🕐",
-      "correct": false,
-      "ending": "[ère]"
+      "correct": false
     },
     {
       "key": "victoire",
       "word": "victoire",
+      "ending": "[oir]",
       "image": "🏆",
-      "correct": true,
-      "ending": "[oir]"
+      "correct": true
     },
     {
       "key": "soirée",
       "word": "soirée",
+      "ending": "[é]",
       "image": "🌙",
-      "correct": false,
-      "ending": "[é]"
+      "correct": false
     },
     {
       "key": "miroir",
       "word": "miroir",
+      "ending": "[oir]",
       "image": "🪞",
-      "correct": true,
-      "ending": "[oir]"
+      "correct": true
     },
     {
       "key": "devoir",
       "word": "devoir",
+      "ending": "[oir]",
       "image": "📝",
-      "correct": true,
-      "ending": "[oir]"
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Ça rime, même avec une autre orthographe !",
-    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}.",
+    "correct": "Ça rime, même avec une autre orthographe !"
   },
   "reward": {
     "block": "bois",

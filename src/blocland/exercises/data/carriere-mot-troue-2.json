@@ -10,80 +10,120 @@
       "word": "beaucoup",
       "before": "b",
       "after": "coup",
-      "answer": "eau",
-      "choices": ["eau", "au", "o"]
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ],
+      "answer": "eau"
     },
     {
       "key": "bateau",
       "word": "bateau",
       "before": "bat",
       "after": "",
-      "answer": "eau",
-      "choices": ["eau", "au", "o"]
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ],
+      "answer": "eau"
     },
     {
       "key": "toujours",
       "word": "toujours",
       "before": "t",
       "after": "jours",
-      "answer": "ou",
-      "choices": ["ou", "oo", "u"]
+      "choices": [
+        "ou",
+        "oo",
+        "u"
+      ],
+      "answer": "ou"
     },
     {
       "key": "jamais",
       "word": "jamais",
       "before": "jam",
       "after": "",
-      "answer": "ais",
-      "choices": ["ais", "ai", "é"]
+      "choices": [
+        "ais",
+        "ai",
+        "é"
+      ],
+      "answer": "ais"
     },
     {
       "key": "longtemps",
       "word": "longtemps",
       "before": "longt",
       "after": "",
-      "answer": "emps",
-      "choices": ["emps", "ent", "an"]
+      "choices": [
+        "emps",
+        "ent",
+        "an"
+      ],
+      "answer": "emps"
     },
     {
       "key": "quand",
       "word": "quand",
       "before": "qu",
       "after": "",
-      "answer": "and",
-      "choices": ["and", "an", "ant"]
+      "choices": [
+        "and",
+        "an",
+        "ant"
+      ],
+      "answer": "and"
     },
     {
       "key": "parce",
       "word": "parce",
       "before": "par",
       "after": "",
-      "answer": "ce",
-      "choices": ["ce", "se", "sse"]
+      "choices": [
+        "ce",
+        "se",
+        "sse"
+      ],
+      "answer": "ce"
     },
     {
       "key": "aujourd'hui",
       "word": "aujourd’hui",
       "before": "aujourd",
       "after": "",
-      "answer": "’hui",
-      "choices": ["’hui", "ui", "oui"]
+      "choices": [
+        "’hui",
+        "ui",
+        "oui"
+      ],
+      "answer": "’hui"
     },
     {
       "key": "temps",
       "word": "temps",
       "before": "t",
       "after": "",
-      "answer": "emps",
-      "choices": ["emps", "ent", "ant"]
+      "choices": [
+        "emps",
+        "ent",
+        "ant"
+      ],
+      "answer": "emps"
     },
     {
       "key": "plusieurs",
       "word": "plusieurs",
       "before": "plusi",
       "after": "s",
-      "answer": "eur",
-      "choices": ["eur", "eure", "er"]
+      "choices": [
+        "eur",
+        "eure",
+        "er"
+      ],
+      "answer": "eur"
     }
   ],
   "feedback": {

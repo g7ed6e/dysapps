@@ -9,7 +9,11 @@
       "key": "carrefour-bifurcation-2-0",
       "prompt": "… … va pas sans lui.",
       "spoken": " (mot manquant)   (mot manquant)  va pas sans lui.",
-      "choices": ["On / n’y", "On / ni", "Ont / n’y"],
+      "choices": [
+        "On / n’y",
+        "On / ni",
+        "Ont / n’y"
+      ],
       "answer": "On / n’y",
       "hint": "« quelqu’un » : on. « ne + y » : n’y.",
       "explanation": "On n’y va pas : quelqu’un (on), ne + y (n’y).",
@@ -33,7 +37,11 @@
       "key": "carrefour-bifurcation-2-1",
       "prompt": "Elle … fait mal … la cour.",
       "spoken": "Elle  (mot manquant)  fait mal  (mot manquant)  la cour.",
-      "choices": ["s’est / dans", "c’est / dans", "s’est / d’en"],
+      "choices": [
+        "s’est / dans",
+        "c’est / dans",
+        "s’est / d’en"
+      ],
       "answer": "s’est / dans",
       "hint": "« je me suis fait mal » : s’est. « à l’intérieur de » : dans.",
       "explanation": "Elle s’est fait mal (verbe se faire mal) dans la cour (à l’intérieur).",
@@ -57,7 +65,11 @@
       "key": "carrefour-bifurcation-2-2",
       "prompt": "… tu veux, on … met.",
       "spoken": " (mot manquant)  tu veux, on  (mot manquant)  met.",
-      "choices": ["Si / s’y", "S’y / si", "Si / si"],
+      "choices": [
+        "Si / s’y",
+        "S’y / si",
+        "Si / si"
+      ],
       "answer": "Si / s’y",
       "hint": "Condition : si. « s’y mettre » : s’y.",
       "explanation": "Si tu veux (condition), on s’y met (se + y).",
@@ -81,7 +93,11 @@
       "key": "carrefour-bifurcation-2-3",
       "prompt": "Il … levé … faire de bruit.",
       "spoken": "Il  (mot manquant)  levé  (mot manquant)  faire de bruit.",
-      "choices": ["s’est / sans", "c’est / sans", "s’est / s’en"],
+      "choices": [
+        "s’est / sans",
+        "c’est / sans",
+        "s’est / s’en"
+      ],
       "answer": "s’est / sans",
       "hint": "« je me suis levé » : s’est. « pas de » : sans.",
       "explanation": "Il s’est levé (verbe se lever) sans faire de bruit (pas de bruit).",
@@ -105,7 +121,11 @@
       "key": "carrefour-bifurcation-2-4",
       "prompt": "… … fini, ils rentrent.",
       "spoken": " (mot manquant)   (mot manquant)  fini, ils rentrent.",
-      "choices": ["Quand / c’est", "Quant / s’est", "Qu’en / c’est"],
+      "choices": [
+        "Quand / c’est",
+        "Quant / s’est",
+        "Qu’en / c’est"
+      ],
       "answer": "Quand / c’est",
       "hint": "« lorsque » : quand. « cela est » : c’est.",
       "explanation": "Quand c’est fini : lorsque cela est fini.",
@@ -129,7 +149,11 @@
       "key": "carrefour-bifurcation-2-5",
       "prompt": "Elle … … chaussures neuves.",
       "spoken": "Elle  (mot manquant)   (mot manquant)  chaussures neuves.",
-      "choices": ["a / ses", "à / ces", "à / ses"],
+      "choices": [
+        "a / ses",
+        "à / ces",
+        "à / ses"
+      ],
       "answer": "a / ses",
       "hint": "« avait » : a. « les siennes » : ses.",
       "explanation": "Elle a (avait) ses (les siennes) chaussures neuves.",
@@ -153,7 +177,11 @@
       "key": "carrefour-bifurcation-2-6",
       "prompt": "… vélos … à eux.",
       "spoken": " (mot manquant)  vélos  (mot manquant)  à eux.",
-      "choices": ["Leurs / sont", "Leur / sont", "Leurs / son"],
+      "choices": [
+        "Leurs / sont",
+        "Leur / sont",
+        "Leurs / son"
+      ],
       "answer": "Leurs / sont",
       "hint": "devant un nom pluriel : leurs. « étaient » : sont.",
       "explanation": "Leurs vélos (nom pluriel) sont (étaient) à eux.",
@@ -177,7 +205,11 @@
       "key": "carrefour-bifurcation-2-7",
       "prompt": "Je … sais pas … tu viens.",
       "spoken": "Je  (mot manquant)  sais pas  (mot manquant)  tu viens.",
-      "choices": ["ne / si", "n’y / si", "ne / s’y"],
+      "choices": [
+        "ne / si",
+        "n’y / si",
+        "ne / s’y"
+      ],
       "answer": "ne / si",
       "hint": "Négation : ne. Question « est-ce que tu viens ? » : si.",
       "explanation": "Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).",
