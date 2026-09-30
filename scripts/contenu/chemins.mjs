@@ -1,5 +1,5 @@
 // Les îles écrites en Markdown (docs/contenu/<île>.md) et les missions du portail (docs/contenu/portail/), avec les
-// JSON qu'ils produisent (src/blocland/iles.ts, src/blocland/exercises/data/, src/apps/<mission>/).
+// JSON qu'ils produisent (src/blocland/iles.ts, src/blocland/exercises/data/, src/blocland/world/plans/, src/apps/<mission>/).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -11,6 +11,7 @@ const racine = process.cwd();
 export const CONTENU = join(racine, 'docs/contenu');
 export const DATA = join(racine, 'src/blocland/exercises/data');
 export const ILES = join(racine, 'src/blocland/iles.ts');
+export const PLANS = join(racine, 'src/blocland/world/plans');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
@@ -34,7 +35,7 @@ export function produire() {
   const biomes = new Map();
   for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md').sort()) {
     const fichier = join('docs/contenu', f);
-    const { ile, biome, exercices } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
+    const { ile, biome, exercices, plans } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
     for (const k of CHAMPS_ILE) if (biome[k] === undefined) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
     if (!MATIERES.includes(biome.subject)) throw new Error(`${fichier} : matière « ${biome.subject} » inconnue (${MATIERES.join(', ')})`);
@@ -49,6 +50,11 @@ export function produire() {
       const chemin = join(DATA, `${ex.id}.json`);
       if (sortie.has(chemin)) throw new Error(`${fichier} : exercice « ${ex.id} » écrit deux fois`);
       sortie.set(chemin, JSON.stringify(ex, null, 2) + '\n');
+    }
+    for (const plan of plans) {
+      const chemin = join(PLANS, `${plan.id}.json`);
+      if (sortie.has(chemin)) throw new Error(`${fichier} : le plan « ${plan.id} » est déjà écrit sur une autre île`);
+      sortie.set(chemin, JSON.stringify(plan, null, 2) + '\n');
     }
   }
   const ordre = ordreDesIles();

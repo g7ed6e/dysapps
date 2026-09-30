@@ -1,7 +1,7 @@
 // Les missions du portail écrites en Markdown (docs/contenu/portail/<mission>.md) : homophones, verbes irréguliers,
 // textes à lire, vocabulaire anglais. Chaque fichier redonne un JSON du jeu (src/apps/<mission>/…json), à l'identique.
 // Le format est strict, comme celui des îles (format.mjs) : une ligne inconnue arrête la génération, avec son numéro.
-import { aGuillemets, ecrireTexte, lireTexte } from './format.mjs';
+import { aGuillemets, ecrireTexte, lireTexte } from './texte.mjs';
 
 const SEP = ' · ';
 

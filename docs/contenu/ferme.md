@@ -230,3 +230,11 @@ Pour tous les items :
    - énoncé : Il est arriv… en retard.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `ferme-etable` | L’étable de Bloquette | 50 | verre × 3 | Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble. |
+| `ferme-toit` | Le toit de l’étable | 60 |  | Un toit sur l’étable ! Meuh, je n’ai plus la pluie sur les cornes. |
+| `ferme-enclos` | L’enclos de l’étable | 70 | or × 2 · cristal × 2 | Mon enclos est fermé, tout s’accorde. Singulier, pluriel, chacun sa barrière ! |

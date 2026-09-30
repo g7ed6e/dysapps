@@ -32,3 +32,11 @@ créature : Stat
 
 - description : Lis un diagramme ou un tableau, puis calcule une fréquence, en fraction et en pourcentage.
 - compétences : c4.ma.b.lire-donnees · c4.ma.b.effectifs-frequences
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `donnees-dome` | Le dôme de Stat | 40 | parchemin × 3 | Mon dôme ! Merci, bâtisseur. Moyenne des blocs : parfaite. Médiane : idem. |
+| `donnees-toit` | Le toit du dôme | 50 |  | Un toit et une porte ! La lanterne compte les étoiles avec moi, une par une. |
+| `donnees-terrasse` | La terrasse du dôme | 60 | or × 2 · cristal × 2 | Une terrasse, une barrière, un escalier… Mon dôme est complet : probabilité 1. |

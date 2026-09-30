@@ -520,3 +520,11 @@ Pour tous les items :
    - réponse : j’aurai fini mes devoirs
    - indice : Lequel des deux verbes est au futur antérieur ?
    - explication : « Aurai fini » est au futur antérieur : les devoirs seront finis avant la sortie. La phrase dit « je sortirai » en premier, mais cette action a lieu après.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `marais-hutte` | La hutte de Kroa | 40 | toile × 3 | Ma hutte ! Merci, bâtisseur. Elle était en ruine, elle est debout, elle restera debout. |
+| `marais-toit` | Le toit de la hutte | 50 |  | Un toit et une porte ! Il faut que la lanterne brille toute la nuit. |
+| `marais-ponton` | Le ponton de la hutte | 60 | or × 2 · cristal × 2 | Un ponton, une barrière, un escalier… Ma hutte est complète. Demain, je m’y reposerai. |

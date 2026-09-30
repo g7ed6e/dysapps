@@ -352,3 +352,11 @@ Pour tous les items :
    - réponse : more
    - indice : Plus… que, avec un adjectif long.
    - explication : more interesting than = plus intéressant que.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `manoir-salon` | Le salon de Moustache | 40 | tuile × 3 | Mon salon ! Thank you, bâtisseur. Hier il était en ruine ; aujourd’hui, il brille. |
+| `manoir-toit` | Le toit du manoir | 50 |  | Un toit et une porte ! Le Spectre ne passera plus par le plafond. |
+| `manoir-jardin` | Le jardin du manoir | 60 | or × 2 · cristal × 2 | Un jardin, une grille, un escalier… Mon manoir est complet, et plus beau que jamais. |

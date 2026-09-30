@@ -32,3 +32,11 @@ créature : Nénu
 
 - description : Une fraction d’une quantité, puis des fractions égales.
 - compétences : c3.ma.nombres.fractions-designations · c3.ma.nombres.fractions-comparer
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `riviere-hutte` | La hutte de Nénu | 40 | pierre × 3 | Ma hutte ! Merci, bâtisseur. Une moitié pour dormir, l’autre pour chanter sous la pluie. |
+| `riviere-toit` | Le toit de la hutte | 50 |  | Un toit et une porte ! La lanterne se reflète dans la mare : deux lanternes pour le prix d’une. |
+| `riviere-ponton` | Le ponton de la hutte | 60 | or × 2 · cristal × 2 | Un ponton, une barrière, un escalier vers l’eau… Ma hutte est entière, pas un quart ne manque. Coâ ! |

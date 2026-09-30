@@ -32,3 +32,11 @@ créature : Fi
 
 - description : Sur le graphique : une image, un antécédent, puis la droite.
 - compétences : c4.ma.b.image-antecedent · c4.ma.b.lineaire-affine
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `phare-lanterne` | La lanterne de Fi | 40 | marbre × 3 | Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière. |
+| `phare-toit` | Le toit de la lanterne | 50 |  | Un toit et une porte ! f(nuit) = lumière, pour tous les bateaux. |
+| `phare-jetee` | La jetée de la lanterne | 60 | or × 2 · cristal × 2 | Une jetée, une barrière, un escalier… Ma lanterne est complète : la droite est tracée. |

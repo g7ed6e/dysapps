@@ -1,6 +1,6 @@
 # Le contenu en Markdown
 
-Ce dossier est la source des îles : un fichier par île (`<île>.md`, l’identifiant de l’île), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts` et `src/blocland/exercises/data/<exercice>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas). Les plans des bâtiments suivront (étape M5 : `docs/pilotage/chantiers.md`).
+Ce dossier est la source des îles : un fichier par île (`<île>.md`, l’identifiant de l’île), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, les plans de ses bâtiments, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts`, `src/blocland/exercises/data/<exercice>.json` et `src/blocland/world/plans/<plan>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas).
 
 ## Le format
 
@@ -82,6 +82,25 @@ Plusieurs exercices d’une mission peuvent porter le même numéro de niveau (l
 **Une clé écrite à la main** s’invente en minuscules avec des tirets, depuis le mot ou le sujet de l’item (`le-chien`, `va-manger`), et ne change plus ensuite, même si elle garde une ancienne graphie (`aujourd'hui`, avec l’apostrophe droite, dans la Carrière) : la corriger ferait oublier l’item à la répétition espacée.
 
 **Hors du Markdown** : un niveau nouveau se déclare aussi dans `ORDER` (`src/blocland/exercises/index.ts`). Une mission nouvelle (un nouveau `type`) a aussi besoin de son écran dans `SCREEN_TYPES` (`src/blocland/exercises/registry.ts`). Les tests le rappellent si l’un manque.
+
+## Les plans des bâtiments
+
+Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les plans`, une rangée par plan dans l’ordre où l’élève les débloque :
+
+```md
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `mine-forge` | La forge de Tunel | 50 | sable × 3 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
+| `mine-toit` | Le toit de la forge | 60 | | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
+```
+
+- **plan** : l’identifiant, qui ne change jamais (les sauvegardes y rattachent les blocs posés).
+- **coffre** : les blocs gagnés, `bloc × nombre` séparés par « · », ou une case vide. Le jeu y ajoute de lui-même les blocs de finition du plan suivant.
+- **quand c’est bâti** : ce que dit la créature quand le plan est fini.
+
+Changer un nom, une récompense ou une réplique se fait ici seulement. La forme du bâtiment est dessinée par le code (`src/blocland/world/architect.ts`) ; ajouter, retirer ou déplacer un plan demande aussi `src/blocland/world/plans.ts`, dont l’ordre doit rester celui du tableau (un test le vérifie). Les noms et les répliques sont ceux de l’univers Blocland ; où vivront ceux d’Archipéo reste à décider quand ses constructions seront renommées. Les récompenses (XP, coffre) règlent l’équilibre du jeu et sont communes aux univers : les changer passe par le directeur artistique, avec une fiche `GD-<n>` (`docs/pilotage/game-design/`). Un nom ou une réplique appartient à l’univers Blocland : le changer passe par le consultant de Blocland et par le référent dys.
 
 ## Les missions du portail
 

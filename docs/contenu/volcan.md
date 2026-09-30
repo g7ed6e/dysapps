@@ -32,3 +32,11 @@ créature : Lavi
 
 - description : Repère un décimal sur la droite, puis complète jusqu’à 1.
 - compétences : c3.ma.nombres.decimaux-comparer · c3.ma.nombres.calcul-mental
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `volcan-abri` | L’abri de Lavi | 40 | terre × 3 | Mon abri ! Merci, bâtisseur. Noir, brillant, et chaud comme une coulée de 1,5 degré de trop. |
+| `volcan-toit` | Le toit de l’abri | 50 |  | Un toit et une porte ! La lanterne, c’est mon petit cratère de nuit. |
+| `volcan-terrasse` | La terrasse de l’abri | 60 | or × 2 · cristal × 2 | Une terrasse, une barrière, un escalier vers le cratère… Mon abri est complet, à 1,00 exactement. |

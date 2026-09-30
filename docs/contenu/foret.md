@@ -359,3 +359,11 @@ Pour tous les items :
 | chat | [a] | 🐱 | non |
 | poisson | [on] | 🐟 | oui |
 | cochon | [on] | 🐷 | oui |
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `foret-cabane` | La cabane de Mousso | 40 | pierre × 3 | Ma cabane ! Merci, bâtisseur. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit. |
+| `foret-toit` | Le toit de la cabane | 50 |  | Un toit de tuiles et une porte qui ferme ! La lanterne brillera pour les sons perdus. |
+| `foret-cour` | La cour de la cabane | 60 | or × 2 · cristal × 2 | Une cour, une barrière, un escalier… Ma maison est finie. Tu es un vrai bâtisseur, une vraie bâtisseuse. |

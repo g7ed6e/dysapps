@@ -216,3 +216,11 @@ Pour tous les items :
 | La vache broute. | vache | vache · fache | vache | le v vibre dans la gorge, comme dans vélo. |
 | Ouvre la bouche. | bouche | bouche · pouche | bouche | le b vibre dans la gorge, comme dans bateau. |
 | Une jupe rouge. | jupe | jupe · chupe | jupe | le j vibre, comme dans jouet. |
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `mine-forge` | La forge de Tunel | 50 | sable × 3 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
+| `mine-toit` | Le toit de la forge | 60 |  | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
+| `mine-cour` | La cour de la forge | 70 | or × 2 · cristal × 2 | Ma forge a sa cour. Les lettres qui se ressemblent n’ont qu’à bien se tenir. |

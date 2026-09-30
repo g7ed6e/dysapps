@@ -530,3 +530,11 @@ Pour tous les items :
      - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `comptoir-boutique` | La boutique de Pudding | 40 | lambris × 3 | Ma boutique ! Thank you, bâtisseur. Come in, it’s open! |
+| `comptoir-toit` | Le toit de la boutique | 50 |  | Un toit et une porte ! Mes fruits restent au sec, même quand il pleut. |
+| `comptoir-terrasse` | La terrasse de la boutique | 60 | or × 2 · cristal × 2 | Une terrasse, une barrière, un escalier… Mon Comptoir est complet. Come again! |

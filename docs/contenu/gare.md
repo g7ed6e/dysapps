@@ -358,3 +358,11 @@ Pour tous les items :
    - réponse : yet
    - indice : Affirmation, question ou négation ? Relis la règle.
    - explication : Négation, en fin de phrase : yet (pas encore).
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `gare-abri` | L’abri de Vapeur | 40 | velours × 3 | Mon abri ! Thank you, bâtisseur. D’ici, je verrai arriver tous les trains. |
+| `gare-toit` | Le toit de l’abri | 50 |  | Un toit et une porte ! Les voyageurs attendront au sec. |
+| `gare-quai` | Le quai de la gare | 60 | or × 2 · cristal × 2 | Un quai, une barrière, un escalier… Ma gare est complète. All aboard! |

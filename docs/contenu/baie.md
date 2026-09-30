@@ -371,3 +371,11 @@ Pour tous les items :
    - réponse : la chose
    - indice : Th au début, « ng » à la fin.
    - explication : thing = la chose (thin = mince, sink = l’évier).
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `baie-cabine` | La cabine de Robin | 40 | cadran × 3 | Ma cabine ! Thank you, bâtisseur. Quand le téléphone sonne, je réponds : hello? |
+| `baie-toit` | Le toit de la cabine | 50 |  | Un toit et une porte ! Même sous la pluie anglaise, je reste au sec. |
+| `baie-quai` | Le quai de la cabine | 60 | or × 2 · cristal × 2 | Un quai, une barrière, un escalier… Ma baie est complète. See you soon! |
