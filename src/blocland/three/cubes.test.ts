@@ -37,11 +37,16 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
     m.scene.traverse((o) => {
       if (o instanceof THREE.Mesh && o.geometry.getAttribute('position').count > 0) maillages.push(o);
     });
-    // Aucun attribut de motif, aucun matériau à rôles peints.
+    // Aucun attribut de motif, aucun shader complété : la construction d'Archipéo (three/construction.ts) peint ses
+    // murs dans `onBeforeCompile` ; les matériaux de Blocland gardent celui de Three.js, qui ne fait rien.
+    expect(maillages.length).toBeGreaterThan(0);
     for (const o of maillages) {
       expect(o.geometry.getAttribute('motif')).toBeUndefined();
       const mats = ([] as THREE.Material[]).concat(o.material);
-      expect(mats.some((x) => x.userData.roles !== undefined || x instanceof THREE.ShaderMaterial)).toBe(false);
+      for (const x of mats) {
+        expect(x).not.toBeInstanceOf(THREE.ShaderMaterial);
+        expect(x.onBeforeCompile).toBe(THREE.Material.prototype.onBeforeCompile);
+      }
     }
     // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube.
     const tri = (g: THREE.BufferGeometry) => (g.index ? g.index.count : g.getAttribute('position').count) / 3;
