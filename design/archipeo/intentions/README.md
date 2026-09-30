@@ -8,3 +8,5 @@ Une fiche par archipel, écrite le 28 septembre 2026 par le directeur artistique
 Chaque sous-lot part de sa fiche et écrit ce qu’il a construit dans sa sous-section du cadrage, où il signale tout écart. Les fiches ne se réécrivent pas après coup : un écart décidé en cours de lot se dit dans la sous-section.
 
 Chaque fiche a les mêmes rubriques : l’intention, les repères signatures, le relief, le décor à redessiner, l’ambiance, la brume et la fumée, les interdits, les captures et critères d’acceptation, l’enveloppe du décor, les questions pour le mainteneur, puis ce qu’elle demande à R5 et ce qu’elle change pour Blocland.
+
+Deux intentions plus anciennes, versées ici le 30 septembre 2026 depuis les fichiers du projet, gardent leur texte d’origine : `r6-personnages.md` (lot R6, les couleurs et proportions du bonhomme et des créatures) et `r7-2d-peinte.md` (lot R7, la 2D peinte). Ce qui a été construit est dans les sections R6 et R7 du [cadrage Archipéo](../../../docs/conception/cadrage-archipeo.md).
