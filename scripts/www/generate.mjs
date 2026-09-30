@@ -316,7 +316,7 @@ function describeItem(item) {
     return `${item.subject} → **${item.answer === 'singulier' ? item.singular : item.plural}** (${item.singular} / ${item.plural})`;
   }
   if (item.meaning) {
-    return `« ${item.meaning} » → **${item.word}** (${item.slot === 'prefix' ? 'préfixe' : 'suffixe'} ${item.answer}, racine ${item.root})`;
+    return `« ${item.meaning} » → **${item.word}** (${item.slot === 'prefix' ? 'préfixe' : 'suffixe'} ${item.answer}, racine ${item.root}${item.spokenRoot && item.spokenRoot !== item.root ? `, lue « ${item.spokenRoot} »` : ''})`;
   }
   if (item.before !== undefined && item.after !== undefined) {
     return `${item.before}…${item.after} → **${item.word}** (${item.choices.join(' / ')})`;

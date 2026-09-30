@@ -189,6 +189,7 @@ it('enclos : 4 sujets par écran, réponse singulier ou pluriel, avec une explic
       expect(['singulier', 'pluriel']).toContain(it.answer);
       expect(it.singular).not.toBe(it.plural);
       expect(String(it.why).length).toBeGreaterThan(10);
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
     }
   }
 });
@@ -202,6 +203,24 @@ it('récolte : phrase à trou, trois terminaisons, règle', () => {
       expect(it.choices).toEqual(['é', 'er', 'ez']);
       expect(it.choices).toContain(it.answer);
       expect(String(it.rule).length).toBeGreaterThan(10);
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
+    }
+});
+
+it.each(['troupeau', 'facettes'])('%s : la réponse parmi 2 à 3 choix distincts, règle affichée et explication', (type) => {
+  const defs = EXERCISES.filter((e) => e.type === type);
+  expect(defs.length).toBeGreaterThanOrEqual(2);
+  for (const def of defs)
+    for (const it of def.items) {
+      const choices = it.choices as string[];
+      expect(choices.length).toBeGreaterThanOrEqual(2);
+      expect(choices.length).toBeLessThanOrEqual(3);
+      expect(new Set(choices).size).toBe(choices.length);
+      expect(choices).toContain(it.answer);
+      if (type === 'troupeau') expect(String(it.prompt)).toContain('…');
+      if (String(it.prompt).includes('…')) expect(String(it.spoken)).not.toContain('…');
+      expect((it.aid as { kind: string }).kind).toBe('rule-card');
+      expect(String(it.explanation).length).toBeGreaterThan(5);
     }
 });
 

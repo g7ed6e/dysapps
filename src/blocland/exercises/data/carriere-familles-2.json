@@ -35,6 +35,7 @@
       "key": "courageux",
       "word": "courageux",
       "root": "courag",
+      "spokenRoot": "courage",
       "slot": "suffix",
       "choices": [
         "eux",
@@ -48,6 +49,7 @@
       "key": "lavable",
       "word": "lavable",
       "root": "lav",
+      "spokenRoot": "laver",
       "slot": "suffix",
       "choices": [
         "able",
@@ -61,6 +63,7 @@
       "key": "lavage",
       "word": "lavage",
       "root": "lav",
+      "spokenRoot": "laver",
       "slot": "suffix",
       "choices": [
         "age",
@@ -73,20 +76,22 @@
     {
       "key": "maisonnette",
       "word": "maisonnette",
-      "root": "maison",
+      "root": "maisonn",
+      "spokenRoot": "maison",
       "slot": "suffix",
       "choices": [
-        "nette",
+        "ette",
         "eur",
         "age"
       ],
-      "answer": "nette",
-      "meaning": "Une petite maison."
+      "answer": "ette",
+      "meaning": "Une petite maison. Le n se double."
     },
     {
       "key": "fillette",
       "word": "fillette",
       "root": "fill",
+      "spokenRoot": "fille",
       "slot": "suffix",
       "choices": [
         "ette",
@@ -100,6 +105,7 @@
       "key": "danseur",
       "word": "danseur",
       "root": "dans",
+      "spokenRoot": "danse",
       "slot": "suffix",
       "choices": [
         "eur",
@@ -126,6 +132,7 @@
       "key": "jetable",
       "word": "jetable",
       "root": "jet",
+      "spokenRoot": "jeter",
       "slot": "suffix",
       "choices": [
         "able",
@@ -136,7 +143,7 @@
       "meaning": "Que l’on peut jeter."
     }
   ],
-  "perRun": 6,
+  "perRun": 8,
   "feedback": {
     "correct": "Bien assemblé !",
     "wrong": "{word} se fabrique avec {answer}. {meaning}"

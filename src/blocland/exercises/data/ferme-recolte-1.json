@@ -15,7 +15,18 @@
         "ez"
       ],
       "answer": "er",
-      "rule": "Après « va », on peut dire « vendre » : c’est -er."
+      "rule": "Après « va », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "a-mange",
@@ -27,7 +38,18 @@
         "ez"
       ],
       "answer": "é",
-      "rule": "Après « a », on peut dire « vendu » : c’est -é."
+      "rule": "Après « a », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "vous-mangez",
@@ -39,7 +61,18 @@
         "ez"
       ],
       "answer": "ez",
-      "rule": "Avec « vous », le verbe finit par -ez."
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "veut-jouer",
@@ -51,7 +84,18 @@
         "ez"
       ],
       "answer": "er",
-      "rule": "Après « veut », on peut dire « vendre » : c’est -er."
+      "rule": "Après « veut », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "est-tombe",
@@ -63,7 +107,18 @@
         "ez"
       ],
       "answer": "é",
-      "rule": "Après « est », on peut dire « vendu » : c’est -é."
+      "rule": "Après « est », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "vous-chantez",
@@ -75,7 +130,18 @@
         "ez"
       ],
       "answer": "ez",
-      "rule": "Avec « vous », le verbe finit par -ez."
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "pour-chanter",
@@ -87,7 +153,18 @@
         "ez"
       ],
       "answer": "er",
-      "rule": "Après « pour », on peut dire « vendre » : c’est -er."
+      "rule": "Après « pour », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     },
     {
       "key": "ont-fini",
@@ -99,7 +176,18 @@
         "ez"
       ],
       "answer": "é",
-      "rule": "Après « ont », on peut dire « vendu » : c’est -é."
+      "rule": "Après « ont », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
     }
   ],
   "feedback": {

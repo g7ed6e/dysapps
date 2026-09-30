@@ -80,7 +80,7 @@ export const ILES = [
     "module": "Orthographe lexicale",
     "subject": "francais",
     "classe": "6e",
-    "description": "Écrire les mots juste, les familles de mots, les mots-outils.",
+    "description": "Écrire les mots juste, les familles de mots, les mots-outils, le sens des mots.",
     "block": "sable",
     "guardian": "la Dune vivante",
     "icon": "mountain",
@@ -113,6 +113,14 @@ export const ILES = [
         "programme": [
           "c3.fr.langue.mots-invariables"
         ]
+      },
+      {
+        "id": "facettes",
+        "title": "Facettes",
+        "description": "Trouver un mot de même sens, puis le sens d’un mot selon la phrase.",
+        "programme": [
+          "c3.fr.langue.synonymie"
+        ]
       }
     ]
   },
@@ -122,7 +130,7 @@ export const ILES = [
     "module": "Orthographe grammaticale",
     "subject": "francais",
     "classe": "6e",
-    "description": "Accorder sujet et verbe, choisir a/à, et/est, -é/-er.",
+    "description": "Accorder sujet et verbe, accorder dans le groupe nominal, choisir a/à, et/est, -é/-er.",
     "block": "terre",
     "guardian": "le Taureau de terre",
     "icon": "wheat",
@@ -152,6 +160,15 @@ export const ILES = [
         "description": "Clique la bonne terminaison.",
         "programme": [
           "c3.fr.langue.finales-en-e"
+        ]
+      },
+      {
+        "id": "troupeau",
+        "title": "Troupeau",
+        "description": "Accorder le déterminant, le nom et l’adjectif, puis trouver le sujet placé après le verbe ou fait de deux noms.",
+        "programme": [
+          "c3.fr.langue.genre-nombre",
+          "c3.fr.langue.sujet"
         ]
       }
     ]

@@ -3,7 +3,7 @@
   "biome": "carriere",
   "type": "coffre",
   "level": 2,
-  "instruction": "Écoute le mot-outil, puis choisis la bonne écriture. Ces mots sont dans le coffre : on les révise souvent.",
+  "instruction": "Écoute le mot ou la phrase, puis choisis l’écriture du mot. Ces mots-outils se révisent souvent.",
   "items": [
     {
       "key": "plusieurs",
@@ -18,6 +18,7 @@
     },
     {
       "key": "quelquefois",
+      "sentence": "Je vais quelquefois à la piscine avec mon frère.",
       "word": "quelquefois",
       "choices": [
         "quelquefois",
@@ -29,6 +30,7 @@
     },
     {
       "key": "autrefois",
+      "sentence": "Autrefois, il n’y avait pas de téléphone portable.",
       "word": "autrefois",
       "choices": [
         "autrefois",
@@ -116,7 +118,7 @@
       "hint": "derrière prend deux r et un accent grave."
     }
   ],
-  "perRun": 6,
+  "perRun": 8,
   "feedback": {
     "correct": "Bonne oreille !",
     "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"

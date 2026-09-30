@@ -4,11 +4,13 @@ import type { ScreenProps } from './registry';
 
 /**
  * Familles-craft : on assemble un mot à partir d'une racine et d'un préfixe ou d'un suffixe.
- * Champs de l'item : meaning (ce que le mot veut dire), root, slot ('prefix' | 'suffix'), choices, answer, word (le mot assemblé).
+ * Champs de l'item : meaning (ce que le mot veut dire), root, slot ('prefix' | 'suffix'), choices, answer, word (le mot assemblé),
+ * spokenRoot (facultatif : la racine lue à voix haute quand le morceau écrit ne se lit pas seul, « lav » → « laver »).
  */
 export function FamillesScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
   const item = items[0];
   const root = String(item.root);
+  const spokenRoot = String(item.spokenRoot ?? root);
   const slot = item.slot === 'suffix' ? 'suffix' : 'prefix';
   const answer = String(item.answer);
   const word = String(item.word);
@@ -24,11 +26,11 @@ export function FamillesScreen({ items, answered, onAnswer, ruledOut }: ScreenPr
         <p className="question-prompt">
           <RichText text={meaning} />
         </p>
-        <SpeakButton text={`${meaning} La racine est ${root}.`} label="Écouter" />
+        <SpeakButton text={`${meaning} La racine est ${spokenRoot}.`} label="Écouter" />
       </div>
       <p
         className="gap-word craft-word"
-        aria-label={`Mot à assembler : ${slot === 'prefix' ? 'morceau manquant, puis' : ''} ${root} ${slot === 'suffix' ? ', puis morceau manquant' : ''}`}
+        aria-label={`Mot à assembler : ${slot === 'prefix' ? 'morceau manquant, puis' : ''} ${spokenRoot} ${slot === 'suffix' ? ', puis morceau manquant' : ''}`}
       >
         {slot === 'prefix' ? gap : null}
         <span className="craft-root">{root}</span>

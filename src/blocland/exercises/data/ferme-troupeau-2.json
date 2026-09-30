@@ -1,0 +1,209 @@
+{
+  "id": "ferme-troupeau-2",
+  "biome": "ferme",
+  "type": "troupeau",
+  "level": 2,
+  "instruction": "Trouve le sujet avec « qui est-ce qui ? », même s’il est après le verbe, puis accorde le verbe. La règle est affichée.",
+  "programme": [
+    "c3.fr.langue.accord-sujet-verbe"
+  ],
+  "items": [
+    {
+      "key": "ferme-troupeau-2-0",
+      "prompt": "Dans le pré … les vaches.",
+      "spoken": "Dans le pré (mot manquant) les vaches.",
+      "choices": [
+        "dort",
+        "dorment"
+      ],
+      "answer": "dorment",
+      "hint": "Qui est-ce qui dort ? Cherche après le verbe.",
+      "explanation": "Le sujet est après le verbe : ce sont les vaches qui dorment. Pluriel : « dorment ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-1",
+      "prompt": "Sur le toit des granges … un coq.",
+      "spoken": "Sur le toit des granges (mot manquant) un coq.",
+      "choices": [
+        "chante",
+        "chantent"
+      ],
+      "answer": "chante",
+      "hint": "Qui est-ce qui chante ? Les granges ne chantent pas.",
+      "explanation": "C’est le coq qui chante, un seul : « chante ». « Des granges » dit seulement où il est.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-2",
+      "prompt": "Où … les poules ?",
+      "spoken": "Où (mot manquant) les poules ?",
+      "choices": [
+        "pond",
+        "pondent"
+      ],
+      "answer": "pondent",
+      "hint": "Qui est-ce qui pond ? Cherche après le verbe.",
+      "explanation": "Dans la question, le sujet est après le verbe : ce sont les poules qui pondent. Pluriel : « pondent ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-3",
+      "prompt": "Quand … le vétérinaire ?",
+      "spoken": "Quand (mot manquant) le vétérinaire ?",
+      "choices": [
+        "arrive",
+        "arrivent"
+      ],
+      "answer": "arrive",
+      "hint": "Qui est-ce qui arrive ? Un seul ou plusieurs ?",
+      "explanation": "Le sujet est après le verbe : c’est le vétérinaire qui arrive, un seul. Singulier : « arrive ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-4",
+      "prompt": "« Rentrez les moutons ! » … le berger.",
+      "spoken": "« Rentrez les moutons ! » (mot manquant) le berger.",
+      "choices": [
+        "crie",
+        "crient"
+      ],
+      "answer": "crie",
+      "hint": "Qui est-ce qui crie ? Ce ne sont pas les moutons.",
+      "explanation": "Après les paroles, le sujet suit le verbe : c’est le berger qui crie, un seul. Singulier : « crie ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-5",
+      "prompt": "Le chien et le chat … près du feu.",
+      "spoken": "Le chien et le chat (mot manquant) près du feu.",
+      "choices": [
+        "dort",
+        "dorment"
+      ],
+      "answer": "dorment",
+      "hint": "Qui est-ce qui dort ? Compte les animaux.",
+      "explanation": "Le chien et le chat, ça fait deux sujets : le verbe est au pluriel, « dorment ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-6",
+      "prompt": "Mon frère et ma sœur … les œufs.",
+      "spoken": "Mon frère et ma sœur (mot manquant) les œufs.",
+      "choices": [
+        "ramasse",
+        "ramassent"
+      ],
+      "answer": "ramassent",
+      "hint": "Qui est-ce qui ramasse ? Compte les personnes.",
+      "explanation": "Mon frère et ma sœur, ça fait deux sujets : le verbe est au pluriel, « ramassent ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ferme-troupeau-2-7",
+      "prompt": "Dans la cour … une oie et un canard.",
+      "spoken": "Dans la cour (mot manquant) une oie et un canard.",
+      "choices": [
+        "court",
+        "courent"
+      ],
+      "answer": "courent",
+      "hint": "Qui est-ce qui court ? Cherche après le verbe, et compte.",
+      "explanation": "Le sujet est après le verbe, et il y en a deux : une oie et un canard. Pluriel : « courent ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le sujet",
+          "lines": [
+            "Pose la question « qui est-ce qui ? » devant le verbe.",
+            "Le sujet peut être après le verbe : « Dans la mare nagent les canards. »",
+            "Deux sujets reliés par « et » : le verbe est au pluriel."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Tu as trouvé le sujet !"
+  },
+  "reward": {
+    "block": "terre",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
