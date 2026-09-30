@@ -61,11 +61,21 @@ export const COLOMBAGE = {
   /** La demi-largeur d'une décharge. */
   decharge: 0.04,
   /**
-   * Le jeu d'une décharge : ses bouts restent à cette distance (de l'axe) de ce qui borde le panneau en bas et en haut.
-   * Elle ne touche que les poteaux, jamais une sablière ni le chaperon : aucun angle aigu entre deux pièces de bois, qui
-   * se lirait comme un chevron (relecture du directeur artistique, 30/09).
+   * Le jeu d'une décharge en bas : son pied reste à cette distance (de l'axe) de ce qui borde le panneau en bas (la
+   * sablière basse). Elle ne touche que les poteaux, jamais une sablière ni le chaperon : aucun angle aigu entre deux
+   * pièces de bois, qui se lirait comme un chevron (relecture du directeur artistique, 30/09). Vue de biais, une face
+   * fuyante fait de la sablière, horizontale, une oblique qui rejoint le pied de la décharge : le jour entre elles doit
+   * donc se voir à la vue de l'île, soit deux pixels au moins quand une case en fait 16 (le colombage y est entièrement
+   * peint, voir `MOTIF_GLSL`). Avec 0,1, il faisait moins d'un pixel, et la décharge et la sablière se lisaient comme un
+   * « < » (seconde relecture, `archi-fantome-pres`).
    */
-  jeu: 0.1,
+  jeuBas: 0.2,
+  /**
+   * Le jeu d'une décharge en haut : sa tête reste à cette distance de ce qui borde le panneau en haut (la sablière haute,
+   * le chaperon, ou le haut de la case, que l'arête d'un fantôme posé au-dessus dessine pendant le chantier). Au 6e,
+   * toutes les décharges sont sous un étage : rien de bois au-dessus d'elles une fois tout construit.
+   */
+  jeuHaut: 0.1,
   /** Le bardage : la hauteur d'une planche, et la demi-largeur d'un joint. */
   planche: 0.25,
   joint: 0.012,
@@ -113,14 +123,14 @@ export function sensDeLaDecharge(cote: number): number {
 /**
  * La décharge d'une face, s'il y en a une : ses deux bouts dans la case, (u, v) de 0 à 1 le long de la face (u : la y de
  * la grille pour une face de normale x, la x pour une face de normale y ; v : la hauteur), du pied à la tête. Le même
- * panneau que `MOTIF_GLSL` : d'un poteau à l'autre, à `COLOMBAGE.jeu` au-dessus de la sablière basse et sous la sablière
- * haute ou le chaperon.
+ * panneau que `MOTIF_GLSL` : d'un poteau à l'autre, à `COLOMBAGE.jeuBas` au-dessus de la sablière basse et à
+ * `COLOMBAGE.jeuHaut` sous la sablière haute ou le chaperon.
  */
 export function decharge(motif: number): { pied: [number, number]; tete: [number, number] } | null {
   if (!(motif & (MOTIF.montante | MOTIF.descendante)) || (motif & 3) !== MOTIF.colombage) return null;
   const C = COLOMBAGE;
-  const bas = (motif & MOTIF.sabliereBasse ? C.soubassement + C.sabliere : 0) + C.jeu;
-  const haut = (motif & MOTIF.chaperon ? 1 - C.chaperon : motif & MOTIF.sabliereHaute ? 1 - C.sabliere : 1) - C.jeu;
+  const bas = (motif & MOTIF.sabliereBasse ? C.soubassement + C.sabliere : 0) + C.jeuBas;
+  const haut = (motif & MOTIF.chaperon ? 1 - C.chaperon : motif & MOTIF.sabliereHaute ? 1 - C.sabliere : 1) - C.jeuHaut;
   return motif & MOTIF.montante
     ? { pied: [C.poteau, bas], tete: [1 - C.poteau, haut] }
     : { pied: [1 - C.poteau, bas], tete: [C.poteau, haut] };
@@ -192,12 +202,11 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     float bois_ = bandeDuMotif(min(fu, 1.0 - fu), P, du);
     if ((m & ${MOTIF.sabliereBasse}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (S + 0.5 * B)), 0.5 * B, dv));
     if ((m & ${MOTIF.sabliereHaute}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (1.0 - 0.5 * B)), 0.5 * B, dv));
-    if (false) {
+    if ((m & ${MOTIF.montante | MOTIF.descendante}) != 0) {
       // Le panneau : entre les poteaux, et entre ce qui le borde en bas et en haut ; la décharge, à son jeu de l'un et
       // de l'autre (elle ne touche que les poteaux).
-      const float J = ${COLOMBAGE.jeu.toFixed(4)};
-      float bas = ((m & ${MOTIF.sabliereBasse}) != 0 ? S + B : 0.0) + J;
-      float haut = ((m & ${MOTIF.chaperon}) != 0 ? 1.0 - C : ((m & ${MOTIF.sabliereHaute}) != 0 ? 1.0 - B : 1.0)) - J;
+      float bas = ((m & ${MOTIF.sabliereBasse}) != 0 ? S + B : 0.0) + ${COLOMBAGE.jeuBas.toFixed(4)};
+      float haut = ((m & ${MOTIF.chaperon}) != 0 ? 1.0 - C : ((m & ${MOTIF.sabliereHaute}) != 0 ? 1.0 - B : 1.0)) - ${COLOMBAGE.jeuHaut.toFixed(4)};
       bool monte = (m & ${MOTIF.montante}) != 0;
       vec2 a = vec2(P, monte ? bas : haut);
       vec2 b = vec2(1.0 - P, monte ? haut : bas);
