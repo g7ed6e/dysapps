@@ -2,7 +2,7 @@
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { lireIle } from './format.mjs';
+import { lireIle, principal } from './format.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -27,17 +27,19 @@ export function produire() {
   return { sortie, iles };
 }
 
-/** Le champ qui nomme un item (le premier hors clé), pour reconnaître un item d'une version à l'autre. */
+/** Ce qui nomme un item (son premier champ hors clé, dans l'ordre du format), pour le reconnaître d'une version à l'autre. */
 function nom(it) {
-  const k = Object.keys(it).find((c) => c !== 'key' && c !== 'aid');
+  const k = principal(it);
   return k === undefined ? '' : JSON.stringify(it[k]);
 }
 
 /**
- * Les clés d'item qui désigneraient un autre item qu'avant (la clé par défaut suit le rang : insérer ou retirer un
- * item au milieu décale les suivants, et la répétition espacée de l'élève glisserait d'un item à l'autre).
+ * Les clés d'item qui glisseraient d'un item à un autre : un item déjà présent avant sous une autre clé (la clé par
+ * défaut suit le rang ; insérer, retirer ou permuter des items au milieu décalerait la répétition espacée de l'élève).
+ * Corriger le texte d'un item en gardant sa place reste permis.
  */
 export function clesDeplacees(ancien, nouveau) {
-  const avant = new Map(ancien.items.map((it) => [it.key, nom(it)]));
-  return nouveau.items.filter((it) => avant.has(it.key) && avant.get(it.key) !== nom(it)).map((it) => it.key);
+  const parNom = new Map();
+  for (const it of ancien.items) parNom.set(nom(it), [...(parNom.get(nom(it)) ?? []), it.key]);
+  return nouveau.items.filter((it) => parNom.has(nom(it)) && !parNom.get(nom(it)).includes(it.key)).map((it) => it.key);
 }

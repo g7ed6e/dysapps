@@ -159,7 +159,7 @@ function champsItem(it, defaut) {
 }
 
 /** Le premier champ d'un item hors clé : celui qui le nomme, jamais mis en commun. */
-function principal(it) {
+export function principal(it) {
   return ITEM.map((c) => c[1]).find((k) => k !== 'key' && it[k] !== undefined);
 }
 
@@ -301,7 +301,7 @@ export function lireIle(md, fichier = 'md') {
   for (i++; i < lignes.length; i++) {
     const l = lignes[i];
     if (l.trim() === '') {
-      pourTous = null; // une ligne vide finit le bloc « Pour tous les items »
+      pourTous = liste = null; // une ligne vide finit le bloc « Pour tous les items » et toute sous-liste
       continue;
     }
     if (/^# /.test(l)) {

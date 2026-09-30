@@ -70,6 +70,17 @@ describe('le format Markdown du contenu', () => {
     const avant = { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'chien' }] };
     const apres = { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'lapin' }, { key: 'e-2', word: 'chien' }] };
     expect(clesDeplacees(avant, apres)).toEqual(['e-1']);
-    expect(clesDeplacees(avant, { items: [...avant.items, { key: 'e-2', word: 'lapin' }] })).toEqual([]);
+    expect(clesDeplacees(avant, { items: [...avant.items, { key: 'e-2', word: 'lapin' }] })).toEqual([]);  });
+
+  it('laisse corriger la faute d’un item sans changer sa place', () => {
+    const avant = { items: [{ key: 'e-0', word: 'chta' }, { key: 'e-1', word: 'chien' }] };
+    expect(clesDeplacees(avant, { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'chien' }] })).toEqual([]);
+  });
+
+  it('ne voit aucun glissement quand une île passe en Markdown', () => {
+    for (const [ile, exercices] of parIle()) {
+      const relu = lireIle(ecrireIle({ id: ile }, exercices)).exercices;
+      exercices.forEach((ex, n) => expect(clesDeplacees(ex, relu[n])).toEqual([]));
+    }
   });
 });
