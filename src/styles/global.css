@@ -4279,17 +4279,96 @@ button.island-quest:active {
   margin: 0.3rem auto 0;
   text-align: left;
 }
-/* Sur un écran large, le graphique et la règle côte à côte : la question, le graphique, la règle et les réponses tiennent
-   mieux dans la hauteur d'une tablette à l'horizontale. La règle garde au moins 20rem (à la taille de texte choisie) :
-   sinon, elle passe sous le graphique, comme sur un téléphone. Les autres écrans de calcul ne changent pas. */
+/* Opération posée (Galets en colonnes) : un chiffre par case, en colonnes, sans l'espacement des lettres des Réglages
+   (les chiffres d'une colonne restent l'un sous l'autre). Une ligne par nombre, bornée en hauteur. */
+figure.posee {
+  /* Sans la marge des figures : l'écran tient dans la hauteur d'une tablette, et la règle a la place d'être à côté. */
+  margin: 0 auto;
+}
+.posee table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+.posee td {
+  min-width: 0.9em;
+  padding: 0 0.05rem;
+  text-align: center;
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.posee td.posee-comma {
+  min-width: 0.25em;
+  padding: 0;
+}
+.posee td.posee-sign {
+  padding-right: 0.3rem;
+  font-weight: 700;
+}
+.posee tr.posee-line td {
+  border-bottom: 3px solid currentColor;
+}
+.posee .unknown {
+  background: var(--yellow);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.posee td.posee-result {
+  text-align: right;
+  padding-right: 0.3rem;
+}
+.posee td.posee-box {
+  /* Les cases des lignes de la multiplication : vides, en pointillés (un guide pour le cahier, pas un champ à toucher). */
+  height: 1em;
+  border: 2px dashed var(--muted);
+}
+.posee tr.posee-partial td {
+  /* Des lignes de guide, un peu moins hautes que celles des nombres : l'écran tient dans la hauteur d'une tablette. */
+  line-height: 1;
+}
+.posee .posee-note {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  text-align: center;
+}
+.posee-division td.posee-last {
+  /* Un peu d'air entre le dernier chiffre du dividende et le trait du diviseur. */
+  padding-right: 0.3em;
+}
+.posee-division td.posee-divisor {
+  border-left: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  padding: 0.05rem 0.6rem;
+  text-align: left;
+}
+.posee-division td.posee-quotient {
+  border-left: 3px solid currentColor;
+  padding: 0.05rem 0.6rem;
+  text-align: left;
+}
+.posee-division td.posee-remainder {
+  text-align: right;
+  padding: 0.2rem 0.4rem 0 0;
+}
+.posee-division .posee-remainder .unknown {
+  padding: 0 0.3rem;
+  font-size: 1.1rem;
+}
+/* Sur un écran large, le graphique (ou l'opération posée) et la règle côte à côte : la question, la figure, la règle et
+   les réponses tiennent mieux dans la hauteur d'une tablette à l'horizontale. La règle garde au moins 20rem (à la taille
+   de texte choisie) : sinon, elle passe sous la figure, comme sur un téléphone. Les autres écrans de calcul ne changent pas. */
 @media (min-width: 800px) {
-  .panel.calcul:has(> .calcul-figure .graph) {
+  .panel.calcul:has(> .calcul-figure .graph),
+  .panel.calcul:has(> .calcul-figure .posee) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     column-gap: 1.2rem;
   }
-  .panel.calcul:has(> .calcul-figure .graph) > * {
+  .panel.calcul:has(> .calcul-figure .graph) > *,
+  .panel.calcul:has(> .calcul-figure .posee) > * {
     flex: 1 1 100%;
   }
   .panel.calcul:has(> .calcul-figure .graph) > .calcul-figure {
@@ -4297,8 +4376,31 @@ button.island-quest:active {
     flex: 0 1 min(24rem, 45vh);
     min-width: 0;
   }
-  .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid {
+  .panel.calcul:has(> .calcul-figure .posee) {
+    column-gap: 0.8rem;
+  }
+  .panel.calcul:has(> .calcul-figure .posee) > .calcul-figure {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0.2rem 0 0.4rem;
+  }
+  /* La règle de la division tient sur trois lignes, une par règle, aux réglages par défaut. */
+  .panel.calcul:has(> .calcul-figure .posee) > .calcul-aid {
+    padding-inline: 0.6rem;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid,
+  .panel.calcul:has(> .calcul-figure .posee) > .calcul-aid {
     flex: 1 1 20rem;
+  }
+  /* L'opération posée : des réponses courtes (« 147 reste 8 »), assez larges pour tenir chacune sur une ligne, et
+     côte à côte quand elles y tiennent, pour que l'écran tienne sans défiler ; avec un texte plus grand, elles passent
+     à deux par ligne. */
+  .panel.calcul:has(> .calcul-figure .posee) > .choices.short {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+    gap: 0.8rem;
+  }
+  .panel.calcul:has(> .calcul-figure .posee) > .choices.short > .choice {
+    padding-inline: 0.5rem;
   }
 }
 

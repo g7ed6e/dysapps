@@ -26,7 +26,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.fr.oral.comprendre-s-exprimer': HORS(ORAL),
   'c3.fr.ecriture.rediger': HORS(ECRITURE_LIBRE),
   'c3.fr.culture.entrees': HORS('Lecture d’œuvres complètes en classe : la mission Lecture du portail en propose des extraits du domaine public, pas le parcours des entrées.'),
-  'c3.fr.lecture.reprises': A_COUVRIR('Pas encore de mission de compréhension en 6e : prévue dans la Tour du lecteur (Étages du sens).'),
   'c3.fr.lecture.documents': A_COUVRIR('Le document composite (texte et tableau, nature et source) est travaillé en 3e à l’Observatoire des textes (Inférences, niveau 3), pas encore en 6e : prévu avec une mission de données de l’île Grandeurs.'),
   'c3.fr.langue.attribut-gn': A_COUVRIR('Attribut, épithète et complément du nom : prévus dans une mission de grammaire de 6e (Tour du lecteur, Vitraux des phrases).'),
   'c3.fr.langue.types-formes': A_COUVRIR('Types et formes de phrases : prévus dans une mission de grammaire de 6e (Tour du lecteur, Vitraux des phrases).'),

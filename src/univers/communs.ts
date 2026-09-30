@@ -78,6 +78,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Un nénuphar coupé en quatre : chaque part, c’est un quart.',
       'Plus il y a de parts, plus chaque part est petite. Même pour les moucherons.',
       'Ma hutte est en galets. Chaque fraction en apporte un.',
+      'Je partage mes moucherons en parts égales. Le reste est toujours plus petit que le nombre de parts.',
     ],
     home: 'Ma hutte de galets est finie ! Une moitié pour dormir, une moitié pour chanter.',
   },

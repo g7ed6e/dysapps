@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Graph, graphPoints, graphSegment } from './Aids';
+import { ColumnOperation, Graph, LongDivision, RuleCard, graphPoints, graphSegment } from './Aids';
 import { AID_COMPONENTS } from './maths';
 
 const FRAME = { xMin: -4, xMax: 4, yMin: -4, yMax: 4 };
@@ -73,5 +73,82 @@ describe('Graph', () => {
     expect(container.querySelectorAll('.graph-line')).toHaveLength(1);
     // Rien d'animé.
     expect(container.querySelector('animate, animateTransform, animateMotion')).toBeNull();
+  });
+});
+
+describe('Opérations posées', () => {
+  it('sont des aides connues de l’écran de calcul', () => {
+    expect(AID_COMPONENTS['column-operation']).toBe(ColumnOperation);
+    expect(AID_COMPONENTS['long-division']).toBe(LongDivision);
+  });
+
+  it('pose l’addition virgule sous virgule, un chiffre par case, le résultat à trouver', () => {
+    const { container } = render(<ColumnOperation op="+" rows={['12,5', '3,25']} />);
+    screen.getByRole('img', { name: 'Addition posée : 12,5 plus 3,25, virgule sous virgule. Le résultat est à trouver.' });
+    const rows = [...container.querySelectorAll('tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.textContent));
+    // Le signe, deux chiffres avant la virgule, la virgule, deux chiffres après : chaque colonne garde son rang.
+    expect(rows[0]).toEqual(['', '1', '2', ',', '5', '']);
+    expect(rows[1]).toEqual(['+', '', '3', ',', '2', '5']);
+    expect(rows[2]).toEqual(['', '?']);
+    expect(container.querySelector('tr.posee-line')).toBe(container.querySelectorAll('tr')[1]);
+    expect(container.querySelector('.posee-note')).toBeNull();
+    expect(container.querySelectorAll('.unknown')).toHaveLength(1);
+  });
+
+  it('pose une multiplication d’entiers chiffre sous chiffre, avec ses deux lignes à remplir, sans colonne de virgule', () => {
+    const { container } = render(<ColumnOperation op="×" rows={['47', '23']} />);
+    screen.getByRole('img', {
+      name: 'Multiplication posée : 47 fois 23, chiffre sous chiffre. 2 lignes à poser sur ton cahier, la ligne des dizaines décalée d’un rang, avec son 0. Le résultat est à trouver.',
+    });
+    const trs = [...container.querySelectorAll('tr')];
+    const rows = trs.map((tr) => [...tr.querySelectorAll('td')].map((td) => td.textContent));
+    // Quatre colonnes : le produit peut en avoir quatre, et les cases vides ne disent pas combien de chiffres il a.
+    expect(rows).toEqual([
+      ['', '', '', '4', '7'],
+      ['×', '', '', '2', '3'],
+      ['', '', '', '', ''],
+      ['+', '', '', '', '0'],
+      ['', '?'],
+    ]);
+    expect(trs[2].querySelectorAll('.posee-box')).toHaveLength(4);
+    expect(trs[3].querySelectorAll('.posee-box')).toHaveLength(3);
+    expect([...container.querySelectorAll('tr.posee-line')]).toEqual([trs[1], trs[3]]);
+    expect(container.querySelector('.posee-comma')).toBeNull();
+    expect(container.querySelectorAll('.unknown')).toHaveLength(1);
+    // Une phrase visible : les cases guident, elles se posent sur le cahier.
+    expect(container.querySelector('.posee-note')?.textContent).toBe('Pose ces lignes sur ton cahier.');
+  });
+
+  it('ne dessine rien sans nombre à poser', () => {
+    const { container } = render(<ColumnOperation op="+" rows={[]} />);
+    expect(container.innerHTML).toBe('');
+  });
+
+  it('pose la division en potence : le dividende, le diviseur, le quotient et le reste à trouver', () => {
+    const { container } = render(<LongDivision dividend="624" divisor="6" remainder />);
+    screen.getByRole('img', { name: 'Division posée de 624 par 6 : le quotient et le reste sont à trouver.' });
+    const [top, bottom] = [...container.querySelectorAll('tr')];
+    expect([...top.querySelectorAll('td')].map((td) => td.textContent)).toEqual(['6', '2', '4', '6']);
+    expect(top.querySelector('.posee-divisor')?.textContent).toBe('6');
+    expect(bottom.querySelector('.posee-quotient')?.textContent).toBe('?');
+    expect(bottom.querySelector('.posee-remainder')?.textContent).toBe('reste ?');
+    // Le dernier chiffre du dividende, un peu écarté du trait du diviseur.
+    expect(top.querySelector('.posee-last')?.textContent).toBe('4');
+  });
+
+  it('garde la virgule du dividende dans sa case ; sans reste demandé, rien sous le dividende', () => {
+    const { container } = render(<LongDivision dividend="14,4" divisor="4" />);
+    screen.getByRole('img', { name: 'Division posée de 14,4 par 4 : le quotient est à trouver.' });
+    const top = container.querySelector('tr')!;
+    expect([...top.querySelectorAll('td')].map((td) => td.textContent)).toEqual(['1', '4', ',', '4', '4']);
+    expect(container.querySelector('.posee-remainder')).toBeNull();
+    expect(container.querySelectorAll('.unknown')).toHaveLength(1);
+  });
+});
+
+describe('RuleCard', () => {
+  it('lie la ponctuation haute à son mot : les deux-points ne passent jamais seuls en début de ligne', () => {
+    const { container } = render(<RuleCard title="Soustraction posée" lines={['Chiffre du haut trop petit : ajoute 10 en haut.']} />);
+    expect(container.querySelector('li')?.textContent).toBe('Chiffre du haut trop petit\u00a0: ajoute 10 en haut.');
   });
 });

@@ -64,10 +64,19 @@ export function ecouterVoix(rappel: () => void): () => void {
   return () => synthese.removeEventListener('voiceschanged', rappel);
 }
 
+/**
+ * Le texte tel que la voix doit le lire : les milliers écrits avec une espace insécable (« 3 822 », voir `fmt`) sont
+ * recollés (« 3822 »), sinon certaines voix lisent « trois, huit cent vingt-deux ». L'affichage ne change pas, et une
+ * espace ordinaire entre deux nombres (« 12 et 15 ») reste une séparation.
+ */
+export function pourLaVoix(text: string): string {
+  return text.replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1');
+}
+
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {
   if (!isSpeechAvailable() || !text.trim()) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
+  const utterance = new SpeechSynthesisUtterance(pourLaVoix(text));
   utterance.lang = LOCALES[lang];
   utterance.rate = rate;
   const voice = pickVoice(window.speechSynthesis.getVoices(), lang);

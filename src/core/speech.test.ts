@@ -1,4 +1,4 @@
-import { langAttr, langueVivante, pickVoice } from './speech';
+import { langAttr, langueVivante, pickVoice, pourLaVoix } from './speech';
 
 const voice = (lang: string, localService = false, name = lang) => ({ lang, localService, name }) as SpeechSynthesisVoice;
 
@@ -42,4 +42,14 @@ it('reconnaît les langues vivantes lues par leur voix, et rien d’autre', () =
   expect(langueVivante('fr')).toBeUndefined();
   expect(langueVivante('toString')).toBeUndefined();
   expect(langueVivante(undefined)).toBeUndefined();
+});
+
+describe('le texte lu à voix haute', () => {
+  it('recolle les milliers écrits avec une espace insécable, sans toucher aux autres espaces', () => {
+    expect(pourLaVoix('3\u202f822')).toBe('3822');
+    expect(pourLaVoix('1\u00a0234\u202f567 reste\u00a08')).toBe('1234567 reste\u00a08');
+    expect(pourLaVoix('12 et 345')).toBe('12 et 345');
+    expect(pourLaVoix('12\u00a0km')).toBe('12\u00a0km');
+    expect(pourLaVoix('3\u202f82')).toBe('3\u202f82');
+  });
 });

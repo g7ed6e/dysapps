@@ -176,10 +176,10 @@ export const ILES = [
   {
     "id": "tour",
     "name": "Tour du lecteur",
-    "module": "Fluence de lecture",
+    "module": "Lecture et compréhension",
     "subject": "francais",
     "classe": "6e",
-    "description": "Lire à voix haute, étage par étage.",
+    "description": "Lire à voix haute, étage par étage, et savoir de qui ou de quoi parle un texte.",
     "block": "verre",
     "guardian": "la Chouette de verre",
     "icon": "castle",
@@ -193,6 +193,15 @@ export const ILES = [
         "description": "Lis un texte court, un paragraphe = un étage.",
         "programme": [
           "c3.fr.lecture.fluidite"
+        ]
+      },
+      {
+        "id": "etages",
+        "title": "Étages du sens",
+        "description": "Lis un texte court et trouve de qui ou de quoi il parle.",
+        "programme": [
+          "c3.fr.lecture.reprises",
+          "c3.fr.lecture.explicite"
         ]
       }
     ]
@@ -253,7 +262,7 @@ export const ILES = [
     "module": "Fractions",
     "subject": "maths",
     "classe": "6e",
-    "description": "Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.",
+    "description": "Lire, comparer et partager des fractions, puis poser les opérations et la division, toujours avec la figure sous les yeux.",
     "block": "galet",
     "guardian": "le Brochet d’argent",
     "icon": "pizza",
@@ -284,6 +293,14 @@ export const ILES = [
         "programme": [
           "c3.ma.nombres.fractions-designations",
           "c3.ma.nombres.fractions-comparer"
+        ]
+      },
+      {
+        "id": "colonnes",
+        "title": "Galets en colonnes",
+        "description": "Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.",
+        "programme": [
+          "c3.ma.nombres.calcul-pose"
         ]
       }
     ]

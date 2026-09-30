@@ -50,9 +50,11 @@ interface Spec {
   instruction: string;
   generators: ItemGenerator[];
   block: BlockId;
+  /** L’XP d’une réussite : 14 au cycle 4, 12 pour les missions de 6e (Rivière des fractions). */
+  xp?: number;
 }
 
-export function defineData({ biome, type, level, instruction, generators, block }: Spec): ExerciseDef {
+export function defineData({ biome, type, level, instruction, generators, block, xp = 14 }: Spec): ExerciseDef {
   const id = `${biome}-${type}-${level}`;
   return {
     id,
@@ -64,7 +66,7 @@ export function defineData({ biome, type, level, instruction, generators, block 
     // Chaque partie tire d'autres nombres : la graine change à chaque partie.
     generate: (seed) => buildDataItems(seed, generators),
     feedback: { correct: 'Bien calculé !', wrong: '{explanation}' },
-    reward: { block, amount: 4, xp: 14 },
+    reward: { block, amount: 4, xp },
     adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
   };
 }
