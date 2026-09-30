@@ -15,6 +15,7 @@
         "3 h 15",
         "3 h 30"
       ],
+      "choicesLang": "fr",
       "answer": "3 h 30",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "half past three = la demie après 3 h : 3 h 30.",
@@ -30,8 +31,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-1",
@@ -42,6 +42,7 @@
         "6 h 15",
         "6 h 45"
       ],
+      "choicesLang": "fr",
       "answer": "6 h 15",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "quarter past six = 6 h et quart : 6 h 15.",
@@ -57,8 +58,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-2",
@@ -69,6 +69,7 @@
         "9 h 15",
         "9 h 45"
       ],
+      "choicesLang": "fr",
       "answer": "8 h 45",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "quarter to nine = 9 h moins le quart : 8 h 45.",
@@ -84,8 +85,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-3",
@@ -96,6 +96,7 @@
         "5 h 30",
         "12 h 05"
       ],
+      "choicesLang": "fr",
       "answer": "5 h 00",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "five o’clock = 5 h pile.",
@@ -111,8 +112,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-4",
@@ -123,6 +123,7 @@
         "7 h 10",
         "10 h 07"
       ],
+      "choicesLang": "fr",
       "answer": "7 h 10",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "ten past seven = 10 minutes après 7 h : 7 h 10.",
@@ -138,8 +139,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-5",
@@ -150,6 +150,7 @@
         "4 h 20",
         "4 h 40"
       ],
+      "choicesLang": "fr",
       "answer": "3 h 40",
       "hint": "Past = après l’heure, to = avant l’heure.",
       "explanation": "twenty to four = 4 h moins 20 : 3 h 40.",
@@ -165,8 +166,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-6",
@@ -177,6 +177,7 @@
         "le 13 mai",
         "le 30 mai"
       ],
+      "choicesLang": "fr",
       "answer": "le 3 mai",
       "hint": "Écoute le jour : third, thirteenth ou thirtieth ?",
       "explanation": "the third of May = le 3 mai (third = troisième).",
@@ -192,8 +193,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "baie-numbers-2-7",
@@ -204,6 +204,7 @@
         "le 12 juin",
         "le 20 juin"
       ],
+      "choicesLang": "fr",
       "answer": "le 20 juin",
       "hint": "Écoute le jour : twentieth, twelfth ou second ?",
       "explanation": "the twentieth of June = le 20 juin (twentieth = vingtième).",
@@ -219,8 +220,7 @@
             "La date : the third of May = le 3 mai."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

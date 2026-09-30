@@ -17,6 +17,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | **U0** à **U6** | Les univers | [Plusieurs univers](../conception/univers.md), §6 |
 | **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../conception/cadrage-contenu.md), la LV2 |
 | **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
+| **M1** à **M5** | Le contenu écrit en Markdown, source du jeu et du site | [Contenu en Markdown](../contenu/README.md) et ci-dessous |
 | **GD-n** | Les propositions de game design | [Game design](game-design/propositions/modele.md) |
 
 À ne pas confondre : **DA-01** à **DA-05** (avec un zéro) sont les règles de direction artistique du dossier Archipéo (`design/archipeo/direction-artistique.md`), **DA-1** à **DA-33** les retouches du directeur artistique.
@@ -93,6 +94,10 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 | --- | --- | --- |
 | LV2-1 (socle, réglage), LV2-2 et LV2-3 (Relais des voyageurs, 5e), LV2-4 (Jardin des heures, 4e) | Fusionnées (#205, #215, #221, #232) | Rééquilibrer les réponses de `relais-*-2` (6 sur 8 au dernier rang) |
 | **LV2-5** (Refuge des carnets, 3e) | En cours dans le fil « LV2 » : relu, validé par le directeur artistique sous une condition, pull request à ouvrir | Le fil écrit ensuite le plan de tout ce qui reste, et s’arrête |
+
+### Le contenu en Markdown (M)
+
+Décision du mainteneur (30 septembre 2026) : le contenu s’écrit en Markdown dans `docs/contenu/`, et ces fichiers produisent à la fois les JSON du jeu et les pages du site. Étapes : **M1** pilote sur une île (format, générateur, vérification en CI : la Baie des mots, **en cours**) ; **M2** tous les exercices (après la PR LV2 #252) ; **M3** les îles et missions de `biomes.ts` dans l’en-tête des fichiers ; **M4** les pages du site produites depuis le Markdown ; **M5** les plans des bâtiments et les missions du portail. Les répliques des univers restent hors plan pour l’instant. Garantie à chaque étape : les JSON produits redonnent exactement les mêmes exercices, avec les mêmes identifiants.
 
 ### Le contenu (C)
 

@@ -50,6 +50,9 @@ jobs:
       # La page des personnages du pilotage (hors du site) suit les données du jeu.
       - name: Vérifier la page des personnages du pilotage
         run: npm run pilotage:personnages -- --check
+      # Les JSON des îles écrites en Markdown (docs/contenu/) suivent leur Markdown.
+      - name: Vérifier les exercices écrits en Markdown
+        run: npm run contenu -- --check
       - run: npm test
       # L'application, telle que Cloudflare la construit (base « / ») : vérification seulement, rien n'est publié d'ici.
       - run: npm run build
