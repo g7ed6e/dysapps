@@ -1,8 +1,8 @@
 // Captures d'écran de la documentation : lance l'application (serveur Vite de développement), la joue dans Chromium
-// (Playwright) avec des parties préparées, et enregistre les images dans docs/_captures/ (copiées par prepare.mjs
-// dans le site). À relancer quand un écran change : `npm run docs:captures` (ou `npm run docs:captures -- menu carte`
+// (Playwright) avec des parties préparées, et enregistre les images dans www/_captures/ (copiées par prepare.mjs
+// dans le site). À relancer quand un écran change : `npm run www:captures` (ou `npm run www:captures -- menu carte`
 // pour quelques-unes). Chromium : celui de Playwright (PLAYWRIGHT_BROWSERS_PATH), ou CHROMIUM_PATH.
-// Les images ne sont pas dans le dépôt (docs/_captures/ est ignoré) : la CI les refait dans un job à part (captures)
+// Les images ne sont pas dans le dépôt (www/_captures/ est ignoré) : la CI les refait dans un job à part (captures)
 // avant de construire la documentation, qui ne lance pas le jeu elle-même.
 import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -11,7 +11,7 @@ import { chromium } from 'playwright-core';
 import { capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
-const OUT = join(root, 'docs', '_captures');
+const OUT = join(root, 'www', '_captures');
 /** Une heure de jour, pour que le ciel et la lumière soient les mêmes à chaque capture. */
 const DAY = new Date('2026-09-28T10:30:00');
 const TABLET = { width: 1024, height: 768 };
@@ -146,7 +146,7 @@ const SHOTS = [
 /**
  * Les réglages extrêmes (rendez-vous 4 du lot 6, référent dys) : OpenDyslexic en 32 px, interlignage et espacements
  * au plus grand, sans voix, et l'appareil qui demande de réduire les animations. Ces captures ne vont pas au manuel :
- * elles ne se prennent que nommées (`npm run docs:captures -- extreme-carte-nuit`), pour une relecture.
+ * elles ne se prennent que nommées (`npm run www:captures -- extreme-carte-nuit`), pour une relecture.
  */
 // Les bornes de sanitizeSettings (src/core/settings.ts) : une valeur au-delà serait ramenée sans erreur.
 const EXTREMES = { font: 'opendyslexic', fontSize: 32, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5, autoRead: false };

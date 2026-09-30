@@ -276,7 +276,7 @@
   border-radius: 4px !important;
 }
 
-/* Les captures d'écran du jeu (docs/_captures/) : un cadre, pour les détacher de la page ; celles du téléphone,
+/* Les captures d'écran du jeu (www/_captures/) : un cadre, pour les détacher de la page ; celles du téléphone,
    étroites, à leur taille. */
 .vp-doc img[src*="/captures/"] {
   display: block;

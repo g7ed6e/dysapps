@@ -11,7 +11,7 @@ const capFirst = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 
 const root = process.cwd();
 
-/** Charge les modules du jeu et renvoie les pages générées : { path, title, body } (chemin relatif à docs/). */
+/** Charge les modules du jeu et renvoie les pages générées : { path, title, body } (chemin relatif à www/). */
 export async function generatePages() {
   const server = await createServer({
     configFile: false,
@@ -547,7 +547,7 @@ function islandPage(b, d) {
 }
 
 /**
- * La page « Personnages et Gardiens » du pilotage (pilotage/game-design/personnages.md, hors du site de documentation,
+ * La page « Personnages et Gardiens » du pilotage (docs/pilotage/game-design/personnages.md, hors du site de documentation,
  * qui s'adresse aux élèves et aux adultes qui les accompagnent) : `npm run pilotage:personnages`.
  */
 export async function generatePersonnages() {

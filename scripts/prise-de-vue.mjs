@@ -1,4 +1,4 @@
-// La prise de vue commune aux captures de la documentation (scripts/docs/captures.mjs) et aux mesures du rendu
+// La prise de vue commune aux captures de la documentation (scripts/www/captures.mjs) et aux mesures du rendu
 // (scripts/rendu/mesures.mjs). En rendu logiciel (SwiftShader, sans carte graphique), la 3D se redessine sans arrêt et
 // Chromium peine à prendre l'image pendant ce temps : 10 à 15 s par capture. Figer la boucle de rendu (les
 // `requestAnimationFrame` de la page) juste avant la ramène à environ 3 s, pour la même image : la dernière dessinée.
