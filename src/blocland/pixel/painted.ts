@@ -274,10 +274,11 @@ export function nuanceDuMotif(motif: Motif, gx: number, gy: number): number {
   // devant un rang sur deux, en quinconce (dessus-dessous).
   if (motif === 'tresse') return mod(gy, 4) >= 2 || mod(gx + (mod(Math.floor(gy / 4), 2) ? 4 : 0), 8) >= 6 ? JOINT : 1;
   // Le bardeau du Refuge : des rangs de quatre pixels, des bardeaux de huit décalés de quatre d'un rang à l'autre, le
-  // bas de chaque rang en joint, et ses deux coins coupés un pixel plus haut (le bas arrondi).
+  // bas de chaque rang en joint, et deux pixels coupés à chacun de ses coins un pixel plus haut (le bas arrondi) : les
+  // mêmes joints que la texture de world/pixels.ts (`bardeau`), un test les compare.
   if (motif === 'ecailles') {
     const u = mod(gx + (mod(Math.floor(gy / 4), 2) ? 4 : 0), 8);
-    return mod(gy, 4) === 3 || (mod(gy, 4) === 2 && (u === 0 || u === 7)) ? JOINT : 1;
+    return mod(gy, 4) === 3 || (mod(gy, 4) === 2 && (u <= 1 || u >= 6)) ? JOINT : 1;
   }
   if (motif === 'pierres') return mod(gy, 16) >= 14 || mod(gx + (mod(Math.floor(gy / 16), 2) ? 8 : 0), 16) >= 14 ? JOINT : 1;
   return 1;

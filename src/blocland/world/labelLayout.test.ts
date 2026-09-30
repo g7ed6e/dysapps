@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLabels, separateMark, type LabelBox } from './labelLayout';
+import { boutonsDuHaut, etiquettesVisibles, layoutLabels, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -98,5 +98,25 @@ describe("l'étiquette d'une île", () => {
     const plain = measureIslandLabel(ctx, 'Mine', 40);
     const withState = measureIslandLabel(ctx, 'Mine', 40, { id: 'a-explorer', name: 'À explorer' });
     expect(withState.w).toBeGreaterThan(plain.w);
+  });
+});
+
+describe('hors de la Carte, les étiquettes qui se montrent', () => {
+  const cadre = { w: 1024, h: 688 };
+  it('une étiquette entière, loin des boutons, se montre', () => {
+    expect(etiquettesVisibles([{ x: 400, y: 200, w: 200, h: 30 }], cadre, [boutonsDuHaut(cadre.w)])).toEqual([true]);
+  });
+  it('coupée par un bord, ou sous la pause et le bouton de l’archipel, elle se tait', () => {
+    const boxes: LabelBox[] = [
+      { x: 40, y: 200, w: 200, h: 30 },
+      { x: 400, y: 5, w: 200, h: 30 },
+      { x: 960, y: 40, w: 180, h: 30 },
+      { x: 880, y: 120, w: 200, h: 30 },
+    ];
+    expect(etiquettesVisibles(boxes, cadre, [boutonsDuHaut(cadre.w)])).toEqual([false, false, false, false]);
+  });
+  it('une étiquette entière au centre fractionnaire reste visible (arrondi de la projection)', () => {
+    // Relevée sur la vue de l'archipel depuis le Château : l'aire hors cadre n'y est pas un zéro exact.
+    expect(etiquettesVisibles([{ x: 487.3, y: 181.2, w: 259.65000000000003, h: 36.9 }], { w: 1024, h: 688 }, [boutonsDuHaut(1024)])).toEqual([true]);
   });
 });

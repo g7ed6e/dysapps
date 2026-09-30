@@ -801,11 +801,11 @@ export const BIOMES: BiomeDef[] = [
     exercises: [
       // Même ordre dans les deux langues : la borne de même rang ouvre la mission de la LV2 choisie.
       { id: 'es-viaje', title: '¿Adónde fuiste?', description: 'Le voyage au passé : fui, visitó ; puis hier ou demain, ir a + infinitif.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },
-      { id: 'es-relato', title: 'Historias de viaje', description: 'Une petite histoire de voyage, puis sa trame : primero, luego, al final.', programme: ['c4.es.lire.recit', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-relato', title: 'Historias de viaje', description: 'Une petite histoire de voyage, puis l’ordre de l’histoire : primero, luego, al final.', programme: ['c4.es.lire.recit', 'c4.es.langue.lexique'], lv2: 'es' },
       { id: 'es-paises', title: 'Países y ciudades', description: 'Les documents du voyage, puis comparer : más, menos, tan… como.', programme: ['c4.es.culture.voyages-rencontres', 'c4.es.lire.informations', 'c4.es.langue.groupe-nominal', 'c4.es.langue.lexique'], lv2: 'es' },
       { id: 'es-porque', title: 'Porque, cuando, pero', description: 'Relier deux idées, puis les faux amis.', programme: ['c4.es.langue.phrase-complexe', 'c4.es.langue.lexique'], lv2: 'es' },
       { id: 'de-reise', title: 'Wohin bist du gefahren?', description: 'Le Perfekt avec haben, puis haben ou sein.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
-      { id: 'de-geschichte', title: 'Reisegeschichten', description: 'Une petite histoire de voyage, puis sa trame : zuerst, dann, am Ende.', programme: ['c4.de.lire.recit', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-geschichte', title: 'Reisegeschichten', description: 'Une petite histoire de voyage, puis l’ordre de l’histoire : zuerst, dann, am Ende.', programme: ['c4.de.lire.recit', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-unterwegs', title: 'Unterwegs', description: 'Mit + datif, puis comparer : größer als, so… wie.', programme: ['c4.de.culture.voyages-rencontres', 'c4.de.lire.informations', 'c4.de.langue.groupe-nominal', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-weil-dass', title: 'Weil und dass', description: 'Weil et dass : le verbe à la fin ; puis les faux amis.', programme: ['c4.de.langue.phrase-complexe', 'c4.de.langue.lexique'], lv2: 'de' },
     ],

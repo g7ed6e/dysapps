@@ -13,11 +13,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "4e7c3078",
-  "cubes": "1b067f81",
-  "cubes avec créatures": "6308bea8",
-  "décor posé sur la pente": "1c14daf0",
+  "cubes": "fcc04c08",
+  "cubes avec créatures": "7dcbf275",
+  "décor posé sur la pente": "018eaafc",
   "navire": "8b55e91e",
-  "sol (facettes)": "a625da41",
+  "sol (facettes)": "660d342d",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "c06c5990",
 }
@@ -25,12 +25,12 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "65d5e1dc",
-  "cubes": "95d9e30b",
-  "cubes avec créatures": "f6221386",
-  "décor posé sur la pente": "4d08fdbd",
+  "créatures et Gardiens": "d584f3fe",
+  "cubes": "43273400",
+  "cubes avec créatures": "0d840f85",
+  "décor posé sur la pente": "cc5aeb9f",
   "navire": "8b55e91e",
-  "sol (facettes)": "a356b27d",
+  "sol (facettes)": "d1c0bf51",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "f042593a",
 }
@@ -39,11 +39,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "08503f64",
-  "cubes avec créatures": "08503f64",
-  "décor posé sur la pente": "892e7d17",
+  "cubes": "35ae8497",
+  "cubes avec créatures": "35ae8497",
+  "décor posé sur la pente": "d036ac83",
   "navire": "4e3d19b2",
-  "sol (facettes)": "676bc6d4",
+  "sol (facettes)": "bbf1abdf",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "974f3796",
 }
@@ -278,9 +278,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "plaine-cour": "45911060",
   "plaine-nid": "2f052ce1",
   "plaine-toit": "9180c499",
-  "refuge-pigeonnier": "0b0b0891",
-  "refuge-poste": "6f746fa6",
-  "refuge-salle": "5385e3c8",
+  "refuge-pigeonnier": "980f4bd1",
+  "refuge-poste": "372fb85a",
+  "refuge-salle": "a7efd0c6",
   "relais-auberge": "937c2204",
   "relais-ecurie": "011c6a1d",
   "relais-fontaine": "c08775ff",

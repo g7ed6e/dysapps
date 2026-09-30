@@ -89,7 +89,9 @@ export const PAPILLON_DE_CUIVRE = {
     [0, 3.9],
     [1.6, 4.2],
     [2.3, 6.2],
-    [2.2, 8.0],
+    // La pointe arrondie, coupée en deux sommets (consultant Archipéo) : le V reste franc, sans pointe de lance.
+    [2.4, 7.3],
+    [1.8, 8.0],
     [0, 5.1],
   ] as [number, number][],
   basse: [

@@ -31,6 +31,7 @@ import { kitReady, launchedStages, stageBuildingAt } from './vehicle';
 import { groundLevelAt } from './ground';
 import { CREATURE_CUBES } from './personnages/creatures';
 import { GUARDIAN_CUBES } from './personnages/gardiens';
+import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
@@ -575,6 +576,34 @@ export const CREATURE_STEPS: [number, number][] = [
   [-1, 1],
 ];
 
+/**
+ * Les personnages en cubes tournés d'un quart de tour dans le monde (sens direct, vu d'en haut) : le visage, côté y = 0
+ * du modèle, passe du côté des x croissants. Au Refuge des carnets, la caméra de l'île et celle de l'archipel pivotent à
+ * fond vers l'ouest (`viewYaw`) et regardent l'île par son côté est : Timbre la regarde de trois quarts, et le Papillon
+ * lui montre ses ailes de biais, jamais par la tranche (DA, retouches LV2-5). Orientation fixe, sans animation ; les
+ * portraits (défi, bulle, panneau) gardent le modèle de face.
+ */
+export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { refuge: 1 };
+function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
+  let out = cubes;
+  for (let i = 0; i < quarts; i++) {
+    const maxY = Math.max(...out.map((c) => c.y));
+    out = out.map((c) => ({ ...c, x: maxY - c.y, y: c.x }));
+  }
+  return out;
+}
+const personnagesTournes = new Map<string, CubeDeModele[]>();
+const tourne = (genre: string, id: BiomeId, cubes: CubeDeModele[]) => {
+  const cle = `${genre}:${id}`;
+  let t = personnagesTournes.get(cle);
+  if (!t) personnagesTournes.set(cle, (t = tourner(cubes, QUARTS_DE_TOUR[id])));
+  return t;
+};
+/** La créature d'une île telle qu'elle se tient dans le monde (voir `QUARTS_DE_TOUR`). */
+export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature', id, CREATURE_CUBES[id]);
+/** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR`). */
+export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
+
 // Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
 const creatureSpots = new Map<string, CreatureSpot>();
 
@@ -614,7 +643,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     const c = scenery.get(`${x},${y}`);
     return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
-  const cubes = CREATURE_CUBES[id];
+  const cubes = creatureDuMonde(id);
   const fits = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
@@ -644,7 +673,7 @@ export function creaturePlacements(
     .map((b) => {
       const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
       const spot = creatureSpot(b.id);
-      return { id: b.id, cubes: CREATURE_CUBES[b.id], origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
+      return { id: b.id, cubes: creatureDuMonde(b.id), origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
     });
 }
 
@@ -675,7 +704,7 @@ export function bossIsletCenter(id: BiomeId): { x: number; y: number; z: number 
 
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
 function guardianOffset(id: BiomeId): { x: number; y: number } {
-  const g = GUARDIAN_CUBES[id];
+  const g = gardienDuMonde(id);
   const mid = (vals: number[]) => (Math.min(...vals) + Math.max(...vals)) / 2;
   return { x: Math.round(ISLET_CENTER.x - mid(g.map((c) => c.x))), y: Math.round(ISLET_CENTER.y - mid(g.map((c) => c.y))) };
 }
@@ -703,7 +732,7 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
   const def = islandDef(id);
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
   const off = guardianOffset(id);
-  const under = new Set(GUARDIAN_CUBES[id].map((c) => `${off.x + c.x},${off.y + c.y}`));
+  const under = new Set(gardienDuMonde(id).map((c) => `${off.x + c.x},${off.y + c.y}`));
   const land = new Set<string>();
   for (let x = 0; x < ISLET_W; x++)
     for (let y = 0; y < ISLET_H; y++) {
@@ -875,7 +904,7 @@ export function guardianPlacements(
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
-    const cubes = beaten ? GUARDIAN_CUBES[b.id].map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : GUARDIAN_CUBES[b.id];
+    const cubes = beaten ? gardienDuMonde(b.id).map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : gardienDuMonde(b.id);
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;
@@ -1046,7 +1075,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
   const spot = creatureSpot(port);
-  for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of CREATURE_CUBES[port]) core(spot.x + sx + c.x, spot.y + sy + c.y);
+  for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of creatureDuMonde(port)) core(spot.x + sx + c.x, spot.y + sy + c.y);
   // Le chemin du bonhomme vers le navire (en ligne droite, d'un point au suivant), jusqu'à la jetée.
   const route = boardingRoute(port);
   for (let i = 1; i < route.length; i++) {
@@ -1652,7 +1681,7 @@ function poserLIle(
   if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes, guardian !== 'waiting');
   if (unlocked && withCreatures) {
     const spot = creatureSpot(biome.id);
-    for (const c of CREATURE_CUBES[biome.id])
+    for (const c of creatureDuMonde(biome.id))
       cubes.push({
         x: ox + spot.x + c.x,
         y: oy + spot.y + c.y,

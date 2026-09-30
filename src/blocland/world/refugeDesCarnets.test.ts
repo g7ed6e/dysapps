@@ -6,8 +6,9 @@ import { grantAccess } from './archipelago';
 import { buildingStages } from './architect';
 import { fenetresDe } from './construction';
 import { GRASS } from './decor';
-import { CORE, inCore, isLand, islandDef, landBox, landscape } from './map';
-import { luminance, MATIERES } from './palette';
+import { CORE, inCore, isLand, islandDef, landBox, landscape, mapOf } from './map';
+import { couleurDeMatiere, luminance, MATIERES } from './palette';
+import { couleursDuToit } from './toits';
 import { CREATURE_CUBES } from './personnages/creatures';
 import { GUARDIAN_CUBES } from './personnages/gardiens';
 import { SENTINELLE } from './personnages/couleurs';
@@ -15,8 +16,10 @@ import { sentinellePeinte, STATUES } from './personnages/sentinellesPeintes';
 import { sentinelleEnFacettes } from './personnages/sentinelle';
 import { ANGLE_DU_PAPILLON, PAPILLON_DE_CUIVRE } from './personnages/statues/3e';
 import { PAINTERS, SIZE } from './pixels';
+import { JOINT, nuanceDuMotif } from '../pixel/painted';
 import { planCells, plansFor } from './plans';
-import { worldCubes } from './terrain';
+import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './faune';
+import { worldBounds, worldCubes } from './terrain';
 
 const ouvert = { plans: {}, journal: [], bridges: grantAccess([], ['refuge']) };
 
@@ -37,27 +40,29 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
     const dessus = new Map<string, (typeof cubes)[number]>();
     for (const q of cubes.filter((q) => q.sol && inCore(def, q.x, q.y))) {
       const k = `${q.x},${q.y}`;
-      if (!dessus.has(k) || dessus.get(k)!.z < q.z) dessus.set(k, q);
+      const avant = dessus.get(k);
+      if (!avant || avant.z < q.z) dessus.set(k, q);
     }
     expect(dessus.size).toBe(CORE * CORE);
     for (const q of dessus.values()) expect(q.color).toBe(GRASS);
     expect(cubes.some((q) => q.tag === 'refuge' && q.sol && q.texture === 'bardeau')).toBe(false);
   });
 
-  it('un seul lac, sur l’herbe, loin du bord, bordé de pierre plate (sans ponton)', () => {
+  it('un seul lac, posé sur l’herbe (au niveau du sol, pas un trou), loin du bord, bordé de pierre plate (sans ponton)', () => {
     const cells = landscape(def);
     const lac = cells.filter((c) => c.ground === 'eau');
     expect(lac.length).toBe(8);
     for (const c of lac) {
       expect(inCore(def, c.x, c.y)).toBe(false);
-      // Loin du bord : deux cases de terre au moins dans chaque direction.
+      expect(c.h, `${c.x},${c.y}`).toBe(0);
+      // Loin du bord : quatre cases de terre au moins dans chaque direction (sa bordure, sa rive, et l'herbe au-delà).
       for (const [dx, dy] of [
         [1, 0],
         [-1, 0],
         [0, 1],
         [0, -1],
       ])
-        for (const k of [1, 2]) expect(isLand(def, c.x + dx * k, c.y + dy * k), `${c.x},${c.y}`).toBe(true);
+        for (const k of [1, 2, 3, 4]) expect(isLand(def, c.x + dx * k, c.y + dy * k), `${c.x},${c.y}`).toBe(true);
       // Chaque case d'eau touche de l'eau ou la bordure de pierre, jamais l'herbe.
       for (const [dx, dy] of [
         [1, 0],
@@ -65,14 +70,26 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
         [0, 1],
         [0, -1],
       ]) {
-        const v = cells.find((x) => x.x === c.x + dx && x.y === c.y + dy)!;
-        expect(['eau', 'roche']).toContain(v.ground);
+        const v = cells.find((x) => x.x === c.x + dx && x.y === c.y + dy);
+        expect(v, `voisine de ${c.x},${c.y}`).toBeDefined();
+        expect(['eau', 'roche']).toContain(v?.ground);
       }
     }
     // La bordure, au ras du sol, et de l'herbe autour.
     const bord = cells.filter((c) => c.ground === 'roche');
     expect(bord.length).toBeGreaterThan(0);
     for (const c of bord) expect(c.h).toBe(0);
+    // Autour de la bordure, la rive d'herbe nue, au même niveau : ni cuvette ni talus.
+    for (const c of bord)
+      for (const [dx, dy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ]) {
+        const v = cells.find((x) => x.x === c.x + dx && x.y === c.y + dy);
+        if (v && v.ground !== 'eau' && v.ground !== 'roche') expect([v.ground, v.h, v.decor ?? null], `${v.x},${v.y}`).toEqual(['herbe', 0, null]);
+      }
     expect(cells.filter((c) => c.ground === 'herbe').length).toBeGreaterThan(cells.length / 2);
     // Pas de ponton ni de barque.
     expect(cubes.some((q) => q.decor?.startsWith('refuge/ponton'))).toBe(false);
@@ -125,13 +142,23 @@ describe('les trois plans du refuge', () => {
 
   it('le pigeonnier : en pierre claire, quatre blocs de haut au plus, un trou d’envol entre deux blocs, la planche-perchoir dessous', () => {
     const [, , cour] = buildingStages('refuge', 'bardeau');
-    const pigeonnier = cour.filter((c) => c.x >= 3 && c.y === 0);
+    // Le chantier est retourné d'est en ouest (la caméra du refuge le voit par l'est) : le pigeonnier de x = 0 à 2.
+    const pigeonnier = cour.filter((c) => c.x <= 2 && c.y === 0);
     expect(Math.max(...pigeonnier.map((c) => c.z))).toBeLessThanOrEqual(3);
     const en = (x: number, z: number) => pigeonnier.find((c) => c.x === x && c.z === z)?.block;
-    expect(en(4, 2)).toBeUndefined();
-    for (const [x, z] of [[3, 0], [3, 1], [3, 2], [5, 1], [5, 2]] as const) expect(en(x, z), `${x},${z}`).toBe('taille');
-    expect(en(4, 3)).toBe('toit');
-    expect(en(4, 1)).toBe('bois');
+    expect(en(1, 2)).toBeUndefined();
+    for (const [x, z] of [[2, 0], [2, 1], [2, 2], [0, 1], [0, 2]] as const) expect(en(x, z), `${x},${z}`).toBe('taille');
+    expect(en(1, 3)).toBe('toit');
+    expect(en(1, 1)).toBe('bois');
+  });
+
+  it('la poste devant, face à la caméra de l’île : trois rangs de bardeau sous l’avant-toit, sa fenêtre', () => {
+    const [poste, finitions] = buildingStages('refuge', 'bardeau');
+    const facade = [...poste, ...finitions].filter((c) => c.x === 5 && c.y >= 2 && c.y <= 4 && c.z <= 2);
+    expect(facade.filter((c) => c.block === 'bardeau').length).toBe(8);
+    expect(facade.filter((c) => c.block === 'verre').length).toBe(1);
+    // Rien devant elle, plus haut qu'un bloc (la caisse, le casier sont de côté).
+    expect([...poste, ...finitions].some((c) => c.x > 5)).toBe(false);
   });
 });
 
@@ -158,11 +185,11 @@ describe('le bardeau', () => {
         // Les deux premières lignes : le bois, sans joint.
         if (y % 4 < 2) expect(p[y].every((c) => c.join(',') === bois.join(','))).toBe(true);
       }
-      // Le bas arrondi : à la troisième ligne, les deux coins de chaque bardeau sont coupés (deux pixels par coin, avec
-      // la ligne du bas), à 0 et 7 dans la première rangée, décalés de quatre dans la suivante.
+      // Le bas arrondi : à la troisième ligne, deux pixels coupés à chaque coin de chaque bardeau (DA, décision 6), de 0
+      // à 1 et de 6 à 7 dans la première rangée, décalés de quatre dans la suivante.
       for (const [y, coins] of [
-        [2, [0, 7, 8, 15]],
-        [6, [3, 4, 11, 12]],
+        [2, [0, 1, 6, 7, 8, 9, 14, 15]],
+        [6, [2, 3, 4, 5, 10, 11, 12, 13]],
       ] as const)
         for (let x = 0; x < SIZE; x++) expect(est(x, y, joint), `${x},${y}`).toBe((coins as readonly number[]).includes(x));
       // Le joint brun sombre, à environ 2:1 du bois : il se lit en gris, sans moirer.
@@ -205,14 +232,55 @@ describe('le bardeau', () => {
   });
 });
 
+describe('le bardeau d’Archipéo', () => {
+  it('en gris, ses murs se détachent des rives d’ardoise des toits du 3e', () => {
+    const mur = couleurDeMatiere('3e', 'bardeau').cote;
+    const rives = couleursDuToit('3e', 'refuge').cote;
+    const [a, b] = [luminance(mur), luminance(rives)];
+    expect((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('les nuages des Îles du Ciel', () => {
+  it('aucun nuage haut ne commence au-dessus d’une île, le refuge compris : pas de fumée de cheminée (référent dys)', () => {
+    const b = worldBounds('3e');
+    const nuages = placeDesNuages('3e', b, Math.max(b.maxX - b.minX, b.maxY - b.minY));
+    const hauts = nuages.filter((n) => n.y === HAUT_DES_NUAGES.ciel);
+    expect(hauts.length).toBe(NUAGES.length);
+    for (const n of hauts)
+      for (const i of mapOf('3e').map((d) => landBox(d)))
+        expect(n.x + n.len <= i.x0 - 3 || n.x >= i.x1 + 3 || n.z + 1.2 <= i.y0 - 3 || n.z >= i.y1 + 3, `${n.x},${n.z}`).toBe(true);
+  });
+
+  it('ailleurs, les nuages restent à leur place d’avant', () => {
+    for (const a of ['6e', '5e', '4e'] as const) {
+      const b = worldBounds(a);
+      const w = Math.max(b.maxX - b.minX, b.maxY - b.minY);
+      expect(placeDesNuages(a, b, w)).toEqual(nuagesDe(a).map(([fx, fy, len]) => ({ x: b.minX + fx * w, y: 12, z: b.minY + fy * (b.maxY - b.minY), len })));
+    }
+  });
+});
+
+describe('le bardeau peint en 2D', () => {
+  it('ses joints sont ceux de la texture (world/pixels.ts), pixel pour pixel, sur un bloc de 16 × 16', () => {
+    const r = () => 0.5;
+    const joint = PAINTERS.bardeau.side(0, 3, r).join(',');
+    for (let y = 0; y < SIZE; y++)
+      for (let x = 0; x < SIZE; x++)
+        expect(nuanceDuMotif('ecailles', x, y) === JOINT, `${x},${y}`).toBe(PAINTERS.bardeau.side(x, y, r).join(',') === joint);
+  });
+});
+
 describe('Timbre en cubes (Blocland)', () => {
   const m = CREATURE_CUBES.refuge;
   const couleurEn = (x: number, y: number, z: number) => m.find((q) => q.x === x && q.y === y && q.z === z)?.color;
 
-  it('la tête plate de cinq sur deux couches, sa rangée de devant crème, deux yeux sombres en haut, sans moustaches', () => {
+  it('la tête plate de cinq sur deux couches, sa rangée de devant crème, deux yeux sombres cernés de crème, sans moustaches', () => {
     const tete = m.filter((q) => q.z >= 4);
     expect(Math.max(...tete.map((q) => q.z))).toBe(5);
     expect(tete.filter((q) => q.z === 4 && q.y === 0).map((q) => q.color)).toEqual(Array(5).fill('#e6d8bc'));
+    // Autour des yeux, du crème : ils se détachent du brun, en gris aussi (référent dys).
+    expect(tete.filter((q) => q.z === 5 && q.y === 0).sort((p, q) => p.x - q.x).map((q) => q.color)).toEqual(['#e6d8bc', '#1f1a16', '#e6d8bc', '#1f1a16', '#e6d8bc']);
     const yeux = tete.filter((q) => q.color === '#1f1a16');
     expect(yeux.map((q) => [q.x, q.y, q.z])).toEqual([
       [1, 0, 5],
@@ -223,7 +291,9 @@ describe('Timbre en cubes (Blocland)', () => {
   });
 
   it('brun-gris : plus sombre que Tunel, plus chaud que Vapeur', () => {
-    const brun = parseInt(couleurEn(2, 1, 2)!.slice(1), 16);
+    const couleur = couleurEn(2, 1, 2);
+    expect(couleur, 'le corps de Timbre en (2, 1, 2)').toBeDefined();
+    const brun = parseInt((couleur ?? '#000000').slice(1), 16);
     expect(luminance(brun)).toBeLessThan(luminance(0x7a5236));
     const [r, , b] = [(brun >> 16) & 255, 0, brun & 255];
     expect(r).toBeGreaterThan(b);
@@ -236,11 +306,13 @@ describe('Timbre en cubes (Blocland)', () => {
     for (const x of [4, 5, 6]) expect(queue.some((q) => q.x === x && q.z === 0)).toBe(true);
   });
 
-  it('une sacoche fauve de deux sur deux, et sa bandoulière en diagonale', () => {
-    const sacoche = m.filter((q) => q.color === '#a8703a');
+  it('une sacoche fauve de deux sur deux, et sa bandoulière fauve en diagonale sur le devant', () => {
+    const fauve = m.filter((q) => q.color === '#a8703a');
+    const sacoche = fauve.filter((q) => q.x === 0);
     expect(sacoche.length).toBe(4);
-    const bandouliere = m.filter((q) => q.color === '#3e2c20');
+    const bandouliere = fauve.filter((q) => q.x > 0);
     expect(bandouliere.length).toBe(2);
+    expect(bandouliere.every((q) => q.y === 0)).toBe(true);
     const [a, b] = bandouliere.sort((p, q) => p.z - q.z);
     expect(b.x - a.x).toBe(1);
   });
@@ -268,7 +340,7 @@ describe('le Papillon de cuivre en cubes (Blocland)', () => {
     const antenne = (q: { x: number; z: number }) => q.z >= 8 && Math.abs(q.x - 5) <= 2;
     const aile = (x: number) => g.filter((q) => q.x === x && !antenne(q));
     for (const x of [6, 7, 8]) expect(en(x, 4), `x ${x}`).toBeUndefined();
-    const haut = g.filter((q) => q.x > 5 && q.z >= 5 && q.z <= 8 && !antenne(q));
+    const haut = g.filter((q) => q.x > 5 && q.z >= 5 && !antenne(q));
     const bas = g.filter((q) => q.x > 5 && q.z >= 1 && q.z <= 3);
     expect(haut.length).toBeGreaterThan(bas.length);
     // Le bord supérieur monte vers le dehors.

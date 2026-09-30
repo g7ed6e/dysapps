@@ -141,7 +141,8 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
       neige: { dessus: 0xe6ecef, cote: 0xc4d0de },
       roche: { dessus: 0xa3a7ad, cote: 0x6e7896 },
       herbe: { dessus: 0x74a064, cote: 0x6c6250 },
-      // Les lacs de montagne (LV2-5, le lac du refuge) : une eau sombre, bleu ardoise, jamais turquoise.
+      // Les lacs de montagne : une eau sombre, bleu ardoise, jamais turquoise. Voulu pour tous les lacs du 3e (le refuge,
+      // le Phare, l'Observatoire des textes, le Studio, le Château), pas seulement celui du refuge (DA, LV2-5).
       eau: { dessus: 0x46627a, cote: 0x384e62 },
     },
     nuages: AMBIENCE['3e'].sky,

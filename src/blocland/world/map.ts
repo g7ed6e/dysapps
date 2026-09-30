@@ -83,7 +83,7 @@ export const MAP: IslandDef[] = [
   { id: 'chateau', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
   // LV2 3e : à l'est du Château, un cran derrière, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et
   // arrondi (intention du 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`).
-  { id: 'refuge', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 7), relief: 'plat', seed: 96 },
+  { id: 'refuge', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
 ];
 
 /** Les îles d'un archipel, dans l'ordre de MAP. */
@@ -318,7 +318,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
     let decor: Decor | undefined;
     const lac = auLac(def, c.x, c.y);
     if (lac === 'lac') {
-      out.push({ x: c.x, y: c.y, h: -1, ground: 'eau' });
+      out.push({ x: c.x, y: c.y, h: 0, ground: 'eau' });
       continue;
     }
     if (lac === 'bord' || lac === 'rive') {

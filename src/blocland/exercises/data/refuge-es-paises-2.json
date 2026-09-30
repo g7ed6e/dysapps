@@ -45,7 +45,7 @@
         "El tren es menos caro que el autobús."
       ],
       "answer": "El tren es más rápido que el autobús.",
-      "hint": "Compare les heures, puis les prix.",
+      "hint": "Moins d’heures, c’est plus rapide ; moins d’euros, c’est moins cher.",
       "explanation": "2 h 30 en train, 6 h en bus : el tren es más rápido. Mais il coûte 60 euros : il est más caro, pas menos caro.",
       "aid": {
         "kind": "rule-card",

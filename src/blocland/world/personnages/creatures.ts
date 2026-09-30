@@ -413,9 +413,9 @@ const MUSCADE = fromLayers(
 );
 
 // Timbre : une loutre factrice debout (DA et consultant Blocland, LV2-5), brun-gris (plus sombre que Tunel, plus chaude
-// que Vapeur), la tête plate de cinq sur deux couches, sa rangée de devant crème, les yeux en haut, deux petites oreilles
-// sur les côtés, sans moustaches ; la gorge crème ; une sacoche fauve de deux sur deux au côté gauche, sa bandoulière en
-// diagonale sur le devant ; la queue sort de côté, à droite, au ras du sol, en marches de trois, deux et un cubes.
+// que Vapeur), la tête plate de cinq sur deux couches, sa rangée de devant crème sur les deux couches (les yeux sombres
+// s'y détachent, en gris aussi), deux petites oreilles sur les côtés, sans moustaches ; la gorge crème ; une sacoche
+// fauve de deux sur deux au côté gauche, sa bandoulière fauve en diagonale sur le devant ; la queue sort de côté, à droite, au ras du sol, en marches de trois, deux et un cubes.
 const TIMBRE = fromLayers(
   [
     ['.B.B...', '.BBB...', '.BBBTTT'],
@@ -423,9 +423,9 @@ const TIMBRE = fromLayers(
     ['SLCB...', 'SBBB...', '.BBBT..'],
     ['.BLB...', '.BBB...', '.BBB...'],
     ['CCCCC..', 'BBBBB..', '.BBB...'],
-    ['BEBEB..', 'OBBBO..', '.BBB...'],
+    ['CECEC..', 'OBBBO..', '.BBB...'],
   ],
-  { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#3e2c20' },
+  { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#a8703a' },
 );
 
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {

@@ -29,7 +29,9 @@ export const ARDOISES: Record<ArchipelagoId, { dessus: Couleur; rives: Couleur }
   '6e': { dessus: 0x2e505e, rives: 0x2e505e },
   '5e': { dessus: 0x224c5f, rives: 0x224c5f },
   '4e': { dessus: 0x3e3636, rives: 0x3e3636 },
-  '3e': { dessus: 0xe5ebe3, rives: 0x2e505e },
+  // Les rives du 3e, un cran plus sombres que l'ardoise du 6e : en gris, les murs de bardeau du refuge s'en détachent
+  // (consultant Archipéo, LV2-5).
+  '3e': { dessus: 0xe5ebe3, rives: 0x1c3440 },
 };
 
 /** Les côtés d'un toit, un peu plus sombres que son dessus : le plancher d'ombre des pentes (fiche de famille §3). */

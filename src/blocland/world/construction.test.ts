@@ -383,7 +383,9 @@ describe('La construction taillée (lot R5)', () => {
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
     const ciel = couleursDuToit('3e', 'phare');
     expect(ciel.dessus).not.toBe(ciel.cote);
-    expect(ARDOISES['3e'].rives).toBe(ARDOISES['6e'].dessus);
+    // Les rives du 3e : un cran plus sombres que l'ardoise du 6e (consultant Archipéo, LV2-5).
+    const luma = (c: number) => ((c >> 16) & 0xff) * 0.299 + ((c >> 8) & 0xff) * 0.587 + (c & 0xff) * 0.114;
+    expect(luma(ARDOISES['3e'].rives)).toBeLessThan(luma(ARDOISES['6e'].dessus));
     expect(couleursDuToit('6e', 'foret', true)).not.toEqual(couleursDuToit('6e', 'foret'));
   });
 

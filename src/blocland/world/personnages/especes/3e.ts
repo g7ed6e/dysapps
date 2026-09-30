@@ -260,24 +260,30 @@ export const ESPECES_3E = {
     dominante: 0x5c4a3e,
     marque: { couleur: 0xe2d4b6, ou: ['poitrine', 'museau'] },
     tenue: { couleur: 0xa8703a, vetements: [] },
-    silhouette: { largeur: 0.27, profondeur: 0.24, jambes: 0.6, tete: 0.32, teteProfondeur: 0.25, crane: 1 },
-    museau: { forme: 'museau', long: 0.08, r: 0.11, y: 2.14 },
+    // La tête plate, bien plus large que haute (0,8 sur 0,5 : une loutre, pas un ours) ; le museau crème large, bas, qui
+    // rejoint la gorge ; les oreilles petites, basses, sur les côtés (consultant Archipéo, retouches LV2-5).
+    silhouette: { largeur: 0.27, profondeur: 0.24, jambes: 0.6, tete: 0.4, teteProfondeur: 0.25, crane: 1 },
+    museau: { forme: 'museau', long: 0.09, r: 0.16, y: 2.08 },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.33, 2.36, 0.04], 0, 0, (c * Math.PI) / 2)), 0, 0.07, 0.04, k.dom, 4);
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.43, 2.2, 0], 0, 0, (c * Math.PI) / 2)), 0, 0.08, 0.07, k.dom, 3);
     },
     corps: (T, k) => {
       // La queue : de la base du dos, posée au sol, vers l'arrière et la droite ; épaisse, puis en pointe.
+      // Épaisse à la base (0,16), elle descend vers l'arrière et la droite jusqu'au sol : elle dépasse sur le côté, de face.
       fuseau(
-        pose(T, repere([0.1, 0.1, 0.12], Math.PI / 2, 0.7, 0)),
+        pose(T, repere([0.12, 0.3, -0.1], -(Math.PI / 2 + 0.4), -1, 0)),
         [
-          [0, 0.12, 0.09],
-          [0.3, 0.13, 0.08],
-          [0.52, 0.09, 0.06],
+          [0, 0.16, 0.12],
+          [0.3, 0.15, 0.1],
+          [0.52, 0.1, 0.07],
           [0.74, 0, 0],
         ],
         5,
         k.dom,
       );
+      // La gorge crème, du museau à la poitrine : une seule tache claire sous la tête, de face.
+      const g = devant(k.torse, 8, 1.9).z;
+      pave(T, -0.13, 1.76, g - 0.05, 0.13, 2.02, g + 0.02, k.marque);
       // La sacoche, sur la hanche gauche, et sa bandoulière, de l'épaule droite à la sacoche, en travers du devant.
       pave(T, -0.44, 0.72, -0.15, -0.27, 1.02, 0.13, k.tenue);
       const z = (y: number) => devant(k.torse, 8, y).z - 0.02;

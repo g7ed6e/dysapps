@@ -60,7 +60,9 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // Château, l'île élargit les Îles du Ciel de 27 cases, et le plancher de nuages qui les borde gagne 336 triangles
   // (4 200 → 4 536, mesuré tout construit). Les enveloppes « autres » en passent 350 à la mer, pris sur le décor (150),
   // la construction (100) et les bornes (100), où les trois archipels gardent de la marge (le plus gourmand : 9 327
-  // pour le décor, 7 069 pour la construction, 700 pour les bornes, aux Îles Brumeuses) ; la somme ne change pas (52 300).
+  // pour le décor, 7 069 pour la construction, aux Îles Brumeuses) ; puis 20 du navire (420 partout) aux bornes, qui
+  // n'avaient plus de marge (700 aux Îles Brumeuses) ; la somme ne change pas (52 300). Le refuge, retouché (île plus
+  // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
   mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 5_000, drawCalls: 1 }, autres: { triangles: 4_550, drawCalls: 1 } },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_500, drawCalls: 3 }, autres: { triangles: 1_300, drawCalls: 3 } },
@@ -71,8 +73,8 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
     premiersRivages: { triangles: 6_500, drawCalls: 3 },
     autres: { triangles: 7_100, drawCalls: 3 },
   },
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_000, drawCalls: 1 }, autres: { triangles: 700, drawCalls: 1 } },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 450, drawCalls: 3 } },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_000, drawCalls: 1 }, autres: { triangles: 720, drawCalls: 1 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 430, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 500, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 1_950, drawCalls: 1 } },
   gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_800, drawCalls: 1 } },

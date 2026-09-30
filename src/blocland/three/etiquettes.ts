@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boutonsDuHaut, etiquettesVisibles, layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import type { WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
@@ -65,6 +65,7 @@ export function creerEtiquettes(
   const camGoal = instant.but;
   const goalCamera = new THREE.PerspectiveCamera();
   let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
+  let labelVisibility: { key: string; visible: boolean[] } | null = null;
   // Sur la Carte, la flèche de la destination (à la place du petit chevron « Commence ici », invisible de si haut) ; si
   // le bonhomme est sur la même île, elle s'écarte de son fanion pour que les deux restent distincts.
   const toScreen = (v: THREE.Vector3, cam: THREE.Camera, W: number, H: number) => {
@@ -117,23 +118,36 @@ export function creerEtiquettes(
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     for (const s of sprites) s.scale.set(s.userData.px.w * perPx, s.userData.px.h * perPx, 1);
-    if (!spread) {
-      if (labelLayout) for (const s of sprites) s.center.set(0.5, 0.5);
-      labelLayout = null;
-      return;
-    }
-    const av = bonhomme().position;
-    const marks = `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}`;
-    const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}`;
-    if (labelLayout?.key !== key) {
+    const cameraKey = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}`;
+    /** Les étiquettes vues du cadrage où la caméra arrive (en pixels CSS). */
+    const boxesFromGoal = () => {
       goalCamera.copy(camera);
       goalCamera.position.copy(camGoal.pos);
       goalCamera.lookAt(camGoal.target);
       goalCamera.updateMatrixWorld();
-      const boxes = sprites.map((s) => {
+      return sprites.map((s) => {
         labelAt.copy(s.position).project(goalCamera);
         return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: s.userData.px.w, h: s.userData.px.h };
       });
+    };
+    if (!spread) {
+      if (labelLayout) for (const s of sprites) s.center.set(0.5, 0.5);
+      labelLayout = null;
+      // Hors de la Carte : une étiquette coupée par le bord, ou sous la pause et le bouton de l'archipel, se tait
+      // (cadrage-archipeo §7) ; calculé une fois par cadrage, comme l'écart sur la Carte.
+      if (labelVisibility?.key !== cameraKey) {
+        labelVisibility = { key: cameraKey, visible: etiquettesVisibles(boxesFromGoal(), { w: W, h: H }, [boutonsDuHaut(W)]) };
+        sprites.forEach((s, i) => (s.visible = labelVisibility?.visible[i] ?? true));
+      }
+      return;
+    }
+    if (labelVisibility) for (const s of sprites) s.visible = true;
+    labelVisibility = null;
+    const av = bonhomme().position;
+    const marks = `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}`;
+    const key = `${cameraKey}@${marks}`;
+    if (labelLayout?.key !== key) {
+      const boxes = boxesFromGoal();
       // Une île fermée pèse moins : c'est son étiquette qui s'écarte d'abord.
       const weights = sprites.map((s) => (s.userData.fermee ? 0.5 : 1));
       // La flèche de la destination et le fanion du bonhomme restent visibles : aucune étiquette ne se pose dessus.
@@ -148,6 +162,7 @@ export function creerEtiquettes(
   };
 
   const vider = () => {
+    labelVisibility = null;
     for (const s of [...labelsGroup.children] as THREE.Sprite[]) {
       s.material.map?.dispose();
       s.material.dispose();

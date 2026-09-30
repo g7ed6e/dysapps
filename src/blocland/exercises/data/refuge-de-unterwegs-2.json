@@ -101,7 +101,7 @@
         "Zug A ist so schnell wie Zug B."
       ],
       "answer": "Zug A ist schneller als Zug B.",
-      "hint": "die Stunde = l’heure. Quel train met le moins de temps ?",
+      "hint": "die Stunde = l’heure. Moins d’heures, c’est plus rapide.",
       "explanation": "3 heures pour le train A, 4 pour le train B : Zug A ist schneller als Zug B, il est plus rapide. langsamer = plus lent ; so schnell wie = aussi rapide que.",
       "aid": {
         "kind": "rule-card",

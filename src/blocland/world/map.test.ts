@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, CORE, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
 import { BRIDGES } from './archipelago';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
@@ -78,7 +78,8 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
     ).toBe(true);
     for (const c of cells) {
       if (c.ground === 'eau' || c.ground === 'lave') expect(c.decor, `${def.id} ${c.x},${c.y}`).toBeUndefined();
-      if (c.ground === 'eau') expect(c.h).toBe(-1);
+      // Une mare dans un creux ; le lac dessiné d'une île, au ras de sa rive d'herbe (consultant Archipéo, LV2-5).
+      if (c.ground === 'eau') expect(c.h, `${def.id} ${c.x},${c.y}`).toBe(LACS[def.id] ? 0 : -1);
     }
     if (cells.some((c) => c.ground === 'eau')) lakes++;
     if (def.relief === 'montagne' && def.region !== 'feu')

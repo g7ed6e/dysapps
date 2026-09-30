@@ -321,13 +321,13 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   },
   refuge: {
     greeting:
-      'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages, comparent et relient leurs idées, dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse, c’est un bardeau pour le village. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',
+      'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',
     lines: [
-      'Dans ma sacoche, j’apporte les lettres des correspondants et des voyageurs rencontrés en chemin.',
+      'Les voyageurs écrivent leur voyage dans un carnet. Dans ma sacoche, je t’apporte leurs pages et les lettres des correspondants.',
       'Chaque lettre raconte un voyage : d’abord, ensuite, à la fin. Suis les petits mots, ils te guident.',
-      'Écoute la fin du verbe : elle dit qui, et quand.',
+      'Écoute bien le verbe : il dit qui, et quand.',
       'Je range les lettres une par une dans mon casier, comme les bardeaux sur le mur : une rangée après l’autre.',
     ],
-    home: 'Ma poste est finie ! Les lettres des voyageurs ont enfin leur place, et toi aussi.',
+    home: 'Ma poste est finie ! Chaque lettre a sa place ici, et toi aussi.',
   },
 };

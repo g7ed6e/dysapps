@@ -118,3 +118,25 @@ export function separateMark(mark: { x: number; y: number }, from: { x: number; 
   const side = dx < 0 ? -1 : 1;
   return { dx: from.x + side * need - mark.x, dy: 0 };
 }
+
+/**
+ * Les boutons posés en haut à droite de la scène (la pause, et sous elle l'archipel où l'on est), en pixels CSS depuis le
+ * coin : aucune étiquette ne passe dessous (cadrage-archipeo §7, référent dys, LV2-5).
+ */
+export const BOUTONS_DU_HAUT = { w: 104, h: 132 } as const;
+
+/**
+ * Hors de la Carte, les étiquettes qu'on montre : celles qui tiennent entières dans le cadre et ne passent sous aucun
+ * bouton (`reserves`, des boîtes centrées). Une étiquette coupée par le bord ou cachée sous un bouton se tait plutôt que
+ * de se lire à moitié : c'est l'île lointaine qui perd son nom, jamais un bouton qui se cache.
+ */
+export function etiquettesVisibles(boxes: LabelBox[], bounds: { w: number; h: number }, reserves: LabelBox[] = []): boolean[] {
+  // Au pixel près : la projection donne des centres fractionnaires, et l'aire hors cadre d'une étiquette entière n'est
+  // alors pas un zéro exact (arrondi du calcul en virgule flottante).
+  return boxes.map((b) => outside(b, bounds) < 1 && reserves.every((r) => overlap(b, r, 0) < 1));
+}
+
+/** La boîte des boutons du haut, dans un cadre de largeur `w`. */
+export function boutonsDuHaut(w: number): LabelBox {
+  return { x: w - BOUTONS_DU_HAUT.w / 2, y: BOUTONS_DU_HAUT.h / 2, w: BOUTONS_DU_HAUT.w, h: BOUTONS_DU_HAUT.h };
+}

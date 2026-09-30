@@ -510,11 +510,13 @@ const SOLEIL = fromLayers(
  * lit par son bord supérieur) ; une rangée vide la sépare de l'aile du bas, plus petite.
  */
 const AILE_DU_PAPILLON = [
-  // z = 8 à 1 (de haut en bas)
+  // z = 9 à 1 (de haut en bas) : le bord du haut monte d'un cube par colonne jusqu'à la pointe (un V, pas un U) ; un cube
+  // vide de chaque côté de la tête (DA et consultant Blocland, retouches LV2-5).
+  '....#',
   '...##',
+  '..###',
   '.####',
   '#####',
-  '####.',
   '.....',
   '###..',
   '###..',
@@ -532,7 +534,7 @@ const PAPILLON: CubeDeModele[] = (() => {
   const out: CubeDeModele[] = [];
   const milieu = 5;
   const aile = new Set<string>();
-  AILE_DU_PAPILLON.forEach((ligne, i) => [...ligne].forEach((ch, k) => ch === '#' && aile.add(`${k},${8 - i}`)));
+  AILE_DU_PAPILLON.forEach((ligne, i) => [...ligne].forEach((ch, k) => ch === '#' && aile.add(`${k},${AILE_DU_PAPILLON.length - i}`)));
   const estAile = (k: number, z: number) => aile.has(`${k},${z}`);
   for (const cle of aile) {
     const [k, z] = cle.split(',').map(Number);

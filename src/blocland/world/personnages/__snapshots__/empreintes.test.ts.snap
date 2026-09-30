@@ -32,7 +32,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "mine": "241 d3def54b",
   "phare": "268 40b9051e",
   "plaine": "256 eb13baf5",
-  "refuge": "273 8910155b",
+  "refuge": "277 8a3fb559",
   "relais": "258 e1147d75",
   "riviere": "248 2aa1c2bb",
   "studio": "278 485c007e",
@@ -46,8 +46,8 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "1940 eb7dbfdd b14255ca",
-    "gardiens": "1649 97063bc3",
+    "creatures": "1944 6b570ee2 0919df8a",
+    "gardiens": "1663 5bf8ac99",
   },
   "4e": {
     "creatures": "1819 be23f192 459914ca",
@@ -90,7 +90,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "mine": "177 80669e4a",
   "phare": "203 b057d33b",
   "plaine": "177 8335cb8f",
-  "refuge": "318 498722fc",
+  "refuge": "332 1ad4083c",
   "relais": "338 261a1cd8",
   "riviere": "190 08403a77",
   "studio": "262 0e836ac3",
@@ -137,7 +137,7 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "mine": "21×44 f02b0dbd 21×44 a05ac383",
     "phare": "16×51 33e0ba1e 16×51 d2e5cbc6",
     "plaine": "22×46 e333e6f8 22×46 f20a8a29",
-    "refuge": "20×47 9d099900 20×47 8dc73838",
+    "refuge": "22×51 a30cb946 22×51 c82a78ca",
     "relais": "18×46 e275354c 18×46 a3ab921b",
     "riviere": "17×51 7f59a03a 17×51 d2a7aa79",
     "studio": "18×47 f5ec9c68 18×47 b43cb06f",
@@ -170,7 +170,7 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
     "mine": "62×153 bd5e2f7a 62×153 e30a7c77",
     "phare": "64×153 f0721f1d 64×153 ab565e59",
     "plaine": "66×150 0a4affd0 66×150 31d83b14",
-    "refuge": "63×168 9e470284 63×168 61aa3c55",
+    "refuge": "64×166 54fc7d64 64×166 0b79106f",
     "relais": "60×124 8907dc31 60×124 ea30a62e",
     "riviere": "60×151 7ea9caab 60×151 140a8663",
     "studio": "60×151 1a8b21d5 60×151 cf79152e",

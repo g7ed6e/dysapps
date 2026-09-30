@@ -378,6 +378,7 @@ async function scenes() {
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés
           // sur la scène (le lieu choisi, jaune) sont masqués le temps de la prise, sinon ils compteraient comme lueur.
+          // Depuis ce masquage, la part de lueur des archipels déjà mesurés baisse un peu : le bouton n'y compte plus.
           await page.addStyleTag({ content: 'body * { visibility: hidden !important } .voxel-canvas canvas { visibility: visible !important }' });
           const box = await page.locator('.voxel-canvas').boundingBox();
           const png = box && (await capturer(page, { type: 'png', clip: box, timeout: 90000 }));

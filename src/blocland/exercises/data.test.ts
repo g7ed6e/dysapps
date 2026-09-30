@@ -341,7 +341,7 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
         expect(String(it.question), it.key).toMatch(/\?$/);
         expect(String(it.question), it.key).not.toMatch(/[£$€:]/);
         // Des réponses en français, sauf « Quelle phrase est vraie ? » (Refuge) : des phrases de la langue, dites exprès.
-        expect(['fr', def.lang], it.key).toContain(it.choicesLang);
+        expect(it.choicesLang, it.key).toBe(/phrase est vraie \?$/.test(String(it.question)) ? def.lang : 'fr');
       }
     }
   }
@@ -356,6 +356,7 @@ it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
     let inegaux = 0;
     let plusCourte = 0;
     for (const it of def.items) {
+      expect(Array.isArray(it.choices), `${it.key} : des choix`).toBe(true);
       const choices = (it.choices as unknown[]).map(String);
       if (choices.every((c) => parseHour(c) !== undefined || parseNumber(c) !== undefined)) continue;
       const answer = String(it.answer);

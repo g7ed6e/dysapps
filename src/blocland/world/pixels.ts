@@ -143,7 +143,7 @@ type TonsDuBardeau = { bois: string; joint: string };
 /**
  * Des bardeaux de bois (le Refuge des carnets, LV2 3e ; DA, LV2-5) : des rangées de quatre pixels, chaque bardeau large de
  * huit, décalées d'un demi-bardeau (quatre pixels) d'une rangée à l'autre ; le bas de chaque bardeau arrondi, ses deux
- * coins coupés (deux pixels à chaque coin : les deux du bas de la rangée, et un de plus au-dessus, de chaque côté), et
+ * coins coupés (deux pixels à chaque coin sur la ligne au-dessus du joint, décision 6 du DA), et
  * souligné d'un joint brun sombre sur toute sa largeur. Deux tons seulement, ni grain ni dégradé : c'est le motif
  * d'écailles qui le nomme, à côté de la tuile (des rangs droits et des traits), de la brique et de la dalle (des joints
  * droits). La dernière ligne est un joint : d'un bloc à l'autre, les rangées continuent. Sans hasard.
@@ -155,7 +155,7 @@ function bardeau(t: TonsDuBardeau): Painter {
     if (v === 3) return joint;
     // La place du pixel dans son bardeau (0 à 7), décalée d'un demi-bardeau une rangée sur deux.
     const u = (x + (Math.floor(y / 4) % 2 ? 4 : 0)) % 8;
-    if (v === 2 && (u === 0 || u === 7)) return joint;
+    if (v === 2 && (u <= 1 || u >= 6)) return joint;
     return bois;
   };
 }
