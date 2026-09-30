@@ -15,7 +15,8 @@
 //   restent ;
 // - soubassement de pierre sur 0,35 case, au pied seulement ; les blocs de pierre font un mur plein ; le chaperon d'un
 //   mur sans toit est en pierre ;
-// - bardage aux pignons et sur les bâtiments du quai ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
+// - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
+//   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
 // Code pur, sans Three.js : le GLSL est une chaîne, que three/construction.ts insère dans le shader des blocs.
 import type { Voisinage } from './voisinage';
 

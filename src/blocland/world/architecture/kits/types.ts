@@ -23,7 +23,7 @@ export interface Kit {
   couleurs: Partial<Record<Role, Couleur>>;
   /** Comment peindre les murs de chaque famille (./peinture.ts) : un colombage, un mur plein ; absente, pas peinte. */
   murs: Partial<Record<Famille, ManiereDuMur>>;
-  /** Les îles dont les bâtiments de bois sont bardés au lieu du colombage : les bâtiments du quai. */
+  /** Les îles dont les bâtiments de bois sont bardés au lieu du colombage : les bâtiments du quai (au 6e, en attente). */
   bardes: readonly string[];
   /** Les pièces dessinées, par famille et par nom de pièce (./choix.ts). */
   pieces: Partial<Record<Famille, Partial<Record<IdDePiece, DessinDePiece>>>>;
