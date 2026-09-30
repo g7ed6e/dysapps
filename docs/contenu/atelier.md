@@ -14,15 +14,21 @@ créature : Ixe
 
 ## Réduire · `reduire`
 
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
 - description : Regroupe les x et les nombres.
 - compétences : c4.ma.a.reduire-developper
 
 ## Développer · `developper`
 
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
 - description : Distributivité simple, puis double, puis factoriser.
 - compétences : c4.ma.a.reduire-developper
 
 ## Équilibre · `equilibre`
+
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
 
 - description : Équations du premier degré, en une puis deux étapes, puis tester une égalité et les équations produits.
 - compétences : c4.ma.a.equations

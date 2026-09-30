@@ -14,15 +14,21 @@ créature : Théo
 
 ## Pythagore · `pythagore`
 
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
 - description : L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât, enfin la réciproque : le triangle est-il rectangle ?
 - compétences : c4.ma.d.pythagore · c4.ma.a.carres-racine
 
 ## Thalès · `thales`
 
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
 - description : Une longueur manquante avec deux droites parallèles, puis la hauteur d’un mât ou son ombre, mesurée avec un bâton, enfin la réciproque : les droites sont-elles parallèles ?
 - compétences : c4.ma.d.thales
 
 ## Trigo · `trigo`
+
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
 
 - description : Cosinus, sinus ou tangente : le bon rapport.
 - compétences : c4.ma.d.trigonometrie

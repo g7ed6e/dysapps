@@ -19,6 +19,8 @@ const REGLES = [
   'review',
   'arrivals',
   'biomes',
+  // Les îles et leurs missions, produites depuis docs/contenu/ par `npm run contenu`.
+  'iles',
   'world/goals',
   'world/destination',
   'world/uses',

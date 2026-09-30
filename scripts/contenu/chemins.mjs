@@ -8,11 +8,13 @@ import { lireIle, principal } from './format.mjs';
 const racine = process.cwd();
 export const CONTENU = join(racine, 'docs/contenu');
 export const DATA = join(racine, 'src/blocland/exercises/data');
-export const ILES = join(racine, 'src/blocland/iles.json');
+export const ILES = join(racine, 'src/blocland/iles.ts');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
 const CHAMPS_MISSION = ['description', 'programme'];
+const MATIERES = ['francais', 'maths', 'anglais', 'lv2'];
+const CLASSES = ['6e', '5e', '4e', '3e'];
 
 /** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `foret` » par île. */
 function ordreDesIles() {
@@ -21,7 +23,7 @@ function ordreDesIles() {
 }
 
 /**
- * Les îles (src/blocland/iles.json, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
+ * Les îles (src/blocland/iles.ts, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
  * { sortie: Map<chemin JSON, texte>, iles: Set<île> }.
  */
 export function produire() {
@@ -33,8 +35,11 @@ export function produire() {
     const { ile, biome, exercices } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
     for (const k of CHAMPS_ILE) if (biome[k] === undefined) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
+    if (!MATIERES.includes(biome.subject)) throw new Error(`${fichier} : matière « ${biome.subject} » inconnue (${MATIERES.join(', ')})`);
+    if (!CLASSES.includes(biome.classe)) throw new Error(`${fichier} : classe « ${biome.classe} » inconnue (${CLASSES.join(', ')})`);
     for (const m of biome.exercises) {
       for (const k of CHAMPS_MISSION) if (m[k] === undefined || m[k].length === 0) throw new Error(`${fichier}, mission ${m.id} : « ${k === 'programme' ? 'compétences' : k} » manque`);
+      if (m.lv2 !== undefined && !['es', 'de'].includes(m.lv2)) throw new Error(`${fichier}, mission ${m.id} : « lv2 » vaut es ou de, lu « ${m.lv2} »`);
     }
     iles.add(ile);
     biomes.set(ile, biome);
@@ -48,7 +53,10 @@ export function produire() {
   for (const id of ordre) if (!biomes.has(id)) throw new Error(`docs/contenu/archipel.md : l'île « ${id} » n'a pas de fichier docs/contenu/${id}.md`);
   for (const id of biomes.keys()) if (!ordre.includes(id)) throw new Error(`docs/contenu/${id}.md : l'île manque dans docs/contenu/archipel.md`);
   if (new Set(ordre).size !== ordre.length) throw new Error('docs/contenu/archipel.md : une île y est écrite deux fois');
-  sortie.set(ILES, JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2) + '\n');
+  // Un module TypeScript plutôt qu'un JSON : `satisfies` fait vérifier chaque île par le compilateur (matière, bloc, icône,
+  // compétences…), sans rien coûter à l'exécution.
+  const entete = "// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.\n";
+  sortie.set(ILES, `${entete}import type { BiomeDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies BiomeDef[];\n`);
   return { sortie, iles };
 }
 

@@ -506,11 +506,16 @@ export function lireIle(md, fichier = 'md') {
       pourTous = liste = tableau = null; // une ligne vide finit le bloc « Pour tous les items », une sous-liste, un tableau
       continue;
     }
-    if (l.startsWith('> ')) continue; // une note pour qui écrit, que le jeu ne lit pas
+    if (l.startsWith('> ')) {
+      // Une note pour qui écrit, que le jeu ne lit pas ; jamais au milieu d'un tableau, d'une sous-liste ou d'un bloc.
+      if (tableau || liste || pourTous || item) throw erreur('une note « > » va seule, hors d’un item, d’un tableau ou d’un bloc « Pour tous les items »');
+      continue;
+    }
     if (/^# /.test(l)) {
       if (mission) throw erreur('le titre de l’île va avant la première mission');
       if (nom !== undefined) throw erreur('l’île a un seul titre');
-      nom = l.slice(2);
+      nom = l.slice(2).trim();
+      if (!nom) throw erreur('le titre de l’île est vide');
       continue;
     }
     let m;

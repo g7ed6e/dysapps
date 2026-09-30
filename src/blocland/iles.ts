@@ -1,4 +1,7 @@
-[
+// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.
+import type { BiomeDef } from './biomes';
+
+export const ILES = [
   {
     "id": "foret",
     "name": "Forêt des sons",
@@ -1502,4 +1505,4 @@
       }
     ]
   }
-]
+] satisfies BiomeDef[];

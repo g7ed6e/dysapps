@@ -1,8 +1,8 @@
-// Les îles s'écrivent dans docs/contenu/ (Markdown) et arrivent par iles.json : TypeScript ne vérifie plus leur forme,
-// ces tests le font.
+// Les îles s'écrivent dans docs/contenu/ (Markdown) et arrivent par iles.ts (vérifié par le compilateur) : ces tests
+// vérifient ce que les types ne disent pas (bloc et icône existants, compétences du référentiel, ordre).
 import { ICONS } from '../components/Icon';
 import { byId } from '../programme';
-import { BIOME_IDS, BIOMES, BLOCKS } from './biomes';
+import { BIOME_IDS, BIOMES, BLOCKS, missionsJouables } from './biomes';
 
 const MATIERES = ['francais', 'maths', 'anglais', 'lv2'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
@@ -18,9 +18,10 @@ describe('les îles de docs/contenu/', () => {
       expect(Object.keys(b), b.id).toEqual(CHAMPS_ILE);
       expect(MATIERES, b.id).toContain(b.subject);
       expect(CLASSES, b.id).toContain(b.classe);
-      expect(BLOCKS[b.block], `${b.id} : bloc ${b.block}`).toBeTruthy();
-      expect(b.icon in ICONS, `${b.id} : icône ${b.icon}`).toBe(true);
+      expect(Object.hasOwn(BLOCKS, b.block), `${b.id} : bloc ${b.block}`).toBe(true);
+      expect(Object.hasOwn(ICONS, b.icon), `${b.id} : icône ${b.icon}`).toBe(true);
       expect(Object.keys(b.creature)).toEqual(['name']);
+      expect(b.creature.name.length, `${b.id} : créature`).toBeGreaterThan(0);
       for (const k of ['name', 'module', 'description', 'guardian'] as const) expect(b[k].length, `${b.id} : ${k}`).toBeGreaterThan(0);
     }
   });
@@ -39,5 +40,11 @@ describe('les îles de docs/contenu/', () => {
         }
       }
     }
+  });
+
+  it('ont des missions uniques dans tout le jeu, quatre au plus par île et par LV2', () => {
+    const ids = BIOMES.flatMap((b) => b.exercises.map((m) => m.id));
+    expect(ids.filter((id, n) => ids.indexOf(id) !== n)).toEqual([]);
+    for (const b of BIOMES) for (const lv2 of ['es', 'de'] as const) expect(missionsJouables(b, lv2).length, `${b.id} (${lv2})`).toBeLessThanOrEqual(4);
   });
 });

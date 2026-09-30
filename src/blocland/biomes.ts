@@ -3,7 +3,7 @@ import type { Subject } from '../apps/registry';
 import type { ProgrammeId } from '../programme';
 import type { AnyIconName } from '../components/Icon';
 import { lv2Courante, type Lv2Choice } from '../core/settings';
-import ILES from './iles.json';
+import { ILES } from './iles';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
 export type Lv2 = Exclude<Lv2Choice, 'aucune'>;
@@ -258,9 +258,9 @@ export interface BiomeDef {
 /**
  * Les îles du français (Forêt au centre de l'archipel), puis celles des maths (rangée de devant). Elles s'écrivent dans
  * docs/contenu/<île>.md (en-tête et missions), dans l'ordre de docs/contenu/archipel.md ; `npm run contenu` en produit
- * iles.json. La forme de chaque île est vérifiée par les tests (biomes.test.ts).
+ * iles.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
-export const BIOMES = ILES as BiomeDef[];
+export const BIOMES: BiomeDef[] = ILES;
 
 /** Les îles d'une matière, dans l'ordre des classes. */
 export function biomesOf(subject: Subject): BiomeDef[] {

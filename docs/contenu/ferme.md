@@ -134,6 +134,8 @@ créature : Bloquette
 
 ## Tri des graines · `graines`
 
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
 - description : Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.
 - compétences : c3.fr.langue.homophonie
 

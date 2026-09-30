@@ -142,7 +142,8 @@ describe('le format Markdown du contenu', () => {
   });
 
   it('écrit puis relit chaque île du jeu, ses missions et son en-tête', () => {
-    const iles = JSON.parse(readFileSync('src/blocland/iles.json', 'utf8'));
+    const texte = readFileSync('src/blocland/iles.ts', 'utf8');
+    const iles = JSON.parse(texte.slice(texte.indexOf('= [') + 2, texte.lastIndexOf(' satisfies')));
     const exercices = parIle();
     for (const ile of iles) {
       const relu = lireIle(ecrireIle(ile, exercices.get(ile.id) ?? []), `${ile.id}.md`);

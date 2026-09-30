@@ -1,6 +1,6 @@
 # L’archipel
 
-Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/blocland/iles.json` dans cet ordre, chacune depuis `<île>.md`. Une île nouvelle s’ajoute ici et dans `BiomeId` (`src/blocland/biomes.ts`).
+Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/blocland/iles.ts` dans cet ordre, chacune depuis `<île>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/blocland/biomes.ts`).
 
 1. `foret`
 2. `mine`
