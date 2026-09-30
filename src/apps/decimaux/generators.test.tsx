@@ -74,3 +74,14 @@ it('aligne les décimaux dans le tableau en complétant par des zéros', () => {
   const rows = screen.getAllByRole('row').slice(1).map((r) => r.textContent);
   expect(rows).toEqual(['350', '345']);
 });
+
+it('la droite graduée en dixièmes et le complément à 1 en dixièmes ne proposent ni millièmes ni centièmes (relecture du 28/09)', () => {
+  const byId = (id: string) => QUESTS.find((q) => q.id === id)!;
+  for (let seed = 1; seed <= 200; seed++) {
+    // 5,001 pour 5,1 : aucun élève ne lit un millième sur une droite graduée en dixièmes.
+    for (const q of byId('droite').makeWith(seeded(seed))) for (const c of q.choices) expect(parseDecimal(c) % 10, c).toBe(0);
+    // 0,3 + … = 1 : la réponse et ses voisins sont en dixièmes, jamais à 0,01 près.
+    for (const q of byId('complements').makeWith(seeded(seed)))
+      if (parseDecimal(q.answer) % 100 === 0) for (const c of q.choices) expect(parseDecimal(c) % 100, `${q.prompt} ${c}`).toBe(0);
+  }
+});

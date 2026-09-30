@@ -10,6 +10,8 @@ import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
 import { walkGround, walkPath } from './paths';
 import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbour';
 import { VEHICLE_STAGES } from './vehicle';
+import { toutConstruit } from './budget';
+import { decorPose } from './decor';
 import {
   avatarHome,
   avatarRoute,
@@ -18,6 +20,7 @@ import {
   bossIsletOrigin,
   bossIsletSteps,
   bridgePath,
+  cacheUneBorne,
   creaturePlacements,
   creatureSpot,
   DEPTH,
@@ -32,6 +35,8 @@ import {
   ISLET_H,
   ISLET_W,
   mistPatches,
+  origineDe,
+  PORTEE_DEVANT_LA_BORNE,
   questStations,
   routeAt,
   routeLengths,
@@ -42,6 +47,7 @@ import {
   VILLAGE_PLACES,
   seaDecor,
   vehiclePlacement,
+  versLaCamera,
   VIEW_YAW_MAX,
   viewYaw,
   viewZone,
@@ -750,4 +756,47 @@ it('la salle des trophées a une place par succès', () => {
   // Un trophée ne remplace jamais un cube de la salle.
   const hall = new Set(trophyModel().map((c) => `${c.x},${c.y},${c.z}`));
   for (const t of TROPHY_SLOTS) expect(hall.has(`${t.x},${t.y},${t.z}`)).toBe(false);
+});
+
+describe('les bornes dans la vue de l’île', () => {
+  it('aucun décor posé (arbre, buisson, rocher, objet du quai) ne cache une borne, pied compris, partie vierge ou tout construit', () => {
+    const tout = toutConstruit();
+    for (const a of ARCHIPELAGO_IDS)
+      for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout]) {
+        const cubes = worldCubes(a, partie.progress, partie.village);
+        for (const b of BIOMES.filter((x) => x.classe === a)) {
+          const o = origineDe(b.id);
+          const socles = new Map(cubes.filter((c) => c.quest?.startsWith(`${b.id}:`)).map((c) => [`${c.x},${c.y}`, c]));
+          const bornes = questStations(b.id).map((st) => {
+            const socle = socles.get(`${o.x + st.x},${o.y + st.y}`);
+            expect(socle, `${b.id}, borne ${st.typeId}`).toBeDefined();
+            return { x: o.x + st.x, y: o.y + st.y, base: socle!.z - 1 };
+          });
+          const vers = versLaCamera(b.id);
+          const cachent = cubes.filter((c) => decorPose(c.decor) && cacheUneBorne(bornes, vers, c.x, c.y, c.z)).map((c) => c.decor);
+          expect([...new Set(cachent)], `${a}, ${b.id}`).toEqual([]);
+        }
+      }
+  });
+
+  it('à la Tour du lecteur, rien ne se dresse devant la deuxième borne, entre elle et la caméra', () => {
+    const cubes = worldCubes('6e', {});
+    const o = origineDe('tour');
+    const st = questStations('tour')[1];
+    const socle = cubes.find((c) => c.quest && c.x === o.x + st.x && c.y === o.y + st.y);
+    expect(socle).toBeDefined();
+    const base = socle!.z - 1;
+    // Le tronc de l’arbre qui la cachait était en (6, −1), deux rangées devant elle.
+    expect(cubes.filter((c) => c.decor && c.x === o.x + st.x && c.y < o.y + st.y && c.y >= o.y + st.y - 3 && c.z > base + 1)).toEqual([]);
+  });
+
+  it('un cube collé à la borne, à sa hauteur, la cache quelle que soit la direction ; un cube sous son sol ou au-delà de la portée, jamais', () => {
+    const bornes = [{ x: 0, y: 0, base: 0 }];
+    for (const vers of [versLaCamera('tour'), [0, 0, 1] as [number, number, number], [-0.6, 0.6, 0.53] as [number, number, number]]) {
+      expect(cacheUneBorne(bornes, vers, 1, 0, 1)).toBe(true);
+      expect(cacheUneBorne(bornes, vers, 0, 1, 2)).toBe(true);
+      expect(cacheUneBorne(bornes, vers, 1, 0, 0)).toBe(false);
+      expect(cacheUneBorne(bornes, vers, PORTEE_DEVANT_LA_BORNE + 1, 0, 3)).toBe(false);
+    }
+  });
 });

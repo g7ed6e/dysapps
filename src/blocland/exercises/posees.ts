@@ -7,19 +7,12 @@
 import { randomInt } from '../../core/random';
 import { POSEES_NOTE } from './Aids';
 import { defineData, fmt, type ItemGenerator } from './college';
+import { boundedDraw, byValue, rangeChoices, ruleCard as card } from './tirage';
 import type { ExerciseDef, ExerciseItem } from './types';
 
 type Rng = () => number;
 
-/** Les tirages d’un item sont bornés : au-delà, le générateur a un défaut, qu’on signale plutôt que de boucler. */
-const MAX_TRIES = 1000;
-function draw<T>(name: string, attempt: () => T | undefined): T {
-  for (let tries = 0; tries < MAX_TRIES; tries++) {
-    const found = attempt();
-    if (found !== undefined) return found;
-  }
-  throw new Error(`Galets en colonnes : aucun item ${name} trouvé en ${MAX_TRIES} tirages.`);
-}
+const draw = boundedDraw('Galets en colonnes');
 
 /** Les chiffres d’un entier, des unités vers la gauche : 503 → [3, 0, 5]. */
 const digitsOf = (n: number): number[] => String(n).split('').reverse().map(Number);
@@ -32,44 +25,9 @@ const notRound = (min: number, max: number, rng: Rng): number =>
     return n % 10 === 0 ? undefined : n;
   });
 
-/**
- * Les quatre réponses, rangées dans l’ordre (`compare`), la place de la réponse tirée au hasard parmi celles que les
- * pièges permettent. Les pièges sont des erreurs d’élèves, le plus fréquent d’abord ; de chaque côté de la réponse, ils
- * passent avant les voisins (`fillers`, les plus proches d’abord). Un vrai piège au moins est toujours proposé, et
- * `required` (le piège que le niveau travaille, le 0 oublié) l’est toujours quand il existe. Sans place possible,
- * `undefined` : l’item est tiré à nouveau. Pas `drawChoices` : il remplit avec des voisins le côté où la place tirée
- * l’exige, quitte à ne proposer aucun vrai piège (« 55 × 32 » n’aurait plus que 1 770, 1 780 et 1 790).
- */
-export function rangeChoices<T>(
-  answer: T,
-  traps: T[],
-  fillers: T[],
-  compare: (a: T, b: T) => number,
-  rng: Rng,
-  required?: T,
-): T[] | undefined {
-  const same = (a: T, b: T) => compare(a, b) === 0;
-  const distinct = (list: T[]) => list.filter((t, i) => !same(t, answer) && list.findIndex((u) => same(u, t)) === i);
-  const real = distinct(required === undefined ? traps : [required, ...traps]);
-  const all = distinct([...real, ...fillers]);
-  const below = all.filter((t) => compare(t, answer) < 0);
-  const above = all.filter((t) => compare(t, answer) > 0);
-  // Les vrais pièges sont en tête de leur côté : la place p garde les p premiers du dessous, les 3 − p premiers du dessus.
-  const realBelow = real.filter((t) => compare(t, answer) < 0).length;
-  const realAbove = real.length - realBelow;
-  const keeps = (p: number) =>
-    ((realBelow > 0 && p >= 1) || (realAbove > 0 && p <= 2)) &&
-    (required === undefined || same(required, answer) || (compare(required, answer) < 0 ? p >= 1 : p <= 2));
-  const places = [0, 1, 2, 3].filter((p) => p <= below.length && 3 - p <= above.length && keeps(p));
-  if (places.length === 0) return undefined;
-  const wanted = places[randomInt(0, places.length - 1, rng)];
-  return [answer, ...below.slice(0, wanted), ...above.slice(0, 3 - wanted)].sort(compare);
-}
-
 /** Les voisins d’une réponse chiffrée, un, deux ou trois crans de `step` de chaque côté, les plus proches d’abord. */
 const neighbours = (answer: number, step: number): number[] =>
   [1, 2, 3].flatMap((k) => [answer - k * step, answer + k * step]).filter((v) => v > 0);
-const byValue = (a: number, b: number) => a - b;
 
 // ---------- Niveau 1 : les opérations posées ----------
 
@@ -85,7 +43,6 @@ export const SUB_RULES = [
 // Pas « virgule sous virgule » : on ne pose que des entiers ici, et pour les décimaux la multiplication ne s’aligne pas
 // sur la virgule.
 export const MUL_RULES = ['Unités sous unités.', 'Ligne des dizaines : écris d’abord 0 aux unités.'];
-const card = (title: string, lines: string[]) => ({ kind: 'rule-card', props: { title, lines } });
 
 /** L’addition posée sans retenue : chaque colonne garde son chiffre des unités, la dernière s’écrit en entier. */
 export function addWithoutCarry(a: number, b: number): number {
