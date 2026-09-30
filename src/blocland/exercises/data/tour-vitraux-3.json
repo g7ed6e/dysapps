@@ -15,18 +15,18 @@
       ],
       "answer": "complexe",
       "hint": "Compte les verbes conjugués.",
-      "explanation": "Il y a deux verbes conjugués, « prends » et « fais » : deux propositions, donc une phrase complexe. Une phrase complexe n’a qu’un seul point à la fin.",
+      "explanation": "Il y a deux verbes conjugués, « prends » et « fais » : deux propositions, donc une phrase complexe. Elles forment une seule phrase, avec un seul point à la fin.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -40,19 +40,19 @@
         "complexe"
       ],
       "answer": "simple",
-      "hint": "Compte les verbes conjugués. Un verbe à l’infinitif compte-t-il ?",
-      "explanation": "« sortir » est à l’infinitif : il ne compte pas. Seul « ferme » est conjugué : la phrase est simple, même avec une virgule.",
+      "hint": "Compte les verbes conjugués, un par un.",
+      "explanation": "Le verbe « sortir » est à l’infinitif : il ne compte pas. Seul « ferme » est conjugué : la phrase est simple, même avec une virgule.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -68,18 +68,18 @@
       ],
       "answer": "juxtaposition",
       "hint": "Y a-t-il un mot entre les deux propositions ?",
-      "explanation": "Rien que la virgule entre « il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.",
+      "explanation": "Rien que la virgule entre « Il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -101,12 +101,12 @@
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -122,18 +122,18 @@
       ],
       "answer": "subordination",
       "hint": "Quel mot relie les deux propositions ? Est-il dans la liste de la coordination ?",
-      "explanation": "« parce que » relie les propositions : c’est une subordination. « car » dirait aussi la cause, mais avec « car », ce serait une coordination.",
+      "explanation": "Les mots « parce que » (ici « parce qu’ ») relient les propositions : c’est une subordination. Le mot « car » dirait aussi la cause, mais avec « car », ce serait une coordination.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -149,18 +149,18 @@
       ],
       "answer": "subordination",
       "hint": "Quel mot se trouve entre « aboie » et « le facteur » ?",
-      "explanation": "« quand » relie les deux propositions, « le chien aboie » et « le facteur passe » : c’est une subordination.",
+      "explanation": "Le mot « quand » relie les deux propositions, « Le chien aboie » et « le facteur passe » : c’est une subordination.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -176,18 +176,18 @@
       ],
       "answer": "coordination",
       "hint": "Quel petit mot se trouve entre « avec nous » et « tu restes » ?",
-      "explanation": "« ou » relie les deux propositions, « tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.",
+      "explanation": "Le mot « ou » relie les deux propositions, « Tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }
@@ -203,18 +203,18 @@
       ],
       "answer": "juxtaposition",
       "hint": "Y a-t-il un mot entre les deux propositions, ou seulement un signe ?",
-      "explanation": "Un point-virgule sépare « le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.",
+      "explanation": "Un point-virgule sépare « Le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Phrase simple, phrase complexe",
           "lines": [
-            "Compte les verbes conjugués. Un seul : phrase simple. Deux ou plus : phrase complexe.",
-            "Un verbe à l’infinitif ne compte pas : manger, partir, finir.",
-            "Chaque verbe conjugué, avec son sujet, forme une proposition.",
-            "Juxtaposition : une virgule ou un point-virgule entre les propositions. Le vent souffle, la porte claque.",
-            "Coordination : un mot comme et, mais, ou, donc, car. Il court et il saute.",
-            "Subordination : un mot comme parce que, quand, si, qui, que. Je souris quand tu chantes."
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
           ]
         }
       }

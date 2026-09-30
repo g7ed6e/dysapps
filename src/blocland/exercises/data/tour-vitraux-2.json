@@ -15,18 +15,18 @@
         "complément du nom"
       ],
       "answer": "attribut du sujet",
-      "hint": "Quel verbe se trouve entre « ma sœur » et « malade » ?",
-      "explanation": "« malade » est séparé du nom par le verbe « est » : il dit comment est le sujet, « ma sœur ». C’est un attribut du sujet, pas une épithète.",
+      "hint": "Quel verbe se trouve entre « Ma sœur » et « malade » ?",
+      "explanation": "Le mot « malade » est séparé du sujet, « Ma sœur », par le verbe « est » : il dit comment est le sujet. C’est un attribut du sujet, pas une épithète.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -48,11 +48,11 @@
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -68,17 +68,17 @@
       ],
       "answer": "complément du nom",
       "hint": "Quel nom ce groupe complète-t-il ? Par quel petit mot commence-t-il ?",
-      "explanation": "« de mon casier » commence par « de » et complète le nom « clé » : de quelle clé parle-t-on ? C’est un complément du nom.",
+      "explanation": "Le groupe « de mon casier » commence par « de » et complète le nom « clé » : de quelle clé parle-t-on ? C’est un complément du nom.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -93,18 +93,18 @@
         "épithète"
       ],
       "answer": "attribut du sujet",
-      "hint": "Quel verbe se trouve entre « mes amis » et « fatigués » ?",
-      "explanation": "« fatigués » vient après le verbe « semblent » et dit comment sont les amis : c’est un attribut du sujet. Sembler marche comme être.",
+      "hint": "Quel verbe se trouve entre « Mes amis » et « fatigués » ?",
+      "explanation": "Le mot « fatigués » vient après le verbe « semblent » et dit comment sont les amis : c’est un attribut du sujet. « Sembler » marche comme « être ».",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -119,18 +119,18 @@
         "attribut du sujet"
       ],
       "answer": "complément du nom",
-      "hint": "« aux pommes » est-il un adjectif, ou un groupe avec un nom ?",
-      "explanation": "« aux pommes » n’est pas un adjectif : c’est un groupe avec le nom « pommes », qui complète le nom « tarte ». C’est un complément du nom. Une épithète est toujours un adjectif.",
+      "hint": "Le groupe « aux pommes » est-il un adjectif, ou contient-il un nom ?",
+      "explanation": "Le groupe « aux pommes » n’est pas un adjectif : il contient le nom « pommes », qui complète le nom « tarte ». C’est un complément du nom. Une épithète est toujours un adjectif.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -146,17 +146,17 @@
       ],
       "answer": "épithète",
       "hint": "Où est le verbe « est » : entre « chat » et « noir », ou plus loin ?",
-      "explanation": "« noir » est collé au nom « chat » : c’est une épithète. Le verbe « est » vient après : c’est « endormi » qui est l’attribut du sujet.",
+      "explanation": "Le mot « noir » est collé au nom « chat » : c’est une épithète. Le verbe « est » vient après : c’est « endormi » qui est l’attribut du sujet.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -171,18 +171,18 @@
         "complément du nom"
       ],
       "answer": "attribut du sujet",
-      "hint": "Quel verbe se trouve entre « mon père » et « infirmier » ?",
-      "explanation": "« infirmier » vient après le verbe « est » et dit ce qu’est le sujet, « mon père » : c’est un attribut du sujet. Un attribut peut être un nom.",
+      "hint": "Quel verbe se trouve entre « Mon père » et « infirmier » ?",
+      "explanation": "Le mot « infirmier » vient après le verbe « est » et dit ce qu’est le sujet, « Mon père » : c’est un attribut du sujet. Un attribut peut être un nom.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }
@@ -198,17 +198,17 @@
       ],
       "answer": "complément du nom",
       "hint": "Quel nom ce groupe complète-t-il ? Est-il avant ou après le verbe ?",
-      "explanation": "« du collège » est collé au nom « cour » et dit de quelle cour on parle : c’est un complément du nom. Le verbe « est » vient après : l’attribut, c’est « grande ».",
+      "explanation": "Le groupe « du collège » est collé au nom « cour » et dit de quelle cour on parle : c’est un complément du nom. Le verbe « est » vient après : l’attribut, c’est « grande ».",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Attribut, épithète, complément du nom",
           "lines": [
-            "Épithète : un adjectif placé tout près du nom, sans verbe entre eux. Une robe bleue.",
-            "Attribut du sujet : il dit comment est le sujet, après être, sembler, devenir, paraître ou rester. La soupe paraît chaude.",
-            "L’attribut peut aussi être un nom. Ma tante est pilote.",
-            "Complément du nom : un groupe qui complète un nom, souvent après à ou de. Un verre d’eau.",
-            "Un verbe comme être entre le nom et le mot : c’est un attribut. Pas de verbe : épithète ou complément du nom."
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
           ]
         }
       }

@@ -15,19 +15,19 @@
         "impérative"
       ],
       "answer": "interrogative",
-      "hint": "Regarde le signe à la fin de la phrase.",
+      "hint": "Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?",
       "explanation": "Les mots sont rangés comme pour raconter, mais le point d’interrogation montre qu’on pose une question : la phrase est interrogative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -42,19 +42,19 @@
         "interrogative"
       ],
       "answer": "impérative",
-      "hint": "Cherche le sujet du verbe « range ». Y en a-t-il un ?",
-      "explanation": "« range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.",
+      "hint": "Cherche le sujet du verbe « Range ». Y en a-t-il un ?",
+      "explanation": "« Range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -69,19 +69,19 @@
         "impérative"
       ],
       "answer": "déclarative",
-      "hint": "Regarde le signe à la fin de la phrase.",
+      "hint": "Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?",
       "explanation": "La phrase parle d’une question, mais elle ne la pose pas : pas de point d’interrogation, elle finit par un point. Elle est déclarative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -97,18 +97,18 @@
       ],
       "answer": "impérative",
       "hint": "Qui fait l’action de courir ? Le sujet est-il écrit ?",
-      "explanation": "« cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec ne et pas, elle est aussi négative, et le point d’exclamation la rend exclamative.",
+      "explanation": "Le verbe « cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec « Ne » et « pas », elle est aussi négative, et le point d’exclamation la rend exclamative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -124,18 +124,18 @@
       ],
       "answer": "interrogative",
       "hint": "La phrase attend-elle une réponse ?",
-      "explanation": "« où » et le point d’interrogation montrent qu’on pose une question : la phrase est interrogative. Le sujet « tu » est placé après le verbe.",
+      "explanation": "« Où » et le point d’interrogation montrent qu’on pose une question : la phrase est interrogative. Le sujet « tu » est placé après le verbe.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -149,19 +149,19 @@
         "affirmative"
       ],
       "answer": "négative",
-      "hint": "Cherche ne, ou n’, devant le verbe.",
-      "explanation": "« ne » et « jamais » encadrent le verbe « mange » : la phrase est négative. Le mot « pas » n’est pas le seul mot de la négation.",
+      "hint": "Cherche « ne » ou « n’ » devant le verbe.",
+      "explanation": "Les mots « ne » et « jamais » encadrent le verbe « mange » : la phrase est négative. Ici, c’est « jamais » qui va avec « ne », à la place de « pas ».",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -175,19 +175,19 @@
         "négative"
       ],
       "answer": "affirmative",
-      "hint": "Cherche ne, ou n’, devant le verbe.",
-      "explanation": "Il n’y a pas de ne devant le verbe « fait » : la phrase est affirmative. Ici, « pas » est un nom, les pas du bébé, pas un mot de la négation.",
+      "hint": "Cherche « ne » ou « n’ » devant le verbe.",
+      "explanation": "Il n’y a aucun « ne » devant le verbe « fait » : la phrase est affirmative. Ici, « pas » est un nom : les pas du bébé.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
@@ -197,23 +197,23 @@
       "prompt": "Quel beau dessin tu as fait !",
       "question": "Cette phrase pose-t-elle une question ?",
       "choices": [
-        "non, elle est exclamative",
-        "oui, elle est interrogative"
+        "oui",
+        "non"
       ],
-      "answer": "non, elle est exclamative",
-      "hint": "Regarde le signe à la fin de la phrase.",
-      "explanation": "La phrase commence par « quel », mais elle finit par un point d’exclamation : elle montre l’admiration, elle ne pose pas de question. Elle est exclamative.",
+      "answer": "non",
+      "hint": "Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?",
+      "explanation": "La phrase commence par « Quel », mais elle finit par un point d’exclamation : elle montre l’admiration, elle ne pose pas de question. Elle est exclamative.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Types et formes de phrases",
           "lines": [
-            "Déclarative : elle raconte ou explique, elle finit par un point. Il pleut depuis ce matin.",
-            "Interrogative : elle pose une question, elle finit par un point d’interrogation. Qui a sonné ?",
-            "Impérative : elle donne un ordre ou un conseil, souvent sans sujet. Mets ton manteau.",
-            "Forme négative : ne (ou n’) avec pas, plus, jamais, rien ou personne. Il ne neige plus.",
-            "Forme exclamative : elle montre une émotion, elle finit par un point d’exclamation. Comme il fait chaud !",
-            "Une phrase a toujours un type. Elle peut aussi être négative, exclamative, ou les deux."
+            "Déclarative : elle raconte, elle finit par un point. Il pleut.",
+            "Interrogative : une question, un point d’interrogation. Qui a sonné ?",
+            "Impérative : un ordre, un verbe sans sujet. Mets ton manteau.",
+            "Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.",
+            "Affirmative : sans « ne » devant le verbe. Il neige.",
+            "Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !"
           ]
         }
       }
