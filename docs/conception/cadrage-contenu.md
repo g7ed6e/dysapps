@@ -115,22 +115,28 @@ Maths 6e, automatismes (point 2) :
 
 - **C-1. Rivière des fractions : division posée.** Quatrième mission, la division et les opérations posées, sur le thème du partage.
 - **C-2. Volcan des décimaux : grands nombres et encadrements.** Quatrième mission, « Nombres géants », puis encadrer une fraction, ranger et intercaler des décimaux (niveaux de plus). Lève `c3.ma.nombres.grands-entiers`.
+  - Relecture du 28/09 : à la Pente graduée, `volcan-pente-1` (générateur `onLine`, `src/apps/decimaux/generators.tsx`) ne propose plus le piège en millièmes (« 5,001 » pour 5,1), et `volcan-pente-2` (`complementToOne`) plus de piège à 0,01 près quand la réponse est en dixièmes ; le portail Décimaux, qui partage ces générateurs, suit.
 
 Français 6e (point 3) :
 
 - **C-3. Ferme des accords et Carrière des mots : accords et mots-outils.** L’accord dans le groupe nominal et le sujet inversé (Ferme) ; les mots-outils manquants de la liste officielle (Coffre à mots). Lève `c3.fr.langue.genre-nombre` et `c3.fr.langue.sujet`.
+  - Relecture du 28/09 : une carte de règle fixe à l’Enclos et à la Récolte (`ferme-enclos-1` et `-2`, `ferme-recolte-1` et `-2`, aucun item n’en a) ; une phrase d’exemple (`sentence`) pour « quelquefois » et « autrefois » dans `carriere-coffre-2`, dont les pièges « quelque fois » et « autre fois » s’écrivent ainsi dans d’autres phrases ; huit items joués au Coffre (`carriere-coffre-1` et `-2` passent de `perRun: 6` à 8).
 - **C-4. Tour du lecteur : « Étages du sens ».** La compréhension d’un texte court, les reprises (qui est « il », « elle », « celui-ci »). Lève `c3.fr.lecture.reprises`.
 - **C-5. Tour du lecteur : « Vitraux des phrases ».** Attribut, épithète, complément du nom, types et formes de phrases, phrase simple et complexe. Lève `c3.fr.langue.attribut-gn`, `c3.fr.langue.types-formes` et `c3.fr.langue.phrase-complexe`.
 - **C-6. Carrière des mots : synonymes et polysémie.** Sans exclusion à lever (la compétence est citée, une partie n’est pas travaillée).
+  - Relecture du 28/09 : dans `carriere-familles-2`, la racine lue à voix haute est le mot de la famille (« danse », « fille », « laver »), pas le morceau écrit (« dans », « fill », « lav »), et « maisonnette » prend le suffixe « ette », le n doublé restant dans la racine, jamais un suffixe « nette » ; dans `carriere-mot-troue-2`, l’item `parce` fait écrire « parce que », jamais « parce » seul ; huit items joués aux Familles (`carriere-familles-1` et `-2` passent de `perRun: 6` à 8).
 
 Français 5e à 3e (points 4 et 6) :
 
 - **C-7. Homophones, champ lexical et niveaux de langue.** « mais / mes / met » à l’Aiguillage (Carrefour des homophones, mission jamais livrée) ; champ lexical et niveaux de langue au Cabinet des mots.
+  - Relecture du 28/09 : au Carrefour, `carrefour-bifurcation-2-7` remplace le piège « n’y / si » par « ni / si » (ni et ne confondus) ; l’Aiguillage et la Bifurcation gardent `c4.fr.langue.orthographe-lexicale`, qui vise plutôt le lexique que les homophones grammaticaux, faute de mieux au cycle 4. Au Cabinet, `cabinet-racines-1-3` dit « observer ce qui est très petit » (pas « regarder le petit »), `cabinet-racines-1-7` « la température », et `cabinet-racines-2-5` remplace le piège « voler avant » par « empêcher un avion de voler » (les deux sens de vol).
 - **C-8. Observatoire des textes : phrase et document.** Attribut du COD, phrase simple et complexe, types et formes de phrase, document composite, en niveaux de plus (l’île a déjà quatre missions). Lève `c4.fr.langue.fonctions-etendues`, `c4.fr.langue.phrase-complexe`, `c4.fr.langue.types-formes`, `c4.fr.lecture.documents` et, en partie, `c3.fr.lecture.documents`.
+  - Relecture du 28/09 : les niveaux 1 des Figures, des Inférences et des Rouages (`textes-figures-1`, `textes-inferences-1`, `textes-rouages-1`) montent au niveau de la 3e. `textes-rouages-2` pose une seule question par consigne (la fonction du groupe, ou le connecteur). Items : `textes-figures-1-4` dit « pareils à deux étoiles » (« tels deux étoiles » enseigne un accord fautif) ; `textes-rouages-1-6` remplace le piège « un adjectif » (juste dans l’ancienne grammaire, « adjectif possessif ») par « un verbe » (« mes » et « met ») ; `textes-inferences-1-6` nomme le personnage avant de demander « Comment est-il ? ». Pièges : « elle va monter dans le bus » au lieu de « elle va conduire le bus » (`textes-inferences-2-1`), « calme » au lieu de « endormi » (`textes-inferences-2-0`).
 
 Anglais (point 7) :
 
 - **C-9. Baie des mots : « Signs ».** Quatrième mission, lire des mots et des phrases très simples avec une image, en 6e. Lève `c3.en.lire.textes-courts`.
+  - Relecture du 28/09 : dans `baie-ears-2-6` (thin), le piège « l’étain », mot inconnu d’un collégien, devient « la boîte » (tin).
 - **C-10. Suivre une histoire à l’oral.** En 6e puis au cycle 4. Lève `c3.en.ecouter.histoire` et `c4.en.ecouter.recit`.
 - **C-11. Repères culturels.** Fêtes, lieux, héros de l’imaginaire, école, médias des pays anglophones. Lève les `c3.en.culture.*` et `c4.en.culture.*` qui restent (ceux que la LV2 couvre ne sont pas concernés).
 
@@ -162,6 +168,52 @@ Une mission des anciens cadrages n’a jamais été livrée : « mais / mes / me
 Sans lot prévu à ce jour : la géométrie qui demande des figures que l’application ne dessine pas encore (figures et solides, parallélisme et symétrie en 6e ; aires et volumes, agrandissement, angles et triangles, triangles semblables, transformations au cycle 4), la ponctuation et le contexte des œuvres en français de cycle 4, l’énonciation à l’oral et la dictée de cycle 4 en anglais.
 
 **Trois contraintes pour chaque lot.** Une île porte au plus quatre missions (une borne tous les trois blocs dans un cœur de seize) : à la Ferme et à la Falaise, qui en ont déjà trois, les ajouts d’un lot tiennent dans une seule mission. Une île de l’école (la Forêt, le Marché, l’Atelier, le Phare) porte au plus trois missions : l’école occupe la place de la quatrième borne ; ce qui s’y ajoute passe par un niveau de plus dans une mission existante (le Phare a pris sa troisième mission avec les Faisceaux). L’identifiant d’une mission reste unique dans tout le jeu : le niveau adapté est retenu par mission.
+
+### Les suites de la relecture du 28/09
+
+La relecture de tous les exercices du 28/09/2026 a corrigé les erreurs sans débat (#156). Voici ce qui reste, vérifié sur le contenu du 30/09 ; ce qui touche une île d’une étape C-n est écrit sous cette étape. Ces changements ne touchent aucune clé d’item ni aucun identifiant d’exercice ou de mission : un item dont le mot change garde sa clé, la répétition espacée et le niveau adapté sont gardés. Pour la même raison, les clés `aujourd'hui` (apostrophe droite, `carriere-mot-troue-2`) et `ont-fini` (`ferme-recolte-1`) restent telles quelles.
+
+Décisions de format, pour tout le jeu :
+
+- **Ordre croissant des nombres.** Les heures sont rangées depuis LV2-4 (#232) ; restent les fractions, puissances, notations scientifiques et expressions littérales que `textChoices` (`src/blocland/exercises/college.ts`) mélange. Les ranger par valeur, et apprendre à `parseNumber` (`src/core/choices.ts`) l’écriture « n/d ».
+- **Rappel de règle en maths de cycle 4.** Une carte de règle fixe pour `glacier-banquise-2` (soustraire des relatifs), `belvedere-thales-1`, `donnees-moyenne-1` et `-2`, `phare-images-1` et `-2`, qui n’ont qu’un tableau, une droite ou des barres.
+- **Rappel de règle à l’écoute en anglais.** Une carte des mots interrogatifs pour les Listening et les Dialogues (`comptoir-listening-1` et `-2`, `theatre-dialogues-1` et `-2`) ; pour les Ears (`baie-ears-1` et `-2`), qui font entendre un mot seul, une exception écrite dans `principes.md`.
+- **Consigne du portail.** `QuizSession` (`src/components/QuizSession.tsx`) écrit une consigne par mission et lit la question à l’ouverture, pour les Homophones et le Vocabulaire.
+- **Symboles dans les indices de maths.** L’indice passe par une table qui dit les symboles en mots (« BC² », « √ », « ÷ »), comme `spoken` le fait pour l’énoncé.
+- **Huit items joués.** `foret-echauffement-001`, `mine-oreille-1` et `mine-oreille-2` passent de `perRun: 6` à 8 (le Coffre et les Familles sont sous C-3 et C-6).
+- **Découpage syllabique.** `syllablesOf` (`src/core/syllables.ts`) coupe selon l’écrit (« vil-la-ge ») et non selon l’oral : à trancher avec le référent dys.
+
+Items à corriger :
+
+- `foret-echauffement-003`, clé `biodiversité` : 5 ou 6 syllabes selon la prononciation ; le mot devient « organisation ».
+- `foret-chasse-son-in-3`, clé `image` : la consigne parle de i et n, le mot n’a pas de n ; il devient « piscine ».
+- `marais-brume-1-5` : « Tu ferais tes devoirs ce soir » se dit aussi (un conseil) ; la phrase dit que c’est sûr.
+- `falaise-corde-2` : la consigne demande « quoi ? » alors que `falaise-corde-2-3` et `-2-4` demandent « qui ? » ; elle dit « qui ? ou quoi ? ».
+- Anglais, pièges qu’un natif accepte : « is working » devient « working » (`manoir-ing-2-2`), « some » devient « a » (`theatre-quantites-1-1`), « miss » devient « would miss » (`chateau-if-1-6`), « do » devient « did » (`gare-futur-1-7`), « will show » devient « will be show » (`chateau-passif-2-2`).
+- `comptoir-shopping-2-3` : « tee » se dit comme « tea » ; il devient « team ».
+- `studio-faux-amis-2-1` : « luggage » n’est pas un faux ami ; l’item prend un faux ami de la carte qui n’a pas encore d’item.
+- Portail, `src/apps/homophones/sets.json` : « Lucas cherche … écouteurs partout. » admet « ces » ; la phrase précise le possesseur.
+- Portail, `src/apps/lecture/texts.json` : les glossaires ajoutent « ne se sent pas de joie », « à tout venant » et « tout à l’heure ».
+- Portail, `src/apps/vocabulaire/themes.json` : le thème « Les jours et les mois » n’a que January ; il prend les autres mois.
+
+Pièges à remplacer :
+
+- `forge-trempe-2` (`primeOrDivisor`) : les pièges sont tous pairs, le nombre premier est donc le seul impair ; des composés impairs (9, 15, 21, 25) les remplacent, et la carte des diviseurs garde les critères sans la liste, qui donne la réponse.
+- `glacier-crevasses-2` (`divRelatifs`) : le piège a − b, qu’aucun élève ne fait, devient une erreur de table.
+- `forge-enclume-2` (`productOfPowers`) : plus de piège à exposant négatif (« 2⁻² ») dans un produit.
+- `mine-oreille-1` et `-2` : les pseudo-mots ne ressemblent à aucun mot (« fache » se lit « fâche », « pulle » se lit « pull ») ; « gâteau / cadeau », où deux sons changent, devient une paire à un seul son (« toit / doigt ») ; « Un verre de vin. » devient une phrase du quotidien d’un collégien.
+
+Niveaux et programme :
+
+- La Mine des lettres : `filon` prend un niveau 3.
+- Au Glacier (5e), `glacier-crevasses-1` et `-2` (× et ÷ des relatifs) et, au Marché (5e), `marche-remises-2` (hausse et baisse en pourcentage) relèvent plutôt de la 4e : ils restent en place. Le Thermomètre (`glacier-thermometre-1` et `-2`) n’a que des entiers, pas encore de décimaux relatifs.
+- La Lecture du portail cite `c3.fr.lecture.genres` sans question sur le genre : une question sur la fable s’ajoute.
+- Le Vocabulaire du portail cite `c3.en.ecrire.dictee` sans rien faire écrire (« J’écris » choisit une écriture) : la citation sort, et la compétence entre dans `src/programme/exclusions.ts` avec son motif.
+
+Univers, à renvoyer au directeur artistique :
+
+- Le nom de Tunel, la taupe de la Mine des lettres (`src/blocland/biomes.ts`, texte `tour-ascension-tunel`), est si proche de « tunnel » qu’il peut ancrer une mauvaise orthographe.
+- « Bien piochée ! » (`mine-filon-*`, `feedback.correct`) accorde avec la lettre, le geste porte sur le bloc.
 
 ### À surveiller
 
