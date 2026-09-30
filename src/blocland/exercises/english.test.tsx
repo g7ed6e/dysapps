@@ -114,3 +114,16 @@ it('sans langue : rien ne change (français)', () => {
   // Le mot français, lui, est bien découpé en syllabes.
   expect(document.querySelector('.syllables')).not.toBeNull();
 });
+
+it('document en français (Tour du lecteur) : le petit texte est découpé en syllabes, une ligne par phrase', () => {
+  renderScreen(
+    CalculScreen,
+    { question: 'Qui est « il » ?', prompt: 'Léa attend son frère.\nIl arrive en courant.', choices: ['le frère de Léa', 'Léa'], answer: 'le frère de Léa' },
+    'fr',
+  );
+  const lines = screen.getAllByRole('listitem');
+  expect(lines).toHaveLength(2);
+  expect(lines.every((l) => l.querySelector('.syllables'))).toBe(true);
+  // Français : aucun élément du document ne porte d'attribut de langue étrangère.
+  expect(document.querySelector('.notice [lang]')).toBeNull();
+});

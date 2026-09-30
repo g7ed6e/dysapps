@@ -147,7 +147,7 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 }
 `;
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"95f4bd9f"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"b9270f59"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
@@ -160,9 +160,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "a1c21415",
-  "cubes": "115abb1c",
-  "cubes avec créatures": "0bd237b1",
-  "décor posé sur la pente": "d2d741d1",
+  "cubes": "437cdf01",
+  "cubes avec créatures": "3af4ce86",
+  "décor posé sur la pente": "3e392cb6",
   "navire": "77ddaf3c",
   "sol (facettes)": "c4f231e0",
   "sol (lave)": "13fe3a3b",
@@ -173,9 +173,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "f4009a06",
-  "cubes": "e3c39536",
-  "cubes avec créatures": "9b22a8c3",
-  "décor posé sur la pente": "05a31a4b",
+  "cubes": "fdd49347",
+  "cubes avec créatures": "74913f72",
+  "décor posé sur la pente": "c2c7a8f4",
   "navire": "77ddaf3c",
   "sol (facettes)": "f005abbc",
   "sol (lave)": "13fe3a3b",
@@ -186,9 +186,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "3e7cde82",
-  "cubes": "9fbf9deb",
-  "cubes avec créatures": "5f05f971",
-  "décor posé sur la pente": "a946f05c",
+  "cubes": "abd3ff17",
+  "cubes avec créatures": "cdb39755",
+  "décor posé sur la pente": "2c2f8394",
   "navire": "1dcafcd1",
   "sol (facettes)": "aa1cf39d",
   "sol (lave)": "13fe3a3b",

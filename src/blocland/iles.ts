@@ -159,10 +159,10 @@ export const ILES = [
   {
     "id": "tour",
     "name": "Tour du lecteur",
-    "module": "Fluence de lecture",
+    "module": "Lecture et compréhension",
     "subject": "francais",
     "classe": "6e",
-    "description": "Lire à voix haute, étage par étage.",
+    "description": "Lire à voix haute, étage par étage, et savoir de qui ou de quoi parle un texte.",
     "block": "verre",
     "guardian": "la Chouette de verre",
     "icon": "castle",
@@ -176,6 +176,15 @@ export const ILES = [
         "description": "Lis un texte court, un paragraphe = un étage.",
         "programme": [
           "c3.fr.lecture.fluidite"
+        ]
+      },
+      {
+        "id": "etages",
+        "title": "Étages du sens",
+        "description": "Lis un texte court et trouve de qui ou de quoi il parle.",
+        "programme": [
+          "c3.fr.lecture.reprises",
+          "c3.fr.lecture.explicite"
         ]
       }
     ]

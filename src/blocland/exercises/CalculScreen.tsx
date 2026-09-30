@@ -19,7 +19,9 @@ export function Aid({ aid }: { aid: AidData }) {
  * un indice sur demande. Champs de l'item : prompt, spoken, choices, answer, hint, explanation, aid, figure.
  * En anglais (`lang: 'en'`), l'énoncé et les réponses sont lus en voix anglaise ; l'indice et l'aide restent en français.
  * Un item peut porter une question en français (`question`) : elle vient d'abord, lue en voix française, et l'énoncé
- * devient un document à lire (panneau, menu, horaire), encadré, une ligne par « \n », lu dans sa langue.
+ * devient un document à lire (panneau, menu, horaire, petit texte), encadré, une ligne par « \n », lu dans sa langue
+ * (en syllabes s'il est en français et que le réglage Syllabes est actif : un document en français n'a donc ni fraction
+ * ni trou « … »).
  */
 export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
@@ -49,7 +51,8 @@ export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang
             <ul className="notice-text" role="list" lang={langAttr(lang)}>
               {prompt.split('\n').map((line, i) => (
                 <li key={i} className="notice-line">
-                  <RichText text={line} lang={lang} />
+                  {/* Un texte en français se lit en syllabes (réglage Syllabes) ; jamais un document en langue étrangère. */}
+                  {lang === 'fr' ? <Syllabified text={frenchTypography(line)} /> : <RichText text={line} lang={lang} />}
                 </li>
               ))}
             </ul>
