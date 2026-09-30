@@ -65,7 +65,12 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
   mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 5_000, drawCalls: 1 }, autres: { triangles: 4_550, drawCalls: 1 } },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
-  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_500, drawCalls: 3 }, autres: { triangles: 1_300, drawCalls: 3 } },
+  // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
+  // le mainteneur : 36 bornes de 28 triangles portent le poste des Premiers Rivages à 1 008, au-dessus de ses 1 000.
+  // Leur enveloppe en prend 250 à la faune, dont les baleines, les oiseaux et les nuages ne dépendent pas des îles
+  // (1 132 mesurés, comme au 5e) : 1 250 pour les bornes (44 bornes, huit de plus pour l'île des Grandeurs), 1 250 pour
+  // la faune ; la somme ne change pas (57 800). Le navire garde ses 1 000, promis en partie à la construction (cadrage Archipéo, lot 7b).
+  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_250, drawCalls: 3 }, autres: { triangles: 1_300, drawCalls: 3 } },
   decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_500, drawCalls: 3 }, autres: { triangles: 9_350, drawCalls: 3 } },
   construction: {
     lot: 'R5',
@@ -73,7 +78,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
     premiersRivages: { triangles: 6_500, drawCalls: 3 },
     autres: { triangles: 7_100, drawCalls: 3 },
   },
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_000, drawCalls: 1 }, autres: { triangles: 720, drawCalls: 1 } },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 720, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 430, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 500, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 1_950, drawCalls: 1 } },

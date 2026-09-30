@@ -457,3 +457,57 @@ export function LongDivision({ dividend, divisor, remainder = false }: { dividen
     </figure>
   );
 }
+
+const CLASSES = ['unités', 'mille', 'millions', 'milliards'];
+const CLASS_RANKS = [
+  { short: 'C', long: 'centaines' },
+  { short: 'D', long: 'dizaines' },
+  { short: 'U', long: 'unités' },
+];
+
+/** Le nombre rangé dans le tableau (`value`, les chiffres sans espace), ou chaque classe en lettres (`words`). */
+export type ClassTableProps = { value: string; words?: undefined } | { words: string[]; value?: undefined };
+
+/**
+ * Le tableau de numération par classes (Nombres géants) : un bloc par classe (milliards, millions, mille, unités), chacun
+ * coupé en centaines, dizaines, unités, un trait épais devant chaque classe sauf la première. Avec `value` (les chiffres,
+ * sans espace), le nombre y est rangé, un chiffre par case ; avec `words` (une classe en lettres par bloc, de la plus
+ * grande à la plus petite, vide pour une classe vide), chaque classe est écrite en lettres au-dessus de trois cases
+ * vides, d'un fond uni : le nombre à écrire, trois chiffres par classe. Chaque chiffre a sa case : l'espacement des
+ * lettres des Réglages ne décale pas les colonnes. Les blocs se suivent sur une ligne ; quand elle est trop étroite (un
+ * téléphone aux grands réglages), une classe passe à la ligne entière, jamais un mot dans la classe voisine.
+ */
+export function ClassTable(props: ClassTableProps) {
+  const { value, words } = props;
+  const count = words ? words.length : Math.ceil((value ?? '').length / 3);
+  if (count === 0) return null;
+  // Les classes de gauche à droite : des milliards (ou des millions) aux unités.
+  const classes = Array.from({ length: count }, (_, i) => CLASSES[count - 1 - i]);
+  const padded = (value ?? '').padStart(count * 3, ' ');
+  const groups = classes.map((_, i) => padded.slice(i * 3, i * 3 + 3));
+  const label = words
+    ? `Tableau de numération par classes, à remplir : ${classes.map((c, i) => `${words[i] || 'rien'} dans la classe des ${c}`).join(', ')}.`
+    : `Tableau de numération par classes : ${classes.map((c, i) => `classe des ${c}, ${groups[i].trim()}`).join(' ; ')}.`;
+  return (
+    <figure className="class-table">
+      <div role="img" aria-label={label} className={`class-blocks${words ? ' class-blocks-words' : ''}`}>
+        {classes.map((c, i) => (
+          <div key={c} className={`class-block${i > 0 ? ' class-start' : ''}`}>
+            <div className="class-name">{c}</div>
+            {CLASS_RANKS.map((r) => (
+              <div key={r.short} className="class-rank">
+                <abbr title={r.long}>{r.short}</abbr>
+              </div>
+            ))}
+            {words && <div className="class-word">{words[i]}</div>}
+            {groups[i].split('').map((d, k) => (
+              <div key={k} className={words ? 'class-digit class-box' : 'class-digit'}>
+                {words ? '' : d.trim()}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </figure>
+  );
+}

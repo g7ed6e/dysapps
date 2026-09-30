@@ -70,10 +70,10 @@ export const ARCHIPEO = {
       },
     },
     volcan: {
-      challenge: 'Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, regarde bien où se place la virgule. »',
+      challenge: 'Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. »',
       guardianSays: {
         hit: 'Une braise s’allume sur mon ventre. C’est exact.',
-        miss: 'Rien ne s’éteint. Repère la virgule, puis lis les rangs un par un. Reprends.',
+        miss: 'Rien ne s’éteint. Regarde le tableau ou la droite, rang par rang, et reprends.',
         beaten: 'Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi.',
       },
     },

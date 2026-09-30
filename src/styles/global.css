@@ -1819,6 +1819,142 @@ button.app-card:active {
   opacity: 0.55;
 }
 
+/* Le tableau des décimaux à côté de sa règle (ranger, intercaler) : sans la marge des figures, des lignes un peu moins
+   hautes. Seulement quand l'item a une règle : la Coulée 1 et la Pente, sans règle, ne changent pas. */
+.panel.calcul:has(> .calcul-aid .rule-card) > .calcul-figure figure.decimal-table {
+  margin: 0 auto;
+}
+.panel.calcul:has(> .calcul-aid .rule-card) > .calcul-figure .decimal-table th,
+.panel.calcul:has(> .calcul-aid .rule-card) > .calcul-figure .decimal-table td {
+  height: 2.2rem;
+}
+
+/* Tableau de numération par classes (Nombres géants) : un bloc par classe, son nom, puis C, D, U, puis les chiffres ;
+   un trait épais devant chaque classe sauf la première. Les blocs se suivent sur une ligne et, quand elle est trop
+   étroite, une classe entière passe à la ligne : un mot ne déborde jamais dans la classe voisine, un nom de classe ne se
+   coupe pas. Les chiffres ne prennent pas l'espacement des lettres des Réglages : les colonnes restent alignées. En
+   lettres, chaque classe est écrite au-dessus de ses trois cases, d'un fond uni (un guide, pas un champ à toucher).
+   Sans la marge des figures : l'écran tient dans la hauteur d'une tablette, et la règle a la place d'être à côté. */
+figure.class-table {
+  margin: 0 auto;
+  max-width: 100%;
+}
+.class-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.class-block {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, minmax(1.75rem, 1fr));
+  /* Des lignes de même hauteur d'un bloc à l'autre : c'est la ligne des mots qui s'allonge. */
+  grid-template-rows: auto auto 1fr auto;
+  border-top: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+}
+.class-block.class-start {
+  border-left: 5px solid var(--pink);
+}
+.class-block > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  text-align: center;
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.class-name,
+.class-word {
+  grid-column: 1 / -1;
+}
+.class-name {
+  padding: 0.15rem 0.3rem;
+  font-size: 0.95rem;
+  background: var(--cyan);
+  color: var(--on-accent);
+  /* Un nom de classe ne se coupe jamais : c'est son bloc qui s'élargit. */
+  white-space: nowrap;
+}
+.class-rank {
+  /* La ligne C, D, U : un repère, moins haut que celle des chiffres. */
+  height: 1.8rem;
+  font-size: 0.8rem;
+}
+.class-rank abbr {
+  text-decoration: none;
+}
+.class-digit {
+  height: 2.6rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+/* En lettres, des classes de même largeur, assez pour « soixante-dix » : les mots passent à la ligne (aux espaces, après
+   un trait d'union) dans leur classe, jamais au milieu d'un mot. */
+.class-blocks-words .class-block {
+  flex-basis: 7.8rem;
+  min-width: 7.8rem;
+}
+.class-word {
+  padding: 0.2rem 0.3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: normal;
+  word-spacing: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+.class-digit.class-box {
+  height: 2.2rem;
+  background: var(--bg);
+}
+/* Les grands nombres ne se coupent pas (espaces insécables) : leurs boutons gardent peu de marge sur les côtés, et
+   les espacements des Réglages ne s'y ajoutent pas, comme dans le tableau (celui des mots rendrait l'espace entre deux
+   classes plus large qu'un chiffre ; avec celui des lettres, le nombre se coupait aux grands réglages). */
+.panel.calcul:has(> .calcul-figure .class-table) > .choices > .choice {
+  padding-inline: 0.4rem;
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+/* Un grand nombre ne se coupe pas : aux grands réglages, l'énoncé et son bouton « Écouter » ne tiennent plus côte à côte,
+   le bouton passe dessous plutôt que d'élargir la page. */
+.panel.calcul:has(> .calcul-figure .class-table) > .question-head {
+  flex-wrap: wrap;
+}
+.panel.calcul:has(> .calcul-figure .class-table) > .question-head > .calcul-prompt {
+  /* Il part de 22 rem, ou de toute la ligne si elle est plus étroite : le bouton ne passe dessous que s'il le faut, et
+     l'énoncé n'est jamais assez étroit pour couper un mot. */
+  flex: 1 1 0;
+  min-width: min(100%, 22rem);
+}
+@media (max-width: 640px) {
+  .class-block {
+    grid-template-columns: repeat(3, minmax(1.3rem, 1fr));
+  }
+  .class-digit {
+    font-size: 1.15rem;
+  }
+  .class-name {
+    padding-inline: 0.1rem;
+    font-size: 0.8rem;
+  }
+  .class-blocks-words .class-block {
+    flex-basis: 6.6rem;
+    min-width: 6.6rem;
+  }
+  /* Deux réponses par ligne : un nombre de dix caractères tient dans son bouton. */
+  .panel.calcul:has(> .calcul-figure .class-table) > .choices > .choice {
+    padding-inline: 0.2rem;
+    font-size: 1.05rem;
+  }
+}
+
 /* ===== Lecture ===== */
 .link-button {
   border: none;
@@ -4401,6 +4537,52 @@ figure.posee {
   }
   .panel.calcul:has(> .calcul-figure .posee) > .choices.short > .choice {
     padding-inline: 0.5rem;
+  }
+}
+/* Le Volcan (Nombres géants, ranger, intercaler, encadrer une fraction) : le tableau ou la droite, et la règle à côté,
+   comme l'opération posée ; les quatre réponses sur une ligne quand elles y tiennent. Seulement quand l'item a une
+   règle : la Pente et la Coulée d'avant, sans règle, ne changent pas. */
+@media (min-width: 800px) {
+  .panel.calcul:has(> .calcul-figure :is(.class-table, .decimal-table, .graduated-line)):has(> .calcul-aid .rule-card) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.8rem;
+  }
+  .panel.calcul:has(> .calcul-figure :is(.class-table, .decimal-table, .graduated-line)):has(> .calcul-aid .rule-card) > * {
+    flex: 1 1 100%;
+  }
+  .panel.calcul:has(> .calcul-figure .class-table):has(> .calcul-aid .rule-card) > .calcul-figure {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0.2rem 0 0.4rem;
+  }
+  .panel.calcul:has(> .calcul-figure .decimal-table):has(> .calcul-aid .rule-card) > .calcul-figure {
+    flex: 0 1 18rem;
+    min-width: 0;
+    margin: 0.2rem 0 0.4rem;
+  }
+  .panel.calcul:has(> .calcul-figure .graduated-line):has(> .calcul-aid .rule-card) > .calcul-figure {
+    flex: 0 1 min(20rem, 40vw);
+    min-width: 0;
+    margin: 0.2rem 0 0.4rem;
+  }
+  .panel.calcul:has(> .calcul-figure :is(.class-table, .decimal-table, .graduated-line)):has(> .calcul-aid .rule-card) > .calcul-aid {
+    flex: 1 1 18rem;
+    padding-inline: 0.6rem;
+  }
+  /* La largeur d'une réponse se compte en chiffres de sa police (`ch`) : un nombre de dix caractères (les espaces des
+     milliers sont fines) tient dans son bouton en OpenDyslexic aussi, quitte à passer à trois ou deux réponses par ligne. */
+  .panel.calcul:has(> .calcul-figure :is(.class-table, .decimal-table, .graduated-line)):has(> .calcul-aid .rule-card) > .choices {
+    font-size: 1.35rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10ch), 1fr));
+    gap: 0.8rem;
+  }
+  .panel.calcul:has(> .calcul-figure :is(.class-table, .decimal-table, .graduated-line)):has(> .calcul-aid .rule-card) > .choices > .choice {
+    padding-inline: 0.5rem;
+  }
+  .panel.calcul:has(> .calcul-figure .class-table):has(> .calcul-aid .rule-card) > .choices > .choice {
+    padding-inline: 0.3rem;
   }
 }
 
