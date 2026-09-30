@@ -301,6 +301,11 @@ export interface OptionsDeLaConstruction {
   navire?: boolean;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
+  /**
+   * Le sol entier, case par case, quand `sol` n'en donne qu'une partie (`construireParIle` ne passe à une île que le
+   * sol sous ses blocs) : les pilotis cherchent le sol jusqu'à `PROFONDEUR` cases plus bas, pas seulement juste dessous.
+   */
+  solEntier?: (x: number, y: number, z: number) => VoxelCube | undefined;
 }
 
 /** Le genre d'un bloc dans la construction. */
@@ -692,9 +697,13 @@ export function maillageDeLaConstruction(
   // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
   const solides = new Map<string, VoxelCube>();
   for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
+  const solide = (x: number, y: number, z: number) => {
+    const s = solides.get(cle(x, y, z)) ?? options.solEntier?.(x, y, z);
+    return s && !s.ghost && !s.quest ? s : undefined;
+  };
   const surLeVide = (x: number, y: number, z: number) => {
     for (let k = 1; k <= PROFONDEUR; k++) {
-      const s = solides.get(cle(x, y, z - k));
+      const s = solide(x, y, z - k);
       if (s) return s.texture === 'eau';
     }
     return true;
@@ -1326,6 +1335,9 @@ export function construireParIle(
     else parIle.set(k, [c]);
   }
   let solParIle: Map<string, VoxelCube[]> | null = null;
+  // Le sol entier, pour les pilotis (ils le cherchent plus bas que la case juste dessous) ; fait une fois, au besoin.
+  let index: Map<string, VoxelCube> | null = null;
+  const solEntier = (x: number, y: number, z: number) => index?.get(cle(x, y, z));
   let refaites = 0;
   for (const k of [...cache.iles.keys()]) if (!parIle.has(k)) {
     cache.iles.delete(k);
@@ -1335,9 +1347,9 @@ export function construireParIle(
     const signature = signatureDeLaConstruction(l, []);
     if (cache.iles.get(k)?.signature === signature) continue;
     // Le sol sous l'île : seulement les cubes du sol sous un de ses blocs (le sol cache le dessous d'un bloc posé).
-    if (!solParIle) {
+    if (!solParIle || !index) {
       solParIle = new Map();
-      const index = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
+      index = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
       for (const [ki, li] of parIle) {
         const s: VoxelCube[] = [];
         for (const c of li) {
@@ -1347,7 +1359,7 @@ export function construireParIle(
         solParIle.set(ki, s);
       }
     }
-    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k)) });
+    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier }) });
     refaites++;
   }
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };

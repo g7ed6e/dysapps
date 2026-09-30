@@ -50,6 +50,7 @@ import { BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
 import { phareDuLarge } from './phareDuLarge';
 import { kitVide } from './architecture';
+import { batimentsDe } from './construction';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -687,6 +688,23 @@ describe('Un maillage par île (lot R5)', () => {
       expect(coutDeLaConstruction(apres.maillage).triangles, a).toBe(coutDeLaConstruction(construireParIle(a, pose, sol, cacheDeLaConstruction()).maillage).triangles);
     }
   }, 60_000);
+
+  it('les pilotis se décident de même, île par île ou d’un tenant : le sol se cherche plus bas que la case juste dessous', () => {
+    const { cubes, sol } = monde('6e', 'tout');
+    // Un bloc de bois au pied d'une maison de la Forêt, son sol descendu d'une case : rien juste dessous, du sol plus bas.
+    const batis = batimentsDe('6e');
+    const solEn = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
+    const pied = cubes.find((c) => c.tag === 'foret' && !c.ghost && batis.get(cle(c.x, c.y, c.z)) === 'planches' && solEn.has(cle(c.x, c.y, c.z - 1)))!;
+    expect(pied).toBeDefined();
+    const sous = solEn.get(cle(pied.x, pied.y, pied.z - 1))!;
+    const solBas = sol.map((c) => (c === sous ? { ...c, z: c.z - 1 } : c));
+    const foret = cubes.filter((c) => c.tag === 'foret');
+    const parIle = construireParIle('6e', foret, solBas, cacheDeLaConstruction()).maillage;
+    const entier = maillageDeLaConstruction('6e', foret, solBas);
+    // Pas de pilotis sur la terre ferme, ni d'un côté ni de l'autre : les mêmes triangles, les mêmes pièces.
+    expect(coutDeLaConstruction(parIle).triangles).toBe(coutDeLaConstruction(entier).triangles);
+    expect(parIle.pieces?.map((p) => p.opaque[1] - p.opaque[0])).toEqual(entier.pieces?.map((p) => p.opaque[1] - p.opaque[0]));
+  }, 30_000);
 
   it('le phare garde ses triangles, décalés, une fois mis bout à bout', () => {
     const { cubes, sol } = mondeDuPhare(getPlan('tour-phare')!.cells.length, getPlan('tour-lanterne')!.cells.length);
