@@ -88,11 +88,11 @@
       "prompt": "Un « microscope » sert à …",
       "spoken": "Un « microscope » sert à  (mot manquant) ",
       "choices": [
-        "regarder le petit",
-        "mesurer le loin",
-        "écrire petit"
+        "observer ce qui est très petit",
+        "mesurer ce qui est loin",
+        "écrire tout petit"
       ],
-      "answer": "regarder le petit",
+      "answer": "observer ce qui est très petit",
       "hint": "micro- = petit, -scope = regarder.",
       "explanation": "micro- (petit) + -scope (regarder).",
       "aid": {
@@ -192,13 +192,13 @@
       "prompt": "Un « thermomètre » mesure …",
       "spoken": "Un « thermomètre » mesure  (mot manquant) ",
       "choices": [
-        "la chaleur",
+        "la température",
         "le temps",
         "la lumière"
       ],
-      "answer": "la chaleur",
+      "answer": "la température",
       "hint": "thermo- = chaleur, -mètre = mesure.",
-      "explanation": "thermo- (chaleur) + -mètre (mesurer).",
+      "explanation": "thermo- (chaleur) + -mètre (mesure) : il mesure la température.",
       "aid": {
         "kind": "rule-card",
         "props": {

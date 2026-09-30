@@ -1,0 +1,222 @@
+{
+  "id": "cabinet-nuances-3",
+  "biome": "cabinet",
+  "type": "nuances",
+  "level": 3,
+  "instruction": "Registres : reconnais le registre, ou choisis la phrase qui convient à la situation. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "cabinet-nuances-3-0",
+      "prompt": "« J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?",
+      "spoken": "« J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?",
+      "choices": [
+        "familier",
+        "courant",
+        "soutenu"
+      ],
+      "answer": "familier",
+      "hint": "Le « ne » manque, et « à la bourre » se dit entre amis.",
+      "explanation": "Registre familier : « ne » oublié, « à la bourre » (en courant : en retard).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-1",
+      "prompt": "« Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?",
+      "spoken": "« Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?",
+      "choices": [
+        "soutenu",
+        "courant",
+        "familier"
+      ],
+      "answer": "courant",
+      "hint": "La phrase est correcte, avec des mots de tous les jours.",
+      "explanation": "Registre courant : le « ne » est là, et les mots sont ceux de tous les jours.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-2",
+      "prompt": "« Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?",
+      "spoken": "« Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?",
+      "choices": [
+        "courant",
+        "familier",
+        "soutenu"
+      ],
+      "answer": "soutenu",
+      "hint": "« point », « apercevoir », « accuser un retard » : des mots recherchés.",
+      "explanation": "Registre soutenu : des mots recherchés, qu’on trouve surtout à l’écrit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-3",
+      "prompt": "Tu écris un message au principal pour ton retard. Quelle phrase convient ?",
+      "spoken": "Tu écris un message au principal pour ton retard. Quelle phrase convient ?",
+      "choices": [
+        "Je vous prie d’excuser mon retard.",
+        "Désolé, j’étais à la bourre.",
+        "Pardon pour le retard, hein."
+      ],
+      "answer": "Je vous prie d’excuser mon retard.",
+      "hint": "Tu écris au chef du collège : pas de mot familier.",
+      "explanation": "Pour écrire au principal, on choisit un registre soutenu : « Je vous prie d’excuser mon retard. » Les deux autres sont familiers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-4",
+      "prompt": "Le mot courant pour « boulot » :",
+      "spoken": "Le mot courant pour « boulot » :",
+      "choices": [
+        "travail",
+        "labeur",
+        "taf"
+      ],
+      "answer": "travail",
+      "hint": "Familier → courant : le mot de tous les jours.",
+      "explanation": "« boulot » (familier) = « travail » (courant). « labeur » est soutenu, « taf » familier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-5",
+      "prompt": "Le mot soutenu pour « avoir peur » :",
+      "spoken": "Le mot soutenu pour « avoir peur » :",
+      "choices": [
+        "craindre",
+        "flipper",
+        "avoir la trouille"
+      ],
+      "answer": "craindre",
+      "hint": "Le mot qu’on lit dans un livre ou une lettre.",
+      "explanation": "« craindre » est soutenu. « flipper » et « avoir la trouille » sont familiers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-6",
+      "prompt": "« Ouais, c’est trop cool, ce truc ! » Quelle phrase dit la même chose en registre courant ?",
+      "spoken": "« Ouais, c’est trop cool, ce truc ! » Quelle phrase dit la même chose en registre courant ?",
+      "choices": [
+        "Oui, c’est très bien, cet objet !",
+        "Trop cool, ce truc !",
+        "Certes, cet objet est admirable !"
+      ],
+      "answer": "Oui, c’est très bien, cet objet !",
+      "hint": "Tous les mots familiers doivent changer : ouais, trop cool, truc.",
+      "explanation": "« Oui, c’est très bien, cet objet ! » est courant. La deuxième reste familière, la troisième est soutenue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "cabinet-nuances-3-7",
+      "prompt": "Dans ton exposé devant la classe, tu dis : « Les élèves ont … la sortie. »",
+      "spoken": "Dans ton exposé devant la classe, tu dis : « Les élèves ont  (mot manquant)  la sortie. »",
+      "choices": [
+        "apprécié",
+        "kiffé",
+        "adoré grave"
+      ],
+      "answer": "apprécié",
+      "hint": "Un exposé se fait en registre courant : pas de mot familier.",
+      "explanation": "« apprécié » est courant. « kiffé » et « adoré grave » sont familiers : on les dit entre amis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Registres de langue",
+          "lines": [
+            "Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »",
+            "Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »",
+            "Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »",
+            "Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "parchemin",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

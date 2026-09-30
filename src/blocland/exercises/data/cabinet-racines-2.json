@@ -132,11 +132,11 @@
       "choices": [
         "empêcher le vol",
         "voler",
-        "voler avant"
+        "empêcher un avion de voler"
       ],
       "answer": "empêcher le vol",
-      "hint": "anti- = contre.",
-      "explanation": "anti- (contre) + vol.",
+      "hint": "anti- = contre. Ici, le vol, c’est prendre ce qui n’est pas à soi.",
+      "explanation": "anti- (contre) + vol : un antivol empêche qu’on vole un vélo, pas qu’un avion vole.",
       "aid": {
         "kind": "rule-card",
         "props": {
