@@ -50,7 +50,7 @@ import { BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
 import { phareDuLarge } from './phareDuLarge';
 import { kitVide } from './architecture';
-import { batimentsDe } from './construction';
+import { batimentsDe, ETAPES_DU_BATIMENT } from './construction';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -660,6 +660,30 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
       expect(c.drawCalls, nom).toBeLessThanOrEqual(3);
     }
   }, 30_000);
+});
+
+describe('Les bâtiments du kit d’architecture (lot 7b)', () => {
+  it('les deux premiers plans de chaque île sont ses murs et son toit ; la cour vient après, hors du bâtiment', () => {
+    // `batimentsDe` prend les `ETAPES_DU_BATIMENT` premiers plans : il faut que ce soient les murs (debout sur le sol)
+    // puis le toit (posé sur les murs), et que le plan suivant, la cour, ne se pose jamais sur eux. Un ordre des plans
+    // changé (dans docs/contenu/<île>.md) donnerait le kit à la cour et laisserait le toit en blocs.
+    expect(ETAPES_DU_BATIMENT).toBe(2);
+    const k = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
+    const dessous = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z - 1}`;
+    let iles = 0;
+    for (const b of BIOMES) {
+      const plans = plansFor(b.id);
+      if (!plans.length) continue;
+      iles++;
+      const [murs, toit, cour] = plans.map((p) => p.cells);
+      expect(murs.some((c) => c.z === 0), `${b.id} : les murs au sol`).toBe(true);
+      const deMur = new Set(murs.map(k));
+      expect(toit.some((c) => deMur.has(dessous(c))), `${b.id} : le toit sur les murs`).toBe(true);
+      const duBatiment = new Set([...murs, ...toit].map(k));
+      expect((cour ?? []).some((c) => duBatiment.has(dessous(c)) || duBatiment.has(k(c))), `${b.id} : la cour hors du bâtiment`).toBe(false);
+    }
+    expect(iles).toBeGreaterThan(0);
+  });
 });
 
 describe('Un maillage par île (lot R5)', () => {
