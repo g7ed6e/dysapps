@@ -439,7 +439,7 @@ export function lireIle(md, fichier = 'md') {
     if (table === PAR_ETIQUETTE_ITEM && etiquette === 'mot troué') {
       const t = /^([^[\]]*)\[([^[\]]+)\]([^[\]]*)$/.exec(lireTexte(brut, ligne));
       if (!t) throw erreur(`mot troué attendu sous la forme « en[f]ant », lu « ${brut} »`);
-      for (const k of ['word', 'before', 'answer', 'after']) if (cible[k] !== undefined || mission?.items[k] !== undefined || pourTousNiveau?.[k] !== undefined) throw erreur(`« mot troué » donne déjà « ${PAR_CLE_ITEM.get(k)[0]} »`);
+      for (const k of ['word', 'before', 'answer', 'after']) if (cible[k] !== undefined || mission?.items[k] !== undefined || (ex && pourTousNiveau[k] !== undefined)) throw erreur(`« mot troué » donne déjà « ${PAR_CLE_ITEM.get(k)[0]} »`);
       Object.assign(cible, { word: t[1] + t[2] + t[3], before: t[1], answer: t[2], after: t[3] });
       liste = null;
       return;
@@ -548,6 +548,7 @@ export function lireIle(md, fichier = 'md') {
     }
     if ((m = /^- (.*)$/.exec(l))) {
       if (pourTous) champ(m[1], pourTous, PAR_ETIQUETTE_ITEM, i + 1);
+      else if (ex?.items.length) throw erreur(`un champ du niveau va avant ses items : ${l}`);
       else champ(m[1], ex ?? mission.champs, PAR_ETIQUETTE_NIVEAU, i + 1);
       continue;
     }

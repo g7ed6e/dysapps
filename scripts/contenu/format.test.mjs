@@ -124,6 +124,9 @@ describe('le format Markdown du contenu', () => {
     expect(lire('| mot |', '| --- |', '| chat |', '| chien |', '', 'Pour tous les items :', '- réponse : X')).toThrow('va avant le premier item');
     expect(lire('Pour tous les items :', '- clé des items : mot', '', '| mot |', '| --- |', '| chat |', '| chat |')).toThrow('ont la même clé « chat »');
     expect(lire('Pour tous les items :', '- réponse : z', '', '1. mot troué : en[f]ant')).toThrow('« mot troué » donne déjà « réponse »');
+    expect(lire('| mot |', '| --- |', '| chat |', '- langue : en')).toThrow('un champ du niveau va avant ses items');
+    const deux = ['---', 'île : baie', '---', '## X · `x`', '### Niveau 1 · `baie-x-1`', '', 'Pour tous les items :', '- réponse : z', '', '1. mot : a', '', '## Y · `y`', 'Pour tous les items :', '- mot troué : en[f]ant', ''].join('\n');
+    expect(() => lireIle(deux)).not.toThrow();
     const md = ['---', 'île : baie', '---', '## X · `x`', 'Pour tous les items :', '- trou lu : blank', '', '### Niveau 1 · `baie-x-1`', '', 'Pour tous les items :', '- trou lu : (mot manquant)', '', '1. énoncé : Il … ici.', ''].join('\n');
     expect(lireIle(md).exercices[0].items[0].spoken).toBe('Il (mot manquant) ici.');
   });
