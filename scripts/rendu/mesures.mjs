@@ -174,7 +174,7 @@ const CAPTURES = [
   { nom: 'refuge-papillon', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 } },
   // Le Papillon vivant, en cuivre (son défi pas encore gagné, `debout`), sur son îlot, du même cadrage que sa statue
   // (la vue de l'île ne montre pas l'îlot : le panneau de l'île le couvre).
-  { nom: 'refuge-papillon-vivant', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', debout: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 } },
+  { nom: 'refuge-papillon-vivant', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', debout: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 }, finesse: 1 },
   // Le texte le plus grand (OpenDyslexic, 32 px, `reglages`) : les étiquettes et les boutons de la vue de l'archipel.
   { nom: 'refuge-archipel-depuis-le-refuge-od32', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
   { nom: 'refuge-archipel-depuis-le-refuge-od32-800x1280', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
@@ -207,23 +207,6 @@ const CAPTURES = [
   { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
   { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
   { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
-  { nom: 'refuge', vue: 'île', famille: 'essai', ile: 'refuge' },
-  { nom: 'refuge-1280x800', vue: 'île', famille: 'essai', ile: 'refuge', taille: { width: 1280, height: 800 } },
-  { nom: 'refuge-800x1280', vue: 'île', famille: 'essai7', ile: 'refuge', taille: { width: 800, height: 1280 } },
-  { nom: 'refuge-archipel-depuis-le-refuge', vue: 'archipel', famille: 'essai7', ile: 'refuge' },
-  { nom: 'refuge-archipel-depuis-le-refuge-1280x800', vue: 'archipel', famille: 'essai7', ile: 'refuge', taille: { width: 1280, height: 800 } },
-  { nom: 'refuge-archipel-depuis-le-refuge-800x1280', vue: 'archipel', famille: 'essai7', ile: 'refuge', taille: { width: 800, height: 1280 } },
-  { nom: 'refuge-archipel-depuis-le-refuge-od32', vue: 'archipel', famille: 'essai7', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
-  { nom: 'refuge-archipel-depuis-le-refuge-od32-800x1280', vue: 'archipel', famille: 'essai7', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
-  { nom: 'refuge-defi', vue: 'défi', famille: 'essai7', ile: 'refuge' },
-  { nom: 'refuge-papillon-vivant', vue: 'archipel', famille: 'essai8', ile: 'refuge', debout: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 } },
-  { nom: 'refuge-papillon-vivant-ile', vue: 'archipel', famille: 'essai8', ile: 'refuge', debout: 'refuge' },
-  { nom: 'lac-phare', vue: 'île', famille: 'essai', ile: 'phare' },
-  { nom: 'lac-textes', vue: 'île', famille: 'essai', ile: 'textes' },
-  { nom: 'lac-studio', vue: 'île', famille: 'essai', ile: 'studio' },
-  { nom: 'lac-chateau', vue: 'île', famille: 'essai', ile: 'chateau' },
-  { nom: 'gris-moustache-bulle', vue: 'bulle', famille: 'essai', ile: 'manoir', sansEtoiles: true, fige: true },
-  { nom: 'gris-muscade-bulle', vue: 'bulle', famille: 'essai', ile: 'jardin', sansEtoiles: true, fige: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
