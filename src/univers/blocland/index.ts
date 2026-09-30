@@ -155,7 +155,7 @@ export const BLOCLAND = {
       challenge: 'Le Dragon de lumière déploie ses ailes : « Tu as allumé tout mon phare. Montre-moi que tu suis la lumière de x jusqu’à f(x). »',
       guardianSays: {
         hit: 'Flash… Juste. Ma lumière trouve son image.',
-        miss: 'Ce n’est rien : remplace x par le nombre, calcule, et reprends.',
+        miss: 'Ce n’est rien : relis la formule ou le graphique, et reprends.',
         beaten: 'Flash. Tu éclaires plus loin que moi. Le phare est à toi… et à Fi.',
       },
     },

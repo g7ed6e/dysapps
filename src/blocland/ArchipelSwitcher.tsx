@@ -38,7 +38,7 @@ export function ArchipelSwitcher({ current, bridges, onGo, onMore }: Props) {
   if (reached.length < 2) return null;
   const here = ARCHIPELAGOS.find((a) => a.classe === current)!;
   return (
-    <div className="world-archipel" ref={box}>
+    <div className="world-archipel" data-couvre="bouton" ref={box}>
       <button
         type="button"
         className="button world-archipel-button"

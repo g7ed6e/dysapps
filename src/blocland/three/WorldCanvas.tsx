@@ -24,6 +24,7 @@ import { creerPersonnages, type Personnages } from './personnages';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
+import { lecteurDePlaceLibre } from '../placeLibre';
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
 interface Scene3D {
@@ -160,7 +161,9 @@ export default function WorldCanvas({
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
-    const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant);
+    // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
+    const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
+    const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     world.current = { camera, cadrage, bornes, etiquettes, personnages, cubes: cubesDuMonde, navire };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];

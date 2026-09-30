@@ -2,7 +2,11 @@
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { islandCenter, viewYaw, viewZone } from '../world/terrain';
+import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
+import type { ArchipelagoId } from '../world/archipelago';
+import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
+import { mapOf } from '../world/map';
+import { islandCenter, viewYaw, viewZone, worldBounds } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
@@ -13,9 +17,25 @@ const ISLAND_DISTANCE = 30;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines (bornes du cadrage de zone). */
 const FOLLOW_DISTANCE = 50;
 const FOLLOW_MAX = 64;
-/** La Carte : presque à la verticale, le même nord, assez loin pour tout le continent. */
+/** La Carte : presque à la verticale, le même nord ; la distance se règle sur la place libre (`cadrageDeLaCarte`). */
 const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
+/**
+ * Le plancher du zoom de la Carte, en pixels CSS par case : une île (22 cases de large environ) y fait encore 75 px,
+ * elle se reconnaît et son nom (18 px) se pose près d'elle. Plus loin, la caméra ne recule pas (DA-31).
+ */
+export const PLANCHER_DE_LA_CARTE = 3.4;
+/**
+ * Autour de la destination, en pixels CSS, ce qui doit tenir dans la place libre avec elle : la flèche au-dessus (48 px,
+ * son rebond et sa pointe), puis son nom et son état juste au-dessus de la flèche (deux lignes, près de 60 px en
+ * OpenDyslexic), ou dessous, sous l'île, quand le dessus est pris par une île voisine. Au plancher, en grand texte sur
+ * tablette, ce cadre déborde de la place libre : il s'aligne sur son haut, et le nom du dessus tient toujours (DA-31).
+ */
+export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
+/** Entre l'archipel entier et le bord de la place libre. */
+const MARGE_DE_LA_CARTE = 12;
+/** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
+const HAUTEUR_DE_TABLETTE = 688;
 /** Le voyage : vue de côté, depuis l'ouest, la caméra qui s'écarte à mesure que le navire s'éloigne. */
 const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
 /**
@@ -24,6 +44,130 @@ const VOYAGE_VIEW = { dx: -0.85, dy: -0.4, up: 0.3 };
  */
 const PAS = 0.016;
 
+/** Le cadrage de la Carte (DA-31) : la place que l'interface laisse libre, et la prochaine destination. */
+export interface LectureDeLaCarte {
+  /** La place libre de la vue, relue quand `contexte` change (../placeLibre.ts, `lecteurDePlaceLibre`). */
+  place(contexte: string): PlaceLue;
+  /** L'île sous la flèche de la Carte, ou `null`. */
+  destination(): BiomeId | null;
+}
+
+/**
+ * Le cadrage de la Carte dans la place libre `libre` d'une vue `w` × `h` (pixels CSS) : la caméra recule assez pour que
+ * l'archipel entier y tienne, avec la destination, sa flèche et son nom, jusqu'au plancher (`PLANCHER_DE_LA_CARTE`).
+ * Au-delà, elle reste au plancher et la destination se pose au centre de la place libre : le bord de l'archipel sort.
+ * `echelle` : les pixels par case au centre visé ; `auPlancher` : l'archipel ne tient pas entier.
+ */
+export function cadrageDeLaCarte(
+  archipel: ArchipelagoId,
+  destination: BiomeId | null,
+  w: number,
+  h: number,
+  libre: Rect,
+): { target: THREE.Vector3; pos: THREE.Vector3; echelle: number; auPlancher: boolean } {
+  const u = new THREE.Vector3(MAP_VIEW.dx, MAP_VIEW.up, MAP_VIEW.dy).normalize();
+  const tan = Math.tan((MAP_FOV / 2) * (Math.PI / 180));
+  const cam = new THREE.PerspectiveCamera(MAP_FOV, w / h, 0.5, 1e5);
+  // L'étendue de l'archipel (terres, îlots et port, world/terrain.ts), à l'altitude de ses îles.
+  const altitude = mapOf(archipel)[0]?.altitude ?? 0;
+  const e = worldBounds(archipel);
+  const terres = [e.minX, e.maxX].flatMap((x) => [e.minY, e.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
+  const c = destination ? islandCenter(destination) : null;
+  // La pointe de la flèche se pose au centre de l'île (three/etiquettes.ts).
+  const dest = c ? new THREE.Vector3(c.x + 0.5, c.z, c.y + 0.5) : null;
+  const sol = dest?.y ?? altitude;
+  const v = new THREE.Vector3();
+  const target = new THREE.Vector3();
+  const placer = (d: number) => {
+    cam.position.copy(target).addScaledVector(u, d);
+    cam.lookAt(target);
+    cam.updateMatrixWorld();
+  };
+  const A = AUTOUR_DE_LA_DESTINATION;
+  /** Le cadre à l'écran de ce qui doit tenir : les terres (si `tout`), et la destination avec ce qui l'entoure. */
+  const cadre = (tout: boolean) => {
+    const r = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+    const ajouter = (x: number, y: number) => {
+      r.x0 = Math.min(r.x0, x);
+      r.x1 = Math.max(r.x1, x);
+      r.y0 = Math.min(r.y0, y);
+      r.y1 = Math.max(r.y1, y);
+    };
+    const ecran = (p: THREE.Vector3) => {
+      v.copy(p).project(cam);
+      return { x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h };
+    };
+    if (tout)
+      for (const p of terres) {
+        const q = ecran(p);
+        ajouter(q.x, q.y);
+      }
+    if (dest) {
+      const q = ecran(dest);
+      ajouter(q.x - A.cote, q.y - A.haut);
+      ajouter(q.x + A.cote, q.y + A.bas);
+    }
+    return r;
+  };
+  const lw = libre.x1 - libre.x0 - 2 * MARGE_DE_LA_CARTE;
+  const lh = libre.y1 - libre.y0 - 2 * MARGE_DE_LA_CARTE;
+  const centreDesTerres = () => target.set((e.minX + e.maxX) / 2, sol, (e.minY + e.maxY) / 2);
+  const tient = (d: number) => {
+    centreDesTerres();
+    placer(d);
+    const r = cadre(true);
+    return r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
+  };
+  const plancher = h / (2 * tan * PLANCHER_DE_LA_CARTE);
+  const auPlancher = !tient(plancher);
+  let d = plancher;
+  if (!auPlancher) {
+    // Le plus près où tout tient : la taille à l'écran décroît avec la distance, une dichotomie suffit.
+    let lo = plancher / 16;
+    for (let i = 0; i < 24; i++) {
+      const m = (lo + d) / 2;
+      if (tient(m)) d = m;
+      else lo = m;
+    }
+  }
+  // Le centre de ce qui doit tenir (tout, ou au plancher la destination seule) au centre de la place libre : la cible
+  // glisse sur le sol, par petits pas corrigés à l'écran (la vue est un peu inclinée, la perspective déforme).
+  centreDesTerres();
+  const tout = !auPlancher || !dest;
+  const vise = { x: (libre.x0 + libre.x1) / 2, y: (libre.y0 + libre.y1) / 2 };
+  const milieu = () => {
+    placer(d);
+    const r = cadre(tout);
+    return { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2 };
+  };
+  if (!tout && dest) target.set(dest.x, sol, dest.z);
+  // Au plancher, un cadre plus haut que la place s'aligne sur son haut : le nom au-dessus de la flèche reste entier.
+  const r0 = (placer(d), cadre(tout));
+  if (r0.y1 - r0.y0 > lh) vise.y = libre.y0 + MARGE_DE_LA_CARTE + (r0.y1 - r0.y0) / 2;
+  for (let i = 0; i < 4; i++) {
+    const m0 = milieu();
+    target.x += 1;
+    const mx = milieu();
+    target.x -= 1;
+    target.z += 1;
+    const mz = milieu();
+    target.z -= 1;
+    // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
+    const a = mx.x - m0.x;
+    const b = mz.x - m0.x;
+    const cc = mx.y - m0.y;
+    const dd = mz.y - m0.y;
+    const det = a * dd - b * cc;
+    if (Math.abs(det) < 1e-9) break;
+    const ex = vise.x - m0.x;
+    const ey = vise.y - m0.y;
+    target.x += (dd * ex - b * ey) / det;
+    target.z += (a * ey - cc * ex) / det;
+  }
+  placer(d);
+  return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };
+}
+
 export interface Camera extends PartieDeLaScene {
   /** Là où la caméra regarde en ce moment (les flèches du clavier cherchent l'île voisine depuis ce point). */
   cible: THREE.Vector3;
@@ -31,8 +175,43 @@ export interface Camera extends PartieDeLaScene {
   cadrer(focus: Derniers['focus'], carte: boolean, home: BiomeId | null): void;
 }
 
-export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avatar: THREE.Object3D, derniers: { readonly current: Derniers }, instant: Instant): Camera {
-  const { etendue: bounds, centre: center } = monde;
+/**
+ * La caméra de la scène ; `carte` : ce qu'elle lit pour cadrer la Carte (la place libre, la destination). Sans elle (un
+ * test), la vue d'une tablette moins la bande du bas, sans destination.
+ */
+export function creerCamera(
+  monde: Monde,
+  camera: THREE.PerspectiveCamera,
+  avatar: THREE.Object3D,
+  derniers: { readonly current: Derniers },
+  instant: Instant,
+  carte: LectureDeLaCarte | null = null,
+): Camera {
+  const reperes = monde.habillage.reperes === 'cadres';
+  /** Combien de fois la Carte s'est ouverte : à chaque ouverture, la place libre est relue. */
+  let ouvertures = 0;
+  let surLaCarte = false;
+  let contexte = { ouvertures: -1, destination: null as BiomeId | null, cle: '' };
+  let cadrageCarte: { lue: PlaceLue | null; destination: BiomeId | null; aspect: number; target: THREE.Vector3; pos: THREE.Vector3 } | null = null;
+  /**
+   * Le cadrage de la Carte, recalculé seulement quand la place libre lue (le même objet tant qu'elle ne change pas) ou
+   * la destination changent (pas image par image). `saut` : sans mouvement.
+   */
+  const laCarte = (aspect: number) => {
+    if (!surLaCarte) ouvertures++;
+    surLaCarte = true;
+    const destination = carte?.destination() ?? null;
+    if (contexte.ouvertures !== ouvertures || contexte.destination !== destination) contexte = { ouvertures, destination, cle: `${ouvertures}|${destination ?? ''}` };
+    const lue = carte?.place(contexte.cle) ?? null;
+    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== destination || (!lue && cadrageCarte.aspect !== aspect)) {
+      // Sans lecture (un test) : une vue de tablette, moins la bande des boutons du bas.
+      const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
+      const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
+      const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
+      cadrageCarte = { lue, destination, aspect, ...cadrageDeLaCarte(monde.archipel, destination, w, h, libre) };
+    }
+    return { target: cadrageCarte.target, pos: cadrageCarte.pos, saut: lue?.saut ?? false };
+  };
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
    * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
@@ -46,18 +225,9 @@ export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avata
     zone: BiomeId | null = null,
     spot: { x: number; y: number; z: number } | null = null,
   ) => {
-    if (onMap) {
-      // Tout le continent tient dans la vue, en largeur comme en profondeur (la vue est un peu inclinée).
-      const ex = bounds.maxX - bounds.minX;
-      const ey = bounds.maxY - bounds.minY;
-      const need = Math.max(ey * 1.35, (ex * 1.2) / Math.max(0.3, aspect));
-      const d = need / (2 * Math.tan((MAP_FOV / 2) * (Math.PI / 180)));
-      const len = Math.hypot(MAP_VIEW.dx, MAP_VIEW.dy, MAP_VIEW.up);
-      // Un peu au nord : le continent descend sur l'écran, sous la ligne d'aide.
-      const target = new THREE.Vector3(center.x, 0, center.y + ey * 0.18);
-      const pos = new THREE.Vector3(target.x + (d * MAP_VIEW.dx) / len, target.y + (d * MAP_VIEW.up) / len, target.z + (d * MAP_VIEW.dy) / len);
-      return { target, pos };
-    }
+    // La Carte : l'archipel entier dans la place libre, ou au plancher la destination en son centre (DA-31).
+    if (onMap) return laCarte(aspect);
+    surLaCarte = false;
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
     let c = spot ?? (island ? islandCenter(island) : avatar);
@@ -74,9 +244,24 @@ export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avata
       const need = (Math.max(ex / Math.max(0.6, aspect), ey * 1.1) * 0.5) / Math.tan((20 * Math.PI) / 180);
       d = Math.min(FOLLOW_MAX, Math.max(FOLLOW_DISTANCE, need * 0.8)) * portrait;
     }
+    // Archipéo : un grand repère de la vue (le grand phare des Îles du Ciel) reste dans le cadre : la cible glisse vers
+    // lui et la caméra recule un peu (world/cadrage.ts). Pas sur une place précise de l'île (`spot`).
+    const repere = reperes && !spot && (island || zone) ? repereDeLaVue(island, island ? null : zone) : null;
+    let pivot = 0;
+    if (repere) {
+      // Depuis l'île même du repère, ou une île d'où la vue pivote pour lui (world/cadrage.ts), la cible ne glisse pas :
+      // le pivot suffit, et l'île de la vue reste au premier plan.
+      const pivote = zone !== null && (zone === repere.ile || repere.pivot?.[zone] !== undefined);
+      const k = island ? CADRAGE_DU_REPERE.ile : pivote ? null : CADRAGE_DU_REPERE.zone;
+      if (k) {
+        c = { x: c.x + k.vers * (repere.x - c.x), y: c.y + k.vers * (repere.y - c.y), z: c.z };
+        d *= k.recul;
+      }
+      if (!island && zone) pivot = repere.pivot?.[zone] ?? 0;
+    }
     // Le pivot vers le cœur du continent : la direction de vue tourne autour de la verticale.
     // (pivot positif : la caméra passe à l'ouest et regarde vers l'est, d'où le signe).
-    const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0);
+    const yaw = -(island ? viewYaw(island) : zone ? viewYaw(zone) : 0) + pivot;
     const dx = v.dx * Math.cos(yaw) - v.dy * Math.sin(yaw);
     const dy = v.dx * Math.sin(yaw) + v.dy * Math.cos(yaw);
     const target = new THREE.Vector3(c.x, c.z + 1, c.y);
@@ -90,14 +275,15 @@ export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avata
 
   return {
     cible: camTarget,
-    cadrer: (focus, carte, home) => {
-      const { target, pos } = framing(focus.island, avatar.position, camera.aspect, carte, home, focus.spot ?? null);
+    cadrer: (focus, carteOuverte, home) => {
+      const { target, pos } = framing(focus.island, avatar.position, camera.aspect, carteOuverte, home, focus.spot ?? null);
       camTarget.copy(target);
       camPos.copy(pos);
       camera.position.copy(pos);
       camera.lookAt(target);
     },
     animer: (_t, _dt, reduit) => {
+      if (!instant.carte) surLaCarte = false;
       const sailing = instant.navigue;
       const walking = instant.marche;
       const { focus, home } = derniers.current;
@@ -122,7 +308,9 @@ export function creerCamera(monde: Monde, camera: THREE.PerspectiveCamera, avata
       but.target.copy(target);
       but.pos.copy(pos);
       const k = reduit ? 1 : 1 - Math.exp(-PAS * 3.5);
-      if (camTarget.lengthSq() === 0 && camPos.lengthSq() === 0) {
+      // La taille du texte a changé sur la Carte : la caméra se recadre d'un coup, sans mouvement.
+      const saut = 'saut' in frame && frame.saut;
+      if (saut || (camTarget.lengthSq() === 0 && camPos.lengthSq() === 0)) {
         camTarget.copy(target);
         camPos.copy(pos);
       } else {

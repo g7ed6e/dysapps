@@ -1,0 +1,1 @@
+Le cadrage du contenu consigne ce qui reste de la relecture des exercices du 28/09 : des items et des pièges à corriger, une carte de règle là où elle manque, huit items joués partout, rangés sous les étapes C-n du plan ou dans une liste à part. Rien ne change encore dans le jeu.

@@ -6,7 +6,7 @@ Ce document rassemble les décisions de game design en vigueur dans Blocland, pr
 
 Blocland reste un univers à part entière, à côté d’Archipéo ([Plusieurs univers](univers.md)). Ce document devient le cadrage de cet univers : l’agent `consultant-blocland` le tient, sous l’autorité du directeur artistique, avec la fiche de l’univers (`design/blocland/fiche.md`).
 
-**Blocland reste l’univers par défaut** (décision du mainteneur, 28 septembre 2026 au soir : les élèves sont très attachés au monde en blocs ; [Plusieurs univers](univers.md), décision 7). Archipéo se choisit dans les Réglages à partir du lot 6. L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs. Sa direction, proposée par le consultant et validée par le directeur artistique, est construite derrière la bascule du lot 6 : voir [Style](style.md#lhabillage-de-blocland).
+**Blocland reste l’univers par défaut** (décision du mainteneur, 28 septembre 2026 au soir : les élèves sont très attachés au monde en blocs ; [Plusieurs univers](univers.md), décision 7). Archipéo se choisit dans les Réglages à partir du lot 6. L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs. Sa direction, proposée par le consultant et validée par le directeur artistique, est construite depuis la bascule du lot 6 : voir [Style](style.md#lhabillage-de-blocland).
 
 ## Ce qu’on garde absolument
 
@@ -57,13 +57,13 @@ Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-v
 
 **Blocland, un univers au choix** (lot 6, fil A, ouvert à la bascule avancée) : le réglage « Univers » des Réglages choisit Archipéo ou Blocland, et l’univers choisit le rendu (les cubes texturés pour Blocland). Blocland est l’univers par défaut et vient en premier dans la section Univers ; un appareil qui a déjà une progression reste dans Blocland, sans message : Archipéo n’est pas mis en avant pour l’instant (décision 9 de univers.md). Dans Blocland, l’écran titre et le menu disent « Blocland » et « Chaque bloc construit ton monde. », le retour vers la Carte « Carte de Blocland », le tutoriel « Bienvenue à Blocland ! », la barre du haut son logo (l’île en blocs) et son nom, l’interface son habillage (`src/styles/blocland.css`) ; les libellés « Dans Blocland », « … étoiles dans Blocland » et « Les îles de … dans Blocland » suivent l’univers ; le réglage « Au démarrage » dit « Le village », dans les deux univers ; le reste des noms attend U4 (fiche `design/blocland/fiche.md`).
 
-**Deux vues au choix** (réglage « Vue du monde ») : le monde en 3D, la liste des îles. Le monde en 2D a quitté le réglage le 28 septembre 2026 (décision du mainteneur : Blocland n’est pas en 2D, voir [les univers](univers.md)) ; sans WebGL, la 3D laisse encore la place à la 2D, et la liste reste pour un appareil qui ne sait rien dessiner.
+**Deux vues au choix** (réglage « Vue du monde ») : le monde en 3D, la liste des îles. Le monde en 2D a quitté le réglage le 28 septembre 2026 (décision du mainteneur : Blocland n’est pas en 2D, voir [les univers](univers.md)) . La 2D n’est pas non plus un repli de la 3D (décision du mainteneur, 29 septembre 2026) : sans WebGL, l’appareil montre la liste des îles.
 
 ## La vue 2D oblique
 
-Depuis le 28 septembre 2026 (décision du mainteneur), cette vue n’est plus un choix des Réglages : elle reste le repli d’un appareil sans WebGL. Les décisions ci-dessous décrivent son dessin, figé avec le reste de Blocland.
+Depuis le 28 septembre 2026 (décision du mainteneur), cette vue n’est plus un choix des Réglages, et depuis le 29 septembre elle n’est pas non plus le repli d’un appareil sans WebGL, qui montre la liste des îles : aucun écran ne l’affiche. Son code reste, base d’un éventuel univers en 2D. Les décisions ci-dessous décrivent son dessin, figé avec le reste de Blocland.
 
-Sans WebGL, ou sur une tablette qui peine, Blocland retombait sur une liste d’îles : il manquait une vue légère qui garde l’aventure.
+À sa création, sans WebGL ou sur une tablette qui peine, Blocland retombait sur une liste d’îles : il manquait une vue légère qui garde l’aventure.
 
 - **Perspective oblique en pixel art** : on voit le dessus des cases, et chaque dénivelé montre une face avant, comme une falaise. C’est une inspiration de point de vue ; formes, textures et personnages restent les nôtres.
 - **Canvas 2D, sans bibliothèque** : pas de moteur de jeu à télécharger, et la vue 2D ne charge pas Three.js.

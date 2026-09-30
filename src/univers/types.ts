@@ -70,6 +70,11 @@ export interface LibellesGardiens {
 export interface TextesSentinelles {
   /** La consigne du défi, qui en dit la règle (le nombre d'épreuves et le seuil sont sur la jauge). */
   consigne: string;
+  /**
+   * La règle en une phrase courte, toujours affichée dans l'arène : le titre du pli qui redit la règle entière, ouvert
+   * au premier défi contre ce Gardien (DA-28).
+   */
+  regle: string;
   /** Le nom de la jauge. */
   jauge: string;
   /** Le compte de la jauge, écrit sous son nom (« 2 sur 7 »). */

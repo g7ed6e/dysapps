@@ -39,7 +39,9 @@ describe('les textes d’univers', () => {
 
   it('Blocland garde les textes d’avant le lot 6, sans un mot changé', () => {
     // L'empreinte des textes des Gardiens et des espèces tels qu'ils étaient dans biomes.ts avant le lot 6 : un mot
-    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous.
+    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous. Une seule
+    // exception voulue : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
+    // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique).
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
     const APRES_LE_LOT_6 = new Set(['relais', 'jardin', 'refuge']);
@@ -49,7 +51,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('5757c1cdbaeadc6823a5125f2a7b0625926ee012352f821b3c4256a23f511eb2');
+    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('1eb585bd9341642adde5c716aea62190f69bf7f14d947830898933e80b94d7a0');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà vaincu. Une revanche ?',
@@ -149,13 +151,13 @@ describe('les textes d’univers', () => {
 describe('les textes communs (J8, U4)', () => {
   it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
-    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230) et celle de Cléa de l’Écho des pronominaux.
+    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238) et celle de Fi des Faisceaux.
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
       const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin' && b.id !== 'refuge').map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ad04c0c36a2ae4db30d3c99c9efa8602038277ac70a4570ed6de0807b3634f99');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('d64da2645fb9dbf5737474b77b4e51e0e024b81a048bee4643a45f4edc007690');
     }
   });
 

@@ -68,7 +68,7 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
-  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre le même monde en 2D, en pixels, vu de dessus en oblique ; s’il ne sait rien dessiner, la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
+  Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.

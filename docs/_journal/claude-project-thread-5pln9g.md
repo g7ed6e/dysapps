@@ -1,0 +1,1 @@
+- Un appareil qui ne sait pas dessiner la 3D (sans WebGL) montre la liste des îles, avec les mêmes actions, et non plus le monde en 2D.

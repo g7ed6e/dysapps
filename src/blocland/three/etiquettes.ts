@@ -1,24 +1,28 @@
 // Les étiquettes de la scène 3D : le nom des îles ouvertes (et leur état sur la Carte), toujours face à l'écran, de
 // taille fixe, par-dessus le relief ; et sur la Carte, la flèche de la prochaine destination. Sur la Carte, les
 // étiquettes s'écartent les unes des autres, de la flèche et du fanion du bonhomme, pour que rien n'en cache rien.
+// Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts). Partout, elles
+// s'écartent de l'interface posée sur la scène, et se montrent entières ou pas du tout (DA-10).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { boutonsDuHaut, etiquettesHorsCarte, layoutLabels, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { reperesDe } from '../world/cadrage';
+import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
+import { lecteurDeZones } from '../zonesCouvertes';
 import type { WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
 /** Les étiquettes des îles : le nom dessiné à 40 px dans sa texture, affiché à 18 px CSS à l'écran (comme en 2D). */
 const LABEL_PX = 40;
 const LABEL_CSS = 18 / LABEL_PX;
-/** Sur la Carte, la bande du bas de l'écran où flottent les boutons (Carte, Blocs, École) : pas d'étiquette dessous. */
+/** Sans page autour (un aperçu), la bande du bas de l'écran où flotteraient les boutons : pas d'étiquette dessous. */
 const LABEL_RESERVE = 72;
-/** La hauteur de l'étiquette au-dessus du centre de son île (en blocs). */
-const LABEL_HEIGHT = 12;
 /** Sur la Carte, la flèche de la prochaine destination : 48 px de haut à l'écran, à 56 px au moins du fanion. */
 const ARROW_CSS = 48;
 const ARROW_GAP = 56;
+/** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
+const ETIQUETTE_AU_DESSUS = 12;
 
 export interface Etiquettes extends PartieDeLaScene {
   /** Le nom des îles (une texture par étiquette, refaite quand la liste change). */
@@ -62,49 +66,18 @@ export function creerEtiquettes(
   // écartées les unes des autres pour qu'aucune n'en cache une autre (le décalage se fait à l'écran, par le point
   // d'ancrage du sprite : l'étiquette reste au-dessus de son île).
   const labelAt = new THREE.Vector3();
+  const ileAt = new THREE.Vector3();
   // Le cadrage où la caméra arrive : l'écart des étiquettes se calcule pour lui (une fois, gardé tant qu'il ne change
   // pas), pas image par image ; pendant qu'elle glisse, les étiquettes suivent leur île sans sauter de place.
   const camGoal = instant.but;
   const goalCamera = new THREE.PerspectiveCamera();
   let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
-  let labelVisibility: { key: string } | null = null;
-  // Les boutons posés sur la scène (la pause, l'archipel, la barre du bas) : relus au plus deux fois par seconde, jamais
-  // à chaque image (une lecture de mise en page).
-  let boutons: { at: number; W: number; boxes: LabelBox[]; sig: string } | null = null;
-  const boutonsSurLaScene = (W: number) => {
-    if (boutons && boutons.W === W && instant.now - boutons.at < 500) return boutons;
-    const boxes: LabelBox[] = [boutonsDuHaut(W)];
-    const scene = el.getBoundingClientRect();
-    for (const b of el.parentElement?.querySelectorAll<HTMLElement>('button, a.button') ?? []) {
-      if (el.contains(b)) continue;
-      const r = b.getBoundingClientRect();
-      if (!r.width || !r.height || r.right <= scene.left || r.left >= scene.right || r.bottom <= scene.top || r.top >= scene.bottom) continue;
-      boxes.push({ x: r.left - scene.left + r.width / 2, y: r.top - scene.top + r.height / 2, w: r.width, h: r.height });
-    }
-    boutons = { at: instant.now, W, boxes, sig: boxes.map((b) => `${b.x.toFixed(0)},${b.y.toFixed(0)},${b.w.toFixed(0)},${b.h.toFixed(0)}`).join(';') };
-    return boutons;
-  };
-  /** Les îles dont l'étiquette ne se tait jamais : celle de la flèche « Commence ici », celle du bonhomme (la plus proche). */
-  const ilesTenues = (sprites: THREE.Sprite[]): string[] => {
-    const out: string[] = [];
-    if (fleche.userData.on && typeof fleche.userData.island === 'string') out.push(fleche.userData.island);
-    const av = bonhomme();
-    if (av.visible) {
-      let best: string | null = null;
-      let bestD = Infinity;
-      for (const s of sprites) {
-        const d = Math.hypot(s.position.x - av.position.x, s.position.z - av.position.z);
-        if (d < bestD) [best, bestD] = [s.userData.ile as string, d];
-      }
-      if (best && !out.includes(best)) out.push(best);
-    }
-    return out;
-  };
   // Sur la Carte, la flèche de la destination (à la place du petit chevron « Commence ici », invisible de si haut) ; si
   // le bonhomme est sur la même île, elle s'écarte de son fanion pour que les deux restent distincts.
   const toScreen = (v: THREE.Vector3, cam: THREE.Camera, W: number, H: number) => {
     labelAt.copy(v).project(cam);
-    return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H };
+    // `z` : la profondeur (au-delà de 1, le point est derrière la caméra).
+    return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, z: labelAt.z };
   };
   const beaconBase = new THREE.Vector3();
   const beaconTop = new THREE.Vector3();
@@ -145,6 +118,52 @@ export function creerEtiquettes(
     const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
     mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
   };
+  // Archipéo : les grands repères de l'archipel (world/cadrage.ts), qu'aucune étiquette ne couvre, hors de la Carte
+  // aussi (DA-17). Blocland n'en a pas : ses étiquettes ne s'écartent que de l'interface
+  // et du bord du cadre, sans quitter l'aplomb de leur île (`montrees`).
+  const reperes = monde.habillage.reperes === 'cadres' ? reperesDe(monde.archipel) : [];
+  const repereBas = new THREE.Vector3();
+  const repereHaut = new THREE.Vector3();
+  /** La colonne de chaque repère à l'écran, vue par `cam` : du pied au sommet, large de son diamètre (et d'une marge). */
+  const colonnes = (cam: THREE.PerspectiveCamera, W: number, H: number): LabelBox[] =>
+    reperes.flatMap((r) => {
+      repereBas.set(r.x, r.pied, r.y);
+      repereHaut.set(r.x, r.haut, r.y);
+      const loin = cam.position.distanceTo(repereHaut);
+      const a = toScreen(repereBas, cam, W, H);
+      if (labelAt.z > 1) return [];
+      const b = toScreen(repereHaut, cam, W, H);
+      if (labelAt.z > 1) return [];
+      const parPx = H / (2 * loin * Math.tan((cam.fov * Math.PI) / 360));
+      return [{ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: 2 * r.rayon * parPx + 8, h: Math.abs(a.y - b.y) }];
+    });
+  /** Ce que visait la caméra au dernier écart hors de la Carte. */
+  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0 };
+  /**
+   * Les étiquettes tenues, en un nombre (sans rien allouer à chaque image) : l'indice de l'île de la flèche « Commence
+   * ici » et celui de l'île la plus proche du bonhomme, plus un (0 : aucune), en `cle = fleche * 1024 + bonhomme`.
+   */
+  const ilesTenues = (sprites: THREE.Sprite[]): number => {
+    let f = 0;
+    if (fleche.userData.on && fleche.userData.island) f = sprites.findIndex((s) => s.userData.id === fleche.userData.island) + 1;
+    let b = 0;
+    const av = bonhomme();
+    if (av.visible) {
+      let bestD = Infinity;
+      sprites.forEach((s, i) => {
+        const d = (s.position.x - av.position.x) ** 2 + (s.position.z - av.position.z) ** 2;
+        if (d < bestD) [b, bestD] = [i + 1, d];
+      });
+    }
+    return f * 1024 + b;
+  };
+  const indicesTenus = (cle: number): number[] => [...new Set([Math.floor(cle / 1024) - 1, (cle % 1024) - 1])].filter((i) => i >= 0);
+  // L'interface posée sur la scène (le panneau de la Carte, les bulles, les boutons) : aucune étiquette ne se pose
+  // dessous (DA-10). Relue quatre fois par seconde au plus, pas à chaque image.
+  // Sans page autour (un aperçu), la bande des boutons du bas reste réservée.
+  const lireZones = lecteurDeZones(el, () => [{ x: el.clientWidth / 2, y: el.clientHeight - LABEL_RESERVE / 2, w: el.clientWidth, h: LABEL_RESERVE }]);
+  /** Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord, une île fermée en dernier. */
+  const poidsDesEtiquettes = (sprites: THREE.Sprite[]) => sprites.map((s) => (s.userData.id === fleche.userData.island ? 2 : s.userData.fermee ? 0.5 : 1));
   const placeLabels = (spread: boolean) => {
     const sprites = labelsGroup.children as THREE.Sprite[];
     if (!sprites.length) return;
@@ -152,65 +171,63 @@ export function creerEtiquettes(
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     for (const s of sprites) s.scale.set(s.userData.px.w * perPx, s.userData.px.h * perPx, 1);
-    const cameraKey = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}`;
-    /** Les étiquettes vues du cadrage où la caméra arrive (en pixels CSS). */
-    const boxesFromGoal = () => {
-      goalCamera.copy(camera);
-      goalCamera.position.copy(camGoal.pos);
-      goalCamera.lookAt(camGoal.target);
-      goalCamera.updateMatrixWorld();
-      return sprites.map((s) => {
-        labelAt.copy(s.position).project(goalCamera);
-        return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: s.userData.px.w, h: s.userData.px.h };
-      });
-    };
-    if (!spread) {
-      labelLayout = null;
-      // Hors de la Carte : une étiquette coupée par le bord, ou sous un bouton posé sur la scène, se tait
-      // (cadrage-archipeo §7), sauf celles de l'île « Commence ici » et de l'île du bonhomme, qui rentrent dans le cadre ;
-      // calculé une fois par cadrage (et quand les boutons bougent), comme l'écart sur la Carte.
-      const reserves = boutonsSurLaScene(W);
-      const tenues = ilesTenues(sprites);
-      const key = `${cameraKey}@${reserves.sig}@${tenues.join(',')}`;
-      if (labelVisibility?.key !== key) {
-        const boxes = boxesFromGoal();
-        const ancres = sprites.map((s) => {
-          if (!tenues.includes(s.userData.ile)) return null;
-          labelAt.set(s.position.x, s.position.y - LABEL_HEIGHT, s.position.z).project(goalCamera);
-          return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H };
-        });
-        const places = etiquettesHorsCarte(boxes, { w: W, h: H }, reserves.boxes, ancres);
-        labelVisibility = { key };
-        sprites.forEach((s, i) => {
-          const p = places[i];
-          s.visible = p.visible;
-          s.center.set(0.5 - p.dx / s.userData.px.w, 0.5 + p.dy / s.userData.px.h);
-        });
-      }
-      return;
-    }
-    if (labelVisibility) for (const s of sprites) s.visible = true;
-    labelVisibility = null;
+    const { zones, bulles, cle: zonesCle } = lireZones();
+    // Hors de la Carte, rien d'autre que la caméra visée, la taille, l'interface et les étiquettes ne change l'écart :
+    // la clé ne se refait que si l'un d'eux a bougé (pas de chaîne construite à chaque image).
+    const tenuesCle = spread ? 0 : ilesTenues(sprites);
+    if (!spread && labelLayout && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
     const av = bonhomme().position;
-    const marks = `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}`;
-    const key = `${cameraKey}@${marks}`;
-    if (labelLayout?.key !== key) {
-      const boxes = boxesFromGoal();
-      // Une île fermée pèse moins : c'est son étiquette qui s'écarte d'abord.
-      const weights = sprites.map((s) => (s.userData.fermee ? 0.5 : 1));
-      // La flèche de la destination et le fanion du bonhomme restent visibles : aucune étiquette ne se pose dessus.
-      const { arrow, beacon } = marksOnScreen(goalCamera, W, H);
-      const obstacles = [arrow, beacon].filter((b): b is LabelBox => b !== null);
-      labelLayout = { key, offsets: layoutLabels(boxes, 6, { w: W, h: H - LABEL_RESERVE }, weights, obstacles) };
-      labelLayout.offsets.forEach((o, i) => {
-        const s = sprites[i];
-        s.center.set(0.5 - o.dx / s.userData.px.w, 0.5 + o.dy / s.userData.px.h);
-      });
+    // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
+    // ici » et celle du bonhomme (l'île la plus proche de lui).
+    const tenues = indicesTenus(tenuesCle);
+    vise.tenues = tenuesCle;
+    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
+    const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}`;
+    // Sur la Carte, l'écart est autre : au retour, il se refait.
+    if (spread) vise.n = -1;
+    else {
+      vise.pos.copy(camGoal.pos);
+      vise.target.copy(camGoal.target);
+      vise.w = W;
+      vise.h = H;
+      vise.n = sprites.length;
+      vise.ids = sprites.map((s) => s.id);
+      vise.zones = zonesCle;
     }
+    if (labelLayout?.key === key) return;
+    goalCamera.copy(camera);
+    goalCamera.position.copy(camGoal.pos);
+    goalCamera.lookAt(camGoal.target);
+    goalCamera.updateMatrixWorld();
+    const boxes = sprites.map((s) => {
+      labelAt.copy(s.position).project(goalCamera);
+      return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: s.userData.px.w, h: s.userData.px.h };
+    });
+    // L'île elle-même, sous son étiquette : si l'interface la couvre, son nom ne désigne rien à l'écran.
+    // Une île derrière la caméra retomberait en miroir dans le cadre : elle compte comme hors du cadre.
+    const iles = sprites.map((s) => {
+      const p = toScreen(ileAt.set(s.position.x, s.position.y - ETIQUETTE_AU_DESSUS, s.position.z), goalCamera, W, H);
+      return p.z > 1 ? { x: -1, y: -1 } : p;
+    });
+    const cadre = { w: W, h: H };
+    // Sur la Carte : une île fermée pèse moins (c'est son étiquette qui s'écarte d'abord), la prochaine destination plus ;
+    // la flèche de la destination et le fanion du bonhomme restent visibles, aucune étiquette ne se pose dessus. Hors de
+    // la Carte : les étiquettes restent au-dessus de leur île ; seules celles posées sur l'interface ou sur un grand
+    // repère (Archipéo) s'en écartent, et celles que coupe le bord du cadre y rentrent. Entière ou absente : celle qui ne
+    // trouve pas de place libre près de son île ne se montre pas à moitié.
+    const marques = spread ? marksOnScreen(goalCamera, W, H) : null;
+    const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : colonnes(goalCamera, W, H);
+    const carte = spread ? { weights: poidsDesEtiquettes(sprites) } : null;
+    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 }, carte, tenues);
+    labelLayout = { key, offsets };
+    offsets.forEach((o, i) => {
+      const s = sprites[i];
+      s.center.set(0.5 - o.dx / s.userData.px.w, 0.5 + o.dy / s.userData.px.h);
+      s.visible = visibles[i];
+    });
   };
 
   const vider = () => {
-    labelVisibility = null;
     for (const s of [...labelsGroup.children] as THREE.Sprite[]) {
       s.material.map?.dispose();
       s.material.dispose();
@@ -237,11 +254,11 @@ export function creerEtiquettes(
         // canvas, à chaque image.
         sprite.userData.px = { w: canvas.width * LABEL_CSS, h: canvas.height * LABEL_CSS };
         sprite.userData.fermee = l.state?.id === 'fermee';
+        sprite.userData.id = l.id;
         sprite.renderOrder = l.state?.id === 'fermee' ? 10 : 11;
         sprite.raycast = () => {};
         const c = islandCenter(l.id);
-        sprite.position.set(c.x + 0.5, c.z + LABEL_HEIGHT, c.y + 0.5);
-        sprite.userData.ile = l.id;
+        sprite.position.set(c.x + 0.5, c.z + ETIQUETTE_AU_DESSUS, c.y + 0.5);
         labelsGroup.add(sprite);
       }
     },

@@ -202,6 +202,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Entre x, sors f(x) : ma lumière fait pareil, elle transforme.',
       'Linéaire : la droite passe par l’origine. Affine : elle est décalée de b.',
       'Ma lanterne est en prismes. Chaque calcul en pose un.',
+      'Mon faisceau part de x, touche la droite, puis éclaire f(x).',
     ],
     home: 'Ma lanterne de prismes est finie ! f(nuit) = lumière.',
   },

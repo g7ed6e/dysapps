@@ -200,6 +200,12 @@ const CAPTURES = [
   // avec `ile` y place le bonhomme).
   { nom: 'archipel-phare', vue: 'archipel', famille: 'ciel', ile: 'phare' },
   { nom: 'archipel-phare-nuit', vue: 'archipel', famille: 'ciel', ile: 'phare', nuit: true },
+  // La vue de l'archipel depuis les deux Observatoires, voisins du Phare : le cadrage qui garde le grand phare en vue
+  // (DA-17) vaut aussi pour elles.
+  { nom: 'archipel-donnees', vue: 'archipel', famille: 'cadrage', ile: 'donnees' },
+  { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
+  { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
+  { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
   { nom: 'lac-phare', vue: 'île', famille: 'essai', ile: 'phare' },
   { nom: 'lac-textes', vue: 'île', famille: 'essai', ile: 'textes' },
   { nom: 'lac-studio', vue: 'île', famille: 'essai', ile: 'studio' },

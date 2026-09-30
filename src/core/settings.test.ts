@@ -71,6 +71,16 @@ describe('applySettings', () => {
     expect(root.style.getPropertyValue('--font-family')).toContain('OpenDyslexic');
   });
 
+  it('dit quand le texte est grand : jamais aux réglages par défaut, toujours à 24 px ou aux plus grands écarts', () => {
+    const root = document.createElement('div');
+    applySettings(DEFAULT_SETTINGS, root);
+    expect(root.dataset.texte).toBe('normal');
+    applySettings({ ...DEFAULT_SETTINGS, fontSize: 24 }, root);
+    expect(root.dataset.texte).toBe('grand');
+    applySettings({ ...DEFAULT_SETTINGS, letterSpacing: 0.2 }, root);
+    expect(root.dataset.texte).toBe('grand');
+  });
+
   it('pose l’univers affiché, qui choisit l’habillage : l’univers choisi, Blocland par défaut', () => {
     const root = document.createElement('div');
     applySettings({ ...DEFAULT_SETTINGS, univers: 'blocland' }, root);
