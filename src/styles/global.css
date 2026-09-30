@@ -4158,6 +4158,98 @@ button.island-quest:active {
   background: var(--yellow);
   border-style: dashed;
 }
+/* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
+   du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
+   d'animé. */
+.graph {
+  margin: 0;
+}
+.graph svg {
+  width: 100%;
+  /* Bornée par la hauteur de l'écran : sur une tablette à l'horizontale, le graphique laisse place à la règle et aux réponses. */
+  max-width: min(24rem, 45vh);
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.graph .graph-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
+}
+.graph .graph-axis {
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.graph .graph-arrow {
+  fill: currentColor;
+}
+.graph text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  font-size: 21px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.graph .graph-name {
+  font-weight: 700;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux nombres des axes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.graph .graph-tick,
+.graph .graph-name {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.graph .graph-axis-tick {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.graph .graph-line {
+  stroke: var(--violet);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.graph .graph-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+:root[data-theme="nuit"] .graph .graph-line {
+  stroke: var(--yellow);
+}
+:root[data-theme="nuit"] .graph .graph-point {
+  fill: var(--yellow);
+}
+.graph figcaption {
+  /* Pas plus large que le graphique : aux grands espacements, la légende revient à la ligne au lieu d'élargir l'écran. */
+  max-width: min(24rem, 45vh);
+  margin: 0.3rem auto 0;
+  text-align: left;
+}
+/* Sur un écran large, le graphique et la règle côte à côte : la question, le graphique, la règle et les réponses tiennent
+   mieux dans la hauteur d'une tablette à l'horizontale. La règle garde au moins 20rem (à la taille de texte choisie) :
+   sinon, elle passe sous le graphique, comme sur un téléphone. Les autres écrans de calcul ne changent pas. */
+@media (min-width: 800px) {
+  .panel.calcul:has(> .calcul-figure .graph) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.2rem;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > * {
+    flex: 1 1 100%;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-figure {
+    /* La largeur du graphique, fixée : un SVG sans largeur propre n'a pas la même taille d'un navigateur à l'autre. */
+    flex: 0 1 min(24rem, 45vh);
+    min-width: 0;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid {
+    flex: 1 1 20rem;
+  }
+}
 
 /* ===== Le plan dans le panneau d'île ===== */
 .plan-section {

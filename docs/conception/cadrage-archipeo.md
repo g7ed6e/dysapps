@@ -446,6 +446,7 @@ Cette fiche est la référence commune aux quatre sous-lots R4b, à R5 et à R6 
 - **Les deux bandes**, en terre cuite désaturée `#A8553A` (jamais en rouge vif), de 0,08 H chacune : de 0,30 à 0,38 H et de 0,50 à 0,58 H. Le fût reste crème entre elles et au-dessus.
 - **La galerie**, une dalle `#553330` posée à 0,70 H, épaisse de 0,03 H, qui dépasse le haut du fût de 0,25 case.
 - **La lanterne**, de 0,73 à 0,85 H, rayon 0,55 r : vitrée et claire de jour (le verre de la palette), elle brille la nuit dans les lueurs, en `#FFD866`. Ni faisceau ni rotation avant le lot 9. Sur une île fermée, elle reste éteinte et délavée, comme le reste du décor.
+- Le mot « faisceau » de la mission « Faisceaux » (Phare des fonctions) et de la réplique de Fi désigne le geste de lecture d’un graphique, porté par Fi, la lampe vivante. Il n’annonce pas le faisceau du phare : la lanterne reste sans faisceau ni rotation jusqu’au lot 9.
 - **Le toit**, conique, de 0,85 à 1,00 H, base de rayon 0,85 r qui dépasse la lanterne, en terre cuite `#A8553A`.
 - **Le socle**, en pierre, avec un anneau pétrole `#3F8299` de 0,15 case à la jonction du socle et du fût.
 - **Au 6e** : H = 6 cases, r = 1,2 case, sans socle propre, dans l’emprise de 3 × 3 cases du plan « Le phare de Grimoire » (île de la Tour, dessiné par R5 ; décision 4 ci-dessous), lanterne tournée vers le large. C’est la seule verticale nette de l’archipel.

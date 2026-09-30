@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"073c39ba"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"4ede52ad"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
@@ -13,9 +13,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "e68cd060",
-  "cubes": "f91c7158",
-  "cubes avec créatures": "fdf8d1b5",
-  "décor posé sur la pente": "c9352e79",
+  "cubes": "b687b203",
+  "cubes avec créatures": "719383d6",
+  "décor posé sur la pente": "98b16154",
   "navire": "8b55e91e",
   "sol (facettes)": "f3662338",
   "sol (lave)": "13fe3a3b",
@@ -26,9 +26,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "597685c8",
-  "cubes": "3b63d711",
-  "cubes avec créatures": "d2d67012",
-  "décor posé sur la pente": "ac5fddbd",
+  "cubes": "761241ba",
+  "cubes avec créatures": "3a05032d",
+  "décor posé sur la pente": "c969eaf4",
   "navire": "8b55e91e",
   "sol (facettes)": "05e162ec",
   "sol (lave)": "13fe3a3b",
@@ -39,9 +39,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "dbd26273",
-  "cubes avec créatures": "dbd26273",
-  "décor posé sur la pente": "c52b755d",
+  "cubes": "6479c79d",
+  "cubes avec créatures": "6479c79d",
+  "décor posé sur la pente": "d146a2d5",
   "navire": "4e3d19b2",
   "sol (facettes)": "da9d736f",
   "sol (lave)": "13fe3a3b",

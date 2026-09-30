@@ -160,8 +160,8 @@ export const ARCHIPEO = {
     phare: {
       challenge: 'Le Dragon de lumière souffle du haut de sa colonne : « Mes ailes de verre sont éteintes. Suis chaque nombre jusqu’à son image, à ton rythme. »',
       guardianSays: {
-        hit: 'Une veine s’allume dans mes ailes. Tu as trouvé l’image.',
-        miss: 'Rien ne s’éteint. Remplace x par le nombre, calcule, et reprends.',
+        hit: 'Une veine s’allume dans mes ailes. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis la formule ou le graphique, et reprends.',
         beaten: 'Mes ailes de verre se rallument. Le phare est à toi, et à Fi.',
       },
     },
