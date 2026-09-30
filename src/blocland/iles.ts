@@ -122,7 +122,7 @@ export const ILES = [
     "module": "Orthographe grammaticale",
     "subject": "francais",
     "classe": "6e",
-    "description": "Accorder sujet et verbe, choisir a/à, et/est, -é/-er.",
+    "description": "Accorder sujet et verbe, accorder dans le groupe nominal, choisir a/à, et/est, -é/-er.",
     "block": "terre",
     "guardian": "le Taureau de terre",
     "icon": "wheat",
@@ -152,6 +152,15 @@ export const ILES = [
         "description": "Clique la bonne terminaison.",
         "programme": [
           "c3.fr.langue.finales-en-e"
+        ]
+      },
+      {
+        "id": "troupeau",
+        "title": "Troupeau",
+        "description": "Accorder le déterminant, le nom et l’adjectif, puis trouver le sujet placé après le verbe ou fait de deux noms.",
+        "programme": [
+          "c3.fr.langue.genre-nombre",
+          "c3.fr.langue.sujet"
         ]
       }
     ]

@@ -120,7 +120,7 @@ Pour tous les items :
 
 - description : Les mots-outils à réviser, en dictée.
 - compétences : c3.fr.langue.mots-invariables
-- par partie : 6
+- par partie : 8
 - bravo : Bonne oreille !
 - erreur : Tu as choisi {chosen}. On écrit {word} : {hint}
 - bloc gagné : sable
@@ -132,7 +132,7 @@ Pour tous les items :
 
 ### Niveau 1 · `carriere-coffre-1`
 
-- consigne : Écoute le mot-outil, puis choisis la bonne écriture. Ces mots reviennent tout le temps : on les apprend par cœur.
+- consigne : Écoute, puis choisis la bonne écriture. Ces mots-outils reviennent tout le temps : on les apprend par cœur.
 - blocs : 3
 - XP : 10
 
@@ -179,7 +179,7 @@ Pour tous les items :
 
 ### Niveau 2 · `carriere-coffre-2`
 
-- consigne : Écoute le mot-outil, puis choisis la bonne écriture. Ces mots sont dans le coffre : on les révise souvent.
+- consigne : Écoute le mot ou la phrase, puis choisis l’écriture du mot. Ces mots-outils se révisent souvent.
 - blocs : 4
 - XP : 12
 
@@ -188,10 +188,12 @@ Pour tous les items :
    - réponse : plusieurs
    - indice : plusieurs finit toujours par un s : il veut dire plus d’un.
 2. mot : quelquefois
+   - phrase : Je vais quelquefois à la piscine avec mon frère.
    - choix : quelquefois · quelquefoi · quelque fois
    - réponse : quelquefois
    - indice : quelquefois en un seul mot, avec un s muet.
 3. mot : autrefois
+   - phrase : Autrefois, il n’y avait pas de téléphone portable.
    - choix : autrefois · autrefoi · autre fois
    - réponse : autrefois
    - indice : autrefois : autre, puis fois, en un seul mot.
@@ -223,6 +225,104 @@ Pour tous les items :
     - choix : derrière · derriere · dérière
     - réponse : derrière
     - indice : derrière prend deux r et un accent grave.
+
+### Niveau 3 · `carriere-coffre-3`
+
+- consigne : Écoute, puis choisis la bonne écriture. Ces mots-outils s’apprennent par cœur.
+- blocs : 5
+- XP : 14
+
+1. mot : ailleurs
+   - choix : ailleurs · ailleur · aileurs
+   - réponse : ailleurs
+   - indice : ailleurs prend deux l, et finit par un s muet.
+2. mot : dehors
+   - choix : dehors · dehor · deors
+   - réponse : dehors
+   - indice : dehors a un h au milieu, qu’on n’entend pas, et un s muet à la fin.
+3. mot : dedans
+   - choix : dedans · dedan · dedant
+   - réponse : dedans
+   - indice : dedans, c’est de, puis dans, avec son s muet.
+4. mot : parmi
+   - choix : parmi · parmis · parmit
+   - réponse : parmi
+   - indice : parmi finit par un i, sans rien derrière.
+5. mot : malgré
+   - choix : malgré · malgrè · malgrés
+   - réponse : malgré
+   - indice : malgré finit par un é, avec un accent aigu, et sans s.
+6. mot : déjà
+   - choix : déjà · deja · déja
+   - réponse : déjà
+   - indice : déjà prend deux accents : aigu sur le é, grave sur le à.
+7. mot : hier
+   - choix : hier · ier · hiers
+   - réponse : hier
+   - indice : hier commence par un h qu’on n’entend pas, et finit par er.
+8. mot : soudain
+   - choix : soudain · soudin · soudein
+   - réponse : soudain
+   - indice : soudain finit par ain, comme main et demain.
+9. mot : aussitôt
+   - choix : aussitôt · aussitot · ausitôt
+   - réponse : aussitôt
+   - indice : aussitôt, c’est aussi, puis tôt, avec son accent circonflexe.
+10. mot : d’abord
+    - choix : d’abord · d’abort · dabord
+    - réponse : d’abord
+    - indice : d’abord : un d, une apostrophe, puis abord, qui finit par un d muet.
+
+### Niveau 4 · `carriere-coffre-4`
+
+- consigne : Écoute le mot ou la phrase, puis choisis l’écriture du mot.
+- blocs : 6
+- XP : 16
+
+1. mot : parce que
+   - choix : parce que · parce-que · parse que
+   - réponse : parce que
+   - indice : parce que s’écrit en deux mots, sans trait d’union, avec un c.
+2. mot : lorsque
+   - choix : lorsque · lorque · lorsqe
+   - réponse : lorsque
+   - indice : lorsque, c’est lors, puis que, comme dans presque.
+3. mot : pourtant
+   - choix : pourtant · pourtan · pourtent
+   - réponse : pourtant
+   - indice : pourtant, c’est pour, puis tant, avec un t muet.
+4. mot : peut-être
+   - phrase : Il pleuvra peut-être demain.
+   - choix : peut-être · peut être · peutêtre
+   - réponse : peut-être
+   - indice : peut-être veut dire « c’est possible » : trait d’union et accent. Sans trait d’union, c’est « il peut être là ».
+5. mot : tout à coup
+   - choix : tout à coup · tout a coup · tout à cou
+   - réponse : tout à coup
+   - indice : tout à coup s’écrit en trois mots, avec un accent sur à et un p muet, comme beaucoup.
+6. mot : davantage
+   - phrase : Il faut travailler davantage.
+   - choix : davantage · d’avantage · davantages
+   - réponse : davantage
+   - indice : davantage veut dire « plus » : un seul mot, sans apostrophe.
+7. mot : assez
+   - choix : assez · asser · assé
+   - réponse : assez
+   - indice : assez prend deux s, et finit par ez, comme nez.
+8. mot : très
+   - choix : très · trè · trés
+   - réponse : très
+   - indice : très prend un accent grave et un s muet, comme après.
+9. mot : près
+   - phrase : J’habite près du collège.
+   - choix : près · prêt · prè
+   - réponse : près
+   - indice : près veut dire « pas loin » : accent grave et s muet. Prêt, avec un t, c’est être prêt à partir.
+10. mot : tôt
+    - phrase : Demain, je me lève tôt.
+    - choix : tôt · tot · tô
+    - réponse : tôt
+    - indice : tôt, le contraire de tard, prend un accent circonflexe et un t muet.
 
 ## Les plans
 

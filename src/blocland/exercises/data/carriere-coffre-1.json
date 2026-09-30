@@ -3,7 +3,7 @@
   "biome": "carriere",
   "type": "coffre",
   "level": 1,
-  "instruction": "Écoute le mot-outil, puis choisis la bonne écriture. Ces mots reviennent tout le temps : on les apprend par cœur.",
+  "instruction": "Écoute, puis choisis la bonne écriture. Ces mots-outils reviennent tout le temps : on les apprend par cœur.",
   "items": [
     {
       "key": "toujours",
@@ -116,7 +116,7 @@
       "hint": "demain finit par ain, comme main."
     }
   ],
-  "perRun": 6,
+  "perRun": 8,
   "feedback": {
     "correct": "Bonne oreille !",
     "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"

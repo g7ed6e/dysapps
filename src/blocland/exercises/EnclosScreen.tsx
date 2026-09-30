@@ -2,15 +2,19 @@ import { useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
+import { Aid } from './CalculScreen';
+import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
 
 /**
  * Enclos : 4 sujets à ranger dans le bon enclos, singulier ou pluriel ; on choisit la forme du verbe, puis on valide.
- * Champs de l'item : subject, singular (forme du verbe), plural, answer ('singulier' | 'pluriel'), why (la marque du nombre).
+ * Champs de l'item : subject, singular (forme du verbe), plural, answer ('singulier' | 'pluriel'), why (la marque du nombre),
+ * aid (la carte de règle du niveau, la même pour tous ses items : celle du premier item de l'écran s'affiche au-dessus des sujets).
  */
 export function EnclosScreen({ items, answered, onAnswer }: ScreenProps) {
   const [choice, setChoice] = useState<Record<string, 'singulier' | 'pluriel'>>({});
   const complete = items.every((it) => choice[it.key]);
+  const aid = items[0]?.aid as AidData | undefined;
 
   const validate = () => {
     const results = items.map((it) => ({ key: it.key, correct: choice[it.key] === it.answer }));
@@ -24,7 +28,12 @@ export function EnclosScreen({ items, answered, onAnswer }: ScreenProps) {
   };
 
   return (
-    <div className="panel question">
+    <div className={`panel question enclos${aid ? ' has-aid' : ''}`}>
+      {aid && (
+        <div className="aid calcul-aid">
+          <Aid aid={aid} />
+        </div>
+      )}
       <ul className="enclos-list" aria-label="Sujets à ranger">
         {items.map((it) => {
           const subject = String(it.subject);

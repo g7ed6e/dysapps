@@ -49,6 +49,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Meuh. Les vaches, au pluriel, prennent un s. Comme les murs.',
       'Mon étable, c’est de la terre et quatre poteaux de bois.',
       'Quand tout s’accorde, ça tient debout.',
+      'Mon troupeau marche groupé, comme le déterminant, le nom et l’adjectif.',
     ],
     home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur.',
   },

@@ -1,0 +1,133 @@
+{
+  "id": "carriere-coffre-3",
+  "biome": "carriere",
+  "type": "coffre",
+  "level": 3,
+  "instruction": "Écoute, puis choisis la bonne écriture. Ces mots-outils s’apprennent par cœur.",
+  "items": [
+    {
+      "key": "ailleurs",
+      "word": "ailleurs",
+      "choices": [
+        "ailleurs",
+        "ailleur",
+        "aileurs"
+      ],
+      "answer": "ailleurs",
+      "hint": "ailleurs prend deux l, et finit par un s muet."
+    },
+    {
+      "key": "dehors",
+      "word": "dehors",
+      "choices": [
+        "dehors",
+        "dehor",
+        "deors"
+      ],
+      "answer": "dehors",
+      "hint": "dehors a un h au milieu, qu’on n’entend pas, et un s muet à la fin."
+    },
+    {
+      "key": "dedans",
+      "word": "dedans",
+      "choices": [
+        "dedans",
+        "dedan",
+        "dedant"
+      ],
+      "answer": "dedans",
+      "hint": "dedans, c’est de, puis dans, avec son s muet."
+    },
+    {
+      "key": "parmi",
+      "word": "parmi",
+      "choices": [
+        "parmi",
+        "parmis",
+        "parmit"
+      ],
+      "answer": "parmi",
+      "hint": "parmi finit par un i, sans rien derrière."
+    },
+    {
+      "key": "malgré",
+      "word": "malgré",
+      "choices": [
+        "malgré",
+        "malgrè",
+        "malgrés"
+      ],
+      "answer": "malgré",
+      "hint": "malgré finit par un é, avec un accent aigu, et sans s."
+    },
+    {
+      "key": "déjà",
+      "word": "déjà",
+      "choices": [
+        "déjà",
+        "deja",
+        "déja"
+      ],
+      "answer": "déjà",
+      "hint": "déjà prend deux accents : aigu sur le é, grave sur le à."
+    },
+    {
+      "key": "hier",
+      "word": "hier",
+      "choices": [
+        "hier",
+        "ier",
+        "hiers"
+      ],
+      "answer": "hier",
+      "hint": "hier commence par un h qu’on n’entend pas, et finit par er."
+    },
+    {
+      "key": "soudain",
+      "word": "soudain",
+      "choices": [
+        "soudain",
+        "soudin",
+        "soudein"
+      ],
+      "answer": "soudain",
+      "hint": "soudain finit par ain, comme main et demain."
+    },
+    {
+      "key": "aussitôt",
+      "word": "aussitôt",
+      "choices": [
+        "aussitôt",
+        "aussitot",
+        "ausitôt"
+      ],
+      "answer": "aussitôt",
+      "hint": "aussitôt, c’est aussi, puis tôt, avec son accent circonflexe."
+    },
+    {
+      "key": "d’abord",
+      "word": "d’abord",
+      "choices": [
+        "d’abord",
+        "d’abort",
+        "dabord"
+      ],
+      "answer": "d’abord",
+      "hint": "d’abord : un d, une apostrophe, puis abord, qui finit par un d muet."
+    }
+  ],
+  "perRun": 8,
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
