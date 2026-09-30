@@ -134,6 +134,8 @@ const AID_NAME = {
   'right-triangle': 'triangle rectangle codé',
   'thales-figure': 'configuration de Thalès',
   graph: 'graphique d’une fonction (repère gradué de 1 en 1, la droite et ses points aux intersections du quadrillage)',
+  'column-operation': 'opération posée en colonnes (chiffre sous chiffre, virgule sous virgule)',
+  'long-division': 'division posée en potence',
   'value-table': 'tableau de valeurs',
   scene: 'schéma de la situation',
 };

@@ -39,9 +39,11 @@ describe('les textes d’univers', () => {
 
   it('Blocland garde les textes d’avant le lot 6, sans un mot changé', () => {
     // L'empreinte des textes des Gardiens et des espèces tels qu'ils étaient dans biomes.ts avant le lot 6 : un mot
-    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous. Une seule
-    // exception voulue : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
-    // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique).
+    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous. Deux
+    // exceptions voulues : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
+    // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique), et celle du
+    // Brochet d'argent (« regarde les parts ou l'opération posée »), changée avec « Galets en colonnes », dont les manches
+    // d'opérations posées n'ont pas de parts coloriées (décision du directeur artistique).
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
     const APRES_LE_LOT_6 = new Set(['relais', 'jardin', 'refuge']);
@@ -51,7 +53,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('1eb585bd9341642adde5c716aea62190f69bf7f14d947830898933e80b94d7a0');
+    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('06960e46af1a8836965ccc8f53fc7a34492eb6dc2e367cbe3ecdb86b552ee99d');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà vaincu. Une revanche ?',
@@ -151,13 +153,14 @@ describe('les textes d’univers', () => {
 describe('les textes communs (J8, U4)', () => {
   it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
-    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238), celle de Fi des Faisceaux (#247), celle de Bloquette du Troupeau (C-3) et celle de Rouxel des Facettes (C-6).
+    // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238), celle de Fi des Faisceaux (#247), celle de Bloquette du Troupeau (C-3), celle de Rouxel des Facettes (C-6)
+    // et celle de Nénu de « Galets en colonnes ».
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
       const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin' && b.id !== 'refuge').map((b) => [b.id, t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('45d48cb94a6d34bfbaa8f78bb6013d6aa58f4af968d70c408f467e4332957de6');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('676dad5686a33211f8f571581facde57aaeb28c145cdc04a7bc2922c30d1b61f');
     }
   });
 

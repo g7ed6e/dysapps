@@ -262,7 +262,7 @@ export const ILES = [
     "module": "Fractions",
     "subject": "maths",
     "classe": "6e",
-    "description": "Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.",
+    "description": "Lire, comparer et partager des fractions, puis poser les opérations et la division, toujours avec la figure sous les yeux.",
     "block": "galet",
     "guardian": "le Brochet d’argent",
     "icon": "pizza",
@@ -293,6 +293,14 @@ export const ILES = [
         "programme": [
           "c3.ma.nombres.fractions-designations",
           "c3.ma.nombres.fractions-comparer"
+        ]
+      },
+      {
+        "id": "colonnes",
+        "title": "Galets en colonnes",
+        "description": "Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.",
+        "programme": [
+          "c3.ma.nombres.calcul-pose"
         ]
       }
     ]

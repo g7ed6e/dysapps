@@ -1,5 +1,6 @@
 // Aides visuelles des îles du collège, dessinées à partir de données (voir maths.ts / college.ts).
 
+import { frenchTypography } from '../../components/math/RichText';
 import { GRAPH_FRAME, type GraphFrame } from './graph';
 
 /** Droite graduée d'entiers (relatifs compris), avec des points marqués et, au besoin, un bond. */
@@ -87,7 +88,7 @@ export function RuleCard({ title, lines }: { title?: string; lines: string[] }) 
       {title && <figcaption>{title}</figcaption>}
       <ul>
         {lines.map((l, i) => (
-          <li key={i}>{l}</li>
+          <li key={i}>{frenchTypography(l)}</li>
         ))}
       </ul>
     </figure>
@@ -325,6 +326,134 @@ export function Graph({
         ))}
       </svg>
       <figcaption>{`La droite épaisse est celle de ${name}.`}</figcaption>
+    </figure>
+  );
+}
+
+/** Un nombre écrit pour une opération posée : ses chiffres avant la virgule, puis ceux d'après. */
+function columnsOf(n: string): { whole: string[]; decimals: string[] } {
+  const [whole, decimals = ''] = n.replace(/\s/g, '').split(',');
+  return { whole: [...whole], decimals: [...decimals] };
+}
+
+type Operation = '+' | '−' | '×';
+/** Sous les lignes à remplir de la multiplication : elles se posent sur le cahier. */
+export const POSEES_NOTE = 'Pose ces lignes sur ton cahier.';
+const OPERATION_NAME = {
+  '+': ['Addition posée', 'plus'],
+  '−': ['Soustraction posée', 'moins'],
+  '×': ['Multiplication posée', 'fois'],
+} satisfies Record<Operation, [string, string]>;
+
+/**
+ * Une opération posée en colonnes (addition, soustraction, multiplication) : un chiffre par case, les unités sous les
+ * unités et la virgule sous la virgule, dans une colonne à elle ; le signe devant le dernier nombre, le trait, puis le
+ * résultat à trouver (« ? »). Chaque chiffre a sa case : l'espacement des lettres des Réglages ne décale pas les colonnes.
+ * Une multiplication par un nombre à plusieurs chiffres dessine aussi ses lignes, une par chiffre du bas, en cases vides
+ * aux bords en pointillés (un guide, pas un champ à toucher ; le nombre de cases ne dit pas le nombre de chiffres) ; la
+ * ligne des dizaines porte déjà son 0, et une phrase dessous dit de les poser sur le cahier, pas en tête.
+ */
+export function ColumnOperation({ op, rows }: { op: Operation; rows: string[] }) {
+  const numbers = rows.map(columnsOf);
+  if (numbers.length === 0) return null;
+  const whole = Math.max(...numbers.map((n) => n.whole.length));
+  const decimals = Math.max(...numbers.map((n) => n.decimals.length));
+  const lower = numbers[numbers.length - 1];
+  // Les lignes de la multiplication : autant que de chiffres au nombre du bas (entier), s'il en a plus d'un.
+  const partials = op === '×' && numbers.length === 2 && !decimals && lower.whole.length > 1 ? lower.whole.length : 0;
+  const wholeWidth = partials ? Math.max(whole, numbers[0].whole.length + lower.whole.length) : whole;
+  const width = wholeWidth + (decimals ? 1 + decimals : 0);
+  const [name, word] = OPERATION_NAME[op];
+  const lines = partials ? ` ${partials} lignes à poser sur ton cahier, la ligne des dizaines décalée d’un rang, avec son 0.` : '';
+  const label = `${name} : ${rows.join(` ${word} `)}, ${decimals ? 'virgule sous virgule' : 'chiffre sous chiffre'}.${lines} Le résultat est à trouver.`;
+  return (
+    <figure className="posee">
+      <div role="img" aria-label={label}>
+        <table>
+          <tbody>
+            {numbers.map((n, i) => {
+              const cells = [
+                ...Array<string>(wholeWidth - n.whole.length).fill(''),
+                ...n.whole,
+                ...(decimals ? [n.decimals.length ? ',' : ''] : []),
+                ...n.decimals,
+                ...Array<string>(decimals - n.decimals.length).fill(''),
+              ];
+              const last = i === numbers.length - 1;
+              return (
+                <tr key={i} className={last ? 'posee-line' : undefined}>
+                  <td className="posee-sign">{last ? op : ''}</td>
+                  {cells.map((c, j) => (
+                    <td key={j} className={decimals && j === wholeWidth ? 'posee-comma' : undefined}>
+                      {c}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+            {Array.from({ length: partials }, (_, k) => (
+              <tr key={`p${k}`} className={k === partials - 1 ? 'posee-partial posee-line' : 'posee-partial'}>
+                <td className="posee-sign">{k === partials - 1 ? '+' : ''}</td>
+                {Array.from({ length: width }, (_, j) => {
+                  // Le décalage : la ligne des dizaines a un 0 aux unités, celle des centaines deux.
+                  const shifted = j >= width - k;
+                  return (
+                    <td key={j} className={shifted ? undefined : 'posee-box'}>
+                      {shifted ? '0' : ''}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+            <tr>
+              <td className="posee-sign" />
+              <td colSpan={width} className="posee-result unknown">
+                ?
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {/* Les cases guident, elles ne se remplissent pas à l'écran : la phrase le dit (l'aria-label aussi). */}
+      {partials > 0 && (
+        <figcaption className="posee-note" aria-hidden="true">
+          {POSEES_NOTE}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+/**
+ * Une division posée, en potence : le dividende à gauche, un chiffre par case (la virgule dans la sienne), le diviseur à
+ * droite du trait, le quotient à trouver sous le diviseur ; avec `remainder`, le reste à trouver sous le dividende.
+ */
+export function LongDivision({ dividend, divisor, remainder = false }: { dividend: string; divisor: string; remainder?: boolean }) {
+  const { whole, decimals } = columnsOf(dividend);
+  const cells = decimals.length ? [...whole, ',', ...decimals] : whole;
+  const label = `Division posée de ${dividend} par ${divisor} : ${remainder ? 'le quotient et le reste sont' : 'le quotient est'} à trouver.`;
+  return (
+    <figure className="posee posee-division">
+      <div role="img" aria-label={label}>
+        <table>
+          <tbody>
+            <tr>
+              {cells.map((c, j) => (
+                <td key={j} className={c === ',' ? 'posee-comma' : j === cells.length - 1 ? 'posee-last' : undefined}>
+                  {c}
+                </td>
+              ))}
+              <td className="posee-divisor">{divisor}</td>
+            </tr>
+            <tr>
+              <td colSpan={cells.length} className={remainder ? 'posee-remainder' : undefined}>
+                {remainder && <span className="unknown">reste ?</span>}
+              </td>
+              <td className="posee-quotient unknown">?</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
