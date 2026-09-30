@@ -1,7 +1,7 @@
-// Prépare les sources du site de documentation pour VitePress (docs/.vitepress/config.mts) :
-// les pages Markdown de docs/ (sauf docs/_theme/, docs/.vitepress/ et docs/conception/, qui ne sont pas
-// publiés : le site s'adresse aux élèves et aux adultes qui les accompagnent, pas aux contributeurs) plus les pages générées depuis
-// les données du jeu (scripts/docs/generate.mjs), copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
+// Prépare les sources du site de documentation pour VitePress (www/.vitepress/config.mts) :
+// les pages Markdown de www/ (sauf www/_theme/ et www/.vitepress/ ; le site s'adresse aux élèves et aux adultes qui
+// les accompagnent, la documentation interne est dans docs/, non publiée) plus les pages générées depuis
+// les données du jeu (scripts/www/generate.mjs), copiées dans .www-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
 // Aucune ressource externe.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, posix, relative } from 'node:path';
@@ -9,22 +9,20 @@ import { execFileSync } from 'node:child_process';
 import { generatePages } from './generate.mjs';
 
 const root = process.cwd();
-export const DOCS = join(root, 'docs');
-export const SRC = join(root, '.docs-src');
-const THEME = join(DOCS, '_theme');
-const CAPTURES = join(DOCS, '_captures');
+export const WWW = join(root, 'www');
+export const SRC = join(root, '.www-src');
+const THEME = join(WWW, '_theme');
+const CAPTURES = join(WWW, '_captures');
 /** Une image JPEG d'un pixel, à la place d'une capture absente en local. */
 const PLACEHOLDER_JPEG =
   '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
 
-/** Les dossiers de docs/ qui ne sont pas publiés : les documents de conception, pour les contributeurs. */
-const NON_PUBLIES = new Set(['conception']);
 
 function walk(dir, list = []) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      if (name.startsWith('_') || name.startsWith('.') || NON_PUBLIES.has(relative(DOCS, full))) continue;
+      if (name.startsWith('_') || name.startsWith('.')) continue;
       walk(full, list);
     } else if (extname(name) === '.md') list.push(full);
   }
@@ -46,20 +44,20 @@ function gitDate(relPath) {
 }
 
 const GAME_NOTE =
-  'Cette page est produite à chaque publication à partir des données du jeu (`scripts/docs/generate.mjs`) : elle décrit exactement la version en ligne.';
+  'Cette page est produite à chaque publication à partir des données du jeu (`scripts/www/generate.mjs`) : elle décrit exactement la version en ligne.';
 
 /**
- * Écrit .docs-src/ et renvoie les pages : { path, title, generated, updated }.
- * `path` est relatif à docs/ (ex. « manuel/demarrer.md »).
+ * Écrit .www-src/ et renvoie les pages : { path, title, generated, updated }.
+ * `path` est relatif à www/ (ex. « manuel/demarrer.md »).
  */
-export async function prepareDocs() {
+export async function prepareSite() {
   const today = new Date().toISOString().slice(0, 10);
-  const disk = walk(DOCS)
+  const disk = walk(WWW)
     .sort()
     .map((full) => {
-      const path = posix.normalize(relative(DOCS, full).split('\\').join('/'));
+      const path = posix.normalize(relative(WWW, full).split('\\').join('/'));
       const body = readFileSync(full, 'utf8');
-      return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('docs', path)) };
+      return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('www', path)) };
     });
   const generated = (await generatePages()).map((p) => ({ ...p, note: GAME_NOTE })).map((p) => ({
     ...p,
@@ -85,10 +83,10 @@ export async function prepareDocs() {
   cpSync(join(root, 'public', 'fonts', 'luciole'), join(pub, 'fonts', 'luciole'), { recursive: true });
   cpSync(join(THEME, 'sw.js'), join(pub, 'sw.js'));
   // Les captures d'écran du jeu : servies sous /captures/. Elles ne sont pas dans le dépôt ; la CI les fait
-  // (npm run docs:captures) avant ce build. Une image citée par une page doit être une capture déclarée dans
-  // scripts/docs/captures.mjs : une capture renommée ou oubliée casse le build, pas seulement l'image.
+  // (npm run www:captures) avant ce build. Une image citée par une page doit être une capture déclarée dans
+  // scripts/www/captures.mjs : une capture renommée ou oubliée casse le build, pas seulement l'image.
   const declared = new Set(
-    [...readFileSync(join(root, 'scripts', 'docs', 'captures.mjs'), 'utf8').matchAll(/name: '([a-z0-9-]+)'/g)].map((m) => `${m[1]}.jpg`),
+    [...readFileSync(join(root, 'scripts', 'www', 'captures.mjs'), 'utf8').matchAll(/name: '([a-z0-9-]+)'/g)].map((m) => `${m[1]}.jpg`),
   );
   const required = process.env.DOCS_CAPTURES === 'required';
   mkdirSync(join(pub, 'captures'), { recursive: true });
@@ -98,15 +96,15 @@ export async function prepareDocs() {
     // Le code (blocs et `en ligne`) ne compte pas : un exemple de syntaxe n'est pas une image citée.
     const text = page.body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
     for (const [, name] of text.matchAll(/\]\(\/captures\/([^)\s]+)\)/g)) {
-      if (!declared.has(name)) throw new Error(`Capture inconnue : ${name} (citée dans docs/${page.path}) — la déclarer dans scripts/docs/captures.mjs`);
+      if (!declared.has(name)) throw new Error(`Capture inconnue : ${name} (citée dans www/${page.path}) — la déclarer dans scripts/www/captures.mjs`);
       if (existsSync(join(CAPTURES, name))) continue;
-      if (required) throw new Error(`Capture absente : docs/_captures/${name} (citée dans docs/${page.path}) — voir npm run docs:captures`);
+      if (required) throw new Error(`Capture absente : www/_captures/${name} (citée dans www/${page.path}) — voir npm run www:captures`);
       missing.add(name);
     }
   }
   // En local, sans captures : une image d'un pixel à la place, pour relire les pages sans rejouer le jeu.
   for (const name of missing) writeFileSync(join(pub, 'captures', name), Buffer.from(PLACEHOLDER_JPEG, 'base64'));
-  if (missing.size) console.warn(`${missing.size} captures absentes de docs/_captures/, remplacées par une image vide : npm run docs:captures pour les faire.`);
+  if (missing.size) console.warn(`${missing.size} captures absentes de www/_captures/, remplacées par une image vide : npm run www:captures pour les faire.`);
   writeFileSync(join(pub, '.nojekyll'), '');
 
   return pages.map(({ path, title, generated: g, updated }) => ({ path, title, generated: g, updated }));

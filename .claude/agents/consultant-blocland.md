@@ -47,8 +47,8 @@ Pour chaque proposition, dis si elle **renforce** l’identité de Blocland (un 
 - **La fiche de l’univers** : `design/blocland/fiche.md`. Tu la tiens : noms, récit, silhouettes, et ce que les lots 1 à 5 d’Archipéo ont changé pour tous, repris ou non.
 - **La référence figée** : l’étiquette git `blocland-reference`, posée juste avant le lot 6, fait foi pour le dessin de Blocland quand `docs/conception/style.md` aura été réécrit pour Archipéo. Avant qu’elle existe, `style.md` et le code d’aujourd’hui font foi. Pour relire l’état d’avant le lot 1 : `git show 07bb03a^:<fichier>`.
 - **Le cadrage de Blocland** : `docs/conception/cadrage-blocland.md`, qui devient le cadrage de ton univers. Tu le tiens : les décisions prises pour Blocland s’y écrivent (tu rédiges le texte, l’agent principal ou le mainteneur l’écrit).
-- **L’état construit** : le manuel `docs/manuel/` (surtout `blocland.md`), le code (`src/blocland/`, `three/`, `pixel/`, textes des îles dans `src/blocland/biomes.ts`).
-- **Les règles communes à tous les univers**, que tu ne discutes pas : les règles dys (`docs/pedagogie/principes.md`), DA-01 (tout se montre à un élève de 3e), DA-02 et DP-06 (le décor ne gêne jamais la lecture), DP-08 (jamais la couleur seule), DP-09 (les récompenses servent le monde), DP-12 (pas de pression inutile), et « rien d’emprunté » (`docs/conception/contribuer.md`). DP-01 et DP-02 (restaurer, jamais combattre) sont propres à Archipéo : Blocland garde son Gardien vaincu en statue.
+- **L’état construit** : le manuel `www/manuel/` (surtout `blocland.md`), le code (`src/blocland/`, `three/`, `pixel/`, textes des îles dans `src/blocland/biomes.ts`).
+- **Les règles communes à tous les univers**, que tu ne discutes pas : les règles dys (`www/pedagogie/principes.md`), DA-01 (tout se montre à un élève de 3e), DA-02 et DP-06 (le décor ne gêne jamais la lecture), DP-08 (jamais la couleur seule), DP-09 (les récompenses servent le monde), DP-12 (pas de pression inutile), et « rien d’emprunté » (`docs/conception/contribuer.md`). DP-01 et DP-02 (restaurer, jamais combattre) sont propres à Archipéo : Blocland garde son Gardien vaincu en statue.
 
 ## De ton ressort
 

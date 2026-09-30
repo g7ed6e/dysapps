@@ -4,7 +4,7 @@ Ce cadrage rassemble les décisions de contenu en vigueur : le collège de la 6e
 
 Ce qui ne se répète pas ici :
 
-- les règles dys, anglais compris (deux voix, pas de syllabes colorées, le trou lu « blank », entendre avant d’écrire) : [Principes dys](../pedagogie/principes.md) ;
+- les règles dys, anglais compris (deux voix, pas de syllabes colorées, le trou lu « blank », entendre avant d’écrire) : [Principes dys](../../www/pedagogie/principes.md) ;
 - le format des exercices (`lang`, `choicesLang`, aides, `ORDER`, écrans) et les règles de rédaction : [Format des exercices](exercices.md) ;
 - le référentiel du programme officiel et les exclusions : [Le référentiel des programmes](programmes.md) ;
 - le game design (îles, ponts, ouvrages, Gardiens, Bloc-Navire) : [cadrage de Blocland](cadrage-blocland.md) et [cadrage d’Archipéo](cadrage-archipeo.md).

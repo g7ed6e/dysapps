@@ -1,6 +1,6 @@
 # Proposer un changement
 
-Pour faire évoluer le game design, on écrit une **fiche de proposition** : un fichier `pilotage/game-design/propositions/GD-<n>.md` (GD-1, GD-2… ; vérifier que le numéro n’est pas pris), d’une page au plus, qui se lit et se décide seule. Le mainteneur peut aussi la demander en une phrase dans un fil : le fil écrit la fiche.
+Pour faire évoluer le game design, on écrit une **fiche de proposition** : un fichier `docs/pilotage/game-design/propositions/GD-<n>.md` (GD-1, GD-2… ; vérifier que le numéro n’est pas pris), d’une page au plus, qui se lit et se décide seule. Le mainteneur peut aussi la demander en une phrase dans un fil : le fil écrit la fiche.
 
 ## Le parcours
 

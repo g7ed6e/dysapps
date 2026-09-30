@@ -17,14 +17,17 @@ src/
   univers/       les textes de chaque univers (archipeo/, blocland/) : répliques des Gardiens et des créatures, espèces
                  des créatures, libellés des Gardiens, mots des états d'île, mot de la baleine ; communs.ts : ceux
                  que les deux univers partagent aujourd'hui
-docs/            cette documentation (Markdown) ; docs/.vitepress/ : configuration et thème VitePress ; docs/_theme/ : sommaire ;
+docs/            la documentation interne, non publiée : conception/ (cette documentation, les cadrages), pilotage/ (état
+                 des chantiers, game design vivant)
+www/             le site public (Markdown) : index.md, manuel/, pedagogie/ ; www/.vitepress/ : configuration et thème
+                 VitePress ; www/_theme/ : sommaire
 design/          archipeo/ : le dossier de game design et la planche d’Archipéo (voir cadrage-archipeo.md) ;
                  blocland/ : la fiche de l’univers Blocland (voir univers.md) ;
                  référence de conception, ni publiée ni embarquée dans l’application
 .claude/agents/  les sept agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
                  referent-dys, expert-frontend, consultant-archipeo et consultant-blocland (voir contribuer.md)
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
-                 construction et vérification de la documentation (docs/), extraction du texte d'un programme
+                 construction du site public (www/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)
 public/          icônes, police Luciole
 ```
@@ -86,4 +89,4 @@ Les textes qui changent d’un univers à l’autre, sur le même jeu (lot 6, un
 
 ## Documentation
 
-Le site de documentation est construit par VitePress à partir de `docs/` : `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui assemble les pages écrites à la main, les pages du contenu pédagogique générées par `scripts/docs/generate.mjs` (il charge les modules du jeu avec Vite et en tire les tableaux, dont la page Programmes officiels et la ligne « Programme officiel » sous chaque mission) (les documents de conception ne sont pas publiés). Les captures d’écran du manuel (`docs/_captures/`) sont prises par `scripts/docs/captures.mjs` (`npm run docs:captures`), qui lance l’application et la joue dans Chromium avec Playwright ; elles ne sont pas dans le dépôt, la CI les refait avant chaque build de la documentation. Ce script et `scripts/rendu/mesures.mjs` prennent leurs images par `scripts/prise-de-vue.mjs`, qui fige la boucle de rendu de la page (ses `requestAnimationFrame`) le temps de la prise : en rendu logiciel, Chromium peine à prendre l’image d’une scène 3D qui se redessine sans arrêt (10 à 15 s), et la prend en 3 s environ une fois figée, sans que l’application le sache. Voir [Contribuer](contribuer.md), [Le référentiel des programmes](programmes.md) et [Déploiement](deploiement.md).
+Le site de documentation public est construit par VitePress à partir de `www/` : `www/.vitepress/config.mts` appelle `scripts/www/prepare.mjs`, qui assemble les pages écrites à la main, les pages du contenu pédagogique générées par `scripts/www/generate.mjs` (il charge les modules du jeu avec Vite et en tire les tableaux, dont la page Programmes officiels et la ligne « Programme officiel » sous chaque mission) (la documentation interne, dans `docs/`, n’est pas publiée). Les captures d’écran du manuel (`www/_captures/`) sont prises par `scripts/www/captures.mjs` (`npm run www:captures`), qui lance l’application et la joue dans Chromium avec Playwright ; elles ne sont pas dans le dépôt, la CI les refait avant chaque build de la documentation. Ce script et `scripts/rendu/mesures.mjs` prennent leurs images par `scripts/prise-de-vue.mjs`, qui fige la boucle de rendu de la page (ses `requestAnimationFrame`) le temps de la prise : en rendu logiciel, Chromium peine à prendre l’image d’une scène 3D qui se redessine sans arrêt (10 à 15 s), et la prend en 3 s environ une fois figée, sans que l’application le sache. Voir [Contribuer](contribuer.md), [Le référentiel des programmes](programmes.md) et [Déploiement](deploiement.md).

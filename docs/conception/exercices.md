@@ -97,7 +97,7 @@ La phrase lue par un lecteur d’écran (`aria-label`) est composée à partir d
 1. Écrire le JSON dans `src/blocland/exercises/data/` en suivant un exercice voisin du même `type`.
 2. Ajouter son `id` à `ORDER` dans `src/blocland/exercises/index.ts`, à sa place dans la progression de l’île : cet ordre départage les variantes d’un même niveau et ordonne la page de l’île. Il n’y a rien à importer : le fichier est trouvé par son dossier.
 3. Lancer `npm test` : `data.test.ts` vérifie que chaque fichier de `data/` a sa place dans `ORDER`, puis le format et les règles du type.
-4. Vérifier la page de l’île dans la documentation (`npm run docs:build`) : l’exercice y apparaît avec sa consigne et ses items.
+4. Vérifier la page de l’île dans la documentation (`npm run www:build`) : l’exercice y apparaît avec sa consigne et ses items.
 
 ## Ajouter une mission ou une île
 

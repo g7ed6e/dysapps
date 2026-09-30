@@ -1,19 +1,19 @@
 // Site de documentation (https://g7ed6e.github.io/dysapps/), construit avec VitePress.
-// Les sources sont préparées dans .docs-src/ (pages de docs/ + pages générées depuis les données du jeu),
-// le sommaire vient de docs/_theme/nav.json. Aucune ressource externe.
+// Les sources sont préparées dans .www-src/ (pages de www/ + pages générées depuis les données du jeu),
+// le sommaire vient de www/_theme/nav.json. Aucune ressource externe.
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { defineConfig, type DefaultTheme } from 'vitepress';
-import { nav, prepareDocs, SRC } from '../../scripts/docs/prepare.mjs';
+import { nav, prepareSite, SRC } from '../../scripts/www/prepare.mjs';
 import { appVersion } from '../../scripts/version.mjs';
 
 const version = appVersion();
-const pages = await prepareDocs();
+const pages = await prepareSite();
 const byPath = new Map(pages.map((p) => [p.path, p]));
 const link = (path: string) => '/' + path.replace(/\.md$/, '.html');
 
-// ---------- Sommaire (docs/_theme/nav.json) ----------
+// ---------- Sommaire (www/_theme/nav.json) ----------
 
 type NavItem = string | { dir: string; title: string };
 const sidebar: DefaultTheme.SidebarItem[] = [
@@ -23,18 +23,18 @@ const sidebar: DefaultTheme.SidebarItem[] = [
     items: section.pages.map((item): DefaultTheme.SidebarItem => {
       if (typeof item === 'string') {
         const page = byPath.get(item);
-        if (!page) throw new Error(`Page absente : docs/${item} (référencée dans docs/_theme/nav.json)`);
+        if (!page) throw new Error(`Page absente : www/${item} (référencée dans www/_theme/nav.json)`);
         return { text: page.title, link: link(page.path) };
       }
       const children = pages.filter((p) => p.path.startsWith(`${item.dir}/`) && !p.path.slice(item.dir.length + 1).includes('/'));
-      if (children.length === 0) throw new Error(`Dossier vide : docs/${item.dir}`);
+      if (children.length === 0) throw new Error(`Dossier vide : www/${item.dir}`);
       return { text: item.title, collapsed: true, items: children.map((p) => ({ text: p.title, link: link(p.path) })) };
     }),
   })),
 ];
 const listed = new Set(JSON.stringify(sidebar).match(/"link":"[^"]+"/g)?.map((s) => s.slice(8, -1)));
 for (const p of pages) {
-  if (p.path !== 'index.md' && !listed.has(link(p.path))) console.warn(`(!) docs/${p.path} n'est dans aucune section de nav.json : page construite, mais hors sommaire.`);
+  if (p.path !== 'index.md' && !listed.has(link(p.path))) console.warn(`(!) www/${p.path} n'est dans aucune section de nav.json : page construite, mais hors sommaire.`);
 }
 
 // ---------- Ancres (identiques à l'ancien site : liens externes stables) ----------
@@ -87,7 +87,7 @@ function addCsp(file: string) {
 
 export default defineConfig({
   srcDir: SRC,
-  outDir: '../dist-docs',
+  outDir: '../dist-www',
   // « / » en local, « /dysapps/ » sur GitHub Pages (variable posée par la CI).
   base: process.env.BASE_PATH ?? '/',
   lang: 'fr-FR',
@@ -104,7 +104,7 @@ export default defineConfig({
   ],
   markdown: { anchor: { slugify } },
   vite: { server: { fs: { allow: [process.cwd()] } } },
-  // Date de mise à jour : dernier commit de la page source (docs/…), ou date du build pour une page générée.
+  // Date de mise à jour : dernier commit de la page source (www/…), ou date du build pour une page générée.
   transformPageData(pageData) {
     const page = byPath.get(pageData.relativePath);
     if (page) pageData.lastUpdated = page.updated ? Date.parse(page.updated) : undefined;
@@ -137,9 +137,9 @@ export default defineConfig({
     docFooter: { prev: 'Précédent', next: 'Suivant' },
     lastUpdated: { text: 'Mis à jour le', formatOptions: { dateStyle: 'long', forceLocale: true } },
     // Chaîne et non fonction : une fonction serait évaluée dans le navigateur, ce que la CSP interdit.
-    // Les pages générées n'ont pas ce lien (editLink: false, posé par scripts/docs/prepare.mjs).
+    // Les pages générées n'ont pas ce lien (editLink: false, posé par scripts/www/prepare.mjs).
     editLink: {
-      pattern: `${nav.repoUrl}/blob/main/docs/:path`,
+      pattern: `${nav.repoUrl}/blob/main/www/:path`,
       text: 'Voir la source de cette page',
     },
     footer: {
