@@ -16,6 +16,7 @@
     "www:dev": "vitepress dev www --port 4173",
     "www:preview": "vitepress preview www --port 4173",
     "pilotage:personnages": "node scripts/pilotage/personnages.mjs",
+    "contenu": "node scripts/contenu/generer.mjs",
     "www:captures": "node scripts/www/captures.mjs",
     "programme:extract": "node scripts/programme/extract.mjs",
     "rendu:mesures": "node scripts/rendu/mesures.mjs"
