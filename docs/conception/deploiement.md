@@ -5,7 +5,7 @@ Deux sites sont publiés à partir du même dépôt :
 | Site | Adresse | Contenu | Construit par |
 | --- | --- | --- | --- |
 | **L’application** (PWA) | <https://dysapps.guillaume-delahaye.workers.dev/> | `dist/`, produit par `npm run build` | Cloudflare Workers, à la racine (`base: '/'`) |
-| **La documentation** | <https://g7ed6e.github.io/dysapps/> | `dist-docs/`, produit par `npm run docs:build` | GitHub Actions, publié sur GitHub Pages dans `/dysapps/` |
+| **La documentation** | <https://g7ed6e.github.io/dysapps/> | `dist-www/`, produit par `npm run www:build` | GitHub Actions, publié sur GitHub Pages dans `/dysapps/` |
 
 L’application n’est plus servie sur GitHub Pages : le site de documentation y dépose un service worker (`sw.js`) qui vide les caches et se désinscrit, pour que les appareils qui avaient installé l’ancienne version voient la documentation puis suivent le lien vers l’application.
 
@@ -23,13 +23,13 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 ## Le build de la documentation
 
-La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`docs/.vitepress/theme/`, décrit dans [Style](style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run docs:build` écrit `dist-docs/` :
+La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`www/.vitepress/theme/`, décrit dans [Style](style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run www:build` écrit `dist-www/` :
 
-1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/`, `docs/.vitepress/` et `docs/conception/` : le site s’adresse aux élèves et aux adultes qui les accompagnent) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
-2. La configuration construit le sommaire depuis `docs/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
+1. `www/.vitepress/config.mts` appelle `scripts/www/prepare.mjs`, qui copie `www/**/*.md` (sauf `www/_theme/` et `www/.vitepress/` ; le site s’adresse aux élèves et aux adultes qui les accompagnent, la documentation interne reste dans `docs/`) dans `.www-src/` et y ajoute les pages générées par `scripts/www/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
+2. La configuration construit le sommaire depuis `www/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
 3. VitePress construit le site ; à la fin, chaque page reçoit sa politique de sécurité du contenu en `<meta>`, avec l’empreinte des scripts en ligne de VitePress.
 
-Le thème (`docs/.vitepress/theme/`) reprend les couleurs de l’application et la police Luciole, avec un texte à 18 px au moins. Le site n’utilise aucune ressource externe, n’a ni cookie ni statistique. Il se prévisualise en local avec `npm run docs:dev` (serveur de développement sur le port 4173) ou `npm run docs:preview` après un build.
+Le thème (`www/.vitepress/theme/`) reprend les couleurs de l’application et la police Luciole, avec un texte à 18 px au moins. Le site n’utilise aucune ressource externe, n’a ni cookie ni statistique. Il se prévisualise en local avec `npm run www:dev` (serveur de développement sur le port 4173) ou `npm run www:preview` après un build.
 
 Le build échoue si une page du sommaire manque.
 
@@ -38,8 +38,8 @@ Le build échoue si une page du sommaire manque.
 `.github/workflows/deploy.yml` s’exécute à chaque push et à chaque pull request :
 
 1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
-2. **captures**, en parallèle, sur `main` seulement : installe le Chromium de `playwright-core` (`npx playwright-core install --with-deps chromium`), rejoue le jeu avec `npm run docs:captures` et téléverse les images en artefact `captures`. Les captures ne sont pas dans le dépôt (`docs/_captures/` est ignoré par git) : elles sont refaites à chaque publication, donc toujours à jour. Une pull request ne les attend pas, pour rester rapide.
-3. **docs**, après **captures** : sur `main`, récupère l’artefact dans `docs/_captures/` et lance `npm run docs:build` avec `DOCS_CAPTURES=required` (une capture citée et absente fait échouer le build) ; sur une pull request, construit le site avec des images vides à la place des captures, ce qui vérifie quand même les pages et les noms de captures ; sur `main`, l’artefact `dist-docs` est téléversé pour Pages.
+2. **captures**, en parallèle, sur `main` seulement : installe le Chromium de `playwright-core` (`npx playwright-core install --with-deps chromium`), rejoue le jeu avec `npm run www:captures` et téléverse les images en artefact `captures`. Les captures ne sont pas dans le dépôt (`www/_captures/` est ignoré par git) : elles sont refaites à chaque publication, donc toujours à jour. Une pull request ne les attend pas, pour rester rapide.
+3. **docs**, après **captures** : sur `main`, récupère l’artefact dans `www/_captures/` et lance `npm run www:build` avec `DOCS_CAPTURES=required` (une capture citée et absente fait échouer le build) ; sur une pull request, construit le site avec des images vides à la place des captures, ce qui vérifie quand même les pages et les noms de captures ; sur `main`, l’artefact `dist-www` est téléversé pour Pages.
 4. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
 5. **deploy** (sur `main` seulement, après **build** et **docs**) : publie l’artefact sur GitHub Pages. Ce job n’exécute aucun code du dépôt et il est le seul à avoir les permissions Pages.
 

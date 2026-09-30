@@ -4,13 +4,18 @@ dev-dist
 coverage
 *.log
 .DS_Store
-dist-docs
-.docs-src
-docs/.vitepress/cache
-docs/.vitepress/.temp
+dist-www
+.www-src
+www/.vitepress/cache
+www/.vitepress/.temp
 .wrangler
 .programme
 .claude/settings.local.json
 .claude/worktrees/
-docs/_captures
+www/_captures
 *.tsbuildinfo
+# Anciens emplacements du site (avant www/), encore présents sur les postes qui l'ont construit
+dist-docs
+.docs-src
+docs/_captures
+docs/.vitepress

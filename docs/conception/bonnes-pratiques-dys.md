@@ -2,7 +2,7 @@
 
 Cette page rassemble ce qui fait référence en France, en septembre 2026, pour qu’une application d’apprentissage convienne à des élèves dys (dyslexie, dysorthographie, dyspraxie, dyscalculie, dysphasie), et le met en face de ce que fait Archipéo. Elle sert de base à l’agent `referent-dys` (voir [Contribuer](contribuer.md#les-agents)), qui relit tout lot touchant l’interface, le contenu ou le rendu.
 
-Les règles de l’application sont dans [Principes dys](../pedagogie/principes.md) : elles s’imposent. Cette page dit **d’où elles viennent** et **ce qui reste à surveiller**. Une pratique qui devient une règle de l’application s’écrit dans les principes, pas ici.
+Les règles de l’application sont dans [Principes dys](../../www/pedagogie/principes.md) : elles s’imposent. Cette page dit **d’où elles viennent** et **ce qui reste à surveiller**. Une pratique qui devient une règle de l’application s’écrit dans les principes, pas ici.
 
 ## Le cadre en France
 
@@ -55,15 +55,15 @@ Les règles de l’application sont dans [Principes dys](../pedagogie/principes.
 
 | Pratique | Ce que fait le jeu | Où le voir |
 | --- | --- | --- |
-| Police, taille, interlignage, espacement | Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial ; 18 px au moins, interlignage 1,5 au moins, espacement des lettres et des mots réglable, en mots | `src/core/settings.ts`, [Principes](../pedagogie/principes.md#lire-moins-mieux-ou-autrement) |
+| Police, taille, interlignage, espacement | Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial ; 18 px au moins, interlignage 1,5 au moins, espacement des lettres et des mots réglable, en mots | `src/core/settings.ts`, [Principes](../../www/pedagogie/principes.md#lire-moins-mieux-ou-autrement) |
 | Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, prévu au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots)) | `src/styles/`, [Style](style.md) |
-| Tout s’entend | Consigne lue dès qu’elle apparaît et relançable, symboles dits en mots, voix anglaise pour l’anglais | [Principes](../pedagogie/principes.md) |
-| Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../pedagogie/principes.md#une-chose-a-la-fois) |
-| Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../pedagogie/principes.md#aider-sans-penaliser) |
-| Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../pedagogie/principes.md#sans-stress) |
-| Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../pedagogie/principes.md#une-chose-a-la-fois) |
+| Tout s’entend | Consigne lue dès qu’elle apparaît et relançable, symboles dits en mots, voix anglaise pour l’anglais | [Principes](../../www/pedagogie/principes.md) |
+| Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
+| Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-penaliser) |
+| Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../../www/pedagogie/principes.md#sans-stress) |
+| Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
 | Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, revient au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots) | `src/core/mouvement.ts`, `src/styles/global.css` |
-| Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../pedagogie/principes.md) |
+| Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../../www/pedagogie/principes.md) |
 
 ### À surveiller
 

@@ -1,6 +1,6 @@
 # Archipéo
 
-Archipéo est l’aventure maritime où **le savoir construit ton monde** : l’archipel, autrefois relié, a été fragmenté, et l’élève le restaure. C’est l’univers de la migration décidée le 27 septembre 2026, **au choix dans les Réglages et pas mis en avant pour l’instant** (décisions 8 et 9 de [Plusieurs univers](../../docs/conception/univers.md)). Il habille le jeu commun ([Le game design](index.md)) sans en changer les règles. Il est tenu par l’agent `consultant-archipeo`, sous l’autorité du directeur artistique. La cible d’origine est le dossier de game design et le pack visuel fournis par le mainteneur (`design/archipeo/`, figés) ; les décisions et le plan en lots sont dans le [Cadrage Archipéo](../../docs/conception/cadrage-archipeo.md).
+Archipéo est l’aventure maritime où **le savoir construit ton monde** : l’archipel, autrefois relié, a été fragmenté, et l’élève le restaure. C’est l’univers de la migration décidée le 27 septembre 2026, **au choix dans les Réglages et pas mis en avant pour l’instant** (décisions 8 et 9 de [Plusieurs univers](../../conception/univers.md)). Il habille le jeu commun ([Le game design](index.md)) sans en changer les règles. Il est tenu par l’agent `consultant-archipeo`, sous l’autorité du directeur artistique. La cible d’origine est le dossier de game design et le pack visuel fournis par le mainteneur (`design/archipeo/`, figés) ; les décisions et le plan en lots sont dans le [Cadrage Archipéo](../../conception/cadrage-archipeo.md).
 
 ## Construit
 
@@ -12,7 +12,7 @@ Archipéo est l’aventure maritime où **le savoir construit ton monde** : l’
 
 ## Cible
 
-Voir le [Cadrage Archipéo](../../docs/conception/cadrage-archipeo.md), §3 et §4 (la cible et les écarts) : l’architecture modulaire (lot 7), L’Horizon sur la mer et le navire maritime (lot 8), la Carte des quatre archipels en 3D (lot 8b), l’archipel vivant (lot 9), un village à soi (lot 10), le monde entier en réseau de lieux (avec les lots 8 et 8b).
+Voir le [Cadrage Archipéo](../../conception/cadrage-archipeo.md), §3 et §4 (la cible et les écarts) : l’architecture modulaire (lot 7), L’Horizon sur la mer et le navire maritime (lot 8), la Carte des quatre archipels en 3D (lot 8b), l’archipel vivant (lot 9), un village à soi (lot 10), le monde entier en réseau de lieux (avec les lots 8 et 8b).
 
 ## Questions ouvertes
 

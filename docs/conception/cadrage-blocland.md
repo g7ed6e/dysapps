@@ -2,7 +2,7 @@
 
 Blocland est le nom de travail du jeu, et reste celui de son module dans le code. Depuis le lot 1 de la migration, les archipels de 6e, 5e et 4e portent leur nom d’Archipéo et les quêtes s’appellent des **missions**. Depuis la bascule du lot 6 (décision 10 de [Plusieurs univers](univers.md)), l’application s’appelle DysApps, et l’écran titre, la barre du haut et l’aventure disent « Blocland », l’univers par défaut.
 
-Ce document rassemble les décisions de game design en vigueur dans Blocland, prises du 25 au 27 septembre 2026, avec leur raison. Il remplace les anciens cadrages du monde, du village, des archipels et de « l’appli entière » : l’historique pull request par pull request reste dans git. Ce que l’application fait, écran par écran, est dans le manuel ([L’aventure Blocland](../manuel/blocland.md)) ; le contenu île par île est dans [L’archipel](../pedagogie/archipel.md) et [Ouvrages et plans](../pedagogie/ouvrages.md). Le jeu migre vers Archipéo ([cadrage « De Blocland à Archipéo »](cadrage-archipeo.md)) : une décision qui change l’existant s’écrit là-bas, et ce document est mis à jour quand le lot est construit.
+Ce document rassemble les décisions de game design en vigueur dans Blocland, prises du 25 au 27 septembre 2026, avec leur raison. Il remplace les anciens cadrages du monde, du village, des archipels et de « l’appli entière » : l’historique pull request par pull request reste dans git. Ce que l’application fait, écran par écran, est dans le manuel ([L’aventure Blocland](../../www/manuel/blocland.md)) ; le contenu île par île est dans [L’archipel](https://g7ed6e.github.io/dysapps/pedagogie/archipel.html) et [Ouvrages et plans](https://g7ed6e.github.io/dysapps/pedagogie/ouvrages.html). Le jeu migre vers Archipéo ([cadrage « De Blocland à Archipéo »](cadrage-archipeo.md)) : une décision qui change l’existant s’écrit là-bas, et ce document est mis à jour quand le lot est construit.
 
 Blocland reste un univers à part entière, à côté d’Archipéo ([Plusieurs univers](univers.md)). Ce document devient le cadrage de cet univers : l’agent `consultant-blocland` le tient, sous l’autorité du directeur artistique, avec la fiche de l’univers (`design/blocland/fiche.md`).
 
@@ -35,7 +35,7 @@ L’élève voyait deux applis collées : un portail de missions par matière et
 - **Le menu en page** suit la hiérarchie d’Archipéo (lot 4a) : l’identité, le village de l’archipel où se tient le bonhomme, un seul bouton principal « Reprendre l’aventure » vers la prochaine destination, la progression, puis les trois Expéditions (une par matière), qui remplacent les tuiles Missions, Succès et Réglages, gardées en liens. La prochaine destination se calcule depuis la sauvegarde (`world/destination.ts`) : le Bloc-Navire prêt à partir, sinon une île où tout est prêt (celle du bonhomme d’abord), sinon une île ouverte pas encore explorée, sinon l’objectif le plus proche, sinon le port avec ce qu’il faut pour que le village avance.
 - **Les mots** : « le menu » (en page ou dans le village), jamais « l’accueil », qui n’est que l’adresse `/`.
 
-Le détail des écrans : [Le menu du village](../manuel/blocland.md#le-menu-du-village), [L’école du village](../manuel/blocland.md#lecole-du-village), [La salle des trophées](../manuel/blocland.md#la-salle-des-trophees).
+Le détail des écrans : [Le menu du village](../../www/manuel/blocland.md#le-menu-du-village), [L’école du village](../../www/manuel/blocland.md#lecole-du-village), [La salle des trophées](../../www/manuel/blocland.md#la-salle-des-trophees).
 
 ## Le monde et les archipels
 
@@ -118,7 +118,7 @@ Passer à la classe suivante se gagne en construisant un véhicule, avec une bel
 
 ## Mes blocs
 
-Retour des joueurs : « trop de blocs qui s’accumulent, on ne sait pas quoi en faire ». Décision : l’inventaire dit, pour chaque bloc, ce qu’il construit maintenant, et chaque chantier est un lien qui emmène la caméra et le bonhomme sur l’île (`world/uses.ts`). Les ouvrages payables sont listés une seule fois (tout bloc d’île paie tout ouvrage). Quand un bloc ne sert à rien, l’inventaire le dit honnêtement. Détail : [Mes blocs](../manuel/blocland.md#mes-blocs).
+Retour des joueurs : « trop de blocs qui s’accumulent, on ne sait pas quoi en faire ». Décision : l’inventaire dit, pour chaque bloc, ce qu’il construit maintenant, et chaque chantier est un lien qui emmène la caméra et le bonhomme sur l’île (`world/uses.ts`). Les ouvrages payables sont listés une seule fois (tout bloc d’île paie tout ouvrage). Quand un bloc ne sert à rien, l’inventaire le dit honnêtement. Détail : [Mes blocs](../../www/manuel/blocland.md#mes-blocs).
 
 ## La vie du monde
 

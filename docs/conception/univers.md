@@ -134,7 +134,7 @@ Le plan [Séparer le jeu du rendu](separation-jeu-rendu.md) fait déjà l’esse
 - **Rangement.** `src/univers/<id>/index.ts`, typé `Univers` avec `satisfies`. Ses clés sont **dérivées** des identifiants stables : `Record<BiomeId, …>`, missions, ouvrages, Gardiens, plans. Il les habille sans les remplacer. Aucune règle ne l’importe.
 - **Le choix** est une **préférence d’appareil**, rangée dans `Settings` à côté de `worldView`.
   - Aucune migration. Un champ absent vaut Archipéo pour un appareil sans progression. Pour un appareil qui a déjà une progression au lot 6, il vaut Blocland (décision 5) : l’élève ne découvre pas, sans l’avoir choisi, des noms tous nouveaux.
-  - Pourquoi une préférence d’appareil plutôt qu’un champ de la sauvegarde : la progression est elle-même enregistrée sur l’appareil, sans export ([Questions](../manuel/questions.md)). Les deux voyagent donc ensemble. Le jour où un export de la progression existera, l’univers partira avec elle, pour qu’un élève n’ait pas deux jeux de noms au collège et à la maison.
+  - Pourquoi une préférence d’appareil plutôt qu’un champ de la sauvegarde : la progression est elle-même enregistrée sur l’appareil, sans export ([Questions](../../www/manuel/questions.md)). Les deux voyagent donc ensemble. Le jour où un export de la progression existera, l’univers partira avec elle, pour qu’un élève n’ait pas deux jeux de noms au collège et à la maison.
   - `sanitizeSettings` remplace un univers inconnu par Archipéo sans planter.
   - Un test relit une même sauvegarde sous les deux univers et obtient le même état : c’est la portabilité de la progression.
 - **Performance.**
@@ -142,7 +142,7 @@ Le plan [Séparer le jeu du rendu](separation-jeu-rendu.md) fait déjà l’esse
   - Les textures et la 2D en pixels de Blocland ne se chargent que pour Blocland.
   - Le service worker met tout en cache. Au-delà d’un poids à mesurer (`npm run build`), seul l’univers choisi est mis en cache, avec Archipéo en repli hors ligne.
 - **Parité.** Chaque univers couvre toutes les clés : le type le garantit en grande partie, et un test vérifie les chaînes vides et les longueurs. Les tests d’équivalence du §4.2 couvrent chaque item habillé.
-- **Documentation.** `scripts/docs/generate.mjs` produit une page par univers depuis les modules : noms, récit, items habillés. Rien n’y est écrit à la main.
+- **Documentation.** `scripts/www/generate.mjs` produit une page par univers depuis les modules : noms, récit, items habillés. Rien n’y est écrit à la main.
 
 ### Dans le rendu (avis de l’artiste technique 3D)
 
@@ -173,7 +173,7 @@ Le choix se fait **dans les Réglages** (décision du mainteneur). Le risque pri
 - **Les repères stables du §4** sous chaque nom d’île.
 - **Un lexique court par univers**, une dizaine de mots au plus. Chacun est expliqué et lu à voix haute la première fois. Celui de Blocland porte « Bâtie » (une île aux trois plans terminés), qui se dit « Restaurée » dans Archipéo (décidé par le mainteneur le 28 septembre 2026).
 - **Aucun texte ne présente un univers comme une aide « pour les dys ».** C’est une affinité, pas une adaptation.
-- **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, voix coupée, « Réduire les animations » de l’appareil ; le Contraste élevé quand il revient, au lot 11 du cadrage Archipéo) et en vue simple. Les invariants du §4 entrent dans les [principes dys](../pedagogie/principes.md) quand U4 les vérifie par des tests.
+- **Une relecture par univers** du référent dys, sur captures, avec les réglages extrêmes (32 px, OpenDyslexic, voix coupée, « Réduire les animations » de l’appareil ; le Contraste élevé quand il revient, au lot 11 du cadrage Archipéo) et en vue simple. Les invariants du §4 entrent dans les [principes dys](../../www/pedagogie/principes.md) quand U4 les vérifie par des tests.
 
 Un point en faveur de Blocland, à vérifier sur tablette avec un élève dyspraxique : une grille en cubes montre mieux la case touchée que des facettes en pente.
 

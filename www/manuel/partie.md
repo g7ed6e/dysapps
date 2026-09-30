@@ -1,6 +1,6 @@
 # Une partie commentée
 
-Cette page suit une élève, de sa première séance à la fin des Premiers Rivages, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run docs:captures`), sur une tablette en paysage, sauf mention contraire.
+Cette page suit une élève, de sa première séance à la fin des Premiers Rivages, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run www:captures`), sur une tablette en paysage, sauf mention contraire.
 
 ## Première séance : le village en ruine
 

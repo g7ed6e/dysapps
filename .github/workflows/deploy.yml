@@ -1,7 +1,7 @@
 name: Tests, builds et documentation GitHub Pages
 
 # L'application (PWA) est publiée par Cloudflare Workers à partir de main (npm run build, base « / »).
-# GitHub Pages (https://g7ed6e.github.io/dysapps/) publie le site de documentation (npm run docs:build).
+# GitHub Pages (https://g7ed6e.github.io/dysapps/) publie le site de documentation (npm run www:build).
 
 on:
   push:
@@ -55,8 +55,8 @@ jobs:
       - run: npm run build
 
   # Les captures d'écran du manuel ne sont pas dans le dépôt : ce job rejoue le jeu dans Chromium
-  # (scripts/docs/captures.mjs), en parallèle des tests, et passe les images au job docs.
-  # Sur main seulement : une pull request n'attend pas les captures (npm run docs:captures en local pour les relire).
+  # (scripts/www/captures.mjs), en parallèle des tests, et passe les images au job docs.
+  # Sur main seulement : une pull request n'attend pas les captures (npm run www:captures en local pour les relire).
   captures:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -76,11 +76,11 @@ jobs:
       - name: Installer Chromium
         run: npx playwright-core install --with-deps chromium
       - name: Faire les captures d'écran
-        run: npm run docs:captures
+        run: npm run www:captures
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: captures
-          path: docs/_captures/*.jpg
+          path: www/_captures/*.jpg
           if-no-files-found: error
           retention-days: 7
 
@@ -108,16 +108,16 @@ jobs:
         if: needs.captures.result == 'success'
         with:
           name: captures
-          path: docs/_captures
+          path: www/_captures
       # DOCS_CAPTURES=required (sur main) : une capture citée par une page et absente fait échouer le build.
-      - run: npm run docs:build
+      - run: npm run www:build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
           DOCS_CAPTURES: ${{ needs.captures.result == 'success' && 'required' || '' }}
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main'
         with:
-          path: dist-docs
+          path: dist-www
 
   # Pose l'étiquette vX.Y.Z sur le commit publié : repère lisible dans l'historique, et point d'ancrage court
   # pour le calcul des versions suivantes. N'exécute aucun code du dépôt (appel à l'API seulement).

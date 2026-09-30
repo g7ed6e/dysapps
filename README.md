@@ -22,11 +22,11 @@ npm install
 npm run dev        # l'application : http://localhost:5173/
 npm test           # tests (Vitest)
 npm run build      # vérification TypeScript + build de production dans dist/
-npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
-npm run docs:build # construit la documentation dans dist-docs/
-npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
-npm run pilotage:personnages # refait pilotage/game-design/personnages.md
-npm run docs:captures # rejoue le jeu dans Chromium et fait les captures d’écran (docs/_captures/, hors du dépôt, refaites par la CI sur main)
+npm run www:dev   # la documentation (VitePress) : http://localhost:4173/
+npm run www:build # construit la documentation dans dist-www/
+npm run www:preview # sert dist-www/ tel que publié : http://localhost:4173/
+npm run pilotage:personnages # refait docs/pilotage/game-design/personnages.md
+npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt, refaites par la CI sur main)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures « avant »)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
@@ -40,8 +40,8 @@ React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice
 Le travail se fait par pull request sur `main`. Chaque pull request :
 
 1. ne touche pas à la version : elle se calcule depuis git à la fusion (mineure par défaut, `+semver: major|patch|none` dans le message pour un autre cran) ;
-2. met à jour le manuel (`docs/manuel/`) et la conception (`docs/conception/`) quand ce qu’ils décrivent change, et la ligne de son chantier dans `pilotage/chantiers.md` ; les pages du contenu pédagogique sont générées au build depuis les données du jeu. Le site publié ne montre que le manuel et le contenu pédagogique : il s’adresse aux élèves et aux adultes qui les accompagnent ;
-3. passe `npm test`, `npm run build` et `npm run docs:build`.
+2. met à jour le manuel (`www/manuel/`) et la conception (`docs/conception/`) quand ce qu’ils décrivent change, et la ligne de son chantier dans `docs/pilotage/chantiers.md` ; les pages du contenu pédagogique sont générées au build depuis les données du jeu. Le site publié ne montre que le manuel et le contenu pédagogique : il s’adresse aux élèves et aux adultes qui les accompagnent ;
+3. passe `npm test`, `npm run build` et `npm run www:build`.
 
 Les consignes complètes sont dans [Contribuer](docs/conception/contribuer.md), `CLAUDE.md` et `AGENTS.md`.
 

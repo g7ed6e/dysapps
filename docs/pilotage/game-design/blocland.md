@@ -1,6 +1,6 @@
 # Blocland
 
-Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 de [Plusieurs univers](../../docs/conception/univers.md)) : les élèves tiennent au monde en cubes. Il habille le jeu commun ([Le game design](index.md)) sans en changer les règles. Il est tenu par l’agent `consultant-blocland`, sous l’autorité du directeur artistique. Le détail : la fiche de l’univers (`design/blocland/fiche.md`) et le [Cadrage de Blocland](../../docs/conception/cadrage-blocland.md).
+Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 de [Plusieurs univers](../../conception/univers.md)) : les élèves tiennent au monde en cubes. Il habille le jeu commun ([Le game design](index.md)) sans en changer les règles. Il est tenu par l’agent `consultant-blocland`, sous l’autorité du directeur artistique. Le détail : la fiche de l’univers (`design/blocland/fiche.md`) et le [Cadrage de Blocland](../../conception/cadrage-blocland.md).
 
 ## Construit
 
@@ -9,7 +9,7 @@ Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 
 - **Le Gardien** : une grande créature en cubes sur son îlot ; **vaincu**, il devient une statue de pierre, « il aime les revanches ». C’est un partenaire qui cède, pas un ennemi abattu.
 - **Qui parle** : les créatures, une par île ; la baleine aux grandes étapes, pour l’instant, avec les mêmes phrases que dans Archipéo sauf celle du dernier Gardien ; qui parle dans Blocland reste à décider ([Personnages et Gardiens](personnages.md)).
 - **Le dessin** : tout en cubes texturés de 16 × 16 générés par le code, une ambiance par archipel, jour et nuit selon l’heure ; budget propre de 80 000 triangles et 240 appels de dessin. Blocland ne reçoit aucun lot R : son dessin est figé (étiquette `blocland-reference`), pas son accessibilité.
-- **L’interface** : des blocs vus de face en aplats d’herbe, de bois, de terre et d’or, titres en Archivo Black ; insignes de rôle en blocs de matériau ([Style](../../docs/conception/style.md), « L’habillage de Blocland »).
+- **L’interface** : des blocs vus de face en aplats d’herbe, de bois, de terre et d’or, titres en Archivo Black ; insignes de rôle en blocs de matériau ([Style](../../conception/style.md), « L’habillage de Blocland »).
 
 ## Cible
 

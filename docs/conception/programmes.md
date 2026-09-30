@@ -1,6 +1,6 @@
 # Le référentiel des programmes
 
-Chaque mission de Blocland et du portail cite les compétences du programme officiel qu’elle travaille. Le référentiel qui les décrit est dans `src/programme/` ; la page [Programmes officiels](../pedagogie/programmes.md) en est produite à chaque build, avec la couverture. Cette page dit d’où vient le référentiel, comment il est fait, et comment l’étendre à une autre matière ou à un autre cycle.
+Chaque mission de Blocland et du portail cite les compétences du programme officiel qu’elle travaille. Le référentiel qui les décrit est dans `src/programme/` ; la page [Programmes officiels](https://g7ed6e.github.io/dysapps/pedagogie/programmes.html) en est produite à chaque build, avec la couverture. Cette page dit d’où vient le référentiel, comment il est fait, et comment l’étendre à une autre matière ou à un autre cycle.
 
 ## Ce qu’il contient
 
@@ -42,7 +42,7 @@ Ce que data.gouv.fr **ne** fournit **pas** : un lexique scolaire, une liste de f
 5. **Déclarer la discipline.** Une nouvelle matière est d’abord une matière de l’application : `Subject` dans `src/apps/registry.ts`, puis `DISCIPLINES` dans `src/programme/index.ts` (libellé, abréviation des identifiants). Une discipline peut entrer au référentiel avant d’avoir une île : elle s’ajoute alors à `Discipline` dans `src/programme/types.ts` (`Subject | 'allemand' | 'espagnol'`) et devient une matière de l’application avec sa première île, comme l’allemand et l’espagnol (LV2). Une discipline qui n’existe que dans un cycle (la LV2 commence en 5e) se déclare dans `programme.test.ts`, qui sinon l’attend dans les deux. Un nouveau PDF se déclare dans `SOURCES`.
 6. **Exclure ce qui n’a pas de mission.** Lancer `npm test` : le test de couverture nomme chaque compétence sans mission ; l’ajouter à `exclusions.ts`, `a-couvrir` avec ce qui est prévu, ou `hors-perimetre` avec la raison.
 7. **Rattacher les missions.** Le champ `programme` des missions concernées ; une île de 6e ne cite que le cycle 3, une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3. Retirer les exclusions des compétences désormais couvertes.
-8. **Vérifier et relire.** `npm test`, `npm run docs:build`, puis relire `dist-docs/pedagogie/programmes/` et les pages des îles touchées (`npm run docs:preview`). La page se génère seule ; il reste le fragment de journal.
+8. **Vérifier et relire.** `npm test`, `npm run www:build`, puis relire `dist-www/pedagogie/programmes/` et les pages des îles touchées (`npm run www:preview`). La page se génère seule ; il reste le fragment de journal.
 
 ## Ce que l’analyse d’origine a établi
 
