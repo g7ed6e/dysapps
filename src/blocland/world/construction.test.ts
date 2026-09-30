@@ -49,6 +49,7 @@ import { sansToursDuCoeur } from './construction';
 import { BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
 import { phareDuLarge } from './phareDuLarge';
+import { kitVide } from './architecture';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -194,7 +195,9 @@ describe('La construction taillée (lot R5)', () => {
       const bloc = blocEn(pleins);
       const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
       for (const mode of ['aucun', 'peint'] as const) {
-        const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode });
+        // Les blocs seuls, sans le kit d'architecture (lot 7b) : ses pièces et ses murs peints ont leurs propres tests
+        // (./architecture/toucher.test.ts).
+        const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode, kit: kitVide() });
         let aire = 0;
         for (const [nom, g] of [['opaque', m.opaque], ['fenetres', m.fenetres]] as const) {
           expect(sensJuste(g), `${a} ${mode}`).toBe(true);
@@ -224,7 +227,7 @@ describe('La construction taillée (lot R5)', () => {
     const { pleins, lanternes } = rangerLesLanternes(cubes);
     const occupe = new Set(pleins.map((c) => cle(c.x, c.y, c.z)));
     const bloc = blocEn(pleins);
-    const m = maillageDeLaConstruction('6e', cubes, sol, { biseau: 'taille' });
+    const m = maillageDeLaConstruction('6e', cubes, sol, { biseau: 'taille', kit: kitVide() });
     expect(sensJuste(m.opaque)).toBe(true);
     let bandes = 0;
     for (const [i, t] of triangles(m.opaque).entries()) {
@@ -641,8 +644,9 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
         expect(Math.hypot(r.cell.x + 0.5 - p.x, r.cell.y + 0.5 - p.z, r.cell.z + 0.5 - p.y)).toBeLessThan(1.6);
       }
     }
-    // Hors du phare : rien.
-    expect(caseDeLaPiece(m, 'opaque', m.phare!.opaque[1], { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
+    // Hors du phare et des pièces d'architecture (un bloc, dessiné avant eux) : rien.
+    expect(m.phare!.opaque[0]).toBeGreaterThan(0);
+    expect(caseDeLaPiece(m, 'opaque', 0, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
   }, 30_000);
 
   it('dans l’enveloppe de la construction du 6e, à chaque étape (6 500 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {

@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -74,6 +74,28 @@ const CAPTURES = [
   // des Premiers Rivages avant, pendant et après ses plans ; l'atelier du 4e, le phare du 3e. `ile` : la capture ne se fait que dans l'archipel de cette île ; `partie` : la partie tout construite, changée.
   { nom: 'chantier', vue: 'île', famille: 'chantier', partie: 'chantier' },
   { nom: 'chantier-nuit', vue: 'île', famille: 'chantier', partie: 'chantier', nuit: true },
+  // L'architecture modulaire du 6e (lot 7b) : les maisons des Premiers Rivages une à une (colombage, pierre, toits en
+  // pente), de jour et de nuit ; un chantier où des fantômes touchent des pièces posées (`murs-mi` : la moitié des murs de
+  // chaque île posée ; `toit-mi` : les murs, et la moitié du toit).
+  { nom: 'archi-foret', vue: 'île', famille: 'architecture', ile: 'foret' },
+  { nom: 'archi-ferme', vue: 'île', famille: 'architecture', ile: 'ferme' },
+  { nom: 'archi-mine', vue: 'île', famille: 'architecture', ile: 'mine' },
+  { nom: 'archi-plaine', vue: 'île', famille: 'architecture', ile: 'plaine' },
+  { nom: 'archi-riviere', vue: 'île', famille: 'architecture', ile: 'riviere' },
+  { nom: 'archi-baie', vue: 'île', famille: 'architecture', ile: 'baie' },
+  { nom: 'archi-foret-nuit', vue: 'île', famille: 'architecture', ile: 'foret', nuit: true },
+  { nom: 'archi-ferme-nuit', vue: 'île', famille: 'architecture', ile: 'ferme', nuit: true },
+  { nom: 'archi-foret-murs', vue: 'île', famille: 'architecture', ile: 'foret', partie: 'murs-mi' },
+  { nom: 'archi-foret-toit', vue: 'île', famille: 'architecture', ile: 'foret', partie: 'toit-mi' },
+  { nom: 'archi-ferme-toit', vue: 'île', famille: 'architecture', ile: 'ferme', partie: 'toit-mi' },
+  { nom: 'archi-archipel', vue: 'archipel', famille: 'architecture', ile: 'foret' },
+  { nom: 'archi-archipel-nuit', vue: 'archipel', famille: 'architecture', ile: 'foret', nuit: true },
+  // De près (famille `architecture-pres`) : la cabane de la Forêt, trois fois plus fine (le colombage net), puis la même
+  // de loin, telle que l'élève la voit (`finesse` 1) ; le remplissage crème à côté d'un fantôme de Brume (`murs-mi`).
+  { nom: 'archi-foret-pres', vue: 'île', famille: 'architecture-pres', ile: 'foret', recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
+  { nom: 'archi-foret-pres-nuit', vue: 'île', famille: 'architecture-pres', ile: 'foret', nuit: true, recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
+  { nom: 'archi-foret-loin', vue: 'archipel', famille: 'architecture-pres', ile: 'foret', finesse: 1 },
+  { nom: 'archi-fantome-pres', vue: 'île', famille: 'architecture-pres', ile: 'foret', partie: 'murs-mi', recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
   { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
   { nom: 'tour-debut', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-debut' },
   { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },
@@ -309,6 +331,18 @@ async function scenes() {
       for (const b of BIOMES) {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
+      }
+    // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit), rien après.
+    const moitie = { 'murs-mi': 0, 'toit-mi': 1 }[partie];
+    if (moitie !== undefined)
+      for (const b of BIOMES) {
+        const l = plansFor(b.id);
+        if (l.length <= moitie) continue;
+        l.forEach((p, i) => {
+          if (i >= moitie) delete plans[p.id];
+        });
+        const cells = planCells(l[moitie]).map((c) => c.key);
+        plans[l[moitie].id] = cells.filter((_, i) => i % 2 === 0);
       }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('tour');
