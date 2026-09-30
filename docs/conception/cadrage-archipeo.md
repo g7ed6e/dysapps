@@ -603,8 +603,9 @@ Tranché le 28 septembre 2026 par le directeur artistique (avis « Aligné »), 
   - soubassement de pierre `#8A8F84` sur 0,3 à 0,4 case, jamais tout le rez ; les blocs de pierre donnent un mur plein de pierre ; le chaperon d’un mur sans toit est en pierre, jamais dans la teinte du toit ;
   - bardage `#B1815E` aux pignons et sur les bâtiments du quai (cabanes, ateliers de pêche) ; les maisons de l’intérieur restent en colombage ;
   - pilotis `#6E4C30` seulement là où un bâtiment touche l’eau ou le bord du quai et où le sol manque ;
-  - toits inchangés (`world/toits.ts`) ; la nuit, le colombage s’assombrit sans lueur, seules les vitres s’allument ;
+  - toits posés comme avant (`world/toits.ts`), dessinés en pentes (rive, versant, faîte) ; la nuit, le colombage s’assombrit sans lueur, seules les vitres s’allument ;
   - validé par le directeur artistique sur captures avant et après : de jour, de nuit, de près, de loin, et chantier en cours.
+  - décisions du directeur artistique sur captures (30 septembre 2026) : la terre (torchis) est de la famille bois, en colombage ; au 6e, le bardage reste aux pignons, faute de bâtiment de bois sur un quai ; la cabine de la Baie et le cadran de l’Horloge restent en blocs.
 
 ### Les personnages du lot R6
 

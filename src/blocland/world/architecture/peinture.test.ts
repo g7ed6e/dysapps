@@ -103,9 +103,36 @@ describe('Les murs peints', () => {
     expect(bouts.length).toBeGreaterThan(20);
     let proche = Infinity;
     for (const a of bouts) for (const b of bouts) if (a.id !== b.id) proche = Math.min(proche, Math.hypot(a.p[0] - b.p[0], a.p[1] - b.p[1], a.p[2] - b.p[2]));
-    // Au plus près, d'un poteau d'angle à l'autre bout de l'autre décharge : bien plus qu'un poteau.
-    expect(proche).toBeGreaterThan(0.5);
+    // Au plus près, à un angle : la tête de l'une et le pied de l'autre sur le même poteau, l'une en haut, l'autre en bas
+    // (toutes montent vers la droite) ; entre elles, la hauteur du panneau moins deux jeux, bien plus que leurs deux
+    // demi-largeurs.
+    expect(proche).toBeGreaterThan(0.3);
   }, 30_000);
+
+  it('une décharge ne touche que les poteaux : un jour la sépare de chaque sablière et du chaperon (aucun angle aigu, pas de « < » ni de V)', () => {
+    const C = COLOMBAGE;
+    // Les pièces de bois et de pierre horizontales d'un panneau, en hauteur (v) : [bas, haut] de chaque bande.
+    const bandes = (m: number): [number, number][] => [
+      ...(m & MOTIF.sabliereBasse ? [[C.soubassement, C.soubassement + C.sabliere] as [number, number]] : []),
+      ...(m & MOTIF.sabliereHaute ? [[1 - C.sabliere, 1] as [number, number]] : []),
+      ...(m & MOTIF.chaperon ? [[1 - C.chaperon, 1] as [number, number]] : []),
+    ];
+    let n = 0;
+    for (let m = 0; m < 1024; m++) {
+      const d = decharge(m | MOTIF.colombage);
+      if (!d) continue;
+      n++;
+      // Le trait de la décharge (sa demi-largeur comprise) reste à plus de 0,05 case de chaque bande.
+      for (const [b, h] of bandes(m | MOTIF.colombage)) {
+        const bas = Math.min(d.pied[1], d.tete[1]) - C.decharge;
+        const haut = Math.max(d.pied[1], d.tete[1]) + C.decharge;
+        expect(Math.max(b - haut, bas - h), `motif ${m}`).toBeGreaterThan(0.05);
+      }
+      // Ses deux bouts sont sur les poteaux.
+      expect([d.pied[0], d.tete[0]].sort()).toEqual([C.poteau, 1 - C.poteau]);
+    }
+    expect(n).toBeGreaterThan(0);
+  });
 
   it('le bois reste nettement minoritaire (poteaux de 1/8, sablières), le soubassement entre 0,3 et 0,4 case', () => {
     const C = COLOMBAGE;
@@ -132,7 +159,7 @@ describe('Les murs peints', () => {
   it('le shader lit les mêmes bits et les mêmes mesures', () => {
     for (const v of [MOTIF.delave, MOTIF.pierreEntiere, MOTIF.montante | MOTIF.descendante, MOTIF.sabliereBasse, MOTIF.sabliereHaute, MOTIF.chaperon, MOTIF.soubassement])
       expect(MOTIF_GLSL).toContain(`& ${v})`);
-    for (const v of [COLOMBAGE.soubassement, COLOMBAGE.sabliere, COLOMBAGE.chaperon, COLOMBAGE.poteau]) expect(MOTIF_GLSL).toContain(v.toFixed(4));
+    for (const v of [COLOMBAGE.soubassement, COLOMBAGE.sabliere, COLOMBAGE.chaperon, COLOMBAGE.poteau, COLOMBAGE.jeu]) expect(MOTIF_GLSL).toContain(v.toFixed(4));
   });
 
   it('une vitre prise dans un mur ne coupe pas la façade : ses voisines restent des murs droits, sans décharge', () => {

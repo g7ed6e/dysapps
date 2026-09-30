@@ -96,6 +96,12 @@ const CAPTURES = [
   { nom: 'archi-foret-pres-nuit', vue: 'île', famille: 'architecture-pres', ile: 'foret', nuit: true, recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
   { nom: 'archi-foret-loin', vue: 'archipel', famille: 'architecture-pres', ile: 'foret', finesse: 1 },
   { nom: 'archi-fantome-pres', vue: 'île', famille: 'architecture-pres', ile: 'foret', partie: 'murs-mi', recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
+  { nom: 'archi-fantome-pres-nuit', vue: 'île', famille: 'architecture-pres', ile: 'foret', partie: 'murs-mi', nuit: true, recadre: { x: 50, y: 280, width: 220, height: 180 }, finesse: 3 },
+  // L'angle du rez de la cabane, en chantier (une décharge par panneau, qui ne touche que les poteaux), et le
+  // soubassement de l'étable, que la cour cache une fois posée : avant la cour (`toit-mi`), puis tout construit.
+  { nom: 'archi-fantome-angle', vue: 'île', famille: 'architecture-pres', ile: 'foret', partie: 'murs-mi', recadre: { x: 150, y: 370, width: 56, height: 42 }, finesse: 12 },
+  { nom: 'archi-ferme-socle', vue: 'île', famille: 'architecture-pres', ile: 'ferme', partie: 'toit-mi', recadre: { x: 95, y: 285, width: 160, height: 120 }, finesse: 4 },
+  { nom: 'archi-ferme-pres', vue: 'île', famille: 'architecture-pres', ile: 'ferme', recadre: { x: 95, y: 285, width: 160, height: 120 }, finesse: 4 },
   { nom: 'tour-avant', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-avant' },
   { nom: 'tour-debut', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-debut' },
   { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },

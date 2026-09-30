@@ -1,7 +1,8 @@
 // Le kit des Premiers Rivages (6e, lot 7b d'Archipéo), la référence des autres archipels : l'intention du directeur
 // artistique du 30 septembre 2026 (avis « Aligné », docs/conception/cadrage-archipeo.md, « L'intention du 6e »).
 // - Le bois : le colombage (poteaux #795643 sur un remplissage crème #D8D9C9, peint, 0 triangle) ; bardé (#B1815E) aux
-//   pignons et sur les bâtiments du quai ; des pilotis (#6E4C30) là où il touche l'eau et où le sol manque dessous.
+//   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
+//   l'eau et où le sol manque dessous.
 // - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
 // - Les toits : les pentes de ./toits.ts, dans la couverture de leur île (world/toits.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
@@ -49,13 +50,13 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
 }
 
 export const KIT_6E: Kit = {
-  // La Ferme (terre) : le torchis d'un colombage ; proposition de l'artiste technique 3D, à valider par le directeur
-  // artistique (sinon, la retirer : l'étable garde ses blocs de terre).
+  // La Ferme (terre) : le torchis d'un colombage, dans la famille du bois (décision du directeur artistique, 30/09).
   matieres: { planches: 'bois', terre: 'bois', pierre: 'pierre', galet: 'pierre', brique: 'pierre', obsidienne: 'pierre', toit: 'toit' },
   couleurs: { poteau: 0x795643, remplissage: 0xd8d9c9, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 },
   murs: { bois: 'colombage', pierre: 'plein' },
-  // Les îles au quai ou au ponton : la Baie (le quai de la cabine), la Rivière (le ponton de la hutte), la Tour (le quai du
-  // phare). Leurs murs ne sont pas de bois aujourd'hui : la règle attend les bâtiments de bois qu'on y posera.
+  // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
+  // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
+  // les bâtiments de bois qu'on y posera.
   bardes: ['baie', 'riviere', 'tour'],
   pieces: { toit: piecesDeToit(), bois: piecesSurPilotis() },
 };
