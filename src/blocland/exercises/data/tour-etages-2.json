@@ -63,17 +63,17 @@
     },
     {
       "key": "tour-etages-2-2",
-      "prompt": "Lina et Hugo travaillent ensemble.\nCelui-ci cherche les images.\nCelle-ci écrit le texte.",
+      "prompt": "Nora et Hugo travaillent ensemble.\nCelui-ci cherche les images.\nCelle-ci écrit le texte.",
       "question": "Qui écrit le texte ?",
-      "spoken": "Lina et Hugo travaillent ensemble. Celui-ci cherche les images. Celle-ci écrit le texte.",
+      "spoken": "Nora et Hugo travaillent ensemble. Celui-ci cherche les images. Celle-ci écrit le texte.",
       "choices": [
-        "Lina",
+        "Nora",
         "Hugo",
-        "Lina et Hugo"
+        "Nora et Hugo"
       ],
-      "answer": "Lina",
+      "answer": "Nora",
       "hint": "« Celle-ci » est au féminin.",
-      "explanation": "« Celle-ci » est au féminin : ce mot reprend Lina. « Celui-ci », au masculin, reprend Hugo, qui cherche les images.",
+      "explanation": "« Celle-ci » est au féminin : ce mot reprend Nora. « Celui-ci », au masculin, reprend Hugo, qui cherche les images.",
       "aid": {
         "kind": "rule-card",
         "props": {

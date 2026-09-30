@@ -166,13 +166,13 @@ Pour tous les items :
    - réponse : le chien
    - indice : Qui est un animal dans ce texte ?
    - explication : « L’animal » reprend « un chien » : le chien est un animal. Il attrape le bâton et le rapporte.
-3. énoncé : "Lina et Hugo travaillent ensemble.\nCelui-ci cherche les images.\nCelle-ci écrit le texte."
+3. énoncé : "Nora et Hugo travaillent ensemble.\nCelui-ci cherche les images.\nCelle-ci écrit le texte."
    - question : Qui écrit le texte ?
-   - lu : Lina et Hugo travaillent ensemble. Celui-ci cherche les images. Celle-ci écrit le texte.
-   - choix : Lina · Hugo · Lina et Hugo
-   - réponse : Lina
+   - lu : Nora et Hugo travaillent ensemble. Celui-ci cherche les images. Celle-ci écrit le texte.
+   - choix : Nora · Hugo · Nora et Hugo
+   - réponse : Nora
    - indice : « Celle-ci » est au féminin.
-   - explication : « Celle-ci » est au féminin : ce mot reprend Lina. « Celui-ci », au masculin, reprend Hugo, qui cherche les images.
+   - explication : « Celle-ci » est au féminin : ce mot reprend Nora. « Celui-ci », au masculin, reprend Hugo, qui cherche les images.
 4. énoncé : "Mon oncle habite une vieille ferme près du village.\nCe bâtiment a plus de cent ans."
    - question : Quel est « ce bâtiment » ?
    - lu : Mon oncle habite une vieille ferme près du village. Ce bâtiment a plus de cent ans.
