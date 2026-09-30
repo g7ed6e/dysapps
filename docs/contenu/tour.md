@@ -1,9 +1,9 @@
 ---
 île : tour
-module : Lecture et compréhension
+module : Lecture et grammaire
 matière : francais
 classe : 6e
-description : Lire à voix haute, étage par étage, et savoir de qui ou de quoi parle un texte.
+description : Lire à voix haute, étage par étage, savoir de qui ou de quoi parle un texte, et analyser la phrase.
 bloc : verre
 gardien : la Chouette de verre
 icône : castle
@@ -208,6 +208,207 @@ Pour tous les items :
    - réponse : Caramel
    - indice : « Le second » : le deuxième nommé.
    - explication : « Le second » reprend le deuxième chat nommé : Caramel. « Le premier », c’est Pixel, le chat noir.
+
+## Vitraux des phrases · `vitraux`
+
+- description : Lis une phrase courte : trouve son type, la fonction d’un mot, ou comment ses propositions sont reliées.
+- compétences : c3.fr.langue.types-formes · c3.fr.langue.attribut-gn · c3.fr.langue.phrase-complexe
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : verre
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `tour-vitraux-1`
+
+- blocs : 4
+- XP : 12
+- consigne : Lis la question, puis la phrase. Trouve le type ou la forme de la phrase. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Types et formes de phrases » :
+  - Déclarative : elle raconte, elle finit par un point. Il pleut.
+  - Interrogative : une question, un point d’interrogation. Qui a sonné ?
+  - Impérative : un ordre, un verbe sans sujet. Mets ton manteau.
+  - Négative : « ne » (ou « n’ ») avec pas, plus, jamais ou rien. Il ne neige plus.
+  - Affirmative : sans « ne » devant le verbe. Il neige.
+  - Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !
+
+1. énoncé : Tu viens au foot samedi ?
+   - question : Quel est le type de cette phrase ?
+   - choix : interrogative · déclarative · impérative
+   - réponse : interrogative
+   - indice : Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?
+   - explication : Les mots sont rangés comme pour raconter, mais le point d’interrogation montre qu’on pose une question : la phrase est interrogative.
+2. énoncé : Range ton sac avant de partir.
+   - question : Quel est le type de cette phrase ?
+   - choix : impérative · déclarative · interrogative
+   - réponse : impérative
+   - indice : Cherche le sujet du verbe « Range ». Y en a-t-il un ?
+   - explication : « Range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.
+3. énoncé : Je me demande où est mon stylo.
+   - question : Quel est le type de cette phrase ?
+   - choix : déclarative · interrogative · impérative
+   - réponse : déclarative
+   - indice : Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?
+   - explication : La phrase parle d’une question, mais elle ne la pose pas : pas de point d’interrogation, elle finit par un point. Elle est déclarative.
+4. énoncé : Ne cours pas dans le couloir !
+   - question : Quel est le type de cette phrase ?
+   - choix : impérative · déclarative · interrogative
+   - réponse : impérative
+   - indice : Qui fait l’action de courir ? Le sujet est-il écrit ?
+   - explication : Le verbe « cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec « Ne » et « pas », elle est aussi négative, et le point d’exclamation la rend exclamative.
+5. énoncé : Où as-tu rangé la télécommande ?
+   - question : Quel est le type de cette phrase ?
+   - choix : interrogative · impérative · déclarative
+   - réponse : interrogative
+   - indice : La phrase attend-elle une réponse ?
+   - explication : « Où » et le point d’interrogation montrent qu’on pose une question : la phrase est interrogative. Le sujet « tu » est placé après le verbe.
+6. énoncé : Je ne mange jamais d’épinards.
+   - question : Quelle est la forme de cette phrase ?
+   - choix : négative · affirmative
+   - réponse : négative
+   - indice : Cherche « ne » ou « n’ » devant le verbe.
+   - explication : Les mots « ne » et « jamais » encadrent le verbe « mange » : la phrase est négative. Ici, c’est « jamais » qui va avec « ne », à la place de « pas ».
+7. énoncé : Le bébé fait ses premiers pas.
+   - question : Quelle est la forme de cette phrase ?
+   - choix : affirmative · négative
+   - réponse : affirmative
+   - indice : Cherche « ne » ou « n’ » devant le verbe.
+   - explication : Il n’y a aucun « ne » devant le verbe « fait » : la phrase est affirmative. Ici, « pas » est un nom : les pas du bébé.
+8. énoncé : Quel beau dessin tu as fait !
+   - question : Cette phrase pose-t-elle une question ?
+   - choix : oui · non
+   - réponse : non
+   - indice : Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?
+   - explication : La phrase commence par « Quel », mais elle finit par un point d’exclamation : elle montre l’admiration, elle ne pose pas de question. Elle est exclamative.
+
+### Niveau 2 · `tour-vitraux-2`
+
+- blocs : 5
+- XP : 14
+- consigne : Lis la question, puis la phrase. Trouve la fonction du mot ou du groupe de mots. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Attribut, épithète, complément du nom » :
+  - Épithète : un adjectif collé au nom. Une robe bleue.
+  - Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.
+  - Attribut du sujet : il dit comment est le sujet. La soupe est chaude.
+  - Après être, sembler, devenir, paraître, rester : attribut.
+  - L’attribut peut être un nom. Ma tante est pilote.
+
+1. énoncé : Ma sœur est malade aujourd’hui.
+   - question : Quelle fonction a « malade » ?
+   - choix : attribut du sujet · épithète · complément du nom
+   - réponse : attribut du sujet
+   - indice : Quel verbe se trouve entre « Ma sœur » et « malade » ?
+   - explication : Le mot « malade » est séparé du sujet, « Ma sœur », par le verbe « est » : il dit comment est le sujet. C’est un attribut du sujet, pas une épithète.
+2. énoncé : J’ai acheté un sac rouge.
+   - question : Quelle fonction a « rouge » ?
+   - choix : épithète · attribut du sujet · complément du nom
+   - réponse : épithète
+   - indice : Y a-t-il un verbe entre « sac » et « rouge » ?
+   - explication : L’adjectif « rouge » est collé au nom « sac », sans verbe entre eux : c’est une épithète.
+3. énoncé : Je cherche la clé de mon casier.
+   - question : Quelle fonction a « de mon casier » ?
+   - choix : complément du nom · épithète · attribut du sujet
+   - réponse : complément du nom
+   - indice : Quel nom ce groupe complète-t-il ? Par quel petit mot commence-t-il ?
+   - explication : Le groupe « de mon casier » commence par « de » et complète le nom « clé » : de quelle clé parle-t-on ? C’est un complément du nom.
+4. énoncé : Mes amis semblent fatigués.
+   - question : Quelle fonction a « fatigués » ?
+   - choix : attribut du sujet · complément du nom · épithète
+   - réponse : attribut du sujet
+   - indice : Quel verbe se trouve entre « Mes amis » et « fatigués » ?
+   - explication : Le mot « fatigués » vient après le verbe « semblent » et dit comment sont les amis : c’est un attribut du sujet. « Sembler » marche comme « être ».
+5. énoncé : Nous mangeons une tarte aux pommes.
+   - question : Quelle fonction a « aux pommes » ?
+   - choix : complément du nom · épithète · attribut du sujet
+   - réponse : complément du nom
+   - indice : Le groupe « aux pommes » est-il un adjectif, ou contient-il un nom ?
+   - explication : Le groupe « aux pommes » n’est pas un adjectif : il contient le nom « pommes », qui complète le nom « tarte ». C’est un complément du nom. Une épithète est toujours un adjectif.
+6. énoncé : Le chat noir est endormi.
+   - question : Quelle fonction a « noir » ?
+   - choix : épithète · attribut du sujet · complément du nom
+   - réponse : épithète
+   - indice : Où est le verbe « est » : entre « chat » et « noir », ou plus loin ?
+   - explication : Le mot « noir » est collé au nom « chat » : c’est une épithète. Le verbe « est » vient après : c’est « endormi » qui est l’attribut du sujet.
+7. énoncé : Mon père est infirmier.
+   - question : Quelle fonction a « infirmier » ?
+   - choix : attribut du sujet · épithète · complément du nom
+   - réponse : attribut du sujet
+   - indice : Quel verbe se trouve entre « Mon père » et « infirmier » ?
+   - explication : Le mot « infirmier » vient après le verbe « est » et dit ce qu’est le sujet, « Mon père » : c’est un attribut du sujet. Un attribut peut être un nom.
+8. énoncé : La cour du collège est grande.
+   - question : Quelle fonction a « du collège » ?
+   - choix : complément du nom · attribut du sujet · épithète
+   - réponse : complément du nom
+   - indice : Quel nom ce groupe complète-t-il ? Est-il avant ou après le verbe ?
+   - explication : Le groupe « du collège » est collé au nom « cour » et dit de quelle cour on parle : c’est un complément du nom. Le verbe « est » vient après : l’attribut, c’est « grande ».
+
+### Niveau 3 · `tour-vitraux-3`
+
+- blocs : 5
+- XP : 14
+- consigne : Lis la question, puis la phrase. Compte les verbes conjugués, ou trouve ce qui relie les propositions. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Phrase simple, phrase complexe » :
+  - Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.
+  - Un verbe à l’infinitif ne compte pas : partir, finir.
+  - Chaque verbe conjugué forme une proposition.
+  - Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.
+  - Coordination : et, mais, ou, donc, car. Il court et il saute.
+  - Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses.
+
+1. énoncé : Je prends mon goûter et je fais mes devoirs.
+   - question : Cette phrase est-elle simple ou complexe ?
+   - choix : complexe · simple
+   - réponse : complexe
+   - indice : Compte les verbes conjugués.
+   - explication : Il y a deux verbes conjugués, « prends » et « fais » : deux propositions, donc une phrase complexe. Elles forment une seule phrase, avec un seul point à la fin.
+2. énoncé : Avant de sortir, je ferme la porte à clé.
+   - question : Cette phrase est-elle simple ou complexe ?
+   - choix : simple · complexe
+   - réponse : simple
+   - indice : Compte les verbes conjugués, un par un.
+   - explication : Le verbe « sortir » est à l’infinitif : il ne compte pas. Seul « ferme » est conjugué : la phrase est simple, même avec une virgule.
+3. énoncé : Il pleut, nous restons à la maison.
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : juxtaposition · coordination · subordination
+   - réponse : juxtaposition
+   - indice : Y a-t-il un mot entre les deux propositions ?
+   - explication : Rien que la virgule entre « Il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.
+4. énoncé : J’ai faim, mais le repas n’est pas prêt.
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : coordination · juxtaposition · subordination
+   - réponse : coordination
+   - indice : Regarde le mot après la virgule.
+   - explication : Il y a une virgule, mais aussi le mot « mais », qui relie les deux propositions : c’est une coordination. La juxtaposition, c’est une virgule seule.
+5. énoncé : Je mets mon manteau parce qu’il fait froid.
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : subordination · coordination · juxtaposition
+   - réponse : subordination
+   - indice : Quel mot relie les deux propositions ? Est-il dans la liste de la coordination ?
+   - explication : Les mots « parce que » (ici « parce qu’ ») relient les propositions : c’est une subordination. Le mot « car » dirait aussi la cause, mais avec « car », ce serait une coordination.
+6. énoncé : Le chien aboie quand le facteur passe.
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : subordination · juxtaposition · coordination
+   - réponse : subordination
+   - indice : Quel mot se trouve entre « aboie » et « le facteur » ?
+   - explication : Le mot « quand » relie les deux propositions, « Le chien aboie » et « le facteur passe » : c’est une subordination.
+7. énoncé : Tu viens avec nous ou tu restes ici ?
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : coordination · subordination · juxtaposition
+   - réponse : coordination
+   - indice : Quel petit mot se trouve entre « avec nous » et « tu restes » ?
+   - explication : Le mot « ou » relie les deux propositions, « Tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.
+8. énoncé : Le réveil sonne ; je saute du lit.
+   - question : Comment les deux propositions sont-elles reliées ?
+   - choix : juxtaposition · subordination · coordination
+   - réponse : juxtaposition
+   - indice : Y a-t-il un mot entre les deux propositions, ou seulement un signe ?
+   - explication : Un point-virgule sépare « Le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.
 
 ## Les plans
 
