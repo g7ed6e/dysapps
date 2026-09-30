@@ -1,0 +1,239 @@
+{
+  "id": "horloge-story-2",
+  "biome": "horloge",
+  "type": "story",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis écoute l’histoire en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "horloge-story-2-0",
+      "prompt": "On Sunday, Emma goes to the market with her dad.\nFirst, they buy apples.\nThen, they buy bread.\nAt the end, they eat an ice cream.",
+      "question": "Qu’achètent Emma et son père en premier ?",
+      "spoken": "On Sunday, Emma goes to the market with her dad. First, they buy apples. Then, they buy bread. At the end, they eat an ice cream.",
+      "choices": [
+        "Du pain",
+        "Une glace",
+        "Des pommes"
+      ],
+      "choicesLang": "fr",
+      "answer": "Des pommes",
+      "hint": "En premier se dit first. Écoute ce qui vient juste après.",
+      "explanation": "First, they buy apples = d’abord, ils achètent des pommes. Le pain (bread) vient ensuite, avec then, et la glace à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-1",
+      "prompt": "Max wakes up at seven.\nFirst, he has a shower.\nThen, he has breakfast.\nAt the end, he takes the bus to school.",
+      "question": "Que fait Max juste après sa douche ?",
+      "spoken": "Max wakes up at seven. First, he has a shower. Then, he has breakfast. At the end, he takes the bus to school.",
+      "choices": [
+        "Il prend le bus",
+        "Il prend son petit déjeuner",
+        "Il se réveille"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il prend son petit déjeuner",
+      "hint": "La douche, c’est a shower. Écoute la phrase qui suit, avec then.",
+      "explanation": "First, a shower (la douche) ; then, breakfast (le petit déjeuner). Le bus vient à la fin, et il se réveille (wakes up) avant la douche.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-2",
+      "prompt": "It’s Nora’s birthday.\nFirst, her friends arrive at four.\nThen, they play games in the garden.\nAt the end, Nora opens her presents.",
+      "question": "Que fait Nora à la fin de la fête ?",
+      "spoken": "It’s Nora’s birthday. First, her friends arrive at four. Then, they play games in the garden. At the end, Nora opens her presents.",
+      "choices": [
+        "Elle ouvre ses cadeaux",
+        "Elle joue dans le jardin",
+        "Elle accueille ses amis"
+      ],
+      "choicesLang": "fr",
+      "answer": "Elle ouvre ses cadeaux",
+      "hint": "À la fin se dit at the end. Écoute la dernière phrase.",
+      "explanation": "At the end, Nora opens her presents = à la fin, Nora ouvre ses cadeaux (a present = un cadeau). Les jeux dans le jardin viennent avant, avec then.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-3",
+      "prompt": "Josh goes to the cinema with his sister, Kate.\nFirst, Kate buys the tickets.\nThen, Josh buys some popcorn.\nAt the end, they walk home.",
+      "question": "Qui achète le pop-corn ?",
+      "spoken": "Josh goes to the cinema with his sister, Kate. First, Kate buys the tickets. Then, Josh buys some popcorn. At the end, they walk home.",
+      "choices": [
+        "Kate",
+        "Josh et Kate",
+        "Josh"
+      ],
+      "choicesLang": "fr",
+      "answer": "Josh",
+      "hint": "Écoute la phrase où l’on entend popcorn : quel prénom juste avant buys ?",
+      "explanation": "Then, Josh buys some popcorn = ensuite, Josh achète du pop-corn. Kate, sa sœur, achète les billets (the tickets) en premier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-4",
+      "prompt": "Lena has got a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson.",
+      "question": "Quel jour Lena joue-t-elle au basket ?",
+      "spoken": "Lena has got a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.",
+      "choices": [
+        "Le jeudi",
+        "Le mardi",
+        "Le lundi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le mardi",
+      "hint": "Tuesday ou Thursday ? Écoute le début du mot.",
+      "explanation": "On Tuesday, she plays basketball = le mardi, elle joue au basket. Tuesday commence par « tiou » ; Thursday (jeudi), avec th, c’est le piano.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-5",
+      "prompt": "Ryan is late for school.\nFirst, he can’t find his shoes.\nThen, he misses the bus.\nAt the end, he runs to school.",
+      "question": "À la fin, comment Ryan va-t-il à l’école ?",
+      "spoken": "Ryan is late for school. First, he can’t find his shoes. Then, he misses the bus. At the end, he runs to school.",
+      "choices": [
+        "En courant",
+        "En bus",
+        "En marchant"
+      ],
+      "choicesLang": "fr",
+      "answer": "En courant",
+      "hint": "Il rate le bus (he misses the bus). Écoute la dernière phrase : quel verbe entends-tu après he ?",
+      "explanation": "At the end, he runs to school = à la fin, il court jusqu’à l’école. Il a raté le bus (he misses the bus) : il ne le prend pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-6",
+      "prompt": "Zoe makes a cake with her grandma.\nFirst, they break three eggs.\nThen, they add sugar and flour.\nAt the end, they put the cake in the oven.",
+      "question": "Que font Zoe et sa grand-mère en premier ?",
+      "spoken": "Zoe makes a cake with her grandma. First, they break three eggs. Then, they add sugar and flour. At the end, they put the cake in the oven.",
+      "choices": [
+        "Elles mettent le gâteau au four",
+        "Elles cassent des œufs",
+        "Elles ajoutent le sucre"
+      ],
+      "choicesLang": "fr",
+      "answer": "Elles cassent des œufs",
+      "hint": "Écoute la phrase qui commence par first.",
+      "explanation": "First, they break three eggs = d’abord, elles cassent trois œufs. Le sucre vient ensuite (then), le four à la fin (at the end).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "horloge-story-2-7",
+      "prompt": "Adam and his mum go to the beach.\nFirst, Adam swims in the sea.\nThen, he plays football on the sand.\nAt the end, they have dinner in a small restaurant.",
+      "question": "Où Adam et sa mère dînent-ils ?",
+      "spoken": "Adam and his mum go to the beach. First, Adam swims in the sea. Then, he plays football on the sand. At the end, they have dinner in a small restaurant.",
+      "choices": [
+        "Sur la plage",
+        "À la maison",
+        "Dans un petit restaurant"
+      ],
+      "choicesLang": "fr",
+      "answer": "Dans un petit restaurant",
+      "hint": "Dîner se dit have dinner. Écoute la dernière phrase.",
+      "explanation": "They have dinner in a small restaurant = ils dînent dans un petit restaurant. La plage (the beach), c’est pour nager et jouer au foot sur le sable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Suivre une histoire",
+          "lines": [
+            "first = d’abord ; then = ensuite ; at the end = à la fin",
+            "Monday = lundi, Tuesday = mardi, Thursday = jeudi",
+            "buy = acheter ; miss the bus = rater le bus ; run = courir",
+            "a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien entendu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "cadran",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

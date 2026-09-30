@@ -62,7 +62,8 @@ Un nouvel exercice part du modèle de son écran : copier un niveau d’une île
 | Écran (missions) | Champs d’un item | Exemple dans |
 | --- | --- | --- |
 | Question à trou, la plus courante (hello, rives, figures, es-hola…) | énoncé avec « … », choix, réponse, indice, explication ; `trou lu` et l’aide pour tous | `baie.md`, `marais.md` |
-| Question sur un document (notices, es-horario, de-geschichte…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication | `comptoir.md`, `refuge.md` |
+| Question sur un document (notices, signs, es-horario, de-geschichte…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication ; `image` (un emoji) aux Signs | `comptoir.md`, `refuge.md` |
+| Histoire à écouter (story, stories) | énoncé (l’histoire, une phrase par ligne), lu, question, choix, réponse, `langue des choix`, indice, explication | `horloge.md`, `theatre.md` |
 | Écoute (ears, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication ; les nombres (numbers) : énoncé et lu à la place du mot | `baie.md` |
 | Syllabes (abattage) | énoncé, mot, entendu (syllabes), choix, réponse ; en tableau | `foret.md` |
 | Chasse au son, rimes | mot, image, entendu ou terminaison, juste (oui ou non) ; en tableau | `foret.md` |

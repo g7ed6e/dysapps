@@ -2,7 +2,7 @@ import { RichText } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { langAttr } from '../../core/speech';
-import { Aid } from './CalculScreen';
+import { Aid } from './Aid';
 import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
 

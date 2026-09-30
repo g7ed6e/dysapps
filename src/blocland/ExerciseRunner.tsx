@@ -91,30 +91,32 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   const autoRead = ownConsigne && settings.autoRead && !type?.speaksOnOpen;
   // Une dictée à choix en langue vivante (LV2) : son mot est dit dans la voix de la langue, après la consigne au premier
   // écran, puis seul à chaque écran suivant.
-  // La consigne finie, le mot suit, sauf si l'élève a quitté le premier écran ou lancé une autre lecture entre-temps (une
-  // lecture coupée finit aussi, en erreur).
-  const premierEcran = useRef(true);
+  // Une écoute d'histoire (Story time, Stories) : sa question en français, puis l'histoire, à chaque écran.
+  // `ecranOuvert` garde l'écran affiché (-1 à la fin ou au démontage) : la phrase dite, la suite (le mot, l'histoire) ne
+  // vient que si l'élève y est encore et n'a pas lancé une autre lecture entre-temps (une lecture coupée finit aussi, en erreur).
+  const ecranOuvert = useRef(0);
   useEffect(() => {
-    premierEcran.current = index === 0 && !done;
+    ecranOuvert.current = done ? -1 : index;
   }, [index, done]);
-  useEffect(() => () => void (premierEcran.current = false), []);
+  useEffect(() => () => void (ecranOuvert.current = -1), []);
+  const puisDire = (texte: string, ecran: number) => () => {
+    const synthese = window.speechSynthesis;
+    if (ecranOuvert.current === ecran && !synthese.speaking && !synthese.pending) speak(texte, undefined, def.lang);
+  };
   useEffect(() => {
     if (!autoRead) return;
-    const dictee = dicteeAutoText(screens[0], def.lang);
-    const ensuite = () => {
-      const synthese = window.speechSynthesis;
-      if (premierEcran.current && !synthese.speaking && !synthese.pending) speak(dictee, undefined, def.lang);
-    };
-    speak(autoReadText(def.instruction, screens[0]), dictee ? ensuite : undefined);
+    const dictee = dicteeAutoText(screens[0], def.lang, type?.listening);
+    speak(autoReadText(def.instruction, screens[0]), dictee ? puisDire(dictee, 0) : undefined);
     // Une lecture par partie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def.id]);
   useEffect(() => {
     if (!autoRead || index === 0) return;
     // Seule une question ou un mot de dictée se lit à chaque écran : un texte vide couperait une lecture en cours.
-    const dictee = dicteeAutoText(items, def.lang);
-    if (dictee) return speak(dictee, undefined, def.lang);
+    const dictee = dicteeAutoText(items, def.lang, type?.listening);
     const text = autoReadText(null, items);
+    if (dictee && text) return speak(text, puisDire(dictee, index));
+    if (dictee) return speak(dictee, undefined, def.lang);
     if (text) speak(text);
     // Une lecture par écran.
     // eslint-disable-next-line react-hooks/exhaustive-deps

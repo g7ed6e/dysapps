@@ -3879,6 +3879,11 @@ button.island-quest:active {
   border-radius: var(--radius-control);
   background: var(--surface);
 }
+/* Une histoire à écouter (Story) : rien à lire avant la réponse, seulement l'invitation à écouter. */
+.recit-listen {
+  margin: 0;
+  font-size: 1.2rem;
+}
 .notice-text {
   flex: 1;
   margin: 0;

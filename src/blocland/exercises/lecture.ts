@@ -18,10 +18,12 @@ export function autoReadText(instruction: string | null, items: ExerciseItem[] |
 /**
  * Le mot d'une dictée à choix en langue vivante (LV2-3) : un item seul dont l'énoncé a un trou (« Bl…stift »). La
  * lecture automatique le dit dans la voix de la langue dès l'ouverture de l'écran (après la consigne au premier), pour
- * que l'élève entende avant de choisir. Vide sinon.
+ * que l'élève entende avant de choisir. Une écoute d'histoire (`listening`, Story) dit de même son histoire, après sa
+ * question en français. Vide sinon.
  */
-export function dicteeAutoText(items: ExerciseItem[] | undefined, lang: Lang | undefined): string {
+export function dicteeAutoText(items: ExerciseItem[] | undefined, lang: Lang | undefined, listening = false): string {
   if (!estLangueVivante(lang) || items?.length !== 1) return '';
   const { prompt, spoken, question } = items[0];
+  if (listening) return typeof spoken === 'string' ? spoken : '';
   return typeof prompt === 'string' && prompt.includes('…') && typeof spoken === 'string' && question === undefined ? spoken : '';
 }

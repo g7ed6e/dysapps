@@ -304,6 +304,156 @@ Pour tous les items :
    - indice : La réponse courte reprend does.
    - explication : No, he doesn’t : on reprend does, à la négation.
 
+## Story time · `story`
+
+- description : Écouter une petite histoire en anglais et répondre à une question : qui, où, quand, dans quel ordre.
+- compétences : c3.en.ecouter.histoire
+- langue : en
+- consigne : Lis la question, puis écoute l’histoire en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.
+- bravo : Bien entendu !
+- erreur : {explanation}
+- bloc gagné : cadran
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- langue des choix : fr
+
+### Niveau 1 · `horloge-story-1`
+
+Pour tous les items :
+- aide « Écouter une histoire » :
+  - Lis d’abord la question : tu sais ce que tu dois entendre.
+  - three = 3, thirteen = 13, thirty = 30 ; fifteen = 15, fifty = 50
+  - Tuesday = mardi, Thursday = jeudi ; he = il, she = elle
+  - walk = marcher, se promener ; work = travailler ; cheese = fromage
+  - kitchen = cuisine, chicken = poulet ; bedroom = chambre, bathroom = salle de bains
+
+1. énoncé : "Hi, I’m Sam.\nI’m thirteen.\nI play tennis on Saturdays."
+   - question : Quel âge a Sam ?
+   - lu : Hi, I’m Sam. I’m thirteen. I play tennis on Saturdays.
+   - choix : 3 ans · 13 ans · 30 ans
+   - réponse : 13 ans
+   - indice : Écoute la fin du nombre : -teen ou -ty ?
+   - explication : I’m thirteen = j’ai 13 ans. On entend -teen à la fin, et la voix appuie dessus : thir-TEEN. Thirty (30) finit par -ty ; three (3) est plus court.
+2. énoncé : "Lucy has got a dog.\nHis name is Max.\nEvery day, Lucy walks in the park with Max."
+   - question : Que fait Lucy au parc tous les jours ?
+   - lu : Lucy has got a dog. His name is Max. Every day, Lucy walks in the park with Max.
+   - choix : Elle se promène avec Max · Elle travaille au parc · Elle joue au ballon avec Max
+   - réponse : Elle se promène avec Max
+   - indice : Écoute le verbe après Lucy, dans la 3e phrase : walks ou works ?
+   - explication : Lucy walks in the park = Lucy se promène dans le parc. Walk (marcher, se promener) se dit avec un « o » long ; work (travailler) sonne plutôt « eu ».
+3. énoncé : "Tom is in the kitchen.\nHe is hungry.\nHe makes a cheese sandwich."
+   - question : Que prépare Tom ?
+   - lu : Tom is in the kitchen. He is hungry. He makes a cheese sandwich.
+   - choix : Un sandwich au poulet · Une pizza au fromage · Un sandwich au fromage
+   - réponse : Un sandwich au fromage
+   - indice : Écoute la dernière phrase : quel mot entends-tu juste avant sandwich ?
+   - explication : a cheese sandwich = un sandwich au fromage. Kitchen, dans la 1re phrase, c’est la cuisine : ne le confonds pas avec chicken, le poulet.
+4. énoncé : "On Thursdays, Anna goes to the swimming pool.\nShe swims for one hour.\nShe loves it!"
+   - question : Quel jour Anna va-t-elle à la piscine ?
+   - lu : On Thursdays, Anna goes to the swimming pool. She swims for one hour. She loves it!
+   - choix : Le jeudi · Le mardi · Le samedi
+   - réponse : Le jeudi
+   - indice : Tuesday ou Thursday ? Écoute le début du mot : « tiou », ou th, la langue entre les dents ?
+   - explication : Thursday = jeudi : il commence par th, la langue entre les dents. Tuesday (mardi) commence par « tiou ».
+5. énoncé : "This is my brother, Leo.\nHe has got a new bike.\nHe rides it every day."
+   - question : Dans l’histoire, qui a un nouveau vélo ?
+   - lu : This is my brother, Leo. He has got a new bike. He rides it every day.
+   - choix : Ma sœur · Mon frère · Mon père
+   - réponse : Mon frère
+   - indice : Écoute la 1re phrase : my brother ou my sister ?
+   - explication : my brother = mon frère, et he = il : c’est Leo, le frère, qui a un vélo neuf. Ma sœur se dit my sister, et on entendrait she.
+6. énoncé : "It’s eight o’clock.\nMia is in her bedroom.\nShe reads a book."
+   - question : Où est Mia ?
+   - lu : It’s eight o’clock. Mia is in her bedroom. She reads a book.
+   - choix : Dans la cuisine · Dans la salle de bains · Dans sa chambre
+   - réponse : Dans sa chambre
+   - indice : Bedroom ou bathroom ? Écoute le début du mot.
+   - explication : bedroom = la chambre (bed = le lit). La salle de bains se dit bathroom, la cuisine kitchen.
+7. énoncé : "My grandad lives on a farm.\nHe is sixty.\nHe has got fifteen cows."
+   - question : Combien de vaches a le grand-père ?
+   - lu : My grandad lives on a farm. He is sixty. He has got fifteen cows.
+   - choix : 15 vaches · 50 vaches · 60 vaches
+   - réponse : 15 vaches
+   - indice : Écoute la dernière phrase : fifteen ou fifty ?
+   - explication : fifteen cows = 15 vaches : on entend -teen à la fin (fif-TEEN). Fifty (50) finit par -ty. Sixty (60), c’est l’âge du grand-père.
+8. énoncé : "Lily is sad today.\nShe can’t find her cat.\nShe looks in the garden."
+   - question : Pourquoi Lily est-elle triste ?
+   - lu : Lily is sad today. She can’t find her cat. She looks in the garden.
+   - choix : Elle ne trouve pas son chapeau · Elle n’aime pas le jardin · Elle ne trouve pas son chat
+   - réponse : Elle ne trouve pas son chat
+   - indice : Écoute la 2e phrase : qu’est-ce que Lily ne trouve pas ?
+   - explication : She can’t find her cat = elle ne trouve pas son chat. Hat (le chapeau) rime avec cat, mais commence par un h soufflé.
+
+### Niveau 2 · `horloge-story-2`
+
+Pour tous les items :
+- aide « Suivre une histoire » :
+  - first = d’abord ; then = ensuite ; at the end = à la fin
+  - Monday = lundi, Tuesday = mardi, Thursday = jeudi
+  - buy = acheter ; miss the bus = rater le bus ; run = courir
+  - a present = un cadeau ; an egg = un œuf ; the oven = le four ; the sand = le sable
+
+1. énoncé : "On Sunday, Emma goes to the market with her dad.\nFirst, they buy apples.\nThen, they buy bread.\nAt the end, they eat an ice cream."
+   - question : Qu’achètent Emma et son père en premier ?
+   - lu : On Sunday, Emma goes to the market with her dad. First, they buy apples. Then, they buy bread. At the end, they eat an ice cream.
+   - choix : Du pain · Une glace · Des pommes
+   - réponse : Des pommes
+   - indice : En premier se dit first. Écoute ce qui vient juste après.
+   - explication : First, they buy apples = d’abord, ils achètent des pommes. Le pain (bread) vient ensuite, avec then, et la glace à la fin.
+2. énoncé : "Max wakes up at seven.\nFirst, he has a shower.\nThen, he has breakfast.\nAt the end, he takes the bus to school."
+   - question : Que fait Max juste après sa douche ?
+   - lu : Max wakes up at seven. First, he has a shower. Then, he has breakfast. At the end, he takes the bus to school.
+   - choix : Il prend le bus · Il prend son petit déjeuner · Il se réveille
+   - réponse : Il prend son petit déjeuner
+   - indice : La douche, c’est a shower. Écoute la phrase qui suit, avec then.
+   - explication : First, a shower (la douche) ; then, breakfast (le petit déjeuner). Le bus vient à la fin, et il se réveille (wakes up) avant la douche.
+3. énoncé : "It’s Nora’s birthday.\nFirst, her friends arrive at four.\nThen, they play games in the garden.\nAt the end, Nora opens her presents."
+   - question : Que fait Nora à la fin de la fête ?
+   - lu : It’s Nora’s birthday. First, her friends arrive at four. Then, they play games in the garden. At the end, Nora opens her presents.
+   - choix : Elle ouvre ses cadeaux · Elle joue dans le jardin · Elle accueille ses amis
+   - réponse : Elle ouvre ses cadeaux
+   - indice : À la fin se dit at the end. Écoute la dernière phrase.
+   - explication : At the end, Nora opens her presents = à la fin, Nora ouvre ses cadeaux (a present = un cadeau). Les jeux dans le jardin viennent avant, avec then.
+4. énoncé : "Josh goes to the cinema with his sister, Kate.\nFirst, Kate buys the tickets.\nThen, Josh buys some popcorn.\nAt the end, they walk home."
+   - question : Qui achète le pop-corn ?
+   - lu : Josh goes to the cinema with his sister, Kate. First, Kate buys the tickets. Then, Josh buys some popcorn. At the end, they walk home.
+   - choix : Kate · Josh et Kate · Josh
+   - réponse : Josh
+   - indice : Écoute la phrase où l’on entend popcorn : quel prénom juste avant buys ?
+   - explication : Then, Josh buys some popcorn = ensuite, Josh achète du pop-corn. Kate, sa sœur, achète les billets (the tickets) en premier.
+5. énoncé : "Lena has got a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson."
+   - question : Quel jour Lena joue-t-elle au basket ?
+   - lu : Lena has got a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.
+   - choix : Le jeudi · Le mardi · Le lundi
+   - réponse : Le mardi
+   - indice : Tuesday ou Thursday ? Écoute le début du mot.
+   - explication : On Tuesday, she plays basketball = le mardi, elle joue au basket. Tuesday commence par « tiou » ; Thursday (jeudi), avec th, c’est le piano.
+6. énoncé : "Ryan is late for school.\nFirst, he can’t find his shoes.\nThen, he misses the bus.\nAt the end, he runs to school."
+   - question : À la fin, comment Ryan va-t-il à l’école ?
+   - lu : Ryan is late for school. First, he can’t find his shoes. Then, he misses the bus. At the end, he runs to school.
+   - choix : En courant · En bus · En marchant
+   - réponse : En courant
+   - indice : Il rate le bus (he misses the bus). Écoute la dernière phrase : quel verbe entends-tu après he ?
+   - explication : At the end, he runs to school = à la fin, il court jusqu’à l’école. Il a raté le bus (he misses the bus) : il ne le prend pas.
+7. énoncé : "Zoe makes a cake with her grandma.\nFirst, they break three eggs.\nThen, they add sugar and flour.\nAt the end, they put the cake in the oven."
+   - question : Que font Zoe et sa grand-mère en premier ?
+   - lu : Zoe makes a cake with her grandma. First, they break three eggs. Then, they add sugar and flour. At the end, they put the cake in the oven.
+   - choix : Elles mettent le gâteau au four · Elles cassent des œufs · Elles ajoutent le sucre
+   - réponse : Elles cassent des œufs
+   - indice : Écoute la phrase qui commence par first.
+   - explication : First, they break three eggs = d’abord, elles cassent trois œufs. Le sucre vient ensuite (then), le four à la fin (at the end).
+8. énoncé : "Adam and his mum go to the beach.\nFirst, Adam swims in the sea.\nThen, he plays football on the sand.\nAt the end, they have dinner in a small restaurant."
+   - question : Où Adam et sa mère dînent-ils ?
+   - lu : Adam and his mum go to the beach. First, Adam swims in the sea. Then, he plays football on the sand. At the end, they have dinner in a small restaurant.
+   - choix : Sur la plage · À la maison · Dans un petit restaurant
+   - réponse : Dans un petit restaurant
+   - indice : Dîner se dit have dinner. Écoute la dernière phrase.
+   - explication : They have dinner in a small restaurant = ils dînent dans un petit restaurant. La plage (the beach), c’est pour nager et jouer au foot sur le sable.
+
 ## Les plans
 
 | plan | nom | XP | coffre | quand c’est bâti |
