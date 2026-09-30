@@ -136,7 +136,7 @@
       "meaning": "Le nom qui vient avant le nom de famille."
     }
   ],
-  "perRun": 6,
+  "perRun": 8,
   "feedback": {
     "correct": "Bien assemblé !",
     "wrong": "{word} se fabrique avec {answer}. {meaning}"

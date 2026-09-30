@@ -124,6 +124,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   sommet: { component: CalculScreen, batch: 1 },
   echo: { component: CalculScreen, batch: 1 },
   troupeau: { component: CalculScreen, batch: 1 },
+  facettes: { component: CalculScreen, batch: 1 },
   racines: { component: CalculScreen, batch: 1 },
   sens: { component: CalculScreen, batch: 1 },
   nuances: { component: CalculScreen, batch: 1 },
