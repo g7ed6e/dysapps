@@ -31,7 +31,7 @@ jobs:
         with:
           persist-credentials: false
           # Tout l'historique et les étiquettes : la version se calcule depuis la dernière étiquette vX.Y.Z,
-          # le journal compare avec la branche de base, et la documentation date chaque page de son dernier commit.
+          # et la documentation date chaque page de son dernier commit.
           fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # La documentation date chaque page de son dernier commit, et le journal numérote les versions depuis git.
+          # La documentation date chaque page de son dernier commit et affiche la version calculée depuis git.
           fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:

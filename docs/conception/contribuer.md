@@ -1,6 +1,6 @@
 # Contribuer
 
-Le dépôt est <https://github.com/g7ed6e/dysapps>. Le travail se fait par pull request sur `main` ; la CI lance les tests, et les deux builds.
+Le dépôt est <https://github.com/g7ed6e/dysapps>. Le travail se fait par pull request sur `main` ; la CI lance les tests, la vérification de la page des personnages du pilotage et les deux builds.
 
 ## Mettre en route
 
