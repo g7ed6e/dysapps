@@ -1,5 +1,6 @@
-// npm run contenu : produit les JSON des exercices du jeu (src/blocland/exercises/data/<id>.json) depuis les îles
-// écrites en Markdown (docs/contenu/<île>.md, format : scripts/contenu/format.mjs). Les JSON produits sont commités ;
+// npm run contenu : produit src/blocland/iles.ts et les JSON des exercices (src/blocland/exercises/data/<id>.json) depuis
+// les îles écrites en Markdown (docs/contenu/<île>.md, format : scripts/contenu/format.mjs), et les JSON des missions du
+// portail (src/apps/<mission>/) depuis docs/contenu/portail/ (format : scripts/contenu/portail.mjs). Ils sont commités ;
 // ne pas les éditer à la main.
 // --check : échoue si un JSON ne suit plus son Markdown, sans rien écrire (CI).
 import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -19,7 +20,7 @@ if (process.argv.includes('--check')) {
     for (const p of enTrop) console.error(`✗ ${court(p)} ne vient d'aucun niveau de docs/contenu/ : npm run contenu le supprime`);
     process.exit(1);
   }
-  console.log(`✓ ${sortie.size} fichiers à jour (${iles.size} îles en Markdown)`);
+  console.log(`✓ ${sortie.size} fichiers à jour (${iles.size} îles et le portail en Markdown)`);
 } else {
   const erreurs = [];
   for (const p of perimes.filter((q) => q.startsWith(DATA) && existsSync(q))) {
@@ -34,5 +35,5 @@ if (process.argv.includes('--check')) {
   }
   for (const p of perimes) writeFileSync(p, sortie.get(p));
   for (const p of enTrop) rmSync(p);
-  console.log(`✓ ${perimes.length} fichiers écrits, ${enTrop.length} supprimés (${iles.size} îles en Markdown)`);
+  console.log(`✓ ${perimes.length} fichiers écrits, ${enTrop.length} supprimés (${iles.size} îles et le portail en Markdown)`);
 }

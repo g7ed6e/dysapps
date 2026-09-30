@@ -1,8 +1,10 @@
-// Les îles écrites en Markdown (docs/contenu/) et les JSON qu'elles produisent (src/blocland/exercises/data/).
+// Les îles écrites en Markdown (docs/contenu/<île>.md) et les missions du portail (docs/contenu/portail/), avec les
+// JSON qu'ils produisent (src/blocland/iles.ts, src/blocland/exercises/data/, src/apps/<mission>/).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { lireIle, principal } from './format.mjs';
+import { MISSIONS_PORTAIL } from './portail.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -57,6 +59,13 @@ export function produire() {
   // compétences…), sans rien coûter à l'exécution.
   const entete = "// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.\n";
   sortie.set(ILES, `${entete}import type { BiomeDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies BiomeDef[];\n`);
+  // Les missions du portail : docs/contenu/portail/<mission>.md → src/apps/<mission>/….json.
+  for (const m of MISSIONS_PORTAIL) {
+    const fichier = join('docs/contenu/portail', `${m.id}.md`);
+    sortie.set(join(racine, m.json), JSON.stringify(m.lire(readFileSync(join(CONTENU, 'portail', `${m.id}.md`), 'utf8'), fichier), null, 2) + '\n');
+  }
+  const connus = new Set(MISSIONS_PORTAIL.map((m) => `${m.id}.md`));
+  for (const f of readdirSync(join(CONTENU, 'portail'))) if (!connus.has(f)) throw new Error(`docs/contenu/portail/${f} : mission du portail inconnue (${[...connus].join(', ')})`);
   return { sortie, iles };
 }
 

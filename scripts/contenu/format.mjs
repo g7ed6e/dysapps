@@ -110,15 +110,15 @@ const SEP = ' · ';
 
 // ---------- Valeurs ----------
 
-function aGuillemets(s) {
+export function aGuillemets(s) {
   return s === '' || s !== s.trim() || /[\n\r]/.test(s) || s.startsWith('"');
 }
 
-function ecrireTexte(s) {
+export function ecrireTexte(s) {
   return aGuillemets(s) ? JSON.stringify(s) : s;
 }
 
-function lireTexte(v, ligne) {
+export function lireTexte(v, ligne) {
   if (v === '' || v !== v.trim()) throw new Error(`ligne ${ligne} : valeur vide ou avec des espaces au bord : l’écrire entre guillemets (« "" »)`);
   if (v.startsWith('"')) {
     try {

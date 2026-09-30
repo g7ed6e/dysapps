@@ -37,7 +37,7 @@ public/          icônes, police Luciole
 - `src/apps/registry.ts` : le **catalogue des missions** (identifiant, matière, titre, description, icône, composant chargé à la demande). Les pages Français, Maths et Anglais le lisent (`SUBJECTS` : la liste des matières), puis ajoutent les îles de Blocland de la matière.
 - `src/components/QuizSession.tsx` : le **moteur d’exercice du portail**, commun à toutes les missions. Il reçoit une fonction `makeQuestions` rappelée à chaque séance (ce qui permet de générer des questions aléatoires) et gère consigne lue, réponses, joker, correction dans un bandeau fixe (`useSheetClearance` fait défiler la question juste au-dessus, pour qu'il ne la cache pas ; Blocland s'en sert aussi), XP et bilan. En fin de mission, il donne aussi les blocs de l’école du village (`completePortal` du contexte Blocland, s’il y en a un).
 - `src/components/QuestMenu.tsx` : le menu des missions d’une activité (cartes numérotées avec le meilleur score), puis la mission choisie.
-- Chaque mission a ses données ou ses générateurs : `homophones/sets.json`, `lecture/texts.json`, `tables/generators.tsx`, `fractions/generators.tsx`, `decimaux/generators.tsx`.
+- Chaque mission a ses données ou ses générateurs : `homophones/sets.json`, `lecture/texts.json`, `vocabulaire/themes.json`, `irreguliers/verbs.json` (produits par `npm run contenu` depuis `docs/contenu/portail/`), `tables/generators.tsx`, `fractions/generators.tsx`, `decimaux/generators.tsx`.
 
 ## Le socle commun (`src/core/`)
 
