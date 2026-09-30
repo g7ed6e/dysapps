@@ -1,1 +1,0 @@
-Outils de captures : avec le rendu Archipéo, le script des mesures choisit aussi l'univers Archipéo dans les Réglages, pour que l'écran du défi, la bulle et les panneaux montrent les textes d'Archipéo et non ceux de Blocland. Rien ne change pour l'élève.

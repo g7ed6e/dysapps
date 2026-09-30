@@ -1,1 +1,0 @@
-- Archipéo : le rallumage d’un Gardien au village (« Le Grand Chêne brille à nouveau. ») ne revient plus en boucle quand l’appareil ne peut rien enregistrer, par exemple en navigation privée. Un Gardien vu reste vu jusqu’à la prochaine ouverture de l’application.

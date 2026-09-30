@@ -1,1 +1,0 @@
-Archipéo, préparation des Îles Brumeuses, des Anciens Ateliers et des Îles du Ciel : le directeur artistique a écrit pour chacun de ces archipels une fiche d’intention (`design/archipeo/intentions/`), qui dit à l’avance ce que l’élève verra en arrivant, ses repères, ses couleurs et ce qui est interdit. Rien ne change encore dans l’application.

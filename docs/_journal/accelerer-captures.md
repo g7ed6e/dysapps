@@ -1,1 +1,0 @@
-Outillage : les captures d’écran se prennent plus vite. Rien ne change pour l’élève. Les deux scripts de captures (celles du manuel et celles des lots de rendu) figent le dessin du monde 3D le temps de prendre l’image : sans carte graphique, une capture passe d’une dizaine de secondes à environ trois, pour la même image.

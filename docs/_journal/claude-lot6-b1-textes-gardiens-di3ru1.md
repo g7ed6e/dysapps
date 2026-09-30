@@ -1,3 +1,0 @@
-**Les textes des Gardiens changent de place, pas de mots.** Les répliques des Gardiens pendant leur défi, l’espèce des créatures, les libellés « Gardien vaincu » et le mot de la baleine sont maintenant rangés par univers. Rien ne change pour l’élève : Archipéo a déjà ses propres textes, où l’on rallume les Gardiens au lieu de les vaincre, mais ils ne s’afficheront qu’au moment où l’on pourra choisir son univers.
-
-**Le bouton Écouter de l’arène lit la phrase affichée.** Devant un Gardien déjà vaincu, il lisait encore la phrase du défi au lieu de « … est déjà vaincu, mais il aime les revanches. »

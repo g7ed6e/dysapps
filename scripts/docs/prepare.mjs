@@ -1,8 +1,7 @@
 // Prépare les sources du site de documentation pour VitePress (docs/.vitepress/config.mts) :
-// les pages Markdown de docs/ (sauf docs/_theme/, docs/_journal/, docs/.vitepress/ et docs/conception/, qui ne sont pas
+// les pages Markdown de docs/ (sauf docs/_theme/, docs/.vitepress/ et docs/conception/, qui ne sont pas
 // publiés : le site s'adresse aux élèves et aux adultes qui les accompagnent, pas aux contributeurs) plus les pages générées depuis
-// les données du jeu (scripts/docs/generate.mjs) ; le journal des versions (docs/_journal/) n'est pas publié,
-// copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
+// les données du jeu (scripts/docs/generate.mjs), copiées dans .docs-src/ avec les fichiers statiques (icône, police Luciole, sw.js, captures d'écran du jeu).
 // Aucune ressource externe.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, posix, relative } from 'node:path';

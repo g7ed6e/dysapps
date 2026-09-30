@@ -1,1 +1,0 @@
-- **Le voyage ne montre plus la mer vide à l’arrivée.** Quand l’archipel change sous le voile, la caméra et le bonhomme passent tout de suite au port d’en face : on voit le Bloc-Navire approcher et accoster, en 3D comme en 2D, à l’aller comme au retour.

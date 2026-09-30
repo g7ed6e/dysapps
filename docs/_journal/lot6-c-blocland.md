@@ -1,2 +1,0 @@
-Documentation : la page Style décrit les deux univers au présent. Blocland, l’univers par défaut, garde son monde en blocs ; Archipéo, choisi dans les Réglages, a son rendu à lui ; la 2D ne sert plus que sur un appareil sans 3D. Rien ne change dans l’application.
-Les aperçus fixes des univers dans Réglages › Univers attendent la fin des lots 8 et 8b : d’ici là, chaque univers garde son icône, sa phrase à écouter et la confirmation.

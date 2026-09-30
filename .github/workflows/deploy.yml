@@ -47,12 +47,6 @@ jobs:
       - name: Calculer la version
         id: version
         run: echo "version=$(node scripts/version.mjs)" >> "$GITHUB_OUTPUT"
-      # Chaque pull request décrit ce qu'elle change dans un fragment du journal (docs/_journal/<nom>.md).
-      - name: Vérifier le journal de la documentation
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: npm run docs:check -- "origin/$BASE_REF"
       # La page des personnages du pilotage (hors du site) suit les données du jeu.
       - name: Vérifier la page des personnages du pilotage
         run: npm run pilotage:personnages -- --check

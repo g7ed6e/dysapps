@@ -1,1 +1,0 @@
-- Dans **Réglages → Vue de Blocland**, le monde en 2D s’appelle maintenant **Le monde en 2D (expérimental)** au lieu de « (essai) ».

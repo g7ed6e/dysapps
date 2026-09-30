@@ -1,1 +1,0 @@
-Conception : trois décisions du mainteneur inscrites dans la fiche de famille du rendu. Aux Premiers Rivages, le phare est celui du plan « Le phare de Grimoire », et le volcan ne garde qu’une fumée mince. Aux Îles Brumeuses, les masses rocheuses sont reliées par un pont court et rigide, de pierre et de bois. Rien ne change dans l’application.

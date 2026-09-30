@@ -1,1 +1,0 @@
-Conception : troisième étape de la séparation du jeu et du rendu. Ce qui existe dans un archipel (les îles, les bornes de mission et leur état) et les décisions du jeu quand l'élève touche le monde ou part en voyage sont maintenant calculés à part, sans dépendre du dessin, pour que la même logique serve demain la vue en 2D, la 3D et Archipéo. Rien ne change dans l'application.

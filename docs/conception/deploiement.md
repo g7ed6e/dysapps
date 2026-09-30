@@ -25,19 +25,19 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`docs/.vitepress/theme/`, décrit dans [Style](style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run docs:build` écrit `dist-docs/` :
 
-1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/`, `docs/_journal/`, `docs/.vitepress/` et `docs/conception/` : le site s’adresse aux élèves et aux adultes qui les accompagnent) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
+1. `docs/.vitepress/config.mts` appelle `scripts/docs/prepare.mjs`, qui copie `docs/**/*.md` (sauf `docs/_theme/`, `docs/.vitepress/` et `docs/conception/` : le site s’adresse aux élèves et aux adultes qui les accompagnent) dans `.docs-src/` et y ajoute les pages générées par `scripts/docs/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
 2. La configuration construit le sommaire depuis `docs/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
 3. VitePress construit le site ; à la fin, chaque page reçoit sa politique de sécurité du contenu en `<meta>`, avec l’empreinte des scripts en ligne de VitePress.
 
 Le thème (`docs/.vitepress/theme/`) reprend les couleurs de l’application et la police Luciole, avec un texte à 18 px au moins. Le site n’utilise aucune ressource externe, n’a ni cookie ni statistique. Il se prévisualise en local avec `npm run docs:dev` (serveur de développement sur le port 4173) ou `npm run docs:preview` après un build.
 
-`npm run docs:check` vérifie qu’une pull request ajoute un fragment au journal (`docs/_journal/`) ; le build échoue si une page du sommaire manque.
+Le build échoue si une page du sommaire manque.
 
 ## Le workflow GitHub Actions
 
 `.github/workflows/deploy.yml` s’exécute à chaque push et à chaque pull request :
 
-1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis sur une pull request `npm run docs:check`, puis `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
+1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
 2. **captures**, en parallèle, sur `main` seulement : installe le Chromium de `playwright-core` (`npx playwright-core install --with-deps chromium`), rejoue le jeu avec `npm run docs:captures` et téléverse les images en artefact `captures`. Les captures ne sont pas dans le dépôt (`docs/_captures/` est ignoré par git) : elles sont refaites à chaque publication, donc toujours à jour. Une pull request ne les attend pas, pour rester rapide.
 3. **docs**, après **captures** : sur `main`, récupère l’artefact dans `docs/_captures/` et lance `npm run docs:build` avec `DOCS_CAPTURES=required` (une capture citée et absente fait échouer le build) ; sur une pull request, construit le site avec des images vides à la place des captures, ce qui vérifie quand même les pages et les noms de captures ; sur `main`, l’artefact `dist-docs` est téléversé pour Pages.
 4. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
@@ -60,9 +60,9 @@ La version n’est écrite dans aucun fichier (`package.json` n’en a pas) : `s
 
 `npm run version:show` affiche la version du commit courant. Sur une pull request, la CI calcule sur le commit de fusion : c’est la version qu’aura `main`. En local, sur une branche à plusieurs commits, le nombre est indicatif (chaque commit compte).
 
-Deux pull requests menées en parallèle ne touchent donc aucun numéro commun et n’ont plus à se rebaser pour la version. Le journal suit le même principe : chaque pull request ajoute un fragment `docs/_journal/<nom>.md` (sans titre), et `scripts/docs/journal.mjs` le place sous le titre `## <version> — <date>` du commit de `main` qui l’a ajouté. Les entrées antérieures (0.14.0 et avant) sont dans `docs/_journal/historique.md`.
+Deux pull requests menées en parallèle ne touchent donc aucun numéro commun et n’ont plus à se rebaser pour la version.
 
-La version est affichée dans les réglages de l’application et dans le pied de page de la documentation ; le journal des versions n’est pas publié (`npm run journal:show` l’affiche). La CI refuse une pull request sans fragment de journal.
+La version est affichée dans les réglages de l’application et dans le pied de page de la documentation. Il n’y a pas de journal des versions : l’historique est celui de git et des pull requests.
 
 ## Dépendances
 

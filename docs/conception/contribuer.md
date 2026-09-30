@@ -1,6 +1,6 @@
 # Contribuer
 
-Le dépôt est <https://github.com/g7ed6e/dysapps>. Le travail se fait par pull request sur `main` ; la CI lance les tests, les deux builds et la vérification du journal.
+Le dépôt est <https://github.com/g7ed6e/dysapps>. Le travail se fait par pull request sur `main` ; la CI lance les tests, et les deux builds.
 
 ## Mettre en route
 
@@ -12,8 +12,6 @@ npm run build      # vérification TypeScript + build de production dans dist/
 npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
-npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/, non publié)
-npm run journal:show # affiche le journal des versions
 npm run pilotage:personnages # refait pilotage/game-design/personnages.md
 npm run docs:captures # rejoue le jeu dans Chromium et fait les captures d’écran (docs/_captures/, hors du dépôt)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D, de jour et de nuit ; --attente <s> : temps laissé à la caméra)
@@ -26,7 +24,6 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 1. **Le code et ses tests.** La logique reste pure et testée (moteur, progression, générateurs, données) ; un exercice ajouté est vérifié par les tests de données.
 2. **La version** : rien à faire. Elle se calcule depuis git à la fusion (voir [Déploiement](deploiement.md#version)) : la pull request monte la version mineure, ou un autre cran si son message contient `+semver: major`, `+semver: patch` ou `+semver: none`.
 3. **La documentation**, dans la même pull request :
-   - un **fragment du journal** : un fichier nouveau `docs/_journal/<nom-de-la-branche>.md`, sans titre, qui dit ce que change la pull request pour l’élève ou pour le contenu (vérifié par la CI). Le titre `## <version> — <date>` est ajouté à la publication ; deux pull requests parallèles écrivent deux fichiers différents et ne se gênent pas ;
    - le **manuel** (`docs/manuel/`) mis à jour si un écran, un geste, un réglage ou une règle du jeu change, ses **captures** relues si l’écran montré change (la CI les refait sur `main` ; `npm run docs:captures` les montre en local) ;
    - les **principes** et la **conception** (`docs/pedagogie/principes.md`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
    - le **README** cohérent avec le reste.
