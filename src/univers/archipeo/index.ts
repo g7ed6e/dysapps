@@ -160,8 +160,8 @@ export const ARCHIPEO = {
     phare: {
       challenge: 'Le Dragon de lumière souffle du haut de sa colonne : « Mes ailes de verre sont éteintes. Suis chaque nombre jusqu’à son image, à ton rythme. »',
       guardianSays: {
-        hit: 'Une veine s’allume dans mes ailes. Tu as trouvé l’image.',
-        miss: 'Rien ne s’éteint. Remplace x par le nombre, calcule, et reprends.',
+        hit: 'Une veine s’allume dans mes ailes. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis la formule ou le graphique, et reprends.',
         beaten: 'Mes ailes de verre se rallument. Le phare est à toi, et à Fi.',
       },
     },
@@ -309,6 +309,7 @@ export const ARCHIPEO = {
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
   sentinelles: {
     consigne: 'Chaque épreuve réussie allume une partie de sa lumière, et une épreuve ratée n’éteint rien. Prends ton temps, personne ne compte les secondes.',
+    regle: 'Une épreuve ratée n’éteint rien.',
     jauge: 'Épreuves réussies',
     compte: (reussies, total) => `${reussies} sur ${total}`,
     seuil: (n, assez) => (assez ? 'C’est assez pour rallumer sa lumière.' : `Il faut ${n} épreuves réussies pour rallumer sa lumière.`),

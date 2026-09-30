@@ -24,9 +24,9 @@ import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
-import { WorldCanvas2D } from './pixel';
-import { useWorldView } from './useImmersive';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
+import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
+import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
@@ -77,6 +77,7 @@ import { usePlanBuilder, type Burst } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
+import { useASuivre } from '../components/useASuivre';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -96,8 +97,6 @@ export function WorldPage() {
   const { settings, speak } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
-  // Le monde en 3D ou en 2D : deux vues du même contrat (world/view.ts).
-  const View = useWorldView() === '2d' ? WorldCanvas2D : WorldCanvas;
   const { state, moveTo, launch } = useBlocland();
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'carte';
@@ -188,6 +187,7 @@ export function WorldPage() {
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
   const islandLabels = useMemo(
@@ -245,8 +245,13 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
+  const [destinationRef, destinationSuite] = useASuivre<HTMLSpanElement>(
+    // La phrase n'existe que sans chemin à construire : la clé change quand elle apparaît.
+    mapOpen && !(mapTarget && remaining.length) ? destinationText : null,
+  );
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
+  const stageRef = useRef<HTMLDivElement>(null);
   // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
   const revoirAide = () => {
     setTutoDone(false);
@@ -485,6 +490,10 @@ export function WorldPage() {
   // un instant, et l'élève reprend la main. Un toucher saute le moment : la sentinelle est allumée tout de suite.
   const [moment, setMoment] = useState<{ id: BiomeId; phase: 'camera' | 'fondu'; seq: number } | null>(null);
   const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
+  // La bulle du bas défile (grand texte, téléphone) : dit s'il reste du texte sous ses boutons (DA-25).
+  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(whaleWord?.id ?? motRallume);
+  usePlaceDesBulles(stageRef, !!voyage);
+  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -590,7 +599,7 @@ export function WorldPage() {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
     openIsland(id);
   };
-  // Ce que l'élève fait dans le monde, en 3D comme en 2D : la vue renvoie une intention, la page décide.
+  // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide.
   const onIntent = (i: Intention) => {
     switch (i.genre) {
       case 'ile':
@@ -637,10 +646,12 @@ export function WorldPage() {
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
 
   return (
-    <div className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}`}>
-      <div className="world-stage" onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
+    <div
+      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume ? ' bulle-ouverte' : ''}`}
+    >
+      <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
-          <View
+          <WorldCanvas
             archipelago={a}
             cubes={cubes}
             creatures={creatures}
@@ -663,7 +674,7 @@ export function WorldPage() {
             onIntent={onIntent}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en ${View === WorldCanvas2D ? '2D' : '3D'} : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
@@ -682,6 +693,7 @@ export function WorldPage() {
             type="button"
             className="button world-menu-button"
             data-tuto="menu"
+            data-couvre="bouton"
             aria-label="Menu"
             aria-pressed={menuOpen}
             aria-controls={menuOpen ? 'panneau-menu' : undefined}
@@ -690,7 +702,7 @@ export function WorldPage() {
             <Icon name="pause" />
           </button>
         )}
-        <div className="world-overlay-top">
+        <div className="world-overlay-top" data-couvre="scene">
           {voyage?.mode === 'cinema' && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
               <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
@@ -700,7 +712,8 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {mapOpen && (
+          {/* Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25). */}
+          {mapOpen && !whaleWord && !motRallume && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               {mapTarget && remaining.length ? (
                 <>
@@ -718,9 +731,13 @@ export function WorldPage() {
                 </>
               ) : (
                 <>
-                  <p className="world-map-destination">
-                    <SpeakButton text={destinationText} compact />
-                    <span>
+                  {/* Écouter hors de la fenêtre qui défile : en grand texte, elle ne montre que des lignes entières (DA-31). */}
+                  <p className={`world-map-destination${destinationSuite ? ' a-suivre' : ''}`}>
+                    <span className="world-map-speak">
+                      <SpeakButton text={destinationText} compact />
+                      {destinationSuite && <Icon name="chevronDown" className="world-map-suite" />}
+                    </span>
+                    <span className="world-map-texte" ref={destinationRef}>
                       <Syllabified text={destinationText} />
                     </span>
                   </p>
@@ -733,7 +750,8 @@ export function WorldPage() {
                     </button>
                   </p>
                   {/* Les îles et leur état, en mots : ce que la Carte dessine sur chaque île, lisible sans la voir. */}
-                  <details className="world-map-islands">
+                  {/* À l'ouverture, le titre du pli vient en haut du panneau, entier (DA-31). */}
+                  <details className="world-map-islands" onToggle={(e) => e.currentTarget.open && titreDuPliEnHaut(e.currentTarget)}>
                     <summary>Les îles et leur état</summary>
                     <ul>
                       {modele.iles.map((b) => {
@@ -782,7 +800,7 @@ export function WorldPage() {
           )}
         </div>
         {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
-        <div className="world-overlay-bottom">
+        <div className="world-overlay-bottom" data-couvre="bulle" ref={bullesRef}>
           {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
           {moment && !motRallume && (
             <button type="button" className="button rallumage-passer" onClick={passerLesRallumages}>
@@ -790,9 +808,9 @@ export function WorldPage() {
             </button>
           )}
           {motRallume ? (
-            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} />
+            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (
-            whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} />
+            whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} aSuivre={bullesSuite} />
           )}
           <Tutorial
             id="village-immersif"
@@ -811,7 +829,7 @@ export function WorldPage() {
             ]}
           />
           </div>
-        <nav className="world-bar" aria-label="Village">
+        <nav className="world-bar" data-couvre="scene" aria-label="Village">
           {island && !voyage && (
             <button
               type="button"
@@ -919,4 +937,10 @@ export function WorldPage() {
       )}
     </div>
   );
+}
+
+/** Le pli ouvert : son titre en haut du panneau qui le porte, sans faire défiler la page (DA-31). */
+function titreDuPliEnHaut(pli: HTMLElement) {
+  const panneau = pli.closest<HTMLElement>('.world-overlay-top');
+  if (panneau) panneau.scrollTop += pli.getBoundingClientRect().top - panneau.getBoundingClientRect().top;
 }

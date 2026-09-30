@@ -214,10 +214,13 @@ svg {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+/* Caché au-dessus de la page de toute sa hauteur, quelle qu'elle soit : en grand texte, il tient sur deux lignes et
+   un décalage fixe le laissait dépasser sous la barre du haut (DA-16). */
 .skip-link {
   position: absolute;
   left: 1rem;
-  top: -4rem;
+  top: 0;
+  transform: translateY(-100%);
   background: var(--yellow);
   color: var(--on-accent);
   padding: 0.5rem 1rem;
@@ -227,6 +230,7 @@ svg {
 }
 .skip-link:focus {
   top: 1rem;
+  transform: none;
 }
 
 /* ===== Panneaux : opaques, angles de 12 px, bordure pleine, sans ombre sur la page ===== */
@@ -247,7 +251,8 @@ svg {
 .grid {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  /* Jamais plus large que l'écran, même quand 15rem dépasse sa largeur (grand texte sur téléphone, DA-16). */
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
@@ -907,7 +912,7 @@ button.app-card:active {
 }
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(8.5rem, 100%), 1fr));
   gap: 0.8rem;
   margin: 1.2rem 0 0;
 }
@@ -1104,14 +1109,19 @@ button.app-card:active {
 .quiz-steps li.current {
   background: var(--sand);
 }
-/* Le défi d'une sentinelle (lot 6) : les écrans passés en Brume, l'écran en cours à son contour épais ; seules les
-   pastilles de la jauge disent les réussites. */
+/* Le défi d'une sentinelle (lot 6) : les écrans passés en Brume, l'écran en cours rempli de Bleu lagon, plus haut, à
+   son contour épais (DA-30) ; jamais de Sable, qui dit la lumière gagnée : seules les pastilles de la jauge disent les
+   réussites. */
+.quiz-steps-neutres {
+  align-items: center;
+}
 .quiz-steps-neutres li.done {
   background: #e5ebe3;
   border-color: var(--ink);
 }
 .quiz-steps-neutres li.current {
-  background: transparent;
+  height: 1.2rem;
+  background: #178078;
   border-width: calc(var(--border-width) * 2);
 }
 .question-count {
@@ -1152,7 +1162,7 @@ button.app-card:active {
 }
 .choices {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
   gap: 1rem;
 }
 .choice {
@@ -2063,6 +2073,36 @@ button.app-card:active {
     transform: translateY(100%);
   }
 }
+/* DA-23 : aux grandes tailles de texte, le bandeau ne tient plus en bas de l'écran (useSheetClearance). Il suit alors
+   la question dans la page, qui défile d'un seul tenant : rien ne passe sur la question ni sur la correction. Seul le
+   bouton pour continuer reste collé en bas de l'écran ; la place qu'il prend est réservée sous le bandeau. */
+.quiz[data-bandeau="page"] .result-sheet {
+  position: static;
+  margin-top: 1.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  padding-bottom: 0.9rem;
+  animation: none;
+}
+.quiz[data-bandeau="page"] .result-sheet-inner {
+  max-height: none;
+}
+.quiz[data-bandeau="page"] .result-sheet-body {
+  overflow: visible;
+}
+.quiz[data-bandeau="page"] .result-sheet .next-button {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 12px calc(0.4rem + env(safe-area-inset-bottom));
+  border-radius: var(--radius) var(--radius) 0 0;
+  /* Un libellé d'une ligne : l'interligne de lecture doublerait la hauteur du bouton, prise sur la question. */
+  line-height: 1.3;
+}
 /* Bouton d'action collé en bas de l'écran pendant la lecture d'un long texte (sur téléphone, il attend à la fin du
    texte : collé, il cacherait un tiers de l'écran). */
 .sticky-actions {
@@ -2226,7 +2266,7 @@ button.app-card:active {
 .biome-map {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
@@ -2985,22 +3025,31 @@ button.app-card:active {
 }
 
 /* ===== Le Gardien : arène ===== */
+/* Une vitrine et un panneau, d'un seul bloc (DA-26) : le décor de l'arène (son dégradé) derrière le Gardien seul, et
+   tout le texte sur le fond uni et clair des panneaux, en encre, où les syllabes se lisent. */
 .arena {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(9rem, 12rem) 1fr;
-  gap: 1rem 1.4rem;
-  align-items: center;
+  grid-template-columns: minmax(9rem, 13rem) 1fr;
+  align-items: stretch;
   margin-bottom: 1.2rem;
-  padding: 1rem 1.2rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
-  color: #fbf6ea;
-  background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
+  overflow: hidden;
+  color: var(--text);
+  background: var(--surface);
 }
-.arena-beaten {
+.arena-vitrine {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-right: var(--border-width) solid var(--ink);
+  background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
+  /* La chute du Gardien vaincu reste dans sa vitrine, jamais sur le texte. */
+  overflow: hidden;
+}
+.arena-beaten .arena-vitrine {
   background: linear-gradient(180deg, #4a7bb5 0%, #8fd0f5 70%, #6cb33f 100%);
-  color: #2b2118;
 }
 .guardian {
   display: grid;
@@ -3065,6 +3114,9 @@ button.app-card:active {
 .arena-info {
   display: grid;
   gap: 0.5rem;
+  align-content: center;
+  min-width: 0;
+  padding: 1rem 1.2rem;
 }
 .arena-name {
   margin: 0;
@@ -3074,21 +3126,23 @@ button.app-card:active {
 }
 .arena-gauge-label {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0 1rem;
   font-family: var(--font-family);
   font-weight: 700;
   font-size: 0.9rem;
 }
+/* Le compte (« 0 sur 6 », « 6 / 6 ») d'un seul tenant : faute de place, il passe sous son libellé (DA-29). */
+.arena-gauge-label > :last-child {
+  white-space: nowrap;
+}
 .arena-gauge {
   height: 1.1rem;
-  border: 2px solid #fbf6ea;
+  border: 2px solid var(--text);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--bg);
   overflow: hidden;
-}
-.arena-beaten .arena-gauge {
-  border-color: var(--ink);
 }
 .arena-gauge-fill {
   height: 100%;
@@ -3107,7 +3161,7 @@ button.app-card:active {
   place-items: center;
   width: 24px;
   height: 24px;
-  border: 2px solid #fbf6ea;
+  border: 2px solid var(--text);
   border-radius: 50%;
   box-sizing: border-box;
 }
@@ -3121,34 +3175,78 @@ button.app-card:active {
   font-weight: 700;
   max-width: none;
 }
-.arena-seuil .syl-0,
-.arena-seuil .syl-1 {
-  color: inherit;
-}
+/* Le seuil et la phrase du Gardien se lisent comme une consigne : en syllabes colorées, si le réglage le veut (DA-27). */
 .arena-line {
   margin: 0;
   font-weight: 700;
   max-width: none;
 }
-.arena-line .syl-0,
-.arena-line .syl-1 {
-  color: inherit;
+/* Archipéo : la règle du rallumage, sa phrase courte toujours lue, la règle entière dans le pli, le haut-parleur à
+   droite du titre, à la même place pli ouvert ou fermé (DA-28). Le chevron est celui des plis des îles. */
+.arena-regle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
 }
-.arena-beaten .arena-line .syl-1 {
-  color: var(--syl-1);
+.arena-regle details {
+  min-width: 0;
 }
+.arena-regle summary {
+  display: flex;
+  /* Sur plusieurs lignes, le chevron reste en face de la première. */
+  align-items: flex-start;
+  padding: 0.4rem 0;
+  box-sizing: border-box;
+  gap: 0.4rem;
+  min-height: 48px;
+  list-style: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.arena-regle summary::-webkit-details-marker {
+  display: none;
+}
+.arena-regle-chevron {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 1lh;
+}
+.arena-regle p {
+  margin: 0.3rem 0 0;
+  max-width: none;
+}
+/* Une colonne sur téléphone et en grand texte : le Gardien au-dessus, dans une vitrine basse, le texte sur toute la
+   largeur dessous (DA-29). */
 @media (max-width: 640px) {
   .arena {
     grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
   }
-  .arena-info {
-    width: 100%;
+  .arena-vitrine {
+    padding: 0.5rem;
+    border-right: 0;
+    border-bottom: var(--border-width) solid var(--ink);
   }
-  .arena-line {
-    text-align: left;
+  .arena-vitrine .guardian-3d {
+    /* Entier, au moins 96 px, jamais plus d'un quart de l'écran en hauteur. */
+    width: clamp(96px, 8rem, calc(25vh - 1rem));
+    height: clamp(96px, 8rem, calc(25vh - 1rem));
   }
+}
+/* Le même passage en une colonne en grand texte : à tenir identique au bloc du téléphone ci-dessus. */
+:root[data-texte="grand"] .arena {
+  grid-template-columns: 1fr;
+}
+:root[data-texte="grand"] .arena-vitrine {
+  padding: 0.5rem;
+  border-right: 0;
+  border-bottom: var(--border-width) solid var(--ink);
+}
+:root[data-texte="grand"] .arena-vitrine .guardian-3d {
+  /* Entier, au moins 96 px, jamais plus d'un quart de l'écran en hauteur. */
+  width: clamp(96px, 8rem, calc(25vh - 1rem));
+  height: clamp(96px, 8rem, calc(25vh - 1rem));
 }
 
 /* ===== Blocland en immersion : le monde en plein écran, panneaux glissants ===== */
@@ -3228,20 +3326,83 @@ button.app-card:active {
   position: absolute;
   left: 0.6rem;
   right: 0.6rem;
-  bottom: 4.6rem;
+  /* Juste au-dessus de la barre du bas, et jamais sur ce qui occupe le haut (mesurés par usePlaceDesBulles, DA-25). */
+  bottom: calc(var(--barre-h, 4rem) + 0.6rem);
   display: grid;
   gap: 0.5rem;
   pointer-events: none;
-  max-height: 45%;
+  max-height: min(45%, calc(100% - var(--barre-h, 4rem) - var(--haut-h, 0px) - 1.2rem));
   overflow: auto;
+}
+/*
+ * Le mot de la baleine ou du rallumage attend « J’ai compris », et en grand texte toute bulle : ils prennent la place
+ * qu'il leur faut entre le haut et la barre, pour se lire sans défiler, ou presque.
+ */
+.bulle-ouverte .world-overlay-bottom,
+:root[data-texte="grand"] .world-overlay-bottom {
+  max-height: calc(100% - var(--barre-h, 4rem) - var(--haut-h, 0px) - 1.2rem);
+}
+/* Si la bulle défile quand même, ses boutons restent en vue, collés en bas. */
+.world-overlay-bottom :is(.whale-word-actions, .tutorial-actions) {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+}
+/* Le texte continue sous les boutons : un trait pointillé au-dessus d'eux et un chevron le disent (comme sur la Carte). */
+.whale-word-actions.a-suivre {
+  border-top: var(--border-width) dashed currentColor;
+  padding-top: 0.4rem;
+}
+.whale-word-suite {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+}
+/*
+ * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine dessinée s'efface (décorative), Écouter
+ * garde son icône seule (son nom reste lu par les lecteurs d'écran) : les boutons prennent moins de place.
+ */
+@media (max-width: 640px) {
+  /* Une chose à la fois : tant que la bulle attend « J’ai compris », la barre du bas s'efface et lui laisse sa place. */
+  :root[data-texte="grand"] .bulle-ouverte .world-bar {
+    display: none;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-icon {
+    display: none;
+  }
+  /* Le trait pointillé seul dit la suite, comme sur la Carte : un chevron à côté d'Écouter en icône se prendrait pour un bouton. */
+  :root[data-texte="grand"] .whale-word-suite {
+    display: none;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .speak-button > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .speak-button {
+    min-width: 48px;
+    padding-inline: 0.5rem;
+  }
+  :root[data-texte="grand"] .world-overlay-bottom .whale-word-actions .button.primary {
+    padding-inline: 0.6rem;
+  }
 }
 .world-overlay-bottom > * {
   pointer-events: auto;
+  /* Jamais plus large que la place : une bulle en grand texte revient à la ligne au lieu de sortir de l'écran. */
+  min-width: 0;
 }
 .world-overlay-bottom .tutorial,
 .world-overlay-bottom .whale-word {
   margin: 0 auto;
   max-width: 26rem;
+}
+/* Sa marge du bas ferait défiler la bulle pour rien : au-dessus de la barre, elle n'en a pas besoin. */
+.world-overlay-bottom .whale-word {
+  margin-bottom: 0;
 }
 /* L'élément dont parle une bulle d'aide : un contour jaune qui pulse. */
 .tuto-target {
@@ -3262,7 +3423,8 @@ button.app-card:active {
 /* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
 .world-map-line {
   display: block;
-  max-width: 34rem;
+  /* Jamais plus large que la place au-dessus du monde (grand texte sur téléphone, DA-16). */
+  max-width: min(34rem, 100%);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
@@ -3281,8 +3443,67 @@ button.app-card:active {
   align-items: flex-start;
   gap: 0.6rem;
 }
-.world-map-destination > button {
+.world-map-speak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex: none;
+}
+/* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
+   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
+   archipels » restent sous elle, toujours visibles. */
+:root[data-texte="grand"] .world-map-line {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+}
+:root[data-texte="grand"] .world-map-line > * {
+  flex: none;
+}
+:root[data-texte="grand"] .world-map-line > button {
+  align-self: flex-start;
+}
+.world-map-texte {
+  display: block;
+  min-width: 0;
+}
+:root[data-texte="grand"] .world-map-texte {
+  /* Un peu d'air entre les lettres et le trait pointillé ; il reste dans la marge de la ligne suivante. */
+  max-height: calc(3lh + 0.2em + var(--border-width));
+  padding-bottom: 0.2em;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+:root[data-texte="grand"] .world-map-destination.a-suivre .world-map-texte {
+  border-bottom: var(--border-width) dashed currentColor;
+}
+:root[data-texte="grand"] .world-map-speak {
+  align-self: stretch;
+}
+/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
+   (trois quarts du texte, jamais sous 18 px), marges fixes. */
+@media (min-width: 641px) {
+  :root[data-texte="grand"] .world-map-line {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  :root[data-texte="grand"] .world-map-actions {
+    gap: 8px;
+  }
+  :root[data-texte="grand"] .world-map-actions .button {
+    font-size: 0.75em;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+.world-map-suite {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  width: 1.4em;
+  height: 1.4em;
 }
 .world-map-actions {
   display: flex;
@@ -3298,7 +3519,7 @@ button.app-card:active {
 }
 .world-map-islands ul {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
   gap: 0.3rem 1rem;
   margin: 0 0 0.4rem;
   padding: 0;
@@ -3936,6 +4157,98 @@ button.island-quest:active {
 .bar-list .bar.mark {
   background: var(--yellow);
   border-style: dashed;
+}
+/* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
+   du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
+   d'animé. */
+.graph {
+  margin: 0;
+}
+.graph svg {
+  width: 100%;
+  /* Bornée par la hauteur de l'écran : sur une tablette à l'horizontale, le graphique laisse place à la règle et aux réponses. */
+  max-width: min(24rem, 45vh);
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.graph .graph-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
+}
+.graph .graph-axis {
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.graph .graph-arrow {
+  fill: currentColor;
+}
+.graph text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  font-size: 21px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.graph .graph-name {
+  font-weight: 700;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux nombres des axes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.graph .graph-tick,
+.graph .graph-name {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.graph .graph-axis-tick {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.graph .graph-line {
+  stroke: var(--violet);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.graph .graph-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+:root[data-theme="nuit"] .graph .graph-line {
+  stroke: var(--yellow);
+}
+:root[data-theme="nuit"] .graph .graph-point {
+  fill: var(--yellow);
+}
+.graph figcaption {
+  /* Pas plus large que le graphique : aux grands espacements, la légende revient à la ligne au lieu d'élargir l'écran. */
+  max-width: min(24rem, 45vh);
+  margin: 0.3rem auto 0;
+  text-align: left;
+}
+/* Sur un écran large, le graphique et la règle côte à côte : la question, le graphique, la règle et les réponses tiennent
+   mieux dans la hauteur d'une tablette à l'horizontale. La règle garde au moins 20rem (à la taille de texte choisie) :
+   sinon, elle passe sous le graphique, comme sur un téléphone. Les autres écrans de calcul ne changent pas. */
+@media (min-width: 800px) {
+  .panel.calcul:has(> .calcul-figure .graph) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.2rem;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > * {
+    flex: 1 1 100%;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-figure {
+    /* La largeur du graphique, fixée : un SVG sans largeur propre n'a pas la même taille d'un navigateur à l'autre. */
+    flex: 0 1 min(24rem, 45vh);
+    min-width: 0;
+  }
+  .panel.calcul:has(> .calcul-figure .graph) > .calcul-aid {
+    flex: 1 1 20rem;
+  }
 }
 
 /* ===== Le plan dans le panneau d'île ===== */
@@ -4639,7 +4952,7 @@ button.island-quest:active {
 /* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
   margin-top: 0.4rem;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
 }
 .home-menu .menu-tile {
   flex-direction: row;
@@ -4738,8 +5051,59 @@ button.app-card {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
+/* Le panneau du haut s'arrête avant la colonne de droite (Pause, choix de l'archipel), mesurée : en grand texte, le
+   bouton « 3e » est plus large que Pause, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
 .world-page .world-overlay-top {
-  right: calc(0.6rem + 52px + 0.5rem);
+  right: calc(0.6rem + max(52px, var(--colonne-w, 52px)) + 0.5rem);
+}
+/* Sur téléphone en grand texte, la place manque : Pause et le choix de l'archipel passent en ligne en haut (Pause
+   reste dans le coin, l'archipel à sa gauche), et le panneau prend toute la largeur dessous (DA-31). */
+@media (max-width: 640px) {
+  :root[data-texte="grand"] .world-page .world-archipel {
+    top: 0.6rem;
+    right: calc(0.6rem + 52px + 0.5rem);
+  }
+  :root[data-texte="grand"] .world-page .world-overlay-top {
+    top: calc(0.6rem + 52px + 0.5rem);
+    right: 0.6rem;
+    /* Pli fermé, le panneau de la Carte s'arrête sous « Y aller », entier ; la suite vient en le faisant défiler
+       (usePanneauDeLaCarte.ts). Des traits pointillés disent qu'il continue, en bas comme en haut. */
+    max-height: var(--carte-panneau-max, 60%);
+  }
+  /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
+     qu'il sépare du bord par un peu d'air. */
+  :root[data-texte="grand"] .world-page .world-overlay-top[data-suite~="haut"]::before,
+  :root[data-texte="grand"] .world-page .world-overlay-top[data-suite~="bas"]::after {
+    content: '';
+    position: sticky;
+    z-index: 1;
+    display: block;
+    height: 0.4em;
+    background: var(--surface);
+    border: var(--border-width) solid var(--ink);
+    border-top: 0;
+    border-bottom: 0;
+    pointer-events: none;
+  }
+  :root[data-texte="grand"] .world-page .world-overlay-top[data-suite~="haut"]::before {
+    top: 0;
+    margin-bottom: calc(-0.4em - 0.5rem);
+    border-top: 3px dashed currentColor;
+  }
+  :root[data-texte="grand"] .world-page .world-overlay-top[data-suite~="bas"]::after {
+    bottom: 0;
+    margin-top: calc(-0.4em - 0.5rem);
+    border-bottom: 3px dashed currentColor;
+  }
+  /* Des marges plus fines dans le panneau et dans la liste des îles : un nom d'île tient sur sa ligne sans se couper. */
+  :root[data-texte="grand"] .world-page .world-map-line {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  :root[data-texte="grand"] .world-page .world-map-island {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 .menu-resume {
   width: 100%;
@@ -4951,4 +5315,216 @@ button.island-quest {
 .rallumage-passer {
   min-height: 48px;
   justify-self: end;
+}
+
+/* ===== DA-16 : grand texte sur téléphone, rien ne sort de l'écran (WCAG 1.4.10) ===== */
+/* En dernier recours seulement, un mot plus long que la ligne se coupe plutôt que de sortir de l'écran. */
+body {
+  overflow-wrap: break-word;
+}
+/* Un groupe de réglages ne s'élargit pas au mot le plus long de ses options. */
+fieldset {
+  min-inline-size: 0;
+}
+@media (max-width: 640px) {
+  /* En grand texte, une case (grille ou rangée) peut devenir plus étroite que son mot le plus long au lieu de pousser
+     l'écran. Sans spécificité (0,0,0) : un minimum écrit ailleurs (cible tactile de 48 px) reste le plus fort. */
+  :where(:root[data-texte="grand"] body *) {
+    min-width: 0;
+  }
+  /* Les étiquettes courtes dont le texte est posé à même une rangée (bouton, case à cocher, légende) : un mot plus
+     long que toute la ligne s'y coupe au lieu de sortir de l'écran. Les consignes et les textes à lire gardent
+     `break-word`, qui ne coupe un mot que s'il ne tient sur aucune ligne. */
+  :root[data-texte="grand"] :is(.button, .speak-button, .toggle, .option, .tag, legend, summary, .page-title, .section-title, .hero-title, .island-sheet-title, .island-quest-title) {
+    overflow-wrap: anywhere;
+  }
+  /* Le défi d'Archipéo : le haut-parleur de la règle au-dessus de son pli, comme celui d'une consigne. */
+  :root[data-texte="grand"] .arena-regle {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  :root[data-texte="grand"] .arena-regle > .speak-button {
+    align-self: flex-start;
+  }
+  /* Quête : le bouton Écouter au-dessus de la consigne, qui a toute la largeur. */
+  :root[data-texte="grand"] .consigne {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  :root[data-texte="grand"] .consigne > .speak-button {
+    align-self: flex-start;
+  }
+  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite ; les suivantes ont
+     toute la largeur. */
+  :root[data-texte="grand"] .app-shell.focus .page-title::before {
+    content: "";
+    float: right;
+    width: calc(56px + 0.6rem);
+    height: 1lh;
+  }
+  /* Les titres coulent comme le texte : l'icône en tête de la première ligne, les mots passent à la ligne dessous. */
+  :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) {
+    display: block;
+  }
+  :root[data-texte="grand"] :is(.page-title, .section-title, .hero-title, .island-sheet-title, .island-sheet-heading) > svg {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-right: 0.3em;
+  }
+  /* Panneau d'île : la créature et la croix sur une ligne, le nom de l'île et son module sur toute la largeur dessous. */
+  :root[data-texte="grand"] .island-sheet-head {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  :root[data-texte="grand"] .island-sheet-titles {
+    order: 1;
+    flex-basis: 100%;
+  }
+  :root[data-texte="grand"] .island-quest {
+    flex-wrap: wrap;
+  }
+  /* Une mission : l'icône et les étoiles (ou « Nouveau ») sur une ligne, le nom et la phrase sur toute la largeur
+     dessous. */
+  :root[data-texte="grand"] .island-quest-text {
+    order: 1;
+    flex-basis: 100%;
+  }
+  /* Les boutons : marges fixes, et l'icône au-dessus du libellé quand les deux ne tiennent pas sur la ligne, pour
+     qu'un mot (« Construire ») ne se coupe pas. */
+  :root[data-texte="grand"] .button {
+    flex-wrap: wrap;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  /* Ce qui s'écrit plus grand que le texte (titre de page, énoncé, calcul, document, blocs de lettres) revient à la
+     taille du texte : un mot y tient entier sur la ligne. */
+  :root[data-texte="grand"] :is(.page-title, .question-prompt, .calcul-prompt, .notice-text, .letter-block, .enclos-pen) {
+    font-size: max(1rem, min(1.3rem, 8vw));
+  }
+  /* Les réponses courtes : côte à côte tant qu'elles tiennent, chacune à sa largeur, sinon une par ligne. */
+  :root[data-texte="grand"] .choices.short {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .choices.short > .choice {
+    flex: 1 1 auto;
+  }
+  :root[data-texte="grand"] .enclos-pens {
+    flex-wrap: wrap;
+  }
+  /* L'aide (règle en liste) : retraits fixes. */
+  :root[data-texte="grand"] .aid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  :root[data-texte="grand"] .rule-card {
+    padding: 8px;
+  }
+  :root[data-texte="grand"] .rule-card ul {
+    padding-left: 20px;
+  }
+  /* Le mot d'un item (à découper, à écouter) reste entier : jamais plus grand qu'il ne faut pour tenir sur la ligne,
+     jamais plus petit que le texte (32 px au plus grand). */
+  :root[data-texte="grand"] .item-word {
+    font-size: max(1rem, min(1.6rem, 8.5vw));
+  }
+  /* « Question 1 / 4 » et le bouton Écouter : sur deux lignes s'ils ne tiennent pas côte à côte. */
+  :root[data-texte="grand"] .question-head {
+    flex-wrap: wrap;
+  }
+  /* « Question » reste entier : « 1 / 4 » passe à la ligne s'il le faut, jamais une lettre seule. */
+  :root[data-texte="grand"] .question-count {
+    padding: 0 8px;
+    overflow-wrap: normal;
+  }
+  /* Réglages : des cases moins rembourrées, et la valeur d'un curseur sous son nom quand les deux ne tiennent pas. */
+  :root[data-texte="grand"] .option {
+    padding: 6px 10px;
+  }
+  /* Le choix de l'univers : le rond et l'icône sur une ligne, le nom et la phrase sur toute la largeur dessous. */
+  :root[data-texte="grand"] .option.univers-choice,
+  :root[data-texte="grand"] .univers-choice label {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .univers-choice label,
+  :root[data-texte="grand"] .univers-text {
+    flex-basis: 100%;
+  }
+  :root[data-texte="grand"] .toggle input {
+    flex-shrink: 0;
+  }
+  /* Une case à cocher, un choix : la case au-dessus de son libellé s'il ne tient pas à côté. */
+  :root[data-texte="grand"] :is(.toggle, .option) {
+    flex-wrap: wrap;
+  }
+  /* Les étapes numérotées : un retrait fixe, le numéro reste dans le panneau. */
+  :root[data-texte="grand"] .settings-steps {
+    padding-left: 30px;
+  }
+  :root[data-texte="grand"] .settings-steps ul {
+    padding-left: 20px;
+  }
+  /* Les titres de groupe (« Espacements ») en trois quarts du texte, jamais sous 18 px : ils tiennent entiers sur
+     la ligne. */
+  :root[data-texte="grand"] .settings legend {
+    padding: 0 4px;
+    font-size: max(18px, 0.75rem);
+  }
+  :root[data-texte="grand"] .slider-label {
+    flex-wrap: wrap;
+    gap: 0 1rem;
+  }
+  /* La Carte : le bouton Écouter au-dessus de la phrase, qui a toute la largeur ; l'état d'une île sous son nom. */
+  :root[data-texte="grand"] .world-map-destination {
+    flex-direction: column;
+  }
+  /* Le trait pointillé seul dit la suite : au-dessus de la phrase, le chevron la montrerait à l'envers. */
+  :root[data-texte="grand"] .world-map-suite {
+    display: none;
+  }
+  /* Deux lignes entières de la phrase, puis « Y aller » et « Les quatre archipels » chacun sur une ligne, aux trois
+     quarts du texte (jamais sous 18 px) comme sur tablette : le panneau tient sans défiler, pli fermé, et laisse à la
+     Carte la place de la destination et de ses voisines (DA-31). */
+  :root[data-texte="grand"] .world-map-texte {
+    max-height: calc(2lh + 0.2em + var(--border-width));
+  }
+  :root[data-texte="grand"] .world-map-actions .button {
+    font-size: max(18px, 0.75em);
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  :root[data-texte="grand"] .world-map-island {
+    flex-wrap: wrap;
+  }
+  :root[data-texte="grand"] .question-head .question-count {
+    white-space: normal;
+  }
+  /* Les marges intérieures en rem grandissaient avec le texte et mangeaient la moitié de la largeur : fixes ici. */
+  :root[data-texte="grand"] .content {
+    padding-left: calc(12px + env(safe-area-inset-left));
+    padding-right: calc(12px + env(safe-area-inset-right));
+  }
+  :root[data-texte="grand"] .panel {
+    padding: 14px;
+  }
+  :root[data-texte="grand"] .island-sheet {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  :root[data-texte="grand"] .island-quest {
+    padding: 8px 10px;
+  }
+}
+/* En grand texte, les cartes de mots à trier (Chasse au son, Rimes) ont chacune au moins onze lettres de large :
+   deux par ligne sur tablette, une sur téléphone ; un mot tient entier dans sa carte. */
+:root[data-texte="grand"] .word-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11em), 1fr));
+}
+/* De même pour les réponses longues : au moins 14 rem de large, pour qu'un mot comme « bibliothèque » tienne. */
+:root[data-texte="grand"] .choices:not(.short) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+/* En grand texte, les bulles posées sur le monde ne sont jamais plus larges que lui. */
+:root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
+  grid-template-columns: minmax(0, 1fr);
 }

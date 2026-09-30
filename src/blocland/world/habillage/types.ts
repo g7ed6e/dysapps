@@ -29,4 +29,9 @@ export interface Habillage {
   figures: 'modeles' | 'cubes';
   /** Le défi d'un Gardien : une sentinelle à rallumer (si l'univers en a les textes), ou l'arène. */
   defi: 'sentinelle' | 'arene';
+  /**
+   * Les grands repères (world/cadrage.ts : le grand phare des Îles du Ciel) : la caméra les garde dans le cadre et les
+   * étiquettes s'en écartent ; ou le cadrage de la zone seul.
+   */
+  reperes: 'cadres' | 'libres';
 }

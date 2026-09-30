@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLabels, separateMark, type LabelBox } from './labelLayout';
+import { ecarterDesObstacles, entiere, layoutLabels, montrees, placerEtiquettes, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -98,5 +98,196 @@ describe("l'étiquette d'une île", () => {
     const plain = measureIslandLabel(ctx, 'Mine', 40);
     const withState = measureIslandLabel(ctx, 'Mine', 40, { id: 'a-explorer', name: 'À explorer' });
     expect(withState.w).toBeGreaterThan(plain.w);
+  });
+});
+
+describe('ecarterDesObstacles', () => {
+  const phare: LabelBox = { x: 370, y: 230, w: 30, h: 200 };
+
+  it('ne bouge pas les étiquettes qui ne couvrent aucun obstacle', () => {
+    const boxes: LabelBox[] = [
+      { x: 540, y: 227, w: 200, h: 32 },
+      { x: 800, y: 140, w: 200, h: 32 },
+    ];
+    expect(ecarterDesObstacles(boxes, [phare], 6)).toEqual([
+      { dx: 0, dy: 0 },
+      { dx: 0, dy: 0 },
+    ]);
+  });
+
+  it('écarte de la colonne d’un grand repère l’étiquette qui la touche, au plus près, sans la poser sur une autre', () => {
+    const boxes: LabelBox[] = [
+      { x: 393, y: 118, w: 240, h: 32 },
+      { x: 560, y: 150, w: 200, h: 32 },
+    ];
+    const out = ecarterDesObstacles(boxes, [phare], 6, { w: 1024, h: 616 });
+    expect(out[1]).toEqual({ dx: 0, dy: 0 });
+    const moved = { ...boxes[0], x: boxes[0].x + out[0].dx, y: boxes[0].y + out[0].dy };
+    expect(overlaps(moved, phare)).toBe(false);
+    expect(overlaps(moved, boxes[1])).toBe(false);
+    // Au-dessus de son île : elle ne descend pas plus bas que nécessaire.
+    expect(Math.hypot(out[0].dx, out[0].dy)).toBeLessThan(160);
+  });
+
+  it('fait rentrer dans le cadre une étiquette coupée par son bord, pas celle d’une île hors du cadre', () => {
+    const bounds = { w: 1024, h: 616 };
+    const out = ecarterDesObstacles(
+      [
+        { x: 1000, y: 245, w: 200, h: 32 },
+        { x: 1300, y: 245, w: 200, h: 32 },
+      ],
+      [phare],
+      6,
+      bounds,
+    );
+    expect(out[0]).toEqual({ dx: 1024 - 100 - 6 - 1000, dy: 0 });
+    expect(out[1]).toEqual({ dx: 0, dy: 0 });
+  });
+});
+
+describe('étiquettes entières ou absentes (DA-10)', () => {
+  const cadre = { w: 1024, h: 768 };
+  // Le panneau « Prochaine destination » de la Carte, en haut à gauche (capture 3e-carte).
+  const panneau: LabelBox = { x: 480, y: 197, w: 680, h: 208 };
+
+  it('écarte de la Carte l’étiquette posée sous le panneau, et la montre entière', () => {
+    const boxes: LabelBox[] = [
+      { x: 580, y: 312, w: 254, h: 50 },
+      { x: 603, y: 450, w: 216, h: 50 },
+    ];
+    const out = layoutLabels(boxes, 6, cadre, [1, 1], [panneau]);
+    const moved = { ...boxes[0], x: boxes[0].x + out[0].dx, y: boxes[0].y + out[0].dy };
+    expect(overlaps(moved, panneau)).toBe(false);
+    expect(entiere(boxes[0], out[0], [panneau], cadre)).toBe(true);
+    expect(entiere(boxes[1], out[1], [panneau], cadre)).toBe(true);
+  });
+
+  it('cache l’étiquette que l’interface couvre en partie, ou que coupe le bord du cadre', () => {
+    const zero = { dx: 0, dy: 0 };
+    expect(entiere({ x: 580, y: 312, w: 254, h: 50 }, zero, [panneau], cadre)).toBe(false);
+    expect(entiere({ x: 1000, y: 400, w: 200, h: 32 }, zero, [], cadre)).toBe(false);
+    expect(entiere({ x: 800, y: 400, w: 200, h: 32 }, zero, [panneau], cadre)).toBe(true);
+    // Collée au bord sans le passer : entière.
+    expect(entiere({ x: 924, y: 400, w: 200, h: 32 }, zero, [], cadre)).toBe(true);
+  });
+
+  it('hors de la Carte, seule l’étiquette posée sur l’interface s’en écarte', () => {
+    const menu: LabelBox = { x: 985, y: 117, w: 50, h: 50 };
+    const out = ecarterDesObstacles(
+      [
+        { x: 950, y: 120, w: 150, h: 32 },
+        { x: 400, y: 400, w: 150, h: 32 },
+      ],
+      [menu],
+      6,
+      cadre,
+    );
+    expect(out[1]).toEqual({ dx: 0, dy: 0 });
+    expect(entiere({ x: 950, y: 120, w: 150, h: 32 }, out[0], [menu], cadre)).toBe(true);
+  });
+
+  it('de deux étiquettes qui se couvrent encore, montre celle de l’île ouverte, puis la première', () => {
+    const zero = { dx: 0, dy: 0 };
+    const boxes: LabelBox[] = [
+      { x: 300, y: 300, w: 200, h: 40 },
+      { x: 320, y: 320, w: 200, h: 40 },
+      { x: 700, y: 300, w: 200, h: 40 },
+    ];
+    expect(montrees(boxes, [zero, zero, zero], [], cadre)).toEqual([true, false, true]);
+    expect(montrees(boxes, [zero, zero, zero], [], cadre, [0.5, 1, 1])).toEqual([false, true, true]);
+  });
+
+  it('cache l’étiquette dont l’île est sous l’interface, ou qui a dû s’écarter trop loin de son île', () => {
+    const b: LabelBox = { x: 580, y: 250, w: 254, h: 50 };
+    // L'île sous le panneau : même descendue sous lui, l'étiquette ne désigne rien.
+    expect(montrees([b], [{ dx: 0, dy: 60 }], [panneau], cadre)).toEqual([false]);
+    // Loin de son île (plus d'une hauteur et demie entre l'étiquette et l'île) : cachée ; tout près, même décalée : montrée.
+    const libre: LabelBox = { x: 580, y: 450, w: 254, h: 50 };
+    const ile = [{ x: 580, y: 470 }];
+    expect(montrees([libre], [{ dx: 0, dy: 60 }], [], cadre, undefined, ile)).toEqual([true]);
+    expect(montrees([libre], [{ dx: 0, dy: -120 }], [], cadre, undefined, ile)).toEqual([false]);
+    expect(montrees([libre], [{ dx: 150, dy: 0 }], [], cadre, undefined, ile)).toEqual([true]);
+    expect(montrees([libre], [{ dx: 300, dy: 0 }], [], cadre, undefined, ile)).toEqual([false]);
+  });
+
+  it('garde l’étiquette de la prochaine destination quand deux se couvrent encore', () => {
+    const zero = { dx: 0, dy: 0 };
+    const boxes: LabelBox[] = [
+      { x: 300, y: 300, w: 200, h: 40 },
+      { x: 320, y: 320, w: 200, h: 40 },
+    ];
+    expect(montrees(boxes, [zero, zero], [], cadre, [1, 2])).toEqual([false, true]);
+  });
+
+  it('cache l’étiquette écartée plus près d’une autre île que de la sienne', () => {
+    const b: LabelBox = { x: 300, y: 300, w: 200, h: 40 };
+    const iles = [{ x: 300, y: 330 }, { x: 300, y: 420 }];
+    const autre: LabelBox = { x: 300, y: 390, w: 200, h: 40 };
+    expect(montrees([b, autre], [{ dx: 0, dy: 90 }, { dx: 0, dy: 0 }], [], cadre, undefined, iles)).toEqual([false, true]);
+    // Écartée mais toujours plus près de la sienne : montrée.
+    expect(montrees([b], [{ dx: 0, dy: 30 }], [], cadre, undefined, iles)).toEqual([true]);
+  });
+
+  it('retire avant l’écart l’étiquette dont l’île est sous le panneau : elle ne pousse pas les autres', () => {
+    const sous: LabelBox = { x: 480, y: 250, w: 254, h: 50 };
+    const libre: LabelBox = { x: 480, y: 360, w: 254, h: 50 };
+    const { offsets, visibles } = placerEtiquettes([sous, libre], [{ x: 480, y: 270 }, { x: 480, y: 380 }], { zones: [panneau], bulles: [], obstacles: [], bounds: cadre, gap: 6 }, { weights: [1, 1] });
+    expect(visibles).toEqual([false, true]);
+    expect(offsets[1]).toEqual({ dx: 0, dy: 0 });
+  });
+
+  it('avant de renoncer à un nom, essaie les places simples autour de son île : dessus, dessous, à gauche, à droite (DA-31)', () => {
+    // L'étiquette posée par l'écart sur une autre étiquette, trop loin : elle trouve place juste sous son île.
+    const pose: LabelBox = { x: 500, y: 500, w: 200, h: 40 };
+    const gene: LabelBox = { x: 500, y: 420, w: 200, h: 40 };
+    const { offsets, visibles } = placerEtiquettes([gene, pose], [{ x: 500, y: 440 }, { x: 500, y: 520 }], { zones: [], bulles: [], obstacles: [], bounds: cadre, gap: 6 }, null);
+    expect(visibles).toEqual([true, true]);
+    expect(offsets[1]).toEqual({ dx: 0, dy: 0 });
+    // Posée sur une autre, plus lourde (la première) : le dessus de son île est pris, elle passe juste dessous.
+    const r = placerEtiquettes(
+      [gene, { x: 500, y: 425, w: 200, h: 40 }],
+      [{ x: 500, y: 440 }, { x: 500, y: 445 }],
+      { zones: [], bulles: [], obstacles: [], bounds: cadre, gap: 6 },
+      null,
+    );
+    expect(r.visibles).toEqual([true, true]);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 445 + 20 + 6 - 425 });
+  });
+  it('sur la Carte, ne retire jamais le nom de la destination : il prend sa place simple et pousse un nom plus léger (DA-31)', () => {
+    // Une bulle cache le nom de la destination et le dessus de son île ; le dessous est pris par un nom plus léger.
+    const bulle: LabelBox = { x: 500, y: 340, w: 400, h: 60 };
+    const boxes: LabelBox[] = [
+      { x: 500, y: 430, w: 200, h: 40 },
+      { x: 500, y: 370, w: 200, h: 40 },
+    ];
+    const iles = [{ x: 500, y: 470 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [bulle], obstacles: [], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles).toEqual([true, true]);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 400 + 26 - 370 });
+    expect(r.offsets[0]).toEqual({ dx: 0, dy: 470 + 26 - 430 });
+  });
+  it('sur la Carte, le nom de la destination se pose sur sa flèche même au-dessus d’une île voisine (DA-31)', () => {
+    // Une bulle cache sa place ; juste au-dessus de la flèche, une île voisine : le nom s'y pose quand même, sur la
+    // flèche qui le relie à son île, plutôt que dessous.
+    const bulle: LabelBox = { x: 500, y: 270, w: 400, h: 40 };
+    const fleche: LabelBox = { x: 500, y: 376, w: 36, h: 48 };
+    const boxes: LabelBox[] = [{ x: 850, y: 650, w: 200, h: 40 }, { x: 500, y: 270, w: 200, h: 40 }];
+    const iles = [{ x: 500, y: 330 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [bulle], obstacles: [fleche], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles[1]).toBe(true);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 352 - 20 - 6 - 270 });
+  });
+  it('sur la Carte, un autre nom ne se pose jamais sur l’île de destination ni contre sa flèche (DA-31)', () => {
+    // Le nom de la Falaise, juste sous la flèche de la destination : il passe sous sa propre île, plus bas.
+    const fleche: LabelBox = { x: 500, y: 376, w: 36, h: 48 };
+    const boxes: LabelBox[] = [{ x: 500, y: 420, w: 200, h: 40 }, { x: 500, y: 340, w: 200, h: 40 }];
+    const iles = [{ x: 500, y: 440 }, { x: 500, y: 400 }];
+    const r = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [fleche], bounds: cadre, gap: 6 }, { weights: [1, 2] });
+    expect(r.visibles).toEqual([true, true]);
+    const falaise = boxes[0].y + r.offsets[0].dy;
+    expect(falaise - boxes[0].h / 2).toBeGreaterThanOrEqual(400 + 32 + 6);
+    // Sans place libre hors de la garde (le bas du cadre), il se cache.
+    const bas = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [fleche], bounds: { w: 1024, h: 470 }, gap: 6 }, { weights: [1, 2] });
+    expect(bas.visibles).toEqual([false, true]);
   });
 });

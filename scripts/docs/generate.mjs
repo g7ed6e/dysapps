@@ -133,6 +133,7 @@ const AID_NAME = {
   'rule-card': 'rappel de règle',
   'right-triangle': 'triangle rectangle codé',
   'thales-figure': 'configuration de Thalès',
+  graph: 'graphique d’une fonction (repère gradué de 1 en 1, la droite et ses points aux intersections du quadrillage)',
   'value-table': 'tableau de valeurs',
   scene: 'schéma de la situation',
 };

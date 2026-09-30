@@ -1,0 +1,1 @@
+Sur la Carte comme dans le monde, le nom d’une île se lit toujours en entier : il s’écarte du panneau « Prochaine destination » et des boutons, et celui qui ne trouve pas de place libre ne s’affiche plus à moitié caché.
