@@ -475,6 +475,8 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Fonctions dans la phrase » :
+  - Sujet : qui est-ce qui fait l’action ?
+  - Complément circonstanciel : où, quand, comment ? On peut l’enlever.
   - COD (complément d’objet direct) : on demande « quoi ? » après le verbe.
   - COI (complément d’objet indirect) : on demande « à qui ? » ou « de quoi ? ».
   - Attribut : après être, devenir (du sujet) ; après trouver, rendre (du COD).
@@ -540,6 +542,7 @@ Pour tous les items :
   - Phrase simple : un seul verbe conjugué. Phrase complexe : plusieurs.
   - Juxtaposées : reliées par une virgule ou un point-virgule.
   - Coordonnées : reliées par mais, ou, et, donc, or, ni, car.
+  - Mais dit l’opposition, car la cause, donc la conséquence.
   - Subordonnée : elle dépend d’une autre, introduite par qui, que, quand, parce que, si.
 
 1. énoncé : « Le réveil sonne, Léa se lève et elle ouvre les volets. » Combien de propositions ?
