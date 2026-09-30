@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
-import { Aid } from './CalculScreen';
+import { Aid } from './Aid';
 import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
 
