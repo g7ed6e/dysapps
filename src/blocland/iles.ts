@@ -176,10 +176,10 @@ export const ILES = [
   {
     "id": "tour",
     "name": "Tour du lecteur",
-    "module": "Lecture et compréhension",
+    "module": "Lecture et grammaire",
     "subject": "francais",
     "classe": "6e",
-    "description": "Lire à voix haute, étage par étage, et savoir de qui ou de quoi parle un texte.",
+    "description": "Lire à voix haute, étage par étage, savoir de qui ou de quoi parle un texte, et analyser la phrase.",
     "block": "verre",
     "guardian": "la Chouette de verre",
     "icon": "castle",
@@ -202,6 +202,16 @@ export const ILES = [
         "programme": [
           "c3.fr.lecture.reprises",
           "c3.fr.lecture.explicite"
+        ]
+      },
+      {
+        "id": "vitraux",
+        "title": "Vitraux des phrases",
+        "description": "Lis une phrase courte : trouve son type, la fonction d’un mot, ou comment ses propositions sont reliées.",
+        "programme": [
+          "c3.fr.langue.types-formes",
+          "c3.fr.langue.attribut-gn",
+          "c3.fr.langue.phrase-complexe"
         ]
       }
     ]

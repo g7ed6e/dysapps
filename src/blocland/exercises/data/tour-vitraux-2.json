@@ -1,0 +1,230 @@
+{
+  "id": "tour-vitraux-2",
+  "biome": "tour",
+  "type": "vitraux",
+  "level": 2,
+  "instruction": "Lis la question, puis la phrase. Trouve la fonction du mot ou du groupe de mots. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "tour-vitraux-2-0",
+      "prompt": "Ma sœur est malade aujourd’hui.",
+      "question": "Quelle fonction a « malade » ?",
+      "choices": [
+        "attribut du sujet",
+        "épithète",
+        "complément du nom"
+      ],
+      "answer": "attribut du sujet",
+      "hint": "Quel verbe se trouve entre « Ma sœur » et « malade » ?",
+      "explanation": "Le mot « malade » est séparé du sujet, « Ma sœur », par le verbe « est » : il dit comment est le sujet. C’est un attribut du sujet, pas une épithète.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-1",
+      "prompt": "J’ai acheté un sac rouge.",
+      "question": "Quelle fonction a « rouge » ?",
+      "choices": [
+        "épithète",
+        "attribut du sujet",
+        "complément du nom"
+      ],
+      "answer": "épithète",
+      "hint": "Y a-t-il un verbe entre « sac » et « rouge » ?",
+      "explanation": "L’adjectif « rouge » est collé au nom « sac », sans verbe entre eux : c’est une épithète.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-2",
+      "prompt": "Je cherche la clé de mon casier.",
+      "question": "Quelle fonction a « de mon casier » ?",
+      "choices": [
+        "complément du nom",
+        "épithète",
+        "attribut du sujet"
+      ],
+      "answer": "complément du nom",
+      "hint": "Quel nom ce groupe complète-t-il ? Par quel petit mot commence-t-il ?",
+      "explanation": "Le groupe « de mon casier » commence par « de » et complète le nom « clé » : de quelle clé parle-t-on ? C’est un complément du nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-3",
+      "prompt": "Mes amis semblent fatigués.",
+      "question": "Quelle fonction a « fatigués » ?",
+      "choices": [
+        "attribut du sujet",
+        "complément du nom",
+        "épithète"
+      ],
+      "answer": "attribut du sujet",
+      "hint": "Quel verbe se trouve entre « Mes amis » et « fatigués » ?",
+      "explanation": "Le mot « fatigués » vient après le verbe « semblent » et dit comment sont les amis : c’est un attribut du sujet. « Sembler » marche comme « être ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-4",
+      "prompt": "Nous mangeons une tarte aux pommes.",
+      "question": "Quelle fonction a « aux pommes » ?",
+      "choices": [
+        "complément du nom",
+        "épithète",
+        "attribut du sujet"
+      ],
+      "answer": "complément du nom",
+      "hint": "Le groupe « aux pommes » est-il un adjectif, ou contient-il un nom ?",
+      "explanation": "Le groupe « aux pommes » n’est pas un adjectif : il contient le nom « pommes », qui complète le nom « tarte ». C’est un complément du nom. Une épithète est toujours un adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-5",
+      "prompt": "Le chat noir est endormi.",
+      "question": "Quelle fonction a « noir » ?",
+      "choices": [
+        "épithète",
+        "attribut du sujet",
+        "complément du nom"
+      ],
+      "answer": "épithète",
+      "hint": "Où est le verbe « est » : entre « chat » et « noir », ou plus loin ?",
+      "explanation": "Le mot « noir » est collé au nom « chat » : c’est une épithète. Le verbe « est » vient après : c’est « endormi » qui est l’attribut du sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-6",
+      "prompt": "Mon père est infirmier.",
+      "question": "Quelle fonction a « infirmier » ?",
+      "choices": [
+        "attribut du sujet",
+        "épithète",
+        "complément du nom"
+      ],
+      "answer": "attribut du sujet",
+      "hint": "Quel verbe se trouve entre « Mon père » et « infirmier » ?",
+      "explanation": "Le mot « infirmier » vient après le verbe « est » et dit ce qu’est le sujet, « Mon père » : c’est un attribut du sujet. Un attribut peut être un nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-2-7",
+      "prompt": "La cour du collège est grande.",
+      "question": "Quelle fonction a « du collège » ?",
+      "choices": [
+        "complément du nom",
+        "attribut du sujet",
+        "épithète"
+      ],
+      "answer": "complément du nom",
+      "hint": "Quel nom ce groupe complète-t-il ? Est-il avant ou après le verbe ?",
+      "explanation": "Le groupe « du collège » est collé au nom « cour » et dit de quelle cour on parle : c’est un complément du nom. Le verbe « est » vient après : l’attribut, c’est « grande ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Attribut, épithète, complément du nom",
+          "lines": [
+            "Épithète : un adjectif collé au nom. Une robe bleue.",
+            "Complément du nom : collé au nom, avec de ou à (du, au, aux). Un verre d’eau.",
+            "Attribut du sujet : il dit comment est le sujet. La soupe est chaude.",
+            "Après être, sembler, devenir, paraître, rester : attribut.",
+            "L’attribut peut être un nom. Ma tante est pilote."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "verre",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

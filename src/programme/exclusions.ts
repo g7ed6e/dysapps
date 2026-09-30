@@ -27,9 +27,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.fr.ecriture.rediger': HORS(ECRITURE_LIBRE),
   'c3.fr.culture.entrees': HORS('Lecture d’œuvres complètes en classe : la mission Lecture du portail en propose des extraits du domaine public, pas le parcours des entrées.'),
   'c3.fr.lecture.documents': A_COUVRIR('Le document composite (texte et tableau, nature et source) est travaillé en 3e à l’Observatoire des textes (Inférences, niveau 3), pas encore en 6e : prévu avec une mission de données de l’île Grandeurs.'),
-  'c3.fr.langue.attribut-gn': A_COUVRIR('Attribut, épithète et complément du nom : prévus dans une mission de grammaire de 6e (Tour du lecteur, Vitraux des phrases).'),
-  'c3.fr.langue.types-formes': A_COUVRIR('Types et formes de phrases : prévus dans une mission de grammaire de 6e (Tour du lecteur, Vitraux des phrases).'),
-  'c3.fr.langue.phrase-complexe': A_COUVRIR('Phrase simple et complexe : prévue dans une mission de grammaire de 6e, puis en 3e (Observatoire des textes).'),
   // ---------- Cycle 3, maths ----------
   'c3.ma.nombres.grands-entiers': A_COUVRIR('Grands nombres entiers : prévus dans une mission du Volcan des décimaux (Nombres géants).'),
   'c3.ma.nombres.donnees': A_COUVRIR('Lecture de tableaux et de diagrammes : prévue dans une mission de données de l’île Grandeurs.'),

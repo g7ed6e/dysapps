@@ -1,0 +1,236 @@
+{
+  "id": "tour-vitraux-3",
+  "biome": "tour",
+  "type": "vitraux",
+  "level": 3,
+  "instruction": "Lis la question, puis la phrase. Compte les verbes conjugués, ou trouve ce qui relie les propositions. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "tour-vitraux-3-0",
+      "prompt": "Je prends mon goûter et je fais mes devoirs.",
+      "question": "Cette phrase est-elle simple ou complexe ?",
+      "choices": [
+        "complexe",
+        "simple"
+      ],
+      "answer": "complexe",
+      "hint": "Compte les verbes conjugués.",
+      "explanation": "Il y a deux verbes conjugués, « prends » et « fais » : deux propositions, donc une phrase complexe. Elles forment une seule phrase, avec un seul point à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-1",
+      "prompt": "Avant de sortir, je ferme la porte à clé.",
+      "question": "Cette phrase est-elle simple ou complexe ?",
+      "choices": [
+        "simple",
+        "complexe"
+      ],
+      "answer": "simple",
+      "hint": "Compte les verbes conjugués, un par un.",
+      "explanation": "Le verbe « sortir » est à l’infinitif : il ne compte pas. Seul « ferme » est conjugué : la phrase est simple, même avec une virgule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-2",
+      "prompt": "Il pleut, nous restons à la maison.",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "juxtaposition",
+        "coordination",
+        "subordination"
+      ],
+      "answer": "juxtaposition",
+      "hint": "Y a-t-il un mot entre les deux propositions ?",
+      "explanation": "Rien que la virgule entre « Il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-3",
+      "prompt": "J’ai faim, mais le repas n’est pas prêt.",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "coordination",
+        "juxtaposition",
+        "subordination"
+      ],
+      "answer": "coordination",
+      "hint": "Regarde le mot après la virgule.",
+      "explanation": "Il y a une virgule, mais aussi le mot « mais », qui relie les deux propositions : c’est une coordination. La juxtaposition, c’est une virgule seule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-4",
+      "prompt": "Je mets mon manteau parce qu’il fait froid.",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "subordination",
+        "coordination",
+        "juxtaposition"
+      ],
+      "answer": "subordination",
+      "hint": "Quel mot relie les deux propositions ? Est-il dans la liste de la coordination ?",
+      "explanation": "Les mots « parce que » (ici « parce qu’ ») relient les propositions : c’est une subordination. Le mot « car » dirait aussi la cause, mais avec « car », ce serait une coordination.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-5",
+      "prompt": "Le chien aboie quand le facteur passe.",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "subordination",
+        "juxtaposition",
+        "coordination"
+      ],
+      "answer": "subordination",
+      "hint": "Quel mot se trouve entre « aboie » et « le facteur » ?",
+      "explanation": "Le mot « quand » relie les deux propositions, « Le chien aboie » et « le facteur passe » : c’est une subordination.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-6",
+      "prompt": "Tu viens avec nous ou tu restes ici ?",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "coordination",
+        "subordination",
+        "juxtaposition"
+      ],
+      "answer": "coordination",
+      "hint": "Quel petit mot se trouve entre « avec nous » et « tu restes » ?",
+      "explanation": "Le mot « ou » relie les deux propositions, « Tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    },
+    {
+      "key": "tour-vitraux-3-7",
+      "prompt": "Le réveil sonne ; je saute du lit.",
+      "question": "Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "juxtaposition",
+        "subordination",
+        "coordination"
+      ],
+      "answer": "juxtaposition",
+      "hint": "Y a-t-il un mot entre les deux propositions, ou seulement un signe ?",
+      "explanation": "Un point-virgule sépare « Le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Phrase simple, phrase complexe",
+          "lines": [
+            "Un verbe conjugué : phrase simple. Deux ou plus : phrase complexe.",
+            "Un verbe à l’infinitif ne compte pas : partir, finir.",
+            "Chaque verbe conjugué forme une proposition.",
+            "Juxtaposition : seulement une virgule ou un point-virgule. Il gèle, je rentre.",
+            "Coordination : et, mais, ou, donc, car. Il court et il saute.",
+            "Subordination : parce que (parce qu’), quand, si. Je ris quand tu danses."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "verre",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
