@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
 import { CalculScreen } from './CalculScreen';
-import { autoReadText } from './lecture';
+import { autoReadText, dicteeAutoText } from './lecture';
+import { RecitScreen } from './RecitScreen';
 import { DicteeItem } from './DicteeItem';
 import { QcmItem } from './QcmItem';
 import type { ScreenProps } from './registry';
@@ -142,4 +143,56 @@ it('document en français (Observatoire des textes) : le document est le texte �
   expect(lines.map((l) => l.textContent?.replace(/\s/g, ''))).toEqual(['ClublectureduCDI', 'Lemardiàmidi']);
   expect(lines.every((l) => l.querySelector('.syllables'))).toBe(true);
   expect(document.querySelector('[lang="en"]')).toBeNull();
+});
+
+it('histoire à écouter : la question d’abord, l’histoire cachée jusqu’à la réponse, puis affichée pour se corriger', async () => {
+  const user = userEvent.setup();
+  const item = {
+    key: 'k',
+    question: 'Où va Sam ?',
+    prompt: 'Sam is hungry.\nHe goes to the kitchen.',
+    spoken: 'Sam is hungry. He goes to the kitchen.',
+    choices: ['À la cuisine', 'À la piscine'],
+    answer: 'À la cuisine',
+    choicesLang: 'fr',
+  };
+  const { rerender } = render(
+    <SettingsProvider>
+      <RecitScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId="x" lang="en" />
+    </SettingsProvider>,
+  );
+  expect(screen.queryByText(/kitchen/)).toBeNull();
+  expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+  await user.click(screen.getByRole('button', { name: /^Écouter/ }));
+  expect(utterances.at(-1)).toEqual({ text: 'Sam is hungry. He goes to the kitchen.', lang: 'en-GB' });
+  rerender(
+    <SettingsProvider>
+      <RecitScreen
+        items={[item]}
+        answered={{ results: [{ key: 'k', correct: true }], detail: { chosen: 'À la cuisine' } }}
+        onAnswer={() => {}}
+        onHelp={() => {}}
+        level={1}
+        exerciseId="x"
+        lang="en"
+      />
+    </SettingsProvider>,
+  );
+  const lines = screen.getAllByRole('listitem');
+  expect(lines.map((l) => l.textContent)).toEqual(['Sam is hungry.', 'He goes to the kitchen.']);
+  expect(lines[0].closest('[lang="en"]')).not.toBeNull();
+});
+
+it('lecture automatique d’une histoire : la question, puis l’histoire en anglais ; jamais sans le type d’écoute', () => {
+  const doc = [{ key: 'k', question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', spoken: 'He goes to the kitchen.' }];
+  expect(autoReadText(null, doc)).toBe('Où va Sam\u00a0?');
+  expect(dicteeAutoText(doc, 'en', true)).toBe('He goes to the kitchen.');
+  expect(dicteeAutoText(doc, 'en')).toBe('');
+});
+
+it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout de suite', () => {
+  vi.unstubAllGlobals();
+  renderScreen(RecitScreen, { question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', choices: ['À la cuisine', 'À la piscine'], answer: 'À la cuisine' }, 'en');
+  expect(screen.getAllByRole('listitem').map((l) => l.textContent)).toEqual(['He goes to the kitchen.']);
+  expect(screen.queryByText(/Écoute l’histoire/)).toBeNull();
 });
