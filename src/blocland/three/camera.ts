@@ -6,13 +6,13 @@ import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
 import type { ArchipelagoId } from '../world/archipelago';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
 import { mapOf } from '../world/map';
-import { islandCenter, viewYaw, viewZone, worldBounds } from '../world/terrain';
+import { islandCenter, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
-/** Vue d'une île : plus haute, pour voir le plan au fond. */
-export const ISLAND_VIEW = { dx: 0.7, dy: -0.7, up: 0.9 };
+/** Vue d'une île : plus haute, pour voir le plan au fond (world/terrain.ts : les bornes y restent visibles). */
+export const ISLAND_VIEW = VUE_DE_L_ILE;
 const ISLAND_DISTANCE = 30;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines (bornes du cadrage de zone). */
 const FOLLOW_DISTANCE = 50;

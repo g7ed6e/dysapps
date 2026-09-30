@@ -333,6 +333,63 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
   return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
+/** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
+export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
+
+/** Une borne telle que la vue de l'île la voit : sa case (coordonnées du monde, ou du cœur) et le dessus du sol sous elle. */
+export interface BorneVue {
+  x: number;
+  y: number;
+  base: number;
+}
+
+/** Vers la caméra de la vue d'une île, pivot compris (`viewYaw`), en cases : x, y de la grille, z en hauteur. */
+export function versLaCamera(id: BiomeId): [number, number, number] {
+  const yaw = -viewYaw(id);
+  const { dx, dy, up } = VUE_DE_L_ILE;
+  const v: [number, number, number] = [dx * Math.cos(yaw) - dy * Math.sin(yaw), dx * Math.sin(yaw) + dy * Math.cos(yaw), up];
+  const l = Math.hypot(...v);
+  return [v[0] / l, v[1] / l, v[2] / l];
+}
+
+/** Des points de la borne (socle et ardoise, deux cubes sur son sol), un peu en retrait de ses arêtes. */
+const POINTS_DE_LA_BORNE: [number, number, number][] = [0.05, 0.5, 0.95].flatMap((u) =>
+  [0.05, 0.5, 0.95].flatMap((v) => [1.05, 1.5, 2, 2.5, 2.95].map((w): [number, number, number] => [u, v, w])),
+);
+/** La marge autour d'un cube de décor : le rendu Archipéo le dessine en volume un peu plus large, et la vue est en perspective. */
+const MARGE_DEVANT_LA_BORNE = 0.1;
+
+/**
+ * Le cube (x, y, z) cache-t-il une borne dans la vue de l'île ? Un rayon part de chaque point de la borne vers la
+ * caméra (vue de l'île, pivot compris) ; le cube, élargi de sa marge, ne doit en couper aucun. Seuls les cubes posés
+ * près de la borne et au-dessus de son sol sont essayés.
+ */
+export function cacheUneBorne(bornes: BorneVue[], vers: [number, number, number], x: number, y: number, z: number): boolean {
+  const m = MARGE_DEVANT_LA_BORNE;
+  const min = [x - m, y - m, z - m];
+  const max = [x + 1 + m, y + 1 + m, z + 1 + m];
+  for (const b of bornes) {
+    if (z + 1 <= b.base + 1 || Math.abs(x - b.x) > 12 || Math.abs(y - b.y) > 12) continue;
+    for (const [u, v, w] of POINTS_DE_LA_BORNE) {
+      const o = [b.x + u, b.y + v, b.base + w];
+      let t0 = 0;
+      let t1 = Infinity;
+      for (let j = 0; j < 3 && t0 <= t1; j++) {
+        if (Math.abs(vers[j]) < 1e-9) {
+          if (o[j] < min[j] || o[j] > max[j]) t0 = Infinity;
+          continue;
+        }
+        const a = (min[j] - o[j]) / vers[j];
+        const c = (max[j] - o[j]) / vers[j];
+        t0 = Math.max(t0, Math.min(a, c));
+        t1 = Math.min(t1, Math.max(a, c));
+      }
+      if (t0 <= t1) return true;
+    }
+  }
+  return false;
+}
+
 const STEP = '#8f8f8f';
 
 /**
@@ -1095,6 +1152,10 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const banned = new Set<string>();
   const ban = (x: number, y: number) => banned.add(`${x},${y}`);
   const core = (x: number, y: number) => ban(def.core.x + x, def.core.y + y);
+  // Devant les bornes (voir `cacheUneBorne`) : ni mât de fanion ni fumée de foyer, qui cacheraient leur pied.
+  const index = BIOMES.findIndex((b) => b.id === port);
+  const bornes = questStations(port).map((st) => ({ x: def.core.x + st.x, y: def.core.y + st.y, base: def.altitude + groundHeight(index, st.x, st.y) }));
+  const vers = versLaCamera(port);
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
   for (const k of placeCells(port)) {
@@ -1117,7 +1178,6 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   for (const b of BRIDGES.filter((d) => d.from === port || d.to === port))
     for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
   // Le niveau du sol de chaque case : le cœur (et son plateau), ou la terre autour.
-  const index = BIOMES.findIndex((b) => b.id === port);
   const land = new Map(landscape(def).map((c) => [`${c.x},${c.y}`, c]));
   const ground = (x: number, y: number): number | null => {
     if (inCore(def, x, y)) return def.altitude + groundHeight(index, x - def.core.x, y - def.core.y);
@@ -1133,13 +1193,15 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
     return z;
   };
   /** `air` : les cases que l'objet surplombe (la fumée), jamais au-dessus du chemin du bonhomme. */
-  const find = (wantX: number, wantY: number, cells: [number, number][], air: [number, number][] = []): QuaySpot | null => {
+  const find = (wantX: number, wantY: number, cells: [number, number][], air: [number, number][] = [], haut = false): QuaySpot | null => {
     let best: QuaySpot | null = null;
     let bestD = Infinity;
     for (let x = X - 12; x <= X + 10; x++)
       for (let y = S; y <= def.core.y + 8; y++) {
         const zs = cells.map(([dx, dy]) => free(x + dx, y + dy));
         if (zs.some((z) => z === null || z !== zs[0])) continue;
+        // Un objet haut (le mât et la toile d'un fanion, la fumée d'un foyer : trois cubes au plus) ne cache pas une borne.
+        if (haut && [...cells, ...air].some(([dx, dy]) => [0, 1, 2, 3].some((dz) => cacheUneBorne(bornes, vers, x + dx, y + dy, zs[0]! + dz)))) continue;
         // Au-dessus des cases surplombées, rien de plus haut qu'un bloc (pas d'arbre dans la fumée).
         if (air.some(([dx, dy]) => banned.has(`${x + dx},${y + dy}`) || y + dy < S || (top.get(`${x + dx},${y + dy}`)?.z ?? -Infinity) > zs[0]! + 1)) continue;
         // Au plus près de la côte d'abord, puis du pied de la jetée.
@@ -1158,8 +1220,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const boat = sea ? find(X - 5, S, rect(BOAT_LENGTH, 2)) : null;
   const crates = find(X - 2, S, rect(2, 1));
   // Un fanion de chaque côté du pied de la jetée, sa toile (une case à côté du mât) au-dessus du sol nu.
-  const flags = [find(X - 2, S, [[0, 0], [-1, 0]]), find(X + 2, S, [[0, 0], [1, 0]])];
-  const hearth = find(X + 3, S + 1, [[0, 0]], SMOKE_DRIFT);
+  const flags = [find(X - 2, S, [[0, 0], [-1, 0]], [], true), find(X + 2, S, [[0, 0], [1, 0]], [], true)];
+  const hearth = find(X + 3, S + 1, [[0, 0]], SMOKE_DRIFT, true);
   return { boat, flags, crates, hearth };
 }
 
@@ -1687,18 +1749,18 @@ function poserLIle(
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
   pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
+  const vers = versLaCamera(biome.id);
   for (const c of scenery) {
     if (!c.decor || nearSentier(c.x, c.y)) continue;
     const r = noise(def.seed + 5, c.x, c.y);
+    const poses: [number, number, number, string, string | undefined][] = [];
+    decorate((x, y, z, color, decor) => poses.push([x, y, c.h + z, color, decor]), c.decor, c.x, c.y, r);
+    // Un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
+    if (poses.some(([x, y, z]) => cacheUneBorne(bornes, vers, x, y, z))) continue;
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-    decorate(
-      (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor),
-      c.decor,
-      c.x,
-      c.y,
-      r,
-    );
+    for (const [x, y, z, color, decor] of poses) if (!inCore(def, x, y) && !taken.has(`${x},${y},${z}`)) putWorld(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)

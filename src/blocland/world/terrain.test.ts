@@ -751,3 +751,37 @@ it('la salle des trophées a une place par succès', () => {
   const hall = new Set(trophyModel().map((c) => `${c.x},${c.y},${c.z}`));
   for (const t of TROPHY_SLOTS) expect(hall.has(`${t.x},${t.y},${t.z}`)).toBe(false);
 });
+
+describe('les bornes dans la vue de l’île', () => {
+  it('aucun décor posé (arbre, buisson, rocher, objet du quai) ne cache une borne, pied compris, partie vierge ou tout construit', async () => {
+    const { cacheUneBorne, versLaCamera, worldCubes, questStations: bornesDe, origineDe } = await import('./terrain');
+    const { decorPose } = await import('./decor');
+    const { toutConstruit } = await import('./budget');
+    const tout = toutConstruit();
+    for (const a of ARCHIPELAGO_IDS)
+      for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout]) {
+        const cubes = worldCubes(a, partie.progress, partie.village);
+        for (const b of BIOMES.filter((x) => x.classe === a)) {
+          const o = origineDe(b.id);
+          const socles = new Map(cubes.filter((c) => c.quest?.startsWith(`${b.id}:`)).map((c) => [`${c.x},${c.y}`, c]));
+          const bornes = bornesDe(b.id).map((st) => {
+            const socle = socles.get(`${o.x + st.x},${o.y + st.y}`);
+            return { x: o.x + st.x, y: o.y + st.y, base: (socle?.z ?? 0) - 1 };
+          });
+          const vers = versLaCamera(b.id);
+          const cachent = cubes.filter((c) => decorPose(c.decor) && cacheUneBorne(bornes, vers, c.x, c.y, c.z)).map((c) => c.decor);
+          expect([...new Set(cachent)], `${a}, ${b.id}`).toEqual([]);
+        }
+      }
+  });
+
+  it('à la Tour du lecteur, rien ne se dresse devant la deuxième borne, entre elle et la caméra', async () => {
+    const { worldCubes, questStations: bornesDe, origineDe } = await import('./terrain');
+    const cubes = worldCubes('6e', {});
+    const o = origineDe('tour');
+    const st = bornesDe('tour')[1];
+    const base = cubes.find((c) => c.quest && c.x === o.x + st.x && c.y === o.y + st.y)!.z - 1;
+    // Le tronc de l’arbre qui la cachait était en (6, −1), deux rangées devant elle.
+    expect(cubes.filter((c) => c.decor && c.x === o.x + st.x && c.y < o.y + st.y && c.y >= o.y + st.y - 3 && c.z > base + 1)).toEqual([]);
+  });
+});
