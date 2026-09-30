@@ -102,6 +102,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   cratere: { component: CalculScreen, batch: 1 },
   coulee: { component: CalculScreen, batch: 1 },
   pente: { component: CalculScreen, batch: 1 },
+  geants: { component: CalculScreen, batch: 1 },
   thermometre: { component: CalculScreen, batch: 1 },
   banquise: { component: CalculScreen, batch: 1 },
   crevasses: { component: CalculScreen, batch: 1 },

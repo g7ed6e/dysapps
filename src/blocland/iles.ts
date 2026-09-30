@@ -321,7 +321,7 @@ export const ILES = [
     "module": "Nombres décimaux",
     "subject": "maths",
     "classe": "6e",
-    "description": "Lire, comparer et placer des nombres à virgule, le tableau de numération toujours affiché.",
+    "description": "Lire, comparer et placer des nombres à virgule, puis les grands nombres, le tableau de numération toujours affiché.",
     "block": "obsidienne",
     "guardian": "le Dragon de cendre",
     "icon": "flame",
@@ -341,7 +341,7 @@ export const ILES = [
       {
         "id": "coulee",
         "title": "Coulée de lave",
-        "description": "Compare deux décimaux, tableau sous les yeux.",
+        "description": "Compare deux décimaux, puis range-les et trouve un nombre entre deux, tableau sous les yeux.",
         "programme": [
           "c3.ma.nombres.decimaux-comparer"
         ]
@@ -349,10 +349,19 @@ export const ILES = [
       {
         "id": "pente",
         "title": "Pente graduée",
-        "description": "Repère un décimal sur la droite, puis complète jusqu’à 1.",
+        "description": "Repère un décimal sur la droite, complète jusqu’à 1, puis encadre une fraction entre deux entiers.",
         "programme": [
           "c3.ma.nombres.decimaux-comparer",
-          "c3.ma.nombres.calcul-mental"
+          "c3.ma.nombres.calcul-mental",
+          "c3.ma.nombres.fractions-comparer"
+        ]
+      },
+      {
+        "id": "geants",
+        "title": "Nombres géants",
+        "description": "Lis et écris les grands nombres, classe par classe, jusqu’aux milliards.",
+        "programme": [
+          "c3.ma.nombres.grands-entiers"
         ]
       }
     ]

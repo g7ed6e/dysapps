@@ -6,7 +6,7 @@ import type { Question } from '../../components/QuizSession';
 import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from '../../components/math/FractionFigures';
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
-import { BarList, ColumnOperation, Graph, LongDivision, NumberLineInt, RatioTable, RightTriangle, RuleCard, ThalesFigure } from './Aids';
+import { BarList, ClassTable, ColumnOperation, Graph, LongDivision, NumberLineInt, RatioTable, RightTriangle, RuleCard, ThalesFigure } from './Aids';
 import { Scene } from './Scene';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
 import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
@@ -41,6 +41,7 @@ export const AID_COMPONENTS: Record<string, (props: never) => ReactNode> = {
   graph: Graph,
   'column-operation': ColumnOperation,
   'long-division': LongDivision,
+  'class-table': ClassTable,
   scene: Scene,
 };
 
