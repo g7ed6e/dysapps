@@ -479,7 +479,7 @@ export type ClassTableProps = { value: string; words?: undefined } | { words: st
  */
 export function ClassTable(props: ClassTableProps) {
   const { value, words } = props;
-  const count = words ? words.length : Math.ceil((value ?? '').length / 3);
+  const count = Math.min(CLASSES.length, words ? words.length : Math.ceil((value ?? '').length / 3));
   if (count === 0) return null;
   // Les classes de gauche à droite : des milliards (ou des millions) aux unités.
   const classes = Array.from({ length: count }, (_, i) => CLASSES[count - 1 - i]);

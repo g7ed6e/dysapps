@@ -1894,9 +1894,10 @@ figure.class-table {
   font-weight: 700;
 }
 /* En lettres, des classes de même largeur, assez pour « soixante-dix » : les mots passent à la ligne (aux espaces, après
-   un trait d'union) dans leur classe, jamais au milieu d'un mot. */
+   un trait d'union) dans leur classe, jamais au milieu d'un mot. Aux grands espacements des Réglages, une classe
+   s'élargit jusqu'à son plus long morceau de mot plutôt que de le laisser déborder. */
 .class-blocks-words .class-block {
-  flex-basis: 7.8rem;
+  width: min-content;
   min-width: 7.8rem;
 }
 .class-word {
@@ -1904,8 +1905,8 @@ figure.class-table {
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.25;
-  letter-spacing: normal;
-  word-spacing: normal;
+  letter-spacing: var(--letter-spacing);
+  word-spacing: var(--word-spacing);
   overflow-wrap: normal;
   word-break: normal;
   hyphens: manual;
@@ -1945,7 +1946,7 @@ figure.class-table {
     font-size: 0.8rem;
   }
   .class-blocks-words .class-block {
-    flex-basis: 6.6rem;
+    width: min-content;
     min-width: 6.6rem;
   }
   /* Deux réponses par ligne : un nombre de dix caractères tient dans son bouton. */
