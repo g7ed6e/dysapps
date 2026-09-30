@@ -919,6 +919,16 @@ export const ILES = [
           "c3.en.ecouter.mots-familiers",
           "c3.en.langue.phonie-graphie"
         ]
+      },
+      {
+        "id": "signs",
+        "title": "Signs",
+        "description": "Lire une étiquette, une carte d’anniversaire ou un petit texte en anglais, avec son image, et y trouver un détail.",
+        "programme": [
+          "c3.en.lire.textes-courts",
+          "c3.en.lire.mots-isoles",
+          "c3.en.culture.vie-quotidienne"
+        ]
       }
     ]
   },

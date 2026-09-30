@@ -92,6 +92,17 @@ it('document : la question en français d’abord, le document en anglais, une l
   expect(utterances.at(-1)).toEqual({ text: 'Swimming pool. Closed on Mondays.', lang: 'en-GB' });
 });
 
+it('document avec une image (Signs) : l’emoji vient devant le document, caché aux lecteurs d’écran', () => {
+  renderScreen(
+    CalculScreen,
+    { question: 'De quelle couleur est le chat ?', prompt: 'Lost cat\nHe is black.', image: '🐈', choices: ['Noir', 'Blanc'], answer: 'Noir', choicesLang: 'fr' },
+    'en',
+  );
+  const picto = screen.getByText('🐈');
+  expect(picto).toHaveAttribute('aria-hidden', 'true');
+  expect(picto.compareDocumentPosition(screen.getAllByRole('listitem')[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
 it('lecture automatique : la question d’un document suit la consigne au premier écran, puis vient seule ; jamais le document', () => {
   const doc = [{ key: 'k', question: 'Quel jour la piscine est-elle fermée ?', prompt: 'Closed on Mondays', spoken: 'Closed on Mondays.' }];
   expect(autoReadText('Lis la question.', doc)).toBe('Lis la question. Quel jour la piscine est-elle fermée\u00a0?');

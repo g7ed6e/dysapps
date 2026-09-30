@@ -89,13 +89,13 @@
       "word": "thin",
       "choices": [
         "mince",
-        "l’étain",
+        "la boîte",
         "la chose"
       ],
       "choicesLang": "fr",
       "answer": "mince",
       "hint": "Th au début, « n » à la fin.",
-      "explanation": "thin = mince (tin = l’étain, thing = la chose)."
+      "explanation": "thin = mince (tin = la boîte, thing = la chose)."
     },
     {
       "key": "baie-ears-2-7",
