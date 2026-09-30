@@ -86,6 +86,7 @@ function ecrireTexte(s) {
 }
 
 function lireTexte(v, ligne) {
+  if (v === '' || v !== v.trim()) throw new Error(`ligne ${ligne} : valeur vide ou avec des espaces au bord : l’écrire entre guillemets (« "" »)`);
   if (v.startsWith('"')) {
     try {
       const s = JSON.parse(v);
@@ -99,7 +100,7 @@ function lireTexte(v, ligne) {
 function lireValeur(type, v, ligne) {
   if (type === 'nombre') {
     const n = Number(v);
-    if (v === '' || !Number.isFinite(n)) throw new Error(`ligne ${ligne} : nombre attendu, lu « ${v} »`);
+    if (!/^-?\d+(\.\d+)?$/.test(v)) throw new Error(`ligne ${ligne} : nombre attendu, lu « ${v} »`);
     return n;
   }
   if (type === 'oui-non') {
@@ -239,7 +240,7 @@ export function ecrireIle(ile, exercices) {
 
 /** Lit le Markdown d'une île : { ile, missions: [{ id, titre }], exercices }. */
 export function lireIle(md, fichier = 'md') {
-  const lignes = md.split('\n');
+  const lignes = md.replace(/^\uFEFF/, '').split(/\r?\n/);
   let ile = null;
   const exercices = [];
   const missions = [];
@@ -257,6 +258,7 @@ export function lireIle(md, fichier = 'md') {
   for (i = 1; i < lignes.length && lignes[i] !== '---'; i++) {
     const m = /^île : (\S+)$/.exec(lignes[i]);
     if (!m) throw erreur(`en-tête inconnu : ${lignes[i]}`);
+    if (ile) throw erreur('« île » écrite deux fois dans l’en-tête');
     ile = m[1];
   }
   if (!ile) throw erreur('« île : … » manque dans l’en-tête');
@@ -302,10 +304,14 @@ export function lireIle(md, fichier = 'md') {
       pourTous = null; // une ligne vide finit le bloc « Pour tous les items »
       continue;
     }
-    if (/^# /.test(l)) continue;
+    if (/^# /.test(l)) {
+      if (mission) throw erreur('le titre de l’île va avant la première mission');
+      continue;
+    }
     let m;
     if ((m = /^## (.+) · `([^`]+)`$/.exec(l))) {
       finirExercice();
+      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant de mission mal écrit : ${m[2]}`);
       if (missions.some((x) => x.id === m[2])) throw erreur(`mission « ${m[2]} » écrite deux fois`);
       mission = { id: m[2], titre: m[1], champs: {}, items: {} };
       missions.push({ id: mission.id, titre: mission.titre });
@@ -315,6 +321,7 @@ export function lireIle(md, fichier = 'md') {
     if ((m = /^### Niveau (\d+) · `([^`]+)`$/.exec(l))) {
       finirExercice();
       if (!mission) throw erreur('un niveau doit être sous une mission (« ## Titre · `id` »)');
+      if (!/^[a-z0-9-]+$/.test(m[2]) || !m[2].startsWith(`${ile}-`)) throw erreur(`identifiant d’exercice mal écrit : ${m[2]} (lettres minuscules, chiffres et tirets, commençant par « ${ile}- »)`);
       ex = { ...structuredClone(mission.champs), id: m[2], biome: ile, type: mission.id, level: Number(m[1]), items: [] };
       pourTousNiveau = {};
       item = pourTous = liste = null;

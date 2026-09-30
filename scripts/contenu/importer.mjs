@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { createServer } from 'vite';
 import { exerciseMeta } from '../exerciseMeta.mjs';
 import { ecrireIle, lireIle } from './format.mjs';
-import { CONTENU, DATA } from './generer.mjs';
+import { CONTENU, DATA } from './chemins.mjs';
 
 const iles = process.argv.slice(2);
 if (iles.length === 0) throw new Error('Usage : node scripts/contenu/importer.mjs <île> [<île>…]');
