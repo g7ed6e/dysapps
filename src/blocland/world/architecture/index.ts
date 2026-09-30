@@ -22,7 +22,7 @@ import { pieceDe, type IdDePiece, type Rotation } from './choix';
 import { KITS, kitRempli, type Famille, type Kit } from './kits';
 import { peintureDuMur, type PeintureDuMur } from './peinture';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './pieces';
-import { COTES, estDuPlan, indexDuPlan, voisinageDe, type Voisinage } from './voisinage';
+import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './voisinage';
 
 export { assemblerLesPieces, type FacetteAssemblee } from './assemblage';
 export { pieceDe, FORMES, PENTES, type Forme, type IdDeMur, type IdDePiece, type IdDeToit, type Pente, type Rotation } from './choix';
@@ -89,6 +89,23 @@ export interface OptionsDeLArchitecture {
   surLeVide?: (x: number, y: number, z: number) => boolean;
 }
 
+/** L'index du plan de chaque carte des bâtiments (world/construction.ts, `batimentsDe`, la garde par archipel). */
+const indexParBatiments = new WeakMap<ReadonlyMap<string, string>, IndexDuPlan>();
+
+function indexDesBatiments(batiments: ReadonlyMap<string, string>): IndexDuPlan {
+  let index = indexParBatiments.get(batiments);
+  if (!index) {
+    index = indexDuPlan(
+      [...batiments].map(([k, texture]) => {
+        const [x, y, z] = k.split(',').map(Number);
+        return { x, y, z, texture, color: '' };
+      }),
+    );
+    indexParBatiments.set(batiments, index);
+  }
+  return index;
+}
+
 /**
  * Les pièces d'architecture d'un monde : chaque bloc posé d'un plan dont le kit de l'archipel dessine ou peint la pièce.
  * `cubes` : tout le plan (fantômes compris), car le voisinage se lit sur le plan entier.
@@ -102,14 +119,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   // mur ne change pas quand l'étape du toit arrive dans le monde).
   const batiments = options.batiments;
   const dansLesCases = (c: VoxelCube) => !batiments || batiments.has(cle(c.x, c.y, c.z));
-  const index = batiments
-    ? indexDuPlan(
-        [...batiments].map(([k, texture]) => {
-          const [x, y, z] = k.split(',').map(Number);
-          return { x, y, z, texture, color: '' };
-        }),
-      )
-    : indexDuPlan(cubes);
+  const index = batiments ? indexDesBatiments(batiments) : indexDuPlan(cubes);
   const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation }[] = [];
   for (const c of cubes) {
     if (c.ghost || !estDuPlan(c) || c.place || LUMIERES.has(c.texture ?? '') || options.exclure?.(c)) continue;
