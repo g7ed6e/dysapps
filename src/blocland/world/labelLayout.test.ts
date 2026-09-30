@@ -310,6 +310,20 @@ describe('hors de la Carte, les étiquettes tenues (« Commence ici », le bonho
     for (let i = 0; i < boxes.length; i++) if (i !== 2 && visibles[i]) expect(overlaps(at(i), at(2)), `étiquette ${i}`).toBe(false);
   });
 
+  it('deux étiquettes tenues ne se couvrent jamais : l’une garde sa place, l’autre se tait', () => {
+    // Deux îles côte à côte, chacune tenue, dont les noms ne trouvent qu'une place commune.
+    // Un cadre étroit où seule la place de départ tient : sans règle, les deux se montrent l'une sur l'autre.
+    const serres: LabelBox[] = [{ x: 120, y: 30, w: 220, h: 37 }, { x: 130, y: 34, w: 220, h: 37 }];
+    const deux = serres.map((b) => ({ x: b.x, y: b.y + 25 }));
+    const etroit = { zones: [], bulles: [], obstacles: [], bounds: { w: 240, h: 90 }, gap: 6 };
+    for (const tenues of [[0, 1], [1, 0]]) {
+      const { offsets, visibles } = placerEtiquettes(serres, deux, etroit, null, tenues);
+      expect(visibles[0] || visibles[1], `${tenues}`).toBe(true);
+      const at = (i: number) => ({ ...serres[i], x: serres[i].x + offsets[i].dx, y: serres[i].y + offsets[i].dy });
+      expect(visibles[0] && visibles[1] && overlaps(at(0), at(1)), `${tenues}`).toBe(false);
+    }
+  });
+
   it('elle se tait si son île est hors de l’écran ou sous l’interface', () => {
     const loin = placerEtiquettes([{ x: 60, y: 200, w: 220, h: 37 }], [{ x: -40, y: 225 }], vue, null, [0]);
     expect(loin.visibles[0]).toBe(false);

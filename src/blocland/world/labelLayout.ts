@@ -280,11 +280,13 @@ export function placerEtiquettes(
   }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
   // l'écart (rentrée dans le cadre, hors de l'interface), et les noms plus légers qu'elle couvre se taisent. Elle ne se
-  // pose jamais sur un obstacle (un grand repère d'Archipéo, la flèche ou le fanion) : là, le repère l'emporte.
+  // pose jamais sur un obstacle (un grand repère d'Archipéo, la flèche ou le fanion) : là, le repère l'emporte. Deux
+  // étiquettes tenues ne se couvrent jamais : celle déjà montrée garde sa place, l'autre se tait (DA-10).
   for (const i of tenues) {
     if (visibles[i] || !gardees.includes(i) || !entiere(boxes[i], offsets[i], couvert, bounds)) continue;
     const at = { ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy };
     if (obstacles.some((v) => overlap(at, v, 0) > 0)) continue;
+    if ([...vues].some(([j, v]) => tenues.includes(j) && overlap(at, v, 0) > 0)) continue;
     for (const [j, v] of [...vues]) {
       if (tenues.includes(j) || overlap(at, v, 0) <= 0) continue;
       vues.delete(j);
