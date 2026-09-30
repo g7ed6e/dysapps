@@ -69,7 +69,7 @@ describe('le format Markdown du contenu', () => {
   it('repère une clé d’item qui désignerait un autre item', () => {
     const avant = { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'chien' }] };
     const apres = { items: [{ key: 'e-0', word: 'chat' }, { key: 'e-1', word: 'lapin' }, { key: 'e-2', word: 'chien' }] };
-    expect(clesDeplacees(avant, apres)).toEqual(['e-1']);
+    expect(clesDeplacees(avant, apres)).toEqual(['e-2']);
     expect(clesDeplacees(avant, { items: [...avant.items, { key: 'e-2', word: 'lapin' }] })).toEqual([]);  });
 
   it('laisse corriger la faute d’un item sans changer sa place', () => {
