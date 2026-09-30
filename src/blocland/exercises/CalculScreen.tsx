@@ -1,17 +1,12 @@
-import { createElement, useState } from 'react';
+import { useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { RichText, frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { langAttr } from '../../core/speech';
-import { AID_COMPONENTS, type AidData } from './maths';
+import { Aid } from './Aid';
+import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
-
-/** Redessine une aide visuelle décrite en données. */
-export function Aid({ aid }: { aid: AidData }) {
-  const component = AID_COMPONENTS[aid.kind];
-  return component ? createElement(component as (p: Record<string, unknown>) => ReturnType<typeof createElement>, aid.props) : null;
-}
 
 /**
  * Écran « calcul » : une seule opération, le nombre lu à voix haute, l'aide visuelle toujours affichée

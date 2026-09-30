@@ -1,13 +1,13 @@
 {
-  "id": "theatre-tale-2",
+  "id": "theatre-stories-2",
   "biome": "theatre",
-  "type": "tale",
+  "type": "stories",
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis écoute le récit en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.",
   "items": [
     {
-      "key": "theatre-tale-2-0",
+      "key": "theatre-stories-2-0",
       "prompt": "Chloe and Sam were at the bus stop.\nThe bus was late.\nSam said, “Let’s walk, it’s only ten minutes.”\nChloe answered, “No, it’s raining!”\nFive minutes later, the bus arrived.",
       "question": "Qui voulait y aller à pied ?",
       "spoken": "Chloe and Sam were at the bus stop. The bus was late. Sam said: Let’s walk, it’s only ten minutes. Chloe answered: No, it’s raining! Five minutes later, the bus arrived.",
@@ -35,7 +35,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-1",
+      "key": "theatre-stories-2-1",
       "prompt": "On Saturday, Ben lost his phone in the park.\nHe looked everywhere, but he didn’t find it.\nOn Monday, his teacher called him.\nA girl from his class found the phone under a bench.\nBen thanked her with a box of chocolates.",
       "question": "Où la fille a-t-elle trouvé le téléphone ?",
       "spoken": "On Saturday, Ben lost his phone in the park. He looked everywhere, but he didn’t find it. On Monday, his teacher called him. A girl from his class found the phone under a bench. Ben thanked her with a box of chocolates.",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-2",
+      "key": "theatre-stories-2-2",
       "prompt": "Anna wanted to surprise her mum.\nFirst, she cleaned the living room.\nThen, she went to the shop and bought some flowers.\nWhen she came back, her mum was already home.\nAnna laughed and said, “Happy birthday, Mum!”",
       "question": "Qu’a fait Anna avant d’aller au magasin ?",
       "spoken": "Anna wanted to surprise her mum. First, she cleaned the living room. Then, she went to the shop and bought some flowers. When she came back, her mum was already home. Anna laughed and said: Happy birthday, Mum!",
@@ -91,7 +91,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-3",
+      "key": "theatre-stories-2-3",
       "prompt": "A woman ran to the ticket office.\nShe said to the man, “One ticket to York, please!”\nThe man answered, “Sorry, madam, the last train left five minutes ago.”\nShe sat down on a bench and waited for the morning.",
       "question": "Où se passe l’histoire ?",
       "spoken": "A woman ran to the ticket office. She said to the man: One ticket to York, please! The man answered: Sorry, madam, the last train left five minutes ago. She sat down on a bench and waited for the morning.",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-4",
+      "key": "theatre-stories-2-4",
       "prompt": "In March, Leo’s family planned a day at the beach.\nThey woke up early on Sunday.\nBut when they opened the door, there was snow everywhere!\nSo they stayed at home and built a snowman.",
       "question": "Pourquoi la famille de Leo est-elle restée à la maison ?",
       "spoken": "In March, Leo’s family planned a day at the beach. They woke up early on Sunday. But when they opened the door, there was snow everywhere! So they stayed at home and built a snowman.",
@@ -147,7 +147,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-5",
+      "key": "theatre-stories-2-5",
       "prompt": "On Wednesday, Nina phoned her grandmother.\n“Can you come to my football match on Saturday?” she asked.\nHer grandmother said, “Of course! I’ll bring your little brother.”\nOn Saturday, they both came, and Nina scored a goal.",
       "question": "À qui Nina parle-t-elle au téléphone ?",
       "spoken": "On Wednesday, Nina phoned her grandmother. Can you come to my football match on Saturday? she asked. Her grandmother said: Of course! I’ll bring your little brother. On Saturday, they both came, and Nina scored a goal.",
@@ -175,7 +175,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-6",
+      "key": "theatre-stories-2-6",
       "prompt": "Jake and Tom were playing football in the garden.\nTom kicked the ball too hard.\nIt broke Mrs Lee’s window, next door.\nFirst, the boys ran away.\nThen, they came back and said sorry to her.",
       "question": "Juste après la vitre cassée, qu’ont fait les garçons ?",
       "spoken": "Jake and Tom were playing football in the garden. Tom kicked the ball too hard. It broke Mrs Lee’s window, next door. First, the boys ran away. Then, they came back and said sorry to her.",
@@ -203,7 +203,7 @@
       }
     },
     {
-      "key": "theatre-tale-2-7",
+      "key": "theatre-stories-2-7",
       "prompt": "In the canteen, Lucas looked at his plate.\n“Fish again!” he said.\nThe cook smiled and answered, “No, it’s chicken today.”\nLucas tasted it: it was chicken, and it was very good.",
       "question": "Qui a dit que c’était du poulet ?",
       "spoken": "In the canteen, Lucas looked at his plate. Fish again! he said. The cook smiled and answered: No, it’s chicken today. Lucas tasted it: it was chicken, and it was very good.",

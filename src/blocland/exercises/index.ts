@@ -93,7 +93,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'comptoir-listening-2', 'comptoir-notices-1', 'comptoir-notices-2', 'manoir-ing-1', 'manoir-ing-2', 'manoir-preterit-1', 'manoir-preterit-2',
   'manoir-comparatifs-1', 'manoir-comparatifs-2', 'theatre-dialogues-1', 'theatre-dialogues-2', 'theatre-quantites-1',
   'theatre-quantites-2', 'theatre-preterit-irregulier-1', 'theatre-preterit-irregulier-2',
-  'theatre-tale-1', 'theatre-tale-2', 'gare-futur-1',
+  'theatre-stories-1', 'theatre-stories-2', 'gare-futur-1',
   'gare-futur-2', 'gare-modaux-1', 'gare-modaux-2', 'gare-present-perfect-1', 'gare-present-perfect-2',
   'studio-comprendre-1', 'studio-comprendre-2', 'studio-connecteurs-1', 'studio-connecteurs-2', 'studio-faux-amis-1',
   'studio-faux-amis-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',

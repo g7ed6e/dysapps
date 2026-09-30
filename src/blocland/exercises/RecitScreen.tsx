@@ -3,15 +3,18 @@ import { Icon } from '../../components/Icon';
 import { RichText, frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
-import { langAttr } from '../../core/speech';
-import { Aid } from './CalculScreen';
+import { isSpeechAvailable, langAttr } from '../../core/speech';
+import { Aid } from './Aid';
 import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
 
 /**
- * Écran « écoute d'une histoire » (Story, Tales) : la question en français vient d'abord ; l'histoire, en anglais, ne
+ * Écran « écoute d'une histoire » (Story time, Stories) : la question en français vient d'abord ; l'histoire, en anglais, ne
  * s'affiche pas : on l'écoute (bouton Écouter, et dès l'ouverture si la lecture automatique est active, après la
  * question). Une fois la réponse donnée, l'histoire s'affiche, une ligne par phrase, pour se corriger en la relisant.
+ * Écran de l'anglais : l'invitation à écouter le dit (« en anglais ») ; une autre langue vivante la ferait varier avec `lang`.
+ * Le lexique vient avant l'invitation à écouter, pour se lire d'abord. Sans synthèse vocale, l'histoire s'affiche dès
+ * l'ouverture : on ne demande jamais d'écouter ce qu'on ne peut pas entendre.
  * Champs de l'item : question, prompt (l'histoire, une phrase par « \n »), spoken, choices, answer, hint, explanation, aid.
  */
 export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'en' }: ScreenProps) {
@@ -26,6 +29,7 @@ export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang 
   const [hintShown, setHintShown] = useState(false);
   const aid = item.aid as AidData | undefined;
   const choicesLang = item.choicesLang === 'fr' ? 'fr' : lang;
+  const shown = Boolean(answered) || !isSpeechAvailable();
 
   return (
     <div className="panel question calcul">
@@ -35,8 +39,13 @@ export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang 
         </p>
         <SpeakButton text={frenchTypography(question)} label="Question" />
       </div>
+      {aid && (
+        <div className="aid calcul-aid">
+          <Aid aid={aid} />
+        </div>
+      )}
       <div className="notice recit">
-        {answered ? (
+        {shown ? (
           <ul className="notice-text" role="list" lang={langAttr(lang)}>
             {story.split('\n').map((line, i) => (
               <li key={i} className="notice-line">
@@ -51,11 +60,6 @@ export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang 
         )}
         <SpeakButton text={spoken} label="Écouter" lang={lang} />
       </div>
-      {aid && (
-        <div className="aid calcul-aid">
-          <Aid aid={aid} />
-        </div>
-      )}
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
         {choices.map((choice) => {
           const isAnswer = answered && choice === answer;

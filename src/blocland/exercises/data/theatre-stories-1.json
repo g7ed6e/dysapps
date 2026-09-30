@@ -1,13 +1,13 @@
 {
-  "id": "theatre-tale-1",
+  "id": "theatre-stories-1",
   "biome": "theatre",
-  "type": "tale",
+  "type": "stories",
   "level": 1,
   "lang": "en",
   "instruction": "Lis la question, puis écoute le récit en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.",
   "items": [
     {
-      "key": "theatre-tale-1-0",
+      "key": "theatre-stories-1-0",
       "prompt": "Last Saturday, Jack and his sister Amy went to the zoo.\nThey took the bus at nine.\nJack wanted to see the lions.\nAmy preferred the giraffes.\nAt noon, they had a picnic near the lake.",
       "question": "Quels animaux Amy préférait-elle ?",
       "spoken": "Last Saturday, Jack and his sister Amy went to the zoo. They took the bus at nine. Jack wanted to see the lions. Amy preferred the giraffes. At noon, they had a picnic near the lake.",
@@ -35,7 +35,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-1",
+      "key": "theatre-stories-1-1",
       "prompt": "Ella’s party was on Thursday evening.\nShe invited her friend Noah.\nNoah arrived at seven.\nHe gave her a book.\nThey danced all evening.",
       "question": "Quel jour était la fête d’Ella ?",
       "spoken": "Ella’s party was on Thursday evening. She invited her friend Noah. Noah arrived at seven. He gave her a book. They danced all evening.",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-2",
+      "key": "theatre-stories-1-2",
       "prompt": "Last summer, Omar and his cousin Leila visited Scotland.\nThey stayed there for thirteen days.\nIt rained a lot.\nOne day, they climbed a mountain.\nLeila took a lot of photos.",
       "question": "Combien de jours Omar et Leila sont-ils restés en Écosse ?",
       "spoken": "Last summer, Omar and his cousin Leila visited Scotland. They stayed there for thirteen days. It rained a lot. One day, they climbed a mountain. Leila took a lot of photos.",
@@ -91,9 +91,9 @@
       }
     },
     {
-      "key": "theatre-tale-1-3",
+      "key": "theatre-stories-1-3",
       "prompt": "On Monday morning, Mr Hill’s car broke down.\nSo he started walking to work.\nHis neighbour, Mrs Green, saw him in the street.\nShe drove him to the office.\nHe arrived just on time.",
-      "question": "Pourquoi M. Hill est-il parti au travail à pied ?",
+      "question": "Pourquoi monsieur Hill est-il parti au travail à pied ?",
       "spoken": "On Monday morning, Mr Hill’s car broke down. So he started walking to work. His neighbour, Mrs Green, saw him in the street. She drove him to the office. He arrived just on time.",
       "choices": [
         "Sa voiture était en panne",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-4",
+      "key": "theatre-stories-1-4",
       "prompt": "Last night, Sophie heard a noise in the kitchen.\nShe woke up her brother, Dan.\nThey went downstairs together.\nThe cat was on the table.\nIt was eating their chicken!",
       "question": "Qui faisait du bruit dans la cuisine ?",
       "spoken": "Last night, Sophie heard a noise in the kitchen. She woke up her brother, Dan. They went downstairs together. The cat was on the table. It was eating their chicken!",
@@ -147,7 +147,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-5",
+      "key": "theatre-stories-1-5",
       "prompt": "In June, Mia and Luke ran a race in the park.\nLuke started very fast.\nAfter ten minutes, he was tired.\nMia ran slowly, but she never stopped.\nIn the end, she won the race.",
       "question": "Qui a gagné la course ?",
       "spoken": "In June, Mia and Luke ran a race in the park. Luke started very fast. After ten minutes, he was tired. Mia ran slowly, but she never stopped. In the end, she won the race.",
@@ -175,7 +175,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-6",
+      "key": "theatre-stories-1-6",
       "prompt": "Last Tuesday, Kevin’s class went to a museum with Mr Brown.\nThey travelled by train.\nA guide showed them some old boats.\nKevin asked a lot of questions.\nMr Brown took photos.",
       "question": "Qu’est-ce que le guide a montré à la classe ?",
       "spoken": "Last Tuesday, Kevin’s class went to a museum with Mr Brown. They travelled by train. A guide showed them some old boats. Kevin asked a lot of questions. Mr Brown took photos.",
@@ -203,7 +203,7 @@
       }
     },
     {
-      "key": "theatre-tale-1-7",
+      "key": "theatre-stories-1-7",
       "prompt": "On Sunday morning, Grace made pancakes for her dad.\nBut she forgot the sugar.\nHer dad tasted one and smiled.\nThen he added some honey.\nIn the end, the pancakes were delicious.",
       "question": "Qu’est-ce que Grace a oublié ?",
       "spoken": "On Sunday morning, Grace made pancakes for her dad. But she forgot the sugar. Her dad tasted one and smiled. Then he added some honey. In the end, the pancakes were delicious.",

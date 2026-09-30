@@ -91,9 +91,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   const autoRead = ownConsigne && settings.autoRead && !type?.speaksOnOpen;
   // Une dictée à choix en langue vivante (LV2) : son mot est dit dans la voix de la langue, après la consigne au premier
   // écran, puis seul à chaque écran suivant.
-  // La consigne finie, le mot suit, sauf si l'élève a quitté le premier écran ou lancé une autre lecture entre-temps (une
-  // lecture coupée finit aussi, en erreur).
-  // Une écoute d'histoire (Story) : sa question en français, puis l'histoire, à chaque écran.
+  // Une écoute d'histoire (Story time, Stories) : sa question en français, puis l'histoire, à chaque écran.
+  // `ecranOuvert` garde l'écran affiché (-1 à la fin ou au démontage) : la phrase dite, la suite (le mot, l'histoire) ne
+  // vient que si l'élève y est encore et n'a pas lancé une autre lecture entre-temps (une lecture coupée finit aussi, en erreur).
   const ecranOuvert = useRef(0);
   useEffect(() => {
     ecranOuvert.current = done ? -1 : index;

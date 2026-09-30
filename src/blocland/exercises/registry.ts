@@ -150,7 +150,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   ears: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   signs: { component: CalculScreen, batch: 1 },
   story: { component: RecitScreen, batch: 1, listening: true },
-  tale: { component: RecitScreen, batch: 1, listening: true },
+  stories: { component: RecitScreen, batch: 1, listening: true },
   'to-be': { component: CalculScreen, batch: 1 },
   'have-got': { component: CalculScreen, batch: 1 },
   'present-simple': { component: CalculScreen, batch: 1 },

@@ -1125,8 +1125,8 @@ export const ILES = [
         ]
       },
       {
-        "id": "tale",
-        "title": "Tales",
+        "id": "stories",
+        "title": "Stories",
         "description": "Écouter un court récit au passé et suivre qui fait quoi, où, dans quel ordre et pourquoi.",
         "programme": [
           "c4.en.ecouter.recit",

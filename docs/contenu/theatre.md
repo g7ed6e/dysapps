@@ -333,7 +333,7 @@ Pour tous les items :
    - indice : Question au passé : quel auxiliaire ?
    - explication : Question au passé : Did you see…?
 
-## Tales · `tale`
+## Stories · `stories`
 
 - description : Écouter un court récit au passé et suivre qui fait quoi, où, dans quel ordre et pourquoi.
 - compétences : c4.en.ecouter.recit · c4.en.ecouter.indices
@@ -350,7 +350,7 @@ Pour tous les items :
 Pour tous les items :
 - langue des choix : fr
 
-### Niveau 1 · `theatre-tale-1`
+### Niveau 1 · `theatre-stories-1`
 
 Pour tous les items :
 - aide « Écouter un récit au passé » :
@@ -382,7 +382,7 @@ Pour tous les items :
    - indice : Écoute la fin du nombre : -teen ou -ty ?
    - explication : thirteen days = 13 jours : on entend -teen à la fin, et la voix appuie dessus (thir-TEEN). Thirty (30) finit par -ty.
 4. énoncé : "On Monday morning, Mr Hill’s car broke down.\nSo he started walking to work.\nHis neighbour, Mrs Green, saw him in the street.\nShe drove him to the office.\nHe arrived just on time."
-   - question : Pourquoi M. Hill est-il parti au travail à pied ?
+   - question : Pourquoi monsieur Hill est-il parti au travail à pied ?
    - lu : On Monday morning, Mr Hill’s car broke down. So he started walking to work. His neighbour, Mrs Green, saw him in the street. She drove him to the office. He arrived just on time.
    - choix : Sa voiture était en panne · Il avait raté le bus · Il voulait faire du sport
    - réponse : Sa voiture était en panne
@@ -417,7 +417,7 @@ Pour tous les items :
    - indice : Oublier se dit forget, au passé forgot. Écoute la 2e phrase.
    - explication : She forgot the sugar = elle a oublié le sucre. Le miel (honey), c’est son père qui l’a ajouté ensuite.
 
-### Niveau 2 · `theatre-tale-2`
+### Niveau 2 · `theatre-stories-2`
 
 Pour tous les items :
 - aide « Suivre un récit » :

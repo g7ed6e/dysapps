@@ -189,3 +189,10 @@ it('lecture automatique d’une histoire : la question, puis l’histoire en ang
   expect(dicteeAutoText(doc, 'en', true)).toBe('He goes to the kitchen.');
   expect(dicteeAutoText(doc, 'en')).toBe('');
 });
+
+it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout de suite', () => {
+  vi.unstubAllGlobals();
+  renderScreen(RecitScreen, { question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', choices: ['À la cuisine', 'À la piscine'], answer: 'À la cuisine' }, 'en');
+  expect(screen.getAllByRole('listitem').map((l) => l.textContent)).toEqual(['He goes to the kitchen.']);
+  expect(screen.queryByText(/Écoute l’histoire/)).toBeNull();
+});
