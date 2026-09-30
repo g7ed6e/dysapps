@@ -9,7 +9,8 @@ import type { ScreenProps } from './registry';
  * Dictée à choix : on entend un mot (rien à lire d'abord), puis on choisit la bonne écriture parmi 2 ou 3.
  * Sert à « Oreille du mineur » (paires proches : vin / fin) et au « Coffre à mots » (mots-outils : toujours / toujour).
  * Champs de l'item : word (lu), choices, answer (= word), hint (indice affiché après la réponse), sentence (contexte lu, facultatif).
- * En anglais (`lang: 'en'`), le mot est lu en voix anglaise.
+ * En anglais (`lang: 'en'`), le mot est lu en voix anglaise. La ligne affichée suit l'item : avec une phrase, elle dit qu'on
+ * écoute la phrase et qu'on écrit le mot.
  */
 export function DicteeItem({ items, answered, onAnswer, ruledOut, exerciseId, lang = 'fr' }: ScreenProps) {
   const { settings, speak } = useSettings();
@@ -31,7 +32,7 @@ export function DicteeItem({ items, answered, onAnswer, ruledOut, exerciseId, la
     <div className="panel question">
       <div className="question-head dictee-head">
         <p className="question-prompt dictee-prompt">
-          <Icon name="speaker" /> Écoute, puis choisis le bon bloc.
+          <Icon name="speaker" /> {item.sentence ? 'Écoute la phrase, puis choisis l’écriture du mot.' : 'Écoute, puis choisis la bonne écriture.'}
         </p>
         <SpeakButton text={spoken} label="Réécouter" lang={lang} />
       </div>

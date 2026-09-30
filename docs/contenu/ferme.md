@@ -3,7 +3,7 @@
 module : Orthographe grammaticale
 matière : francais
 classe : 6e
-description : Accorder sujet et verbe, choisir a/à, et/est, -é/-er.
+description : Accorder sujet et verbe, accorder dans le groupe nominal, choisir a/à, et/est, -é/-er.
 bloc : terre
 gardien : le Taureau de terre
 icône : wheat
@@ -27,6 +27,12 @@ créature : Bloquette
 - consigne : Pour chaque sujet, choisis le verbe qui va avec : un seul, ou plusieurs. Puis valide.
 - blocs : 4
 - XP : 12
+
+Pour tous les items :
+- aide « Accorder le verbe avec son sujet » :
+  - Le verbe s’accorde avec celui qui fait l’action.
+  - Un seul : singulier (il parle).
+  - Plusieurs : pluriel, le verbe finit par -nt (ils parlent).
 
 1. clé : le-chien
    - sujet : Le chien
@@ -82,6 +88,11 @@ créature : Bloquette
 - consigne : Attention aux pièges : cherche qui fait l’action, choisis le verbe, puis valide.
 - blocs : 5
 - XP : 14
+
+Pour tous les items :
+- aide « Trouver le vrai sujet » :
+  - « La sœur de mes amis » : c’est la sœur qui fait l’action.
+  - Deux sujets reliés par « et » : pluriel, le verbe finit par -nt.
 
 1. clé : paul-et-léa
    - sujet : Paul et Léa
@@ -152,6 +163,10 @@ créature : Bloquette
 Pour tous les items :
 - trou lu : (terminaison)
 - choix : é · er · ez
+- aide « -é, -er ou -ez ? » :
+  - On peut dire « vendre » : -er (elle va laver).
+  - On peut dire « vendu » : -é (elle a lavé).
+  - Avec « vous » : -ez (vous lavez).
 
 ### Niveau 1 · `ferme-recolte-1`
 
@@ -230,6 +245,129 @@ Pour tous les items :
    - énoncé : Il est arriv… en retard.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.
+
+## Troupeau · `troupeau`
+
+- description : Accorder le déterminant, le nom et l’adjectif, puis trouver le sujet placé après le verbe ou fait de deux noms.
+- compétences : c3.fr.langue.genre-nombre · c3.fr.langue.sujet
+- erreur : {explanation}
+- bloc gagné : terre
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : (mot manquant)
+
+### Niveau 1 · `ferme-troupeau-1`
+
+- consigne : Choisis le mot bien accordé : regarde les mots de son groupe. La règle est affichée.
+- programme : c3.fr.langue.accord-gn
+- bravo : Tout le groupe va ensemble !
+- blocs : 4
+- XP : 12
+
+Pour tous les items :
+- aide « L’accord dans le groupe nominal » :
+  - Le nom commande : déterminant et adjectif prennent son genre et son nombre.
+  - Le déterminant change aussi : son, sa, ses ; ce, cette, ces.
+  - Féminin : souvent un -e (grand, grande).
+  - Pluriel : un -s, ou un -x (des bateaux, des journaux).
+
+1. énoncé : Les vaches … broutent l’herbe du pré.
+   - choix : noir · noire · noires
+   - réponse : noires
+   - indice : Regarde le nom : « vaches », c’est féminin et pluriel.
+   - explication : « Les vaches » est au féminin pluriel : l’adjectif prend -e puis -s, « noires ».
+2. énoncé : Le fermier range … bottes de paille.
+   - choix : son · sa · ses
+   - réponse : ses
+   - indice : Combien de bottes ? Le déterminant doit le dire.
+   - explication : « Bottes » est au pluriel (un s) : le déterminant aussi, « ses bottes ».
+3. énoncé : Une … poule picore dans la cour.
+   - choix : petit · petite · petits
+   - réponse : petite
+   - indice : « Une poule » : féminin ou masculin ? Un seul ou plusieurs ?
+   - explication : « Une poule » est au féminin singulier : l’adjectif prend un -e, « petite ».
+4. énoncé : Deux … galopent dans le champ.
+   - choix : cheval · chevaux · chevals
+   - réponse : chevaux
+   - indice : Deux, c’est plusieurs. Relis la règle des noms en -al.
+   - explication : Au pluriel, les noms en -al deviennent -aux : un cheval, deux chevaux.
+5. énoncé : Les agneaux … dorment contre leur mère.
+   - choix : blanc · blancs · blanches
+   - réponse : blancs
+   - indice : « Agneaux » : masculin ou féminin ? Un seul ou plusieurs ?
+   - explication : « Les agneaux » est au masculin pluriel : l’adjectif prend seulement un -s, « blancs ».
+6. énoncé : Ma tante a une jument très … .
+   - choix : doux · douce · douces
+   - réponse : douce
+   - indice : « Une jument » : féminin, et une seule.
+   - explication : « Une jument » est au féminin singulier : doux devient « douce » au féminin.
+7. énoncé : Dans l’étable, les … boivent du lait.
+   - choix : veau · veaux · veaus
+   - réponse : veaux
+   - indice : « Les », c’est plusieurs. Relis la règle des noms en -eau.
+   - explication : Les noms en -eau prennent un -x au pluriel : un veau, les veaux.
+8. énoncé : Regarde : … vache donne beaucoup de lait.
+   - choix : ce · cette · ces
+   - réponse : cette
+   - indice : « Vache » : féminin ou masculin ? Une seule ou plusieurs ?
+   - explication : « Vache » est au féminin singulier : le déterminant est « cette ». « Ce » va avec un nom masculin, « ces » avec un pluriel.
+
+### Niveau 2 · `ferme-troupeau-2`
+
+- consigne : Trouve le sujet avec « qui est-ce qui ? », même s’il est après le verbe, puis accorde le verbe. La règle est affichée.
+- programme : c3.fr.langue.accord-sujet-verbe
+- bravo : Tu as trouvé le sujet !
+- blocs : 5
+- XP : 14
+
+Pour tous les items :
+- aide « Trouver le sujet » :
+  - Pose la question « qui est-ce qui ? » devant le verbe.
+  - Le sujet peut être après le verbe : « Dans la mare nagent les canards. »
+  - Deux sujets reliés par « et » : le verbe est au pluriel.
+
+1. énoncé : Dans le pré … les vaches.
+   - choix : dort · dorment
+   - réponse : dorment
+   - indice : Qui est-ce qui dort ? Cherche après le verbe.
+   - explication : Le sujet est après le verbe : ce sont les vaches qui dorment. Pluriel : « dorment ».
+2. énoncé : Sur le toit des granges … un coq.
+   - choix : chante · chantent
+   - réponse : chante
+   - indice : Qui est-ce qui chante ? Les granges ne chantent pas.
+   - explication : C’est le coq qui chante, un seul : « chante ». « Des granges » dit seulement où il est.
+3. énoncé : Où … les poules ?
+   - choix : pond · pondent
+   - réponse : pondent
+   - indice : Qui est-ce qui pond ? Cherche après le verbe.
+   - explication : Dans la question, le sujet est après le verbe : ce sont les poules qui pondent. Pluriel : « pondent ».
+4. énoncé : Quand … le vétérinaire ?
+   - choix : arrive · arrivent
+   - réponse : arrive
+   - indice : Qui est-ce qui arrive ? Un seul ou plusieurs ?
+   - explication : Le sujet est après le verbe : c’est le vétérinaire qui arrive, un seul. Singulier : « arrive ».
+5. énoncé : « Rentrez les moutons ! » … le berger.
+   - choix : crie · crient
+   - réponse : crie
+   - indice : Qui est-ce qui crie ? Ce ne sont pas les moutons.
+   - explication : Après les paroles, le sujet suit le verbe : c’est le berger qui crie, un seul. Singulier : « crie ».
+6. énoncé : Le chien et le chat … près du feu.
+   - choix : dort · dorment
+   - réponse : dorment
+   - indice : Qui est-ce qui dort ? Compte les animaux.
+   - explication : Le chien et le chat, ça fait deux sujets : le verbe est au pluriel, « dorment ».
+7. énoncé : Mon frère et ma sœur … les œufs.
+   - choix : ramasse · ramassent
+   - réponse : ramassent
+   - indice : Qui est-ce qui ramasse ? Compte les personnes.
+   - explication : Mon frère et ma sœur, ça fait deux sujets : le verbe est au pluriel, « ramassent ».
+8. énoncé : Dans la cour … une oie et un canard.
+   - choix : court · courent
+   - réponse : courent
+   - indice : Qui est-ce qui court ? Cherche après le verbe, et compte.
+   - explication : Le sujet est après le verbe, et il y en a deux : une oie et un canard. Pluriel : « courent ».
 
 ## Les plans
 

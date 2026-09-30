@@ -3001,6 +3001,30 @@ button.app-card:active {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
+/* La carte de règle de l'Enclos : sur une tablette à l'horizontale, à droite des sujets, pour que les quatre sujets et
+   Valider tiennent dans la hauteur ; au-dessus des sujets sur un écran en hauteur. */
+@media (min-width: 800px) and (orientation: landscape) {
+  .panel.enclos.has-aid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 30%);
+    column-gap: 1.2rem;
+    align-items: start;
+  }
+  .panel.enclos.has-aid > .calcul-aid {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin: 0;
+  }
+  .panel.enclos.has-aid > .enclos-list {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .panel.enclos.has-aid > .validate-button {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+}
 
 /* ===== Blocland : le Gardien (boss de biome) ===== */
 .boss-card {

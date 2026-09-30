@@ -1,0 +1,137 @@
+{
+  "id": "carriere-coffre-4",
+  "biome": "carriere",
+  "type": "coffre",
+  "level": 4,
+  "instruction": "Écoute le mot ou la phrase, puis choisis l’écriture du mot.",
+  "items": [
+    {
+      "key": "parce que",
+      "word": "parce que",
+      "choices": [
+        "parce que",
+        "parce-que",
+        "parse que"
+      ],
+      "answer": "parce que",
+      "hint": "parce que s’écrit en deux mots, sans trait d’union, avec un c."
+    },
+    {
+      "key": "lorsque",
+      "word": "lorsque",
+      "choices": [
+        "lorsque",
+        "lorque",
+        "lorsqe"
+      ],
+      "answer": "lorsque",
+      "hint": "lorsque, c’est lors, puis que, comme dans presque."
+    },
+    {
+      "key": "pourtant",
+      "word": "pourtant",
+      "choices": [
+        "pourtant",
+        "pourtan",
+        "pourtent"
+      ],
+      "answer": "pourtant",
+      "hint": "pourtant, c’est pour, puis tant, avec un t muet."
+    },
+    {
+      "key": "peut-être",
+      "sentence": "Il pleuvra peut-être demain.",
+      "word": "peut-être",
+      "choices": [
+        "peut-être",
+        "peut être",
+        "peutêtre"
+      ],
+      "answer": "peut-être",
+      "hint": "peut-être veut dire « c’est possible » : trait d’union et accent. Sans trait d’union, c’est « il peut être là »."
+    },
+    {
+      "key": "tout à coup",
+      "word": "tout à coup",
+      "choices": [
+        "tout à coup",
+        "tout a coup",
+        "tout à cou"
+      ],
+      "answer": "tout à coup",
+      "hint": "tout à coup s’écrit en trois mots, avec un accent sur à et un p muet, comme beaucoup."
+    },
+    {
+      "key": "davantage",
+      "sentence": "Il faut travailler davantage.",
+      "word": "davantage",
+      "choices": [
+        "davantage",
+        "d’avantage",
+        "davantages"
+      ],
+      "answer": "davantage",
+      "hint": "davantage veut dire « plus » : un seul mot, sans apostrophe."
+    },
+    {
+      "key": "assez",
+      "word": "assez",
+      "choices": [
+        "assez",
+        "asser",
+        "assé"
+      ],
+      "answer": "assez",
+      "hint": "assez prend deux s, et finit par ez, comme nez."
+    },
+    {
+      "key": "très",
+      "word": "très",
+      "choices": [
+        "très",
+        "trè",
+        "trés"
+      ],
+      "answer": "très",
+      "hint": "très prend un accent grave et un s muet, comme après."
+    },
+    {
+      "key": "près",
+      "sentence": "J’habite près du collège.",
+      "word": "près",
+      "choices": [
+        "près",
+        "prêt",
+        "prè"
+      ],
+      "answer": "près",
+      "hint": "près veut dire « pas loin » : accent grave et s muet. Prêt, avec un t, c’est être prêt à partir."
+    },
+    {
+      "key": "tôt",
+      "sentence": "Demain, je me lève tôt.",
+      "word": "tôt",
+      "choices": [
+        "tôt",
+        "tot",
+        "tô"
+      ],
+      "answer": "tôt",
+      "hint": "tôt, le contraire de tard, prend un accent circonflexe et un t muet."
+    }
+  ],
+  "perRun": 8,
+  "feedback": {
+    "correct": "Bonne oreille !",
+    "wrong": "Tu as choisi {chosen}. On écrit {word} : {hint}"
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 6,
+    "xp": 16
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

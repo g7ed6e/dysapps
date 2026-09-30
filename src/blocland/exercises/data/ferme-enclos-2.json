@@ -11,7 +11,17 @@
       "singular": "joue",
       "plural": "jouent",
       "answer": "pluriel",
-      "why": "Paul et Léa, ça fait deux personnes : le verbe prend -nt."
+      "why": "Paul et Léa, ça fait deux personnes : le verbe prend -nt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "le-chien-de-mes-voisins",
@@ -19,7 +29,17 @@
       "singular": "aboie",
       "plural": "aboient",
       "answer": "singulier",
-      "why": "c’est le chien qui aboie, un seul, même s’il y a plusieurs voisins."
+      "why": "c’est le chien qui aboie, un seul, même s’il y a plusieurs voisins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "elles",
@@ -27,7 +47,17 @@
       "singular": "dort",
       "plural": "dorment",
       "answer": "pluriel",
-      "why": "elles, c’est plusieurs : le verbe prend -nt."
+      "why": "elles, c’est plusieurs : le verbe prend -nt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "tout-le-monde",
@@ -35,7 +65,17 @@
       "singular": "rit",
       "plural": "rient",
       "answer": "singulier",
-      "why": "tout le monde se conjugue comme il, au singulier."
+      "why": "tout le monde se conjugue comme il, au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "les-élèves-de-la-classe",
@@ -43,7 +83,17 @@
       "singular": "écoute",
       "plural": "écoutent",
       "answer": "pluriel",
-      "why": "ce sont les élèves qui écoutent, plusieurs : le verbe prend -nt."
+      "why": "ce sont les élèves qui écoutent, plusieurs : le verbe prend -nt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "mon-frère",
@@ -51,7 +101,17 @@
       "singular": "court",
       "plural": "courent",
       "answer": "singulier",
-      "why": "un seul frère (mon), donc le verbe reste au singulier."
+      "why": "un seul frère (mon), donc le verbe reste au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "le-chat-et-le-chien",
@@ -59,7 +119,17 @@
       "singular": "dort",
       "plural": "dorment",
       "answer": "pluriel",
-      "why": "le chat et le chien, ça fait deux : le verbe prend -nt."
+      "why": "le chat et le chien, ça fait deux : le verbe prend -nt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     },
     {
       "key": "il",
@@ -67,7 +137,17 @@
       "singular": "mange",
       "plural": "mangent",
       "answer": "singulier",
-      "why": "il, c’est une seule personne : le verbe reste au singulier."
+      "why": "il, c’est une seule personne : le verbe reste au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trouver le vrai sujet",
+          "lines": [
+            "« La sœur de mes amis » : c’est la sœur qui fait l’action.",
+            "Deux sujets reliés par « et » : pluriel, le verbe finit par -nt."
+          ]
+        }
+      }
     }
   ],
   "feedback": {

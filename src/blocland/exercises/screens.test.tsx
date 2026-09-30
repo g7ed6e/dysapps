@@ -6,6 +6,8 @@ import { ProgressProvider } from '../../core/ProgressContext';
 import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
 import { loadAllExercises } from './index';
+import { EnclosScreen } from './EnclosScreen';
+import { QcmItem } from './QcmItem';
 import { demanderMoinsDAnimations } from '../../core/mouvement.testing';
 
 const ALL = await loadAllExercises();
@@ -237,4 +239,33 @@ it('ascension : un étage par paragraphe validé, temps comparé à soi-même', 
   expect(saved.fluence[def.id]).toHaveLength(1);
   // 4 blocs, +2 pour trois étoiles, +2 la première fois.
   expect(saved.inventory.verre).toBe(8);
+});
+
+it('enclos et récolte : la carte de règle du niveau s’affiche avec les sujets et la phrase ; sans aide, pas de carte', () => {
+  const props = { answered: null, onAnswer: () => {}, onHelp: () => {}, level: 1 };
+  const cases = [
+    { Screen: EnclosScreen, def: getExercise('ferme-enclos-1')!, n: 4 },
+    { Screen: QcmItem, def: getExercise('ferme-recolte-1')!, n: 1 },
+  ];
+  for (const { Screen, def, n } of cases) {
+    const items = def.items.slice(0, n);
+    const title = (items[0].aid as { props: { title: string } }).props.title;
+    const { container, unmount } = render(
+      <SettingsProvider>
+        <Screen {...props} items={items} exerciseId={def.id} />
+      </SettingsProvider>,
+    );
+    expect(screen.getByText(title)).toBeInTheDocument();
+    if (Screen === EnclosScreen) expect(container.querySelector('.panel.enclos.has-aid')).not.toBeNull();
+    unmount();
+    const bare = render(
+      <SettingsProvider>
+        <Screen {...props} items={items.map(({ aid: _aid, ...it }) => it)} exerciseId={def.id} />
+      </SettingsProvider>,
+    );
+    expect(screen.queryByText(title)).not.toBeInTheDocument();
+    expect(bare.container.querySelector('figure')).toBeNull();
+    expect(bare.container.querySelector('.has-aid')).toBeNull();
+    bare.unmount();
+  }
 });
