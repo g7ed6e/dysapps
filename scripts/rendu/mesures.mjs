@@ -172,6 +172,11 @@ const CAPTURES = [
   { nom: 'refuge-timbre', vue: 'île', famille: 'refuge-pres', ile: 'refuge', finesse: 2 },
   { nom: 'refuge-timbre-bulle', vue: 'bulle', famille: 'refuge-pres', ile: 'refuge', sansEtoiles: true, fige: true },
   { nom: 'refuge-papillon', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 } },
+  // Le Papillon vivant, en cuivre (son défi pas encore gagné, `debout`), sur son îlot, vu de la caméra de l'île.
+  { nom: 'refuge-papillon-vivant', vue: 'île', famille: 'refuge-pres', ile: 'refuge', debout: 'refuge' },
+  // Le texte le plus grand (OpenDyslexic, 32 px, `reglages`) : les étiquettes et les boutons de la vue de l'archipel.
+  { nom: 'refuge-archipel-depuis-le-refuge-od32', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'refuge-archipel-depuis-le-refuge-od32-800x1280', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
   { nom: 'refuge-bardeau-ile', vue: 'île', famille: 'refuge-pres', ile: 'refuge', finesse: 1 },
   { nom: 'refuge-gris-echo', vue: 'défi', famille: 'refuge-pres', ile: 'studio' },
   { nom: 'refuge-gris-soleil', vue: 'défi', famille: 'refuge-pres', ile: 'jardin' },
@@ -195,6 +200,12 @@ const CAPTURES = [
   // avec `ile` y place le bonhomme).
   { nom: 'archipel-phare', vue: 'archipel', famille: 'ciel', ile: 'phare' },
   { nom: 'archipel-phare-nuit', vue: 'archipel', famille: 'ciel', ile: 'phare', nuit: true },
+  { nom: 'lac-phare', vue: 'île', famille: 'essai', ile: 'phare' },
+  { nom: 'lac-textes', vue: 'île', famille: 'essai', ile: 'textes' },
+  { nom: 'lac-studio', vue: 'île', famille: 'essai', ile: 'studio' },
+  { nom: 'lac-chateau', vue: 'île', famille: 'essai', ile: 'chateau' },
+  { nom: 'gris-moustache-bulle', vue: 'bulle', famille: 'essai5', ile: 'manoir', sansEtoiles: true, fige: true },
+  { nom: 'gris-muscade-bulle', vue: 'bulle', famille: 'essai4', ile: 'jardin', sansEtoiles: true, fige: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -265,6 +276,12 @@ function routeDe(c, parIle, routes) {
   if (c.ile && c.vue === 'île') return `/aventure/${c.ile}`;
   if (c.ile && (c.vue === 'défi' || c.vue === 'bulle')) return `/aventure/${c.ile}/gardien`;
   return routes[c.vue];
+}
+
+/** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <île>-gardien » retirée) : il est debout. */
+function sansLeGardien(parCle, ile) {
+  if (!ile) return parCle;
+  return Object.fromEntries(Object.entries(parCle).filter(([k]) => k !== `${ile}-gardien`));
 }
 
 async function scenes() {
@@ -339,6 +356,8 @@ async function scenes() {
               taille: c.taille,
               recadre: c.recadre,
               sansIles: c.sansIles,
+              debout: c.debout,
+              reglages: c.reglages,
               depuis: c.depuis,
               fige: c.fige,
               finesse: c.finesse,
@@ -347,26 +366,27 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers, lv2 }) => {
+        ({ village, progress, view, univers, lv2, reglages }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}) }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
         {
           village: { ...built, plans: sansLesIles(plans ?? built.plans, sansIles), ...(bridges ? { bridges } : {}), at: depuis ?? ile ?? at },
-          progress: sansEtoiles ? {} : sansLesIles(progress, sansIles),
+          progress: sansEtoiles ? {} : sansLeGardien(sansLesIles(progress, sansIles), debout),
           view,
           univers: UNIVERS_DES_TEXTES,
           lv2,
+          reglages,
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);

@@ -136,6 +136,54 @@ export function etiquettesVisibles(boxes: LabelBox[], bounds: { w: number; h: nu
   return boxes.map((b) => outside(b, bounds) < 1 && reserves.every((r) => overlap(b, r, 0) < 1));
 }
 
+/** Où se pose une étiquette hors de la Carte : montrée ou non, et son écart à l'écran (en pixels CSS). */
+export interface PlaceHorsCarte extends LabelOffset {
+  visible: boolean;
+}
+
+/**
+ * Hors de la Carte, comme `etiquettesVisibles`, mais deux étiquettes ne se taisent jamais : celle de l'île de la flèche
+ * « Commence ici » et celle de l'île du bonhomme (`tenues` : le point de l'île à l'écran, ou `null` pour une autre
+ * étiquette). Coupée par le bord ou sous un bouton, une étiquette tenue rentre dans le cadre, au plus près, comme sur la
+ * Carte ; elle ne se cache que si son île elle-même est hors de l'écran (référent dys, LV2-5).
+ */
+export function etiquettesHorsCarte(
+  boxes: LabelBox[],
+  bounds: { w: number; h: number },
+  reserves: LabelBox[],
+  tenues: ({ x: number; y: number } | null)[],
+): PlaceHorsCarte[] {
+  const libre = (b: LabelBox) => outside(b, bounds) < 1 && reserves.every((r) => overlap(b, r, 0) < 1);
+  return boxes.map((b, i) => {
+    const ile = tenues[i];
+    if (!ile) return { visible: libre(b), dx: 0, dy: 0 };
+    if (ile.x < 0 || ile.x > bounds.w || ile.y < 0 || ile.y > bounds.h) return { visible: false, dx: 0, dy: 0 };
+    if (libre(b)) return { visible: true, dx: 0, dy: 0 };
+    const dans = (x: number, y: number): LabelBox => ({
+      ...b,
+      x: clamp(x, b.w / 2, bounds.w - b.w / 2),
+      y: clamp(y, b.h / 2, bounds.h - b.h / 2),
+    });
+    // Les places essayées : rentrée dans le cadre, puis de part et d'autre de chaque bouton qu'elle toucherait.
+    const places = [dans(b.x, b.y)];
+    const gap = 4;
+    for (const r of reserves) {
+      const p = places[0];
+      places.push(
+        dans(p.x, r.y + r.h / 2 + b.h / 2 + gap),
+        dans(p.x, r.y - r.h / 2 - b.h / 2 - gap),
+        dans(r.x - r.w / 2 - b.w / 2 - gap, p.y),
+        dans(r.x + r.w / 2 + b.w / 2 + gap, p.y),
+      );
+    }
+    const loin = (p: LabelBox) => Math.hypot(p.x - b.x, p.y - b.y);
+    const bonnes = places.filter(libre).sort((p, q) => loin(p) - loin(q));
+    // Aucune place libre (un écran minuscule) : elle reste montrée, rentrée dans le cadre.
+    const p = bonnes[0] ?? places[0];
+    return { visible: true, dx: p.x - b.x, dy: p.y - b.y };
+  });
+}
+
 /** La boîte des boutons du haut, dans un cadre de largeur `w`. */
 export function boutonsDuHaut(w: number): LabelBox {
   return { x: w - BOUTONS_DU_HAUT.w / 2, y: BOUTONS_DU_HAUT.h / 2, w: BOUTONS_DU_HAUT.w, h: BOUTONS_DU_HAUT.h };

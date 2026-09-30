@@ -510,10 +510,11 @@ const SOLEIL = fromLayers(
  * lit par son bord supérieur) ; une rangée vide la sépare de l'aile du bas, plus petite.
  */
 const AILE_DU_PAPILLON = [
-  // z = 9 à 1 (de haut en bas) : le bord du haut monte d'un cube par colonne jusqu'à la pointe (un V, pas un U) ; un cube
-  // vide de chaque côté de la tête (DA et consultant Blocland, retouches LV2-5).
-  '....#',
+  // z = 9 à 1 (de haut en bas) : le bord du haut monte en marches vers le dehors (un V, pas un U) et finit par un sommet
+  // de deux cubes, sans pointe isolée : seules les antennes gardent une pointe fine (sinon, un chandelier) ; un cube vide
+  // de chaque côté de la tête et des antennes (DA et consultant Blocland, retouches LV2-5).
   '...##',
+  '..###',
   '..###',
   '.####',
   '#####',

@@ -48,7 +48,7 @@ Un bleu franc : plus de lavande.
 - Soleil `#FFF4E2`, force 2,3. Ambiance du ciel `#D4E4F6`, du sol `#8C9CBE`, force 1,05.
 - Brume de profondeur 110 / 350. Voile `#DCE8F2`, force 0,05.
 - Sols : neige `#E6ECEF` / `#C4D0DE` ; roche `#A3A7AD` / `#6E7896` ; herbe `#74A064` / `#6C6250`.
-- Plancher de nuages (mer de jour et teinte de la mer) : `#DDE3E8`. Ardoise des rives `#2E505E`, dessus enneigé `#E5EBE3`.
+- Plancher de nuages (mer de jour et teinte de la mer) : `#DDE3E8`. Ardoise des rives `#1C3440` depuis LV2-5 (`#2E505E` avant), dessus enneigé `#E5EBE3`.
 
 ## 6. La brume
 

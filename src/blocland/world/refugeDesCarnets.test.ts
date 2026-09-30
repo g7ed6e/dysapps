@@ -1,7 +1,7 @@
 // Le rendu du Refuge des carnets (LV2, 3e), décidé par le directeur artistique le 29/09 après les relectures
 // (consultants Archipéo et Blocland, référent dys) : la place sur la carte, le cœur d'herbe et le lac, le refuge sans
 // lanterne, ses trois plans, le bardeau, Timbre et le Papillon de cuivre dans les deux univers.
-import { BLOCKS } from '../biomes';
+import { BIOMES, BLOCKS, estIleLv2, type BiomeId } from '../biomes';
 import { grantAccess } from './archipelago';
 import { buildingStages } from './architect';
 import { fenetresDe } from './construction';
@@ -19,7 +19,7 @@ import { PAINTERS, SIZE } from './pixels';
 import { JOINT, nuanceDuMotif } from '../pixel/painted';
 import { planCells, plansFor } from './plans';
 import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './faune';
-import { worldBounds, worldCubes } from './terrain';
+import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBounds, worldCubes } from './terrain';
 
 const ouvert = { plans: {}, journal: [], bridges: grantAccess([], ['refuge']) };
 
@@ -252,6 +252,16 @@ describe('les nuages des Îles du Ciel', () => {
         expect(n.x + n.len <= i.x0 - 3 || n.x >= i.x1 + 3 || n.z + 1.2 <= i.y0 - 3 || n.z >= i.y1 + 3, `${n.x},${n.z}`).toBe(true);
   });
 
+  it('aucun nuage, haut ou bas, ne mord l’îlot d’un Gardien', () => {
+    const b = worldBounds('3e');
+    const nuages = placeDesNuages('3e', b, Math.max(b.maxX - b.minX, b.maxY - b.minY));
+    for (const d of mapOf('3e')) {
+      const o = bossIsletOrigin(BIOMES.findIndex((x) => x.id === d.id));
+      for (const n of nuages)
+        expect(n.x + n.len <= o.x - 3 || n.x >= o.x + ISLET_W - 1 + 3 || n.z + 1.2 <= o.y - 3 || n.z >= o.y + ISLET_H - 1 + 3, `${d.id} ${n.x},${n.z}`).toBe(true);
+    }
+  });
+
   it('ailleurs, les nuages restent à leur place d’avant', () => {
     for (const a of ['6e', '5e', '4e'] as const) {
       const b = worldBounds(a);
@@ -351,6 +361,15 @@ describe('le Papillon de cuivre en cubes (Blocland)', () => {
     expect(g.some((q) => q.color === BORD && q.z >= 5 && q.x > 5)).toBe(true);
     for (const q of g) expect(g.some((r) => r.x === 10 - q.x && r.z === q.z && r.color === q.color), `${q.x},${q.z}`).toBe(true);
   });
+
+  it('pas un chandelier : chaque aile du haut finit par un sommet de deux cubes, seules les antennes ont une pointe fine', () => {
+    const zMax = Math.max(...g.map((q) => q.z));
+    const sommet = g.filter((q) => q.z === zMax).map((q) => q.x).sort((a, b) => a - b);
+    // Les deux antennes (x 3 et 7) et, de chaque côté, deux cubes d’aile côte à côte (x 0-1 et 9-10), séparés des antennes par un vide.
+    expect(sommet).toEqual([0, 1, 3, 7, 9, 10]);
+    for (const x of [0, 10]) expect(en(x, zMax - 1), `sous le sommet ${x}`).toBeDefined();
+    for (const x of [2, 8]) expect(en(x, zMax), `entre antenne et aile ${x}`).toBeUndefined();
+  });
 });
 
 describe('le Papillon de cuivre d’Archipéo', () => {
@@ -403,6 +422,22 @@ describe('le Papillon de cuivre d’Archipéo', () => {
       const [cx, cz] = [Math.sin((deg * Math.PI) / 180), -Math.cos((deg * Math.PI) / 180)];
       // Chaque aile, ouverte de `ouverture`, reste à moins de 50° de la caméra : jamais vue par la tranche.
       for (const t of lichen) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2], `${deg}°`).toBeGreaterThan(Math.cos((50 * Math.PI) / 180));
+    }
+  });
+});
+
+describe('les caméras des îles', () => {
+  // Le pivot de chaque caméra d'île avant le refuge (main, en degrés) : le refuge ne le change pour aucune autre île, dans
+  // aucun archipel (DA, LV2-5).
+  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 32, mine: -23.2, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 23.2, horloge: -0.8, glacier: 36.8, marche: 13.6, carrefour: 36.8, marais: 13.6, comptoir: -12, manoir: -12, relais: -37.6, forge: 40, atelier: 25.2, falaise: -0.4, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 30.4, phare: 0, donnees: -30.4, textes: 0, studio: 40, chateau: -40 };
+  it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
+    for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
+      expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);
+  });
+  it('seules des îles de LV2 sortent de la colonne centrale', () => {
+    for (const id of HORS_DE_LA_COLONNE) {
+      const b = BIOMES.find((x) => x.id === id);
+      expect(b && estIleLv2(b), id).toBe(true);
     }
   });
 });

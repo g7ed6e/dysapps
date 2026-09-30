@@ -162,11 +162,16 @@ export function worldBounds(a: ArchipelagoId): {
   minY: number;
   maxY: number;
 } {
+  return bornesDesIles(a, mapOf(a));
+}
+
+/** Les bornes de quelques îles d'un archipel, et de son port (voir `worldBounds`). */
+function bornesDesIles(a: ArchipelagoId, iles: IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
-  for (const def of mapOf(a)) {
+  for (const def of iles) {
     const b = landBox(def);
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
@@ -247,10 +252,33 @@ export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: num
  */
 export function viewYaw(home: BiomeId): number {
   const c = islandCenter(home);
-  const b = worldBounds(archipelagoOfIsland(home));
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
-  const dx = (b.minX + b.maxX) / 2 - c.x;
+  const dx = colonneCentrale(archipelagoOfIsland(home)) - c.x;
   return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
+}
+
+/**
+ * Les îles de LV2 qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel,
+ * ne fait pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5). Le Relais des voyageurs (5e) et
+ * le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel, qu'on ne rouvre pas.
+ */
+export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['refuge'];
+
+const colonnes = new Map<ArchipelagoId, number>();
+/**
+ * La colonne centrale d'un archipel, vers laquelle pivotent les caméras des îles : le milieu est-ouest de ses îles (sauf
+ * `HORS_DE_LA_COLONNE`) et de son port.
+ */
+export function colonneCentrale(a: ArchipelagoId): number {
+  const connue = colonnes.get(a);
+  if (connue !== undefined) return connue;
+  const b = bornesDesIles(
+    a,
+    mapOf(a).filter((d) => !HORS_DE_LA_COLONNE.includes(d.id)),
+  );
+  const x = (b.minX + b.maxX) / 2;
+  colonnes.set(a, x);
+  return x;
 }
 
 /** Île la plus proche d'un point de la grille d'un archipel (pour le toucher : une île ou le pont qui y mène). */

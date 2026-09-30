@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boutonsDuHaut, etiquettesVisibles, layoutLabels, separateMark, type LabelBox } from './labelLayout';
+import { boutonsDuHaut, etiquettesHorsCarte, etiquettesVisibles, layoutLabels, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -118,5 +118,40 @@ describe('hors de la Carte, les étiquettes qui se montrent', () => {
   it('une étiquette entière au centre fractionnaire reste visible (arrondi de la projection)', () => {
     // Relevée sur la vue de l'archipel depuis le Château : l'aire hors cadre n'y est pas un zéro exact.
     expect(etiquettesVisibles([{ x: 487.3, y: 181.2, w: 259.65000000000003, h: 36.9 }], { w: 1024, h: 688 }, [boutonsDuHaut(1024)])).toEqual([true]);
+  });
+});
+
+describe('hors de la Carte, les étiquettes tenues (« Commence ici », le bonhomme)', () => {
+  const cadre = { w: 1024, h: 688 };
+  const haut = boutonsDuHaut(cadre.w);
+  const barre = { x: 512, y: 660, w: 500, h: 56 };
+  const dedans = (b: { x: number; y: number; w: number; h: number }) => b.x - b.w / 2 >= 0 && b.x + b.w / 2 <= cadre.w && b.y - b.h / 2 >= 0 && b.y + b.h / 2 <= cadre.h;
+  const touche = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+
+  it('coupée par le bord ou sous un bouton, elle rentre dans le cadre au lieu de se taire ; une autre se tait', () => {
+    const boxes: LabelBox[] = [
+      { x: 60, y: 200, w: 220, h: 37 },
+      { x: 960, y: 60, w: 200, h: 37 },
+      { x: 500, y: 655, w: 240, h: 37 },
+      { x: 60, y: 300, w: 220, h: 37 },
+    ];
+    const ile = [{ x: 60, y: 260 }, { x: 960, y: 120 }, { x: 500, y: 640 }, null];
+    const out = etiquettesHorsCarte(boxes, cadre, [haut, barre], ile);
+    out.slice(0, 3).forEach((p, i) => {
+      expect(p.visible, `étiquette ${i}`).toBe(true);
+      const b = { ...boxes[i], x: boxes[i].x + p.dx, y: boxes[i].y + p.dy };
+      expect(dedans(b), `étiquette ${i} dans le cadre`).toBe(true);
+      expect(touche(b, haut) || touche(b, barre), `étiquette ${i} sous un bouton`).toBe(false);
+    });
+    expect(out[3].visible).toBe(false);
+  });
+
+  it('elle ne se cache que si son île est hors de l’écran', () => {
+    const out = etiquettesHorsCarte([{ x: -80, y: 200, w: 220, h: 37 }], cadre, [haut], [{ x: -40, y: 260 }]);
+    expect(out[0].visible).toBe(false);
+  });
+
+  it('entière et libre, elle ne bouge pas', () => {
+    expect(etiquettesHorsCarte([{ x: 400, y: 200, w: 200, h: 37 }], cadre, [haut], [{ x: 400, y: 260 }])).toEqual([{ visible: true, dx: 0, dy: 0 }]);
   });
 });
