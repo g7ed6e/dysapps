@@ -144,6 +144,8 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   figures: { component: CalculScreen, batch: 1 },
   rouages: { component: CalculScreen, batch: 1 },
   voix: { component: CalculScreen, batch: 1 },
+  // Tour du lecteur (6e) : un petit texte à lire, puis de qui ou de quoi il parle.
+  etages: { component: CalculScreen, batch: 1 },
   // Anglais (lang: 'en') : les phrases à trou et les nombres sur l'écran à règle, l'écoute sur la dictée.
   hello: { component: CalculScreen, batch: 1 },
   numbers: { component: CalculScreen, batch: 1 },

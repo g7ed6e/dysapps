@@ -76,7 +76,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'foret-echauffement-001', 'foret-echauffement-002', 'foret-echauffement-003', 'foret-chasse-son-an', 'foret-chasse-son-on',
   'foret-chasse-son-oi', 'foret-chasse-son-in', 'foret-chasse-son-ch', 'foret-chasse-son-s', 'foret-chasse-son-in-3', 'mine-filon-b',
   'mine-filon-d', 'mine-filon-p', 'mine-filon-q', 'mine-filon-mix-1', 'mine-filon-mix-2', 'carriere-mot-troue-1',
-  'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont',
+  'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont', 'tour-etages-1', 'tour-etages-2',
   'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'foret-rimes-oire', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
   'carriere-coffre-2', 'carriere-coffre-3', 'carriere-coffre-4', 'carriere-familles-1', 'carriere-familles-2', 'carriere-facettes-1', 'carriere-facettes-2', 'ferme-enclos-1', 'ferme-enclos-2',
   'ferme-recolte-1', 'ferme-recolte-2', 'ferme-troupeau-1', 'ferme-troupeau-2', MATHS_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
