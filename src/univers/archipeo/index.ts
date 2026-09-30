@@ -65,7 +65,7 @@ export const ARCHIPEO = {
       challenge: 'Le Brochet d’argent murmure dans sa fontaine : « Mon flanc est éteint. Tu as partagé toute ma rivière, lis maintenant mes parts. »',
       guardianSays: {
         hit: 'Une part de mon flanc s’allume. C’est juste.',
-        miss: 'Rien ne s’éteint. Regarde les parts, compte celles qui sont coloriées, et reprends.',
+        miss: 'Rien ne s’éteint. Regarde les parts ou l’opération posée, et reprends.',
         beaten: 'Mon flanc se rallume. La rivière est à toi, et à Nénu.',
       },
     },

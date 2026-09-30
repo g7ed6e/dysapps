@@ -59,7 +59,7 @@ export const BLOCLAND = {
       challenge: 'Le Brochet d’argent fend l’eau : « Tu as partagé toute ma rivière. Montre-moi comment tu lis les parts. »',
       guardianSays: {
         hit: 'Plouf ! Juste. Mes écailles frissonnent.',
-        miss: 'Ce n’est rien : regarde les parts, compte celles qui sont coloriées, et reprends.',
+        miss: 'Ce n’est rien : regarde les parts ou l’opération posée, et reprends.',
         beaten: 'Glou. Tu partages mieux que la rivière elle-même. Elle est à toi… et à Nénu.',
       },
     },

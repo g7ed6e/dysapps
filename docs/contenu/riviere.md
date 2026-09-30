@@ -3,7 +3,7 @@
 module : Fractions
 matière : maths
 classe : 6e
-description : Lire, comparer et partager des fractions, toujours avec la figure sous les yeux.
+description : Lire, comparer et partager des fractions, puis poser les opérations et la division, toujours avec la figure sous les yeux.
 bloc : galet
 gardien : le Brochet d’argent
 icône : pizza
@@ -32,6 +32,13 @@ créature : Nénu
 
 - description : Une fraction d’une quantité, puis des fractions égales.
 - compétences : c3.ma.nombres.fractions-designations · c3.ma.nombres.fractions-comparer
+
+## Galets en colonnes · `colonnes`
+
+> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+
+- description : Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.
+- compétences : c3.ma.nombres.calcul-pose
 
 ## Les plans
 
