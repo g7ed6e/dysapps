@@ -20,7 +20,7 @@ Le mainteneur, le 30 septembre 2026 : « Dans Blocland la collecte de blocs doit
    | 3e | 2 lentilles + 1 quartz | Miroir | Loupe |
 
 3. **Recette fixe et toujours affichée** : vignettes, nombres et noms, lue à voix haute, « tu en as … » à côté de chaque bloc ; un toucher sur « Assembler » fait un bloc. Ni grille, ni place des blocs qui compte, ni recette à deviner. Sans assez de blocs, le bouton reste grisé : rien ne se perd.
-4. **Les huit monuments existants** en demandent 4 à 8 chacun, aux endroits qui comptent (poteaux et longue-vue de l’observatoire des baleines, ailes du grand moulin, lanterne du phare du large, lanterneau du kiosque, roues de la locomotive du viaduc, machinerie de l’amphithéâtre, grande lunette de l’observatoire des étoiles, faîte du temple). Aucun monument n’est créé.
+4. **Les huit monuments existants** en demandent 4 à 8 chacun, aux endroits qui comptent (poteaux et longue-vue de l’observatoire des baleines, ailes du grand moulin, lanterne du phare du large, hublots de son fût dans Archipéo, lanterneau du kiosque, roues de la locomotive du viaduc, machinerie de l’amphithéâtre, grande lunette de l’observatoire des étoiles, faîte du temple). Aucun monument n’est créé.
 5. **Rien ne recule** : une case déjà posée reste posée, quel que soit le bloc qu’elle demande maintenant.
 
 Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/assemblage.md`, lu par `npm run contenu` (demande du mainteneur).

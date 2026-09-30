@@ -41,7 +41,7 @@ import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseD
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
-import { dessinerPhareDuLarge, phareDuLarge } from './phareDuLarge';
+import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
 import { getPlan, planCells } from './plans';
@@ -1191,8 +1191,17 @@ export function maillageDeLaConstruction(
     const P = new Pinceau();
     const L = new Pinceau();
     dessinerPhareDuLarge(P, L, large.pose);
+    const [t0] = O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
+    // Ses hublots (GD-2, consultant Archipéo) : les vitraux du monument, ronds sur le fût, à mi-hauteur ; un carré de
+    // cadre jaune posé sur le pan, que le shader peint en hublot (motif 12). Deux triangles chacun ; aucun sur une île fermée.
+    if (!large.pose.muted) {
+      const cadre = couleurDeMatiere(a, 'vitrail').cote;
+      const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+      for (const h of hublotsDuPhareDuLarge(large.pose))
+        O.poly(h.points, h.normale, h.points.map(() => cadre), { biseaux: sansBiseau, teinte: 1, motif: MOTIF_ASSEMBLE.vitrail });
+    }
     dessinDuLarge = {
-      opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }),
+      opaque: [t0, O.idx.length / 3],
       fenetres: F.facettes(L.fin(), { extra: 0 }),
       cellules: large.pose.cellules,
     };

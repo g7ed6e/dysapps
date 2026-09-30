@@ -1445,9 +1445,11 @@ export type Atelier = 'fabrique' | 'halle';
  * Le lieu où l'on assemble les blocs (GD-2 ; coordonnées relatives à son coin, z = 1 au-dessus du sol) : une halle de
  * 3 × 3 au fond, sa grande porte ouverte au milieu de la façade (la halle est creuse derrière elle), et devant, dans la
  * cour, une potence qui porte le bloc assemblé de l'archipel, suspendu, et les blocs de sa recette empilés. Rien à lire.
- * - `fabrique` (Blocland) : des murs de brique, un toit plat de pierre de taille, une cheminée de pierre, une potence de
- *   rondins (des poutres).
- * - `halle` (Archipéo) : une halle basse en bois sur un socle de pierre, un toit à deux pentes, une potence de bois.
+ * - `fabrique` (Blocland) : des murs de brique sur un soubassement de pierre (ce qui la sépare des maisons), un toit plat
+ *   de pierre de taille, une haute cheminée de pierre (son sommet à 7, au-dessus de la salle des trophées vue de la
+ *   caméra de l'île), une potence de bois, d'où le bloc suspendu se détache.
+ * - `halle` (Archipéo) : une halle basse en bois sur un socle de pierre, un toit à deux pentes, et une haute potence de
+ *   bois (son bras à 6) qui porte le bloc assemblé au-dessus du toit de la salle des trophées : le repère du lieu.
  */
 export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
   const out: ModelCube[] = [];
@@ -1461,22 +1463,23 @@ export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
     for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++)
       for (let z = 1; z <= haut; z++) {
         if (x === 1 && y <= 3 && z <= 2) continue;
-        out.push({ x, y, z, block: halle ? (z === 1 ? 'pierre' : 'bois') : 'brique' });
+        out.push({ x, y, z, block: z === 1 ? 'pierre' : halle ? 'bois' : 'brique' });
       }
   if (halle) {
     // Le toit à deux pentes : un rang de tuiles, puis le faîte au milieu, dans le sens de la profondeur (le pignon en façade).
     for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 3, block: 'toit' });
     for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: 4, block: 'toit' });
   } else {
-    // Le toit plat, et la cheminée au coin du fond.
+    // Le toit plat, et la haute cheminée au coin du fond.
     for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: 'taille' });
-    for (const z of [5, 6]) out.push({ x: 2, y: 4, z, block: 'pierre' });
+    for (const z of [5, 6, 7]) out.push({ x: 2, y: 4, z, block: 'pierre' });
   }
-  // La potence, sur le côté gauche de la cour : un mât contre la façade, un bras vers l'avant, le bloc suspendu dessous.
-  const bois = halle ? 'bois' : 'poutre';
-  for (let z = 1; z <= 4; z++) out.push({ x: 0, y: 1, z, block: bois });
-  out.push({ x: 0, y: 0, z: 4, block: bois });
-  out.push({ x: 0, y: 0, z: 2, block: suspendu });
+  // La potence, sur le côté gauche de la cour : un mât de bois contre la façade, un bras vers l'avant, le bloc suspendu
+  // dessous, une case sous le bras (rien ne le touche). Dans la Halle, plus haute : elle est son repère.
+  const bras = halle ? 6 : 4;
+  for (let z = 1; z <= bras; z++) out.push({ x: 0, y: 1, z, block: 'bois' });
+  out.push({ x: 0, y: 0, z: bras, block: 'bois' });
+  out.push({ x: 0, y: 0, z: bras - 2, block: suspendu });
   // Les blocs de la recette, empilés à droite de la cour.
   out.push({ x: 2, y: 0, z: 1, block: premier });
   out.push({ x: 2, y: 1, z: 1, block: premier });

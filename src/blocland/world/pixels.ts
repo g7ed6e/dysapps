@@ -175,11 +175,12 @@ const vers = (a: [number, number, number], b: [number, number, number], t: numbe
 
 /**
  * La poutre (Blocland) : un rondin équarri clair. Sur le côté, le fil du bois en long (deux fibres qui ondulent d'un
- * pixel), les deux arêtes équarries plus sombres, et deux chevilles de 2 × 2 en diagonale ; sur le dessus, le bois de
+ * pixel), les deux arêtes équarries plus sombres, et deux chevilles rondes de 3 × 3 en diagonale, brun très sombre
+ * au cœur clair (le bout de la cheville), ce qui la sépare des planches ; sur le dessus, le bois de
  * bout : des cernes carrés autour du cœur. Sans hasard : la même texture sur chaque face.
  */
 function poutre(face: 'top' | 'side'): Painter {
-  const [clair, fil, arete, cheville] = [hex('#dcba86'), hex('#bf955e'), hex('#a47a46'), hex('#5e4026')];
+  const [clair, fil, arete, cheville, bout] = [hex('#dcba86'), hex('#c49c66'), hex('#a47a46'), hex('#3e2814'), hex('#8a6038')];
   if (face === 'top')
     return (x, y) => {
       const d = Math.max(Math.abs(x - 7.5), Math.abs(y - 7.5));
@@ -189,8 +190,17 @@ function poutre(face: 'top' | 'side'): Painter {
     };
   return (x, y) => {
     if (x === 0 || x === 15) return arete;
-    if ((x === 4 || x === 5) && (y === 3 || y === 4)) return cheville;
-    if ((x === 10 || x === 11) && (y === 11 || y === 12)) return cheville;
+    // Les chevilles : un rond de 3 × 3 (les coins gardent le bois), son cœur un peu plus clair.
+    for (const [px, py] of [
+      [4, 3],
+      [11, 11],
+    ]) {
+      const dx = Math.abs(x - px);
+      const dy = Math.abs(y - py);
+      if (dx === 0 && dy === 0) return bout;
+      if (dx <= 1 && dy <= 1 && dx + dy < 2) return cheville;
+      if (dx === 1 && dy === 1) return vers(cheville, clair, 0.4);
+    }
     const onde = y % 8 < 4 ? 0 : 1;
     return x === 2 + onde || x === 8 + onde || x === 13 - onde ? fil : clair;
   };

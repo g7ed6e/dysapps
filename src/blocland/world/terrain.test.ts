@@ -764,23 +764,25 @@ it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d�
       const door = VILLAGE_PLACES.assemblage.door;
       for (const [y, z] of [[0, 1], [0, 2], [1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]]) expect(at(door, y, z), `${y},${z}`).toBeUndefined();
       expect(at(door, 4, 1)).toBeDefined();
-      // Le bloc assemblé de l'archipel, suspendu sous le bras de la potence (rien dessous), et les blocs de sa recette.
-      expect(at(0, 0, 2)).toBe(recette.bloc);
-      expect(at(0, 0, 1)).toBeUndefined();
-      expect(at(0, 0, 4)).toBe(at(0, 1, 4));
+      // Le bloc assemblé de l'archipel, suspendu sous le bras de bois de la potence (rien autour de lui), et les blocs de
+      // sa recette. Dans la Halle, la potence est plus haute : son repère au-dessus de la salle des trophées.
+      const bras = atelier === 'halle' ? 6 : 4;
+      expect(at(0, 0, bras - 2)).toBe(recette.bloc);
+      for (let z = 1; z < bras; z++) if (z !== bras - 2) expect(at(0, 0, z), `${z}`).toBeUndefined();
+      expect([at(0, 0, bras), at(0, 1, bras), at(0, 1, 1)]).toEqual(['bois', 'bois', 'bois']);
       for (const i of recette.ingredients) expect(m.some((c) => c.y < 2 && c.block === i.bloc), i.bloc).toBe(true);
       // Ce qui change d'un univers à l'autre : la brique, le toit plat et la cheminée ; le bois sur la pierre et les deux pentes.
       if (atelier === 'fabrique') {
-        expect(at(0, 2, 1)).toBe('brique');
+        // Un soubassement de pierre sous la brique, une haute cheminée (sommet à 7).
+        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'brique']);
         expect(m.filter((c) => c.z === 4 && c.y >= 2).every((c) => c.block === 'taille')).toBe(true);
-        expect(at(2, 4, 6)).toBe('pierre');
-        expect(at(0, 1, 1)).toBe('poutre');
+        expect([5, 6, 7].map((z) => at(2, 4, z))).toEqual(['pierre', 'pierre', 'pierre']);
+        expect(Math.max(...m.map((c) => c.z))).toBe(7);
       } else {
         expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'bois']);
         expect(at(1, 2, 4)).toBe('toit');
         expect(at(0, 2, 4)).toBeUndefined();
-        expect(at(0, 1, 1)).toBe('bois');
-        expect(m.some((c) => c.z > 4)).toBe(false);
+        expect(m.filter((c) => c.z > 4).every((c) => c.x === 0 && c.y <= 1)).toBe(true);
       }
     }
   }

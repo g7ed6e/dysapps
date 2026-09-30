@@ -333,7 +333,7 @@ export const ARCHIPEO = {
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
     'monument-phare-large': {
-      description: 'Une haute tour ronde de pierre grise. À son sommet, un feu brûle pour guider les navires dans la brume.',
+      description: 'Une haute tour ronde de pierre grise, percée de hublots. À son sommet, un feu brûle pour guider les navires dans la brume.',
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },

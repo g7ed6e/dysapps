@@ -212,8 +212,35 @@ const CAPTURES = [
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'foret', finesse: 2 },
   { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-observatoire', finesse: 2 },
   { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-moulin', finesse: 2 },
+  // Le lieu de près (recadré sur la halle, derrière la salle des trophées), et son panneau ouvert, aux réglages par
+  // défaut puis en OpenDyslexic 32 px, avec des blocs en poche (`inventaire`) : la poutre s'assemble, le vitrail non.
+  { nom: 'assemblage-lieu', vue: 'île', famille: 'assemblage', ile: 'foret', recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
+  { nom: 'assemblage-panneau', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'assemblage', inventaire: { bois: 5, pierre: 3, glace: 2 } },
+  {
+    nom: 'assemblage-panneau-od32',
+    vue: 'île',
+    famille: 'assemblage',
+    ile: 'foret',
+    lieu: 'assemblage',
+    inventaire: { bois: 5, pierre: 3, glace: 2 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  },
+  // Les mêmes, en hauteur, pour voir les deux cartes (« Assembler » actif, puis grisé) sans faire défiler.
+  { nom: 'assemblage-panneau-haut', vue: 'île', famille: 'assemblage-panneau', ile: 'foret', lieu: 'assemblage', inventaire: { bois: 5, pierre: 3, glace: 2 }, taille: { width: 1024, height: 1700 } },
+  {
+    nom: 'assemblage-panneau-od32-haut',
+    vue: 'île',
+    famille: 'assemblage-panneau',
+    ile: 'foret',
+    lieu: 'assemblage',
+    inventaire: { bois: 5, pierre: 3, glace: 2 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    taille: { width: 1024, height: 3000 },
+  },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'marche', finesse: 2 },
   { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'marche', lieu: 'monument-kiosque', finesse: 2 },
+  { nom: 'assemblage-phare-large', vue: 'île', famille: 'assemblage', ile: 'glacier', lieu: 'monument-phare-large', finesse: 2 },
+  { nom: 'assemblage-amphitheatre', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'monument-amphitheatre', finesse: 2 },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'atelier', finesse: 2 },
   { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'monument-viaduc', finesse: 2 },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'phare', finesse: 2 },
@@ -370,6 +397,7 @@ async function scenes() {
               sansIles: c.sansIles,
               debout: c.debout,
               reglages: c.reglages,
+              inventaire: c.inventaire,
               depuis: c.depuis,
               fige: c.fige,
               finesse: c.finesse,
@@ -378,18 +406,18 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, inventaire } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers, lv2, reglages }) => {
+        ({ village, progress, view, univers, lv2, reglages, inventaire }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
-          localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
+          localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: inventaire ?? {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
         {
@@ -399,6 +427,7 @@ async function scenes() {
           univers: UNIVERS_DES_TEXTES,
           lv2,
           reglages,
+          inventaire,
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);

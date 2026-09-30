@@ -116,7 +116,7 @@ function moulin(): PlanCell[] {
   return cells;
 }
 
-/** Le phare du large : un socle de glace, une tour rayée de tuiles et de glace, une galerie de lambris, une lanterne de panneaux. */
+/** Le phare du large : un socle de glace, une tour rayée de tuiles et de glace, une galerie de lambris, une lanterne de vitraux. */
 function phareLarge(): PlanCell[] {
   const { cells, put, box } = drawer();
   box(1, 1, 0, 5, 5, 1, 'glace');
@@ -212,7 +212,7 @@ function etoiles(): PlanCell[] {
   return cells;
 }
 
-/** Le temple de marbre : un soubassement de pierre de taille, huit colonnes de marbre, un entablement, un toit de prismes. */
+/** Le temple de marbre : un soubassement de pierre de taille, huit colonnes de marbre, un entablement, un toit de prismes au faîte de miroirs. */
 function temple(): PlanCell[] {
   const { cells, put, box } = drawer();
   box(0, 1, 0, 7, 5, 1, 'taille');
@@ -265,7 +265,7 @@ const FICHES: Fiche[] = [
     biome: 'glacier',
     archipelago: '5e',
     name: 'Le phare du large',
-    description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de panneaux, pour les navires qui passent.',
+    description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
     islet: { x: 62, y: 339 },
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
@@ -320,7 +320,7 @@ const FICHES: Fiche[] = [
     biome: 'belvedere',
     archipelago: '3e',
     name: 'Le temple de marbre',
-    description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes qui brille au soleil.',
+    description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes et un faîte de miroirs qui brillent au soleil.',
     islet: { x: 5, y: 935 },
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
