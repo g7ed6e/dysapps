@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { clesDeplacees } from './chemins.mjs';
+import { clesDeplacees, clesRemplacees } from './chemins.mjs';
 import { ecrireIle, lireIle } from './format.mjs';
 
 const DATA = 'src/blocland/exercises/data';
@@ -116,6 +116,26 @@ describe('le format Markdown du contenu', () => {
     expect(lire('Pour tous les items :', '- clé des items : rang', '', '1. mot : chat')).toThrow('« clé des items » vaut');
     expect(lire('Pour tous les items :', '- clé des items : mot', '', '1. texte : sans mot')).toThrow('n’a pas de mot pour faire sa clé');
     expect(lire('1. mot troué : enfant')).toThrow('mot troué attendu sous la forme « en[f]ant »');
+  });
+
+  it('refuse les écritures ambiguës autour des tableaux et des règles', () => {
+    const debut = ['---', 'île : baie', '---', '## X · `x`', '### Niveau 1 · `baie-x-1`', ''];
+    const lire = (...l) => () => lireIle([...debut, ...l, ''].join('\n'), 'baie.md');
+    expect(lire('| mot |', '| --- |', '| chat |', '| chien |', '', 'Pour tous les items :', '- réponse : X')).toThrow('va avant le premier item');
+    expect(lire('Pour tous les items :', '- clé des items : mot', '', '| mot |', '| --- |', '| chat |', '| chat |')).toThrow('ont la même clé « chat »');
+    expect(lire('Pour tous les items :', '- réponse : z', '', '1. mot troué : en[f]ant')).toThrow('« mot troué » donne déjà « réponse »');
+    const md = ['---', 'île : baie', '---', '## X · `x`', 'Pour tous les items :', '- trou lu : blank', '', '### Niveau 1 · `baie-x-1`', '', 'Pour tous les items :', '- trou lu : (mot manquant)', '', '1. énoncé : Il … ici.', ''].join('\n');
+    expect(lireIle(md).exercices[0].items[0].spoken).toBe('Il (mot manquant) ici.');
+  });
+
+  it('écrit une liste vide hors du tableau', () => {
+    const ex = { id: 'baie-x-1', biome: 'baie', type: 'x', level: 1, items: [{ key: 'baie-x-1-0', word: 'a', choices: [] }, { key: 'baie-x-1-1', word: 'b', choices: ['c'] }] };
+    expect(lireIle(ecrireIle({ id: 'baie' }, [ex])).exercices).toEqual([ex]);
+  });
+
+  it('signale une clé remplacée par une autre au même rang', () => {
+    const avant = { items: [{ key: 'chta', word: 'chta' }, { key: 'chien', word: 'chien' }] };
+    expect(clesRemplacees(avant, { items: [{ key: 'chat', word: 'chat' }, { key: 'chien', word: 'chien' }] })).toEqual(['chta → chat']);
   });
 
   it('ne voit aucun glissement quand une île passe en Markdown', () => {

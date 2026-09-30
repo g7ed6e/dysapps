@@ -144,6 +144,7 @@ function poser(objet, chemin, valeur) {
   o[cles.at(-1)] = valeur;
 }
 
+// ---------- Écriture ----------
 
 function ecrireAide(aide, entete, retrait) {
   if (aide.kind !== 'rule-card' || Object.keys(aide).join() !== 'kind,props' || Object.keys(aide.props).join() !== 'title,lines') {
@@ -183,6 +184,11 @@ function champsCommuns(items, exclus) {
 }
 
 // ---------- Champs déduits ----------
+
+// Pseudo-champs : le mot troué (à l'écriture), les règles « trou lu » et « clé des items » (dans « Pour tous les items »).
+const TROUE = '#troue';
+const TROU = '#trou';
+const CLE = '#cle';
 
 /**
  * « clé des items : mot » : la clé de chaque item est son mot (ou sa lettre) au lieu de « <exercice>-<rang> » ;
@@ -236,11 +242,9 @@ function estTroue(it) {
   return parts.every((s) => typeof s === 'string' && !/[[\]]/.test(s)) && it.answer !== '' && it.word === parts.join('');
 }
 
-// ---------- Écriture ----------
-
 function ecrireChampItem(it, k) {
   if (k === 'aid') return ecrireAide(it.aid, '- aide « % » :', '');
-  if (k === '#troue') return [`- mot troué : ${ecrireTexte(`${it.before}[${it.answer}]${it.after}`)}`];
+  if (k === TROUE) return [`- mot troué : ${ecrireTexte(`${it.before}[${it.answer}]${it.after}`)}`];
   const [etiquette, , type] = PAR_CLE_ITEM.get(k);
   return ecrireChamp(etiquette, type, it[k], '');
 }
@@ -258,14 +262,14 @@ function champsEcrits(it, defaut, partages, trou) {
   let cles = champsItem(it, defaut).filter((k) => !partages.has(k));
   if (trou !== undefined && trouLu(it) === trou) cles = cles.filter((k) => k !== 'spoken');
   if (['word', 'before', 'after', 'answer'].every((k) => cles.includes(k)) && estTroue(it)) {
-    cles = cles.filter((k) => !['before', 'after', 'answer'].includes(k)).map((k) => (k === 'word' ? '#troue' : k));
+    cles = cles.filter((k) => !['before', 'after', 'answer'].includes(k)).map((k) => (k === 'word' ? TROUE : k));
   }
   return cles;
 }
 
 /** Un champ écrit dans une case de tableau, ou null s'il n'y tient pas (aide, liste en sous-liste). */
 function enCase(it, k) {
-  if (k === 'aid') return null;
+  if (k === 'aid' || (Array.isArray(it[k]) && it[k].length === 0)) return null;
   const lignes = ecrireChampItem(it, k);
   if (lignes.length !== 1) return null;
   const v = lignes[0].slice(lignes[0].indexOf(' : ') + 3);
@@ -274,10 +278,10 @@ function enCase(it, k) {
 
 /** Un niveau s'écrit en tableau quand ses items sont courts : au plus 5 colonnes, des cases d'au plus 45 signes. */
 const LARGEUR_CASE = 45;
-const ORDRE_COLONNES = ITEM.flatMap(([, k]) => (k === 'word' ? ['word', '#troue'] : [k]));
+const ORDRE_COLONNES = ITEM.flatMap(([, k]) => (k === 'word' ? ['word', TROUE] : [k]));
 
 function etiquetteColonne(k) {
-  return k === '#troue' ? 'mot troué' : PAR_CLE_ITEM.get(k)[0];
+  return k === TROUE ? 'mot troué' : PAR_CLE_ITEM.get(k)[0];
 }
 
 function ecrireItems(items, clesParItem) {
@@ -290,7 +294,7 @@ function ecrireItems(items, clesParItem) {
   const lignes = [];
   items.forEach((it, i) => {
     const cles = [...clesParItem[i]];
-    if (cles.length === 0 || cles[0] === 'aid' || (cles[0] !== '#troue' && PAR_CLE_ITEM.get(cles[0])[2] === 'liste')) cles.unshift('#');
+    if (cles.length === 0 || cles[0] === 'aid' || (cles[0] !== TROUE && PAR_CLE_ITEM.get(cles[0])[2] === 'liste')) cles.unshift('#');
     const numero = `${i + 1}. `;
     const retrait = ' '.repeat(numero.length);
     cles.forEach((k, j) => {
@@ -388,9 +392,9 @@ export function lireIle(md, fichier = 'md') {
     if (!ex) return;
     ex.items = ex.items.map((propre, n) => {
       const it = { ...structuredClone(mission.items), ...structuredClone(pourTousNiveau), ...propre };
-      const { '#trou': trou, '#cle': cle } = it;
-      delete it['#trou'];
-      delete it['#cle'];
+      const { [TROU]: trou, [CLE]: cle } = it;
+      delete it[TROU];
+      delete it[CLE];
       const parties = trouUnique(it);
       if (trou !== undefined && it.spoken === undefined && parties) it.spoken = parties[0] + trou + parties[1];
       it.key ??= cleParDefaut(cle, it, ex.id, n);
@@ -425,17 +429,17 @@ export function lireIle(md, fichier = 'md') {
     const [, etiquette, brut = ''] = m;
     if (table === PAR_ETIQUETTE_ITEM && (etiquette === 'trou lu' || etiquette === 'clé des items')) {
       if (cible !== pourTous) throw erreur(`« ${etiquette} » va dans « Pour tous les items »`);
-      const k = etiquette === 'trou lu' ? '#trou' : '#cle';
+      const k = etiquette === 'trou lu' ? TROU : CLE;
       if (cible[k] !== undefined) throw erreur(`« ${etiquette} » écrit deux fois`);
       cible[k] = lireTexte(brut, ligne);
-      if (k === '#cle' && !Object.hasOwn(CLE_DES_ITEMS, cible[k])) throw erreur(`« clé des items » vaut « mot », « lettre » ou « paragraphe », lu « ${cible[k]} »`);
+      if (k === CLE && !Object.hasOwn(CLE_DES_ITEMS, cible[k])) throw erreur(`« clé des items » vaut « mot », « lettre » ou « paragraphe », lu « ${cible[k]} »`);
       liste = null;
       return;
     }
     if (table === PAR_ETIQUETTE_ITEM && etiquette === 'mot troué') {
       const t = /^([^[\]]*)\[([^[\]]+)\]([^[\]]*)$/.exec(lireTexte(brut, ligne));
       if (!t) throw erreur(`mot troué attendu sous la forme « en[f]ant », lu « ${brut} »`);
-      for (const k of ['word', 'before', 'answer', 'after']) if (cible[k] !== undefined) throw erreur(`« mot troué » donne déjà « ${PAR_CLE_ITEM.get(k)[0]} »`);
+      for (const k of ['word', 'before', 'answer', 'after']) if (cible[k] !== undefined || mission?.items[k] !== undefined || pourTousNiveau?.[k] !== undefined) throw erreur(`« mot troué » donne déjà « ${PAR_CLE_ITEM.get(k)[0]} »`);
       Object.assign(cible, { word: t[1] + t[2] + t[3], before: t[1], answer: t[2], after: t[3] });
       liste = null;
       return;
@@ -487,7 +491,7 @@ export function lireIle(md, fichier = 'md') {
     if (l.startsWith('#')) throw erreur(`titre inconnu : ${l}`);
     if (!mission) throw erreur('ligne hors d’une mission');
     if (l === 'Pour tous les items :') {
-      if (item) throw erreur('« Pour tous les items » va avant le premier item');
+      if (item || ex?.items.length) throw erreur('« Pour tous les items » va avant le premier item');
       pourTous = ex ? pourTousNiveau : mission.items;
       liste = null;
       continue;

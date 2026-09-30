@@ -43,3 +43,16 @@ export function clesDeplacees(ancien, nouveau) {
   for (const it of ancien.items) parNom.set(nom(it), [...(parNom.get(nom(it)) ?? []), it.key]);
   return nouveau.items.filter((it) => parNom.has(nom(it)) && !parNom.get(nom(it)).includes(it.key)).map((it) => it.key);
 }
+
+/**
+ * Les clés d'avant remplacées par une clé nouvelle au même rang : avec « clé des items : mot », corriger un mot change
+ * sa clé, et l'item repart de zéro dans la répétition espacée. Permis (on peut vouloir remplacer un item), mais signalé.
+ */
+export function clesRemplacees(ancien, nouveau) {
+  const avant = new Set(ancien.items.map((it) => it.key));
+  const apres = new Set(nouveau.items.map((it) => it.key));
+  return ancien.items.flatMap((it, n) => {
+    const remplacant = nouveau.items[n];
+    return !apres.has(it.key) && remplacant && !avant.has(remplacant.key) ? [`${it.key} → ${remplacant.key}`] : [];
+  });
+}

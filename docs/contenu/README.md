@@ -33,8 +33,8 @@ Pour tous les items :                         ← champs communs à tous les ite
 - **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`. Le barème (`blocs`, `XP`, `monte à`, `descend à`) reste écrit ici, niveau par niveau.
 - **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, et `aide « titre » :` suivie de ses lignes en sous-liste. Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
 - **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul. S’y écrivent aussi les deux règles qui évitent de recopier :
-  - `trou lu : blank` : la voix lit l’énoncé en remplaçant le « … » par ce texte (`blank` en anglais, `(mot manquant)` en français). Un item dont la lecture est autre garde son champ `lu`. Seul un énoncé à un seul « … » est concerné.
-  - `clé des items : mot` (ou `lettre`) : la clé de chaque item est son mot, ce qui permet d’insérer un item n’importe où ; `clé des items : paragraphe` : les clés sont p1, p2… (textes à lire).
+  - `trou lu : blank` : la voix lit l’énoncé en remplaçant le « … » par ce texte (`blank` en anglais, `(mot manquant)` en français). Un item dont la lecture est autre garde son champ `lu`. Seul un énoncé à un seul « … » est concerné : un énoncé dont le « … » n’est pas un trou (des points de suspension dans un récit) donne son `lu` lui-même.
+  - `clé des items : mot` (ou `lettre`) : la clé de chaque item est son mot, ce qui permet d’insérer un item n’importe où ; mais corriger une faute dans le mot change sa clé (l’item repart de zéro pour l’élève) : garder alors l’ancienne avec `- clé :` (`npm run contenu` signale une clé remplacée) ; `clé des items : paragraphe` : les clés sont p1, p2… (textes à lire).
 - **Mot troué** : `mot troué : en[f]ant` donne à la fois le mot (`enfant`), ce qui vient avant et après le trou, et la réponse (`f`).
 - **Tableau** : les items courts d’un niveau peuvent s’écrire en tableau Markdown, une colonne par champ, une ligne par item dans l’ordre ; une case vide = champ absent. Une case ne contient pas « | ». Un niveau a soit un tableau, soit des items numérotés.
 - **Listes** : `a · b · c` sur la ligne, ou une sous-liste quand un élément contient « · ».
@@ -50,17 +50,25 @@ Un nouvel exercice part du modèle de son écran : copier un niveau d’une île
 | --- | --- | --- |
 | Question à trou, la plus courante (hello, rives, figures, es-hola…) | énoncé avec « … », choix, réponse, indice, explication ; `trou lu` et l’aide pour tous | `baie.md`, `marais.md` |
 | Question sur un document (notices, es-horario, de-geschichte…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication | `comptoir.md`, `refuge.md` |
-| Écoute (ears, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication | `baie.md` |
+| Écoute (ears, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication ; les nombres (numbers) : énoncé et lu à la place du mot | `baie.md` |
 | Syllabes (abattage) | énoncé, mot, entendu (syllabes), choix, réponse ; en tableau | `foret.md` |
 | Chasse au son, rimes | mot, image, entendu ou terminaison, juste (oui ou non) ; en tableau | `foret.md` |
 | Filon (lettres b, d, p, q) | lettre, juste, astuce, parfois cible | `mine.md` |
 | Oreille du mineur | phrase, mot, choix, réponse, indice | `mine.md` |
 | Mot troué | mot troué, choix ; `clé des items : mot` | `carriere.md` |
-| Familles, coffre à mots | mot, racine, case, choix, réponse, sens (familles) ; mot, choix, réponse, indice (coffre) | `carriere.md` |
+| Familles, coffre à mots | mot, racine, case (`prefix` ou `suffix`), choix, réponse, sens (familles) ; mot, choix, réponse, indice (coffre) | `carriere.md` |
 | Enclos (accord sujet-verbe) | sujet, singulier, pluriel, réponse, pourquoi | `ferme.md` |
-| Récolte (-é, -er, -ez) | énoncé, lu, choix, réponse, règle | `ferme.md` |
+| Récolte (-é, -er, -ez) | énoncé, choix, réponse, règle ; `trou lu : (terminaison)` pour tous | `ferme.md` |
 | Dialogues | mot, choix, réponse, indice, explication | `theatre.md` |
-| Ascension (lecture à voix haute) | texte, un paragraphe par item ; `clé des items : paragraphe` | `tour.md` |
+| Ascension (lecture à voix haute) | texte, un paragraphe par item ; `clé des items : paragraphe` ; `monte à : 2` et `descend à : -1` coupent l’adaptation | `tour.md` |
+
+Plusieurs exercices d’une mission peuvent porter le même numéro de niveau (les textes de la Tour, les lettres du Filon) : ce sont des variantes, que distingue leur identifiant.
+
+**Le message d’erreur** (`erreur`) peut citer un champ de l’item entre accolades, par son nom dans le JSON (`{explanation}`, `{word}`, `{answer}`, `{meaning}`, `{heard}`, `{letter}`, `{tip}`, `{subject}`, `{why}`, `{rule}`), ou ce que l’écran fournit (`{chosen}` : le choix de l’élève ; `{target}`, `{verb}`, `{mined}`, `{missed}`). Les tests refusent un nom que tous les items n’ont pas.
+
+**Une clé écrite à la main** s’invente en minuscules avec des tirets, depuis le mot ou le sujet de l’item (`le-chien`, `va-manger`), et ne change plus ensuite, même si elle garde une ancienne graphie (`aujourd'hui`, avec l’apostrophe droite, dans la Carrière) : la corriger ferait oublier l’item à la répétition espacée.
+
+**Hors du Markdown** (jusqu’à l’étape M3) : un niveau nouveau se déclare aussi dans `ORDER` (`src/blocland/exercises/index.ts`), et sa quête cite ses compétences dans `programme` (`src/blocland/biomes.ts`). Une mission nouvelle (un nouveau `type`) a aussi besoin de son écran dans `SCREEN_TYPES` (`src/blocland/exercises/registry.ts`). Les tests le rappellent si l’un manque.
 
 ## Passer une île en Markdown
 
