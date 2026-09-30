@@ -27,7 +27,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.fr.ecriture.rediger': HORS(ECRITURE_LIBRE),
   'c3.fr.culture.entrees': HORS('Lecture d’œuvres complètes en classe : la mission Lecture du portail en propose des extraits du domaine public, pas le parcours des entrées.'),
   'c3.fr.lecture.reprises': A_COUVRIR('Pas encore de mission de compréhension en 6e : prévue dans la Tour du lecteur (Étages du sens).'),
-  'c3.fr.lecture.documents': A_COUVRIR('Pas de document composite (texte et tableau) dans les missions : prévu avec une mission de données de l’île Grandeurs et l’Observatoire des textes.'),
+  'c3.fr.lecture.documents': A_COUVRIR('Le document composite (texte et tableau, nature et source) est travaillé en 3e à l’Observatoire des textes (Inférences, niveau 3), pas encore en 6e : prévu avec une mission de données de l’île Grandeurs.'),
   'c3.fr.langue.genre-nombre': A_COUVRIR('Les marques de genre et de nombre ne sont travaillées qu’à travers les accords : une mission d’accord dans le groupe nominal en 6e est prévue (Ferme des accords).'),
   'c3.fr.langue.sujet': A_COUVRIR('Le sujet inversé ou composé n’est travaillé qu’en 4e (Sommet du sujet) : une mission de 6e est prévue (Ferme des accords).'),
   'c3.fr.langue.attribut-gn': A_COUVRIR('Attribut, épithète et complément du nom : prévus dans une mission de grammaire de 6e (Tour du lecteur, Vitraux des phrases).'),
@@ -54,13 +54,9 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 4, français ----------
   'c4.fr.oral.comprendre-s-exprimer': HORS(ORAL),
   'c4.fr.lecture.image': HORS('Analyse d’image : l’application n’affiche pas d’œuvres ni de photographies (rien d’emprunté).'),
-  'c4.fr.lecture.documents': A_COUVRIR('Documents composites (texte et tableau) : prévus dans l’Observatoire des textes.'),
   'c4.fr.lecture.genres-epoques': A_COUVRIR('Situer une œuvre dans son époque : la mission Lecture identifie les genres, pas les contextes.'),
   'c4.fr.ecriture.rediger': HORS(ECRITURE_LIBRE),
   'c4.fr.culture.entrees': HORS('Lecture d’œuvres complètes en classe : hors de ce qu’une application d’entraînement propose.'),
-  'c4.fr.langue.fonctions-etendues': A_COUVRIR('La phrase impersonnelle est reconnue dans Voix des textes, l’apposition dans Écho des pronominaux (Falaise des accords, niveau 3) ; attribut du COD et expansions du nom : prévus dans un niveau de plus des Rouages (Observatoire des textes).'),
-  'c4.fr.langue.types-formes': A_COUVRIR('Les formes passive et impersonnelle sont reconnues dans Voix des textes ; les types de phrase et les formes négative et exclamative ne sont pas encore travaillés en 3e : prévus dans l’Observatoire des textes.'),
-  'c4.fr.langue.phrase-complexe': A_COUVRIR('Les subordonnées sont reconnues dans Voix des textes ; phrase simple et complexe, juxtaposition et coordination, compter les propositions : prévus dans l’Observatoire des textes.'),
   'c4.fr.langue.ponctuation': A_COUVRIR('Rôle de la ponctuation : aucune mission ne l’aborde.'),
   // ---------- Cycle 4, maths ----------
   'c4.ma.c.aires-volumes': A_COUVRIR('Aires et volumes du cycle 4 : pas encore de figure dessinée pour cela.'),

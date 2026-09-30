@@ -1,0 +1,222 @@
+{
+  "id": "textes-inferences-3",
+  "biome": "textes",
+  "type": "inferences",
+  "level": 3,
+  "instruction": "Lis la question, puis cherche la réponse dans les lignes du document. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "textes-inferences-3-0",
+      "prompt": "Le club lecture du collège\nLe club accueille les élèves de 4e et de 3e.\nÉlèves de 4e inscrits : 14\nÉlèves de 3e inscrits : 9",
+      "question": "Y a-t-il plus d’élèves de 4e ou plus d’élèves de 3e au club ?",
+      "spoken": "Le club lecture du collège. Le club accueille les élèves de quatrième et de troisième. Élèves de quatrième inscrits, 14. Élèves de troisième inscrits, 9.",
+      "choices": [
+        "plus d’élèves de 3e",
+        "autant des deux",
+        "plus d’élèves de 4e"
+      ],
+      "answer": "plus d’élèves de 4e",
+      "hint": "Compare les nombres des deux dernières lignes.",
+      "explanation": "Il y a 14 élèves de 4e et 9 élèves de 3e : 14 est plus grand que 9, il y a donc plus d’élèves de 4e. La 3e vient en dernier, mais ce n’est pas le plus grand nombre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-1",
+      "prompt": "Menu de la cantine\nLe mardi, le repas est végétarien : sans viande ni poisson.\nLundi : poulet et riz\nMardi : omelette et pâtes\nJeudi : poisson et purée",
+      "question": "Que mange-t-on le jour du repas végétarien ?",
+      "spoken": "Menu de la cantine. Le mardi, le repas est végétarien, sans viande ni poisson. Lundi, poulet et riz. Mardi, omelette et pâtes. Jeudi, poisson et purée.",
+      "choices": [
+        "du poisson et de la purée",
+        "une omelette et des pâtes",
+        "du poulet et du riz"
+      ],
+      "answer": "une omelette et des pâtes",
+      "hint": "Une ligne dit quel jour ; une autre dit ce qu’on mange ce jour-là.",
+      "explanation": "La deuxième ligne dit que le repas végétarien est le mardi, et la ligne Mardi donne omelette et pâtes. Le poisson n’est pas végétarien : le document dit sans viande ni poisson.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-2",
+      "prompt": "Piscine municipale\nLe mercredi, la piscine ferme plus tôt pour le nettoyage.\nLundi, mardi, jeudi, vendredi : de 12 h à 20 h\nMercredi : de 12 h à 17 h\nSamedi : de 9 h à 18 h",
+      "question": "Jusqu’à quelle heure peut-on nager le mercredi ?",
+      "spoken": "Piscine municipale. Le mercredi, la piscine ferme plus tôt pour le nettoyage. Lundi, mardi, jeudi, vendredi, de 12 heures à 20 heures. Mercredi, de 12 heures à 17 heures. Samedi, de 9 heures à 18 heures.",
+      "choices": [
+        "17 h",
+        "18 h",
+        "20 h"
+      ],
+      "answer": "17 h",
+      "hint": "Cherche la ligne qui commence par Mercredi.",
+      "explanation": "La ligne Mercredi dit de 12 h à 17 h : la piscine ferme plus tôt, comme l’annonce la deuxième ligne. 20 h est l’heure des autres jours, 18 h celle du samedi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-3",
+      "prompt": "Sortie au musée des sciences, le vendredi 12 juin\nPrévoyez un pique-nique.\nDépart : 8 h 30\nRetour : 16 h 45\nLa vie scolaire",
+      "question": "Qui a écrit ce document ?",
+      "spoken": "Sortie au musée des sciences, le vendredi 12 juin. Prévoyez un pique-nique. Départ, 8 heures 30. Retour, 16 heures 45. La vie scolaire.",
+      "choices": [
+        "les familles",
+        "la vie scolaire du collège",
+        "le musée des sciences"
+      ],
+      "answer": "la vie scolaire du collège",
+      "hint": "Regarde la dernière ligne : c’est la signature.",
+      "explanation": "Le document est signé « La vie scolaire » : c’est le collège qui l’écrit, pour les élèves et leurs familles. Les familles le lisent, elles ne l’ont pas écrit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-4",
+      "prompt": "Le journal du collège, numéro de mars\nTournoi de handball : la 3e B gagne la finale !\nButs marqués en finale :\n3e B : 18\n3e A : 15",
+      "question": "Quel genre de document est-ce ?",
+      "spoken": "Le journal du collège, numéro de mars. Tournoi de handball, la troisième B gagne la finale ! Buts marqués en finale. Troisième B, 18. Troisième A, 15.",
+      "choices": [
+        "une affiche qui annonce le tournoi",
+        "un article du journal du collège",
+        "un mot aux familles"
+      ],
+      "answer": "un article du journal du collège",
+      "hint": "Regarde la première ligne : d’où vient le document ?",
+      "explanation": "La première ligne dit « Le journal du collège », et il raconte un match déjà joué, avec le score : c’est un article. Une affiche annoncerait le tournoi avant qu’il ait lieu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-5",
+      "prompt": "Sondage : le sport préféré des élèves de 3e\nCette année, le football n’est plus en tête.\nFootball : 11 élèves\nBadminton : 13 élèves\nNatation : 6 élèves",
+      "question": "Quel sport est en tête cette année ?",
+      "spoken": "Sondage, le sport préféré des élèves de troisième. Cette année, le football n’est plus en tête. Football, 11 élèves. Badminton, 13 élèves. Natation, 6 élèves.",
+      "choices": [
+        "le football",
+        "la natation",
+        "le badminton"
+      ],
+      "answer": "le badminton",
+      "hint": "Cherche le plus grand nombre dans les lignes.",
+      "explanation": "Le plus grand nombre est 13, pour le badminton : il est en tête, comme le dit la deuxième ligne. Le football vient en premier dans la liste, mais avec 11 élèves seulement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-6",
+      "prompt": "La sortie en forêt\nNous partirons le jour le plus chaud de la semaine.\nLundi : 12 degrés\nMardi : 15 degrés\nJeudi : 14 degrés",
+      "question": "Quel jour aura lieu la sortie en forêt ?",
+      "spoken": "La sortie en forêt. Nous partirons le jour le plus chaud de la semaine. Lundi, 12 degrés. Mardi, 15 degrés. Jeudi, 14 degrés.",
+      "choices": [
+        "jeudi",
+        "lundi",
+        "mardi"
+      ],
+      "answer": "mardi",
+      "hint": "La deuxième ligne dit : le jour le plus chaud. Cherche la plus haute température.",
+      "explanation": "Le jour le plus chaud a la plus haute température : 15 degrés, le mardi. Jeudi est proche, avec 14 degrés, mais un peu moins chaud.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "textes-inferences-3-7",
+      "prompt": "Vente de gâteaux\nL’argent de la vente paiera le car du voyage de fin d’année.\nCrêpe : 3 euros\nPart de gâteau : 2 euros\nJus de fruits : 1 euro",
+      "question": "Tu prends une crêpe et un jus de fruits. Combien paies-tu ?",
+      "spoken": "Vente de gâteaux. L’argent de la vente paiera le car du voyage de fin d’année. Crêpe, 3 euros. Part de gâteau, 2 euros. Jus de fruits, 1 euro.",
+      "choices": [
+        "3 euros",
+        "4 euros",
+        "6 euros"
+      ],
+      "answer": "4 euros",
+      "hint": "Trouve le prix de la crêpe, puis celui du jus de fruits, et ajoute-les.",
+      "explanation": "La crêpe coûte 3 euros et le jus de fruits 1 euro : 3 plus 1, cela fait 4 euros. 3 euros, c’est la crêpe seule ; 6 euros, c’est tout ce qui est vendu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Lis la question, puis cherche la ligne qui y répond.",
+            "Relie les lignes : une phrase explique, une autre donne le chiffre.",
+            "Qui a écrit le document ? Regarde la première et la dernière ligne."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lentille",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

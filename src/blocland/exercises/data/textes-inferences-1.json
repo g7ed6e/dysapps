@@ -3,20 +3,20 @@
   "biome": "textes",
   "type": "inferences",
   "level": 1,
-  "instruction": "Lis la phrase et choisis ce qu’elle laisse comprendre sans le dire. Relie les indices.",
+  "instruction": "Lis le passage et choisis ce qu’il laisse comprendre sans le dire. Relie tous les indices.",
   "items": [
     {
       "key": "textes-inferences-1-0",
-      "prompt": "« Léa referme son parapluie et secoue ses cheveux trempés. » Quel temps fait-il ?",
-      "spoken": "« Léa referme son parapluie et secoue ses cheveux trempés. » Quel temps fait-il ?",
+      "prompt": "« Léa secoue son parapluie sur le paillasson. Dehors, en plein après-midi, les voitures roulent phares allumés. » Quel temps fait-il ?",
+      "spoken": "« Léa secoue son parapluie sur le paillasson. Dehors, en plein après-midi, les voitures roulent phares allumés. » Quel temps fait-il ?",
       "choices": [
-        "il pleut",
-        "il neige",
-        "il fait beau"
+        "il fait nuit",
+        "il pleut sous un ciel sombre",
+        "il neige"
       ],
-      "answer": "il pleut",
-      "hint": "Parapluie + cheveux trempés.",
-      "explanation": "Le parapluie et les cheveux trempés indiquent la pluie.",
+      "answer": "il pleut sous un ciel sombre",
+      "hint": "Relis « en plein après-midi » : peut-il faire nuit ?",
+      "explanation": "Le parapluie qu’on secoue dit la pluie ; les phares allumés l’après-midi disent un ciel très sombre. Ce n’est pas la nuit : le texte dit « en plein après-midi ».",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -24,23 +24,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-1",
-      "prompt": "« Il souffla les bougies d’un coup et tout le monde applaudit. » Que se passe-t-il ?",
-      "spoken": "« Il souffla les bougies d’un coup et tout le monde applaudit. » Que se passe-t-il ?",
+      "prompt": "« Quand M. Durand entra, les bavardages cessèrent et tous les élèves se levèrent. » Qui est M. Durand ?",
+      "spoken": "« Quand Monsieur Durand entra, les bavardages cessèrent et tous les élèves se levèrent. » Qui est Monsieur Durand ?",
       "choices": [
-        "un anniversaire",
-        "une panne de courant",
-        "un incendie"
+        "un élève en retard",
+        "un parent d’élève",
+        "un professeur"
       ],
-      "answer": "un anniversaire",
-      "hint": "Des bougies qu’on souffle, des applaudissements.",
-      "explanation": "Souffler des bougies sous les applaudissements : c’est un anniversaire.",
+      "answer": "un professeur",
+      "hint": "Pour qui les élèves se taisent-ils et se lèvent-ils ?",
+      "explanation": "Les élèves se taisent et se lèvent quand un adulte du collège entre en classe : M. Durand est un professeur. On ne se lève pas pour un élève en retard.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -48,23 +48,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-2",
-      "prompt": "« Elle regarda sa montre pour la dixième fois et soupira. » Comment se sent-elle ?",
-      "spoken": "« Elle regarda sa montre pour la dixième fois et soupira. » Comment se sent-elle ?",
+      "prompt": "« Devant le cinéma, Inès regarda sa montre pour la dixième fois, puis appela quelqu’un. » Que se passe-t-il ?",
+      "spoken": "« Devant le cinéma, Inès regarda sa montre pour la dixième fois, puis appela quelqu’un. » Que se passe-t-il ?",
       "choices": [
-        "impatiente",
-        "heureuse",
-        "fatiguée"
+        "la personne qu’elle attend est en retard",
+        "le film est terminé",
+        "elle a perdu son billet"
       ],
-      "answer": "impatiente",
-      "hint": "Regarder l’heure sans arrêt, soupirer.",
-      "explanation": "Regarder sa montre dix fois : elle attend, elle est impatiente.",
+      "answer": "la personne qu’elle attend est en retard",
+      "hint": "Relie les trois indices : le lieu, la montre, l’appel.",
+      "explanation": "Elle attend devant le cinéma, regarde l’heure sans arrêt, puis appelle : quelqu’un est en retard au rendez-vous.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -72,23 +72,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-3",
-      "prompt": "« Le chien gratta la porte en gémissant, sa laisse dans la gueule. » Que veut-il ?",
-      "spoken": "« Le chien gratta la porte en gémissant, sa laisse dans la gueule. » Que veut-il ?",
+      "prompt": "« En rentrant, Nora trouva le coussin déchiré et le chien caché sous la table, les oreilles basses. » Que s’est-il passé ?",
+      "spoken": "« En rentrant, Nora trouva le coussin déchiré et le chien caché sous la table, les oreilles basses. » Que s’est-il passé ?",
       "choices": [
-        "sortir se promener",
-        "manger",
-        "dormir"
+        "un voleur est entré",
+        "le chien a déchiré le coussin",
+        "le chien est malade"
       ],
-      "answer": "sortir se promener",
-      "hint": "La laisse, la porte.",
-      "explanation": "La laisse dans la gueule et la porte : il veut sortir.",
+      "answer": "le chien a déchiré le coussin",
+      "hint": "Pourquoi le chien se cache-t-il, les oreilles basses ?",
+      "explanation": "Le chien se cache, les oreilles basses, comme s’il avait fait une bêtise : c’est lui qui a déchiré le coussin. Un voleur n’explique pas pourquoi le chien se cache.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -96,23 +96,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-4",
-      "prompt": "« Sur la table, les assiettes vides et une seule part de gâteau. » Que s’est-il passé ?",
-      "spoken": "« Sur la table, les assiettes vides et une seule part de gâteau. » Que s’est-il passé ?",
+      "prompt": "« Dans l’assiette de Tom, les frites ont disparu, mais les haricots n’ont pas bougé. » Que comprend-on ?",
+      "spoken": "« Dans l’assiette de Tom, les frites ont disparu, mais les haricots n’ont pas bougé. » Que comprend-on ?",
       "choices": [
-        "on a presque tout mangé",
-        "personne n’a mangé",
-        "le repas va commencer"
+        "Tom n’a pas faim",
+        "Tom a tout mangé",
+        "Tom n’aime pas les haricots"
       ],
-      "answer": "on a presque tout mangé",
-      "hint": "Assiettes vides, une seule part qui reste.",
-      "explanation": "Les assiettes sont vides et il reste une part : le repas est presque fini.",
+      "answer": "Tom n’aime pas les haricots",
+      "hint": "Tom a-t-il mangé quelque chose ? Quoi ?",
+      "explanation": "Tom a mangé les frites, il avait donc faim ; il a laissé les haricots : il ne les aime pas.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -120,23 +120,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-5",
-      "prompt": "« Tom rangea ses crayons en bâillant et éteignit la lampe. » Quel moment ?",
-      "spoken": "« Tom rangea ses crayons en bâillant et éteignit la lampe. » Quel moment ?",
+      "prompt": "« Une tartine à la main, Nora court vers l’arrêt, son cartable ouvert sur le dos. » Que comprend-on ?",
+      "spoken": "« Une tartine à la main, Nora court vers l’arrêt, son cartable ouvert sur le dos. » Que comprend-on ?",
       "choices": [
-        "le soir",
-        "le matin",
-        "midi"
+        "elle est en retard",
+        "elle a faim",
+        "elle rentre du collège"
       ],
-      "answer": "le soir",
-      "hint": "Bâiller, éteindre la lampe.",
-      "explanation": "Bâiller et éteindre la lampe : c’est le soir, l’heure de dormir.",
+      "answer": "elle est en retard",
+      "hint": "Elle court, mange en route, n’a pas fermé son cartable : pourquoi ?",
+      "explanation": "Elle court, finit son petit-déjeuner en route et n’a pas eu le temps de fermer son cartable : elle est en retard. La tartine seule ne suffit pas : vérifie tous les indices.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -144,23 +144,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-6",
-      "prompt": "« Ses mains tremblaient en ouvrant l’enveloppe des résultats. » Comment est-il ?",
-      "spoken": "« Ses mains tremblaient en ouvrant l’enveloppe des résultats. » Comment est-il ?",
+      "prompt": "« Les mains de Hugo tremblaient quand il ouvrit l’enveloppe de ses résultats. » Comment est-il ?",
+      "spoken": "« Les mains de Hugo tremblaient quand il ouvrit l’enveloppe de ses résultats. » Comment est-il ?",
       "choices": [
         "anxieux",
-        "en colère",
-        "amusé"
+        "soulagé",
+        "en colère"
       ],
       "answer": "anxieux",
-      "hint": "Mains qui tremblent devant des résultats.",
-      "explanation": "Les mains tremblent : il est anxieux, inquiet du résultat.",
+      "hint": "Ses mains tremblent avant qu’il lise ses résultats.",
+      "explanation": "Hugo ne connaît pas encore ses résultats et ses mains tremblent : il est anxieux. Il serait soulagé après avoir lu de bonnes notes.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -168,23 +168,23 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }
     },
     {
       "key": "textes-inferences-1-7",
-      "prompt": "« Le vendeur lui rendit la monnaie et un ticket. » Où est-on ?",
-      "spoken": "« Le vendeur lui rendit la monnaie et un ticket. » Où est-on ?",
+      "prompt": "« La dame en blouse blanche appela Léo ; il reposa son magazine et entra dans le cabinet. » Où est Léo ?",
+      "spoken": "« La dame en blouse blanche appela Léo ; il reposa son magazine et entra dans le cabinet. » Où est Léo ?",
       "choices": [
-        "dans un magasin",
-        "à l’école",
-        "chez le médecin"
+        "à la bibliothèque",
+        "chez le médecin",
+        "dans un magasin"
       ],
-      "answer": "dans un magasin",
-      "hint": "Vendeur, monnaie, ticket.",
-      "explanation": "Un vendeur, de la monnaie, un ticket : un magasin.",
+      "answer": "chez le médecin",
+      "hint": "Une blouse blanche, un cabinet, un magazine pour patienter.",
+      "explanation": "La blouse blanche, l’attente avec un magazine et le cabinet : Léo est chez le médecin, dans la salle d’attente.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -192,7 +192,7 @@
           "lines": [
             "Une inférence : ce que le texte ne dit pas mais laisse comprendre.",
             "Cherche les indices (objets, gestes, mots) et relie-les à ce que tu sais.",
-            "Vérifie : ton idée est-elle possible avec TOUS les indices ?"
+            "Vérifie : ton idée est-elle possible avec tous les indices ?"
           ]
         }
       }

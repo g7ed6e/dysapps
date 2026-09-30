@@ -12,7 +12,7 @@
       "choices": [
         "en colère",
         "joyeux",
-        "endormi"
+        "calme"
       ],
       "answer": "en colère",
       "hint": "Claquer une porte, monter vite.",
@@ -35,12 +35,12 @@
       "spoken": "« Elle courait vers l’arrêt, mais le bus démarrait déjà. » Que va-t-il arriver ?",
       "choices": [
         "elle va rater le bus",
-        "elle va conduire le bus",
+        "elle va monter dans le bus",
         "le bus va l’attendre"
       ],
       "answer": "elle va rater le bus",
       "hint": "Le bus démarre pendant qu’elle court.",
-      "explanation": "Le bus part déjà : elle va probablement le rater.",
+      "explanation": "Elle court encore quand le bus démarre : elle n’aura pas le temps d’y monter, elle va probablement le rater.",
       "aid": {
         "kind": "rule-card",
         "props": {
