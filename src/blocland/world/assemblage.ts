@@ -4,18 +4,19 @@
 // La recette est fixe et toujours affichée ; un toucher assemble un bloc, sans grille ni recette à deviner. Code pur,
 // commun aux univers. Les recettes et les noms (du lieu et des blocs, propres à chaque univers) s'écrivent dans
 // docs/contenu/assemblage.md, que `npm run contenu` recopie dans recettes.ts ; les textes d'univers les reprennent.
-import type { BlockId } from "../biomes";
-import type { ArchipelagoId } from "./archipels";
-import { ASSEMBLAGE } from "./recettes";
+import type { BlockId } from '../biomes';
+import type { ArchipelagoId } from './archipels';
+import { ASSEMBLAGE } from './recettes';
 
 /** L'adresse du lieu (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
-export const ASSEMBLAGE_PATH = "/aventure/assemblage";
+export const ASSEMBLAGE_PATH = '/aventure/assemblage';
 
 /**
- * Les univers que nomme docs/contenu/assemblage.md, par leur identifiant (ceux de `core/univers`, qu'un test compare) :
- * les règles ne lisent pas la couche des univers, ce sont les univers qui lisent ces noms.
+ * Les univers que nomme docs/contenu/assemblage.md, par leur identifiant (ceux de `core/univers`, qu'un test compare).
+ * Ce module n'importe pas la couche des univers (couches.test.ts) : ce sont les univers qui lisent ces noms, et
+ * `nomDuBloc` (biomes.ts) prend l'univers choisi par `universCourant`, comme la LV2 par `lv2Courante`.
  */
-export type UniversNomme = "blocland" | "archipeo";
+export type UniversNomme = 'blocland' | 'archipeo';
 
 /** Le nom d'un bloc dans un univers, et son pluriel quand il ne s'écrit pas en ajoutant un « s ». */
 export interface NomDeBloc {
@@ -52,24 +53,15 @@ export interface Recette {
 }
 
 /** Les recettes, une par archipel, dans l'ordre des archipels (docs/contenu/assemblage.md). */
-export const RECETTES: Recette[] = ASSEMBLAGE.recettes.map(
-  ({ bloc, archipelago, ingredients }) => ({ bloc, archipelago, ingredients }),
-);
+export const RECETTES: Recette[] = ASSEMBLAGE.recettes.map(({ bloc, archipelago, ingredients }) => ({ bloc, archipelago, ingredients }));
 
 /** Les noms des blocs assemblés dans un univers (les textes d'univers les reprennent). */
-export function nomsAssembles(
-  univers: UniversNomme,
-): Partial<Record<BlockId, NomDeBloc>> {
-  return Object.fromEntries(
-    ASSEMBLAGE.recettes.map((r) => [r.bloc, r.noms[univers]]),
-  );
+export function nomsAssembles(univers: UniversNomme): Partial<Record<BlockId, NomDeBloc>> {
+  return Object.fromEntries(ASSEMBLAGE.recettes.map((r) => [r.bloc, r.noms[univers]]));
 }
 
 /** Le nom qu'un univers donne à un bloc assemblé (rien pour un autre bloc). */
-export function nomAssemble(
-  bloc: BlockId,
-  univers: UniversNomme,
-): NomDeBloc | undefined {
+export function nomAssemble(bloc: BlockId, univers: UniversNomme): NomDeBloc | undefined {
   return ASSEMBLAGE.recettes.find((r) => r.bloc === bloc)?.noms[univers];
 }
 
@@ -87,21 +79,11 @@ export function recetteDeLArchipel(a: ArchipelagoId): Recette | undefined {
 }
 
 /** Combien de blocs de cette recette l'inventaire permet d'assembler. */
-export function assemblables(
-  inventory: Partial<Record<BlockId, number>>,
-  r: Recette,
-): number {
-  return Math.min(
-    ...r.ingredients.map((i) => Math.floor((inventory[i.bloc] ?? 0) / i.n)),
-  );
+export function assemblables(inventory: Partial<Record<BlockId, number>>, r: Recette): number {
+  return Math.min(...r.ingredients.map((i) => Math.floor((inventory[i.bloc] ?? 0) / i.n)));
 }
 
 /** Ce qui manque pour assembler un bloc, bloc par bloc (vide quand on peut). */
-export function manquePour(
-  inventory: Partial<Record<BlockId, number>>,
-  r: Recette,
-): { bloc: BlockId; n: number }[] {
-  return r.ingredients
-    .filter((i) => (inventory[i.bloc] ?? 0) < i.n)
-    .map((i) => ({ bloc: i.bloc, n: i.n - (inventory[i.bloc] ?? 0) }));
+export function manquePour(inventory: Partial<Record<BlockId, number>>, r: Recette): { bloc: BlockId; n: number }[] {
+  return r.ingredients.filter((i) => (inventory[i.bloc] ?? 0) < i.n).map((i) => ({ bloc: i.bloc, n: i.n - (inventory[i.bloc] ?? 0) }));
 }

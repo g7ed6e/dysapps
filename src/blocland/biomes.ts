@@ -202,7 +202,11 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   escalier: { id: 'escalier', name: 'Escalier', top: '#c29a5f', side: '#8a6a3c', texture: 'escalier' },
 };
 
-/** Le nom d'un bloc dans l'univers affiché, avec sa majuscule : « Poutre » dans Blocland, « Madrier » dans Archipéo. */
+/**
+ * Le nom d'un bloc dans l'univers affiché, avec sa majuscule : « Poutre » dans Blocland, « Madrier » dans Archipéo.
+ * L'univers vient des réglages en mémoire (`universCourant`), comme la LV2 des phrases (`lv2Courante`) : les règles
+ * n'importent pas la couche des univers, et changer d'univers redessine l'application qui relit ces noms.
+ */
 export function nomDuBloc(id: BlockId): string {
   return nomAssemble(id, universCourant())?.nom ?? BLOCKS[id].name;
 }

@@ -37,7 +37,7 @@ function enMots(r: Recette): string {
   return r.ingredients.map((i) => blockCount(i.bloc, i.n)).join(' et ');
 }
 
-/** Une vignette par bloc à donner (au plus cinq d'un même bloc : la recette reste petite). */
+/** Une vignette par bloc à donner (les recettes en demandent deux au plus d'un même bloc : assemblage.test.ts). */
 function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
   const b = BLOCKS[bloc];
   return (
@@ -58,10 +58,16 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const en = state.inventory[recette.bloc] ?? 0;
   const pour = monumentsOf(recette.archipelago).filter((m) => (planStatus(state, m).missing[recette.bloc] ?? 0) > 0);
   const phrase = `Pour 1 ${blockName(recette.bloc, 1)}, il faut ${enMots(recette)}.`;
+  const manqueEnMots = manque.length ? `Il te manque ${manque.map((m) => blockCount(m.bloc, m.n)).join(' et ')}.` : 'Tu as tout ce qu’il faut.';
+  const pocheEnMots = `Dans ta poche : ${blockCount(recette.bloc, en)}.`;
+  // Le bouton « Écouter la recette » redit tout ce qui est écrit sur la carte (référent dys : rien à lire sans voix).
+  const aEcouter = `${phrase} ${manqueEnMots} ${pocheEnMots}`;
   const titreId = `recette-${recette.bloc}`;
   const bloc = BLOCKS[recette.bloc];
 
   const onAssemble = () => {
+    // Le bouton reste dans l'ordre du clavier quand les blocs manquent (aria-disabled) : le focus ne se perd pas.
+    if (!peut) return;
     const r = assemble(recette.bloc);
     if (r.ok) setDit(`Tu as assemblé 1 ${blockName(recette.bloc, 1)}. Tu en as ${(r.state.inventory[recette.bloc] ?? 0).toString()}.`);
   };
@@ -74,7 +80,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
       </h3>
       <p className="assemblage-phrase">
         <Syllabified text={phrase} />
-        <SpeakButton text={phrase} label="Écouter la recette" compact />
+        <SpeakButton text={aEcouter} label="Écouter la recette" compact />
       </p>
       <ul className="assemblage-ingredients" aria-label={`Ce qu’il faut pour 1 ${blockName(recette.bloc, 1)}`}>
         {recette.ingredients.map((i) => {
@@ -119,11 +125,14 @@ function RecetteCarte({ recette }: { recette: Recette }) {
       <p className="assemblage-en-poche">
         Dans ta poche : <strong>{en}</strong> {blockName(recette.bloc, en)}.
       </p>
-      <button type="button" className="button primary" disabled={!peut} onClick={onAssemble}>
+      <button type="button" className="button primary" aria-disabled={!peut} onClick={onAssemble}>
         <Icon name="hammer" /> Assembler 1 {blockName(recette.bloc, 1)}
       </button>
-      <p className="build-status" role="status" aria-live="polite">
-        {dit ?? ''}
+      <p className="build-status assemblage-dit">
+        <span role="status" aria-live="polite">
+          {dit ?? ''}
+        </span>
+        {dit && <SpeakButton text={dit} label="Écouter" compact />}
       </p>
     </section>
   );

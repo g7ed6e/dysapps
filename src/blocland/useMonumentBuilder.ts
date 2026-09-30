@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { useHaptics } from '../core/haptics';
-import { BLOCKS, ofBlock, type BlockId } from './biomes';
+import { BLOCKS, blockCount, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { nextFillable, planStatus, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
@@ -58,7 +58,7 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
     if (!next) return;
     const r = fillPlan(monument, next.x, next.y, next.z);
     if (!r.ok) {
-      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : ${allerChercher(r.block)}.`);
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
       sound(playNope);
       return;
     }

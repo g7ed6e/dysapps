@@ -5725,3 +5725,8 @@ fieldset {
 .assemblage-recette .button.primary {
   min-height: 48px;
 }
+/* Grisé sans quitter l'ordre du clavier (aria-disabled) : le focus reste sur le bouton après le dernier bloc assemblé. */
+.assemblage-recette .button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

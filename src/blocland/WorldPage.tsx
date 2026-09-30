@@ -136,9 +136,10 @@ export function WorldPage() {
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
     () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles, habillage.atelier),
-    // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`).
+    // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
+    // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2],
+    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
   );
   const creatures = useMemo(
     () => [

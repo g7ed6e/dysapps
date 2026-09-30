@@ -28,7 +28,7 @@ it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monum
   expect(document.body.textContent).toContain('Pour 1 poutre, il faut 2 blocs de bois et 1 bloc de pierre.');
   expect(document.body.textContent).toContain('Il te manque 1 bloc de bois');
   expect(screen.getByRole('link', { name: 'L’observatoire des baleines' })).toHaveAttribute('href', '/aventure/monument-observatoire');
-  expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toHaveAttribute('aria-disabled', 'true');
   // Seul l'archipel atteint : pas de recette des Îles du Ciel en 6e.
   expect(screen.queryByRole('heading', { level: 3, name: /Miroir/ })).toBeNull();
 });
@@ -40,7 +40,12 @@ it('« Assembler » fait un bloc à la fois et l’enregistre', async () => {
   await user.click(screen.getByRole('button', { name: /Assembler 1 poutre/ }));
   expect(screen.getByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, pierre: 0, poutre: 1 });
-  expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toBeDisabled();
+  const bouton = screen.getByRole('button', { name: /Assembler 1 poutre/ });
+  expect(bouton).toHaveAttribute('aria-disabled', 'true');
+  // Grisé, il garde le focus et ne fait rien : rien ne se perd.
+  expect(bouton).toHaveFocus();
+  await user.click(bouton);
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, pierre: 0, poutre: 1 });
 });
 
 it('dans Archipéo, la Halle aux matériaux et le madrier', () => {

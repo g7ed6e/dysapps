@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
@@ -53,7 +53,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!stage) return;
     const r = fillPlan(stage, x, y, z);
     if (!r.ok) {
-      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : ${allerChercher(r.block)}.`);
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
       else if (r.reason === 'deja-pose') setNotice('Ce bloc du Bloc-Navire est déjà posé.');
       sound(playNope);
       return;

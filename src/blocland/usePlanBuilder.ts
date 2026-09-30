@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
-import { BLOCKS, blockCount, ofBlock, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
 import { playDone, playNope, playPlace } from './sound';
@@ -87,7 +87,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     if (!plan) return;
     const r = fillPlan(plan, x, y, z);
     if (!r.ok) {
-      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut 1 bloc ${ofBlock(r.block)} : ${allerChercher(r.block)}.`);
+      if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
       else if (r.reason === 'deja-pose') setNotice('Ce bloc du plan est déjà posé.');
       sound(playNope);
       return;
