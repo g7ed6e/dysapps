@@ -1,11 +1,25 @@
 ---
 île : relais
+module : Se présenter, compter, décrire
+matière : lv2
+classe : 5e
+description : Se présenter, compter, parler de sa famille et de son école : les premiers mots du voyage, dans ta deuxième langue.
+bloc : dalle
+gardien : la Diligence de cuivre
+icône : languages
+créature : Lina
 ---
 
 # Relais des voyageurs
 
+> Île de la LV2 (allemand ou espagnol), à partir de la 5e : une seule île par archipel, la même pour les deux langues, en bout de chemin (rien n’en dépend). Seules changent les missions, choisies par la LV2 des Réglages, et la voix.
+> Les missions de chaque langue sont dans le même ordre : la borne de même rang ouvre la mission de la LV2 choisie.
+
 ## Hola · `es-hola`
 
+- description : Se présenter : une question en espagnol, la bonne réponse (ser et tener).
+- compétences : c4.es.dialoguer.echanges-sociaux · c4.es.langue.temps-verbaux · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - bravo : Bien répondu !
 - erreur : {explanation}
@@ -142,6 +156,9 @@ Pour tous les items :
 
 ## Números · `es-numeros`
 
+- description : Les nombres entendus : sesenta ou setenta, doce ou dos ?
+- compétences : c4.es.ecouter.intervention-breve · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - consigne : Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.
 - bravo : Bien compté !
@@ -277,6 +294,9 @@ Pour tous les items :
 
 ## Familia y colegio · `es-familia`
 
+- description : La famille, les consignes de la classe, un panneau ; tu ou tú ?
+- compétences : c4.es.lire.consignes-panneaux · c4.es.langue.lexique
+- lv2 : es
 - langue : es
 - erreur : {explanation}
 - bloc gagné : dalle
@@ -424,6 +444,9 @@ Pour tous les items :
 
 ## El, la, los, las · `es-el-la`
 
+- description : L’article du nom, au singulier et au pluriel (el día).
+- compétences : c4.es.langue.groupe-nominal
+- lv2 : es
 - langue : es
 - erreur : {explanation}
 - bloc gagné : dalle
@@ -554,6 +577,9 @@ Pour tous les items :
 
 ## Hallo · `de-hallo`
 
+- description : Se présenter : une question en allemand, la bonne réponse (sein et haben).
+- compétences : c4.de.dialoguer.echanges-sociaux · c4.de.langue.temps-verbaux · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - bravo : Bien répondu !
 - erreur : {explanation}
@@ -690,6 +716,9 @@ Pour tous les items :
 
 ## Zahlen · `de-zahlen`
 
+- description : Les nombres entendus : -zehn ou -zig, 24 ou 42 ?
+- compétences : c4.de.ecouter.intervention-breve · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - consigne : Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.
 - bravo : Bien compté !
@@ -826,6 +855,9 @@ Pour tous les items :
 
 ## Familie und Schule · `de-familie`
 
+- description : La famille, les consignes de la classe, un panneau ; schon ou schön ?
+- compétences : c4.de.lire.consignes-panneaux · c4.de.langue.lexique
+- lv2 : de
 - langue : de
 - erreur : {explanation}
 - bloc gagné : dalle
@@ -972,6 +1004,9 @@ Pour tous les items :
 
 ## Der, die, das · `de-der-die-das`
 
+- description : L’article du nom, toujours avec sa majuscule (das Mädchen).
+- compétences : c4.de.langue.groupe-nominal
+- lv2 : de
 - langue : de
 - bravo : Bon article !
 - erreur : {explanation}

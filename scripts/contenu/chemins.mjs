@@ -8,22 +8,47 @@ import { lireIle, principal } from './format.mjs';
 const racine = process.cwd();
 export const CONTENU = join(racine, 'docs/contenu');
 export const DATA = join(racine, 'src/blocland/exercises/data');
+export const ILES = join(racine, 'src/blocland/iles.json');
 
-/** Les exercices des îles écrites en Markdown : { sortie: Map<chemin JSON, texte>, iles: Set<île> }. */
+/** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
+const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
+const CHAMPS_MISSION = ['description', 'programme'];
+
+/** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `foret` » par île. */
+function ordreDesIles() {
+  const texte = readFileSync(join(CONTENU, 'archipel.md'), 'utf8');
+  return [...texte.matchAll(/^\d+\. `([a-z0-9-]+)`$/gm)].map((m) => m[1]);
+}
+
+/**
+ * Les îles (src/blocland/iles.json, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
+ * { sortie: Map<chemin JSON, texte>, iles: Set<île> }.
+ */
 export function produire() {
   const sortie = new Map();
   const iles = new Set();
-  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md').sort()) {
+  const biomes = new Map();
+  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md').sort()) {
     const fichier = join('docs/contenu', f);
-    const { ile, exercices } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
+    const { ile, biome, exercices } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
+    for (const k of CHAMPS_ILE) if (biome[k] === undefined) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
+    for (const m of biome.exercises) {
+      for (const k of CHAMPS_MISSION) if (m[k] === undefined || m[k].length === 0) throw new Error(`${fichier}, mission ${m.id} : « ${k === 'programme' ? 'compétences' : k} » manque`);
+    }
     iles.add(ile);
+    biomes.set(ile, biome);
     for (const ex of exercices) {
       const chemin = join(DATA, `${ex.id}.json`);
       if (sortie.has(chemin)) throw new Error(`${fichier} : exercice « ${ex.id} » écrit deux fois`);
       sortie.set(chemin, JSON.stringify(ex, null, 2) + '\n');
     }
   }
+  const ordre = ordreDesIles();
+  for (const id of ordre) if (!biomes.has(id)) throw new Error(`docs/contenu/archipel.md : l'île « ${id} » n'a pas de fichier docs/contenu/${id}.md`);
+  for (const id of biomes.keys()) if (!ordre.includes(id)) throw new Error(`docs/contenu/${id}.md : l'île manque dans docs/contenu/archipel.md`);
+  if (new Set(ordre).size !== ordre.length) throw new Error('docs/contenu/archipel.md : une île y est écrite deux fois');
+  sortie.set(ILES, JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2) + '\n');
   return { sortie, iles };
 }
 

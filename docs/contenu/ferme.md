@@ -1,11 +1,21 @@
 ---
 île : ferme
+module : Orthographe grammaticale
+matière : francais
+classe : 6e
+description : Accorder sujet et verbe, choisir a/à, et/est, -é/-er.
+bloc : terre
+gardien : le Taureau de terre
+icône : wheat
+créature : Bloquette
 ---
 
 # Ferme des accords
 
 ## Enclos · `enclos`
 
+- description : Glisse les sujets vers le bon verbe : singulier ou pluriel.
+- compétences : c3.fr.langue.accord-sujet-verbe
 - bravo : Tout le monde dans le bon enclos !
 - erreur : {subject} : {why} Le verbe est donc « {verb} ».
 - bloc gagné : terre
@@ -122,8 +132,15 @@
    - réponse : singulier
    - pourquoi : il, c’est une seule personne : le verbe reste au singulier.
 
+## Tri des graines · `graines`
+
+- description : Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.
+- compétences : c3.fr.langue.homophonie
+
 ## Récolte -é / -er / -ez · `recolte`
 
+- description : Clique la bonne terminaison.
+- compétences : c3.fr.langue.finales-en-e
 - bravo : Bonne terminaison !
 - erreur : {rule}
 - bloc gagné : terre

@@ -1,11 +1,21 @@
 ---
 île : horloge
+module : Grammaire : to be, have got, présent simple
+matière : anglais
+classe : 6e
+description : Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.
+bloc : cadran
+gardien : le Coucou de bronze
+icône : history
+créature : Tick
 ---
 
 # Horloge des verbes
 
 ## To be · `to-be`
 
+- description : Am, is, are ; la négation et la question.
+- compétences : c3.en.langue.groupe-verbal · c3.en.langue.phrase
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -93,6 +103,8 @@ Pour tous les items :
 
 ## Have got · `have-got`
 
+- description : Have got ou has got, pour dire ce qu’on a.
+- compétences : c3.en.langue.groupe-verbal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -178,6 +190,8 @@ Pour tous les items :
 
 ## Présent simple · `present-simple`
 
+- description : Le s de he, she, it ; do et does pour la question et la négation.
+- compétences : c3.en.langue.groupe-verbal · c3.en.langue.phrase
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

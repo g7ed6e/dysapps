@@ -1,11 +1,21 @@
 ---
 île : manoir
+module : Grammaire : -ing, prétérit, comparatifs
+matière : anglais
+classe : 5e
+description : Ce qui se passe maintenant, ce qui s’est passé hier, et qui est le plus grand : la règle sous les yeux.
+bloc : lambris
+gardien : le Spectre du manoir
+icône : history
+créature : Moustache
 ---
 
 # Manoir du passé
 
 ## -ing · `ing`
 
+- description : Be + -ing (maintenant) ou présent simple (d’habitude).
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -119,6 +129,8 @@ Pour tous les items :
 
 ## Prétérit · `preterit`
 
+- description : Was, were, les verbes en -ed ; did pour la question et la négation.
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -227,6 +239,8 @@ Pour tous les items :
 
 ## Comparatifs · `comparatifs`
 
+- description : Taller than, the tallest, more… than, better, the best.
+- compétences : c4.en.langue.groupe-nominal · c3.en.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

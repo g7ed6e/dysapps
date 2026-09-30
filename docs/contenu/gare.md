@@ -1,11 +1,21 @@
 ---
 île : gare
+module : Grammaire : futur, modaux, present perfect
+matière : anglais
+classe : 4e
+description : Ce qui arrivera, ce qu’on peut ou doit faire, ce qu’on a déjà fait : la règle sous les yeux.
+bloc : rail
+gardien : la Locomotive de fer
+icône : history
+créature : Vapeur
 ---
 
 # Gare du futur
 
 ## Futur · `futur`
 
+- description : Will et be going to.
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -120,6 +130,8 @@ Pour tous les items :
 
 ## Modaux · `modaux`
 
+- description : Can, must, should, have to.
+- compétences : c4.en.langue.modaux-passif
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -234,6 +246,8 @@ Pour tous les items :
 
 ## Present perfect · `present-perfect`
 
+- description : Have been, ever, never, already, yet, just.
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

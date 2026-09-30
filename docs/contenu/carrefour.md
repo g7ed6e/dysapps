@@ -1,11 +1,26 @@
 ---
 île : carrefour
+module : Homophones grammaticaux
+matière : francais
+classe : 5e
+description : Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.
+bloc : panneau
+gardien : le Sphinx des routes
+icône : compass
+créature : Sema
 ---
 
 # Carrefour des homophones
 
+## Panneaux · `panneaux`
+
+- description : Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.
+- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+
 ## Aiguillage · `aiguillage`
 
+- description : Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…
+- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
 - bravo : Bonne route !
 - erreur : {explanation}
@@ -122,6 +137,8 @@ Pour tous les items :
 
 ## Bifurcation · `bifurcation`
 
+- description : Deux trous dans la phrase : choisis la bonne paire de mots.
+- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
 - consigne : Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.
 - bravo : Bonne route !
 - erreur : {explanation}

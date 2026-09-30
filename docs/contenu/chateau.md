@@ -1,11 +1,21 @@
 ---
 île : chateau
+module : Grammaire : for et since, if, passif
+matière : anglais
+classe : 3e
+description : Depuis quand, et si…, et par qui : les phrases longues de 3e, la règle sous les yeux.
+bloc : taille
+gardien : le Dragon gallois
+icône : castle
+créature : Knight
 ---
 
 # Château des hypothèses
 
 ## For / since · `for-since`
 
+- description : For, since, ago ; present perfect ou prétérit.
+- compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -106,6 +116,8 @@ Pour tous les items :
 
 ## If · `if`
 
+- description : Si… : le réel (will) et l’imaginaire (would).
+- compétences : c4.en.langue.phrase-complexe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -212,6 +224,8 @@ Pour tous les items :
 
 ## Passif · `passif`
 
+- description : Is spoken, was built, will be shown : be + participe passé.
+- compétences : c4.en.langue.modaux-passif
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

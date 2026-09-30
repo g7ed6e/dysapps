@@ -141,6 +141,27 @@ describe('le format Markdown du contenu', () => {
     expect(clesRemplacees(avant, { items: [{ key: 'chat', word: 'chat' }, { key: 'chien', word: 'chien' }] })).toEqual(['chta → chat']);
   });
 
+  it('écrit puis relit chaque île du jeu, ses missions et son en-tête', () => {
+    const iles = JSON.parse(readFileSync('src/blocland/iles.json', 'utf8'));
+    const exercices = parIle();
+    for (const ile of iles) {
+      const relu = lireIle(ecrireIle(ile, exercices.get(ile.id) ?? []), `${ile.id}.md`);
+      expect(relu.biome).toEqual(ile);
+      const parId = (liste) => [...liste].sort((a, b) => a.id.localeCompare(b.id));
+      expect(parId(relu.exercices)).toEqual(parId(exercices.get(ile.id) ?? []));
+    }
+  });
+
+  it('refuse un en-tête ou un champ de mission mal écrit', () => {
+    expect(() => lireIle(['---', 'île : baie', 'couleur : bleu', '---', ''].join('\n'), 'baie.md')).toThrow('champ d’en-tête inconnu « couleur »');
+    expect(() => lireIle(['---', 'île : baie', 'bloc : a', 'bloc : b', '---', ''].join('\n'), 'baie.md')).toThrow('« bloc » écrit deux fois');
+    expect(() => lireIle(['---', 'île : baie', '---', '# A', '# B', ''].join('\n'), 'baie.md')).toThrow('l’île a un seul titre');
+    const md = ['---', 'île : baie', '---', '## X · `x`', '- description : a', '- description : b', ''].join('\n');
+    expect(() => lireIle(md, 'baie.md')).toThrow('« description » écrit deux fois');
+    const niveau = ['---', 'île : baie', '---', '## X · `x`', '### Niveau 1 · `baie-x-1`', '- compétences : c3.x', ''].join('\n');
+    expect(() => lireIle(niveau, 'baie.md')).toThrow('champ inconnu « compétences »');
+  });
+
   it('ne voit aucun glissement quand une île passe en Markdown', () => {
     for (const [ile, exercices] of parIle()) {
       const relu = lireIle(ecrireIle({ id: ile }, exercices)).exercices;

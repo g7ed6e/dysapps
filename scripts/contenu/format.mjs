@@ -1,12 +1,15 @@
 // Le format Markdown du contenu (docs/contenu/<île>.md) : une île par fichier, un niveau d'exercice par section.
-// lireIle(md) rend les exercices (les objets des JSON du jeu), ecrireIle(ile, exercices) écrit le Markdown.
+// lireIle(md) rend l'île et ses exercices (les objets des JSON du jeu), ecrireIle(ile, exercices) écrit le Markdown.
 // Le format est strict : un champ inconnu ou mal écrit arrête la génération, avec le numéro de ligne.
 //
 //   ---
-//   île : baie
+//   île : baie                               ← en-tête : l'identifiant de l'île, puis ce qu'elle est
+//   module : Vocabulaire et écoute
 //   ---
-//   # Baie …                                 ← titre libre
+//   # Baie des mots                          ← le nom de l'île
+//   > une note                               ← ignorée
 //   ## Écoute · `ears`                       ← une mission : son titre et son identifiant
+//   - description : …                        ← la mission (description, compétences, lv2)
 //   - consigne : Écoute le mot anglais, …    ← champs communs à tous ses niveaux
 //   ### Niveau 1 · `baie-ears-1`             ← un niveau : l'identifiant de l'exercice
 //   - langue : en                            ← champs propres à ce niveau
@@ -28,6 +31,27 @@
 // Une valeur qui a un saut de ligne, des espaces au bord, qui est vide ou qui commence par « " »
 // s'écrit comme une chaîne JSON entre guillemets. Une liste s'écrit « a · b · c », ou en sous-liste si un élément
 // contient « · ».
+
+/** Champs de l'île, dans l'en-tête (son nom est le titre « # … ») : [étiquette, chemin dans le JSON]. */
+const ILE = [
+  ['module', 'module'],
+  ['matière', 'subject'],
+  ['classe', 'classe'],
+  ['description', 'description'],
+  ['bloc', 'block'],
+  ['gardien', 'guardian'],
+  ['icône', 'icon'],
+  ['créature', 'creature.name'],
+];
+const PAR_ETIQUETTE_ILE = new Map(ILE.map((c) => [c[0], c]));
+
+/** Champs d'une mission (sous son titre « ## … »), qui ne passent pas à ses niveaux : [étiquette, clé, type]. */
+const MISSION = [
+  ['description', 'description', 'texte'],
+  ['compétences', 'programme', 'liste'],
+  ['lv2', 'lv2', 'texte'],
+];
+const PAR_ETIQUETTE_MISSION = new Map(MISSION.map((c) => [c[0], c]));
 
 /** Champs d'un niveau, dans l'ordre d'écriture : [étiquette, chemin dans le JSON, type]. */
 const NIVEAU = [
@@ -318,16 +342,23 @@ function commune(valeurs) {
  * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
 export function ecrireIle(ile, exercices) {
-  const lignes = ['---', `île : ${ile.id}`, '---', '', `# ${ile.nom ?? ile.id}`, ''];
-  const missions = [...(ile.missions ?? [])];
+  verifierCles(ile, new Set(['id', 'name', 'exercises', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
+  const entete = ILE.filter(([, chemin]) => obtenir(ile, chemin) !== undefined).map(([etiquette, chemin]) => `${etiquette} : ${ecrireTexte(obtenir(ile, chemin))}`);
+  const lignes = ['---', `île : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
+  const missions = [...(ile.exercises ?? [])];
   for (const ex of exercices) {
     verifierCles(ex, CLES_NIVEAU, ex.id);
     if (ex.biome !== ile.id) throw new Error(`${ex.id} : île ${ex.biome}, attendue ${ile.id}`);
-    if (!missions.some((m) => m.id === ex.type)) missions.push({ id: ex.type, titre: ex.type });
+    if (!missions.some((m) => m.id === ex.type)) missions.push({ id: ex.type, title: ex.type });
   }
   for (const mission of missions) {
+    verifierCles(mission, new Set(['id', 'title', ...MISSION.map((c) => c[1])]), `${ile.id}, mission ${mission.id}`);
     const niveaux = exercices.filter((ex) => ex.type === mission.id);
-    if (niveaux.length === 0) continue;
+    const champsMission = MISSION.filter(([, k]) => mission[k] !== undefined).flatMap(([etiquette, k, type]) => ecrireChamp(etiquette, type, mission[k], ''));
+    if (niveaux.length === 0) {
+      lignes.push(`## ${mission.title} · \`${mission.id}\``, '', ...champsMission, ...(champsMission.length ? [''] : []));
+      continue;
+    }
     const communs = NIVEAU.filter(([, chemin]) => {
       const v = JSON.stringify(obtenir(niveaux[0], chemin));
       return v !== undefined && niveaux.every((ex) => JSON.stringify(obtenir(ex, chemin)) === v);
@@ -337,9 +368,9 @@ export function ecrireIle(ile, exercices) {
     const trous = niveaux.map((ex) => trouDuNiveau(ex.items));
     const clesDes = niveaux.map((ex) => cleDuNiveau(ex.items));
     const directivesMission = { trou: commune(trous), cle: commune(clesDes) };
-    lignes.push(`## ${mission.titre} · \`${mission.id}\``, '');
+    lignes.push(`## ${mission.title} · \`${mission.id}\``, '', ...champsMission);
     for (const [etiquette, chemin, type] of communs) lignes.push(...ecrireChamp(etiquette, type, obtenir(niveaux[0], chemin), ''));
-    if (communs.length) lignes.push('');
+    if (communs.length || champsMission.length) lignes.push('');
     lignes.push(...ecrirePourTous(tousItems[0], itemsMission, directivesMission));
     niveaux.forEach((ex, n) => {
       lignes.push(`### Niveau ${ex.level} · \`${ex.id}\``, '');
@@ -366,6 +397,7 @@ export function ecrireIle(ile, exercices) {
 export function lireIle(md, fichier = 'md') {
   const lignes = md.replace(/^\uFEFF/, '').split(/\r?\n/);
   let ile = null;
+  const biome = {};
   const exercices = [];
   const missions = [];
   let mission = null; // { id, titre, champs, items } : mission en cours (items : champs pour tous ses items)
@@ -381,12 +413,21 @@ export function lireIle(md, fichier = 'md') {
   // En-tête
   if (lignes[0] !== '---') throw erreur('l’en-tête « --- » manque');
   for (i = 1; i < lignes.length && lignes[i] !== '---'; i++) {
-    const m = /^île : (\S+)$/.exec(lignes[i]);
-    if (!m) throw erreur(`en-tête inconnu : ${lignes[i]}`);
-    if (ile) throw erreur('« île » écrite deux fois dans l’en-tête');
-    ile = m[1];
+    const m = /^(.+?) : (.+)$/.exec(lignes[i]);
+    if (!m) throw erreur(`« étiquette : valeur » attendu dans l’en-tête, lu « ${lignes[i]} »`);
+    if (m[1] === 'île') {
+      if (ile) throw erreur('« île » écrite deux fois dans l’en-tête');
+      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant d’île mal écrit : ${m[2]}`);
+      ile = m[2];
+      continue;
+    }
+    const def = PAR_ETIQUETTE_ILE.get(m[1]);
+    if (!def) throw erreur(`champ d’en-tête inconnu « ${m[1]} »`);
+    if (obtenir(biome, def[1]) !== undefined) throw erreur(`« ${m[1]} » écrit deux fois`);
+    poser(biome, def[1], lireTexte(m[2], i + 1));
   }
   if (!ile) throw erreur('« île : … » manque dans l’en-tête');
+  let nom;
 
   const finirExercice = () => {
     if (!ex) return;
@@ -465,8 +506,11 @@ export function lireIle(md, fichier = 'md') {
       pourTous = liste = tableau = null; // une ligne vide finit le bloc « Pour tous les items », une sous-liste, un tableau
       continue;
     }
+    if (l.startsWith('> ')) continue; // une note pour qui écrit, que le jeu ne lit pas
     if (/^# /.test(l)) {
       if (mission) throw erreur('le titre de l’île va avant la première mission');
+      if (nom !== undefined) throw erreur('l’île a un seul titre');
+      nom = l.slice(2);
       continue;
     }
     let m;
@@ -474,8 +518,8 @@ export function lireIle(md, fichier = 'md') {
       finirExercice();
       if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant de mission mal écrit : ${m[2]}`);
       if (missions.some((x) => x.id === m[2])) throw erreur(`mission « ${m[2]} » écrite deux fois`);
-      mission = { id: m[2], titre: m[1], champs: {}, items: {} };
-      missions.push({ id: mission.id, titre: mission.titre });
+      mission = { id: m[2], titre: m[1], champs: {}, items: {}, def: { id: m[2], title: m[1] } };
+      missions.push(mission.def);
       item = pourTous = liste = tableau = null;
       continue;
     }
@@ -549,13 +593,22 @@ export function lireIle(md, fichier = 'md') {
     if ((m = /^- (.*)$/.exec(l))) {
       if (pourTous) champ(m[1], pourTous, PAR_ETIQUETTE_ITEM, i + 1);
       else if (ex?.items.length) throw erreur(`un champ du niveau va avant ses items : ${l}`);
+      else if (!ex && PAR_ETIQUETTE_MISSION.has(/^(.+?) :/.exec(m[1])?.[1])) champ(m[1], mission.def, PAR_ETIQUETTE_MISSION, i + 1);
       else champ(m[1], ex ?? mission.champs, PAR_ETIQUETTE_NIVEAU, i + 1);
       continue;
     }
     throw erreur(`ligne inattendue : ${l}`);
   }
   finirExercice();
-  return { ile, missions, exercices: exercices.map(ordonner) };
+  const ordreMission = ['id', 'title', ...MISSION.map((c) => c[1])];
+  const exercises = missions.map((d) => Object.fromEntries(ordreMission.filter((k) => d[k] !== undefined).map((k) => [k, d[k]])));
+  const champsIle = Object.fromEntries(['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]));
+  return {
+    ile,
+    missions: missions.map((d) => ({ id: d.id, titre: d.title })),
+    biome: { id: ile, ...(nom === undefined ? {} : { name: nom }), ...champsIle, exercises },
+    exercices: exercices.map(ordonner),
+  };
 }
 
 /** L'ordre des champs d'un item dans le JSON produit : celui du tableau ITEM, puis l'aide. */

@@ -1,0 +1,28 @@
+---
+île : marche
+module : Proportionnalité
+matière : maths
+classe : 5e
+description : Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.
+bloc : toile
+gardien : le Colporteur
+icône : ruler
+créature : Bazar
+---
+
+# Marché des proportions
+
+## Étals · `etals`
+
+- description : Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.
+- compétences : c4.ma.b.proportionnalite · c4.ma.b.ratio · c3.ma.nombres.proportionnalite
+
+## Remises · `remises`
+
+- description : Prends un pourcentage, puis applique une hausse ou une baisse.
+- compétences : c4.ma.b.pourcentages-echelles · c3.ma.nombres.proportionnalite
+
+## Balances · `balances`
+
+- description : Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.
+- compétences : c4.ma.c.grandeurs-composees · c4.ma.b.pourcentages-echelles · c3.ma.espace.echelle · c4.ma.c.conversions

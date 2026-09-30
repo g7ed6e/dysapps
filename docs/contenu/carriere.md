@@ -1,11 +1,21 @@
 ---
 île : carriere
+module : Orthographe lexicale
+matière : francais
+classe : 6e
+description : Écrire les mots juste, les familles de mots, les mots-outils.
+bloc : sable
+gardien : la Dune vivante
+icône : mountain
+créature : Rouxel
 ---
 
 # Carrière des mots
 
 ## Mot troué · `mot-troue`
 
+- description : Glisse le bloc de lettres qui manque.
+- compétences : c3.fr.langue.regularites-orthographiques
 - consigne : Écoute le mot, puis tape le bloc de lettres qui manque.
 - bravo : Le mot est complet !
 - erreur : {word} s’écrit avec « {answer} », pas « {chosen} ».
@@ -50,6 +60,8 @@ Pour tous les items :
 
 ## Familles-craft · `familles`
 
+- description : Assemble préfixe, racine et suffixe.
+- compétences : c3.fr.langue.derivation-composition · c3.fr.langue.racines · c3.fr.langue.familles-champ-lexical
 - par partie : 6
 - bravo : Bien assemblé !
 - erreur : {word} se fabrique avec {answer}. {meaning}
@@ -106,6 +118,8 @@ Pour tous les items :
 
 ## Coffre à mots · `coffre`
 
+- description : Les mots-outils à réviser, en dictée.
+- compétences : c3.fr.langue.mots-invariables
 - par partie : 6
 - bravo : Bonne oreille !
 - erreur : Tu as choisi {chosen}. On écrit {word} : {hint}

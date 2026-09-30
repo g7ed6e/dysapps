@@ -2,7 +2,7 @@
 
 <!-- Page produite par `npm run pilotage:personnages` : ne pas l’écrire à la main. -->
 
-Cette page est produite à partir des données du jeu (`src/blocland/biomes.ts` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.
+Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.
 
 Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans Blocland, on **vainc** le Gardien, qui devient une statue ; dans Archipéo, c’est une sentinelle de pierre éteinte que l’élève **rallume**. La **baleine** parle rarement, aux grandes étapes d’un archipel, dans les deux univers.
 

@@ -1,11 +1,21 @@
 ---
 île : foret
+module : Conscience phonologique
+matière : francais
+classe : 6e
+description : Écouter, couper en syllabes, repérer les sons et les rimes.
+bloc : bois
+gardien : le Grand Chêne
+icône : tree
+créature : Mousso
 ---
 
 # Forêt des sons
 
 ## Abattage syllabique · `abattage`
 
+- description : Tape autant de coups que de syllabes.
+- compétences : c3.fr.langue.phonemes-graphemes
 - bravo : Bien entendu !
 - erreur : On entend {heard} : {answer}, c’est le nombre de syllabes.
 - bloc gagné : bois
@@ -91,6 +101,8 @@ Pour tous les items :
 
 ## Chasse au son · `chasse-son`
 
+- description : Tape les mots où tu entends le son demandé.
+- compétences : c3.fr.langue.phonemes-graphemes
 - erreur : Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.
 - bloc gagné : bois
 - monte à : 0.85
@@ -262,6 +274,8 @@ Pour tous les items :
 
 ## Rimes-échelle · `rimes`
 
+- description : Empile les mots qui riment pour monter à la cabane.
+- compétences : c3.fr.langue.phonemes-graphemes
 - erreur : Écoute la fin de {word} : ça finit par {ending}.
 - bloc gagné : bois
 - monte à : 0.85

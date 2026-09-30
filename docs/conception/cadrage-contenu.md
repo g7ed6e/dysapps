@@ -18,7 +18,7 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 - **Une île = un thème du programme**, avec une classe indicative (6e à 3e). En général trois missions par île ; la Plaine des nombres, le Glacier des relatifs, le Comptoir, le Marais des temps, la Falaise des accords et l’Observatoire des textes en ont quatre, la Mine des lettres deux, la Tour du lecteur une.
 - **Deux ou trois niveaux par mission** (deux en anglais ; quatre au plus sur une île de l’école, où ce qui s’ajoute passe par un niveau de plus, comme aux Balances), **huit items par exercice** (dix pour une dictée, avec `perRun`).
 - **Le contenu monte, les règles ne changent pas** : de la 6e à la 3e, les mêmes principes dys ; en 4e et 3e, l’énoncé peut s’allonger mais reste découpé.
-- **Chaque mission cite le programme** (`programme` dans `src/blocland/biomes.ts` et `src/apps/registry.ts`). Une île de 6e ne cite que le cycle 3 ; une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3.
+- **Chaque mission cite le programme** (`compétences` dans `docs/contenu/<île>.md`, `programme` dans `src/apps/registry.ts`). Une île de 6e ne cite que le cycle 3 ; une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3.
 
 ### Maths générées, français et anglais écrits à la main
 
@@ -213,7 +213,7 @@ Niveaux et programme :
 
 Univers, à renvoyer au directeur artistique :
 
-- Le nom de Tunel, la taupe de la Mine des lettres (`src/blocland/biomes.ts`, texte `tour-ascension-tunel`), est si proche de « tunnel » qu’il peut ancrer une mauvaise orthographe.
+- Le nom de Tunel, la taupe de la Mine des lettres (`docs/contenu/mine.md`, texte `tour-ascension-tunel`), est si proche de « tunnel » qu’il peut ancrer une mauvaise orthographe.
 - « Bien piochée ! » (`mine-filon-*`, `feedback.correct`) accorde avec la lettre, le geste porte sur le bloc.
 
 ### À surveiller
