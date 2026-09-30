@@ -18,7 +18,7 @@ const RECIT_ENTENDU = A_COUVRIR(
   'Suivre un récit à l’oral : il faut un écran où le récit s’entend d’abord, puis s’affiche (question écrite, lexique affiché), à cadrer avec le référent dys et l’expert frontend, le même pour l’anglais, l’allemand et l’espagnol. Au Refuge des carnets, le récit s’affiche dès l’ouverture : il se lit, l’écoute n’y est qu’un soutien.',
 );
 const LV2_LANGAGES = A_COUVRIR(
-  'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), à cadrer avec c4.en.culture.langages, qui manque aussi en anglais.',
+  'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), comme ceux de c4.en.culture.langages en anglais (Studio des ondes, School and media).',
 );
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
@@ -41,8 +41,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, anglais ----------
   'c3.en.parler.reproduire-presenter': HORS(ORAL),
   'c3.en.ecrire.phrases': HORS(ECRITURE_LIBRE),
-  'c3.en.culture.reperes': A_COUVRIR('Repères géographiques, historiques et culturels des pays anglophones : aucune mission ne les aborde.'),
-  'c3.en.culture.imaginaire': A_COUVRIR('Contes, légendes et héros des pays anglophones : aucune mission ne les aborde.'),
   // ---------- Cycle 4, français ----------
   'c4.fr.oral.comprendre-s-exprimer': HORS(ORAL),
   'c4.fr.lecture.image': HORS('Analyse d’image : l’application n’affiche pas d’œuvres ni de photographies (rien d’emprunté).'),
@@ -62,9 +60,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.en.parler.presenter-raconter': HORS(ORAL),
   'c4.en.ecrire.dictee-fiche': A_COUVRIR('Écrire sous la dictée au cycle 4 : le Vocabulaire du portail le fait au niveau A1 seulement.'),
   'c4.en.ecrire.recit': HORS(ECRITURE_LIBRE),
-  'c4.en.culture.langages': A_COUVRIR('Médias, réseaux, chansons et cinéma des pays anglophones : aucune mission ne les aborde.'),
-  'c4.en.culture.ecole-societe': A_COUVRIR('École et société dans les pays anglophones : aucune mission ne les aborde.'),
-  'c4.en.culture.voyages-rencontres': A_COUVRIR('Voyages, migrations, patrimoine des pays anglophones : aucune mission ne les aborde.'),
   'c4.en.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, allemand (LV2) ----------
   'c4.de.ecouter.recit': RECIT_ENTENDU,
