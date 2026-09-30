@@ -435,7 +435,7 @@ export const ILES = [
       {
         "id": "aiguillage",
         "title": "Aiguillage",
-        "description": "Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…",
+        "description": "Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…",
         "programme": [
           "c4.fr.langue.orthographe-lexicale",
           "c3.fr.langue.homophonie"
@@ -666,7 +666,7 @@ export const ILES = [
       {
         "id": "sens",
         "title": "Sens",
-        "description": "Sens propre ou sens figuré, expressions imagées, puis le champ lexical.",
+        "description": "Sens propre ou sens figuré, expressions imagées, puis le champ lexical, dans une liste puis dans une phrase.",
         "programme": [
           "c4.fr.langue.sens-des-mots",
           "c4.fr.langue.reseaux-de-mots"
@@ -675,7 +675,7 @@ export const ILES = [
       {
         "id": "nuances",
         "title": "Nuances",
-        "description": "Synonymes, antonymes, registres de langue, puis le degré d’intensité.",
+        "description": "Synonymes, antonymes, registres de langue, le degré d’intensité, puis le registre qui convient à la situation.",
         "programme": [
           "c4.fr.langue.sens-des-mots",
           "c4.fr.langue.reseaux-de-mots",

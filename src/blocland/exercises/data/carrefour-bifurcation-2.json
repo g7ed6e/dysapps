@@ -207,7 +207,7 @@
       "spoken": "Je  (mot manquant)  sais pas  (mot manquant)  tu viens.",
       "choices": [
         "ne / si",
-        "n’y / si",
+        "ni / si",
         "ne / s’y"
       ],
       "answer": "ne / si",

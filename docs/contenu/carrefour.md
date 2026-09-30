@@ -21,7 +21,7 @@ créature : Sema
 
 ## Aiguillage · `aiguillage`
 
-- description : Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt…
+- description : Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…
 - compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
 - bravo : Bonne route !
@@ -93,7 +93,6 @@ Pour tous les items :
   - si = condition ou oui. s’y = se + y (il s’y met).
   - plus tôt = contraire de plus tard. plutôt = de préférence.
   - près = pas loin. prêt = préparé.
-  - mes = les miens. mais = pourtant. met = verbe mettre.
 
 1. énoncé : Il … a pas de pain.
    - choix : ni · n’y · nid
@@ -136,6 +135,56 @@ Pour tous les items :
    - réponse : prêt
    - indice : « prêt » = préparé (au féminin : prête).
    - explication : Il est prêt à partir : préparé.
+
+### Niveau 3 · `carrefour-aiguillage-3`
+
+Pour tous les items :
+- aide « Mais, mes, met, m’est » :
+  - mais = pourtant (petit, mais courageux).
+  - mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».
+  - met = verbe mettre (il met, il mettait).
+  - m’est = me + est (cela m’est égal, cela t’est égal).
+
+1. énoncé : J’ai cherché partout, … je n’ai rien trouvé.
+   - choix : mais · mes · met
+   - réponse : mais
+   - indice : Remplace par « pourtant ».
+   - explication : « J’ai cherché partout, pourtant je n’ai rien trouvé » fonctionne : c’est « mais ».
+2. énoncé : … parents arrivent ce soir.
+   - choix : Mais · Mes · Met
+   - réponse : Mes
+   - indice : Remplace par « tes » : tes parents.
+   - explication : On peut dire « tes parents » : c’est « mes », le pluriel de « mon ».
+3. énoncé : Il … la table avant le dîner.
+   - choix : mes · m’est · met
+   - réponse : met
+   - indice : Remplace par « mettait ».
+   - explication : « Il mettait la table » fonctionne : c’est le verbe mettre, « met ».
+4. énoncé : Tu peux prendre … crayons de couleur.
+   - choix : mes · met · mais
+   - réponse : mes
+   - indice : Remplace par « tes » : tes crayons.
+   - explication : On peut dire « tes crayons » : c’est « mes », le pluriel de « mon ».
+5. énoncé : Elle … toujours son casque à vélo.
+   - choix : mais · met · m’est
+   - réponse : met
+   - indice : Remplace par « mettait ».
+   - explication : « Elle mettait son casque » fonctionne : c’est le verbe mettre, « met ».
+6. énoncé : Le film était long, … il était très drôle.
+   - choix : met · mes · mais
+   - réponse : mais
+   - indice : Remplace par « pourtant ».
+   - explication : « Le film était long, pourtant il était très drôle » fonctionne : c’est « mais ».
+7. énoncé : Ce qu’il pense … égal.
+   - choix : m’est · mais · mes
+   - réponse : m’est
+   - indice : Remplace par « t’est » : cela t’est égal.
+   - explication : « Cela m’est égal » : me + est, comme « cela t’est égal ».
+8. énoncé : Cette histoire … arrivée l’an dernier.
+   - choix : mais · m’est · met
+   - réponse : m’est
+   - indice : Remplace par « t’est » : elle t’est arrivée.
+   - explication : « Cette histoire m’est arrivée » : me + est, comme « elle t’est arrivée ».
 
 ## Bifurcation · `bifurcation`
 
@@ -264,7 +313,7 @@ Pour tous les items :
    - explication : Leurs vélos (nom pluriel) sont (étaient) à eux.
 8. énoncé : Je … sais pas … tu viens.
    - lu : Je  (mot manquant)  sais pas  (mot manquant)  tu viens.
-   - choix : ne / si · n’y / si · ne / s’y
+   - choix : ne / si · ni / si · ne / s’y
    - réponse : ne / si
    - indice : Négation : ne. Question « est-ce que tu viens ? » : si.
    - explication : Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).
