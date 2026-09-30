@@ -115,15 +115,20 @@ it('sans langue : rien ne change (français)', () => {
   expect(document.querySelector('.syllables')).not.toBeNull();
 });
 
-it('document en français (Tour du lecteur) : le petit texte est découpé en syllabes, une ligne par phrase', () => {
+it('document en français (Observatoire des textes) : le document est le texte à lire, découpé en syllabes', () => {
   renderScreen(
     CalculScreen,
-    { question: 'Qui est « il » ?', prompt: 'Léa attend son frère.\nIl arrive en courant.', choices: ['le frère de Léa', 'Léa'], answer: 'le frère de Léa' },
-    'fr',
+    {
+      question: 'Quel jour le club se réunit-il ?',
+      prompt: 'Club lecture du CDI\nLe mardi à midi',
+      spoken: 'Club lecture du CDI. Le mardi à midi.',
+      choices: ['le mardi', 'le jeudi'],
+      answer: 'le mardi',
+    },
+    undefined,
   );
   const lines = screen.getAllByRole('listitem');
-  expect(lines).toHaveLength(2);
+  expect(lines.map((l) => l.textContent?.replace(/\s/g, ''))).toEqual(['ClublectureduCDI', 'Lemardiàmidi']);
   expect(lines.every((l) => l.querySelector('.syllables'))).toBe(true);
-  // Français : aucun élément du document ne porte d'attribut de langue étrangère.
-  expect(document.querySelector('.notice [lang]')).toBeNull();
+  expect(document.querySelector('[lang="en"]')).toBeNull();
 });
