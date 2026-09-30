@@ -143,6 +143,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   hello: { component: CalculScreen, batch: 1 },
   numbers: { component: CalculScreen, batch: 1 },
   ears: { component: DicteeItem, batch: 1, speaksOnOpen: true },
+  signs: { component: CalculScreen, batch: 1 },
   'to-be': { component: CalculScreen, batch: 1 },
   'have-got': { component: CalculScreen, batch: 1 },
   'present-simple': { component: CalculScreen, batch: 1 },

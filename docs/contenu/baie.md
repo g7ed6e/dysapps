@@ -362,15 +362,185 @@ Pour tous les items :
    - indice : Un seul son : un « i » long.
    - explication : bee = l’abeille (beach = la plage).
 7. mot : thin
-   - choix : mince · l’étain · la chose
+   - choix : mince · la boîte · la chose
    - réponse : mince
    - indice : Th au début, « n » à la fin.
-   - explication : thin = mince (tin = l’étain, thing = la chose).
+   - explication : thin = mince (tin = la boîte, thing = la chose).
 8. mot : thing
    - choix : la chose · mince · l’évier
    - réponse : la chose
    - indice : Th au début, « ng » à la fin.
    - explication : thing = la chose (thin = mince, sink = l’évier).
+
+## Signs · `signs`
+
+- description : Lire une étiquette, une carte d’anniversaire ou un petit texte en anglais, avec son image, et y trouver un détail.
+- compétences : c3.en.lire.textes-courts · c3.en.lire.mots-isoles · c3.en.culture.vie-quotidienne
+- langue : en
+- bravo : Bien lu !
+- erreur : {explanation}
+- bloc gagné : cabine
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- langue des choix : fr
+
+### Niveau 1 · `baie-signs-1`
+
+- consigne : Lis la question, puis l’étiquette ou la carte en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Lire une étiquette, une carte » :
+  - Lis d’abord la question, puis cherche le mot qui répond dans le texte : l’image dit seulement de quoi il parle.
+  - black = noir, blue = bleu, white = blanc, brown = marron
+  - mother = mère, father = père, brother = frère, grandma = grand-mère
+  - Mr = Monsieur, Mrs = Madame ; first = premier, third = troisième
+  - two = 2, twelve = 12, twenty = 20 ; at Tom’s house = chez Tom
+
+1. énoncé : "Art room\nFirst floor"
+   - image : 🎨
+   - question : À quel étage est la salle d’arts plastiques ?
+   - lu : Art room. First floor.
+   - choix : Au rez-de-chaussée · Au premier étage · Au troisième étage
+   - réponse : Au premier étage
+   - indice : Lis la deuxième ligne : first ou third ?
+   - explication : first floor = le premier étage (first = premier). Le troisième étage se dit third floor, le rez-de-chaussée ground floor.
+2. énoncé : "Happy birthday, Emma!\nYou are twelve today."
+   - image : 🎂
+   - question : Quel âge a Emma aujourd’hui ?
+   - lu : Happy birthday, Emma! You are twelve today.
+   - choix : 2 ans · 12 ans · 20 ans
+   - réponse : 12 ans
+   - indice : two, twelve et twenty commencent tous par tw : lis le mot jusqu’au bout.
+   - explication : twelve = 12. two = 2 et twenty = 20 commencent aussi par tw.
+3. énoncé : "Horse: Lucky\nIt likes apples."
+   - image : 🐴
+   - question : Qu’est-ce que Lucky aime manger ?
+   - lu : Horse: Lucky. It likes apples.
+   - choix : Des ananas · Des carottes · Des pommes
+   - réponse : Des pommes
+   - indice : Lis la deuxième ligne : le dernier mot est un fruit.
+   - explication : apples = des pommes. L’ananas se dit pineapple, les carottes carrots.
+4. énoncé : "Lost cat\nIt is black and white."
+   - image : 🐾
+   - question : De quelle couleur est le chat perdu ?
+   - lu : Lost cat. It is black and white.
+   - choix : Noir et blanc · Bleu et blanc · Noir et marron
+   - réponse : Noir et blanc
+   - indice : black et blue commencent tous les deux par bl : regarde la fin du mot.
+   - explication : black = noir, white = blanc. Bleu se dit blue, marron brown.
+5. énoncé : "Me with my grandma\nat the beach"
+   - image : 📸
+   - question : Avec qui l’enfant est-il sur la photo ?
+   - lu : Me with my grandma at the beach.
+   - choix : Son grand-père · Sa grand-mère · Sa mère
+   - réponse : Sa grand-mère
+   - indice : Regarde le mot après my : grandma ou grandpa ?
+   - explication : grandma = la grand-mère (grandpa = le grand-père, mum = la mère). with my grandma = avec ma grand-mère.
+6. énoncé : "Class 6B\nTeacher: Mr Green"
+   - image : 🏫
+   - question : Qui est le professeur de la classe ?
+   - lu : Class six B. Teacher: Mister Green.
+   - choix : Madame Green · Mademoiselle Green · Monsieur Green
+   - réponse : Monsieur Green
+   - indice : Mr ou Mrs ? Regarde s’il y a un s.
+   - explication : Mr = Monsieur. Mrs = Madame, Miss = Mademoiselle. teacher = le professeur.
+7. énoncé : "Happy Mother’s Day!\nLove, Leo"
+   - image : 💐
+   - question : À qui Leo écrit-il cette carte ?
+   - lu : Happy Mother’s Day! Love, Leo.
+   - choix : À sa mère · À son père · À son frère
+   - réponse : À sa mère
+   - indice : mother, father et brother finissent tous par -ther : regarde le début du mot.
+   - explication : mother = la mère : Mother’s Day, c’est la fête des mères. father = le père, brother = le frère.
+8. énoncé : "Mum, I’m at Tom’s house.\nSee you later! Ella"
+   - image : 📝
+   - question : Où est Ella ?
+   - lu : Mum, I’m at Tom’s house. See you later! Ella.
+   - choix : À la maison · Au parc · Chez Tom
+   - réponse : Chez Tom
+   - indice : À qui est la maison ? Regarde le prénom juste avant house.
+   - explication : at Tom’s house = chez Tom, dans la maison de Tom. Être à la maison, chez soi, se dit at home.
+
+### Niveau 2 · `baie-signs-2`
+
+- consigne : Lis la question, puis le petit texte en anglais, et trouve la phrase qui répond. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Lire un petit texte » :
+  - Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.
+  - he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)
+  - dad = papa, mum = maman, brother = frère, sister = sœur
+  - -teen = de 13 à 19 (fifteen = 15) ; -ty = les dizaines (fifty = 50)
+  - Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche
+
+1. énoncé : "Dear Nina,\nI’m in London with my dad.\nIt’s rainy, but the parks are great!\nLove, Sara"
+   - image : ✉️
+   - question : Avec qui Sara est-elle à Londres ?
+   - lu : Dear Nina, I’m in London with my dad. It’s rainy, but the parks are great! Love, Sara.
+   - choix : Avec son père · Avec sa mère · Avec son frère
+   - réponse : Avec son père
+   - indice : Lis la deuxième ligne jusqu’au bout : with my…
+   - explication : with my dad = avec mon papa, mon père. La mère se dit mum, le frère brother.
+2. énoncé : "My name is Ben. I’m eleven.\nI have a dog and two cats.\nMy dog is called Rex."
+   - image : 🐾
+   - question : Combien de chats Ben a-t-il ?
+   - lu : My name is Ben. I’m eleven. I have a dog and two cats. My dog is called Rex.
+   - choix : Un chat · Deux chats · Trois chats
+   - réponse : Deux chats
+   - indice : Cherche le mot cats, puis lis le nombre juste avant.
+   - explication : two cats = deux chats. a dog = un chien : Ben a trois animaux en tout, mais seulement deux chats.
+3. énoncé : "This is my friend Alex.\nShe is twelve.\nShe likes football and music."
+   - image : ⚽
+   - question : Qui est Alex ?
+   - lu : This is my friend Alex. She is twelve. She likes football and music.
+   - choix : Une fille de 12 ans · Un garçon de 12 ans · Une fille de 20 ans
+   - réponse : Une fille de 12 ans
+   - indice : Regarde le petit mot au début de la deuxième ligne : he ou she ?
+   - explication : she = elle : Alex est une fille (he = il, pour un garçon). twelve = 12 ; 20 se dit twenty.
+4. énoncé : "Party time!\nCome to my party on Saturday.\nIt’s at my house.\nFrom Jack"
+   - image : 🎉
+   - question : Quel jour a lieu la fête ?
+   - lu : Party time! Come to my party on Saturday. It’s at my house. From Jack.
+   - choix : Dimanche · Jeudi · Samedi
+   - réponse : Samedi
+   - indice : Cherche le mot après on : c’est le jour.
+   - explication : Saturday = samedi. Sunday = dimanche : les deux commencent par S, lis le mot jusqu’au bout. Jeudi se dit Thursday.
+5. énoncé : "This is my monster.\nIt has three eyes and four legs.\nIt is green and yellow."
+   - image : 🖍️
+   - question : Combien d’yeux le monstre a-t-il ?
+   - lu : This is my monster. It has three eyes and four legs. It is green and yellow.
+   - choix : Deux yeux · Trois yeux · Quatre yeux
+   - réponse : Trois yeux
+   - indice : Cherche le mot eyes, puis lis le nombre juste avant.
+   - explication : three eyes = trois yeux. four legs = quatre pattes : le nombre quatre est pour les pattes, pas pour les yeux.
+6. énoncé : "Hi! I’m Mia. I live in Dublin.\nMy brother is fifteen.\nMy sister is five."
+   - image : 👪
+   - question : Quel âge a le frère de Mia ?
+   - lu : Hi! I’m Mia. I live in Dublin. My brother is fifteen. My sister is five.
+   - choix : 5 ans · 15 ans · 50 ans
+   - réponse : 15 ans
+   - indice : Trouve la ligne du brother, puis écoute la fin du nombre : -teen ou -ty ?
+   - explication : My brother is fifteen = mon frère a 15 ans (-teen, de 13 à 19). five = 5, c’est l’âge de la sœur ; 50 se dit fifty.
+7. énoncé : "My week\nOn Monday, I play tennis.\nOn Tuesday, I go to the swimming pool."
+   - image : 🏊
+   - question : Quel jour l’enfant va-t-il à la piscine ?
+   - lu : My week. On Monday, I play tennis. On Tuesday, I go to the swimming pool.
+   - choix : Le lundi · Le jeudi · Le mardi
+   - réponse : Le mardi
+   - indice : Trouve la ligne de la piscine, swimming pool, puis lis le jour au début.
+   - explication : Tuesday = mardi. Thursday = jeudi : les deux commencent par T, lis le mot jusqu’au bout. Monday = lundi, c’est le jour du tennis.
+8. énoncé : "Fruit salad for four\nTwo bananas\nOne apple\nTen grapes"
+   - image : 🥣
+   - question : Combien de pommes faut-il pour la salade ?
+   - lu : Fruit salad for four. Two bananas. One apple. Ten grapes.
+   - choix : Une pomme · Deux pommes · Quatre pommes
+   - réponse : Une pomme
+   - indice : Trouve la ligne du mot apple, puis lis le nombre au début.
+   - explication : one apple = une pomme. two, c’est pour les bananes, et for four veut dire pour quatre personnes.
 
 ## Les plans
 

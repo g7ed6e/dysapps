@@ -307,7 +307,7 @@ function programmesPage(d) {
 function describeItem(item) {
   // Un document à lire (Notices) : le document, une ligne par information, puis la question en français.
   if (item.question && item.prompt && Array.isArray(item.choices)) {
-    return `« ${item.prompt.split('\n').join(' / ')} » ${item.question} → **${item.answer}** (${item.choices.join(' / ')})`;
+    return `${item.image ? `${item.image} ` : ''}« ${item.prompt.split('\n').join(' / ')} » ${item.question} → **${item.answer}** (${item.choices.join(' / ')})`;
   }
   if (item.prompt && Array.isArray(item.choices)) {
     return `${item.prompt} → **${item.answer}** (${item.choices.join(' / ')})`;
