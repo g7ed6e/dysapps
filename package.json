@@ -15,7 +15,7 @@
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs --port 4173",
     "docs:preview": "vitepress preview docs --port 4173",
-    "docs:check": "node scripts/docs/check.mjs",
+    "pilotage:personnages": "node scripts/pilotage/personnages.mjs",
     "docs:captures": "node scripts/docs/captures.mjs",
     "programme:extract": "node scripts/programme/extract.mjs",
     "rendu:mesures": "node scripts/rendu/mesures.mjs"

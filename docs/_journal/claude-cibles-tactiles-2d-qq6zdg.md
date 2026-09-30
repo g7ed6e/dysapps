@@ -1,1 +1,0 @@
-- Cibles tactiles 2D : le monde en 2D (gardé sans écran qui l'affiche, base d'un éventuel univers en 2D) agrandit à au moins 48 px la zone de toucher d'un panneau de mission ou d'une créature dessiné plus petit que le doigt, sans changer son dessin. Quand deux zones se chevauchent, le toucher va à celle dont le milieu est le plus près du doigt.

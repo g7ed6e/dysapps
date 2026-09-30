@@ -1,1 +1,0 @@
-Conception : la scène 3D est découpée en parties (les cubes, le navire, les bornes, les personnages, la lumière, la brume, les étiquettes, le large, la caméra), chacune dans son fichier, pour que les prochains lots du rendu d'Archipéo travaillent chacun dans la sienne. Rien ne change dans l'application.

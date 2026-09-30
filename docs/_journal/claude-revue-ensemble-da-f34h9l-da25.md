@@ -1,1 +1,0 @@
-En grand texte, le mot de la baleine ne recouvre plus le panneau de la Carte (celui-ci attend qu’on ferme le mot) et ne passe plus sous la barre du bas : sur téléphone, la barre s’efface le temps du mot et « J’ai compris » reste en vue. Dans les deux univers.

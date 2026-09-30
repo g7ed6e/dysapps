@@ -1,1 +1,0 @@
-- **Le bonhomme ne coupe plus par le milieu des îles.** Quand il traverse une île pour aller plus loin, il va d’un ouvrage au suivant sans repasser par sa place au centre. Sur chaque île, il suit le sol et contourne les arbres, les rochers, les bornes de quête, les maisons et les créatures, au lieu de marcher en ligne droite à travers eux. En 3D comme en 2D.

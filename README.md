@@ -25,7 +25,7 @@ npm run build      # vérification TypeScript + build de production dans dist/
 npm run docs:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run docs:build # construit la documentation dans dist-docs/
 npm run docs:preview # sert dist-docs/ tel que publié : http://localhost:4173/
-npm run docs:check # vérifie que la pull request ajoute un fragment au journal (docs/_journal/)
+npm run pilotage:personnages # refait pilotage/game-design/personnages.md
 npm run docs:captures # rejoue le jeu dans Chromium et fait les captures d’écran (docs/_captures/, hors du dépôt, refaites par la CI sur main)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures « avant »)
 npm run version:show # affiche la version calculée depuis git
@@ -33,18 +33,17 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/
 ```
 
-React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](https://g7ed6e.github.io/dysapps/conception/architecture.html), [Format des exercices](https://g7ed6e.github.io/dysapps/conception/exercices.html) et [Déploiement et sécurité](https://g7ed6e.github.io/dysapps/conception/deploiement.html).
+React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](docs/conception/architecture.md), [Format des exercices](docs/conception/exercices.md) et [Déploiement et sécurité](docs/conception/deploiement.md).
 
 ## Contribuer
 
 Le travail se fait par pull request sur `main`. Chaque pull request :
 
 1. ne touche pas à la version : elle se calcule depuis git à la fusion (mineure par défaut, `+semver: major|patch|none` dans le message pour un autre cran) ;
-2. ajoute un fragment de journal `docs/_journal/<nom-de-la-branche>.md` (sans titre), vérifié par la CI ;
-3. met à jour le manuel et la conception (`docs/`) quand ce qu’ils décrivent change ; les pages du contenu pédagogique sont générées au build depuis les données du jeu ;
-4. passe `npm test`, `npm run build`, `npm run docs:check` et `npm run docs:build`.
+2. met à jour le manuel (`docs/manuel/`) et la conception (`docs/conception/`) quand ce qu’ils décrivent change, et la ligne de son chantier dans `pilotage/chantiers.md` ; les pages du contenu pédagogique sont générées au build depuis les données du jeu. Le site publié ne montre que le manuel et le contenu pédagogique : il s’adresse aux élèves et aux adultes qui les accompagnent ;
+3. passe `npm test`, `npm run build` et `npm run docs:build`.
 
-Les consignes complètes sont dans [Contribuer](https://g7ed6e.github.io/dysapps/conception/contribuer.html), `CLAUDE.md` et `AGENTS.md`.
+Les consignes complètes sont dans [Contribuer](docs/conception/contribuer.md), `CLAUDE.md` et `AGENTS.md`.
 
 ## Déploiement
 

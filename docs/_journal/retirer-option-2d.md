@@ -1,3 +1,0 @@
-- Le réglage « Vue du monde » ne propose plus « Le monde en 2D » : il reste « Le monde en 3D » (par défaut) et « La liste des îles ». Ni Archipéo ni Blocland ne sont en 2D. Un appareil qui avait choisi la 2D retrouve le monde en 3D ; sa partie n’est pas touchée.
-- Un appareil qui ne sait pas dessiner la 3D (sans WebGL) montre toujours le monde en 2D, avant la liste des îles.
-- Le manuel ne montre plus de capture du monde en 2D.

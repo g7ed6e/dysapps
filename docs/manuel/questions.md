@@ -55,7 +55,7 @@ Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, gril
 ## Mises à jour et données
 
 **Comment savoir si j’ai la dernière version ?**
-Réglages → Application affiche la version et propose « Vérifier les mises à jour ». Le [journal des versions](../journal.md) décrit chaque publication.
+Réglages → Application affiche la version et propose « Vérifier les mises à jour ».
 
 **J’avais installé l’application depuis GitHub Pages et elle ouvre maintenant cette documentation.**
 L’application n’est plus publiée qu’à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Réinstaller depuis cette adresse ; la progression enregistrée sous l’ancienne adresse n’est pas transférée.

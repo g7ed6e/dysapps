@@ -1,1 +1,0 @@
-Le cadrage du contenu donne le plan de la suite, en étapes numérotées de C-1 à C-15 : automatismes de maths en 6e, français de la 6e à la 3e, anglais, île des Grandeurs, puis géométrie avec figures. Rien ne change encore dans le jeu.

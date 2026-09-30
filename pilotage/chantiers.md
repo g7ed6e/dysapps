@@ -1,0 +1,116 @@
+# État des chantiers
+
+Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026.**
+
+Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](game-design/index.md).
+
+## Les références
+
+Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les pull requests et la doc).
+
+| Préfixe | Chantier | Plan détaillé |
+| --- | --- | --- |
+| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../docs/conception/cadrage-archipeo.md), §6 |
+| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../docs/conception/cadrage-archipeo.md), piste Rendu |
+| **DA-1** à **DA-33** | Les retouches de la revue d’ensemble du directeur artistique | Liste tenue hors du dépôt par le fil « Revue d’ensemble du DA » ; résumé ci-dessous |
+| **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../docs/conception/separation-jeu-rendu.md), §3 |
+| **U0** à **U6** | Les univers | [Plusieurs univers](../docs/conception/univers.md), §6 |
+| **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../docs/conception/cadrage-contenu.md), la LV2 |
+| **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../docs/conception/cadrage-contenu.md), le plan |
+| **GD-n** | Les propositions de game design | [Game design](game-design/propositions/modele.md) |
+
+À ne pas confondre : **DA-01** à **DA-05** (avec un zéro) sont les règles de direction artistique du dossier Archipéo (`design/archipeo/direction-artistique.md`), **DA-1** à **DA-33** les retouches du directeur artistique.
+
+## Ce qui attend le mainteneur
+
+| Quoi | Chantier | Recommandation |
+| --- | --- | --- |
+| Lancer le 7b (le 6e en architecture modulaire) | lot 7 | Après l’avis du directeur artistique sur les monuments, l’école et la salle des trophées, et les points « à régler avant 7b » |
+| Lancer C-1 (la division posée à la Rivière) | C | Les étapes C-1 à C-11 ne changent pas le monde : elles peuvent partir en parallèle du rendu |
+| La vidéo de l’oiseau planeur | DA-22 | — |
+| La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
+| La limite de 40 appels de dessin : par archipel tout construit, ou pour la vue d’une île seulement | R | Aujourd’hui 45 à 65 appels en vue d’archipel, 81 à 115 sur la Carte |
+| Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
+
+### À vérifier sur tablette
+
+- Images par seconde du monde 3D (`?mesures`), sur la tablette de référence (R0).
+- Fumées et brume, avec et sans « Réduire les animations » de l’appareil ; panache du volcan en portrait ; brume du 5e et planeur du 3e en vidéo.
+- Scintillement des planches des ponts du 5e quand la caméra bouge ; mât de grue en 1024 × 768.
+- Voix : « Bâtie », la phrase de la baleine, « −1 » et « (0 ; 2) », « COD », « p.m. » en voix anglaise, les voix allemande et espagnole (heures, nombres, « Tú », « Sí »).
+- Écrans sans défilement en OpenDyslexic grande taille (ticket #231 : en 1024 × 768, les écrans avec document défilent) ; l’en-tête des écrans de calcul (Faisceaux, Relevés, Thalès) fait défiler d’environ 124 px sur tablette.
+- Sur téléphone en grand texte : le défilement du panneau de la Carte et le nom de destination jamais sous le panneau (DA-31) ; les noms d’îles sous la bulle de la baleine (DA-10).
+
+## Les chantiers
+
+### La migration vers Archipéo (lots)
+
+| Lot | Titre | État | Suite |
+| --- | --- | --- | --- |
+| lot 1 à lot 5 (3a, 3b, 4a, 4b) | Les mots, l’interface, le monde qui change, le menu et la Carte, le mot de la baleine | Construits | — |
+| lot 6 | Le nouveau monde, à deux univers (avec U3) | **Fini** le 29 septembre 2026 (#241) | Aperçus fixes des univers reportés après les lots 8 et 8b |
+| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) | **7b** (le 6e, la référence) attend le mot du mainteneur ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
+| lot 8 | L’Horizon et le navire maritime | À faire | Migration de sauvegarde des pièces du navire ; monde en réseau (J6) |
+| lot 8b | La Carte des quatre archipels en 3D | À faire | Après le lot 8 |
+| lot 9 | L’archipel vivant | À faire | Le faisceau et la rotation du phare l’attendent |
+| lot 10 | Un village à soi | À faire | — |
+| lot 11 | Contraste élevé et « Réduire les animations » dans l’appli | À refaire (retirés le 28 septembre 2026, #196) | — |
+
+### Le rendu d’Archipéo (R) et la revue d’ensemble (DA-n)
+
+Tous les lots R sont construits : R0 à R7, S, les quatre R4b (6e, 5e, 4e, 3e), R5 avec les ponts du 5e, R6. La 2D peinte (R7) reste dans le code sans écran qui l’affiche (sans WebGL, la vue simple est la liste des îles).
+
+| Retouches | État |
+| --- | --- |
+| DA-3 à DA-6, DA-8 à DA-10, DA-14 à DA-18, DA-23 à DA-31 | Fusionnées |
+| DA-7, DA-32 | Sans objet |
+| **DA-19** (lueur de nuit du 3e au-dessus de 3 %) | En cours dans le fil « Revue d’ensemble du DA » |
+| DA-11 (nuages au ras de l’eau), DA-20 (massif du 3e), DA-21 (nuit lilas du 3e) | À faire, dans cet ordre, après DA-19 |
+| DA-22 (oiseau planeur) | Attend la vidéo du mainteneur |
+| DA-1 (fumée plus grise), DA-2 (fourneau du 4e), DA-13 (lointain du 6e, facultatif), DA-12 (capture du pont Marché–Marais) | À faire, en dernier |
+| DA-33 (à la revanche, « brille déjà » alors que la sentinelle repart éteinte) | À valider par le directeur artistique |
+
+Restes de R6 (cadrage Archipéo, les personnages) : répliques des créatures, mot de la baleine et une partie des espèces propres à Archipéo (encore communs), miniature en cubes du panneau d’île, créatures un peu moins contrastées de nuit.
+
+### Séparer le jeu du rendu (J)
+
+J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes dans `src/univers/`, couche `univers`) fait avec U4. **Reste la disposition en réseau** (le monde d’Archipéo en lieux sans marche, décision du mainteneur), avec les lots 8 et 8b, à cadrer d’abord avec le directeur artistique.
+
+### Les univers (U)
+
+| Étape | État | Suite |
+| --- | --- | --- |
+| U0 à U3 | Faites | — |
+| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Restent le retour des noms propres à Blocland (proposés par son consultant), le lexique court et l’écran « L’île X s’appelle maintenant Y » |
+| U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
+| U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
+
+Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../docs/conception/univers.md)).
+
+### La deuxième langue vivante (LV2)
+
+| Étape | État | Suite |
+| --- | --- | --- |
+| LV2-1 (socle, réglage), LV2-2 et LV2-3 (Relais des voyageurs, 5e), LV2-4 (Jardin des heures, 4e) | Fusionnées (#205, #215, #221, #232) | Rééquilibrer les réponses de `relais-*-2` (6 sur 8 au dernier rang) |
+| **LV2-5** (Refuge des carnets, 3e) | En cours dans le fil « LV2 » : relu, validé par le directeur artistique sous une condition, pull request à ouvrir | Le fil écrit ensuite le plan de tout ce qui reste, et s’arrête |
+
+### Le contenu (C)
+
+Le plan C-1 à C-15 est dans le [cadrage du contenu](../docs/conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). Aucune étape n’est commencée ; **C-1 attend le mot du mainteneur**. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
+
+Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
+
+## Les défauts relevés en consolidant
+
+- Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).
+- La baleine nomme l’île sans article : « Plaine des nombres est bâtie », « Un chemin s’ouvre vers Mine des lettres » (`src/univers/baleine.ts`).
+
+## Les incohérences à reprendre dans les cadrages
+
+Relevées le 30 septembre 2026 en consolidant ; chacune se corrige dans le document qui la porte, par le fil qui le tient.
+
+- L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../docs/conception/univers.md), §5).
+- « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../docs/conception/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../docs/conception/separation-jeu-rendu.md), §3).
+- U1 attend encore l’étiquette `blocland-reference` d’après [Plusieurs univers](../docs/conception/univers.md), §6, alors qu’elle est posée sur `031b029`.
+- U4 n’est pas marqué fait dans sa ligne alors que J6, J7 et J8 le disent fait.
+- La 2D est « plus un repli » depuis le 29 septembre, mais le cadrage du lot 7 (30 septembre) dit qu’elle est « le repli d’un appareil sans WebGL ».
