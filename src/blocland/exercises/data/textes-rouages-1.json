@@ -7,150 +7,156 @@
   "items": [
     {
       "key": "textes-rouages-1-0",
-      "prompt": "Dans « Le chat dort », quelle est la nature de « dort » ?",
-      "spoken": "Dans « Le chat dort », quelle est la nature de « dort » ?",
+      "prompt": "Dans « Je le vois chaque matin », « le » est …",
+      "spoken": "Dans « Je le vois chaque matin », « le » est  (mot manquant) ",
       "choices": [
-        "verbe",
-        "nom",
-        "adjectif"
+        "un déterminant",
+        "un pronom",
+        "un nom"
       ],
-      "answer": "verbe",
-      "hint": "Il se conjugue : je dors, tu dors.",
-      "explanation": "« dort » est le verbe dormir conjugué.",
+      "answer": "un pronom",
+      "hint": "« le » est-il devant un nom ou devant un verbe ?",
+      "explanation": "« le » est placé devant le verbe « vois » et remplace une personne ou une chose : pronom. Devant un nom (« le bus »), ce serait un déterminant.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-1",
-      "prompt": "Dans « Une belle maison », « belle » est …",
-      "spoken": "Dans « Une belle maison », « belle » est  (mot manquant) ",
+      "prompt": "Dans « Nous leur parlons souvent », « leur » est …",
+      "spoken": "Dans « Nous leur parlons souvent », « leur » est  (mot manquant) ",
       "choices": [
-        "un adjectif",
-        "un nom",
+        "un pronom",
+        "un déterminant",
         "un adverbe"
       ],
-      "answer": "un adjectif",
-      "hint": "Il qualifie le nom « maison ».",
-      "explanation": "« belle » qualifie « maison » : adjectif.",
+      "answer": "un pronom",
+      "hint": "« leur » est-il devant un nom ou devant un verbe ?",
+      "explanation": "« leur » est devant le verbe « parlons » et veut dire « à eux » : pronom. Il ne prend jamais de s dans ce cas.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-2",
-      "prompt": "Dans « Elle chante », « elle » est …",
-      "spoken": "Dans « Elle chante », « elle » est  (mot manquant) ",
+      "prompt": "Dans « Ils ont rangé leurs affaires », « leurs » est …",
+      "spoken": "Dans « Ils ont rangé leurs affaires », « leurs » est  (mot manquant) ",
       "choices": [
         "un pronom",
         "un nom",
         "un déterminant"
       ],
-      "answer": "un pronom",
-      "hint": "Il remplace une personne.",
-      "explanation": "« elle » remplace un nom : pronom.",
+      "answer": "un déterminant",
+      "hint": "Quel mot suit « leurs » ?",
+      "explanation": "« leurs » est devant le nom « affaires » et l’accompagne : déterminant possessif, au pluriel comme le nom.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-3",
-      "prompt": "Dans « Il court vite », « vite » est …",
-      "spoken": "Dans « Il court vite », « vite » est  (mot manquant) ",
+      "prompt": "Dans « Il est arrivé avant moi », « avant » est …",
+      "spoken": "Dans « Il est arrivé avant moi », « avant » est  (mot manquant) ",
       "choices": [
+        "une préposition",
         "un adverbe",
-        "un adjectif",
-        "un verbe"
+        "une conjonction"
       ],
-      "answer": "un adverbe",
-      "hint": "Invariable, il précise le verbe.",
-      "explanation": "« vite » précise « court » et ne change jamais : adverbe.",
+      "answer": "une préposition",
+      "hint": "« avant » est-il suivi d’un complément ?",
+      "explanation": "« avant » introduit le complément « moi » : préposition. Seul, comme dans « il est arrivé avant », ce serait un adverbe.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-4",
-      "prompt": "Dans « Un cadeau pour toi », « pour » est …",
-      "spoken": "Dans « Un cadeau pour toi », « pour » est  (mot manquant) ",
+      "prompt": "Dans « Je pense que tu as raison », « que » est …",
+      "spoken": "Dans « Je pense que tu as raison », « que » est  (mot manquant) ",
       "choices": [
-        "une préposition",
+        "un pronom",
         "une conjonction",
-        "un pronom"
+        "un adverbe"
       ],
-      "answer": "une préposition",
-      "hint": "Petit mot qui introduit « toi ».",
-      "explanation": "« pour » introduit un complément : préposition.",
+      "answer": "une conjonction",
+      "hint": "Quel mot vient juste avant « que » : un nom ou un verbe ?",
+      "explanation": "« que » suit le verbe « pense » et introduit ce que je pense : conjonction de subordination. Il ne remplace aucun nom.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-5",
-      "prompt": "Dans « Léa et Tom », « et » est …",
-      "spoken": "Dans « Léa et Tom », « et » est  (mot manquant) ",
+      "prompt": "Dans « Le livre que tu lis est à moi », « que » est …",
+      "spoken": "Dans « Le livre que tu lis est à moi », « que » est  (mot manquant) ",
       "choices": [
         "une conjonction",
-        "une préposition",
-        "un adverbe"
+        "un déterminant",
+        "un pronom"
       ],
-      "answer": "une conjonction",
-      "hint": "Il relie deux mots.",
-      "explanation": "« et » relie Léa et Tom : conjonction de coordination.",
+      "answer": "un pronom",
+      "hint": "Quel mot vient juste avant « que » : un nom ou un verbe ?",
+      "explanation": "« que » suit le nom « livre » et le remplace dans la relative (tu lis le livre) : pronom relatif.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
@@ -162,45 +168,47 @@
       "choices": [
         "un déterminant",
         "un pronom",
-        "un adjectif"
+        "un verbe"
       ],
       "answer": "un déterminant",
-      "hint": "Devant le nom « amis ».",
-      "explanation": "« mes » accompagne le nom : déterminant possessif.",
+      "hint": "Quel mot suit « mes » ? Ne le confonds pas avec « met », du verbe mettre.",
+      "explanation": "« mes » accompagne le nom « amis » : déterminant possessif. « Met », sans s, est le verbe mettre (il met son manteau).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-1-7",
-      "prompt": "Dans « La liberté est précieuse », « liberté » est …",
-      "spoken": "Dans « La liberté est précieuse », « liberté » est  (mot manquant) ",
+      "prompt": "Dans « Elle chante vraiment bien », « bien » est …",
+      "spoken": "Dans « Elle chante vraiment bien », « bien » est  (mot manquant) ",
       "choices": [
-        "un nom",
         "un adjectif",
-        "un verbe"
+        "un adverbe",
+        "un nom"
       ],
-      "answer": "un nom",
-      "hint": "On peut mettre « la » devant.",
-      "explanation": "« liberté » désigne une idée, précédé de « la » : nom.",
+      "answer": "un adverbe",
+      "hint": "« bien » précise le verbe « chante ». Change-t-il si on dit « elles chantent » ?",
+      "explanation": "« bien » précise le verbe « chante » et ne s’accorde jamais (elles chantent bien) : adverbe. L’adjectif serait « bon » (une bonne chanteuse).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Nature des mots",
           "lines": [
-            "Nom : chose, personne, animal (table, Léa, chat). Déterminant : devant le nom (le, une, mes).",
-            "Verbe : action ou état, se conjugue (courir, être). Adjectif : qualifie le nom (grand).",
-            "Pronom : remplace un nom (il, elle, le, lui). Adverbe : invariable, précise (vite, très, hier).",
-            "Préposition : petit mot de liaison (à, de, pour, sans). Conjonction : relie (et, ou, mais, car)."
+            "Déterminant : devant un nom (le, mes, leurs, ce). Pronom : remplace un nom (le, lui, leur, qui, que).",
+            "« le », « leur » : devant un nom, déterminants ; devant un verbe, pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction de subordination.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable, il précise un mot (vite, bien).",
+            "Verbe : se conjugue. Adjectif : qualifie un nom. Conjonction : relie (et, mais, que, quand)."
           ]
         }
       }

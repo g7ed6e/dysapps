@@ -3,7 +3,7 @@
   "biome": "textes",
   "type": "rouages",
   "level": 2,
-  "instruction": "Quelle est la fonction du groupe, ou quel connecteur logique convient ? Le rappel est affiché.",
+  "instruction": "Quelle est la fonction du groupe entre guillemets ? Le rappel est affiché.",
   "items": [
     {
       "key": "textes-rouages-2-0",
@@ -20,12 +20,12 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
@@ -37,7 +37,7 @@
       "choices": [
         "COI",
         "COD",
-        "attribut"
+        "attribut du sujet"
       ],
       "answer": "COI",
       "hint": "Il parle à qui ?",
@@ -45,12 +45,12 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
@@ -70,12 +70,12 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
@@ -95,112 +95,112 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-2-4",
-      "prompt": "« Il pleut, … nous restons dedans. » Quel connecteur ?",
-      "spoken": "« Il pleut,  (mot manquant)  nous restons dedans. » Quel connecteur ?",
+      "prompt": "« Mes amis trouvent ce film ennuyeux. » Fonction de « ennuyeux » ?",
+      "spoken": "« Mes amis trouvent ce film ennuyeux. » Fonction de « ennuyeux » ?",
       "choices": [
-        "donc",
-        "mais",
-        "car"
+        "épithète",
+        "attribut du COD",
+        "COD"
       ],
-      "answer": "donc",
-      "hint": "La pluie a pour conséquence : rester dedans.",
-      "explanation": "Conséquence : « donc ».",
+      "answer": "attribut du COD",
+      "hint": "Remplace « ce film » par « le ». Le mot « ennuyeux » part-il avec lui, ou reste-t-il ?",
+      "explanation": "« Mes amis le trouvent ennuyeux » : « le » remplace le COD « ce film », et « ennuyeux » reste à part. Après « trouver », il dit comment est le COD : attribut du COD.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-2-5",
-      "prompt": "« Elle est fatiguée … elle a mal dormi. » Quel connecteur ?",
-      "spoken": "« Elle est fatiguée  (mot manquant)  elle a mal dormi. » Quel connecteur ?",
+      "prompt": "« J’ai oublié mon sac de sport. » Fonction de « de sport » ?",
+      "spoken": "« J’ai oublié mon sac de sport. » Fonction de « de sport » ?",
       "choices": [
-        "car",
-        "donc",
-        "puis"
+        "COI",
+        "complément circonstanciel",
+        "complément du nom"
       ],
-      "answer": "car",
-      "hint": "La seconde partie donne la cause.",
-      "explanation": "Cause : « car ».",
+      "answer": "complément du nom",
+      "hint": "« de sport » complète-t-il le verbe, ou le nom « sac » ?",
+      "explanation": "« de sport » précise le nom « sac » : quel sac ? un sac de sport. C’est un complément du nom. Il commence par « de », mais il ne complète pas le verbe : ce n’est pas un COI.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-2-6",
-      "prompt": "« Il fait froid, … il sort sans manteau. » Quel connecteur ?",
-      "spoken": "« Il fait froid,  (mot manquant)  il sort sans manteau. » Quel connecteur ?",
+      "prompt": "« Nous avons adopté un chat noir. » Fonction de « noir » ?",
+      "spoken": "« Nous avons adopté un chat noir. » Fonction de « noir » ?",
       "choices": [
-        "pourtant",
-        "donc",
-        "car"
+        "attribut du sujet",
+        "épithète",
+        "attribut du COD"
       ],
-      "answer": "pourtant",
-      "hint": "Deux idées qui s’opposent.",
-      "explanation": "Opposition : « pourtant ».",
+      "answer": "épithète",
+      "hint": "Remplace « un chat noir » par « l’ » : « Nous l’avons adopté ». Que devient « noir » ?",
+      "explanation": "« Nous l’avons adopté » : « l’ » remplace tout le groupe « un chat noir », « noir » part avec lui. L’adjectif est collé au nom, sans verbe entre eux : épithète.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
     },
     {
       "key": "textes-rouages-2-7",
-      "prompt": "« Dans la forêt, le loup guette. » Fonction de « le loup » ?",
-      "spoken": "« Dans la forêt, le loup guette. » Fonction de « le loup » ?",
+      "prompt": "« Dans la forêt sombre guette un loup affamé. » Fonction de « un loup affamé » ?",
+      "spoken": "« Dans la forêt sombre guette un loup affamé. » Fonction de « un loup affamé » ?",
       "choices": [
-        "sujet",
         "COD",
+        "sujet",
         "complément circonstanciel"
       ],
       "answer": "sujet",
-      "hint": "Qui est-ce qui guette ?",
-      "explanation": "« qui est-ce qui guette ? le loup » : sujet.",
+      "hint": "Qui est-ce qui guette ? Le sujet peut se placer après le verbe.",
+      "explanation": "« Qui est-ce qui guette ? un loup affamé » : c’est le sujet, placé après le verbe (sujet inversé). Ce n’est pas un COD : on ne guette pas « quoi », ici c’est lui qui guette.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Fonction des mots et connecteurs",
+          "title": "Fonctions dans la phrase",
           "lines": [
-            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi / qui ? COI : verbe + à qui / de quoi ?",
+            "Sujet : qui fait l’action (qui est-ce qui ?). COD : verbe + quoi ou qui ? COI : verbe + à qui ou de quoi ?",
             "Complément circonstanciel : où, quand, comment, pourquoi (on peut le déplacer ou l’enlever).",
-            "Attribut du sujet : après être, sembler, devenir.",
-            "Connecteurs : mais (opposition), car (cause), donc (conséquence), puis (temps), pourtant (opposition)."
+            "Attribut du sujet : après être, sembler, devenir. Attribut du COD : après trouver, rendre, nommer, il dit comment est le COD.",
+            "Épithète : adjectif placé à côté du nom. Complément du nom : relié au nom par de, à, en (un sac de sport)."
           ]
         }
       }
