@@ -95,9 +95,9 @@ const ORDER: (string | ExerciseDef[])[] = [
   'manoir-comparatifs-1', 'manoir-comparatifs-2', 'theatre-dialogues-1', 'theatre-dialogues-2', 'theatre-quantites-1',
   'theatre-quantites-2', 'theatre-preterit-irregulier-1', 'theatre-preterit-irregulier-2',
   'theatre-stories-1', 'theatre-stories-2', 'gare-futur-1',
-  'gare-futur-2', 'gare-modaux-1', 'gare-modaux-2', 'gare-present-perfect-1', 'gare-present-perfect-2',
+  'gare-futur-2', 'gare-modaux-1', 'gare-modaux-2', 'gare-present-perfect-1', 'gare-present-perfect-2', 'gare-traditions-1', 'gare-traditions-2',
   'studio-comprendre-1', 'studio-comprendre-2', 'studio-connecteurs-1', 'studio-connecteurs-2', 'studio-faux-amis-1',
-  'studio-faux-amis-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
+  'studio-faux-amis-2', 'studio-medias-1', 'studio-medias-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
   'chateau-passif-1', 'chateau-passif-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'relais-de-hallo-1', 'relais-de-hallo-2', 'relais-de-zahlen-1', 'relais-de-zahlen-2', 'relais-de-familie-1',

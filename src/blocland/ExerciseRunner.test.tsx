@@ -209,7 +209,8 @@ describe('lecture automatique', () => {
     renderAt('/aventure/horloge/story');
     await loaded();
     const [first, second] = runItems(story, runSeed(story));
-    expect(dit).toEqual([`${frenchTypography(story.instruction)} ${frenchTypography(first.question as string)}`]);
+    // La première lecture part avec l'écran : sur une machine lente, après la fin du chargement.
+    await waitFor(() => expect(dit).toEqual([`${frenchTypography(story.instruction)} ${frenchTypography(first.question as string)}`]));
     enCours!.onend?.();
     expect(dit.at(-1)).toBe(first.spoken);
     expect(langues).toEqual(['fr-FR', 'en-GB']);
