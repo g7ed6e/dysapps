@@ -1,6 +1,6 @@
 # État des chantiers
 
-Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026.**
+Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026 au soir.**
 
 Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](game-design/index.md).
 
@@ -27,7 +27,8 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
 | Lancer le 7b (le 6e en architecture modulaire) | lot 7 | Après l’avis du directeur artistique sur les monuments, l’école et la salle des trophées, et les points « à régler avant 7b » |
-| Lancer C-1 (la division posée à la Rivière) | C | Les étapes C-1 à C-11 ne changent pas le monde : elles peuvent partir en parallèle du rendu |
+| Choisir l’asset du banc d’essai, puis qui lance les outils de génération | Assets | Un Gardien d’Archipéo, en portrait 2D puis en 3D ; lancés d’abord à la main par le mainteneur sur une commande préparée |
+| Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
 | La vidéo de l’oiseau planeur | DA-22 | — |
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
 | La limite de 40 appels de dessin : par archipel tout construit, ou pour la vue d’une île seulement | R | Aujourd’hui 45 à 65 appels en vue d’archipel, 81 à 115 sur la Carte |
@@ -39,7 +40,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 - Fumées et brume, avec et sans « Réduire les animations » de l’appareil ; panache du volcan en portrait ; brume du 5e et planeur du 3e en vidéo.
 - Scintillement des planches des ponts du 5e quand la caméra bouge ; mât de grue en 1024 × 768.
 - Voix : « Bâtie », la phrase de la baleine, « −1 » et « (0 ; 2) », « COD », « p.m. » en voix anglaise, les voix allemande et espagnole (heures, nombres, « Tú », « Sí »).
-- Écrans sans défilement en OpenDyslexic grande taille (ticket #231 : en 1024 × 768, les écrans avec document défilent) ; l’en-tête des écrans de calcul (Faisceaux, Relevés, Thalès) fait défiler d’environ 124 px sur tablette.
+- Écrans sans défilement en OpenDyslexic grande taille (ticket #231 : en 1024 × 768, les écrans avec document défilent).
 - Sur téléphone en grand texte : le défilement du panneau de la Carte et le nom de destination jamais sous le panneau (DA-31) ; les noms d’îles sous la bulle de la baleine (DA-10).
 
 ## Les chantiers
@@ -65,7 +66,7 @@ Tous les lots R sont construits : R0 à R7, S, les quatre R4b (6e, 5e, 4e, 3e), 
 | --- | --- |
 | DA-3 à DA-6, DA-8 à DA-10, DA-14 à DA-18, DA-23 à DA-31 | Fusionnées |
 | DA-7, DA-32 | Sans objet |
-| **DA-19** (lueur de nuit du 3e au-dessus de 3 %) | En cours dans le fil « Revue d’ensemble du DA » |
+| **DA-19** (lueur de nuit du 3e au-dessus de 3 %) | En cours dans le fil « Revue d’ensemble du DA » (mesure par l’artiste technique 3D), sans pull request pour l’instant |
 | DA-11 (nuages au ras de l’eau), DA-20 (massif du 3e), DA-21 (nuit lilas du 3e) | À faire, dans cet ordre, après DA-19 |
 | DA-22 (oiseau planeur) | Attend la vidéo du mainteneur |
 | DA-1 (fumée plus grise), DA-2 (fourneau du 4e), DA-13 (lointain du 6e, facultatif), DA-12 (capture du pont Marché–Marais) | À faire, en dernier |
@@ -97,18 +98,22 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 
 ### Le contenu en Markdown (M)
 
-Décision du mainteneur (30 septembre 2026) : le contenu s’écrit en Markdown dans `docs/contenu/`, et ces fichiers produisent à la fois les JSON du jeu et les pages du site. Étapes : **M1** pilote sur une île (format, générateur, vérification en CI : la Baie des mots, fusionnée #254) ; **M2** tous les exercices (les 21 îles qui en ont, fusionnée #255 ; format allégé sur l’avis du directeur du contenu : lecture du trou et clé déduites, mot troué, tableaux pour les items courts, modèles par écran ; le barème reste dans les fichiers) ; **M3** les 31 îles et leurs missions de `biomes.ts` dans l’en-tête et les sections des fichiers, `src/blocland/iles.ts` produit, l’ordre dans `docs/contenu/archipel.md` (fusionnée #256) ; **M4** les pages du site produites depuis le Markdown : **sans objet**, le site est fabriqué depuis les données du jeu, que `npm run contenu` produit depuis `docs/contenu/` (une île ou un exercice modifié dans le Markdown change donc sa page au build suivant) ; **M5** les missions du portail (homophones, verbes irréguliers, textes à lire, vocabulaire : `docs/contenu/portail/`) et les plans des bâtiments (nom, XP, coffre, réplique : section « Les plans » à la fin du fichier de chaque île), **en cours** (#257) ; la forme des bâtiments et les blocs restent dans le code. Les répliques des univers restent hors plan pour l’instant. Garantie à chaque étape : les JSON produits redonnent exactement les mêmes exercices, avec les mêmes identifiants.
+Décision du mainteneur (30 septembre 2026) : le contenu s’écrit en Markdown dans `docs/contenu/`, et ces fichiers produisent à la fois les JSON du jeu et les pages du site. Étapes : **M1** pilote sur une île (format, générateur, vérification en CI : la Baie des mots, fusionnée #254) ; **M2** tous les exercices (les 21 îles qui en ont, fusionnée #255 ; format allégé sur l’avis du directeur du contenu : lecture du trou et clé déduites, mot troué, tableaux pour les items courts, modèles par écran ; le barème reste dans les fichiers) ; **M3** les 31 îles et leurs missions de `biomes.ts` dans l’en-tête et les sections des fichiers, `src/blocland/iles.ts` produit, l’ordre dans `docs/contenu/archipel.md` (fusionnée #256) ; **M4** les pages du site produites depuis le Markdown : **sans objet**, le site est fabriqué depuis les données du jeu, que `npm run contenu` produit depuis `docs/contenu/` (une île ou un exercice modifié dans le Markdown change donc sa page au build suivant) ; **M5** les missions du portail (homophones, verbes irréguliers, textes à lire, vocabulaire : `docs/contenu/portail/`) et les plans des bâtiments (nom, XP, coffre, réplique : section « Les plans » à la fin du fichier de chaque île), fusionnée #257 ; la forme des bâtiments et les blocs restent dans le code. **Chantier fini** le 30 septembre 2026 : tout le contenu s’écrit dans `docs/contenu/` ([format](../contenu/README.md)). Les répliques des univers restent hors plan pour l’instant. Garantie à chaque étape : les JSON produits redonnent exactement les mêmes exercices, avec les mêmes identifiants.
 
 ### Le contenu (C)
 
-Le plan C-1 à C-15 est dans le [cadrage du contenu](../conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). Aucune étape n’est commencée ; **C-1 attend le mot du mainteneur**. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
+Le plan C-1 à C-15 est dans le [cadrage du contenu](../conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). **C-1** (la division posée à la Rivière) est **en cours** dans le fil « Contenu 5e à 3e », écrite dans le format Markdown ; les autres étapes ne sont pas commencées. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
 
 Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
+
+### Le flux de l’idée aux assets
+
+En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » ; rien n’entre dans le dépôt avant sa validation. Décidé le 30 septembre 2026 : la règle « aucun modèle ni texture importé » s’ouvre, avec un cadre (une fiche par asset : outil, prompt, licence ; le budget de l’archipel ; servi depuis l’appli, hors ligne ; validé par le directeur artistique et le référent dys). Le cadre reste à écrire dans le [cadrage Archipéo](../conception/cadrage-archipeo.md) avec le flux. En cours : comment générer les images et les modèles 3D ; proposition d’un banc d’essai sur un seul asset, jugé sur le rendu, le poids et le coût. Blocland reste dessiné par le code.
 
 ## Les défauts relevés en consolidant
 
 - Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).
-- La baleine nomme l’île sans article : « Plaine des nombres est bâtie », « Un chemin s’ouvre vers Mine des lettres » (`src/univers/baleine.ts`).
+- La baleine nomme l’île sans article : « Plaine des nombres est bâtie », « Un chemin s’ouvre vers Mine des lettres » (`src/univers/blocland/index.ts`, reprise par Archipéo).
 
 ## Les incohérences à reprendre dans les cadrages
 
@@ -116,6 +121,4 @@ Relevées le 30 septembre 2026 en consolidant ; chacune se corrige dans le docum
 
 - L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../conception/univers.md), §5).
 - « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../conception/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3).
-- U1 attend encore l’étiquette `blocland-reference` d’après [Plusieurs univers](../conception/univers.md), §6, alors qu’elle est posée sur `031b029`.
 - U4 n’est pas marqué fait dans sa ligne alors que J6, J7 et J8 le disent fait.
-- La 2D est « plus un repli » depuis le 29 septembre, mais le cadrage du lot 7 (30 septembre) dit qu’elle est « le repli d’un appareil sans WebGL ».
