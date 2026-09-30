@@ -15,10 +15,10 @@
         "13",
         "30"
       ],
+      "choicesLang": "fr",
       "answer": "13",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "thirteen = 13 : -teen, c’est de 13 à 19.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -42,10 +42,10 @@
         "13",
         "30"
       ],
+      "choicesLang": "fr",
       "answer": "30",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "thirty = 30 : -ty, ce sont les dizaines.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -69,10 +69,10 @@
         "15",
         "50"
       ],
+      "choicesLang": "fr",
       "answer": "15",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "fifteen = 15 : -teen, c’est de 13 à 19.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -96,10 +96,10 @@
         "15",
         "50"
       ],
+      "choicesLang": "fr",
       "answer": "50",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "fifty = 50 : -ty, ce sont les dizaines.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -123,10 +123,10 @@
         "12",
         "20"
       ],
+      "choicesLang": "fr",
       "answer": "2",
       "hint": "Écoute la fin : -teen (de 13 à 19), -ty (20, 30, 40…), ou un mot tout court ?",
       "explanation": "two = 2 : un mot tout court. twelve = 12 et twenty = 20 commencent aussi par tw.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -150,10 +150,10 @@
         "18",
         "80"
       ],
+      "choicesLang": "fr",
       "answer": "8",
       "hint": "Écoute la fin : -teen (de 13 à 19), -ty (20, 30, 40…), ou un mot tout court ?",
       "explanation": "eight = 8. eighteen = 18 (-teen), eighty = 80 (-ty).",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -177,10 +177,10 @@
         "14",
         "40"
       ],
+      "choicesLang": "fr",
       "answer": "14",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "fourteen = 14 : -teen, c’est de 13 à 19. 40 se dit forty, sans u.",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -204,10 +204,10 @@
         "60",
         "66"
       ],
+      "choicesLang": "fr",
       "answer": "66",
       "hint": "Écoute la fin : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
       "explanation": "sixty-six = 66 : sixty (60) + six (6).",
-      "choicesLang": "fr",
       "aid": {
         "kind": "rule-card",
         "props": {

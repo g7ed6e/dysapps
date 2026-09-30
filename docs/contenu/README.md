@@ -18,8 +18,9 @@ Ce dossier est la source du contenu des îles : un fichier par île (`<île>.md`
 
 ### Niveau 1 · `baie-hello-1`                 ← un niveau : son numéro, puis l’identifiant de l’exercice
 
-Aide « Se présenter », pour tous les items :  ← la règle affichée, quand elle est la même pour tous les items
-- Hello / Hi = bonjour. Goodbye / Bye = au revoir.
+Pour tous les items :                         ← champs communs à tous les items du niveau (ou, placé avant le
+- aide « Se présenter » :                        premier niveau, à tous les items de la mission)
+  - Hello / Hi = bonjour. Goodbye / Bye = au revoir.
 
 1. énoncé : …, my name is Tom.                ← un item par numéro, son premier champ sur la même ligne
    - lu : blank, my name is Tom.
@@ -30,6 +31,7 @@ Aide « Se présenter », pour tous les items :  ← la règle affichée, quand 
 - **Identifiants** : ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>` ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`).
 - **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`.
 - **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, et `aide « titre » :` suivie de ses lignes en sous-liste. Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
+- **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul.
 - **Listes** : `a · b · c` sur la ligne, ou une sous-liste quand un élément contient « · ».
 - **Guillemets** : une valeur vide, avec un saut de ligne, des espaces au bord ou qui commence par « " » s’écrit en chaîne JSON (`"…"`).
 

@@ -10,8 +10,9 @@
 //   - consigne : Écoute le mot anglais, …    ← champs communs à tous ses niveaux
 //   ### Niveau 1 · `baie-ears-1`             ← un niveau : l'identifiant de l'exercice
 //   - langue : en                            ← champs propres à ce niveau
-//   Aide « Se présenter », pour tous les items :
-//   - Hello / Hi = bonjour.
+//   Pour tous les items :                    ← champs communs à tous les items du niveau (ou de la mission)
+//   - aide « Se présenter » :
+//     - Hello / Hi = bonjour.
 //   1. mot : cat                             ← un item par numéro, son premier champ sur la ligne
 //      - choix : le chat · le chien · la vache
 //
@@ -148,10 +149,45 @@ function verifierCles(objet, attendues, ou) {
 
 const CLES_NIVEAU = new Set(['id', 'biome', 'type', 'level', 'items', 'feedback', 'reward', 'adaptive', ...NIVEAU.map((c) => c[1].split('.')[0])]);
 
+/** Les champs d'un item, dans l'ordre d'écriture : la clé (si elle n'est pas celle par défaut), les champs du tableau ITEM, l'aide. */
+function champsItem(it, defaut) {
+  for (const k of Object.keys(it)) if (k !== 'aid' && !PAR_CLE_ITEM.has(k)) throw new Error(`${defaut} : champ inconnu « ${k} » (à ajouter à scripts/contenu/format.mjs)`);
+  const cles = ITEM.map((c) => c[1]).filter((k) => it[k] !== undefined && !(k === 'key' && it.key === defaut));
+  if (it.aid !== undefined) cles.push('aid');
+  return cles;
+}
+
+/** Le premier champ d'un item hors clé : celui qui le nomme, jamais mis en commun. */
+function principal(it) {
+  return ITEM.map((c) => c[1]).find((k) => k !== 'key' && it[k] !== undefined);
+}
+
+/** Les champs identiques dans tous les items donnés (au moins deux), hors clé et hors champ principal d'un item. */
+function champsCommuns(items, exclus) {
+  if (items.length < 2) return [];
+  const principaux = new Set(items.map(principal));
+  const cles = [...ITEM.map((c) => c[1]), 'aid'].filter((k) => k !== 'key' && !principaux.has(k) && !exclus.includes(k));
+  return cles.filter((k) => {
+    const v = JSON.stringify(items[0][k]);
+    return v !== undefined && items.every((it) => JSON.stringify(it[k]) === v);
+  });
+}
+
+function ecrireChampItem(it, k) {
+  if (k === 'aid') return ecrireAide(it.aid, '- aide « % » :', '');
+  const [etiquette, , type] = PAR_CLE_ITEM.get(k);
+  return ecrireChamp(etiquette, type, it[k], '');
+}
+
+function ecrirePourTous(item, cles) {
+  if (cles.length === 0) return [];
+  return ['Pour tous les items :', ...cles.flatMap((k) => ecrireChampItem(item, k)), ''];
+}
+
 /**
  * Écrit le Markdown d'une île. `ile` = { id, nom, missions: [{ id, titre }] } (les missions sans exercice sont
- * omises ; un type d'exercice absent de la liste devient une mission à son nom). Les champs identiques pour tous
- * les niveaux d'une mission s'écrivent une fois, sous le titre de la mission.
+ * omises ; un type d'exercice absent de la liste devient une mission à son nom). Ce qui vaut pour tous les niveaux
+ * d'une mission, ou pour tous les items d'une mission ou d'un niveau, s'écrit une fois.
  */
 export function ecrireIle(ile, exercices) {
   const lignes = ['---', `île : ${ile.id}`, '---', '', `# ${ile.nom ?? ile.id}`, ''];
@@ -168,41 +204,27 @@ export function ecrireIle(ile, exercices) {
       const v = JSON.stringify(obtenir(niveaux[0], chemin));
       return v !== undefined && niveaux.every((ex) => JSON.stringify(obtenir(ex, chemin)) === v);
     });
+    const tousItems = niveaux.flatMap((ex) => ex.items);
+    const itemsMission = champsCommuns(tousItems, []);
     lignes.push(`## ${mission.titre} · \`${mission.id}\``, '');
     for (const [etiquette, chemin, type] of communs) lignes.push(...ecrireChamp(etiquette, type, obtenir(niveaux[0], chemin), ''));
     if (communs.length) lignes.push('');
+    lignes.push(...ecrirePourTous(tousItems[0], itemsMission));
     for (const ex of niveaux) {
       lignes.push(`### Niveau ${ex.level} · \`${ex.id}\``, '');
-      let champs = 0;
-      for (const def of NIVEAU) {
-        const [etiquette, chemin, type] = def;
-        const v = obtenir(ex, chemin);
-        if (v !== undefined && !communs.includes(def)) {
-          lignes.push(...ecrireChamp(etiquette, type, v, ''));
-          champs++;
-        }
-      }
-      const aides = ex.items.map((it) => JSON.stringify(it.aid));
-      const aideCommune = ex.items.length > 1 && aides[0] !== undefined && aides.every((a) => a === aides[0]) ? ex.items[0].aid : null;
-      if (aideCommune) {
-        if (champs) lignes.push('');
-        lignes.push(...ecrireAide(aideCommune, 'Aide « % », pour tous les items :', '').map((l) => l.replace(/^ {2}/, '')));
-      }
-      if (champs || aideCommune) lignes.push('');
+      const propres = NIVEAU.filter((def) => obtenir(ex, def[1]) !== undefined && !communs.includes(def));
+      for (const [etiquette, chemin, type] of propres) lignes.push(...ecrireChamp(etiquette, type, obtenir(ex, chemin), ''));
+      if (propres.length) lignes.push('');
+      const itemsNiveau = champsCommuns(ex.items, itemsMission);
+      lignes.push(...ecrirePourTous(ex.items[0], itemsNiveau));
+      const partages = new Set([...itemsMission, ...itemsNiveau]);
       ex.items.forEach((it, i) => {
-        const cles = Object.keys(it).filter((k) => !(k === 'key' && it.key === `${ex.id}-${i}`) && !(k === 'aid' && aideCommune));
-        for (const k of cles) if (k !== 'aid' && !PAR_CLE_ITEM.has(k)) throw new Error(`${ex.id}, item ${i + 1} : champ inconnu « ${k} » (à ajouter à scripts/contenu/format.mjs)`);
+        const cles = champsItem(it, `${ex.id}-${i}`).filter((k) => !partages.has(k));
         if (cles.length === 0 || cles[0] === 'aid' || PAR_CLE_ITEM.get(cles[0])[2] === 'liste') cles.unshift('#');
         const numero = `${i + 1}. `;
         const retrait = ' '.repeat(numero.length);
         cles.forEach((k, j) => {
-          let champ;
-          if (k === '#') champ = ['- item'];
-          else if (k === 'aid') champ = ecrireAide(it.aid, '- aide « % » :', '');
-          else {
-            const [etiquette, , type] = PAR_CLE_ITEM.get(k);
-            champ = ecrireChamp(etiquette, type, it[k], '');
-          }
+          const champ = k === '#' ? ['- item'] : ecrireChampItem(it, k);
           if (j === 0) lignes.push(numero + champ[0].slice(2), ...champ.slice(1).map((l) => retrait + l));
           else lignes.push(...champ.map((l) => retrait + l));
         });
@@ -221,11 +243,12 @@ export function lireIle(md, fichier = 'md') {
   let ile = null;
   const exercices = [];
   const missions = [];
-  let mission = null; // { id, titre, champs } : mission en cours
+  let mission = null; // { id, titre, champs, items } : mission en cours (items : champs pour tous ses items)
   let ex = null; // exercice en cours
-  let item = null; // item en cours
-  let liste = null; // { tableau, retrait } : sous-liste en cours (liste d'un champ, lignes d'une aide)
-  let aideCommune = null;
+  let pourTousNiveau = null; // champs pour tous les items du niveau en cours
+  let item = null; // item en cours (ses propres champs)
+  let pourTous = null; // bloc « Pour tous les items » en cours de lecture
+  let liste = null; // tableau : sous-liste en cours (liste d'un champ, lignes d'une aide)
   let i = 0;
   const erreur = (m) => new Error(`${fichier}, ligne ${i + 1} : ${m}`);
 
@@ -240,30 +263,24 @@ export function lireIle(md, fichier = 'md') {
 
   const finirExercice = () => {
     if (!ex) return;
-    if (aideCommune) for (const it of ex.items) it.aid = structuredClone(aideCommune);
-    ex.items.forEach((it, n) => {
-      if (it.key === undefined) {
-        // la clé par défaut vient en tête, comme dans les JSON d'origine
-        const reste = { ...it };
-        for (const k of Object.keys(it)) delete it[k];
-        Object.assign(it, { key: `${ex.id}-${n}` }, reste);
-      }
-    });
+    ex.items = ex.items.map((propre, n) =>
+      ordonnerItem({ key: `${ex.id}-${n}`, ...structuredClone(mission.items), ...structuredClone(pourTousNiveau), ...propre }),
+    );
     exercices.push(ex);
     ex = null;
   };
 
   const champ = (texte, cible, table, ligne) => {
+    const aide = table === PAR_ETIQUETTE_ITEM && /^aide « (.+) » :$/.exec(texte);
+    if (aide) {
+      if (cible.aid !== undefined) throw erreur('aide écrite deux fois');
+      cible.aid = { kind: 'rule-card', props: { title: lireTexte(aide[1], ligne), lines: [] } };
+      liste = cible.aid.props.lines;
+      return;
+    }
     const m = /^(.+?) :(?: (.*))?$/.exec(texte);
     if (!m) throw erreur(`« étiquette : valeur » attendu, lu « ${texte} »`);
     const [, etiquette, brut = ''] = m;
-    const aide = /^aide « (.+) »$/.exec(etiquette);
-    if (aide && table === PAR_ETIQUETTE_ITEM) {
-      if (brut !== '') throw erreur('les lignes d’une aide vont en sous-liste');
-      cible.aid = { kind: 'rule-card', props: { title: lireTexte(aide[1], ligne), lines: [] } };
-      liste = { tableau: cible.aid.props.lines };
-      return;
-    }
     const def = table.get(etiquette);
     if (!def) throw erreur(`champ inconnu « ${etiquette} »`);
     const [, chemin, type] = def;
@@ -271,9 +288,8 @@ export function lireIle(md, fichier = 'md') {
       throw erreur(ex && mission && obtenir(mission.champs, chemin) !== undefined ? `« ${etiquette} » est déjà donné pour toute la mission` : `« ${etiquette} » écrit deux fois`);
     }
     if (type === 'liste' && brut === '') {
-      const tableau = [];
-      poser(cible, chemin, tableau);
-      liste = { tableau };
+      liste = [];
+      poser(cible, chemin, liste);
       return;
     }
     poser(cible, chemin, lireValeur(type, brut, ligne));
@@ -283,7 +299,7 @@ export function lireIle(md, fichier = 'md') {
   for (i++; i < lignes.length; i++) {
     const l = lignes[i];
     if (l.trim() === '') {
-      if (liste && liste.retrait === '') liste = null; // une ligne vide finit l'aide commune
+      pourTous = null; // une ligne vide finit le bloc « Pour tous les items »
       continue;
     }
     if (/^# /.test(l)) continue;
@@ -291,29 +307,25 @@ export function lireIle(md, fichier = 'md') {
     if ((m = /^## (.+) · `([^`]+)`$/.exec(l))) {
       finirExercice();
       if (missions.some((x) => x.id === m[2])) throw erreur(`mission « ${m[2]} » écrite deux fois`);
-      mission = { id: m[2], titre: m[1], champs: {} };
+      mission = { id: m[2], titre: m[1], champs: {}, items: {} };
       missions.push({ id: mission.id, titre: mission.titre });
-      item = null;
-      liste = null;
+      item = pourTous = liste = null;
       continue;
     }
     if ((m = /^### Niveau (\d+) · `([^`]+)`$/.exec(l))) {
       finirExercice();
       if (!mission) throw erreur('un niveau doit être sous une mission (« ## Titre · `id` »)');
       ex = { ...structuredClone(mission.champs), id: m[2], biome: ile, type: mission.id, level: Number(m[1]), items: [] };
-      item = null;
-      liste = null;
-      aideCommune = null;
+      pourTousNiveau = {};
+      item = pourTous = liste = null;
       continue;
     }
     if (l.startsWith('#')) throw erreur(`titre inconnu : ${l}`);
-    const cible = ex ?? mission?.champs;
-    if (!cible) throw erreur('ligne hors d’une mission');
-    if ((m = /^Aide « (.+) », pour tous les items :$/.exec(l))) {
-      if (!ex) throw erreur('une aide commune va sous un niveau');
-      aideCommune = { kind: 'rule-card', props: { title: lireTexte(m[1], i + 1), lines: [] } };
-      liste = { tableau: aideCommune.props.lines, retrait: '' };
-      item = null;
+    if (!mission) throw erreur('ligne hors d’une mission');
+    if (l === 'Pour tous les items :') {
+      if (item) throw erreur('« Pour tous les items » va avant le premier item');
+      pourTous = ex ? pourTousNiveau : mission.items;
+      liste = null;
       continue;
     }
     if ((m = /^(\d+)\. (.*)$/.exec(l))) {
@@ -321,14 +333,14 @@ export function lireIle(md, fichier = 'md') {
       if (Number(m[1]) !== ex.items.length + 1) throw erreur(`item ${ex.items.length + 1} attendu, lu ${m[1]}`);
       item = {};
       ex.items.push(item);
-      liste = null;
+      pourTous = liste = null;
       if (m[2] !== 'item') champ(m[2], item, PAR_ETIQUETTE_ITEM, i + 1);
       continue;
     }
     if (item) {
       const retrait = ' '.repeat(`${ex.items.length}. `.length);
       if ((m = new RegExp(`^${retrait}  - (.*)$`).exec(l)) && liste) {
-        liste.tableau.push(lireTexte(m[1], i + 1));
+        liste.push(lireTexte(m[1], i + 1));
         continue;
       }
       if ((m = new RegExp(`^${retrait}- (.*)$`).exec(l))) {
@@ -337,22 +349,27 @@ export function lireIle(md, fichier = 'md') {
       }
       throw erreur(`ligne d’item mal alignée : ${l}`);
     }
-    if ((m = /^- (.*)$/.exec(l))) {
-      if (liste && liste.retrait === '') {
-        liste.tableau.push(lireTexte(m[1], i + 1));
-        continue;
-      }
-      champ(m[1], cible, PAR_ETIQUETTE_NIVEAU, i + 1);
+    if ((m = /^ {2}- (.*)$/.exec(l)) && liste) {
+      liste.push(lireTexte(m[1], i + 1));
       continue;
     }
-    if ((m = /^ {2}- (.*)$/.exec(l)) && liste) {
-      liste.tableau.push(lireTexte(m[1], i + 1));
+    if ((m = /^- (.*)$/.exec(l))) {
+      if (pourTous) champ(m[1], pourTous, PAR_ETIQUETTE_ITEM, i + 1);
+      else champ(m[1], ex ?? mission.champs, PAR_ETIQUETTE_NIVEAU, i + 1);
       continue;
     }
     throw erreur(`ligne inattendue : ${l}`);
   }
   finirExercice();
   return { ile, missions, exercices: exercices.map(ordonner) };
+}
+
+/** L'ordre des champs d'un item dans le JSON produit : celui du tableau ITEM, puis l'aide. */
+function ordonnerItem(it) {
+  const sortie = {};
+  for (const [, k] of ITEM) if (it[k] !== undefined) sortie[k] = it[k];
+  if (it.aid !== undefined) sortie.aid = it.aid;
+  return sortie;
 }
 
 /** L'ordre des champs d'un exercice dans le JSON produit. */
