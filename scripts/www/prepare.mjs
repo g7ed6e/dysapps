@@ -9,10 +9,10 @@ import { execFileSync } from 'node:child_process';
 import { generatePages } from './generate.mjs';
 
 const root = process.cwd();
-export const DOCS = join(root, 'www');
+export const WWW = join(root, 'www');
 export const SRC = join(root, '.www-src');
-const THEME = join(DOCS, '_theme');
-const CAPTURES = join(DOCS, '_captures');
+const THEME = join(WWW, '_theme');
+const CAPTURES = join(WWW, '_captures');
 /** Une image JPEG d'un pixel, à la place d'une capture absente en local. */
 const PLACEHOLDER_JPEG =
   '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
@@ -50,12 +50,12 @@ const GAME_NOTE =
  * Écrit .www-src/ et renvoie les pages : { path, title, generated, updated }.
  * `path` est relatif à www/ (ex. « manuel/demarrer.md »).
  */
-export async function prepareDocs() {
+export async function prepareSite() {
   const today = new Date().toISOString().slice(0, 10);
-  const disk = walk(DOCS)
+  const disk = walk(WWW)
     .sort()
     .map((full) => {
-      const path = posix.normalize(relative(DOCS, full).split('\\').join('/'));
+      const path = posix.normalize(relative(WWW, full).split('\\').join('/'));
       const body = readFileSync(full, 'utf8');
       return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('www', path)) };
     });

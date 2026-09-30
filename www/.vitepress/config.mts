@@ -5,11 +5,11 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { defineConfig, type DefaultTheme } from 'vitepress';
-import { nav, prepareDocs, SRC } from '../../scripts/www/prepare.mjs';
+import { nav, prepareSite, SRC } from '../../scripts/www/prepare.mjs';
 import { appVersion } from '../../scripts/version.mjs';
 
 const version = appVersion();
-const pages = await prepareDocs();
+const pages = await prepareSite();
 const byPath = new Map(pages.map((p) => [p.path, p]));
 const link = (path: string) => '/' + path.replace(/\.md$/, '.html');
 

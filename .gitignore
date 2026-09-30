@@ -14,3 +14,8 @@ www/.vitepress/.temp
 .claude/worktrees/
 www/_captures
 *.tsbuildinfo
+# Anciens emplacements du site (avant www/), encore présents sur les postes qui l'ont construit
+dist-docs
+.docs-src
+docs/_captures
+docs/.vitepress
