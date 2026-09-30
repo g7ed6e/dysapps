@@ -7,7 +7,8 @@
 // Repères des formes (repère Three) : la baleine regarde vers +X (tête), le dos vers +Y ; l'oiseau vole vers +Z, ailes
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
 import { AMBIENCE, mixColor } from './daylight';
-import type { ArchipelagoId } from './map';
+import { landBox, mapOf, type ArchipelagoId } from './map';
+import { ISLET_GAP, ISLET_H, ISLET_W } from './terrain';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
 
@@ -28,6 +29,55 @@ export const NUAGES: [number, number, number][] = [
 /** Les nuages d'un archipel (voir `NUAGES`). */
 export function nuagesDe(a: ArchipelagoId): [number, number, number][] {
   return AMBIENCE[a].sky ? [...NUAGES, ...NUAGES.map(([fx, fy, len]) => [(fx + 0.5) % 1.1, fy - 0.45, len + 1] as [number, number, number])] : NUAGES;
+}
+
+/** Un nuage posé : le coin de son premier cube (x, z en cases du monde, y en hauteur) et sa longueur. */
+export interface NuagePose {
+  x: number;
+  y: number;
+  z: number;
+  len: number;
+}
+
+/**
+ * Les nuages hauts des Îles du Ciel volent au-dessus des toits (les îles y sont à 9 blocs d'altitude) ; ailleurs, à 12.
+ * Les nuages bas des Îles du Ciel passent sous les îles, entre elles.
+ */
+export const HAUT_DES_NUAGES = { ciel: 16, ailleurs: 12 } as const;
+
+/**
+ * Où sont les nuages d'un archipel au départ (et à jamais avec « Réduire les animations ») : leur place relative à
+ * l'étendue (`nuagesDe`). Aux Îles du Ciel, un nuage haut qui commencerait au-dessus d'une île (à trois cases près) est
+ * poussé de côté, hors de l'île, vers le bord le plus proche : de loin, des cubes blancs juste au-dessus d'un toit se
+ * liraient comme une fumée de cheminée (référent dys, LV2-5).
+ */
+export function placeDesNuages(a: ArchipelagoId, bounds: { minX: number; minY: number; maxY: number }, largeur: number): NuagePose[] {
+  const spots = nuagesDe(a);
+  const ciel = Boolean(AMBIENCE[a].sky);
+  // Les îlots des Gardiens (devant leur île, voir `bossIsletOrigin`) : aucun nuage, haut ou bas, n'y mord.
+  const ilots = ciel
+    ? mapOf(a).map((d) => {
+        const y0 = d.core.y - d.ext.front - ISLET_H - ISLET_GAP;
+        return { x0: d.core.x, x1: d.core.x + ISLET_W - 1, y0, y1: y0 + ISLET_H - 1 };
+      })
+    : [];
+  const iles = ciel ? mapOf(a).map((d) => landBox(d)) : [];
+  const MARGE = 3;
+  return spots.map(([fx, fy, len], i) => {
+    const bas = ciel && i >= NUAGES.length;
+    const n: NuagePose = { x: bounds.minX + fx * largeur, y: bas ? 4 + (i % 3) : ciel ? HAUT_DES_NUAGES.ciel : HAUT_DES_NUAGES.ailleurs, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
+    // Un nuage haut évite les îles et les îlots ; un nuage bas, la mer de nuages sous les îles, seulement les îlots.
+    const aEviter = bas ? ilots : [...iles, ...ilots];
+    const dessus = (b: (typeof iles)[number]) => n.x + n.len > b.x0 - MARGE && n.x < b.x1 + MARGE && n.z + 1.2 > b.y0 - MARGE && n.z < b.y1 + MARGE;
+    for (let essai = 0; essai < aEviter.length; essai++) {
+      const b = aEviter.find(dessus);
+      if (!b) break;
+      const ouest = b.x0 - MARGE - n.len;
+      const est = b.x1 + MARGE;
+      n.x = n.x - ouest < est - n.x ? ouest : est;
+    }
+    return n;
+  });
 }
 
 /** Les oiseaux d'un archipel : combien, et à quelle altitude (plus nombreux et plus haut aux Anciens Ateliers, tout en haut aux Îles du Ciel). */

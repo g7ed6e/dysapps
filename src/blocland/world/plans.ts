@@ -92,6 +92,9 @@ import studioTerrasse from './plans/studio-terrasse.json';
 import chateauTour from './plans/chateau-tour.json';
 import chateauToit from './plans/chateau-toit.json';
 import chateauRempart from './plans/chateau-rempart.json';
+import refugePoste from './plans/refuge-poste.json';
+import refugeSalle from './plans/refuge-salle.json';
+import refugePigeonnier from './plans/refuge-pigeonnier.json';
 
 export interface PlanCell {
   x: number;
@@ -212,6 +215,9 @@ const PLAN_FILES = [
   chateauTour,
   chateauToit,
   chateauRempart,
+  refugePoste,
+  refugeSalle,
+  refugePigeonnier,
 ] as Omit<PlanDef, 'cells' | 'origin'>[];
 
 /**

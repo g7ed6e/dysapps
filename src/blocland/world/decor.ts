@@ -4,7 +4,7 @@
 // des cubes par une fonction `put` que lui donne le terrain, qui décide où ils vont et ce qu'ils ne recouvrent pas.
 import { BLOCKS, type BiomeId } from '../biomes';
 import type { VoxelCube } from './cube';
-import { CORE, inCore, isLand, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
+import { CORE, inCore, isLand, LACS, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
 
 /** Les couleurs du paysage et du décor (les textures 3D s'en déduisent, voir `TEXTURES` dans ./terrain.ts). */
 export const TRUNK = '#6b4a2e';
@@ -362,6 +362,25 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(3, 9, h(3, 9) + 1, BLOCKS.taille.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
   },
+  refuge: (put, h) => {
+    // Un cœur d'herbe (DA, LV2-5) : une pile de bûches, un banc de pierre de taille, quelques fleurs de
+    // prairie, une pierre. Aucune lanterne, même éteinte, ni cloche, ni boîte aux lettres : la nuit, rien n'y luit.
+    for (const [x, z] of [
+      [9, 1],
+      [10, 1],
+      [9, 2],
+    ] as const)
+      put(x, 3, h(x, 3) + z, TRUNK);
+    put(11, 5, h(11, 5) + 1, BLOCKS.taille.side);
+    // Des fleurs blanches et mauves, pas de jaune : la nuit, un jaune vif se lirait comme une lueur.
+    for (const [x, y, k] of [
+      [8, 5, 2],
+      [12, 3, 3],
+      [3, 9, 2],
+    ] as const)
+      put(x, y, h(x, y) + 1, FLOWERS[k], `fleur@${x},${y}`);
+    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+  },
 };
 
 /** La forme en blocs d'un élément de décor du paysage : `put` pose un cube relatif au sol de sa case (z = 1 juste au-dessus). */
@@ -631,10 +650,11 @@ export function pontonEtBarque(def: IslandDef, scenery: LandCell[], place: Put):
 
 /**
  * Les cascades : d'un lac d'une île en altitude, l'eau déborde au bord le plus proche et tombe jusqu'à la mer. Nom de
- * décor : « cascade@x,y » (la case du bord).
+ * décor : « cascade@x,y » (la case du bord). Un lac dessiné (`LACS`, le lac du refuge) reste loin du bord : il ne
+ * déborde pas.
  */
 export function cascades(def: IslandDef, scenery: LandCell[], place: Put): void {
-  if (def.altitude === 0) return;
+  if (def.altitude === 0 || LACS[def.id]) return;
   const lakes = scenery.filter((c) => c.ground === 'eau');
   if (!lakes.length) return;
   const isLandAt = (x: number, y: number) => isLand(def, x, y);

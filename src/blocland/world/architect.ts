@@ -1,5 +1,5 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
-// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin) et du bloc de l'île. Les cases sont relatives à la zone des
+// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -27,7 +27,8 @@ export type BuildingStyle =
   | { kind: 'hutte' }
   | { kind: 'kiosque' }
   | { kind: 'relais' }
-  | { kind: 'jardin' };
+  | { kind: 'jardin' }
+  | { kind: 'refuge' };
 
 /** La forme du bâtiment de chaque île (son nom et ses phrases sont dans plans/*.json). */
 export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
@@ -65,6 +66,7 @@ export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   textes: { kind: 'tour', top: 'phare' },
   studio: { kind: 'maison' },
   chateau: { kind: 'tour', top: 'creneaux' },
+  refuge: { kind: 'refuge' },
 };
 
 // ---------- Outils ----------
@@ -364,6 +366,70 @@ function jardin(b: BlockId): Stages {
   return [without(walls, [[doorX, y0, 0], ...windows]), roof, yard];
 }
 
+/**
+ * Le refuge (le Refuge des carnets, LV2 3e) : trois plans, trois choses qu'on reconnaît (DA, LV2-5), en bardeau et en
+ * pierre de taille (le bloc du Château voisin, que donne le coffre du premier plan). La poste de Timbre : une maison de
+ * trois sur trois à gauche, ses murs de bardeau, un casier à lettres en planches contre la façade, une caisse à côté de
+ * la porte. La salle commune : le toit à deux pans de la poste, sa porte et une seule fenêtre (sur le côté ouest), et, à
+ * droite, une salle longue et basse ouverte à l'est, sous un toit plus bas qui court de devant à derrière, une grande
+ * table de planches entre deux bancs de pierre de taille. Le pigeonnier : devant la salle, quatre blocs de haut, un
+ * soubassement de pierre de taille, un trou d'envol et, sous lui, la planche-perchoir ; aucun pigeon ; devant la
+ * poste, une barrière à portillon et une marche.
+ * Aucune lanterne, allumée ou non : la nuit, en Blocland, rien ne luit au refuge (DA, LV2-5) ; en Archipéo, la seule
+ * fenêtre, de verre, peut s'allumer (une au plus). Ni drapeau, ni colombage, ni chalet à balcon, ni cloche.
+ */
+function refuge(b: BlockId): Stages {
+  const x0 = 0;
+  const y0 = 2;
+  const w = 3;
+  const d = 3;
+  const h = 3;
+  const doorX = 1;
+  const windows: [number, number, number][] = [[x0, y0 + 1, 1]];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
+  // Le casier à lettres, en planches, contre la façade à droite de la porte (deux cases de haut) ; une caisse devant,
+  // à l'écart du mur : les trois rangs de bardeau de la façade restent visibles depuis la caméra de l'île (DA LV2-5).
+  const poste: ArchCell[] = [
+    ...without(walls, [[doorX, y0, 0], ...windows]),
+    { x: 2, y: 1, z: 0, block: 'bois' },
+    { x: 2, y: 1, z: 1, block: 'bois' },
+    { x: 0, y: 0, z: 0, block: 'bois' },
+  ];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: 'porte' }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'verre' as BlockId }))];
+  // Le toit de la poste : deux pans et le faîte, les pignons de bardeau.
+  for (let x = x0; x < x0 + w; x++) roof.push({ x, y: y0, z: h, block: 'toit' }, { x, y: y0 + d - 1, z: h, block: 'toit' }, { x, y: y0 + 1, z: h + 1, block: 'toit' });
+  roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });
+  // La salle commune, de x = 3 à 5, de y = 1 à 4 : longue, basse (deux blocs), adossée à la poste, ouverte à l'est (vers
+  // la caméra de l'île) entre ses deux poteaux ; ses murs de devant et de derrière.
+  for (let z = 0; z < 2; z++) {
+    for (const x of [3, 4]) roof.push({ x, y: 1, z, block: b }, { x, y: 4, z, block: b });
+    roof.push({ x: 5, y: 1, z, block: b }, { x: 5, y: 4, z, block: b });
+  }
+  // La grande table de planches, en long, entre deux bancs de pierre de taille.
+  for (const y of [2, 3]) roof.push({ x: 3, y, z: 0, block: 'taille' }, { x: 4, y, z: 0, block: 'bois' }, { x: 5, y, z: 0, block: 'taille' });
+  // Son toit, plat et bas, d'un seul rang : il ne cache pas la façade de la poste à la caméra de l'île (DA LV2-5).
+  for (let y = 1; y <= 4; y++) roof.push({ x: 3, y, z: 2, block: 'toit' }, { x: 4, y, z: 2, block: 'toit' }, { x: 5, y, z: 2, block: 'toit' });
+  // Le pigeonnier, devant la salle, d'un bloc d'épaisseur (le trou d'envol se voit au travers), en pierre claire (DA
+  // LV2-5 : pierre claire et ardoise enneigée dans Archipéo ; le même bloc de pierre de taille en Blocland) : un
+  // soubassement, un rang dont le milieu est la planche-perchoir, en planches ; au-dessus d'elle, le trou d'envol,
+  // (4, 0, 2), laissé vide entre deux blocs de pierre ; un toit plat par-dessus (l'ardoise enneigée du 3e en Archipéo,
+  // `toits.ts`). Quatre blocs de haut.
+  const yard: ArchCell[] = [
+    { x: 2, y: 0, z: 0, block: 'barriere' },
+    { x: doorX, y: 1, z: 0, block: 'escalier' },
+  ];
+  for (const x of [3, 4, 5]) yard.push({ x, y: 0, z: 0, block: 'taille' }, { x, y: 0, z: 3, block: 'toit' });
+  yard.push({ x: 3, y: 0, z: 1, block: 'taille' }, { x: 4, y: 0, z: 1, block: 'bois' }, { x: 5, y: 0, z: 1, block: 'taille' });
+  yard.push({ x: 3, y: 0, z: 2, block: 'taille' }, { x: 5, y: 0, z: 2, block: 'taille' });
+  // Tout est tracé ci-dessus comme ailleurs (la façade côté y = 0), puis retourné d'est en ouest (x → 5 - x) : au
+  // refuge, la caméra de l'île pivote à fond vers l'ouest et regarde le chantier par son côté est (`viewYaw`). La poste
+  // passe ainsi devant, sa fenêtre et ses trois rangs de bardeau face à la caméra, la salle commune derrière elle, et le
+  // pigeonnier à droite (DA, retouches LV2-5 : deux rangs de bardeau au moins sous l'avant-toit, vus de l'île).
+  const retourne = (cells: ArchCell[]) => cells.map((c) => ({ ...c, x: 5 - c.x }));
+  return [retourne(poste), retourne(roof), retourne(yard)];
+}
+
 /** Les trois étapes du bâtiment d'une île. */
 export function buildingStages(biome: BiomeId, block: BlockId): Stages {
   const style = BUILDING_OF[biome];
@@ -384,6 +450,8 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return relais(block);
     case 'jardin':
       return jardin(block);
+    case 'refuge':
+      return refuge(block);
   }
 }
 

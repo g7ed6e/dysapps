@@ -106,6 +106,11 @@ const ORDER: (string | ExerciseDef[])[] = [
   'jardin-de-stundenplan-2', 'jardin-de-ich-kann-1', 'jardin-de-ich-kann-2', 'jardin-es-hora-1', 'jardin-es-hora-2',
   'jardin-es-mi-dia-1', 'jardin-es-mi-dia-2', 'jardin-es-horario-1', 'jardin-es-horario-2', 'jardin-es-ser-estar-1',
   'jardin-es-ser-estar-2',
+  // LV2 (Refuge des carnets, 3e) : de même, l’allemand puis l’espagnol.
+  'refuge-de-reise-1', 'refuge-de-reise-2', 'refuge-de-geschichte-1', 'refuge-de-geschichte-2', 'refuge-de-unterwegs-1',
+  'refuge-de-unterwegs-2', 'refuge-de-weil-dass-1', 'refuge-de-weil-dass-2', 'refuge-es-viaje-1', 'refuge-es-viaje-2',
+  'refuge-es-relato-1', 'refuge-es-relato-2', 'refuge-es-paises-1', 'refuge-es-paises-2', 'refuge-es-porque-1',
+  'refuge-es-porque-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });

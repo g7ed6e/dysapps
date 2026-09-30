@@ -37,7 +37,8 @@ export type BiomeId =
   | 'studio'
   | 'chateau'
   | 'relais'
-  | 'jardin';
+  | 'jardin'
+  | 'refuge';
 export type BlockId =
   | 'bois'
   | 'pierre'
@@ -71,6 +72,7 @@ export type BlockId =
   | 'cristal'
   | 'dalle'
   | 'osier'
+  | 'bardeau'
   | 'toit'
   | 'porte'
   | 'lanterne'
@@ -122,6 +124,7 @@ export type BlockTexture =
   | 'cristal'
   | 'dalle'
   | 'osier'
+  | 'bardeau'
   | 'feuilles'
   | 'tronc'
   | 'nuage'
@@ -167,6 +170,9 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Jardin des heures (LV2, 4e) : des brins d'osier tressés dessus-dessous, distincts des planches, de la dalle
   // et du foin par le motif.
   osier: { id: 'osier', name: 'Osier', top: '#a8955a', side: '#86743f', texture: 'osier' },
+  // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
+  // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
+  bardeau: { id: 'bardeau', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
   // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
   toit: { id: 'toit', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
   porte: { id: 'porte', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
@@ -191,7 +197,7 @@ const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
-const PLURIELS: Partial<Record<BlockId, string>> = { cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille' };
+const PLURIELS: Partial<Record<BlockId, string>> = { bardeau: 'bardeaux', cristal: 'cristaux', panneau: 'panneaux', taille: 'pierres de taille' };
 
 /** Ce qui suit le nombre, accordé : « toit », « toits », « bloc de sable », « blocs d’or », « cristaux ». */
 export function blockName(id: BlockId, n: number): string {
@@ -780,6 +786,29 @@ export const BIOMES: BiomeDef[] = [
       { id: 'de-mein-tag', title: 'Mein Tag', description: 'La journée : le verbe en deuxième place, puis la particule à la fin.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-stundenplan', title: 'Stundenplan und Mensa', description: 'Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.', programme: ['c4.de.lire.informations', 'c4.de.culture.ecole-societe', 'c4.de.langue.lexique'], lv2: 'de' },
       { id: 'de-ich-kann', title: 'Ich esse, ich kann', description: 'L’accusatif (einen, den), puis können, müssen, wollen.', programme: ['c4.de.langue.groupe-nominal', 'c4.de.langue.lexique'], lv2: 'de' },
+    ],
+  },
+  {
+    id: 'refuge',
+    name: 'Refuge des carnets',
+    module: 'Le voyage, le récit, relier ses idées',
+    subject: 'lv2',
+    classe: '3e',
+    description: 'Raconter un voyage au passé, lire les carnets des voyageurs, comparer, relier deux idées : dans ta deuxième langue.',
+    block: 'bardeau',
+    guardian: 'le Papillon de cuivre',
+    icon: 'languages',
+    creature: { name: 'Timbre' },
+    exercises: [
+      // Même ordre dans les deux langues : la borne de même rang ouvre la mission de la LV2 choisie.
+      { id: 'es-viaje', title: '¿Adónde fuiste?', description: 'Le voyage au passé : fui, visitó ; puis hier ou demain, ir a + infinitif.', programme: ['c4.es.langue.temps-verbaux', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-relato', title: 'Historias de viaje', description: 'Une petite histoire de voyage, puis l’ordre de l’histoire : primero, luego, al final.', programme: ['c4.es.lire.recit', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-paises', title: 'Países y ciudades', description: 'Les documents du voyage, puis comparer : más, menos, tan… como.', programme: ['c4.es.culture.voyages-rencontres', 'c4.es.lire.informations', 'c4.es.langue.groupe-nominal', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'es-porque', title: 'Porque, cuando, pero', description: 'Relier deux idées, puis les faux amis.', programme: ['c4.es.langue.phrase-complexe', 'c4.es.langue.lexique'], lv2: 'es' },
+      { id: 'de-reise', title: 'Wohin bist du gefahren?', description: 'Le Perfekt avec haben, puis haben ou sein.', programme: ['c4.de.langue.temps-verbaux', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-geschichte', title: 'Reisegeschichten', description: 'Une petite histoire de voyage, puis l’ordre de l’histoire : zuerst, dann, am Ende.', programme: ['c4.de.lire.recit', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-unterwegs', title: 'Unterwegs', description: 'Mit + datif, puis comparer : größer als, so… wie.', programme: ['c4.de.culture.voyages-rencontres', 'c4.de.lire.informations', 'c4.de.langue.groupe-nominal', 'c4.de.langue.lexique'], lv2: 'de' },
+      { id: 'de-weil-dass', title: 'Weil und dass', description: 'Weil et dass : le verbe à la fin ; puis les faux amis.', programme: ['c4.de.langue.phrase-complexe', 'c4.de.langue.lexique'], lv2: 'de' },
     ],
   },
 ];

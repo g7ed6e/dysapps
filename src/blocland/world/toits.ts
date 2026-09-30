@@ -13,8 +13,8 @@ export type Couverture = 'ardoise' | 'terre-cuite';
 /**
  * Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles
  * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
- * voisins en terre cuite), et le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 ; le 4e garde
- * une île de terre cuite sur six.
+ * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
+ * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
  */
 export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'mine', 'comptoir', 'theatre', 'belvedere'];
 
@@ -29,7 +29,9 @@ export const ARDOISES: Record<ArchipelagoId, { dessus: Couleur; rives: Couleur }
   '6e': { dessus: 0x2e505e, rives: 0x2e505e },
   '5e': { dessus: 0x224c5f, rives: 0x224c5f },
   '4e': { dessus: 0x3e3636, rives: 0x3e3636 },
-  '3e': { dessus: 0xe5ebe3, rives: 0x2e505e },
+  // Les rives du 3e, un cran plus sombres que l'ardoise du 6e : en gris, les murs de bardeau du refuge s'en détachent
+  // (consultant Archipéo, LV2-5).
+  '3e': { dessus: 0xe5ebe3, rives: 0x1c3440 },
 };
 
 /** Les côtés d'un toit, un peu plus sombres que son dessus : le plancher d'ombre des pentes (fiche de famille §3). */

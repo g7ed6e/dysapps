@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -136,6 +136,54 @@ const CAPTURES = [
   { nom: 'jardin-osier-ile', vue: 'île', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 60, y: 380, width: 320, height: 200 }, finesse: 1 },
   { nom: 'jardin-osier-archipel', vue: 'archipel', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 230, y: 320, width: 260, height: 180 }, finesse: 1 },
   { nom: 'jardin-soleil', vue: 'archipel', famille: 'jardin-pres', ile: 'jardin', recadre: { x: 620, y: 380, width: 360, height: 270 } },
+  // Le Refuge des carnets (LV2-5, l'île LV2 du 3e, à l'est du Château) : l'archipel vu depuis le Château avec une LV2 et
+  // avec « Pas de LV2 » (le refuge fermé, sans pont : le cadrage du Château d'avant), et depuis le refuge, dans les trois
+  // formats ; le refuge sans LV2 (vu depuis le Château), de jour et de nuit, et son défi.
+  { nom: 'refuge-archipel', vue: 'archipel', famille: 'refuge', ile: 'chateau' },
+  { nom: 'refuge-archipel-sans-lv2', vue: 'archipel', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'] },
+  { nom: 'refuge-archipel-1280x800', vue: 'archipel', famille: 'refuge', ile: 'chateau', taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-archipel-sans-lv2-1280x800', vue: 'archipel', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'], taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-archipel-800x1280', vue: 'archipel', famille: 'refuge', ile: 'chateau', taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-archipel-sans-lv2-800x1280', vue: 'archipel', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'], taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-chateau', vue: 'île', famille: 'refuge', ile: 'chateau' },
+  { nom: 'refuge-chateau-sans-lv2', vue: 'île', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'] },
+  { nom: 'refuge-chateau-1280x800', vue: 'île', famille: 'refuge', ile: 'chateau', taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-chateau-sans-lv2-1280x800', vue: 'île', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'], taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-chateau-800x1280', vue: 'île', famille: 'refuge', ile: 'chateau', taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-chateau-sans-lv2-800x1280', vue: 'île', famille: 'refuge', ile: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'], taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-archipel-depuis-le-refuge', vue: 'archipel', famille: 'refuge', ile: 'refuge' },
+  { nom: 'refuge-archipel-depuis-le-refuge-1280x800', vue: 'archipel', famille: 'refuge', ile: 'refuge', taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-archipel-depuis-le-refuge-800x1280', vue: 'archipel', famille: 'refuge', ile: 'refuge', taille: { width: 800, height: 1280 } },
+  // Le phare au plus à 60 % de la largeur de la vue de l'archipel (tiers central), avec le refuge et sans lui.
+  { nom: 'refuge-phare', vue: 'archipel', famille: 'refuge', ile: 'phare' },
+  { nom: 'refuge-phare-1280x800', vue: 'archipel', famille: 'refuge', ile: 'phare', taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-phare-800x1280', vue: 'archipel', famille: 'refuge', ile: 'phare', taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-phare-sans-lv2', vue: 'archipel', famille: 'refuge', ile: 'phare', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'] },
+  { nom: 'refuge', vue: 'île', famille: 'refuge', ile: 'refuge' },
+  { nom: 'refuge-1280x800', vue: 'île', famille: 'refuge', ile: 'refuge', taille: { width: 1280, height: 800 } },
+  { nom: 'refuge-800x1280', vue: 'île', famille: 'refuge', ile: 'refuge', taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-sans-lv2', vue: 'île', famille: 'refuge', ile: 'refuge', depuis: 'chateau', lv2: 'aucune', sansPonts: ['chateau-refuge'], sansIles: ['refuge'] },
+  { nom: 'refuge-nuit', vue: 'île', famille: 'refuge', ile: 'refuge', nuit: true },
+  { nom: 'refuge-defi', vue: 'défi', famille: 'refuge', ile: 'refuge' },
+  { nom: 'refuge-carte', vue: 'carte', famille: 'refuge', ile: 'refuge' },
+  // De près (famille `refuge-pres`) : Timbre dans la vue de son île et sa bulle ; le Papillon de cuivre ; le bardeau à
+  // deux distances (`finesse` 1). Pour le test en gris, les voisins à comparer : l'Écho (3e), le Soleil et Muscade (4e),
+  // le Hanneton et Moustache (6e), chacun pris dans son archipel (`--archipel 4e`, `--archipel 6e`).
+  { nom: 'refuge-timbre', vue: 'île', famille: 'refuge-pres', ile: 'refuge', finesse: 2 },
+  { nom: 'refuge-timbre-bulle', vue: 'bulle', famille: 'refuge-pres', ile: 'refuge', sansEtoiles: true, fige: true },
+  { nom: 'refuge-papillon', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 } },
+  // Le Papillon vivant, en cuivre (son défi pas encore gagné, `debout`), sur son îlot, du même cadrage que sa statue
+  // (la vue de l'île ne montre pas l'îlot : le panneau de l'île le couvre).
+  { nom: 'refuge-papillon-vivant', vue: 'archipel', famille: 'refuge-pres', ile: 'refuge', debout: 'refuge', recadre: { x: 560, y: 260, width: 420, height: 315 }, finesse: 1 },
+  // Le texte le plus grand (OpenDyslexic, 32 px, `reglages`) : les étiquettes et les boutons de la vue de l'archipel.
+  { nom: 'refuge-archipel-depuis-le-refuge-od32', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'refuge-archipel-depuis-le-refuge-od32-800x1280', vue: 'archipel', famille: 'refuge', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
+  { nom: 'refuge-bardeau-ile', vue: 'île', famille: 'refuge-pres', ile: 'refuge', finesse: 1 },
+  { nom: 'refuge-gris-echo', vue: 'défi', famille: 'refuge-pres', ile: 'studio' },
+  { nom: 'refuge-gris-soleil', vue: 'défi', famille: 'refuge-pres', ile: 'jardin' },
+  { nom: 'refuge-gris-muscade', vue: 'île', famille: 'refuge-pres', ile: 'jardin' },
+  { nom: 'refuge-gris-hanneton', vue: 'défi', famille: 'refuge-pres', ile: 'plaine' },
+  { nom: 'refuge-gris-moustache', vue: 'île', famille: 'refuge-pres', ile: 'manoir' },
   // La revue d'ensemble du directeur artistique (28/09) : le phare du large du 5e, de jour et de nuit (`lieu` : la vue
   // d'un monument, dans l'archipel `archipel`, le bonhomme sur l'île `ile`) ; une sentinelle de près, à côté du phare de
   // la Tour (6e, la Plaine et l'arbre voisin de son îlot) et de la grue de l'Atelier (4e), de jour et de nuit.
@@ -231,6 +279,12 @@ function routeDe(c, parIle, routes) {
   return routes[c.vue];
 }
 
+/** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <île>-gardien » retirée) : il est debout. */
+function sansLeGardien(parCle, ile) {
+  if (!ile) return parCle;
+  return Object.fromEntries(Object.entries(parCle).filter(([k]) => k !== `${ile}-gardien`));
+}
+
 async function scenes() {
   // Le build a passé le processus en production : le compteur ne s'exposerait pas (import.meta.env.DEV).
   process.env.NODE_ENV = 'development';
@@ -303,6 +357,8 @@ async function scenes() {
               taille: c.taille,
               recadre: c.recadre,
               sansIles: c.sansIles,
+              debout: c.debout,
+              reglages: c.reglages,
               depuis: c.depuis,
               fige: c.fige,
               finesse: c.finesse,
@@ -311,26 +367,27 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers, lv2 }) => {
+        ({ village, progress, view, univers, lv2, reglages }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
-          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}) }));
+          localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
         },
         {
           village: { ...built, plans: sansLesIles(plans ?? built.plans, sansIles), ...(bridges ? { bridges } : {}), at: depuis ?? ile ?? at },
-          progress: sansEtoiles ? {} : sansLesIles(progress, sansIles),
+          progress: sansEtoiles ? {} : sansLeGardien(sansLesIles(progress, sansIles), debout),
           view,
           univers: UNIVERS_DES_TEXTES,
           lv2,
+          reglages,
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
@@ -340,7 +397,10 @@ async function scenes() {
         await page.waitForTimeout(8000);
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
-          // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour).
+          // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés
+          // sur la scène (le lieu choisi, jaune) sont masqués le temps de la prise, sinon ils compteraient comme lueur.
+          // Depuis ce masquage, la part de lueur des archipels déjà mesurés baisse un peu : le bouton n'y compte plus.
+          await page.addStyleTag({ content: 'body * { visibility: hidden !important } .voxel-canvas canvas { visibility: visible !important }' });
           const box = await page.locator('.voxel-canvas').boundingBox();
           const png = box && (await capturer(page, { type: 'png', clip: box, timeout: 90000 }));
           if (png) lueurs.push({ archipel: a, nom, vue, part: await partDeLueur(outil, png) });

@@ -32,6 +32,7 @@ export type TextureKind =
   | 'taille'
   | 'dalle'
   | 'osier'
+  | 'bardeau'
   | 'or'
   | 'cristal'
   | 'feuilles'
@@ -133,6 +134,29 @@ function osier(t: TonsDOsier, bord = false): Painter {
     // passe derrière lui, dans son ombre.
     if ((x + (rang % 2 ? 4 : 0)) % 8 >= 6) return ombre;
     return dans === 0 ? clair : brin;
+  };
+}
+
+/** Les tons du bardeau : le bois, et le joint brun sombre sous chaque bardeau et à ses coins. */
+type TonsDuBardeau = { bois: string; joint: string };
+
+/**
+ * Des bardeaux de bois (le Refuge des carnets, LV2 3e ; DA, LV2-5) : des rangées de quatre pixels, chaque bardeau large de
+ * huit, décalées d'un demi-bardeau (quatre pixels) d'une rangée à l'autre ; le bas de chaque bardeau arrondi, ses deux
+ * coins coupés (deux pixels à chaque coin sur la ligne au-dessus du joint, décision 6 du DA), et
+ * souligné d'un joint brun sombre sur toute sa largeur. Deux tons seulement, ni grain ni dégradé : c'est le motif
+ * d'écailles qui le nomme, à côté de la tuile (des rangs droits et des traits), de la brique et de la dalle (des joints
+ * droits). La dernière ligne est un joint : d'un bloc à l'autre, les rangées continuent. Sans hasard.
+ */
+function bardeau(t: TonsDuBardeau): Painter {
+  const [bois, joint] = [hex(t.bois), hex(t.joint)];
+  return (x, y) => {
+    const v = y % 4;
+    if (v === 3) return joint;
+    // La place du pixel dans son bardeau (0 à 7), décalée d'un demi-bardeau une rangée sur deux.
+    const u = (x + (Math.floor(y / 4) % 2 ? 4 : 0)) % 8;
+    if (v === 2 && (u <= 1 || u >= 6)) return joint;
+    return bois;
   };
 }
 
@@ -305,6 +329,13 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   osier: {
     top: osier({ clair: '#c2ad6c', brin: '#a8955a', ombre: '#8c7a44', joint: '#6f623b' }),
     side: osier({ clair: '#a2905a', brin: '#86743f', ombre: '#6e5e32', joint: '#534826' }, true),
+  },
+  // Bardeau (le Refuge des carnets, LV2 3e) : des écailles de bois brun chaud, en rangées décalées, le bas arrondi et
+  // souligné d'un joint brun sombre. Un brun moyen, entre les planches et le lambris, ni orangé comme le cuivre, ni
+  // jaune comme l'osier, plus sombre et plus rouge que la dalle.
+  bardeau: {
+    top: bardeau({ bois: '#96724e', joint: '#4e3826' }),
+    side: bardeau({ bois: '#7c5c3e', joint: '#402e20' }),
   },
   or: {
     top: (x, y, r) => (r() < 0.1 ? [255, 240, 150] : grain('#e0b52a', '#f2c944')(x, y, r)),

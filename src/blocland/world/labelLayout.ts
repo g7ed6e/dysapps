@@ -198,8 +198,13 @@ export function placerEtiquettes(
   iles: { x: number; y: number }[],
   vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
   carte: { weights: number[] } | null,
+  tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
   const { zones, bulles, obstacles, bounds, gap } = vue;
+  // Hors de la Carte, les étiquettes tenues (l'île « Commence ici », l'île du bonhomme) pèsent plus que les autres : elles
+  // se montrent d'abord, et prennent leur place simple à un nom plus léger (référent dys, LV2-5).
+  const poidsHors = !carte && tenues.length ? boxes.map((_, i) => (tenues.includes(i) ? 2 : 1)) : undefined;
+  const w = carte?.weights ?? poidsHors;
   const gardees = boxes.map((_, i) => i).filter((i) => {
     const ile = { ...iles[i], w: 1, h: 1 };
     return outside(ile, bounds) === 0 && !zones.some((z) => overlap(ile, z, 0) > 0);
@@ -211,13 +216,13 @@ export function placerEtiquettes(
   const offsets: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
   gardees.forEach((i, k) => (offsets[i] = placees[k]));
   const couvert = [...zones, ...bulles];
-  const visibles = montrees(boxes, offsets, couvert, bounds, carte?.weights, iles);
+  const visibles = montrees(boxes, offsets, couvert, bounds, w, iles);
   // Avant de renoncer à un nom dont l'île se voit : les places simples autour d'elle, dessus, dessous, à gauche, à
   // droite (DA-31), sans trait de rappel ni place plus loin. La plus lourde d'abord ; une place prise n'en change pas
   // tant que le cadrage ne bouge pas (le calcul ne dépend que de lui). Sur la Carte, le nom de la destination ne se
   // retire jamais pour un autre : il prend sa place simple, et le nom plus léger qui l'occupait cherche la sienne.
-  const poids = (i: number) => (carte ? carte.weights[i] : 1);
-  const lourd = carte ? Math.max(1, ...gardees.map(poids)) : Infinity;
+  const poids = (i: number) => (w ? w[i] : 1);
+  const lourd = w ? Math.max(1, ...gardees.map(poids)) : Infinity;
   const destination = carte && lourd > 1 ? gardees.find((i) => poids(i) >= lourd) : undefined;
   const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], obstacles);
   const vues = new Map<number, LabelBox>();
@@ -272,6 +277,23 @@ export function placerEtiquettes(
       vues.set(i, at);
       break;
     }
+  }
+  // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
+  // l'écart (rentrée dans le cadre, hors de l'interface), et les noms plus légers qu'elle couvre se taisent. Elle ne se
+  // pose jamais sur un obstacle (un grand repère d'Archipéo, la flèche ou le fanion) : là, le repère l'emporte. Deux
+  // étiquettes tenues ne se couvrent jamais : celle déjà montrée garde sa place, l'autre se tait (DA-10).
+  for (const i of tenues) {
+    if (visibles[i] || !gardees.includes(i) || !entiere(boxes[i], offsets[i], couvert, bounds)) continue;
+    const at = { ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy };
+    if (obstacles.some((v) => overlap(at, v, 0) > 0)) continue;
+    if ([...vues].some(([j, v]) => tenues.includes(j) && overlap(at, v, 0) > 0)) continue;
+    for (const [j, v] of [...vues]) {
+      if (tenues.includes(j) || overlap(at, v, 0) <= 0) continue;
+      vues.delete(j);
+      visibles[j] = false;
+    }
+    visibles[i] = true;
+    vues.set(i, at);
   }
   return { offsets, visibles };
 }

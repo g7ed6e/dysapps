@@ -48,7 +48,7 @@ Un bleu franc : plus de lavande.
 - Soleil `#FFF4E2`, force 2,3. Ambiance du ciel `#D4E4F6`, du sol `#8C9CBE`, force 1,05.
 - Brume de profondeur 110 / 350. Voile `#DCE8F2`, force 0,05.
 - Sols : neige `#E6ECEF` / `#C4D0DE` ; roche `#A3A7AD` / `#6E7896` ; herbe `#74A064` / `#6C6250`.
-- Plancher de nuages (mer de jour et teinte de la mer) : `#DDE3E8`. Ardoise des rives `#2E505E`, dessus enneigé `#E5EBE3`.
+- Plancher de nuages (mer de jour et teinte de la mer) : `#DDE3E8`. Ardoise des rives `#1C3440` depuis LV2-5 (`#2E505E` avant), dessus enneigé `#E5EBE3`.
 
 ## 6. La brume
 
@@ -60,6 +60,7 @@ Les nappes suivent `respirationDeLaBrume` et se figent d’un coup avec « Rédu
 - Le village à colombages ; le lagon ; la mer (jusqu’au lot 8).
 - Des couches de brume étagées ; un horizon ou un voile lavande.
 - Une baleine ; le massif qui passe derrière la lanterne.
+- Au Refuge des carnets (LV2-5) : papillon de décor, pigeon, lettre ou carnet à lire, chalet en bardeau à balcon, toit en bardeau, plus d’une fenêtre éclairée la nuit, fumée, timbre ou lettre dont on puisse lire le motif, lagon turquoise ; rien de vertical qui fasse concurrence au phare.
 
 ## 8. Les captures et les critères d’acceptation
 
@@ -74,6 +75,7 @@ Les nappes suivent `respirationDeLaBrume` et se figent d’un coup avec « Rédu
   - Avec « Réduire les animations » (la préférence de l’appareil), rien ne bouge, oiseau compris. Plus de capture dédiée depuis le 28 septembre 2026 : la vidéo sur tablette le montre.
   - Les lueurs couvrent moins de 5 % des captures de nuit.
   - Le test en gris est réussi. Le budget est tenu, par poste.
+  - Avec le Refuge des carnets (LV2-5) : vue de l’archipel avec une LV2 et avec « Pas de LV2 » (Refuge fermé, sans pont, cadrage du Château d’avant), en 1024 × 768, 1280 × 800 et 800 × 1280 ; le phare reste au plus à 60 % de la vue, la ronde de l’oiseau reste au-dessus du massif, jamais au-dessus du Refuge, et la règle du massif (au moins 1,2 fois plus large que l’arc) se mesure avec lui ; le Papillon en gris depuis la caméra du jeu ne se lit ni en croix ni en trèfle ; Timbre en gris à côté de Muscade et de Moustache, le bardeau en gris à côté de l’ardoise et de la roche du massif.
 
 ## 9. L’enveloppe du décor (9 000 triangles, 3 appels)
 

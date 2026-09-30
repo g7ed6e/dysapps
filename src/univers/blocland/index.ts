@@ -207,6 +207,14 @@ export const BLOCLAND = {
         beaten: 'Je me couche… en pierre, pour ton village. Le Jardin est à toi… et à Muscade.',
       },
     },
+    refuge: {
+      challenge: 'Le Papillon de cuivre attend devant le refuge : « Tu as rencontré tous les voyageurs du refuge. Montre-moi que tu comprends leurs voyages. »',
+      guardianSays: {
+        hit: 'Juste. Je me souviens : avant, j’étais chenille.',
+        miss: 'Ce n’est rien : lis bien la question, relis la règle, et reprends.',
+        beaten: 'Je me pose… en pierre, pour ton village. Le refuge est à toi… et à Timbre.',
+      },
+    },
     manoir: {
       challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
       guardianSays: {
@@ -278,6 +286,7 @@ export const BLOCLAND = {
     comptoir: 'bouledogue marchand',
     relais: 'cigogne voyageuse',
     jardin: 'écureuil cuisinier',
+    refuge: 'loutre factrice',
     manoir: 'chat du manoir',
     theatre: 'lutin souffleur',
     gare: 'blaireau chef de gare',

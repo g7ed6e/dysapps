@@ -291,3 +291,56 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
     expect(bas.visibles).toEqual([false, true]);
   });
 });
+
+describe('hors de la Carte, les étiquettes tenues (« Commence ici », le bonhomme ; référent dys, LV2-5)', () => {
+  const cadre = { w: 1000, h: 600 };
+  const zones = [{ x: 500, y: 570, w: 1000, h: 60 }];
+  const vue = { zones, bulles: [], obstacles: [], bounds: cadre, gap: 6 };
+  // Cinq noms serrés au-dessus de cinq îles voisines : sans rien de plus, le troisième se tait.
+  const boxes: LabelBox[] = [100, 110, 120, 150, 60].map((y, i) => ({ x: [470, 500, 530, 500, 500][i], y, w: 220, h: 37 }));
+  const iles = boxes.map((b) => ({ x: b.x, y: b.y + 25 }));
+
+  it('une étiquette tenue dont l’île se voit se montre, entière, là où une autre se tairait', () => {
+    expect(placerEtiquettes(boxes, iles, vue, null).visibles[2]).toBe(false);
+    const { offsets, visibles } = placerEtiquettes(boxes, iles, vue, null, [2]);
+    expect(visibles[2]).toBe(true);
+    expect(entiere(boxes[2], offsets[2], zones, cadre)).toBe(true);
+    // Aucune étiquette montrée ne la couvre.
+    const at = (i: number) => ({ ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy });
+    for (let i = 0; i < boxes.length; i++) if (i !== 2 && visibles[i]) expect(overlaps(at(i), at(2)), `étiquette ${i}`).toBe(false);
+  });
+
+  it('deux étiquettes tenues ne se couvrent jamais : l’une garde sa place, l’autre se tait', () => {
+    // Deux îles côte à côte, chacune tenue, dont les noms ne trouvent qu'une place commune.
+    // Un cadre étroit où seule la place de départ tient : sans règle, les deux se montrent l'une sur l'autre.
+    const serres: LabelBox[] = [{ x: 120, y: 30, w: 220, h: 37 }, { x: 130, y: 34, w: 220, h: 37 }];
+    const deux = serres.map((b) => ({ x: b.x, y: b.y + 25 }));
+    const etroit = { zones: [], bulles: [], obstacles: [], bounds: { w: 240, h: 90 }, gap: 6 };
+    for (const tenues of [[0, 1], [1, 0]]) {
+      const { offsets, visibles } = placerEtiquettes(serres, deux, etroit, null, tenues);
+      expect(visibles[0] || visibles[1], `${tenues}`).toBe(true);
+      const at = (i: number) => ({ ...serres[i], x: serres[i].x + offsets[i].dx, y: serres[i].y + offsets[i].dy });
+      expect(visibles[0] && visibles[1] && overlaps(at(0), at(1)), `${tenues}`).toBe(false);
+    }
+  });
+
+  it('elle se tait si son île est hors de l’écran ou sous l’interface', () => {
+    const loin = placerEtiquettes([{ x: 60, y: 200, w: 220, h: 37 }], [{ x: -40, y: 225 }], vue, null, [0]);
+    expect(loin.visibles[0]).toBe(false);
+    const dessous = placerEtiquettes([{ x: 500, y: 540, w: 220, h: 37 }], [{ x: 500, y: 575 }], vue, null, [0]);
+    expect(dessous.visibles[0]).toBe(false);
+  });
+});
+
+describe('une étiquette tenue ne se pose pas sur un grand repère', () => {
+  it('forcée, elle cède la place à un obstacle qu’elle couvrirait', () => {
+    const cadre = { w: 1000, h: 600 };
+    const boxes: LabelBox[] = [100, 110, 120, 150, 60].map((y, i) => ({ x: [470, 500, 530, 500, 500][i], y, w: 220, h: 37 }));
+    const iles = boxes.map((b) => ({ x: b.x, y: b.y + 25 }));
+    // Une colonne de repère partout autour du troisième nom, sauf sur son île : aucune place ne l'évite.
+    const colonne = { x: 530, y: 60, w: 1000, h: 110 };
+    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [colonne], bounds: cadre, gap: 6 }, null, [2]);
+    const at = { ...boxes[2], x: boxes[2].x + offsets[2].dx, y: boxes[2].y + offsets[2].dy };
+    if (visibles[2]) expect(overlaps(at, colonne)).toBe(false);
+  });
+});

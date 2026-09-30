@@ -504,6 +504,58 @@ const SOLEIL = fromLayers(
   { C: '#b87333', c: '#8a5226', K: '#2a2622' },
 );
 
+/**
+ * Les ailes du Papillon de cuivre, de face (x de gauche à droite, z de bas en haut ; `#` : une case d'aile) : l'aile
+ * droite, à partir de la colonne voisine du corps. L'aile du haut, plus grande, monte en marches vers le dehors (le V se
+ * lit par son bord supérieur) ; une rangée vide la sépare de l'aile du bas, plus petite.
+ */
+const AILE_DU_PAPILLON = [
+  // z = 9 à 1 (de haut en bas) : le bord du haut monte en marches vers le dehors (un V, pas un U) ; en haut, l'aile touche
+  // la pointe de l'antenne, sans cube vide entre elles (moins de pointes, pas de chandelier) ; un cube vide de chaque côté
+  // de la tête (DA et consultant Blocland, retouches LV2-5).
+  '..###',
+  '..###',
+  '..###',
+  '.####',
+  '#####',
+  '.....',
+  '###..',
+  '###..',
+  '##...',
+];
+
+/**
+ * Le Papillon de cuivre (DA et consultant Blocland, LV2-5) : deux paires d'ailes pleines d'un cube d'épaisseur, le bord
+ * de cuivre clair #b87333, l'intérieur de cuivre sombre #8a5226, un cube vide entre les deux paires ; le corps en colonne,
+ * la tête de trois cubes (deux yeux sombres, sans bouche), deux antennes de deux cubes en marche ; posé sur un cube plein.
+ * Ni motif orange et noir, ni nervures en rayons ; il ne vole pas : sa seule animation est la respiration commune.
+ */
+const PAPILLON: CubeDeModele[] = (() => {
+  const [BORD, DEDANS, YEUX] = ['#b87333', '#8a5226', '#2a2622'];
+  const out: CubeDeModele[] = [];
+  const milieu = 5;
+  const aile = new Set<string>();
+  AILE_DU_PAPILLON.forEach((ligne, i) => [...ligne].forEach((ch, k) => ch === '#' && aile.add(`${k},${AILE_DU_PAPILLON.length - i}`)));
+  const estAile = (k: number, z: number) => aile.has(`${k},${z}`);
+  for (const cle of aile) {
+    const [k, z] = cle.split(',').map(Number);
+    // Le bord : une case d'aile dont une voisine (dans le plan de l'aile) n'est pas de l'aile, côté corps excepté.
+    const bord = [
+      [k + 1, z],
+      [k, z + 1],
+      [k, z - 1],
+    ].some(([a, b]) => !estAile(a, b)) || (k > 0 && !estAile(k - 1, z));
+    for (const c of [-1, 1]) out.push({ x: milieu + c * (k + 1), y: 1, z, color: bord ? BORD : DEDANS });
+  }
+  // Le cube plein qui le porte, le corps en colonne, la tête de trois cubes (les yeux aux deux bouts), les antennes.
+  // Tout dans le même plan, d'un cube d'épaisseur, comme les ailes.
+  out.push({ x: milieu, y: 1, z: 0, color: DEDANS });
+  for (let z = 1; z <= 6; z++) out.push({ x: milieu, y: 1, z, color: BORD });
+  out.push({ x: milieu - 1, y: 1, z: 7, color: YEUX }, { x: milieu, y: 1, z: 7, color: BORD }, { x: milieu + 1, y: 1, z: 7, color: YEUX });
+  for (const c of [-1, 1]) out.push({ x: milieu + c, y: 1, z: 8, color: DEDANS }, { x: milieu + 2 * c, y: 1, z: 9, color: DEDANS });
+  return out;
+})();
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: GRAND_CHENE,
   mine: GOLEM,
@@ -535,4 +587,5 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   gare: LOCOMOTIVE,
   studio: ANTENNE,
   chateau: DRAGON_G,
+  refuge: PAPILLON,
 };

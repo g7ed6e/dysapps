@@ -35,7 +35,7 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les trente îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les trente et une îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
@@ -81,6 +81,9 @@ export const MAP: IslandDef[] = [
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
   { id: 'studio', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
   { id: 'chateau', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
+  // LV2 3e : à l'est du Château, un cran derrière, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et
+  // arrondi (intention du 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`).
+  { id: 'refuge', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
 ];
 
 /** Les îles d'un archipel, dans l'ordre de MAP. */
@@ -235,6 +238,27 @@ function peaks(def: IslandDef): { x: number; y: number; h: number; r: number }[]
   return silhouetteDe(def.id).pics.map((p) => ({ x: def.core.x + p.x, y: def.core.y + p.y, h: p.h, r: p.r }));
 }
 
+/**
+ * Les lacs dessinés à la main (en cases relatives au coin du cœur ; `x`, `y` le coin, `w` × `d`) : le lac d'altitude du
+ * Refuge des carnets (DA, LV2-5), sur l'herbe, loin du bord, derrière le cœur, à gauche de la poste dans la vue de
+ * l'île, bordé d'une rangée de pierre plate (la roche, au ras du sol : pas de ponton), puis d'une rive d'herbe nue. Sur une île qui a son lac, le hasard n'en creuse pas d'autre.
+ */
+export const LACS: Partial<Record<BiomeId, { x: number; y: number; w: number; d: number }>> = {
+  refuge: { x: 6, y: 17, w: 4, d: 2 },
+};
+
+/**
+ * La place d'une case par rapport au lac dessiné de son île : dedans, sur sa bordure de pierre, sur la rive d'herbe nue
+ * qui l'entoure (aucun arbre ne le cache à la caméra de l'île), ou ailleurs.
+ */
+function auLac(def: IslandDef, x: number, y: number): 'lac' | 'bord' | 'rive' | null {
+  const l = LACS[def.id];
+  if (!l) return null;
+  const [dx, dy] = [x - def.core.x, y - def.core.y];
+  const dans = (m: number) => dx >= l.x - m && dx < l.x + l.w + m && dy >= l.y - m && dy < l.y + l.d + m;
+  return dans(0) ? 'lac' : dans(1) ? 'bord' : dans(2) ? 'rive' : null;
+}
+
 const landscapeCache = new Map<BiomeId, LandCell[]>();
 
 /** Le paysage d'une île : chaque case de terre hors du cœur avec sa hauteur, son sol et son décor (mémorisé). */
@@ -290,9 +314,18 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (def.id === 'glacier' && h >= 2) ground = 'neige';
     if (crater) ground = 'lave';
     if (edge && def.altitude === 0 && h === 0 && def.region !== 'feu') ground = 'sable';
-    // Lacs et mares : dans un creux, loin du bord et du cœur.
+    // Lacs et mares : dans un creux, loin du bord et du cœur ; le lac dessiné d'une île, et sa bordure de pierre.
     let decor: Decor | undefined;
-    if (!edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, c.x, c.y, 3) > 0.78 && def.relief !== 'volcan') {
+    const lac = auLac(def, c.x, c.y);
+    if (lac === 'lac') {
+      out.push({ x: c.x, y: c.y, h: 0, ground: 'eau' });
+      continue;
+    }
+    if (lac === 'bord' || lac === 'rive') {
+      out.push({ x: c.x, y: c.y, h: 0, ground: lac === 'bord' ? 'roche' : 'herbe' });
+      continue;
+    }
+    if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, c.x, c.y, 3) > 0.78 && def.relief !== 'volcan') {
       ground = 'eau';
       h = -1;
     } else if (h <= 2 && !edge && fine > 0.62) {

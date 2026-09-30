@@ -11,11 +11,15 @@ const A_COUVRIR = (motif: string): Exclusion => ({ kind: 'a-couvrir', motif });
 const ORAL = 'Production orale : hors de ce que peut faire une application sans micro ni interlocuteur.';
 const ECRITURE_LIBRE = 'Production écrite libre : l’application propose des réponses à choisir, pas de rédaction.';
 
-// LV2 (allemand, espagnol). Ce qui est prévu, étape par étape (docs/conception/cadrage-contenu.md, « LV2 ») : l’île de 5e
-// (le Relais des voyageurs, LV2-2 et LV2-3) et l’île de 4e (le Jardin des heures, LV2-4) sont faites ; reste LV2-5, île
-// de 3e. Le passif (`langue.modaux-passif`) reste hors du niveau A2 visé : un manque sans exclusion, les modaux sont faits.
-const LV2_5 = (quoi: string) => A_COUVRIR(`À venir avec l’île LV2 de 3e (LV2-5 du cadrage du contenu) : ${quoi}.`);
-const LV2_LANGAGES = A_COUVRIR('Médias, chansons et cinéma : rien ne s’emprunte, et aucune étape du cadrage LV2 (LV2-2 à LV2-5) ne les prévoit ; à reprendre après LV2-5.');
+// LV2 (allemand, espagnol) : les trois îles sont faites (docs/conception/cadrage-contenu.md, « LV2 ») : le Relais des
+// voyageurs (5e, LV2-2 et LV2-3), le Jardin des heures (4e, LV2-4) et le Refuge des carnets (3e, LV2-5). Le passif
+// (`langue.modaux-passif`) reste hors du niveau A2 visé : un manque sans exclusion, les modaux sont faits.
+const RECIT_ENTENDU = A_COUVRIR(
+  'Suivre un récit à l’oral : il faut un écran où le récit s’entend d’abord, puis s’affiche (question écrite, lexique affiché), à cadrer avec le référent dys et l’expert frontend, le même pour l’anglais, l’allemand et l’espagnol. Au Refuge des carnets, le récit s’affiche dès l’ouverture : il se lit, l’écoute n’y est qu’un soutien.',
+);
+const LV2_LANGAGES = A_COUVRIR(
+  'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), à cadrer avec c4.en.culture.langages, qui manque aussi en anglais.',
+);
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
@@ -77,21 +81,15 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.en.culture.voyages-rencontres': A_COUVRIR('Voyages, migrations, patrimoine des pays anglophones : aucune mission ne les aborde.'),
   'c4.en.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, allemand (LV2) ----------
-  'c4.de.ecouter.recit': LV2_5('suivre un petit récit entendu'),
-  'c4.de.lire.recit': LV2_5('lire un petit texte suivi'),
+  'c4.de.ecouter.recit': RECIT_ENTENDU,
   'c4.de.parler.presenter-raconter': HORS(ORAL),
   'c4.de.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.de.culture.langages': LV2_LANGAGES,
-  'c4.de.culture.voyages-rencontres': LV2_5('voyages et villes des pays germanophones'),
-  'c4.de.langue.phrase-complexe': LV2_5('subordonnées en weil et dass'),
   'c4.de.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 4, espagnol (LV2) ----------
-  'c4.es.ecouter.recit': LV2_5('suivre un petit récit entendu'),
-  'c4.es.lire.recit': LV2_5('lire un petit texte suivi'),
+  'c4.es.ecouter.recit': RECIT_ENTENDU,
   'c4.es.parler.presenter-raconter': HORS(ORAL),
   'c4.es.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.es.culture.langages': LV2_LANGAGES,
-  'c4.es.culture.voyages-rencontres': LV2_5('voyages et villes des pays hispanophones'),
-  'c4.es.langue.phrase-complexe': LV2_5('phrases reliées par porque, cuando, pero'),
   'c4.es.langue.phonologie': HORS(ORAL),
 };

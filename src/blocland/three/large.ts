@@ -3,7 +3,7 @@
 // profondeur et la faune en facettes, un appel de dessin par famille.
 import * as THREE from 'three';
 import { AMBIENCE, palette } from '../world/daylight';
-import { NUAGES, nuagesDe, oiseauxDe, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type PoseDeBaleine, type Ronde } from '../world/faune';
+import { oiseauxDe, placeDesNuages, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type PoseDeBaleine, type Ronde } from '../world/faune';
 import type { ChampDuSol } from '../world/landMesh';
 import { signatureDesTerres, terresDeLaMer } from '../world/mer';
 import { cielDe, teinteSur } from '../world/palette';
@@ -25,8 +25,6 @@ const WATER_LEVEL = -0.45;
 const CLOUD_FLOOR = 2.5;
 /** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
 const EAU_MOYENNE = 0x54a2e4;
-/** Nuages : positions relatives à l'étendue du monde (0..1), longueur en cubes (world/faune.ts). */
-const CLOUDS = NUAGES;
 
 export interface Large extends PartieDeLaScene {
   /** La côte a peut-être changé : la mer d'Archipéo est repeinte si c'est le cas. */
@@ -89,23 +87,19 @@ export function creerLarge(
   // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
   const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
   const clouds = new THREE.Group();
-  const cloudSpots = nuagesDe(archipel);
   /** Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. */
-  const cloudAt = cloudSpots.map(([fx, fy, len], i) => {
-    const low = ambience.sky && i >= CLOUDS.length;
-    return { x: bounds.minX + fx * width, y: low ? 4 + (i % 3) : 12, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
-  });
-  if (!peinte) cloudSpots.forEach(([fx, fy, len], i) => {
-    const cloud = new THREE.Group();
-    for (let k = 0; k < len; k++) {
-      const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
-      puff.position.set(k, (k % 2) * 0.5, 0);
-      cloud.add(puff);
-    }
-    const low = ambience.sky && i >= CLOUDS.length;
-    cloud.position.set(bounds.minX + fx * width, low ? 4 + (i % 3) : 12, bounds.minY + fy * (bounds.maxY - bounds.minY));
-    clouds.add(cloud);
-  });
+  const cloudAt = placeDesNuages(archipel, bounds, width);
+  if (!peinte)
+    cloudAt.forEach(({ x, y, z, len }) => {
+      const cloud = new THREE.Group();
+      for (let k = 0; k < len; k++) {
+        const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
+        puff.position.set(k, (k % 2) * 0.5, 0);
+        cloud.add(puff);
+      }
+      cloud.position.set(x, y, z);
+      clouds.add(cloud);
+    });
   scene.add(clouds);
 
   // Les oiseaux : de petits V sombres qui tournent au-dessus du monde, ailes battantes.

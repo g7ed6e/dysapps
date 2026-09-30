@@ -92,8 +92,8 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 
 | Étape | État | Suite |
 | --- | --- | --- |
-| LV2-1 (socle, réglage), LV2-2 et LV2-3 (Relais des voyageurs, 5e), LV2-4 (Jardin des heures, 4e) | Fusionnées (#205, #215, #221, #232) | Rééquilibrer les réponses de `relais-*-2` (6 sur 8 au dernier rang) |
-| **LV2-5** (Refuge des carnets, 3e) | En cours dans le fil « LV2 » : relu, validé par le directeur artistique sous une condition, pull request à ouvrir | Le fil écrit ensuite le plan de tout ce qui reste, et s’arrête |
+| LV2-1 (socle, réglage), LV2-2 et LV2-3 (Relais des voyageurs, 5e), LV2-4 (Jardin des heures, 4e) | Fusionnées (#205, #215, #221, #232) | Voir [La LV2 : ce qui reste](lv2-suites.md) |
+| **LV2-5** (Refuge des carnets, 3e) | Pull request ouverte, relue (DA, consultants, référent dys, expert frontend) : attend le mot du mainteneur | Tout ce qui reste est rangé dans [La LV2 : ce qui reste](lv2-suites.md) ; rien n’est lancé sans le mot du mainteneur |
 
 ### Le contenu en Markdown (M)
 

@@ -73,8 +73,8 @@ function lueurs(f: FacettesDePersonnage): number {
   return new Set(ts.map((_, i) => racine(i))).size;
 }
 
-/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil de cuivre. */
-const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin'];
+/** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil et le Papillon de cuivre. */
+const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin', 'refuge'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
  * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
@@ -243,7 +243,7 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil de cuivre, un disque qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['jardin', 'relais']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['jardin', 'refuge', 'relais']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('jardin');

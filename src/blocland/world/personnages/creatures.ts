@@ -412,6 +412,22 @@ const MUSCADE = fromLayers(
   { C: '#8a4a26', T: '#9a5a32', t: '#c79a6a', W: '#efe4c8', L: '#8a6236', E: '#1f1a16', M: '#c89a72' },
 );
 
+// Timbre : une loutre factrice debout (DA et consultant Blocland, LV2-5), brun-gris (plus sombre que Tunel, plus chaude
+// que Vapeur), la tête plate de cinq sur deux couches, sa rangée de devant crème sur les deux couches (les yeux sombres
+// s'y détachent, en gris aussi), deux petites oreilles sur les côtés, sans moustaches ; la gorge crème ; une sacoche
+// fauve de deux sur deux au côté gauche, sa bandoulière fauve en diagonale sur le devant ; la queue sort de côté, à droite, au ras du sol, en marches de trois, deux et un cubes.
+const TIMBRE = fromLayers(
+  [
+    ['.B.B...', '.BBB...', '.BBBTTT'],
+    ['SBCB...', 'SBBB...', '.BBBTT.'],
+    ['SLCB...', 'SBBB...', '.BBBT..'],
+    ['.BLB...', '.BBB...', '.BBB...'],
+    ['CCCCC..', 'BBBBB..', '.BBB...'],
+    ['CECEC..', 'OBBBO..', '.BBB...'],
+  ],
+  { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#a8703a' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   foret: MOUSSO,
   mine: TUNEL,
@@ -443,4 +459,5 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   gare: VAPEUR,
   studio: ECHO,
   chateau: KNIGHT,
+  refuge: TIMBRE,
 };

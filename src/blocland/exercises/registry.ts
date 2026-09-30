@@ -183,4 +183,13 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'es-mi-dia': { component: CalculScreen, batch: 1 },
   'es-horario': { component: CalculScreen, batch: 1 },
   'es-ser-estar': { component: CalculScreen, batch: 1 },
+  // LV2 du Refuge des carnets (3e) : le passé du voyage, un récit à lire, voyager et comparer, relier deux idées.
+  'de-reise': { component: CalculScreen, batch: 1 },
+  'de-geschichte': { component: CalculScreen, batch: 1 },
+  'de-unterwegs': { component: CalculScreen, batch: 1 },
+  'de-weil-dass': { component: CalculScreen, batch: 1 },
+  'es-viaje': { component: CalculScreen, batch: 1 },
+  'es-relato': { component: CalculScreen, batch: 1 },
+  'es-paises': { component: CalculScreen, batch: 1 },
+  'es-porque': { component: CalculScreen, batch: 1 },
 };

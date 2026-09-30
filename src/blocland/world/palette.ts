@@ -141,6 +141,9 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
       neige: { dessus: 0xe6ecef, cote: 0xc4d0de },
       roche: { dessus: 0xa3a7ad, cote: 0x6e7896 },
       herbe: { dessus: 0x74a064, cote: 0x6c6250 },
+      // Les lacs de montagne : une eau sombre, bleu ardoise, jamais turquoise. Voulu pour tous les lacs du 3e (le refuge,
+      // le Phare, l'Observatoire des textes, le Studio, le Château), pas seulement celui du refuge (DA, LV2-5).
+      eau: { dessus: 0x46627a, cote: 0x384e62 },
     },
     nuages: AMBIENCE['3e'].sky,
     // Le plancher de nuages de la fiche.
@@ -320,6 +323,9 @@ export const MATIERES: Record<TextureKind, Faces> = {
   dalle: { dessus: 0xc8b28a, cote: 0xa8916c },
   // L'osier du Jardin : un miel d'olive, plus vert que le bois et plus sombre que la dalle ; son motif fait le reste.
   osier: { dessus: 0xb09c5e, cote: 0x8c7a44 },
+  // Le bardeau du Refuge : un bois brun chaud, entre les planches et le lambris, moins orangé que le cuivre, plus
+  // sombre et plus rouge que la dalle ; jamais le gris de la pierre, de l'ardoise ou de la roche du massif.
+  bardeau: { dessus: 0x9e7a56, cote: 0x7e5e40 },
   or: { dessus: 0xf0c84a, cote: 0xcca22e },
   cristal: { dessus: 0x88e8e0, cote: 0x4cbdb6 },
   feuilles: { dessus: 0x5e9a3e, cote: 0x4a8434 },

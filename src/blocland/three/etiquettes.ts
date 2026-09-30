@@ -138,7 +138,35 @@ export function creerEtiquettes(
       return [{ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: 2 * r.rayon * parPx + 8, h: Math.abs(a.y - b.y) }];
     });
   /** Ce que visait la caméra au dernier écart hors de la Carte. */
-  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '' };
+  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0 };
+  /**
+   * Les étiquettes tenues, en un nombre (sans rien allouer à chaque image) : l'indice de l'île de la flèche « Commence
+   * ici » et celui de l'île la plus proche du bonhomme, plus un (0 : aucune), en `cle = fleche * 1024 + bonhomme`.
+   */
+  const ilesTenues = (sprites: THREE.Sprite[]): number => {
+    let f = 0;
+    if (fleche.userData.on && fleche.userData.island)
+      for (let i = 0; i < sprites.length; i++)
+        if (sprites[i].userData.id === fleche.userData.island) {
+          f = i + 1;
+          break;
+        }
+    let b = 0;
+    const av = bonhomme();
+    if (av.visible) {
+      let bestD = Infinity;
+      for (let i = 0; i < sprites.length; i++) {
+        const p = sprites[i].position;
+        const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
+        if (d < bestD) {
+          b = i + 1;
+          bestD = d;
+        }
+      }
+    }
+    return f * 1024 + b;
+  };
+  const indicesTenus = (cle: number): number[] => [...new Set([Math.floor(cle / 1024) - 1, (cle % 1024) - 1])].filter((i) => i >= 0);
   // L'interface posée sur la scène (le panneau de la Carte, les bulles, les boutons) : aucune étiquette ne se pose
   // dessous (DA-10). Relue quatre fois par seconde au plus, pas à chaque image.
   // Sans page autour (un aperçu), la bande des boutons du bas reste réservée.
@@ -155,9 +183,14 @@ export function creerEtiquettes(
     const { zones, bulles, cle: zonesCle } = lireZones();
     // Hors de la Carte, rien d'autre que la caméra visée, la taille, l'interface et les étiquettes ne change l'écart :
     // la clé ne se refait que si l'un d'eux a bougé (pas de chaîne construite à chaque image).
-    if (!spread && labelLayout && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
+    const tenuesCle = spread ? 0 : ilesTenues(sprites);
+    if (!spread && labelLayout && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
     const av = bonhomme().position;
-    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : 'reperes';
+    // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
+    // ici » et celle du bonhomme (l'île la plus proche de lui).
+    const tenues = indicesTenus(tenuesCle);
+    vise.tenues = tenuesCle;
+    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;
@@ -194,7 +227,7 @@ export function creerEtiquettes(
     const marques = spread ? marksOnScreen(goalCamera, W, H) : null;
     const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : colonnes(goalCamera, W, H);
     const carte = spread ? { weights: poidsDesEtiquettes(sprites) } : null;
-    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 }, carte);
+    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 }, carte, tenues);
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];

@@ -44,7 +44,7 @@ describe('les textes d’univers', () => {
     // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique).
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
-    const APRES_LE_LOT_6 = new Set(['relais', 'jardin']);
+    const APRES_LE_LOT_6 = new Set(['relais', 'jardin', 'refuge']);
     const avant = Object.fromEntries(
       BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
         const g = t.gardiens[b.id];
@@ -155,8 +155,8 @@ describe('les textes communs (J8, U4)', () => {
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
-      // Les îles venues après U4 (le Jardin des heures, LV2-4) n'ont pas de réplique « d'avant » : hors de l'empreinte.
-      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin').map((b) => [b.id, t.creatures[b.id]]));
+      // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin' && b.id !== 'refuge').map((b) => [b.id, t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('d64da2645fb9dbf5737474b77b4e51e0e024b81a048bee4643a45f4edc007690');
     }
   });
