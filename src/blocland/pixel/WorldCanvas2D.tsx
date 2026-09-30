@@ -59,6 +59,7 @@ import { drawContactShadow, drawPaintedShadow, drawPaintedSprite } from './paint
 import { allumageDuGardien } from '../world/personnages/allumage';
 import { STYLE } from './style';
 import { surfaceOf } from './surface';
+import { CIBLE_MIN_PX, cibleAu } from './cibles';
 import { CHUNK, TILE, buildTiles, frame2D, pickTile, project, toBase, toScreen, type TileMap, type View2D } from './oblique';
 
 /** Sous ce niveau, les cubes sont sous la mer : on ne les dessine pas (la mer est un fond animé). */
@@ -81,6 +82,8 @@ interface Hit {
   h: number;
   /** Ce que fait le toucher (au point touché, en pixels de l'écran) ; faux : le toucher passe au sol dessous. */
   act: (sx: number, sy: number) => boolean | void;
+  /** Vrai : plus petite que le doigt, la cible se touche aussi autour de son dessin (48 px au moins, voir cibles.ts). */
+  agrandir?: boolean;
 }
 
 /**
@@ -346,13 +349,11 @@ export default function WorldCanvas2D({
       const rect = canvas.getBoundingClientRect();
       return { sx: ((e.clientX - rect.left) / rect.width) * canvas.width, sy: ((e.clientY - rect.top) / rect.height) * canvas.height };
     };
+    // Un panneau ou une créature plus petit que le doigt se touche jusqu'à 48 px de CSS autour de son milieu.
     const hitAt = (e: PointerEvent) => {
       const { sx, sy } = toCanvas(e);
-      for (let i = hits.length - 1; i >= 0; i--) {
-        const h = hits[i];
-        if (sx >= h.x && sx <= h.x + h.w && sy >= h.y && sy <= h.y + h.h) return h;
-      }
-      return null;
+      const largeur = canvas.getBoundingClientRect().width;
+      return cibleAu(hits, sx, sy, CIBLE_MIN_PX * (largeur > 0 ? canvas.width / largeur : 1));
     };
     const pickAt = (e: PointerEvent) => {
       const t = terrain.current;
@@ -660,7 +661,7 @@ export default function WorldCanvas2D({
             if (STYLE.shadows) shadow(sx + cam.s, sy, 6 * cam.s, 2 * cam.s);
             const r = placeSprite(ctx, sign, sx, sy, cam.s);
             const [biome, typeId] = st.quest.split(':');
-            newHits.push({ ...r, act: () => props.current.onPickQuest?.(biome as BiomeId, typeId) });
+            newHits.push({ ...r, agrandir: true, act: () => props.current.onPickQuest?.(biome as BiomeId, typeId) });
             // Le repère au-dessus : un losange qui flotte (à faire), ou les étoiles gagnées.
             const state = marks.get(st.quest);
             overlays.push(() => {
@@ -698,10 +699,13 @@ export default function WorldCanvas2D({
             const { id, kind } = wk.stroll;
             newHits.push({
               ...r,
+              agrandir: true,
+              // En chantier, sans panneau de créature, le toucher passe au sol (une case à poser à côté se pose).
               act: () => {
                 const q = props.current;
                 if (q.onPickCreature) q.onPickCreature(id, kind);
                 else if (!q.build) q.onPickIsland?.(id);
+                else return false;
               },
             });
           },
