@@ -20,7 +20,8 @@ export function Aid({ aid }: { aid: AidData }) {
  * En anglais (`lang: 'en'`), l'énoncé et les réponses sont lus en voix anglaise ; l'indice et l'aide restent en français.
  * Un item peut porter une question en français (`question`) : elle vient d'abord, lue en voix française, et l'énoncé
  * devient un document à lire (panneau, menu, horaire), encadré, une ligne par « \n », lu dans sa langue ; un document
- * en français (Observatoire des textes) est découpé en syllabes quand le réglage est actif.
+ * en français (Observatoire des textes) est découpé en syllabes quand le réglage est actif. Un document peut porter une
+ * image (`image`, un emoji) : le visuel qui l'accompagne (Signs), affiché devant lui, sans jamais donner la réponse.
  */
 export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
@@ -35,6 +36,7 @@ export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang
   const figure = item.figure as AidData | undefined;
   const choicesLang = item.choicesLang === 'fr' ? 'fr' : lang;
   const question = typeof item.question === 'string' ? item.question : '';
+  const image = typeof item.image === 'string' ? item.image : '';
 
   return (
     <div className="panel question calcul">
@@ -47,6 +49,11 @@ export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang
             <SpeakButton text={frenchTypography(question)} label="Question" />
           </div>
           <div className="notice">
+            {image && (
+              <span className="notice-picto" aria-hidden="true">
+                {image}
+              </span>
+            )}
             <ul className="notice-text" role="list" lang={langAttr(lang)}>
               {prompt.split('\n').map((line, i) => (
                 <li key={i} className="notice-line">
