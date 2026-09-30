@@ -979,6 +979,14 @@ export const ILES = [
           "c3.en.langue.groupe-verbal",
           "c3.en.langue.phrase"
         ]
+      },
+      {
+        "id": "story",
+        "title": "Story time",
+        "description": "Écouter une petite histoire en anglais et répondre à une question : qui, où, quand, dans quel ordre.",
+        "programme": [
+          "c3.en.ecouter.histoire"
+        ]
       }
     ]
   },
@@ -1114,6 +1122,15 @@ export const ILES = [
         "description": "Went, saw, bought : les verbes irréguliers au passé.",
         "programme": [
           "c4.en.langue.temps-verbaux"
+        ]
+      },
+      {
+        "id": "tale",
+        "title": "Tales",
+        "description": "Écouter un court récit au passé et suivre qui fait quoi, où, dans quel ordre et pourquoi.",
+        "programme": [
+          "c4.en.ecouter.recit",
+          "c4.en.ecouter.indices"
         ]
       }
     ]

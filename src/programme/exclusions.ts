@@ -43,7 +43,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.ma.espace.construction': HORS('Géométrie de construction : demande règle, équerre et compas.'),
   'c3.ma.espace.relations': A_COUVRIR('Perpendicularité, parallélisme, symétrie axiale : pas encore de figure dessinée pour cela.'),
   // ---------- Cycle 3, anglais ----------
-  'c3.en.ecouter.histoire': A_COUVRIR('Suivre une histoire simple à l’oral : les écoutes de la Baie des mots portent sur des mots, pas sur un récit.'),
   'c3.en.parler.reproduire-presenter': HORS(ORAL),
   'c3.en.ecrire.phrases': HORS(ECRITURE_LIBRE),
   'c3.en.culture.reperes': A_COUVRIR('Repères géographiques, historiques et culturels des pays anglophones : aucune mission ne les aborde.'),
@@ -64,8 +63,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.ma.d.transformations': A_COUVRIR('Translation, rotation, symétrie centrale, homothétie : pas encore de figure dessinée pour cela.'),
   'c4.ma.e.programmation': HORS('Algorithmique et programmation : hors du périmètre de l’application.'),
   // ---------- Cycle 4, anglais ----------
-  'c4.en.ecouter.recit': A_COUVRIR('Suivre un récit à l’oral : les écoutes portent sur des phrases et des questions, pas sur un récit.'),
-  'c4.en.ecouter.indices': A_COUVRIR('Identifier la situation d’énonciation à l’oral : aucune mission ne l’aborde.'),
   'c4.en.parler.presenter-raconter': HORS(ORAL),
   'c4.en.ecrire.dictee-fiche': A_COUVRIR('Écrire sous la dictée au cycle 4 : le Vocabulaire du portail le fait au niveau A1 seulement.'),
   'c4.en.ecrire.recit': HORS(ECRITURE_LIBRE),

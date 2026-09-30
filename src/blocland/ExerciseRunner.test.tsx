@@ -190,6 +190,35 @@ describe('lecture automatique', () => {
     expect(derniere).not.toContain(second.prompt as string);
   }, 30_000);
 
+  it('histoire à écouter (Story) : la consigne et la question, puis l’histoire en anglais ; la question et l’histoire ensuite', async () => {
+    const user = userEvent.setup();
+    const langues: string[] = [];
+    let enCours: { onend?: () => void } | null = null;
+    vi.stubGlobal('speechSynthesis', {
+      cancel: () => {},
+      getVoices: () => [],
+      speaking: false,
+      pending: false,
+      speak: (u: { text: string; lang: string; onend?: () => void }) => {
+        dit.push(u.text);
+        langues.push(u.lang);
+        enCours = u;
+      },
+    });
+    const story = getExercise('horloge-story-1')!;
+    renderAt('/aventure/horloge/story');
+    await loaded();
+    const [first, second] = runItems(story, runSeed(story));
+    expect(dit).toEqual([`${frenchTypography(story.instruction)} ${frenchTypography(first.question as string)}`]);
+    enCours!.onend?.();
+    expect(dit.at(-1)).toBe(first.spoken);
+    expect(langues).toEqual(['fr-FR', 'en-GB']);
+    await suivant(user, first.answer as string);
+    await waitFor(() => expect(dit.at(-1)).toBe(frenchTypography(second.question as string)));
+    enCours!.onend?.();
+    expect(dit.at(-1)).toBe(second.spoken);
+  }, 30_000);
+
   it('dictée à choix en LV2 (niveau 2) : la consigne, puis le mot dans la voix de la langue ; le mot seul ensuite', async () => {
     const user = userEvent.setup();
     // La synthèse simulée finit chaque phrase aussitôt dite (fin de la consigne, puis de chaque mot).

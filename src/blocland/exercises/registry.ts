@@ -13,6 +13,7 @@ import { FamillesScreen } from './FamillesScreen';
 import { EnclosScreen } from './EnclosScreen';
 import { BossScreen } from './BossScreen';
 import { CalculScreen } from './CalculScreen';
+import { RecitScreen } from './RecitScreen';
 
 export interface ScreenAnswer {
   /** Résultat par item de l'écran. */
@@ -49,6 +50,8 @@ export interface ScreenType {
   ordered?: boolean;
   /** L'écran lit lui-même son item en s'ouvrant (dictée) : la consigne n'est alors pas lue automatiquement. */
   speaksOnOpen?: boolean;
+  /** Une écoute d'histoire (Story) : la lecture automatique dit la question en français, puis l'histoire dans sa langue. */
+  listening?: boolean;
   /** Un tri (mots, sujets) : après une erreur, on peut refaire l'écran une fois (voir `retryAllowed`). */
   sorting?: boolean;
 }
@@ -146,6 +149,8 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   numbers: { component: CalculScreen, batch: 1 },
   ears: { component: DicteeItem, batch: 1, speaksOnOpen: true },
   signs: { component: CalculScreen, batch: 1 },
+  story: { component: RecitScreen, batch: 1, listening: true },
+  tale: { component: RecitScreen, batch: 1, listening: true },
   'to-be': { component: CalculScreen, batch: 1 },
   'have-got': { component: CalculScreen, batch: 1 },
   'present-simple': { component: CalculScreen, batch: 1 },

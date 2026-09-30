@@ -333,6 +333,157 @@ Pour tous les items :
    - indice : Question au passé : quel auxiliaire ?
    - explication : Question au passé : Did you see…?
 
+## Tales · `tale`
+
+- description : Écouter un court récit au passé et suivre qui fait quoi, où, dans quel ordre et pourquoi.
+- compétences : c4.en.ecouter.recit · c4.en.ecouter.indices
+- langue : en
+- consigne : Lis la question, puis écoute le récit en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.
+- bravo : Bien entendu !
+- erreur : {explanation}
+- bloc gagné : velours
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- langue des choix : fr
+
+### Niveau 1 · `theatre-tale-1`
+
+Pour tous les items :
+- aide « Écouter un récit au passé » :
+  - Écoute les prénoms : he = il (un garçon), she = elle (une fille).
+  - went = est allé ; took = a pris ; saw = a vu ; ran = a couru ; won = a gagné
+  - heard = a entendu ; woke up = a réveillé ; broke down = est tombée en panne ; forgot = a oublié
+  - thirteen = 13, thirty = 30 ; Tuesday = mardi, Thursday = jeudi
+  - neighbour = voisin, voisine ; honey = miel ; downstairs = en bas
+
+1. énoncé : "Last Saturday, Jack and his sister Amy went to the zoo.\nThey took the bus at nine.\nJack wanted to see the lions.\nAmy preferred the giraffes.\nAt noon, they had a picnic near the lake."
+   - question : Quels animaux Amy préférait-elle ?
+   - lu : Last Saturday, Jack and his sister Amy went to the zoo. They took the bus at nine. Jack wanted to see the lions. Amy preferred the giraffes. At noon, they had a picnic near the lake.
+   - choix : Les lions · Les girafes · Les singes
+   - réponse : Les girafes
+   - indice : Écoute la phrase qui commence par Amy.
+   - explication : Amy preferred the giraffes = Amy préférait les girafes. Les lions, c’est Jack qui voulait les voir.
+2. énoncé : "Ella’s party was on Thursday evening.\nShe invited her friend Noah.\nNoah arrived at seven.\nHe gave her a book.\nThey danced all evening."
+   - question : Quel jour était la fête d’Ella ?
+   - lu : Ella’s party was on Thursday evening. She invited her friend Noah. Noah arrived at seven. He gave her a book. They danced all evening.
+   - choix : Jeudi soir · Mardi soir · Samedi soir
+   - réponse : Jeudi soir
+   - indice : Tuesday ou Thursday ? Écoute le début du mot : « tiou », ou th, la langue entre les dents ?
+   - explication : on Thursday evening = jeudi soir. Thursday commence par th ; Tuesday (mardi) commence par « tiou ».
+3. énoncé : "Last summer, Omar and his cousin Leila visited Scotland.\nThey stayed there for thirteen days.\nIt rained a lot.\nOne day, they climbed a mountain.\nLeila took a lot of photos."
+   - question : Combien de jours Omar et Leila sont-ils restés en Écosse ?
+   - lu : Last summer, Omar and his cousin Leila visited Scotland. They stayed there for thirteen days. It rained a lot. One day, they climbed a mountain. Leila took a lot of photos.
+   - choix : 3 jours · 13 jours · 30 jours
+   - réponse : 13 jours
+   - indice : Écoute la fin du nombre : -teen ou -ty ?
+   - explication : thirteen days = 13 jours : on entend -teen à la fin, et la voix appuie dessus (thir-TEEN). Thirty (30) finit par -ty.
+4. énoncé : "On Monday morning, Mr Hill’s car broke down.\nSo he started walking to work.\nHis neighbour, Mrs Green, saw him in the street.\nShe drove him to the office.\nHe arrived just on time."
+   - question : Pourquoi M. Hill est-il parti au travail à pied ?
+   - lu : On Monday morning, Mr Hill’s car broke down. So he started walking to work. His neighbour, Mrs Green, saw him in the street. She drove him to the office. He arrived just on time.
+   - choix : Sa voiture était en panne · Il avait raté le bus · Il voulait faire du sport
+   - réponse : Sa voiture était en panne
+   - indice : Écoute la 1re phrase : qu’est-il arrivé à la voiture (car) de Mr Hill ?
+   - explication : Mr Hill’s car broke down = la voiture de M. Hill est tombée en panne. So (alors) il est parti à pied, jusqu’à ce que sa voisine le conduise au bureau.
+5. énoncé : "Last night, Sophie heard a noise in the kitchen.\nShe woke up her brother, Dan.\nThey went downstairs together.\nThe cat was on the table.\nIt was eating their chicken!"
+   - question : Qui faisait du bruit dans la cuisine ?
+   - lu : Last night, Sophie heard a noise in the kitchen. She woke up her brother, Dan. They went downstairs together. The cat was on the table. It was eating their chicken!
+   - choix : Dan, le frère de Sophie · Le chat · Le chien
+   - réponse : Le chat
+   - indice : Écoute la fin : qui était sur la table ?
+   - explication : The cat was on the table = le chat était sur la table : il mangeait leur poulet (chicken). Dan dormait : Sophie l’a réveillé (she woke up her brother).
+6. énoncé : "In June, Mia and Luke ran a race in the park.\nLuke started very fast.\nAfter ten minutes, he was tired.\nMia ran slowly, but she never stopped.\nIn the end, she won the race."
+   - question : Qui a gagné la course ?
+   - lu : In June, Mia and Luke ran a race in the park. Luke started very fast. After ten minutes, he was tired. Mia ran slowly, but she never stopped. In the end, she won the race.
+   - choix : Luke · Mia et Luke, ensemble · Mia
+   - réponse : Mia
+   - indice : Écoute la dernière phrase : he ou she won the race ?
+   - explication : In the end, she won the race = à la fin, elle a gagné la course. She = elle, c’est Mia. Luke est parti très vite, mais il était fatigué (he was tired).
+7. énoncé : "Last Tuesday, Kevin’s class went to a museum with Mr Brown.\nThey travelled by train.\nA guide showed them some old boats.\nKevin asked a lot of questions.\nMr Brown took photos."
+   - question : Qu’est-ce que le guide a montré à la classe ?
+   - lu : Last Tuesday, Kevin’s class went to a museum with Mr Brown. They travelled by train. A guide showed them some old boats. Kevin asked a lot of questions. Mr Brown took photos.
+   - choix : De vieux trains · De vieux bateaux · Des photos
+   - réponse : De vieux bateaux
+   - indice : Écoute la phrase qui commence par a guide.
+   - explication : A guide showed them some old boats = un guide leur a montré de vieux bateaux. Le train, c’est pour venir au musée ; les photos, c’est M. Brown qui les a prises.
+8. énoncé : "On Sunday morning, Grace made pancakes for her dad.\nBut she forgot the sugar.\nHer dad tasted one and smiled.\nThen he added some honey.\nIn the end, the pancakes were delicious."
+   - question : Qu’est-ce que Grace a oublié ?
+   - lu : On Sunday morning, Grace made pancakes for her dad. But she forgot the sugar. Her dad tasted one and smiled. Then he added some honey. In the end, the pancakes were delicious.
+   - choix : Le sucre · Le miel · Le lait
+   - réponse : Le sucre
+   - indice : Oublier se dit forget, au passé forgot. Écoute la 2e phrase.
+   - explication : She forgot the sugar = elle a oublié le sucre. Le miel (honey), c’est son père qui l’a ajouté ensuite.
+
+### Niveau 2 · `theatre-tale-2`
+
+Pour tous les items :
+- aide « Suivre un récit » :
+  - Qui parle ? Écoute le nom juste avant ou après said (a dit), asked (a demandé), answered (a répondu).
+  - first = d’abord ; then = ensuite ; when = quand ; so = alors ; but = mais
+  - lost = a perdu ; found = a trouvé ; broke = a cassé ; ran away = s’est sauvé
+  - a bench = un banc ; a ticket office = un guichet ; snow = la neige ; a cook = un cuisinier
+  - kicked = a tapé dans ; tasted = a goûté ; thanked = a remercié
+
+1. énoncé : "Chloe and Sam were at the bus stop.\nThe bus was late.\nSam said, “Let’s walk, it’s only ten minutes.”\nChloe answered, “No, it’s raining!”\nFive minutes later, the bus arrived."
+   - question : Qui voulait y aller à pied ?
+   - lu : Chloe and Sam were at the bus stop. The bus was late. Sam said: Let’s walk, it’s only ten minutes. Chloe answered: No, it’s raining! Five minutes later, the bus arrived.
+   - choix : Chloe · Sam · Le chauffeur du bus
+   - réponse : Sam
+   - indice : Écoute qui dit let’s walk (allons-y à pied) : le nom est juste avant said.
+   - explication : Sam said, “Let’s walk” : c’est Sam qui veut marcher. Chloe répond non, parce qu’il pleut (it’s raining).
+2. énoncé : "On Saturday, Ben lost his phone in the park.\nHe looked everywhere, but he didn’t find it.\nOn Monday, his teacher called him.\nA girl from his class found the phone under a bench.\nBen thanked her with a box of chocolates."
+   - question : Où la fille a-t-elle trouvé le téléphone ?
+   - lu : On Saturday, Ben lost his phone in the park. He looked everywhere, but he didn’t find it. On Monday, his teacher called him. A girl from his class found the phone under a bench. Ben thanked her with a box of chocolates.
+   - choix : Sous un banc · Dans la classe · Chez le professeur
+   - réponse : Sous un banc
+   - indice : Écoute la phrase avec found (a trouvé) : under veut dire sous.
+   - explication : She found the phone under a bench = elle a trouvé le téléphone sous un banc, au parc. La fille est de sa classe (from his class), et c’est le professeur qui a appelé Ben.
+3. énoncé : "Anna wanted to surprise her mum.\nFirst, she cleaned the living room.\nThen, she went to the shop and bought some flowers.\nWhen she came back, her mum was already home.\nAnna laughed and said, “Happy birthday, Mum!”"
+   - question : Qu’a fait Anna avant d’aller au magasin ?
+   - lu : Anna wanted to surprise her mum. First, she cleaned the living room. Then, she went to the shop and bought some flowers. When she came back, her mum was already home. Anna laughed and said: Happy birthday, Mum!
+   - choix : Elle a acheté des fleurs · Elle a appelé sa mère · Elle a nettoyé le salon
+   - réponse : Elle a nettoyé le salon
+   - indice : Avant le magasin, c’est la phrase avec first.
+   - explication : First, she cleaned the living room = d’abord, elle a nettoyé le salon. Then (ensuite), elle est allée au magasin acheter des fleurs.
+4. énoncé : "A woman ran to the ticket office.\nShe said to the man, “One ticket to York, please!”\nThe man answered, “Sorry, madam, the last train left five minutes ago.”\nShe sat down on a bench and waited for the morning."
+   - question : Où se passe l’histoire ?
+   - lu : A woman ran to the ticket office. She said to the man: One ticket to York, please! The man answered: Sorry, madam, the last train left five minutes ago. She sat down on a bench and waited for the morning.
+   - choix : À l’aéroport · À la gare · À l’arrêt de bus
+   - réponse : À la gare
+   - indice : Écoute ce qui est parti il y a cinq minutes : un avion, un train ou un bus ?
+   - explication : Un guichet (ticket office) et le dernier train (the last train) : on est à la gare. À l’aéroport, on parlerait d’un avion (a plane).
+5. énoncé : "In March, Leo’s family planned a day at the beach.\nThey woke up early on Sunday.\nBut when they opened the door, there was snow everywhere!\nSo they stayed at home and built a snowman."
+   - question : Pourquoi la famille de Leo est-elle restée à la maison ?
+   - lu : In March, Leo’s family planned a day at the beach. They woke up early on Sunday. But when they opened the door, there was snow everywhere! So they stayed at home and built a snowman.
+   - choix : Il pleuvait très fort · Ils se sont réveillés trop tard · Il y avait de la neige partout
+   - réponse : Il y avait de la neige partout
+   - indice : Écoute la phrase qui commence par but : qu’ont-ils vu en ouvrant la porte ?
+   - explication : There was snow everywhere = il y avait de la neige partout. So (alors) ils sont restés et ont fait un bonhomme de neige. Ils s’étaient levés tôt (early), pas tard.
+6. énoncé : "On Wednesday, Nina phoned her grandmother.\n“Can you come to my football match on Saturday?” she asked.\nHer grandmother said, “Of course! I’ll bring your little brother.”\nOn Saturday, they both came, and Nina scored a goal."
+   - question : À qui Nina parle-t-elle au téléphone ?
+   - lu : On Wednesday, Nina phoned her grandmother. Can you come to my football match on Saturday? she asked. Her grandmother said: Of course! I’ll bring your little brother. On Saturday, they both came, and Nina scored a goal.
+   - choix : À sa grand-mère · À son petit frère · À son entraîneur
+   - réponse : À sa grand-mère
+   - indice : Écoute la 1re phrase : Nina phoned (a téléphoné à) qui ?
+   - explication : Nina phoned her grandmother = Nina a appelé sa grand-mère. Le petit frère, c’est la grand-mère qui l’amène au match.
+7. énoncé : "Jake and Tom were playing football in the garden.\nTom kicked the ball too hard.\nIt broke Mrs Lee’s window, next door.\nFirst, the boys ran away.\nThen, they came back and said sorry to her."
+   - question : Juste après la vitre cassée, qu’ont fait les garçons ?
+   - lu : Jake and Tom were playing football in the garden. Tom kicked the ball too hard. It broke Mrs Lee’s window, next door. First, the boys ran away. Then, they came back and said sorry to her.
+   - choix : Ils se sont excusés · Ils se sont sauvés · Ils ont rejoué au foot
+   - réponse : Ils se sont sauvés
+   - indice : Écoute la phrase avec first, juste après la vitre cassée.
+   - explication : First, the boys ran away = d’abord, les garçons se sont sauvés. Then (ensuite), ils sont revenus s’excuser (said sorry).
+8. énoncé : "In the canteen, Lucas looked at his plate.\n“Fish again!” he said.\nThe cook smiled and answered, “No, it’s chicken today.”\nLucas tasted it: it was chicken, and it was very good."
+   - question : Qui a dit que c’était du poulet ?
+   - lu : In the canteen, Lucas looked at his plate. Fish again! he said. The cook smiled and answered: No, it’s chicken today. Lucas tasted it: it was chicken, and it was very good.
+   - choix : Lucas · Un ami de Lucas · Le cuisinier
+   - réponse : Le cuisinier
+   - indice : Écoute qui dit it’s chicken : le nom est juste avant answered.
+   - explication : The cook answered, “No, it’s chicken today” : c’est le cuisinier (the cook) qui parle. Lucas, lui, croyait que c’était du poisson (fish).
+
 ## Les plans
 
 | plan | nom | XP | coffre | quand c’est bâti |
