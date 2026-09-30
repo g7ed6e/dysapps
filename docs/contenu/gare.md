@@ -379,11 +379,11 @@ Pour tous les items :
 - langue des choix : fr
 - aide « Les fêtes de l’année » :
   - Halloween : 31 octobre ; treat = une friandise (des bonbons).
-  - Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.
-  - Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.
-  - Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.
-  - Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.
-  - St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis.
+  - bonfire = feu de joie ; fireworks = feu d’artifice.
+  - Remembrance Day : 11 novembre ; poppy = coquelicot.
+  - Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.
+  - Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.
+  - Independence Day = le jour de l’indépendance.
 
 1. énoncé : "Halloween tonight!\nPut on your costume and knock on the doors: “Trick or treat!”"
    - question : Que demandent les enfants aux voisins ?
@@ -391,56 +391,56 @@ Pour tous les items :
    - choix : Des bonbons · De l’argent · Des déguisements
    - réponse : Des bonbons
    - indice : Regarde la ligne Halloween du lexique : que veut dire treat ?
-   - explication : Trick or treat! = « une farce ou une friandise ! » : les enfants déguisés demandent des bonbons, sinon ils font une farce. La fête d’Halloween, le 31 octobre, vient d’Irlande et d’Écosse ; elle est très suivie aux États-Unis.
-2. énoncé : "Bonfire Night\n5th November\nBig bonfire and fireworks in the park at 7 pm"
+   - explication : Trick or treat, c’est « une farce ou une friandise » : les enfants déguisés demandent des bonbons. Sinon, ils font une farce.
+2. énoncé : "Bonfire Night in London\n5th November\nBig bonfire and fireworks in the park at 7 pm"
    - question : Dans quel pays se passe cette fête ?
-   - lu : Bonfire Night. The fifth of November. Big bonfire and fireworks in the park at seven p.m.
+   - lu : Bonfire Night in London. The fifth of November. Big bonfire and fireworks in the park at seven p.m.
    - choix : Au Royaume-Uni · Aux États-Unis · Au Canada
    - réponse : Au Royaume-Uni
-   - indice : Cherche Bonfire Night dans le lexique.
-   - explication : Bonfire Night, le 5 novembre, se fête au Royaume-Uni : un grand feu de joie (a bonfire) et un feu d’artifice (fireworks), en souvenir d’un complot contre le Parlement de Londres, en 1605. Aux États-Unis, le grand feu d’artifice, c’est le 4 juillet.
-3. énoncé : "Remembrance Day\n11th November\nWe wear a red poppy to remember the soldiers of the First World War."
+   - indice : Regarde la ville écrite sur la première ligne.
+   - explication : Bonfire Night se fête le 5 novembre au Royaume-Uni, dont Londres est la capitale. Aux États-Unis, le grand feu d’artifice, c’est le 4 juillet.
+3. énoncé : "Remembrance Day\n11th November\nWe wear a red poppy.\nWe remember the soldiers of the First World War."
    - question : Quelle fleur porte-t-on ce jour-là ?
-   - lu : Remembrance Day. The eleventh of November. We wear a red poppy to remember the soldiers of the First World War.
+   - lu : Remembrance Day. The eleventh of November. We wear a red poppy. We remember the soldiers of the First World War.
    - choix : Un coquelicot · Un bleuet · Une jonquille
    - réponse : Un coquelicot
    - indice : Cherche le mot poppy dans le lexique.
-   - explication : poppy = coquelicot : au Royaume-Uni, le 11 novembre, on porte un coquelicot rouge en souvenir des soldats de la Première Guerre mondiale. En France, la fleur du souvenir est le bleuet.
+   - explication : poppy = coquelicot : au Royaume-Uni, on le porte le 11 novembre en souvenir des soldats. En France, la fleur du souvenir est le bleuet.
 4. énoncé : "Dear Grandma,\nSee you on Thursday for Thanksgiving! Dad is cooking the turkey.\nLove, Sam"
    - question : Que cuisine le père de Sam ?
    - lu : Dear Grandma, see you on Thursday for Thanksgiving! Dad is cooking the turkey. Love, Sam.
    - choix : Une dinde · Un plat de Turquie · Une tarte au potiron
    - réponse : Une dinde
-   - indice : turkey, sans majuscule : cherche ce mot dans le lexique.
-   - explication : turkey = la dinde (Turkey, avec une majuscule, c’est la Turquie). À Thanksgiving, le quatrième jeudi de novembre, les familles des États-Unis partagent un grand repas, souvent une dinde.
+   - indice : Ici, turkey est un animal qu’on cuisine. Cherche-le dans le lexique.
+   - explication : turkey = la dinde, le plat du repas de Thanksgiving. Turkey avec une majuscule, c’est la Turquie.
 5. énoncé : "Boxing Day\n26th December\nFamily walk on the beach in the morning"
-   - question : Quand a lieu Boxing Day ?
+   - question : Quand a lieu cette fête ?
    - lu : Boxing Day. The twenty-sixth of December. Family walk on the beach in the morning.
    - choix : Le lendemain de Noël · La veille de Noël · Le premier jour de l’année
    - réponse : Le lendemain de Noël
    - indice : Regarde la date. Noël, c’est le 25 décembre.
-   - explication : Boxing Day, le 26 décembre, est le lendemain de Noël, un jour férié au Royaume-Uni. Il n’a rien à voir avec la boxe. La veille de Noël se dit Christmas Eve.
+   - explication : Le 26 décembre, c’est le lendemain de Noël. Ce jour férié n’a rien à voir avec la boxe.
 6. énoncé : "Pancake Day is on Tuesday!\nPancake race in the playground at lunchtime"
-   - question : À quelle fête française correspond Pancake Day ?
+   - question : Quelle fête française tombe le même jour ?
    - lu : Pancake Day is on Tuesday! Pancake race in the playground at lunchtime.
    - choix : Mardi gras · La Chandeleur · Pâques
    - réponse : Mardi gras
    - indice : Regarde le jour de la semaine : Tuesday, c’est mardi.
-   - explication : Pancake Day tombe un mardi, le même jour que Mardi gras : on mange des crêpes (pancakes) et on fait des courses en faisant sauter une crêpe dans une poêle. La Chandeleur, le 2 février, est une autre fête des crêpes, en France.
+   - explication : Pancake Day tombe un mardi, le jour de Mardi gras : on mange des crêpes. La Chandeleur, le 2 février, est une autre fête des crêpes.
 7. énoncé : "St Patrick’s Day\n17th March\nParade in Dublin: wear something green!"
    - question : De quel pays est-ce la fête nationale ?
    - lu : Saint Patrick’s Day. The seventeenth of March. Parade in Dublin. Wear something green!
    - choix : L’Irlande · L’Écosse · Le pays de Galles
    - réponse : L’Irlande
-   - indice : Dublin est une capitale. Cherche aussi St Patrick’s Day dans le lexique.
-   - explication : Le 17 mars, la Saint-Patrick est la fête nationale de l’Irlande, dont Dublin est la capitale : on porte du vert. L’Écosse fête Saint Andrew, le 30 novembre, et le pays de Galles Saint David, le 1er mars.
-8. énoncé : "Happy Fourth of July!\nBarbecue in the garden at 6 pm, fireworks at 9 pm"
+   - indice : Dublin est une capitale : de quel pays ?
+   - explication : Dublin est la capitale de l’Irlande : le 17 mars, c’est sa fête nationale. L’Écosse, elle, fête Saint Andrew, le 30 novembre.
+8. énoncé : "Happy Fourth of July!\nIndependence Day: barbecue at 6 pm,\nfireworks at 9 pm"
    - question : Que fête-t-on ce jour-là aux États-Unis ?
-   - lu : Happy Fourth of July! Barbecue in the garden at six p.m., fireworks at nine p.m.
-   - choix : La fête nationale · Thanksgiving · La fin de l’année scolaire
-   - réponse : La fête nationale
-   - indice : Cherche Fourth of July dans le lexique, puis compare avec le 14 juillet.
-   - explication : Le 4 juillet (Independence Day), les États-Unis fêtent leur indépendance, déclarée en 1776 : c’est leur fête nationale, comme le 14 juillet en France. Thanksgiving, c’est en novembre.
+   - lu : Happy Fourth of July! Independence Day. Barbecue at six p.m., fireworks at nine p.m.
+   - choix : L’indépendance du pays · La fin de l’année scolaire · Le début de l’été
+   - réponse : L’indépendance du pays
+   - indice : Cherche Independence Day dans le lexique.
+   - explication : Le 4 juillet, les États-Unis fêtent leur indépendance, déclarée en 1776. C’est leur fête nationale, comme le 14 juillet en France.
 
 ### Niveau 2 · `gare-traditions-2`
 
@@ -448,67 +448,68 @@ Pour tous les items :
 - langue des choix : fr
 - aide « Lieux et légendes » :
   - the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.
-  - London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.
-  - Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).
-  - Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.
-  - a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi.
+  - Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.
+  - river = fleuve ; the Thames = la Tamise ; loch = lac.
+  - outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.
+  - sword = épée ; stone = pierre ; true = vrai.
+  - a present = un cadeau ; by ship = en bateau.
 
-1. énoncé : "Sherwood Forest\nWalk in the forest of Robin Hood, the outlaw who stole from the rich to give to the poor."
+1. énoncé : "Sherwood Forest\nThe forest of Robin Hood, the outlaw.\nHe stole from the rich to give to the poor."
    - question : Que faisait Robin des Bois, d’après la légende ?
-   - lu : Sherwood Forest. Walk in the forest of Robin Hood, the outlaw who stole from the rich to give to the poor.
-   - choix : Il volait les riches pour aider les pauvres · Il volait les pauvres pour aider les riches · Il gardait la forêt du roi
-   - réponse : Il volait les riches pour aider les pauvres
-   - indice : Regarde les petits mots from (à, venant de) et to (pour, vers).
-   - explication : stole from the rich = il volait les riches ; to give to the poor = pour donner aux pauvres. Robin Hood est un héros des légendes anglaises, un hors-la-loi (an outlaw) qui vivait dans la forêt de Sherwood, près de Nottingham.
+   - lu : Sherwood Forest. The forest of Robin Hood, the outlaw. He stole from the rich to give to the poor.
+   - choix : Il aidait les pauvres · Il aidait les riches · Il gardait la forêt du roi
+   - réponse : Il aidait les pauvres
+   - indice : Regarde les petits mots from (à) et to (pour).
+   - explication : He stole from the rich to give to the poor : il volait les riches pour donner aux pauvres. Robin des Bois est un héros des légendes anglaises.
 2. énoncé : "The legend of King Arthur\nOnly the true king can pull the sword from the stone."
    - question : Qui peut retirer l’épée de la pierre ?
    - lu : The legend of King Arthur. Only the true king can pull the sword from the stone.
    - choix : Le vrai roi · Le plus fort des chevaliers · L’enchanteur Merlin
    - réponse : Le vrai roi
    - indice : Regarde les mots juste après only (seulement).
-   - explication : only the true king = seul le vrai roi. Dans la légende, les chevaliers les plus forts échouent ; le jeune Arthur retire l’épée et devient roi. Merlin est l’enchanteur qui le conseille.
-3. énoncé : "Loch Ness boat trip\nLook at the water: maybe you will see Nessie!"
+   - explication : only the true king = seul le vrai roi. Dans la légende, le jeune Arthur retire l’épée et devient roi.
+3. énoncé : "Loch Ness boat trip\nLook at the water!\nMaybe you will see Nessie, the monster of the lake."
    - question : Qui est Nessie ?
-   - lu : Loch Ness boat trip. Look at the water. Maybe you will see Nessie!
+   - lu : Loch Ness boat trip. Look at the water! Maybe you will see Nessie, the monster of the lake.
    - choix : Un monstre de légende · La capitaine du bateau · Une reine d’Écosse
    - réponse : Un monstre de légende
-   - indice : Regarde où il faut chercher Nessie : dans l’eau.
-   - explication : Nessie est le monstre du Loch Ness, un grand lac d’Écosse : on dit qu’il vit dans l’eau, mais personne ne l’a jamais vraiment vu. C’est une légende. maybe = peut-être.
-4. énoncé : "Hello from Edinburgh!\nWe visited the castle on the hill and walked down the old streets.\nSee you soon, Lina"
+   - indice : Regarde la dernière ligne : les mots après Nessie.
+   - explication : the monster of the lake = le monstre du lac : Nessie vivrait dans le Loch Ness, en Écosse. Personne ne l’a jamais vraiment vu : c’est une légende.
+4. énoncé : "Hello from Edinburgh, the capital of Scotland!\nWe visited the castle on the hill.\nSee you soon, Lina"
    - question : Dans quel pays Lina passe-t-elle ses vacances ?
-   - lu : Hello from Edinburgh! We visited the castle on the hill and walked down the old streets. See you soon, Lina.
+   - lu : Hello from Edinburgh, the capital of Scotland! We visited the castle on the hill. See you soon, Lina.
    - choix : En Écosse · En Irlande · Au pays de Galles
    - réponse : En Écosse
-   - indice : Edinburgh est une capitale : cherche-la dans le lexique.
-   - explication : Edinburgh (Édimbourg) est la capitale de l’Écosse ; son château est posé sur un ancien volcan. La capitale de l’Irlande est Dublin, celle du pays de Galles Cardiff.
-5. énoncé : "Welcome to Wales!\nCardiff Castle is open every day."
+   - indice : Regarde les mots après capital of.
+   - explication : Edinburgh (Édimbourg) est la capitale de l’Écosse (Scotland). La capitale de l’Irlande est Dublin.
+5. énoncé : "Welcome to Wales!\nLook up at the castle:\na red dragon is on the flag."
    - question : Quel animal voit-on sur le drapeau de ce pays ?
-   - lu : Welcome to Wales! Cardiff Castle is open every day.
+   - lu : Welcome to Wales! Look up at the castle. A red dragon is on the flag.
    - choix : Un dragon rouge · Un lion d’or · Une licorne blanche
    - réponse : Un dragon rouge
-   - indice : Wales, c’est le pays de Galles : cherche son symbole dans le lexique.
-   - explication : Wales = le pays de Galles : son drapeau porte un dragon rouge. Le lion est un symbole de l’Angleterre, la licorne celui de l’Écosse.
-6. énoncé : "London by boat\nFrom the Tower of London to Big Ben, on the River Thames"
+   - indice : Cherche flag dans le lexique, puis relis la dernière ligne.
+   - explication : Le drapeau du pays de Galles (Wales) porte un dragon rouge. Le lion est un symbole de l’Angleterre, la licorne de l’Écosse.
+6. énoncé : "London by boat\nFrom the Tower of London to Big Ben,\non the River Thames"
    - question : Sur quel fleuve navigue le bateau ?
    - lu : London by boat. From the Tower of London to Big Ben, on the River Thames.
    - choix : La Tamise · L’Hudson · Le Loch Ness
    - réponse : La Tamise
    - indice : Regarde le mot après river (fleuve).
-   - explication : the River Thames = la Tamise, le fleuve qui traverse Londres. L’Hudson coule à New York, et le Loch Ness est un lac d’Écosse.
+   - explication : the River Thames = la Tamise, le fleuve de Londres. L’Hudson coule à New York, et le Loch Ness est un lac d’Écosse.
 7. énoncé : "New York City tour\nThe Statue of Liberty was a present from France in 1886."
    - question : Quel pays a offert la statue de la Liberté ?
    - lu : New York City tour. The Statue of Liberty was a present from France in eighteen eighty-six.
    - choix : La France · Le Royaume-Uni · Les États-Unis
    - réponse : La France
    - indice : a present = un cadeau. Qui l’a donné ? Regarde le mot après from.
-   - explication : a present from France = un cadeau de la France. La statue de la Liberté a été offerte par la France aux États-Unis en 1886 ; elle accueille les bateaux qui arrivent à New York.
-8. énoncé : "Ellis Island Museum\nFrom 1892 to 1954, millions of immigrants arrived here by ship to start a new life in America."
+   - explication : a present from France = un cadeau de la France. La France a offert la statue aux États-Unis en 1886.
+8. énoncé : "Ellis Island Museum\nFrom 1892 to 1954,\nmillions of immigrants arrived here by ship.\nThey came to start a new life in America."
    - question : Qui arrivait sur cette île ?
-   - lu : Ellis Island Museum. From eighteen ninety-two to nineteen fifty-four, millions of immigrants arrived here by ship to start a new life in America.
+   - lu : Ellis Island Museum. From eighteen ninety-two to nineteen fifty-four, millions of immigrants arrived here by ship. They came to start a new life in America.
    - choix : Des immigrants venus en bateau · Des touristes venus en vacances · Des soldats en guerre
    - réponse : Des immigrants venus en bateau
    - indice : immigrants ressemble au mot français. Et by ship ?
-   - explication : immigrants = des personnes qui viennent vivre dans un autre pays ; by ship = en bateau ; a new life = une nouvelle vie. Ellis Island, près de New York, a accueilli des millions d’immigrants venus surtout d’Europe entre 1892 et 1954. C’est aujourd’hui un musée.
+   - explication : Des millions d’immigrants sont arrivés en bateau (by ship) sur cette île, près de New York. Ils venaient commencer une nouvelle vie.
 
 ## Les plans
 

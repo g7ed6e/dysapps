@@ -1253,8 +1253,8 @@ export const ILES = [
       },
       {
         "id": "medias",
-        "title": "School and media",
-        "description": "L’école au Royaume-Uni (year 7, uniforme, college) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.",
+        "title": "École et médias",
+        "description": "L’école au Royaume-Uni (classes, uniforme, lycée) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.",
         "programme": [
           "c4.en.culture.ecole-societe",
           "c4.en.culture.langages"

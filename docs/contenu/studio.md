@@ -380,9 +380,9 @@ Pour tous les items :
    - indice : Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !
    - explication : grapes = les raisins (une grappe = a bunch ; grapefruit = pamplemousse).
 
-## School and media · `medias`
+## École et médias · `medias`
 
-- description : L’école au Royaume-Uni (year 7, uniforme, college) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.
+- description : L’école au Royaume-Uni (classes, uniforme, lycée) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.
 - compétences : c4.en.culture.ecole-societe · c4.en.culture.langages
 - langue : en
 - consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
@@ -399,69 +399,69 @@ Pour tous les items :
 Pour tous les items :
 - langue des choix : fr
 - aide « L’école au Royaume-Uni » :
-  - Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.
+  - Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.
+  - Year 9 = la quatrième ; Year 10 = la troisième.
   - Faux ami : college = école après 16 ans ; collège = secondary school.
-  - Faux ami : a public school = une école privée et payante.
   - uniform : blazer (veste), tie (cravate) ; trainers = baskets.
-  - school dinner = repas de midi ; report = bulletin ; drama = théâtre.
-  - work experience = stage en entreprise ; club = activité après les cours.
+  - lunch = déjeuner ; report = bulletin ; drama = théâtre.
+  - to pay = payer ; work = travail ; a company = une entreprise.
 
 1. énoncé : "Name: Amir Khan\nClass: Year 7\nForm tutor: Mrs Lee"
    - question : En quelle classe serait Amir en France ?
    - lu : Name, Amir Khan. Class, Year 7. Form tutor, Mrs Lee.
-   - choix : En 6e · En CM2 · En 5e
-   - réponse : En 6e
+   - choix : En sixième · En CM2 · En cinquième
+   - réponse : En sixième
    - indice : Cherche Year 7 dans le lexique.
-   - explication : Year 7 = la première année de secondary school, à 11 ans : c’est la 6e. Year 8 correspond à la 5e. form tutor = le professeur principal.
+   - explication : Year 7, c’est la première année du collège, à 11 ans : la sixième. Year 8 correspond à la cinquième.
 2. énoncé : "School uniform\nNavy blazer, white shirt, school tie, black shoes\nNo trainers"
    - question : Quelles chaussures sont interdites ?
    - lu : School uniform. Navy blazer, white shirt, school tie, black shoes. No trainers.
    - choix : Les baskets · Les chaussures noires · Les chaussures de ville
    - réponse : Les baskets
    - indice : Regarde la ligne qui commence par no (pas de).
-   - explication : no trainers = pas de baskets. Beaucoup d’écoles britanniques ont un uniforme : une veste (blazer), une chemise, une cravate (tie) et des chaussures noires, qui sont donc permises.
+   - explication : no trainers = pas de baskets. Les chaussures noires font partie de l’uniforme : elles sont permises.
 3. énoncé : "School dinners\nMonday: fish and rice\nTuesday: vegetable pasta\nLunch break: 12.30 to 1.15"
-   - question : À quel moment de la journée mange-t-on le school dinner ?
+   - question : À quel moment de la journée mange-t-on ce repas ?
    - lu : School dinners. Monday, fish and rice. Tuesday, vegetable pasta. Lunch break, twelve thirty to one fifteen.
    - choix : À midi · Le soir · Le matin
    - réponse : À midi
    - indice : Regarde la dernière ligne : lunch, c’est le déjeuner.
-   - explication : school dinner = le repas de midi à la cantine, pendant la pause du déjeuner (lunch break). Ce n’est pas un dîner le soir, même si dinner ressemble à ce mot.
+   - explication : Ce repas se prend à la cantine, pendant la pause du déjeuner (lunch break). Dinner ressemble à dîner, mais ici, c’est le repas de midi.
 4. énoncé : "Oakfield College\nFor students aged 16 to 18\nArt, music, science"
-   - question : À quelle école française ressemble ce college ?
+   - question : À quelle école française ressemble cette école ?
    - lu : Oakfield College. For students aged sixteen to eighteen. Art, music, science.
    - choix : Au lycée · Au collège · À l’école primaire
    - réponse : Au lycée
    - indice : Regarde l’âge des élèves : de 16 à 18 ans.
-   - explication : Faux ami : en Angleterre, un college accueille les élèves de 16 à 18 ans, comme un lycée. Le collège français, de 11 à 15 ans, se dit secondary school.
+   - explication : Faux ami : en Angleterre, un college accueille les élèves de 16 à 18 ans, comme un lycée. Notre collège se dit secondary school.
 5. énoncé : "Ashcombe is a public school.\nParents pay a lot of money for it."
    - question : Quel genre d’école est Ashcombe ?
    - lu : Ashcombe is a public school. Parents pay a lot of money for it.
    - choix : Une école privée et payante · Une école publique et gratuite · Une école pour les adultes
    - réponse : Une école privée et payante
-   - indice : Faux ami : cherche public school dans le lexique, puis regarde la deuxième ligne.
-   - explication : En Angleterre, a public school est une école privée et chère : les parents paient (pay). L’école publique et gratuite se dit a state school.
+   - indice : Regarde la deuxième ligne : qui paie, et combien ?
+   - explication : Faux ami : en Angleterre, a public school est une école privée, où les parents paient cher. L’école publique et gratuite se dit a state school.
 6. énoncé : "School report – Year 8\nMaths: A\nEnglish: B\nComment: Tom works well, but he talks too much in class."
    - question : Que reproche le professeur à Tom ?
    - lu : School report, Year 8. Maths, A. English, B. Comment: Tom works well, but he talks too much in class.
    - choix : Il bavarde trop en classe · Il ne travaille pas assez · Il a de mauvaises notes
    - réponse : Il bavarde trop en classe
    - indice : Regarde ce qui vient après but (mais).
-   - explication : but annonce le reproche : he talks too much = il parle trop. Tom travaille bien (works well), et ses notes sont bonnes : dans ce bulletin (report), A est la meilleure note, puis B.
+   - explication : but annonce le reproche : he talks too much = il parle trop. Tom travaille bien, et A est la meilleure note.
 7. énoncé : "After-school clubs\nMonday: chess club\nWednesday: drama club\nFriday: football"
    - question : Quel jour peut-on faire du théâtre ?
    - lu : After-school clubs. Monday, chess club. Wednesday, drama club. Friday, football.
    - choix : Le mercredi · Le lundi · Le vendredi
    - réponse : Le mercredi
    - indice : Faux ami : cherche drama dans le lexique.
-   - explication : drama club = le club de théâtre (drama ne veut pas dire un drame). chess = les échecs. Au Royaume-Uni, les clubs ont souvent lieu à l’école, après les cours.
+   - explication : drama club = le club de théâtre (drama ne veut pas dire un drame). chess = les échecs.
 8. énoncé : "Year 10 work experience\nTwo weeks in a company, in June"
-   - question : Que font les élèves de Year 10 en juin ?
+   - question : Que font ces élèves en juin ?
    - lu : Year 10 work experience. Two weeks in a company, in June.
    - choix : Un stage en entreprise · Des examens de fin d’année · Un voyage scolaire
    - réponse : Un stage en entreprise
-   - indice : Cherche work experience dans le lexique.
-   - explication : work experience = un stage en entreprise (a company = une entreprise). Les élèves de Year 10 le font souvent pendant deux semaines, comme le stage de 3e en France.
+   - indice : Cherche work et company dans le lexique.
+   - explication : work experience = un stage en entreprise (a company). Il ressemble au stage de troisième en France.
 
 ### Niveau 2 · `studio-medias-2`
 
@@ -471,66 +471,66 @@ Pour tous les items :
   - TV guide = programme télé ; the news = le journal, les informations.
   - tickets = billets ; sold out = complet ; review = critique ; ending = fin.
   - post = message sur un réseau ; share = partager ; followers = abonnés.
-  - comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.
-  - En anglais, la virgule sépare les milliers : 5,000 = 5 000.
-  - pm = après midi : 7 pm = 19 h.
+  - cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.
+  - En anglais, une virgule sépare les milliers (five thousand : cinq mille).
+  - pm = après midi : 7 pm, c’est 19 heures.
 
 1. énoncé : "TV guide – Tonight\n6 pm: The News\n7 pm: Wild Islands\n8 pm: Quiz Night"
-   - question : Quelle émission passe à 18 h ?
+   - question : Quelle émission passe à 18 heures ?
    - lu : TV guide. Tonight. Six p.m., The News. Seven p.m., Wild Islands. Eight p.m., Quiz Night.
    - choix : Le journal télévisé · Une nouvelle série · Une émission de jeux
    - réponse : Le journal télévisé
-   - indice : 6 pm = 18 h. Cherche ensuite the news dans le lexique.
-   - explication : 6 pm = 18 h : The News = le journal télévisé, les informations. Ce n’est pas une nouvelle série : the news, ce sont les nouvelles du jour. L’émission de jeux (Quiz Night) passe à 20 h.
-2. énoncé : "The Blue Owls in concert\nSaturday, 8 pm\nTickets: £12\nSOLD OUT"
+   - indice : 6 pm, c’est 18 heures. Cherche ensuite the news dans le lexique.
+   - explication : 6 pm, c’est 18 heures : The News, c’est le journal télévisé. L’émission de jeux passe à 20 heures.
+2. énoncé : "The Blue Owls in concert\nSaturday, 8 pm\nTickets: £12\nSold out"
    - question : Peut-on encore acheter un billet ?
    - lu : The Blue Owls in concert. Saturday, eight p.m. Tickets, twelve pounds. Sold out.
    - choix : Non, c’est complet · Oui, pour 12 livres · Oui, à l’entrée
    - réponse : Non, c’est complet
    - indice : Regarde la dernière ligne, puis cherche-la dans le lexique.
-   - explication : sold out = complet : tous les billets (tickets) sont vendus. Le prix, 12 livres, ne sert plus à rien.
+   - explication : sold out = complet : tous les billets (tickets) sont vendus. Le prix ne sert plus à rien.
 3. énoncé : "@lina_skates\nFirst day at the new skatepark!\nShare this post if you love skating."
    - question : Que demande Lina à ceux qui lisent son message ?
    - lu : Lina skates. First day at the new skatepark! Share this post if you love skating.
    - choix : De partager son message · D’acheter un skate · De venir la voir au skatepark
    - réponse : De partager son message
    - indice : Cherche share et post dans le lexique.
-   - explication : share this post = partage ce message. a post = un message publié sur un réseau ; to share = partager.
+   - explication : share this post = partage ce message. a post, c’est un message publié sur un réseau.
 4. énoncé : "Mia’s cooking channel\n2,000 followers\nNew video every Sunday"
    - question : Combien de personnes suivent la chaîne de Mia ?
    - choix : 2 · 20 · 2 000
    - réponse : 2 000
    - lu : Mia’s cooking channel. Two thousand followers. New video every Sunday.
-   - indice : En anglais, la virgule d’un nombre sépare les milliers.
-   - explication : 2,000 = 2 000 : en anglais, la virgule sépare les milliers (en français, on laisse un espace). followers = les abonnés, ceux qui suivent la chaîne.
+   - indice : Dans un nombre anglais, la virgule sépare les milliers.
+   - explication : 2,000 se lit two thousand : deux mille. followers = les abonnés, ceux qui suivent la chaîne.
 5. énoncé : "The Space Podcast\nEpisode 12: Can we live on Mars?\nOn the school radio, Friday at lunchtime"
    - question : Comment découvre-t-on cet épisode ?
    - lu : The Space Podcast. Episode twelve. Can we live on Mars? On the school radio, Friday at lunchtime.
    - choix : En l’écoutant · En le lisant · En le regardant à la télé
    - réponse : En l’écoutant
    - indice : Cherche podcast dans le lexique, et regarde où il passe.
-   - explication : a podcast = une émission à écouter ; celui-ci passe à la radio de l’école (school radio), vendredi à midi.
+   - explication : a podcast est une émission à écouter. Celui-ci passe à la radio du collège, vendredi midi.
 6. énoncé : "New comic!\nCaptain Tide saves the harbour\nOut on Wednesday in all bookshops"
    - question : Qu’est-ce qui sort mercredi ?
    - lu : New comic! Captain Tide saves the harbour. Out on Wednesday in all bookshops.
    - choix : Une bande dessinée · Un dessin animé · Une émission comique
    - réponse : Une bande dessinée
-   - indice : Faux ami : cherche comic dans le lexique.
-   - explication : a comic = une bande dessinée, vendue en librairie (bookshop). Un dessin animé se dit a cartoon, et comic ne veut pas dire comique ici.
+   - indice : Où le trouve-t-on ? Regarde la dernière ligne.
+   - explication : a comic = une bande dessinée, vendue en librairie (bookshop). Un dessin animé se dit a cartoon.
 7. énoncé : "Film review: Moon over Harbour Street\n4 stars out of 5\nGreat story, but the ending is too sad."
    - question : Que pense le critique de la fin du film ?
    - lu : Film review. Moon over Harbour Street. Four stars out of five. Great story, but the ending is too sad.
    - choix : Elle est trop triste · Elle est très drôle · Elle est vraiment parfaite
    - réponse : Elle est trop triste
    - indice : Regarde ce qui vient après but (mais).
-   - explication : but annonce la critique : the ending = la fin ; too sad = trop triste. L’histoire est bonne (great story), d’où 4 étoiles sur 5.
-8. énoncé : "Bay Radio News\nStudents clean the beach: 200 bags of rubbish in one morning"
+   - explication : but annonce la critique : the ending is too sad = la fin est trop triste. L’histoire, elle, est bonne.
+8. énoncé : "Bay Radio News\nStudents clean the beach:\n200 bags of rubbish in one morning"
    - question : De quoi parle cette information ?
    - lu : Bay Radio News. Students clean the beach. Two hundred bags of rubbish in one morning.
    - choix : Des élèves nettoient la plage · Des élèves partent en vacances à la plage · La plage est fermée
    - réponse : Des élèves nettoient la plage
    - indice : clean = nettoyer. Et rubbish ?
-   - explication : students clean the beach = des élèves nettoient la plage ; rubbish = les déchets. Un titre d’information (a headline) est court et au présent.
+   - explication : students clean the beach = des élèves nettoient la plage. rubbish = les déchets.
 
 ## Les plans
 

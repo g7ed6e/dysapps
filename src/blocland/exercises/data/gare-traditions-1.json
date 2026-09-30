@@ -19,27 +19,27 @@
       "choicesLang": "fr",
       "answer": "Des bonbons",
       "hint": "Regarde la ligne Halloween du lexique : que veut dire treat ?",
-      "explanation": "Trick or treat! = « une farce ou une friandise ! » : les enfants déguisés demandent des bonbons, sinon ils font une farce. La fête d’Halloween, le 31 octobre, vient d’Irlande et d’Écosse ; elle est très suivie aux États-Unis.",
+      "explanation": "Trick or treat, c’est « une farce ou une friandise » : les enfants déguisés demandent des bonbons. Sinon, ils font une farce.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-1-1",
-      "prompt": "Bonfire Night\n5th November\nBig bonfire and fireworks in the park at 7 pm",
+      "prompt": "Bonfire Night in London\n5th November\nBig bonfire and fireworks in the park at 7 pm",
       "question": "Dans quel pays se passe cette fête ?",
-      "spoken": "Bonfire Night. The fifth of November. Big bonfire and fireworks in the park at seven p.m.",
+      "spoken": "Bonfire Night in London. The fifth of November. Big bonfire and fireworks in the park at seven p.m.",
       "choices": [
         "Au Royaume-Uni",
         "Aux États-Unis",
@@ -47,28 +47,28 @@
       ],
       "choicesLang": "fr",
       "answer": "Au Royaume-Uni",
-      "hint": "Cherche Bonfire Night dans le lexique.",
-      "explanation": "Bonfire Night, le 5 novembre, se fête au Royaume-Uni : un grand feu de joie (a bonfire) et un feu d’artifice (fireworks), en souvenir d’un complot contre le Parlement de Londres, en 1605. Aux États-Unis, le grand feu d’artifice, c’est le 4 juillet.",
+      "hint": "Regarde la ville écrite sur la première ligne.",
+      "explanation": "Bonfire Night se fête le 5 novembre au Royaume-Uni, dont Londres est la capitale. Aux États-Unis, le grand feu d’artifice, c’est le 4 juillet.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-1-2",
-      "prompt": "Remembrance Day\n11th November\nWe wear a red poppy to remember the soldiers of the First World War.",
+      "prompt": "Remembrance Day\n11th November\nWe wear a red poppy.\nWe remember the soldiers of the First World War.",
       "question": "Quelle fleur porte-t-on ce jour-là ?",
-      "spoken": "Remembrance Day. The eleventh of November. We wear a red poppy to remember the soldiers of the First World War.",
+      "spoken": "Remembrance Day. The eleventh of November. We wear a red poppy. We remember the soldiers of the First World War.",
       "choices": [
         "Un coquelicot",
         "Un bleuet",
@@ -77,18 +77,18 @@
       "choicesLang": "fr",
       "answer": "Un coquelicot",
       "hint": "Cherche le mot poppy dans le lexique.",
-      "explanation": "poppy = coquelicot : au Royaume-Uni, le 11 novembre, on porte un coquelicot rouge en souvenir des soldats de la Première Guerre mondiale. En France, la fleur du souvenir est le bleuet.",
+      "explanation": "poppy = coquelicot : au Royaume-Uni, on le porte le 11 novembre en souvenir des soldats. En France, la fleur du souvenir est le bleuet.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
@@ -105,19 +105,19 @@
       ],
       "choicesLang": "fr",
       "answer": "Une dinde",
-      "hint": "turkey, sans majuscule : cherche ce mot dans le lexique.",
-      "explanation": "turkey = la dinde (Turkey, avec une majuscule, c’est la Turquie). À Thanksgiving, le quatrième jeudi de novembre, les familles des États-Unis partagent un grand repas, souvent une dinde.",
+      "hint": "Ici, turkey est un animal qu’on cuisine. Cherche-le dans le lexique.",
+      "explanation": "turkey = la dinde, le plat du repas de Thanksgiving. Turkey avec une majuscule, c’est la Turquie.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
@@ -125,7 +125,7 @@
     {
       "key": "gare-traditions-1-4",
       "prompt": "Boxing Day\n26th December\nFamily walk on the beach in the morning",
-      "question": "Quand a lieu Boxing Day ?",
+      "question": "Quand a lieu cette fête ?",
       "spoken": "Boxing Day. The twenty-sixth of December. Family walk on the beach in the morning.",
       "choices": [
         "Le lendemain de Noël",
@@ -135,18 +135,18 @@
       "choicesLang": "fr",
       "answer": "Le lendemain de Noël",
       "hint": "Regarde la date. Noël, c’est le 25 décembre.",
-      "explanation": "Boxing Day, le 26 décembre, est le lendemain de Noël, un jour férié au Royaume-Uni. Il n’a rien à voir avec la boxe. La veille de Noël se dit Christmas Eve.",
+      "explanation": "Le 26 décembre, c’est le lendemain de Noël. Ce jour férié n’a rien à voir avec la boxe.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
@@ -154,7 +154,7 @@
     {
       "key": "gare-traditions-1-5",
       "prompt": "Pancake Day is on Tuesday!\nPancake race in the playground at lunchtime",
-      "question": "À quelle fête française correspond Pancake Day ?",
+      "question": "Quelle fête française tombe le même jour ?",
       "spoken": "Pancake Day is on Tuesday! Pancake race in the playground at lunchtime.",
       "choices": [
         "Mardi gras",
@@ -164,18 +164,18 @@
       "choicesLang": "fr",
       "answer": "Mardi gras",
       "hint": "Regarde le jour de la semaine : Tuesday, c’est mardi.",
-      "explanation": "Pancake Day tombe un mardi, le même jour que Mardi gras : on mange des crêpes (pancakes) et on fait des courses en faisant sauter une crêpe dans une poêle. La Chandeleur, le 2 février, est une autre fête des crêpes, en France.",
+      "explanation": "Pancake Day tombe un mardi, le jour de Mardi gras : on mange des crêpes. La Chandeleur, le 2 février, est une autre fête des crêpes.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
@@ -192,48 +192,48 @@
       ],
       "choicesLang": "fr",
       "answer": "L’Irlande",
-      "hint": "Dublin est une capitale. Cherche aussi St Patrick’s Day dans le lexique.",
-      "explanation": "Le 17 mars, la Saint-Patrick est la fête nationale de l’Irlande, dont Dublin est la capitale : on porte du vert. L’Écosse fête Saint Andrew, le 30 novembre, et le pays de Galles Saint David, le 1er mars.",
+      "hint": "Dublin est une capitale : de quel pays ?",
+      "explanation": "Dublin est la capitale de l’Irlande : le 17 mars, c’est sa fête nationale. L’Écosse, elle, fête Saint Andrew, le 30 novembre.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-1-7",
-      "prompt": "Happy Fourth of July!\nBarbecue in the garden at 6 pm, fireworks at 9 pm",
+      "prompt": "Happy Fourth of July!\nIndependence Day: barbecue at 6 pm,\nfireworks at 9 pm",
       "question": "Que fête-t-on ce jour-là aux États-Unis ?",
-      "spoken": "Happy Fourth of July! Barbecue in the garden at six p.m., fireworks at nine p.m.",
+      "spoken": "Happy Fourth of July! Independence Day. Barbecue at six p.m., fireworks at nine p.m.",
       "choices": [
-        "La fête nationale",
-        "Thanksgiving",
-        "La fin de l’année scolaire"
+        "L’indépendance du pays",
+        "La fin de l’année scolaire",
+        "Le début de l’été"
       ],
       "choicesLang": "fr",
-      "answer": "La fête nationale",
-      "hint": "Cherche Fourth of July dans le lexique, puis compare avec le 14 juillet.",
-      "explanation": "Le 4 juillet (Independence Day), les États-Unis fêtent leur indépendance, déclarée en 1776 : c’est leur fête nationale, comme le 14 juillet en France. Thanksgiving, c’est en novembre.",
+      "answer": "L’indépendance du pays",
+      "hint": "Cherche Independence Day dans le lexique.",
+      "explanation": "Le 4 juillet, les États-Unis fêtent leur indépendance, déclarée en 1776. C’est leur fête nationale, comme le 14 juillet en France.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les fêtes de l’année",
           "lines": [
             "Halloween : 31 octobre ; treat = une friandise (des bonbons).",
-            "Bonfire Night (Royaume-Uni) : 5 novembre ; fireworks = feu d’artifice.",
-            "Remembrance Day (Royaume-Uni) : 11 novembre ; poppy = coquelicot.",
-            "Thanksgiving (États-Unis) : 4e jeudi de novembre ; turkey = dinde.",
-            "Boxing Day : 26 décembre ; Pancake Day : le jour de Mardi gras.",
-            "St Patrick’s Day : 17 mars, Irlande ; Fourth of July : États-Unis."
+            "bonfire = feu de joie ; fireworks = feu d’artifice.",
+            "Remembrance Day : 11 novembre ; poppy = coquelicot.",
+            "Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.",
+            "Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.",
+            "Independence Day = le jour de l’indépendance."
           ]
         }
       }

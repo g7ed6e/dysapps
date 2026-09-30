@@ -9,7 +9,7 @@
     {
       "key": "studio-medias-2-0",
       "prompt": "TV guide – Tonight\n6 pm: The News\n7 pm: Wild Islands\n8 pm: Quiz Night",
-      "question": "Quelle émission passe à 18 h ?",
+      "question": "Quelle émission passe à 18 heures ?",
       "spoken": "TV guide. Tonight. Six p.m., The News. Seven p.m., Wild Islands. Eight p.m., Quiz Night.",
       "choices": [
         "Le journal télévisé",
@@ -18,8 +18,8 @@
       ],
       "choicesLang": "fr",
       "answer": "Le journal télévisé",
-      "hint": "6 pm = 18 h. Cherche ensuite the news dans le lexique.",
-      "explanation": "6 pm = 18 h : The News = le journal télévisé, les informations. Ce n’est pas une nouvelle série : the news, ce sont les nouvelles du jour. L’émission de jeux (Quiz Night) passe à 20 h.",
+      "hint": "6 pm, c’est 18 heures. Cherche ensuite the news dans le lexique.",
+      "explanation": "6 pm, c’est 18 heures : The News, c’est le journal télévisé. L’émission de jeux passe à 20 heures.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -28,16 +28,16 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
     },
     {
       "key": "studio-medias-2-1",
-      "prompt": "The Blue Owls in concert\nSaturday, 8 pm\nTickets: £12\nSOLD OUT",
+      "prompt": "The Blue Owls in concert\nSaturday, 8 pm\nTickets: £12\nSold out",
       "question": "Peut-on encore acheter un billet ?",
       "spoken": "The Blue Owls in concert. Saturday, eight p.m. Tickets, twelve pounds. Sold out.",
       "choices": [
@@ -48,7 +48,7 @@
       "choicesLang": "fr",
       "answer": "Non, c’est complet",
       "hint": "Regarde la dernière ligne, puis cherche-la dans le lexique.",
-      "explanation": "sold out = complet : tous les billets (tickets) sont vendus. Le prix, 12 livres, ne sert plus à rien.",
+      "explanation": "sold out = complet : tous les billets (tickets) sont vendus. Le prix ne sert plus à rien.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -57,9 +57,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
@@ -77,7 +77,7 @@
       "choicesLang": "fr",
       "answer": "De partager son message",
       "hint": "Cherche share et post dans le lexique.",
-      "explanation": "share this post = partage ce message. a post = un message publié sur un réseau ; to share = partager.",
+      "explanation": "share this post = partage ce message. a post, c’est un message publié sur un réseau.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -86,9 +86,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
@@ -105,8 +105,8 @@
       ],
       "choicesLang": "fr",
       "answer": "2 000",
-      "hint": "En anglais, la virgule d’un nombre sépare les milliers.",
-      "explanation": "2,000 = 2 000 : en anglais, la virgule sépare les milliers (en français, on laisse un espace). followers = les abonnés, ceux qui suivent la chaîne.",
+      "hint": "Dans un nombre anglais, la virgule sépare les milliers.",
+      "explanation": "2,000 se lit two thousand : deux mille. followers = les abonnés, ceux qui suivent la chaîne.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -115,9 +115,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
@@ -135,7 +135,7 @@
       "choicesLang": "fr",
       "answer": "En l’écoutant",
       "hint": "Cherche podcast dans le lexique, et regarde où il passe.",
-      "explanation": "a podcast = une émission à écouter ; celui-ci passe à la radio de l’école (school radio), vendredi à midi.",
+      "explanation": "a podcast est une émission à écouter. Celui-ci passe à la radio du collège, vendredi midi.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -144,9 +144,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
@@ -163,8 +163,8 @@
       ],
       "choicesLang": "fr",
       "answer": "Une bande dessinée",
-      "hint": "Faux ami : cherche comic dans le lexique.",
-      "explanation": "a comic = une bande dessinée, vendue en librairie (bookshop). Un dessin animé se dit a cartoon, et comic ne veut pas dire comique ici.",
+      "hint": "Où le trouve-t-on ? Regarde la dernière ligne.",
+      "explanation": "a comic = une bande dessinée, vendue en librairie (bookshop). Un dessin animé se dit a cartoon.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,9 +173,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
@@ -193,7 +193,7 @@
       "choicesLang": "fr",
       "answer": "Elle est trop triste",
       "hint": "Regarde ce qui vient après but (mais).",
-      "explanation": "but annonce la critique : the ending = la fin ; too sad = trop triste. L’histoire est bonne (great story), d’où 4 étoiles sur 5.",
+      "explanation": "but annonce la critique : the ending is too sad = la fin est trop triste. L’histoire, elle, est bonne.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -202,16 +202,16 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }
     },
     {
       "key": "studio-medias-2-7",
-      "prompt": "Bay Radio News\nStudents clean the beach: 200 bags of rubbish in one morning",
+      "prompt": "Bay Radio News\nStudents clean the beach:\n200 bags of rubbish in one morning",
       "question": "De quoi parle cette information ?",
       "spoken": "Bay Radio News. Students clean the beach. Two hundred bags of rubbish in one morning.",
       "choices": [
@@ -222,7 +222,7 @@
       "choicesLang": "fr",
       "answer": "Des élèves nettoient la plage",
       "hint": "clean = nettoyer. Et rubbish ?",
-      "explanation": "students clean the beach = des élèves nettoient la plage ; rubbish = les déchets. Un titre d’information (a headline) est court et au présent.",
+      "explanation": "students clean the beach = des élèves nettoient la plage. rubbish = les déchets.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -231,9 +231,9 @@
             "TV guide = programme télé ; the news = le journal, les informations.",
             "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
             "post = message sur un réseau ; share = partager ; followers = abonnés.",
-            "comic = bande dessinée ; cartoon = dessin animé ; podcast = émission audio.",
-            "En anglais, la virgule sépare les milliers : 5,000 = 5 000.",
-            "pm = après midi : 7 pm = 19 h."
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
           ]
         }
       }

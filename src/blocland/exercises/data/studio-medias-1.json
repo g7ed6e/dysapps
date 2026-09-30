@@ -12,25 +12,25 @@
       "question": "En quelle classe serait Amir en France ?",
       "spoken": "Name, Amir Khan. Class, Year 7. Form tutor, Mrs Lee.",
       "choices": [
-        "En 6e",
+        "En sixième",
         "En CM2",
-        "En 5e"
+        "En cinquième"
       ],
       "choicesLang": "fr",
-      "answer": "En 6e",
+      "answer": "En sixième",
       "hint": "Cherche Year 7 dans le lexique.",
-      "explanation": "Year 7 = la première année de secondary school, à 11 ans : c’est la 6e. Year 8 correspond à la 5e. form tutor = le professeur principal.",
+      "explanation": "Year 7, c’est la première année du collège, à 11 ans : la sixième. Year 8 correspond à la cinquième.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -48,18 +48,18 @@
       "choicesLang": "fr",
       "answer": "Les baskets",
       "hint": "Regarde la ligne qui commence par no (pas de).",
-      "explanation": "no trainers = pas de baskets. Beaucoup d’écoles britanniques ont un uniforme : une veste (blazer), une chemise, une cravate (tie) et des chaussures noires, qui sont donc permises.",
+      "explanation": "no trainers = pas de baskets. Les chaussures noires font partie de l’uniforme : elles sont permises.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -67,7 +67,7 @@
     {
       "key": "studio-medias-1-2",
       "prompt": "School dinners\nMonday: fish and rice\nTuesday: vegetable pasta\nLunch break: 12.30 to 1.15",
-      "question": "À quel moment de la journée mange-t-on le school dinner ?",
+      "question": "À quel moment de la journée mange-t-on ce repas ?",
       "spoken": "School dinners. Monday, fish and rice. Tuesday, vegetable pasta. Lunch break, twelve thirty to one fifteen.",
       "choices": [
         "À midi",
@@ -77,18 +77,18 @@
       "choicesLang": "fr",
       "answer": "À midi",
       "hint": "Regarde la dernière ligne : lunch, c’est le déjeuner.",
-      "explanation": "school dinner = le repas de midi à la cantine, pendant la pause du déjeuner (lunch break). Ce n’est pas un dîner le soir, même si dinner ressemble à ce mot.",
+      "explanation": "Ce repas se prend à la cantine, pendant la pause du déjeuner (lunch break). Dinner ressemble à dîner, mais ici, c’est le repas de midi.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -96,7 +96,7 @@
     {
       "key": "studio-medias-1-3",
       "prompt": "Oakfield College\nFor students aged 16 to 18\nArt, music, science",
-      "question": "À quelle école française ressemble ce college ?",
+      "question": "À quelle école française ressemble cette école ?",
       "spoken": "Oakfield College. For students aged sixteen to eighteen. Art, music, science.",
       "choices": [
         "Au lycée",
@@ -106,18 +106,18 @@
       "choicesLang": "fr",
       "answer": "Au lycée",
       "hint": "Regarde l’âge des élèves : de 16 à 18 ans.",
-      "explanation": "Faux ami : en Angleterre, un college accueille les élèves de 16 à 18 ans, comme un lycée. Le collège français, de 11 à 15 ans, se dit secondary school.",
+      "explanation": "Faux ami : en Angleterre, un college accueille les élèves de 16 à 18 ans, comme un lycée. Notre collège se dit secondary school.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -134,19 +134,19 @@
       ],
       "choicesLang": "fr",
       "answer": "Une école privée et payante",
-      "hint": "Faux ami : cherche public school dans le lexique, puis regarde la deuxième ligne.",
-      "explanation": "En Angleterre, a public school est une école privée et chère : les parents paient (pay). L’école publique et gratuite se dit a state school.",
+      "hint": "Regarde la deuxième ligne : qui paie, et combien ?",
+      "explanation": "Faux ami : en Angleterre, a public school est une école privée, où les parents paient cher. L’école publique et gratuite se dit a state school.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -164,18 +164,18 @@
       "choicesLang": "fr",
       "answer": "Il bavarde trop en classe",
       "hint": "Regarde ce qui vient après but (mais).",
-      "explanation": "but annonce le reproche : he talks too much = il parle trop. Tom travaille bien (works well), et ses notes sont bonnes : dans ce bulletin (report), A est la meilleure note, puis B.",
+      "explanation": "but annonce le reproche : he talks too much = il parle trop. Tom travaille bien, et A est la meilleure note.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -193,18 +193,18 @@
       "choicesLang": "fr",
       "answer": "Le mercredi",
       "hint": "Faux ami : cherche drama dans le lexique.",
-      "explanation": "drama club = le club de théâtre (drama ne veut pas dire un drame). chess = les échecs. Au Royaume-Uni, les clubs ont souvent lieu à l’école, après les cours.",
+      "explanation": "drama club = le club de théâtre (drama ne veut pas dire un drame). chess = les échecs.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }
@@ -212,7 +212,7 @@
     {
       "key": "studio-medias-1-7",
       "prompt": "Year 10 work experience\nTwo weeks in a company, in June",
-      "question": "Que font les élèves de Year 10 en juin ?",
+      "question": "Que font ces élèves en juin ?",
       "spoken": "Year 10 work experience. Two weeks in a company, in June.",
       "choices": [
         "Un stage en entreprise",
@@ -221,19 +221,19 @@
       ],
       "choicesLang": "fr",
       "answer": "Un stage en entreprise",
-      "hint": "Cherche work experience dans le lexique.",
-      "explanation": "work experience = un stage en entreprise (a company = une entreprise). Les élèves de Year 10 le font souvent pendant deux semaines, comme le stage de 3e en France.",
+      "hint": "Cherche work et company dans le lexique.",
+      "explanation": "work experience = un stage en entreprise (a company). Il ressemble au stage de troisième en France.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "L’école au Royaume-Uni",
           "lines": [
-            "Year 7 = la 6e (11 ans) ; Year 8 = 5e ; Year 9 = 4e ; Year 10 = 3e.",
+            "Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.",
+            "Year 9 = la quatrième ; Year 10 = la troisième.",
             "Faux ami : college = école après 16 ans ; collège = secondary school.",
-            "Faux ami : a public school = une école privée et payante.",
             "uniform : blazer (veste), tie (cravate) ; trainers = baskets.",
-            "school dinner = repas de midi ; report = bulletin ; drama = théâtre.",
-            "work experience = stage en entreprise ; club = activité après les cours."
+            "lunch = déjeuner ; report = bulletin ; drama = théâtre.",
+            "to pay = payer ; work = travail ; a company = une entreprise."
           ]
         }
       }

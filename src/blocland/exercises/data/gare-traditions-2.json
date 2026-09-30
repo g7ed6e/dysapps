@@ -8,28 +8,29 @@
   "items": [
     {
       "key": "gare-traditions-2-0",
-      "prompt": "Sherwood Forest\nWalk in the forest of Robin Hood, the outlaw who stole from the rich to give to the poor.",
+      "prompt": "Sherwood Forest\nThe forest of Robin Hood, the outlaw.\nHe stole from the rich to give to the poor.",
       "question": "Que faisait Robin des Bois, d’après la légende ?",
-      "spoken": "Sherwood Forest. Walk in the forest of Robin Hood, the outlaw who stole from the rich to give to the poor.",
+      "spoken": "Sherwood Forest. The forest of Robin Hood, the outlaw. He stole from the rich to give to the poor.",
       "choices": [
-        "Il volait les riches pour aider les pauvres",
-        "Il volait les pauvres pour aider les riches",
+        "Il aidait les pauvres",
+        "Il aidait les riches",
         "Il gardait la forêt du roi"
       ],
       "choicesLang": "fr",
-      "answer": "Il volait les riches pour aider les pauvres",
-      "hint": "Regarde les petits mots from (à, venant de) et to (pour, vers).",
-      "explanation": "stole from the rich = il volait les riches ; to give to the poor = pour donner aux pauvres. Robin Hood est un héros des légendes anglaises, un hors-la-loi (an outlaw) qui vivait dans la forêt de Sherwood, près de Nottingham.",
+      "answer": "Il aidait les pauvres",
+      "hint": "Regarde les petits mots from (à) et to (pour).",
+      "explanation": "He stole from the rich to give to the poor : il volait les riches pour donner aux pauvres. Robin des Bois est un héros des légendes anglaises.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
@@ -47,26 +48,27 @@
       "choicesLang": "fr",
       "answer": "Le vrai roi",
       "hint": "Regarde les mots juste après only (seulement).",
-      "explanation": "only the true king = seul le vrai roi. Dans la légende, les chevaliers les plus forts échouent ; le jeune Arthur retire l’épée et devient roi. Merlin est l’enchanteur qui le conseille.",
+      "explanation": "only the true king = seul le vrai roi. Dans la légende, le jeune Arthur retire l’épée et devient roi.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-2-2",
-      "prompt": "Loch Ness boat trip\nLook at the water: maybe you will see Nessie!",
+      "prompt": "Loch Ness boat trip\nLook at the water!\nMaybe you will see Nessie, the monster of the lake.",
       "question": "Qui est Nessie ?",
-      "spoken": "Loch Ness boat trip. Look at the water. Maybe you will see Nessie!",
+      "spoken": "Loch Ness boat trip. Look at the water! Maybe you will see Nessie, the monster of the lake.",
       "choices": [
         "Un monstre de légende",
         "La capitaine du bateau",
@@ -74,27 +76,28 @@
       ],
       "choicesLang": "fr",
       "answer": "Un monstre de légende",
-      "hint": "Regarde où il faut chercher Nessie : dans l’eau.",
-      "explanation": "Nessie est le monstre du Loch Ness, un grand lac d’Écosse : on dit qu’il vit dans l’eau, mais personne ne l’a jamais vraiment vu. C’est une légende. maybe = peut-être.",
+      "hint": "Regarde la dernière ligne : les mots après Nessie.",
+      "explanation": "the monster of the lake = le monstre du lac : Nessie vivrait dans le Loch Ness, en Écosse. Personne ne l’a jamais vraiment vu : c’est une légende.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-2-3",
-      "prompt": "Hello from Edinburgh!\nWe visited the castle on the hill and walked down the old streets.\nSee you soon, Lina",
+      "prompt": "Hello from Edinburgh, the capital of Scotland!\nWe visited the castle on the hill.\nSee you soon, Lina",
       "question": "Dans quel pays Lina passe-t-elle ses vacances ?",
-      "spoken": "Hello from Edinburgh! We visited the castle on the hill and walked down the old streets. See you soon, Lina.",
+      "spoken": "Hello from Edinburgh, the capital of Scotland! We visited the castle on the hill. See you soon, Lina.",
       "choices": [
         "En Écosse",
         "En Irlande",
@@ -102,27 +105,28 @@
       ],
       "choicesLang": "fr",
       "answer": "En Écosse",
-      "hint": "Edinburgh est une capitale : cherche-la dans le lexique.",
-      "explanation": "Edinburgh (Édimbourg) est la capitale de l’Écosse ; son château est posé sur un ancien volcan. La capitale de l’Irlande est Dublin, celle du pays de Galles Cardiff.",
+      "hint": "Regarde les mots après capital of.",
+      "explanation": "Edinburgh (Édimbourg) est la capitale de l’Écosse (Scotland). La capitale de l’Irlande est Dublin.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-2-4",
-      "prompt": "Welcome to Wales!\nCardiff Castle is open every day.",
+      "prompt": "Welcome to Wales!\nLook up at the castle:\na red dragon is on the flag.",
       "question": "Quel animal voit-on sur le drapeau de ce pays ?",
-      "spoken": "Welcome to Wales! Cardiff Castle is open every day.",
+      "spoken": "Welcome to Wales! Look up at the castle. A red dragon is on the flag.",
       "choices": [
         "Un dragon rouge",
         "Un lion d’or",
@@ -130,25 +134,26 @@
       ],
       "choicesLang": "fr",
       "answer": "Un dragon rouge",
-      "hint": "Wales, c’est le pays de Galles : cherche son symbole dans le lexique.",
-      "explanation": "Wales = le pays de Galles : son drapeau porte un dragon rouge. Le lion est un symbole de l’Angleterre, la licorne celui de l’Écosse.",
+      "hint": "Cherche flag dans le lexique, puis relis la dernière ligne.",
+      "explanation": "Le drapeau du pays de Galles (Wales) porte un dragon rouge. Le lion est un symbole de l’Angleterre, la licorne de l’Écosse.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-2-5",
-      "prompt": "London by boat\nFrom the Tower of London to Big Ben, on the River Thames",
+      "prompt": "London by boat\nFrom the Tower of London to Big Ben,\non the River Thames",
       "question": "Sur quel fleuve navigue le bateau ?",
       "spoken": "London by boat. From the Tower of London to Big Ben, on the River Thames.",
       "choices": [
@@ -159,17 +164,18 @@
       "choicesLang": "fr",
       "answer": "La Tamise",
       "hint": "Regarde le mot après river (fleuve).",
-      "explanation": "the River Thames = la Tamise, le fleuve qui traverse Londres. L’Hudson coule à New York, et le Loch Ness est un lac d’Écosse.",
+      "explanation": "the River Thames = la Tamise, le fleuve de Londres. L’Hudson coule à New York, et le Loch Ness est un lac d’Écosse.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
@@ -187,26 +193,27 @@
       "choicesLang": "fr",
       "answer": "La France",
       "hint": "a present = un cadeau. Qui l’a donné ? Regarde le mot après from.",
-      "explanation": "a present from France = un cadeau de la France. La statue de la Liberté a été offerte par la France aux États-Unis en 1886 ; elle accueille les bateaux qui arrivent à New York.",
+      "explanation": "a present from France = un cadeau de la France. La France a offert la statue aux États-Unis en 1886.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
     },
     {
       "key": "gare-traditions-2-7",
-      "prompt": "Ellis Island Museum\nFrom 1892 to 1954, millions of immigrants arrived here by ship to start a new life in America.",
+      "prompt": "Ellis Island Museum\nFrom 1892 to 1954,\nmillions of immigrants arrived here by ship.\nThey came to start a new life in America.",
       "question": "Qui arrivait sur cette île ?",
-      "spoken": "Ellis Island Museum. From eighteen ninety-two to nineteen fifty-four, millions of immigrants arrived here by ship to start a new life in America.",
+      "spoken": "Ellis Island Museum. From eighteen ninety-two to nineteen fifty-four, millions of immigrants arrived here by ship. They came to start a new life in America.",
       "choices": [
         "Des immigrants venus en bateau",
         "Des touristes venus en vacances",
@@ -215,17 +222,18 @@
       "choicesLang": "fr",
       "answer": "Des immigrants venus en bateau",
       "hint": "immigrants ressemble au mot français. Et by ship ?",
-      "explanation": "immigrants = des personnes qui viennent vivre dans un autre pays ; by ship = en bateau ; a new life = une nouvelle vie. Ellis Island, près de New York, a accueilli des millions d’immigrants venus surtout d’Europe entre 1892 et 1954. C’est aujourd’hui un musée.",
+      "explanation": "Des millions d’immigrants sont arrivés en bateau (by ship) sur cette île, près de New York. Ils venaient commencer une nouvelle vie.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Lieux et légendes",
           "lines": [
             "the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.",
-            "London, sur la Tamise (the Thames) ; Edinburgh : capitale de l’Écosse.",
-            "Symboles : dragon rouge (Wales), lion (Angleterre), licorne (Écosse).",
-            "Légendes : Robin Hood, le roi Arthur, Nessie, le monstre du Loch Ness.",
-            "a present = un cadeau ; by ship = en bateau ; outlaw = hors-la-loi."
+            "Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.",
+            "river = fleuve ; the Thames = la Tamise ; loch = lac.",
+            "outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.",
+            "sword = épée ; stone = pierre ; true = vrai.",
+            "a present = un cadeau ; by ship = en bateau."
           ]
         }
       }
