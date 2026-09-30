@@ -107,6 +107,46 @@ Le test a aussi confirmé ce qu’il faut garder : les séances courtes, la corr
 
 Le rattachement des missions aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Une pull request par lot ; chacune retire de `src/programme/exclusions.ts` les exclusions « à couvrir » qu’elle couvre. Certains manques n’ont pas d’exclusion : la compétence est déjà citée par une mission, mais une partie n’est pas travaillée.
 
+### Le plan, étape par étape
+
+Les étapes du contenu portent le préfixe **C-n**, jamais « lot n » (réservé au [cadrage Archipéo](cadrage-archipeo.md)), ni R, DA, U, J ou LV2, qui sont d’autres chantiers. Une étape est une pull request, sauf mention contraire ; elle retire des exclusions ce qu’elle couvre. Le détail de chaque thème (pièges, aides, livraisons passées) est dans les points numérotés plus bas. Ordre décidé le 30/09/2026 : d’abord les étapes courtes qui ne changent pas le monde, puis l’île des Grandeurs, qui demande un cadrage avec le directeur artistique.
+
+Maths 6e, automatismes (point 2) :
+
+- **C-1. Rivière des fractions : division posée.** Quatrième mission, la division et les opérations posées, sur le thème du partage.
+- **C-2. Volcan des décimaux : grands nombres et encadrements.** Quatrième mission, « Nombres géants », puis encadrer une fraction, ranger et intercaler des décimaux (niveaux de plus). Lève `c3.ma.nombres.grands-entiers`.
+
+Français 6e (point 3) :
+
+- **C-3. Ferme des accords et Carrière des mots : accords et mots-outils.** L’accord dans le groupe nominal et le sujet inversé (Ferme) ; les mots-outils manquants de la liste officielle (Coffre à mots). Lève `c3.fr.langue.genre-nombre` et `c3.fr.langue.sujet`.
+- **C-4. Tour du lecteur : « Étages du sens ».** La compréhension d’un texte court, les reprises (qui est « il », « elle », « celui-ci »). Lève `c3.fr.lecture.reprises`.
+- **C-5. Tour du lecteur : « Vitraux des phrases ».** Attribut, épithète, complément du nom, types et formes de phrases, phrase simple et complexe. Lève `c3.fr.langue.attribut-gn`, `c3.fr.langue.types-formes` et `c3.fr.langue.phrase-complexe`.
+- **C-6. Carrière des mots : synonymes et polysémie.** Sans exclusion à lever (la compétence est citée, une partie n’est pas travaillée).
+
+Français 5e à 3e (points 4 et 6) :
+
+- **C-7. Homophones, champ lexical et niveaux de langue.** « mais / mes / met » à l’Aiguillage (Carrefour des homophones, mission jamais livrée) ; champ lexical et niveaux de langue au Cabinet des mots.
+- **C-8. Observatoire des textes : phrase et document.** Attribut du COD, phrase simple et complexe, types et formes de phrase, document composite, en niveaux de plus (l’île a déjà quatre missions). Lève `c4.fr.langue.fonctions-etendues`, `c4.fr.langue.phrase-complexe`, `c4.fr.langue.types-formes`, `c4.fr.lecture.documents` et, en partie, `c3.fr.lecture.documents`.
+
+Anglais (point 7) :
+
+- **C-9. Baie des mots : « Signs ».** Quatrième mission, lire des mots et des phrases très simples avec une image, en 6e. Lève `c3.en.lire.textes-courts`.
+- **C-10. Suivre une histoire à l’oral.** En 6e puis au cycle 4. Lève `c3.en.ecouter.histoire` et `c4.en.ecouter.recit`.
+- **C-11. Repères culturels.** Fêtes, lieux, héros de l’imaginaire, école, médias des pays anglophones. Lève les `c3.en.culture.*` et `c4.en.culture.*` qui restent (ceux que la LV2 couvre ne sont pas concernés).
+
+Île des Grandeurs, maths 6e (point 1) :
+
+- **C-12. L’île et sa première mission.** Cadrage avec le directeur artistique et les deux consultants d’univers (nom, créature, Gardien, place dans les Premiers Rivages, plans), rendu avec l’artiste technique 3D, puis durées et horaires (Horloges). Les Premiers Rivages passent à quatre îles de maths.
+- **C-13. Aires, angles et périmètres (Clôtures), conversions et volumes.** Lève `c3.ma.grandeurs.aire`, `angles`, `unites-conversions` et `volume`.
+- **C-14. Tableaux, diagrammes et prix.** Une mission de données, sous un autre identifiant et un autre titre que « Relevés », et les problèmes à étapes avec des prix. Lève `c3.ma.nombres.donnees`.
+
+Sans lot prévu :
+
+- **C-15. Géométrie avec figures.** Figures et solides, parallélisme et symétrie en 6e ; aires et volumes, agrandissement, angles et triangles, triangles semblables, transformations au cycle 4 (`c3.ma.espace.figures-solides`, `c3.ma.espace.relations`, `c4.ma.c.aires-volumes`, `c4.ma.c.agrandissement`, `c4.ma.d.angles-triangles`, `c4.ma.d.triangles-parallelogramme`, `c4.ma.d.transformations`). Il faut d’abord des aides qui dessinent ces figures, comme l’aide `graph` du Phare ; l’étape sera découpée quand elle sera cadrée.
+- Restent aussi sans étape la ponctuation et le contexte des œuvres en français de cycle 4, l’énonciation à l’oral et la dictée de cycle 4 en anglais.
+
+La LV2 (point 9) garde ses étapes LV2-n, dans son propre fil.
+
 Une mission des anciens cadrages n’a jamais été livrée : « mais / mes / met » à l’Aiguillage. Les missions **Lecture** le sont, sous d’autres noms : lire un diagramme aux Relevés de l’Observatoire des données, lire un graphique aux Faisceaux du Phare. L’aide `value-table` (tableau de valeurs) n’existe pas : les Images du Phare utilisent `ratio-table`, les Faisceaux l’aide `graph`.
 
 1. **Île « Grandeurs » (maths 6e, Premiers Rivages)** : durées et horaires au-delà d’une heure et tableaux d’horaires (Horloges), conversions (Balances), aires et angles, périmètre du carré et du cercle (Clôtures), tableaux et diagrammes (une mission de données, sous un autre identifiant et un autre titre que la mission « Relevés », `releves`, de l’Observatoire des données : le niveau adapté est retenu par type, et deux missions du même nom brouilleraient les repères), volumes et contenances, problèmes à étapes avec des prix. Les Premiers Rivages passent à quatre îles de maths. Le « Carnet du passeur » (Plaine) couvre déjà les premiers périmètres, les durées de moins d’une heure et les problèmes à deux étapes. Exclusions : `c3.ma.grandeurs.aire`, `volume`, `angles`, `unites-conversions`, `c3.ma.nombres.donnees`, en partie `c3.fr.lecture.documents`. Reste aussi la correspondance entre volume et contenance de `c4.ma.c.conversions`, compétence citée par les Balances (un manque sans exclusion). Les conversions de l’île ne reprennent pas le type `balances` : le niveau adapté est retenu par type, il serait partagé avec le Marché.
