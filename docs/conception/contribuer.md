@@ -27,8 +27,6 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
    - un **fragment du journal** : un fichier nouveau `docs/_journal/<nom-de-la-branche>.md`, sans titre, qui dit ce que change la pull request pour l’élève ou pour le contenu (vérifié par la CI). Le titre `## <version> — <date>` est ajouté à la publication ; deux pull requests parallèles écrivent deux fichiers différents et ne se gênent pas ;
    - le **manuel** (`docs/manuel/`) mis à jour si un écran, un geste, un réglage ou une règle du jeu change, ses **captures** relues si l’écran montré change (la CI les refait sur `main` ; `npm run docs:captures` les montre en local) ;
    - les **principes** et la **conception** (`docs/pedagogie/principes.md`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
-   - l’**état des chantiers** (`docs/pilotage/chantiers.md`) : la ligne du chantier que la pull request fait avancer ;
-   - le **game design** (`docs/game-design/`) si une règle du jeu, un système ou un personnage change ;
    - le **README** cohérent avec le reste.
 4. **Le contenu pédagogique** (programmes officiels, archipel, pages des îles, homophones, lecture, maths et anglais du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une mission ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/docs/generate.mjs`.
 5. **Le programme officiel** : une mission cite dans `programme` les compétences qu’elle travaille (`src/programme/`) ; une compétence nouvellement couverte quitte `src/programme/exclusions.ts`, une compétence qui perd sa mission y entre avec un motif. Le test de couverture le rappelle. Voir [Le référentiel des programmes](programmes.md).
@@ -61,9 +59,6 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 
 | Document | Tenu par | Rôle |
 | --- | --- | --- |
-| [État des chantiers](../pilotage/chantiers.md) | Chaque pull request, pour la ligne de son chantier | Où en est chaque chantier, ce qui attend le mainteneur ; le point d’entrée du pilotage |
-| [Le game design](../game-design/index.md), [les décisions](../game-design/decisions.md), [les propositions](../game-design/propositions/modele.md) | Directeur artistique ; les pages de chaque univers par son consultant | Le jeu tel qu’il est et tel qu’on le veut, là où l’on itère ; une proposition GD-n par changement |
-| [Personnages et Gardiens](../game-design/personnages.md) | Le générateur | Produite depuis les données du jeu, jamais écrite à la main |
 | [Principes dys](../pedagogie/principes.md) | Contenu | Les règles dys ; une contrainte pour tous les agents |
 | [Bonnes pratiques dys](bonnes-pratiques-dys.md) | Référent dys | D’où viennent les règles dys, ce qui reste à surveiller ; il propose aussi les évolutions des principes |
 | [Bonnes pratiques du code](bonnes-pratiques-code.md) | Expert frontend | L’état de l’art pour la pile du dépôt, ce qui reste à surveiller ; il en propose les mises à jour |
@@ -78,7 +73,7 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 | Le manuel (`docs/manuel/`) | Celui qui change l’écran | Ce que l’élève voit aujourd’hui |
 | Les pages du contenu pédagogique | Le générateur | Produites depuis les données du jeu, jamais écrites à la main |
 
-Une question qui touche aux deux (une mission qui doit produire une conséquence visible dans le monde, le nombre de blocs que rapporte un exercice) se partage ainsi : ce qu’un exercice enseigne, ses items et sa correction relèvent du contenu ; ce que la réussite rapporte et change dans le monde relève du game design. Une décision prise s’écrit dans le cadrage de celui qui la tient ; une décision de game design s’inscrit aussi dans [les décisions](../game-design/decisions.md).
+Une question qui touche aux deux (une mission qui doit produire une conséquence visible dans le monde, le nombre de blocs que rapporte un exercice) se partage ainsi : ce qu’un exercice enseigne, ses items et sa correction relèvent du contenu ; ce que la réussite rapporte et change dans le monde relève du game design. Une décision prise s’écrit dans le cadrage de celui qui la tient.
 
 ## Écrire pour la documentation
 

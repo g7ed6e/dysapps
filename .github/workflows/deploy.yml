@@ -53,6 +53,9 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: npm run docs:check -- "origin/$BASE_REF"
+      # La page des personnages du pilotage (hors du site) suit les données du jeu.
+      - name: Vérifier la page des personnages du pilotage
+        run: npm run pilotage:personnages -- --check
       - run: npm test
       # L'application, telle que Cloudflare la construit (base « / ») : vérification seulement, rien n'est publié d'ici.
       - run: npm run build

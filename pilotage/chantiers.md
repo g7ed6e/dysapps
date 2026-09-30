@@ -2,7 +2,7 @@
 
 Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026.**
 
-Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (voir [Contribuer](../conception/contribuer.md)). Une décision de game design ne s’écrit pas ici mais dans le [game design](../game-design/index.md).
+Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](game-design/index.md).
 
 ## Les références
 
@@ -10,14 +10,14 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Préfixe | Chantier | Plan détaillé |
 | --- | --- | --- |
-| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../conception/cadrage-archipeo.md), §6 |
-| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../conception/cadrage-archipeo.md), piste Rendu |
+| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../docs/conception/cadrage-archipeo.md), §6 |
+| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../docs/conception/cadrage-archipeo.md), piste Rendu |
 | **DA-1** à **DA-33** | Les retouches de la revue d’ensemble du directeur artistique | Liste tenue hors du dépôt par le fil « Revue d’ensemble du DA » ; résumé ci-dessous |
-| **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3 |
-| **U0** à **U6** | Les univers | [Plusieurs univers](../conception/univers.md), §6 |
-| **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../conception/cadrage-contenu.md), la LV2 |
-| **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
-| **GD-n** | Les propositions de game design | [Game design](../game-design/propositions/modele.md) |
+| **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../docs/conception/separation-jeu-rendu.md), §3 |
+| **U0** à **U6** | Les univers | [Plusieurs univers](../docs/conception/univers.md), §6 |
+| **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../docs/conception/cadrage-contenu.md), la LV2 |
+| **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../docs/conception/cadrage-contenu.md), le plan |
+| **GD-n** | Les propositions de game design | [Game design](game-design/propositions/modele.md) |
 
 À ne pas confondre : **DA-01** à **DA-05** (avec un zéro) sont les règles de direction artistique du dossier Archipéo (`design/archipeo/direction-artistique.md`), **DA-1** à **DA-33** les retouches du directeur artistique.
 
@@ -85,7 +85,7 @@ J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes 
 | U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
 | U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
 
-Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../conception/univers.md)).
+Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../docs/conception/univers.md)).
 
 ### La deuxième langue vivante (LV2)
 
@@ -96,7 +96,7 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 
 ### Le contenu (C)
 
-Le plan C-1 à C-15 est dans le [cadrage du contenu](../conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). Aucune étape n’est commencée ; **C-1 attend le mot du mainteneur**. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
+Le plan C-1 à C-15 est dans le [cadrage du contenu](../docs/conception/cadrage-contenu.md) (#248), avec les points de la relecture du 28 septembre rangés sous C-2, C-3 et C-6 à C-9 (#249). Aucune étape n’est commencée ; **C-1 attend le mot du mainteneur**. Ordre décidé : d’abord les étapes courtes qui ne changent pas le monde (C-1 à C-11), puis l’île des Grandeurs (C-12 à C-14, à cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D) ; C-15 (géométrie à figures) n’a pas de lot.
 
 Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
 
@@ -109,8 +109,8 @@ Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le
 
 Relevées le 30 septembre 2026 en consolidant ; chacune se corrige dans le document qui la porte, par le fil qui le tient.
 
-- L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../conception/univers.md), §5).
-- « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../conception/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3).
-- U1 attend encore l’étiquette `blocland-reference` d’après [Plusieurs univers](../conception/univers.md), §6, alors qu’elle est posée sur `031b029`.
+- L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../docs/conception/univers.md), §5).
+- « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../docs/conception/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../docs/conception/separation-jeu-rendu.md), §3).
+- U1 attend encore l’étiquette `blocland-reference` d’après [Plusieurs univers](../docs/conception/univers.md), §6, alors qu’elle est posée sur `031b029`.
 - U4 n’est pas marqué fait dans sa ligne alors que J6, J7 et J8 le disent fait.
 - La 2D est « plus un repli » depuis le 29 septembre, mais le cadrage du lot 7 (30 septembre) dit qu’elle est « le repli d’un appareil sans WebGL ».
