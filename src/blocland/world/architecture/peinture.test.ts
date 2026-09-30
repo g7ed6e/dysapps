@@ -171,6 +171,9 @@ describe('Les murs peints', () => {
     for (const v of [MOTIF.delave, MOTIF.pierreEntiere, MOTIF.montante | MOTIF.descendante, MOTIF.sabliereBasse, MOTIF.sabliereHaute, MOTIF.chaperon, MOTIF.soubassement])
       expect(MOTIF_GLSL).toContain(`& ${v})`);
     for (const v of [COLOMBAGE.soubassement, COLOMBAGE.sabliere, COLOMBAGE.chaperon, COLOMBAGE.poteau, COLOMBAGE.jeuBas, COLOMBAGE.jeuHaut]) expect(MOTIF_GLSL).toContain(v.toFixed(4));
+    // Les dérivées avant le premier retour de `peindreLeMotif` (hors d'un flot uniforme, elles ne sont pas définies).
+    const corps = MOTIF_GLSL.slice(MOTIF_GLSL.indexOf('vec3 peindreLeMotif'));
+    expect(corps.lastIndexOf('fwidth')).toBeLessThan(corps.indexOf('return'));
   });
 
   it('une vitre prise dans un mur ne coupe pas la façade : ses voisines restent des murs droits, sans décharge', () => {

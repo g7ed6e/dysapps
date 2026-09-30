@@ -180,19 +180,20 @@ float bandeDuMotif(float d, float w, float f) {
   return 1.0 - smoothstep(w - 0.5 * f, w + 0.5 * f, d);
 }
 vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
+  // Les dérivées (fwidth) avant tout retour conditionnel : hors d'un flot uniforme, elles ne sont pas définies.
+  vec3 an = abs(n);
+  float u = an.x > 0.5 ? pos.z : pos.x;
+  float du = max(fwidth(u), 1e-5);
+  float dv = max(fwidth(pos.y), 1e-5);
   int m = int(motif + 0.5);
   if (m <= 0) return c;
   bool delave = (m & ${MOTIF.delave}) != 0;
   vec3 bois = delave ? uRoles[3] : uRoles[0];
   vec3 socle = delave ? uRoles[4] : uRoles[1];
   vec3 chap = delave ? uRoles[5] : uRoles[2];
-  vec3 an = abs(n);
   if (an.y > 0.5) return (m & ${MOTIF.pierreEntiere}) != 0 ? chap : c;
-  float u = an.x > 0.5 ? pos.z : pos.x;
   float fu = fract(u);
   float fv = fract(pos.y);
-  float du = max(fwidth(u), 1e-5);
-  float dv = max(fwidth(pos.y), 1e-5);
   float loin = clamp((1.0 / max(du, dv) - 8.0) / 8.0, 0.0, 1.0);
   int genre = m & 3;
   const float S = ${COLOMBAGE.soubassement.toFixed(4)};
