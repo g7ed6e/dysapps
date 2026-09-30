@@ -2055,22 +2055,22 @@ function drawReading(rng: Rng, imageNotZero: boolean): { a: number; b: number; x
 const point = (x: number, y: number) => `(${fmt(x)} ; ${fmt(y)})`;
 
 export const READ_IMAGE_RULES = [
-  'L’image de x se lit sur l’axe vertical ; ses nombres sont écrits à gauche.',
+  'L’image de x se lit sur l’axe vertical. Ses nombres sont écrits à gauche.',
   'Pars de x, écrit en bas, monte ou descends jusqu’à la droite.',
   'Puis va à l’horizontale et lis le nombre en face, à gauche.',
   'Le point (5 ; 7) veut dire : l’image de 5 est 7, f(5) = 7.',
 ];
 
 export const READ_ANTECEDENT_RULES = [
-  'L’antécédent se lit sur l’axe horizontal ; ses nombres sont écrits en bas.',
+  'L’antécédent se lit sur l’axe horizontal. Ses nombres sont écrits en bas.',
   'Pars du nombre écrit à gauche, va à l’horizontale jusqu’à la droite.',
-  'Puis monte ou descends et lis le nombre en face, en bas.',
+  'Puis monte ou descends jusqu’en bas et lis le nombre.',
   'Le point (5 ; 7) veut dire : 5 est un antécédent de 7.',
 ];
 
 export const READ_LINE_RULES = [
   'f(x) = ax + b : b est l’ordonnée à l’origine, a le coefficient directeur.',
-  'b : là où la droite coupe l’axe vertical, au point où x = 0.',
+  'b : là où la droite coupe l’axe vertical ; lis le nombre en face, à gauche.',
   'a : quand x augmente de 1, compte les carreaux que la droite monte ou descend.',
   'La droite monte : a est positif. Elle descend : a est négatif.',
 ];
@@ -2130,7 +2130,7 @@ export const graphAntecedent: ItemGenerator = (rng) => {
       rng,
     ),
     answer: fmt(x),
-    hint: `Pars de ${fmt(y)}, écrit à gauche, va à l’horizontale jusqu’à la droite, puis lis le nombre en face, en bas.`,
+    hint: `Pars de ${fmt(y)}, écrit à gauche, va à l’horizontale jusqu’à la droite, puis monte ou descends jusqu’en bas et lis le nombre.`,
     explanation: `La droite passe par le point ${point(x, y)} : pour f(x) = ${fmt(y)}, on lit ${fmt(x)} sur l’axe horizontal. L’antécédent de ${fmt(y)} est ${fmt(x)}.`,
     figure: graphFigure(a, b),
     aid: { kind: 'rule-card', props: { title: 'Lire un antécédent', lines: READ_ANTECEDENT_RULES } },
@@ -2167,7 +2167,7 @@ export const graphLine: ItemGenerator = (rng) => {
         rng,
       ),
       answer: fmt(b),
-      hint: 'Regarde où la droite coupe l’axe vertical, sur la ligne où x = 0.',
+      hint: 'Regarde où la droite coupe l’axe vertical, puis lis le nombre en face, à gauche.',
       explanation: `La droite coupe l’axe vertical au point ${point(0, b)} : l’ordonnée à l’origine est ${fmt(b)}. Ici, ${expr}.`,
       figure,
       aid,
@@ -2253,7 +2253,7 @@ const IMAGES = 'Calcule l’image : remplace x par le nombre dans la formule. Le
 const ANTECEDENT = 'Trouve l’antécédent : résous l’équation f(x) égale le nombre donné.';
 const DROITES = 'Coefficient directeur, fonction linéaire ou affine : la règle est affichée.';
 const FAISCEAUX = 'Lis l’image sur le graphique : pars du nombre écrit en bas, puis lis le nombre en face, à gauche.';
-const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du nombre écrit à gauche, puis lis le nombre en face, en bas.';
+const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du nombre écrit à gauche, puis lis le nombre tout en bas.';
 const FAISCEAUX_DROITE = 'Lis sur la droite : l’ordonnée à l’origine sur l’axe vertical, le coefficient directeur en comptant les carreaux.';
 
 export const COLLEGE_EXERCISES: ExerciseDef[] = [
