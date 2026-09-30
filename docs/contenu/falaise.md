@@ -544,3 +544,11 @@ Pour tous les items :
    - réponse : racontées
    - indice : Que raconte mon grand-père ? Cherche le nom avant la première virgule.
    - explication : Le participe apposé précise ces histoires, au féminin pluriel : racontées. Mon grand-père est tout près, mais ce n’est pas lui qu’on raconte.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `falaise-bergerie` | La bergerie de Cléa | 40 | acier × 3 | Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé. |
+| `falaise-toit` | Le toit de la bergerie | 50 |  | Un toit et une porte ! La lanterne, accrochée à la paroi, veille sur les chevreaux. |
+| `falaise-enclos` | L’enclos de la bergerie | 60 | or × 2 · cristal × 2 | Un enclos, une barrière, un escalier… Ma bergerie est complète. Les chèvres sont rentrées, accordées au pluriel. |

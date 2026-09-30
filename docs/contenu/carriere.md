@@ -223,3 +223,11 @@ Pour tous les items :
     - choix : derrière · derriere · dérière
     - réponse : derrière
     - indice : derrière prend deux r et un accent grave.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `carriere-four` | Le four de Rouxel | 50 | terre × 3 | Mon four est reconstruit ! Le pain va sentir bon dans tout le village. |
+| `carriere-abri` | L’abri du four | 60 |  | Un abri sur mon four : plus de pluie sur le pain ! Merci. |
+| `carriere-cour` | La cour du four | 70 | or × 2 · cristal × 2 | Une cour pour le four. Les mots bien écrits viendront y chercher leur pain. |

@@ -39,3 +39,11 @@ créature : Frimas
 
 - description : Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.
 - compétences : c4.ma.a.fractions · c4.ma.a.calcul-fractions
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `glacier-igloo` | L’igloo de Frimas | 40 | brique × 3 | Mon igloo ! Merci, bâtisseur. Dedans, plus deux ; dehors, moins huit. La différence fait dix. |
+| `glacier-toit` | Le dôme de l’igloo | 50 |  | Un dôme et une porte ! La lanterne tient le froid à moins un mètre. |
+| `glacier-patinoire` | La patinoire de l’igloo | 60 | or × 2 · cristal × 2 | Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant. |

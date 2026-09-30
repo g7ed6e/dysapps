@@ -394,3 +394,11 @@ Pour tous les items :
    - réponse : humide, mouillé, trempé
    - indice : Commence par le moins mouillé.
    - explication : On commence par le plus faible : humide, puis mouillé, puis trempé.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `cabinet-nid` | Le nid de Plume | 40 | calque × 3 | Mon nid ! Merci, bâtisseur. Cent parchemins roulés, un mot par parchemin. |
+| `cabinet-toit` | Le toit du nid | 50 |  | Un toit et une porte ! La lanterne éclaire les mots rares, la nuit. |
+| `cabinet-perchoir` | Le perchoir du nid | 60 | or × 2 · cristal × 2 | Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré. |

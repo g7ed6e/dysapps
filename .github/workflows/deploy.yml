@@ -50,7 +50,7 @@ jobs:
       # La page des personnages du pilotage (hors du site) suit les données du jeu.
       - name: Vérifier la page des personnages du pilotage
         run: npm run pilotage:personnages -- --check
-      # Les JSON des îles écrites en Markdown (docs/contenu/) suivent leur Markdown.
+      # Les données des îles et des missions du portail écrites en Markdown (docs/contenu/) suivent leur Markdown.
       - name: Vérifier les exercices écrits en Markdown
         run: npm run contenu -- --check
       - run: npm test

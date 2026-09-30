@@ -30,7 +30,7 @@ export type BuildingStyle =
   | { kind: 'jardin' }
   | { kind: 'refuge' };
 
-/** La forme du bâtiment de chaque île (son nom et ses phrases sont dans plans/*.json). */
+/** La forme du bâtiment de chaque île (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
 export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   // Premiers Rivages (6e)
   foret: { kind: 'maison' },

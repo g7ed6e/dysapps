@@ -1247,3 +1247,11 @@ Pour tous les items :
    - réponse : Ja, er muss aufstehen.
    - indice : Regarde la fin : aufstehen finit par -en et reste en un seul mot.
    - explication : Ja, er muss aufstehen = oui, il doit se lever. Après muss, aufstehen reste à l’infinitif, en un seul mot, à la fin.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `jardin-cuisine` | La cuisine de Muscade | 40 | velours × 3 | Les murs de ma cuisine ! Merci, bâtisseur. Bientôt, la soupe mijotera ici. |
+| `jardin-tonnelle` | La tonnelle du jardin | 50 |  | Un toit, une cheminée et une tonnelle ! On mangera dehors, à l’ombre, à toute heure. |
+| `jardin-serre` | La serre du jardin | 60 | or × 2 · cristal × 2 | Une serre, une barrière, une marche… Mon jardin est complet. À table, bâtisseur ! |

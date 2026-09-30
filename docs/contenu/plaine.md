@@ -39,3 +39,11 @@ créature : Coco
 
 - description : Un pont, un quai, une traversée : lis le schéma, puis calcule la longueur, le tour ou l’heure.
 - compétences : c3.ma.nombres.problemes · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `plaine-nid` | Le nid de Coco | 40 | bois × 3 | Mon nid ! Merci, bâtisseur. Dix fenêtres, dix points : je m’y retrouve enfin. |
+| `plaine-toit` | Le toit du nid | 50 |  | Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi. |
+| `plaine-cour` | La cour du nid | 60 | or × 2 · cristal × 2 | Une cour, une barrière, un escalier… Cinq et cinq : mon nid est complet. Tu calcules comme un chef ! |

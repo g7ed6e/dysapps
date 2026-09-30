@@ -32,3 +32,11 @@ créature : Bazar
 
 - description : Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.
 - compétences : c4.ma.c.grandeurs-composees · c4.ma.b.pourcentages-echelles · c3.ma.espace.echelle · c4.ma.c.conversions
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `marche-echoppe` | L’échoppe de Bazar | 40 | galet × 3 | Mon échoppe ! Merci, bâtisseur. Cent pour cent debout, prix d’ami. |
+| `marche-toit` | L’auvent de l’échoppe | 50 |  | Un auvent et une porte ! La lanterne éclaire les comptes du soir. |
+| `marche-etal` | L’étal de l’échoppe | 60 | or × 2 · cristal × 2 | Un étal, une barrière, un escalier… Mon échoppe est complète : deux fois plus belle, pas deux fois plus chère. |

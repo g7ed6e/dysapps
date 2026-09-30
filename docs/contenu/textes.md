@@ -591,3 +591,11 @@ Pour tous les items :
    - réponse : complément de lieu
    - indice : J’étudie où ?
    - explication : « Où » reprend « le collège » et dit où j’étudie : complément de lieu.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `textes-lanterne` | La lanterne d’Astra | 40 | quartz × 3 | Ma lanterne ! Merci, bâtisseur. Elle grossit les mots : on y lit même ce qui n’est pas écrit. |
+| `textes-toit` | Le toit de la lanterne | 50 |  | Un toit et une porte ! La nuit, je lis à ma propre lumière. |
+| `textes-coupole` | La coupole de la lanterne | 60 | or × 2 · cristal × 2 | Une coupole, une barrière, un escalier… Ma lanterne est complète : fin du chapitre, pas de l’histoire. |

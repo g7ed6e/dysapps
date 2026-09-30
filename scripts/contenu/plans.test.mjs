@@ -1,0 +1,45 @@
+import { readFileSync } from 'node:fs';
+import { ecrireIle, lireIle } from './format.mjs';
+
+/** Les plans dans l'ordre où le jeu les débloque (PLAN_FILES de src/blocland/world/plans.ts). */
+function plansDuJeu() {
+  const ts = readFileSync('src/blocland/world/plans.ts', 'utf8');
+  const imports = new Map([...ts.matchAll(/^import (\w+) from '\.\/plans\/([a-z0-9-]+)\.json';$/gm)].map((m) => [m[1], m[2]]));
+  const noms = /const PLAN_FILES = \[([\s\S]*?)\] as/.exec(ts)[1].split(',').map((x) => x.trim()).filter(Boolean);
+  return noms.map((n) => JSON.parse(readFileSync(`src/blocland/world/plans/${imports.get(n)}.json`, 'utf8')));
+}
+
+const debut = ['---', 'île : mine', '---', '', '# Mine', '', '## Les plans', ''];
+const tete = ['| plan | nom | XP | coffre | quand c’est bâti |', '| --- | --- | --- | --- | --- |'];
+const lire = (...l) => () => lireIle([...debut, ...tete, ...l, ''].join('\n'), 'mine.md');
+
+describe('les plans des bâtiments en Markdown', () => {
+  it('écrit puis relit les plans de chaque île à l’identique', () => {
+    const plans = plansDuJeu();
+    for (const ile of new Set(plans.map((p) => p.biome))) {
+      const siens = plans.filter((p) => p.biome === ile);
+      expect(lireIle(ecrireIle({ id: ile }, [], siens), `${ile}.md`).plans).toEqual(siens);
+    }
+  });
+
+  it('suit, dans chaque docs/contenu/<île>.md, l’ordre où le jeu débloque les plans', () => {
+    const plans = plansDuJeu();
+    for (const ile of new Set(plans.map((p) => p.biome))) {
+      const md = lireIle(readFileSync(`docs/contenu/${ile}.md`, 'utf8'), `${ile}.md`);
+      expect(md.plans.map((p) => p.id)).toEqual(plans.filter((p) => p.biome === ile).map((p) => p.id));
+    }
+  });
+
+  it('refuse une rangée mal écrite, avec la ligne', () => {
+    expect(lire('| `mine-forge` | La forge | 50 | sable × 3 | Fini. |').call().plans).toEqual([
+      { id: 'mine-forge', biome: 'mine', name: 'La forge', reward: { xp: 50, chest: { sable: 3 } }, done: 'Fini.' },
+    ]);
+    expect(lire('| mine-forge | La forge | 50 | | Fini. |')).toThrow('mine.md, ligne 11 : identifiant de plan attendu');
+    expect(lire('| `mine-forge` | La forge | cinquante | | Fini. |')).toThrow('XP : nombre attendu');
+    expect(lire('| `mine-forge` | La forge | 50 | sable 3 | Fini. |')).toThrow('coffre : « bloc × nombre » attendu');
+    expect(lire('| `mine-forge` | La forge | 50 | sable × 1 · sable × 2 | Fini. |')).toThrow('« sable » écrit deux fois');
+    expect(lire('| `a` | A | 1 | | Fini. |', '| `a` | B | 1 | | Fini. |')).toThrow('mine.md, ligne 12 : le plan « a » est écrit deux fois');
+    expect(lire('| `a` | A | 1 | | "Fini. |')).toThrow(/^mine\.md, ligne 11 : chaîne entre guillemets/);
+    expect(lire('| `a` | A | 1 | | Fini. |', '', 'du texte')).toThrow('ligne inattendue après le tableau des plans');
+  });
+});

@@ -303,3 +303,11 @@ Pour tous les items :
    - réponse : doesn’t
    - indice : La réponse courte reprend does.
    - explication : No, he doesn’t : on reprend does, à la négation.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `horloge-tour` | La tour de Tick | 40 | cabine × 3 | Ma tour ! Merci, bâtisseur. Tic, tac : elle donne l’heure à toute l’île. |
+| `horloge-toit` | Le toit de la tour | 50 |  | Un toit et une porte ! Le coucou a enfin sa maison. |
+| `horloge-cour` | La cour de l’horloge | 60 | or × 2 · cristal × 2 | Une cour, une barrière, un escalier… Mon horloge est complète, et toujours à l’heure. |

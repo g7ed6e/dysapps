@@ -379,3 +379,11 @@ Pour tous les items :
    - réponse : les raisins
    - indice : Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !
    - explication : grapes = les raisins (une grappe = a bunch ; grapefruit = pamplemousse).
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `studio-regie` | La régie d’Écho | 40 | taille × 3 | Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un… |
+| `studio-toit` | Le toit de la régie | 50 |  | Un toit et une porte ! Plus de grésillement quand il pleut. |
+| `studio-terrasse` | La terrasse du studio | 60 | or × 2 · cristal × 2 | Une terrasse, une barrière, un escalier… Mon studio est complet. Stay tuned! |

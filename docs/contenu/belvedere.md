@@ -32,3 +32,11 @@ créature : Théo
 
 - description : Cosinus, sinus ou tangente : le bon rapport.
 - compétences : c4.ma.d.trigonometrie
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `belvedere-kiosque` | Le kiosque de Théo | 40 | ardoise × 3 | Mon kiosque ! Merci, bâtisseur. Ses angles sont droits, ses colonnes proportionnelles. |
+| `belvedere-toit` | Le toit du kiosque | 50 |  | Un toit et une porte ! La lanterne pend au sommet, à la verticale exacte. |
+| `belvedere-terrasse` | La terrasse du kiosque | 60 | or × 2 · cristal × 2 | Une terrasse, une barrière, un escalier… Mon kiosque est complet : hypoténuse comprise. |

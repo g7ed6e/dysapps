@@ -338,3 +338,11 @@ Pour tous les items :
    - réponse : built
    - indice : Après be, le participe passé : 3e forme.
    - explication : build – built – built : Was the castle built…?
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `chateau-tour` | La tour de Knight | 40 | antenne × 3 | Ma tour ! Thank you, bâtisseur. If I were a king, I would live here. |
+| `chateau-toit` | Le toit de la tour | 50 |  | Un toit et une porte ! Même le Dragon ne passera pas. |
+| `chateau-rempart` | Le rempart du château | 60 | or × 2 · cristal × 2 | Un rempart, une barrière, un escalier… Mon château est complet. It has been built by you! |

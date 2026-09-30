@@ -332,3 +332,11 @@ Pour tous les items :
    - réponse : Did
    - indice : Question au passé : quel auxiliaire ?
    - explication : Question au passé : Did you see…?
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `theatre-loge` | La loge de Puck | 40 | rail × 3 | Ma loge ! Thank you, bâtisseur. J’y souffle les répliques aux acteurs. |
+| `theatre-toit` | Le toit de la loge | 50 |  | Un toit et une porte ! Les acteurs peuvent répéter à l’abri. |
+| `theatre-scene` | La scène du théâtre | 60 | or × 2 · cristal × 2 | Une scène, une barrière, un escalier… Mon théâtre est complet. Curtain up! |

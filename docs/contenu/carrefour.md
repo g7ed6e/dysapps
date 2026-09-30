@@ -268,3 +268,11 @@ Pour tous les items :
    - réponse : ne / si
    - indice : Négation : ne. Question « est-ce que tu viens ? » : si.
    - explication : Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `carrefour-cabane` | La cabane de Sema | 40 | glace × 3 | Ma cabane ! Merci, bâtisseur. Ses panneaux, ces panneaux : c’est réussi, tu ne t’es pas trompé. |
+| `carrefour-toit` | Le toit de la cabane | 50 |  | Un toit et une porte ! La lanterne éclaire le panneau « ici ». |
+| `carrefour-rondpoint` | Le rond-point de la cabane | 60 | or × 2 · cristal × 2 | Un rond-point, une barrière, un escalier… Ma cabane est complète, quel que soit le chemin. |

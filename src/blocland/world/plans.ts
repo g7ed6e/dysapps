@@ -123,7 +123,7 @@ export interface PlanDef {
 /** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
 export const PLAN_ZONE = { x: 8, y: 10, w: 6, h: 5 };
 
-/** Les fiches des plans (nom, phrases, XP, coffre) dans l'ordre : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
+/** Les fiches des plans (nom, phrases, XP, coffre ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
 const PLAN_FILES = [
   foretCabane,
   foretToit,

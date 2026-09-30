@@ -1133,3 +1133,11 @@ Pour tous les items :
    - réponse : der Schulhof
    - indice : Schulhof = Schule + Hof : lequel décide ?
    - explication : der Schulhof (la cour de l’école) : le dernier nom décide, der Hof (la cour). die Schule ne compte pas.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `relais-auberge` | L’auberge de Lina | 40 | tuile × 3 | Les murs de mon auberge ! Merci, bâtisseur. Les voyageurs pourront bientôt s’y reposer. |
+| `relais-ecurie` | L’écurie du relais | 50 |  | Un toit, une porte et une écurie ! Les chevaux de la diligence sont à l’abri, et mon nid est sur la cheminée. |
+| `relais-fontaine` | La fontaine du relais | 60 | or × 2 · cristal × 2 | Une fontaine, une barrière, une marche… Mon Relais est complet. Bon voyage, d’où que tu viennes ! |

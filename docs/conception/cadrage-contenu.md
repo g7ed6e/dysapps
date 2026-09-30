@@ -193,9 +193,9 @@ Items à corriger :
 - Anglais, pièges qu’un natif accepte : « is working » devient « working » (`manoir-ing-2-2`), « some » devient « a » (`theatre-quantites-1-1`), « miss » devient « would miss » (`chateau-if-1-6`), « do » devient « did » (`gare-futur-1-7`), « will show » devient « will be show » (`chateau-passif-2-2`).
 - `comptoir-shopping-2-3` : « tee » se dit comme « tea » ; il devient « team ».
 - `studio-faux-amis-2-1` : « luggage » n’est pas un faux ami ; l’item prend un faux ami de la carte qui n’a pas encore d’item.
-- Portail, `src/apps/homophones/sets.json` : « Lucas cherche … écouteurs partout. » admet « ces » ; la phrase précise le possesseur.
-- Portail, `src/apps/lecture/texts.json` : les glossaires ajoutent « ne se sent pas de joie », « à tout venant » et « tout à l’heure ».
-- Portail, `src/apps/vocabulaire/themes.json` : le thème « Les jours et les mois » n’a que January ; il prend les autres mois.
+- Portail, `docs/contenu/portail/homophones.md` : « Lucas cherche … écouteurs partout. » admet « ces » ; la phrase précise le possesseur.
+- Portail, `docs/contenu/portail/lecture.md` : les glossaires ajoutent « ne se sent pas de joie », « à tout venant » et « tout à l’heure ».
+- Portail, `docs/contenu/portail/vocabulaire.md` : le thème « Les jours et les mois » n’a que January ; il prend les autres mois.
 
 Pièges à remplacer :
 

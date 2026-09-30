@@ -1187,3 +1187,11 @@ Pour tous les items :
    - réponse : du poison
    - indice : Schokolade = le chocolat ; Hunde = les chiens. Ce mot ressemble à un mot anglais.
    - explication : das Gift = le poison : le chocolat est un poison pour les chiens. Un cadeau se dit ein Geschenk ; en anglais, a gift.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `refuge-poste` | La poste de Timbre | 40 | taille × 3 | Les murs de ma poste ! Merci, bâtisseur. Les lettres des voyageurs auront bientôt leur casier. |
+| `refuge-salle` | La salle commune | 50 |  | Un toit, une porte et une salle commune ! Les voyageurs s’y assoient à la grande table pour raconter leur voyage. |
+| `refuge-pigeonnier` | Le pigeonnier du refuge | 60 | or × 2 · cristal × 2 | Un pigeonnier, une barrière, une marche… Mon refuge est complet. Les lettres peuvent partir, et revenir ! |

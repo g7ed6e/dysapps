@@ -56,3 +56,11 @@ Pour tous les items :
 2. texte : Tunel creuse des galeries avec ses pattes. Chaque jour, elle trouve des pierres grises, des pierres bleues et parfois de l’or.
 3. texte : Mais Tunel a un problème : elle ne voit presque rien. Dans le noir, les lettres b et d se ressemblent.
 4. texte : Elle demande de l’aide au bâtisseur. Ensemble, ils rangent les pierres, une lettre après l’autre.
+
+## Les plans
+
+| plan | nom | XP | coffre | quand c’est bâti |
+| --- | --- | --- | --- | --- |
+| `tour-phare` | Le phare de Grimoire | 60 | bois × 4 | Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village. |
+| `tour-lanterne` | La lanterne du phare | 70 |  | Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou ! |
+| `tour-quai` | Le quai du phare | 80 | or × 3 · cristal × 3 | Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau. |
