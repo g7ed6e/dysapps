@@ -1,0 +1,255 @@
+{
+  "id": "studio-medias-2",
+  "biome": "studio",
+  "type": "medias",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "studio-medias-2-0",
+      "prompt": "TV guide – Tonight\n6 pm: The News\n7 pm: Wild Islands\n8 pm: Quiz Night",
+      "question": "Quelle émission passe à 18 heures ?",
+      "spoken": "TV guide. Tonight. Six p.m., The News. Seven p.m., Wild Islands. Eight p.m., Quiz Night.",
+      "choices": [
+        "Le journal télévisé",
+        "Une nouvelle série",
+        "Une émission de jeux"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le journal télévisé",
+      "hint": "6 pm, c’est 18 heures. Cherche ensuite the news dans le lexique.",
+      "explanation": "6 pm, c’est 18 heures : The News, c’est le journal télévisé. L’émission de jeux passe à 20 heures.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-1",
+      "prompt": "The Blue Owls in concert\nSaturday, 8 pm\nTickets: £12\nSold out",
+      "question": "Peut-on encore acheter un billet ?",
+      "spoken": "The Blue Owls in concert. Saturday, eight p.m. Tickets, twelve pounds. Sold out.",
+      "choices": [
+        "Non, c’est complet",
+        "Oui, pour 12 livres",
+        "Oui, à l’entrée"
+      ],
+      "choicesLang": "fr",
+      "answer": "Non, c’est complet",
+      "hint": "Regarde la dernière ligne, puis cherche-la dans le lexique.",
+      "explanation": "sold out = complet : tous les billets (tickets) sont vendus. Le prix ne sert plus à rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-2",
+      "prompt": "@lina_skates\nFirst day at the new skatepark!\nShare this post if you love skating.",
+      "question": "Que demande Lina à ceux qui lisent son message ?",
+      "spoken": "Lina skates. First day at the new skatepark! Share this post if you love skating.",
+      "choices": [
+        "De partager son message",
+        "D’acheter un skate",
+        "De venir la voir au skatepark"
+      ],
+      "choicesLang": "fr",
+      "answer": "De partager son message",
+      "hint": "Cherche share et post dans le lexique.",
+      "explanation": "share this post = partage ce message. a post, c’est un message publié sur un réseau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-3",
+      "prompt": "Mia’s cooking channel\n2,000 followers\nNew video every Sunday",
+      "question": "Combien de personnes suivent la chaîne de Mia ?",
+      "spoken": "Mia’s cooking channel. Two thousand followers. New video every Sunday.",
+      "choices": [
+        "2",
+        "20",
+        "2 000"
+      ],
+      "choicesLang": "fr",
+      "answer": "2 000",
+      "hint": "Dans un nombre anglais, la virgule sépare les milliers.",
+      "explanation": "2,000 se lit two thousand : deux mille. followers = les abonnés, ceux qui suivent la chaîne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-4",
+      "prompt": "The Space Podcast\nEpisode 12: Can we live on Mars?\nOn the school radio, Friday at lunchtime",
+      "question": "Comment découvre-t-on cet épisode ?",
+      "spoken": "The Space Podcast. Episode twelve. Can we live on Mars? On the school radio, Friday at lunchtime.",
+      "choices": [
+        "En l’écoutant",
+        "En le lisant",
+        "En le regardant à la télé"
+      ],
+      "choicesLang": "fr",
+      "answer": "En l’écoutant",
+      "hint": "Cherche podcast dans le lexique, et regarde où il passe.",
+      "explanation": "a podcast est une émission à écouter. Celui-ci passe à la radio du collège, vendredi midi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-5",
+      "prompt": "New comic!\nCaptain Tide saves the harbour\nOut on Wednesday in all bookshops",
+      "question": "Qu’est-ce qui sort mercredi ?",
+      "spoken": "New comic! Captain Tide saves the harbour. Out on Wednesday in all bookshops.",
+      "choices": [
+        "Une bande dessinée",
+        "Un dessin animé",
+        "Une émission comique"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une bande dessinée",
+      "hint": "Où le trouve-t-on ? Regarde la dernière ligne.",
+      "explanation": "a comic = une bande dessinée, vendue en librairie (bookshop). Un dessin animé se dit a cartoon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-6",
+      "prompt": "Film review: Moon over Harbour Street\n4 stars out of 5\nGreat story, but the ending is too sad.",
+      "question": "Que pense le critique de la fin du film ?",
+      "spoken": "Film review. Moon over Harbour Street. Four stars out of five. Great story, but the ending is too sad.",
+      "choices": [
+        "Elle est trop triste",
+        "Elle est très drôle",
+        "Elle est vraiment parfaite"
+      ],
+      "choicesLang": "fr",
+      "answer": "Elle est trop triste",
+      "hint": "Regarde ce qui vient après but (mais).",
+      "explanation": "but annonce la critique : the ending is too sad = la fin est trop triste. L’histoire, elle, est bonne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "studio-medias-2-7",
+      "prompt": "Bay Radio News\nStudents clean the beach:\n200 bags of rubbish in one morning",
+      "question": "De quoi parle cette information ?",
+      "spoken": "Bay Radio News. Students clean the beach. Two hundred bags of rubbish in one morning.",
+      "choices": [
+        "Des élèves nettoient la plage",
+        "Des élèves partent en vacances à la plage",
+        "La plage est fermée"
+      ],
+      "choicesLang": "fr",
+      "answer": "Des élèves nettoient la plage",
+      "hint": "clean = nettoyer. Et rubbish ?",
+      "explanation": "students clean the beach = des élèves nettoient la plage. rubbish = les déchets.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un média",
+          "lines": [
+            "TV guide = programme télé ; the news = le journal, les informations.",
+            "tickets = billets ; sold out = complet ; review = critique ; ending = fin.",
+            "post = message sur un réseau ; share = partager ; followers = abonnés.",
+            "cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.",
+            "En anglais, une virgule sépare les milliers (five thousand : cinq mille).",
+            "pm = après midi : 7 pm, c’est 19 heures."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Message reçu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "antenne",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

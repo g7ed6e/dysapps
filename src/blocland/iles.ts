@@ -1199,6 +1199,16 @@ export const ILES = [
         "programme": [
           "c4.en.langue.temps-verbaux"
         ]
+      },
+      {
+        "id": "traditions",
+        "title": "Traditions",
+        "description": "Voyager chez les anglophones : leurs fêtes, leurs lieux, leurs héros et leurs légendes, dans un petit document à lire.",
+        "programme": [
+          "c3.en.culture.reperes",
+          "c3.en.culture.imaginaire",
+          "c4.en.culture.voyages-rencontres"
+        ]
       }
     ]
   },
@@ -1239,6 +1249,15 @@ export const ILES = [
         "description": "Actually, library, sensible : des mots qui ressemblent au français, mais trompent.",
         "programme": [
           "c4.en.langue.lexique"
+        ]
+      },
+      {
+        "id": "medias",
+        "title": "École et médias",
+        "description": "L’école au Royaume-Uni (classes, uniforme, lycée) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.",
+        "programme": [
+          "c4.en.culture.ecole-societe",
+          "c4.en.culture.langages"
         ]
       }
     ]
