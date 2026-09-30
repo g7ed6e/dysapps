@@ -553,6 +553,14 @@ function personnagesPage(d) {
   const { BIOMES, TEXTES_DE, UNIVERS } = d;
   const bl = TEXTES_DE.blocland;
   const ar = TEXTES_DE.archipeo;
+  for (const [u, t] of Object.entries(TEXTES_DE))
+    for (const b of BIOMES)
+      if (!t.gardiens[b.id] || !t.creatures[b.id] || !t.especes[b.id]) throw new Error(`generate.mjs : textes de ${u} incomplets pour l’île ${b.id}`);
+  // Les exemples du mot de la baleine : le premier archipel, son île-port, la première île ouverte par un ouvrage.
+  const premier = d.ARCHIPELAGOS[0];
+  const nom = (id) => BIOMES.find((b) => b.id === id).name;
+  const port = nom(premier.port);
+  const ouverte = nom(BIOMES.find((b) => b.classe === premier.classe && !premier.starts.includes(b.id)).id);
   const lines = [
     '# Personnages et Gardiens',
     '',
@@ -566,9 +574,9 @@ function personnagesPage(d) {
       ['Moment', UNIVERS.blocland.nom, UNIVERS.archipeo.nom],
       [
         ...CLASSES.map((c) => [`Arrivée en ${c}`, bl.baleine.arrivee[c], ar.baleine.arrivee[c]]),
-        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens('Premiers Rivages'), ar.baleine.gardiens('Premiers Rivages')],
-        ['Île-port terminée (exemple)', bl.baleine.port('La Plaine'), ar.baleine.port('La Plaine')],
-        ['Premier ouvrage payé (exemple)', bl.baleine.ouvrage('la Rivière'), ar.baleine.ouvrage('la Rivière')],
+        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(premier.name), ar.baleine.gardiens(premier.name)],
+        ['Île-port terminée (exemple)', bl.baleine.port(port), ar.baleine.port(port)],
+        ['Premier ouvrage payé (exemple)', bl.baleine.ouvrage(ouverte), ar.baleine.ouvrage(ouverte)],
       ],
     ),
     '',
