@@ -14,7 +14,7 @@ Le mainteneur veut donner plus de caractère à Blocland, l’univers par défau
 
 ## La proposition
 
-Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit et se fête du point de vue de celui qui construit. Il se décline en quatre changements :
+Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit et se fête du point de vue de celui qui construit. Le mainteneur l’a précisé : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie, avec des clins d’œil aux jeux vidéo. Le bloc c’est l’unité de base pour construire. » Formulation proposée par le directeur artistique : dans Blocland, on bâtit bloc à bloc, et les mécanismes font vivre ce qu’on a bâti. Il se décline en quatre changements :
 
 1. **Qui parle aux grandes étapes** d’un archipel (l’arrivée, le premier ouvrage, le dernier Gardien vaincu, l’île-port bâtie) : la créature de l’île-école de l’archipel, avec son portrait dans la bulle. Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e. Les baleines en cubes restent au large, sans parler.
 2. **Les noms des archipels** : retour des noms d’origine de Blocland, les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) ; les Îles du Ciel (3e) ne changent pas ; « Le village de Blocland » dans les Réglages. Un élève qui a déjà une partie voit une fois « L’archipel X s’appelle maintenant Y » (U4).
@@ -44,4 +44,4 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 ## La décision
 
-30 septembre 2026, mainteneur, dans le fil « Donner du caractère à Blocland » : le pilier « chantier du bâtisseur » (« 1 ») ; la créature de l’île-école parle aux grandes étapes (« 1 ») ; retour des noms d’origine des archipels (« 1 ») ; des métiers du chantier pour les rôles (« 1 ») ; le geste de pose (« 2 ») et un son de pose propre à Blocland (« Et 3 »).
+30 septembre 2026, mainteneur, dans le fil « Donner du caractère à Blocland » : le pilier « chantier du bâtisseur » (« 1 ») ; la créature de l’île-école parle aux grandes étapes (« 1 ») ; retour des noms d’origine des archipels (« 1 ») ; des métiers du chantier pour les rôles (« 1 ») ; le geste de pose (« 2 ») et un son de pose propre à Blocland (« Et 3 »). Puis l’identité de Blocland : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie, avec des clins d’œil aux jeux vidéo. Le bloc c’est l’unité de base pour construire. » Restent ouverts : la liste des rôles, la géographie (le mainteneur trouve l’île et le pont propres à Archipéo ; ils sont pourtant d’origine dans Blocland, `git show 07bb03a^:src/blocland/world/archipelago.ts`), et donc les noms des archipels, qui ne se construisent pas avant ce choix.
