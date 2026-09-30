@@ -40,6 +40,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
       'Mon four ! Il me faut du sable et deux pierres.',
       'Le sable, ça vient des mots qu’on a beaucoup lus.',
+      'Une pierre a plusieurs faces. Un mot a plusieurs sens : regarde la phrase autour.',
     ],
     home: 'Le four est chaud ! Tu sens ? Ça sent le pain et les mots bien cuits.',
   },

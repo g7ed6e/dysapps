@@ -84,6 +84,7 @@ const ITEM = [
   ['mot', 'word', 'texte'],
   ['lettre', 'letter', 'texte'],
   ['racine', 'root', 'texte'],
+  ['racine lue', 'spokenRoot', 'texte'],
   ['sujet', 'subject', 'texte'],
   ['singulier', 'singular', 'texte'],
   ['pluriel', 'plural', 'texte'],

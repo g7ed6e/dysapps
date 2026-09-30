@@ -80,7 +80,7 @@ export const ILES = [
     "module": "Orthographe lexicale",
     "subject": "francais",
     "classe": "6e",
-    "description": "Écrire les mots juste, les familles de mots, les mots-outils.",
+    "description": "Écrire les mots juste, les familles de mots, les mots-outils, le sens des mots.",
     "block": "sable",
     "guardian": "la Dune vivante",
     "icon": "mountain",
@@ -112,6 +112,14 @@ export const ILES = [
         "description": "Les mots-outils à réviser, en dictée.",
         "programme": [
           "c3.fr.langue.mots-invariables"
+        ]
+      },
+      {
+        "id": "facettes",
+        "title": "Facettes",
+        "description": "Trouver un mot de même sens, puis le sens d’un mot selon la phrase.",
+        "programme": [
+          "c3.fr.langue.synonymie"
         ]
       }
     ]

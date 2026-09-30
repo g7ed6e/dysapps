@@ -207,8 +207,8 @@ it('récolte : phrase à trou, trois terminaisons, règle', () => {
     }
 });
 
-it('troupeau : phrase à trou, la réponse parmi 2 à 3 choix distincts, règle affichée et explication', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'troupeau');
+it.each(['troupeau', 'facettes'])('%s : la réponse parmi 2 à 3 choix distincts, règle affichée et explication', (type) => {
+  const defs = EXERCISES.filter((e) => e.type === type);
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs)
     for (const it of def.items) {
@@ -217,8 +217,8 @@ it('troupeau : phrase à trou, la réponse parmi 2 à 3 choix distincts, règle 
       expect(choices.length).toBeLessThanOrEqual(3);
       expect(new Set(choices).size).toBe(choices.length);
       expect(choices).toContain(it.answer);
-      expect(String(it.prompt)).toContain('…');
-      expect(String(it.spoken)).not.toContain('…');
+      if (type === 'troupeau') expect(String(it.prompt)).toContain('…');
+      if (String(it.prompt).includes('…')) expect(String(it.spoken)).not.toContain('…');
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
       expect(String(it.explanation).length).toBeGreaterThan(5);
     }

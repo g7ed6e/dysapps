@@ -3,7 +3,7 @@
 module : Orthographe lexicale
 matière : francais
 classe : 6e
-description : Écrire les mots juste, les familles de mots, les mots-outils.
+description : Écrire les mots juste, les familles de mots, les mots-outils, le sens des mots.
 bloc : sable
 gardien : la Dune vivante
 icône : mountain
@@ -53,7 +53,7 @@ Pour tous les items :
 |  | jam[ais] | ais · ai · é |
 |  | longt[emps] | emps · ent · an |
 |  | qu[and] | and · an · ant |
-|  | par[ce] | ce · se · sse |
+| parce | par[ce] que | ce · se · sse |
 | aujourd'hui | aujourd[’hui] | ’hui · ui · oui |
 |  | t[emps] | emps · ent · ant |
 |  | plusi[eur]s | eur · eure · er |
@@ -62,7 +62,7 @@ Pour tous les items :
 
 - description : Assemble préfixe, racine et suffixe.
 - compétences : c3.fr.langue.derivation-composition · c3.fr.langue.racines · c3.fr.langue.familles-champ-lexical
-- par partie : 6
+- par partie : 8
 - bravo : Bien assemblé !
 - erreur : {word} se fabrique avec {answer}. {meaning}
 - bloc gagné : sable
@@ -103,18 +103,18 @@ Pour tous les items :
 Pour tous les items :
 - case : suffix
 
-| mot | racine | choix | réponse | sens |
-| --- | --- | --- | --- | --- |
-| jardinet | jardin | et · eur · age | et | Un petit jardin. |
-| chanteur | chant | eur · age · able | eur | Celui qui chante. |
-| courageux | courag | eux · et · eur | eux | Qui a du courage. |
-| lavable | lav | able · age · eur | able | Qu’on peut laver. |
-| lavage | lav | age · able · et | age | L’action de laver. |
-| maisonnette | maison | nette · eur · age | nette | Une petite maison. |
-| fillette | fill | ette · eur · age | ette | Une petite fille. |
-| danseur | dans | eur · ette · able | eur | Celui qui danse. |
-| peureux | peur | eux · able · age | eux | Qui a souvent peur. |
-| jetable | jet | able · eux · ette | able | Que l’on peut jeter. |
+| mot | racine | racine lue | choix | réponse | sens |
+| --- | --- | --- | --- | --- | --- |
+| jardinet | jardin |  | et · eur · age | et | Un petit jardin. |
+| chanteur | chant |  | eur · age · able | eur | Celui qui chante. |
+| courageux | courag | courage | eux · et · eur | eux | Qui a du courage. |
+| lavable | lav | laver | able · age · eur | able | Qu’on peut laver. |
+| lavage | lav | laver | age · able · et | age | L’action de laver. |
+| maisonnette | maisonn | maison | ette · eur · age | ette | Une petite maison. Le n se double. |
+| fillette | fill | fille | ette · eur · age | ette | Une petite fille. |
+| danseur | dans | danse | eur · ette · able | eur | Celui qui danse. |
+| peureux | peur |  | eux · able · age | eux | Qui a souvent peur. |
+| jetable | jet | jeter | able · eux · ette | able | Que l’on peut jeter. |
 
 ## Coffre à mots · `coffre`
 
@@ -323,6 +323,125 @@ Pour tous les items :
     - choix : tôt · tot · tô
     - réponse : tôt
     - indice : tôt, le contraire de tard, prend un accent circonflexe et un t muet.
+
+## Facettes · `facettes`
+
+- description : Trouver un mot de même sens, puis le sens d’un mot selon la phrase.
+- compétences : c3.fr.langue.synonymie
+- erreur : {explanation}
+- bloc gagné : sable
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `carriere-facettes-1`
+
+- consigne : Choisis le mot de même sens pour compléter la deuxième phrase. La règle est affichée.
+- bravo : Même sens, bien trouvé !
+- blocs : 4
+- XP : 12
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- aide « Les synonymes » :
+  - Deux synonymes ont un sens proche : une maison, une habitation.
+  - On remplace l’un par l’autre sans changer le sens de la phrase.
+  - Un mot de sens contraire n’est pas un synonyme : chaud, froid.
+
+1. énoncé : Mon frère est fatigué après le match. Même sens : mon frère est … après le match.
+   - choix : épuisé · endormi · reposé
+   - réponse : épuisé
+   - indice : Quel mot dit la même chose que fatigué ?
+   - explication : « Épuisé » veut dire très fatigué : c’est un synonyme. « Reposé » est le contraire. « Endormi » veut dire qui dort.
+2. énoncé : Ce film est drôle. Même sens : ce film est …
+   - choix : amusant · triste · court
+   - réponse : amusant
+   - indice : Un film drôle fait rire. Quel mot dit la même chose ?
+   - explication : « Amusant » veut dire drôle : c’est un synonyme. « Triste » est le contraire. « Court » parle de la durée du film.
+3. énoncé : Le match a commencé. Même sens : le match a …
+   - choix : débuté · fini · repris
+   - réponse : débuté
+   - indice : Quel mot dit la même chose que commencé ?
+   - explication : « Débuter » veut dire commencer : c’est un synonyme. « Fini » est le contraire. « Repris » veut dire recommencé après une pause.
+4. énoncé : Cet exercice est facile. Même sens : cet exercice est …
+   - choix : simple · difficile · long
+   - réponse : simple
+   - indice : Un exercice facile se fait sans peine. Quel mot dit la même chose ?
+   - explication : « Simple » veut dire facile : c’est un synonyme. « Difficile » est le contraire. « Long » parle du temps qu’il faut.
+5. énoncé : Le gymnase est immense. Même sens : le gymnase est …
+   - choix : énorme · petit · neuf
+   - réponse : énorme
+   - indice : Immense veut dire très grand. Quel mot dit la même chose ?
+   - explication : « Énorme » veut dire très grand : c’est un synonyme. « Petit » est le contraire. « Neuf » parle de l’âge du gymnase.
+6. énoncé : Ce gâteau est délicieux. Même sens : ce gâteau est …
+   - choix : savoureux · sucré · fade
+   - réponse : savoureux
+   - indice : Un gâteau délicieux a très bon goût. Quel mot dit la même chose ?
+   - explication : « Savoureux » veut dire qui a très bon goût : c’est un synonyme. « Fade » est le contraire. « Sucré » dit le goût du sucre, pas s’il est bon.
+7. énoncé : Ma voisine est gentille. Même sens : ma voisine est …
+   - choix : aimable · méchante · timide
+   - réponse : aimable
+   - indice : Quel mot dit la même chose que gentille ?
+   - explication : « Aimable » veut dire gentille : c’est un synonyme. « Méchante » est le contraire. « Timide » veut dire qui n’ose pas.
+8. énoncé : La rue est calme ce soir. Même sens : la rue est … ce soir.
+   - choix : tranquille · bruyante · sombre
+   - réponse : tranquille
+   - indice : Une rue calme, sans bruit. Quel mot dit la même chose ?
+   - explication : « Tranquille » veut dire calme : c’est un synonyme. « Bruyante » est le contraire. « Sombre » parle de la lumière, pas du bruit.
+
+### Niveau 2 · `carriere-facettes-2`
+
+- consigne : Lis la phrase, puis choisis le sens du mot entre guillemets dans cette phrase. La règle est affichée.
+- programme : c3.fr.lecture.lexique-contexte
+- bravo : Tu as trouvé le bon sens !
+- blocs : 5
+- XP : 14
+
+Pour tous les items :
+- aide « Un mot, plusieurs sens » :
+  - Un même mot peut avoir plusieurs sens.
+  - Les autres mots de la phrase disent quel sens choisir.
+  - Exemple : une pièce de monnaie, une pièce de la maison.
+
+1. énoncé : Je déplace la « souris » pour ouvrir le fichier. Que veut dire « souris » ici ?
+   - choix : un petit animal · un objet de l’ordinateur
+   - réponse : un objet de l’ordinateur
+   - indice : Quel mot de la phrase t’aide ? Pense au fichier.
+   - explication : On ouvre un fichier sur un ordinateur : ici, la souris est l’objet qu’on déplace pour cliquer.
+2. énoncé : En été, je mange une « glace » à la fraise. Que veut dire « glace » ici ?
+   - choix : un dessert froid · un miroir · de l’eau gelée
+   - réponse : un dessert froid
+   - indice : Quels mots de la phrase t’aident ? Je la mange, et elle est à la fraise.
+   - explication : On la mange, et elle est à la fraise : ici, la glace est un dessert froid.
+3. énoncé : Au tribunal, un « avocat » défend son client. Que veut dire « avocat » ici ?
+   - choix : un fruit vert · un métier de la justice
+   - réponse : un métier de la justice
+   - indice : Quels mots de la phrase t’aident ? Pense au tribunal.
+   - explication : Il défend un client au tribunal : ici, l’avocat exerce un métier de la justice. Le fruit ne défend personne.
+4. énoncé : Écris ton nom en haut de la « feuille ». Que veut dire « feuille » ici ?
+   - choix : une partie d’un arbre · un morceau de papier
+   - réponse : un morceau de papier
+   - indice : Quel mot de la phrase t’aide ? Sur quoi écrit-on son nom ?
+   - explication : On y écrit son nom : ici, la feuille est un morceau de papier.
+5. énoncé : Appuie sur le « bouton » pour allumer la lampe. Que veut dire « bouton » ici ?
+   - choix : une touche · un rond de chemise · un point sur la peau
+   - réponse : une touche
+   - indice : Quels mots de la phrase t’aident ? On appuie, et la lampe s’allume.
+   - explication : On appuie dessus et la lampe s’allume. Ici, le bouton est une touche d’un appareil : la lampe.
+6. énoncé : Au restaurant, le serveur apporte la « carte ». Que veut dire « carte » ici ?
+   - choix : la liste des plats · le plan d’un pays · une carte à jouer
+   - réponse : la liste des plats
+   - indice : Quel mot de la phrase t’aide ? Pense au restaurant.
+   - explication : Au restaurant, on lit la carte pour choisir son repas : ici, c’est la liste des plats.
+7. énoncé : J’ai eu une bonne « note » en maths. Que veut dire « note » ici ?
+   - choix : un résultat à un contrôle · un son de musique · un petit mot écrit
+   - réponse : un résultat à un contrôle
+   - indice : Quels mots de la phrase t’aident ? Une bonne note, en maths.
+   - explication : Une bonne note en maths, c’est le résultat d’un contrôle. Le do et le ré sont des notes de musique.
+8. énoncé : Le chef d’orchestre lève sa « baguette ». Que veut dire « baguette » ici ?
+   - choix : un pain long · un petit bâton
+   - réponse : un petit bâton
+   - indice : Quels mots de la phrase t’aident ? Pense au chef d’orchestre.
+   - explication : Le chef d’orchestre dirige les musiciens avec un petit bâton : ici, la baguette n’est pas le pain.
 
 ## Les plans
 

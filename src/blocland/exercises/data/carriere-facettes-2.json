@@ -1,0 +1,205 @@
+{
+  "id": "carriere-facettes-2",
+  "biome": "carriere",
+  "type": "facettes",
+  "level": 2,
+  "instruction": "Lis la phrase, puis choisis le sens du mot entre guillemets dans cette phrase. La règle est affichée.",
+  "programme": [
+    "c3.fr.lecture.lexique-contexte"
+  ],
+  "items": [
+    {
+      "key": "carriere-facettes-2-0",
+      "prompt": "Je déplace la « souris » pour ouvrir le fichier. Que veut dire « souris » ici ?",
+      "choices": [
+        "un petit animal",
+        "un objet de l’ordinateur"
+      ],
+      "answer": "un objet de l’ordinateur",
+      "hint": "Quel mot de la phrase t’aide ? Pense au fichier.",
+      "explanation": "On ouvre un fichier sur un ordinateur : ici, la souris est l’objet qu’on déplace pour cliquer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-1",
+      "prompt": "En été, je mange une « glace » à la fraise. Que veut dire « glace » ici ?",
+      "choices": [
+        "un dessert froid",
+        "un miroir",
+        "de l’eau gelée"
+      ],
+      "answer": "un dessert froid",
+      "hint": "Quels mots de la phrase t’aident ? Je la mange, et elle est à la fraise.",
+      "explanation": "On la mange, et elle est à la fraise : ici, la glace est un dessert froid.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-2",
+      "prompt": "Au tribunal, un « avocat » défend son client. Que veut dire « avocat » ici ?",
+      "choices": [
+        "un fruit vert",
+        "un métier de la justice"
+      ],
+      "answer": "un métier de la justice",
+      "hint": "Quels mots de la phrase t’aident ? Pense au tribunal.",
+      "explanation": "Il défend un client au tribunal : ici, l’avocat exerce un métier de la justice. Le fruit ne défend personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-3",
+      "prompt": "Écris ton nom en haut de la « feuille ». Que veut dire « feuille » ici ?",
+      "choices": [
+        "une partie d’un arbre",
+        "un morceau de papier"
+      ],
+      "answer": "un morceau de papier",
+      "hint": "Quel mot de la phrase t’aide ? Sur quoi écrit-on son nom ?",
+      "explanation": "On y écrit son nom : ici, la feuille est un morceau de papier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-4",
+      "prompt": "Appuie sur le « bouton » pour allumer la lampe. Que veut dire « bouton » ici ?",
+      "choices": [
+        "une touche",
+        "un rond de chemise",
+        "un point sur la peau"
+      ],
+      "answer": "une touche",
+      "hint": "Quels mots de la phrase t’aident ? On appuie, et la lampe s’allume.",
+      "explanation": "On appuie dessus et la lampe s’allume. Ici, le bouton est une touche d’un appareil : la lampe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-5",
+      "prompt": "Au restaurant, le serveur apporte la « carte ». Que veut dire « carte » ici ?",
+      "choices": [
+        "la liste des plats",
+        "le plan d’un pays",
+        "une carte à jouer"
+      ],
+      "answer": "la liste des plats",
+      "hint": "Quel mot de la phrase t’aide ? Pense au restaurant.",
+      "explanation": "Au restaurant, on lit la carte pour choisir son repas : ici, c’est la liste des plats.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-6",
+      "prompt": "J’ai eu une bonne « note » en maths. Que veut dire « note » ici ?",
+      "choices": [
+        "un résultat à un contrôle",
+        "un son de musique",
+        "un petit mot écrit"
+      ],
+      "answer": "un résultat à un contrôle",
+      "hint": "Quels mots de la phrase t’aident ? Une bonne note, en maths.",
+      "explanation": "Une bonne note en maths, c’est le résultat d’un contrôle. Le do et le ré sont des notes de musique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "carriere-facettes-2-7",
+      "prompt": "Le chef d’orchestre lève sa « baguette ». Que veut dire « baguette » ici ?",
+      "choices": [
+        "un pain long",
+        "un petit bâton"
+      ],
+      "answer": "un petit bâton",
+      "hint": "Quels mots de la phrase t’aident ? Pense au chef d’orchestre.",
+      "explanation": "Le chef d’orchestre dirige les musiciens avec un petit bâton : ici, la baguette n’est pas le pain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, plusieurs sens",
+          "lines": [
+            "Un même mot peut avoir plusieurs sens.",
+            "Les autres mots de la phrase disent quel sens choisir.",
+            "Exemple : une pièce de monnaie, une pièce de la maison."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Tu as trouvé le bon sens !"
+  },
+  "reward": {
+    "block": "sable",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

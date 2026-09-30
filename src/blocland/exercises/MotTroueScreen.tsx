@@ -19,9 +19,10 @@ export function MotTroueScreen({ items, answered, onAnswer, ruledOut }: ScreenPr
     <div className="panel question">
       <div className="question-head">
         <p className="question-prompt gap-word" aria-label={`Mot à compléter : ${before}, trou, ${after}`}>
-          <span>{before}</span>
+          {/* Le mot est en flex : une espace au bord d'un morceau (« parce que ») disparaîtrait ; elle devient un écart visible. */}
+          <span className={before.endsWith(' ') ? 'word-space-after' : undefined}>{before.trimEnd()}</span>
           <span className={`gap${filled ? ' filled' : ''}`}>{filled ?? '…'}</span>
-          <span>{after}</span>
+          <span className={after.startsWith(' ') ? 'word-space-before' : undefined}>{after.trimStart()}</span>
         </p>
         <SpeakButton text={word} label="Écouter le mot" />
       </div>

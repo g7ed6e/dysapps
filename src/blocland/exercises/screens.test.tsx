@@ -8,6 +8,7 @@ import { BloclandProvider } from '../BloclandContext';
 import { loadAllExercises } from './index';
 import { EnclosScreen } from './EnclosScreen';
 import { QcmItem } from './QcmItem';
+import { FamillesScreen } from './FamillesScreen';
 import { demanderMoinsDAnimations } from '../../core/mouvement.testing';
 
 const ALL = await loadAllExercises();
@@ -268,4 +269,31 @@ it('enclos et récolte : la carte de règle du niveau s’affiche avec les sujet
     expect(bare.container.querySelector('.has-aid')).toBeNull();
     bare.unmount();
   }
+});
+
+it('familles : quand le morceau écrit ne se lit pas seul, c’est le mot de la famille qui est dit (« dans » → « danse »)', () => {
+  const def = getExercise('carriere-familles-2')!;
+  const item = def.items.find((it) => it.word === 'danseur')!;
+  expect(item.root).toBe('dans');
+  expect(item.spokenRoot).toBe('danse');
+  render(
+    <SettingsProvider>
+      <FamillesScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId={def.id} />
+    </SettingsProvider>,
+  );
+  expect(within(screen.getByLabelText(/danse/)).getByText('dans', { exact: true })).toBeInTheDocument();
+});
+
+it('mot troué en deux mots : « parce que » garde un écart visible entre les deux mots', async () => {
+  const def = getExercise('carriere-mot-troue-2')!;
+  const item = def.items.find((it) => it.key === 'parce')!;
+  expect(item.word).toBe('parce que');
+  const { MotTroueScreen } = await import('./MotTroueScreen');
+  const { container } = render(
+    <SettingsProvider>
+      <MotTroueScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={2} exerciseId={def.id} />
+    </SettingsProvider>,
+  );
+  const que = within(container.querySelector('.gap-word') as HTMLElement).getByText('que', { exact: true });
+  expect(que).toHaveClass('word-space-before');
 });

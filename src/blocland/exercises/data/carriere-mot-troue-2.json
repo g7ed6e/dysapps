@@ -79,9 +79,9 @@
     },
     {
       "key": "parce",
-      "word": "parce",
+      "word": "parce que",
       "before": "par",
-      "after": "",
+      "after": " que",
       "choices": [
         "ce",
         "se",
