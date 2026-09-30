@@ -58,8 +58,8 @@ Pour tous les items :
    - indice : -logie = science, étude.
    - explication : « -logie » = étude : la géologie est l’étude de la terre.
 4. énoncé : Un « microscope » sert à …
-   - choix : regarder le petit · mesurer le loin · écrire petit
-   - réponse : regarder le petit
+   - choix : observer ce qui est très petit · mesurer ce qui est loin · écrire tout petit
+   - réponse : observer ce qui est très petit
    - indice : micro- = petit, -scope = regarder.
    - explication : micro- (petit) + -scope (regarder).
 5. énoncé : Un « autographe », c’est …
@@ -79,10 +79,10 @@ Pour tous les items :
    - indice : Géo-graphie : décrire la terre.
    - explication : « géo- » = terre.
 8. énoncé : Un « thermomètre » mesure …
-   - choix : la chaleur · le temps · la lumière
-   - réponse : la chaleur
+   - choix : la température · le temps · la lumière
+   - réponse : la température
    - indice : thermo- = chaleur, -mètre = mesure.
-   - explication : thermo- (chaleur) + -mètre (mesurer).
+   - explication : thermo- (chaleur) + -mètre (mesure) : il mesure la température.
 
 ### Niveau 2 · `cabinet-racines-2`
 
@@ -122,10 +122,10 @@ Pour tous les items :
    - indice : re- = de nouveau.
    - explication : re- = de nouveau : refaire = faire encore une fois.
 6. énoncé : Un « antivol » sert à …
-   - choix : empêcher le vol · voler · voler avant
+   - choix : empêcher le vol · voler · empêcher un avion de voler
    - réponse : empêcher le vol
-   - indice : anti- = contre.
-   - explication : anti- (contre) + vol.
+   - indice : anti- = contre. Ici, le vol, c’est prendre ce qui n’est pas à soi.
+   - explication : anti- (contre) + vol : un antivol empêche qu’on vole un vélo, pas qu’un avion vole.
 7. énoncé : « Construction » est …
    - choix : l’action de construire · celui qui construit · ce qui peut être construit
    - réponse : l’action de construire
@@ -140,7 +140,7 @@ Pour tous les items :
 
 ## Sens · `sens`
 
-- description : Sens propre ou sens figuré, expressions imagées, puis le champ lexical.
+- description : Sens propre ou sens figuré, expressions imagées, puis le champ lexical, dans une liste puis dans une phrase.
 - compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.reseaux-de-mots
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -266,9 +266,68 @@ Pour tous les items :
    - indice : Que regarde-t-on sur le grand écran ?
    - explication : « film » parle du cinéma. Un roman se lit, une chanson s’écoute.
 
+### Niveau 3 · `cabinet-sens-3`
+
+- consigne : Champ lexical dans une phrase : trouve le thème, ou le mot qui en fait partie. La règle est affichée.
+
+Pour tous les items :
+- aide « Champ lexical dans une phrase » :
+  - Un champ lexical réunit les mots d’une phrase qui parlent d’un même thème.
+  - Un seul mot ne suffit pas : cherche le thème que plusieurs mots partagent.
+  - Un champ lexical peut dire un sentiment : sourire, rire, chanter, c’est la joie.
+
+1. énoncé : « Le navire quitte le port, les voiles se gonflent et la coque glisse sur les vagues. » Quel est le champ lexical ?
+   - lu : « Le navire quitte le port, les voiles se gonflent et la coque glisse sur les vagues. » Quel est le champ lexical ?
+   - choix : la navigation · la plage · la pêche
+   - réponse : la navigation
+   - indice : Relève les mots : navire, port, voiles, coque.
+   - explication : Navire, port, voiles, coque : ces mots parlent de la navigation. On ne se baigne pas, on ne pêche pas.
+2. énoncé : « Il tremblait, son cœur battait fort, il retenait son souffle dans le noir. » Quel sentiment dit ce champ lexical ?
+   - lu : « Il tremblait, son cœur battait fort, il retenait son souffle dans le noir. » Quel sentiment dit ce champ lexical ?
+   - choix : la peur · la colère · la fatigue
+   - réponse : la peur
+   - indice : Imagine la scène : pourquoi tremble-t-il dans le noir ?
+   - explication : Trembler, le cœur qui bat, le souffle retenu, le noir : c’est le champ lexical de la peur.
+3. énoncé : « Sous la pluie, Léo court vers le stade, le ballon sous le bras. » Quel mot appartient au champ lexical du sport ?
+   - lu : « Sous la pluie, Léo court vers le stade, le ballon sous le bras. » Quel mot appartient au champ lexical du sport ?
+   - choix : stade · pluie · bras
+   - réponse : stade
+   - indice : Où joue-t-on un match ?
+   - explication : « stade » parle du sport, comme « ballon ». « pluie » parle de la météo, « bras » du corps.
+4. énoncé : « Le rideau se lève, les acteurs entrent en scène et le public applaudit. » Quel est le champ lexical ?
+   - lu : « Le rideau se lève, les acteurs entrent en scène et le public applaudit. » Quel est le champ lexical ?
+   - choix : le théâtre · le cinéma · le concert
+   - réponse : le théâtre
+   - indice : Le rideau et la scène : où les voit-on ensemble ?
+   - explication : Rideau, acteurs, scène, public : c’est le champ lexical du théâtre. Au cinéma, les acteurs sont sur un écran.
+5. énoncé : « Samedi, on accroche des guirlandes, on prépare un gâteau et on accueille les invités. » Quel mot continue ce champ lexical ?
+   - lu : « Samedi, on accroche des guirlandes, on prépare un gâteau et on accueille les invités. » Quel mot continue ce champ lexical ?
+   - choix : bougies · cartable · parapluie
+   - réponse : bougies
+   - indice : Trouve d’abord le thème des trois mots.
+   - explication : Guirlandes, gâteau, invités : le thème est la fête. Les bougies en font partie.
+6. énoncé : « Le ciel s’assombrit, le tonnerre gronde, les premières gouttes tombent. » Quel mot continue ce champ lexical ?
+   - lu : « Le ciel s’assombrit, le tonnerre gronde, les premières gouttes tombent. » Quel mot continue ce champ lexical ?
+   - choix : éclair · soleil · plage
+   - réponse : éclair
+   - indice : Trouve d’abord le thème : un ciel sombre et le tonnerre.
+   - explication : Ciel sombre, tonnerre, gouttes : c’est l’orage. L’éclair en fait partie, pas le soleil.
+7. énoncé : « Au marché, Nina achète des pommes, des poireaux et du fromage. » Quel est le champ lexical ?
+   - lu : « Au marché, Nina achète des pommes, des poireaux et du fromage. » Quel est le champ lexical ?
+   - choix : la nourriture · l’argent · le jardin
+   - réponse : la nourriture
+   - indice : Plusieurs mots parlent du même thème : lesquels ?
+   - explication : Pommes, poireaux, fromage : c’est la nourriture. « achète » fait penser à l’argent, mais c’est un seul mot.
+8. énoncé : « La neige tombe, le lac a gelé, un vent glacial souffle sur le village. » Quel est le champ lexical ?
+   - lu : « La neige tombe, le lac a gelé, un vent glacial souffle sur le village. » Quel est le champ lexical ?
+   - choix : le froid · le vent · la montagne
+   - réponse : le froid
+   - indice : Neige, gelé, glacial : qu’ont-ils en commun ?
+   - explication : Neige, gelé, glacial : c’est le champ lexical du froid. Le vent n’est qu’un des mots.
+
 ## Nuances · `nuances`
 
-- description : Synonymes, antonymes, registres de langue, puis le degré d’intensité.
+- description : Synonymes, antonymes, registres de langue, le degré d’intensité, puis le registre qui convient à la situation.
 - compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.reseaux-de-mots · c4.fr.langue.oral-ecrit · c3.fr.langue.synonymie
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -394,6 +453,66 @@ Pour tous les items :
    - réponse : humide, mouillé, trempé
    - indice : Commence par le moins mouillé.
    - explication : On commence par le plus faible : humide, puis mouillé, puis trempé.
+
+### Niveau 3 · `cabinet-nuances-3`
+
+- consigne : Registres : reconnais le registre, ou choisis la phrase qui convient à la situation. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Registres de langue » :
+  - Familier, entre amis, à l’oral : « J’ai pas le temps, je me casse. »
+  - Courant, avec tout le monde : « Je n’ai pas le temps, je m’en vais. »
+  - Soutenu, à l’écrit ou dans un discours : « Je n’ai guère le temps, je dois prendre congé. »
+  - Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais.
+
+1. énoncé : « J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?
+   - lu : « J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?
+   - choix : familier · courant · soutenu
+   - réponse : familier
+   - indice : Le « ne » manque, et « à la bourre » se dit entre amis.
+   - explication : Registre familier : « ne » oublié, « à la bourre » (en courant : en retard).
+2. énoncé : « Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?
+   - lu : « Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?
+   - choix : soutenu · courant · familier
+   - réponse : courant
+   - indice : La phrase est correcte, avec des mots de tous les jours.
+   - explication : Registre courant : le « ne » est là, et les mots sont ceux de tous les jours.
+3. énoncé : « Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?
+   - lu : « Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?
+   - choix : courant · familier · soutenu
+   - réponse : soutenu
+   - indice : « point », « apercevoir », « accuser un retard » : des mots recherchés.
+   - explication : Registre soutenu : des mots recherchés, qu’on trouve surtout à l’écrit.
+4. énoncé : Tu écris un message au principal pour ton retard. Quelle phrase convient ?
+   - lu : Tu écris un message au principal pour ton retard. Quelle phrase convient ?
+   - choix : Je vous prie d’excuser mon retard. · Désolé, j’étais à la bourre. · Pardon pour le retard, hein.
+   - réponse : Je vous prie d’excuser mon retard.
+   - indice : Tu écris au chef du collège : pas de mot familier.
+   - explication : Pour écrire au principal, on choisit un registre soutenu : « Je vous prie d’excuser mon retard. » Les deux autres sont familiers.
+5. énoncé : Le mot courant pour « boulot » :
+   - lu : Le mot courant pour « boulot » :
+   - choix : travail · labeur · taf
+   - réponse : travail
+   - indice : Familier → courant : le mot de tous les jours.
+   - explication : « boulot » (familier) = « travail » (courant). « labeur » est soutenu, « taf » familier.
+6. énoncé : Le mot soutenu pour « avoir peur » :
+   - lu : Le mot soutenu pour « avoir peur » :
+   - choix : craindre · flipper · avoir la trouille
+   - réponse : craindre
+   - indice : Le mot qu’on lit dans un livre ou une lettre.
+   - explication : « craindre » est soutenu. « flipper » et « avoir la trouille » sont familiers.
+7. énoncé : « Ouais, c’est trop cool, ce truc ! » Quelle phrase dit la même chose en registre courant ?
+   - lu : « Ouais, c’est trop cool, ce truc ! » Quelle phrase dit la même chose en registre courant ?
+   - choix : Oui, c’est très bien, cet objet ! · Trop cool, ce truc ! · Certes, cet objet est admirable !
+   - réponse : Oui, c’est très bien, cet objet !
+   - indice : Tous les mots familiers doivent changer : ouais, trop cool, truc.
+   - explication : « Oui, c’est très bien, cet objet ! » est courant. La deuxième reste familière, la troisième est soutenue.
+8. énoncé : Dans ton exposé devant la classe, tu dis : « Les élèves ont … la sortie. »
+   - lu : Dans ton exposé devant la classe, tu dis : « Les élèves ont  (mot manquant)  la sortie. »
+   - choix : apprécié · kiffé · adoré grave
+   - réponse : apprécié
+   - indice : Un exposé se fait en registre courant : pas de mot familier.
+   - explication : « apprécié » est courant. « kiffé » et « adoré grave » sont familiers : on les dit entre amis.
 
 ## Les plans
 
