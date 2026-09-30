@@ -9,63 +9,63 @@
     {
       "key": "pantalon",
       "word": "pantalon",
+      "ending": "[on]",
       "image": "👖",
-      "correct": true,
-      "ending": "[on]"
+      "correct": true
     },
     {
       "key": "mouton",
       "word": "mouton",
+      "ending": "[on]",
       "image": "🐑",
-      "correct": true,
-      "ending": "[on]"
+      "correct": true
     },
     {
       "key": "tortue",
       "word": "tortue",
+      "ending": "[u]",
       "image": "🐢",
-      "correct": false,
-      "ending": "[u]"
+      "correct": false
     },
     {
       "key": "fleur",
       "word": "fleur",
+      "ending": "[eur]",
       "image": "🌸",
-      "correct": false,
-      "ending": "[eur]"
+      "correct": false
     },
     {
       "key": "bouton",
       "word": "bouton",
+      "ending": "[on]",
       "image": "🔘",
-      "correct": true,
-      "ending": "[on]"
+      "correct": true
     },
     {
       "key": "chat",
       "word": "chat",
+      "ending": "[a]",
       "image": "🐱",
-      "correct": false,
-      "ending": "[a]"
+      "correct": false
     },
     {
       "key": "poisson",
       "word": "poisson",
+      "ending": "[on]",
       "image": "🐟",
-      "correct": true,
-      "ending": "[on]"
+      "correct": true
     },
     {
       "key": "cochon",
       "word": "cochon",
+      "ending": "[on]",
       "image": "🐷",
-      "correct": true,
-      "ending": "[on]"
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Ça rime !",
-    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}.",
+    "correct": "Ça rime !"
   },
   "reward": {
     "block": "bois",

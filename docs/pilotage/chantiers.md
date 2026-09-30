@@ -93,11 +93,11 @@ Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages e
 | Étape | État | Suite |
 | --- | --- | --- |
 | LV2-1 (socle, réglage), LV2-2 et LV2-3 (Relais des voyageurs, 5e), LV2-4 (Jardin des heures, 4e) | Fusionnées (#205, #215, #221, #232) | Voir [La LV2 : ce qui reste](lv2-suites.md) |
-| **LV2-5** (Refuge des carnets, 3e) | Pull request ouverte, relue (DA, consultants, référent dys, expert frontend) : attend le mot du mainteneur | Tout ce qui reste est rangé dans [La LV2 : ce qui reste](lv2-suites.md) ; rien n’est lancé sans le mot du mainteneur |
+| **LV2-5** (Refuge des carnets, 3e) | Fusionnée (#252) | Tout ce qui reste est rangé dans [La LV2 : ce qui reste](lv2-suites.md) ; rien n’est lancé sans le mot du mainteneur |
 
 ### Le contenu en Markdown (M)
 
-Décision du mainteneur (30 septembre 2026) : le contenu s’écrit en Markdown dans `docs/contenu/`, et ces fichiers produisent à la fois les JSON du jeu et les pages du site. Étapes : **M1** pilote sur une île (format, générateur, vérification en CI : la Baie des mots, **en cours**) ; **M2** tous les exercices (après la PR LV2 #252) ; **M3** les îles et missions de `biomes.ts` dans l’en-tête des fichiers ; **M4** les pages du site produites depuis le Markdown ; **M5** les plans des bâtiments et les missions du portail. Les répliques des univers restent hors plan pour l’instant. Garantie à chaque étape : les JSON produits redonnent exactement les mêmes exercices, avec les mêmes identifiants.
+Décision du mainteneur (30 septembre 2026) : le contenu s’écrit en Markdown dans `docs/contenu/`, et ces fichiers produisent à la fois les JSON du jeu et les pages du site. Étapes : **M1** pilote sur une île (format, générateur, vérification en CI : la Baie des mots, fusionnée #254) ; **M2** tous les exercices (les 21 îles qui en ont, **en cours** ; format allégé sur l’avis du directeur du contenu : lecture du trou et clé déduites, mot troué, tableaux pour les items courts, modèles par écran ; le barème reste dans les fichiers) ; **M3** les îles et missions de `biomes.ts` dans l’en-tête des fichiers ; **M4** les pages du site produites depuis le Markdown ; **M5** les plans des bâtiments et les missions du portail. Les répliques des univers restent hors plan pour l’instant. Garantie à chaque étape : les JSON produits redonnent exactement les mêmes exercices, avec les mêmes identifiants.
 
 ### Le contenu (C)
 

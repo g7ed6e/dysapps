@@ -3,97 +3,97 @@
   "biome": "foret",
   "type": "chasse-son",
   "level": 1,
-  "instruction": "Tape les mots où tu entends le son [oi], comme dans étoile. Puis valide.",
   "target": "oi",
+  "instruction": "Tape les mots où tu entends le son [oi], comme dans étoile. Puis valide.",
   "items": [
     {
       "key": "roi",
       "word": "roi",
       "image": "👑",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "pain",
       "word": "pain",
       "image": "🍞",
-      "correct": false,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": false
     },
     {
       "key": "poire",
       "word": "poire",
       "image": "🍐",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "oiseau",
       "word": "oiseau",
       "image": "🐦",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "lune",
       "word": "lune",
       "image": "🌙",
-      "correct": false,
-      "heard": "[u]"
+      "heard": "[u]",
+      "correct": false
     },
     {
       "key": "voiture",
       "word": "voiture",
       "image": "🚗",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "toit",
       "word": "toit",
       "image": "🏠",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "pomme",
       "word": "pomme",
       "image": "🍎",
-      "correct": false,
-      "heard": "[o]"
+      "heard": "[o]",
+      "correct": false
     },
     {
       "key": "noix",
       "word": "noix",
       "image": "🌰",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "chat",
       "word": "chat",
       "image": "🐱",
-      "correct": false,
-      "heard": "[a]"
+      "heard": "[a]",
+      "correct": false
     },
     {
       "key": "poisson",
       "word": "poisson",
       "image": "🐟",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     },
     {
       "key": "bois",
       "word": "bois",
       "image": "🌲",
-      "correct": true,
-      "heard": "[oi]"
+      "heard": "[oi]",
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Bravo, tu entends bien [oi] !",
-    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [oi] !"
   },
   "reward": {
     "block": "bois",

@@ -7,95 +7,136 @@
   "items": [
     {
       "key": "jardinet",
-      "meaning": "Un petit jardin.",
+      "word": "jardinet",
       "root": "jardin",
       "slot": "suffix",
-      "choices": ["et", "eur", "age"],
+      "choices": [
+        "et",
+        "eur",
+        "age"
+      ],
       "answer": "et",
-      "word": "jardinet"
+      "meaning": "Un petit jardin."
     },
     {
       "key": "chanteur",
-      "meaning": "Celui qui chante.",
+      "word": "chanteur",
       "root": "chant",
       "slot": "suffix",
-      "choices": ["eur", "age", "able"],
+      "choices": [
+        "eur",
+        "age",
+        "able"
+      ],
       "answer": "eur",
-      "word": "chanteur"
+      "meaning": "Celui qui chante."
     },
     {
       "key": "courageux",
-      "meaning": "Qui a du courage.",
+      "word": "courageux",
       "root": "courag",
       "slot": "suffix",
-      "choices": ["eux", "et", "eur"],
+      "choices": [
+        "eux",
+        "et",
+        "eur"
+      ],
       "answer": "eux",
-      "word": "courageux"
+      "meaning": "Qui a du courage."
     },
     {
       "key": "lavable",
-      "meaning": "Qu’on peut laver.",
+      "word": "lavable",
       "root": "lav",
       "slot": "suffix",
-      "choices": ["able", "age", "eur"],
+      "choices": [
+        "able",
+        "age",
+        "eur"
+      ],
       "answer": "able",
-      "word": "lavable"
+      "meaning": "Qu’on peut laver."
     },
     {
       "key": "lavage",
-      "meaning": "L’action de laver.",
+      "word": "lavage",
       "root": "lav",
       "slot": "suffix",
-      "choices": ["age", "able", "et"],
+      "choices": [
+        "age",
+        "able",
+        "et"
+      ],
       "answer": "age",
-      "word": "lavage"
+      "meaning": "L’action de laver."
     },
     {
       "key": "maisonnette",
-      "meaning": "Une petite maison.",
+      "word": "maisonnette",
       "root": "maison",
       "slot": "suffix",
-      "choices": ["nette", "eur", "age"],
+      "choices": [
+        "nette",
+        "eur",
+        "age"
+      ],
       "answer": "nette",
-      "word": "maisonnette"
+      "meaning": "Une petite maison."
     },
     {
       "key": "fillette",
-      "meaning": "Une petite fille.",
+      "word": "fillette",
       "root": "fill",
       "slot": "suffix",
-      "choices": ["ette", "eur", "age"],
+      "choices": [
+        "ette",
+        "eur",
+        "age"
+      ],
       "answer": "ette",
-      "word": "fillette"
+      "meaning": "Une petite fille."
     },
     {
       "key": "danseur",
-      "meaning": "Celui qui danse.",
+      "word": "danseur",
       "root": "dans",
       "slot": "suffix",
-      "choices": ["eur", "ette", "able"],
+      "choices": [
+        "eur",
+        "ette",
+        "able"
+      ],
       "answer": "eur",
-      "word": "danseur"
+      "meaning": "Celui qui danse."
     },
     {
       "key": "peureux",
-      "meaning": "Qui a souvent peur.",
+      "word": "peureux",
       "root": "peur",
       "slot": "suffix",
-      "choices": ["eux", "able", "age"],
+      "choices": [
+        "eux",
+        "able",
+        "age"
+      ],
       "answer": "eux",
-      "word": "peureux"
+      "meaning": "Qui a souvent peur."
     },
     {
       "key": "jetable",
-      "meaning": "Que l’on peut jeter.",
+      "word": "jetable",
       "root": "jet",
       "slot": "suffix",
-      "choices": ["able", "eux", "ette"],
+      "choices": [
+        "able",
+        "eux",
+        "ette"
+      ],
       "answer": "able",
-      "word": "jetable"
+      "meaning": "Que l’on peut jeter."
     }
   ],
+  "perRun": 6,
   "feedback": {
     "correct": "Bien assemblé !",
     "wrong": "{word} se fabrique avec {answer}. {meaning}"
@@ -108,6 +149,5 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  },
-  "perRun": 6
+  }
 }

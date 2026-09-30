@@ -216,8 +216,8 @@
     }
   ],
   "feedback": {
-    "correct": "Bien répondu !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Bien répondu !"
   },
   "reward": {
     "block": "bardeau",

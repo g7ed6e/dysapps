@@ -15,6 +15,7 @@
         "constipé",
         "fatigué"
       ],
+      "choicesLang": "fr",
       "answer": "enrhumé",
       "hint": "fiebre = fièvre ; tos = toux.",
       "explanation": "constipado = enrhumé : il a de la fièvre et il tousse. Constipé se dit estreñido.",
@@ -30,8 +31,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-1",
@@ -42,6 +42,7 @@
         "large",
         "lent"
       ],
+      "choicesLang": "fr",
       "answer": "long",
       "hint": "Lis la fin : doce horas = douze heures.",
       "explanation": "largo = long : un voyage de douze heures. Large se dit ancho.",
@@ -57,8 +58,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-2",
@@ -69,6 +69,7 @@
         "Nous subissons",
         "Nous sortons"
       ],
+      "choicesLang": "fr",
       "answer": "Nous montons",
       "hint": "al tren = dans le train. Que fait-on pour prendre le train ?",
       "explanation": "subir = monter : subimos al tren = nous montons dans le train. Subir, en français, se dit sufrir.",
@@ -84,8 +85,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-3",
@@ -96,6 +96,7 @@
         "salit",
         "arrive"
       ],
+      "choicesLang": "fr",
       "answer": "part",
       "hint": "Que fait un train à l’heure du départ ?",
       "explanation": "salir = partir, sortir : el tren sale = le train part. Salir, en français, se dit ensuciar.",
@@ -111,8 +112,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-4",
@@ -123,6 +123,7 @@
         "conteste",
         "raconte"
       ],
+      "choicesLang": "fr",
       "answer": "répond",
       "hint": "al teléfono = au téléphone. Que fait-on quand le téléphone sonne ?",
       "explanation": "contestar = répondre : mon ami ne répond pas au téléphone. Contester se dit protestar.",
@@ -138,8 +139,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-5",
@@ -150,6 +150,7 @@
         "sortie",
         "excès"
       ],
+      "choicesLang": "fr",
       "answer": "succès",
       "hint": "fue un gran = a été un grand. Une fête peut être réussie.",
       "explanation": "el éxito = le succès : la fête a été un grand succès. La sortie se dit la salida.",
@@ -165,8 +166,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-6",
@@ -177,6 +177,7 @@
         "Quitte",
         "Laisse"
       ],
+      "choicesLang": "fr",
       "answer": "Enlève",
       "hint": "de la silla = de la chaise. Que fait-on d’un sac posé sur une chaise ?",
       "explanation": "quitar = enlever : enlève ton sac de la chaise. Quitter se dit dejar ou salir de.",
@@ -192,8 +193,7 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-es-porque-2-7",
@@ -204,6 +204,7 @@
         "manche",
         "poche"
       ],
+      "choicesLang": "fr",
       "answer": "tache",
       "hint": "en la camiseta = sur le tee-shirt.",
       "explanation": "la mancha = la tache : j’ai une tache sur mon tee-shirt. La manche d’un vêtement se dit la manga.",
@@ -219,13 +220,12 @@
             "la firma = la signature (pas la firme)"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {
-    "correct": "Pas piégé !",
-    "wrong": "{explanation}"
+    "wrong": "{explanation}",
+    "correct": "Pas piégé !"
   },
   "reward": {
     "block": "bardeau",

@@ -1,6 +1,6 @@
 # Le contenu en Markdown
 
-Ce dossier est la source du contenu des îles : un fichier par île (`<île>.md`, l’identifiant de l’île). `npm run contenu` en produit les JSON du jeu (`src/blocland/exercises/data/<exercice>.json`), qu’on n’édite plus à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). Les îles pas encore passées ici s’écrivent encore en JSON (plan M1 à M5 : `docs/pilotage/chantiers.md`).
+Ce dossier est la source du contenu des îles : un fichier par île (`<île>.md`, l’identifiant de l’île). `npm run contenu` en produit les JSON du jeu (`src/blocland/exercises/data/<exercice>.json`), qu’on n’édite plus à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). Toutes les îles qui ont des exercices y sont (étape M2) ; les noms des îles et des missions, les plans des bâtiments et les missions du portail suivront (étapes M3 à M5 : `docs/pilotage/chantiers.md`).
 
 ## Le format
 
@@ -28,16 +28,40 @@ Pour tous les items :                         ← champs communs à tous les ite
    - réponse : Hello
 ```
 
-- **Identifiants** : ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>` ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`). Un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
+- **Identifiants** : ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>`, ou ce que dit `clé des items` (plus bas) ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`) ou dans la colonne `clé`. Avec la clé par défaut, un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
 - **Titres** : le titre de l’île et ceux des missions ne sont pas encore lus par le jeu (ils le seront à l’étape M3) ; aujourd’hui, les noms affichés viennent de `src/blocland/biomes.ts`.
-- **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`.
-- **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, et `aide « titre » :` suivie de ses lignes en sous-liste. Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
-- **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul.
+- **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`. Le barème (`blocs`, `XP`, `monte à`, `descend à`) reste écrit ici, niveau par niveau.
+- **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, et `aide « titre » :` suivie de ses lignes en sous-liste. Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
+- **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul. S’y écrivent aussi les deux règles qui évitent de recopier :
+  - `trou lu : blank` : la voix lit l’énoncé en remplaçant le « … » par ce texte (`blank` en anglais, `(mot manquant)` en français). Un item dont la lecture est autre garde son champ `lu`. Seul un énoncé à un seul « … » est concerné.
+  - `clé des items : mot` (ou `lettre`) : la clé de chaque item est son mot, ce qui permet d’insérer un item n’importe où ; `clé des items : paragraphe` : les clés sont p1, p2… (textes à lire).
+- **Mot troué** : `mot troué : en[f]ant` donne à la fois le mot (`enfant`), ce qui vient avant et après le trou, et la réponse (`f`).
+- **Tableau** : les items courts d’un niveau peuvent s’écrire en tableau Markdown, une colonne par champ, une ligne par item dans l’ordre ; une case vide = champ absent. Une case ne contient pas « | ». Un niveau a soit un tableau, soit des items numérotés.
 - **Listes** : `a · b · c` sur la ligne, ou une sous-liste quand un élément contient « · ».
 - **Guillemets** : une valeur vide, avec un saut de ligne, des espaces au bord ou qui commence par « " » s’écrit en chaîne JSON (`"…"`).
 
 Une ligne vide termine un bloc « Pour tous les items » : sans elle, un champ écrit ensuite (par exemple `cible`, qui existe pour le niveau comme pour l’item) compterait pour tous les items. Le format est strict : un champ inconnu, un item mal numéroté ou un champ écrit deux fois arrête `npm run contenu` avec le fichier et la ligne. Le lecteur et l’écriture sont dans `scripts/contenu/format.mjs` ; un nouveau champ s’y ajoute.
 
+## Les modèles, par écran
+
+Un nouvel exercice part du modèle de son écran : copier un niveau d’une île qui a le même type de mission. Les champs de chaque écran :
+
+| Écran (missions) | Champs d’un item | Exemple dans |
+| --- | --- | --- |
+| Question à trou, la plus courante (hello, rives, figures, es-hola…) | énoncé avec « … », choix, réponse, indice, explication ; `trou lu` et l’aide pour tous | `baie.md`, `marais.md` |
+| Question sur un document (notices, es-horario, de-geschichte…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication | `comptoir.md`, `refuge.md` |
+| Écoute (ears, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication | `baie.md` |
+| Syllabes (abattage) | énoncé, mot, entendu (syllabes), choix, réponse ; en tableau | `foret.md` |
+| Chasse au son, rimes | mot, image, entendu ou terminaison, juste (oui ou non) ; en tableau | `foret.md` |
+| Filon (lettres b, d, p, q) | lettre, juste, astuce, parfois cible | `mine.md` |
+| Oreille du mineur | phrase, mot, choix, réponse, indice | `mine.md` |
+| Mot troué | mot troué, choix ; `clé des items : mot` | `carriere.md` |
+| Familles, coffre à mots | mot, racine, case, choix, réponse, sens (familles) ; mot, choix, réponse, indice (coffre) | `carriere.md` |
+| Enclos (accord sujet-verbe) | sujet, singulier, pluriel, réponse, pourquoi | `ferme.md` |
+| Récolte (-é, -er, -ez) | énoncé, lu, choix, réponse, règle | `ferme.md` |
+| Dialogues | mot, choix, réponse, indice, explication | `theatre.md` |
+| Ascension (lecture à voix haute) | texte, un paragraphe par item ; `clé des items : paragraphe` | `tour.md` |
+
 ## Passer une île en Markdown
 
-`node scripts/contenu/importer.mjs <île>` écrit `<île>.md` depuis ses JSON actuels, après avoir vérifié que le Markdown redonne exactement les mêmes exercices ; puis `npm run contenu` réécrit ses JSON depuis le Markdown.
+`node scripts/contenu/importer.mjs <île>` (pour une île nouvelle écrite d’abord en JSON) écrit `<île>.md` depuis ses JSON, après avoir vérifié que le Markdown redonne exactement les mêmes exercices ; puis `npm run contenu` réécrit ses JSON depuis le Markdown.

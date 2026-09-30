@@ -15,6 +15,7 @@
         "48",
         "84"
       ],
+      "choicesLang": "fr",
       "answer": "48",
       "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
       "explanation": "cuarenta y ocho = 48 : la dizaine (cuarenta, 40), puis y, puis l’unité (ocho, 8).",
@@ -32,8 +33,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-1",
@@ -44,6 +44,7 @@
         "76",
         "77"
       ],
+      "choicesLang": "fr",
       "answer": "76",
       "hint": "set- (comme siete, 7) ou ses- (comme seis, 6) ? La dizaine vient d’abord.",
       "explanation": "setenta y seis = 76 : setenta (70, set- comme siete), puis y, puis seis (6). 66 se dit sesenta y seis, 77 setenta y siete.",
@@ -61,8 +62,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-2",
@@ -73,6 +73,7 @@
         "76",
         "77"
       ],
+      "choicesLang": "fr",
       "answer": "67",
       "hint": "ses- (comme seis, 6) ou set- (comme siete, 7) ? La dizaine vient d’abord.",
       "explanation": "sesenta y siete = 67 : sesenta (60, ses- comme seis), puis y, puis siete (7).",
@@ -90,8 +91,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-3",
@@ -102,6 +102,7 @@
         "19",
         "90"
       ],
+      "choicesLang": "fr",
       "answer": "90",
       "hint": "Écoute la fin : -enta, ce sont les dizaines.",
       "explanation": "noventa = 90 : -enta, c’est une dizaine, et nov- rappelle nueve (9). 19 se dit diecinueve.",
@@ -119,8 +120,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-4",
@@ -131,6 +131,7 @@
         "12",
         "22"
       ],
+      "choicesLang": "fr",
       "answer": "22",
       "hint": "veinti- veut dire « vingt et ».",
       "explanation": "veintidós = « vingt et deux » = 22 : de 21 à 29, un seul mot en veinti-. 12 se dit doce.",
@@ -148,8 +149,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-5",
@@ -160,6 +160,7 @@
         "18",
         "80"
       ],
+      "choicesLang": "fr",
       "answer": "18",
       "hint": "dieci- veut dire « dix et… ».",
       "explanation": "dieciocho = « dix et huit » = 18. 8 se dit ocho, 80 ochenta.",
@@ -177,8 +178,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-6",
@@ -189,6 +189,7 @@
         "30",
         "31"
       ],
+      "choicesLang": "fr",
       "answer": "31",
       "hint": "trece (13) ou treinta (30) ? Puis écoute ce qui vient après y.",
       "explanation": "treinta y uno = 31 : treinta (30), puis y, puis uno (1). 13 se dit trece.",
@@ -206,8 +207,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-es-numeros-2-7",
@@ -218,6 +218,7 @@
         "80",
         "85"
       ],
+      "choicesLang": "fr",
       "answer": "58",
       "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
       "explanation": "cincuenta y ocho = 58 : cincuenta (50), puis y, puis ocho (8). 80 se dit ochenta, 85 ochenta y cinco.",
@@ -235,8 +236,7 @@
             "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

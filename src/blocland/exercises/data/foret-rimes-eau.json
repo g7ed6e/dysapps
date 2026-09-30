@@ -9,63 +9,63 @@
     {
       "key": "bateau",
       "word": "bateau",
+      "ending": "[o]",
       "image": "🚤",
-      "correct": true,
-      "ending": "[o]"
+      "correct": true
     },
     {
       "key": "souris",
       "word": "souris",
+      "ending": "[i]",
       "image": "🐭",
-      "correct": false,
-      "ending": "[i]"
+      "correct": false
     },
     {
       "key": "gâteau",
       "word": "gâteau",
+      "ending": "[o]",
       "image": "🎂",
-      "correct": true,
-      "ending": "[o]"
+      "correct": true
     },
     {
       "key": "maison",
       "word": "maison",
+      "ending": "[on]",
       "image": "🏠",
-      "correct": false,
-      "ending": "[on]"
+      "correct": false
     },
     {
       "key": "château",
       "word": "château",
+      "ending": "[o]",
       "image": "🏰",
-      "correct": true,
-      "ending": "[o]"
+      "correct": true
     },
     {
       "key": "cadeau",
       "word": "cadeau",
+      "ending": "[o]",
       "image": "🎁",
-      "correct": true,
-      "ending": "[o]"
+      "correct": true
     },
     {
       "key": "lapin",
       "word": "lapin",
+      "ending": "[in]",
       "image": "🐰",
-      "correct": false,
-      "ending": "[in]"
+      "correct": false
     },
     {
       "key": "marteau",
       "word": "marteau",
+      "ending": "[o]",
       "image": "🔨",
-      "correct": true,
-      "ending": "[o]"
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Ça rime !",
-    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}.",
+    "correct": "Ça rime !"
   },
   "reward": {
     "block": "bois",

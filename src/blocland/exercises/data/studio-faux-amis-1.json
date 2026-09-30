@@ -15,6 +15,7 @@
         "actuellement",
         "activement"
       ],
+      "choicesLang": "fr",
       "answer": "en fait",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "actually = en fait (actuellement se dit now ou currently).",
@@ -30,8 +31,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-1",
@@ -42,6 +42,7 @@
         "la librairie",
         "la liberté"
       ],
+      "choicesLang": "fr",
       "answer": "la bibliothèque",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "library = la bibliothèque (une librairie = a bookshop).",
@@ -57,8 +58,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-2",
@@ -69,6 +69,7 @@
         "sensible",
         "sucré"
       ],
+      "choicesLang": "fr",
       "answer": "raisonnable",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "sensible = raisonnable (le français « sensible » se dit sensitive).",
@@ -84,8 +85,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-3",
@@ -96,6 +96,7 @@
         "attendre",
         "atteindre"
       ],
+      "choicesLang": "fr",
       "answer": "assister à",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "to attend = assister à (attendre = to wait).",
@@ -111,8 +112,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-4",
@@ -123,6 +123,7 @@
         "un coin",
         "un caillou"
       ],
+      "choicesLang": "fr",
       "answer": "une pièce de monnaie",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "a coin = une pièce de monnaie (un coin = a corner).",
@@ -138,8 +139,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-5",
@@ -150,6 +150,7 @@
         "large",
         "légère"
       ],
+      "choicesLang": "fr",
       "answer": "grande",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "large = grand (le français « large » se dit wide).",
@@ -165,8 +166,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-6",
@@ -177,6 +177,7 @@
         "éventuellement",
         "évidemment"
       ],
+      "choicesLang": "fr",
       "answer": "finalement",
       "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
       "explanation": "eventually = finalement (éventuellement = maybe).",
@@ -192,8 +193,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "studio-faux-amis-1-7",
@@ -204,6 +204,7 @@
         "raisonnable",
         "sportif"
       ],
+      "choicesLang": "fr",
       "answer": "sensible",
       "hint": "Relis la règle : sensible et sensitive ne veulent pas dire la même chose.",
       "explanation": "sensitive = sensible (l’anglais sensible = raisonnable).",
@@ -219,8 +220,7 @@
             "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

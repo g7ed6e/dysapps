@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "jardin-es-horario-2-0",
-      "question": "Quel est le plat principal du menu ?",
       "prompt": "Menú del día: 11 euros\nPrimer plato: ensalada\nSegundo plato: pescado con patatas\nPostre: flan o fruta",
+      "question": "Quel est le plat principal du menu ?",
       "spoken": "Menú del día, once euros. Primer plato, ensalada. Segundo plato, pescado con patatas. Postre, flan o fruta.",
       "choices": [
         "Du poisson avec des pommes de terre",
         "Une salade",
         "Un flan ou un fruit"
       ],
+      "choicesLang": "fr",
       "answer": "Du poisson avec des pommes de terre",
       "hint": "Le plat principal, c’est le segundo plato.",
       "explanation": "segundo plato = le plat principal : pescado con patatas, du poisson avec des pommes de terre. La salade est l’entrée (primer plato).",
@@ -31,19 +32,19 @@
             "el pescado = le poisson ; las patatas = les pommes de terre"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-1",
-      "question": "Quel menu coûte 7 euros ?",
       "prompt": "Restaurante Sol\nMenú del día: 12 euros\nMenú infantil: 7 euros\nBebida: 2 euros",
+      "question": "Quel menu coûte 7 euros ?",
       "spoken": "Restaurante Sol. Menú del día, doce euros. Menú infantil, siete euros. Bebida, dos euros.",
       "choices": [
         "Le menu pour enfants",
         "Le menu du jour",
         "La boisson"
       ],
+      "choicesLang": "fr",
       "answer": "Le menu pour enfants",
       "hint": "Cherche 7 euros, puis lis le début de sa ligne.",
       "explanation": "Menú infantil: 7 euros. infantil veut dire « pour enfants ». Le menu du jour coûte 12 euros ; la boisson, 2 euros.",
@@ -59,19 +60,19 @@
             "el pescado = le poisson ; las patatas = les pommes de terre"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-2",
-      "question": "Quelle glace peux-tu prendre ?",
       "prompt": "Postres\nhelado de fresa\nflan de huevo\nfruta del tiempo",
+      "question": "Quelle glace peux-tu prendre ?",
       "spoken": "Postres. Helado de fresa. Flan de huevo. Fruta del tiempo.",
       "choices": [
         "Une glace à la fraise",
         "Une glace à la framboise",
         "Une glace au chocolat"
       ],
+      "choicesLang": "fr",
       "answer": "Une glace à la fraise",
       "hint": "helado = glace. Et fresa ?",
       "explanation": "helado de fresa = une glace à la fraise. La framboise se dit frambuesa : les deux mots se ressemblent.",
@@ -87,19 +88,19 @@
             "el pescado = le poisson ; las patatas = les pommes de terre"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-3",
-      "question": "Que peux-tu boire avec le menu ?",
       "prompt": "Menú escolar\nPrimer plato: sopa de pollo\nSegundo plato: arroz con verduras\nBebida: agua o zumo de naranja",
+      "question": "Que peux-tu boire avec le menu ?",
       "spoken": "Menú escolar. Primer plato, sopa de pollo. Segundo plato, arroz con verduras. Bebida, agua o zumo de naranja.",
       "choices": [
         "De l’eau ou un jus d’orange",
         "Du lait",
         "Une soupe au poulet"
       ],
+      "choicesLang": "fr",
       "answer": "De l’eau ou un jus d’orange",
       "hint": "Boire, c’est la bebida : trouve sa ligne.",
       "explanation": "Bebida = la boisson : agua o zumo de naranja, de l’eau ou un jus d’orange. La soupe au poulet est l’entrée.",
@@ -115,19 +116,19 @@
             "el pescado = le poisson ; las patatas = les pommes de terre"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-4",
-      "question": "Le samedi, à quelle heure ouvre la piscine ?",
       "prompt": "Piscina municipal\nde lunes a viernes: de 16:00 a 21:00\nsábado: de 10:00 a 14:00\ndomingo: cerrado",
+      "question": "Le samedi, à quelle heure ouvre la piscine ?",
       "spoken": "Piscina municipal. De lunes a viernes, de dieciséis a veintiuna horas. Sábado, de diez a catorce horas. Domingo, cerrado.",
       "choices": [
         "10 h 00",
         "14 h 00",
         "16 h 00"
       ],
+      "choicesLang": "fr",
       "answer": "10 h 00",
       "hint": "Trouve la ligne sábado, puis lis la première heure.",
       "explanation": "sábado = samedi : de 10:00 a 14:00, la piscine ouvre à 10 h et ferme à 14 h. 16 h, c’est du lundi au vendredi.",
@@ -142,19 +143,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-5",
-      "question": "Quel jour le billet coûte-t-il 5 euros ?",
       "prompt": "Cine Luna\nLa isla del dragón: 17:30 y 20:00\nentrada: 7 euros\nmiércoles: 5 euros",
+      "question": "Quel jour le billet coûte-t-il 5 euros ?",
       "spoken": "Cine Luna. La isla del dragón, a las diecisiete y treinta y a las veinte horas. Entrada, siete euros. Miércoles, cinco euros.",
       "choices": [
         "Le mercredi",
         "Le mardi",
         "Le dimanche"
       ],
+      "choicesLang": "fr",
       "answer": "Le mercredi",
       "hint": "Cherche 5 euros, puis lis le début de sa ligne.",
       "explanation": "miércoles: 5 euros, le mercredi, le billet coûte 5 euros. Les autres jours, la entrada (le billet) coûte 7 euros. martes, c’est mardi.",
@@ -169,19 +170,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-6",
-      "question": "Quels jours y a-t-il du basket ?",
       "prompt": "Polideportivo\nFútbol: martes y jueves, 18:00\nBaloncesto: lunes y miércoles, 17:00\nNatación: sábado, 11:00",
+      "question": "Quels jours y a-t-il du basket ?",
       "spoken": "Polideportivo. Fútbol, martes y jueves, a las dieciocho. Baloncesto, lunes y miércoles, a las diecisiete. Natación, sábado, a las once.",
       "choices": [
         "Le lundi et le mercredi",
         "Le mardi et le jeudi",
         "Le samedi"
       ],
+      "choicesLang": "fr",
       "answer": "Le lundi et le mercredi",
       "hint": "Le basket se dit baloncesto : trouve sa ligne.",
       "explanation": "el baloncesto = le basket : lunes y miércoles, le lundi et le mercredi. Le football, c’est le mardi et le jeudi.",
@@ -196,19 +197,19 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-horario-2-7",
-      "question": "À quelle heure dîne la famille de Lucía ?",
       "prompt": "En casa de Lucía\ndesayuno: 7:30\ncomida: 14:30\nmerienda: 18:00\ncena: 21:30",
+      "question": "À quelle heure dîne la famille de Lucía ?",
       "spoken": "En casa de Lucía. Desayuno, a las siete y treinta. Comida, a las catorce y treinta. Merienda, a las dieciocho. Cena, a las veintiuna y treinta.",
       "choices": [
         "14 h 30",
         "18 h 00",
         "21 h 30"
       ],
+      "choicesLang": "fr",
       "answer": "21 h 30",
       "hint": "Le dîner se dit la cena.",
       "explanation": "la cena = le dîner : 21 h 30. la comida, c’est le déjeuner (14 h 30). En Espagne, on dîne souvent plus tard qu’en France.",
@@ -223,8 +224,7 @@
             "7:15 = 7 h 15 ; 16:45 = 16 h 45"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

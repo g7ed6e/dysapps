@@ -3,97 +3,97 @@
   "biome": "foret",
   "type": "chasse-son",
   "level": 1,
-  "instruction": "Tape les mots où tu entends le son [on], comme dans ballon. Puis valide.",
   "target": "on",
+  "instruction": "Tape les mots où tu entends le son [on], comme dans ballon. Puis valide.",
   "items": [
     {
       "key": "pont",
       "word": "pont",
       "image": "🌉",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "enfant",
       "word": "enfant",
       "image": "🧒",
-      "correct": false,
-      "heard": "[an]"
+      "heard": "[an]",
+      "correct": false
     },
     {
       "key": "mouton",
       "word": "mouton",
       "image": "🐑",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "lapin",
       "word": "lapin",
       "image": "🐰",
-      "correct": false,
-      "heard": "[in]"
+      "heard": "[in]",
+      "correct": false
     },
     {
       "key": "maison",
       "word": "maison",
       "image": "🏠",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "cochon",
       "word": "cochon",
       "image": "🐷",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "banane",
       "word": "banane",
       "image": "🍌",
-      "correct": false,
-      "heard": "[a]"
+      "heard": "[a]",
+      "correct": false
     },
     {
       "key": "bouton",
       "word": "bouton",
       "image": "🔘",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "vélo",
       "word": "vélo",
       "image": "🚲",
-      "correct": false,
-      "heard": "[o]"
+      "heard": "[o]",
+      "correct": false
     },
     {
       "key": "bonbon",
       "word": "bonbon",
       "image": "🍬",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "poisson",
       "word": "poisson",
       "image": "🐟",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     },
     {
       "key": "citron",
       "word": "citron",
       "image": "🍋",
-      "correct": true,
-      "heard": "[on]"
+      "heard": "[on]",
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Bravo, tu entends bien [on] !",
-    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [on] !"
   },
   "reward": {
     "block": "bois",

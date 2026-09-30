@@ -9,63 +9,63 @@
     {
       "key": "bicyclette",
       "word": "bicyclette",
+      "ending": "[ète]",
       "image": "🚲",
-      "correct": true,
-      "ending": "[ète]"
+      "correct": true
     },
     {
       "key": "tomate",
       "word": "tomate",
+      "ending": "[ate]",
       "image": "🍅",
-      "correct": false,
-      "ending": "[ate]"
+      "correct": false
     },
     {
       "key": "chaussette",
       "word": "chaussette",
+      "ending": "[ète]",
       "image": "🧦",
-      "correct": true,
-      "ending": "[ète]"
+      "correct": true
     },
     {
       "key": "camion",
       "word": "camion",
+      "ending": "[on]",
       "image": "🚚",
-      "correct": false,
-      "ending": "[on]"
+      "correct": false
     },
     {
       "key": "allumette",
       "word": "allumette",
+      "ending": "[ète]",
       "image": "🔥",
-      "correct": true,
-      "ending": "[ète]"
+      "correct": true
     },
     {
       "key": "cravate",
       "word": "cravate",
+      "ending": "[ate]",
       "image": "👔",
-      "correct": false,
-      "ending": "[ate]"
+      "correct": false
     },
     {
       "key": "trompette",
       "word": "trompette",
+      "ending": "[ète]",
       "image": "🎺",
-      "correct": true,
-      "ending": "[ète]"
+      "correct": true
     },
     {
       "key": "sucette",
       "word": "sucette",
+      "ending": "[ète]",
       "image": "🍭",
-      "correct": true,
-      "ending": "[ète]"
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Ça rime !",
-    "wrong": "Écoute la fin de {word} : ça finit par {ending}."
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}.",
+    "correct": "Ça rime !"
   },
   "reward": {
     "block": "bois",

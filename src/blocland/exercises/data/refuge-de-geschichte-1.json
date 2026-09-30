@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "refuge-de-geschichte-1-0",
-      "question": "Jonas prend deux transports. Lequel a-t-il pris à la gare ?",
       "prompt": "Jonas ist mit dem Auto zum Bahnhof gefahren.\nDann ist er mit dem Zug nach Köln gefahren.\nDort hat er seine Oma besucht.",
+      "question": "Jonas prend deux transports. Lequel a-t-il pris à la gare ?",
       "spoken": "Jonas ist mit dem Auto zum Bahnhof gefahren. Dann ist er mit dem Zug nach Köln gefahren. Dort hat er seine Oma besucht.",
       "choices": [
         "Le train",
         "La voiture",
         "Le bus"
       ],
+      "choicesLang": "fr",
       "answer": "Le train",
       "hint": "Lis la 2e phrase, après dann.",
       "explanation": "Dann ist er mit dem Zug gefahren : à la gare, il a pris le train. La voiture (das Auto), c’était pour aller jusqu’à la gare.",
@@ -31,19 +32,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-1",
-      "question": "Lea est allée à la mer. Avec qui ?",
       "prompt": "Am Sonntag ist Lea ans Meer gefahren.\nIhre Oma ist mitgekommen.\nAm Abend hat sie ihren Opa angerufen.",
+      "question": "Lea est allée à la mer. Avec qui ?",
       "spoken": "Am Sonntag ist Lea ans Meer gefahren. Ihre Oma ist mitgekommen. Am Abend hat sie ihren Opa angerufen.",
       "choices": [
         "Sa grand-mère",
         "Son grand-père",
         "Son père"
       ],
+      "choicesLang": "fr",
       "answer": "Sa grand-mère",
       "hint": "Oma ou Opa ? Qui est mitgekommen ?",
       "explanation": "Ihre Oma ist mitgekommen = sa grand-mère est venue avec elle. Son grand-père (Opa), elle l’a appelé le soir.",
@@ -59,19 +60,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-2",
-      "question": "Paul a visité une ville avec sa classe. Comment ont-ils voyagé ?",
       "prompt": "Paul hat mit seiner Klasse Berlin besucht.\nSie sind mit dem Bus gefahren.\nAm Abend haben sie Pizza gegessen.",
+      "question": "Paul a visité une ville avec sa classe. Comment ont-ils voyagé ?",
       "spoken": "Paul hat mit seiner Klasse Berlin besucht. Sie sind mit dem Bus gefahren. Am Abend haben sie Pizza gegessen.",
       "choices": [
         "En bus",
         "En train",
         "En avion"
       ],
+      "choicesLang": "fr",
       "answer": "En bus",
       "hint": "Lis la 2e phrase : mit dem…",
       "explanation": "Sie sind mit dem Bus gefahren = ils ont voyagé en bus.",
@@ -87,19 +88,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-3",
-      "question": "Emma a rendu visite à sa tante. Qui est venu avec elle ?",
       "prompt": "Emma hat ihre Tante in Bonn besucht.\nIhr Bruder ist mitgekommen.\nIhre Schwester ist zu Hause geblieben.",
+      "question": "Emma a rendu visite à sa tante. Qui est venu avec elle ?",
       "spoken": "Emma hat ihre Tante in Bonn besucht. Ihr Bruder ist mitgekommen. Ihre Schwester ist zu Hause geblieben.",
       "choices": [
         "Son frère",
         "Sa sœur",
         "Sa cousine"
       ],
+      "choicesLang": "fr",
       "answer": "Son frère",
       "hint": "mitgekommen = venu avec. Lis la 2e phrase.",
       "explanation": "Ihr Bruder ist mitgekommen = son frère est venu avec elle. Sa sœur (ihre Schwester) est restée à la maison.",
@@ -115,19 +116,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-4",
-      "question": "Noah est parti avec son père. Qu’ont-ils vu ?",
       "prompt": "Noah ist mit seinem Vater nach Köln gefahren.\nDort haben sie ein Fußballspiel gesehen.\nAm Abend sind sie nach Hause gefahren.",
+      "question": "Noah est parti avec son père. Qu’ont-ils vu ?",
       "spoken": "Noah ist mit seinem Vater nach Köln gefahren. Dort haben sie ein Fußballspiel gesehen. Am Abend sind sie nach Hause gefahren.",
       "choices": [
         "Un match",
         "Un film",
         "Un concert"
       ],
+      "choicesLang": "fr",
       "answer": "Un match",
       "hint": "gesehen = vu. Lis la 2e phrase : das Fußballspiel = le match de foot.",
       "explanation": "Dort haben sie ein Fußballspiel gesehen = là-bas, ils ont vu un match de foot.",
@@ -143,19 +144,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-5",
-      "question": "Mila est partie chez son oncle. Où habite-t-il ?",
       "prompt": "Mila ist zu ihrem Onkel gefahren.\nEr wohnt in einem kleinen Dorf.\nDort hat sie viele Tiere gesehen.",
+      "question": "Mila est partie chez son oncle. Où habite-t-il ?",
       "spoken": "Mila ist zu ihrem Onkel gefahren. Er wohnt in einem kleinen Dorf. Dort hat sie viele Tiere gesehen.",
       "choices": [
         "Dans un village",
         "Dans une grande ville",
         "À la mer"
       ],
+      "choicesLang": "fr",
       "answer": "Dans un village",
       "hint": "er wohnt = il habite. das Dorf = le village ; die Stadt = la ville.",
       "explanation": "Er wohnt in einem kleinen Dorf = il habite dans un petit village. das Dorf = le village.",
@@ -171,19 +172,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-6",
-      "question": "Ben a rendu visite à son grand-père. Comment y est-il allé ?",
       "prompt": "Ben hat seinen Opa angerufen.\nDann ist er mit dem Rad zu ihm gefahren.\nSeine Mutter ist mit dem Auto gekommen.",
+      "question": "Ben a rendu visite à son grand-père. Comment y est-il allé ?",
       "spoken": "Ben hat seinen Opa angerufen. Dann ist er mit dem Rad zu ihm gefahren. Seine Mutter ist mit dem Auto gekommen.",
       "choices": [
         "À vélo",
         "En voiture",
         "À pied"
       ],
+      "choicesLang": "fr",
       "answer": "À vélo",
       "hint": "Lis la 2e phrase. das Rad = le vélo ; das Auto = la voiture.",
       "explanation": "Dann ist er mit dem Rad zu ihm gefahren = ensuite, il est allé chez lui à vélo. En voiture (mit dem Auto), c’est sa mère.",
@@ -199,19 +200,19 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-1-7",
-      "question": "Sara est partie avec ses parents. Qu’ont-ils fait le soir ?",
       "prompt": "Sara ist mit ihren Eltern nach Wien geflogen.\nDort haben sie ihre Tante besucht.\nAm Abend sind sie ins Konzert gegangen.",
+      "question": "Sara est partie avec ses parents. Qu’ont-ils fait le soir ?",
       "spoken": "Sara ist mit ihren Eltern nach Wien geflogen. Dort haben sie ihre Tante besucht. Am Abend sind sie ins Konzert gegangen.",
       "choices": [
         "Ils sont allés au concert.",
         "Ils ont rendu visite à sa tante.",
         "Ils ont pris l’avion."
       ],
+      "choicesLang": "fr",
       "answer": "Ils sont allés au concert.",
       "hint": "am Abend = le soir. Lis la phrase qui commence ainsi.",
       "explanation": "Am Abend sind sie ins Konzert gegangen = le soir, ils sont allés au concert. La visite à la tante, c’était avant.",
@@ -227,8 +228,7 @@
             "Köln = Cologne ; Wien = Vienne"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

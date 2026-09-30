@@ -8,14 +8,15 @@
   "items": [
     {
       "key": "refuge-de-geschichte-2-0",
-      "question": "Mia a oublié sa valise. Qu’a-t-elle fait ensuite ?",
       "prompt": "Zuerst hat Mia ihren Koffer im Zug vergessen.\nDann ist sie zur Information gegangen.\nDanach hat ein Mann den Koffer gebracht.\nAm Ende ist Mia froh nach Hause gefahren.",
+      "question": "Mia a oublié sa valise. Qu’a-t-elle fait ensuite ?",
       "spoken": "Zuerst hat Mia ihren Koffer im Zug vergessen. Dann ist sie zur Information gegangen. Danach hat ein Mann den Koffer gebracht. Am Ende ist Mia froh nach Hause gefahren.",
       "choices": [
         "Elle est allée à l’accueil.",
         "Elle est rentrée chez elle.",
         "Elle a cherché dans le train."
       ],
+      "choicesLang": "fr",
       "answer": "Elle est allée à l’accueil.",
       "hint": "Lis la ligne qui commence par Dann.",
       "explanation": "Dann ist sie zur Information gegangen = ensuite, elle est allée à l’accueil (die Information). Elle est rentrée chez elle à la fin (am Ende).",
@@ -31,19 +32,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-1",
-      "question": "Qui a rapporté la valise ?",
       "prompt": "Zuerst hat Mia ihren Koffer im Zug vergessen.\nDann ist sie zur Information gegangen.\nDanach hat ein Mann den Koffer gebracht.\nAm Ende ist Mia froh nach Hause gefahren.",
+      "question": "Qui a rapporté la valise ?",
       "spoken": "Zuerst hat Mia ihren Koffer im Zug vergessen. Dann ist sie zur Information gegangen. Danach hat ein Mann den Koffer gebracht. Am Ende ist Mia froh nach Hause gefahren.",
       "choices": [
         "Un homme",
         "Mia",
         "Un contrôleur"
       ],
+      "choicesLang": "fr",
       "answer": "Un homme",
       "hint": "Cherche le verbe gebracht (apporté).",
       "explanation": "Danach hat ein Mann den Koffer gebracht = ensuite, un homme a rapporté la valise. Mia l’avait oubliée.",
@@ -59,19 +60,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-2",
-      "question": "Felix a perdu sa clé. Qui l’a trouvée ?",
       "prompt": "Zuerst hat Felix seinen Schlüssel verloren.\nDann hat er im Park gesucht.\nDanach hat sein Hund den Schlüssel gefunden.\nAm Ende war Felix sehr froh.",
+      "question": "Felix a perdu sa clé. Qui l’a trouvée ?",
       "spoken": "Zuerst hat Felix seinen Schlüssel verloren. Dann hat er im Park gesucht. Danach hat sein Hund den Schlüssel gefunden. Am Ende war Felix sehr froh.",
       "choices": [
         "Son chien",
         "Felix",
         "Son grand frère"
       ],
+      "choicesLang": "fr",
       "answer": "Son chien",
       "hint": "Cherche le verbe gefunden (trouvé).",
       "explanation": "Danach hat sein Hund den Schlüssel gefunden = ensuite, son chien a trouvé la clé. der Hund = le chien.",
@@ -87,19 +88,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-3",
-      "question": "Où Felix a-t-il cherché sa clé ?",
       "prompt": "Zuerst hat Felix seinen Schlüssel verloren.\nDann hat er im Park gesucht.\nDanach hat sein Hund den Schlüssel gefunden.\nAm Ende war Felix sehr froh.",
+      "question": "Où Felix a-t-il cherché sa clé ?",
       "spoken": "Zuerst hat Felix seinen Schlüssel verloren. Dann hat er im Park gesucht. Danach hat sein Hund den Schlüssel gefunden. Am Ende war Felix sehr froh.",
       "choices": [
         "Dans le parc",
         "Dans sa maison",
         "Dans la rue"
       ],
+      "choicesLang": "fr",
       "answer": "Dans le parc",
       "hint": "Cherche le verbe gesucht (cherché).",
       "explanation": "Dann hat er im Park gesucht = ensuite, il a cherché dans le parc.",
@@ -115,19 +116,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-4",
-      "question": "Anna a raté son train. Comment est-elle partie ?",
       "prompt": "Zuerst ist Anna zum Bahnhof gegangen.\nDann hat sie eine Fahrkarte gekauft.\nDanach hat sie ihren Zug verpasst.\nAm Ende ist sie mit dem Bus gefahren.",
+      "question": "Anna a raté son train. Comment est-elle partie ?",
       "spoken": "Zuerst ist Anna zum Bahnhof gegangen. Dann hat sie eine Fahrkarte gekauft. Danach hat sie ihren Zug verpasst. Am Ende ist sie mit dem Bus gefahren.",
       "choices": [
         "En bus",
         "En train",
         "À pied"
       ],
+      "choicesLang": "fr",
       "answer": "En bus",
       "hint": "Lis la ligne qui commence par Am Ende. verpasst = raté.",
       "explanation": "Am Ende ist sie mit dem Bus gefahren = à la fin, elle est partie en bus. Son train, elle l’a raté (verpasst).",
@@ -143,19 +144,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-5",
-      "question": "Lis la 2e phrase. Qu’a acheté Anna ?",
       "prompt": "Zuerst ist Anna zum Bahnhof gegangen.\nDann hat sie eine Fahrkarte gekauft.\nDanach hat sie ihren Zug verpasst.\nAm Ende ist sie mit dem Bus gefahren.",
+      "question": "Lis la 2e phrase. Qu’a acheté Anna ?",
       "spoken": "Zuerst ist Anna zum Bahnhof gegangen. Dann hat sie eine Fahrkarte gekauft. Danach hat sie ihren Zug verpasst. Am Ende ist sie mit dem Bus gefahren.",
       "choices": [
         "Un billet",
         "Une valise",
         "Un sandwich"
       ],
+      "choicesLang": "fr",
       "answer": "Un billet",
       "hint": "die Fahrkarte : on la montre dans le train.",
       "explanation": "Dann hat sie eine Fahrkarte gekauft = ensuite, elle a acheté un billet. die Fahrkarte = le billet de train ou de bus.",
@@ -171,19 +172,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-6",
-      "question": "Leon est dans le train. Qu’a-t-il fait en premier ?",
       "prompt": "Zuerst hat Leon im Zug geschlafen.\nDann hat er ein Buch gelesen.\nDanach hat er mit einem Mädchen gesprochen.\nAm Ende hat sie ihm ihre Adresse gegeben.",
+      "question": "Leon est dans le train. Qu’a-t-il fait en premier ?",
       "spoken": "Zuerst hat Leon im Zug geschlafen. Dann hat er ein Buch gelesen. Danach hat er mit einem Mädchen gesprochen. Am Ende hat sie ihm ihre Adresse gegeben.",
       "choices": [
         "Il a dormi.",
         "Il a lu un livre.",
         "Il a parlé."
       ],
+      "choicesLang": "fr",
       "answer": "Il a dormi.",
       "hint": "en premier = zuerst. geschlafen = dormi ; gesprochen = parlé.",
       "explanation": "Zuerst hat Leon im Zug geschlafen = d’abord, Leon a dormi dans le train. Il a lu ensuite (dann), puis il a parlé (danach).",
@@ -199,19 +200,19 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "refuge-de-geschichte-2-7",
-      "question": "Lis la fin de l’histoire. Qu’a donné la fille à Leon ?",
       "prompt": "Zuerst hat Leon im Zug geschlafen.\nDann hat er ein Buch gelesen.\nDanach hat er mit einem Mädchen gesprochen.\nAm Ende hat sie ihm ihre Adresse gegeben.",
+      "question": "Lis la fin de l’histoire. Qu’a donné la fille à Leon ?",
       "spoken": "Zuerst hat Leon im Zug geschlafen. Dann hat er ein Buch gelesen. Danach hat er mit einem Mädchen gesprochen. Am Ende hat sie ihm ihre Adresse gegeben.",
       "choices": [
         "Son adresse",
         "Un livre",
         "Son numéro de téléphone"
       ],
+      "choicesLang": "fr",
       "answer": "Son adresse",
       "hint": "Cherche le verbe gegeben (donné).",
       "explanation": "Am Ende hat sie ihm ihre Adresse gegeben = à la fin, elle lui a donné son adresse. Le livre, c’est Leon qui l’a lu.",
@@ -227,8 +228,7 @@
             "der Koffer = la valise ; der Schlüssel = la clé"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

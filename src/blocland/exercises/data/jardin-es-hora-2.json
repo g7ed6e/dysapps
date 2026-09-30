@@ -11,14 +11,15 @@
   "items": [
     {
       "key": "jardin-es-hora-2-0",
-      "question": "Où est-on ?",
       "prompt": "Buenas tardes. ¿Una mesa para dos?",
+      "question": "Où est-on ?",
       "spoken": "Buenas tardes. Una mesa para dos?",
       "choices": [
         "Au restaurant",
         "À la gare",
         "Au collège"
       ],
+      "choicesLang": "fr",
       "answer": "Au restaurant",
       "hint": "Cherche le mot mesa dans le lexique.",
       "explanation": "una mesa para dos = une table pour deux : on est au restaurant.",
@@ -34,19 +35,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-1",
-      "question": "Qui parle ?",
       "prompt": "Silencio, por favor. Abrid el cuaderno.",
+      "question": "Qui parle ?",
       "spoken": "Silencio, por favor. Abrid el cuaderno.",
       "choices": [
         "Un professeur",
         "Un serveur",
         "Un vendeur"
       ],
+      "choicesLang": "fr",
       "answer": "Un professeur",
       "hint": "Regarde le lexique : abrid.",
       "explanation": "Silencio, por favor = du silence, s’il vous plaît ; abrid el cuaderno = ouvrez le cahier. C’est un professeur qui parle à sa classe.",
@@ -62,19 +63,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-2",
-      "question": "Où est-on ?",
       "prompt": "El tren para Sevilla sale del andén dos.",
+      "question": "Où est-on ?",
       "spoken": "El tren para Sevilla sale del andén dos.",
       "choices": [
         "À la gare",
         "À l’arrêt de bus",
         "À la piscine"
       ],
+      "choicesLang": "fr",
       "answer": "À la gare",
       "hint": "Regarde le lexique : el tren, el andén.",
       "explanation": "el tren sale del andén dos = le train part du quai 2 : on est à la gare.",
@@ -90,19 +91,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-3",
-      "question": "Qui parle ?",
       "prompt": "Son cuatro euros con cincuenta, por favor.",
+      "question": "Qui parle ?",
       "spoken": "Son cuatro euros con cincuenta, por favor.",
       "choices": [
         "Un vendeur",
         "Un professeur",
         "Un élève"
       ],
+      "choicesLang": "fr",
       "answer": "Un vendeur",
       "hint": "Qui dit un prix ?",
       "explanation": "cuatro euros con cincuenta = 4 euros 50 : c’est un prix, donc un vendeur.",
@@ -118,19 +119,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-4",
-      "question": "À quel moment de la journée est-on ?",
       "prompt": "¡Buenas noches! Me voy a la cama.",
+      "question": "À quel moment de la journée est-on ?",
       "spoken": "Buenas noches! Me voy a la cama.",
       "choices": [
         "Le soir",
         "Le matin",
         "À midi"
       ],
+      "choicesLang": "fr",
       "answer": "Le soir",
       "hint": "Regarde le lexique : buenas noches.",
       "explanation": "buenas noches = bonne nuit ; me voy a la cama = je vais au lit. C’est le soir.",
@@ -146,19 +147,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-5",
-      "question": "Où est-on ?",
       "prompt": "Dos entradas para la película de las ocho.",
+      "question": "Où est-on ?",
       "spoken": "Dos entradas para la película de las ocho.",
       "choices": [
         "Au cinéma",
         "Au restaurant",
         "À la gare"
       ],
+      "choicesLang": "fr",
       "answer": "Au cinéma",
       "hint": "la película, c’est le film.",
       "explanation": "dos entradas = deux billets ; la película de las ocho = le film de 20 h. On est au cinéma.",
@@ -174,19 +175,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-6",
-      "question": "Qui parle ?",
       "prompt": "Mamá, ¿qué hay para cenar?",
+      "question": "Qui parle ?",
       "spoken": "Mamá, qué hay para cenar?",
       "choices": [
         "Un enfant à sa mère",
         "Un serveur à un client",
         "Un professeur à un élève"
       ],
+      "choicesLang": "fr",
       "answer": "Un enfant à sa mère",
       "hint": "Écoute le premier mot de la phrase.",
       "explanation": "Mamá = maman ; ¿qué hay para cenar? = qu’est-ce qu’il y a pour le dîner ? C’est un enfant qui parle à sa mère.",
@@ -202,19 +203,19 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "jardin-es-hora-2-7",
-      "question": "Où est-on ?",
       "prompt": "Primero, corta la cebolla. Luego, a la sartén.",
+      "question": "Où est-on ?",
       "spoken": "Primero, corta la cebolla. Luego, a la sartén.",
       "choices": [
         "Dans une cuisine",
         "Dans une classe",
         "Dans un magasin"
       ],
+      "choicesLang": "fr",
       "answer": "Dans une cuisine",
       "hint": "Cherche la cebolla et la sartén dans le lexique.",
       "explanation": "corta la cebolla = coupe l’oignon ; a la sartén = dans la poêle. On prépare un plat : on est dans une cuisine.",
@@ -230,8 +231,7 @@
             "la cebolla = l’oignon ; la sartén = la poêle"
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

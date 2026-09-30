@@ -16,6 +16,15 @@
 //   1. mot : cat                             ← un item par numéro, son premier champ sur la ligne
 //      - choix : le chat · le chien · la vache
 //
+// ou, pour des items courts, un tableau (une colonne par champ, une case vide = champ absent) :
+//   | mot troué | choix |
+//   | --- | --- |
+//   | [en]fant | en · an · in |
+//
+// Ce qui se déduit ne s'écrit pas : « trou lu : blank » (pour tous les items) donne « lu » = l'énoncé dont le « … »
+// est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
+// le mot, avant, après et la réponse.
+//
 // Une valeur qui a un saut de ligne, des espaces au bord, qui est vide ou qui commence par « " »
 // s'écrit comme une chaîne JSON entre guillemets. Une liste s'écrit « a · b · c », ou en sous-liste si un élément
 // contient « · ».
@@ -135,7 +144,6 @@ function poser(objet, chemin, valeur) {
   o[cles.at(-1)] = valeur;
 }
 
-// ---------- Écriture ----------
 
 function ecrireAide(aide, entete, retrait) {
   if (aide.kind !== 'rule-card' || Object.keys(aide).join() !== 'kind,props' || Object.keys(aide.props).join() !== 'title,lines') {
@@ -174,21 +182,136 @@ function champsCommuns(items, exclus) {
   });
 }
 
+// ---------- Champs déduits ----------
+
+/**
+ * « clé des items : mot » : la clé de chaque item est son mot (ou sa lettre) au lieu de « <exercice>-<rang> » ;
+ * « clé des items : paragraphe » : p1, p2… (les paragraphes d'un texte à lire).
+ */
+const CLE_DES_ITEMS = { mot: 'word', lettre: 'letter', paragraphe: null };
+
+function cleParDefaut(cle, it, id, rang) {
+  if (cle === 'paragraphe') return `p${rang + 1}`;
+  return cle ? it[CLE_DES_ITEMS[cle]] : `${id}-${rang}`;
+}
+
+/** Un énoncé à un seul trou « … » : [avant le trou, après le trou], sinon undefined. */
+function trouUnique(it) {
+  if (typeof it.prompt !== 'string') return undefined;
+  const parties = it.prompt.split('…');
+  return parties.length === 2 ? parties : undefined;
+}
+
+/** Ce que la voix lit à la place du trou de l'énoncé, quand « lu » n'est que l'énoncé ainsi complété. */
+function trouLu(it) {
+  const parties = trouUnique(it);
+  if (!parties || typeof it.spoken !== 'string') return undefined;
+  const [a, b] = parties;
+  if (it.spoken.length < a.length + b.length || !it.spoken.startsWith(a) || !it.spoken.endsWith(b)) return undefined;
+  return it.spoken.slice(a.length, it.spoken.length - b.length);
+}
+
+/** Le « trou lu » d'un niveau : la lecture du trou de la plupart de ses items, si tout item à un trou a une lecture. */
+function trouDuNiveau(items) {
+  const aTrou = items.filter(trouUnique);
+  if (aTrou.length < 2 || aTrou.some((it) => it.spoken === undefined)) return undefined;
+  const compte = new Map();
+  for (const x of aTrou.map(trouLu)) if (x !== undefined) compte.set(x, (compte.get(x) ?? 0) + 1);
+  const [meilleur] = [...compte].sort((a, b) => b[1] - a[1]);
+  return meilleur && meilleur[1] >= 2 && 2 * meilleur[1] > aTrou.length ? meilleur[0] : undefined;
+}
+
+/** La « clé des items » d'un niveau, quand la plupart de ses items ont leur mot (ou leur lettre) pour clé. */
+function cleDuNiveau(items) {
+  if (items.every((it, i) => it.key === `p${i + 1}`)) return 'paragraphe';
+  return ['mot', 'lettre'].find((nom) => {
+    const champ = CLE_DES_ITEMS[nom];
+    return 2 * items.filter((it) => typeof it[champ] === 'string' && it.key === it[champ]).length > items.length;
+  });
+}
+
+/** Un mot troué qui s'écrit « en[f]ant » : le mot est exactement avant + réponse + après. */
+function estTroue(it) {
+  const parts = [it.before, it.answer, it.after];
+  return parts.every((s) => typeof s === 'string' && !/[[\]]/.test(s)) && it.answer !== '' && it.word === parts.join('');
+}
+
+// ---------- Écriture ----------
+
 function ecrireChampItem(it, k) {
   if (k === 'aid') return ecrireAide(it.aid, '- aide « % » :', '');
+  if (k === '#troue') return [`- mot troué : ${ecrireTexte(`${it.before}[${it.answer}]${it.after}`)}`];
   const [etiquette, , type] = PAR_CLE_ITEM.get(k);
   return ecrireChamp(etiquette, type, it[k], '');
 }
 
-function ecrirePourTous(item, cles) {
-  if (cles.length === 0) return [];
-  return ['Pour tous les items :', ...cles.flatMap((k) => ecrireChampItem(item, k)), ''];
+function ecrirePourTous(item, cles, directives) {
+  const lignes = [];
+  if (directives.trou !== undefined) lignes.push(`- trou lu : ${ecrireTexte(directives.trou)}`);
+  if (directives.cle !== undefined) lignes.push(`- clé des items : ${directives.cle}`);
+  lignes.push(...cles.flatMap((k) => ecrireChampItem(item, k)));
+  return lignes.length ? ['Pour tous les items :', ...lignes, ''] : [];
+}
+
+/** Les champs qu'un item écrit : ni ceux donnés pour tous, ni ceux qui se déduisent (clé, lu, mot troué). */
+function champsEcrits(it, defaut, partages, trou) {
+  let cles = champsItem(it, defaut).filter((k) => !partages.has(k));
+  if (trou !== undefined && trouLu(it) === trou) cles = cles.filter((k) => k !== 'spoken');
+  if (['word', 'before', 'after', 'answer'].every((k) => cles.includes(k)) && estTroue(it)) {
+    cles = cles.filter((k) => !['before', 'after', 'answer'].includes(k)).map((k) => (k === 'word' ? '#troue' : k));
+  }
+  return cles;
+}
+
+/** Un champ écrit dans une case de tableau, ou null s'il n'y tient pas (aide, liste en sous-liste). */
+function enCase(it, k) {
+  if (k === 'aid') return null;
+  const lignes = ecrireChampItem(it, k);
+  if (lignes.length !== 1) return null;
+  const v = lignes[0].slice(lignes[0].indexOf(' : ') + 3);
+  return v.length <= LARGEUR_CASE && !v.includes('|') ? v : null;
+}
+
+/** Un niveau s'écrit en tableau quand ses items sont courts : au plus 5 colonnes, des cases d'au plus 45 signes. */
+const LARGEUR_CASE = 45;
+const ORDRE_COLONNES = ITEM.flatMap(([, k]) => (k === 'word' ? ['word', '#troue'] : [k]));
+
+function etiquetteColonne(k) {
+  return k === '#troue' ? 'mot troué' : PAR_CLE_ITEM.get(k)[0];
+}
+
+function ecrireItems(items, clesParItem) {
+  const colonnes = ORDRE_COLONNES.filter((k) => clesParItem.some((cles) => cles.includes(k)));
+  const cases = items.map((it, i) => colonnes.map((k) => (clesParItem[i].includes(k) ? enCase(it, k) : '')));
+  if (items.length >= 2 && colonnes.length >= 1 && colonnes.length <= 5 && cases.every((ligne) => ligne.every((c) => c !== null))) {
+    const rangee = (cellules) => `| ${cellules.join(' | ')} |`;
+    return [rangee(colonnes.map(etiquetteColonne)), rangee(colonnes.map(() => '---')), ...cases.map(rangee)];
+  }
+  const lignes = [];
+  items.forEach((it, i) => {
+    const cles = [...clesParItem[i]];
+    if (cles.length === 0 || cles[0] === 'aid' || (cles[0] !== '#troue' && PAR_CLE_ITEM.get(cles[0])[2] === 'liste')) cles.unshift('#');
+    const numero = `${i + 1}. `;
+    const retrait = ' '.repeat(numero.length);
+    cles.forEach((k, j) => {
+      const champ = k === '#' ? ['- item'] : ecrireChampItem(it, k);
+      if (j === 0) lignes.push(numero + champ[0].slice(2), ...champ.slice(1).map((l) => retrait + l));
+      else lignes.push(...champ.map((l) => retrait + l));
+    });
+  });
+  return lignes;
+}
+
+/** Une même valeur pour tous les niveaux, ou undefined. */
+function commune(valeurs) {
+  return valeurs.every((v) => v !== undefined && v === valeurs[0]) ? valeurs[0] : undefined;
 }
 
 /**
  * Écrit le Markdown d'une île. `ile` = { id, nom, missions: [{ id, titre }] } (les missions sans exercice sont
  * omises ; un type d'exercice absent de la liste devient une mission à son nom). Ce qui vaut pour tous les niveaux
- * d'une mission, ou pour tous les items d'une mission ou d'un niveau, s'écrit une fois.
+ * d'une mission, ou pour tous les items d'une mission ou d'un niveau, s'écrit une fois ; ce qui se déduit (clé,
+ * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
 export function ecrireIle(ile, exercices) {
   const lignes = ['---', `île : ${ile.id}`, '---', '', `# ${ile.nom ?? ile.id}`, ''];
@@ -207,31 +330,28 @@ export function ecrireIle(ile, exercices) {
     });
     const tousItems = niveaux.flatMap((ex) => ex.items);
     const itemsMission = champsCommuns(tousItems, []);
+    const trous = niveaux.map((ex) => trouDuNiveau(ex.items));
+    const clesDes = niveaux.map((ex) => cleDuNiveau(ex.items));
+    const directivesMission = { trou: commune(trous), cle: commune(clesDes) };
     lignes.push(`## ${mission.titre} · \`${mission.id}\``, '');
     for (const [etiquette, chemin, type] of communs) lignes.push(...ecrireChamp(etiquette, type, obtenir(niveaux[0], chemin), ''));
     if (communs.length) lignes.push('');
-    lignes.push(...ecrirePourTous(tousItems[0], itemsMission));
-    for (const ex of niveaux) {
+    lignes.push(...ecrirePourTous(tousItems[0], itemsMission, directivesMission));
+    niveaux.forEach((ex, n) => {
       lignes.push(`### Niveau ${ex.level} · \`${ex.id}\``, '');
       const propres = NIVEAU.filter((def) => obtenir(ex, def[1]) !== undefined && !communs.includes(def));
       for (const [etiquette, chemin, type] of propres) lignes.push(...ecrireChamp(etiquette, type, obtenir(ex, chemin), ''));
       if (propres.length) lignes.push('');
       const itemsNiveau = champsCommuns(ex.items, itemsMission);
-      lignes.push(...ecrirePourTous(ex.items[0], itemsNiveau));
+      const directives = {
+        trou: directivesMission.trou === undefined ? trous[n] : undefined,
+        cle: directivesMission.cle === undefined ? clesDes[n] : undefined,
+      };
+      lignes.push(...ecrirePourTous(ex.items[0], itemsNiveau, directives));
       const partages = new Set([...itemsMission, ...itemsNiveau]);
-      ex.items.forEach((it, i) => {
-        const cles = champsItem(it, `${ex.id}-${i}`).filter((k) => !partages.has(k));
-        if (cles.length === 0 || cles[0] === 'aid' || PAR_CLE_ITEM.get(cles[0])[2] === 'liste') cles.unshift('#');
-        const numero = `${i + 1}. `;
-        const retrait = ' '.repeat(numero.length);
-        cles.forEach((k, j) => {
-          const champ = k === '#' ? ['- item'] : ecrireChampItem(it, k);
-          if (j === 0) lignes.push(numero + champ[0].slice(2), ...champ.slice(1).map((l) => retrait + l));
-          else lignes.push(...champ.map((l) => retrait + l));
-        });
-      });
-      lignes.push('');
-    }
+      const clesParItem = ex.items.map((it, i) => champsEcrits(it, cleParDefaut(clesDes[n], it, ex.id, i), partages, trous[n]));
+      lignes.push(...ecrireItems(ex.items, clesParItem), '');
+    });
   }
   return lignes.join('\n');
 }
@@ -250,6 +370,7 @@ export function lireIle(md, fichier = 'md') {
   let item = null; // item en cours (ses propres champs)
   let pourTous = null; // bloc « Pour tous les items » en cours de lecture
   let liste = null; // tableau : sous-liste en cours (liste d'un champ, lignes d'une aide)
+  let tableau = null; // tableau d'items en cours : { etiquettes, separe }
   let i = 0;
   const erreur = (m) => new Error(`${fichier}, ligne ${i + 1} : ${m}`);
 
@@ -265,9 +386,17 @@ export function lireIle(md, fichier = 'md') {
 
   const finirExercice = () => {
     if (!ex) return;
-    ex.items = ex.items.map((propre, n) =>
-      ordonnerItem({ key: `${ex.id}-${n}`, ...structuredClone(mission.items), ...structuredClone(pourTousNiveau), ...propre }),
-    );
+    ex.items = ex.items.map((propre, n) => {
+      const it = { ...structuredClone(mission.items), ...structuredClone(pourTousNiveau), ...propre };
+      const { '#trou': trou, '#cle': cle } = it;
+      delete it['#trou'];
+      delete it['#cle'];
+      const parties = trouUnique(it);
+      if (trou !== undefined && it.spoken === undefined && parties) it.spoken = parties[0] + trou + parties[1];
+      it.key ??= cleParDefaut(cle, it, ex.id, n);
+      if (typeof it.key !== 'string') throw new Error(`${fichier}, ${ex.id} : l’item ${n + 1} n’a pas de ${cle} pour faire sa clé ; lui écrire « - clé : … »`);
+      return ordonnerItem(it);
+    });
     // Une clé par défaut (le rang) peut retomber sur une clé écrite à la main : deux items partageraient alors
     // la même répétition espacée.
     const vus = new Map();
@@ -294,6 +423,23 @@ export function lireIle(md, fichier = 'md') {
     const m = /^(.+?) :(?: (.*))?$/.exec(texte);
     if (!m) throw erreur(`« étiquette : valeur » attendu, lu « ${texte} »`);
     const [, etiquette, brut = ''] = m;
+    if (table === PAR_ETIQUETTE_ITEM && (etiquette === 'trou lu' || etiquette === 'clé des items')) {
+      if (cible !== pourTous) throw erreur(`« ${etiquette} » va dans « Pour tous les items »`);
+      const k = etiquette === 'trou lu' ? '#trou' : '#cle';
+      if (cible[k] !== undefined) throw erreur(`« ${etiquette} » écrit deux fois`);
+      cible[k] = lireTexte(brut, ligne);
+      if (k === '#cle' && !Object.hasOwn(CLE_DES_ITEMS, cible[k])) throw erreur(`« clé des items » vaut « mot », « lettre » ou « paragraphe », lu « ${cible[k]} »`);
+      liste = null;
+      return;
+    }
+    if (table === PAR_ETIQUETTE_ITEM && etiquette === 'mot troué') {
+      const t = /^([^[\]]*)\[([^[\]]+)\]([^[\]]*)$/.exec(lireTexte(brut, ligne));
+      if (!t) throw erreur(`mot troué attendu sous la forme « en[f]ant », lu « ${brut} »`);
+      for (const k of ['word', 'before', 'answer', 'after']) if (cible[k] !== undefined) throw erreur(`« mot troué » donne déjà « ${PAR_CLE_ITEM.get(k)[0]} »`);
+      Object.assign(cible, { word: t[1] + t[2] + t[3], before: t[1], answer: t[2], after: t[3] });
+      liste = null;
+      return;
+    }
     const def = table.get(etiquette);
     if (!def) throw erreur(`champ inconnu « ${etiquette} »`);
     const [, chemin, type] = def;
@@ -312,7 +458,7 @@ export function lireIle(md, fichier = 'md') {
   for (i++; i < lignes.length; i++) {
     const l = lignes[i];
     if (l.trim() === '') {
-      pourTous = liste = null; // une ligne vide finit le bloc « Pour tous les items » et toute sous-liste
+      pourTous = liste = tableau = null; // une ligne vide finit le bloc « Pour tous les items », une sous-liste, un tableau
       continue;
     }
     if (/^# /.test(l)) {
@@ -326,7 +472,7 @@ export function lireIle(md, fichier = 'md') {
       if (missions.some((x) => x.id === m[2])) throw erreur(`mission « ${m[2]} » écrite deux fois`);
       mission = { id: m[2], titre: m[1], champs: {}, items: {} };
       missions.push({ id: mission.id, titre: mission.titre });
-      item = pourTous = liste = null;
+      item = pourTous = liste = tableau = null;
       continue;
     }
     if ((m = /^### Niveau (\d+) · `([^`]+)`$/.exec(l))) {
@@ -335,7 +481,7 @@ export function lireIle(md, fichier = 'md') {
       if (!/^[a-z0-9-]+$/.test(m[2]) || !m[2].startsWith(`${ile}-`)) throw erreur(`identifiant d’exercice mal écrit : ${m[2]} (lettres minuscules, chiffres et tirets, commençant par « ${ile}- »)`);
       ex = { ...structuredClone(mission.champs), id: m[2], biome: ile, type: mission.id, level: Number(m[1]), items: [] };
       pourTousNiveau = {};
-      item = pourTous = liste = null;
+      item = pourTous = liste = tableau = null;
       continue;
     }
     if (l.startsWith('#')) throw erreur(`titre inconnu : ${l}`);
@@ -346,8 +492,33 @@ export function lireIle(md, fichier = 'md') {
       liste = null;
       continue;
     }
+    if (l.startsWith('|')) {
+      if (!ex) throw erreur('un tableau d’items va sous un niveau');
+      if (!l.endsWith('|') || l.length < 2) throw erreur(`ligne de tableau mal fermée : ${l}`);
+      const cases = l.slice(1, -1).split('|').map((c) => c.trim());
+      if (!tableau) {
+        if (ex.items.length) throw erreur('un niveau a un seul tableau d’items, ou des items numérotés, pas les deux');
+        for (const e of cases) if (e !== 'mot troué' && !PAR_ETIQUETTE_ITEM.has(e)) throw erreur(`colonne inconnue « ${e} »`);
+        if (new Set(cases).size !== cases.length) throw erreur('colonne écrite deux fois');
+        tableau = { etiquettes: cases, separe: false };
+      } else if (!tableau.separe) {
+        if (cases.length !== tableau.etiquettes.length || !cases.every((c) => /^:?-+:?$/.test(c))) throw erreur('ligne « |---|---| » attendue sous les noms des colonnes');
+        tableau.separe = true;
+      } else {
+        if (cases.length !== tableau.etiquettes.length) throw erreur(`${tableau.etiquettes.length} cases attendues, lu ${cases.length} (une valeur ne contient pas « | »)`);
+        item = {};
+        ex.items.push(item);
+        cases.forEach((c, n) => {
+          if (c !== '') champ(`${tableau.etiquettes[n]} : ${c}`, item, PAR_ETIQUETTE_ITEM, i + 1);
+        });
+        liste = item = null;
+      }
+      pourTous = null;
+      continue;
+    }
     if ((m = /^(\d+)\. (.*)$/.exec(l))) {
       if (!ex) throw erreur('un item va sous un niveau');
+      if (tableau || (ex.items.length && !item)) throw erreur('un niveau a un seul tableau d’items, ou des items numérotés, pas les deux');
       if (Number(m[1]) !== ex.items.length + 1) throw erreur(`item ${ex.items.length + 1} attendu, lu ${m[1]}`);
       item = {};
       ex.items.push(item);

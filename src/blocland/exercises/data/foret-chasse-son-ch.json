@@ -3,97 +3,97 @@
   "biome": "foret",
   "type": "chasse-son",
   "level": 2,
-  "instruction": "Tape les mots où tu entends le son [ch], comme dans chapeau. Puis valide.",
   "target": "ch",
+  "instruction": "Tape les mots où tu entends le son [ch], comme dans chapeau. Puis valide.",
   "items": [
     {
       "key": "chat",
       "word": "chat",
       "image": "🐱",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "jupe",
       "word": "jupe",
       "image": "👗",
-      "correct": false,
-      "heard": "[j]"
+      "heard": "[j]",
+      "correct": false
     },
     {
       "key": "chien",
       "word": "chien",
       "image": "🐶",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "cheval",
       "word": "cheval",
       "image": "🐴",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "girafe",
       "word": "girafe",
       "image": "🦒",
-      "correct": false,
-      "heard": "[j]"
+      "heard": "[j]",
+      "correct": false
     },
     {
       "key": "chaussure",
       "word": "chaussure",
       "image": "👟",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "vache",
       "word": "vache",
       "image": "🐄",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "orange",
       "word": "orange",
       "image": "🍊",
-      "correct": false,
-      "heard": "[j]"
+      "heard": "[j]",
+      "correct": false
     },
     {
       "key": "bouche",
       "word": "bouche",
       "image": "👄",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "chocolat",
       "word": "chocolat",
       "image": "🍫",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     },
     {
       "key": "jardin",
       "word": "jardin",
       "image": "🏡",
-      "correct": false,
-      "heard": "[j]"
+      "heard": "[j]",
+      "correct": false
     },
     {
       "key": "cheminée",
       "word": "cheminée",
       "image": "🔥",
-      "correct": true,
-      "heard": "[ch]"
+      "heard": "[ch]",
+      "correct": true
     }
   ],
   "feedback": {
-    "correct": "Bravo, tu entends bien [ch] !",
-    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}."
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [ch] !"
   },
   "reward": {
     "block": "bois",

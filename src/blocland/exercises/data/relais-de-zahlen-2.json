@@ -15,6 +15,7 @@
         "70",
         "76"
       ],
+      "choicesLang": "fr",
       "answer": "67",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "siebenundsechzig = « sept et soixante » = 67 : l’unité (sieben) d’abord, la dizaine (sechzig) ensuite. 70 se dit siebzig, 76 sechsundsiebzig.",
@@ -32,8 +33,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-1",
@@ -44,6 +44,7 @@
         "70",
         "76"
       ],
+      "choicesLang": "fr",
       "answer": "76",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "sechsundsiebzig = « six et soixante-dix » = 76 : l’unité (sechs) d’abord, la dizaine (siebzig) ensuite.",
@@ -61,8 +62,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-2",
@@ -73,6 +73,7 @@
         "58",
         "85"
       ],
+      "choicesLang": "fr",
       "answer": "58",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "achtundfünfzig = « huit et cinquante » = 58 : l’unité (acht) d’abord, la dizaine (fünfzig) ensuite. 85 se dit fünfundachtzig.",
@@ -90,8 +91,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-3",
@@ -102,6 +102,7 @@
         "20",
         "21"
       ],
+      "choicesLang": "fr",
       "answer": "21",
       "hint": "ein, c’est 1 devant und.",
       "explanation": "einundzwanzig = « un et vingt » = 21 : 1 devient ein devant und. 12 se dit zwölf.",
@@ -119,8 +120,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-4",
@@ -131,6 +131,7 @@
         "90",
         "99"
       ],
+      "choicesLang": "fr",
       "answer": "99",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "neunundneunzig = « neuf et quatre-vingt-dix » = 99. 19 se dit neunzehn, 90 neunzig.",
@@ -148,8 +149,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-5",
@@ -160,6 +160,7 @@
         "80",
         "83"
       ],
+      "choicesLang": "fr",
       "answer": "38",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "achtunddreißig = « huit et trente » = 38 : l’unité (acht) d’abord, la dizaine (dreißig) ensuite. 83 se dit dreiundachtzig.",
@@ -177,8 +178,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-6",
@@ -189,6 +189,7 @@
         "26",
         "62"
       ],
+      "choicesLang": "fr",
       "answer": "26",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "sechsundzwanzig = « six et vingt » = 26 : l’unité (sechs) d’abord, la dizaine (zwanzig) ensuite. 62 se dit zweiundsechzig.",
@@ -206,8 +207,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     },
     {
       "key": "relais-de-zahlen-2-7",
@@ -218,6 +218,7 @@
         "70",
         "74"
       ],
+      "choicesLang": "fr",
       "answer": "47",
       "hint": "L’unité vient d’abord, puis und, puis la dizaine.",
       "explanation": "siebenundvierzig = « sept et quarante » = 47 : l’unité (sieben) d’abord, la dizaine (vierzig) ensuite. 70 se dit siebzig, 74 vierundsiebzig.",
@@ -235,8 +236,7 @@
             "-zehn, c’est de 13 à 19 ; -zig, ce sont les dizaines."
           ]
         }
-      },
-      "choicesLang": "fr"
+      }
     }
   ],
   "feedback": {

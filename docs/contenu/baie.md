@@ -16,6 +16,9 @@
 - monte à : 0.85
 - descend à : 0.5
 
+Pour tous les items :
+- trou lu : blank
+
 ### Niveau 1 · `baie-hello-1`
 
 Pour tous les items :
@@ -27,49 +30,41 @@ Pour tous les items :
   - please = s’il te plaît. thank you = merci. sorry = pardon.
 
 1. énoncé : …, my name is Tom.
-   - lu : blank, my name is Tom.
    - choix : Hello · Goodbye · Thank you
    - réponse : Hello
    - indice : On se présente : on commence par dire bonjour.
    - explication : « Hello » = bonjour : on salue avant de se présenter.
 2. énoncé : What is your …? — My name is Lina.
-   - lu : What is your blank? — My name is Lina.
    - choix : name · age · town
    - réponse : name
    - indice : On se présente : de quoi parle la question ?
    - explication : « What is your name? » = Comment t’appelles-tu ?
 3. énoncé : How … are you? — I’m eleven.
-   - lu : How blank are you? — I’m eleven.
    - choix : old · name · from
    - réponse : old
    - indice : On se présente : de quoi parle la question ?
    - explication : « How old are you? » = Quel âge as-tu ? On répond avec son âge.
 4. énoncé : Where are you …? — I’m from France.
-   - lu : Where are you blank? — I’m from France.
    - choix : from · old · name
    - réponse : from
    - indice : On se présente : de quoi parle la question ?
    - explication : « Where are you from? » = D’où viens-tu ?
 5. énoncé : …! See you tomorrow.
-   - lu : blank! See you tomorrow.
    - choix : Goodbye · Hello · Please
    - réponse : Goodbye
    - indice : On se quitte : que dit-on ?
    - explication : « Goodbye » = au revoir ; « See you tomorrow » = à demain.
 6. énoncé : Can I have a pen, …?
-   - lu : Can I have a pen, blank?
    - choix : please · sorry · hello
    - réponse : please
    - indice : On demande quelque chose poliment.
    - explication : « please » = s’il te plaît : on le dit quand on demande.
 7. énoncé : … you very much!
-   - lu : blank you very much!
    - choix : Thank · Please · Sorry
    - réponse : Thank
    - indice : On remercie.
    - explication : « Thank you very much » = merci beaucoup.
 8. énoncé : How are you? — I’m …, thank you.
-   - lu : How are you? — I’m blank, thank you.
    - choix : fine · old · from
    - réponse : fine
    - indice : On te demande comment tu vas.
@@ -86,49 +81,41 @@ Pour tous les items :
   - I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?
 
 1. énoncé : … your book, please.
-   - lu : blank your book, please.
    - choix : Open · Sit · Listen
    - réponse : Open
    - indice : Que te demande le professeur ? Relis les phrases de la classe.
    - explication : « Open your book » = ouvre ton livre.
 2. énoncé : … down, please.
-   - lu : blank down, please.
    - choix : Sit · Open · Repeat
    - réponse : Sit
    - indice : Que te demande le professeur ? Relis les phrases de la classe.
    - explication : « Sit down » = assieds-toi.
 3. énoncé : … to the teacher.
-   - lu : blank to the teacher.
    - choix : Listen · Open · Sit
    - réponse : Listen
    - indice : Que te demande le professeur ? Relis les phrases de la classe.
    - explication : « Listen to the teacher » = écoute le professeur.
 4. énoncé : … at the board.
-   - lu : blank at the board.
    - choix : Look · Sit · Open
    - réponse : Look
    - indice : Que te demande le professeur ? Relis les phrases de la classe.
    - explication : « Look at the board » = regarde le tableau.
 5. énoncé : … after me: apple.
-   - lu : blank after me: apple.
    - choix : Repeat · Open · Sit
    - réponse : Repeat
    - indice : Que te demande le professeur ? Relis les phrases de la classe.
    - explication : « Repeat after me » = répète après moi.
 6. énoncé : Can you … it, please? — C, A, T.
-   - lu : Can you blank it, please? — C, A, T.
    - choix : spell · listen · sit
    - réponse : spell
    - indice : On donne les lettres une par une.
    - explication : « Can you spell it? » = peux-tu l’épeler ?
 7. énoncé : Sorry, I don’t … . Can you repeat that?
-   - lu : Sorry, I don’t blank . Can you repeat that?
    - choix : understand · open · spell
    - réponse : understand
    - indice : L’élève demande de répéter : pourquoi ?
    - explication : « I don’t understand » = je ne comprends pas.
 8. énoncé : What does “cat” …? — Chat.
-   - lu : What does “cat” blank? — Chat.
    - choix : mean · sit · open
    - réponse : mean
    - indice : On demande le sens d’un mot.

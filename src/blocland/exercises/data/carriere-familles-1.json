@@ -7,95 +7,136 @@
   "items": [
     {
       "key": "refaire",
-      "meaning": "Faire encore une fois.",
+      "word": "refaire",
       "root": "faire",
       "slot": "prefix",
-      "choices": ["re", "dé", "in"],
+      "choices": [
+        "re",
+        "dé",
+        "in"
+      ],
       "answer": "re",
-      "word": "refaire"
+      "meaning": "Faire encore une fois."
     },
     {
       "key": "défaire",
-      "meaning": "Le contraire de faire.",
+      "word": "défaire",
       "root": "faire",
       "slot": "prefix",
-      "choices": ["dé", "re", "pré"],
+      "choices": [
+        "dé",
+        "re",
+        "pré"
+      ],
       "answer": "dé",
-      "word": "défaire"
+      "meaning": "Le contraire de faire."
     },
     {
       "key": "impossible",
-      "meaning": "Pas possible.",
+      "word": "impossible",
       "root": "possible",
       "slot": "prefix",
-      "choices": ["im", "re", "dé"],
+      "choices": [
+        "im",
+        "re",
+        "dé"
+      ],
       "answer": "im",
-      "word": "impossible"
+      "meaning": "Pas possible."
     },
     {
       "key": "mécontent",
-      "meaning": "Pas content.",
+      "word": "mécontent",
       "root": "content",
       "slot": "prefix",
-      "choices": ["mé", "re", "im"],
+      "choices": [
+        "mé",
+        "re",
+        "im"
+      ],
       "answer": "mé",
-      "word": "mécontent"
+      "meaning": "Pas content."
     },
     {
       "key": "décoller",
-      "meaning": "Le contraire de coller.",
+      "word": "décoller",
       "root": "coller",
       "slot": "prefix",
-      "choices": ["dé", "re", "in"],
+      "choices": [
+        "dé",
+        "re",
+        "in"
+      ],
       "answer": "dé",
-      "word": "décoller"
+      "meaning": "Le contraire de coller."
     },
     {
       "key": "prévoir",
-      "meaning": "Voir à l’avance.",
+      "word": "prévoir",
       "root": "voir",
       "slot": "prefix",
-      "choices": ["pré", "re", "dé"],
+      "choices": [
+        "pré",
+        "re",
+        "dé"
+      ],
       "answer": "pré",
-      "word": "prévoir"
+      "meaning": "Voir à l’avance."
     },
     {
       "key": "relire",
-      "meaning": "Lire encore une fois.",
+      "word": "relire",
       "root": "lire",
       "slot": "prefix",
-      "choices": ["re", "dé", "in"],
+      "choices": [
+        "re",
+        "dé",
+        "in"
+      ],
       "answer": "re",
-      "word": "relire"
+      "meaning": "Lire encore une fois."
     },
     {
       "key": "déranger",
-      "meaning": "Mettre en désordre, le contraire de ranger.",
+      "word": "déranger",
       "root": "ranger",
       "slot": "prefix",
-      "choices": ["dé", "re", "pré"],
+      "choices": [
+        "dé",
+        "re",
+        "pré"
+      ],
       "answer": "dé",
-      "word": "déranger"
+      "meaning": "Mettre en désordre, le contraire de ranger."
     },
     {
       "key": "inconnu",
-      "meaning": "Que l’on ne connaît pas.",
+      "word": "inconnu",
       "root": "connu",
       "slot": "prefix",
-      "choices": ["in", "re", "dé"],
+      "choices": [
+        "in",
+        "re",
+        "dé"
+      ],
       "answer": "in",
-      "word": "inconnu"
+      "meaning": "Que l’on ne connaît pas."
     },
     {
       "key": "prénom",
-      "meaning": "Le nom qui vient avant le nom de famille.",
+      "word": "prénom",
       "root": "nom",
       "slot": "prefix",
-      "choices": ["pré", "re", "dé"],
+      "choices": [
+        "pré",
+        "re",
+        "dé"
+      ],
       "answer": "pré",
-      "word": "prénom"
+      "meaning": "Le nom qui vient avant le nom de famille."
     }
   ],
+  "perRun": 6,
   "feedback": {
     "correct": "Bien assemblé !",
     "wrong": "{word} se fabrique avec {answer}. {meaning}"
@@ -108,6 +149,5 @@
   "adaptive": {
     "promoteAt": 0.85,
     "demoteAt": 0.5
-  },
-  "perRun": 6
+  }
 }

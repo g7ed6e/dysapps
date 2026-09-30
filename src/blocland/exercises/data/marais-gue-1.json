@@ -9,7 +9,11 @@
       "key": "marais-gue-1-0",
       "prompt": "Tu … ton sac tous les soirs.",
       "spoken": "Tu (mot manquant) ton sac tous les soirs.",
-      "choices": ["ranges", "range", "rangent"],
+      "choices": [
+        "ranges",
+        "range",
+        "rangent"
+      ],
       "answer": "ranges",
       "hint": "Le sujet est tu : quelle terminaison prend un verbe en -er avec tu ?",
       "explanation": "Au présent, avec tu, un verbe en -er finit par -es : tu ranges. « Rangent » va avec ils.",
@@ -30,7 +34,11 @@
       "key": "marais-gue-1-1",
       "prompt": "Nous … le bus à huit heures.",
       "spoken": "Nous (mot manquant) le bus à huit heures.",
-      "choices": ["prenons", "prenez", "prennent"],
+      "choices": [
+        "prenons",
+        "prenez",
+        "prennent"
+      ],
       "answer": "prenons",
       "hint": "Qui prend le bus ? Cherche la terminaison qui va avec ce sujet.",
       "explanation": "Avec nous, le présent finit par -ons : nous prenons. « Prenez » va avec vous, « prennent » avec ils.",
@@ -51,7 +59,11 @@
       "key": "marais-gue-1-2",
       "prompt": "Vous … vos devoirs avant le dîner.",
       "spoken": "Vous (mot manquant) vos devoirs avant le dîner.",
-      "choices": ["faites", "faisez", "font"],
+      "choices": [
+        "faites",
+        "faisez",
+        "font"
+      ],
       "answer": "faites",
       "hint": "Faire se conjugue comme dire avec vous : vous dites.",
       "explanation": "Faire est irrégulier : vous faites, comme vous dites et vous êtes. « Font » va avec ils.",
@@ -72,7 +84,11 @@
       "key": "marais-gue-1-3",
       "prompt": "Mon frère … toujours merci.",
       "spoken": "Mon frère (mot manquant) toujours merci.",
-      "choices": ["dit", "dis", "disent"],
+      "choices": [
+        "dit",
+        "dis",
+        "disent"
+      ],
       "answer": "dit",
       "hint": "Mon frère, c’est il. Quelle lettre finale avec il ?",
       "explanation": "Avec il ou elle, dire finit par -t : il dit. « Dis » va avec je ou tu, « disent » avec ils.",
@@ -93,7 +109,11 @@
       "key": "marais-gue-1-4",
       "prompt": "Léo, … ton manteau, il fait froid !",
       "spoken": "Léo, (mot manquant) ton manteau, il fait froid !",
-      "choices": ["mets", "met", "mettre"],
+      "choices": [
+        "mets",
+        "met",
+        "mettre"
+      ],
       "answer": "mets",
       "hint": "C’est un ordre donné à Léo : pense à tu, sans l’écrire.",
       "explanation": "Impératif avec tu : on prend le présent, tu mets, sans le sujet. Mettre n’est pas un verbe en -er : il garde son s. Mets ton manteau !",
@@ -114,7 +134,11 @@
       "key": "marais-gue-1-5",
       "prompt": "Inès, … chercher le pain, s’il te plaît.",
       "spoken": "Inès, (mot manquant) chercher le pain, s’il te plaît.",
-      "choices": ["va", "vas", "vais"],
+      "choices": [
+        "va",
+        "vas",
+        "vais"
+      ],
       "answer": "va",
       "hint": "Relis la règle de l’impératif, pour aller.",
       "explanation": "Impératif avec tu : aller n’a pas de s, comme les verbes en -er. Va chercher le pain ! « Vais » s’emploie avec je.",
@@ -135,7 +159,11 @@
       "key": "marais-gue-1-6",
       "prompt": "Les enfants, … vos mains !",
       "spoken": "Les enfants, (mot manquant) vos mains !",
-      "choices": ["lavez", "lavé", "laver"],
+      "choices": [
+        "lavez",
+        "lavé",
+        "laver"
+      ],
       "answer": "lavez",
       "hint": "On parle à plusieurs enfants : à quelle personne ?",
       "explanation": "Un ordre à plusieurs personnes : impératif avec vous, terminaison -ez. Lavez vos mains ! « Lavé » est un participe, « laver » un infinitif.",
@@ -156,7 +184,11 @@
       "key": "marais-gue-1-7",
       "prompt": "Toi et moi, … vite à la maison !",
       "spoken": "Toi et moi, (mot manquant) vite à la maison !",
-      "choices": ["rentrons", "rentrez", "rentrer"],
+      "choices": [
+        "rentrons",
+        "rentrez",
+        "rentrer"
+      ],
       "answer": "rentrons",
       "hint": "Toi et moi : quel pronom peut les remplacer ?",
       "explanation": "Toi et moi, c’est nous : impératif avec nous, terminaison -ons. Rentrons vite ! « Rentrez » s’adresse aux autres, sans moi.",
