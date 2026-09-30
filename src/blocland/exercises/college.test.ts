@@ -38,6 +38,7 @@ import {
 } from './college';
 import { MATHS_EXERCISES } from './maths';
 import { POSEES_EXERCISES } from './posees';
+import { VOLCAN_EXERCISES } from './volcan';
 import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
 import { runItems } from './run';
 import { shuffleRunChoices } from './shuffle';
@@ -374,7 +375,7 @@ it('maths générées : les accords au singulier (« 1 caisse », « une pomme �
     [item.prompt, item.spoken, item.hint, item.explanation, ...((item.choices as unknown[]) ?? [])].map(String).join(' ¦ ');
   const plural = /(?<![\d,  ])1 (caisses|boules|rouges|bleues|parts|graduations|zéros|rangs|mètres|kilos|centimètres|kilomètres)\b/;
   const gender = /\b[Uu]n (pomme|bille|crêpe|tomate)\b/;
-  for (const def of [...MATHS_EXERCISES, ...POSEES_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+  for (const def of [...MATHS_EXERCISES, ...POSEES_EXERCISES, ...VOLCAN_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
     for (let s = 0; s < 150; s++) {
       for (const item of runItems(def, `${def.id}#accords${s}`)) {
         const t = texts(item);
@@ -387,7 +388,7 @@ it('maths générées : les accords au singulier (« 1 caisse », « une pomme �
 
 it('maths générées : la partie garde les choix tirés, et la bonne réponse prend chaque place (aucune au-delà de 40 %)', () => {
   const report: string[] = [];
-  for (const def of [...MATHS_EXERCISES, ...POSEES_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
+  for (const def of [...MATHS_EXERCISES, ...POSEES_EXERCISES, ...VOLCAN_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES]) {
     const byPlace = new Map<number, number[]>();
     for (let s = 0; s < 300; s++) {
       const seed = `${def.id}#places${s}`;

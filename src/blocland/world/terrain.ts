@@ -338,6 +338,132 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
   return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
+/** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
+export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
+
+/** Une borne telle que la vue de l'île la voit : sa case (coordonnées du monde, ou du cœur) et le dessus du sol sous elle. */
+export interface BorneVue {
+  x: number;
+  y: number;
+  base: number;
+}
+
+/** La distance de la caméra de la vue d'une île au point visé (en paysage ; la vue en portrait recule, three/camera.ts). */
+export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
+/** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
+export const VISEE_AU_DESSUS_DU_SOL = 1;
+
+/** La direction de la vue d'une île, pivot compris (`viewYaw`), non normée : x, y de la grille, z en hauteur. */
+function directionDeLaVue(id: BiomeId): [number, number, number] {
+  const yaw = -viewYaw(id);
+  const { dx, dy, up } = VUE_DE_L_ILE;
+  return [dx * Math.cos(yaw) - dy * Math.sin(yaw), dx * Math.sin(yaw) + dy * Math.cos(yaw), up];
+}
+
+/** Vers la caméra de la vue d'une île, pivot compris (`viewYaw`), en cases : x, y de la grille, z en hauteur. */
+export function versLaCamera(id: BiomeId): [number, number, number] {
+  const v = directionDeLaVue(id);
+  const l = Math.hypot(...v);
+  return [v[0] / l, v[1] / l, v[2] / l];
+}
+
+/**
+ * La place de la caméra de la vue d'une île (x, y de la grille, z en hauteur), en paysage et sans le glissement vers un
+ * grand repère d'Archipéo (world/cadrage.ts) : ce que calcule three/camera.ts dans le cas simple.
+ */
+export function cameraDeLIle(id: BiomeId): { x: number; y: number; z: number } {
+  const c = islandCenter(id);
+  const [dx, dy, up] = directionDeLaVue(id);
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE;
+  return { x: c.x + d * dx, y: c.y + d * dy, z: c.z + VISEE_AU_DESSUS_DU_SOL + d * up };
+}
+
+/** Des points de la borne (socle et ardoise, deux cubes sur son sol), un peu en retrait de ses arêtes : u, v dans la case, w au-dessus du sol. */
+const POINTS_DE_LA_BORNE: [number, number, number][] = [0.05, 0.5, 0.95].flatMap((u) =>
+  [0.05, 0.5, 0.95].flatMap((v) => [1.05, 1.5, 2, 2.5, 2.95].map((w): [number, number, number] => [u, v, w])),
+);
+/** Le plus bas de ces points au-dessus du sol de la borne. */
+const PIED_DE_LA_BORNE = 1.05;
+/** La marge autour d'un cube de décor : le rendu Archipéo le dessine en volume un peu plus large, et la vue est en perspective. */
+const MARGE_DEVANT_LA_BORNE = 0.1;
+/**
+ * Le plus haut qu'un cube du décor monte au-dessus du sol d'une borne, en cubes, marge comprise : un arbre ou un sapin
+ * (feuillage à 5 cubes au-dessus de son sol, `BLOCS_DU_DECOR`) sur un relief qui monte de 2 blocs au plus dans le voisinage
+ * des bornes, et deux de plus pour un relief ou un décor à venir.
+ */
+const HAUTEUR_MAX_DU_DECOR = 9;
+/**
+ * La portée, en cases : plus loin de la borne (en x ou en y), un cube du décor passe sous tous les rayons de la vue de
+ * l'île, qui ne s'éloignent que de `hypot(dx, dy) / up` (1,1) case par bloc de montée ; une case de plus pour le feuillage,
+ * qui déborde d'une case de son tronc.
+ */
+export const PORTEE_DEVANT_LA_BORNE = Math.ceil((HAUTEUR_MAX_DU_DECOR * Math.hypot(VUE_DE_L_ILE.dx, VUE_DE_L_ILE.dy)) / VUE_DE_L_ILE.up) + 1;
+
+/** La case (x, y) est-elle assez près d'une borne pour qu'un décor posé là puisse la cacher (voir `PORTEE_DEVANT_LA_BORNE`) ? */
+export function presDUneBorne(bornes: readonly BorneVue[], x: number, y: number, marge = 0): boolean {
+  const p = PORTEE_DEVANT_LA_BORNE + marge;
+  for (const b of bornes) if (Math.abs(x - b.x) <= p && Math.abs(y - b.y) <= p) return true;
+  return false;
+}
+
+/**
+ * Le cube (x, y, z) cache-t-il une borne dans la vue de l'île ? Un rayon part de chaque point de la borne vers la
+ * caméra (vue de l'île, pivot compris) ; le cube, élargi de sa marge, ne doit en couper aucun. Seuls les cubes posés
+ * près de la borne (`PORTEE_DEVANT_LA_BORNE`) et au-dessus de son sol sont essayés ; un cube que les rayons ne peuvent
+ * atteindre à sa hauteur est écarté avant eux. Un cube collé à la borne, à sa hauteur, compte comme cachant quelle que
+ * soit la direction de la vue : élargi de sa marge, il contient déjà des points de la borne.
+ */
+export function cacheUneBorne(bornes: readonly BorneVue[], vers: readonly [number, number, number], x: number, y: number, z: number): boolean {
+  const m = MARGE_DEVANT_LA_BORNE;
+  const minX = x - m;
+  const minY = y - m;
+  const minZ = z - m;
+  const maxX = x + 1 + m;
+  const maxY = y + 1 + m;
+  const maxZ = z + 1 + m;
+  const [vx, vy, vz] = vers;
+  for (const b of bornes) {
+    if (z + 1 <= b.base + 1 || Math.abs(x - b.x) > PORTEE_DEVANT_LA_BORNE || Math.abs(y - b.y) > PORTEE_DEVANT_LA_BORNE) continue;
+    // Rejet précoce : les rayons montent ; à la hauteur du haut du cube, ils ne sont pas allés plus loin que `t` en x et en y.
+    if (vz > 1e-9) {
+      const t = (maxZ - b.base - PIED_DE_LA_BORNE) / vz;
+      if (t < 0) continue;
+      const bx0 = b.x + 0.05 + Math.min(0, vx * t);
+      const bx1 = b.x + 0.95 + Math.max(0, vx * t);
+      const by0 = b.y + 0.05 + Math.min(0, vy * t);
+      const by1 = b.y + 0.95 + Math.max(0, vy * t);
+      if (bx1 < minX || bx0 > maxX || by1 < minY || by0 > maxY) continue;
+    }
+    for (const [u, v, w] of POINTS_DE_LA_BORNE) {
+      const ox = b.x + u;
+      const oy = b.y + v;
+      const oz = b.base + w;
+      let t0 = 0;
+      let t1 = Infinity;
+      // Les trois dalles du cube, l'une après l'autre (x, y, puis la hauteur).
+      for (let j = 0; j < 3 && t0 <= t1; j++) {
+        const o = j === 0 ? ox : j === 1 ? oy : oz;
+        const d = j === 0 ? vx : j === 1 ? vy : vz;
+        const lo = j === 0 ? minX : j === 1 ? minY : minZ;
+        const hi = j === 0 ? maxX : j === 1 ? maxY : maxZ;
+        if (Math.abs(d) < 1e-9) {
+          if (o < lo || o > hi) t0 = Infinity;
+          continue;
+        }
+        const a = (lo - o) / d;
+        const c = (hi - o) / d;
+        t0 = Math.max(t0, Math.min(a, c));
+        t1 = Math.min(t1, Math.max(a, c));
+      }
+      if (t0 <= t1) return true;
+    }
+  }
+  return false;
+}
+
+/** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
+const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
+
 const STEP = '#8f8f8f';
 
 /**
@@ -1100,6 +1226,10 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const banned = new Set<string>();
   const ban = (x: number, y: number) => banned.add(`${x},${y}`);
   const core = (x: number, y: number) => ban(def.core.x + x, def.core.y + y);
+  // Devant les bornes (voir `cacheUneBorne`) : ni mât de fanion ni fumée de foyer, qui cacheraient leur pied.
+  const index = BIOMES.findIndex((b) => b.id === port);
+  const bornes = questStations(port).map((st) => ({ x: def.core.x + st.x, y: def.core.y + st.y, base: def.altitude + groundHeight(index, st.x, st.y) }));
+  const vers = versLaCamera(port);
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
   for (const k of placeCells(port)) {
@@ -1122,7 +1252,6 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   for (const b of BRIDGES.filter((d) => d.from === port || d.to === port))
     for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
   // Le niveau du sol de chaque case : le cœur (et son plateau), ou la terre autour.
-  const index = BIOMES.findIndex((b) => b.id === port);
   const land = new Map(landscape(def).map((c) => [`${c.x},${c.y}`, c]));
   const ground = (x: number, y: number): number | null => {
     if (inCore(def, x, y)) return def.altitude + groundHeight(index, x - def.core.x, y - def.core.y);
@@ -1138,13 +1267,16 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
     return z;
   };
   /** `air` : les cases que l'objet surplombe (la fumée), jamais au-dessus du chemin du bonhomme. */
-  const find = (wantX: number, wantY: number, cells: [number, number][], air: [number, number][] = []): QuaySpot | null => {
+  const find = (wantX: number, wantY: number, cells: [number, number][], air: [number, number][] = [], haut = false): QuaySpot | null => {
     let best: QuaySpot | null = null;
     let bestD = Infinity;
+    // Un objet haut (le mât et la toile d'un fanion, la fumée d'un foyer : trois cubes au plus) ne cache pas une borne.
+    const hauts = haut ? [...cells, ...air] : [];
     for (let x = X - 12; x <= X + 10; x++)
       for (let y = S; y <= def.core.y + 8; y++) {
         const zs = cells.map(([dx, dy]) => free(x + dx, y + dy));
         if (zs.some((z) => z === null || z !== zs[0])) continue;
+        if (hauts.some(([dx, dy]) => HAUTEURS_D_UN_OBJET_HAUT.some((dz) => cacheUneBorne(bornes, vers, x + dx, y + dy, zs[0]! + dz)))) continue;
         // Au-dessus des cases surplombées, rien de plus haut qu'un bloc (pas d'arbre dans la fumée).
         if (air.some(([dx, dy]) => banned.has(`${x + dx},${y + dy}`) || y + dy < S || (top.get(`${x + dx},${y + dy}`)?.z ?? -Infinity) > zs[0]! + 1)) continue;
         // Au plus près de la côte d'abord, puis du pied de la jetée.
@@ -1163,8 +1295,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const boat = sea ? find(X - 5, S, rect(BOAT_LENGTH, 2)) : null;
   const crates = find(X - 2, S, rect(2, 1));
   // Un fanion de chaque côté du pied de la jetée, sa toile (une case à côté du mât) au-dessus du sol nu.
-  const flags = [find(X - 2, S, [[0, 0], [-1, 0]]), find(X + 2, S, [[0, 0], [1, 0]])];
-  const hearth = find(X + 3, S + 1, [[0, 0]], SMOKE_DRIFT);
+  const flags = [find(X - 2, S, [[0, 0], [-1, 0]], [], true), find(X + 2, S, [[0, 0], [1, 0]], [], true)];
+  const hearth = find(X + 3, S + 1, [[0, 0]], SMOKE_DRIFT, true);
   return { boat, flags, crates, hearth };
 }
 
@@ -1755,18 +1887,24 @@ function poserLIle(
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
   pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
+  const vers = versLaCamera(biome.id);
   for (const c of scenery) {
     if (!c.decor || nearSentier(c.x, c.y)) continue;
     const r = noise(def.seed + 5, c.x, c.y);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-    decorate(
-      (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor),
-      c.decor,
-      c.x,
-      c.y,
-      r,
-    );
+    const poser: Put = (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor);
+    // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
+    // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
+    if (!presDUneBorne(bornes, c.x, c.y, 1)) {
+      decorate(poser, c.decor, c.x, c.y, r);
+      continue;
+    }
+    const poses: [number, number, number, string, string | undefined][] = [];
+    decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
+    if (poses.some(([x, y, z]) => cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)

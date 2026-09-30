@@ -89,6 +89,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'La virgule, c’est la frontière : à gauche les unités, à droite les dixièmes.',
       'Le plus long n’est pas le plus grand ! 3,5 bat 3,45.',
       'Mon abri est en obsidienne, noire et brillante. Chaque nombre en apporte une.',
+      'Un nombre géant, je le coupe en classes de trois chiffres, en partant de la droite.',
     ],
     home: 'Mon abri d’obsidienne est fini ! Il brille comme 1,0 : entier et sans un dixième qui manque.',
   },

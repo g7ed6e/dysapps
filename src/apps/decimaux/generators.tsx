@@ -107,8 +107,9 @@ export const onLine: Generator = (rng) => {
     id: `droite-${th}`,
     prompt: 'Quel nombre repère le point ?',
     figure: <GraduatedLine start={start} units={1} perUnit={10} point={k} />,
-    // Pièges : 2,04 (dixième lu comme centième), graduation voisine, chiffres inversés.
-    choices: decimalChoices(th, [start * SCALE + k * 10, th + 100, th - 100, k * SCALE + start * 100, start * SCALE + k], rng),
+    // Pièges : 2,04 (dixième lu comme centième), graduation voisine, chiffres inversés. Pas de millièmes (5,001 pour
+    // 5,1) : la droite est graduée en dixièmes, aucun élève ne lit un millième sur elle.
+    choices: decimalChoices(th, [start * SCALE + k * 10, th + 100, th - 100, k * SCALE + start * 100], rng),
     answer: f(th),
     hint: 'L’unité est partagée en 10 parts égales : chaque graduation vaut un dixième (0,1).',
     explanation: `${k} graduation${k > 1 ? 's' : ''} après ${start} : ${start} + ${f(k * 100)} = ${f(th)}.`,
@@ -182,8 +183,9 @@ export const complementToOne: Generator = (rng) => {
     id: `c1-${th}`,
     prompt: `${f(th)} + … = 1`,
     spokenPrompt: `${f(th)} plus combien égale 1 ?`,
-    // Piège : oublier la retenue (0,35 + 0,75).
-    choices: decimalChoices(answer, [answer + 100, answer - 100, answer + 10, answer - 10], rng),
+    // Piège : oublier la retenue (0,35 + 0,75). Un piège à 0,01 près seulement quand la réponse est en centièmes :
+    // en dixièmes, elle se compte sur la droite graduée en dixièmes, et ses voisins sont à un dixième.
+    choices: decimalChoices(answer, hundredths ? [answer + 100, answer - 100, answer + 10, answer - 10] : [answer + 100, answer - 100], rng),
     answer: f(answer),
     hint: hundredths ? `Va d’abord jusqu’à ${f(next)}, puis de ${f(next)} jusqu’à 1.` : 'Compte les dixièmes qui manquent pour arriver à 10 dixièmes.',
     aid: hundredths ? <NumberLineJumps points={[th / SCALE, next / SCALE, 1]} /> : <GraduatedLine start={0} units={1} perUnit={10} point={th / 100} />,

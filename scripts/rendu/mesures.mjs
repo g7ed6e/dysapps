@@ -79,6 +79,12 @@ const CAPTURES = [
   { nom: 'tour-mi', vue: 'île', famille: 'chantier', ile: 'tour', partie: 'tour-mi' },
   { nom: 'tour-apres', vue: 'île', famille: 'chantier', ile: 'tour' },
   { nom: 'tour-nuit', vue: 'île', famille: 'chantier', ile: 'tour', nuit: true },
+  // (De près, les bornes de la Tour, pied compris : aucun décor ne se dresse devant elles, de jour et de nuit.)
+  { nom: 'tour-bornes', vue: 'île', famille: 'chantier', ile: 'tour', recadre: { x: 180, y: 400, width: 320, height: 240 } },
+  { nom: 'tour-bornes-nuit', vue: 'île', famille: 'chantier', ile: 'tour', nuit: true, recadre: { x: 180, y: 400, width: 320, height: 240 } },
+  // (Le port des Premiers Rivages : ses fanions et son foyer ont quitté le devant des bornes.)
+  { nom: 'plaine', vue: 'île', famille: 'chantier', ile: 'plaine' },
+  { nom: 'plaine-nuit', vue: 'île', famille: 'chantier', ile: 'plaine', nuit: true },
   { nom: 'atelier', vue: 'île', famille: 'chantier', ile: 'atelier' },
   { nom: 'atelier-nuit', vue: 'île', famille: 'chantier', ile: 'atelier', nuit: true },
   { nom: 'phare', vue: 'île', famille: 'chantier', ile: 'phare' },

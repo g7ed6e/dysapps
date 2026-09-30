@@ -68,7 +68,7 @@ export const BLOCLAND = {
       challenge: 'Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. »',
       guardianSays: {
         hit: 'Grrr… Exact. Ma fumée se dissipe.',
-        miss: 'Ce n’est rien : repère la virgule, puis lis les rangs un par un. Reprends.',
+        miss: 'Ce n’est rien : regarde le tableau ou la droite, rang par rang, et reprends.',
         beaten: 'Grrr. Tu lis les rangs mieux que mes flammes. Le volcan est à toi… et à Lavi.',
       },
     },
