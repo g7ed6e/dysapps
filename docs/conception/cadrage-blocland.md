@@ -140,6 +140,7 @@ Les règles des missions jouées depuis le monde (graine tirée au hasard, place
 
 ## À venir
 
+- **Le caractère de Blocland** ([GD-1](../pilotage/game-design/propositions/GD-1.md), décidée le 30 septembre 2026) : les créatures des îles-écoles parlent aux grandes étapes à la place de la baleine, les archipels reprennent leurs noms d’origine, les rôles deviennent des métiers du chantier, un geste et un son de pose propres à Blocland.
 - ~~**La vue 2D** : retirer la mention « expérimental » du réglage après un essai en classe.~~ Sans objet : la 2D a quitté le réglage le 28 septembre 2026.
 - **Le premier voyage** : écouter les retours des enfants sur le nombre de Gardiens exigés (3, 2, 2) et la taille du premier chantier, à régler dans `world/vehicle.ts`.
 - **Le village au démarrage** : observer combien d’élèves entrent à l’école depuis le monde et combien repassent le réglage « Au démarrage » sur « Le menu ».

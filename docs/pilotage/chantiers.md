@@ -83,7 +83,8 @@ J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes 
 | Étape | État | Suite |
 | --- | --- | --- |
 | U0 à U3 | Faites | — |
-| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Restent le retour des noms propres à Blocland (proposés par son consultant), le lexique court et l’écran « L’île X s’appelle maintenant Y » |
+| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Restent le retour des noms propres à Blocland (décidé par [GD-1](game-design/propositions/GD-1.md) : Basses Terres, Collines du Large, Monts de Feu), le lexique court et l’écran « L’île X s’appelle maintenant Y » |
+| Le caractère de Blocland ([GD-1](game-design/propositions/GD-1.md)) | Décidé le 30 septembre 2026, rien de construit | Créatures des îles-écoles aux grandes étapes, noms d’origine des archipels, rôles en métiers du chantier (avec U4) ; geste et son de pose (lot à ouvrir, dégel ciblé du dessin, artiste technique 3D). Attend le « go » du mainteneur pour lancer la construction |
 | U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
 | U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
 
