@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { VoxelCube } from '../Voxel';
+import { cadrageSerre, coinsDesCubes } from './cadrageSerre';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface VoxelCanvasProps {
@@ -31,6 +32,11 @@ export interface VoxelCanvasProps {
   cameraDirection?: [number, number];
   elevation?: number;
   fit?: number;
+  /**
+   * Une vitrine serrée (le Gardien du défi, DA-34) : la caméra se pose, dans la même direction, au plus près où la
+   * scène entière tient encore dans le cadre (respiration comprise) ; `fit` et `distance` sont alors ignorés.
+   */
+  remplir?: boolean;
   className?: string;
   label: string;
 }
@@ -39,6 +45,8 @@ export interface VoxelCanvasProps {
 const toWorld = (x: number, y: number, z: number) => new THREE.Vector3(x + 0.5, z + 0.5, y + 0.5);
 
 const SKY = 0x8fd0f5;
+/** L'amplitude de la respiration des cubes (`breathe`), en blocs. */
+const RESPIRATION = 0.06;
 /** Nuages : rangées de cubes blancs, en positions fixes autour du centre de la scène. */
 const CLOUDS: [number, number, number][] = [
   [-9, 9, 3],
@@ -64,6 +72,7 @@ export default function VoxelCanvas({
   cameraDirection,
   elevation,
   fit,
+  remplir = false,
   className,
   label,
 }: VoxelCanvasProps) {
@@ -106,7 +115,15 @@ export default function VoxelCanvas({
       minY = 0;
       maxY = 1;
     }
-    return { cx: (minX + maxX) / 2, cy: (minY + maxY) / 2, cz: maxZ / 2, maxZ, radius: Math.max(maxX - minX, maxY - minY, maxZ) };
+    return {
+      cx: (minX + maxX) / 2,
+      cy: (minY + maxY) / 2,
+      cz: maxZ / 2,
+      maxZ,
+      radius: Math.max(maxX - minX, maxY - minY, maxZ),
+      largeur: maxX - minX,
+      profondeur: maxY - minY,
+    };
   })();
 
   // ---- Création de la scène (une fois)
@@ -243,7 +260,7 @@ export default function VoxelCanvas({
     const loop = () => {
       frame = requestAnimationFrame(loop);
       const t = clock.getElapsedTime();
-      if (breathe && !reduceMotion) cubesGroup.position.y = Math.sin(t * 1.6) * 0.06;
+      if (breathe && !reduceMotion) cubesGroup.position.y = Math.sin(t * 1.6) * RESPIRATION;
       controls.update();
       renderer.render(scene, camera);
     };
@@ -282,11 +299,20 @@ export default function VoxelCanvas({
     // (son visage est du côté y négatif), pour voir les yeux.
     const [dx, dy] = cameraDirection ?? (gridSize ? [0.75, 0.75] : [0.75, -0.75]);
     const up = elevation ?? (gridSize ? 0.62 : 0.3);
-    w.camera.position.set(extent.cx + d * dx, extent.cz + d * up, extent.cy + d * dy);
+    if (remplir) {
+      // Au plus près où tous les cubes tiennent, respiration comprise (les cubes, un peu plus haut et un peu plus bas).
+      const origine: [number, number, number] = [extent.cx, extent.cz, extent.cy];
+      const respire = breathe ? [RESPIRATION, -RESPIRATION] : [0];
+      const coins = coinsDesCubes(cubes.flatMap((c) => respire.map((r) => [c.x, c.z + r, c.y] as const)), origine);
+      const { cible, distance: serre } = cadrageSerre(coins, [dx, up, dy], w.camera.fov, w.camera.aspect || 1);
+      const n = Math.hypot(dx, up, dy) || 1;
+      w.controls.target.set(origine[0] + cible[0], origine[1] + cible[1], origine[2] + cible[2]);
+      w.camera.position.copy(w.controls.target).add(new THREE.Vector3(dx, up, dy).multiplyScalar(serre / n));
+    } else w.camera.position.set(extent.cx + d * dx, extent.cz + d * up, extent.cy + d * dy);
     w.controls.update();
     // Uniquement au montage et quand la taille de la scène change nettement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gridSize, distance, fit, elevation, cameraDirection?.[0], cameraDirection?.[1], Math.round(extent.radius)]);
+  }, [gridSize, distance, fit, remplir, elevation, cameraDirection?.[0], cameraDirection?.[1], Math.round(extent.radius)]);
 
   // ---- Cubes
   useEffect(() => {
