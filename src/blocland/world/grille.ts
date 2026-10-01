@@ -9,6 +9,8 @@ import type { BiomeId } from '../biomes';
 import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './disposition';
+import { caseDArrivee, toucheLEau, type Arrivee } from './arrivee';
+import { islandDef } from './map';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
 import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
@@ -23,6 +25,12 @@ export function dureeDeMarche(route: Point[]): number {
   return Math.min(WALK_MAX_MS, (routeLengths(route)[route.length - 1] / WALK_SPEED) * 1000);
 }
 
+/** Les bouts d'un trajet, quand ce ne sont pas les places habituelles : là où il s'arrête, là d'où il part. */
+export interface BoutsDuTrajet {
+  arrivee?: Point;
+  depart?: Point;
+}
+
 /** La disposition en grille d'un archipel, et ce que seule la grille sait faire : raccorder deux points à pied. */
 export interface DispositionEnGrille extends Disposition {
   genre: 'grille';
@@ -33,12 +41,35 @@ export interface DispositionEnGrille extends Disposition {
   versIle(p: Point, ile?: BiomeId): Ancrage;
   /** Le chemin à pied d'un point à un autre sur le sol (autour du décor et des créatures), ou `null`. */
   raccord(depuis: Point, vers: Point): Point[] | null;
+  /**
+   * Le trajet vers une île ou un lieu ; vers une île, il peut s'arrêter en `arrivee` (la case du sol touchée) plutôt
+   * qu'à la place habituelle, et partir de `depart` (là où il se tient sur l'île de départ) plutôt que de sa place.
+   */
+  trajet(depuis: Entite, vers: Entite, bouts?: BoutsDuTrajet): Trajet | null;
+  /**
+   * Toucher le sol de l'île `ile` en `touche` : la case où va le bonhomme depuis `depuis` (./arrivee.ts), ou `null` (hors
+   * de l'île, rien d'accessible, ou sans grille de marche) : la place habituelle.
+   */
+  arrivee(ile: BiomeId, touche: { x: number; y: number }, depuis: Point): Arrivee | null;
+  /** Le doigt est tombé sur l'eau (ou la lave). */
+  surLEau(touche: { x: number; y: number }): boolean;
 }
 
 /** Un point du monde, ancré à l'île `ile` : dans son repère. */
 function ancre(ile: BiomeId, p: Point): Ancrage {
   const o = origineDe(ile);
   return { ile, local: { x: p.x - o.x, y: p.y - o.y, z: p.z - o.z } };
+}
+
+/**
+ * La disposition en grille d'un archipel, sans cubes ni ouvrages (ce qu'elle dit ne dépend alors que de l'archipel : où
+ * sont les îles, le repère de chacune), faite une fois et partagée : le clavier, le toucher, les intentions des vues.
+ */
+const grilles = new Map<ArchipelagoId, DispositionEnGrille>();
+export function grilleDe(a: ArchipelagoId): DispositionEnGrille {
+  let g = grilles.get(a);
+  if (!g) grilles.set(a, (g = dispositionEnGrille(a)));
+  return g;
 }
 
 /**
@@ -95,12 +126,15 @@ export function dispositionEnGrille(
     }
   }
 
-  /** De l'île où il se tient à une île, ou à la porte d'un lieu : sur les ouvrages construits, puis à pied. */
-  function trajet(depuis: Entite, vers: Entite): Trajet | null {
+  /**
+   * De l'île où il se tient (de sa place, ou de `depart`) à une île, ou à la porte d'un lieu : sur les ouvrages
+   * construits, puis à pied, jusqu'à sa place, ou jusqu'à `arrivee` sur une île (la case du sol touchée).
+   */
+  function trajet(depuis: Entite, vers: Entite, { arrivee, depart }: BoutsDuTrajet = {}): Trajet | null {
     if (depuis.genre !== 'ile') return null;
     const cible = vers.genre === 'ile' ? vers.id : vers.genre === 'lieu' ? vers.ile : null;
     if (!cible) return null;
-    const chemin = avatarRoute(depuis.id, cible, bridges, marche());
+    const chemin = avatarRoute(depuis.id, cible, bridges, marche(), { end: vers.genre === 'ile' ? arrivee : undefined, start: depart });
     if (!chemin) return null;
     const route: Point[] = [...chemin];
     if (vers.genre === 'lieu') {
@@ -128,5 +162,13 @@ export function dispositionEnGrille(
     etendue: (): Etendue => worldBounds(a),
     ileEn,
     versIle: (p, ile) => ancre(ile ?? ileEn(p), p),
+    arrivee: (ile, touche, depuis) => {
+      const g = marche();
+      return g ? caseDArrivee(g, islandDef(ile), depuis, touche) : null;
+    },
+    surLEau: (touche) => {
+      const g = marche();
+      return g ? toucheLEau(g, touche) : false;
+    },
   };
 }

@@ -26,7 +26,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
-| Fusionner l’école et la salle des trophées au kit du 6e (suite du 7b) | lot 7 | Oui : validé par le directeur artistique sur captures (`lot-7b-lieux/`) ; à voir sur tablette avec le 7b (moiré en mouvement, images par seconde, pose d’un bloc à la Forêt) |
+| Voir sur tablette le 7b et les lieux du 6e | lot 7 | Oui : moiré en mouvement, images par seconde, pose d’un bloc à la Forêt |
 | Choisir l’asset du banc d’essai, puis qui lance les outils de génération | Assets | Un Gardien d’Archipéo, en portrait 2D puis en 3D ; lancés d’abord à la main par le mainteneur sur une commande préparée |
 | Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
 | Valider le budget des bornes du 6e (1 250 triangles, pris sur la faune ; total inchangé à 57 800) | C-2, R | Oui : la quatrième borne du Volcan dépasse de 8 triangles, la faune a de la marge |
@@ -44,6 +44,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 - Galets en colonnes (Rivière) : les cases de la multiplication et la potence en 1024 × 768 ; la voix des nombres de 1 000 et plus (« 2 550 ») et des décimaux (« 5,69 »).
 - Voix : « Bâtie », la phrase de la baleine, « −1 » et « (0 ; 2) », « COD », « p.m. » en voix anglaise, les voix allemande et espagnole (heures, nombres, « Tú », « Sí »).
 - Écrans sans défilement en OpenDyslexic grande taille (ticket #231 : en 1024 × 768, les écrans avec document défilent).
+- Toucher le sol pour promener le bonhomme : aucune marche lancée par un glissé, borne ou créature jamais ratée au profit du sol, rond du but lisible sur chaque sol (sable, herbe, neige, pierre claire). Reste connu : toucher une autre île pendant une marche fait repasser le bonhomme par la place de l’île visée.
 - Faire glisser le monde au doigt (Recentrer) : confort du glissé, aucun toucher d’île déclenché par erreur après un glissé, second doigt ignoré ; sur téléphone en grand texte, « Recentrer » et une bulle du haut ne se chevauchent pas.
 - Sur téléphone en grand texte : le défilement du panneau de la Carte et le nom de destination jamais sous le panneau (DA-31) ; les noms d’îles sous la bulle de la baleine (DA-10).
 
@@ -55,7 +56,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | --- | --- | --- | --- |
 | lot 1 à lot 5 (3a, 3b, 4a, 4b) | Les mots, l’interface, le monde qui change, le menu et la Carte, le mot de la baleine | Construits | — |
 | lot 6 | Le nouveau monde, à deux univers (avec U3) | **Fini** le 29 septembre 2026 (#241) | Aperçus fixes des univers reportés après les lots 8 et 8b |
-| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) ; 7b (le 6e : colombage peint, toits en pente) fusionné (#273) ; **l’école et la salle des trophées au kit du 6e** construites, validées par le directeur artistique sur captures (`lot-7b-lieux/`) | Ensuite : une proposition de game design sur la place des trophées (aucun sur le toit), commune aux deux univers, à trancher par le mainteneur ; le bardage des pignons (à trancher par le directeur artistique), le dessus des fantômes un peu plus distinct du crème (référent dys) ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
+| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) ; 7b (le 6e : colombage peint, toits en pente) fusionné (#273) ; **l’école et la salle des trophées au kit du 6e** fusionnées (#279) | Ensuite : la place des trophées, fiche GD-3 décidée le 1er octobre 2026 (option B : aucun sur le toit, une salle qui s’agrandit), commune aux deux univers, à construire avant 7c ; le bardage des pignons (à trancher par le directeur artistique), le dessus des fantômes un peu plus distinct du crème (référent dys) ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
 | lot 8 | L’Horizon et le navire maritime | À faire | Migration de sauvegarde des pièces du navire ; monde en réseau (J6) |
 | lot 8b | La Carte des quatre archipels en 3D | À faire | Après le lot 8 |
 | lot 9 | L’archipel vivant | À faire | Le faisceau et la rotation du phare l’attendent |

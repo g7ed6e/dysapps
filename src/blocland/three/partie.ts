@@ -37,7 +37,7 @@ export interface Derniers {
 export interface Instant {
   /** L'horloge, en millisecondes (`performance.now`). */
   now: number;
-  /** Le bonhomme marche. */
+  /** Le bonhomme marche, et la caméra le suit (pas pendant une flânerie sur son île, vers une case touchée). */
   marche: boolean;
   /** Le navire est en route : où il est, où il en est de son temps (0 à 1), à quelle étape du navire. */
   navigue: { at: THREE.Vector3; k: number; stage: 1 | 2 | 3 } | null;

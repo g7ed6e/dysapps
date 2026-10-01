@@ -21,7 +21,7 @@ describe('Les intentions d’une vue', () => {
     const o = origineDe('foret');
     const p = origineDe('plaine');
     r.build!.onPickFace({ x: o.x + 1, y: o.y + 2, z: o.z + 4 }, { x: o.x + 1, y: o.y + 2, z: o.z + 5 });
-    r.build!.onPickFace({ x: p.x + 3, y: p.y - 6, z: p.z + 1 }, { x: p.x + 3, y: p.y - 6, z: p.z + 1 }, 'plaine');
+    r.build!.onPickFace({ x: p.x + 3, y: p.y - 6, z: p.z + 1 }, { x: p.x + 3, y: p.y - 6, z: p.z + 1 }, { ile: 'plaine' });
     r.onVoyageLegEnd!();
     r.onVoyageSkip!();
     expect(recues).toEqual([
