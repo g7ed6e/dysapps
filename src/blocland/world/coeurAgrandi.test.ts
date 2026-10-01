@@ -1,5 +1,5 @@
 // Le cœur agrandi des îles-écoles (décision du mainteneur, 01/10/2026 : « vraie terre en plus »). La Forêt d'abord, puis
-// le Marché et l'Atelier : un cœur de 20 × 20 avec sa côte d'avant tout autour, la terre gagne deux cases de chaque côté, ses
+// le Marché, l'Atelier et le Phare : un cœur de 20 × 20 avec sa côte d'avant tout autour, la terre gagne deux cases de chaque côté, ses
 // voisines s'écartent d'autant dans MAP. Les clés de sauvegarde restent relatives à l'origine `core`, qui ne bouge pas.
 import type { BiomeId } from '../biomes';
 import { BRIDGES } from './archipelago';
@@ -76,6 +76,19 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
       'forge-gare': 11,
       'cabinet-theatre': 10,
       'theatre-jardin': 10,
+    },
+  },
+  phare: {
+    archipel: '3e',
+    core: { x: 58, y: 912 },
+    ext: { left: 3, right: 3, front: 3, back: 3 },
+    ouvrages: {
+      'phare-belvedere': 17,
+      'phare-donnees': 16,
+      'phare-textes': 28,
+      'belvedere-studio': 13,
+      'donnees-chateau': 11,
+      'chateau-refuge': 7,
     },
   },
 };
@@ -175,6 +188,11 @@ it('les ouvrages partent du cœur de 20 et l’îlot du Gardien suit la côte re
   // L'Atelier. Vers la Forge et vers la Falaise, depuis sa côte repoussée de part et d'autre.
   expect(depart('atelier-forge').x).toBe(62 - 2 - 3 - 1);
   expect(depart('atelier-falaise').x).toBe(62 + 18 + 3);
+  // Le Phare. Vers le Belvédère et l'Observatoire des données, depuis sa côte repoussée ; le col des textes, depuis
+  // l'arrière de sa terre.
+  expect(depart('phare-belvedere').x).toBe(58 - 2 - 3);
+  expect(depart('phare-donnees').x).toBe(58 + 18 + 3);
+  expect(depart('phare-textes').y).toBe(912 + 18 + 3 - 1);
   // L'îlot, au droit du bord gauche du cœur, à trois cases d'eau de la côte, comme avant.
   for (const id of IDS) {
     const def = islandDef(id);
@@ -192,6 +210,10 @@ it('le quai d’une île-école qui est un port suit sa côte repoussée ; les c
   expect(shoreY('atelier')).toBe(628);
   expect(dockOrigin('atelier')).toEqual({ x: 62 + 15, y: 616, z: 0 });
   expect(ORIGINE_DU_QUAI.atelier).toEqual({ x: 15, y: -14, z: -7 });
+  // Le Phare, port des Îles du Ciel, sans étape du Bloc-Navire : le navire s'y pose devant sa côte repoussée.
+  expect(shoreY('phare')).toBe(912 - 2 - 3 + 1);
+  expect(dockOrigin('phare')).toEqual({ x: 58 + 15, y: 896, z: 9 });
+  expect(ORIGINE_DU_QUAI.phare).toBeUndefined();
 });
 
 it('les voisines d’une île-école s’écartent : les ouvrages de son archipel gardent leur longueur à deux cases près, les bras de mer restent ouverts', () => {

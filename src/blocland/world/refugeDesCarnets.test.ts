@@ -434,8 +434,10 @@ describe('les caméras des îles', () => {
   // centrale y recule d'une case, et les caméras tournent de 0,8° (le Comptoir et le Manoir, écartés vers l'est, de
   // 2,4°) ; avant : Glacier 36,8, Marché 13,6, Carrefour 36,8, Marais 13,6, Comptoir et Manoir −12, Relais −37,6. Aux
   // Anciens Ateliers, le cœur de l'Atelier passé à 20 (01/10/2026) : la Falaise, écartée de deux cases vers l'est, tourne
-  // de 1,6° (−0,4 avant) ; la Forge, écartée vers l'ouest, reste au pivot maximal.
-  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 33.6, mine: -24.8, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 24.8, horloge: -0.8, glacier: 37.6, marche: 12.8, carrefour: 36, marais: 12.8, comptoir: -14.4, manoir: -14.4, relais: -38.4, forge: 40, atelier: 25.2, falaise: -2, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 30.4, phare: 0, donnees: -30.4, textes: 0, studio: 40, chateau: -40 };
+  // de 1,6° (−0,4 avant) ; la Forge, écartée vers l'ouest, reste au pivot maximal. Aux Îles du Ciel, le cœur du Phare
+  // passé à 20 (01/10/2026) : le Belvédère et l'Observatoire des données, écartés de deux cases, pivotent de 1,6° de plus
+  // (30,4 et −30,4 avant).
+  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 33.6, mine: -24.8, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 24.8, horloge: -0.8, glacier: 37.6, marche: 12.8, carrefour: 36, marais: 12.8, comptoir: -14.4, manoir: -14.4, relais: -38.4, forge: 40, atelier: 25.2, falaise: -2, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 32, phare: 0, donnees: -32, textes: 0, studio: 40, chateau: -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);

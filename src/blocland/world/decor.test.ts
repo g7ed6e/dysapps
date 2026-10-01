@@ -103,10 +103,10 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "atelier/foyer@80,630",
       ],
       [
-        "phare/caisse@66,909",
-        "phare/fanion@73,911",
-        "phare/fanion@75,909",
-        "phare/foyer@76,911",
+        "phare/caisse@66,908",
+        "phare/fanion@64,908",
+        "phare/fanion@77,908",
+        "phare/foyer@76,910",
       ],
     ]
   `);

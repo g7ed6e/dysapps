@@ -309,7 +309,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'Le temple de marbre',
     description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes qui brille au soleil.',
-    islet: { x: 5, y: 935 },
+    islet: { x: 3, y: 935 }, // 2 cases à l'ouest avec le Belvédère (le Phare a grandi, 01/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
     draw: temple,

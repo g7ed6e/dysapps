@@ -45,9 +45,9 @@ export const CORE = 16;
  * C'est de la vraie terre en plus : la côte (`ext`) garde sa largeur autour du cœur agrandi, la terre de l'île gagne
  * deux cases de chaque côté, et ses voisines s'écartent d'autant dans `MAP` (choix du mainteneur, 01/10/2026). Les
  * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
- * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché et l'Atelier.
+ * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché, l'Atelier et le Phare.
  */
-export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20, atelier: 20 };
+export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20, atelier: 20, phare: 20 };
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -127,11 +127,17 @@ export const MAP: IslandDef[] = [
   { id: 'atelier', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
   { id: 'falaise', region: 'montagne', core: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
   { id: 'cabinet', region: 'hauteurs', core: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
-  // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare.
-  { id: 'belvedere', region: 'montagne', core: { x: 20, y: 930 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
+  // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare. Le Phare, île-école, a un
+  // cœur de 20 et sa côte autour (01/10/2026) : le Belvédère s'écarte de 2 vers l'ouest, l'Observatoire des données de
+  // 2 vers l'est (leurs ponts vers le Phare gardent leur longueur, ceux du Studio et du Château y perdent deux cases),
+  // chacun avec son dessin (`deplacee`). L'Observatoire des textes avance de 2 vers le Phare : la mer de nuages, qui
+  // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
+  // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
+  // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
+  { id: 'belvedere', region: 'montagne', core: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
   { id: 'phare', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
-  { id: 'donnees', region: 'hauteurs', core: { x: 96, y: 930 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: 58, y: 960 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'donnees', region: 'hauteurs', core: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
+  { id: 'textes', region: 'hauteurs', core: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
   // Anglais 6e : derrière la Ferme et la Forêt, les deux îles se touchent (un isthme).
   { id: 'baie', region: 'basses-terres', core: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
   { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },

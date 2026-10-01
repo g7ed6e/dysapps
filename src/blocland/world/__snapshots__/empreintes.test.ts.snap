@@ -1,49 +1,49 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"8de78ac2"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"3f3122ae"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
-  "embarquement": "4c877902",
-  "ouvrages": "059f5aef",
+  "embarquement": "3c49ac5f",
+  "ouvrages": "76079dc8",
   "voyages": "e6548dc9",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "4e7c3078",
-  "cubes": "4a8c3a18",
-  "cubes avec créatures": "cb07d1f3",
-  "décor posé sur la pente": "ecab9862",
-  "navire": "8b55e91e",
-  "sol (facettes)": "2a656a1c",
+  "créatures et Gardiens": "24db5531",
+  "cubes": "7fa91c05",
+  "cubes avec créatures": "5a1723f6",
+  "décor posé sur la pente": "a8df32f5",
+  "navire": "812ad2a0",
+  "sol (facettes)": "3e6ba68e",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "4dee892b",
+  "trajets depuis le port": "8e27d9d4",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "9e89f602",
-  "cubes": "95c82a70",
-  "cubes avec créatures": "c1261161",
-  "décor posé sur la pente": "7db1eafb",
-  "navire": "8b55e91e",
-  "sol (facettes)": "e34f23ec",
+  "créatures et Gardiens": "10bd61a7",
+  "cubes": "e43028c3",
+  "cubes avec créatures": "70773e6a",
+  "décor posé sur la pente": "b8886f72",
+  "navire": "812ad2a0",
+  "sol (facettes)": "c9741064",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "091bc62d",
+  "trajets depuis le port": "b7fdce3f",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "b956991f",
-  "cubes avec créatures": "b956991f",
-  "décor posé sur la pente": "004a75b5",
-  "navire": "4e3d19b2",
-  "sol (facettes)": "54ae4143",
+  "cubes": "6b004ced",
+  "cubes avec créatures": "6b004ced",
+  "décor posé sur la pente": "bb2d14e3",
+  "navire": "72dd9e54",
+  "sol (facettes)": "59b6eaab",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "974f3796",
 }

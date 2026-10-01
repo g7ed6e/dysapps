@@ -31,9 +31,10 @@ export const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.
  * Phare (l'arrivée), la caméra passe plein sud au lieu du sud-sud-est, pour que la lanterne se découpe sur le ciel et
  * le massif, et non plus sur l'île de l'Observatoire des textes, juste derrière elle ; depuis cette île des textes,
  * dont le phare est au premier plan, le même pivot l'écarte du cœur de l'île, sa lanterne sur le ciel (radians,
- * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare).
+ * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare). Depuis que le cœur du Phare a 20
+ * cases (01/10/2026), le phare suit la côte repoussée, deux cases plus loin en x et en y (75,5 et 929,5 avant).
  */
-export const GRAND_PHARE_3E = { ile: 'phare', x: 75.5, y: 929.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
+export const GRAND_PHARE_3E = { ile: 'phare', x: 77.5, y: 931.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
 
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);

@@ -31,11 +31,13 @@ export const REPERES_CADRES: readonly RepereCadre[] = [GRAND_PHARE_3E];
  * cadrée, sauf depuis cette île même, que la vue montre déjà, et depuis une île d'où la vue pivote pour lui (son
  * `pivot` y joue seul : l'île de la vue reste au premier plan) ; dans la vue d'une
  * île, quand c'est la sienne (le panneau de l'île couvre la moitié droite de l'écran : le
- * repère, au fond de l'île, passait au-dessus du cadre).
+ * repère, au fond de l'île, passait au-dessus du cadre). Dans la vue de l'île, 0,32 depuis que le cœur du Phare a 20
+ * cases (01/10/2026) : le phare, sur la côte repoussée, est deux cases plus loin en x et en y, et sa lanterne passait à
+ * 38 px du bord, sous la marge de 40 (0,3 avant).
  */
 export const CADRAGE_DU_REPERE = {
   zone: { vers: 0.4, recul: 1.1 },
-  ile: { vers: 0.3, recul: 1.3 },
+  ile: { vers: 0.32, recul: 1.3 },
 } as const;
 
 /** Les repères cadrés d'un archipel. */
