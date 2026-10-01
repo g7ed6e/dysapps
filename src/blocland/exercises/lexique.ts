@@ -1,5 +1,5 @@
 /**
- * Ce que le bouton Écouter d'une ligne de lexique lit, dans la voix de la langue vivante : les mots de la langue, à gauche
+ * Ce que le bouton Écouter d'une ligne de lexique d'anglais lit, en voix anglaise : les mots anglais, à gauche
  * des « = » (« push = pousser, pull = tirer » → « push, pull »). Les lignes du lexique s'écrivent ainsi dans
  * `docs/contenu/` : le mot de la langue d'abord, puis son sens en français.
  * - Ce qui est entre parenthèses est une précision, laissée de côté (« library = bibliothèque (une librairie = …) »).
@@ -9,12 +9,18 @@
  *   « thank you = merci. sorry = pardon. ») ; sans l'un d'eux, c'est encore du français (« = 4 h moins 20 = 3 h 40 »).
  * - Un mot que la voix de la langue lirait mal est laissé : un mot accentué ou un petit mot français (« collège »,
  *   « Un nom au singulier ») et un suffixe (« -ty »).
+ * - Les « … » d'une expression à compléter ne se lisent pas (« Listen to… Look at… » → « Listen to, Look at », « I’d like… » → « I’d like ») ; « am » et
+ *   « pm » seuls se lisent comme des lettres (« a.m. », « p.m. »), pas comme le verbe « am ».
  * Une ligne de méthode, sans « = », ne lit rien : elle n'a pas de bouton.
+ * Réglé pour l'anglais : en allemand ou en espagnol, le filtre des accents écarterait des mots de la langue (« frühstücken »,
+ * « el andén ») ; il faudrait un filtre des mots français propre à chaque langue, avec ses cas de test.
  */
 const ACCENTS = /[àâäçéèêëîïôöùûüÿœæ]/i;
 const PETITS_MOTS_FRANCAIS = /(^|\s)(un|une|des|du|de|le|la|les|au|aux|ou|et)(\s|$)/i;
 const DEBUT_DU_PREMIER = / : /g;
 const DEBUT_DES_SUIVANTS = /, | : |[.?!] /g;
+// Les deux séparateurs ont le drapeau g : ils ne servent qu'avec matchAll, jamais avec test ou exec (lastIndex resterait collé).
+const HEURE = { am: 'a.m.', pm: 'p.m.' } as const;
 
 /** Position juste après le dernier séparateur trouvé dans `texte`, ou -1. */
 function apresLeDernier(texte: string, separateurs: RegExp): number {
@@ -35,9 +41,11 @@ export function motsAEcouter(ligne: string): string {
         .slice(Math.max(debut, 0))
         .replace(/\s*\/\s*/g, ', ')
         .replace(/\.$/, '')
+        .replace(/…\s+(?=[A-Z])/g, ', ')
+        .replace(/\s*…/g, '')
         .trim();
       if (mot && !mot.startsWith('-') && !ACCENTS.test(mot) && !PETITS_MOTS_FRANCAIS.test(mot)) mots.push(mot);
     }
   }
-  return mots.join(', ');
+  return mots.map((mot) => (mot === 'am' || mot === 'pm' ? HEURE[mot] : mot)).join(', ');
 }

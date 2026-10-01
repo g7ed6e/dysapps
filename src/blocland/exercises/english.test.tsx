@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
 import { CalculScreen } from './CalculScreen';
@@ -201,8 +201,8 @@ it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglai
   const user = userEvent.setup();
   const aid = { kind: 'rule-card', props: { title: 'Lire un panneau', lines: ['Lis d’abord la question.', 'push = pousser, pull = tirer'] } };
   renderScreen(CalculScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
-  const [methode, lexique] = [...document.querySelectorAll('.rule-card li')];
-  expect(methode.querySelector('button')).toBeNull();
+  const [methode, lexique] = within(screen.getByRole('figure')).getAllByRole('listitem');
+  expect(within(methode).queryByRole('button')).toBeNull();
   await user.click(screen.getByRole('button', { name: 'Écouter : push, pull' }));
   expect(utterances.at(-1)).toMatchObject({ text: 'push, pull', lang: 'en-GB' });
   expect(lexique.textContent).toBe('push = pousser, pull = tirer');
@@ -211,5 +211,5 @@ it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglai
 it('lexique en français : pas de bouton par ligne', () => {
   const aid = { kind: 'rule-card', props: { lines: ['nombre = quantité'] } };
   renderScreen(CalculScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4', aid }, 'fr');
-  expect(document.querySelector('.rule-card button')).toBeNull();
+  expect(within(screen.getByRole('figure')).queryByRole('button')).toBeNull();
 });

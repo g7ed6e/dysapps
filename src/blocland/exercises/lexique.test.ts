@@ -10,7 +10,10 @@ describe('Mots lus par le bouton Écouter d’une ligne de lexique', () => {
     ['to = avant : twenty to four = 4 h moins 20 = 3 h 40.', 'to, twenty to four'],
     ['he = il (un garçon), she = elle (une fille)', 'he, she'],
     ['can = pouvoir, savoir (I can swim). can’t = ne pas pouvoir.', 'can, can’t'],
-    ['I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?', 'I don’t understand, What does… mean?'],
+    ['I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?', 'I don’t understand, What does mean?'],
+    ['Listen to… Look at… = Écoute… Regarde…', 'Listen to, Look at'],
+    ['I’d like… = je voudrais…', 'I’d like'],
+    ['am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h) ; last = dernier', 'a.m., p.m., last'],
   ])('« %s » → « %s »', (ligne, mots) => {
     expect(motsAEcouter(ligne)).toBe(mots);
   });

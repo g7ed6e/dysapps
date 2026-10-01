@@ -84,10 +84,10 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « En classe » :
-  - Open / Close your book. = Ouvre / Ferme ton livre.
-  - Sit down. Stand up. = Assieds-toi. Lève-toi.
-  - Listen to… Look at… = Écoute… Regarde…
-  - Repeat after me. = Répète après moi.
+  - open = ouvre, close = ferme
+  - sit down = assieds-toi, stand up = lève-toi
+  - listen to = écoute, look at = regarde
+  - repeat = répète (après moi)
   - I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?
 
 1. énoncé : … your book, please.
@@ -153,11 +153,11 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Les nombres » :
-  - 1 one, 2 two, 3 three, 4 four, 5 five, 6 six, 7 seven, 8 eight, 9 nine, 10 ten
-  - 11 eleven, 12 twelve
+  - one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, ten = 10
+  - eleven = 11, twelve = 12
   - 13 à 19 : -teen (thirteen, fourteen…). On appuie sur la fin : thir-TEEN.
   - 20, 30, 40… : -ty (twenty, thirty, forty…). On appuie sur le début : THIR-ty.
-  - 21 = twenty-one, 35 = thirty-five.
+  - twenty-one = 21, thirty-five = 35.
 
 1. énoncé : thirteen
    - lu : thirteen
@@ -474,7 +474,7 @@ Pour tous les items :
   - Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.
   - he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)
   - dad = papa, mum = maman, brother = frère, sister = sœur
-  - -teen = de 13 à 19 (fifteen = 15) ; -ty = les dizaines (fifty = 50)
+  - sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)
   - Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche
 
 1. énoncé : "Dear Nina,\nI’m in London with my dad.\nIt’s rainy, but the parks are great!\nLove, Sara"
