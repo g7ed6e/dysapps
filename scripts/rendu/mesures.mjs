@@ -7,8 +7,9 @@
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
 // `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle, ecoles). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
-// `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
-// plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
+// `--attente 20` le plus long temps laissé à la scène avant la mesure (en secondes, 10 par défaut) : la caméra est posée à
+// son cadrage dès que le monde est construit et ne bouge plus (`attendreLaScene`, scripts/prise-de-vue.mjs), souvent
+// bien avant.
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
 // tard le phare : proches de la lueur `#FFD866`, voir `estUneLueur`) : au plus `LUEUR_MAX` à la vue île (décision du
 // directeur artistique, lot R5), affichée dans un second tableau.
@@ -18,7 +19,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { build, createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { capturer, figeable } from '../prise-de-vue.mjs';
+import { attendreLaScene, capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const TABLET = { width: 1024, height: 768 };
@@ -478,7 +479,7 @@ async function scenes() {
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
-        await page.waitForTimeout(8000);
+        if (!(await attendreLaScene(page, WAIT))) console.warn(`${a}-${nom} : la caméra n'est pas arrivée à son cadrage en ${WAIT / 1000} s`);
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés
@@ -495,7 +496,7 @@ async function scenes() {
       try {
         // Le monde se construit en quelques secondes (rendu logiciel), puis la caméra rejoint son cadrage en douceur.
         // (Pas de waitForFunction : l'horloge figée de la page l'empêche de sonder.)
-        await page.waitForTimeout(WAIT);
+        if (!(await attendreLaScene(page, WAIT))) console.warn(`${a}-${nom} : la caméra n'est pas arrivée à son cadrage en ${WAIT / 1000} s`);
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
         rows.push({ archipel: a, vue, ...s });

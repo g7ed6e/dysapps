@@ -8,7 +8,7 @@ import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { capturer, figeable } from '../prise-de-vue.mjs';
+import { attendreLaScene, capturer, figeable } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const OUT = join(root, 'www', '_captures');
@@ -341,6 +341,9 @@ async function take(shot) {
     await page.waitForTimeout(shot.wait ?? 6000);
     if (shot.act) await shot.act(page);
     if (shot.after) await page.waitForTimeout(shot.after);
+    // Un écran avec le monde 3D : la caméra, bridée, n'a pas forcément fini de rejoindre son cadrage (après un geste qui
+    // change d'île ou ouvre la Carte) ; elle s'y pose d'un coup.
+    if (await page.evaluate(() => Boolean(window.__dysappsCamera))) await attendreLaScene(page, 15_000);
     const file = join(OUT, `${shot.name}.jpg`);
     // Le rendu logiciel de la 3D peut prendre plus de 30 s par image sur la CI.
     await capturer(page, { path: file, type: 'jpeg', quality: 82, timeout: 120_000 });
