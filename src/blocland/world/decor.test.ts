@@ -90,8 +90,8 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "marche/barque@80,310",
         "marche/barque@87,314",
         "marche/caisse@84,314",
-        "marche/fanion@74,314",
-        "marche/fanion@78,314",
+        "marche/fanion@87,319",
+        "marche/fanion@88,317",
         "marche/foyer@90,317",
       ],
       [
@@ -105,8 +105,8 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
       [
         "phare/caisse@66,908",
         "phare/fanion@64,908",
-        "phare/fanion@77,908",
-        "phare/foyer@76,910",
+        "phare/fanion@74,909",
+        "phare/foyer@77,909",
       ],
     ]
   `);

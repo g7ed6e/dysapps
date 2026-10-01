@@ -463,6 +463,37 @@ export function cacheUneBorne(bornes: readonly BorneVue[], vers: readonly [numbe
   return false;
 }
 
+const rangeesDevant = new Map<BiomeId, ReadonlySet<string>>();
+/**
+ * La rangée de côte devant les bornes d'une île-école (l'île de l'école de son archipel, `school`) : la première rangée
+ * de côte hors du cœur, côté caméra (y = bord avant du cœur − 1), de la case droit devant la première borne jusqu'à celle
+ * que traverse l'axe de la caméra de la vue de l'île (`versLaCamera`, pivot compris) depuis la dernière, une case de plus
+ * de chaque côté. Aucun décor n'y est posé : rien de rouge ni de touffu entre l'élève et les bornes (DA, 01/10/2026 :
+ * trois champignons rouges devant celles de la Forêt). Cases du monde (« x,y ») ; vide hors des îles-écoles.
+ * La bande reste dans la portée des bornes (`PORTEE_DEVANT_LA_BORNE`), où `poserLIle` essaie chaque élément du décor.
+ */
+export function rangeeDevantLesBornes(id: BiomeId): ReadonlySet<string> {
+  const connue = rangeesDevant.get(id);
+  if (connue) return connue;
+  const out = new Set<string>();
+  if (isSchoolIsland(id)) {
+    const def = islandDef(id);
+    const y = coeurDe(def).y0 - 1;
+    const [vx, vy] = versLaCamera(id);
+    for (const st of questStations(id)) {
+      const bx = def.core.x + st.x + 0.5;
+      const by = def.core.y + st.y + 0.5;
+      // Où l'axe borne → caméra traverse le milieu de la rangée (la caméra est devant : vy < 0).
+      const xr = vy < -1e-9 ? bx + (vx * (by - (y + 0.5))) / -vy : bx;
+      const lo = Math.min(bx, xr) - 1.5;
+      const hi = Math.max(bx, xr) + 1.5;
+      for (let x = Math.ceil(lo - 0.5); x + 0.5 <= hi; x++) out.add(`${x},${y}`);
+    }
+  }
+  rangeesDevant.set(id, out);
+  return out;
+}
+
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
 
@@ -1200,6 +1231,16 @@ function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): str
   return BLOCKS.terre.side;
 }
 
+/**
+ * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
+ * de l'archipel depuis le port (DA, 01/10/2026 : au 5e, celle de 91, 345 nageait derrière le Marché et seul son souffle
+ * se voyait). `de` : la clairière choisie ; `vers` : la nouvelle, en eau libre ; le rond y garde trois cases de toute
+ * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/baleines.test.ts.
+ */
+export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
+  '5e': [{ de: { x: 91, y: 345 }, vers: { x: 97, y: 344 } }],
+};
+
 const whaleCache = new Map<ArchipelagoId, { x: number; y: number; r: number }[]>();
 export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
   const known = whaleCache.get(a);
@@ -1250,6 +1291,10 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
     if (spots.some((s) => Math.hypot(s.x - c.x, s.y - c.y) < s.r + c.r + 20)) continue;
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
     if (spots.length === 4) break;
+  }
+  for (const { de, vers } of BALEINES_REPLACEES[a] ?? []) {
+    const i = spots.findIndex((s) => s.x === de.x && s.y === de.y);
+    if (i >= 0) spots[i] = { x: vers.x, y: vers.y, r: Math.min(clearance(vers.x, vers.y) - 3, 9) };
   }
   // Dans un ordre qui ne dépend que de leur place (d'ouest en est, puis de l'avant vers l'arrière) : chaque baleine garde son rythme
   // (`three/large.ts` le tire de son rang) quand une île grandit et que les notes des clairières changent.
@@ -1369,6 +1414,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
   for (const m of margesDuCoeur(def)) ban(m.x, m.y);
+  // La rangée de côte devant les bornes d'une île-école reste nue (`rangeeDevantLesBornes`, DA, 01/10/2026).
+  for (const k of rangeeDevantLesBornes(port)) banned.add(k);
   const spot = creatureSpot(port);
   for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of creatureDuMonde(port)) core(spot.x + sx + c.x, spot.y + sy + c.y);
   // Le chemin du bonhomme vers le navire (en ligne droite, d'un point au suivant), jusqu'à la jetée.
@@ -1985,6 +2032,8 @@ function poserLIle(
   pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
   const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
   const vers = versLaCamera(biome.id);
+  // Sur une île-école, la rangée de côte devant les bornes reste nue (`rangeeDevantLesBornes`).
+  const devant = rangeeDevantLesBornes(biome.id);
   // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
   const abords = abordsDansLesMarges(def);
   const marges = margesDuCoeur(def);
@@ -1998,14 +2047,15 @@ function poserLIle(
     // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
     const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
-    // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
+    // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
+    // la rangée de côte devant les bornes d'une île-école.
     if (!presDUneBorne(bornes, c.x, c.y, 1)) {
       decorate(poser, c.decor, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.

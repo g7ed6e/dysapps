@@ -407,12 +407,35 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
       }
       let fin = k;
       while (fin < rangee.length && !plein[fin]) fin++;
-      // La suite nue [k, fin) : ses jalons à intervalles égaux, ni à ses bouts (contre un décor) ni l'un contre l'autre.
+      // La suite nue [k, fin) : ses jalons à intervalles à peu près égaux, ni à ses bouts (contre un décor) ni l'un contre
+      // l'autre. Chacun glisse d'une case au hasard (bruit fixe) et change de genre d'un jalon au suivant : pas de rangée
+      // régulière de rondins identiques (DA, 01/10/2026, sur la rangée de devant des Anciens Ateliers). Les glissements
+      // gardent moins de `PAS_DES_JALONS` cases nues à la suite ; sinon, les places égales.
       const long = fin - k;
       const n = Math.floor(long / PAS_DES_JALONS);
-      for (let j = 1; j <= n; j++) {
-        const [x, y] = rangee[k + Math.floor((j * long) / (n + 1))];
-        out.set(`${x},${y}`, genres[Math.floor(noise(def.seed + 29, x, y) * genres.length) % genres.length]);
+      const egales = Array.from({ length: n }, (_, j) => k + Math.floor(((j + 1) * long) / (n + 1)));
+      // Les glissements (−1, 0 ou +1 par jalon) sont tirés d'un bruit fixe ; le premier tirage qui tient les écarts est gardé.
+      const tient = (ps: number[]) =>
+        ps.every((p, j) => {
+          const avant = j ? ps[j - 1] : k - 1;
+          return p > avant + 1 && p < fin - 1 && p - avant - 1 < PAS_DES_JALONS;
+        }) && fin - ps[ps.length - 1] - 1 < PAS_DES_JALONS;
+      let finales = egales;
+      // (Pas sur une île allégée, `DECOR_DES_MARGES` : le Marché garde ses roseaux, une case sur deux, à leur place.)
+      for (let essai = 0; essai < 4 && n > 0 && !DECOR_DES_MARGES[def.id]; essai++) {
+        const ps = egales.map((p) => p + Math.floor(noise(def.seed + 31 + essai, rangee[p][0], rangee[p][1]) * 3) - 1);
+        if (ps.some((p, j) => p !== egales[j]) && tient(ps)) {
+          finales = ps;
+          break;
+        }
+      }
+      let precedent = -1;
+      for (const p of finales) {
+        const [x, y] = rangee[p];
+        let g = Math.floor(noise(def.seed + 29, x, y) * genres.length) % genres.length;
+        if (g === precedent && genres.length > 1) g = (g + 1) % genres.length;
+        precedent = g;
+        out.set(`${x},${y}`, genres[g]);
       }
       k = fin;
     }
