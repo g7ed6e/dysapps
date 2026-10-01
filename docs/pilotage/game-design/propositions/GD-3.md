@@ -1,6 +1,6 @@
 # GD-3 : Les trophées sous le toit, une salle qui s’agrandit au fil des succès
 
-**État** : Proposée
+**État** : Décidée le 1er octobre 2026 (option B)
 **Portée** : Commun
 
 ## Le constat
@@ -64,4 +64,4 @@ Pourquoi B : elle règle le toit et fait de la récompense un agrandissement du 
 
 ## La décision
 
-<date>, mainteneur : …
+1er octobre 2026, mainteneur : « b ». L’option B est retenue : plus aucun trophée sur le toit, une salle qui s’agrandit d’une travée tous les 6 succès, vers la gauche, jusqu’à 8 × 3 cases. Le quart de tour de la créature du Marché se valide dans le lot qui la construit, par le directeur artistique et les deux consultants.

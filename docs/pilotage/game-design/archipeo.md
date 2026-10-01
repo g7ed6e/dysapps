@@ -17,7 +17,6 @@ Voir le [Cadrage Archipéo](../../conception/cadrage-archipeo.md), §3 et §4 (l
 ## Questions ouvertes
 
 - Quand Archipéo sort de la discrétion, et avec quels aperçus (reportés après les lots 8 et 8b).
-- Les monuments, l’école et la salle des trophées prennent-ils le kit modulaire (le directeur artistique tranche avant le 7b) ?
 - La maquette d’une île en réseau, la place des Gardiens et des monuments, la Carte (à cadrer avec le directeur artistique avant J6).
 - Les répliques des créatures, le mot de la baleine et une partie des espèces, encore communs aux deux univers (les répliques des Gardiens sont déjà propres à chaque univers).
 - La caméra basse de la vue d’archipel ; le sable plus chaud du pack visuel.
