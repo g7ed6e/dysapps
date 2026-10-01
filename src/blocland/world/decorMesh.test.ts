@@ -335,8 +335,9 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
   for (const i of maillage.decor.elements) if (mer.has(i)) n++;
   expect(n).toBeLessThanOrEqual(2500);
   // Tous les écueils et les bancs sont là, un élément chacun.
-  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(139);
-  expect(elements.filter((e) => e.genre === 'banc').length).toBe(55);
+  // (139 et 55 avant que le cœur de la Forêt passe à 20 et que ses voisines s'écartent, 01/10/2026.)
+  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(140);
+  expect(elements.filter((e) => e.genre === 'banc').length).toBe(54);
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');

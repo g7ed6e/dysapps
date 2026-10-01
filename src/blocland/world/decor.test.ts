@@ -79,12 +79,12 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
   expect(quai).toMatchInlineSnapshot(`
     [
       [
-        "plaine/barque@73,24",
-        "plaine/barque@75,14",
-        "plaine/caisse@79,18",
-        "plaine/fanion@73,18",
-        "plaine/fanion@80,20",
-        "plaine/foyer@79,23",
+        "plaine/barque@73,22",
+        "plaine/barque@75,12",
+        "plaine/caisse@79,16",
+        "plaine/fanion@73,16",
+        "plaine/fanion@80,18",
+        "plaine/foyer@79,21",
       ],
       [
         "marche/barque@80,312",

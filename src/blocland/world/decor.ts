@@ -518,8 +518,10 @@ interface OutilsDuRepereEnBlocs {
  */
 export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
   'grand-arbre': ({ def, scenery, backY, named, put }) => {
-    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages.
-    const s = findSpot(def, scenery, coeurDe(def).x0 - 4, backY, 2);
+    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, deux cases en
+    // dedans de son bord gauche : depuis que le cœur de la Forêt a 20 cases (01/10/2026), le replat d'avant, quatre cases
+    // à gauche, est au bord de la pente, et le chêne y montrait plus de la moitié de son tronc.
+    const s = findSpot(def, scenery, coeurDe(def).x0 + 2, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);

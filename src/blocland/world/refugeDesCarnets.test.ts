@@ -428,8 +428,9 @@ describe('le Papillon de cuivre d’Archipéo', () => {
 
 describe('les caméras des îles', () => {
   // Le pivot de chaque caméra d'île avant le refuge (main, en degrés) : le refuge ne le change pour aucune autre île, dans
-  // aucun archipel (DA, LV2-5).
-  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 32, mine: -23.2, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 23.2, horloge: -0.8, glacier: 36.8, marche: 13.6, carrefour: 36.8, marais: 13.6, comptoir: -12, manoir: -12, relais: -37.6, forge: 40, atelier: 25.2, falaise: -0.4, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 30.4, phare: 0, donnees: -30.4, textes: 0, studio: 40, chateau: -40 };
+  // aucun archipel (DA, LV2-5). La Ferme, la Mine et la Baie, écartées de deux cases quand le cœur de la Forêt est passé
+  // à 20 (01/10/2026), pivotent de 1,6° de plus vers la colonne centrale (32, −23,2 et 23,2 avant).
+  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 33.6, mine: -24.8, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 24.8, horloge: -0.8, glacier: 36.8, marche: 13.6, carrefour: 36.8, marais: 13.6, comptoir: -12, manoir: -12, relais: -37.6, forge: 40, atelier: 25.2, falaise: -0.4, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 30.4, phare: 0, donnees: -30.4, textes: 0, studio: 40, chateau: -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);

@@ -243,7 +243,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
-    islet: { x: 27, y: 84 },
+    islet: { x: 25, y: 84 }, // 2 cases à l'ouest avec la Ferme (la Forêt a grandi, 01/10/2026)
     reward: { xp: 150, chest: {} },
     done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,

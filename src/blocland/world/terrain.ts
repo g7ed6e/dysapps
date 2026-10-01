@@ -12,14 +12,17 @@ import {
   bornesDuCoeur,
   coeurDe,
   DANS_LE_CIEL,
+  inCoeurDOrigine,
   inCore,
   isLand,
   islandDef,
   landBox,
   landCells,
   landscape,
+  margesDuCoeur,
   smoothNoise,
   mapOf,
+  tirage,
   noise,
   type ArchipelagoId,
   type Decor,
@@ -617,6 +620,28 @@ function nearSentier(x: number, y: number): boolean {
   return false;
 }
 
+/**
+ * Les abords des ouvrages d'une île dans les marges de son cœur (`margesDuCoeur`) : de l'amorce de chaque ouvrage au
+ * cœur d'origine, la case du passage et ses voisines. Le décor des marges les laisse libres : le bonhomme y va tout
+ * droit du cœur à l'ouvrage. Vide pour une île sans marges.
+ */
+function abordsDansLesMarges(def: IslandDef): Set<string> {
+  const out = new Set<string>();
+  if (!margesDuCoeur(def).length) return out;
+  for (const b of bridgesOf(def.id)) {
+    const path = bridgePath(b);
+    if (!path.length) continue;
+    const depart = b.from === def.id;
+    const bout = depart ? path[0] : path[path.length - 1];
+    // Vers l'intérieur de l'île : à rebours du tracé à son départ, dans son sens à son arrivée.
+    const [sx, sy] = depart ? [-bout.dx, -bout.dy] : [bout.dx, bout.dy];
+    if (!sx && !sy) continue;
+    for (let k = 0, x = bout.x, y = bout.y; k <= CORE && !inCoeurDOrigine(def, x, y); k++, x += sx, y += sy)
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(`${x + dx},${y + dy}`);
+  }
+  return out;
+}
+
 /** Où le bonhomme se tient sur une île, en coordonnées relatives au cœur (à côté de la créature, loin des plans). */
 export const AVATAR_HOME = { x: 1, y: 1 };
 
@@ -805,6 +830,8 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (const k of placeCells(id)) blocked.add(k);
+  // Le décor des marges du cœur (un cœur agrandi) : la créature ne s'y pose pas.
+  for (const m of margesDuCoeur(def)) if (m.decor) blocked.add(`${m.x - def.core.x},${m.y - def.core.y}`);
   const coeur = bornesDuCoeur(def);
   for (let x = coeur.x0; x < coeur.x1; x++) for (let y = coeur.y0; y < coeur.y1; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
   // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
@@ -863,9 +890,13 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
   return origineDeLIlot(islandDef(BIOMES[index].id));
 }
 
-/** Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition. */
+/**
+ * Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition : devant la terre
+ * de l'île, au droit du bord gauche de son cœur (`coeurDe`) et au-delà de sa côte ; il suit le cœur quand il grandit.
+ */
 export function origineDeLIlot(def: IslandDef): { x: number; y: number; z: number } {
-  return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+  const c = coeurDe(def);
+  return { x: c.x0, y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
 }
 
 /**
@@ -914,7 +945,8 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
     for (let y = 0; y < ISLET_H; y++) {
       const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
       const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
-      const coast = (smoothNoise(def.seed + 7, o.x + x, o.y + y, 3) - 0.5) * 0.3;
+      const t = tirage(def, o.x + x, o.y + y);
+      const coast = (smoothNoise(def.seed + 7, t.x, t.y, 3) - 0.5) * 0.3;
       if (under.has(`${x},${y}`) || Math.hypot(dx, dy) + coast < 0.98) land.add(`${x},${y}`);
     }
   const cells: IsletCell[] = [];
@@ -1020,7 +1052,10 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   if (kinds.length === 0) kinds.push('rocher');
   const spots = cells
     .filter((c) => !c.arena && !c.guardian)
-    .map((c) => ({ c, r: noise(def.seed + 8, c.x, c.y) }))
+    .map((c) => {
+      const t = tirage(def, c.x, c.y);
+      return { c, r: noise(def.seed + 8, t.x, t.y) };
+    })
     .sort((p, q) => q.r - p.r)
     .slice(0, 5);
   const trophy = beaten ? trophySpot(biome.id) : null;
@@ -1870,12 +1905,15 @@ function poserLIle(
   pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
   const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
   const vers = versLaCamera(biome.id);
-  for (const c of scenery) {
+  // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
+  const abords = abordsDansLesMarges(def);
+  for (const c of [...scenery, ...margesDuCoeur(def).filter((m) => !abords.has(`${m.x},${m.y}`))]) {
     if (!c.decor || nearSentier(c.x, c.y)) continue;
-    const r = noise(def.seed + 5, c.x, c.y);
+    const t = tirage(def, c.x, c.y);
+    const r = noise(def.seed + 5, t.x, t.y);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
-    // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-    const poser: Put = (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor);
+    // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
+    const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
     if (!presDUneBorne(bornes, c.x, c.y, 1)) {
