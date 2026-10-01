@@ -183,6 +183,10 @@ export default function WorldCanvas({
     const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     world.current = { camera, cadrage, bornes, etiquettes, personnages, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
+    // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
+    // scripts, comme le compteur de mesures.
+    const pourLesCaptures = { poser: () => cadrage.poser() };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
     let deplacee = false;
     const signaler = () => {
@@ -482,6 +486,7 @@ export default function WorldCanvas({
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       for (const p of parties) p.dispose();
       meter?.dispose();
+      if (window.__dysappsCamera === pourLesCaptures) delete window.__dysappsCamera;
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;

@@ -171,6 +171,13 @@ export function cadrageDeLaCarte(
   return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };
 }
 
+declare global {
+  interface Window {
+    /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
+    __dysappsCamera?: { poser(): number };
+  }
+}
+
 export interface Camera extends PartieDeLaScene {
   /** Là où la caméra regarde en ce moment (les flèches du clavier cherchent l'île voisine depuis ce point). */
   cible: THREE.Vector3;
@@ -185,6 +192,12 @@ export interface Camera extends PartieDeLaScene {
   recentrer(): void;
   /** La vue a été déplacée (un décalage non nul). */
   decale(): boolean;
+  /**
+   * Pour les captures : met la caméra d'un coup à son cadrage de la dernière image, sans attendre son pas, et rend
+   * l'écart qu'il restait (infini avant la première image). Deux appels de suite qui rendent presque zéro : le cadrage
+   * ne bouge plus.
+   */
+  poser(): number;
   /**
    * Un glissé est en cours : les étiquettes gardent l'écart calculé au début (pas de nouveau calcul à chaque image) ;
    * elles le refont une fois le doigt levé.
@@ -306,6 +319,8 @@ export function creerCamera(
     decalage.x = 0;
     decalage.z = 0;
   };
+  /** Le cadrage a été calculé au moins une fois (`vise` et `place` le tiennent). */
+  let vu = false;
 
   const self: Camera = {
     cible: camTarget,
@@ -336,6 +351,15 @@ export function creerCamera(
     },
     recentrer: zero,
     decale: () => estDecale(decalage),
+    poser: () => {
+      if (!vu) return Infinity;
+      const ecart = camTarget.distanceTo(vise) + camPos.distanceTo(place);
+      camTarget.copy(vise);
+      camPos.copy(place);
+      camera.position.copy(camPos);
+      camera.lookAt(camTarget);
+      return ecart;
+    },
     animer: (_t, _dt, reduit) => {
       if (!instant.carte) surLaCarte = false;
       const sailing = instant.navigue;
@@ -381,6 +405,7 @@ export function creerCamera(
       target.z += decalage.z;
       pos.x += decalage.x;
       pos.z += decalage.z;
+      vu = true;
       const k = reduit ? 1 : 1 - Math.exp(-PAS * 3.5);
       // La taille du texte a changé sur la Carte : la caméra se recadre d'un coup, sans mouvement.
       const saut = 'saut' in frame && frame.saut;
