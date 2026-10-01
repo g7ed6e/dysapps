@@ -18,17 +18,28 @@ vi.mock('./three', () => ({
     vehicle,
     archipelago,
     voyage,
+    onVueDeplacee,
+    recentrage,
   }: {
     focus: { island: string | null; spot?: { ile: string; local: { x: number; y: number } } };
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
     voyage: { leg: string; stage: number; back: boolean } | null;
+    onVueDeplacee?: (deplacee: boolean) => void;
+    recentrage?: number;
   }) => (
-    <div>
+    <div className="voxel-canvas" tabIndex={0}>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="point">{focus.spot ? `${focus.spot.ile} ${focus.spot.local.x},${focus.spot.local.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
+      <p data-testid="recentrage">{recentrage ?? 0}</p>
+      <button type="button" onClick={() => onVueDeplacee?.(true)}>
+        Faire glisser le monde
+      </button>
+      <button type="button" onClick={() => onVueDeplacee?.(false)}>
+        La vue revient à son cadrage
+      </button>
       <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
       <button type="button" onClick={() => onIntent({ genre: 'fin-du-voyage' })}>
         Fin du temps
@@ -455,4 +466,20 @@ it('le bouton retour, dans le village, ouvre le menu du village au lieu de quitt
   window.history.back();
   expect(await screen.findByRole('dialog', { name: 'Menu' })).toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
+});
+
+it('« Recentrer » apparaît quand la vue a glissé, la ramène d’un appui, et disparaît quand elle y est revenue', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  expect(screen.queryByRole('button', { name: 'Recentrer' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Faire glisser le monde' }));
+  const recentrer = screen.getByRole('button', { name: 'Recentrer' });
+  expect(screen.getByTestId('recentrage')).toHaveTextContent('0');
+  await user.click(recentrer);
+  expect(screen.getByTestId('recentrage')).toHaveTextContent('1');
+  // Le bouton va disparaître : le focus est déjà rendu au monde, il ne tombe pas sur la page.
+  expect(document.activeElement).toHaveClass('voxel-canvas');
+  // La vue dit qu'elle est revenue à son cadrage : le bouton s'en va.
+  await user.click(screen.getByRole('button', { name: 'La vue revient à son cadrage' }));
+  expect(screen.queryByRole('button', { name: 'Recentrer' })).not.toBeInTheDocument();
 });

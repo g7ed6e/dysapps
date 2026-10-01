@@ -291,6 +291,9 @@ export function WorldPage() {
   // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
   const [voyage, setVoyage] = useState<Voyage | null>(null);
   const [veil, setVeil] = useState(false);
+  // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
+  const [vueDeplacee, setVueDeplacee] = useState(false);
+  const [recentrage, setRecentrage] = useState(0);
   const timers = useRef<number[]>([]);
   const later = (f: () => void, ms: number) => timers.current.push(window.setTimeout(f, ms));
   const clearTimers = () => {
@@ -655,6 +658,20 @@ export function WorldPage() {
     if (settings.autoRead) speak(frenchTypography(text));
   };
   const reachedNext = isArchipelagoReached('5e', state.village.bridges);
+  // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
+  const ligneDuVoyage = voyage?.mode === 'cinema';
+  // Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
+  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume;
+  const phraseDuVillage = villageSaid && !whaleWord;
+  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || said);
+  /**
+   * « Recentrer » : le focus passe d'abord au monde (le bouton va disparaître, le focus ne tombe pas sur la page), puis
+   * la vue revient à son cadrage.
+   */
+  const recentrer = () => {
+    stageRef.current?.querySelector<HTMLElement>('.voxel-canvas')?.focus();
+    setRecentrage((n) => n + 1);
+  };
 
   return (
     <div
@@ -683,6 +700,8 @@ export function WorldPage() {
             rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, dureeMs: DEROULE.fondu } : null}
             burst={burst}
             onIntent={onIntent}
+            onVueDeplacee={setVueDeplacee}
+            recentrage={recentrage}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
             label={`${UNIVERS[univers].nom} en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
@@ -713,8 +732,15 @@ export function WorldPage() {
             <Icon name="pause" />
           </button>
         )}
+        {/* Après un glissé : sous la colonne de droite (Pause, l'archipel), sans animation. Jamais sur une bulle du haut :
+            le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
+        {vueDeplacee && !voyage && !bulleEnHaut && (
+          <button type="button" className="button world-recentrer" onClick={recentrer}>
+            <Icon name="recentrer" /> Recentrer
+          </button>
+        )}
         <div className="world-overlay-top" data-couvre="scene">
-          {voyage?.mode === 'cinema' && (
+          {ligneDuVoyage && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
               <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
               <SpeakButton text={voyageSentence(voyage.to, voyage.back, voyage.from)} compact />
@@ -723,8 +749,7 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {/* Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25). */}
-          {mapOpen && !whaleWord && !motRallume && (
+          {panneauDeLaCarte && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               {mapTarget && remaining.length ? (
                 <>
@@ -794,7 +819,7 @@ export function WorldPage() {
               <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
             </div>
           )}
-          {villageSaid && !whaleWord && (
+          {phraseDuVillage && (
             <div className="creature-line world-line" role="status" aria-live="polite">
               <Icon name="flag" /> <Syllabified text={villageSaid} />
               <SpeakButton text={villageSaid} compact />
