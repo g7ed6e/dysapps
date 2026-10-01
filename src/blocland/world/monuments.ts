@@ -72,15 +72,16 @@ function observatoire(): PlanCell[] {
   ])
     put(x, y, 3, 'verre');
   box(1, 2, 5, 5, 5, 1, 'bois');
+  // Les poteaux du belvédère et le pied de la longue-vue : des poutres assemblées (GD-2).
   for (const [x, y] of [
     [1, 2],
     [5, 2],
     [1, 6],
     [5, 6],
   ])
-    put(x, y, 6, 'bois');
+    put(x, y, 6, 'poutre');
   // La longue-vue, pointée vers le large (et les baleines).
-  put(3, 4, 6, 'cadran');
+  put(3, 4, 6, 'poutre');
   put(3, 3, 7, 'obsidienne');
   put(3, 2, 7, 'obsidienne');
   put(3, 1, 8, 'obsidienne');
@@ -98,7 +99,7 @@ function moulin(): PlanCell[] {
   put(3, 2, 1, 'cabine');
   put(3, 2, 3, 'verre');
   box(2, 2, 6, 3, 3, 1, 'bois');
-  put(3, 3, 7, 'bois');
+  put(3, 3, 7, 'poutre');
   // Les ailes : un moyeu de cadran devant la tour, quatre bras de bois, de la toile de sable au bout de chacun.
   put(3, 1, 5, 'cadran');
   for (const [dx, dz] of [
@@ -107,21 +108,23 @@ function moulin(): PlanCell[] {
     [1, -1],
     [-1, -1],
   ]) {
-    put(3 + dx, 1, 5 + dz, 'bois');
+    // Le pied de chaque aile, au moyeu : une poutre assemblée (GD-2).
+    put(3 + dx, 1, 5 + dz, 'poutre');
     put(3 + 2 * dx, 1, 5 + 2 * dz, 'bois');
     put(3 + 2 * dx, 1, 5 + dz, 'sable');
   }
   return cells;
 }
 
-/** Le phare du large : un socle de glace, une tour rayée de tuiles et de glace, une galerie de lambris, une lanterne de panneaux. */
+/** Le phare du large : un socle de glace, une tour rayée de tuiles et de glace, une galerie de lambris, une lanterne de vitraux. */
 function phareLarge(): PlanCell[] {
   const { cells, put, box } = drawer();
   box(1, 1, 0, 5, 5, 1, 'glace');
   for (let z = 1; z <= 7; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, z % 2 === 1 ? 'tuile' : 'glace');
   put(3, 2, 1, 'lambris');
   for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, 7, 'lambris');
-  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 8, 'panneau');
+  // La lanterne : des vitraux assemblés (GD-2).
+  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 8, 'vitrail');
   box(2, 2, 9, 3, 3, 1, 'toile');
   put(3, 3, 10, 'tuile');
   return cells;
@@ -144,8 +147,9 @@ function kiosqueMusique(): PlanCell[] {
     for (let z = 1; z <= 3; z++) put(x, y, z, 'tourbe');
   for (const [x, y] of disc(3, 7)) put(x, y, 4, (x + y) % 2 === 0 ? 'toile' : 'tuile');
   for (const [x, y] of disc(3, 5)) put(x, y, 5, (x + y) % 2 === 0 ? 'tuile' : 'toile');
-  for (const [x, y] of disc(3, 3)) put(x, y, 6, 'toile');
-  put(3, 3, 7, 'panneau');
+  // Le lanterneau au sommet du toit : des vitraux assemblés (GD-2).
+  for (const [x, y] of disc(3, 3)) put(x, y, 6, 'vitrail');
+  put(3, 3, 7, 'vitrail');
   return cells;
 }
 
@@ -157,12 +161,15 @@ function viaduc(): PlanCell[] {
   for (const x of [1, 2, 4, 5]) for (const y of [2, 4]) put(x, y, 3, 'ardoise');
   box(0, 2, 4, 7, 3, 1, 'rail');
   box(1, 3, 5, 3, 1, 2, 'acier');
+  // Les roues de la locomotive : des engrenages assemblés (GD-2).
+  for (const x of [1, 2, 3]) put(x, 3, 5, 'engrenage');
   put(4, 3, 5, 'velours');
   put(4, 3, 6, 'velours');
   put(1, 3, 7, 'acier');
   // Des garde-corps de calque au bord du tablier.
   for (const x of [0, 6]) for (const y of [2, 4]) put(x, y, 5, 'calque');
-  put(3, 2, 5, 'parchemin');
+  // Le levier de l'aiguillage, un engrenage assemblé (GD-2).
+  put(3, 2, 5, 'engrenage');
   return cells;
 }
 
@@ -178,10 +185,12 @@ function amphitheatre(): PlanCell[] {
   }
   box(1, 0, 0, 5, 3, 1, 'parchemin');
   for (const x of [1, 5]) {
-    for (let z = 1; z <= 3; z++) put(x, 0, z, 'calque');
-    put(x, 0, 4, 'acier');
+    for (let z = 1; z <= 2; z++) put(x, 0, z, 'calque');
+    // Le haut des colonnes, leurs projecteurs et la machinerie de la scène : des engrenages assemblés (GD-2).
+    put(x, 0, 3, 'engrenage');
+    put(x, 0, 4, 'engrenage');
   }
-  put(3, 2, 1, 'rail');
+  put(3, 2, 1, 'engrenage');
   return cells;
 }
 
@@ -191,24 +200,27 @@ function etoiles(): PlanCell[] {
   for (const [x, y] of disc(3, 7)) put(x, y, 0, 'marbre');
   for (let z = 1; z <= 3; z++) for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, z, 'quartz');
   put(3, 1, 1, 'taille');
-  put(2, 1, 2, 'prisme');
-  put(4, 1, 2, 'prisme');
+  // Deux miroirs assemblés à la porte (GD-2).
+  put(2, 1, 2, 'miroir');
+  put(4, 1, 2, 'miroir');
   for (const [x, y] of disc(3, 5)) put(x, y, 4, 'lentille');
   for (const [x, y] of disc(3, 3)) put(x, y, 5, 'lentille');
-  put(3, 3, 6, 'lentille');
-  put(3, 2, 6, 'antenne');
-  put(3, 1, 7, 'antenne');
+  // La grande lunette : des miroirs assemblés (GD-2).
+  put(3, 3, 6, 'miroir');
+  put(3, 2, 6, 'miroir');
+  put(3, 1, 7, 'miroir');
   return cells;
 }
 
-/** Le temple de marbre : un soubassement de pierre de taille, huit colonnes de marbre, un entablement, un toit de prismes. */
+/** Le temple de marbre : un soubassement de pierre de taille, huit colonnes de marbre, un entablement, un toit de prismes au faîte de miroirs. */
 function temple(): PlanCell[] {
   const { cells, put, box } = drawer();
   box(0, 1, 0, 7, 5, 1, 'taille');
   for (const x of [0, 2, 4, 6]) for (const y of [1, 5]) for (let z = 1; z <= 4; z++) put(x, y, z, 'marbre');
   for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 5, 'taille');
   for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 6, 'prisme');
-  for (let x = 0; x < 7; x++) put(x, 3, 7, 'prisme');
+  // Le faîte, qui renvoie le soleil : des miroirs assemblés (GD-2).
+  for (let x = 0; x < 7; x++) put(x, 3, 7, 'miroir');
   // L'autel au fond, une antenne qui capte les étoiles.
   put(3, 4, 1, 'quartz');
   put(3, 4, 2, 'antenne');
@@ -253,7 +265,7 @@ const FICHES: Fiche[] = [
     biome: 'glacier',
     archipelago: '5e',
     name: 'Le phare du large',
-    description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de panneaux, pour les navires qui passent.',
+    description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
     islet: { x: 58, y: 343 }, // 4 cases à l'ouest et 4 en arrière : le Marché a grandi (01/10/2026), le Glacier s'est écarté
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
@@ -308,7 +320,7 @@ const FICHES: Fiche[] = [
     biome: 'belvedere',
     archipelago: '3e',
     name: 'Le temple de marbre',
-    description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes qui brille au soleil.',
+    description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes et un faîte de miroirs qui brillent au soleil.',
     islet: { x: 3, y: 935 }, // 2 cases à l'ouest avec le Belvédère (le Phare a grandi, 01/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',

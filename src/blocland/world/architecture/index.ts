@@ -17,9 +17,9 @@
 //   blocs taillés (des repères au large, seuls sur leur îlot) ; la cour d'une île (barrières, jardinières, quai) aussi :
 //   seuls les murs et le toit d'un bâtiment prennent le kit (world/construction.ts, `batimentsDe`) ; Blocland n'a pas
 //   de kit ;
-// - l'école et la salle des trophées (des lieux du village, au milieu des maisons, décision du 30 septembre 2026)
-//   prennent le kit quand il les nomme (`lieux`, au 6e) : leur plan se lit sur leurs blocs, la famille de chaque bloc
-//   sur sa place dans leur modèle (./lieux.ts) ; ailleurs, elles gardent leur dessin.
+// - les lieux du village (l'école, la salle des trophées, le lieu où l'on assemble : au milieu des maisons, décision du
+//   30 septembre 2026) prennent le kit quand il les nomme (`lieux`, au 6e) : leur plan se lit sur leurs blocs, la
+//   famille de chaque bloc sur sa place dans leur modèle (./lieux.ts) ; ailleurs, ils gardent leur dessin.
 import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipels';
 import type { TextureKind } from '../pixels';

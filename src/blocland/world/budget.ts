@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES } from '../biomes';
+import { BIOMES, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { BRIDGES, VOYAGES } from './archipelago';
 import type { ArchipelagoId } from './map';
@@ -51,6 +51,16 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // la crête, à six blocs d'altitude, l'île ajoute 2 775 triangles au sol des Anciens Ateliers (21 268 → 24 043). Les
   // enveloppes « autres » en passent 1 100 au sol, pris sur la mer, la faune, le décor, la construction, le navire et
   // les créatures, où les trois archipels gardent de la marge (mesurée, tout construit) ; la somme ne change pas (52 300).
+  // La Halle aux matériaux (GD-2), enveloppe validée par le mainteneur le 01/10/2026 : le lieu où l'on assemble, sur l'île de
+  // l'école de chaque archipel, coûte de 108 à 118 triangles de construction, hublots du phare du large compris. Après
+  // les îles-écoles en 20 × 20 (01/10/2026), mesuré tout construit : 6 097 aux Premiers Rivages (sur 6 500), 7 217 aux
+  // Îles Brumeuses, 4 594 aux Anciens Ateliers, 4 858 aux Îles du Ciel. L'enveloppe « autres » de la construction passe
+  // de 7 100 à 7 240 ; 60 triangles sont pris au bonhomme (25), à la faune (20), au navire (10) et aux bornes (5)
+  // (mesurés : 472, 1 274, 420, 700), et aucun autre poste n'a de marge depuis le sol en 20 × 20 : la somme des
+  // « autres » passe de 52 960 à 53 040 (toujours sous les 60 000 des tablettes). Puis, enveloppe commune avec la salle
+  // des trophées agrandie (GD-3), validée par le mainteneur le 01/10/2026 : la construction du 5e monte à 7 249 avec les
+  // trophées sur le toit, à environ 7 241 au pire de GD-3 (20 succès) ; l'enveloppe passe à 7 260 et la somme à 53 060,
+  // pris sur la réserve sous les 60 000 (aucun autre poste n'a de marge).
   // Le cœur agrandi de l'Atelier (4e, 01/10/2026), enveloppe validée par le mainteneur le 01/10/2026 : 20 × 20 et sa côte autour, l'île gagne 184 colonnes de terre et 694 triangles de sol (Anciens Ateliers :
   // 24 043 → 24 756). Rien à alléger sans retirer de la terre (les marges sont déjà plates, deux triangles par case), et
   // aucun poste « autres » n'a 660 triangles de marge dans les trois archipels (100 en tout) : l'enveloppe du sol passe
@@ -74,17 +84,17 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // Leur enveloppe en prend 250 à la faune, dont les baleines, les oiseaux et les nuages ne dépendent pas des îles
   // (1 132 mesurés, comme au 5e) : 1 250 pour les bornes (44 bornes, huit de plus pour l'île des Grandeurs), 1 250 pour
   // la faune ; la somme ne change pas (57 800). Le navire garde ses 1 000, promis en partie à la construction (cadrage Archipéo, lot 7b).
-  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_250, drawCalls: 3 }, autres: { triangles: 1_300, drawCalls: 3 } },
+  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_250, drawCalls: 3 }, autres: { triangles: 1_280, drawCalls: 3 } },
   decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_500, drawCalls: 3 }, autres: { triangles: 9_350, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 6_500, drawCalls: 3 },
-    autres: { triangles: 7_100, drawCalls: 3 },
+    autres: { triangles: 7_260, drawCalls: 3 },
   },
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 720, drawCalls: 1 } },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 430, drawCalls: 3 } },
-  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 500, drawCalls: 2 } },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
+  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 1_950, drawCalls: 1 } },
   gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_800, drawCalls: 1 } },
   scene: {
@@ -141,9 +151,9 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
  * Un archipel tout construit comme le rendu Archipéo le range : le sol (en facettes), le décor en primitives (lot R4),
  * qui ne fige plus sa case, et le reste (en cubes).
  */
-function archipelArchipeo(a: ArchipelagoId) {
+function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = []) {
   const { progress, village } = toutConstruit();
-  const cubes = worldCubes(a, progress, village, false);
+  const cubes = worldCubes(a, progress, village, false, [...trophees], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
   const ground = modelerLeSol(a, cubes.filter((c) => c.sol), reste);
@@ -215,8 +225,8 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
  * La construction taillée d'Archipéo (lot R5) : bâtiments, ouvrages, monuments, quai et cœur des îles, fantômes et
  * fenêtres compris (./construction.ts), sans les bornes : trois appels de dessin au plus.
  */
-export function constructionCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const { ground, reste, champ } = archipelArchipeo(a);
+export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
+  const { ground, reste, champ } = archipelArchipeo(a, trophees);
   const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, sansToursDuCoeur(reste)), ground));
   return { triangles, drawCalls };
 }

@@ -121,10 +121,13 @@ describe('La salle des trophées (GD-3)', () => {
     }
   });
 
-  it('chaque porte de lieu (école, salle, et tout lieu du village) est hors de l’emprise réservée, et devant elle la case est libre', () => {
+  it('chaque porte de lieu (école, salle, lieu où l’on assemble, et tout lieu du village) est hors de l’emprise réservée, la créature ne se tient jamais devant, et aucun autre lieu n’empiète sur l’emprise', () => {
+    expect(Object.keys(VILLAGE_PLACES).sort()).toEqual(['assemblage', 'ecole', 'trophees']);
     for (const [place, { at, door, size }] of Object.entries(VILLAGE_PLACES)) {
       expect(dansLEmprise(at.x + door, at.y - 1), place).toBe(false);
       expect(door >= 0 && door < size.w, place).toBe(true);
+      // Les autres lieux (l'école, le lieu où l'on assemble) n'empiètent jamais sur l'emprise.
+      if (place !== 'trophees') for (let x = 0; x < size.w; x++) for (let y = 0; y < size.d; y++) expect(dansLEmprise(at.x + x, at.y + y), `${place} ${x},${y}`).toBe(false);
     }
     for (const a of ARCHIPELAGOS) {
       const o = origineDe(a.school);

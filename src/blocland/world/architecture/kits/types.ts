@@ -56,7 +56,7 @@ export interface Kit {
   /** Les pièces dessinées, par famille et par nom de pièce (./choix.ts). */
   pieces: Partial<Record<Famille, Partial<Record<IdDePiece, DessinDePiece>>>>;
   /**
-   * Les lieux du village qui prennent le kit (l'école, la salle des trophées) : la famille de chacun de leurs blocs, lue
+   * Les lieux du village qui prennent le kit (l'école, la salle des trophées, le lieu où l'on assemble) : la famille de chacun de leurs blocs, lue
    * sur sa place dans le modèle du lieu, pas sur la seule texture (la table « bloc vers matière » reste celle des plans).
    * Un lieu absent garde son dessin.
    */

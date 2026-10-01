@@ -4,6 +4,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
 import { useSettings } from '../core/SettingsContext';
 import { SchoolLink } from './School';
+import { AssemblageLink } from './Assemblage';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
 import { lockedHint, nextGoalInfo } from './world/goals';
@@ -141,11 +142,14 @@ export function BiomePage() {
       {unlocked && archipelagoOf(biome.id).school === biome.id && (
         <>
           <h2 className="section-title">
-            <Icon name="school" /> L’école et la salle des trophées
+            <Icon name="school" /> Les lieux du village
           </h2>
           <ul className="grid apps">
             <li>
               <SchoolLink variant="card" />
+            </li>
+            <li>
+              <AssemblageLink variant="card" />
             </li>
             <li>
               {/* En vue simple, la salle des trophées est la page Succès. */}

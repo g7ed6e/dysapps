@@ -21,6 +21,7 @@ import {
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
 import { getMonument } from './world/monuments';
+import { assemblables, lireTirage, noterQuestion, recetteDe, tirageNeuf, type TirageAssemblage } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
 export interface ExerciseProgress {
@@ -65,6 +66,11 @@ export interface BloclandState {
   fluence: Record<string, number[]>;
   /** Le village : les blocs posés sur la zone libre de chaque île. */
   village: Village;
+  /**
+   * Le tirage des questions des blocs assemblés (GD-2), par bloc : l'ordre propre à l'élève, les dernières posées, les
+   * manquées. Absent tant qu'aucune question n'a reçu de réponse.
+   */
+  assemblageTirage?: Partial<Record<BlockId, TirageAssemblage>>;
 }
 
 export interface Village {
@@ -244,6 +250,14 @@ export function sanitizeState(input: unknown): BloclandState {
   }
   // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
   const at = typeof village.at === 'string' && getBiome(village.at) && isBiomeUnlocked(village.at as BiomeId, bridges) ? (village.at as BiomeId) : undefined;
+  // Le tirage des questions d'assemblage : seulement pour un bloc qui a sa recette, et seulement s'il y en a un.
+  const assemblageTirage: Partial<Record<BlockId, TirageAssemblage>> = {};
+  if (isRecord(raw.assemblageTirage)) {
+    for (const [bloc, t] of Object.entries(raw.assemblageTirage)) {
+      const lu = Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
+      if (lu) assemblageTirage[bloc as BlockId] = lu;
+    }
+  }
   return {
     progress,
     spaced,
@@ -253,6 +267,7 @@ export function sanitizeState(input: unknown): BloclandState {
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluence,
     village: at ? { plans, journal, bridges, at } : { plans, journal, bridges },
+    ...(Object.keys(assemblageTirage).length ? { assemblageTirage } : {}),
   };
 }
 
@@ -305,6 +320,68 @@ export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: 
       },
     },
   };
+}
+
+export type AssembleResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' };
+
+/**
+ * Assemble un bloc (GD-2) : retire les ingrédients de la recette et ajoute le bloc assemblé. Un seul à la fois, et
+ * rien ne se perd : sans assez de blocs, l'inventaire ne bouge pas.
+ */
+export function assembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+  const recette = recetteDe(bloc);
+  if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
+  if (assemblables(state.inventory, recette) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.inventory };
+  for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) - i.n;
+  inventory[bloc] = (inventory[bloc] ?? 0) + 1;
+  return { state: { ...state, inventory }, ok: true };
+}
+
+/** Le tirage des questions d'un bloc assemblé pour cet élève, ou un tirage neuf avec `graine`. */
+export function tirageDe(state: BloclandState, bloc: BlockId, graine: string): TirageAssemblage {
+  return state.assemblageTirage?.[bloc] ?? tirageNeuf(graine);
+}
+
+/** La réponse finale d'un élève à la question d'un bloc assemblé, et le tirage qui l'a posée. */
+export interface ReponseDonnee {
+  /** Les questions du bloc, dans l'ordre du fichier. */
+  cles: readonly string[];
+  cle: string;
+  juste: boolean;
+  tirage: TirageAssemblage;
+}
+
+export type ReponseAssemblage =
+  | { state: BloclandState; assemble: true }
+  | { state: BloclandState; assemble: false; reason: 'manquee' | 'pas-de-recette' | 'plus-de-blocs' };
+
+/**
+ * La réponse finale à la question d'un bloc assemblé (GD-2) : juste (du premier coup ou au second essai), le bloc est
+ * assemblé (`assembleBlock`) ; manquée, rien n'est pris. Dans les deux cas, la question est notée dans le tirage de
+ * l'élève (`tirage` : celui qui l'a tirée). Ni blocs gagnés, ni XP, ni niveau : la question ne rapporte que le bloc.
+ */
+export function repondreAssemblage(state: BloclandState, bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage {
+  if (!recetteDe(bloc)) return { state, assemble: false, reason: 'pas-de-recette' };
+  const tirage = noterQuestion(reponse.cles, state.assemblageTirage?.[bloc] ?? reponse.tirage, reponse.cle, reponse.juste);
+  const note: BloclandState = { ...state, assemblageTirage: { ...state.assemblageTirage, [bloc]: tirage } };
+  if (!reponse.juste) return { state: note, assemble: false, reason: 'manquee' };
+  const r = assembleBlock(note, bloc);
+  return r.ok ? { state: r.state, assemble: true } : { state: note, assemble: false, reason: r.reason };
+}
+
+/**
+ * Défait un bloc assemblé en poche (GD-2, choix du mainteneur après la relecture UX UI) : rend tous ses ingrédients.
+ * Un bloc déjà posé dans un monument reste posé ; sans bloc en poche, l'inventaire ne bouge pas.
+ */
+export function disassembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+  const recette = recetteDe(bloc);
+  if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
+  if ((state.inventory[bloc] ?? 0) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.inventory };
+  for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) + i.n;
+  inventory[bloc] = (inventory[bloc] ?? 0) - 1;
+  return { state: { ...state, inventory }, ok: true };
 }
 
 /** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
@@ -493,7 +570,8 @@ function playedToday(
   let chestBlock: BlockId | undefined;
   let chests = state.chests;
   if (streak.chest) {
-    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare);
+    // Ni les blocs rares, ni les blocs assemblés (GD-2), qu'on ne gagne jamais tout faits.
+    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
     chestBlock = common[Math.floor(rng() * common.length)];
     inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
     chests += 1;

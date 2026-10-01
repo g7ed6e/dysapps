@@ -5,6 +5,7 @@
 // consultant de Blocland.
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
+import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 
@@ -325,6 +326,9 @@ export const BLOCLAND = {
     'monument-moulin': { done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' },
     'monument-amphitheatre': { done: 'L’amphithéâtre est prêt ! Tout le monde des Monts de Feu viendra au spectacle.' },
   },
+  // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
+  blocs: nomsAssembles('blocland'),
+  assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).
   baleine: {
     parle: 'ecole',

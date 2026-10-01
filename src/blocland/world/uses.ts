@@ -5,6 +5,8 @@ import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../bi
 import { canLaunch, currentPlan, currentStage, planStatus, type BloclandState } from '../engine';
 import { BRIDGE_BLOCKS, archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf } from './monuments';
+import { lieuDAssemblage } from './assemblage';
+import { universCourant } from '../../core/settings';
 import { plansFor } from './plans';
 import type { VehicleStage } from './vehicle';
 
@@ -13,9 +15,14 @@ export function earnIsland(block: BlockId): BiomeDef | undefined {
   return BIOMES.find((b) => b.block === block);
 }
 
-/** Où gagner un type de bloc, en mots : le nom de son île, sinon le coffre d'un plan. */
+/** Où gagner un type de bloc, en mots : le nom de son île, sinon le coffre d'un plan (un bloc assemblé : voir `allerChercher`). */
 export function whereToEarn(block: BlockId): string {
   return earnIsland(block)?.name ?? 'le coffre du plan précédent (ou un coffre de régularité)';
+}
+
+/** Où aller chercher un bloc qui manque, en une consigne : « va dans Forêt des sons », « va à la Fabrique pour l’assembler ». */
+export function allerChercher(block: BlockId): string {
+  return BLOCKS[block].assemble ? `va ${lieuDAssemblage(universCourant()).a} pour l’assembler` : `va dans ${whereToEarn(block)}`;
 }
 
 export interface Use {

@@ -116,7 +116,7 @@ describe('Empreintes de la grille (filet de la séparation du jeu et du rendu)',
     it(`${a}, la place des îles, des bornes, des lieux et du bonhomme`, () => {
       const places = BIOMES.filter((b) => archipelagoOfIsland(b.id as BiomeId) === a).map((b) => {
         const id = b.id as BiomeId;
-        return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('ecole', id), placeDoor('trophees', id)];
+        return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('ecole', id), placeDoor('trophees', id), placeDoor('assemblage', id)];
       });
       expect(empreinte(places)).toMatchSnapshot();
     });

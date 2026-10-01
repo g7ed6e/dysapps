@@ -1,3 +1,5 @@
+import { BADGES } from '../../core/progress';
+import { trophyBlock } from '../trophies';
 import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
@@ -71,13 +73,25 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   });
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
-  // enveloppe validée par le mainteneur le 01/10/2026.
-  it('les enveloppes décidées le 28 septembre 2026 : 57 800 triangles et 25 appels aux Premiers Rivages, 52 960 et 24 ailleurs', () => {
+  // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
+  it('les enveloppes décidées le 28 septembre 2026 : 57 800 triangles et 25 appels aux Premiers Rivages, 53 060 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([57_800, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([52_960, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([53_060, 24]);
   });
+
+  // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
+  // construction tient son enveloppe à chaque nombre de succès, de 0 à 24, pas seulement sans succès.
+  it('R5 et GD-3 : la construction tient son enveloppe avec 0 à 24 succès, dans chaque archipel', () => {
+    const blocs = BADGES.map((b) => trophyBlock(b.id));
+    for (const a of ARCHIPELAGO_IDS)
+      for (let n = 0; n <= blocs.length; n++) {
+        const m = constructionCost(a, blocs.slice(0, n));
+        expect(m.triangles, `${a}, ${n} succès`).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
+        expect(m.drawCalls, `${a}, ${n} succès`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
+      }
+  }, 600_000);
 
   // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
   // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.

@@ -10,6 +10,7 @@ import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { InventoryLink } from './Inventory';
 import { EarnLink } from './PlanSection';
+import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { firstSentences } from './firstSentences';
 import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
@@ -38,8 +39,15 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const { state } = useBlocland();
   const { monument, status } = builder;
   const open = useMonumentOpen(monument);
-  const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
+  // Les blocs assemblés d'abord : ce sont eux qu'il faut aller faire à la Fabrique (relecture UX UI).
+  const missing = (Object.entries(status.missing) as [BlockId, number][])
+    .filter(([, n]) => n > 0)
+    .sort(([a], [b]) => Number(Boolean(BLOCKS[b].assemble)) - Number(Boolean(BLOCKS[a].assemble)));
+  // Plus rien à poser, et seules des cases de blocs assemblés attendent : la ligne dit d'aller les assembler.
+  const manquants = missing.filter(([b]) => (state.inventory[b] ?? 0) < 1);
+  const aAssembler = !builder.canFill && manquants.length > 0 && manquants.every(([b]) => BLOCKS[b].assemble) ? manquants[0] : undefined;
   const textes = useTextes();
+  const lieu = textes.assemblage;
   const texte = texteDuMonument(textes, monument);
   const said = firstSentences(texte.description);
   return (
@@ -86,11 +94,19 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
             </p>
           ) : (
             <>
-              {!builder.canFill && (
-                // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
-                <p className="monument-lacking">
-                  <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.inventory)} />
+              {aAssembler ? (
+                // Plus rien à poser mais des cases attendent un bloc assemblé : la ligne dit où aller (relecture UX UI).
+                <p className="monument-lacking plan-pourquoi">
+                  <Icon name="hammer" /> Il te reste {blockCount(aAssembler[0], aAssembler[1])} à poser : va{' '}
+                  <Link to={`${ASSEMBLAGE_PATH}?bloc=${aAssembler[0]}`}>{lieu.a}</Link> pour {aAssembler[1] > 1 ? 'les assembler' : 'l’assembler'}.
                 </p>
+              ) : (
+                !builder.canFill && (
+                  // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
+                  <p className="monument-lacking">
+                    <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.inventory)} />
+                  </p>
+                )
               )}
               <details className="sheet-more monument-blocks">
                 <summary>Les blocs qu’il faut</summary>

@@ -31,7 +31,8 @@ const empreinteDuDecor = (f: FacettesDuDecor) =>
 
 function empreintesDuRendu(a: ArchipelagoId): Record<string, string> {
   const { progress, village } = toutConstruit();
-  const cubes = worldCubes(a, progress, village, false);
+  // Le rendu Archipéo : la Halle aux matériaux (GD-2) à la place de la Fabrique.
+  const cubes = worldCubes(a, progress, village, false, [], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
   const sol = modelerLeSol(a, cubes.filter((c) => c.sol), reste);

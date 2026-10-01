@@ -48,6 +48,7 @@ export async function generatePages() {
       ]);
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
+    const recettesMod = await load('/src/blocland/world/recettes.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
@@ -70,6 +71,9 @@ export async function generatePages() {
       VOYAGES: archMod.VOYAGES,
       VEHICLE_STAGES: vehicleMod.VEHICLE_STAGES,
       MONUMENTS: monumentsMod.MONUMENTS,
+      ASSEMBLAGE: recettesMod.ASSEMBLAGE,
+      // Les questions des blocs assemblés (GD-2), une par bloc : hors du catalogue des îles.
+      QUESTIONS_ASSEMBLAGE: (await Promise.all(recettesMod.ASSEMBLAGE.recettes.map((r) => exercisesMod.loadAssemblage(r.bloc)))).filter(Boolean),
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -873,6 +877,17 @@ function ouvragesPage(d) {
     '## Les monuments',
     '',
     `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent comme un plan, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    '',    `Chaque monument demande aussi quelques **blocs assemblés** : un par archipel, qu’aucune île ne donne. On les assemble sur l’île de l’école, ${d.ASSEMBLAGE.lieu.blocland.a} dans Blocland (${d.ASSEMBLAGE.lieu.archipeo.a} dans Archipéo), avec des blocs de deux îles de l’archipel.`,
+    '',
+    table(
+      ['Archipel', 'Bloc assemblé', 'Recette', 'Nom dans Archipéo'],
+      d.ASSEMBLAGE.recettes.map((r) => [
+        `Les ${d.ARCHIPELAGOS.find((a) => a.classe === r.archipelago).name}`,
+        r.noms.blocland.nom,
+        r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et '),
+        r.noms.archipeo.nom,
+      ]),
+    ),
     '',
     table(
       ['Archipel', 'Monument', 'Au large de', 'Blocs', 'XP'],
@@ -885,8 +900,42 @@ function ouvragesPage(d) {
       }),
     ),
     '',
+    ...questionsAssemblage(d),
   ];
   return { path: 'pedagogie/ouvrages.md', title: 'Ouvrages et plans', body: lines.join('\n') };
+}
+
+/** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */
+function questionsAssemblage(d) {
+  if (d.QUESTIONS_ASSEMBLAGE.length === 0) return [];
+  const lines = [
+    '## Les questions de l’assemblage',
+    '',
+    'Chaque bloc assemblé demande de répondre à une question qui mêle les **deux matières de sa recette** : on lit un petit texte, on calcule, puis on choisit parmi trois réponses, avec le rappel des deux matières toujours affiché et un indice. Une bonne réponse, du premier coup ou au second essai, assemble le bloc ; une erreur ne fait rien perdre. Les questions ne rapportent ni XP ni étoiles. Chaque élève les rencontre dans son propre ordre ; une question ne revient jamais avant six autres, et une question manquée revient plus tard. Voir [La Fabrique](../manuel/blocland.md#la-question-de-lassemblage) dans le manuel.',
+    '',
+    table(
+      ['Bloc assemblé', 'Archipel', 'Recette', 'Questions'],
+      d.QUESTIONS_ASSEMBLAGE.map((q) => {
+        const r = d.ASSEMBLAGE.recettes.find((x) => x.bloc === q.bloc);
+        return [
+          r.noms.blocland.nom,
+          `Les ${d.ARCHIPELAGOS.find((a) => a.classe === r.archipelago).name}`,
+          r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et '),
+          String(q.items.length),
+        ];
+      }),
+    ),
+    '',
+  ];
+  for (const q of d.QUESTIONS_ASSEMBLAGE) {
+    const r = d.ASSEMBLAGE.recettes.find((x) => x.bloc === q.bloc);
+    lines.push(`### ${r.noms.blocland.nom} (${r.noms.archipeo.nom} dans Archipéo)`, '');
+    lines.push(programmeLine(q.programme, d, ''), '');
+    lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');
+    lines.push('<details>', `<summary>Questions : ${q.items.length}</summary>`, '');
+    lines.push(...q.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
+  }
+  return lines;
 }
 
 function baremePage(d) {

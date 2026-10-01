@@ -6,6 +6,7 @@
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
+import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 /** « de » devant un nom avec son article : « du Grand Chêne », « de la Dune vivante », « de l’Hydre des marais ». */
@@ -347,10 +348,13 @@ export const ARCHIPEO = {
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
     'monument-phare-large': {
-      description: 'Une haute tour ronde de pierre grise, dont le feu guide les navires dans la brume.',
+      description: 'Une haute tour ronde de pierre grise, percée de hublots, dont le feu guide les navires dans la brume.',
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },
+  // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
+  blocs: nomsAssembles('archipeo'),
+  assemblage: lieuDAssemblage('archipeo'),
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
   // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.

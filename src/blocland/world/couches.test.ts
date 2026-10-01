@@ -36,6 +36,9 @@ const REGLES = [
   'world/plansV1',
   'world/architect',
   'world/monuments',
+  // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.
+  'world/assemblage',
+  'world/recettes',
   'world/modele',
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
   'world/disposition',
