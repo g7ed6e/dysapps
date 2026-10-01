@@ -28,6 +28,7 @@ design/          archipeo/ : le dossier de game design et la planche d’Archip�
                  referent-dys, expert-frontend, consultant-archipeo, consultant-blocland et consultant-ux-ui
                  (voir contribuer.md)
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
+                 rangement du dépôt vérifié en CI (structure.test.mjs, d’après « Où va quoi » de CLAUDE.md),
                  construction du site public (www/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)
 public/          icônes, police Luciole

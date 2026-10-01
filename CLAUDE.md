@@ -13,6 +13,24 @@
 - Pour un autre cran, mettre une ligne `+semver: major`, `+semver: patch` ou `+semver: none` dans le message du commit de fusion (la description de la pull request fusionnée par squash).
 - La CI pose l'étiquette `vX.Y.Z` sur chaque commit publié de `main`. `npm run version:show` affiche la version courante.
 
+## Où va quoi
+
+Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la racine, `docs/`, `www/`, `design/`, `.claude/` et `scripts/` (l’arborescence de `src/` relève d’`architecture.md` et de la relecture). Une place nouvelle se décide d’abord (l’`expert-frontend` en juge), s’écrit dans ce tableau, puis dans le test, dans la même pull request.
+
+| Quoi | Où |
+| --- | --- |
+| La configuration, à la racine | seulement `package.json`, `package-lock.json`, `tsconfig.json`, `vite.config.ts`, `wrangler.jsonc`, `index.html`, `.npmrc`, `.gitignore`, `README.md`, `LICENSE`, `CLAUDE.md`, `AGENTS.md` ; la CI dans `.github/` |
+| Le code de l’application | `src/` (arborescence : `docs/conception/architecture.md`) |
+| Le contenu (îles, missions, exercices, plans, portail) | `docs/contenu/` ; jamais dans les JSON qu’il produit |
+| Le site public (élèves, familles, enseignants, orthophonistes) | `www/` : accueil, `www/manuel/`, `www/pedagogie/` ; chaque page au sommaire `www/_theme/nav.json` ; thème et configuration dans `www/_theme/` et `www/.vitepress/` |
+| La conception (architecture, cadrages, bonnes pratiques, univers) | `docs/conception/` |
+| Le pilotage et le game design | `docs/pilotage/` (`chantiers.md`, `game-design/`, fiches `propositions/GD-<n>.md`) |
+| Le dossier d’un univers (références visuelles, game design source, esquisses) | `design/archipeo/`, `design/blocland/` |
+| Les fichiers servis tels quels (icônes, polices, écrans de lancement) | `public/` |
+| Les scripts (build, contenu, site, rendu, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
+| Les agents et les skills | `.claude/agents/<agent>.md`, `.claude/skills/<skill>/` (`SKILL.md` et ses ressources) |
+| Les livrables de travail (captures, maquettes, notes de fil) | hors du dépôt : la Bibliothèque du projet, ou la branche `captures` |
+
 ## Documentation (systématique, dans la même pull request)
 
 Le site de documentation public (dossier `www/`, publié sur https://g7ed6e.github.io/dysapps/ par `npm run www:build`) s’adresse **aux élèves, aux familles, aux enseignants et aux orthophonistes, jamais au mainteneur ni aux contributeurs** (décision du mainteneur, 30 septembre 2026) : il ne publie que le manuel (`www/manuel/`), le contenu pédagogique (`www/pedagogie/`) et l’accueil. Rien d’interne n’y entre : ni cadrage, ni plan, ni lot, ni retouche. La documentation interne est dans `docs/` (`docs/conception/`, `docs/pilotage/`), jamais publiée (décision du mainteneur, 30 septembre 2026). Toute pull request tient la documentation à jour :
