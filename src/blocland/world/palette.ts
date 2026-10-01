@@ -132,7 +132,7 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
   // Les Îles du Ciel (R4b-3e) : un bleu franc, sans lavande ; l'horizon et la lueur de nuit sont ceux du directeur
   // artistique ; la neige et la roche froides du massif, le plancher de nuages d'un blanc bleuté, jamais sable
   // (design/archipeo/intentions/3e-iles-du-ciel.md §5). La nuit reste de la famille des trois autres (revue du 3e,
-  // DA-21) : zénith, lune, ambiance et plancher ramenés de 223-225° vers 210-220° (220° au zénith, 210-212° pour la
+  // DA-21) : zénith, lune, ambiance et plancher ramenés de 223-225° vers 210-220° (220° au zénith, 209-212° pour la
   // lune, l'ambiance et le plancher), à clarté HSL égale : fini le lilas sur le plancher de nuages.
   '3e': {
     jour: { zenith: 0x3a86cc, horizon: 0xb4d2ec, lueur: 0xeef3f4, soleil: 0xfff4e2, soleilForce: 2.3, ambianceCiel: 0xd4e4f6, ambianceSol: 0x8c9cbe, ambianceForce: 1.05, mer: 0xdde3e8 },
