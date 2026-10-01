@@ -1,0 +1,219 @@
+name: Captures d'un lot
+
+# Les captures d'un lot de rendu, faites par la CI au lieu du conteneur d'un fil (décision du mainteneur, 01/10/2026) :
+# lancé à la main sur la branche du lot (`workflow_dispatch`), il prend l'avant (le commit de main dont la branche part)
+# et l'après (la branche), chaque univers et chaque archipel sur sa propre machine, en parallèle. Il compare ensuite
+# l'après à l'avant (scripts/rendu/comparer.mjs) et range les planches des seules vues changées, avec `comparaison.md`,
+# sur la branche `captures`, dans `<lot>/<univers>/`. Le déroulé : .claude/skills/captures/SKILL.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      lot:
+        description: "Dossier du lot sur la branche captures (minuscules, chiffres, tirets : r5, gd-3…)"
+        required: true
+        type: string
+      familles:
+        description: "Familles de CAPTURES (scripts/rendu/mesures.mjs), séparées par des virgules ; les vues de jour se font toujours"
+        required: true
+        default: jour,nuit
+        type: string
+      archipels:
+        description: "Archipels, séparés par des virgules"
+        required: true
+        default: 6e,5e,4e,3e
+        type: string
+      univers:
+        description: "Univers"
+        required: true
+        default: les-deux
+        type: choice
+        options: [blocland, archipeo, les-deux]
+
+# Aucune permission par défaut : chaque job ne reçoit que ce dont il a besoin.
+permissions: {}
+
+concurrency:
+  group: captures-lot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Vérifie les entrées (jamais recopiées dans un script : seulement par l'environnement) et trouve le commit de main
+  # dont la branche part.
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      base: ${{ steps.plan.outputs.base }}
+      prises: ${{ steps.plan.outputs.prises }}
+      univers: ${{ steps.plan.outputs.univers }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - id: plan
+        env:
+          LOT: ${{ inputs.lot }}
+          FAMILLES: ${{ inputs.familles }}
+          ARCHIPELS: ${{ inputs.archipels }}
+          UNIVERS: ${{ inputs.univers }}
+        run: |
+          set -eu
+          [[ "$LOT" =~ ^[a-z0-9][a-z0-9-]{0,40}$ ]] || { echo "::error::Nom de lot refusé : $LOT"; exit 1; }
+          [[ "$FAMILLES" =~ ^[a-z-]+(,[a-z-]+)*$ ]] || { echo "::error::Familles refusées : $FAMILLES"; exit 1; }
+          [[ "$UNIVERS" =~ ^(blocland|archipeo|les-deux)$ ]] || { echo "::error::Univers refusé : $UNIVERS"; exit 1; }
+          [[ "$ARCHIPELS" =~ ^(6e|5e|4e|3e)(,(6e|5e|4e|3e))*$ ]] || { echo "::error::Archipels refusés : $ARCHIPELS"; exit 1; }
+          if [ "$UNIVERS" = les-deux ]; then univers='["blocland","archipeo"]'; else univers="[\"$UNIVERS\"]"; fi
+          if [ "$GITHUB_REF_NAME" = main ]; then echo "::error::À lancer sur la branche du lot, pas sur main."; exit 1; fi
+          base=$(git merge-base HEAD origin/main)
+          archipels=$(printf '%s' "$ARCHIPELS" | jq -Rc 'split(",") | unique')
+          prises=$(jq -nc --argjson u "$univers" --argjson a "$archipels" \
+            '[$u[] as $u | $a[] as $a | ["avant", "apres"][] as $c | {univers: $u, archipel: $a, cote: $c}]')
+          {
+            echo "base=$base"
+            echo "univers=$univers"
+            echo "prises=$prises"
+          } >> "$GITHUB_OUTPUT"
+          echo "Avant : $base ; après : $GITHUB_SHA ; $(printf '%s' "$prises" | jq length) machines."
+
+  # Une machine par univers, archipel et côté (avant ou après). Rejoue le jeu (code du dépôt) : lecture seule.
+  prendre:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        prise: ${{ fromJSON(needs.plan.outputs.prises) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ matrix.prise.cote == 'avant' && needs.plan.outputs.base || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Installer Chromium
+        run: npx playwright-core install --with-deps chromium
+      # Une lueur de nuit au-dessus du plafond (code 2) n'arrête rien : la planche la montre, l'avertissement la signale.
+      - name: Prendre les captures
+        env:
+          FAMILLES: ${{ inputs.familles }}
+          ARCHIPEL: ${{ matrix.prise.archipel }}
+          COTE: ${{ matrix.prise.cote }}
+          RENDU: ${{ matrix.prise.univers == 'archipeo' && '--rendu archipeo' || '' }}
+        run: |
+          code=0
+          npm run rendu:mesures -- --sans-poids --familles "$FAMILLES" --archipel "$ARCHIPEL" --captures prises $RENDU || code=$?
+          if [ "$code" -eq 2 ]; then echo "::warning::$COTE, $ARCHIPEL : une lueur de nuit dépasse le plafond."; fi
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: prises-${{ matrix.prise.cote }}-${{ matrix.prise.univers }}-${{ matrix.prise.archipel }}
+          path: prises/*.jpg
+          if-no-files-found: error
+          retention-days: 7
+
+  # Compare l'après à l'avant, univers par univers (code du dépôt, sur la branche du lot) : lecture seule.
+  comparer:
+    needs: [plan, prendre]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      # Le Chrome de la machine (images ubuntu de GitHub) : télécharger Chromium et ses dépendances prendrait 1 à 4 min.
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: prises-*
+          path: prises
+      - name: Comparer
+        env:
+          UNIVERS: ${{ join(fromJSON(needs.plan.outputs.univers), ' ') }}
+          BASE: ${{ needs.plan.outputs.base }}
+          NAVIGATEUR: chrome
+        run: |
+          set -eu
+          for u in $UNIVERS; do
+            mkdir -p "avant/$u" "sortie/$u"
+            cp prises/prises-avant-"$u"-*/*.jpg "avant/$u/"
+            cp prises/prises-apres-"$u"-*/*.jpg "sortie/$u/"
+            node scripts/rendu/comparer.mjs "avant/$u" "sortie/$u" "main au commit $BASE (après : $GITHUB_SHA)"
+            mkdir -p "planches/$u"
+            cp "sortie/$u/comparaison.md" "planches/$u/"
+            find "sortie/$u/planches" -name '*.jpg' -exec cp {} "planches/$u/" \;
+            cat "sortie/$u/comparaison.md" >> "$GITHUB_STEP_SUMMARY"
+          done
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: planches
+          path: planches/
+          if-no-files-found: error
+          retention-days: 7
+
+  # Range les planches sur la branche `captures`, dans `<lot>/<univers>/` (remplacé à chaque passage). N'exécute aucun
+  # code du dépôt (git seulement) : seul ce job peut écrire.
+  publier:
+    needs: comparer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: planches
+          path: planches
+      - name: Ranger sur captures
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LOT: ${{ inputs.lot }}
+        run: |
+          set -eu
+          [[ "$LOT" =~ ^[a-z0-9][a-z0-9-]{0,40}$ ]] || exit 1
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git init -q depot
+          cd depot
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          # Un autre lot ou un fil peut publier sur `captures` en même temps : on reprend la branche et on recommence, cinq
+          # fois au plus, après une attente un peu au hasard.
+          for essai in 1 2 3 4 5; do
+            if git -c http.extraheader="$auth" fetch -q --depth 1 origin captures; then
+              git checkout -q -B captures FETCH_HEAD
+            else
+              git checkout -q --orphan captures
+            fi
+            for u in ../planches/*/; do
+              u=$(basename "$u")
+              rm -rf "$LOT/$u"
+              mkdir -p "$LOT/$u"
+              cp ../planches/"$u"/* "$LOT/$u/"
+            done
+            git add -A "$LOT"
+            git diff --cached --quiet && { echo "Rien de nouveau pour $LOT."; exit 0; }
+            git commit -q -m "Captures du lot $LOT : planches des vues changées ($GITHUB_REF_NAME, ${GITHUB_SHA::7})"
+            if git -c http.extraheader="$auth" push -q origin HEAD:captures; then
+              echo "Rangées dans https://github.com/$GITHUB_REPOSITORY/tree/captures/$LOT" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep $((essai * 3 + RANDOM % 5))
+          done
+          exit 1
