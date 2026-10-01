@@ -47,7 +47,7 @@ export const CORE = 16;
  * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
  * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché, l'Atelier et le Phare.
  */
-export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20, atelier: 20, phare: 20 };
+export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ foret: 20, marche: 20, atelier: 20, phare: 20 });
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -197,11 +197,24 @@ export function islandDef(id: BiomeId): IslandDef {
  */
 export function tirage(def: IslandDef, x: number, y: number): { x: number; y: number } {
   const b = bornesDuCoeur(def);
-  const avant = (rel: number, b0: number, b1: number) =>
-    rel < b0 ? rel - b0 : rel >= b1 ? rel - b1 + CORE : b0 === 0 && b1 === CORE ? rel : Math.floor(((rel - b0) * CORE) / (b1 - b0));
   const ox = def.core.x - (def.deplacee?.x ?? 0);
   const oy = def.core.y - (def.deplacee?.y ?? 0);
-  return { x: ox + avant(x - def.core.x, b.x0, b.x1), y: oy + avant(y - def.core.y, b.y0, b.y1) };
+  return { x: ox + aLaPlaceDOrigine(x - def.core.x, b.x0, b.x1), y: oy + aLaPlaceDOrigine(y - def.core.y, b.y0, b.y1) };
+}
+
+/**
+ * Une coordonnée relative au cœur d'origine (`rel`), sur un axe où le cœur va de `debut` à `fin` (bornes de
+ * `bornesDuCoeur`), ramenée à sa place autour du cœur d'origine [0, `CORE`).
+ */
+function aLaPlaceDOrigine(rel: number, debut: number, fin: number): number {
+  // Avant le cœur : la côte d'avant, repoussée d'autant que le cœur a grandi de ce côté.
+  if (rel < debut) return rel - debut;
+  // Après le cœur : de même, de l'autre côté.
+  if (rel >= fin) return rel - fin + CORE;
+  // Dans un cœur d'origine (16 de côté) : la case elle-même.
+  if (debut === 0 && fin === CORE) return rel;
+  // Dans un cœur agrandi : le dessin d'avant étiré sur sa largeur.
+  return Math.floor(((rel - debut) * CORE) / (fin - debut));
 }
 
 /** Bruit déterministe dans [0, 1) pour une case. */
@@ -294,9 +307,23 @@ const margesCache = new Map<BiomeId, LandCell[]>();
  * de son rythme ; `derriere`, rien devant le cœur d'origine (la rangée des bornes reste dégagée, côté caméra). Le Marché
  * (5e, 01/10/2026) : le port reste bas (intention du 5e, §3), des roseaux sur les côtés et derrière.
  */
-export const DECOR_DES_MARGES: Partial<Record<BiomeId, { genre?: Decor; unSurDeux?: true; derriere?: true }>> = {
-  marche: { genre: 'roseau', unSurDeux: true, derriere: true },
-};
+export const DECOR_DES_MARGES: Readonly<Partial<Record<BiomeId, Readonly<{ genre?: Decor; unSurDeux?: true; derriere?: true }>>>> = Object.freeze({
+  marche: Object.freeze({ genre: 'roseau', unSurDeux: true, derriere: true } as const),
+});
+
+/**
+ * Le seuil du décor : une case de côte porte un élément de décor quand son bruit fin (`noise(seed + 3)`) le passe
+ * (`computeLandscape`, `margesDuCoeur`, `jalonsDesMarges`) ; `pickDecor` choisit l'élément entre ce seuil et 1.
+ */
+const SEUIL_DU_DECOR = 0.62;
+
+/** Le sol d'une terre à plat de l'île, hors de son bord (la côte de `computeLandscape`, l'isthme, les marges du cœur). */
+function solAPlat(def: IslandDef): Ground {
+  if (def.id === 'glacier') return 'glace';
+  if (def.region === 'feu') return 'basalte';
+  if (def.region === 'marais') return 'mousse';
+  return 'herbe';
+}
 
 /**
  * Les marges du cœur d'une île dont le cœur est plus grand que `CORE` : l'anneau entre le cœur d'origine et le cœur
@@ -310,7 +337,7 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
   if (cached) return cached;
   const c = coeurDe(def);
   // Le sol à plat de la côte de l'île (comme dans `computeLandscape`), qui choisit son décor.
-  const sol: Ground = def.id === 'glacier' ? 'glace' : def.region === 'feu' ? 'basalte' : def.region === 'marais' ? 'mousse' : 'herbe';
+  const sol = solAPlat(def);
   const out: LandCell[] = [];
   const jalons = jalonsDesMarges(def, c, sol);
   for (let x = c.x0; x < c.x1; x++)
@@ -322,7 +349,7 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
       const bord = inCoeurDOrigine(def, x - 1, y) || inCoeurDOrigine(def, x + 1, y) || inCoeurDOrigine(def, x, y - 1) || inCoeurDOrigine(def, x, y + 1);
       const coin = inCoeurDOrigine(def, x - 1, y - 1) || inCoeurDOrigine(def, x + 1, y - 1) || inCoeurDOrigine(def, x - 1, y + 1) || inCoeurDOrigine(def, x + 1, y + 1);
       const allege = DECOR_DES_MARGES[def.id];
-      let decor = !bord && !coin && fine > 0.62 ? pickDecor(def, sol, 0, fine) : undefined;
+      let decor = !bord && !coin && fine > SEUIL_DU_DECOR ? pickDecor(def, sol, 0, fine) : undefined;
       if (!decor) decor = jalons.get(`${x},${y}`);
       if (decor && allege) {
         if (allege.genre) decor = allege.genre;
@@ -362,7 +389,7 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
   const duBruit = (x: number, y: number) => {
     const t = tirage(def, x, y);
     const fine = noise(def.seed + 3, t.x, t.y);
-    return fine > 0.62 && pickDecor(def, sol, 0, fine) !== undefined;
+    return fine > SEUIL_DU_DECOR && pickDecor(def, sol, 0, fine) !== undefined;
   };
   const genres = JALONS[def.region];
   const cotes: [number, number][][] = [
@@ -403,11 +430,52 @@ function coreDistance(def: IslandDef, x: number, y: number): number {
 }
 
 /**
+ * La terre d'une île, calculée une fois (le monde ne change pas de forme en cours de partie) : sa boîte (`landBox`), une
+ * case par octet (1 : terre, isthme compris), et la liste de ses cases. `isLand` et `landCells` la lisent : le dessin
+ * d'une île (sol, paysage, décor, cascades, gués) demande la terre des milliers de fois, et chaque bloc posé redessine
+ * l'archipel (relecture de l'expert frontend, 01/10/2026 : `cubesDeLIle` 2 à 3 fois plus lent avec les cœurs agrandis).
+ */
+interface TerreDeLIle {
+  x0: number;
+  y0: number;
+  w: number;
+  h: number;
+  cases: Uint8Array;
+  liste: readonly Readonly<{ x: number; y: number }>[];
+}
+const terres = new Map<BiomeId, TerreDeLIle>();
+
+function terreDe(def: IslandDef): TerreDeLIle {
+  let t = terres.get(def.id);
+  if (!t) {
+    const { x0, y0, x1, y1 } = landBox(def);
+    const w = x1 - x0;
+    const h = y1 - y0;
+    const cases = new Uint8Array(w * h);
+    const liste: Readonly<{ x: number; y: number }>[] = [];
+    // (Dans l'ordre d'avant : colonne par colonne.)
+    for (let x = x0; x < x1; x++)
+      for (let y = y0; y < y1; y++)
+        if (isLandProper(def, x, y) || inIsthmus(def, x, y)) {
+          cases[(y - y0) * w + (x - x0)] = 1;
+          liste.push(Object.freeze({ x, y }));
+        }
+    t = { x0, y0, w, h, cases, liste: Object.freeze(liste) };
+    terres.set(def.id, t);
+  }
+  return t;
+}
+
+/**
  * La case (x, y) du monde fait-elle partie de la terre de l'île ? Le cœur toujours ; autour, une côte
- * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain.
+ * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain. Lu dans la terre calculée (`terreDe`),
+ * sans rien allouer.
  */
 export function isLand(def: IslandDef, x: number, y: number): boolean {
-  return isLandProper(def, x, y) || inIsthmus(def, x, y);
+  const t = terreDe(def);
+  const lx = x - t.x0;
+  const ly = y - t.y0;
+  return lx >= 0 && ly >= 0 && lx < t.w && ly < t.h && t.cases[ly * t.w + lx] === 1;
 }
 
 /** La terre propre d'une île (sans l'isthme). */
@@ -425,12 +493,9 @@ function isLandProper(def: IslandDef, x: number, y: number): boolean {
   return d + coast < 0.92;
 }
 
-/** Toutes les cases de terre d'une île. */
-export function landCells(def: IslandDef): { x: number; y: number }[] {
-  const { x0, y0, x1, y1 } = landBox(def);
-  const out: { x: number; y: number }[] = [];
-  for (let x = x0; x < x1; x++) for (let y = y0; y < y1; y++) if (isLand(def, x, y)) out.push({ x, y });
-  return out;
+/** Toutes les cases de terre d'une île, colonne par colonne (calculées une fois, à ne pas modifier). */
+export function landCells(def: IslandDef): readonly Readonly<{ x: number; y: number }>[] {
+  return terreDe(def).liste;
 }
 
 /** Nature du sol d'une case hors du cœur. */
@@ -500,7 +565,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (inIsthmus(def, c.x, c.y)) {
       // L'isthme : une bande plate qui relie deux îles, herbe et sable au bord, quelques buissons.
       const sandy = edge && def.altitude === 0 && def.region !== 'feu';
-      const ground: Ground = sandy ? 'sable' : def.region === 'feu' ? 'basalte' : def.region === 'marais' ? 'mousse' : def.id === 'glacier' ? 'glace' : 'herbe';
+      const ground: Ground = sandy ? 'sable' : solAPlat(def);
       out.push({ x: c.x, y: c.y, h: 0, ground, decor: !edge && fine > 0.8 ? pickDecor(def, ground, 0, fine) : undefined });
       continue;
     }
@@ -544,7 +609,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, t.x, t.y, 3) > 0.78 && def.relief !== 'volcan') {
       ground = 'eau';
       h = -1;
-    } else if (h <= 2 && !edge && fine > 0.62) {
+    } else if (h <= 2 && !edge && fine > SEUIL_DU_DECOR) {
       decor = pickDecor(def, ground, h, fine);
     }
     out.push({ x: c.x, y: c.y, h, ground, decor });
@@ -554,7 +619,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
 
 function pickDecor(def: IslandDef, ground: Ground, h: number, r: number): Decor | undefined {
   if (ground === 'eau' || ground === 'lave' || ground === 'sable') return undefined;
-  const t = (r - 0.62) / 0.38; // 0..1
+  const t = (r - SEUIL_DU_DECOR) / (1 - SEUIL_DU_DECOR); // 0..1
   switch (def.region) {
     case 'basses-terres':
       return t > 0.8 ? 'arbre' : t > 0.55 ? 'buisson' : t > 0.42 ? 'fleur' : t > 0.34 ? 'champignon' : undefined;

@@ -624,10 +624,15 @@ function nearSentier(x: number, y: number): boolean {
 /**
  * Les abords des ouvrages d'une île dans les marges de son cœur (`margesDuCoeur`) : de l'amorce de chaque ouvrage au
  * cœur d'origine, la case du passage et ses voisines. Le décor des marges les laisse libres : le bonhomme y va tout
- * droit du cœur à l'ouvrage. Vide pour une île sans marges.
+ * droit du cœur à l'ouvrage. Vide pour une île sans marges. Mémorisé (les ouvrages et les marges ne bougent pas).
  */
-function abordsDansLesMarges(def: IslandDef): Set<string> {
+const abordsCache = new Map<BiomeId, ReadonlySet<string>>();
+
+function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
+  const connus = abordsCache.get(def.id);
+  if (connus) return connus;
   const out = new Set<string>();
+  abordsCache.set(def.id, out);
   if (!margesDuCoeur(def).length) return out;
   for (const b of bridgesOf(def.id)) {
     const path = bridgePath(b);
@@ -1053,23 +1058,34 @@ function isletGround(def: IslandDef): string {
 /** Le petit décor de l'îlot : celui de l'île, sans les arbres (ils cacheraient le Gardien). */
 const SMALL_DECOR: Decor[] = ['buisson', 'fleur', 'rocher', 'roseau', 'cristal', 'souche', 'champignon'];
 
-/** Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient au-dessus. */
-function taperLayers(cells: { x: number; y: number }[]): { x: number; y: number; d: number }[] {
+/**
+ * Une case du monde (x, y, et une hauteur z) en un nombre, pour les ensembles de cases chauds (ce qu'une île a déjà
+ * posé, ce que ses voisines occupent) : sans chaîne construite à chaque cube. x et y de −4 096 à 4 095, z de −64 à 63.
+ */
+export function cleDeCube(x: number, y: number, z = 0): number {
+  return ((x + 4096) * 8192 + (y + 4096)) * 128 + (z + 64);
+}
+
+const couchesCache = new WeakMap<readonly { x: number; y: number }[], readonly { x: number; y: number; d: number }[]>();
+
+/**
+ * Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient
+ * au-dessus. Mémorisé par liste de cases (celles de `landCells` et de `bossIsletCells` le sont déjà).
+ */
+function taperLayers(cells: readonly { x: number; y: number }[]): readonly { x: number; y: number; d: number }[] {
+  const known = couchesCache.get(cells);
+  if (known) return known;
   const out: { x: number; y: number; d: number }[] = [];
-  let layer = new Set(cells.map((c) => `${c.x},${c.y}`));
+  let layer: readonly { x: number; y: number }[] = cells;
+  let dessus = new Set(layer.map((c) => cleDeCube(c.x, c.y)));
   for (let d = 1; d <= TAPER; d++) {
-    const next = new Set<string>();
-    for (const key of layer) {
-      const [x, y] = key.split(',').map(Number);
-      if ([`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].every((k) => layer.has(k))) next.add(key);
-    }
-    layer = next;
-    for (const key of layer) {
-      const [x, y] = key.split(',').map(Number);
-      out.push({ x, y, d });
-    }
-    if (layer.size === 0) break;
+    const ici = dessus;
+    layer = layer.filter((c) => ici.has(cleDeCube(c.x - 1, c.y)) && ici.has(cleDeCube(c.x + 1, c.y)) && ici.has(cleDeCube(c.x, c.y - 1)) && ici.has(cleDeCube(c.x, c.y + 1)));
+    dessus = new Set(layer.map((c) => cleDeCube(c.x, c.y)));
+    for (const c of layer) out.push({ x: c.x, y: c.y, d });
+    if (layer.length === 0) break;
   }
+  couchesCache.set(cells, out);
   return out;
 }
 
@@ -1792,7 +1808,7 @@ export function origineDe(id: BiomeId): { x: number; y: number; z: number } {
  * Les cubes d'une île dans son repère (étape J5). Pour l'instant, l'île est calculée en cases du monde (map.ts place
  * son cœur dans le monde) puis ramenée à son origine ; R4b et la suite écrivent en repère d'île. Le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
  * Gardien, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
- * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en cases du monde
+ * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en clés `cleDeCube` du monde
  * (une cascade ne tombe jamais sur la terre de l'île voisine) ; l'île y ajoute ses cubes.
  */
 export function cubesDeLIle(
@@ -1802,7 +1818,7 @@ export function cubesDeLIle(
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
-  voisins: Set<string> = new Set(),
+  voisins: Set<number> = new Set(),
   /** Archipéo (lot 6) : l'îlot et la sentinelle, avant que le défi soit prêt. */
   sentinelles = false,
 ): VoxelCube[] {
@@ -1834,7 +1850,7 @@ export function worldCubes(
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
-  const placed = new Set<string>();
+  const placed = new Set<number>();
   for (const biome of BIOMES) {
     if (biome.classe !== a) continue;
     const o = origineDe(biome.id);
@@ -1856,7 +1872,7 @@ function poserLIle(
   village: Village,
   withCreatures: boolean,
   trophies: (keyof typeof BLOCKS)[],
-  placed: Set<string>,
+  placed: Set<number>,
   cubes: VoxelCube[],
   sentinelles = false,
 ): void {
@@ -1878,10 +1894,10 @@ function poserLIle(
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
-  const taken = new Set<string>();
+  const taken = new Set<number>();
   const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
-    taken.add(`${x},${y},${z}`);
-    placed.add(`${x},${y},${oz + z}`);
+    taken.add(cleDeCube(x, y, z));
+    placed.add(cleDeCube(x, y, oz + z));
     cubes.push({
       x,
       y,
@@ -1949,8 +1965,8 @@ function poserLIle(
       quest,
       muted,
     });
-    taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
-    taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 1));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 2));
   }
   // L'école et la salle des trophées (sur l'île de l'école de l'archipel) : on les touche pour entrer, comme une borne.
   for (const place of PLACE_IDS) {
@@ -1964,20 +1980,23 @@ function poserLIle(
     for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
       cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
   }
-  landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
-  cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
-  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  landmark(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && putWorld(x, y, z, color, decor));
+  cascades(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
+  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
   const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
   const vers = versLaCamera(biome.id);
   // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
   const abords = abordsDansLesMarges(def);
-  for (const c of [...scenery, ...margesDuCoeur(def).filter((m) => !abords.has(`${m.x},${m.y}`))]) {
+  const marges = margesDuCoeur(def);
+  for (let k = 0; k < scenery.length + marges.length; k++) {
+    const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(c.x, c.y)) continue;
+    if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
     const t = tirage(def, c.x, c.y);
     const r = noise(def.seed + 5, t.x, t.y);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
-    const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor);
+    const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
     if (!presDUneBorne(bornes, c.x, c.y, 1)) {
@@ -1991,7 +2010,7 @@ function poserLIle(
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)
-    for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+    for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
   // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
   // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
   const guardian = guardianStatus(biome, progress, village.bridges, sentinelles);

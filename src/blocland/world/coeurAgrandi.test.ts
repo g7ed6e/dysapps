@@ -317,14 +317,14 @@ it('les voisines d’une île-école s’écartent : les ouvrages de son archipe
     expect(BRIDGES.filter((b) => mapOf(archipel).some((d) => d.id === b.from)).every((b) => b.id in ouvrages), archipel).toBe(true);
     // Entre deux terres (îles et îlots des Gardiens) qui ne partagent pas d'isthme, au moins deux cases d'eau.
     const iles = mapOf(archipel);
-    const terres = [
-      ...iles.map((d) => ({ id: d.id as string, ile: d.id as string, cases: landCells(d) })),
-      ...iles.map((d) => ({ id: `ilot-${d.id}`, ile: d.id as string, cases: bossIsletCells(d.id) })),
+    const terres: { id: string; ile: BiomeId; ilot: boolean; cases: readonly { x: number; y: number }[] }[] = [
+      ...iles.map((d) => ({ id: d.id as string, ile: d.id, ilot: false, cases: landCells(d) })),
+      ...iles.map((d) => ({ id: `ilot-${d.id}`, ile: d.id, ilot: true, cases: bossIsletCells(d.id) })),
     ];
     for (let i = 0; i < terres.length; i++)
       for (let j = i + 1; j < terres.length; j++) {
         const [a, b] = [terres[i], terres[j]];
-        if (a.ile === b.ile || isthmusOf(a.id as never) === b.id) continue;
+        if (a.ile === b.ile || (!a.ilot && !b.ilot && isthmusOf(a.ile) === b.ile)) continue;
         let ecart = Infinity;
         for (const p of a.cases) for (const q of b.cases) ecart = Math.min(ecart, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
         expect(ecart, `${a.id} / ${b.id}`).toBeGreaterThanOrEqual(2);
