@@ -312,6 +312,7 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
   // Le sol à plat de la côte de l'île (comme dans `computeLandscape`), qui choisit son décor.
   const sol: Ground = def.id === 'glacier' ? 'glace' : def.region === 'feu' ? 'basalte' : def.region === 'marais' ? 'mousse' : 'herbe';
   const out: LandCell[] = [];
+  const jalons = jalonsDesMarges(def, c, sol);
   for (let x = c.x0; x < c.x1; x++)
     for (let y = c.y0; y < c.y1; y++) {
       if (inCoeurDOrigine(def, x, y)) continue;
@@ -322,6 +323,7 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
       const coin = inCoeurDOrigine(def, x - 1, y - 1) || inCoeurDOrigine(def, x + 1, y - 1) || inCoeurDOrigine(def, x - 1, y + 1) || inCoeurDOrigine(def, x + 1, y + 1);
       const allege = DECOR_DES_MARGES[def.id];
       let decor = !bord && !coin && fine > 0.62 ? pickDecor(def, sol, 0, fine) : undefined;
+      if (!decor) decor = jalons.get(`${x},${y}`);
       if (decor && allege) {
         if (allege.genre) decor = allege.genre;
         if (allege.unSurDeux && (t.x + t.y) % 2) decor = undefined;
@@ -330,6 +332,64 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
       out.push({ x, y, h: 0, ground: sol, decor });
     }
   margesCache.set(def.id, out);
+  return out;
+}
+
+/**
+ * Sur la rangée extérieure des marges, une suite de cases nues de `PAS_DES_JALONS` cases ou plus reçoit un jalon, deux
+ * à partir du double, et ainsi de suite, posés à intervalles égaux dans la suite (voir `jalonsDesMarges`).
+ */
+export const PAS_DES_JALONS = 5;
+
+/** Les jalons des marges par région : une pierre, une touffe, un rondin ; rien que de bas. */
+const JALONS: Readonly<Record<RegionId, readonly Decor[]>> = Object.freeze({
+  'basses-terres': ['rocher', 'buisson', 'souche'],
+  marais: ['souche', 'rocher'],
+  hauteurs: ['rocher', 'souche'],
+  montagne: ['rocher'],
+  feu: ['rocher'],
+});
+
+/**
+ * Les jalons de la rangée extérieure des marges d'un cœur agrandi (`c`) : vue de l'archipel, la bande d'herbe nue le
+ * long du cœur faisait une longue ligne droite (relecture du consultant Blocland, 01/10/2026). Chaque côté de la rangée
+ * est parcouru ; une suite de cases sans décor du bruit (le même que dans `margesDuCoeur`) est cassée de loin en loin
+ * (`PAS_DES_JALONS`) par une pierre, une touffe ou un rondin (`JALONS`, selon la région), jamais contre un décor ni
+ * contre un autre jalon. La rangée où l'on marche (contre le cœur d'origine) reste nue. Rend les jalons par case.
+ */
+function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, Decor> {
+  const out = new Map<string, Decor>();
+  const duBruit = (x: number, y: number) => {
+    const t = tirage(def, x, y);
+    const fine = noise(def.seed + 3, t.x, t.y);
+    return fine > 0.62 && pickDecor(def, sol, 0, fine) !== undefined;
+  };
+  const genres = JALONS[def.region];
+  const cotes: [number, number][][] = [
+    Array.from({ length: c.x1 - c.x0 }, (_, k) => [c.x0 + k, c.y0]),
+    Array.from({ length: c.x1 - c.x0 }, (_, k) => [c.x0 + k, c.y1 - 1]),
+    Array.from({ length: c.y1 - c.y0 }, (_, k) => [c.x0, c.y0 + k]),
+    Array.from({ length: c.y1 - c.y0 }, (_, k) => [c.x1 - 1, c.y0 + k]),
+  ];
+  for (const rangee of cotes) {
+    const plein = rangee.map(([x, y]) => duBruit(x, y) || out.has(`${x},${y}`));
+    for (let k = 0; k < rangee.length; ) {
+      if (plein[k]) {
+        k++;
+        continue;
+      }
+      let fin = k;
+      while (fin < rangee.length && !plein[fin]) fin++;
+      // La suite nue [k, fin) : ses jalons à intervalles égaux, ni à ses bouts (contre un décor) ni l'un contre l'autre.
+      const long = fin - k;
+      const n = Math.floor(long / PAS_DES_JALONS);
+      for (let j = 1; j <= n; j++) {
+        const [x, y] = rangee[k + Math.floor((j * long) / (n + 1))];
+        out.set(`${x},${y}`, genres[Math.floor(noise(def.seed + 29, x, y) * genres.length) % genres.length]);
+      }
+      k = fin;
+    }
+  }
   return out;
 }
 

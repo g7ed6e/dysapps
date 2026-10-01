@@ -21,6 +21,7 @@ import {
   margesDuCoeur,
   mapOf,
   MAP,
+  PAS_DES_JALONS,
   tirage,
   type ArchipelagoId,
 } from './map';
@@ -159,6 +160,37 @@ it('les marges du cœur : une terre plate, au décor de la côte sur leur rangé
   for (const d of MAP) if (!IDS.includes(d.id)) expect(margesDuCoeur(d), d.id).toEqual([]);
   // Le Marché, le port des Îles Brumeuses, reste bas (intention du 5e, §3) : des roseaux, une case sur deux, sur les côtés et derrière.
   expect(DECOR_DES_MARGES).toEqual({ marche: { genre: 'roseau', unSurDeux: true, derriere: true } });
+});
+
+it('la rangée extérieure des marges est cassée de loin en loin (une pierre, une touffe, un rondin) ; la rangée où l’on marche reste nue', () => {
+  // Relecture du consultant Blocland (01/10/2026) : vue de l'archipel, la bande nue le long du cœur faisait une longue
+  // ligne droite. Sans allègement (`DECOR_DES_MARGES`), pas plus de `PAS_DES_JALONS` − 1 cases nues à la suite sur
+  // chaque côté de la rangée extérieure.
+  expect(PAS_DES_JALONS).toBe(5);
+  const nues: Record<string, number> = {};
+  for (const id of IDS) {
+    const def = islandDef(id);
+    const c = coeurDe(def);
+    const decor = new Map(margesDuCoeur(def).map((m) => [`${m.x},${m.y}`, m.decor]));
+    const cotes = [
+      Array.from({ length: c.x1 - c.x0 }, (_, k) => `${c.x0 + k},${c.y0}`),
+      Array.from({ length: c.x1 - c.x0 }, (_, k) => `${c.x0 + k},${c.y1 - 1}`),
+      Array.from({ length: c.y1 - c.y0 }, (_, k) => `${c.x0},${c.y0 + k}`),
+      Array.from({ length: c.y1 - c.y0 }, (_, k) => `${c.x1 - 1},${c.y0 + k}`),
+    ];
+    let plusLongue = 0;
+    for (const cote of cotes) {
+      let suite = 0;
+      for (const k of cote) {
+        suite = decor.get(k) ? 0 : suite + 1;
+        plusLongue = Math.max(plusLongue, suite);
+      }
+    }
+    nues[id] = plusLongue;
+    if (!DECOR_DES_MARGES[id]) expect(plusLongue, id).toBeLessThan(PAS_DES_JALONS);
+  }
+  // Le Marché, allégé (des roseaux, une case sur deux, rien devant), garde sa rangée de devant nue.
+  expect(nues).toEqual({ foret: 4, marche: 20, atelier: 4, phare: 4 });
 });
 
 it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la zone des plans gardent leur place', () => {
