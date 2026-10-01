@@ -1,11 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
 import { AssemblagePage } from './Assemblage';
+import { AssemblageQuestionPage } from './AssemblageQuestion';
 import { BRIDGES, VOYAGES } from './world/archipelago';
+import { prochaineQuestion, tirageNeuf, type TirageAssemblage } from './world/assemblage';
+import type { AssemblageDef } from './exercises/types';
 
 function renderIn(node: React.ReactNode, at = '/aventure/assemblage') {
   return render(
@@ -19,7 +23,40 @@ function renderIn(node: React.ReactNode, at = '/aventure/assemblage') {
   );
 }
 
-afterEach(() => localStorage.clear());
+/** Le lieu et la question d'un bloc, comme dans l'application. */
+function renderFabrique(at = '/aventure/assemblage') {
+  return renderIn(
+    <Routes>
+      <Route path="/aventure/assemblage" element={<AssemblagePage />} />
+      <Route path="/aventure/assemblage/:bloc" element={<AssemblageQuestionPage />} />
+    </Routes>,
+    at,
+  );
+}
+
+const POUTRE = JSON.parse(readFileSync('src/blocland/exercises/data/assemblage-poutre.json', 'utf8')) as AssemblageDef;
+const CLES = POUTRE.items.map((it) => it.key);
+const sauvegarde = () => JSON.parse(localStorage.getItem('dysapps:blocland')!);
+
+/** Une partie avec ces blocs et un tirage connu : la question que l'élève verra, et ses choix juste et faux. */
+function partie(inventory: Record<string, number>, tirage: TirageAssemblage = tirageNeuf('test')) {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory, assemblageTirage: { poutre: tirage } }));
+  const item = POUTRE.items.find((it) => it.key === prochaineQuestion(CLES, tirage))!;
+  const faux = (item.choices as string[]).filter((c) => c !== item.answer);
+  return { item, juste: String(item.answer), faux };
+}
+
+/** Le texte de la page, les espaces insécables de la typographie française rendues ordinaires. */
+const page = () => (document.body.textContent ?? '').replace(/[\u00a0\u202f]/g, ' ');
+const sans = (t: unknown) => String(t).replace(/[\u00a0\u202f]/g, ' ');
+
+/** Le bouton d'un choix (son texte entier). */
+const choix = (texte: string) => within(screen.getByRole('group', { name: 'Réponses possibles' })).getByRole('button', { name: texte });
+
+afterEach(() => {
+  localStorage.clear();
+  vi.unstubAllGlobals();
+});
 
 it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monument qui attend le bloc', () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 1 } }));
@@ -36,19 +73,104 @@ it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monum
   expect(screen.queryByRole('heading', { level: 3, name: /Miroir/ })).toBeNull();
 });
 
-it('« Assembler » fait un bloc à la fois et l’enregistre', async () => {
+it('« Assembler » ouvre la question du tirage ; juste du premier coup, le bloc est assemblé', async () => {
   const user = userEvent.setup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4, brique: 1 } }));
-  renderIn(<AssemblagePage />);
+  // Une voix, et la lecture automatique : la consigne et la question sont lues en ouvrant.
+  const dit: string[] = [];
+  vi.stubGlobal(
+    'SpeechSynthesisUtterance',
+    class {
+      constructor(public text: string) {}
+    },
+  );
+  vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+  localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+  const { item, juste } = partie({ bois: 4, brique: 1 });
+  renderFabrique();
   await user.click(screen.getByRole('button', { name: /Assembler 1 poutre/ }));
+  // L'écran d'une mission : la consigne, le document et sa question, trois choix, Écouter, le rappel, l'indice.
+  // Les questions se chargent à la demande : on attend les réponses.
+  expect(await screen.findByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: /Assembler 1 poutre/ })).toBeInTheDocument();
+  expect(sans(screen.getByRole('heading', { level: 2 }).textContent)).toBe(sans(POUTRE.instruction));
+  expect(page()).toContain(sans(item.question));
+  expect(within(screen.getByRole('group', { name: 'Réponses possibles' })).getAllByRole('button')).toHaveLength(3);
+  expect(screen.getAllByRole('button', { name: /Écouter/ }).length).toBeGreaterThanOrEqual(1);
+  await waitFor(() => expect(dit.some((t) => sans(t).includes(sans(item.question)))).toBe(true));
+  expect(page()).toContain(sans((item.aid as { props: { title: string } }).props.title));
+  expect(screen.getByRole('button', { name: /Un indice/ })).toBeInTheDocument();
+  // Rien n'est pris tant que la question n'a pas sa réponse.
+  expect(sauvegarde().inventory).toMatchObject({ bois: 4, brique: 1 });
+  await user.click(choix(juste));
   expect(screen.getByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, brique: 0, poutre: 1 });
+  expect(sauvegarde().inventory).toMatchObject({ bois: 2, brique: 0, poutre: 1 });
+  expect(sauvegarde().assemblageTirage.poutre.recentes).toEqual([item.key]);
+  // Ni XP ni étoiles : la question ne compte pas comme une mission.
+  expect(sauvegarde().progress).toEqual({});
+  // Plus de brique : pas d'autre poutre à proposer ; retour au lieu, qui redit ce qui vient d'être assemblé.
+  expect(screen.queryByRole('button', { name: /Assembler 1 autre poutre/ })).toBeNull();
+  await user.click(screen.getByRole('link', { name: /Revenir à la Fabrique/ }));
+  expect(screen.getByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
+  expect(screen.getByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeInTheDocument();
   const bouton = screen.getByRole('button', { name: /Assembler 1 poutre/ });
   expect(bouton).toHaveAttribute('aria-disabled', 'true');
+});
+
+it('une erreur laisse un second essai, avec l’indice et la réponse barrée ; juste au second, le bloc est assemblé', async () => {
+  const user = userEvent.setup();
+  const { item, juste, faux } = partie({ bois: 4, brique: 2 });
+  renderFabrique('/aventure/assemblage/poutre');
+  await user.click(await screen.findByRole('button', { name: faux[0] }));
+  expect(screen.getByText('Presque !')).toBeInTheDocument();
+  expect(page()).toContain(`Indice : ${sans(item.hint)}`);
+  expect(choix(faux[0])).toBeDisabled();
+  expect(sauvegarde().inventory).toMatchObject({ bois: 4, brique: 2 });
+  await user.click(choix(juste));
+  expect(screen.getByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeInTheDocument();
+  expect(sauvegarde().inventory).toMatchObject({ bois: 2, brique: 1, poutre: 1 });
+  // Encore assez de blocs : une autre poutre, une autre question.
+  await user.click(screen.getByRole('button', { name: /Assembler 1 autre poutre/ }));
+  expect(screen.queryByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeNull();
+  expect(screen.getByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
+});
+
+it('deux erreurs : rien n’est perdu, l’explication s’affiche, la question reviendra, une autre est proposée', async () => {
+  const user = userEvent.setup();
+  const { item, faux } = partie({ bois: 2, brique: 1 });
+  renderFabrique('/aventure/assemblage/poutre');
+  await user.click(await screen.findByRole('button', { name: faux[0] }));
+  await user.click(choix(faux[1]));
+  expect(screen.getByText('Pas tout à fait')).toBeInTheDocument();
+  expect(page()).toContain(sans(item.explanation));
+  expect(page()).toContain('Tes blocs sont toujours dans ta poche.');
+  expect(sauvegarde().inventory).toEqual({ bois: 2, brique: 1 });
+  expect(sauvegarde().assemblageTirage.poutre.ratees).toEqual([item.key]);
+  await user.click(screen.getByRole('button', { name: /Une autre question/ }));
+  // Une autre question, jamais la même juste après.
+  const suivante = POUTRE.items.find((it) => it.key === prochaineQuestion(CLES, sauvegarde().assemblageTirage.poutre))!;
+  expect(suivante.key).not.toBe(item.key);
+  expect(page()).toContain(sans(suivante.question));
+  expect(screen.queryByText('Pas tout à fait')).toBeNull();
+});
+
+it('sans assez de blocs, rien ne change : le bouton est grisé, la ligne de ce qui manque reste, aucune question', async () => {
+  const user = userEvent.setup();
+  partie({ bois: 3 });
+  renderFabrique();
+  const bouton = screen.getByRole('button', { name: /Assembler 1 poutre/ });
+  expect(bouton).toHaveAttribute('aria-disabled', 'true');
+  await user.click(bouton);
   // Grisé, il garde le focus et ne fait rien : rien ne se perd.
   expect(bouton).toHaveFocus();
-  await user.click(bouton);
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, brique: 0, poutre: 1 });
+  expect(screen.getByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
+  expect(document.body.textContent).toContain('Il te manque 1 brique');
+  expect(sauvegarde().inventory).toEqual({ bois: 3 });
+});
+
+it('la question tapée à la main, sans assez de blocs, ramène au lieu', async () => {
+  partie({ bois: 1 });
+  renderFabrique('/aventure/assemblage/poutre');
+  expect(await screen.findByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
 });
 
 it('dans Archipéo, la Halle aux matériaux et le madrier', () => {
@@ -78,4 +200,7 @@ it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, brique: 1, poutre: 0 });
   // Plus de poutre en poche : le bouton s'en va.
   expect(screen.queryByRole('button', { name: /Défaire 1 poutre/ })).toBeNull();
+  // Défaire ne pose aucune question.
+  expect(screen.queryByRole('group', { name: 'Réponses possibles' })).toBeNull();
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).assemblageTirage).toBeUndefined();
 });

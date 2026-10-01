@@ -21,6 +21,7 @@ import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { SchoolPage } from './blocland/School';
 import { AssemblagePage } from './blocland/Assemblage';
+import { AssemblageQuestionPage } from './blocland/AssemblageQuestion';
 import { MonumentPage, MonumentsPage } from './blocland/Monuments';
 import { useMonumentBuilder } from './blocland/useMonumentBuilder';
 import { getMonument, type MonumentDef } from './blocland/world/monuments';
@@ -56,6 +57,8 @@ export function AppRoutes() {
         <Route path="aventure" element={<AventureEntry />} />
         <Route path="aventure/:biomeId" element={<IslandEntry />} />
         <Route path="aventure/voyage/:vers" element={<VoyageEntry />} />
+        {/* La question d'un bloc assemblé (GD-2), en plein écran comme une mission, en 3D comme en vue simple. */}
+        <Route path="aventure/assemblage/:bloc" element={<AssemblageQuestionPage />} />
         <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
         <Route path="reglages" element={<SettingsPage />} />

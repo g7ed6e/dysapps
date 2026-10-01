@@ -1,0 +1,316 @@
+{
+  "id": "assemblage-miroir",
+  "bloc": "miroir",
+  "type": "assemblage",
+  "level": 1,
+  "instruction": "Lis le texte, puis choisis la bonne réponse. Le rappel est affiché.",
+  "programme": [
+    "c4.fr.langue.sens-des-mots",
+    "c4.fr.langue.enonciation",
+    "c4.fr.langue.discours-rapporte",
+    "c4.fr.langue.passif",
+    "c4.fr.langue.coherence-textuelle",
+    "c4.fr.lecture.procedes",
+    "c4.fr.lecture.controle",
+    "c3.fr.lecture.implicite",
+    "c4.ma.b.probabilites",
+    "c4.ma.b.indicateurs",
+    "c4.ma.b.effectifs-frequences",
+    "c4.ma.b.lire-donnees",
+    "c4.ma.b.pourcentages-echelles"
+  ],
+  "items": [
+    {
+      "key": "miroir-0",
+      "prompt": "Dans un sac : 3 billes rouges et 1 bille bleue.\nAli tire une bille sans regarder.\nIl dit : « Je vais forcément tirer une rouge. »",
+      "question": "Ali a-t-il raison ?",
+      "spoken": "Dans un sac, 3 billes rouges et 1 bille bleue. Ali tire une bille sans regarder. Il dit : je vais forcément tirer une rouge.",
+      "choices": [
+        "Oui : il y a plus de rouges.",
+        "Non : c’est probable, pas certain.",
+        "Non : il a une chance sur deux."
+      ],
+      "answer": "Non : c’est probable, pas certain.",
+      "hint": "« forcément » veut dire certain. La bille bleue peut-elle sortir ?",
+      "explanation": "La chance de tirer une rouge est de 3 sur 4 : c’est probable. « Forcément » veut dire certain : c’est faux, la bleue peut sortir. Deux couleurs ne font pas une chance sur deux : il y a 4 billes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Certain ou probable ?",
+          "lines": [
+            "forcément, sûrement = certain ; sans doute, probablement = probable.",
+            "Probabilité = cas favorables ÷ cas possibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-1",
+      "prompt": "Max : « Il pleut tous les jours dans cette ville ! »\nRelevé de juin : 9 jours de pluie sur 30.",
+      "question": "Que montre le relevé ?",
+      "spoken": "Max dit : il pleut tous les jours dans cette ville ! Relevé de juin : 9 jours de pluie sur 30.",
+      "choices": [
+        "Max exagère : c’est une hyperbole.",
+        "Max exagère : c’est une comparaison.",
+        "Max a raison : il pleut presque tous les jours."
+      ],
+      "answer": "Max exagère : c’est une hyperbole.",
+      "hint": "9 jours sur 30, c’est moins d’un jour sur trois. Et une figure qui exagère ?",
+      "explanation": "9 sur 30 = 0,3 : il pleut moins d’un jour sur trois. Max exagère : c’est une hyperbole. Une comparaison rapproche deux choses avec « comme ». « Max a raison », c’est lire Max sans lire le relevé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fréquence et hyperbole",
+          "lines": [
+            "Fréquence = effectif ÷ total : 9 ÷ 30.",
+            "hyperbole = exagération ; comparaison = rapprochement avec « comme »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-2",
+      "prompt": "Relevé : lundi 18 °C, mardi 20 °C, mercredi 22 °C.\nMardi soir, Tom écrit : « Depuis lundi, la moyenne est de 19 °C. »",
+      "question": "Tom a-t-il raison ?",
+      "spoken": "Relevé : lundi 18 degrés, mardi 20 degrés, mercredi 22 degrés. Mardi soir, Tom écrit : depuis lundi, la moyenne est de 19 degrés.",
+      "choices": [
+        "Oui : il a raison.",
+        "Non : elle est de 20 °C.",
+        "Non : elle est de 38 °C."
+      ],
+      "answer": "Oui : il a raison.",
+      "hint": "Quand Tom écrit-il ? Quels jours compte-t-il ?",
+      "explanation": "Tom écrit mardi soir : pour lui, depuis lundi, c’est lundi et mardi. (18 + 20) ÷ 2 = 19 °C. 20 °C est la moyenne des trois jours, mais mercredi n’était pas encore là. 38, c’est la somme sans la division.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui écrit, quand ? La moyenne",
+          "lines": [
+            "« depuis », « aujourd’hui » : on compte depuis le jour où la personne écrit.",
+            "Moyenne = somme des valeurs ÷ nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-3",
+      "prompt": "Tirs de Léo : 20. Buts : 8.\nLe coach : « Ce n’est pas mal ! »",
+      "question": "Que veut dire le coach ?",
+      "spoken": "Tirs de Léo, 20. Buts, 8. Le coach dit : ce n’est pas mal !",
+      "choices": [
+        "C’est bien : 40 % des tirs sont des buts.",
+        "C’est mauvais : 40 % des tirs sont des buts.",
+        "C’est bien : 8 % des tirs sont des buts."
+      ],
+      "answer": "C’est bien : 40 % des tirs sont des buts.",
+      "hint": "« pas mal » : le coach est-il content ? Puis : 8 sur 20, c’est combien sur 100 ?",
+      "explanation": "8 ÷ 20 = 0,4 = 40 % : c’est un bon score. « Pas mal » est une litote : on dit moins pour dire plus, le coach veut dire « c’est bien ». « C’est mauvais », c’est lire la négation au pied de la lettre. 8 %, c’est prendre le nombre de buts pour le pourcentage.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Litote et pourcentage",
+          "lines": [
+            "litote = dire moins pour dire plus : « il n’est pas bête » veut dire « il est malin ».",
+            "Pourcentage = part ÷ total × 100 : 5 sur 20, c’est 25 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-4",
+      "prompt": "Notes de Lina en maths :\n8 ; 9 ; 15 ; 16 ; 17",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Notes de Lina en maths : 8, 9, 15, 16, 17.",
+      "choices": [
+        "La médiane est 15, donc c’est la note du milieu.",
+        "La médiane est 15, pourtant c’est la note du milieu.",
+        "La médiane est 13, donc c’est la note du milieu."
+      ],
+      "answer": "La médiane est 15, donc c’est la note du milieu.",
+      "hint": "Les notes sont rangées : laquelle est au milieu ? Puis : une conséquence, ou une opposition ?",
+      "explanation": "5 notes rangées : la troisième, 15, est au milieu. C’est la médiane. « donc » annonce une conséquence ; « pourtant », une opposition : ici, rien ne s’oppose. 13, c’est la moyenne : 65 ÷ 5, qui n’est pas une note de Lina.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane, donc ou pourtant",
+          "lines": [
+            "Médiane : la valeur du milieu, les notes rangées dans l’ordre.",
+            "donc = une conséquence ; pourtant = une opposition."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-5",
+      "prompt": "Le principal : « Dans notre collège,\n50 % des 600 élèves viennent à vélo. »",
+      "question": "Comment rapporter ses paroles ?",
+      "spoken": "Le principal dit : dans notre collège, 50 pour cent des 600 élèves viennent à vélo.",
+      "choices": [
+        "Il a dit que 300 élèves de son collège venaient à vélo.",
+        "Il a dit que 300 élèves de notre collège venaient à vélo.",
+        "Il a dit que 50 élèves de son collège venaient à vélo."
+      ],
+      "answer": "Il a dit que 300 élèves de son collège venaient à vélo.",
+      "hint": "Qui parle de « notre » collège ? Puis : 50 %, c’est quelle part ?",
+      "explanation": "50 % de 600, c’est la moitié : 300 élèves. Quand on rapporte les paroles du principal, « notre collège » devient « son collège ». « notre », c’est garder les mots du principal comme si on parlait soi-même. 50 élèves, c’est prendre le pourcentage pour un nombre d’élèves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Discours rapporté et pourcentage",
+          "lines": [
+            "Discours rapporté : je, nous, notre deviennent il, ils, son, leur.",
+            "25 %, c’est le quart ; 50 % de 80, c’est 40."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-6",
+      "prompt": "Record du saut en longueur :\n2019 : 5,10 m (Inès)\n2024 : 5,40 m (Zoé)",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Record du saut en longueur. 2019, 5 mètres 10, Inès. 2024, 5 mètres 40, Zoé.",
+      "choices": [
+        "Le record d’Inès a été battu par Zoé, de 30 cm.",
+        "Le record de Zoé a été battu par Inès, de 30 cm.",
+        "Le record d’Inès a été battu par Zoé, de 3 cm."
+      ],
+      "answer": "Le record d’Inès a été battu par Zoé, de 30 cm.",
+      "hint": "Qui a sauté le plus loin, et quand ? Puis : 0,30 m, c’est combien de centimètres ?",
+      "explanation": "En 2024, Zoé saute plus loin qu’Inès en 2019 : c’est Zoé qui bat le record d’Inès. 5,40 − 5,10 = 0,30 m = 30 cm. Au passif, « battu par Zoé » : Zoé fait l’action. 3 cm, c’est mal convertir : 1 m = 100 cm.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Passif et longueurs",
+          "lines": [
+            "Passif : « A a été battu par B » : c’est B qui gagne.",
+            "1 m = 100 cm : 0,5 m = 50 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-7",
+      "prompt": "Températures de la semaine, en °C :\n12 ; 14 ; 13 ; 15 ; 14 ; 13 ; 14\nNoé : « Pas besoin de changer de pull cette semaine. »",
+      "question": "Que sous-entend Noé ?",
+      "spoken": "Températures de la semaine, en degrés : 12, 14, 13, 15, 14, 13, 14. Noé dit : pas besoin de changer de pull cette semaine.",
+      "choices": [
+        "Le temps change peu : l’étendue est de 3 degrés.",
+        "Noé n’a qu’un seul pull : l’étendue est de 3 degrés.",
+        "Le temps change peu : l’étendue est de 15 degrés."
+      ],
+      "answer": "Le temps change peu : l’étendue est de 3 degrés.",
+      "hint": "Que laisse comprendre Noé sur le temps ? Puis : la plus grande valeur moins la plus petite.",
+      "explanation": "De 12 à 15, l’écart est de 15 − 12 = 3 degrés : le temps change peu, d’où le même pull. Noé ne parle pas du nombre de ses pulls : il le sous-entend du temps. 15, c’est la plus grande valeur, pas l’étendue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Étendue et sous-entendu",
+          "lines": [
+            "Étendue = plus grande valeur − plus petite valeur.",
+            "Sous-entendre : faire comprendre une chose sans la dire. Cherche ce que la phrase laisse comprendre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-8",
+      "prompt": "On lance un dé à 6 faces.\nLina dit : « Faire un 7, c’est peu probable. »",
+      "question": "Lina a-t-elle raison ?",
+      "spoken": "On lance un dé à 6 faces. Lina dit : faire un 7, c’est peu probable.",
+      "choices": [
+        "Non : c’est impossible.",
+        "Oui : c’est peu probable.",
+        "Non : la chance est de 1 sur 6."
+      ],
+      "answer": "Non : c’est impossible.",
+      "hint": "Un dé à 6 faces porte-t-il un 7 ?",
+      "explanation": "Les faces vont de 1 à 6 : aucune ne porte un 7. La probabilité est 0 : c’est impossible, pas peu probable. 1 sur 6, c’est la chance d’un nombre qui est sur le dé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Impossible ou peu probable ?",
+          "lines": [
+            "impossible = n’arrive jamais (probabilité 0) ; peu probable = arrive rarement ; certain = arrive toujours (probabilité 1).",
+            "Probabilité = cas favorables ÷ cas possibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-9",
+      "prompt": "Sondage de la classe : 25 élèves\nEn bus : 8\nÀ pied : 17",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Sondage de la classe, 25 élèves. En bus, 8. À pied, 17.",
+      "choices": [
+        "La plupart des élèves viennent à pied : 68 %.",
+        "Peu d’élèves viennent à pied : 68 %.",
+        "La plupart des élèves viennent à pied : 17 %."
+      ],
+      "answer": "La plupart des élèves viennent à pied : 68 %.",
+      "hint": "17 sur 25 : plus ou moins de la moitié ? Puis, combien sur 100 ?",
+      "explanation": "17 ÷ 25 = 0,68 = 68 % : plus de la moitié vient à pied, c’est la plupart. « Peu » veut dire une petite partie : 68 %, c’est beaucoup. 17 %, c’est prendre l’effectif pour la fréquence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La plupart, et la fréquence",
+          "lines": [
+            "Fréquence = effectif ÷ total. En pourcentage : × 100.",
+            "la plupart = plus de la moitié ; peu = une petite partie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-10",
+      "prompt": "Trajets de Sam, en minutes :\n12 ; 15 ; 14\nSam : « Je mets en moyenne environ 14 minutes. »",
+      "question": "Sam a-t-il raison ?",
+      "spoken": "Trajets de Sam, en minutes : 12, 15, 14. Sam dit : je mets en moyenne environ 14 minutes.",
+      "choices": [
+        "Oui : la moyenne est proche de 14.",
+        "Non : la moyenne n’est pas tout à fait 14.",
+        "Non : la moyenne est de 41 minutes."
+      ],
+      "answer": "Oui : la moyenne est proche de 14.",
+      "hint": "Calcule la moyenne. Puis : « environ », c’est tout juste ou à peu près ?",
+      "explanation": "(12 + 15 + 14) ÷ 3 = 41 ÷ 3, un peu moins de 14 (13,7 environ). « Environ » veut dire à peu près : Sam a raison. « Pas tout à fait 14 », c’est oublier le mot environ. 41, c’est la somme sans la division.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Environ, et la moyenne",
+          "lines": [
+            "Moyenne = somme des valeurs ÷ nombre de valeurs.",
+            "environ = à peu près, pas tout juste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "miroir-11",
+      "prompt": "Titre : « Les ventes de vélos explosent ! »\nVentes en 2024 : 200 vélos\nVentes en 2025 : 210 vélos",
+      "question": "Le titre dit-il vrai ?",
+      "spoken": "Titre : les ventes de vélos explosent ! Ventes en 2024, 200 vélos. Ventes en 2025, 210 vélos.",
+      "choices": [
+        "Non : il exagère, les ventes montent de 5 %.",
+        "Oui : les ventes montent très fort, de 5 %.",
+        "Non : il exagère, les ventes montent de 10 %."
+      ],
+      "answer": "Non : il exagère, les ventes montent de 5 %.",
+      "hint": "De 200 à 210, de combien montent les ventes ? Puis, combien sur 100 ?",
+      "explanation": "Les ventes montent de 10 vélos sur 200 : 10 ÷ 200 = 0,05 = 5 %. C’est peu : « explosent » exagère pour attirer le lecteur. « Très fort », c’est croire le titre sans lire les nombres. 10 %, c’est prendre 10 vélos pour 10 %.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un titre, et une hausse",
+          "lines": [
+            "Hausse en % = hausse ÷ valeur de départ × 100.",
+            "Un titre peut exagérer pour attirer : exploser = ici, monter très fort."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien assemblé !",
+    "wrong": "{explanation}"
+  }
+}

@@ -3,8 +3,8 @@
 // scripts/exerciseMeta.mjs) ; leur contenu est chargé à la demande, au lancement d'une partie ou d'un Gardien.
 // Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
 import { SETS } from '../../apps/homophones/data';
-import type { BiomeId } from '../biomes';
-import type { ExerciseDef } from './types';
+import type { BiomeId, BlockId } from '../biomes';
+import type { AssemblageDef, ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
 import { POSEES_EXERCISES } from './posees';
@@ -125,8 +125,26 @@ export const CATALOG: ExerciseMeta[] = ORDER.flatMap((entry) =>
   typeof entry === 'string' ? (JSON_BY_ID.has(entry) ? [JSON_BY_ID.get(entry)!] : []) : entry.map(metaOf),
 );
 
-/** Les exercices JSON de data/ que `ORDER` oublie (vide : vérifié par les tests). */
-export const UNORDERED = [...JSON_BY_ID.keys()].filter((id) => !ORDER.includes(id));
+/**
+ * Les exercices JSON de data/ que `ORDER` oublie (vide : vérifié par les tests). Les questions des blocs assemblés
+ * (`type: 'assemblage'`) n'y sont pas : elles ne sont pas dans une île, et ne sont pas au catalogue.
+ */
+export const UNORDERED = [...JSON_BY_ID.values()].filter((m) => m.type !== 'assemblage' && !ORDER.includes(m.id)).map((m) => m.id);
+
+/** L'identifiant des questions d'un bloc assemblé (GD-2) : data/assemblage-<bloc>.json. */
+export function assemblageId(bloc: BlockId): string {
+  return `assemblage-${bloc}`;
+}
+
+/** Les blocs assemblés qui ont leurs questions (docs/contenu/assemblage.md, « Les questions »). */
+export const BLOCS_A_QUESTIONS: BlockId[] = [...JSON_BY_ID.values()]
+  .filter((m) => m.type === 'assemblage')
+  .map((m) => m.id.slice('assemblage-'.length) as BlockId);
+
+/** Les questions d'un bloc assemblé, chargées à la demande comme un exercice JSON. */
+export async function loadAssemblage(bloc: BlockId): Promise<AssemblageDef | undefined> {
+  return (await LOADERS.get(assemblageId(bloc))?.()) as AssemblageDef | undefined;
+}
 
 /** Le contenu d'un exercice (ses items, sa consigne…), chargé à la demande pour un exercice JSON. */
 export async function loadExercise(id: string): Promise<ExerciseDef | undefined> {

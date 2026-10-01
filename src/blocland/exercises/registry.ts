@@ -207,4 +207,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'es-relato': { component: CalculScreen, batch: 1 },
   'es-paises': { component: CalculScreen, batch: 1 },
   'es-porque': { component: CalculScreen, batch: 1 },
+  // La question d'un bloc assemblé (GD-2) : un document à lire sur deux matières, sa question, trois choix, le rappel
+  // des deux matières toujours affiché (docs/contenu/assemblage.md). Hors des îles : elle se pose à la Fabrique.
+  assemblage: { component: CalculScreen, batch: 1 },
 };

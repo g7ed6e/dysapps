@@ -1,9 +1,10 @@
 // Le lieu où l'on assemble les blocs (GD-2) : la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo, sur
 // l'île de l'école de chaque archipel. Une recette par archipel atteint, toujours affichée (vignettes, nombres, noms,
-// lue à voix haute) ; un toucher sur « Assembler » fait un bloc. Pas de grille, rien à deviner, rien ne se perd
-// (référent dys). Un panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
+// lue à voix haute) ; un toucher sur « Assembler » ouvre une question sur les deux matières de la recette, et la bonne
+// réponse assemble le bloc (AssemblageQuestion.tsx). Pas de grille, rien à deviner, rien ne se perd (référent dys). Un
+// panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -13,6 +14,7 @@ import { useTextes } from '../univers';
 import { BLOCKS, blockCount, blockName, nomDuBloc, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { EarnLink } from './PlanSection';
+import { messageAssemble, questionPath } from './AssemblageQuestion';
 import { useSchoolIsland } from './School';
 import { BlockIcon } from './Voxel';
 import { planStatus } from './engine';
@@ -62,8 +64,9 @@ function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
  * le bloc, chacun avec son nombre.
  */
 function RecetteCarte({ recette }: { recette: Recette }) {
-  const { state, assemble, disassemble } = useBlocland();
-  const [dit, setDit] = useState<{ texte: string; retour: MonumentDef | null } | null>(null);
+  const { state, disassemble } = useBlocland();
+  const navigate = useNavigate();
+  const location = useLocation();
   const nom = nomDuBloc(recette.bloc);
   const un = blockName(recette.bloc, 1);
   const peut = assemblables(state.inventory, recette) > 0;
@@ -72,6 +75,12 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const pour = monumentsOf(recette.archipelago)
     .map((m) => ({ m, n: planStatus(state, m).missing[recette.bloc] ?? 0 }))
     .filter((x) => x.n > 0);
+  // Assez pour un monument : on propose d'y retourner (rien à retenir).
+  const retourPour = (apres: number) => pour.find(({ n }) => apres >= n)?.m ?? null;
+  // Au retour d'une question réussie, la carte dit ce qui vient d'être assemblé.
+  const [dit, setDit] = useState<{ texte: string; retour: MonumentDef | null } | null>(() =>
+    (location.state as { assemble?: string } | null)?.assemble === recette.bloc ? { texte: messageAssemble(recette.bloc, en), retour: retourPour(en) } : null,
+  );
   const phrase = `Pour 1 ${un}, il faut ${enMots(recette)}.`;
   const manqueEnMots = manque.length ? `Il te manque ${manque.map((m) => blockCount(m.bloc, m.n)).join(' et ')}.` : 'Tu as tout ce qu’il faut.';
   const pocheEnMots = `Dans ta poche : ${blockCount(recette.bloc, en)}.`;
@@ -81,15 +90,11 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const titreId = `recette-${recette.bloc}`;
   const bloc = BLOCKS[recette.bloc];
 
+  // « Assembler » ouvre la question du bloc (GD-2), en plein écran : le bloc est assemblé à la bonne réponse.
   const onAssemble = () => {
     // Le bouton reste dans l'ordre du clavier quand il ne peut rien faire (aria-disabled) : le focus ne se perd pas.
     if (!peut) return;
-    const r = assemble(recette.bloc);
-    if (!r.ok) return;
-    const apres = r.state.inventory[recette.bloc] ?? 0;
-    // Assez pour un monument : on propose d'y retourner (rien à retenir).
-    const retour = pour.find(({ n }) => apres >= n)?.m ?? null;
-    setDit({ texte: `Tu as assemblé 1 ${un}. Tu en as ${apres.toString()}.`, retour });
+    navigate(questionPath(recette.bloc));
   };
   // Un bloc assemblé se défait : ses blocs reviennent, rien ne se perd (choix du mainteneur, relecture UX UI).
   const onDefaire = () => {

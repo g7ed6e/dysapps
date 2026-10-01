@@ -6225,6 +6225,18 @@ fieldset {
   margin: 0 0 0.6rem;
   font-weight: 700;
 }
+/* La question d'un bloc assemblé (GD-2), sur l'écran d'une mission : sous la correction, le bouton pour continuer
+   (revenir au lieu, ou une autre question), puis l'autre choix ; ils passent l'un sous l'autre sur téléphone. */
+.assemblage-question-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.assemblage-question-actions .button {
+  min-height: 48px;
+}
 /* Grisé sans quitter l'ordre du clavier (aria-disabled) : le focus reste sur le bouton après le dernier bloc assemblé. */
 .assemblage-recette .button[aria-disabled="true"] {
   opacity: 0.5;

@@ -43,6 +43,19 @@ export interface ExerciseDef {
   adaptive: { promoteAt: number; demoteAt: number };
 }
 
+/**
+ * La question d'un bloc assemblé (GD-2) : `docs/contenu/assemblage.md`, section « Les questions », écrite par
+ * `npm run contenu` dans `data/assemblage-<bloc>.json`. Les champs d'un exercice, sans île, sans récompense et sans
+ * adaptation : une question d'assemblage ne rapporte ni blocs ni XP et n'adapte aucun niveau. Les compétences
+ * (`programme`) valent pour tout le bloc ; une question à la fois est posée (voir `world/assemblage.ts`).
+ */
+export interface AssemblageDef extends Omit<ExerciseDef, 'biome' | 'reward' | 'adaptive' | 'generate' | 'perRun' | 'target'> {
+  type: 'assemblage';
+  /** Le bloc assemblé que la question fait gagner. */
+  bloc: BlockId;
+  programme: string[];
+}
+
 /** Résultat d'un item joué. */
 export interface ItemResult {
   key: string;

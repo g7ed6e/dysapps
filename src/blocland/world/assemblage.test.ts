@@ -1,11 +1,24 @@
 import { readFileSync } from 'node:fs';
 import { BLOCKS, BIOMES, blockCount, nomDuBloc } from '../biomes';
-import { EMPTY_STATE, assembleBlock, disassembleBlock, fillPlanCell, planStatus, sanitizeState } from '../engine';
+import { EMPTY_STATE, assembleBlock, disassembleBlock, fillPlanCell, planStatus, repondreAssemblage, sanitizeState } from '../engine';
 import { retenirReglages } from '../../core/settings';
 import { DEFAULT_SETTINGS } from '../../core/settings';
 import { textesDe } from '../../univers';
 import { ARCHIPELAGOS } from './archipelago';
-import { RECETTES, assemblables, manquePour, recetteDe } from './assemblage';
+import {
+  QUESTIONS_SANS_REDITE,
+  RECETTES,
+  RETOUR_DE_LA_MANQUEE,
+  assemblables,
+  lireTirage,
+  manquePour,
+  noterQuestion,
+  ordreDuTour,
+  prochaineQuestion,
+  recetteDe,
+  tirageNeuf,
+  type TirageAssemblage,
+} from './assemblage';
 import { ASSEMBLAGE } from './recettes';
 import { UNIVERS_IDS } from '../../core/univers';
 import { getMonument, monumentsOf } from './monuments';
@@ -102,4 +115,101 @@ it('nomme les blocs assemblés et leur lieu selon l’univers, depuis docs/conte
   expect(blockCount('bois', 3)).toBe('3 blocs de bois');
   expect(textesDe('archipeo').assemblage.titre).toBe('La Halle aux matériaux');
   expect(allerChercher('poutre')).toBe('va à la Halle aux matériaux pour l’assembler');
+});
+
+describe('le tirage des questions d’un bloc assemblé', () => {
+  const cles = Array.from({ length: 12 }, (_, i) => `poutre-${i}`);
+
+  /** Pose `n` questions de suite, chacune juste ou non selon `juste(rang, cle)` ; rend les clés posées et le tirage. */
+  function poser(n: number, juste: (rang: number, cle: string) => boolean, t: TirageAssemblage = tirageNeuf('eleve'), liste = cles) {
+    const posees: string[] = [];
+    for (let k = 0; k < n; k++) {
+      const cle = prochaineQuestion(liste, t)!;
+      posees.push(cle);
+      t = noterQuestion(liste, t, cle, juste(k, cle));
+    }
+    return { posees, t };
+  }
+
+  it('suit une permutation propre à l’élève, toutes les questions une fois par tour, parcourue en boucle', () => {
+    const { posees, t } = poser(36, () => true);
+    for (let tour = 0; tour < 3; tour++) expect([...posees.slice(12 * tour, 12 * tour + 12)].sort()).toEqual([...cles].sort());
+    expect(t.tour).toBe(3);
+    // Un autre élève, un autre ordre ; un autre tour, un autre ordre.
+    expect(poser(12, () => true, tirageNeuf('autre')).posees).not.toEqual(posees.slice(0, 12));
+    expect(ordreDuTour(cles, { graine: 'eleve', tour: 1 })).not.toEqual(ordreDuTour(cles, { graine: 'eleve', tour: 0 }));
+    expect(posees.slice(0, 12)).not.toEqual(cles);
+  });
+
+  it('ne repose jamais une question parmi les 6 dernières, même entre deux tours et avec des erreurs', () => {
+    for (const liste of [cles, cles.slice(0, 8)])
+      for (const graine of ['a', 'b', 'c', 'd']) {
+        // Une erreur sur trois, environ.
+        const { posees } = poser(200, (k, cle) => (k * 7 + cle.length) % 3 !== 0, tirageNeuf(graine), liste);
+        posees.forEach((cle, k) => expect(posees.slice(Math.max(0, k - QUESTIONS_SANS_REDITE), k), `${graine} ${k}`).not.toContain(cle));
+      }
+  });
+
+  it('une question manquée revient après au moins 3 autres, dès qu’elle sort des 6 dernières', () => {
+    let t = tirageNeuf('eleve');
+    const premiere = prochaineQuestion(cles, t)!;
+    t = noterQuestion(cles, t, premiere, false);
+    expect(t.ratees).toEqual([premiere]);
+    const { posees, t: apres } = poser(10, () => true, t);
+    const retour = posees.indexOf(premiere);
+    expect(retour).toBeGreaterThanOrEqual(Math.max(RETOUR_DE_LA_MANQUEE, QUESTIONS_SANS_REDITE));
+    expect(retour).toBe(QUESTIONS_SANS_REDITE);
+    // Réussie, elle n'est plus à revoir.
+    expect(apres.ratees).toEqual([]);
+  });
+
+  it('ignore une question qui n’existe plus, et se lit dans une sauvegarde sans rien casser', () => {
+    const t = noterQuestion(cles, tirageNeuf('g'), 'poutre-0', false);
+    expect(noterQuestion(cles, t, 'poutre-99', true)).toBe(t);
+    expect(prochaineQuestion([], t)).toBeUndefined();
+    // Une question retirée du fichier sort des listes.
+    expect(noterQuestion(cles.slice(1), t, 'poutre-1', true).ratees).toEqual([]);
+    expect(lireTirage({ graine: 'g', tour: 2, posees: ['a', 'a', 3], recentes: 'x', ratees: ['b'] })).toEqual({
+      graine: 'g',
+      tour: 2,
+      posees: ['a'],
+      recentes: [],
+      ratees: ['b'],
+    });
+    expect(lireTirage({ tour: 1 })).toBeUndefined();
+    expect(lireTirage({ graine: '', tour: 1 })).toBeUndefined();
+    expect(lireTirage({ graine: 'g', tour: -1 })?.tour).toBe(0);
+  });
+
+  it('la sauvegarde garde le tirage d’un bloc assemblé, et une sauvegarde d’avant n’en a pas', () => {
+    expect('assemblageTirage' in sanitizeState({ inventory: { bois: 2 } })).toBe(false);
+    expect('assemblageTirage' in sanitizeState(EMPTY_STATE)).toBe(false);
+    const t = noterQuestion(cles, tirageNeuf('g'), 'poutre-3', false);
+    const lu = sanitizeState({ assemblageTirage: { poutre: t, bois: t, inconnu: t, vitrail: { tour: 1 } } });
+    expect(lu.assemblageTirage).toEqual({ poutre: t });
+    expect(sanitizeState(JSON.parse(JSON.stringify(lu)))).toEqual(lu);
+  });
+
+  it('une bonne réponse assemble le bloc ; une question manquée ne prend rien et sera reposée', () => {
+    const state = { ...EMPTY_STATE, inventory: { bois: 2, brique: 1 } };
+    const tirage = tirageNeuf('g');
+    const cle = prochaineQuestion(cles, tirage)!;
+    const rate = repondreAssemblage(state, 'poutre', { cles, cle, juste: false, tirage });
+    expect(rate.assemble).toBe(false);
+    expect(rate.state.inventory).toEqual(state.inventory);
+    expect(rate.state.assemblageTirage?.poutre?.ratees).toEqual([cle]);
+    // Rien d'autre ne bouge : ni XP, ni étoiles, ni niveau, ni répétition espacée.
+    expect({ ...rate.state, assemblageTirage: undefined }).toEqual({ ...state, assemblageTirage: undefined });
+    const autre = prochaineQuestion(cles, rate.state.assemblageTirage!.poutre!)!;
+    expect(autre).not.toBe(cle);
+    const juste = repondreAssemblage(rate.state, 'poutre', { cles, cle: autre, juste: true, tirage });
+    expect(juste.assemble).toBe(true);
+    expect(juste.state.inventory).toEqual({ bois: 0, brique: 0, poutre: 1 });
+    expect(juste.state.assemblageTirage?.poutre?.recentes).toEqual([cle, autre]);
+    // Plus assez de blocs : la réponse est notée, rien n'est assemblé ni perdu.
+    const sans = repondreAssemblage(juste.state, 'poutre', { cles, cle: 'poutre-5', juste: true, tirage });
+    expect(sans).toMatchObject({ assemble: false, reason: 'plus-de-blocs' });
+    expect(sans.state.inventory).toEqual(juste.state.inventory);
+    expect(repondreAssemblage(state, 'bois', { cles, cle, juste: true, tirage })).toMatchObject({ assemble: false, reason: 'pas-de-recette' });
+  });
 });

@@ -3,7 +3,6 @@ import { gelerSauvegarde, loadJSON, removeKey, saveJSON } from '../core/storage'
 import { bacASable, remplir } from './batisseur';
 import {
   EMPTY_STATE,
-  assembleBlock,
   disassembleBlock,
   buildBridge as buildBridgePure,
   completeExercise,
@@ -13,6 +12,7 @@ import {
   launchVehicle as launchVehiclePure,
   moveAvatar,
   recordFluence as recordFluencePure,
+  repondreAssemblage as repondreAssemblagePure,
   sanitizeState,
   todayISO,
   type AssembleResult,
@@ -21,12 +21,14 @@ import {
   type FillResult,
   type LaunchResult,
   type PortalCompletion,
+  type ReponseAssemblage,
 } from './engine';
 import type { BiomeId, BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
+import type { TirageAssemblage } from './world/assemblage';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 export const SESSION_MAX_EXERCISES = 3;
@@ -49,8 +51,11 @@ interface BloclandContextValue {
   recordFluence: (textId: string, seconds: number) => { previous: number | null };
   /** Pose le bloc attendu à une cellule d'un plan. */
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
-  /** Assemble un bloc (GD-2), avec les blocs de l'inventaire. */
-  assemble: (bloc: BlockId) => AssembleResult;
+  /**
+   * La réponse finale à la question d'un bloc assemblé (GD-2) : juste, le bloc est assemblé avec les blocs de
+   * l'inventaire ; manquée, rien n'est pris. La question est notée dans le tirage de l'élève.
+   */
+  repondreAssemblage: (bloc: BlockId, reponse: { cles: readonly string[]; cle: string; juste: boolean; tirage: TirageAssemblage }) => ReponseAssemblage;
   /** Défait un bloc assemblé en poche : ses blocs reviennent (GD-2). */
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
@@ -120,7 +125,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(next);
     return { ...r, state: next };
   }, []);
-  const assemble = useCallback((bloc: BlockId) => appliquer(assembleBlock(stateRef.current, bloc)), [appliquer]);
+  const repondreAssemblage = useCallback((bloc: BlockId, reponse: Parameters<BloclandContextValue['repondreAssemblage']>[1]) => {
+    const r = repondreAssemblagePure(stateRef.current, bloc, reponse);
+    if (r.state === stateRef.current) return r;
+    const next = batisseurRef.current ? remplir(r.state) : r.state;
+    stateRef.current = next;
+    setState(next);
+    return { ...r, state: next };
+  }, []);
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
@@ -177,7 +189,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       continueSession,
       recordFluence,
       fillPlan,
-      assemble,
+      repondreAssemblage,
       disassemble,
       buildBridge,
       moveTo,
@@ -186,7 +198,25 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       batisseur,
       ouvrirBatisseur,
     }),
-    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, assemble, disassemble, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
+    [
+      state,
+      complete,
+      completePortal,
+      dueCount,
+      sessionCount,
+      pauseAfterNext,
+      continueSession,
+      recordFluence,
+      fillPlan,
+      repondreAssemblage,
+      disassemble,
+      buildBridge,
+      moveTo,
+      launch,
+      reset,
+      batisseur,
+      ouvrirBatisseur,
+    ],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

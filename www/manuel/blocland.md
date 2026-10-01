@@ -278,11 +278,27 @@ On y entre en touchant le bâtiment dans le monde, avec la ligne « La Fabrique 
 - **la recette**, toujours affichée : une vignette par bloc à donner, le nombre et le nom, « tu en as … » à côté de chaque bloc, et le bouton **Écouter la recette**, qui lit toute la carte ;
 - combien on en a déjà (« Dans ta poche ») ;
 - juste au-dessus du bouton, ce qu’il manque, s’il manque quelque chose (« Il te manque 1 brique, à gagner dans la Plaine des nombres ») ;
-- le bouton **Assembler**, qui fait **un bloc à la fois**. Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé. Les blocs assemblés ne servent qu’aux monuments : quand on en a en poche, le bouton **Défaire 1 poutre** rend tous ses blocs (« Tu as défait 1 poutre : tu récupères 2 blocs de bois et 1 brique. ») ; un bloc déjà posé dans un monument reste posé ;
+- le bouton **Assembler 1 poutre**, qui fait **un bloc à la fois**, après une question (voir plus bas). Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé et aucune question n’est posée. Les blocs assemblés ne servent qu’aux monuments : quand on en a en poche, le bouton **Défaire 1 poutre** rend tous ses blocs, sans question (« Tu as défait 1 poutre : tu récupères 2 blocs de bois et 1 brique. ») ; un bloc déjà posé dans un monument reste posé ;
 - après un assemblage, ce qu’on vient de faire (« Tu as assemblé 1 poutre. Tu en as 5. »), et un lien pour retourner au monument dès qu’on en a assez pour lui ;
 - les monuments qui attendent ce bloc, chacun avec son nombre (« L’observatoire des baleines attend 5 poutres »), avec un lien.
 
-Les cases d’un monument déjà posées avant l’arrivée des blocs assemblés restent posées. L’adresse de la Fabrique est `#/aventure/assemblage` (en vue simple, c’est une page).
+### La question de l’assemblage
+
+Chaque bloc assemblé demande de répondre à **une question** qui mêle les deux matières de sa recette : le français et les maths pour la poutre, le vitrail et le miroir, les maths et l’anglais pour l’engrenage. Le bouton **Assembler 1 poutre** l’ouvre en plein écran, comme une mission :
+
+- en haut, la consigne (« Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché. »), lue à voix haute avec la question quand la lecture automatique est active ;
+- la question, puis le petit texte à lire, encadré, avec le bouton **Écouter** (en anglais pour l’engrenage) ;
+- le **rappel** des deux matières, toujours affiché (« Un ou plusieurs ? Donner, c’est enlever. 1 : pas de s (1 bille). ») ;
+- **trois réponses** : des nombres, toujours rangés du plus petit au plus grand ; des phrases, dans un ordre qui change, la bonne réponse jamais toujours à la même place ;
+- le bouton **Un indice**, qui ne coûte rien.
+
+Une bonne réponse, du premier coup ou au second essai, assemble le bloc : les blocs de la recette sont pris, le bloc arrive dans la poche, et l’écran le dit : « Tu as assemblé 1 poutre. Tu en as 5. » Le bouton **Revenir à la Fabrique** ramène à la carte, qui le redit ; **Assembler 1 autre poutre** pose tout de suite une autre question, quand il reste assez de blocs.
+
+Une erreur ne fait rien perdre. À la première, « Presque ! » et l’indice s’affichent, la réponse choisie est barrée, et on choisit encore. À la seconde, l’écran montre la bonne réponse et l’explication, et dit « Tes blocs sont toujours dans ta poche. » ; le bouton **Une autre question** en pose une autre. Quitter pendant une question (bouton **Pause**, puis **Quitter la partie**, qui ramène à la Fabrique) ne prend rien non plus.
+
+Chaque bloc a **12 questions**, au niveau de son archipel. Elles viennent dans un ordre propre à chaque élève, puis recommencent dans un autre ordre ; une question ne revient jamais avant 6 autres. Une question manquée revient plus tard, après au moins 6 autres, pour s’y essayer de nouveau. Les questions ne rapportent ni XP ni étoiles et ne changent pas le niveau des missions : elles ne rapportent que le bloc assemblé. Elles sont les mêmes dans Blocland et dans Archipéo.
+
+Les cases d’un monument déjà posées avant l’arrivée des blocs assemblés restent posées. L’adresse de la Fabrique est `#/aventure/assemblage` (en vue simple, c’est une page) ; celle d’une question, `#/aventure/assemblage/poutre` (ou `vitrail`, `engrenage`, `miroir`).
 
 ## Le mot des grandes étapes
 
