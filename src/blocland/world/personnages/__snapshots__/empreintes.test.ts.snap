@@ -59,7 +59,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
   },
   "6e": {
     "creatures": "2488 cae52569 4c8615d7",
-    "gardiens": "1770 747fac13",
+    "gardiens": "1786 c6b4807b",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }
@@ -68,7 +68,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
 exports[`Empreintes des personnages en facettes > les sentinelles, île par île (éteintes) 1`] = `
 {
   "atelier": "230 15752aea",
-  "baie": "227 02a761dc",
+  "baie": "243 1642ee67",
   "belvedere": "207 f3f36d77",
   "cabinet": "178 7787181c",
   "carrefour": "180 ae511a7a",
@@ -148,7 +148,7 @@ exports[`Empreintes des personnages en facettes > les sprites de la 2D peinte, d
   },
   "sentinelles": {
     "atelier": "78×150 efb1ab42 78×150 28084310",
-    "baie": "73×154 ef7d18f7 73×154 ad89241a",
+    "baie": "77×120 b6622704 77×120 9b8235c0",
     "belvedere": "60×152 cd56bccd 60×152 bba6f497",
     "cabinet": "60×150 37c2ca1b 60×150 c1e060f9",
     "carrefour": "60×149 ec647687 60×149 5c3dcf3a",

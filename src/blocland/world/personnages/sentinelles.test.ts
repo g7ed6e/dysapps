@@ -20,6 +20,7 @@ import {
   HAUTEUR_DE_SENTINELLE,
 } from './sentinelle';
 import { sentinelleAuDefi, sentinelleDuMonde, sentinellePeinte, STATUES } from './sentinellesPeintes';
+import { HAUTEUR_DU_LION } from './statues/lion';
 
 const nbTriangles = (f: FacettesDePersonnage) => f.pieces.length;
 
@@ -77,9 +78,15 @@ function lueurs(f: FacettesDePersonnage): number {
 const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin', 'refuge'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
- * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
+ * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas ; le Lion de pierre, couché sur un quai bas
+ * (`HAUTEUR_DU_LION`, décision du mainteneur du 01/10/2026).
  */
-const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5], jardin: [5.8, 6.3] };
+const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5], jardin: [5.8, 6.3], baie: [HAUTEUR_DU_LION - 0.005, HAUTEUR_DU_LION + 0.005] };
+/**
+ * Les sentinelles dont la crinière se rallume (le Lion de pierre, retouche du directeur artistique du 01/10/2026) : une
+ * veine sur chacune des huit plaques, qui se lisent ensemble comme une seule lueur, la crinière.
+ */
+const CRINIERES: BiomeId[] = ['baie'];
 /** Les sentinelles basses plus longues que hautes. */
 const LONGUES: BiomeId[] = ['relais'];
 
@@ -206,10 +213,10 @@ describe('Les Gardiens en sentinelles', () => {
         for (let t = 0; t < nbTriangles(f); t++) expect(f.teintes[t] === LUEUR, `triangle ${t} (${nom(t)})`).toBe(nom(t) === 'flamme' || nom(t) === 'veines');
       });
 
-      it('porte une à trois lueurs selon l’objet, en plus de la flamme', () => {
+      it(CRINIERES.includes(b.id) ? 'porte une veine sur chacune des huit plaques de sa crinière, en plus de la flamme' : 'porte une à trois lueurs selon l’objet, en plus de la flamme', () => {
         const n = lueurs(f);
         expect(n).toBeGreaterThanOrEqual(1);
-        expect(n).toBeLessThanOrEqual(3);
+        expect(n).toBeLessThanOrEqual(CRINIERES.includes(b.id) ? 8 : 3);
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {
