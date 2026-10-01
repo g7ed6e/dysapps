@@ -75,7 +75,7 @@ const CAPTURES = [
   // La lisibilité (famille `lisibilite`), à reprendre par tout lot qui touche l'interface ou une créature : le texte le
   // plus grand (OpenDyslexic, 32 px, `reglages`) sur la vue de l'archipel du 3e depuis le Refuge, en tablette et en
   // portrait ; le test en gris des créatures, chacune dans son archipel (l'Écho du 3e ; le Soleil et Muscade du 4e ; le
-  // Hanneton et Moustache du 6e).
+  // Hanneton et Moustache du 6e), pris en couleur : la mise en gris se fait à la relecture.
   { nom: 'grand-texte-archipel', vue: 'archipel', famille: 'lisibilite', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
   { nom: 'grand-texte-archipel-800x1280', vue: 'archipel', famille: 'lisibilite', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
   { nom: 'gris-echo', vue: 'défi', famille: 'lisibilite', ile: 'studio' },
