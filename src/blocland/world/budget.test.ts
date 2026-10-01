@@ -71,7 +71,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   });
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
-  // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, proposé, world/budget.ts).
+  // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts).
   it('les enveloppes décidées le 28 septembre 2026 : 57 800 triangles et 25 appels aux Premiers Rivages, 53 040 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);

@@ -38,6 +38,7 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 - Contenu : `docs/contenu/assemblage.md` → `src/blocland/world/recettes.ts` (`npm run contenu`).
 - Rythme (directeur du contenu) : chaque case assemblée coûte deux blocs de plus, soit 8 à 16 blocs par monument, deux ou trois missions, une séance au plus, payée par le stock accumulé.
 - Sauvegarde : aucune donnée nouvelle hors de l’inventaire.
+- Rendu : le lieu coûte de 108 à 118 triangles de construction par archipel. Avec les îles-écoles en 20 × 20, la construction mesure 7 217 au 5e : l’enveloppe « autres » de la construction passe de 7 100 à 7 240 triangles, 60 sont pris au bonhomme, à la faune, au navire et aux bornes, et la somme des « autres » passe de 52 960 à 53 040 (`world/budget.ts`).
 
 ## Les avis
 
@@ -50,4 +51,4 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 
 ## La décision
 
-30 septembre 2026, mainteneur : les blocs assemblés vont dans les monuments existants ; deux noms de lieu (la Fabrique, la Halle aux matériaux) ; les quatre blocs « Mécanismes » ; « 1 ok, 2 il faut nom spécifique à l’univers, 3 ok » ; « Ok. L’implémentation doit permettre d’alimenter les noms via markdown. » Le 1er octobre 2026 : « Ok pour défaire ».
+30 septembre 2026, mainteneur : les blocs assemblés vont dans les monuments existants ; deux noms de lieu (la Fabrique, la Halle aux matériaux) ; les quatre blocs « Mécanismes » ; « 1 ok, 2 il faut nom spécifique à l’univers, 3 ok » ; « Ok. L’implémentation doit permettre d’alimenter les noms via markdown. » Le 1er octobre 2026 : « Ok pour défaire » ; « ok budget » (construction à 7 240, somme à 53 040).
