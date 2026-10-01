@@ -11,6 +11,8 @@ describe('sanitizeSettings', () => {
     expect(s.lineHeight).toBe(DEFAULT_SETTINGS.lineHeight);
     expect(s.theme).toBe(DEFAULT_SETTINGS.theme);
     expect(s.font).toBe(DEFAULT_SETTINGS.font);
+    expect(sanitizeSettings({ worldLight: 'nuit' as never }).worldLight).toBe('reelle');
+    expect(sanitizeSettings({ worldLight: 'jour' }).worldLight).toBe('jour');
   });
 });
 

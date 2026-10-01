@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -241,6 +241,32 @@ const CAPTURES = [
   { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
   { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
   { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
+  // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
+  // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
+  // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
+  { nom: 'lieux', vue: 'île', famille: 'lieux', ile: 'foret', succes: 'tous' },
+  { nom: 'lieux-nuit', vue: 'île', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
+  { nom: 'lieux-sans-trophee', vue: 'île', famille: 'lieux', ile: 'foret' },
+  { nom: 'lieux-archipel', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous' },
+  { nom: 'lieux-archipel-nuit', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
+  // De près (famille `lieux-pres`) : l'école, puis la salle des trophées avec six trophées (les socles) et avec tous (les
+  // socles, le faîte et le bord du toit), de jour et de nuit.
+  { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'foret', recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
+  { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', nuit: true, recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
+  { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  // La salle de près (famille `lieux-salle`) : sans trophée (l'ouverture devant, le fond de velours), avec huit (le
+  // faîte), avec dix-huit (le bord du toit), de jour et de nuit ; le fond de velours au plus près, par l'ouverture (la
+  // caméra de l'île ne se tourne pas : on le voit de biais), avec deux trophées.
+  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'foret', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 8, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
+  { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -326,12 +352,15 @@ async function scenes() {
   await server.listen();
   const base = server.resolvedUrls.local[0].replace(/\/$/, '');
   const load = (p) => server.ssrLoadModule(p);
-  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }] = await Promise.all([
+  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }, { BADGES }] = await Promise.all([
     load('/src/blocland/biomes.ts'),
     load('/src/blocland/world/map.ts'),
     load('/src/blocland/world/budget.ts'),
     load('/src/blocland/world/plans.ts'),
+    load('/src/core/progress.ts'),
   ]);
+  /** Les succès gagnés d'une capture (`succes` : leur nombre, ou `tous`), un trophée chacun dans la salle des trophées. */
+  const succesDe = (n) => Object.fromEntries(BADGES.slice(0, n === 'tous' ? BADGES.length : (n ?? 0)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
   // La même partie tout construite que le test du budget (world/budget.test.ts).
   const { progress, village: built } = toutConstruit();
   /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
@@ -407,25 +436,26 @@ async function scenes() {
               reglages: c.reglages,
               depuis: c.depuis,
               fige: c.fige,
+              succes: c.succes,
               finesse: c.finesse,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await page.clock.setFixedTime(time);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers, lv2, reglages }) => {
+        ({ village, progress, view, univers, lv2, reglages, badges }) => {
           localStorage.clear();
           sessionStorage.setItem('dysapps:titre-vu', '1');
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: {}, progress, village }));
-          localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000 }));
+          localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
         },
         {
           village: { ...built, plans: sansLesIles(plans ?? built.plans, sansIles), ...(bridges ? { bridges } : {}), at: depuis ?? ile ?? at },
@@ -434,6 +464,7 @@ async function scenes() {
           univers: UNIVERS_DES_TEXTES,
           lv2,
           reglages,
+          badges: succesDe(succes),
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);

@@ -27,7 +27,7 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 
 ### La classe affichée
 
-- La classe s’affiche sur les cartes et les panneaux (« Niveau 5e »). Les pages Français, Maths et Anglais listent les îles de leur matière, de la 6e à la 3e ; les archipels pas encore atteints y sont repliés.
+- La classe s’affiche sur les cartes et, au pied, sur le panneau d’une île (« Niveau 5e »). Les pages Français, Maths et Anglais listent les îles de leur matière, de la 6e à la 3e ; les archipels pas encore atteints y sont repliés.
 - Aucune île n’est imposée : un élève de 3e peut commencer par la Forêt. L’anglais donne plus de choix, pas plus d’obstacles : il ne change pas les étapes du Bloc-Navire.
 
 ### Les îles par archipel et par matière

@@ -18,7 +18,8 @@ import { MENU_PATH } from '../core/paths';
 
 /**
  * Les grands endroits de l'appli, toujours au même endroit et avec les mêmes mots, dans la barre du haut. Sur
- * téléphone, pas d'onglets : la barre du haut garde le Menu et les Réglages (en icônes) ; le village a son menu (⏸).
+ * téléphone, pas d'onglets : la barre du haut garde le Menu et les Réglages (en icônes). Sur l'écran du monde (le
+ * village en 3D), pas de barre du haut : son menu Pause donne le rôle, les grands endroits et l'accueil.
  */
 const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; phone: boolean; desktop: boolean }[] = [
   { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, phone: true, desktop: false },
@@ -43,7 +44,7 @@ function Shell() {
   const { pathname } = useLocation();
   // Pendant une partie : ni barre du haut ni onglets, seulement le bouton Pause (mode concentration).
   const focus = useFocusActive();
-  // Carte et îles de Blocland en 3D : le monde prend tout l'écran sous la barre du haut.
+  // Carte et îles de Blocland en 3D : le monde prend tout l'écran, sans barre du haut (son menu Pause la remplace).
   const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname);
   useEffect(() => startAppUpdates(), []);
 
@@ -76,7 +77,7 @@ function Shell() {
       <a className="skip-link" href="#contenu">
         Aller au contenu
       </a>
-      {!focus && (
+      {!focus && !immersive && (
         <header className="topbar">
           <Link to="/" className="brand" aria-label={`Accueil ${univers.nom}`}>
             {/* Archipéo garde son initiale sur le sable ; Blocland a son logo, l'île en blocs. */}
