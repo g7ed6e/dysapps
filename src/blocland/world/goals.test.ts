@@ -1,10 +1,21 @@
 import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { lockedHint, nextGoal, nextGoalInfo } from './goals';
+import { textesDe } from '../../univers';
+import { BRIDGES, NOMS_ARCHIPELS } from './archipelago';
+import { lockedHint as lockedHintDe, nextGoal as nextGoalDe, nextGoalInfo as nextGoalInfoDe } from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
+
+// L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut),
+// et les archipels avec les noms communs des données ; les noms d'un univers sont essayés dans src/univers/univers.test.ts.
+type Etat = Parameters<typeof lockedHintDe>[0];
+type Ile = Parameters<typeof lockedHintDe>[1];
+type Univers = 'blocland' | 'archipeo';
+const lockedHint = (state: Etat, island: Ile, univers: Univers = 'blocland') => lockedHintDe(state, island, NOMS_ARCHIPELS, textesDe(univers).libelles);
+const nextGoal = (state: Etat, island: Ile, univers: Univers = 'blocland') => nextGoalDe(state, island, NOMS_ARCHIPELS, textesDe(univers).libelles);
+const nextGoalInfo = (state: Etat, island: Ile) => nextGoalInfoDe(state, island, NOMS_ARCHIPELS, textesDe('blocland').libelles);
 
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
@@ -41,6 +52,7 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const posed = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret']) });
   expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
+  expect(nextGoal(posed, 'plaine', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
   const ready = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
@@ -117,4 +129,19 @@ it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardien
     'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
   );
   expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
+});
+
+it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jamais vaincu ni battu', () => {
+  const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
+  expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine']) }), 'marche', 'archipeo')).toBe(
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
+  );
+  // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées.
+  const voisines: string[] = BRIDGES.filter((b) => b.from === 'textes' || b.to === 'textes').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'phare');
+  const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
+  const col = sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e', 'voyage-3e', ...ouverts] } });
+  expect(lockedHint(col, 'textes', 'archipeo')).toBe(
+    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 6 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+  );
+  expect(lockedHint(col, 'textes')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
 });

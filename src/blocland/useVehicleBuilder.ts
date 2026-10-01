@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../univers';
 import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
@@ -35,6 +37,7 @@ export interface VehicleBuilder {
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
@@ -46,6 +49,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const launch = stage ? canLaunch(state, stage) : null;
   const kit = stage ? kitReady(stage, state.progress) : false;
   const sound = (f: () => void) => settings.sounds && f();
+  // Le son de pose de l'univers (le « clac » de Blocland, le « toc » d'Archipéo), lu une fois.
+  const [playPlace] = useState(() => sonDePose(habillageDuMonde().pose));
   const haptics = useHaptics();
 
   const fillAt = (x: number, y: number, z: number) => {
@@ -71,8 +76,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.done}`
-      : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
+      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
+      : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
     if (settings.autoRead) speak(msg);

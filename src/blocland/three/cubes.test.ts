@@ -12,6 +12,8 @@ import { creerCubes } from './cubes';
 import type { Large } from './large';
 import type { Lumiere } from './lumiere';
 import type { Instant, Monde } from './partie';
+import type { VoxelCube } from '../Voxel';
+import { GESTE_DE_POSE } from '../world/pose';
 
 function monde(habillage: Habillage): Monde {
   return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10 };
@@ -52,6 +54,67 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
     const tri = (g: THREE.BufferGeometry) => (g.index ? g.index.count : g.getAttribute('position').count) / 3;
     const attendus = buildMesh(cubes).reduce((n, g) => n + g.indices.length / 3, 0);
     expect(maillages.reduce((n, o) => n + tri(o.geometry), 0)).toBe(attendus);
+    c.dispose();
+  });
+});
+
+describe('Le geste de pose de Blocland (GD-1, point 4)', () => {
+  const lumiere = { nuit: () => 0, suivre: () => {} } as unknown as Lumiere;
+  const avant = [
+    { x: 0, y: 0, z: 0, texture: 'herbe' },
+    { x: 1, y: 0, z: 0, texture: 'planches', ghost: true },
+  ] as VoxelCube[];
+  const apres = [avant[0], { x: 1, y: 0, z: 0, texture: 'planches' }] as VoxelCube[];
+  const triangles = (o: THREE.Object3D) => {
+    let n = 0;
+    o.traverse((x) => {
+      if (x instanceof THREE.Mesh) n += (x.geometry.index?.count ?? 0) / 3;
+    });
+    return n;
+  };
+  const attendus = () => buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0);
+  const scene = () => {
+    const m = monde(HABILLAGES.blocland);
+    const c = creerCubes(m, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
+    c.poser(avant);
+    // Le terrain est le premier groupe de la scène ; le bloc qui descend, le dernier objet ajouté.
+    return { m, c, terrain: m.scene.children[0] };
+  };
+
+  it('le dernier bloc descend sans rebond, le terrain garde le fantôme, puis tout s’enclenche en un maillage', () => {
+    const { m, c, terrain } = scene();
+    const avecFantome = triangles(terrain);
+    const n = m.scene.children.length;
+    c.enclencher(apres[1]);
+    c.poser(apres);
+    // Pendant la descente : le terrain d'avant (le fantôme attend dans la case) et un seul bloc de plus.
+    expect(triangles(terrain)).toBe(avecFantome);
+    expect(m.scene.children.length).toBe(n + 1);
+    const bloc = m.scene.children[n];
+    // Image par image : la première le montre en haut ; une image longue (0,1 s) ne le fait avancer que d'un pas.
+    const hauteurs: number[] = [];
+    for (const dt of [0.016, 0.03, 0.1, 0.03, 0.03, 0.03]) {
+      c.animer!(0, dt, false);
+      hauteurs.push(bloc.position.y);
+    }
+    expect(hauteurs[0]).toBe(GESTE_DE_POSE.hauteur);
+    for (let i = 1; i < hauteurs.length; i++) expect(hauteurs[i]).toBeLessThan(hauteurs[i - 1]);
+    expect(Math.min(...hauteurs)).toBeGreaterThan(0);
+    // À l'arrêt : le bloc qui descendait s'en va, le terrain reçoit les cubes posés, en un seul maillage.
+    for (let i = 0; i < 20 && m.scene.children.length > n; i++) c.animer!(0, 0.03, false);
+    expect(m.scene.children.length).toBe(n);
+    expect(triangles(terrain)).toBe(attendus());
+    c.dispose();
+  });
+
+  it('coupé quand l’appareil demande moins d’animations : posé tout de suite', () => {
+    const { m, c, terrain } = scene();
+    const n = m.scene.children.length;
+    c.enclencher(apres[1]);
+    c.poser(apres);
+    c.animer!(0, 0.016, true);
+    expect(m.scene.children.length).toBe(n);
+    expect(triangles(terrain)).toBe(attendus());
     c.dispose();
   });
 });

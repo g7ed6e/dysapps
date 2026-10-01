@@ -25,6 +25,7 @@ import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RenommagePanel, useRenommage } from './Renommage';
 import { RallumagePanel, useRallumage } from './Rallumage';
 import { playBell } from './sound';
 import { useSettings } from '../core/SettingsContext';
@@ -53,9 +54,9 @@ export function BloclandPage() {
   const { state } = useBlocland();
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
-  const destination = nextDestination(state);
-  // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const textes = useTextes();
+  const destination = nextDestination(state, textes.archipels, textes.libelles);
+  // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRallumage(state.progress, here, textes.sentinelles !== null);
   const rallume = rallumage.enAttente[0] ?? null;
@@ -63,7 +64,9 @@ export function BloclandPage() {
     if (rallume && settings.sounds) playBell();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallume]);
-  const whale = useWhaleWord(state, here, !rallume);
+  // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
+  const renommage = useRenommage(!rallume, 1200);
+  const whale = useWhaleWord(state, here, !rallume && !renommage.ouvert);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   return (
     <>
@@ -87,7 +90,9 @@ export function BloclandPage() {
         </p>
       </section>
 
-      {rallume ? (
+      {renommage.ouvert ? (
+        <RenommagePanel onClose={renommage.fermer} />
+      ) : rallume ? (
         <RallumagePanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
       ) : (
         whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
@@ -114,7 +119,7 @@ export function BloclandPage() {
         return (
           <section key={a.classe} className={`archipel${reached ? '' : ' archipel-locked'}`} aria-labelledby={`archipel-${a.classe}`}>
             <h2 id={`archipel-${a.classe}`} className="section-title">
-              <Icon name="map" /> {archipelagoTitle(a.classe)}{' '}
+              <Icon name="map" /> {archipelagoTitle(a.classe, textes.archipels)}{' '}
               <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Dans la brume'}</span>
             </h2>
             {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="section-intro" />}

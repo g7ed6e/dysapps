@@ -1,5 +1,8 @@
 // Les textes de Blocland : ceux d'avant le lot 6, déplacés sans un mot changé (Blocland garde « vaincre », le Gardien
-// vaincu et sa statue). Leur invariance est vérifiée par src/univers/univers.test.ts.
+// vaincu et sa statue). Leur invariance est vérifiée par src/univers/univers.test.ts. GD-1 (« le chantier du
+// bâtisseur », décidée le 30 septembre 2026) y ajoute sa voix et ses noms : la créature de l'île-école parle aux
+// grandes étapes, les archipels reprennent leurs noms d'origine, les rôles sont des métiers du chantier. Textes du
+// consultant de Blocland.
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
 
@@ -300,7 +303,7 @@ export const BLOCLAND = {
     resistance: (reste, total) => `${reste} épreuves sur ${total} avant de le vaincre`,
     dejaFaitArene: (gardien) => `${gardien} est déjà vaincu, mais il aime les revanches.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à vaincre`,
-    navireAttend: (n) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} vaincu${s(n)}.`,
+    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} vaincu${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à vaincre dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} vaincu${s(n)} sur ${total}`,
@@ -311,19 +314,51 @@ export const BLOCLAND = {
     arene: () => 'L’arène du Gardien',
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien vaincu.',
+    ouvrageGardien: 'Il faut aussi avoir vaincu le Gardien de l’autre côté.',
+    navireGardiensManquants: (n, archipel) => `bats encore ${n} Gardien${s(n)} des ${archipel}`,
+    gardienDabord: (ile) => `Bats d’abord le Gardien de ${ile}.`,
     decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
   sentinelles: null,
-  monuments: {},
+  // Les monuments qui nomment un archipel : le même message, avec le nom de Blocland.
+  monuments: {
+    'monument-moulin': { done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' },
+    'monument-amphitheatre': { done: 'L’amphithéâtre est prêt ! Tout le monde des Monts de Feu viendra au spectacle.' },
+  },
+  // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).
   baleine: {
+    parle: 'ecole',
     arrivee: {
-      '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
-      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
-      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+      '6e': 'Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide.',
+      '5e': 'Le Bloc-Navire a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
+      '4e': 'Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
+      '3e': 'Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
     },
-    gardiens: (archipel) => `Tous les Gardiens des ${archipel} ont reconnu ton savoir. Je l’ai vu depuis le large.`,
-    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
-    ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
+    gardiens: (archipel) => `Tous les Gardiens des ${archipel} sont vaincus ! Leurs statues gardent maintenant ton chantier.`,
+    port: (ile) => `Chantier fini : ${ile} ! Bloc après bloc, ton archipel grandit.`,
+    ouvrage: (ile) => `Ton ouvrage tient bon ! Nouvelle île ouverte : ${ile}.`,
+  },
+  // Les noms d'origine des archipels de Blocland (GD-1, point 2) ; les Îles du Ciel ne changent pas.
+  archipels: { '6e': 'Basses Terres', '5e': 'Collines du Large', '4e': 'Monts de Feu', '3e': 'Îles du Ciel' },
+  // Des métiers qui vont de la construction à l'ingénierie (GD-1, point 3) ; « bâtisseur » reste le nom que les
+  // créatures donnent à l'élève.
+  roles: { explorateur: 'Apprenti', cartographe: 'Maçon', batisseur: 'Mécanicien', navigateur: 'Ingénieur', architecte: 'Architecte' },
+  succes: {
+    'rang-argent': { title: 'Maçon', description: 'Devenir Maçon : tu poses les blocs bien droits.' },
+    'rang-or': { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
+    'rang-diamant': { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
+    'rang-legende': { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
+    aeronaute: { title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.' },
+  },
+  // Dit une fois par appareil, à un élève qui jouait déjà avant les nouveaux noms (src/blocland/Renommage.tsx).
+  renommage: {
+    titre: 'De nouveaux noms',
+    intro: 'Dans Blocland, trois archipels reprennent leur nom d’origine. Tes blocs, tes étoiles et tes bâtiments ne changent pas.',
+    lignes: [
+      'Les Premiers Rivages s’appellent maintenant les Basses Terres.',
+      'Les Îles Brumeuses s’appellent maintenant les Collines du Large.',
+      'Les Anciens Ateliers s’appellent maintenant les Monts de Feu.',
+    ],
+    bouton: 'D’accord',
   },
 } satisfies TextesUnivers;

@@ -3625,7 +3625,7 @@ figure.class-table {
   flex: none;
 }
 /*
- * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine dessinée s'efface (décorative), Écouter
+ * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine ou le portrait de la créature s'efface (décoratif, son nom reste écrit), Écouter
  * garde son icône seule (son nom reste lu par les lecteurs d'écran) : les boutons prennent moins de place.
  */
 @media (max-width: 640px) {
@@ -3633,7 +3633,7 @@ figure.class-table {
   :root[data-texte="grand"] .bulle-ouverte .world-bar {
     display: none;
   }
-  :root[data-texte="grand"] .world-overlay-bottom .whale-icon {
+  :root[data-texte="grand"] .world-overlay-bottom :is(.whale-icon, .whale-portrait) {
     display: none;
   }
   /* Le trait pointillé seul dit la suite, comme sur la Carte : un chevron à côté d'Écouter en icône se prendrait pour un bouton. */
@@ -5280,6 +5280,32 @@ details.island-fold-objectif {
   font-size: 1.2rem;
   justify-content: center;
 }
+/* Blocland : le logo se construit (src/blocland/LogoQuiSeConstruit.tsx) ; ses quatre cubes descendent en accélérant et
+   s’arrêtent d’un coup, sans rebond ; le logo entier ne bouge pas. Coupé quand l’appareil demande moins d’animations. */
+.title-logo-construit {
+  animation: none;
+}
+.logo-cube {
+  animation-name: logo-chute, logo-apparait;
+  animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45), linear;
+  animation-fill-mode: both;
+}
+@keyframes logo-chute {
+  from {
+    transform: translateY(-140px);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes logo-apparait {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Le bloc tombe et rebondit une fois (coupé quand l’appareil demande moins d’animations). */
 @keyframes title-drop {
   from {
@@ -5825,7 +5851,10 @@ button.island-quest {
   fill: var(--muted);
 }
 
-/* ===== Le mot de la baleine (Archipéo, lot 5) : rare, aux grandes étapes, opaque et uni comme les autres panneaux ===== */
+/*
+ * ===== Le mot des grandes étapes (lot 5) : rare, opaque et uni comme les autres panneaux. La baleine le dit dans
+ * Archipéo ; dans Blocland, la créature de l'île-école, son portrait en cubes à côté de son nom écrit (GD-1). =====
+ */
 .whale-word {
   margin-bottom: 1.2rem;
   border-color: var(--primary-bg);
@@ -5843,6 +5872,15 @@ button.island-quest {
   flex: none;
   color: var(--primary-bg);
 }
+.whale-portrait {
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+}
+.whale-portrait .creature {
+  width: 100%;
+  height: 100%;
+}
 .whale-word-text {
   margin: 0 0 0.8rem;
   max-width: none;
@@ -5852,6 +5890,13 @@ button.island-quest {
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: center;
+}
+/* Les nouveaux noms des archipels (GD-1) : une phrase par archipel, une par ligne. */
+.renommage-lignes {
+  margin: 0 0 0.8rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
 }
 /* Les points de page (deux pages à l'arrivée) : la page en cours est pleine, les autres creuses. */
 .whale-word-dots {
@@ -5874,6 +5919,13 @@ button.island-quest {
 /* Le titre du défi (Archipéo) laisse la place du bouton Pause, fixé en haut à droite : il revient à la ligne avant lui. */
 .defi-titre {
   padding-right: calc(56px + 0.6rem);
+}
+/* Sur téléphone, le nom de l'écran (« Le défi du Golem de roche ») tient en deux lignes au lieu de trois. Sans effet en
+   grand texte, dont la taille de titre l'emporte. */
+@media (max-width: 640px) {
+  .defi-titre {
+    font-size: 1.3rem;
+  }
 }
 .rallumage-passer {
   min-height: 48px;

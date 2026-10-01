@@ -18,7 +18,7 @@ Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre pr
 Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une flèche jaune flotte au-dessus de la Forêt tant qu’aucune mission n’a été jouée. Le tutoriel de trois bulles se rejoue avec le bouton « Revoir l’aide ».
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
-Un peu : le Bloc-Navire qui mène en 5e se construit dans les Premiers Rivages (une cinquantaine de blocs et trois Gardiens vaincus), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
+Un peu : le Bloc-Navire qui mène en 5e se construit dans les Basses Terres (une cinquantaine de blocs et trois Gardiens vaincus), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
 
 **Comment passer en 5e (puis en 4e, en 3e) ?**
 Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « Le Bloc-Navire » : poser ses blocs comme un plan, vaincre les Gardiens demandés (la voile, le ballon ou les feux apparaissent alors), puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.

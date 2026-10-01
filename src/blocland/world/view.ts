@@ -70,6 +70,11 @@ export interface Burst {
   /** Le cube posé : son île et sa case dans le repère de l'île. */
   cell: Ancrage;
   color: string;
+  /**
+   * Le dernier bloc d'un plan du village : dans Blocland, au lieu des poussières, le geste de pose (world/pose.ts), ce
+   * bloc descend et s'enclenche. Archipéo garde ses éclats.
+   */
+  pose?: boolean;
 }
 
 /**

@@ -17,7 +17,11 @@ export type { ArchipelagoId };
 /** Un archipel : une classe, un nom, une île-port (le Bloc-Navire s'y construit et y accoste) et ses îles de départ. */
 export interface ArchipelagoDef {
   classe: ArchipelagoId;
-  /** Sans article ni majuscule initiale d'article : « Premiers Rivages » → « les Premiers Rivages ». */
+  /**
+   * Le nom commun, celui des données (le site de documentation, les tests) : sans article ni majuscule initiale
+   * d'article, « Premiers Rivages » → « les Premiers Rivages ». Ce que lit l'élève passe par les textes de l'univers
+   * affiché (`archipels` de src/univers/), jamais par ce champ (GD-1).
+   */
   name: string;
   port: BiomeId;
   /** Les îles ouvertes dès qu'on est dans l'archipel. */
@@ -35,6 +39,15 @@ export const ARCHIPELAGOS: ArchipelagoDef[] = [
   { classe: '3e', name: 'Îles du Ciel', port: 'phare', starts: ['phare'], travel: 'ciel', school: 'phare' },
 ];
 
+/**
+ * Le nom de chaque archipel dans un univers (« Basses Terres »), sans article : ce que lit l'élève. Les règles et les
+ * phrases communes le reçoivent de l'appelant, qui le prend dans les textes de l'univers affiché (GD-1).
+ */
+export type NomsArchipels = Record<ArchipelagoId, string>;
+
+/** Les noms communs des données (`name`), pour le site de documentation et les tests. */
+export const NOMS_ARCHIPELS = Object.fromEntries(ARCHIPELAGOS.map((a) => [a.classe, a.name])) as NomsArchipels;
+
 export function getArchipelago(a: ArchipelagoId): ArchipelagoDef {
   return ARCHIPELAGOS.find((x) => x.classe === a)!;
 }
@@ -49,9 +62,9 @@ export function islandsOf(a: ArchipelagoId): BiomeDef[] {
   return BIOMES.filter((b) => b.classe === a);
 }
 
-/** « Archipel de 5e — Les Îles Brumeuses ». */
-export function archipelagoTitle(a: ArchipelagoId): string {
-  return `Archipel de ${a} — Les ${getArchipelago(a).name}`;
+/** « Archipel de 5e — Les Collines du Large », avec les noms de l'univers affiché. */
+export function archipelagoTitle(a: ArchipelagoId, noms: NomsArchipels): string {
+  return `Archipel de ${a} — Les ${noms[a]}`;
 }
 
 /** L'archipel qui suit (ou précède) : `null` au bout. */
@@ -329,14 +342,25 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
     });
 }
 
+/**
+ * Les mots de l'univers pour les Gardiens dans ce que disent les ouvrages et les objectifs (vaincus dans Blocland,
+ * rallumés dans Archipéo) : les libellés de l'univers en cours (`textes.libelles`), passés par l'écran, la règle
+ * n'important pas d'univers.
+ */
+export interface MotsDesGardiens {
+  ouvrageGardien: string;
+  navireGardiensManquants: (n: number, archipel: string) => string;
+  gardienDabord: (ile: string) => string;
+}
+
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
-export function conditionText(bridge: BridgeDef, bridges: string[]): string | null {
+export function conditionText(bridge: BridgeDef, bridges: string[], mots: MotsDesGardiens): string | null {
   const condition = CONDITION_OF[bridge.kind];
   if (condition === 'aucune') return null;
   const open = reachableIslands(bridges);
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
   const name = getBiome(island)?.name ?? island;
-  if (condition === 'gardien') return `Bats d’abord le Gardien de ${name}.`;
+  if (condition === 'gardien') return mots.gardienDabord(name);
   const first = plansFor(island)[0];
   return `Termine d’abord le plan « ${first?.name ?? 'premier plan'} » de ${name}.`;
 }

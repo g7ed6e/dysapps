@@ -25,6 +25,11 @@ export interface VehicleStage extends PlanDef {
   kit: PlanCell[];
   /** Le nom court de l'étape (« la voile »), pour les phrases. */
   short: string;
+  /**
+   * Le message de fin, avec le nom de l'archipel où elle mène dans l'univers affiché (GD-1) ; `done` le donne avec le
+   * nom commun des données.
+   */
+  fin: (archipel: string) => string;
 }
 
 /** Remplit un volume de cases, du coin (x0, y0, z0), de w × d × h cases. */
@@ -94,18 +99,18 @@ function stage(
   parts: { cells: PlanCell[]; kit: PlanCell[] },
   guardians: number,
   reward: PlanDef['reward'],
-  done: string,
+  fin: (archipel: string) => string,
 ): VehicleStage {
   const from = ARCHIPELAGOS[n - 1];
   const to = ARCHIPELAGOS[n];
-  return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done };
+  return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done: fin(to.name), fin };
 }
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
 export const VEHICLE_STAGES: VehicleStage[] = [
-  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { lanterne: 2, barriere: 4 } }, 'La voile est hissée ! Pose les derniers blocs et embarque : les Îles Brumeuses t’attendent.'),
-  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { lanterne: 2, escalier: 2 } }, 'Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les Anciens Ateliers t’attendent.'),
-  stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { lanterne: 3 } }, 'Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les Îles du Ciel t’attendent.'),
+  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { lanterne: 2, barriere: 4 } }, (archipel) => `La voile est hissée ! Pose les derniers blocs et embarque : les ${archipel} t’attendent.`),
+  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { lanterne: 2, escalier: 2 } }, (archipel) => `Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les ${archipel} t’attendent.`),
+  stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { lanterne: 3 } }, (archipel) => `Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les ${archipel} t’attendent.`),
 ];
 
 export function getStage(id: string): VehicleStage | undefined {

@@ -7,7 +7,8 @@ Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 
 - **Le récit** : le village est en ruine, l’élève est le **bâtisseur** ; les blocs gagnés construisent les ouvrages, les bâtiments des créatures, les monuments et le Bloc-Navire. Une île aux trois plans terminés est « Bâtie ».
 - **Le ton** : familier et chaleureux, un peu drôle, jamais menaçant ; les répliques tutoient et disent « bâtisseur ».
 - **Le Gardien** : une grande créature en cubes sur son îlot ; **vaincu**, il devient une statue de pierre, « il aime les revanches ». C’est un partenaire qui cède, pas un ennemi abattu.
-- **Qui parle** : les créatures, une par île ; la baleine aux grandes étapes, pour l’instant, avec les mêmes phrases que dans Archipéo sauf celle du dernier Gardien ; à remplacer par les créatures des îles-écoles ([GD-1](propositions/GD-1.md), [Personnages et Gardiens](personnages.md)).
+- **Qui parle** : les créatures, une par île ; aux quatre grandes étapes d’un archipel, la créature de l’île-école (Mousso, Bazar, Ixe, Fi), son nom écrit dans le titre de la bulle (« Le mot de Mousso ») et son portrait en cubes ; les baleines restent au large, sans parler ([GD-1](propositions/GD-1.md), point 1 ; [Personnages et Gardiens](personnages.md)).
+- **Les noms** : les archipels portent leurs noms d’origine, les Basses Terres, les Collines du Large, les Monts de Feu, les Îles du Ciel (GD-1, point 2) ; un élève qui jouait déjà les voit annoncés une fois, sur l’écran « De nouveaux noms ». Les rôles sont des métiers du chantier : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte, sur les seuils communs, et leurs succès expliquent le métier (GD-1, point 3).
 - **Le dessin** : tout en cubes texturés de 16 × 16 générés par le code, une ambiance par archipel, jour et nuit selon l’heure ; budget propre de 80 000 triangles et 240 appels de dessin. Blocland ne reçoit aucun lot R : son dessin est figé (étiquette `blocland-reference`), pas son accessibilité.
 - **L’interface** : des blocs vus de face en aplats d’herbe, de bois, de terre et d’or, titres en Archivo Black ; insignes de rôle en blocs de matériau ([Style](../../conception/style.md), « L’habillage de Blocland »).
 
@@ -15,14 +16,9 @@ Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 
 
 Garder un univers en blocs complet et soigné, univers de preuve de l’habillage pédagogique (U5), sans rien emprunter à un jeu existant.
 
-## Décidé, à construire
+## Construit avec GD-1
 
-Le caractère de Blocland se bâtit autour du **chantier du bâtisseur** ([GD-1](propositions/GD-1.md), décidée le 30 septembre 2026) :
-
-- aux quatre grandes étapes d’un archipel, c’est la créature de l’île-école qui parle (Mousso, Bazar, Ixe, Fi), avec son portrait ; les baleines restent au large, sans parler ;
-- les archipels reprennent leurs noms d’origine : les Basses Terres, les Collines du Large, les Monts de Feu, les Îles du Ciel ; « Le village de Blocland » ; l’écran « L’archipel X s’appelle maintenant Y » (U4) ;
-- les rôles deviennent des métiers, de la construction à l’ingénierie : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte, sur les mêmes seuils ;
-- un geste de pose (un bloc qui tombe et se pose, à la fin d’un plan et à l’écran titre) et un son de pose propres à Blocland, par un dégel ciblé du dessin.
+Le caractère de Blocland se bâtit autour du **chantier du bâtisseur** ([GD-1](propositions/GD-1.md), décidée le 30 septembre 2026). Les quatre points sont construits : qui parle, les noms des archipels, les rôles, et le geste et le son de pose (le dernier bloc d’un plan s’enclenche, le logo se construit, un « clac » mat).
 
 ## Questions ouvertes
 

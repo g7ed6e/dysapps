@@ -1,7 +1,8 @@
+import { textesDe } from '../../univers';
 import { BIOMES } from '../biomes';
 import { EMPTY_STATE, levelFor, type BloclandState } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
-import { BRIDGES, getArchipelago, isBiomeUnlocked, islandsOf } from './archipelago';
+import { BRIDGES, NOMS_ARCHIPELS, getArchipelago, isBiomeUnlocked, islandsOf } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipels';
 import { toutConstruit } from './budget';
 import {
@@ -19,6 +20,8 @@ import {
   type Voyage,
 } from './modele';
 import { questStations } from './terrain';
+
+const mots = textesDe('blocland').libelles;
 
 const vierge: BloclandState = EMPTY_STATE;
 const fini = (): BloclandState => ({ ...EMPTY_STATE, ...toutConstruit() }) as BloclandState;
@@ -38,19 +41,19 @@ it('l’état des bornes est celui que calculait la page du monde', () => {
           return { id: `${b.id}:${st.typeId}`, ile: b.id, mission: st.typeId, etat: !def ? 'locked' : progress ? progress.stars : 'new' };
         }),
       );
-      expect(modeleDuMonde(state, a).bornes).toEqual(attendu);
+      expect(modeleDuMonde(state, a, NOMS_ARCHIPELS, mots).bornes).toEqual(attendu);
     }
 });
 
 it('les îles du modèle : ouvertes ou non, et leur état', () => {
-  const m = modeleDuMonde(vierge, '6e');
+  const m = modeleDuMonde(vierge, '6e', NOMS_ARCHIPELS, mots);
   expect(m.iles.map((i) => i.id)).toEqual(islandsOf('6e').map((b) => b.id));
   expect(m.iles.find((i) => i.id === 'foret')).toMatchObject({ ouverte: true, etat: { id: 'a-explorer' } });
   expect(m.iles.find((i) => i.id === 'mine')).toMatchObject({ ouverte: false, etat: { id: 'fermee' } });
 });
 
 it('une borne touchée : jouer si elle est jouable, sinon ouvrir son île', () => {
-  const { bornes } = modeleDuMonde(vierge, '6e');
+  const { bornes } = modeleDuMonde(vierge, '6e', NOMS_ARCHIPELS, mots);
   const ouverte = bornes.find((b) => b.ile === 'foret')!;
   const fermee = bornes.find((b) => b.ile === 'mine')!;
   expect(borneTouchee(bornes, 'foret', ouverte.mission)).toBe('jouer');
