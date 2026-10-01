@@ -103,6 +103,10 @@ it('le nom du Gardien seulement dans le titre ; la réplique se replie à la pre
   const item = def.items.find((i) => prompt.includes(String(i.word)))!;
   await user.click(screen.getByRole('button', { name: String(item.answer) }));
   expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+  // Repliée, la première phrase à l'écran ; la suite reste dans la page pour le lecteur d'écran, et le chevron l'ouvre.
+  const ligne = arene.querySelector('.arena-line')!;
+  expect(ligne.textContent).toBe('Une branche s’allume dans ma couronne. Tu as l’oreille fine.');
+  expect(ligne.querySelector('.visually-hidden')!.textContent).toBe(' Tu as l’oreille fine.');
   expect(screen.getByRole('button', { name: 'Toute la réplique' })).toHaveAttribute('aria-expanded', 'false');
   // La règle reste comme au lancement : ouverte au premier défi (DA-28).
   expect(pli().open).toBe(true);

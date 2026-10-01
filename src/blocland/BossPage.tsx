@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -15,6 +15,7 @@ import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
+import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { FONDU, lueursDuDefi } from './world/personnages/allumage';
@@ -60,6 +61,10 @@ export function BossPage() {
   const [line, setLine] = useState<string | null>(null);
   // La réplique du Gardien, entière au lancement, repliée en une ligne dès la première épreuve jouée (DA-34).
   const [repliqueOuverte, setRepliqueOuverte] = useState(false);
+  // La ligne repliée déborde-t-elle ? Mesuré à l'écran : la première phrase peut ne pas tenir sur une ligne.
+  const [deborde, setDeborde] = useState(false);
+  const ligneRef = useRef<HTMLParagraphElement>(null);
+  const ligneId = useId();
   // Ce Gardien vaincu fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
@@ -77,6 +82,18 @@ export function BossPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def]);
 
+  // Mesurée tant que la réplique est repliée, et à chaque changement de taille ; ouverte, on garde la dernière mesure.
+  useLayoutEffect(() => {
+    const el = ligneRef.current;
+    if (!el || played === 0 || repliqueOuverte) return;
+    const mesure = () => setDeborde(el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1);
+    mesure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(mesure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [line, played, repliqueOuverte]);
+
   if (!biome) return <NotFoundPage />;
   const { challenge, guardianSays: says } = textes.gardiens[biome.id];
   // Ce que dit l'arène, écrit et lu à l'identique.
@@ -85,6 +102,10 @@ export function BossPage() {
   const beatenNow = finished && won >= needed;
   const remaining = Math.max(0, total - won);
   const repliee = played > 0 && !repliqueOuverte;
+  // Repliée, la ligne montre la première phrase (coupée par « … » si elle ne tient pas) ; le reste, caché à l'écran,
+  // reste lu par un lecteur d'écran. Le chevron n'est là que si la réplique est vraiment coupée.
+  const { first: premiere, rest: suite } = firstSentences(arenaLine);
+  const coupee = suite !== '' || deborde;
 
   const onRound = ({ correct }: { correct: boolean }) => {
     const nextWon = won + (correct ? 1 : 0);
@@ -154,9 +175,9 @@ export function BossPage() {
               {sent ? (
                 <>
                   <div className="arena-jauge">
-                    <div className="arena-gauge-label" aria-hidden="true">
-                      <span>{sent.jauge}</span>
-                      <span>{sent.compte(won, total)}</span>
+                    <div className="arena-gauge-label">
+                      <span aria-hidden="true">{sent.jauge}</span>
+                      <span aria-hidden="true">{sent.compte(won, total)}</span>
                     </div>
                     <div
                       className="arena-pastilles"
@@ -197,9 +218,9 @@ export function BossPage() {
                 </>
               ) : (
                 <div className="arena-jauge">
-                  <div className="arena-gauge-label" aria-hidden="true">
-                    <span>Résistance</span>
-                    <span>
+                  <div className="arena-gauge-label">
+                    <span aria-hidden="true">Résistance</span>
+                    <span aria-hidden="true">
                       {remaining} / {total}
                     </span>
                   </div>
@@ -220,12 +241,12 @@ export function BossPage() {
                   des plis des îles (ou un toucher sur la ligne) ouvre en entier. Le texte reste entier pour un lecteur
                   d'écran, et le haut-parleur, à sa droite, le lit toujours en entier (DA-34). */}
               <div className={`arena-replique${repliee ? ' repliee' : ''}`}>
-                {played > 0 && (
+                {played > 0 && coupee && (
                   <button
                     type="button"
                     className="arena-replique-pli"
                     aria-expanded={repliqueOuverte}
-                    aria-controls="arena-line"
+                    aria-controls={ligneId}
                     onClick={() => setRepliqueOuverte((o) => !o)}
                   >
                     <Icon name={repliqueOuverte ? 'chevronDown' : 'chevronRight'} />
@@ -233,13 +254,21 @@ export function BossPage() {
                   </button>
                 )}
                 <p
-                  id="arena-line"
+                  ref={ligneRef}
+                  id={ligneId}
                   className="arena-line"
                   role="status"
                   aria-live="polite"
-                  onClick={repliee ? () => setRepliqueOuverte(true) : undefined}
+                  onClick={repliee && coupee ? () => setRepliqueOuverte(true) : undefined}
                 >
-                  <Syllabified text={arenaLine} />
+                  {repliee && suite ? (
+                    <>
+                      <Syllabified text={premiere} />
+                      <span className="visually-hidden"> {suite}</span>
+                    </>
+                  ) : (
+                    <Syllabified text={arenaLine} />
+                  )}
                 </p>
                 <SpeakButton text={arenaLine} label="Écouter" compact />
               </div>

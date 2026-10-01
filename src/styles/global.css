@@ -3290,6 +3290,19 @@ figure.class-table {
     opacity: 0.85;
   }
 }
+/* Dans la vitrine basse de l'arène (DA-34), le Gardien tombe sans descendre : il reste dans son cadre. */
+.arena-vitrine .guardian-beaten {
+  animation-name: guardian-fall-vitrine;
+}
+@keyframes guardian-fall-vitrine {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotate(-70deg) scale(0.85);
+    opacity: 0.85;
+  }
+}
 .arena-info {
   display: grid;
   gap: 0.3rem;
@@ -3406,6 +3419,14 @@ figure.class-table {
   background: none;
   color: inherit;
   cursor: pointer;
+}
+/* Sans bordure et collé à la réplique par ses marges négatives : son anneau de focus, décalé, passe devant elle. */
+.arena-replique-pli:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius);
 }
 /* Archipéo : la règle du rallumage, sa phrase courte toujours lue, la règle entière dans le pli, le haut-parleur à
    droite du titre, à la même place pli ouvert ou fermé (DA-28). Le chevron est celui des plis des îles. */

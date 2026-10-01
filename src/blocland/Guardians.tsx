@@ -57,6 +57,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
       reduceMotion={reduceMotion}
       cameraDirection={[-0.55, -0.85]}
       elevation={0.35}
+      remplir
       className="creature-3d guardian-3d"
       label={label}
     />
@@ -68,7 +69,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
       reduceMotion={reduceMotion}
       cameraDirection={[0.55, -0.85]}
       elevation={0.35}
-      fit={1.5}
+      remplir
       className="creature-3d guardian-3d"
       label={label}
     />

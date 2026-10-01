@@ -125,21 +125,53 @@ it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis
   expect(ligne().textContent).toMatch(/Le Grand Chêne/);
   expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
   expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
-  // Une épreuve jouée : la nouvelle réplique, repliée en une ligne (à l'écran), entière dans la page.
+  // Une épreuve jouée : la nouvelle réplique, repliée en une ligne. Courte (« Mes branches tremblent. Tu as l’oreille
+  // fine. »), elle tient : rien n'est coupé, donc pas de chevron (jsdom ne mesure pas de débordement).
   const { loadExercise } = await import('./exercises');
   const def = (await loadExercise('foret-echauffement-001'))!;
   const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
   const item = def.items.find((i) => prompt.includes(String(i.word)))!;
   await user.click(screen.getByRole('button', { name: String(item.answer) }));
-  expect(ligne().textContent).toMatch(/Mes branches tremblent/);
+  expect(ligne().textContent).toBe('Mes branches tremblent. Tu as l’oreille fine.');
   expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
-  const pli = screen.getByRole('button', { name: 'Toute la réplique' });
-  expect(pli).toHaveAttribute('aria-expanded', 'false');
-  expect(pli).toHaveAttribute('aria-controls', ligne().id);
-  // Le pli l'ouvre en entier, et la referme.
-  await user.click(pli);
-  expect(pli).toHaveAttribute('aria-expanded', 'true');
-  expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
-  await user.click(pli);
-  expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+  expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
+});
+
+it('la réplique repliée montre sa première phrase, le reste pour le lecteur d’écran, et le chevron l’ouvre (DA-34)', async () => {
+  const { gardiens } = (await import('../univers/blocland')).BLOCLAND;
+  const says: { hit: string } = gardiens.foret.guardianSays;
+  // Le temps de ce test, une réplique de réussite en deux phrases, dont la première suffit à la ligne repliée.
+  const avant = says.hit;
+  says.hit = 'Mes branches tremblent jusqu’aux racines. Tu as l’oreille fine.';
+  try {
+    localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+    const user = (await import('@testing-library/user-event')).default.setup();
+    renderAt('/aventure/foret/gardien');
+    await loaded();
+    const arene = screen.getByRole('region', { name: /L’arène du Gardien/ });
+    const ligne = () => arene.querySelector('.arena-line')!;
+    const { loadExercise } = await import('./exercises');
+    const def = (await loadExercise('foret-echauffement-001'))!;
+    const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
+    const item = def.items.find((i) => prompt.includes(String(i.word)))!;
+    await user.click(screen.getByRole('button', { name: String(item.answer) }));
+    expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+    // À l'écran, la première phrase ; la suite, cachée, reste dans la page.
+    const cachee = ligne().querySelector('.visually-hidden')!;
+    expect(cachee.textContent).toBe(' Tu as l’oreille fine.');
+    expect(ligne().textContent!.replace(cachee.textContent!, '')).toBe('Mes branches tremblent jusqu’aux racines.');
+    const pli = screen.getByRole('button', { name: 'Toute la réplique' });
+    expect(pli).toHaveAttribute('aria-expanded', 'false');
+    expect(pli).toHaveAttribute('aria-controls', ligne().id);
+    // Le pli l'ouvre en entier, et la referme.
+    await user.click(pli);
+    expect(pli).toHaveAttribute('aria-expanded', 'true');
+    expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
+    expect(ligne().querySelector('.visually-hidden')).toBeNull();
+    expect(ligne().textContent).toBe('Mes branches tremblent jusqu’aux racines. Tu as l’oreille fine.');
+    await user.click(pli);
+    expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+  } finally {
+    says.hit = avant;
+  }
 });
