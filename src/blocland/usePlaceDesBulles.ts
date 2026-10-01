@@ -5,7 +5,8 @@ import { useLayoutEffect, type RefObject } from 'react';
  * et la barre du bas, dont la hauteur change avec la taille du texte (deux lignes de boutons sur téléphone, DA-24).
  * On mesure l'un et l'autre et on les donne à la scène (`--barre-h`, `--haut-h`) : une bulle ne passe jamais sous la
  * barre ni sur le haut (DA-25). On donne aussi la largeur de la colonne de droite (Pause et le choix de l'archipel,
- * `--colonne-w`) : le panneau du haut s'arrête avant elle, aucun bouton ne se pose sur son texte (DA-31).
+ * `--colonne-w`) : le panneau du haut s'arrête avant elle, aucun bouton ne se pose sur son texte (DA-31). Et son bas
+ * (`--colonne-bas`) : « Recentrer » se pose dessous, qu'il y ait ou non le choix de l'archipel.
  */
 export function usePlaceDesBulles(stageRef: RefObject<HTMLElement | null>, voyage: boolean) {
   useLayoutEffect(() => {
@@ -28,6 +29,7 @@ export function usePlaceDesBulles(stageRef: RefObject<HTMLElement | null>, voyag
       const { bar, tops, colonne } = trouver();
       const s = stage.getBoundingClientRect();
       poser('--colonne-w', Math.ceil(Math.max(0, ...colonne.map((e) => e.getBoundingClientRect().width))));
+      poser('--colonne-bas', Math.ceil(Math.max(0, ...colonne.map((e) => e.getBoundingClientRect().bottom - s.top))));
       // Une barre masquée (bulle ouverte sur téléphone en grand texte) ne prend plus de place.
       const barre = bar && bar.getClientRects().length ? Math.ceil(s.bottom - bar.getBoundingClientRect().top) : 0;
       poser('--barre-h', Math.max(0, barre));

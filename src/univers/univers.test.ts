@@ -19,6 +19,7 @@ function tousLesTextes(t: TextesUnivers): string[] {
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens('Premiers Rivages'), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
   out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
+  out.push(l.decouverteOuvrages, l.decouverteNavire);
   const d = t.sentinelles;
   if (d) {
     out.push(d.consigne, d.jauge, d.seuil(5, false), d.seuil(5, true), d.rallume('Le Grand Chêne'));

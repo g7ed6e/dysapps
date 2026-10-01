@@ -266,7 +266,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « Le present perfect » :
   - have / has + participe passé (I have seen, she has seen).
-  - Expérience : ever (déjà, dans une question), never (jamais).
+  - Expérience : ever = déjà (dans une question), never = jamais.
   - Verbe régulier : participe en -ed (finished). Irrégulier : 3e forme (seen, eaten, been).
 
 1. énoncé : I have … to London twice.
@@ -378,10 +378,10 @@ Pour tous les items :
 Pour tous les items :
 - langue des choix : fr
 - aide « Les fêtes de l’année » :
-  - Halloween : 31 octobre ; treat = une friandise (des bonbons).
+  - Halloween = le 31 octobre ; treat = une friandise.
   - bonfire = feu de joie ; fireworks = feu d’artifice.
-  - Remembrance Day : 11 novembre ; poppy = coquelicot.
-  - Thanksgiving : quatrième jeudi de novembre ; turkey = dinde.
+  - Remembrance Day = le 11 novembre ; poppy = une fleur rouge des champs.
+  - Thanksgiving = le quatrième jeudi de novembre ; turkey = une grosse volaille.
   - Christmas = Noël ; pancake = crêpe ; Tuesday = mardi.
   - Independence Day = le jour de l’indépendance.
 
@@ -447,7 +447,7 @@ Pour tous les items :
 Pour tous les items :
 - langue des choix : fr
 - aide « Lieux et légendes » :
-  - the UK : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.
+  - the UK = quatre pays : l’Angleterre, l’Écosse, le pays de Galles, l’Irlande du Nord.
   - Scotland = Écosse ; Wales = pays de Galles ; flag = drapeau.
   - river = fleuve ; the Thames = la Tamise ; loch = lac.
   - outlaw = hors-la-loi ; the rich = les riches ; the poor = les pauvres.

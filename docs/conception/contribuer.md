@@ -34,7 +34,7 @@ Une pull request qui ajoute une page au manuel ou à la conception la déclare d
 
 ## Les agents
 
-Le dépôt fournit sept agents partagés pour Claude Code, dans `.claude/agents/`. Toute personne qui clone le dépôt a les mêmes ; leurs consignes se modifient par pull request, comme le reste. On les sollicite par leur nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent <nom>`.
+Le dépôt fournit huit agents partagés pour Claude Code, dans `.claude/agents/`. Toute personne qui clone le dépôt a les mêmes ; leurs consignes se modifient par pull request, comme le reste. On les sollicite par leur nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent <nom>`.
 
 - Le **Directeur contenu pédagogique** (`directeur-contenu-pedagogique`) garantit le programme officiel, les règles dys et la qualité des items. Il cadre un lot de contenu à partir de ce qui reste à couvrir, relit et écrit des exercices, et tient les exclusions du référentiel à jour. Il peut modifier des fichiers.
 - Le **directeur artistique** (`directeur-artistique`) est le game designer. Il conduit les [univers](univers.md) et la migration vers Archipéo : il cadre un lot de game design, relit une proposition sous cet angle, garde les règles communes à tous les univers, valide ce que proposent les consultants et tranche entre eux. Il lit et propose, sans modifier de fichier.
@@ -43,6 +43,7 @@ Le dépôt fournit sept agents partagés pour Claude Code, dans `.claude/agents/
 
 - Le **Référent dys** (`referent-dys`) s’assure que le jeu convient à des élèves dys. Il relit tout lot qui touche ce que l’élève voit, entend ou fait, à partir des [principes dys](../../www/pedagogie/principes.md) et des [bonnes pratiques](bonnes-pratiques-dys.md) en vigueur en France. Il rend un avis, sans modifier de fichier.
 - L’**Expert frontend** (`expert-frontend`) s’assure que le code est à l’état de l’art pour la pile du dépôt, avec trois priorités dans cet ordre : la sécurité, la performance et la maintenabilité. Il relit toute pull request qui modifie du code à partir des [bonnes pratiques du code](bonnes-pratiques-code.md), lance les contrôles du dépôt et rend un avis, sans modifier de fichier.
+- Le **Consultant UX UI** (`consultant-ux-ui`) s’occupe de l’ergonomie et de l’interface des écrans, communes aux univers : parcours, navigation, hiérarchie d’un écran et prochaine action, composants et leurs états, mise en page sur tablette, téléphone, portrait et paysage, retours à l’élève. Il propose l’interface d’un lot, relit ce qui change un écran à partir des [bonnes pratiques UX UI](bonnes-pratiques-ux-ui.md) et rend un avis, sans modifier de fichier. Il travaille sous l’autorité du directeur artistique.
 
 **Le directeur artistique, ou le consultant d’un univers sous son autorité, décide quoi ; l’artiste technique 3D décide comment.** Le premier fixe l’intention (ce que l’élève voit, la palette, les silhouettes, l’ambiance) et relit le résultat ; le second choisit la technique et ne change pas l’intention. Quand une cible coûte trop cher ou demanderait une image importée, l’artiste technique 3D propose d’autres façons d’approcher l’effet : le directeur artistique choisit le rendu, le mainteneur arbitre le budget et les règles du dépôt.
 
@@ -52,6 +53,8 @@ Le dépôt fournit sept agents partagés pour Claude Code, dans `.claude/agents/
 
 **L’Expert frontend relit tout le code.** Toute pull request qui modifie du code (application, rendu, scripts, tests, configuration, CI, dépendances) passe par sa relecture avant d’être ouverte, et sa description en donne le verdict (Conforme, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant l’arrête de la même façon. Il ne tranche ni la technique du rendu, que l’artiste technique 3D choisit (il relit son code comme tout code : typage, découpage, fuites de mémoire, tests), ni ce que l’élève doit vivre, que dit le Référent dys (il vérifie que le code le fait : sémantique, focus, clavier, préférences du système).
 
+**Le Consultant UX UI relit les écrans.** Toute pull request qui change un écran, un composant, la navigation ou un parcours passe par sa relecture avant d’être ouverte, et sa description en donne le verdict (Clair, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant l’arrête tant que le directeur artistique ne l’a pas levé ou que le mainteneur n’a pas tranché. Un changement d’habillage seul (couleur, texture, police de titre, nom), sans toucher la structure de l’écran ni la place des éléments, ne passe que par le consultant de l’univers. Il propose et relit l’ergonomie commune aux univers ; le directeur artistique décide, les consultants d’univers gardent l’habillage et les noms, ce qu’est une célébration ou un son revient au directeur artistique (le consultant UX UI en relit la place et la durée), le Référent dys ce que l’élève dys doit pouvoir faire (une règle dys l’emporte toujours), l’Expert frontend et ceux qui écrivent le code la façon de le coder.
+
 Les autres choix techniques (code hors rendu, données, tests, CI, déploiement) reviennent à ceux qui écrivent le code, après l’avis de l’Expert frontend, et sont décrits par [Architecture](architecture.md) et [Déploiement](deploiement.md).
 
 ### Qui tient quel document
@@ -60,6 +63,7 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 | --- | --- | --- |
 | [Principes dys](../../www/pedagogie/principes.md) | Contenu | Les règles dys ; une contrainte pour tous les agents |
 | [Bonnes pratiques dys](bonnes-pratiques-dys.md) | Référent dys | D’où viennent les règles dys, ce qui reste à surveiller ; il propose aussi les évolutions des principes |
+| [Bonnes pratiques UX UI](bonnes-pratiques-ux-ui.md) | Consultant UX UI | L’ergonomie et l’interface des écrans, ce qui reste à surveiller ; il en propose les mises à jour |
 | [Bonnes pratiques du code](bonnes-pratiques-code.md) | Expert frontend | L’état de l’art pour la pile du dépôt, ce qui reste à surveiller ; il en propose les mises à jour |
 | [Format des exercices](exercices.md), [Référentiel des programmes](programmes.md) | Contenu | Le format des items, la couverture du programme |
 | [Cadrage du contenu](cadrage-contenu.md) | Contenu | Les décisions de contenu et la suite à couvrir |
@@ -88,7 +92,7 @@ Une question qui touche aux deux (une mission qui doit produire une conséquence
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
 - Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
-- Les changements de contenu (exercices, missions, exclusions du référentiel) sont relus par l’agent `directeur-contenu-pedagogique`, ceux de style ou de game design (univers, progression, récompenses, textures, polices) par l’agent `directeur-artistique`, ceux des noms, du récit ou du rendu d’un univers par son consultant (`consultant-archipeo`, `consultant-blocland`), ceux du rendu du monde (`src/blocland/three/`, `pixel/`, textures, maillage) aussi par l’agent `artiste-technique-3d`, avant fusion ; tout changement de ce que l’élève voit, entend ou fait passe en plus par l’agent `referent-dys`, et tout changement de code par l’agent `expert-frontend`, avant l’ouverture de la pull request (voir [Les agents](#les-agents)).
+- Les changements de contenu (exercices, missions, exclusions du référentiel) sont relus par l’agent `directeur-contenu-pedagogique`, ceux de style ou de game design (univers, progression, récompenses, textures, polices) par l’agent `directeur-artistique`, ceux des noms, du récit ou du rendu d’un univers par son consultant (`consultant-archipeo`, `consultant-blocland`), ceux du rendu du monde (`src/blocland/three/`, `pixel/`, textures, maillage) aussi par l’agent `artiste-technique-3d`, avant fusion ; tout changement de ce que l’élève voit, entend ou fait passe en plus par l’agent `referent-dys`, tout changement d’écran, de composant, de navigation ou de parcours par l’agent `consultant-ux-ui`, et tout changement de code par l’agent `expert-frontend`, avant l’ouverture de la pull request (voir [Les agents](#les-agents)).
 
 ## Signaler un problème
 

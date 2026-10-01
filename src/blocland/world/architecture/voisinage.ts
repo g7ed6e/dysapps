@@ -96,11 +96,13 @@ export interface OptionsDuVoisinage {
    * rien ne l'est.
    */
   surLeVide?: (x: number, y: number, z: number) => boolean;
+  /** La classe du bloc, quand elle ne se lit pas sur sa texture (un bloc d'un lieu du village : ./lieux.ts). */
+  classe?: Classe;
 }
 
 /** Le voisinage d'un bloc du plan (`null` pour une lanterne, qui ne fait pas masse). */
 export function voisinageDe(c: VoxelCube, index: IndexDuPlan, options: OptionsDuVoisinage = {}): Voisinage | null {
-  const classe = classeDe(c.texture);
+  const classe = options.classe ?? classeDe(c.texture);
   if (!classe) return null;
   const a = (dx: number, dy: number, dz: number) => index.get(cle(c.x + dx, c.y + dy, c.z + dz));
   let cotes = 0;

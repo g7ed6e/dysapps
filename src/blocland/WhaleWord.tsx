@@ -82,9 +82,9 @@ interface Props {
   aSuivre?: boolean;
 }
 
-/** Le panneau « Le mot de la baleine » : une ou deux pages lues à voix haute, fermé par « J'ai compris » ou Échap. */
+/** Le panneau « Le mot de la baleine » : une ou deux pages lues à voix haute, fermé par « J'ai compris », « Passer » (avant la dernière page) ou Échap. */
 export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false }: Props) {
-  const { settings, speak } = useSettings();
+  const { settings, speak, stop } = useSettings();
   const textes = useTextes();
   // Un bandeau de récompense attend que le mot soit fermé, dans le monde comme en vue simple (DA-9).
   useHoldCelebrations(true);
@@ -130,6 +130,18 @@ export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false 
         ) : (
           <button type="button" className="button primary" onClick={() => setPage((p) => p + 1)}>
             Suivant
+          </button>
+        )}
+        {!last && (
+          <button
+            type="button"
+            className="button"
+            onClick={() => {
+              stop();
+              onClose();
+            }}
+          >
+            Passer
           </button>
         )}
       </div>

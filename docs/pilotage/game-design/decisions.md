@@ -19,3 +19,4 @@ Les décisions prises avant cette page restent dans les tableaux où elles ont �
 | Date | Décision | Fiche | Lot |
 | --- | --- | --- | --- |
 | 30 septembre 2026 | Le game design se tient dans cette section, et chaque changement passe par une fiche GD-n | — | — |
+| 1er octobre 2026 | Plus aucun trophée sur le toit de la salle des trophées : la salle s’agrandit d’une travée tous les 6 succès, vers la gauche, jusqu’à 8 × 3 cases (commun aux deux univers) | [GD-3](propositions/GD-3.md) | lot 7 (avant 7c) |

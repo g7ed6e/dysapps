@@ -3425,8 +3425,9 @@ figure.class-table {
   min-height: 0;
   overflow: hidden;
 }
-.app-shell.immersive .topbar {
-  flex-shrink: 0;
+/* Sans barre du haut, le monde commence sous l'encoche de l'appareil (appli installée, viewport-fit=cover). */
+.app-shell.immersive {
+  padding-top: env(safe-area-inset-top);
 }
 .app-shell.immersive .content {
   flex: 1 1 auto;
@@ -3679,11 +3680,15 @@ figure.class-table {
   gap: 0.5rem;
 }
 .world-map-islands summary {
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   font-weight: 700;
   cursor: pointer;
+}
+/* Sous la liste des îles, une ligne : ce qui ouvre une île pâle. */
+.world-map-islands-note {
+  margin: 0 0 0.4rem;
 }
 .world-map-islands ul {
   display: grid;
@@ -3801,6 +3806,30 @@ figure.class-table {
   margin: 0;
   color: var(--muted);
 }
+/* La matière, la classe et l'archipel, au pied du panneau d'une île. */
+.island-sheet-foot {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+/* Un pli de texte (« La suite » de l'accueil, « En savoir plus ») : le titre garde le triangle du navigateur. */
+.sheet-more {
+  margin: -0.4rem 0 0.8rem;
+}
+.sheet-more > summary {
+  display: list-item;
+  min-height: 48px;
+  padding: 0.55rem 0;
+  box-sizing: border-box;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sheet-more > p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  margin: 0;
+}
 .island-sheet-close {
   flex-shrink: 0;
   align-self: flex-start;
@@ -3815,6 +3844,10 @@ figure.class-table {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-control);
   background: var(--secondary-bg);
+}
+/* L'accueil d'une île : le nom de la créature et « Réécouter » sur une ligne, sa phrase dessous. */
+.island-sheet-says-texte {
+  flex: 1 1 100%;
 }
 .island-sheet-heading {
   display: flex;
@@ -3920,7 +3953,7 @@ button.island-quest:active {
     width: min(1.2em, 28px);
     height: min(1.2em, 28px);
   }
-  /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les six boutons tiennent sur la largeur. */
+  /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les cinq boutons tiennent sur la largeur. */
   .world-bar-text {
     position: absolute;
     width: 1px;
@@ -3928,6 +3961,14 @@ button.island-quest:active {
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+  /* En grand texte, les libellés restent écrits : les boutons passent à la ligne plutôt que de n'être que des icônes. */
+  :root[data-texte="grand"] .world-bar-text {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
   }
   .island-sheet {
     max-height: 58%;
@@ -4152,6 +4193,20 @@ button.island-quest:active {
 .rule-card ul {
   margin: 0;
   padding-left: 1.2rem;
+}
+/* Une ligne de lexique d'anglais porte son bouton Écouter (l'icône seule) à droite, en colonne, calé en haut de la ligne :
+   les boutons s'alignent d'une ligne à l'autre, le texte passe à la ligne à côté du bouton, jamais dessous. */
+.rule-line-listen {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.rule-line-listen > span {
+  flex: 1;
+}
+/* Deux boutons de lignes voisines ne se touchent pas : on vise l'un sans lancer l'autre. */
+.rule-card li:has(> .rule-line-listen) + li:has(> .rule-line-listen) {
+  margin-top: 0.5rem;
 }
 
 /* Le rappel de règle dans l'aide : un seul cadre. */
@@ -4608,6 +4663,12 @@ figure.posee {
 .island-inventory-link {
   margin: 0.6rem 0 0;
 }
+/* « Tous les monuments » : une cible d'au moins 48 px. */
+.island-inventory-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+}
 .island-inventory-link .tag {
   display: inline-flex;
   align-items: center;
@@ -4633,8 +4694,33 @@ figure.posee {
 .island-goal p {
   margin: 0;
 }
+/* Dans le pli du prochain objectif (île-port), l'objectif et sa jauge sont le titre : lisibles pli fermé. */
+details.island-fold-objectif {
+  margin-top: 0.8rem;
+  padding-top: 0;
+  border-top: none;
+}
+.island-fold-objectif > summary {
+  align-items: flex-start;
+}
+.island-fold-objectif > summary .island-fold-chevron {
+  margin-top: 0.6rem;
+}
+.island-fold-objectif > summary .island-goal {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+.island-fold-objectif .village-stage {
+  margin: 0.4rem 0 0 1.8rem;
+}
+.island-village {
+  margin-top: 0.8rem;
+}
 /* Jauge de l'objectif : blocs gagnés sur blocs nécessaires. */
 .goal-gauge {
+  display: block;
   position: relative;
   height: 1.6rem;
   margin-top: 0.5rem;
@@ -4998,6 +5084,20 @@ figure.posee {
 }
 .inventory-line {
   margin: 0 0 0.5rem;
+}
+.inventory-all {
+  margin-top: 0.5rem;
+}
+/* Un monument : ce qui manque pour poser, en une ligne visible au-dessus du pli des blocs. */
+.monument-lacking {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+  font-weight: 700;
+}
+.monument-blocks {
+  margin: 0 0 0.6rem;
 }
 .inventory-missing li {
   display: flex;
@@ -5444,13 +5544,43 @@ button.app-card {
 .menu-resume {
   width: 100%;
   justify-content: center;
-  margin: 0.4rem 0 0.8rem;
+  margin: 0.4rem 0 0.6rem;
+}
+/* Le menu du village tient sans défiler sur un écran d'ordinateur (1280 × 800) : des lignes plus serrées, des cibles
+   d'au moins 48 px. */
+.menu-sheet {
+  padding-bottom: 0.8rem;
+}
+.menu-sheet .island-quests {
+  gap: 0.35rem;
+}
+.menu-sheet .island-quest {
+  min-height: 48px;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+/* Réglages et Accueil côte à côte, juste sous Reprendre : visibles d'emblée, même sur un téléphone. */
+.menu-quick {
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  margin-bottom: 0.6rem;
 }
 button.island-quest {
   width: 100%;
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+/* « Recentrer », après un glissé du monde : sous la colonne de droite (Pause, l'archipel), mesurée (`--colonne-bas`).
+   Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
+.world-recentrer {
+  position: absolute;
+  top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+  right: 0.6rem;
+  z-index: 2;
+  padding: 0.4rem 0.9rem;
+  gap: 0.4rem;
+  white-space: nowrap;
 }
 
 /* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
@@ -5863,4 +5993,13 @@ fieldset {
 /* En grand texte, les bulles posées sur le monde ne sont jamais plus larges que lui. */
 :root[data-texte="grand"] :is(.world-overlay-top, .world-overlay-bottom) {
   grid-template-columns: minmax(0, 1fr);
+}
+
+/* Le rôle et la jauge d'XP en tête du menu du village : la barre du haut de l'appli n'est pas sur l'écran du monde. */
+.menu-role {
+  margin: 0.1rem 0 0.2rem;
+}
+.menu-role .xp-title {
+  font-size: 1rem;
+  white-space: normal;
 }
