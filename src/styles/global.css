@@ -5453,6 +5453,18 @@ button.island-quest {
   cursor: pointer;
 }
 
+/* « Recentrer », après un glissé du monde : sous la colonne de droite (Pause, l'archipel), mesurée (`--colonne-bas`).
+   Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
+.world-recentrer {
+  position: absolute;
+  top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+  right: 0.6rem;
+  z-index: 2;
+  padding: 0.4rem 0.9rem;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
 /* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
 .world-archipel {
   position: absolute;

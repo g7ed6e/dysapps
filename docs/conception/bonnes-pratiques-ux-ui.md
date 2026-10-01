@@ -28,7 +28,7 @@ Les règles dys de l’application ([Principes](../../www/pedagogie/principes.md
 
 - **De grandes cibles, bien espacées** : 48 px au moins dans l’application (le minimum de WCAG 2.2, critère 2.5.8, est de 24 px ; Material Design recommande 48 dp, Apple 44 pt). Deux cibles voisines ne se touchent pas par erreur.
 - **Le pouce sur tablette** : les actions fréquentes à portée des bords bas et latéraux ; ce qui est rare ou risqué (quitter, effacer) loin de ce qui est fréquent, et confirmé.
-- **Un geste simple** : un toucher plutôt qu’un glisser, jamais l’appui long seul (WCAG 2.2, critère 2.5.7 « mouvements de glissement »).
+- **Un geste simple** : un toucher plutôt qu’un glisser, jamais l’appui long seul (WCAG 2.2, critère 2.5.7 « mouvements de glissement »). Un glisser reste un plus : faire glisser le monde pour l’explorer a son équivalent par simple toucher (toucher une île, bouton « Recentrer »), un petit mouvement compte encore comme un toucher, et rien ne s’ouvre au doigt levé après un glissé.
 
 ### Ne rien cacher
 
