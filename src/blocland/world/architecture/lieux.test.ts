@@ -8,7 +8,7 @@ import { BADGES } from '../../../core/progress';
 import { trophyBlock } from '../../trophies';
 import { toutConstruit } from '../budget';
 import { batimentsDe, caseDeLaConstruction, caseDeLaPiece, caseDuLieu, maillageDeLaConstruction, type GroupeDeConstruction } from '../construction';
-import { schoolModel, trophyModel, TROPHY_SLOTS, worldCubes } from '../terrain';
+import { schoolModel, trophyModel, worldCubes } from '../terrain';
 import { architectureDe, MOTIF, pieceDe, type Voisinage } from '.';
 import { KIT_6E } from './kits/6e';
 
@@ -96,7 +96,8 @@ describe('Les lieux du village au kit du 6e', () => {
     for (const c of salle.filter((c) => rel(c)?.z === 4)) expect(archi.couverts.has(cle(c))).toBe(true);
     for (const c of salle.filter((c) => c.texture === 'or')) expect(archi.couverts.has(cle(c))).toBe(false);
     // Le reste (le fond de velours, les socles, les trophées) : des blocs.
-    const pilier = (m: { x: number; y: number }) => (m.x === 0 || m.x === 3) && (m.y === 0 || m.y === 2);
+    // Les quatre coins de la salle de départ, à droite de son emprise (x = 4 à 7, GD-3).
+    const pilier = (m: { x: number; y: number }) => (m.x === 4 || m.x === 7) && (m.y === 0 || m.y === 2);
     for (const c of salle) {
       const m = rel(c);
       if (!m || m.z >= 4 || pilier(m)) continue;
@@ -104,18 +105,37 @@ describe('Les lieux du village au kit du 6e', () => {
     }
   });
 
-  it('un trophée posé sur le toit ou le faîte : le toit sous lui reste un bloc, le trophée ne flotte jamais au-dessus d’une pente', () => {
-    const { cubes } = lieux('6e', TOUS);
+  it.each([
+    [13, 6, 12, 6],
+    [24, 8, 16, 8],
+  ])('avec %i succès, la halle s’allonge (GD-3) : %i colonnes, un toit d’un seul tenant en versants, le faîte d’or qui s’allonge, des piliers de travée sans décharge, aucun trophée sur le toit', (n, largeur, versants, faite) => {
+    const { cubes } = lieux('6e', TOUS.slice(0, n));
     const archi = archiDe('6e', cubes);
     const salle = cubes.filter((c) => c.place === 'trophees');
-    const occupees = new Set(salle.map(cle));
-    for (const c of salle) {
-      if (!archi.remplacees.has(cle(c))) continue;
-      expect(occupees.has(`${c.x},${c.y},${c.z + 1}`), cle(c)).toBe(false);
+    const rel = (c: VoxelCube) => caseDuLieu(c)!;
+    expect(new Set(salle.map((c) => rel(c).x)).size).toBe(largeur);
+    // Plus aucun trophée au-dessus des socles : tout le toit devient des pentes, aucun bloc plat n'y reste.
+    expect(salle.filter((c) => rel(c).z >= 4).every((c) => archi.remplacees.has(cle(c)) || rel(c).z === 4)).toBe(true);
+    const toits = archi.pieces.filter((p) => p.cube.place === 'trophees');
+    expect(toits.map((p) => `${p.cube.texture}:${p.piece.split('.')[1]}`).sort()).toEqual([...Array(versants).fill('taille:versant'), ...Array(faite).fill('or:faite')].sort());
+    // Le pignon au bout de la halle, aucun au milieu : la rive aux deux bouts seulement, des versants courants entre eux,
+    // tous tournés pareil.
+    const debut = 8 - largeur;
+    for (const y of [0, 2]) {
+      const rang = toits.filter((p) => p.cube.texture === 'taille' && rel(p.cube).y === y).sort((a, b) => rel(a.cube).x - rel(b.cube).x);
+      const rotation = rang[0].rotation;
+      expect(
+        rang.map((p) => `${rel(p.cube).x}:${p.piece}@${p.rotation}`),
+        `rang ${y}`,
+      ).toEqual(Array.from({ length: largeur }, (_, i) => `${debut + i}:toit.versant.${i === 0 || i === largeur - 1 ? 'rive' : 'courant'}.ciel@${rotation}`));
     }
-    // Tous les succès : chaque place du toit a son trophée, donc tout le toit reste en blocs.
-    expect(TOUS.length).toBe(TROPHY_SLOTS.length);
-    expect(archi.pieces.filter((p) => p.cube.place === 'trophees')).toEqual([]);
+    // Les piliers de la salle et de ses travées : en colombage, sans décharge.
+    const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophees');
+    expect(piliers.length).toBe((largeur === 6 ? 6 : 8) * 3);
+    for (const p of piliers) {
+      expect(p.cube.texture).toBe('marbre');
+      expect(p.peinture.motifs.every((f) => !(f & (MOTIF.montante | MOTIF.descendante))), cle(p.cube)).toBe(true);
+    }
   });
 
   it('le haut d’un toit de quatre rangées : un versant qui monte vers sa voisine de même niveau (la règle tourne avec lui)', () => {
