@@ -39,7 +39,7 @@
 // Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
 // les trois groupes.
 import type { VoxelCube } from '../Voxel';
-import { architectureDe, assemblerLesPieces, KITS, MOTIF, ROLES_PEINTS, type CaseDuLieu, type Kit, type Role } from './architecture';
+import { architectureDe, assemblerLesPieces, estUnLieuDuVillage, KITS, MOTIF, ROLES_PEINTS, type CaseDuLieu, type Kit, type Role } from './architecture';
 import { BLOCKS, type BiomeId } from '../biomes';
 import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
@@ -577,7 +577,8 @@ const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
  * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
- * le décor, les ponts, les bornes, les monuments, l'école et la salle des trophées n'y sont pas : ils gardent leur dessin.
+ * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; l'école et la salle des
+ * trophées non plus (elles prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   const deja = batiments.get(a);
@@ -600,12 +601,13 @@ const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null
  * marche du sol) ou hors d'un lieu du village (un monument).
  */
 export function caseDuLieu(c: VoxelCube): CaseDuLieu | null {
-  if ((c.place !== 'ecole' && c.place !== 'trophees') || !c.tag) return null;
+  if (!estUnLieuDuVillage(c.place) || !c.tag) return null;
   const k = `${c.place}|${c.tag}`;
   let coin = coinsDesLieux.get(k);
   if (coin === undefined) {
-    const s = placeSpot(c.place, c.tag as BiomeId);
-    coin = s && { x: s.x, y: s.y, z: islandDef(c.tag as BiomeId).altitude + s.h };
+    const ile = c.tag as BiomeId;
+    const s = placeSpot(c.place, ile);
+    coin = s && { x: s.x, y: s.y, z: islandDef(ile).altitude + s.h };
     coinsDesLieux.set(k, coin);
   }
   if (!coin) return null;
@@ -763,12 +765,15 @@ export function maillageDeLaConstruction(
     const fond = peintDe(c)?.peinture.fond ?? '';
     // Un toit prend la couverture de son île ; un bloc d'un lieu aussi, quand le kit le dit (le toit de la salle des trophées).
     const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
-    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
+    // Un bloc d'un lieu peut prendre la couleur d'une autre matière (la souche du clocheton, en pierre de taille).
+    const repeint = c.place ? archi?.matieres.get(cle(c.x, c.y, c.z)) : undefined;
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
     const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
+    else if (repeint) f = delave(couleurDeMatiere(a, repeint));
     else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
     else if (g === 'bloc' && cremeDuPhare(c)) {
       const [teinte, force] = ambianceDe(a).voile;

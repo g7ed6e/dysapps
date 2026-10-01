@@ -100,6 +100,8 @@ export type ManiereDuMur = 'colombage' | 'plein';
 export interface ContexteDuMur {
   /** Le bâtiment est bardé (les bâtiments du quai), au lieu du colombage. */
   barde?: boolean;
+  /** Un pilier isolé (la salle des trophées) : poteaux et sablières seulement, aucune décharge. */
+  sansDecharge?: boolean;
   /** La face du côté `cote` (0 à 3, ordre de `COTES`) regarde-t-elle le dehors du bâtiment ? (Les décharges y vont seules.) */
   exterieur?: (cote: number) => boolean;
 }
@@ -160,7 +162,7 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
   if (contexte.barde) return partout(MOTIF.bardage | (pied ? MOTIF.soubassement : 0) | bandes, 'bardage');
   const base = MOTIF.colombage | (pied ? MOTIF.soubassement | MOTIF.sabliereBasse : 0) | (v.dessus === 'toit' ? MOTIF.sabliereHaute : 0) | bandes;
   const motifs = [0, 1, 2, 3].map((cote) => {
-    if (!pied || v.cotes & (1 << cote) || !contexte.exterieur?.(cote)) return base;
+    if (!pied || contexte.sansDecharge || v.cotes & (1 << cote) || !contexte.exterieur?.(cote)) return base;
     // Les deux voisines le long de la face : exactement une qui manque, c'est un bout ou un angle de la façade.
     const manquent = [(cote + 1) % 4, (cote + 3) % 4].filter((c) => !(v.cotes & (1 << c))).length;
     return manquent === 1 ? base | sensDeLaDecharge(cote) : base;

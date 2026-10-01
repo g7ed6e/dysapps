@@ -31,10 +31,18 @@ export interface CaseDuLieu {
 }
 
 /**
- * Ce que le kit fait d'un bloc d'un lieu du village : sa famille (un mur de bois ou de pierre, un toit), et s'il prend la
- * couverture de son île (world/toits.ts) au lieu de sa matière ; `undefined` : il reste un bloc taillé.
+ * Ce que le kit fait d'un bloc d'un lieu du village : sa famille (un mur de bois ou de pierre, un toit ; sans famille, il
+ * reste un bloc taillé), s'il prend la couverture de son île (world/toits.ts) ou la couleur d'une autre matière
+ * (`matiere`) au lieu de la sienne, et si son colombage se passe de décharge (`sansDecharge`, un pilier isolé) ;
+ * `undefined` : il reste le bloc qu'il est.
  */
-export type LieuDuKit = (m: CaseDuLieu) => { famille: Famille; couverture?: boolean } | undefined;
+export interface BlocDuKit {
+  famille?: Famille;
+  couverture?: boolean;
+  matiere?: TextureKind;
+  sansDecharge?: boolean;
+}
+export type LieuDuKit = (m: CaseDuLieu) => BlocDuKit | undefined;
 
 export interface Kit {
   /** La table « bloc vers matière » : la famille de chaque texture de bloc (une texture absente n'est pas remplacée). */

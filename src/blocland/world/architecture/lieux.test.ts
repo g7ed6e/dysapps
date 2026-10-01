@@ -70,6 +70,12 @@ describe('Les lieux du village au kit du 6e', () => {
     for (const c of ecole.filter((c) => ['porte', 'verre', 'or'].includes(c.texture ?? '') || rel(c)?.z === 6)) {
       expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
     }
+    // La souche du clocheton (le toit sous lui) : un bloc, de la pierre de taille du clocheton (un seul fût de deux cases).
+    const souches = ecole.filter((c) => c.texture === 'toit' && rel(c)?.z === 5 && rel(c).x === 2 && rel(c).y === 1);
+    expect(souches.length).toBe(1);
+    expect(archi.matieres.get(cle(souches[0]))).toBe('taille');
+    expect(archi.remplacees.has(cle(souches[0]))).toBe(false);
+    expect([...archi.matieres.keys()]).toEqual([cle(souches[0])]);
   });
 
   it('la salle des trophées : ses quatre piliers en colombage, son toit en pentes dans la couverture de l’île, son faîte d’or ; velours, socles et trophées restent des blocs', () => {
@@ -80,6 +86,9 @@ describe('Les lieux du village au kit du 6e', () => {
     const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophees');
     expect(piliers.length).toBe(12);
     expect(piliers.every((p) => p.cube.texture === 'marbre' && p.peinture.fond === 'remplissage')).toBe(true);
+    // Des piliers isolés : poteaux et sablières, aucune décharge (décision du directeur artistique, 1er octobre 2026).
+    for (const p of piliers) expect(p.peinture.motifs.every((f) => !(f & (MOTIF.montante | MOTIF.descendante))), cle(p.cube)).toBe(true);
+    expect(piliers.filter((p) => rel(p.cube).z === 1).every((p) => p.peinture.motifs.slice(0, 4).every((f) => f & MOTIF.soubassement))).toBe(true);
     const toits = archi.pieces.filter((p) => p.cube.place === 'trophees');
     // Deux rangs de versants (devant, derrière) et le faîte d'or.
     expect(toits.map((p) => `${p.cube.texture}:${p.piece.split('.')[1]}`).sort()).toEqual([...Array(8).fill('taille:versant'), ...Array(4).fill('or:faite')].sort());
@@ -120,24 +129,32 @@ describe('Les lieux du village au kit du 6e', () => {
     }
   });
 
-  it('le toucher : toute la case d’un bloc de l’école ou de la salle, sur chaque facette de pièce', () => {
-    const { cubes, sol } = lieux('6e', TOUS.slice(0, 6));
+  it.each([0, 6])('le toucher, avec %i trophées : toute la case d’un bloc, et toujours le lieu de la facette touchée (un toit de la salle ouvre la salle, jamais l’école)', (n) => {
+    const { cubes, sol } = lieux('6e', TOUS.slice(0, n));
     const m = maillageDeLaConstruction('6e', cubes, sol);
     const parCase = new Map(cubes.map((c) => [cle(c), c]));
+    // L'emprise au sol de chaque lieu : une facette au-dessus d'elle est à ce lieu.
+    const emprise = new Map(cubes.map((c) => [`${c.x},${c.y}`, c.place]));
     const g: GroupeDeConstruction = m.opaque;
     let pieces = 0;
+    const lieuxTouches = new Set<string>();
     for (let t = 0; t < g.indices.length / 3; t++) {
       const s = [0, 1, 2].map((k) => g.indices[3 * t + k]);
       const pts = s.map((i) => ({ x: g.positions[3 * i], y: g.positions[3 * i + 1], z: g.positions[3 * i + 2] }));
-      const n = { x: g.normals[3 * s[0]], y: g.normals[3 * s[0] + 1], z: g.normals[3 * s[0] + 2] };
+      const nor = { x: g.normals[3 * s[0]], y: g.normals[3 * s[0] + 1], z: g.normals[3 * s[0] + 2] };
       const c = { x: (pts[0].x + pts[1].x + pts[2].x) / 3, y: (pts[0].y + pts[1].y + pts[2].y) / 3, z: (pts[0].z + pts[1].z + pts[2].z) / 3 };
-      const piece = caseDeLaPiece(m, 'opaque', t, c, n);
-      const r = piece ?? caseDeLaConstruction(c, n);
+      const piece = caseDeLaPiece(m, 'opaque', t, c, nor);
+      const r = piece ?? caseDeLaConstruction(c, nor);
+      // Le lieu de la facette, lu sous elle (un peu en dedans) : repère Three (x, hauteur, y).
+      const attendu = emprise.get(`${Math.floor(c.x - nor.x * 0.01)},${Math.floor(c.z - nor.z * 0.01)}`);
       const touche = parCase.get(cle(r.cell));
       expect(touche?.place, `${t} → ${JSON.stringify(r.cell)}`).toMatch(/^(ecole|trophees)$/);
+      expect(touche?.place, `${t} → ${JSON.stringify(r.cell)}`).toBe(attendu);
+      lieuxTouches.add(touche?.place ?? '');
       if (piece) pieces++;
     }
     expect(pieces).toBeGreaterThan(0);
+    expect([...lieuxTouches].sort()).toEqual(['ecole', 'trophees']);
   });
 
   it('les monuments gardent leurs blocs taillés ; au 5e, au 4e et au 3e, l’école et la salle gardent leur dessin', () => {

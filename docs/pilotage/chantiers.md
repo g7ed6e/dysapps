@@ -26,7 +26,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
-| Fusionner l’école et la salle des trophées au kit du 6e (suite du 7b) | lot 7 | Après la validation du directeur artistique sur captures (`lot-7b-lieux/`) ; à voir sur tablette avec le 7b (moiré en mouvement, images par seconde, pose d’un bloc à la Forêt) |
+| Fusionner l’école et la salle des trophées au kit du 6e (suite du 7b) | lot 7 | Oui : validé par le directeur artistique sur captures (`lot-7b-lieux/`) ; à voir sur tablette avec le 7b (moiré en mouvement, images par seconde, pose d’un bloc à la Forêt) |
 | Choisir l’asset du banc d’essai, puis qui lance les outils de génération | Assets | Un Gardien d’Archipéo, en portrait 2D puis en 3D ; lancés d’abord à la main par le mainteneur sur une commande préparée |
 | Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
 | Valider le budget des bornes du 6e (1 250 triangles, pris sur la faune ; total inchangé à 57 800) | C-2, R | Oui : la quatrième borne du Volcan dépasse de 8 triangles, la faune a de la marge |
@@ -54,7 +54,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | --- | --- | --- | --- |
 | lot 1 à lot 5 (3a, 3b, 4a, 4b) | Les mots, l’interface, le monde qui change, le menu et la Carte, le mot de la baleine | Construits | — |
 | lot 6 | Le nouveau monde, à deux univers (avec U3) | **Fini** le 29 septembre 2026 (#241) | Aperçus fixes des univers reportés après les lots 8 et 8b |
-| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) ; 7b (le 6e : colombage peint, toits en pente) fusionné (#273) ; **l’école et la salle des trophées au kit du 6e** construites, à valider par le directeur artistique sur captures (`lot-7b-lieux/`) | Ensuite : le bardage des pignons (à trancher par le directeur artistique), le dessus des fantômes un peu plus distinct du crème (référent dys) ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
+| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) ; 7b (le 6e : colombage peint, toits en pente) fusionné (#273) ; **l’école et la salle des trophées au kit du 6e** construites, validées par le directeur artistique sur captures (`lot-7b-lieux/`) | Ensuite : une proposition de game design sur la place des trophées (aucun sur le toit), commune aux deux univers, à trancher par le mainteneur ; le bardage des pignons (à trancher par le directeur artistique), le dessus des fantômes un peu plus distinct du crème (référent dys) ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
 | lot 8 | L’Horizon et le navire maritime | À faire | Migration de sauvegarde des pièces du navire ; monde en réseau (J6) |
 | lot 8b | La Carte des quatre archipels en 3D | À faire | Après le lot 8 |
 | lot 9 | L’archipel vivant | À faire | Le faisceau et la rotation du phare l’attendent |

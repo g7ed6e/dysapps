@@ -36,7 +36,7 @@ export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, se
 export { boiteDansLaCase, FACES, facettesPosees, TOUTES_LES_FACES, trianglesDe, type DessinDePiece, type Facette, type Role } from './pieces';
 export { classeDe, COTES, estDuPlan, indexDuPlan, tournerVoisinage, voisinageDe, type Classe, type Voisinage } from './voisinage';
 export { KITS, kitRempli, kitVide, type CaseDuLieu, type Famille, type Kit, type LieuDuKit } from './kits';
-export { lieuxDuKit, type LieuxDuKit } from './lieux';
+export { estUnLieuDuVillage, lieuxDuKit, type LieuxDuKit } from './lieux';
 
 /** Une case, en coordonnées de grille (z : hauteur). */
 export interface CaseDuPlan {
@@ -77,6 +77,8 @@ export interface Architecture {
   triangles: number;
   /** Les blocs des lieux du village (pièces ou non) qui prennent la couverture de leur île (clé `x,y,z`, ./lieux.ts). */
   couverts: Set<string>;
+  /** Les blocs des lieux du village qui prennent la couleur d'une autre matière (clé `x,y,z`, ./lieux.ts). */
+  matieres: Map<string, TextureKind>;
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -126,7 +128,7 @@ function indexDesBatiments(batiments: ReadonlyMap<string, string>): IndexDuPlan 
  */
 export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], options: OptionsDeLArchitecture = {}): Architecture {
   const kit = options.kit ?? KITS[a];
-  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set() };
+  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set(), matieres: new Map() };
   // Un kit sans pièce ni mur peint ne remplace rien : pas même l'index du plan à faire.
   if (!kitRempli(kit)) return out;
   // Le plan entier, fantômes compris ; les bâtiments entiers quand ils sont donnés (la cour n'allonge pas un mur, et un
@@ -136,15 +138,18 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   const index = batiments ? indexDesBatiments(batiments) : indexDuPlan(cubes);
   // Les lieux du village que le kit reprend : leur plan à eux, lu sur leurs blocs (ils n'ont ni chantier ni fantôme).
   const lieux = kit.lieux && options.caseDuLieu ? lieuxDuKit(kit, cubes, options.caseDuLieu) : null;
-  if (lieux) out.couverts = lieux.couverts;
-  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation }[] = [];
+  if (lieux) {
+    out.couverts = lieux.couverts;
+    out.matieres = lieux.matieres;
+  }
+  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean }[] = [];
   for (const c of cubes) {
     if (c.place) {
-      const bloc = lieux?.blocs.get(cle(c.x, c.y, c.z));
-      if (!bloc || options.exclure?.(c)) continue;
-      const v = voisinageDe(c, bloc.classe === 'toit' ? lieux!.indexDesToits : lieux!.index, { surLeVide: options.surLeVide, classe: bloc.classe });
+      const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
+      if (!lieux || !bloc || options.exclure?.(c)) continue;
+      const v = voisinageDe(c, bloc.classe === 'toit' ? lieux.indexDesToits : lieux.index, { surLeVide: options.surLeVide, classe: bloc.classe });
       if (!v) continue;
-      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v) });
+      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge });
       continue;
     }
     if (c.ghost || !estDuPlan(c) || LUMIERES.has(c.texture ?? '') || options.exclure?.(c)) continue;
@@ -166,7 +171,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const m = centres.get(k) ?? { x: 0, y: 0, n: 0 };
     centres.set(k, { x: m.x + c.x + 0.5, y: m.y + c.y + 0.5, n: m.n + 1 });
   }
-  for (const { c, famille, v, piece, rotation } of choisis) {
+  for (const { c, famille, v, piece, rotation, sansDecharge } of choisis) {
     const k = cle(c.x, c.y, c.z);
     const dessin = kit.pieces[famille]?.[piece];
     if (dessin) {
@@ -185,7 +190,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       const [dx, dy] = COTES[cote];
       return dx * (c.x + 0.5 - m.x / m.n) + dy * (c.y + 0.5 - m.y / m.n) > 0;
     };
-    const peinture = peintureDuMur(v, maniere, { barde: kit.bardes.includes(c.tag ?? ''), exterieur });
+    const peinture = peintureDuMur(v, maniere, { barde: kit.bardes.includes(c.tag ?? ''), exterieur, sansDecharge });
     out.peints.set(k, { cube: c, famille, piece, rotation, peinture });
   }
   return out;

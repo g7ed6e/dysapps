@@ -4,14 +4,19 @@
 // world/terrain.ts. Leur plan se lit donc sur les blocs du monde, et la famille de chaque bloc sur sa place dans le
 // modèle du lieu (le kit, `lieux`), pas sur sa seule texture : une même pierre de taille fait un mur à l'école et un toit
 // à la salle des trophées. Code pur, sans Three.js.
-import type { VoxelCube, VillagePlaceId } from '../cube';
+import type { PlaceId, VoxelCube, VillagePlaceId } from '../cube';
+import type { TextureKind } from '../pixels';
 import type { CaseDuLieu, Famille, Kit } from './kits';
 import { classeDe, type Classe, type IndexDuPlan } from './voisinage';
 
-/** Un bloc d'un lieu que le kit reprend : sa famille et sa classe dans le plan du lieu. */
+/** Le lieu d'un cube est-il un lieu du village (l'école, la salle des trophées), et non un monument ? */
+export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'ecole' || place === 'trophees';
+
+/** Un bloc d'un lieu que le kit reprend : sa famille et sa classe dans le plan du lieu, et s'il se passe de décharge. */
 export interface BlocDuLieu {
   famille: Famille;
   classe: Classe;
+  sansDecharge: boolean;
 }
 
 export interface LieuxDuKit {
@@ -23,6 +28,8 @@ export interface LieuxDuKit {
   blocs: Map<string, BlocDuLieu>;
   /** Les blocs (pièces ou non) qui prennent la couverture de leur île au lieu de leur matière. */
   couverts: Set<string>;
+  /** Les blocs qui prennent la couleur d'une autre matière (la souche du clocheton, en pierre de taille). */
+  matieres: Map<string, TextureKind>;
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -34,21 +41,22 @@ const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
  * reste un bloc, et les pentes de ses voisins se lisent sans lui (`indexDesToits`).
  */
 export function lieuxDuKit(kit: Kit, cubes: readonly VoxelCube[], caseDuLieu: (c: VoxelCube) => CaseDuLieu | null): LieuxDuKit {
-  const out: LieuxDuKit = { index: new Map(), indexDesToits: new Map(), blocs: new Map(), couverts: new Set() };
+  const out: LieuxDuKit = { index: new Map(), indexDesToits: new Map(), blocs: new Map(), couverts: new Set(), matieres: new Map() };
   const lieux = kit.lieux;
   if (!lieux) return out;
   for (const c of cubes) {
-    const lieu = c.place && !c.ghost ? lieux[c.place as VillagePlaceId] : undefined;
+    const lieu = estUnLieuDuVillage(c.place) && !c.ghost ? lieux[c.place] : undefined;
     if (!lieu) continue;
     const m = caseDuLieu(c);
     if (!m) continue;
     const r = lieu(m);
-    const classe: Classe | null = r ? (r.famille === 'toit' ? 'toit' : 'mur') : classeDe(c.texture);
+    const classe: Classe | null = r?.famille ? (r.famille === 'toit' ? 'toit' : 'mur') : classeDe(c.texture);
     if (!classe) continue;
     const k = cle(c.x, c.y, c.z);
     out.index.set(k, classe);
-    if (r) out.blocs.set(k, { famille: r.famille, classe });
+    if (r?.famille) out.blocs.set(k, { famille: r.famille, classe, sansDecharge: Boolean(r.sansDecharge) });
     if (r?.couverture) out.couverts.add(k);
+    if (r?.matiere) out.matieres.set(k, r.matiere);
   }
   // Les murs lisent le plan entier (un mur sous un toit caché porte sa sablière haute, pas un chaperon) ; les toits, le
   // plan sans les toits cachés.

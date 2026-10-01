@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -257,6 +257,16 @@ const CAPTURES = [
   { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
   { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
   { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  // La salle de près (famille `lieux-salle`) : sans trophée (l'ouverture devant, le fond de velours), avec huit (le
+  // faîte), avec dix-huit (le bord du toit), de jour et de nuit ; le fond de velours au plus près, par l'ouverture (la
+  // caméra de l'île ne se tourne pas : on le voit de biais), avec deux trophées.
+  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'foret', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 8, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
+  { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

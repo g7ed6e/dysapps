@@ -53,23 +53,34 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
 
 /** Un pilier de la salle des trophées : un coin du pavillon. */
 const pilier = ({ x, y, w, d }: CaseDuLieu) => (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
+/** La souche du clocheton de l'école : la case du toit sous lui, au milieu de la façade, au deuxième rang (schoolModel). */
+const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 5;
 
 /**
  * Les lieux du village des Premiers Rivages (world/terrain.ts) :
  * - l'école : ses murs de brique aux coins de pierre de taille (les trois rangs posés sur le sol) en colombage, son toit
- *   à deux pans en pentes ; la porte, les deux fenêtres, le clocheton et sa cloche d'or restent des blocs ;
- * - la salle des trophées : ses quatre piliers de marbre en colombage ; son toit de pierre de taille en pentes, dans la
- *   couverture de l'île, et son faîte d'or en faîte ; le fond de velours (le fond des trophées), les socles de marbre et
- *   les trophées restent des blocs.
+ *   à deux pans en pentes ; la porte, les deux fenêtres, le clocheton et sa cloche d'or restent des blocs, et la souche
+ *   du clocheton prend sa pierre de taille : un seul fût de deux cases (décision du directeur artistique, 1er octobre) ;
+ * - la salle des trophées : ses quatre piliers de marbre en colombage, sans décharge (des piliers isolés : poteaux et
+ *   sablières seulement) ; son toit de pierre de taille en pentes, dans la couverture de l'île, et son faîte d'or en
+ *   faîte ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs.
  */
 export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
-  ecole: ({ z, texture }) => (z <= 3 && (texture === 'brique' || texture === 'taille') ? { famille: 'bois' } : texture === 'toit' ? { famille: 'toit' } : undefined),
+  ecole: (m) =>
+    m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
+      ? { famille: 'bois' }
+      : m.texture === 'toit' && souche(m)
+        ? { matiere: 'taille' }
+        : m.texture === 'toit'
+          ? { famille: 'toit' }
+          : undefined,
   trophees: (m) =>
     m.texture === 'marbre' && m.z <= 3 && pilier(m)
-      ? { famille: 'bois' }
+      ? { famille: 'bois', sansDecharge: true }
       : m.z === 4 && m.texture === 'taille'
         ? { famille: 'toit', couverture: true }
-        : m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
+        : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 4 × 3), sinon il n'y en a pas.
+          m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
           ? { famille: 'toit' }
           : undefined,
 };
