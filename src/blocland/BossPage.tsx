@@ -118,6 +118,8 @@ export function BossPage() {
     const text = victory ? says.beaten : correct ? says.hit : says.miss;
     setMood(victory ? 'beaten' : correct ? 'hit' : 'miss');
     setLine(text);
+    // La règle, ouverte au premier défi, se replie avec la réplique dès la première épreuve jouée ; rouverte, elle le reste.
+    if (played === 0) setRegleOuverte(false);
     if (victory) sound(playVictory);
     // Une épreuve ratée n'a jamais de son dans Archipéo (rien ne s'éteint) ; Blocland garde le grognement.
     else if (!correct && !sent) sound(playGrowl);
@@ -200,7 +202,8 @@ export function BossPage() {
                     <Syllabified text={sent.seuil(needed, won >= needed)} />
                   </p>
                   {/* La règle du rallumage, à côté de la jauge qu'elle explique : sa phrase courte toujours lue, la règle
-                      entière dans un pli ouvert au premier défi contre ce Gardien ; le haut-parleur la lit en entier (DA-28). */}
+                      entière dans un pli ouvert au premier défi contre ce Gardien, jusqu'à la première épreuve jouée (DA-28, DA-34) ;
+                      le haut-parleur la lit en entier. */}
                   <div className="arena-regle">
                     <details open={regleOuverte} onToggle={(e) => setRegleOuverte(e.currentTarget.open)}>
                       <summary>

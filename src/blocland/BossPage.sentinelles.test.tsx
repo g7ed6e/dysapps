@@ -86,7 +86,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   expect(gauge().querySelectorAll('.arena-pastille')).toHaveLength(total);
 });
 
-it('le nom du Gardien seulement dans le titre ; la réplique se replie à la première épreuve, la règle garde son pli (DA-34)', async () => {
+it('le nom du Gardien seulement dans le titre ; la réplique et la règle se replient à la première épreuve (DA-34)', async () => {
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/aventure/foret/gardien');
@@ -108,7 +108,15 @@ it('le nom du Gardien seulement dans le titre ; la réplique se replie à la pre
   expect(ligne.textContent).toBe('Une branche s’allume dans ma couronne. Tu as l’oreille fine.');
   expect(ligne.querySelector('.visually-hidden')!.textContent).toBe(' Tu as l’oreille fine.');
   expect(screen.getByRole('button', { name: 'Toute la réplique' })).toHaveAttribute('aria-expanded', 'false');
-  // La règle reste comme au lancement : ouverte au premier défi (DA-28).
+  // La règle, ouverte au premier défi, se replie aussi ; sa phrase courte reste (DA-28, DA-34).
+  expect(pli().open).toBe(false);
+  expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');
+  // Rouverte par l'élève, elle le reste à l'épreuve suivante.
+  await user.click(pli().querySelector('summary')!);
+  expect(pli().open).toBe(true);
+  const prompt2 = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
+  const item2 = def.items.find((i) => prompt2.includes(String(i.word)))!;
+  await user.click(screen.getByRole('button', { name: String(item2.answer) }));
   expect(pli().open).toBe(true);
 });
 
