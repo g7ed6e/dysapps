@@ -109,3 +109,37 @@ it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission d
   expect(document.body.textContent).not.toMatch(/Il te manque encore des étoiles/);
   expect(screen.getAllByText(/Épreuve : /).length).toBeGreaterThan(0);
 }, 30_000);
+
+it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis repliée en une ligne (DA-34)', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  const user = (await import('@testing-library/user-event')).default.setup();
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  const arene = screen.getByRole('region', { name: /L’arène du Gardien/ });
+  // Le nom dans le titre de l'écran, pas répété dans l'arène.
+  expect(screen.getByRole('heading', { level: 1, name: /Le Grand Chêne/ })).toBeInTheDocument();
+  expect(arene.querySelector('.arena-name')).toBeNull();
+  expect(Array.from(arene.querySelectorAll('p')).some((p) => p.textContent === 'Le Grand Chêne')).toBe(false);
+  // Au lancement : la réplique entière, sans pli.
+  const ligne = () => arene.querySelector('.arena-line')!;
+  expect(ligne().textContent).toMatch(/Le Grand Chêne/);
+  expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
+  expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
+  // Une épreuve jouée : la nouvelle réplique, repliée en une ligne (à l'écran), entière dans la page.
+  const { loadExercise } = await import('./exercises');
+  const def = (await loadExercise('foret-echauffement-001'))!;
+  const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
+  const item = def.items.find((i) => prompt.includes(String(i.word)))!;
+  await user.click(screen.getByRole('button', { name: String(item.answer) }));
+  expect(ligne().textContent).toMatch(/Mes branches tremblent/);
+  expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+  const pli = screen.getByRole('button', { name: 'Toute la réplique' });
+  expect(pli).toHaveAttribute('aria-expanded', 'false');
+  expect(pli).toHaveAttribute('aria-controls', ligne().id);
+  // Le pli l'ouvre en entier, et la referme.
+  await user.click(pli);
+  expect(pli).toHaveAttribute('aria-expanded', 'true');
+  expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
+  await user.click(pli);
+  expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+});

@@ -58,6 +58,8 @@ export function BossPage() {
   const [mood, setMood] = useState<GuardianMood>('idle');
   const [seq, setSeq] = useState(0);
   const [line, setLine] = useState<string | null>(null);
+  // La réplique du Gardien, entière au lancement, repliée en une ligne dès la première épreuve jouée (DA-34).
+  const [repliqueOuverte, setRepliqueOuverte] = useState(false);
   // Ce Gardien vaincu fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
@@ -67,6 +69,7 @@ export function BossPage() {
     setPlayed(0);
     setMood('idle');
     setLine(null);
+    setRepliqueOuverte(false);
     // Pas de tambour pour une sentinelle : rien ne se combat. Sa règle est lue au lancement, comme une consigne.
     if (def && !sent) sound(playDrum);
     if (def && sent && settings.autoRead) speak(frenchTypography(def.instruction));
@@ -81,6 +84,7 @@ export function BossPage() {
   const finished = def ? played >= total : false;
   const beatenNow = finished && won >= needed;
   const remaining = Math.max(0, total - won);
+  const repliee = played > 0 && !repliqueOuverte;
 
   const onRound = ({ correct }: { correct: boolean }) => {
     const nextWon = won + (correct ? 1 : 0);
@@ -105,7 +109,8 @@ export function BossPage() {
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}${sent ? ' defi-titre' : ''}`}>
-        {/* Archipéo : le nom de l'écran (« Le défi du Grand Chêne ») ; le nom du Gardien est dans l'arène. */}
+        {/* Le nom du Gardien, une seule fois à l'écran (DA-34) : son nom dans Blocland, le nom de l'écran dans Archipéo
+            (« Le défi du Grand Chêne ») ; l'arène ne le répète pas. */}
         <Icon name={sent ? 'flame' : 'shield'} /> {sent ? textes.libelles.arene(biome.guardian) : guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
@@ -146,28 +151,29 @@ export function BossPage() {
             </div>
             {/* Le texte de l'arène sur un panneau uni, clair, collé à la vitrine (DA-26). */}
             <div className="arena-info">
-              <p className="arena-name">{guardianTitle(biome)}</p>
               {sent ? (
                 <>
-                  <div className="arena-gauge-label" aria-hidden="true">
-                    <span>{sent.jauge}</span>
-                    <span>{sent.compte(won, total)}</span>
-                  </div>
-                  <div
-                    className="arena-pastilles"
-                    role="progressbar"
-                    aria-label={sent.jauge}
-                    aria-valuemin={0}
-                    aria-valuemax={total}
-                    aria-valuenow={won}
-                    aria-valuetext={sent.jaugeLue(won, total, needed)}
-                  >
-                    {/* Les réussites d'abord, dans l'ordre où elles viennent : une pastille vide ne dit pas laquelle a raté. */}
-                    {Array.from({ length: total }, (_, i) => (
-                      <span key={i} className={`arena-pastille${i < won ? ' on' : ''}`}>
-                        {i < won && <Icon name="flame" size="14px" />}
-                      </span>
-                    ))}
+                  <div className="arena-jauge">
+                    <div className="arena-gauge-label" aria-hidden="true">
+                      <span>{sent.jauge}</span>
+                      <span>{sent.compte(won, total)}</span>
+                    </div>
+                    <div
+                      className="arena-pastilles"
+                      role="progressbar"
+                      aria-label={sent.jauge}
+                      aria-valuemin={0}
+                      aria-valuemax={total}
+                      aria-valuenow={won}
+                      aria-valuetext={sent.jaugeLue(won, total, needed)}
+                    >
+                      {/* Les réussites d'abord, dans l'ordre où elles viennent : une pastille vide ne dit pas laquelle a raté. */}
+                      {Array.from({ length: total }, (_, i) => (
+                        <span key={i} className={`arena-pastille${i < won ? ' on' : ''}`}>
+                          {i < won && <Icon name="flame" size="14px" />}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <p className="arena-seuil">
                     <Syllabified text={sent.seuil(needed, won >= needed)} />
@@ -190,7 +196,7 @@ export function BossPage() {
                   </div>
                 </>
               ) : (
-                <>
+                <div className="arena-jauge">
                   <div className="arena-gauge-label" aria-hidden="true">
                     <span>Résistance</span>
                     <span>
@@ -208,12 +214,35 @@ export function BossPage() {
                   >
                     <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
                   </div>
-                </>
+                </div>
               )}
-              <p className="arena-line" role="status" aria-live="polite">
-                <Syllabified text={arenaLine} />
-              </p>
-              <SpeakButton text={arenaLine} label="Écouter" />
+              {/* La réplique : entière au lancement ; dès la première épreuve jouée, repliée en une ligne, que le chevron
+                  des plis des îles (ou un toucher sur la ligne) ouvre en entier. Le texte reste entier pour un lecteur
+                  d'écran, et le haut-parleur, à sa droite, le lit toujours en entier (DA-34). */}
+              <div className={`arena-replique${repliee ? ' repliee' : ''}`}>
+                {played > 0 && (
+                  <button
+                    type="button"
+                    className="arena-replique-pli"
+                    aria-expanded={repliqueOuverte}
+                    aria-controls="arena-line"
+                    onClick={() => setRepliqueOuverte((o) => !o)}
+                  >
+                    <Icon name={repliqueOuverte ? 'chevronDown' : 'chevronRight'} />
+                    <span className="visually-hidden">Toute la réplique</span>
+                  </button>
+                )}
+                <p
+                  id="arena-line"
+                  className="arena-line"
+                  role="status"
+                  aria-live="polite"
+                  onClick={repliee ? () => setRepliqueOuverte(true) : undefined}
+                >
+                  <Syllabified text={arenaLine} />
+                </p>
+                <SpeakButton text={arenaLine} label="Écouter" compact />
+              </div>
             </div>
           </section>
           {shipHint && (

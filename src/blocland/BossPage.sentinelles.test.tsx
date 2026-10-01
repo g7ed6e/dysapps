@@ -86,6 +86,28 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   expect(gauge().querySelectorAll('.arena-pastille')).toHaveLength(total);
 });
 
+it('le nom du Gardien seulement dans le titre ; la réplique se replie à la première épreuve, la règle garde son pli (DA-34)', async () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  const user = (await import('@testing-library/user-event')).default.setup();
+  renderAt('/aventure/foret/gardien');
+  await loaded();
+  const arene = screen.getByRole('region', { name: 'Le défi du Grand Chêne' });
+  expect(arene.querySelector('.arena-name')).toBeNull();
+  expect(Array.from(arene.querySelectorAll('p')).some((p) => p.textContent === 'Le Grand Chêne')).toBe(false);
+  expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
+  expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
+
+  const { loadExercise } = await import('./exercises');
+  const def = (await loadExercise('foret-echauffement-001'))!;
+  const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
+  const item = def.items.find((i) => prompt.includes(String(i.word)))!;
+  await user.click(screen.getByRole('button', { name: String(item.answer) }));
+  expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
+  expect(screen.getByRole('button', { name: 'Toute la réplique' })).toHaveAttribute('aria-expanded', 'false');
+  // La règle reste comme au lancement : ouverte au premier défi (DA-28).
+  expect(pli().open).toBe(true);
+});
+
 const pli = () => screen.getByRole('region', { name: 'Le défi du Grand Chêne' }).querySelector('.arena-regle details') as HTMLDetailsElement;
 
 it('la règle est un pli dans l’arène : sa phrase courte toujours lue, ouvert au premier défi (DA-28)', async () => {
