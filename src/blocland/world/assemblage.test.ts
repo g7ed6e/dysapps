@@ -33,16 +33,16 @@ it('un bloc assemblé par archipel, fait de blocs de deux îles de son archipel,
 });
 
 it('assemble un bloc à la fois, sans rien perdre quand il manque des blocs', () => {
-  const state = { ...EMPTY_STATE, inventory: { bois: 5, pierre: 1 } };
+  const state = { ...EMPTY_STATE, inventory: { bois: 5, brique: 1 } };
   const poutre = recetteDe('poutre')!;
   expect(assemblables(state.inventory, poutre)).toBe(1);
   const r = assembleBlock(state, 'poutre');
   expect(r.ok).toBe(true);
-  expect(r.state.inventory).toEqual({ bois: 3, pierre: 0, poutre: 1 });
+  expect(r.state.inventory).toEqual({ bois: 3, brique: 0, poutre: 1 });
   const encore = assembleBlock(r.state, 'poutre');
   expect(encore.ok).toBe(false);
   expect(encore.state).toBe(r.state);
-  expect(manquePour(r.state.inventory, poutre)).toEqual([{ bloc: 'pierre', n: 1 }]);
+  expect(manquePour(r.state.inventory, poutre)).toEqual([{ bloc: 'brique', n: 1 }]);
   expect(assembleBlock(state, 'bois')).toMatchObject({
     ok: false,
     reason: 'pas-de-recette',
@@ -50,16 +50,16 @@ it('assemble un bloc à la fois, sans rien perdre quand il manque des blocs', ()
 });
 
 it('défait un bloc assemblé en poche : ses blocs reviennent, rien ne se perd', () => {
-  const state = { ...EMPTY_STATE, inventory: { bois: 0, pierre: 0, poutre: 1 } };
+  const state = { ...EMPTY_STATE, inventory: { bois: 0, brique: 0, poutre: 1 } };
   const r = disassembleBlock(state, 'poutre');
   expect(r.ok).toBe(true);
-  expect(r.state.inventory).toEqual({ bois: 2, pierre: 1, poutre: 0 });
+  expect(r.state.inventory).toEqual({ bois: 2, brique: 1, poutre: 0 });
   // Plus de poutre en poche : rien ne bouge.
   expect(disassembleBlock(r.state, 'poutre')).toMatchObject({ ok: false, reason: 'plus-de-blocs', state: r.state });
   expect(disassembleBlock(state, 'bois')).toMatchObject({ ok: false, reason: 'pas-de-recette' });
   // Assembler puis défaire rend l'inventaire d'avant.
-  const avant = { ...EMPTY_STATE, inventory: { bois: 5, pierre: 3 } };
-  expect(disassembleBlock(assembleBlock(avant, 'poutre').state, 'poutre').state.inventory).toEqual({ bois: 5, pierre: 3, poutre: 0 });
+  const avant = { ...EMPTY_STATE, inventory: { bois: 5, brique: 3 } };
+  expect(disassembleBlock(assembleBlock(avant, 'poutre').state, 'poutre').state.inventory).toEqual({ bois: 5, brique: 3, poutre: 0 });
 });
 
 it('garde les blocs assemblés d’une sauvegarde, et une case déjà posée d’un monument le reste', () => {
@@ -91,7 +91,7 @@ it('nomme les blocs assemblés et leur lieu selon l’univers, depuis docs/conte
   expect(Object.keys(ASSEMBLAGE.lieu).sort()).toEqual([...UNIVERS_IDS].sort());
   for (const r of ASSEMBLAGE.recettes) expect(Object.keys(r.noms).sort(), r.bloc).toEqual([...UNIVERS_IDS].sort());
   const md = readFileSync('docs/contenu/assemblage.md', 'utf8');
-  expect(md).toContain('| `poutre` | 6e | bois × 2 · pierre × 1 | Poutre | Madrier |');
+  expect(md).toContain('| `poutre` | 6e | bois × 2 · brique × 1 | Poutre | Madrier |');
   expect(nomDuBloc('poutre')).toBe('Poutre');
   expect(blockCount('vitrail', 3)).toBe('3 vitraux');
   expect(textesDe('blocland').assemblage.titre).toBe('La Fabrique');

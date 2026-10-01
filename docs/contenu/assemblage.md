@@ -17,7 +17,7 @@
 
 | bloc | archipel | recette | Blocland | Archipéo |
 | --- | --- | --- | --- | --- |
-| `poutre` | 6e | bois × 2 · pierre × 1 | Poutre | Madrier |
+| `poutre` | 6e | bois × 2 · brique × 1 | Poutre | Madrier |
 | `vitrail` | 5e | glace × 2 · panneau × 1 | Vitrail (vitraux) | Hublot |
 | `engrenage` | 4e | acier × 2 · rail × 1 | Engrenage | Poulie |
 | `miroir` | 3e | lentille × 2 · quartz × 1 | Miroir | Loupe |

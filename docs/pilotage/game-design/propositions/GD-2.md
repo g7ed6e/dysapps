@@ -14,14 +14,15 @@ Le mainteneur, le 30 septembre 2026 : « Dans Blocland la collecte de blocs doit
 
    | Archipel | Recette | Blocland | Archipéo |
    | --- | --- | --- | --- |
-   | 6e | 2 bois + 1 pierre | Poutre | Madrier |
+   | 6e | 2 bois + 1 brique | Poutre | Madrier |
    | 5e | 2 glace + 1 panneau | Vitrail | Hublot |
    | 4e | 2 acier + 1 rail | Engrenage | Poulie |
    | 3e | 2 lentilles + 1 quartz | Miroir | Loupe |
 
-3. **Recette fixe et toujours affichée** : vignettes, nombres et noms, lue à voix haute, « tu en as … » à côté de chaque bloc ; un toucher sur « Assembler » fait un bloc. Ni grille, ni place des blocs qui compte, ni recette à deviner. Sans assez de blocs, le bouton reste grisé : rien ne se perd. Un bloc assemblé en poche **se défait** : « Défaire 1 poutre » rend tous ses blocs, pour ne jamais prendre au bois ou à la pierre ce qu’un plan ou un pont demandera (relecture UX UI et mainteneur, 1er octobre 2026). Un bloc déjà posé dans un monument reste posé.
+3. **Recette fixe et toujours affichée** : vignettes, nombres et noms, lue à voix haute, « tu en as … » à côté de chaque bloc ; un toucher sur « Assembler » fait un bloc. Ni grille, ni place des blocs qui compte, ni recette à deviner. Sans assez de blocs, le bouton reste grisé : rien ne se perd. Un bloc assemblé en poche **se défait** : « Défaire 1 poutre » rend tous ses blocs, pour ne jamais prendre au bois ou à la brique ce qu’un plan ou un pont demandera (relecture UX UI et mainteneur, 1er octobre 2026). Un bloc déjà posé dans un monument reste posé.
 4. **Les huit monuments existants** en demandent 4 à 8 chacun, aux endroits qui comptent (poteaux et longue-vue de l’observatoire des baleines, ailes du grand moulin, lanterne du phare du large, hublots de son fût dans Archipéo, lanterneau du kiosque, roues de la locomotive du viaduc, machinerie de l’amphithéâtre, grande lunette de l’observatoire des étoiles, faîte du temple). Aucun monument n’est créé.
 5. **Rien ne recule** : une case déjà posée reste posée, quel que soit le bloc qu’elle demande maintenant.
+6. **Une question à chaque bloc assemblé**, qui mobilise **deux matières** (mainteneur, 1er octobre 2026) : celles des deux îles de la recette (la poutre : bois de la Forêt des sons et brique de la Plaine des nombres, français et maths ; le vitrail : maths et français ; l’engrenage : maths et anglais ; le miroir : français et maths). Quand c’est possible, la forme écrite de la bonne réponse dépend du résultat du calcul. Trois choix : la réponse et un piège de chaque matière ; le rappel des deux matières est affiché. 12 questions par bloc, écrites dans `docs/contenu/assemblage.md` ; aucune ne revient avant 6 autres ; une erreur ne fait rien perdre et laisse un second essai. Proposition du directeur du contenu pédagogique.
 
 Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/assemblage.md`, lu par `npm run contenu` (demande du mainteneur).
 
@@ -51,4 +52,4 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 
 ## La décision
 
-30 septembre 2026, mainteneur : les blocs assemblés vont dans les monuments existants ; deux noms de lieu (la Fabrique, la Halle aux matériaux) ; les quatre blocs « Mécanismes » ; « 1 ok, 2 il faut nom spécifique à l’univers, 3 ok » ; « Ok. L’implémentation doit permettre d’alimenter les noms via markdown. » Le 1er octobre 2026 : « Ok pour défaire » ; « ok budget » (construction à 7 240, somme à 53 040).
+30 septembre 2026, mainteneur : les blocs assemblés vont dans les monuments existants ; deux noms de lieu (la Fabrique, la Halle aux matériaux) ; les quatre blocs « Mécanismes » ; « 1 ok, 2 il faut nom spécifique à l’univers, 3 ok » ; « Ok. L’implémentation doit permettre d’alimenter les noms via markdown. » Le 1er octobre 2026 : « Ok pour défaire » ; « ok budget » (construction à 7 240, somme à 53 040) ; « Combiner un bloc va nécessiter la réponse à une question afin de mobiliser des compétences / connaissances en 2 matières », puis, sur la proposition du contenu (recettes à deux matières, 12 questions par bloc sans retour avant 6 autres, second essai) et sur la ligne « deux matières, une question à chaque bloc » : « 1 ok 2 ok ».

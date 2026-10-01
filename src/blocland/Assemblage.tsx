@@ -39,7 +39,7 @@ function useRecettes(): { premiere: Recette | undefined; autres: Recette[] } {
   return { premiere, autres: ouvertes.filter((r) => r !== premiere) };
 }
 
-/** « 2 blocs de bois et 1 bloc de pierre » */
+/** « 2 blocs de bois et 1 brique » */
 function enMots(r: Recette): string {
   return r.ingredients.map((i) => blockCount(i.bloc, i.n)).join(' et ');
 }

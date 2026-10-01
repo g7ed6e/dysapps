@@ -24,7 +24,7 @@ export const ASSEMBLAGE = {
           "n": 2
         },
         {
-          "bloc": "pierre",
+          "bloc": "brique",
           "n": 1
         }
       ],
