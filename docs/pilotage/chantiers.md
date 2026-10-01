@@ -118,6 +118,10 @@ En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » 
 
 Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Construit** par sa pull request (brouillon). Le lieu suivra l’école et la salle des trophées quand elles prendront le kit d’architecture modulaire (après le 7b). Attend le mainteneur : l’enveloppe de construction des archipels 5e à 3e (7 100 → 7 200 triangles, somme inchangée). Reste ouvert : l’étiquette de l’île qui couvre le lieu, le hublot du phare du large (petit), l’icône du Hublot aux couleurs du vitrail, une explication courte des mots rares d’Archipéo (madrier, poulie, hublot).
 
+### Les agents
+
+Huit agents dans `.claude/agents/`, décrits dans [Contribuer](../conception/contribuer.md#les-agents). Le dernier venu, le **consultant UX UI** (`consultant-ux-ui`, demandé par le mainteneur le 1er octobre 2026), relit l’ergonomie et l’interface des écrans communes aux univers, sous l’autorité du directeur artistique, avec ses [bonnes pratiques UX UI](../conception/bonnes-pratiques-ux-ui.md) ; il est consulté avant toute pull request qui change un écran, un composant, la navigation ou un parcours.
+
 ## Les défauts relevés en consolidant
 
 - Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).

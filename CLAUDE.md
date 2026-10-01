@@ -39,6 +39,11 @@ Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) po
 - Toute pull request qui modifie du code (application, rendu, scripts, tests, configuration, CI, dépendances) passe par l'agent `expert-frontend` avant d'être ouverte. Il regarde d'abord la sécurité, puis la performance, puis la maintenabilité. Sa description donne son verdict (Conforme, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
 - Il rend un avis sans trancher : la technique du rendu reste à l'`artiste-technique-3d`, l'accessibilité dys au `referent-dys`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-code.md`.
 
+## Relecture de l'interface (systématique)
+
+- Toute pull request qui change un écran, un composant, la navigation ou un parcours passe par l'agent `consultant-ux-ui` avant d'être ouverte. Sa description donne son verdict (Clair, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé par le `directeur-artistique` ou tranché par le mainteneur. Un changement d'habillage seul (couleur, texture, police de titre, nom), sans toucher la structure ni la place des éléments, ne passe que par le consultant de l'univers.
+- Il propose et relit l'ergonomie commune aux univers, sous l'autorité du `directeur-artistique` : l'habillage et les noms restent aux consultants d'univers, l'accessibilité dys au `referent-dys`, le code à l'`expert-frontend`. Voir `docs/conception/contribuer.md` (« Les agents ») et `docs/conception/bonnes-pratiques-ux-ui.md`.
+
 ## Relecture des univers (systématique)
 
 - Toute pull request qui touche les noms, le récit ou le rendu d'un univers (Archipéo, Blocland) passe par son consultant (`consultant-archipeo`, `consultant-blocland`) avant d'être ouverte ; un changement du jeu commun qui change ce que l'élève voit dans les deux univers passe par les deux. Sa description donne le verdict (Fidèle, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé par le `directeur-artistique` ou tranché par le mainteneur.
