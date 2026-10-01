@@ -27,16 +27,17 @@ export interface IslandDef {
 
 /**
  * Côté du cœur d'origine (16) : le repère des clés de sauvegarde et des plans, posé sur `IslandDef.core`. L'étendue du
- * cœur d'une île ne se lit plus ici mais avec `coeurDe` (ou `bornesDuCoeur`), qui suit le réglage de son archipel.
+ * cœur d'une île ne se lit plus ici mais avec `coeurDe` (ou `bornesDuCoeur`), qui suit le réglage de son île.
  */
 export const CORE = 16;
 
 /**
- * Côté du cœur, par archipel (cadrage : le cœur passe de 16 × 16 à 20 × 20, un archipel à la fois). Il grandit
+ * Côté du cœur des îles qui en ont un plus grand que `CORE` : les îles-écoles, qui portent les lieux du village (l'école,
+ * la salle des trophées), passent de 16 × 16 à 20 × 20 (décision du mainteneur, 01/10/2026), une à la fois. Il grandit
  * également des deux côtés autour du cœur d'origine : à 20, le cœur couvre [−2, 18) en coordonnées relatives à
  * `IslandDef.core`, qui reste l'origine du repère de l'île (et des clés de sauvegarde) ; son milieu ne bouge pas.
  */
-export const COTE_DU_COEUR: Record<ArchipelagoId, number> = { '6e': 16, '5e': 16, '4e': 16, '3e': 16 };
+export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = {};
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -52,7 +53,7 @@ const bornesLocales = new Map<BiomeId, Readonly<Bornes>>();
 export function bornesDuCoeur(def: IslandDef): Readonly<Bornes> {
   let b = bornesLocales.get(def.id);
   if (!b) {
-    const cote = COTE_DU_COEUR[archipelagoOfIsland(def.id)];
+    const cote = COTE_DU_COEUR[def.id] ?? CORE;
     const marge = (cote - CORE) / 2;
     b = Object.freeze({ x0: -marge, y0: -marge, x1: cote - marge, y1: cote - marge });
     bornesLocales.set(def.id, b);
