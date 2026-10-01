@@ -47,6 +47,7 @@ import {
   Target,
   TreePine,
   Trophy,
+  Undo2,
   Volume2,
   VolumeX,
   Wheat,
@@ -110,6 +111,7 @@ export const ICONS = {
   pause: Pause,
   ancre: Anchor,
   cube: Box,
+  recentrer: Undo2,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;
