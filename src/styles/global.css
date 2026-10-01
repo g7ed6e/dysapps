@@ -6197,6 +6197,11 @@ fieldset {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+/* Sous « Défaire » : refaire le bloc demandera une question (rien de caché). */
+.assemblage-refaire {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
 .assemblage-dit {
   display: flex;
   flex-wrap: wrap;
@@ -6225,8 +6230,20 @@ fieldset {
   margin: 0 0 0.6rem;
   font-weight: 700;
 }
-/* La question d'un bloc assemblé (GD-2), sur l'écran d'une mission : sous la correction, le bouton pour continuer
-   (revenir au lieu, ou une autre question), puis l'autre choix ; ils passent l'un sous l'autre sur téléphone. */
+/* La question d'un bloc assemblé (GD-2), sur l'écran d'une mission. Le résultat suit les réponses dans la page (pas de
+   bandeau fixe : il passait sous la question) : le cri et le message, puis le bouton pour continuer (revenir au lieu,
+   ou une autre question) et l'autre choix, l'un sous l'autre sur téléphone. La page y défile à la réponse. */
+.assemblage-resultat {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  scroll-margin-bottom: 1rem;
+}
+/* En grand texte, le résultat peut dépasser l'écran et passer sous le bouton Pause, fixé en haut à droite : son bouton
+   Écouter va sous le texte, à gauche. */
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex-direction: column;
+  align-items: flex-start;
+}
 .assemblage-question-actions {
   display: flex;
   flex-wrap: wrap;

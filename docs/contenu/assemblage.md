@@ -24,7 +24,7 @@
 
 ## Les questions
 
-> Une question à chaque bloc assemblé. Elle mobilise les deux matières de la recette ; ses compétences
+> Une question à chaque bloc assemblé. Elle mobilise les deux matières scolaires des îles de sa recette ; ses compétences
 > sont celles de l’archipel (6e : cycle 3 seul ; 5e à 3e : au moins une du cycle 4). Douze questions par bloc
 > (au moins 8). Trois choix : la réponse, un piège de chaque matière. `lu` ne lit que le document : la question
 > a son propre bouton. `npm run contenu` les écrit dans `src/blocland/exercises/data/assemblage-<bloc>.json`.
@@ -54,8 +54,8 @@
    - indice : 2 paquets de 50 : c’est 2 fois 50. Puis, quel mot écrit un nombre ?
    - explication : 2 × 50 = 100, qui s’écrit cent. « sans » se dit pareil, mais veut dire « pas de ». 52, c’est 50 + 2 : on a ajouté le nombre de paquets.
    - aide « Un son, plusieurs mots » :
-     - 2 paquets de 50 = 50 + 50.
-     - cent = le nombre 100. sans = le contraire de avec.
+     - 3 paquets de 10 = 10 + 10 + 10.
+     - cent = un nombre (deux cents, cent dix). sans = le contraire de avec.
 3. énoncé : "Tom a 8 billes. Léa en a 5.\nElle lui en donne 2."
    - question : Combien Tom a-t-il de billes maintenant ?
    - lu : Tom a 8 billes. Léa en a 5. Elle lui en donne 2.
@@ -76,16 +76,16 @@
    - aide « Partager, et le pluriel » :
      - Partager à parts égales, c’est diviser.
      - 1 : pas de s (1 pomme). À partir de 2 : un s (3 pommes).
-5. énoncé : "Une boîte contient 4 rangées\nde 5 œufs."
-   - question : Combien d’œufs y a-t-il ?
-   - lu : Une boîte contient 4 rangées de 5 œufs.
-   - choix : vingt œufs · vin œufs · neuf œufs
-   - réponse : vingt œufs
+5. énoncé : "Une boîte a 4 rangées\nde 5 cases."
+   - question : Combien de cases y a-t-il ?
+   - lu : Une boîte a 4 rangées de 5 cases.
+   - choix : vingt cases · vin cases · neuf cases
+   - réponse : vingt cases
    - indice : 4 rangées de 5 : c’est 4 fois 5. Puis, quel mot écrit un nombre ?
    - explication : 4 × 5 = 20, qui s’écrit vingt, avec un g et un t. « vin » se dit pareil, mais c’est une boisson. 9, c’est 4 + 5 : des rangées, c’est une multiplication.
    - aide « Un son, plusieurs mots » :
-     - 4 rangées de 5 = 5 + 5 + 5 + 5.
-     - vingt = le nombre 20. vin = la boisson.
+     - 3 rangées de 5 = 5 + 5 + 5.
+     - vingt = un nombre (vingt-deux, quatre-vingts). vin = la boisson faite avec du raisin.
 6. énoncé : "Mia a 4 billes.\nElle en gagne 3."
    - question : Quelle phrase est juste ?
    - lu : Mia a 4 billes. Elle en gagne 3.
@@ -131,7 +131,7 @@
     - lu : Le film commence à 14 heures 30. Il finit à 16 heures.
     - choix : Il dure 1 heure et demie. · Il dure 1 heures et demie. · Il dure 2 heures et demie.
     - réponse : Il dure 1 heure et demie.
-    - indice : Compte d’abord jusqu’à 15 h, puis jusqu’à 16 h. Puis : une heure, ou plusieurs ?
+    - indice : Compte d’abord jusqu’à 15 heures, puis jusqu’à 16 heures. Puis : une heure, ou plusieurs ?
     - explication : De 14 h 30 à 15 h : 30 minutes. De 15 h à 16 h : 1 heure. En tout : 1 heure et demie. Avec 1, heure reste au singulier. 2 heures et demie, c’est 16 − 14 = 2, puis les 30 minutes ajoutées au lieu d’être enlevées.
     - aide « Durée, et le pluriel » :
       - Une durée : compte par bonds, de l’heure du début jusqu’à l’heure de la fin.
@@ -141,10 +141,10 @@
     - lu : Une école achète 2 boîtes. Chaque boîte contient 500 cartes.
     - choix : mille cartes · milles cartes · cent cartes
     - réponse : mille cartes
-    - indice : 2 boîtes de 500 : c’est 500 + 500. Compte bien les zéros.
+    - indice : 2 boîtes de 500 : c’est 500 plus 500. Compte bien les zéros.
     - explication : 500 + 500 = 1 000, qui s’écrit mille. Mille ne prend jamais de s : deux mille, trois mille. 100, c’est un zéro oublié : 5 centaines + 5 centaines = 10 centaines = 1 000.
     - aide « Mille, sans s » :
-      - 5 centaines + 5 centaines = 10 centaines.
+      - 3 centaines + 2 centaines = 5 centaines.
       - mille ne change jamais : deux mille, dix mille.
 12. énoncé : "Lucas a 9 €.\nIl veut savoir ce qui lui manque\npour un livre à 15 €."
     - question : Quelle phrase répond à Lucas ?
@@ -167,9 +167,9 @@
 1. énoncé : "Le matin : −3 °C.\nL’après-midi : 4 °C."
    - question : Quelle phrase est juste ?
    - lu : Le matin, moins 3 degrés. L’après-midi, 4 degrés.
-   - choix : L’écart est de 7 degrés entre ces deux moments. · L’écart est de 7 degrés entre ses deux moments. · L’écart est de 1 degré entre ces deux moments.
-   - réponse : L’écart est de 7 degrés entre ces deux moments.
-   - indice : De −3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?
+   - choix : Ces deux moments ont 7 degrés d’écart. · Ses deux moments ont 7 degrés d’écart. · Ces deux moments ont 1 degré d’écart.
+   - réponse : Ces deux moments ont 7 degrés d’écart.
+   - indice : De moins 3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?
    - explication : 4 − (−3) = 4 + 3 = 7 degrés. « ces » montre (ces moments-là) ; « ses » veut dire les siens. 1, c’est 4 − 3 : le signe moins a été oublié.
    - aide « Écart, et ces, ses » :
      - Soustraire un négatif, c’est ajouter : 4 − (−3) = 4 + 3.
@@ -197,8 +197,8 @@
 4. énoncé : "Oslo : −8 °C.\nParis : −2 °C."
    - question : Quelle phrase est juste ?
    - lu : Oslo, moins 8 degrés. Paris, moins 2 degrés.
-   - choix : Oslo est la ville où il fait le plus froid. · Oslo est la ville ou il fait le plus froid. · Paris est la ville où il fait le plus froid.
-   - réponse : Oslo est la ville où il fait le plus froid.
+   - choix : Oslo, c’est là où il fait plus froid. · Oslo, c’est là ou il fait plus froid. · Paris, c’est là où il fait plus froid.
+   - réponse : Oslo, c’est là où il fait plus froid.
    - indice : Lequel est le plus loin de 0, du côté des négatifs ? Puis : un lieu, ou « ou bien » ?
    - explication : −8 est plus petit que −2 : il fait plus froid à Oslo. « où » dit le lieu ; « ou » veut dire « ou bien ». Paris, c’est croire que −2 est plus petit parce que 2 est plus petit que 8.
    - aide « Le plus froid, et ou, où » :
@@ -219,7 +219,7 @@
    - lu : Lou ajoute moins 6 et 6.
    - choix : La somme est 0 : ces nombres sont opposés. · La somme est 0 : ces nombres son opposés. · La somme est 12 : ces nombres sont opposés.
    - réponse : La somme est 0 : ces nombres sont opposés.
-   - indice : De −6, avance de 6 bonds. Puis remplace par « étaient ».
+   - indice : De moins 6, avance de 6 bonds. Puis remplace par « étaient ».
    - explication : −6 + 6 = 0 : deux nombres opposés ont une somme nulle. On peut dire « ils étaient opposés » : on écrit sont. « son » veut dire « le sien ». 12, c’est 6 + 6 : le signe moins a été oublié.
    - aide « Opposés, et son, sont » :
      - Ajouter un positif, c’est avancer vers la droite sur la droite graduée.
@@ -227,10 +227,10 @@
 7. énoncé : "À midi : 4 °C.\nLe soir : −2 °C."
    - question : Quelle phrase est juste ?
    - lu : À midi, 4 degrés. Le soir, moins 2 degrés.
-   - choix : La température s’est abaissée de 6 degrés. · La température c’est abaissée de 6 degrés. · La température s’est abaissée de 2 degrés.
-   - réponse : La température s’est abaissée de 6 degrés.
-   - indice : De 4 à 0, puis de 0 à −2 : compte les bonds. Puis : peux-tu dire « cela est » ?
-   - explication : De 4 à 0 : 4 degrés ; de 0 à −2 : 2 degrés. En tout, 6 degrés. Le verbe est « s’abaisser » : on écrit s’est. « c’est » veut dire « cela est ». 2, c’est 4 − 2 : le signe moins a été oublié.
+   - choix : L’air s’est refroidi de 6 degrés. · L’air c’est refroidi de 6 degrés. · L’air s’est refroidi de 2 degrés.
+   - réponse : L’air s’est refroidi de 6 degrés.
+   - indice : De 4 à 0, puis de 0 à moins 2 : compte les bonds. Puis : peux-tu dire « cela est » ?
+   - explication : De 4 à 0 : 4 degrés ; de 0 à −2 : 2 degrés. En tout, 6 degrés. Le verbe est « se refroidir » : on écrit s’est. « c’est » veut dire « cela est ». 2, c’est 4 − 2 : le signe moins a été oublié.
    - aide « La baisse, et c’est, s’est » :
      - Pour un écart, passe par 0 et compte les bonds.
      - s’est = se + est (elle s’est levée). c’est = cela est.
@@ -255,11 +255,11 @@
      - Une tarte entière = quatre quarts. Deux quarts = la moitié.
      - leur + un nom au singulier (leur chat). leurs + un nom au pluriel (leurs chats).
 10. énoncé : "À Paris, il est 10 h.\nDécalage de Londres : −1 h."
-    - question : Quelle phrase est juste ?
+    - question : Quelle heure est-il à Londres ?
     - lu : À Paris, il est 10 heures. Décalage de Londres, moins 1 heure.
-    - choix : À Londres, il est 9 h : une heure plus tôt. · À Londres, il est 9 h : une heure plutôt. · À Londres, il est 11 h : une heure plus tôt.
-    - réponse : À Londres, il est 9 h : une heure plus tôt.
-    - indice : Ajouter −1, c’est reculer ou avancer ? Puis : le contraire de « plus tard » ?
+    - choix : 9 h : une heure plus tôt. · 9 h : une heure plutôt. · 11 h : une heure plus tôt.
+    - réponse : 9 h : une heure plus tôt.
+    - indice : Ajouter moins 1, c’est reculer ou avancer ? Puis : le contraire de « plus tard » ?
     - explication : 10 + (−1) = 9 : à Londres, il est 9 h. « plus tôt » est le contraire de « plus tard » ; « plutôt » veut dire « de préférence ». 11 h, c’est 10 + 1 : le signe moins a été oublié.
     - aide « Le décalage, et plus tôt, plutôt » :
       - Ajouter un négatif, c’est reculer : 8 + (−2) = 6.
@@ -267,10 +267,10 @@
 11. énoncé : "Jade et Emma lisent le même livre.\nJade en a lu un tiers.\nEmma en a lu un quart."
     - question : Quelle phrase est juste ?
     - lu : Jade et Emma lisent le même livre. Jade en a lu un tiers. Emma en a lu un quart.
-    - choix : Jade a lu plus qu’elle. · Jade a lu plus quelle. · Emma a lu plus qu’elle.
-    - réponse : Jade a lu plus qu’elle.
+    - choix : Emma voit que Jade a lu plus qu’elle. · Emma voit que Jade a lu plus quelle. · Jade voit qu’Emma a lu plus qu’elle.
+    - réponse : Emma voit que Jade a lu plus qu’elle.
     - indice : En 3 parts ou en 4 parts : quelle part est la plus grande ? Puis remplace par « qu’il ».
-    - explication : Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma. On peut dire « plus qu’il » : on écrit qu’elle. Emma, c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.
+    - explication : Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma : elle, c’est Emma. On peut dire « plus qu’il » : on écrit qu’elle. « Jade voit qu’Emma a lu plus », c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.
     - aide « Comparer, et qu’elle, quel » :
       - Même numérateur : plus le dénominateur est grand, plus la part est petite.
       - qu’elle = qu’il au féminin. quel = devant un nom (quel livre ?).
@@ -301,7 +301,7 @@ Pour tous les items :
    - lu : One cell splits in two every hour. Look again in three hours.
    - choix : 2 · 6 · 8
    - réponse : 8
-   - indice : split in two = se couper en deux. Toutes les heures, le nombre double.
+   - indice : Toutes les heures, une cellule devient deux. Compte heure par heure.
    - explication : 1, puis 2, puis 4, puis 8 : 2 × 2 × 2 = 2³ = 8. 6, c’est 2 × 3 : la base fois l’exposant. 2, c’est le nombre de la phrase, sans le temps : every hour veut dire toutes les heures.
    - aide « Doubler, et les puissances » :
      - every hour = toutes les heures ; split in two = se couper en deux ; in 3 hours = dans 3 heures
@@ -311,7 +311,7 @@ Pour tous les items :
    - lu : To open the lock, you must type nine squared.
    - choix : 9 · 18 · 81
    - réponse : 81
-   - indice : squared = au carré. must = il faut.
+   - indice : Cherche le sens des mots dans le rappel. Au carré, ce n’est pas le double.
    - explication : 9 squared = 9² = 9 × 9 = 81. 18, c’est 9 × 2 : le carré n’est pas le double. 9, c’est oublier squared, au carré.
    - aide « Must, et le carré » :
      - lock = cadenas ; type = taper ; must = il faut ; squared = au carré
@@ -321,7 +321,7 @@ Pour tous les items :
    - lu : A ticket costs two to the power of four euros. Children will pay two euros less. Sam is eleven.
    - choix : 6 · 14 · 18
    - réponse : 14
-   - indice : Calcule d’abord 2⁴. Puis : less, c’est moins ou plus ?
+   - indice : Calcule d’abord 2 puissance 4. Puis : les enfants paient-ils moins, ou plus ?
    - explication : 2⁴ = 2 × 2 × 2 × 2 = 16 euros. Sam est un enfant : 16 − 2 = 14 euros. 6, c’est 8 − 2 : 2⁴ n’est pas 2 × 4. 18, c’est 16 + 2 : less veut dire moins.
    - aide « Le prix, et la puissance » :
      - cost = coûter ; will pay = paiera ; less = moins ; more = plus
@@ -329,10 +329,10 @@ Pour tous les items :
 4. énoncé : "Tom has 10³ stickers.\nHe gives away a hundred of them."
    - question : Combien d’autocollants lui reste-t-il ?
    - lu : Tom has ten to the power of three stickers. He gives away a hundred of them.
-   - choix : 900 · 970 · 1 100
+   - choix : 900 · 1 100 · 9 900
    - réponse : 900
-   - indice : 10³ : combien de zéros ? Puis : give away, c’est donner ou recevoir ?
-   - explication : 10³ = 1 000. Tom en donne 100 : 1 000 − 100 = 900. 970, c’est 10³ pris pour 30 : 1 000 − 30. 1 100, c’est 1 000 + 100 : give away veut dire donner.
+   - indice : Combien de zéros dans 10 puissance 3 ? Puis : Tom donne-t-il, ou reçoit-il ?
+   - explication : 10³ = 1 000. Tom en donne 100 : 1 000 − 100 = 900. 9 900, c’est 10 000 − 100 : 10³ s’écrit avec trois zéros, pas quatre. 1 100, c’est 1 000 + 100 : give away veut dire donner.
    - aide « Donner, et 10 puissance 3 » :
      - sticker = autocollant ; give away = donner ; a hundred = cent
      - 10 puissance n, c’est un 1 suivi de n zéros.
@@ -341,27 +341,27 @@ Pour tous les items :
    - lu : The museum has ten to the power of six visitors a year. Half of them are children.
    - choix : 50 000 · 500 000 · 2 000 000
    - réponse : 500 000
-   - indice : 10⁶ : combien de zéros ? Puis : half, c’est la moitié ou le double ?
+   - indice : Combien de zéros dans 10 puissance 6 ? Puis : les enfants, c’est la moitié ou le double ?
    - explication : 10⁶ = 1 000 000, un million. La moitié : 500 000. 50 000, c’est un zéro oublié : 10⁶ a six zéros. 2 000 000, c’est le double : half veut dire la moitié.
    - aide « La moitié, et 10 puissance 6 » :
      - half of = la moitié de ; a year = par an ; a million = un million
      - 10 puissance n, c’est un 1 suivi de n zéros.
-6. énoncé : "You can share 30 stickers between 4 friends.\nHow many stickers are left?"
+6. énoncé : "You share 30 stickers equally between 4 friends.\nHow many stickers are left?"
    - question : Combien d’autocollants reste-t-il ?
-   - lu : You can share thirty stickers between four friends. How many stickers are left?
+   - lu : You share thirty stickers equally between four friends. How many stickers are left?
    - choix : 0 · 2 · 7
    - réponse : 2
-   - indice : Cherche le plus grand nombre de la table de 4 sous 30. Puis : left, c’est ce qui reste.
+   - indice : Cherche le plus grand nombre de la table de 4 sous 30. Puis : on cherche ce qui reste, pas la part de chacun.
    - explication : 4 × 7 = 28 : chaque ami en a 7, et il en reste 30 − 28 = 2. 0, c’est croire que 30 est divisible par 4 : il est pair, mais pas dans la table de 4. 7, c’est la part de chacun : left veut dire ce qui reste.
    - aide « Partager, et le reste » :
-     - share between = partager entre ; left = qui reste ; each = chacun
+     - share between = partager entre ; equally = à parts égales ; left = qui reste
      - Pour partager, cherche le plus grand multiple sous le nombre, puis ce qui reste.
 7. énoncé : "At the start, there were 5 fans.\nThe number of fans has doubled three times."
    - question : Combien de fans y a-t-il maintenant ?
    - lu : At the start, there were five fans. The number of fans has doubled three times.
    - choix : 15 · 30 · 40
    - réponse : 40
-   - indice : has doubled = a doublé. Double 3 fois, l’un après l’autre.
+   - indice : Le nombre a doublé trois fois : double 5, puis double encore, et encore.
    - explication : 5, puis 10, puis 20, puis 40 : 5 × 2³ = 5 × 8 = 40. 30, c’est 5 × 2 × 3 : 2³ n’est pas 2 × 3. 15, c’est 5 × 3 : has doubled three times veut dire a doublé trois fois, pas a triplé.
    - aide « Doubler trois fois » :
      - has doubled = a doublé ; three times = trois fois ; at the start = au début
@@ -371,7 +371,7 @@ Pour tous les items :
    - lu : Mia is going to make a square garden. Each side will be seven metres.
    - choix : Mia va faire un jardin de 49 m². · Mia a fait un jardin de 49 m². · Mia va faire un jardin de 14 m².
    - réponse : Mia va faire un jardin de 49 m².
-   - indice : is going to : c’est déjà fait, ou bientôt ? Puis : l’aire d’un carré.
+   - indice : Le texte parle-t-il de ce qui est fait, ou de ce qui va se faire ? Puis : l’aire d’un carré.
    - explication : is going to dit ce qui va se passer : Mia va faire. L’aire du carré : 7 × 7 = 7² = 49 m². « a fait », c’est lire un passé. 14, c’est 7 × 2 : le carré n’est pas le double.
    - aide « Le futur, et l’aire du carré » :
      - is going to = va (bientôt) ; square = carré ; side = côté
@@ -381,7 +381,7 @@ Pour tous les items :
    - lu : Photo contest: your photo must be a square. Its side mustn’t be more than the square root of one hundred and forty-four centimetres.
    - choix : Le côté ne doit pas dépasser 12 cm. · Le côté doit dépasser 12 cm. · Le côté ne doit pas dépasser 72 cm.
    - réponse : Le côté ne doit pas dépasser 12 cm.
-   - indice : Quel nombre, multiplié par lui-même, donne 144 ? Puis : mustn’t, c’est permis ou interdit ?
+   - indice : Quel nombre, multiplié par lui-même, donne 144 ? Puis : dépasser, c’est permis ou interdit ?
    - explication : 12 × 12 = 144, donc √144 = 12. mustn’t be more than veut dire ne doit pas dépasser. « doit dépasser », c’est lire must au lieu de mustn’t. 72, c’est 144 ÷ 2 : la racine carrée n’est pas la moitié.
    - aide « Interdit, et la racine carrée » :
      - must = il faut ; mustn’t = il ne faut pas, c’est interdit ; more than = plus de
@@ -391,7 +391,7 @@ Pour tous les items :
     - lu : About eight billion people live on Earth.
     - choix : 8 × 10⁸ · 8 × 10⁹ · 8 × 10¹²
     - réponse : 8 × 10⁹
-    - indice : a billion = un milliard. Combien de zéros dans un milliard ?
+    - indice : Le mot anglais est un faux ami : il veut dire un milliard. Combien de zéros dans un milliard ?
     - explication : a billion = un milliard = 1 000 000 000 = 10⁹. Donc 8 milliards = 8 × 10⁹. 8 × 10¹², c’est le faux ami : un billion, en français, vaut mille milliards. 8 × 10⁸, c’est un zéro oublié en comptant.
     - aide « Les grands nombres » :
       - a million = un million ; a billion = un milliard (faux ami : pas un billion)
@@ -401,17 +401,17 @@ Pour tous les items :
     - lu : Guess my number! It is a prime number between twenty and twenty-five.
     - choix : 21 · 23 · 25
     - réponse : 23
-    - indice : prime number = nombre premier. Cherche un diviseur pour chaque nombre.
+    - indice : Un nombre premier n’a que deux diviseurs. Cherche un autre diviseur pour chaque nombre.
     - explication : 23 n’a que deux diviseurs, 1 et 23 : il est premier. 21 = 3 × 7 : prime ne veut pas dire le premier après 20. 25 = 5 × 5 : un nombre impair n’est pas toujours premier.
     - aide « Nombre premier » :
       - guess = deviner ; prime number = nombre premier ; between = entre
       - Un nombre premier a deux diviseurs seulement : 1 et lui-même. 15 = 3 × 5 n’est pas premier.
 12. énoncé : "This year, the game has 10 players.\nEach year, it will have 10 times more players."
-    - question : Combien de joueurs aura-t-il dans 3 ans ?
+    - question : Combien de joueurs le jeu aura-t-il dans 3 ans ?
     - lu : This year, the game has ten players. Each year, it will have ten times more players.
     - choix : 40 · 1 000 · 10 000
     - réponse : 10 000
-    - indice : 10 times more = 10 fois plus. Fais-le 3 fois.
+    - indice : Chaque année, le nombre de joueurs est multiplié par 10. Fais-le 3 fois.
     - explication : 10, puis 100, puis 1 000, puis 10 000 : 10 × 10³ = 10⁴ = 10 000. 1 000, c’est 10³ : on a oublié les 10 joueurs du début. 40, c’est 10 + 10 + 10 + 10 : times more veut dire fois plus, pas de plus.
     - aide « Fois plus, et les puissances de 10 » :
       - will have = aura ; each year = chaque année ; times more = fois plus
@@ -437,28 +437,28 @@ Pour tous les items :
 2. énoncé : "Max : « Il pleut tous les jours dans cette ville ! »\nRelevé de juin : 9 jours de pluie sur 30."
    - question : Que montre le relevé ?
    - lu : Max dit : il pleut tous les jours dans cette ville ! Relevé de juin : 9 jours de pluie sur 30.
-   - choix : Max exagère : c’est une hyperbole. · Max exagère : c’est une comparaison. · Max a raison : il pleut presque tous les jours.
+   - choix : Max exagère : c’est une hyperbole. · Max exagère : c’est une comparaison. · Max a raison : il pleut très souvent.
    - réponse : Max exagère : c’est une hyperbole.
    - indice : 9 jours sur 30, c’est moins d’un jour sur trois. Et une figure qui exagère ?
    - explication : 9 sur 30 = 0,3 : il pleut moins d’un jour sur trois. Max exagère : c’est une hyperbole. Une comparaison rapproche deux choses avec « comme ». « Max a raison », c’est lire Max sans lire le relevé.
    - aide « Fréquence et hyperbole » :
      - Fréquence = effectif ÷ total : 9 ÷ 30.
      - hyperbole = exagération ; comparaison = rapprochement avec « comme ».
-3. énoncé : "Relevé : lundi 18 °C, mardi 20 °C, mercredi 22 °C.\nMardi soir, Tom écrit : « Depuis lundi, la moyenne est de 19 °C. »"
-   - question : Tom a-t-il raison ?
-   - lu : Relevé : lundi 18 degrés, mardi 20 degrés, mercredi 22 degrés. Mardi soir, Tom écrit : depuis lundi, la moyenne est de 19 degrés.
-   - choix : Oui : il a raison. · Non : elle est de 20 °C. · Non : elle est de 38 °C.
-   - réponse : Oui : il a raison.
-   - indice : Quand Tom écrit-il ? Quels jours compte-t-il ?
-   - explication : Tom écrit mardi soir : pour lui, depuis lundi, c’est lundi et mardi. (18 + 20) ÷ 2 = 19 °C. 20 °C est la moyenne des trois jours, mais mercredi n’était pas encore là. 38, c’est la somme sans la division.
+3. énoncé : "Relevé fait jeudi : lundi 18 °C, mardi 20 °C, mercredi 22 °C.\nMardi soir, Tom avait écrit : « Depuis lundi, la moyenne est de 19 °C. »"
+   - question : Tom avait-il raison ?
+   - lu : Relevé fait jeudi : lundi 18 degrés, mardi 20 degrés, mercredi 22 degrés. Mardi soir, Tom avait écrit : depuis lundi, la moyenne est de 19 degrés.
+   - choix : Oui : il avait raison. · Non : elle était de 20 °C. · Non : elle était de 38 °C.
+   - réponse : Oui : il avait raison.
+   - indice : Quand Tom a-t-il écrit ? Quels jours compte-t-il ?
+   - explication : Tom a écrit mardi soir : pour lui, depuis lundi, c’est lundi et mardi. (18 + 20) ÷ 2 = 19 °C. 20 °C est la moyenne des trois jours, mais mercredi n’était pas encore là. 38, c’est la somme sans la division.
    - aide « Qui écrit, quand ? La moyenne » :
      - « depuis », « aujourd’hui » : on compte depuis le jour où la personne écrit.
      - Moyenne = somme des valeurs ÷ nombre de valeurs.
 4. énoncé : "Tirs de Léo : 20. Buts : 8.\nLe coach : « Ce n’est pas mal ! »"
    - question : Que veut dire le coach ?
    - lu : Tirs de Léo, 20. Buts, 8. Le coach dit : ce n’est pas mal !
-   - choix : C’est bien : 40 % des tirs sont des buts. · C’est mauvais : 40 % des tirs sont des buts. · C’est bien : 8 % des tirs sont des buts.
-   - réponse : C’est bien : 40 % des tirs sont des buts.
+   - choix : C’est bien : 40 % de tirs réussis. · C’est mauvais : 40 % de tirs réussis. · C’est bien : 8 % de tirs réussis.
+   - réponse : C’est bien : 40 % de tirs réussis.
    - indice : « pas mal » : le coach est-il content ? Puis : 8 sur 20, c’est combien sur 100 ?
    - explication : 8 ÷ 20 = 0,4 = 40 % : c’est un bon score. « Pas mal » est une litote : on dit moins pour dire plus, le coach veut dire « c’est bien ». « C’est mauvais », c’est lire la négation au pied de la lettre. 8 %, c’est prendre le nombre de buts pour le pourcentage.
    - aide « Litote et pourcentage » :
@@ -467,19 +467,19 @@ Pour tous les items :
 5. énoncé : "Notes de Lina en maths :\n8 ; 9 ; 15 ; 16 ; 17"
    - question : Quelle phrase est juste ?
    - lu : Notes de Lina en maths : 8, 9, 15, 16, 17.
-   - choix : La médiane est 15, donc c’est la note du milieu. · La médiane est 15, pourtant c’est la note du milieu. · La médiane est 13, donc c’est la note du milieu.
-   - réponse : La médiane est 15, donc c’est la note du milieu.
+   - choix : 15 est au milieu, donc c’est la médiane. · 15 est au milieu, pourtant c’est la médiane. · 13 est au milieu, donc c’est la médiane.
+   - réponse : 15 est au milieu, donc c’est la médiane.
    - indice : Les notes sont rangées : laquelle est au milieu ? Puis : une conséquence, ou une opposition ?
    - explication : 5 notes rangées : la troisième, 15, est au milieu. C’est la médiane. « donc » annonce une conséquence ; « pourtant », une opposition : ici, rien ne s’oppose. 13, c’est la moyenne : 65 ÷ 5, qui n’est pas une note de Lina.
    - aide « Médiane, donc ou pourtant » :
      - Médiane : la valeur du milieu, les notes rangées dans l’ordre.
      - donc = une conséquence ; pourtant = une opposition.
 6. énoncé : "Le principal : « Dans notre collège,\n50 % des 600 élèves viennent à vélo. »"
-   - question : Comment rapporter ses paroles ?
+   - question : Comment finir la phrase « Il a dit que » ?
    - lu : Le principal dit : dans notre collège, 50 pour cent des 600 élèves viennent à vélo.
-   - choix : Il a dit que 300 élèves de son collège venaient à vélo. · Il a dit que 300 élèves de notre collège venaient à vélo. · Il a dit que 50 élèves de son collège venaient à vélo.
-   - réponse : Il a dit que 300 élèves de son collège venaient à vélo.
-   - indice : Qui parle de « notre » collège ? Puis : 50 %, c’est quelle part ?
+   - choix : 300 élèves de son collège venaient à vélo. · 300 élèves de notre collège venaient à vélo. · 50 élèves de son collège venaient à vélo.
+   - réponse : 300 élèves de son collège venaient à vélo.
+   - indice : Qui parle de « notre » collège ? Puis : 50 pour cent, c’est quelle part ?
    - explication : 50 % de 600, c’est la moitié : 300 élèves. Quand on rapporte les paroles du principal, « notre collège » devient « son collège ». « notre », c’est garder les mots du principal comme si on parlait soi-même. 50 élèves, c’est prendre le pourcentage pour un nombre d’élèves.
    - aide « Discours rapporté et pourcentage » :
      - Discours rapporté : je, nous, notre deviennent il, ils, son, leur.
@@ -487,18 +487,18 @@ Pour tous les items :
 7. énoncé : "Record du saut en longueur :\n2019 : 5,10 m (Inès)\n2024 : 5,40 m (Zoé)"
    - question : Quelle phrase est juste ?
    - lu : Record du saut en longueur. 2019, 5 mètres 10, Inès. 2024, 5 mètres 40, Zoé.
-   - choix : Le record d’Inès a été battu par Zoé, de 30 cm. · Le record de Zoé a été battu par Inès, de 30 cm. · Le record d’Inès a été battu par Zoé, de 3 cm.
-   - réponse : Le record d’Inès a été battu par Zoé, de 30 cm.
-   - indice : Qui a sauté le plus loin, et quand ? Puis : 0,30 m, c’est combien de centimètres ?
-   - explication : En 2024, Zoé saute plus loin qu’Inès en 2019 : c’est Zoé qui bat le record d’Inès. 5,40 − 5,10 = 0,30 m = 30 cm. Au passif, « battu par Zoé » : Zoé fait l’action. 3 cm, c’est mal convertir : 1 m = 100 cm.
+   - choix : Inès est battue par Zoé, de 30 cm. · Zoé est battue par Inès, de 30 cm. · Inès est battue par Zoé, de 3 cm.
+   - réponse : Inès est battue par Zoé, de 30 cm.
+   - indice : Qui a sauté le plus loin, et quand ? Puis : 0,30 mètre, c’est combien de centimètres ?
+   - explication : En 2024, Zoé saute plus loin qu’Inès en 2019 : c’est Zoé qui bat le record d’Inès. 5,40 − 5,10 = 0,30 m = 30 cm. Au passif, « Inès est battue par Zoé » : c’est Zoé qui fait l’action. « Zoé est battue par Inès », c’est prendre le premier nom pour celui qui agit. 3 cm, c’est mal convertir : 1 m = 100 cm.
    - aide « Passif et longueurs » :
-     - Passif : « A a été battu par B » : c’est B qui gagne.
+     - Passif : « A est battu par B » : c’est B qui gagne.
      - 1 m = 100 cm : 0,5 m = 50 cm.
 8. énoncé : "Températures de la semaine, en °C :\n12 ; 14 ; 13 ; 15 ; 14 ; 13 ; 14\nNoé : « Pas besoin de changer de pull cette semaine. »"
    - question : Que sous-entend Noé ?
    - lu : Températures de la semaine, en degrés : 12, 14, 13, 15, 14, 13, 14. Noé dit : pas besoin de changer de pull cette semaine.
-   - choix : Le temps change peu : l’étendue est de 3 degrés. · Noé n’a qu’un seul pull : l’étendue est de 3 degrés. · Le temps change peu : l’étendue est de 15 degrés.
-   - réponse : Le temps change peu : l’étendue est de 3 degrés.
+   - choix : Le temps change peu : 3 degrés d’étendue. · Noé n’a qu’un pull : 3 degrés d’étendue. · Le temps change peu : 15 degrés d’étendue.
+   - réponse : Le temps change peu : 3 degrés d’étendue.
    - indice : Que laisse comprendre Noé sur le temps ? Puis : la plus grande valeur moins la plus petite.
    - explication : De 12 à 15, l’écart est de 15 − 12 = 3 degrés : le temps change peu, d’où le même pull. Noé ne parle pas du nombre de ses pulls : il le sous-entend du temps. 15, c’est la plus grande valeur, pas l’étendue.
    - aide « Étendue et sous-entendu » :
@@ -517,8 +517,8 @@ Pour tous les items :
 10. énoncé : "Sondage de la classe : 25 élèves\nEn bus : 8\nÀ pied : 17"
     - question : Quelle phrase est juste ?
     - lu : Sondage de la classe, 25 élèves. En bus, 8. À pied, 17.
-    - choix : La plupart des élèves viennent à pied : 68 %. · Peu d’élèves viennent à pied : 68 %. · La plupart des élèves viennent à pied : 17 %.
-    - réponse : La plupart des élèves viennent à pied : 68 %.
+    - choix : La plupart viennent à pied : 68 %. · Peu d’élèves viennent à pied : 68 %. · La plupart viennent à pied : 17 %.
+    - réponse : La plupart viennent à pied : 68 %.
     - indice : 17 sur 25 : plus ou moins de la moitié ? Puis, combien sur 100 ?
     - explication : 17 ÷ 25 = 0,68 = 68 % : plus de la moitié vient à pied, c’est la plupart. « Peu » veut dire une petite partie : 68 %, c’est beaucoup. 17 %, c’est prendre l’effectif pour la fréquence.
     - aide « La plupart, et la fréquence » :
@@ -527,20 +527,20 @@ Pour tous les items :
 11. énoncé : "Trajets de Sam, en minutes :\n12 ; 15 ; 14\nSam : « Je mets en moyenne environ 14 minutes. »"
     - question : Sam a-t-il raison ?
     - lu : Trajets de Sam, en minutes : 12, 15, 14. Sam dit : je mets en moyenne environ 14 minutes.
-    - choix : Oui : la moyenne est proche de 14. · Non : la moyenne n’est pas tout à fait 14. · Non : la moyenne est de 41 minutes.
+    - choix : Oui : la moyenne est proche de 14. · Non : il dit qu’il met toujours 14 minutes. · Non : la moyenne est de 41 minutes.
     - réponse : Oui : la moyenne est proche de 14.
     - indice : Calcule la moyenne. Puis : « environ », c’est tout juste ou à peu près ?
-    - explication : (12 + 15 + 14) ÷ 3 = 41 ÷ 3, un peu moins de 14 (13,7 environ). « Environ » veut dire à peu près : Sam a raison. « Pas tout à fait 14 », c’est oublier le mot environ. 41, c’est la somme sans la division.
+    - explication : (12 + 15 + 14) ÷ 3 = 41 ÷ 3, un peu moins de 14 (13,7 environ). « Environ » veut dire à peu près : Sam a raison. Sam ne dit pas « toujours » : « en moyenne », c’est un calcul sur tous ses trajets, pas le temps de chacun. 41, c’est la somme sans la division.
     - aide « Environ, et la moyenne » :
       - Moyenne = somme des valeurs ÷ nombre de valeurs.
-      - environ = à peu près, pas tout juste.
+      - environ = à peu près, pas tout juste. en moyenne = pas à chaque fois.
 12. énoncé : "Titre : « Les ventes de vélos explosent ! »\nVentes en 2024 : 200 vélos\nVentes en 2025 : 210 vélos"
     - question : Le titre dit-il vrai ?
     - lu : Titre : les ventes de vélos explosent ! Ventes en 2024, 200 vélos. Ventes en 2025, 210 vélos.
-    - choix : Non : il exagère, les ventes montent de 5 %. · Oui : les ventes montent très fort, de 5 %. · Non : il exagère, les ventes montent de 10 %.
-    - réponse : Non : il exagère, les ventes montent de 5 %.
+    - choix : Non : il exagère, c’est 5 % de plus. · Oui : c’est une forte hausse de 5 %. · Non : il exagère, c’est 10 % de plus.
+    - réponse : Non : il exagère, c’est 5 % de plus.
     - indice : De 200 à 210, de combien montent les ventes ? Puis, combien sur 100 ?
-    - explication : Les ventes montent de 10 vélos sur 200 : 10 ÷ 200 = 0,05 = 5 %. C’est peu : « explosent » exagère pour attirer le lecteur. « Très fort », c’est croire le titre sans lire les nombres. 10 %, c’est prendre 10 vélos pour 10 %.
+    - explication : Les ventes montent de 10 vélos sur 200 : 10 ÷ 200 = 0,05 = 5 %. C’est peu : « explosent » exagère pour attirer le lecteur. « Une forte hausse », c’est croire le titre sans lire les nombres. 10 %, c’est prendre 10 vélos pour 10 %.
     - aide « Un titre, et une hausse » :
       - Hausse en % = hausse ÷ valeur de départ × 100.
       - Un titre peut exagérer pour attirer : exploser = ici, monter très fort.

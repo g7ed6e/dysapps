@@ -61,8 +61,8 @@
         "props": {
           "title": "Un son, plusieurs mots",
           "lines": [
-            "2 paquets de 50 = 50 + 50.",
-            "cent = le nombre 100. sans = le contraire de avec."
+            "3 paquets de 10 = 10 + 10 + 10.",
+            "cent = un nombre (deux cents, cent dix). sans = le contraire de avec."
           ]
         }
       }
@@ -117,15 +117,15 @@
     },
     {
       "key": "poutre-4",
-      "prompt": "Une boîte contient 4 rangées\nde 5 œufs.",
-      "question": "Combien d’œufs y a-t-il ?",
-      "spoken": "Une boîte contient 4 rangées de 5 œufs.",
+      "prompt": "Une boîte a 4 rangées\nde 5 cases.",
+      "question": "Combien de cases y a-t-il ?",
+      "spoken": "Une boîte a 4 rangées de 5 cases.",
       "choices": [
-        "vingt œufs",
-        "vin œufs",
-        "neuf œufs"
+        "vingt cases",
+        "vin cases",
+        "neuf cases"
       ],
-      "answer": "vingt œufs",
+      "answer": "vingt cases",
       "hint": "4 rangées de 5 : c’est 4 fois 5. Puis, quel mot écrit un nombre ?",
       "explanation": "4 × 5 = 20, qui s’écrit vingt, avec un g et un t. « vin » se dit pareil, mais c’est une boisson. 9, c’est 4 + 5 : des rangées, c’est une multiplication.",
       "aid": {
@@ -133,8 +133,8 @@
         "props": {
           "title": "Un son, plusieurs mots",
           "lines": [
-            "4 rangées de 5 = 5 + 5 + 5 + 5.",
-            "vingt = le nombre 20. vin = la boisson."
+            "3 rangées de 5 = 5 + 5 + 5.",
+            "vingt = un nombre (vingt-deux, quatre-vingts). vin = la boisson faite avec du raisin."
           ]
         }
       }
@@ -246,7 +246,7 @@
         "Il dure 2 heures et demie."
       ],
       "answer": "Il dure 1 heure et demie.",
-      "hint": "Compte d’abord jusqu’à 15 h, puis jusqu’à 16 h. Puis : une heure, ou plusieurs ?",
+      "hint": "Compte d’abord jusqu’à 15 heures, puis jusqu’à 16 heures. Puis : une heure, ou plusieurs ?",
       "explanation": "De 14 h 30 à 15 h : 30 minutes. De 15 h à 16 h : 1 heure. En tout : 1 heure et demie. Avec 1, heure reste au singulier. 2 heures et demie, c’est 16 − 14 = 2, puis les 30 minutes ajoutées au lieu d’être enlevées.",
       "aid": {
         "kind": "rule-card",
@@ -270,14 +270,14 @@
         "cent cartes"
       ],
       "answer": "mille cartes",
-      "hint": "2 boîtes de 500 : c’est 500 + 500. Compte bien les zéros.",
+      "hint": "2 boîtes de 500 : c’est 500 plus 500. Compte bien les zéros.",
       "explanation": "500 + 500 = 1 000, qui s’écrit mille. Mille ne prend jamais de s : deux mille, trois mille. 100, c’est un zéro oublié : 5 centaines + 5 centaines = 10 centaines = 1 000.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Mille, sans s",
           "lines": [
-            "5 centaines + 5 centaines = 10 centaines.",
+            "3 centaines + 2 centaines = 5 centaines.",
             "mille ne change jamais : deux mille, dix mille."
           ]
         }

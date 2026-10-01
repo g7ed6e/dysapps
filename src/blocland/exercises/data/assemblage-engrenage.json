@@ -27,7 +27,7 @@
       ],
       "choicesLang": "fr",
       "answer": "8",
-      "hint": "split in two = se couper en deux. Toutes les heures, le nombre double.",
+      "hint": "Toutes les heures, une cellule devient deux. Compte heure par heure.",
       "explanation": "1, puis 2, puis 4, puis 8 : 2 × 2 × 2 = 2³ = 8. 6, c’est 2 × 3 : la base fois l’exposant. 2, c’est le nombre de la phrase, sans le temps : every hour veut dire toutes les heures.",
       "aid": {
         "kind": "rule-card",
@@ -52,7 +52,7 @@
       ],
       "choicesLang": "fr",
       "answer": "81",
-      "hint": "squared = au carré. must = il faut.",
+      "hint": "Cherche le sens des mots dans le rappel. Au carré, ce n’est pas le double.",
       "explanation": "9 squared = 9² = 9 × 9 = 81. 18, c’est 9 × 2 : le carré n’est pas le double. 9, c’est oublier squared, au carré.",
       "aid": {
         "kind": "rule-card",
@@ -77,7 +77,7 @@
       ],
       "choicesLang": "fr",
       "answer": "14",
-      "hint": "Calcule d’abord 2⁴. Puis : less, c’est moins ou plus ?",
+      "hint": "Calcule d’abord 2 puissance 4. Puis : les enfants paient-ils moins, ou plus ?",
       "explanation": "2⁴ = 2 × 2 × 2 × 2 = 16 euros. Sam est un enfant : 16 − 2 = 14 euros. 6, c’est 8 − 2 : 2⁴ n’est pas 2 × 4. 18, c’est 16 + 2 : less veut dire moins.",
       "aid": {
         "kind": "rule-card",
@@ -97,13 +97,13 @@
       "spoken": "Tom has ten to the power of three stickers. He gives away a hundred of them.",
       "choices": [
         "900",
-        "970",
-        "1 100"
+        "1 100",
+        "9 900"
       ],
       "choicesLang": "fr",
       "answer": "900",
-      "hint": "10³ : combien de zéros ? Puis : give away, c’est donner ou recevoir ?",
-      "explanation": "10³ = 1 000. Tom en donne 100 : 1 000 − 100 = 900. 970, c’est 10³ pris pour 30 : 1 000 − 30. 1 100, c’est 1 000 + 100 : give away veut dire donner.",
+      "hint": "Combien de zéros dans 10 puissance 3 ? Puis : Tom donne-t-il, ou reçoit-il ?",
+      "explanation": "10³ = 1 000. Tom en donne 100 : 1 000 − 100 = 900. 9 900, c’est 10 000 − 100 : 10³ s’écrit avec trois zéros, pas quatre. 1 100, c’est 1 000 + 100 : give away veut dire donner.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -127,7 +127,7 @@
       ],
       "choicesLang": "fr",
       "answer": "500 000",
-      "hint": "10⁶ : combien de zéros ? Puis : half, c’est la moitié ou le double ?",
+      "hint": "Combien de zéros dans 10 puissance 6 ? Puis : les enfants, c’est la moitié ou le double ?",
       "explanation": "10⁶ = 1 000 000, un million. La moitié : 500 000. 50 000, c’est un zéro oublié : 10⁶ a six zéros. 2 000 000, c’est le double : half veut dire la moitié.",
       "aid": {
         "kind": "rule-card",
@@ -142,9 +142,9 @@
     },
     {
       "key": "engrenage-5",
-      "prompt": "You can share 30 stickers between 4 friends.\nHow many stickers are left?",
+      "prompt": "You share 30 stickers equally between 4 friends.\nHow many stickers are left?",
       "question": "Combien d’autocollants reste-t-il ?",
-      "spoken": "You can share thirty stickers between four friends. How many stickers are left?",
+      "spoken": "You share thirty stickers equally between four friends. How many stickers are left?",
       "choices": [
         "0",
         "2",
@@ -152,14 +152,14 @@
       ],
       "choicesLang": "fr",
       "answer": "2",
-      "hint": "Cherche le plus grand nombre de la table de 4 sous 30. Puis : left, c’est ce qui reste.",
+      "hint": "Cherche le plus grand nombre de la table de 4 sous 30. Puis : on cherche ce qui reste, pas la part de chacun.",
       "explanation": "4 × 7 = 28 : chaque ami en a 7, et il en reste 30 − 28 = 2. 0, c’est croire que 30 est divisible par 4 : il est pair, mais pas dans la table de 4. 7, c’est la part de chacun : left veut dire ce qui reste.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Partager, et le reste",
           "lines": [
-            "share between = partager entre ; left = qui reste ; each = chacun",
+            "share between = partager entre ; equally = à parts égales ; left = qui reste",
             "Pour partager, cherche le plus grand multiple sous le nombre, puis ce qui reste."
           ]
         }
@@ -177,7 +177,7 @@
       ],
       "choicesLang": "fr",
       "answer": "40",
-      "hint": "has doubled = a doublé. Double 3 fois, l’un après l’autre.",
+      "hint": "Le nombre a doublé trois fois : double 5, puis double encore, et encore.",
       "explanation": "5, puis 10, puis 20, puis 40 : 5 × 2³ = 5 × 8 = 40. 30, c’est 5 × 2 × 3 : 2³ n’est pas 2 × 3. 15, c’est 5 × 3 : has doubled three times veut dire a doublé trois fois, pas a triplé.",
       "aid": {
         "kind": "rule-card",
@@ -202,7 +202,7 @@
       ],
       "choicesLang": "fr",
       "answer": "Mia va faire un jardin de 49 m².",
-      "hint": "is going to : c’est déjà fait, ou bientôt ? Puis : l’aire d’un carré.",
+      "hint": "Le texte parle-t-il de ce qui est fait, ou de ce qui va se faire ? Puis : l’aire d’un carré.",
       "explanation": "is going to dit ce qui va se passer : Mia va faire. L’aire du carré : 7 × 7 = 7² = 49 m². « a fait », c’est lire un passé. 14, c’est 7 × 2 : le carré n’est pas le double.",
       "aid": {
         "kind": "rule-card",
@@ -227,7 +227,7 @@
       ],
       "choicesLang": "fr",
       "answer": "Le côté ne doit pas dépasser 12 cm.",
-      "hint": "Quel nombre, multiplié par lui-même, donne 144 ? Puis : mustn’t, c’est permis ou interdit ?",
+      "hint": "Quel nombre, multiplié par lui-même, donne 144 ? Puis : dépasser, c’est permis ou interdit ?",
       "explanation": "12 × 12 = 144, donc √144 = 12. mustn’t be more than veut dire ne doit pas dépasser. « doit dépasser », c’est lire must au lieu de mustn’t. 72, c’est 144 ÷ 2 : la racine carrée n’est pas la moitié.",
       "aid": {
         "kind": "rule-card",
@@ -252,7 +252,7 @@
       ],
       "choicesLang": "fr",
       "answer": "8 × 10⁹",
-      "hint": "a billion = un milliard. Combien de zéros dans un milliard ?",
+      "hint": "Le mot anglais est un faux ami : il veut dire un milliard. Combien de zéros dans un milliard ?",
       "explanation": "a billion = un milliard = 1 000 000 000 = 10⁹. Donc 8 milliards = 8 × 10⁹. 8 × 10¹², c’est le faux ami : un billion, en français, vaut mille milliards. 8 × 10⁸, c’est un zéro oublié en comptant.",
       "aid": {
         "kind": "rule-card",
@@ -277,7 +277,7 @@
       ],
       "choicesLang": "fr",
       "answer": "23",
-      "hint": "prime number = nombre premier. Cherche un diviseur pour chaque nombre.",
+      "hint": "Un nombre premier n’a que deux diviseurs. Cherche un autre diviseur pour chaque nombre.",
       "explanation": "23 n’a que deux diviseurs, 1 et 23 : il est premier. 21 = 3 × 7 : prime ne veut pas dire le premier après 20. 25 = 5 × 5 : un nombre impair n’est pas toujours premier.",
       "aid": {
         "kind": "rule-card",
@@ -293,7 +293,7 @@
     {
       "key": "engrenage-11",
       "prompt": "This year, the game has 10 players.\nEach year, it will have 10 times more players.",
-      "question": "Combien de joueurs aura-t-il dans 3 ans ?",
+      "question": "Combien de joueurs le jeu aura-t-il dans 3 ans ?",
       "spoken": "This year, the game has ten players. Each year, it will have ten times more players.",
       "choices": [
         "40",
@@ -302,7 +302,7 @@
       ],
       "choicesLang": "fr",
       "answer": "10 000",
-      "hint": "10 times more = 10 fois plus. Fais-le 3 fois.",
+      "hint": "Chaque année, le nombre de joueurs est multiplié par 10. Fais-le 3 fois.",
       "explanation": "10, puis 100, puis 1 000, puis 10 000 : 10 × 10³ = 10⁴ = 10 000. 1 000, c’est 10³ : on a oublié les 10 joueurs du début. 40, c’est 10 + 10 + 10 + 10 : times more veut dire fois plus, pas de plus.",
       "aid": {
         "kind": "rule-card",

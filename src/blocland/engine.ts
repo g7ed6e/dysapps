@@ -254,7 +254,7 @@ export function sanitizeState(input: unknown): BloclandState {
   const assemblageTirage: Partial<Record<BlockId, TirageAssemblage>> = {};
   if (isRecord(raw.assemblageTirage)) {
     for (const [bloc, t] of Object.entries(raw.assemblageTirage)) {
-      const lu = bloc in BLOCKS && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
+      const lu = Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
       if (lu) assemblageTirage[bloc as BlockId] = lu;
     }
   }
@@ -343,6 +343,15 @@ export function tirageDe(state: BloclandState, bloc: BlockId, graine: string): T
   return state.assemblageTirage?.[bloc] ?? tirageNeuf(graine);
 }
 
+/** La réponse finale d'un élève à la question d'un bloc assemblé, et le tirage qui l'a posée. */
+export interface ReponseDonnee {
+  /** Les questions du bloc, dans l'ordre du fichier. */
+  cles: readonly string[];
+  cle: string;
+  juste: boolean;
+  tirage: TirageAssemblage;
+}
+
 export type ReponseAssemblage =
   | { state: BloclandState; assemble: true }
   | { state: BloclandState; assemble: false; reason: 'manquee' | 'pas-de-recette' | 'plus-de-blocs' };
@@ -352,11 +361,7 @@ export type ReponseAssemblage =
  * assemblé (`assembleBlock`) ; manquée, rien n'est pris. Dans les deux cas, la question est notée dans le tirage de
  * l'élève (`tirage` : celui qui l'a tirée). Ni blocs gagnés, ni XP, ni niveau : la question ne rapporte que le bloc.
  */
-export function repondreAssemblage(
-  state: BloclandState,
-  bloc: BlockId,
-  reponse: { cles: readonly string[]; cle: string; juste: boolean; tirage: TirageAssemblage },
-): ReponseAssemblage {
+export function repondreAssemblage(state: BloclandState, bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage {
   if (!recetteDe(bloc)) return { state, assemble: false, reason: 'pas-de-recette' };
   const tirage = noterQuestion(reponse.cles, state.assemblageTirage?.[bloc] ?? reponse.tirage, reponse.cle, reponse.juste);
   const note: BloclandState = { ...state, assemblageTirage: { ...state.assemblageTirage, [bloc]: tirage } };

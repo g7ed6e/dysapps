@@ -103,6 +103,9 @@ it('« Assembler » ouvre la question du tirage ; juste du premier coup, le bloc
   expect(sauvegarde().inventory).toMatchObject({ bois: 4, brique: 1 });
   await user.click(choix(juste));
   expect(screen.getByText('Tu as assemblé 1 poutre. Tu en as 1.')).toBeInTheDocument();
+  // Un seul bouton Écouter dans le résultat, et le focus sur le bouton principal.
+  expect(within(screen.getByRole('region', { name: 'Résultat' })).getAllByRole('button', { name: /Écouter/ })).toHaveLength(1);
+  expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toHaveFocus();
   expect(sauvegarde().inventory).toMatchObject({ bois: 2, brique: 0, poutre: 1 });
   expect(sauvegarde().assemblageTirage.poutre.recentes).toEqual([item.key]);
   // Ni XP ni étoiles : la question ne compte pas comme une mission.
@@ -145,12 +148,23 @@ it('deux erreurs : rien n’est perdu, l’explication s’affiche, la question 
   expect(page()).toContain('Tes blocs sont toujours dans ta poche.');
   expect(sauvegarde().inventory).toEqual({ bois: 2, brique: 1 });
   expect(sauvegarde().assemblageTirage.poutre.ratees).toEqual([item.key]);
+  expect(screen.getByRole('button', { name: /Une autre question/ })).toHaveFocus();
+  // Le second bouton ramène au lieu, comme après une bonne réponse.
+  expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Une autre question/ }));
   // Une autre question, jamais la même juste après.
   const suivante = POUTRE.items.find((it) => it.key === prochaineQuestion(CLES, sauvegarde().assemblageTirage.poutre))!;
   expect(suivante.key).not.toBe(item.key);
   expect(page()).toContain(sans(suivante.question));
   expect(screen.queryByText('Pas tout à fait')).toBeNull();
+});
+
+it('un double toucher sur la bonne réponse n’assemble qu’un bloc', async () => {
+  const user = userEvent.setup();
+  const { juste } = partie({ bois: 4, brique: 2 });
+  renderFabrique('/aventure/assemblage/poutre');
+  await user.dblClick(await screen.findByRole('button', { name: juste }));
+  expect(sauvegarde().inventory).toMatchObject({ bois: 2, brique: 1, poutre: 1 });
 });
 
 it('sans assez de blocs, rien ne change : le bouton est grisé, la ligne de ce qui manque reste, aucune question', async () => {
@@ -195,6 +209,8 @@ it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
   const user = userEvent.setup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { poutre: 1 } }));
   renderIn(<AssemblagePage />);
+  // Refaire la poutre posera une question : la carte le dit sous le bouton.
+  expect(screen.getByText('Pour refaire 1 poutre, tu répondras à une question.')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Défaire 1 poutre/ }));
   expect(screen.getByText('Tu as défait 1 poutre : tu récupères 2 blocs de bois et 1 brique.')).toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, brique: 1, poutre: 0 });

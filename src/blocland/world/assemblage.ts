@@ -99,6 +99,8 @@ export function manquePour(inventory: Partial<Record<BlockId, number>>, r: Recet
 export const QUESTIONS_SANS_REDITE = 6;
 /** Une question manquée revient après au moins ce nombre d'autres questions. */
 export const RETOUR_DE_LA_MANQUEE = 3;
+/** Un tour lu dans une sauvegarde ne dépasse pas ce nombre (une valeur abîmée ne grossit pas la graine sans fin). */
+const TOUR_MAX = 100_000;
 /** Au plus tant de questions manquées gardées par bloc (une sauvegarde reste petite). */
 const MANQUEES_GARDEES = 24;
 
@@ -203,7 +205,7 @@ export function lireTirage(raw: unknown): TirageAssemblage | undefined {
   const tour = Number(r.tour);
   return {
     graine: r.graine,
-    tour: Number.isInteger(tour) && tour >= 0 ? tour : 0,
+    tour: Number.isInteger(tour) && tour >= 0 ? Math.min(tour, TOUR_MAX) : 0,
     posees: cles(r.posees, 200),
     recentes: cles(r.recentes, QUESTIONS_SANS_REDITE),
     ratees: cles(r.ratees, MANQUEES_GARDEES),

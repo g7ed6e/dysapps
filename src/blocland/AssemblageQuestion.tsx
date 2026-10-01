@@ -8,12 +8,12 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
 import { Loading } from '../components/Loading';
-import { frenchTypography, RichText } from '../components/math/RichText';
+import { frenchTypography } from '../components/math/RichText';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { useAnswerKeys } from '../components/useAnswerKeys';
 import { useFocusMode } from '../components/FocusMode';
-import { useSheetClearance } from '../components/useSheetClearance';
+import { moinsDAnimations } from '../core/mouvement';
 import { useSettings } from '../core/SettingsContext';
 import { useHaptics } from '../core/haptics';
 import { useLoaded } from '../core/useLoaded';
@@ -21,7 +21,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { useTextes } from '../univers';
 import { blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
-import { tirageDe } from './engine';
+import { tirageDe, type ReponseDonnee } from './engine';
 import { loadAssemblage } from './exercises';
 import { autoReadText } from './exercises/lecture';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
@@ -113,11 +113,25 @@ function QuestionDAssemblage({
   const [answered, setAnswered] = useState<ScreenAnswer | null>(null);
   const [fin, setFin] = useState<Fin | null>(null);
   const [encore, setEncore] = useState(false);
+  // Les essais déjà comptés, lus sans attendre un rendu : un double toucher ne compte jamais deux erreurs, ni
+  // n'assemble deux blocs.
+  const essais = useRef<'aucun' | 'premier' | 'fini'>('aucun');
 
-  // Quitter pendant la question ne prend rien : les blocs restent, la question n'est pas comptée.
-  useFocusMode(!answered && possible, () => navigate(retour), 'Tes blocs restent dans ta poche : rien n’est pris.');
-  useSheetClearance(sectionRef, Boolean(answered));
+  const resultatRef = useRef<HTMLDivElement>(null);
+  const principalRef = useRef<HTMLAnchorElement & HTMLButtonElement>(null);
+  // Le mode concentration reste jusqu'à ce que l'élève quitte l'écran, résultat compris : la barre du haut ne revient
+  // pas sous ses yeux. Quitter ne prend rien ; une fois le bloc assemblé, il est dans la poche. Retour au lieu sans
+  // garder la question dans l'historique : le geste retour du téléphone ne la rouvre pas.
+  const notePause = `${fin?.assemble ? fin.texte : 'Tes blocs restent dans ta poche : rien n’est pris.'} Tu reviens ${lieu.a}.`;
+  useFocusMode(possible, () => navigate(retour, { replace: true }), notePause);
   useAnswerKeys(sectionRef);
+  // Le résultat s'affiche sous les réponses, en entier, avec ses boutons : la page y défile, le focus va au bouton
+  // principal (relecture UX UI : le bandeau fixe passait sous la question ou hors de l'écran).
+  useEffect(() => {
+    if (!fin) return;
+    resultatRef.current?.scrollIntoView?.({ block: 'end', behavior: moinsDAnimations() ? 'auto' : 'smooth' });
+    principalRef.current?.focus({ preventScroll: true });
+  }, [fin]);
   // La consigne et la question sont lues en ouvrant, comme au début d'une mission ; le document, à la demande.
   useEffect(() => {
     if (settings.autoRead && item && possible) speak(autoReadText(def.instruction, [item]));
@@ -131,15 +145,18 @@ function QuestionDAssemblage({
   const Screen = SCREEN_TYPES[def.type].component;
 
   const onAnswer = (a: ScreenAnswer) => {
-    if (answered) return;
+    if (answered || essais.current === 'fini') return;
     const juste = a.results.every((r) => r.correct);
     // Une erreur au premier essai : l'indice, la réponse tentée barrée, un second essai.
-    if (!juste && !firstTry && retryAllowed(def.type, [item])) {
+    if (!juste && essais.current === 'aucun' && retryAllowed(def.type, [item])) {
+      essais.current = 'premier';
       setFirstTry(a);
       return;
     }
+    essais.current = 'fini';
     setAnswered(a);
-    const r = repondreAssemblage(recette.bloc, { cles, cle: item.key, juste, tirage });
+    const reponse: ReponseDonnee = { cles, cle: item.key, juste, tirage };
+    const r = repondreAssemblage(recette.bloc, reponse);
     if (r.assemble) {
       haptics.success();
       setFin({ juste: true, assemble: true, texte: messageAssemble(recette.bloc, r.state.inventory[recette.bloc] ?? 0) });
@@ -157,7 +174,7 @@ function QuestionDAssemblage({
   };
 
   return (
-    <section className={`quiz assemblage-question${answered ? ' has-sheet' : ''}`} ref={sectionRef} aria-labelledby="consigne">
+    <section className="quiz assemblage-question" ref={sectionRef} aria-labelledby="consigne">
       <div className="consigne">
         <h2 id="consigne" className="consigne-text">
           <Syllabified text={frenchTypography(def.instruction)} />
@@ -187,48 +204,44 @@ function QuestionDAssemblage({
       />
 
       {answered && fin && (
-        <div className={`result-sheet result-${fin.juste ? 'bien' : 'rate'}`} role="region" aria-label="Résultat">
-          <div className="result-sheet-inner">
-            <div className="result-sheet-body">
-              <Feedback
-                shout={fin.juste ? def.feedback.correct : 'Pas tout à fait'}
-                message=""
-                tone={fin.juste ? 'bien' : 'rate'}
-                compact
-                speakKey="fin"
-                autoSpeak={false}
-              />
-              <p className="explanation" role="status">
-                <Icon name={fin.juste ? 'hammer' : 'lightbulb'} />{' '}
-                <span>
-                  <RichText text={fin.texte} />
-                </span>
-                {fin.juste && <SpeakButton text={fin.texte} label="Écouter" compact />}
-              </p>
-            </div>
-            <div className="assemblage-question-actions">
-              {fin.juste ? (
-                <>
-                  <Link to={retour} state={fin.assemble ? { assemble: recette.bloc } : undefined} className="button primary next-button" autoFocus>
-                    <Icon name="back" /> Revenir {lieu.a}
-                  </Link>
-                  {encore && (
-                    <button type="button" className="button" onClick={onAutre}>
-                      <Icon name="hammer" /> Assembler 1 autre {un}
-                    </button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <button type="button" className="button primary next-button" onClick={onAutre} autoFocus>
-                    <Icon name="replay" /> Une autre question
+        <div ref={resultatRef} className={`panel assemblage-resultat result-${fin.juste ? 'bien' : 'rate'}`} role="region" aria-label="Résultat">
+          {/* Un seul bouton Écouter : il lit le cri, puis le bloc assemblé ou l'explication. */}
+          <Feedback
+            shout={fin.juste ? def.feedback.correct : 'Pas tout à fait'}
+            message={fin.texte}
+            tone={fin.juste ? 'bien' : 'rate'}
+            compact
+            speakKey="fin"
+            autoSpeak={false}
+          />
+          <div className="assemblage-question-actions">
+            {fin.juste ? (
+              <>
+                <Link
+                  ref={principalRef}
+                  to={retour}
+                  replace
+                  state={fin.assemble ? { assemble: recette.bloc } : undefined}
+                  className="button primary next-button"
+                >
+                  <Icon name="back" /> Revenir {lieu.a}
+                </Link>
+                {encore && (
+                  <button type="button" className="button" onClick={onAutre}>
+                    <Icon name="hammer" /> Assembler 1 autre {un}
                   </button>
-                  <Link to={retour} className="button">
-                    <Icon name="back" /> {lieu.titre}
-                  </Link>
-                </>
-              )}
-            </div>
+                )}
+              </>
+            ) : (
+              <>
+                <button ref={principalRef} type="button" className="button primary next-button" onClick={onAutre}>
+                  <Icon name="replay" /> Une autre question
+                </button>
+                <Link to={retour} replace className="button">
+                  <Icon name="back" /> Revenir {lieu.a}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

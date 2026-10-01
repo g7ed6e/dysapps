@@ -22,13 +22,13 @@ import {
   type LaunchResult,
   type PortalCompletion,
   type ReponseAssemblage,
+  type ReponseDonnee,
 } from './engine';
 import type { BiomeId, BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import type { TirageAssemblage } from './world/assemblage';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 export const SESSION_MAX_EXERCISES = 3;
@@ -55,7 +55,7 @@ interface BloclandContextValue {
    * La réponse finale à la question d'un bloc assemblé (GD-2) : juste, le bloc est assemblé avec les blocs de
    * l'inventaire ; manquée, rien n'est pris. La question est notée dans le tirage de l'élève.
    */
-  repondreAssemblage: (bloc: BlockId, reponse: { cles: readonly string[]; cle: string; juste: boolean; tirage: TirageAssemblage }) => ReponseAssemblage;
+  repondreAssemblage: (bloc: BlockId, reponse: ReponseDonnee) => ReponseAssemblage;
   /** Défait un bloc assemblé en poche : ses blocs reviennent (GD-2). */
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
@@ -118,21 +118,21 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }
     return r;
   }, []);
-  const appliquer = useCallback((r: AssembleResult): AssembleResult => {
-    if (!r.ok) return r;
-    const next = batisseurRef.current ? remplir(r.state) : r.state;
+  /** Enregistre un état nouveau de l'assemblage (inventaire plein en mode bâtisseur) et le rend. */
+  const pousser = useCallback((state: BloclandState): BloclandState => {
+    const next = batisseurRef.current ? remplir(state) : state;
     stateRef.current = next;
     setState(next);
-    return { ...r, state: next };
+    return next;
   }, []);
-  const repondreAssemblage = useCallback((bloc: BlockId, reponse: Parameters<BloclandContextValue['repondreAssemblage']>[1]) => {
-    const r = repondreAssemblagePure(stateRef.current, bloc, reponse);
-    if (r.state === stateRef.current) return r;
-    const next = batisseurRef.current ? remplir(r.state) : r.state;
-    stateRef.current = next;
-    setState(next);
-    return { ...r, state: next };
-  }, []);
+  const appliquer = useCallback((r: AssembleResult): AssembleResult => (r.ok ? { ...r, state: pousser(r.state) } : r), [pousser]);
+  const repondreAssemblage = useCallback(
+    (bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage => {
+      const r = repondreAssemblagePure(stateRef.current, bloc, reponse);
+      return r.state === stateRef.current ? r : { ...r, state: pousser(r.state) };
+    },
+    [pousser],
+  );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);

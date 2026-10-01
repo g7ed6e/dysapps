@@ -3,7 +3,7 @@
 // lue à voix haute) ; un toucher sur « Assembler » ouvre une question sur les deux matières de la recette, et la bonne
 // réponse assemble le bloc (AssemblageQuestion.tsx). Pas de grille, rien à deviner, rien ne se perd (référent dys). Un
 // panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -81,12 +81,20 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const [dit, setDit] = useState<{ texte: string; retour: MonumentDef | null } | null>(() =>
     (location.state as { assemble?: string } | null)?.assemble === recette.bloc ? { texte: messageAssemble(recette.bloc, en), retour: retourPour(en) } : null,
   );
+  // Lu une fois : Précédent et Suivant ne redisent pas « Tu as assemblé… ».
+  useEffect(() => {
+    if ((location.state as { assemble?: string } | null)?.assemble !== recette.bloc) return;
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    // Seulement à l'arrivée sur la carte.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const phrase = `Pour 1 ${un}, il faut ${enMots(recette)}.`;
   const manqueEnMots = manque.length ? `Il te manque ${manque.map((m) => blockCount(m.bloc, m.n)).join(' et ')}.` : 'Tu as tout ce qu’il faut.';
   const pocheEnMots = `Dans ta poche : ${blockCount(recette.bloc, en)}.`;
   const attendEnMots = pour.map(({ m, n }) => `${m.name} attend ${blockCount(recette.bloc, n)}.`).join(' ');
   // Le bouton « Écouter la recette » redit tout ce qui est écrit sur la carte (référent dys : rien à lire sans voix).
-  const aEcouter = `${phrase} ${pocheEnMots} ${manqueEnMots} ${attendEnMots}`;
+  const refaireEnMots = en > 0 ? `Pour refaire 1 ${un}, tu répondras à une question.` : '';
+  const aEcouter = [phrase, pocheEnMots, manqueEnMots, refaireEnMots, attendEnMots].filter(Boolean).join(' ');
   const titreId = `recette-${recette.bloc}`;
   const bloc = BLOCKS[recette.bloc];
 
@@ -154,6 +162,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
           </button>
         )}
       </div>
+      {refaireEnMots && <p className="assemblage-refaire">{refaireEnMots}</p>}
       <p className="assemblage-dit">
         <span role="status" aria-live="polite">
           {dit?.texte ?? ''}

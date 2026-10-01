@@ -19,12 +19,12 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Le matin, moins 3 degrés. L’après-midi, 4 degrés.",
       "choices": [
-        "L’écart est de 7 degrés entre ces deux moments.",
-        "L’écart est de 7 degrés entre ses deux moments.",
-        "L’écart est de 1 degré entre ces deux moments."
+        "Ces deux moments ont 7 degrés d’écart.",
+        "Ses deux moments ont 7 degrés d’écart.",
+        "Ces deux moments ont 1 degré d’écart."
       ],
-      "answer": "L’écart est de 7 degrés entre ces deux moments.",
-      "hint": "De −3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?",
+      "answer": "Ces deux moments ont 7 degrés d’écart.",
+      "hint": "De moins 3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?",
       "explanation": "4 − (−3) = 4 + 3 = 7 degrés. « ces » montre (ces moments-là) ; « ses » veut dire les siens. 1, c’est 4 − 3 : le signe moins a été oublié.",
       "aid": {
         "kind": "rule-card",
@@ -91,11 +91,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Oslo, moins 8 degrés. Paris, moins 2 degrés.",
       "choices": [
-        "Oslo est la ville où il fait le plus froid.",
-        "Oslo est la ville ou il fait le plus froid.",
-        "Paris est la ville où il fait le plus froid."
+        "Oslo, c’est là où il fait plus froid.",
+        "Oslo, c’est là ou il fait plus froid.",
+        "Paris, c’est là où il fait plus froid."
       ],
-      "answer": "Oslo est la ville où il fait le plus froid.",
+      "answer": "Oslo, c’est là où il fait plus froid.",
       "hint": "Lequel est le plus loin de 0, du côté des négatifs ? Puis : un lieu, ou « ou bien » ?",
       "explanation": "−8 est plus petit que −2 : il fait plus froid à Oslo. « où » dit le lieu ; « ou » veut dire « ou bien ». Paris, c’est croire que −2 est plus petit parce que 2 est plus petit que 8.",
       "aid": {
@@ -144,7 +144,7 @@
         "La somme est 12 : ces nombres sont opposés."
       ],
       "answer": "La somme est 0 : ces nombres sont opposés.",
-      "hint": "De −6, avance de 6 bonds. Puis remplace par « étaient ».",
+      "hint": "De moins 6, avance de 6 bonds. Puis remplace par « étaient ».",
       "explanation": "−6 + 6 = 0 : deux nombres opposés ont une somme nulle. On peut dire « ils étaient opposés » : on écrit sont. « son » veut dire « le sien ». 12, c’est 6 + 6 : le signe moins a été oublié.",
       "aid": {
         "kind": "rule-card",
@@ -163,13 +163,13 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "À midi, 4 degrés. Le soir, moins 2 degrés.",
       "choices": [
-        "La température s’est abaissée de 6 degrés.",
-        "La température c’est abaissée de 6 degrés.",
-        "La température s’est abaissée de 2 degrés."
+        "L’air s’est refroidi de 6 degrés.",
+        "L’air c’est refroidi de 6 degrés.",
+        "L’air s’est refroidi de 2 degrés."
       ],
-      "answer": "La température s’est abaissée de 6 degrés.",
-      "hint": "De 4 à 0, puis de 0 à −2 : compte les bonds. Puis : peux-tu dire « cela est » ?",
-      "explanation": "De 4 à 0 : 4 degrés ; de 0 à −2 : 2 degrés. En tout, 6 degrés. Le verbe est « s’abaisser » : on écrit s’est. « c’est » veut dire « cela est ». 2, c’est 4 − 2 : le signe moins a été oublié.",
+      "answer": "L’air s’est refroidi de 6 degrés.",
+      "hint": "De 4 à 0, puis de 0 à moins 2 : compte les bonds. Puis : peux-tu dire « cela est » ?",
+      "explanation": "De 4 à 0 : 4 degrés ; de 0 à −2 : 2 degrés. En tout, 6 degrés. Le verbe est « se refroidir » : on écrit s’est. « c’est » veut dire « cela est ». 2, c’est 4 − 2 : le signe moins a été oublié.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -232,15 +232,15 @@
     {
       "key": "vitrail-9",
       "prompt": "À Paris, il est 10 h.\nDécalage de Londres : −1 h.",
-      "question": "Quelle phrase est juste ?",
+      "question": "Quelle heure est-il à Londres ?",
       "spoken": "À Paris, il est 10 heures. Décalage de Londres, moins 1 heure.",
       "choices": [
-        "À Londres, il est 9 h : une heure plus tôt.",
-        "À Londres, il est 9 h : une heure plutôt.",
-        "À Londres, il est 11 h : une heure plus tôt."
+        "9 h : une heure plus tôt.",
+        "9 h : une heure plutôt.",
+        "11 h : une heure plus tôt."
       ],
-      "answer": "À Londres, il est 9 h : une heure plus tôt.",
-      "hint": "Ajouter −1, c’est reculer ou avancer ? Puis : le contraire de « plus tard » ?",
+      "answer": "9 h : une heure plus tôt.",
+      "hint": "Ajouter moins 1, c’est reculer ou avancer ? Puis : le contraire de « plus tard » ?",
       "explanation": "10 + (−1) = 9 : à Londres, il est 9 h. « plus tôt » est le contraire de « plus tard » ; « plutôt » veut dire « de préférence ». 11 h, c’est 10 + 1 : le signe moins a été oublié.",
       "aid": {
         "kind": "rule-card",
@@ -259,13 +259,13 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Jade et Emma lisent le même livre. Jade en a lu un tiers. Emma en a lu un quart.",
       "choices": [
-        "Jade a lu plus qu’elle.",
-        "Jade a lu plus quelle.",
-        "Emma a lu plus qu’elle."
+        "Emma voit que Jade a lu plus qu’elle.",
+        "Emma voit que Jade a lu plus quelle.",
+        "Jade voit qu’Emma a lu plus qu’elle."
       ],
-      "answer": "Jade a lu plus qu’elle.",
+      "answer": "Emma voit que Jade a lu plus qu’elle.",
       "hint": "En 3 parts ou en 4 parts : quelle part est la plus grande ? Puis remplace par « qu’il ».",
-      "explanation": "Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma. On peut dire « plus qu’il » : on écrit qu’elle. Emma, c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.",
+      "explanation": "Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma : elle, c’est Emma. On peut dire « plus qu’il » : on écrit qu’elle. « Jade voit qu’Emma a lu plus », c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.",
       "aid": {
         "kind": "rule-card",
         "props": {
