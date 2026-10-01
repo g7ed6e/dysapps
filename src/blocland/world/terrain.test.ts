@@ -778,7 +778,8 @@ it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’
         const { at, size } = VILLAGE_PLACES[place];
         expect(lx >= at.x && lx < at.x + size.w && ly >= at.y && ly < at.y + size.d, `${place} ${lx},${ly}`).toBe(true);
         // Dans le cœur, hors de la zone des plans, loin des bornes (et de leur marge) ; la rangée de devant reste libre.
-        expect(lx >= 0 && lx < CORE && ly >= 0 && ly < CORE).toBe(true);
+        const bc = bornesDuCoeur(islandDef(island));
+        expect(lx >= bc.x0 && lx < bc.x1 && ly >= bc.y0 && ly < bc.y1, `${place} ${lx},${ly}`).toBe(true);
         expect(lx >= PLAN_ZONE.x && lx < PLAN_ZONE.x + PLAN_ZONE.w && ly >= PLAN_ZONE.y && ly < PLAN_ZONE.y + PLAN_ZONE.h).toBe(false);
         for (const st of questStations(island)) expect(Math.abs(lx - st.x) <= 1 && Math.abs(ly - st.y) <= 1).toBe(false);
         expect(ly).toBeGreaterThan(0);
@@ -787,6 +788,13 @@ it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’
       const door = placeDoor(place, island)!;
       expect(ground.feet.get(`${door.x},${door.y}`)).toBe(door.z);
       expect(walkPath(ground, avatarHome(island), door)).not.toBeNull();
+      // Hors de l'emprise que la salle des trophées prendra en grandissant (GD-3 : jusqu'à 8 × 3, de (0,8) à (7,10)).
+      if (place !== 'trophees') {
+        const dx = door.x - ox;
+        const dy = door.y - oy;
+        expect(dx >= 0 && dx <= 7 && dy >= 8 && dy <= 10, `${place} : porte en ${dx},${dy}`).toBe(false);
+        for (const c of cells) expect(c.x - ox <= 7 && c.y - oy >= 8 && c.y - oy <= 10, `${place} ${c.x - ox},${c.y - oy}`).toBe(false);
+      }
     }
     // L'école : murs, porte, toit et cloche. La salle : un trophée par succès, à sa place.
     expect(cubes.filter((c) => c.place === 'ecole').some((c) => c.texture === 'porte')).toBe(true);

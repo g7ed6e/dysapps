@@ -1619,12 +1619,13 @@ export const SCHOOL_AT = { x: 11, y: 1 };
 export const TROPHY_SIZE = { w: 4, d: 3 };
 export const TROPHY_AT = { x: 4, y: 8 };
 /**
- * Le lieu où l'on assemble les blocs (GD-2) : 3 × 5 cases, à gauche au fond du cœur, derrière la salle des trophées et
- * le long de la zone des plans ; la halle au fond (trois rangs), la cour devant (deux rangs : la potence, les blocs
- * empilés). La porte au milieu, sa case devant la cour. Loin de la créature (et de ses pas), des bornes et du port.
+ * Le lieu où l'on assemble les blocs (GD-2) : 3 × 5 cases, à droite au fond du cœur agrandi des îles-écoles, derrière
+ * l'école et à côté de la zone des plans, hors de l'emprise que la salle des trophées prend en grandissant (GD-3 : de
+ * (0,8) à (7,10)) ; la halle au fond (trois rangs), la cour devant (deux rangs : la potence, les blocs empilés). La
+ * porte au milieu, sa case devant la cour. Loin de la créature (et de ses pas), des bornes et du port.
  */
 export const ASSEMBLAGE_SIZE = { w: 3, d: 5 };
-export const ASSEMBLAGE_AT = { x: 0, y: 11 };
+export const ASSEMBLAGE_AT = { x: 14, y: 11 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
