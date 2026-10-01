@@ -4,8 +4,9 @@
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import { coeurDe, islandDef } from '../map';
-import type { Couleur, Faces } from '../palette';
-import type { Lointain } from './lointain';
+import { eauxDe, type Couleur, type Faces } from '../palette';
+import type { Lointain, Massif } from './lointain';
+import { compense, exposition, PLANCHER_DE_NUAGES } from '../mer';
 import { enRepere, type Forme } from './outils';
 import { dessinerPhare, PHARES, PIECES_DU_PHARE } from './phare';
 import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './pinceau';
@@ -133,6 +134,25 @@ const grandPhare = enRepere(({ P, L, e, Z, plusBas, matiere }) => {
 export const FORMES_3E: Record<string, Forme> = { 'grand-phare': grandPhare };
 
 /**
+ * Le massif posé sur le plancher de nuages (DA-20, revue d'ensemble : il faisait décor de théâtre, bouts coupés net, base
+ * en l'air, roche peu lisible). Sur les quatre dixièmes de sa longueur à chaque bout, la crête s'abaisse jusque sous les
+ * nuages et recule de 30 cases dans la brume ; son pied est un glacis qui plonge sous le plancher, sa roche prend la
+ * couleur du plancher sur les 2,5 blocs du bas (éclaircie sur les pentes, pour qu'on la voie comme le plancher) ; ses versants ont un épaulement, et la roche tire vers son ombre
+ * (au moins 0,3, jusqu'à 0,8 à l'opposé du soleil) : une valeur nettement plus sombre que la neige.
+ */
+export const MASSIF_3E: Massif = {
+  archipel: '3e',
+  bouts: 0.4,
+  fuite: 30,
+  plancher: PLANCHER_DE_NUAGES,
+  fondu: 2.5,
+  glacis: 14,
+  couleurDuPlancher: compense(eauxDe('3e').large, exposition('3e')),
+  ombreForce: 0.8,
+  ombreSocle: 0.3,
+};
+
+/**
  * Le massif enneigé des Îles du Ciel (fiche, §2) : une crête continue et irrégulière, 1,2 fois plus large que l'arc des
  * îles, de roche froide, la neige franche au-dessus de 55 % de sa hauteur, ses cols hauts (0,55 à 0,75 de la hauteur)
  * pour que la neige fasse une bande continue ; un second rang plus haut et plus pâle derrière lui fait l'épaisseur de la
@@ -142,7 +162,7 @@ export const FORMES_3E: Record<string, Forme> = { 'grand-phare': grandPhare };
 export const LOINTAIN_3E: Lointain = {
   graine: 'lointain-3e',
   pieces: [
-    { genre: 'cretes', u: -0.1, a: 1.1, recul: 80, haut: 14, cimes: 11, epaisseur: 30, couleur: 0x7e8aa8, ombre: 0x47598c, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75] },
-    { genre: 'cretes', u: 0.05, a: 0.95, recul: 110, haut: 18, cimes: 8, epaisseur: 30, couleur: 0x8b96b2, ombre: 0x56679a, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75] },
+    { genre: 'cretes', u: -0.1, a: 1.1, recul: 80, haut: 14, cimes: 11, epaisseur: 30, couleur: 0x7e8aa8, ombre: 0x47598c, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75], massif: MASSIF_3E },
+    { genre: 'cretes', u: 0.05, a: 0.95, recul: 110, haut: 18, cimes: 8, epaisseur: 30, couleur: 0x8b96b2, ombre: 0x56679a, sommet: 0xe5ebe3, neige: 0.55, neigeFranche: true, cols: [0.55, 0.75], massif: MASSIF_3E },
   ],
 };
