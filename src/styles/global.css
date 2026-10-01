@@ -5183,6 +5183,32 @@ details.island-fold-objectif {
   font-size: 1.2rem;
   justify-content: center;
 }
+/* Blocland : le logo se construit (src/blocland/LogoQuiSeConstruit.tsx) ; ses quatre cubes descendent en accélérant et
+   s’arrêtent d’un coup, sans rebond ; le logo entier ne bouge pas. Coupé quand l’appareil demande moins d’animations. */
+.title-logo-construit {
+  animation: none;
+}
+.logo-cube {
+  animation-name: logo-chute, logo-apparait;
+  animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45), linear;
+  animation-fill-mode: both;
+}
+@keyframes logo-chute {
+  from {
+    transform: translateY(-140px);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes logo-apparait {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Le bloc tombe et rebondit une fois (coupé quand l’appareil demande moins d’animations). */
 @keyframes title-drop {
   from {

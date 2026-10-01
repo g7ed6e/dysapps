@@ -34,4 +34,9 @@ export interface Habillage {
    * étiquettes s'en écartent ; ou le cadrage de la zone seul.
    */
   reperes: 'cadres' | 'libres';
+  /**
+   * La pose d'un bloc (GD-1, point 4) : le geste de Blocland, où le dernier bloc d'un plan descend et s'enclenche
+   * (world/pose.ts), et le « clac » de cliquet à chaque pose ; ou les poussières claires et le « toc » commun.
+   */
+  pose: 'geste' | 'eclats';
 }

@@ -498,6 +498,18 @@ export default function WorldCanvas({
     if (recentrage) world.current?.recentrer();
   }, [recentrage]);
 
+  // ---- Le geste de pose (Blocland, world/pose.ts) : le dernier bloc d'un plan descend et s'enclenche dans sa case.
+  // Avant le terrain : le terrain garde son maillage d'avant (le fantôme de la case) le temps de la descente.
+  const geste = Boolean(burst?.pose) && habillageDe(rendu).pose === 'geste';
+  useEffect(() => {
+    const w = world.current;
+    if (!w || !burst || burst.seq === 0 || !geste || reduceMotion) return;
+    const { x, y, z } = burst.cell;
+    const cube = cubes.find((c) => c.x === x && c.y === y && c.z === z && !c.ghost);
+    if (cube) w.cubes.enclencher(cube);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [burst?.seq]);
+
   // ---- Terrain : une géométrie par matériau, faces visibles seulement
   useEffect(() => {
     world.current?.cubes.poser(cubes);
@@ -546,10 +558,11 @@ export default function WorldCanvas({
     world.current?.cubes.viser(null);
   }, [Boolean(build)]);
 
-  // ---- À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens
+  // ---- À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens (sauf au geste
+  // de pose de Blocland, sans poussière)
   useEffect(() => {
     const w = world.current;
-    if (!w || !burst || burst.seq === 0 || reduceMotion) return;
+    if (!w || !burst || burst.seq === 0 || reduceMotion || geste) return;
     w.cubes.eclater(burst);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);

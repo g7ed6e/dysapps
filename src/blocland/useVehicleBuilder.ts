@@ -3,7 +3,8 @@ import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
@@ -46,6 +47,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const launch = stage ? canLaunch(state, stage) : null;
   const kit = stage ? kitReady(stage, state.progress) : false;
   const sound = (f: () => void) => settings.sounds && f();
+  // Le son de pose de l'univers (le « clac » de Blocland, le « toc » d'Archipéo), lu une fois.
+  const [playPlace] = useState(() => sonDePose(habillageDuMonde().pose));
   const haptics = useHaptics();
 
   const fillAt = (x: number, y: number, z: number) => {

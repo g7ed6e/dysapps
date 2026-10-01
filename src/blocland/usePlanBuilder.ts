@@ -4,7 +4,10 @@ import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, blockCount, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
+import { moinsDAnimations } from '../core/mouvement';
+import { GESTE_DE_POSE } from './world/pose';
 import { planCells, plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
 import type { Ancrage } from './world/disposition';
@@ -82,6 +85,9 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
   const status = plan ? planStatus(state, plan) : null;
   const sound = (f: () => void) => settings.sounds && f();
   const haptics = useHaptics();
+  // La pose de l'univers, lue une fois : dans Blocland, le « clac » à chaque bloc et le geste du dernier bloc d'un plan.
+  const [pose] = useState(() => habillageDuMonde().pose);
+  const playPlace = sonDePose(pose);
 
   const fillAt = (x: number, y: number, z: number) => {
     if (!plan) return;
@@ -92,7 +98,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       sound(playNope);
       return;
     }
-    burstAt(x, y, z, r.block);
+    burstAt(x, y, z, r.block, r.completed);
     if (r.completed) finished(plan);
     else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
@@ -100,9 +106,9 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       haptics.place();
     }
   };
-  const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
+  const burstAt = (x: number, y: number, z: number, block: BlockId, last = false) => {
+    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1). Le dernier bloc d'un plan : le geste.
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top, ...(last ? { pose: true } : {}) }));
   };
   // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
   const finished = (done: PlanDef) => {
@@ -112,14 +118,20 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     const msg = `${done.name} : terminé ! ${done.done} Coffre : ${chest}. +${done.reward.xp} XP.`;
     setNotice(msg);
     completePlan(done.reward.xp);
-    sound(playDone);
+    // Dans Blocland, le bloc descend et s'enclenche (world/pose.ts) : le « clac » sonne à l'arrêt, le carillon juste après.
+    // Sans le geste (Archipéo, ou l'appareil demande moins d'animations), le carillon tout de suite.
+    if (pose === 'geste' && settings.sounds) {
+      const arret = moinsDAnimations() ? 0 : GESTE_DE_POSE.dureeMs;
+      window.setTimeout(playPlace, arret);
+      window.setTimeout(playDone, arret + 120);
+    } else sound(playDone);
     if (settings.autoRead) speak(msg);
   };
   const fillAll = () => {
     if (!plan) return;
     const { placed, last, completed } = placeAll(plan, state.village.plans[plan.id] ?? [], fillPlan);
     if (!last) return;
-    burstAt(last.x, last.y, last.z, last.block);
+    burstAt(last.x, last.y, last.z, last.block, completed);
     if (completed) return finished(plan);
     const left = (status?.total ?? 0) - (status?.done ?? 0) - placed;
     setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''}. ${left > 0 ? `Il en reste ${left} à poser : gagne les blocs qui manquent.` : ''}`.trim());

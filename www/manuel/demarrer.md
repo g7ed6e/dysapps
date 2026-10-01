@@ -51,7 +51,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), « Blocland » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le bouton Jouer.](/captures/titre.jpg)
 

@@ -158,7 +158,7 @@ Chaque île a sa forme de bâtiment :
 - S’il manque un type de bloc, le panneau dit lequel et sur quelle île le gagner.
 - Les blocs de **finition** (toit, porte, lanterne, barrière, escalier) ne se gagnent pas dans les exercices : le coffre de chaque plan terminé fournit exactement ceux du plan suivant, et le dernier plan d’une île donne de l’or et du cristal, utiles pour les ouvrages.
 - **Les bâtiments ont été redessinés** (plus grands, avec fenêtres, toits à deux pans, cheminées). Un bâtiment déjà construit avec l’ancien dessin est construit avec le nouveau, et son coffre, déjà ouvert, est complété de ce que le nouveau donne en plus ; les blocs posés dans un plan commencé qui ne servent plus reviennent dans l’inventaire.
-- Plan terminé : la créature parle (lue à voix haute), un coffre de blocs, de l’XP, un succès. Le **journal du village** date chaque bâtiment terminé, rappelé dans le panneau de son île ; la page Succès compte les bâtiments.
+- Plan terminé : dans Blocland, en 3D, le dernier bloc posé descend dans sa case et s’enclenche d’un seul cran, en moins d’une demi-seconde, sans rebond ni poussière ; on peut toucher le monde ou le panneau pendant ce temps. Puis la créature parle (lue à voix haute), un coffre de blocs, de l’XP, un succès. Le **journal du village** date chaque bâtiment terminé, rappelé dans le panneau de son île ; la page Succès compte les bâtiments.
 
 Un rappel de pause s’affiche après dix minutes de construction, sans rien bloquer.
 
@@ -282,7 +282,7 @@ Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, 
 
 ## Les sons
 
-Les sons sont générés par le code, sans aucun fichier : un « toc » à la pose (et trois poussières claires qui montent doucement de la case), un « pop » au retrait, un refus doux, un carillon de deux notes quand un plan est terminé, jamais pendant la lecture à voix haute. Le réglage « Sons dans le village » les coupe. L’**ambiance** (vent, oiseaux le jour, grillons la nuit) est désactivée par défaut et s’active dans les réglages.
+Les sons sont générés par le code, sans aucun fichier : à la pose, dans Blocland, un « clac » mat et court, comme un cliquet qui s’enclenche, et dans Archipéo un « toc » (avec trois poussières claires qui montent doucement de la case) ; un « pop » au retrait, un refus doux, un carillon de deux notes quand un plan est terminé (dans Blocland, juste après le « clac » du dernier bloc), jamais pendant la lecture à voix haute. Aucun son ne dit seul ce qui se passe : le panneau l’écrit toujours. Le réglage « Sons dans le village » les coupe. L’**ambiance** (vent, oiseaux le jour, grillons la nuit) est désactivée par défaut et s’active dans les réglages.
 
 ## Les commandes en bref
 

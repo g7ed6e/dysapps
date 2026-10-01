@@ -1,6 +1,7 @@
 // Les cubes de la scène 3D : le monde en blocs (une géométrie par matériau, faces visibles seulement) ; dans Archipéo,
 // le sol et la roche en facettes (lot R2) et le décor en primitives (lot R4), le reste en cubes. Aussi la case visée en
-// chantier, et les éclats (la poussière d'un bloc posé, l'écume du navire).
+// chantier, les éclats (la poussière d'un bloc posé, l'écume du navire) et, dans Blocland, le geste de pose (le dernier
+// bloc d'un plan descend et s'enclenche, world/pose.ts).
 import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
@@ -8,6 +9,7 @@ import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type Cha
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
+import { gesteFini, hauteurDuGeste } from '../world/pose';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerPiliers } from './bornes';
@@ -21,6 +23,9 @@ import { creerSol } from './sol';
 
 type Case = { x: number; y: number; z: number };
 
+/** Le pas le plus long du geste de pose, par image (ms) : la descente dure au moins six images, moins d'une seconde dès 10 images par seconde. */
+const PAS_DU_GESTE_MS = 60;
+
 export interface Cubes extends PartieDeLaScene {
   /** Le sol à facettes d'Archipéo, pour le toucher et la marche (`null` dans le monde en blocs, ou avant les cubes). */
   champ(): ChampDuSol | null;
@@ -33,6 +38,12 @@ export interface Cubes extends PartieDeLaScene {
   viser(next: Case | null): void;
   /** À la pose d'un bloc : trois poussières claires qui montent doucement, sans partir en tous sens. */
   eclater(burst: NonNullable<EnCasesDuMonde['burst']>): void;
+  /**
+   * Le geste de pose (Blocland) : ce cube, le dernier d'un plan, descend dans sa case (où le fantôme attend) et
+   * s'enclenche. Le terrain garde son maillage d'avant pendant la descente ; les cubes reçus entre-temps sont posés à
+   * l'arrêt, en un seul maillage (pas un de plus que sans le geste).
+   */
+  enclencher(cube: VoxelCube): void;
   /** Un éclat de plus (petit cube qui retombe et disparaît) ; `material` lui appartient. */
   eclat(mesh: THREE.Mesh, velocity: THREE.Vector3, born: number): void;
   /** La forme d'un éclat, partagée. */
@@ -71,12 +82,69 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   scene.add(hover);
   const sparkGeo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
   const sparks: Spark[] = [];
+  /**
+   * Le geste de pose en cours : le bloc qui descend (ses matériaux sont partagés), le temps écoulé depuis la première
+   * image qui le dessine (`null` avant), les cubes qui attendent.
+   */
+  let geste: { bloc: THREE.Group; ecoule: number | null; enAttente: VoxelCube[] | null } | null = null;
 
   const viderLeTerrain = () => {
     for (const child of [...terrain.children]) {
       terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
+  };
+
+  /** Le terrain : un maillage par matériau (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
+  const poserLeTerrain = (cubes: VoxelCube[]) => {
+    viderLeTerrain();
+    if (!sol) {
+      for (const g of buildMesh(cubes)) terrain.add(meshOf(g, surface));
+      return;
+    }
+    // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
+    // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
+    const surLeSol: VoxelCube[] = [];
+    const autres: VoxelCube[] = [];
+    // Sans les tours du décor du cœur (un seul phare par île, lot R5) : Blocland les garde.
+    for (const c of sansToursDuCoeur(cubes)) (c.sol ? surLeSol : autres).push(c);
+    // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
+    const { elements, reste } = rangerLeDecor(autres);
+    // Le modelé dessiné d'Archipéo (U2) par-dessus le relief de marche, que la grille garde.
+    const auSol = modelerLeSol(archipel, surLeSol, reste);
+    const champ = champDuSol(archipel, auSol, reste);
+    // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
+    // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.
+    const construction = poseDuDecor(champ, reste);
+    if (taille) {
+      const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
+      if (change || !taille.maillage) {
+        taille.construction.peindre(maillage);
+        taille.piliers.poser(piliersDe(construction));
+        taille.maillage = maillage;
+      }
+    }
+    const signature = signatureDuChamp(champ);
+    const style = styleDuMonde() === 'a' ? 'a' : 'b';
+    if (signature !== sol.signature) sol.en3D.peindre(landMesh(champ, { style }));
+    const decorSignature = signatureDuDecor(elements);
+    if (signature !== sol.signature || decorSignature !== sol.decorSignature) {
+      sol.decor.peindre(maillageDuDecor(archipel, champ, elements, { style }));
+      sol.decorSignature = decorSignature;
+    }
+    sol.signature = signature;
+    sol.champ = champ;
+    large.rivage(champ, autres);
+  };
+
+  /** Le geste de pose fini (ou coupé) : le bloc qui descendait s'en va, le terrain reçoit les cubes qui attendaient. */
+  const finirLeGeste = () => {
+    if (!geste) return;
+    const { bloc, enAttente } = geste;
+    geste = null;
+    if (enAttente) poserLeTerrain(enAttente);
+    scene.remove(bloc);
+    for (const child of bloc.children) (child as THREE.Mesh).geometry.dispose();
   };
 
   return {
@@ -109,44 +177,16 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       return caseDeLaConstruction(hit.point, n);
     },
     poser: (cubes) => {
-      viderLeTerrain();
-      if (!sol) {
-        for (const g of buildMesh(cubes)) terrain.add(meshOf(g, surface));
-        return;
-      }
-      // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
-      // (poser un bloc sur un plan ne le change pas : la case est déjà figée par le fantôme).
-      const surLeSol: VoxelCube[] = [];
-      const autres: VoxelCube[] = [];
-      // Sans les tours du décor du cœur (un seul phare par île, lot R5) : Blocland les garde.
-      for (const c of sansToursDuCoeur(cubes)) (c.sol ? surLeSol : autres).push(c);
-      // Le décor en primitives (lot R4) : sorti des cubes, il ne fige plus sa case ; le sol à facettes passe dessous.
-      const { elements, reste } = rangerLeDecor(autres);
-      // Le modelé dessiné d'Archipéo (U2) par-dessus le relief de marche, que la grille garde.
-      const auSol = modelerLeSol(archipel, surLeSol, reste);
-      const champ = champDuSol(archipel, auSol, reste);
-      // Le décor resté en cubes (les objets du quai) d'une case descendue au bas de sa pente descend avec elle.
-      // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.
-      const construction = poseDuDecor(champ, reste);
-      if (taille) {
-        const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
-        if (change || !taille.maillage) {
-          taille.construction.peindre(maillage);
-          taille.piliers.poser(piliersDe(construction));
-          taille.maillage = maillage;
-        }
-      }
-      const signature = signatureDuChamp(champ);
-      const style = styleDuMonde() === 'a' ? 'a' : 'b';
-      if (signature !== sol.signature) sol.en3D.peindre(landMesh(champ, { style }));
-      const decorSignature = signatureDuDecor(elements);
-      if (signature !== sol.signature || decorSignature !== sol.decorSignature) {
-        sol.decor.peindre(maillageDuDecor(archipel, champ, elements, { style }));
-        sol.decorSignature = decorSignature;
-      }
-      sol.signature = signature;
-      sol.champ = champ;
-      large.rivage(champ, autres);
+      if (geste) geste.enAttente = cubes;
+      else poserLeTerrain(cubes);
+    },
+    enclencher: (cube) => {
+      finirLeGeste();
+      const bloc = new THREE.Group();
+      for (const g of buildMesh([cube])) bloc.add(meshOf(g, surface));
+      bloc.position.y = hauteurDuGeste(0);
+      scene.add(bloc);
+      geste = { bloc, ecoule: null, enAttente: null };
     },
     viser: (next) => {
       hover.visible = next !== null;
@@ -171,6 +211,14 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     animer: (t, dt, reduit) => {
       // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
       sol?.decor.animer(t, dt, reduit);
+      // Le geste de pose : le bloc descend, en accélérant, puis s'arrête d'un coup dans sa case (world/pose.ts).
+      // Son temps avance image par image, d'un pas borné : une image longue (la fin d'un plan refait le village) ne fait
+      // pas sauter la descente, qui se voit toujours en entier.
+      if (geste) {
+        geste.ecoule = geste.ecoule === null ? 0 : geste.ecoule + Math.min(dt * 1000, PAS_DU_GESTE_MS);
+        if (reduit || gesteFini(geste.ecoule)) finirLeGeste();
+        else geste.bloc.position.y = hauteurDuGeste(geste.ecoule);
+      }
       if (reduit) return;
       // Éclats : petits cubes qui retombent et disparaissent.
       for (const s of [...sparks]) {
@@ -187,6 +235,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
     },
     dispose: () => {
+      if (geste) geste.enAttente = null;
+      finirLeGeste();
       hover.geometry.dispose();
       (hover.material as THREE.Material).dispose();
       viderLeTerrain();
