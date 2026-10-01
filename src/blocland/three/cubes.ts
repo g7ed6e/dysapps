@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
-import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import type { EnCasesDuMonde } from '../world/view';
@@ -57,8 +57,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   if (sol) scene.add(sol.en3D.group, sol.decor.group);
   // La lanterne du phare et la couleur des fumées suivent le moment du jour (R4b-6e).
   if (sol) lumiere.suivre((jour) => sol.decor.jour(jour));
-  // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés.
-  const materiaux = facettes ? creerMateriaux(lumiere) : null;
+  // Archipéo (lot R5) : la construction taillée, en trois appels, et les piliers des bornes, instanciés ; ses murs peints
+  // aux couleurs du kit d'architecture de l'archipel (lot 7).
+  const materiaux = facettes ? creerMateriaux(lumiere, couleursDesRoles(archipel)) : null;
   // Un maillage par île, gardé : poser un bloc ne refait que son île.
   const taille = materiaux
     ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), cache: cacheDeLaConstruction(), maillage: null as MaillageDeLaConstruction | null }
