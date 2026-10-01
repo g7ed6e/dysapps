@@ -49,6 +49,8 @@ const TETE_DU_LION: Anneau[] = [
  * le pan qui rentre sous l'arcade. Leur hauteur dans la tête, leur écart au milieu, leur demi-largeur, leur demi-hauteur.
  */
 const ORBITES = { y: 0.15, ecart: 0.22, demi: 0.15, haut: 0.1 } as const;
+/** Le nez : la demi-largeur et la hauteur de sa base, en haut et en bas, la hauteur de sa pointe et son avancée. */
+const NEZ = { haut: [0.15, -0.1], bas: [0.1, -0.4], pointe: -0.34, avance: 0.16 } as const;
 
 /**
  * La collerette : huit plaques en couronne autour de la tête (l'angle de chacune, en degrés depuis la droite, sa
@@ -189,6 +191,23 @@ export function sculptureDuLion(T: Trace, a: Atelier): void {
     const sur = (px: number, py: number): V3 => [px, py, face(py) - 0.006];
     facette(H, [sur(x - s * demi, y - haut * 0.3), sur(x, y - haut), sur(x + s * demi, y + haut * 0.6), sur(x, y + haut)], [x, y, face(y) + 1], a.orbite);
   }
+  // Le nez, une pyramide basse au bout du museau (quatre triangles, sa base dans la pierre).
+  const { haut: nh, bas: nb, pointe: np, avance } = NEZ;
+  const [g, d, gb, db]: V3[] = [
+    [-nh[0], nh[1], face(nh[1]) + 0.02],
+    [nh[0], nh[1], face(nh[1]) + 0.02],
+    [-nb[0], nb[1], face(nb[1]) + 0.02],
+    [nb[0], nb[1], face(nb[1]) + 0.02],
+  ];
+  const sommet: V3 = [0, np, face(np) - avance];
+  const dos: V3 = [0, (nh[1] + nb[1]) / 2, face(np) + 0.4];
+  for (const [u, v] of [
+    [g, d],
+    [d, db],
+    [db, gb],
+    [gb, g],
+  ])
+    H.triangle(u, v, sommet, dos, a.pierre);
   for (const p of CRINIERE) plaque(H, plaqueDeCriniere(p), a.pierre);
 }
 
