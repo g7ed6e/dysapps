@@ -106,7 +106,7 @@
           "title": "Lire un horaire",
           "lines": [
             "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
-            "Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche",
+            "Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche",
             "weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes",
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
@@ -133,7 +133,7 @@
           "title": "Lire un horaire",
           "lines": [
             "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
-            "Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche",
+            "Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche",
             "weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes",
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
@@ -160,7 +160,7 @@
           "title": "Lire un horaire",
           "lines": [
             "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
-            "Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche",
+            "Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche",
             "weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes",
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
@@ -187,7 +187,7 @@
           "title": "Lire un horaire",
           "lines": [
             "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
-            "Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche",
+            "Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche",
             "weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes",
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
@@ -214,7 +214,7 @@
           "title": "Lire un horaire",
           "lines": [
             "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
-            "Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche",
+            "Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche",
             "weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes",
             "am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé"
           ]
