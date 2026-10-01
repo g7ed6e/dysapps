@@ -3680,11 +3680,15 @@ figure.class-table {
   gap: 0.5rem;
 }
 .world-map-islands summary {
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   font-weight: 700;
   cursor: pointer;
+}
+/* Sous la liste des îles, une ligne : ce qui ouvre une île pâle. */
+.world-map-islands-note {
+  margin: 0 0 0.4rem;
 }
 .world-map-islands ul {
   display: grid;
@@ -3813,7 +3817,7 @@ figure.class-table {
 }
 .sheet-more > summary {
   display: list-item;
-  min-height: 44px;
+  min-height: 48px;
   padding: 0.55rem 0;
   box-sizing: border-box;
   font-weight: 700;
@@ -3840,6 +3844,10 @@ figure.class-table {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-control);
   background: var(--secondary-bg);
+}
+/* L'accueil d'une île : le nom de la créature et « Réécouter » sur une ligne, sa phrase dessous. */
+.island-sheet-says-texte {
+  flex: 1 1 100%;
 }
 .island-sheet-heading {
   display: flex;
@@ -3953,6 +3961,14 @@ button.island-quest:active {
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+  /* En grand texte, les libellés restent écrits : les boutons passent à la ligne plutôt que de n'être que des icônes. */
+  :root[data-texte="grand"] .world-bar-text {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
   }
   .island-sheet {
     max-height: 58%;
@@ -4646,6 +4662,12 @@ figure.posee {
 /* Le lien vers « Mes blocs », sous le plan. */
 .island-inventory-link {
   margin: 0.6rem 0 0;
+}
+/* « Tous les monuments » : une cible d'au moins 48 px. */
+.island-inventory-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
 }
 .island-inventory-link .tag {
   display: inline-flex;
@@ -5522,7 +5544,25 @@ button.app-card {
 .menu-resume {
   width: 100%;
   justify-content: center;
-  margin: 0.4rem 0 0.8rem;
+  margin: 0.4rem 0 0.6rem;
+}
+/* Le menu du village tient sans défiler sur un écran d'ordinateur (1280 × 800) : des lignes plus serrées, des cibles
+   d'au moins 48 px. */
+.menu-sheet {
+  padding-bottom: 0.8rem;
+}
+.menu-sheet .island-quests {
+  gap: 0.35rem;
+}
+.menu-sheet .island-quest {
+  min-height: 48px;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+/* Réglages et Accueil côte à côte, juste sous Reprendre : visibles d'emblée, même sur un téléphone. */
+.menu-quick {
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  margin-bottom: 0.6rem;
 }
 button.island-quest {
   width: 100%;
@@ -5945,7 +5985,7 @@ fieldset {
 
 /* Le rôle et la jauge d'XP en tête du menu du village : la barre du haut de l'appli n'est pas sur l'écran du monde. */
 .menu-role {
-  margin: 0.2rem 0 0.4rem;
+  margin: 0.1rem 0 0.2rem;
 }
 .menu-role .xp-title {
   font-size: 1rem;

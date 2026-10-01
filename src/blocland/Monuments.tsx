@@ -122,7 +122,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
         {builder.notice ?? ''}
       </p>
       <p className="island-inventory-link">
-        <InventoryLink /> · <Link to={MONUMENTS_PATH}>Tous les monuments</Link>
+        <InventoryLink /> · <Link to={MONUMENTS_PATH} className="island-inventory-more">Tous les monuments</Link>
       </p>
     </div>
   );

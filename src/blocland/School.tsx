@@ -42,9 +42,10 @@ export function SchoolBody() {
   const greeting = greetingOf(island);
   const block = BLOCKS[island.block];
 
-  // La créature de l'île accueille à voix haute, une fois à l'entrée.
+  // Le texte visible est lu à voix haute, une fois à l'entrée ; l'accueil entier est sur « Écouter », dans le pli.
+  const reward = `Chaque mission ici donne des blocs ${ofBlock(island.block)}.`;
   useEffect(() => {
-    if (settings.autoRead && !door) speak(frenchTypography(greeting));
+    if (settings.autoRead && !door) speak(frenchTypography(reward));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -52,7 +53,7 @@ export function SchoolBody() {
     <div className="school">
       {/* Une ligne pour l'essentiel ; l'accueil de la créature est écrit dans un pli, avec Écouter : les portes se voient tout de suite. */}
       <p className="school-reward">
-        <BlockIcon top={block.top} side={block.side} size={28} /> Chaque mission ici donne des blocs.
+        <BlockIcon top={block.top} side={block.side} size={28} /> {reward}
       </p>
       <details className="sheet-more">
         <summary>En savoir plus</summary>

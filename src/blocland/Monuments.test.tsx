@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -46,7 +46,7 @@ it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapport
   expect(saved.inventory.brique).toBe(40 - monumentNeeds(OBS).brique!);
   expect(saved.village.plans[OBS.id]).toHaveLength(posed);
 
-  document.body.innerHTML = '';
+  cleanup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: monumentNeeds(OBS) }));
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
@@ -72,7 +72,7 @@ it('« Poser » impossible : une ligne visible dit ce qui manque ; la liste des 
   expect(blocks.querySelector('summary')).toHaveTextContent('Les blocs qu’il faut');
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   // Des blocs en poche : on peut poser, la ligne s'efface.
-  document.body.innerHTML = '';
+  cleanup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { brique: 2 } }));
   renderIn(<Page />);
   expect(document.querySelector('.monument-lacking')).toBeNull();

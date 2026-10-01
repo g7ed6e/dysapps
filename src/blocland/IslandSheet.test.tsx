@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -65,7 +65,7 @@ it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y fair
   expect(plan()).toHaveAttribute('open');
   // Des blocs en poche : le plan et les ouvrages s'ouvrent d'eux-mêmes.
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
-  document.body.innerHTML = '';
+  cleanup();
   renderSheet('foret', () => {}, undefined, true);
   expect(plan()).toHaveAttribute('open');
   expect(ouvrages()).toHaveAttribute('open');
@@ -123,7 +123,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   const plans = { [coque.id]: planCells(coque).map((c) => c.key) };
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
   localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans, bridges: ['foret-mine'] } }));
-  document.body.innerHTML = '';
+  cleanup();
   renderSheet('plaine');
   expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
   expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
@@ -162,7 +162,7 @@ it('« Poser tout ce que j’ai » pose d’un coup les blocs que l’inventaire
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getByText(`10 blocs posés. Il en reste ${cabane.cells.length - 10} à poser : gagne les blocs qui manquent.`)).toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.plans[cabane.id]).toHaveLength(10);
-  document.body.innerHTML = '';
+  cleanup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: cabane.cells.length } }));
   renderSheet('foret');
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
@@ -181,6 +181,18 @@ it('l’accueil de la créature : une ligne écrite visible, la suite dans un pl
   if (speak) expect(speak.getAttribute('aria-label')).toContain(more.querySelector('p')!.textContent!.trim().slice(0, 20));
   expect(says.textContent!.length).toBeGreaterThan(30);
   expect(says.textContent).not.toContain(more.querySelector('p')!.textContent!.trim());
+  // « Réécouter » sur la ligne du nom de la créature, sa phrase dessous.
+  expect(says.firstElementChild).toHaveTextContent('Mousso :');
+  expect(says.lastElementChild).toHaveClass('island-sheet-says-texte');
+  if (speak) expect(says.children[1]).toBe(speak);
+});
+
+it('sur l’île-port en 3D, la suite de l’accueil et le pli de l’objectif ont des clés distinctes', () => {
+  const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+  renderSheet('plaine', () => {}, undefined, true);
+  expect(document.querySelector('.island-fold-objectif')).not.toBeNull();
+  expect(error.mock.calls.some((c) => String(c[0]).includes('same key'))).toBe(false);
+  error.mockRestore();
 });
 
 it('la matière, la classe et l’archipel descendent au pied du panneau ; les missions suivent l’accueil', () => {
@@ -200,7 +212,7 @@ it('la matière, la classe et l’archipel descendent au pied du panneau ; les m
 it('la jauge du prochain objectif se compte tant qu’il manque des blocs, et s’efface quand tout est là', () => {
   renderSheet('foret');
   expect(document.querySelector('.island-goal .goal-gauge')).toHaveTextContent('0 / 3');
-  document.body.innerHTML = '';
+  cleanup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
   renderSheet('foret');
   expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux construire le sentier');
@@ -220,7 +232,7 @@ it('sur l’île-port, le prochain objectif et le village sont un seul pli, titr
   await userEvent.click(summary);
   expect(fold).toHaveAttribute('open');
   // Une île qui n'est pas un port : l'objectif seul, sans pli.
-  document.body.innerHTML = '';
+  cleanup();
   renderSheet('foret');
   expect(document.querySelector('.island-fold-objectif')).toBeNull();
   expect(document.querySelector('.village-stage')).toBeNull();

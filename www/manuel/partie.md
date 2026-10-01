@@ -66,7 +66,7 @@ Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs,
 
 L'**école du village** ouvre les missions du portail (français, maths, anglais). Elles rapportent les blocs de l'île de l'école.
 
-![Le panneau de l'École du village : « Chaque mission ici donne des blocs », le pli En savoir plus, puis les trois portes.](/captures/ecole.jpg)
+![Le panneau de l'École du village : « Chaque mission ici donne des blocs de bois. », le pli En savoir plus, puis les trois portes.](/captures/ecole.jpg)
 
 ## Pour les blocs en trop : les monuments
 

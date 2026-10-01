@@ -1,7 +1,7 @@
 // Le panneau replié de l'île où l'on est : il le reste quand on revient de la Carte, d'un panneau du village ou d'un
 // exercice (le monde se remonte alors). Retenu le temps de la séance (sessionStorage) ; si le navigateur le refuse,
 // le temps de la page.
-import type { BiomeId } from './biomes';
+import { getBiome, type BiomeId } from './biomes';
 
 const CLE = 'dysapps:panneau-replie';
 let enMemoire: BiomeId | null = null;
@@ -9,7 +9,9 @@ let enMemoire: BiomeId | null = null;
 /** L'île dont le panneau est replié, ou `null` si aucun ne l'est. */
 export function panneauReplie(): BiomeId | null {
   try {
-    return (sessionStorage.getItem(CLE) as BiomeId | null) ?? null;
+    // Une valeur qui n'est pas une île (ancienne, ou écrite à la main) ne replie rien.
+    const lue = sessionStorage.getItem(CLE);
+    return (lue && getBiome(lue)?.id) || null;
   } catch {
     return enMemoire;
   }

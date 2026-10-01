@@ -18,9 +18,10 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
     ? `Chaque succès gagné pose un trophée dans la salle : ${earned} sur ${BADGES.length}. L’or pour tes exploits, le cristal pour tes rôles, le quartz pour les Gardiens, les lentilles pour les voyages.`
     : `La salle est vide pour l’instant. Chaque succès gagné y posera un trophée : il y en a ${BADGES.length} à gagner.`;
   const { settings, speak } = useSettings();
-  // Lu à voix haute une fois, à l'entrée.
+  // Le texte visible (le compte des trophées) est lu à voix haute une fois, à l'entrée ; l'accueil entier est sur
+  // « Écouter », dans le pli.
   useEffect(() => {
-    if (settings.autoRead) speak(frenchTypography(says));
+    if (settings.autoRead) speak(frenchTypography(`${TROPHIES_TITLE} : ${earned} trophée${earned > 1 ? 's' : ''} sur ${BADGES.length}.`));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

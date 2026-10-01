@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -7,6 +7,7 @@ import { BloclandProvider } from './BloclandContext';
 import { WorldPage } from './WorldPage';
 import { BADGES } from '../core/progress';
 import { demanderMoinsDAnimations } from '../core/mouvement.testing';
+import { textesDe } from '../univers';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île.
 vi.mock('./three', () => ({
@@ -127,14 +128,19 @@ it('le panneau replié reste replié quand on touche l’île où l’on est ; u
   renderAt('/aventure/foret');
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(sheet()).not.toBeInTheDocument();
+  const bulle = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line'));
+  expect(bulle()).toBeUndefined();
+  // Toucher l'île : sa créature parle (une réponse visible), le panneau reste replié.
   await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
   expect(sheet()).not.toBeInTheDocument();
-  // La créature de l'île parle, le panneau reste replié.
+  expect(bulle()).toHaveTextContent(/^Mousso :/);
+  // Toucher la créature fait de même.
+  await user.click(within(bulle()!).getByRole('button', { name: 'Fermer' }));
   await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
   expect(sheet()).not.toBeInTheDocument();
-  expect(screen.queryAllByRole('status').some((el) => el.classList.contains('world-line'))).toBe(true);
+  expect(bulle()).toBeDefined();
   // Depuis le village sans île, toucher la Forêt ouvre son panneau.
-  document.body.innerHTML = '';
+  cleanup();
   renderAt('/aventure');
   await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
   expect(sheet()).toBeInTheDocument();
@@ -242,7 +248,7 @@ it('le sélecteur d’archipel : l’archipel où l’on est, et les autres déj
   renderAt('/aventure');
   // Un seul archipel atteint : pas de sélecteur.
   expect(screen.queryByRole('button', { name: /changer d’archipel/ })).not.toBeInTheDocument();
-  document.body.innerHTML = '';
+  cleanup();
   localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'foret' } }));
   renderAt('/aventure');
   const button = screen.getByRole('button', { name: /Archipel de 6e, les Premiers Rivages : changer d’archipel/ });
@@ -285,7 +291,7 @@ it('à la première arrivée dans un archipel, le mot de la baleine, en deux pag
   await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
   expect(screen.queryByRole('dialog', { name: 'Le mot de la baleine' })).not.toBeInTheDocument();
   // Déjà dit : la baleine ne le répète pas.
-  document.body.innerHTML = '';
+  cleanup();
   renderAt('/aventure');
   await new Promise((r) => setTimeout(r, 1500));
   expect(screen.queryByRole('dialog', { name: 'Le mot de la baleine' })).not.toBeInTheDocument();
@@ -442,10 +448,15 @@ it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » l
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/aventure/trophees');
   expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
-  // En tête, le rôle et la jauge d'XP ; en bas, l'accueil (plus de « Tutoriel » ni de « Le menu en page »).
+  // En tête, le rôle et la jauge d'XP ; sous Reprendre, Réglages et Accueil, avant le reste (plus de « Tutoriel », de
+  // « Le menu en page » ni de « Revoir l’aide du village » : le « ? » de la barre du bas la rouvre).
   expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
   expect(within(menu).getByRole('link', { name: /Accueil/ })).toHaveAttribute('href', '/menu');
   expect(within(menu).queryByRole('link', { name: /Tutoriel|Le menu en page/ })).not.toBeInTheDocument();
+  expect(within(menu).queryByRole('button', { name: /Revoir l’aide/ })).not.toBeInTheDocument();
+  const ordre = [within(menu).getByRole('button', { name: /Reprendre/ }), ...within(menu).getAllByRole('link')].map((el) => el.textContent!.trim());
+  expect(ordre.slice(0, 4)).toEqual(['Reprendre', 'Réglages', 'Accueil', expect.stringMatching(/^(Continuer|À revoir|École du village)/)]);
+  expect(within(menu).getByRole('link', { name: /Monuments/ })).toHaveTextContent('Bâtis avec tes blocs');
   await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/aventure$/);
@@ -521,7 +532,7 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent(/touche une borne pour jouer.*Chaque mission te donne des blocs pour construire l’île\./);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent('Le bouton Menu ouvre le menu : missions, succès, réglages, accueil.');
+  expect(tuto()).toHaveTextContent('Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
   // La bulle montre le bouton Menu.
   expect(document.querySelector('[data-tuto="menu"]')!.classList.contains('tuto-target')).toBe(true);
   await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
@@ -529,13 +540,12 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
 });
 
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {
-  const { PHRASE_OUVRAGES } = await import('./WorldPage');
   localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('Les îles pâles sont fermées'));
   const premier = renderAt('/aventure/mine');
   expect(ligne()).toBeDefined();
-  expect(ligne()!.textContent).toContain(PHRASE_OUVRAGES.slice(0, 40));
+  expect(ligne()!.textContent).toContain(textesDe('blocland').libelles.decouverteOuvrages);
   premier.unmount();
   renderAt('/aventure/riviere');
   expect(ligne()).toBeUndefined();

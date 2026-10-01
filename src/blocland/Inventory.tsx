@@ -55,10 +55,10 @@ export function InventoryBody() {
     .filter((u) => (seen.has(useKey(u)) ? false : (seen.add(useKey(u)), true)));
   const readyOuvrages = ouvrages.filter((o) => o.enough);
   // Les trois premiers chantiers prêts, celui du prochain objectif de l'île du bonhomme en tête ; le reste sur demande.
-  type Ready = { key: string; rank: number; use?: Use; ouvrage?: (typeof ouvrages)[number] };
+  type Ready = { key: string; rank: number } & ({ genre: 'usage'; use: Use } | { genre: 'ouvrage'; ouvrage: (typeof ouvrages)[number] });
   const ready = [
-    ...readyUses.map((use): Ready => ({ key: useKey(use), rank: readyRank(use.kind, use.island === at), use })),
-    ...readyOuvrages.map((o): Ready => ({ key: o.bridge.id, rank: readyRank('ouvrage', o.from === at || o.to === at), ouvrage: o })),
+    ...readyUses.map((use): Ready => ({ genre: 'usage', key: useKey(use), rank: readyRank(use.kind, use.island === at), use })),
+    ...readyOuvrages.map((o): Ready => ({ genre: 'ouvrage', key: o.bridge.id, rank: readyRank('ouvrage', o.from === at || o.to === at), ouvrage: o })),
   ]
     .map((item, i) => ({ item, i }))
     .sort((a, b) => a.item.rank - b.item.rank || a.i - b.i)
@@ -71,6 +71,8 @@ export function InventoryBody() {
     requestAnimationFrame(() => list.current?.querySelectorAll('a')[READY_SHOWN]?.focus());
   };
   const shown = all ? ready : ready.slice(0, READY_SHOWN);
+  // « Dans ta poche » ne redit pas les chantiers que « Tu peux construire » montre déjà.
+  const listed = new Set(shown.map((r) => r.key));
   // Les ouvrages pas encore payables : les trois moins chers suffisent, une longue liste de coûts noierait l'essentiel.
   const laterOuvrages = ouvrages
     .filter((o) => !o.enough)
@@ -94,19 +96,17 @@ export function InventoryBody() {
         ) : (
           <>
             <ul ref={list} className="inventory-uses" aria-labelledby="inventaire-maintenant">
-              {shown.map(({ key, use, ouvrage: o }) => (
-                <li key={key}>
-                  {use ? (
-                    <Link to={use.to ?? `/aventure/${use.island}`} className="tag tag-ok">
-                      <Icon name={useIcon(use)} />{' '}
-                      {use.kind === 'navire' ? cap(VEHICLE_NAME) : use.kind === 'monument' ? use.name : `Plan de ${getBiome(use.island)?.name ?? use.island}`}
+              {shown.map((r) => (
+                <li key={r.key}>
+                  {r.genre === 'usage' ? (
+                    <Link to={r.use.to ?? `/aventure/${r.use.island}`} className="tag tag-ok">
+                      <Icon name={useIcon(r.use)} />{' '}
+                      {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.kind === 'monument' ? r.use.name : `Plan de ${getBiome(r.use.island)?.name ?? r.use.island}`}
                     </Link>
                   ) : (
-                    o && (
-                      <Link to={`/aventure/${o.from}`} className="tag tag-ok">
-                        <Icon name="map" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name}
-                      </Link>
-                    )
+                    <Link to={`/aventure/${r.ouvrage.from}`} className="tag tag-ok">
+                      <Icon name="map" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
+                    </Link>
                   )}
                 </li>
               ))}
@@ -129,25 +129,30 @@ export function InventoryBody() {
         </p>
       ) : (
         <ul className="inventory-list" aria-labelledby="inventaire-blocs">
-          {rows.map((row) => (
-            <li key={row.block} className="inventory-row">
-              <span className="inventory-block">
-                <BlockIcon top={BLOCKS[row.block].top} side={BLOCKS[row.block].side} size={28} />
-                <strong>{row.count}</strong> {blockName(row.block, row.count)}
-              </span>
-              <span className="inventory-uses">
-                {row.uses.length === 0 ? (
-                  <span className="inventory-none">Rien à construire pour l’instant</span>
-                ) : (
-                  row.uses.map((use) => (
-                    <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
-                      <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
-                    </Link>
-                  ))
-                )}
-              </span>
-            </li>
-          ))}
+          {rows.map((row) => {
+            const uses = row.uses.filter((u) => !listed.has(useKey(u)));
+            return (
+              <li key={row.block} className="inventory-row">
+                <span className="inventory-block">
+                  <BlockIcon top={BLOCKS[row.block].top} side={BLOCKS[row.block].side} size={28} />
+                  <strong>{row.count}</strong> {blockName(row.block, row.count)}
+                </span>
+                <span className="inventory-uses">
+                  {row.uses.length === 0 ? (
+                    <span className="inventory-none">Rien à construire pour l’instant</span>
+                  ) : uses.length === 0 ? (
+                    <span className="inventory-none">Pour un chantier plus haut</span>
+                  ) : (
+                    uses.map((use) => (
+                      <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
+                        <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
+                      </Link>
+                    ))
+                  )}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
 

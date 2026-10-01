@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { SANS_LV2, estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -19,7 +19,8 @@ import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
-import { lockedHint, nextGoalInfo } from './world/goals';
+import { nextGoalInfo } from './world/goals';
+import { accueilDeLIle } from './decouvertes';
 import { GoalFold, GoalLine } from './GoalLine';
 import { firstSentences } from './firstSentences';
 import { VillageStageLine } from './VillageStageLine';
@@ -56,7 +57,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id);
+  const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
@@ -99,13 +100,17 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
           <Icon name="close" />
         </button>
       </div>
-      <p className="island-sheet-says" role="status" aria-live="polite">
-        <strong>{biome.creature.name} :</strong> <Syllabified text={says.first} />
+      {/* « Réécouter » sur la ligne du nom de la créature ; sa phrase dessous, sur toute la largeur. */}
+      <p className="island-sheet-says island-sheet-says-nom" role="status" aria-live="polite">
+        <strong>{biome.creature.name} :</strong>
         <SpeakButton text={greeting} label="Réécouter" compact />
+        <span className="island-sheet-says-texte">
+          <Syllabified text={says.first} />
+        </span>
       </p>
       {says.rest && (
         // La suite de l'accueil, écrite dans un pli : rien n'est seulement à l'écoute. « Réécouter » lit le tout.
-        <details key={biome.id} className="sheet-more island-says-more">
+        <details key={`suite-${biome.id}`} className="sheet-more island-says-more">
           <summary>La suite</summary>
           <p>
             <Syllabified text={says.rest} />
@@ -220,7 +225,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
 
       {/* Le prochain objectif et, sur l'île-port, l'état du village (qui se voit aussi au port en cubes) : un seul pli. */}
       {goal && port ? (
-        <GoalFold key={biome.id} goal={goal}>
+        <GoalFold key={`objectif-${biome.id}`} goal={goal}>
           <VillageStageLine village={state.village} archipelago={biome.classe} />
         </GoalFold>
       ) : goal ? (

@@ -1,6 +1,7 @@
 // Le menu du village (le menu pause de Blocland) : un panneau à la place de celui d'une île, le monde reste derrière.
-// En tête, le rôle et la jauge d'XP (la barre du haut de l'appli n'est pas sur l'écran du monde). Reprendre, la dernière
-// mission, les révisions du jour, l'école, puis les grands endroits de l'appli, et l'accueil.
+// En tête, le rôle et la jauge d'XP (la barre du haut de l'appli n'est pas sur l'écran du monde). Reprendre, puis les
+// Réglages et l'Accueil côte à côte (visibles d'emblée, même sur un téléphone), puis la dernière mission, les révisions
+// du jour, l'école et les grands endroits de l'appli. L'aide du village se revoit avec le « ? » de la barre du bas.
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
@@ -16,8 +17,6 @@ import { TROPHIES_PATH } from './trophies';
 interface Props {
   /** Reprendre : le panneau se ferme, on est dans le village. */
   onClose: () => void;
-  /** Revoir l'aide du village (le tutoriel en bulles). */
-  onHelp: () => void;
 }
 
 function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: string; desc?: string }) {
@@ -36,7 +35,7 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
   );
 }
 
-export function MenuSheet({ onClose, onHelp }: Props) {
+export function MenuSheet({ onClose }: Props) {
   const { state } = useBlocland();
   const { progress } = useProgress();
   const resume = lastPlace();
@@ -59,6 +58,10 @@ export function MenuSheet({ onClose, onHelp }: Props) {
       <button type="button" className="button primary menu-resume" onClick={onClose} autoFocus>
         <Icon name="play" /> Reprendre
       </button>
+      <ul className="island-quests menu-quick" aria-label="Réglages et accueil">
+        <Row to="/reglages" icon="settings" title="Réglages" />
+        <Row to={MENU_PATH} icon="home" title="Accueil" />
+      </ul>
       <ul className="island-quests menu-list" aria-label="Menu">
         {resume && <Row to={resume.path} icon="play" title="Continuer" desc={resume.label} />}
         {reviews.length > 0 && (
@@ -70,21 +73,9 @@ export function MenuSheet({ onClose, onHelp }: Props) {
           />
         )}
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
-        <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Tes blocs en trop" />
+        <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Bâtis avec tes blocs" />
         <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes, par matière" />
         <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="Ton rôle, tes trophées" />
-        <Row to="/reglages" icon="settings" title="Réglages" desc="Police, couleurs, voix" />
-        <li>
-          <button type="button" className="island-quest" onClick={onHelp}>
-            <span className="island-quest-icon">
-              <Icon name="help" />
-            </span>
-            <span className="island-quest-text">
-              <span className="island-quest-title">Revoir l’aide du village</span>
-            </span>
-          </button>
-        </li>
-        <Row to={MENU_PATH} icon="home" title="Accueil" desc="Hors du village" />
       </ul>
     </section>
   );

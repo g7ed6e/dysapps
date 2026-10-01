@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -46,7 +46,7 @@ it('rien à construire : pas de « Tout voir »', () => {
 
 it('l’école : une ligne pour les blocs, l’accueil de la créature dans un pli avec Écouter, les portes tout de suite', () => {
   renderIn(<SchoolSheet onClose={() => {}} />);
-  expect(screen.getByText('Chaque mission ici donne des blocs.')).toBeInTheDocument();
+  expect(screen.getByText('Chaque mission ici donne des blocs de bois.')).toBeInTheDocument();
   const more = document.querySelector<HTMLDetailsElement>('.school .sheet-more')!;
   expect(more).not.toHaveAttribute('open');
   expect(more.querySelector('summary')).toHaveTextContent('En savoir plus');
@@ -63,4 +63,45 @@ it('les trophées : l’accueil de la salle dans un pli, la salle tout de suite'
   expect(more.querySelector('summary')).toHaveTextContent('En savoir plus');
   expect(more.textContent).toContain('La salle est vide pour l’instant.');
   expect(sheet.querySelector('.island-sheet-says')).toBeNull();
+});
+
+it('« Dans ta poche » ne redit pas les chantiers que « Tu peux construire » montre déjà', () => {
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 200, brique: 200, pierre: 200, sable: 200 } }));
+  renderIn(<InventorySheet onClose={() => {}} />);
+  const shown = within(screen.getByRole('list', { name: /Tu peux construire/ }))
+    .getAllByRole('link')
+    .map((a) => a.getAttribute('href'));
+  const poche = screen.getByRole('list', { name: /Dans ta poche/ });
+  // Le plan de la Forêt est en tête de « Tu peux construire » : la poche ne le redit pas.
+  expect(within(poche).queryByRole('link', { name: /Plan de Forêt des sons/ })).not.toBeInTheDocument();
+  for (const link of within(poche).queryAllByRole('link')) expect(shown).not.toContain(link.getAttribute('href'));
+});
+
+describe('à l’ouverture, seul le texte visible est lu', () => {
+  const dit: string[] = [];
+  beforeEach(() => {
+    dit.length = 0;
+    class Utterance {
+      lang = '';
+      rate = 1;
+      voice: unknown = null;
+      constructor(public text: string) {}
+    }
+    vi.stubGlobal('SpeechSynthesisUtterance', Utterance);
+    vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+  });
+
+  it('l’école lit sa ligne, pas l’accueil du pli', async () => {
+    renderIn(<SchoolSheet onClose={() => {}} />);
+    await waitFor(() => expect(dit).toHaveLength(1));
+    expect(dit[0]).toContain('Chaque mission ici donne des blocs de bois.');
+    expect(dit[0]).not.toContain('Bienvenue');
+  });
+
+  it('les trophées lisent leur compte, pas l’accueil du pli', async () => {
+    renderIn(<TrophySheet onClose={() => {}} />);
+    await waitFor(() => expect(dit).toHaveLength(1));
+    expect(dit[0]).toMatch(/^Salle des trophées\s:\s0 trophée sur \d+\.$/u);
+  });
 });
