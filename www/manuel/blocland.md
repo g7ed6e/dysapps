@@ -6,11 +6,13 @@ L’aventure a deux univers, qui se choisissent dans les [Réglages](reglages.md
 
 ## Le monde
 
-L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le menu, **Blocland** l’ouvre aussi. Le village est en 3D sur tout l’écran : la barre du haut de l’appli n’y est pas, le [menu du village](#le-menu-du-village) donne le rôle, les grands endroits et l’accueil. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il marche. Un toucher n’importe où pendant un trajet le fait arriver tout de suite. Au clavier, les flèches vont à l’île voisine.
+L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le menu, **Blocland** l’ouvre aussi. Le village est en 3D sur tout l’écran : la barre du haut de l’appli n’y est pas, le [menu du village](#le-menu-du-village) donne le rôle, les grands endroits et l’accueil. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il va d’une île à l’autre. Un toucher dans le vide pendant un trajet le fait arriver tout de suite.
+
+Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en contournant arbres, bornes et maisons. Un rond clair cerné de foncé marque où il va, et s’efface à l’arrivée. Si la case touchée est dans l’eau ou derrière un obstacle, il va à la case de l’île la plus proche où il peut aller. Sur l’île où il est déjà, ni le panneau ni la caméra ne bougent ; sur une autre île, il s’arrête là où l’on a touché. Un autre toucher sur le sol pendant la marche change son but ; une borne, un lieu ou une créature gardent toujours la priorité sur le sol. Au clavier, les flèches l’emmènent à la place habituelle de l’île voisine.
 
 Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris) : la vue suit le doigt, sans zoom ni rotation, et s’arrête au bord de l’archipel. Un petit mouvement compte encore comme un toucher ; un vrai glissé n’ouvre rien quand on lève le doigt.
 
-Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une île, ouvrir la Carte ou faire marcher le bonhomme recentre aussi la vue. Le glissé n’est pas possible sur la Carte, qui montre déjà tout l’archipel, ni pendant un trajet ou un voyage. Tout reste faisable sans glisser, par un simple toucher.
+Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une autre île, une borne ou une créature, ouvrir la Carte ou envoyer le bonhomme sur une autre île recentre aussi la vue ; le promener sur son île ne la recentre pas. Le glissé n’est pas possible sur la Carte, qui montre déjà tout l’archipel, ni pendant un trajet d’une île à l’autre ou un voyage. Tout reste faisable sans glisser, par un simple toucher.
 
 ![Les Premiers Rivages en 3D, reconstruits : les îles reliées par des ponts, leurs maisons, les statues des Gardiens vaincus, les étiquettes des noms d'îles et la barre du bas (Carte, Blocs, École).](/captures/village-reconstruit.jpg)
 
@@ -72,7 +74,7 @@ Le plan, le Bloc-Navire et les ouvrages sont des **sections repliables**. Elles 
 
 Dans le monde, chaque île a **une borne par mission** (un socle et un panneau) : la toucher lance la mission. Après un exercice, on revient au même endroit, panneau ouvert.
 
-La **croix** du panneau le replie sans quitter l’île : la caméra reste cadrée sur elle. Un bouton au nom de l’île, dans la barre du bas, le rouvre ou le replie. Tant qu’il est replié, toucher l’île où l’on est ne le rouvre pas : on peut regarder le monde, et sa créature dit une phrase, lue à voix haute, comme quand on la touche ; toucher une autre île ouvre le panneau de celle-ci. Il reste replié aussi quand on ferme la Carte (on revient sur l’île où l’on est) ou un panneau du village, et au retour d’une mission de cette île ; **Y aller**, sur la Carte, l’ouvre.
+La **croix** du panneau le replie sans quitter l’île : la caméra reste cadrée sur elle. Un bouton au nom de l’île, dans la barre du bas, le rouvre ou le replie. Tant qu’il est replié, toucher le sol de l’île où l’on est ne le rouvre pas : le bonhomme y marche, et l’on peut regarder le monde ; toucher la créature lui fait dire une phrase, lue à voix haute ; toucher une autre île ouvre le panneau de celle-ci. Il reste replié aussi quand on ferme la Carte (on revient sur l’île où l’on est) ou un panneau du village, et au retour d’une mission de cette île ; **Y aller**, sur la Carte, l’ouvre.
 
 ## Les missions et les étoiles
 
@@ -308,7 +310,8 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 
 | Geste | Effet |
 | --- | --- |
-| Toucher une île ouverte | La caméra s’approche, son panneau s’ouvre, le bonhomme y marche ; l’île où l’on est, panneau replié : sa créature dit une phrase, le panneau reste replié |
+| Toucher une île ouverte | La caméra s’approche, son panneau s’ouvre, le bonhomme y marche et s’arrête là où l’on a touché |
+| Toucher le sol de l’île où l’on est | Le bonhomme y marche (un rond marque le but) ; le panneau et la caméra ne bougent pas |
 | Toucher une île fermée | Sa créature dit l’ouvrage qui y mène |
 | Toucher une borne de mission | Lance la mission (ou explique pourquoi elle ne l’est pas) |
 | Toucher un ouvrage (construit ou fantôme) | Ouvre l’île qu’il touche, avec sa proposition mise en avant |
@@ -320,7 +323,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher pendant le voyage, Entrée, Espace, Échap, bouton « Arriver » | Le Bloc-Navire arrive tout de suite |
 | Toucher le Gardien sur son îlot | Lance le défi |
 | Toucher l’école, ou bouton École | Le bonhomme marche jusqu’à sa porte, le panneau de l’école s’ouvre (le bouton le referme) |
-| Toucher pendant un trajet | Le bonhomme arrive tout de suite |
+| Toucher pendant un trajet | Dans le vide ou sur l’eau : le bonhomme arrive tout de suite ; sur le sol : il change de but |
 | Flèches du clavier | Île voisine dans cette direction |
 | Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans zoom ni rotation ; le bouton « Recentrer » apparaît |
 | Bouton « Recentrer » (en haut à droite) | La caméra revient sur l’île ou le bonhomme |

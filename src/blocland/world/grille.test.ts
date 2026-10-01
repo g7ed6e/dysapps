@@ -99,6 +99,28 @@ describe('La disposition en grille', () => {
     expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'mine' })).toBeNull();
   });
 
+  it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
+    const a = '6e';
+    const { g } = grilleDe(a);
+    let essais = 0;
+    for (const from of islandsOf(a))
+      for (const to of islandsOf(a)) {
+        if (from.id === to.id) continue;
+        const aller = g.trajet({ genre: 'ile', id: from.id }, { genre: 'ile', id: to.id });
+        if (!aller || aller.etapes.length < 4) continue;
+        // Juste parti : encore sur l'île de départ. Un toucher le renvoie sur cette île.
+        const p = g.versMonde(aller.etapes[1]);
+        if (g.ileEn(p) !== from.id) continue;
+        const retour = g.trajet({ genre: 'ile', id: g.ileEn(p) }, { genre: 'ile', id: from.id }, { depart: p });
+        expect(retour!.etapes.every((e) => e.ile !== to.id), `${from.id} → ${to.id}`).toBe(true);
+        // Parti de l'île visée (ce que faisait la page) : il finissait de traverser jusqu'à elle avant de revenir.
+        const avant = g.trajet({ genre: 'ile', id: to.id }, { genre: 'ile', id: from.id }, { depart: p });
+        expect(avant!.etapes.some((e) => e.ile === to.id)).toBe(true);
+        essais++;
+      }
+    expect(essais).toBeGreaterThan(0);
+  });
+
   it('le trajet jusqu’à la porte d’un lieu du village : celui d’avant', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);

@@ -38,6 +38,10 @@ function decorKind(decor: string): string {
 /** Le sol où l'on peut marcher : la hauteur des pieds de chaque case libre (le dessus du bloc le plus haut, + 1). */
 export interface WalkGround {
   feet: Map<string, number>;
+  /** Les colonnes dont le dessus est de l'eau ou de la lave (on n'y marche pas). */
+  liquid: Set<string>;
+  /** Les colonnes d'un ouvrage (pont, gué…) : on y passe, on ne s'y arrête pas quand on touche le sol. */
+  bridge: Set<string>;
 }
 
 const key = (x: number, y: number) => `${x},${y}`;
@@ -56,6 +60,8 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
     if (!cur || c.z > cur.z) top.set(k, { z: c.z, liquid: c.texture === 'eau' || c.texture === 'lave' });
   }
   const blocked = new Set<string>();
+  const bridge = new Set<string>();
+  for (const c of cubes) if (c.bridge && !c.ghost) bridge.add(key(c.x, c.y));
   // Une borne de mission, même basse, ne se piétine pas ; l'école non plus.
   for (const c of cubes) if ((c.quest || c.place) && !c.ghost) blocked.add(key(c.x, c.y));
   for (const c of cubes) {
@@ -71,8 +77,12 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
       for (const c of cr.cubes) blocked.add(key(Math.floor(cr.origin.x + sx + c.x), Math.floor(cr.origin.y + sy + c.y)));
   }
   const feet = new Map<string, number>();
-  for (const [k, t] of top) if (!t.liquid && !blocked.has(k)) feet.set(k, t.z + 1);
-  return { feet };
+  const liquid = new Set<string>();
+  for (const [k, t] of top) {
+    if (t.liquid) liquid.add(k);
+    else if (!blocked.has(k)) feet.set(k, t.z + 1);
+  }
+  return { feet, liquid, bridge };
 }
 
 const DIRS: [number, number][] = [
