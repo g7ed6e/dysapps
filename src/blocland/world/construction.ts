@@ -24,8 +24,11 @@
 // Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
 // ronde de pierre à feu ouvert (./phareDuLarge.ts), dans l'opaque (son feu dans les fenêtres).
 //
-// L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan dont le kit de l'archipel dessine la pièce
-// laisse sa case à cette pièce, dans l'opaque, à la fin. Au socle (7a), les kits sont vides : rien n'est remplacé.
+// L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan d'île dont le kit de l'archipel peint le
+// mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
+// peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
+// laisse sa case à cette pièce, assemblée (./architecture/assemblage.ts) et peinte dans l'opaque, à la fin. Seul le kit
+// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé.
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case
@@ -35,16 +38,17 @@
 // Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
 // les trois groupes.
 import type { VoxelCube } from '../Voxel';
-import { architectureDe, type Kit } from './architecture';
+import { architectureDe, assemblerLesPieces, KITS, MOTIF, ROLES_PEINTS, type Kit, type Role } from './architecture';
+import { BLOCKS } from '../biomes';
 import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
-import { islandDef, type ArchipelagoId } from './map';
+import { islandDef, mapOf, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe } from './terrain';
-import { getPlan, planCells } from './plans';
+import { getPlan, planCells, plansFor } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
@@ -87,6 +91,8 @@ export const PLEINE_NUIT = 0.8;
 export const FANTOME: Couleur = BRUME;
 export const ARETE: Couleur = 0x142b38;
 export const ARETE_FANTOME = 0.035;
+/** Les pilotis : une case est sur le vide si rien de solide n'est dessous sur tant de cases (ou si c'est l'eau). */
+export const PROFONDEUR = 6;
 /** La toile du Bloc-Navire : le crème Brume. */
 export const TOILE_DU_NAVIRE: Couleur = BRUME;
 /**
@@ -105,6 +111,30 @@ export const PHARE_DE_GRIMOIRE = {
 } as const satisfies { archipel: ArchipelagoId; ile: string; etapes: readonly { plan: string; pieces: readonly PieceDuPhare[] }[] };
 /** Le crème des cases posées du phare, tant que leur étape n'est pas finie. */
 export const CREME_DU_PHARE: Couleur = COULEURS_DU_PHARE.fut;
+
+/**
+ * La couleur d'un rôle du kit d'architecture (lot 7 : poteau, remplissage, soubassement, bardage, pilotis, chaperon), de
+ * jour : sous le voile de l'archipel, comme les matières ; délavée si l'île est fermée.
+ */
+export function couleurDuRole(a: ArchipelagoId, kit: Kit, role: Role, muted = false): Couleur {
+  const [teinte, force] = ambianceDe(a).voile;
+  const v = mixColor(kit.couleurs[role] ?? BRUME, teinte, force);
+  return muted ? mixColor(v, DELAVE[0], DELAVE[1]) : v;
+}
+
+/**
+ * Les couleurs des rôles que le shader peint sur les murs (`ROLES_PEINTS` : poteau, soubassement, chaperon), puis les
+ * mêmes délavées, dans l'espace linéaire de Three.js : l'uniforme `uRoles` des blocs (three/construction.ts).
+ */
+export function couleursDesRoles(a: ArchipelagoId, kit: Kit = KITS[a]): Float32Array {
+  const out: number[] = [];
+  for (const muted of [false, true])
+    for (const r of ROLES_PEINTS) {
+      const k = rgb(couleurDuRole(a, kit, r, muted));
+      out.push(lineaire(k[0] / 255), lineaire(k[1] / 255), lineaire(k[2] / 255));
+    }
+  return Float32Array.from(out);
+}
 
 // ---------- Les fonctions que le shader reprend ----------
 
@@ -218,17 +248,21 @@ export interface GroupeOpaque extends GroupeDeConstruction {
   /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
   aretes: Float32Array;
   /**
-   * Par sommet : le motif peint (0 : aucun). Celui d'une pièce d'architecture est inerte au socle (lot 7a) : le
-   * colombage peint (7b) le lira dans le shader, sans un triangle de plus. Celui d'un bloc assemblé (GD-2,
-   * `MOTIF_ASSEMBLE`, 11 à 14) est peint par le shader (`MOTIF_GLSL`).
+   * Par sommet : le motif peint (0 : aucun). Celui d'un mur ou d'une pièce d'architecture (./architecture/peinture.ts,
+   * `MOTIF`, en bits, sous `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint le colombage, le bardage, le soubassement et le
+   * chaperon. Celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, à partir de `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint
+   * sa forme (`MOTIF_ASSEMBLE_GLSL`). Ni l'un ni l'autre n'ajoute un triangle.
    */
   motifs: Float32Array;
 }
 
-/** Des triangles de l'opaque (de, à) qui remplacent des cases : la case de chaque triangle, pour le toucher. */
+/** Des triangles de l'opaque (de, à) qui remplacent des cases : les cases de chaque triangle, pour le toucher. */
 export interface TrancheDesPieces {
   opaque: [number, number];
-  /** La case du triangle `de + i` : `cases[3i]`, `cases[3i + 1]`, `cases[3i + 2]` (x, y, z). */
+  /**
+   * Les cases du triangle `de + i`, de `cases[6i..6i + 2]` à `cases[6i + 3..6i + 5]` (x, y, z) : une case, ou une
+   * rangée de pièces dessinées d'un tenant (le toucher prend la case de la rangée sous le point touché).
+   */
   cases: Int32Array;
 }
 
@@ -269,6 +303,11 @@ export interface OptionsDeLaConstruction {
   navire?: boolean;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
+  /**
+   * Le sol entier, case par case, quand `sol` n'en donne qu'une partie (`construireParIle` ne passe à une île que le
+   * sol sous ses blocs) : les pilotis cherchent le sol jusqu'à `PROFONDEUR` cases plus bas, pas seulement juste dessous.
+   */
+  solEntier?: (x: number, y: number, z: number) => VoxelCube | undefined;
 }
 
 /** Le genre d'un bloc dans la construction. */
@@ -356,12 +395,25 @@ vec3 biseauPeint(vec3 c, float k, float force) {
 // ---------- Les motifs des blocs assemblés (GD-2) ----------
 
 /**
- * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, que le lot 7 réserve au colombage des pièces
- * d'architecture : les blocs assemblés prennent 11 à 14, loin de ses premiers numéros). Il se peint dans le shader,
- * sans un triangle de plus, par-dessus la couleur de fond du bloc (world/palette.ts, `MATIERES`) : deux blocs ne se
- * distinguent jamais par la couleur seule. Un bloc délavé (île fermée) n'a pas de motif.
+ * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/peinture.ts,
+ * `MOTIF`), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un bloc assemblé, ni
+ * l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
  */
-export const MOTIF_ASSEMBLE = { poutre: 11, vitrail: 12, engrenage: 13, miroir: 14 } as const;
+export const MOTIF_ASSEMBLE_DEBUT = 2 * Math.max(...Object.values(MOTIF));
+
+/**
+ * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, qu'il partage avec les murs peints du lot 7 :
+ * les blocs assemblés prennent `MOTIF_ASSEMBLE_DEBUT` + 1 à + 4, au-delà de leurs bits ; 1025 à 1028 aujourd'hui, des
+ * entiers exacts en flottant). Il se peint dans le shader, sans un triangle de plus, par-dessus la couleur de fond du
+ * bloc (world/palette.ts, `MATIERES`) : deux blocs ne se distinguent jamais par la couleur seule. Un bloc délavé (île
+ * fermée) n'a pas de motif.
+ */
+export const MOTIF_ASSEMBLE = {
+  poutre: MOTIF_ASSEMBLE_DEBUT + 1,
+  vitrail: MOTIF_ASSEMBLE_DEBUT + 2,
+  engrenage: MOTIF_ASSEMBLE_DEBUT + 3,
+  miroir: MOTIF_ASSEMBLE_DEBUT + 4,
+} as const;
 export type BlocAssemble = keyof typeof MOTIF_ASSEMBLE;
 
 /** Les mesures des motifs, en part de case, depuis le milieu de la face (le même dessin en JS et en GLSL). */
@@ -411,12 +463,13 @@ const glslLin = (c: Couleur) => {
 const f3 = (v: number) => v.toFixed(3);
 
 /**
- * Les motifs en GLSL : `motifAssemble(c, m, pos, n)` peint le motif `m` (0 : aucun) sur la couleur linéaire `c`, à la
- * position `pos` d'une face de normale `n` (repère Three). Bords adoucis sur un pixel ; de loin, quand une case tient en
- * moins de 12 pixels, le motif s'efface vers le fond (rien sous 6 pixels) : jamais de moiré. Les dérivées se prennent
- * avant tout branchement.
+ * Les motifs en GLSL : `motifAssemble(c, m, pos, n)` peint le bloc assemblé `m` (son rang : 1 poutre, 2 vitrail,
+ * 3 engrenage, 4 miroir ; 0 : aucun) sur la couleur linéaire `c`, à la position `pos` d'une face de normale `n` (repère
+ * Three). Le shader lui passe `motif − MOTIF_ASSEMBLE_DEBUT` pour un bloc assemblé, 0 sinon (three/construction.ts).
+ * Bords adoucis sur un pixel ; de loin, quand une case tient en moins de 12 pixels, le motif s'efface vers le fond (rien
+ * sous 6 pixels) : jamais de moiré. Les dérivées se prennent avant tout branchement.
  */
-export const MOTIF_GLSL = (() => {
+export const MOTIF_ASSEMBLE_GLSL = (() => {
   const D = DETAILS_ASSEMBLES;
   const P = MESURES_DES_MOTIFS;
   return `
@@ -427,22 +480,22 @@ vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n) {
   vec2 q = an.x > 0.5 ? pos.zy : (dessus ? pos.xz : pos.xy);
   vec2 fq = fwidth(q);
   float fw = max(max(fq.x, fq.y), 1e-5);
-  if (m < 10.5) return c;
+  if (m < 0.5) return c;
   float k = clamp((1.0 / fw - 6.0) / 6.0, 0.0, 1.0);
   vec2 p = fract(q) - 0.5;
   float r = length(p);
-  if (m < 11.5) {
+  if (m < 1.5) {
     if (dessus) return mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(abs(r - ${f3(P.poutre.cerne)}) - ${f3(P.poutre.epaisseurDuCerne)}, fw) * k);
     float v = min(abs(p.x - (${f3(P.poutre.veines[0])})), abs(p.x - ${f3(P.poutre.veines[1])})) - ${f3(P.poutre.veine)};
     c = mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(v, fw) * k);
     return mix(c, ${glslLin(D.poutre.collier)}, dansLeMotif(abs(p.y) - ${f3(P.poutre.collier)}, fw) * k);
   }
-  if (m < 12.5) {
+  if (m < 2.5) {
     c = mix(c, ${glslLin(D.vitrail.bord)}, dansLeMotif(r - ${f3(P.vitrail.bord)}, fw) * k);
     c = mix(c, ${glslLin(D.vitrail.verre)}, dansLeMotif(r - ${f3(P.vitrail.verre)}, fw) * k);
     return mix(c, ${glslLin(D.vitrail.reflet)}, dansLeMotif(length(p - vec2(${f3(P.vitrail.reflet[0])}, ${f3(P.vitrail.reflet[1])})) - ${f3(P.vitrail.reflet[2])}, fw) * k);
   }
-  if (m < 13.5) {
+  if (m < 3.5) {
     c = mix(c, ${glslLin(D.engrenage.roue)}, dansLeMotif(r - ${f3(P.engrenage.roue)}, fw) * k);
     c = mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(abs(r - ${f3(P.engrenage.gorge)}) - ${f3(P.engrenage.epaisseurDeGorge)}, fw) * k);
     return mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(r - ${f3(P.engrenage.axe)}, fw) * k);
@@ -636,6 +689,28 @@ function poseDuPhare(a: ArchipelagoId, emprise: Cell[], pieces: Set<PieceDuPhare
   };
 }
 
+/** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
+export const ETAPES_DU_BATIMENT = 2;
+
+const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
+
+/**
+ * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
+ * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
+ * le décor, les ponts, les bornes, les monuments, l'école et la salle des trophées n'y sont pas : ils gardent leur dessin.
+ */
+export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
+  const deja = batiments.get(a);
+  if (deja) return deja;
+  const out = new Map<string, string>();
+  for (const def of mapOf(a))
+    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT))
+      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1).
+      for (const c of planCells(plan)) out.set(`${def.core.x + c.x},${def.core.y + c.y},${def.altitude + c.z + 1}`, BLOCKS[c.block].texture);
+  batiments.set(a, out);
+  return out;
+}
+
 /** Un groupe en cours de remplissage. */
 class Remplissage {
   pos: number[] = [];
@@ -737,8 +812,31 @@ export function maillageDeLaConstruction(
     return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
   };
   // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
-  // cases déjà prises par un modèle restent au modèle.
-  const archi = options.navire ? null : architectureDe(a, cubes, { exclure: parUnModele, kit: options.kit });
+  // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
+  // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
+  const kit = options.kit ?? KITS[a];
+  // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
+  const solides = new Map<string, VoxelCube>();
+  for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
+  const solide = (x: number, y: number, z: number) => {
+    const s = solides.get(cle(x, y, z)) ?? options.solEntier?.(x, y, z);
+    return s && !s.ghost && !s.quest ? s : undefined;
+  };
+  const surLeVide = (x: number, y: number, z: number) => {
+    for (let k = 1; k <= PROFONDEUR; k++) {
+      const s = solide(x, y, z - k);
+      if (s) return s.texture === 'eau';
+    }
+    return true;
+  };
+  const archi = options.navire
+    ? null
+    : architectureDe(a, cubes, {
+        exclure: (c) => parUnModele(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        kit,
+        batiments: options.kit ? undefined : batimentsDe(a),
+        surLeVide,
+      });
   const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre (comme en 2D).
@@ -753,13 +851,18 @@ export function maillageDeLaConstruction(
   const vues = new Map<string, Faces>();
   /** Une case posée du phare de Grimoire, dans une étape pas encore finie : du crème, au lieu du verre provisoire. */
   const cremeDuPhare = (c: VoxelCube) => c.texture === 'verre' && phare !== null && phare.enCours.has(cle(c.x, c.y, c.z));
+  /** Le mur peint d'un bloc (lot 7), s'il en est un. */
+  const peintDe = (c: VoxelCube) => (archi?.peints.size ? archi.peints.get(cle(c.x, c.y, c.z)) : undefined);
   const couleursDe = (c: VoxelCube): Faces => {
     const g = genres.get(c);
-    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.texture === 'toit' ? c.tag : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}`;
+    const fond = peintDe(c)?.peinture.fond ?? '';
+    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.texture === 'toit' ? c.tag : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
-    if (c.texture === 'toit') f = couleursDuToit(a, c.tag, c.muted);
+    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' ? couleurDuRole(a, kit, fond, c.muted) : null;
+    if (role !== null) f = { dessus: role, cote: role };
+    else if (c.texture === 'toit') f = couleursDuToit(a, c.tag, c.muted);
     else if (g === 'bloc' && cremeDuPhare(c)) {
       const [teinte, force] = ambianceDe(a).voile;
       const creme = mixColor(CREME_DU_PHARE, teinte, force);
@@ -793,6 +896,17 @@ export function maillageDeLaConstruction(
 
   /** Le bit, dans le masque `couvre` d'une pièce (./architecture/pieces.ts), de la face de sa case tournée vers `d`. */
   const FACE_DE_CASE = [1, 4, 2, 8, 16, 32];
+  /** L'ordre des faces d'une peinture (./architecture/peinture.ts : +x, +y, −x, −y, haut, bas) pour la direction `d`. */
+  const FACE_PEINTE = [0, 2, 1, 3, 4, 5];
+  /**
+   * Le motif de la face `d` d'un bloc : celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, aucun sur une île fermée), sinon
+   * celui de son mur peint, délavé sur une île fermée ; 0 hors d'un mur peint.
+   */
+  const motifDe = (c: VoxelCube, d: number) => {
+    if (c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
+    const m = peintDe(c)?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
+    return m && c.muted ? m | MOTIF.delave : m;
+  };
   /**
    * La face `d` du bloc est-elle visible ? Un bloc plein la cache, ou une pièce d'architecture qui ferme la face de sa
    * case tournée vers lui ; le sol cache le dessous ; un fantôme ne cache rien.
@@ -809,8 +923,6 @@ export function maillageDeLaConstruction(
   const teinteDe = (c: VoxelCube) =>
     Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
-  /** Le motif d'un bloc assemblé (GD-2), peint par le shader ; aucun sur une île fermée. */
-  const motifDe = (c: VoxelCube) => (!c.muted && genres.get(c) === 'bloc' && c.texture && c.texture in MOTIF_ASSEMBLE ? MOTIF_ASSEMBLE[c.texture as BlocAssemble] : 0);
   /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
   const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) ? 1 : 0);
   /** L'arête entre les faces `d` et `e` d'un bloc est-elle biseautée ? */
@@ -999,13 +1111,13 @@ export function maillageDeLaConstruction(
       ];
       if (g !== 'bloc' || !fusion) {
         // Une face seule : les vitres et les lanternes ont chacune leur décalage.
-        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c), motifDe(c));
+        rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c), motifDe(c, d));
         continue;
       }
       const pk = `o|${d}|${plan}`;
       let p = plans.get(pk);
       if (!p) plans.set(pk, (p = new Map()));
-      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), arete: areteDe(c), motif: motifDe(c), r, fait: false });
+      p.set(`${base[i]},${base[j]}`, { u: base[i], v: base[j], couleur: couleurDeFace(c, d), teinte: teinteDe(c), arete: areteDe(c), motif: motifDe(c, d), r, fait: false });
     }
   }
 
@@ -1193,7 +1305,7 @@ export function maillageDeLaConstruction(
     dessinerPhareDuLarge(P, L, large.pose);
     const [t0] = O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
     // Ses hublots (GD-2, consultant Archipéo) : les vitraux du monument, ronds sur le fût, à mi-hauteur ; un carré de
-    // cadre jaune posé sur le pan, que le shader peint en hublot (motif 12). Deux triangles chacun ; aucun sur une île fermée.
+    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée.
     if (!large.pose.muted) {
       const cadre = couleurDeMatiere(a, 'vitrail').cote;
       const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
@@ -1207,22 +1319,22 @@ export function maillageDeLaConstruction(
     };
   }
 
-  // ---- Les pièces d'architecture (lot 7) : leurs facettes dans l'opaque, à la fin, aux couleurs de la matière du bloc
-  // qu'elles remplacent, avec sa teinte ; la case de chaque triangle, pour le toucher (toute la case).
+  // ---- Les pièces d'architecture dessinées (lot 7) : assemblées (sans les facettes contre un bloc plein ni celles que
+  // deux pièces partagent ; une rangée d'un tenant), dans l'opaque, à la fin, aux couleurs de la matière du bloc qu'elles
+  // remplacent (ou d'un rôle du kit), avec sa teinte ; les cases de chaque triangle, pour le toucher (toute la case).
   let dessinDesPieces: MaillageDeLaConstruction['pieces'];
   if (archi?.pieces.length) {
     const t0 = O.idx.length / 3;
     const cases: number[] = [];
     const sansBiseau = mode === 'peint' ? [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU] : null;
-    for (const p of archi.pieces) {
-      const c = p.cube;
+    const estPlein = (x: number, y: number, z: number) => plein.has(cle(x, y, z)) || sous.has(cle(x, y, z));
+    const cleDeCouleur = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.tag ?? ''}`;
+    for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi.pieces, estPlein, cleDeCouleur)) {
       const couleurs = couleursDe(c);
-      const teinte = teinteDeCase(c.x, c.y, c.z);
-      for (const f of p.facettes) {
-        const col = f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
-        O.poly(f.points, f.normale, f.points.map(() => col), { biseaux: sansBiseau ? f.points.map(() => sansBiseau) : undefined, teinte, motif: f.motif ?? 0 });
-        for (let i = 2; i < f.points.length; i++) cases.push(c.x, c.y, c.z);
-      }
+      const col = f.role ? couleurDuRole(a, kit, f.role, c.muted) : f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
+      const motif = f.motif && c.muted ? f.motif | MOTIF.delave : (f.motif ?? 0);
+      O.poly(f.points, f.normale, f.points.map(() => col), { biseaux: sansBiseau ? f.points.map(() => sansBiseau) : undefined, teinte: teinteDeCase(c.x, c.y, c.z), motif });
+      for (let i = 2; i < f.points.length; i++) cases.push(...min, ...max);
     }
     dessinDesPieces = [{ opaque: [t0, O.idx.length / 3], cases: Int32Array.from(cases) }];
   }
@@ -1292,13 +1404,19 @@ export function caseDeLaPiece(
   point: { x: number; y: number; z: number },
   normale: { x: number; y: number; z: number },
 ): { cell: Cell; next: Cell } | null {
-  // Une pièce d'architecture : la case de son triangle.
+  // Une pièce d'architecture : la case de son triangle, ou, pour une rangée, la case de la rangée sous le point touché
+  // (un peu derrière la facette, ramené dans la rangée).
   if (groupe === 'opaque')
     for (const t of m.pieces ?? []) {
       if (triangle < t.opaque[0] || triangle >= t.opaque[1]) continue;
-      const i = 3 * (triangle - t.opaque[0]);
-      if (i + 2 >= t.cases.length) return null;
-      const cell = { x: t.cases[i], y: t.cases[i + 1], z: t.cases[i + 2] };
+      const i = 6 * (triangle - t.opaque[0]);
+      if (i + 5 >= t.cases.length) return null;
+      const dans = (v: number, de: number, a: number) => Math.min(a, Math.max(de, Math.floor(v)));
+      const cell = {
+        x: dans(point.x - normale.x * 0.01, t.cases[i], t.cases[i + 3]),
+        y: dans(point.z - normale.z * 0.01, t.cases[i + 1], t.cases[i + 4]),
+        z: dans(point.y - normale.y * 0.01, t.cases[i + 2], t.cases[i + 5]),
+      };
       const { next } = caseDeLaConstruction({ x: cell.x + 0.5, y: cell.z + 0.5, z: cell.y + 0.5 }, normale);
       return { cell, next: { x: next.x, y: next.y, z: next.z } };
     }
@@ -1351,6 +1469,9 @@ export function construireParIle(
     else parIle.set(k, [c]);
   }
   let solParIle: Map<string, VoxelCube[]> | null = null;
+  // Le sol entier, pour les pilotis (ils le cherchent plus bas que la case juste dessous) ; fait une fois, au besoin.
+  let index: Map<string, VoxelCube> | null = null;
+  const solEntier = (x: number, y: number, z: number) => index?.get(cle(x, y, z));
   let refaites = 0;
   for (const k of [...cache.iles.keys()]) if (!parIle.has(k)) {
     cache.iles.delete(k);
@@ -1360,9 +1481,9 @@ export function construireParIle(
     const signature = signatureDeLaConstruction(l, []);
     if (cache.iles.get(k)?.signature === signature) continue;
     // Le sol sous l'île : seulement les cubes du sol sous un de ses blocs (le sol cache le dessous d'un bloc posé).
-    if (!solParIle) {
+    if (!solParIle || !index) {
       solParIle = new Map();
-      const index = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
+      index = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
       for (const [ki, li] of parIle) {
         const s: VoxelCube[] = [];
         for (const c of li) {
@@ -1372,7 +1493,7 @@ export function construireParIle(
         solParIle.set(ki, s);
       }
     }
-    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k)) });
+    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier }) });
     refaites++;
   }
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };

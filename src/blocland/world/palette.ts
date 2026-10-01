@@ -356,7 +356,7 @@ export const MATIERES: Record<TextureKind, Faces> = {
  * Les détails peints des blocs assemblés (GD-2, Archipéo), par-dessus leur fond (`MATIERES`) : le madrier, ses veines et
  * son collier gris ; le hublot, son disque de verre bleuté et son reflet ; la poulie, sa roue d'acier et sa gorge ; la
  * loupe, son anneau et son manche de laiton, son verre bleu et son éclat mauve. Deux blocs ne se distinguent jamais par
- * la couleur seule : chacun a sa forme (world/construction.ts, `MOTIF_GLSL`).
+ * la couleur seule : chacun a sa forme (world/construction.ts, `MOTIF_ASSEMBLE_GLSL`).
  */
 export const DETAILS_ASSEMBLES = {
   poutre: { veine: 0xb58e5c, collier: 0x767e88 },

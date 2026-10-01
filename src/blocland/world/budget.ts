@@ -52,8 +52,10 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // enveloppes « autres » en passent 1 100 au sol, pris sur la mer, la faune, le décor, la construction, le navire et
   // les créatures, où les trois archipels gardent de la marge (mesurée, tout construit) ; la somme ne change pas (52 300).
   // Proposition de l'artiste technique 3D pour la Halle aux matériaux (GD-2), à valider par le mainteneur : le lieu où
-  // l'on assemble, sur l'île de l'école de chaque archipel, coûte 110 triangles de construction (112 aux Premiers
-  // Rivages, qui gardent leur marge : 6 290 sur 6 500) ; les Îles Brumeuses passent à 7 179. Les enveloppes « autres »
+  // l'on assemble, sur l'île de l'école de chaque archipel, coûte de 108 à 118 triangles de construction, hublots du
+  // phare du large compris (mesuré tout construit, après le colombage du lot 7b : 5 964 → 6 080 aux Premiers Rivages,
+  // qui gardent leur marge sur 6 500 ; 7 067 → 7 185 aux Îles Brumeuses ; 4 528 → 4 644 aux Anciens Ateliers ; 4 732 →
+  // 4 840 aux Îles du Ciel). Les enveloppes « autres »
   // passent 100 triangles à la construction (7 100 → 7 200), pris au sol (40), au bonhomme (25), à la faune (20), au
   // navire (10) et aux bornes (5), mesurés tout construit (le plus gourmand : 24 043 au sol aux Anciens Ateliers, 472
   // pour le bonhomme, 1 274 pour la faune aux Îles du Ciel, 420 pour le navire, 700 pour les bornes) ; la somme ne

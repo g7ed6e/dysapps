@@ -1,10 +1,11 @@
 // Le rendu des blocs assemblés (GD-2) dans les deux univers : chaque bloc a son motif (jamais la couleur seule), dans la
 // texture pixel de Blocland (3D et 2D) comme dans la construction taillée d'Archipéo (peint par le shader, sans un
 // triangle de plus). Voir world/pixels.ts, world/palette.ts (`DETAILS_ASSEMBLES`) et world/construction.ts
-// (`MOTIF_ASSEMBLE`, `MOTIF_GLSL`).
+// (`MOTIF_ASSEMBLE`, `MOTIF_ASSEMBLE_GLSL`).
 import { BLOCKS, type BlockId } from '../biomes';
 import type { VoxelCube } from './cube';
-import { detailDuMotif, maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_GLSL, type BlocAssemble } from './construction';
+import { MOTIF } from './architecture';
+import { detailDuMotif, maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, type BlocAssemble } from './construction';
 import { DETAILS_ASSEMBLES, luminance, MATIERES, type Couleur } from './palette';
 import { PAINTERS, SIZE, type TextureKind } from './pixels';
 
@@ -78,17 +79,27 @@ describe('Les blocs assemblés dans Archipéo (construction taillée)', () => {
     return out;
   };
 
-  it('chaque bloc a son fond dans la palette et son motif peint, des numéros à part de ceux des pièces', () => {
+  it('chaque bloc a son fond dans la palette et son motif peint, au-delà de tous les bits des murs peints', () => {
+    // Le plus grand motif d'un mur peint : tous ses bits à la fois (aucun mur réel ne les a tous).
+    const murLePlusGrand = Object.values(MOTIF).reduce((p, q) => p | q, 0);
+    expect(MOTIF_ASSEMBLE_DEBUT).toBeGreaterThan(murLePlusGrand);
+    expect(MOTIF_ASSEMBLE_DEBUT & murLePlusGrand).toBe(0);
     for (const b of ASSEMBLES) {
       expect(MATIERES[b], b).toBeDefined();
-      expect(MOTIF_ASSEMBLE[b]).toBeGreaterThan(10);
+      expect(MOTIF_ASSEMBLE[b]).toBeGreaterThan(MOTIF_ASSEMBLE_DEBUT);
+      expect(MOTIF_ASSEMBLE[b] - MOTIF_ASSEMBLE_DEBUT).toBeLessThanOrEqual(ASSEMBLES.length);
+      // Un entier exact dans l'attribut, un flottant 32 bits.
+      expect(Math.fround(MOTIF_ASSEMBLE[b])).toBe(MOTIF_ASSEMBLE[b]);
       expect(Object.keys(DETAILS_ASSEMBLES)).toContain(b);
     }
     expect(new Set(Object.values(MOTIF_ASSEMBLE)).size).toBe(ASSEMBLES.length);
-    expect(MOTIF_GLSL).toContain('vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n)');
+    expect(MOTIF_ASSEMBLE_GLSL).toContain('vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n)');
+    // Le shader reçoit le rang du bloc (1 à 4), pas son motif : aucun seuil au-delà.
+    expect(MOTIF_ASSEMBLE_GLSL).toContain('if (m < 0.5) return c;');
+    expect(MOTIF_ASSEMBLE_GLSL).not.toMatch(/m < (1[0-9]|[5-9])\./);
     // Les dérivées d'abord, puis les branchements ; de loin, le motif s'efface (jamais de moiré).
-    expect(MOTIF_GLSL.indexOf('fwidth')).toBeLessThan(MOTIF_GLSL.indexOf('if (m <'));
-    expect(MOTIF_GLSL).toContain('(1.0 / fw - 6.0) / 6.0');
+    expect(MOTIF_ASSEMBLE_GLSL.indexOf('fwidth')).toBeLessThan(MOTIF_ASSEMBLE_GLSL.indexOf('if (m <'));
+    expect(MOTIF_ASSEMBLE_GLSL).toContain('(1.0 / fw - 6.0) / 6.0');
   });
 
   it('les motifs diffèrent par leur forme, deux à deux, sur le côté comme sur le dessus', () => {

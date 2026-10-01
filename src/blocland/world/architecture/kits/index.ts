@@ -6,7 +6,7 @@ import { KIT_5E } from './5e';
 import { KIT_6E } from './6e';
 import type { Kit } from './types';
 
-export type { Famille, Kit } from './types';
-export { kitVide } from './types';
+export type { Famille, Kit, Role } from './types';
+export { kitRempli, kitVide } from './types';
 
 export const KITS: Record<ArchipelagoId, Kit> = { '6e': KIT_6E, '5e': KIT_5E, '4e': KIT_4E, '3e': KIT_3E };
