@@ -3,7 +3,7 @@
 // profondeur et la faune en facettes, un appel de dessin par famille.
 import * as THREE from 'three';
 import { AMBIENCE, palette } from '../world/daylight';
-import { oiseauxDe, placeDesNuages, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type PoseDeBaleine, type Ronde } from '../world/faune';
+import { capDuNuage, deriveDesNuages, oiseauxDe, placeDesNuages, placeDesNuagesDArchipeo, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type NuageAuLoin, type PoseDeBaleine, type Ronde } from '../world/faune';
 import type { ChampDuSol } from '../world/landMesh';
 import { signatureDesTerres, terresDeLaMer } from '../world/mer';
 import { cielDe, teinteSur } from '../world/palette';
@@ -84,11 +84,17 @@ export function creerLarge(
   cloudFloor.visible = ambience.sky && !peinte;
   scene.add(cloudFloor);
 
-  // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
+  // Blocland : nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
+  // Archipéo : des cumulus facettés, au loin derrière l'archipel (DA-11), dessinés avec la faune (plus bas).
   const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
   const clouds = new THREE.Group();
-  /** Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. */
-  const cloudAt = placeDesNuages(archipel, bounds, width);
+  /**
+   * Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. Archipéo : au loin, au nord
+   * de l'archipel, jamais sur un pont ni sur un chemin (DA-11, world/faune.ts).
+   */
+  const cloudAt: NuageAuLoin[] = peinte ? placeDesNuagesDArchipeo(archipel, bounds) : placeDesNuages(archipel, bounds, width).map((n) => ({ ...n, grossi: 1 }));
+  /** Archipéo : la dérive des nuages, et leur fondu au bout (world/faune.ts). */
+  const derive = deriveDesNuages(bounds);
   if (!peinte)
     cloudAt.forEach(({ x, y, z, len }) => {
       const cloud = new THREE.Group();
@@ -186,10 +192,14 @@ export function creerLarge(
     faune.poserOiseau(birds.length, p.x, p.y, p.z, p.cap, PLANEUR.ailes, p.echelle);
   };
   if (faune) scene.add(faune.group);
-  /** Pose un nuage d'Archipéo à sa place (le milieu de ses cubes d'avant), tourné d'un rien, chacun le sien. */
+  /**
+   * Pose un nuage d'Archipéo à sa place (le milieu de ses cubes), tourné d'un rien, chacun le sien, à sa taille (`grossi`)
+   * et défait au bout de sa dérive.
+   */
   const placeCloud = (i: number) => {
     const c = cloudAt[i];
-    faune?.poserNuage(i, c.x + c.len / 2, c.y, c.z + 0.6, c.len, ((i * 0.37) % 1) * 0.6 - 0.3);
+    const milieu = c.x + c.len / 2;
+    faune?.poserNuage(i, milieu, c.y, c.z + 0.6, c.len, capDuNuage(i), c.grossi * derive.taille(milieu));
   };
   /** Le vol d'un oiseau à l'instant `t` : sur son cercle, à son altitude, tourné le long du cercle. */
   const birdAt = (b: (typeof birds)[number], t: number) => {
@@ -242,7 +252,7 @@ export function creerLarge(
       if (faune)
         cloudAt.forEach((c, i) => {
           c.x -= 0.004;
-          if (c.x < bounds.minX - 12) c.x = bounds.maxX + 12;
+          if (c.x + c.len / 2 < derive.debut) c.x = derive.fin - c.len / 2;
           placeCloud(i);
         });
       if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);

@@ -7,7 +7,7 @@
 // Repères des formes (repère Three) : la baleine regarde vers +X (tête), le dos vers +Y ; l'oiseau vole vers +Z, ailes
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
 import { AMBIENCE, mixColor } from './daylight';
-import { landBox, mapOf, type ArchipelagoId } from './map';
+import { ALTITUDE, landBox, mapOf, type ArchipelagoId } from './map';
 import { ISLET_GAP, ISLET_H, ISLET_W } from './terrain';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
@@ -78,6 +78,82 @@ export function placeDesNuages(a: ArchipelagoId, bounds: { minX: number; minY: n
     }
     return n;
   });
+}
+
+/**
+ * Les nuages d'Archipéo (DA-11) : au loin, derrière l'archipel, dans la brume de l'horizon. Plus bas que les caméras
+ * (de 20 à 30 blocs au-dessus du sol), un nuage posé au-dessus de l'archipel se voyait sur la mer et se lisait comme de
+ * la glace ; aux Îles du Ciel, un nuage bas coupait un pont. Ici, chacun commence à `recul` cases au nord de l'archipel,
+ * quelque part sur `profondeur` cases, à `hauteur` blocs au-dessus de ses îles et jusqu'à `ecart` de plus, ces deux
+ * tirages hors de l'ordre des nuages (pas de frise régulière). Les gros cumulus de la fiche : `grossi` fois la taille
+ * d'un nuage en blocs, plus gros au fond de la plage. Toutes les caméras (île, archipel, Carte, voyage, voir
+ * three/camera.ts) sont au sud de l'archipel : un rayon qui atteint un nuage va vers le nord et passe d'abord par tout
+ * pont ou chemin qu'il croise, plus au sud. Aucun nuage ne passe donc devant un pont ni un chemin, même en dérivant (le
+ * long de X seulement). Au bout de sa dérive (`bord` cases au-delà de l'archipel), il se défait sur `fondu` cases avant
+ * de revenir de l'autre côté, où il se reforme : le retour ne se voit sur aucune vue.
+ */
+export const NUAGES_AU_LOIN = { recul: 40, profondeur: 14, hauteur: 14, ecart: 5, grossi: [1.6, 2.2], bord: 12, fondu: 24 } as const;
+
+/** L'épaisseur d'un nuage d'Archipéo, en hauteur et en profondeur (fois sa taille). */
+export const EPAISSEUR_DU_NUAGE = 1.1;
+
+/**
+ * L'allongement d'un nuage d'Archipéo de `longueur` blocs, le long de X (la forme de `formeDeNuage` fait environ 4
+ * unités de long). Un nombre, pas un tableau : la vue 3D le lit à chaque image.
+ */
+export function allongementDuNuage(longueur: number): number {
+  return Math.max(0.7, longueur / 3.5) * 1.15;
+}
+
+/** Le cap du nuage `i` d'Archipéo, tourné d'un rien, chacun le sien (radians, autour de la verticale). */
+export function capDuNuage(i: number): number {
+  return ((i * 0.37) % 1) * 0.6 - 0.3;
+}
+
+/** Un nuage d'Archipéo posé : comme en blocs, et sa taille (`grossi`, voir `NUAGES_AU_LOIN`). */
+export interface NuageAuLoin extends NuagePose {
+  grossi: number;
+}
+
+/**
+ * Où sont les nuages d'Archipéo (DA-11) : le même nombre et les mêmes longueurs qu'en blocs (`nuagesDe`), le même ordre
+ * d'ouest en est, mais tous au loin, au nord de l'archipel (`NUAGES_AU_LOIN`), et entiers au départ. Le monde en blocs garde les siens
+ * (`placeDesNuages`).
+ */
+export function placeDesNuagesDArchipeo(a: ArchipelagoId, bounds: { minX: number; maxX: number; maxY: number }): NuageAuLoin[] {
+  const L = NUAGES_AU_LOIN;
+  const d = deriveDesNuages(bounds);
+  // Le milieu de chaque nuage, d'ouest en est, là où il est entier (hors du fondu des bouts) : immobile avec « Réduire
+  // les animations », il y reste entier.
+  const ouest = d.debut + L.fondu;
+  const est = d.fin - L.fondu;
+  // Les tirages changent d'un archipel à l'autre (graine : son altitude).
+  const graine = ALTITUDE[a] * 7;
+  return nuagesDe(a).map(([fx, , len], i) => {
+    const fond = hasard(i * 17 + 3, 101 + graine);
+    return {
+      x: ouest + Math.max(0, Math.min(1, fx / 1.1)) * (est - ouest) - len / 2,
+      y: ALTITUDE[a] + L.hauteur + hasard(i * 29 + 7, 211 + graine) * L.ecart,
+      z: bounds.maxY + L.recul + fond * L.profondeur,
+      len,
+      grossi: L.grossi[0] + fond * (L.grossi[1] - L.grossi[0]),
+    };
+  });
+}
+
+/**
+ * La dérive d'un nuage d'Archipéo, pour son milieu : de `fin` à `debut` (l'ouest, où il repart à `fin`), `bord` cases
+ * au-delà de l'archipel de chaque côté ; et sa taille quand son milieu est en `x`, de 0 aux deux bouts à 1 à `fondu` cases d'eux
+ * (fondu en douceur), pour que son retour ne se voie pas.
+ */
+export function deriveDesNuages(bounds: { minX: number; maxX: number }): { debut: number; fin: number; taille: (x: number) => number } {
+  const debut = bounds.minX - NUAGES_AU_LOIN.bord;
+  const fin = bounds.maxX + NUAGES_AU_LOIN.bord;
+  const doux = (u: number) => {
+    const k = Math.max(0, Math.min(1, u / NUAGES_AU_LOIN.fondu));
+    return k * k * (3 - 2 * k);
+  };
+  return { debut, fin, taille: (x) => doux(x - debut) * doux(fin - x) };
 }
 
 /** Les oiseaux d'un archipel : combien, et à quelle altitude (plus nombreux et plus haut aux Anciens Ateliers, tout en haut aux Îles du Ciel). */
