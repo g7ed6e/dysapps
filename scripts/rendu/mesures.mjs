@@ -268,15 +268,15 @@ const CAPTURES = [
   { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
   { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
   // Le Lion de pierre redessiné (Baie des mots, 6e ; la vue de son île ne montre pas son îlot) : au défi, éteint ; puis
-  // l'archipel vu depuis la Baie, et de près (recadré), rallumé (tout construit) et éteint (`debout` : son défi pas encore
+  // l'archipel vu depuis la Baie, et de près (recadré, une fois et demie plus fin), rallumé (tout construit) et éteint (`debout` : son défi pas encore
   // gagné), de jour et de nuit.
   { nom: 'lion-defi', vue: 'défi', famille: 'lion', ile: 'baie' },
   { nom: 'lion-archipel', vue: 'archipel', famille: 'lion', ile: 'baie' },
   { nom: 'lion-archipel-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', nuit: true },
-  { nom: 'lion-pres', vue: 'archipel', famille: 'lion', ile: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
-  { nom: 'lion-pres-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
-  { nom: 'lion-pres-eteint', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
-  { nom: 'lion-pres-eteint-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 }, finesse: 2 },
+  { nom: 'lion-pres', vue: 'archipel', famille: 'lion', ile: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 } },
+  { nom: 'lion-pres-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 } },
+  { nom: 'lion-pres-eteint', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', recadre: { x: 420, y: 380, width: 240, height: 180 } },
+  { nom: 'lion-pres-eteint-nuit', vue: 'archipel', famille: 'lion', ile: 'baie', debout: 'baie', nuit: true, recadre: { x: 420, y: 380, width: 240, height: 180 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
