@@ -10,6 +10,7 @@ import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
+import { decalageDuQuai } from './world/terrain';
 
 export interface VehicleBuilder {
   /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
@@ -71,8 +72,10 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     }
   };
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
+    // La clé (x, y, z) d'une case du navire est dessinée au quai : dans le repère de l'île, le cube (x, y, z + 1) décalé
+    // de `decalageDuQuai` (nul tant que le quai n'a pas bougé).
+    const d = stage ? decalageDuQuai(stage) : { x: 0, y: 0, z: 0 };
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: x + d.x, y: y + d.y, z: z + d.z + 1 } }, color: BLOCKS[block].top }));
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
@@ -99,8 +102,11 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const tryFill = (ile: BiomeId, c: { x: number; y: number; z: number }) => {
     if (!stage || ile !== island) return false;
-    if (!planCellAt(stage, c.x, c.y, c.z)) return false;
-    fillAt(c.x, c.y, c.z);
+    // La case touchée est dans le repère de l'île ; la clé de la case du navire s'en déduit (`decalageDuQuai`).
+    const d = decalageDuQuai(stage);
+    const k = { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z };
+    if (!planCellAt(stage, k.x, k.y, k.z)) return false;
+    fillAt(k.x, k.y, k.z);
     return true;
   };
 

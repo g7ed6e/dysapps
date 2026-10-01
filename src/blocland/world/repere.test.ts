@@ -14,7 +14,7 @@ describe('Chaque île dans son repère', () => {
   it('le monde commence par ses îles, chacune née dans son repère et posée à son origine', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const monde = worldCubes(a, progress, village, true, []);
-      const voisins = new Set<string>();
+      const voisins = new Set<number>();
       const iles = islandsOf(a).flatMap((b) => {
         const o = origineDe(b.id);
         return cubesDeLIle(b.id, progress, village, true, [], voisins).map((c) => ({ ...c, x: c.x + o.x, y: c.y + o.y, z: c.z + o.z }));

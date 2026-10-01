@@ -15,18 +15,68 @@ export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 export interface IslandDef {
   id: BiomeId;
   region: RegionId;
-  /** Coin (x, y) du cœur 16 × 16 dans le monde. */
+  /** Origine (x, y) du repère de l'île dans le monde : le coin du cœur d'origine 16 × 16 (ses bornes : `coeurDe`). */
   core: { x: number; y: number };
   /** Altitude du sol : 0 (mer), 3 (collines), 6 (monts), 9 (sommets). */
   altitude: number;
-  /** Terre en plus autour du cœur : à gauche (x plus petit), à droite, devant (y plus petit), derrière. */
+  /** Terre en plus autour du cœur (de ses bornes, `coeurDe`) : à gauche (x plus petit), à droite, devant (y plus petit), derrière. */
   ext: { left: number; right: number; front: number; back: number };
   relief: Relief;
   seed: number;
+  /**
+   * De combien l'île a été déplacée (en cases) depuis la place où sa côte, son relief et son décor ont été tirés : le
+   * bruit qui les dessine est lu à cette place (`tirage`), et l'île garde son dessin quand on l'écarte. Les voisines de
+   * la Forêt, écartées quand son cœur est passé à 20 (01/10/2026).
+   */
+  deplacee?: { x: number; y: number };
 }
 
-/** Côté du cœur d'une île. */
+/**
+ * Côté du cœur d'origine (16) : le repère des clés de sauvegarde et des plans, posé sur `IslandDef.core`. L'étendue du
+ * cœur d'une île ne se lit plus ici mais avec `coeurDe` (ou `bornesDuCoeur`), qui suit le réglage de son île.
+ */
 export const CORE = 16;
+
+/**
+ * Côté du cœur des îles qui en ont un plus grand que `CORE` : les îles-écoles, qui portent les lieux du village (l'école,
+ * la salle des trophées), passent de 16 × 16 à 20 × 20 (décision du mainteneur, 01/10/2026), une à la fois. Il grandit
+ * également des deux côtés autour du cœur d'origine : à 20, le cœur couvre [−2, 18) en coordonnées relatives à
+ * `IslandDef.core`, qui reste l'origine du repère de l'île (et des clés de sauvegarde) ; son milieu ne bouge pas.
+ * C'est de la vraie terre en plus : la côte (`ext`) garde sa largeur autour du cœur agrandi, la terre de l'île gagne
+ * deux cases de chaque côté, et ses voisines s'écartent d'autant dans `MAP` (choix du mainteneur, 01/10/2026). Les
+ * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
+ * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché, l'Atelier et le Phare.
+ */
+export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ foret: 20, marche: 20, atelier: 20, phare: 20 });
+
+/** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
+export interface Bornes {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+const bornesLocales = new Map<BiomeId, Readonly<Bornes>>();
+
+/** Les bornes du cœur d'une île relatives à son origine `def.core` (0..16 aujourd'hui, −2..18 à 20 de côté). */
+export function bornesDuCoeur(def: IslandDef): Readonly<Bornes> {
+  let b = bornesLocales.get(def.id);
+  if (!b) {
+    const cote = COTE_DU_COEUR[def.id] ?? CORE;
+    // (CORE − cote) / 2 plutôt que −marge : 0 et non −0 pour un cœur de 16.
+    const debut = (CORE - cote) / 2;
+    b = Object.freeze({ x0: debut, y0: debut, x1: cote + debut, y1: cote + debut });
+    bornesLocales.set(def.id, b);
+  }
+  return b;
+}
+
+/** Les bornes du cœur d'une île en cases du monde (bornes hautes exclues). */
+export function coeurDe(def: IslandDef): Bornes {
+  const b = bornesDuCoeur(def);
+  return { x0: def.core.x + b.x0, y0: def.core.y + b.y0, x1: def.core.x + b.x1, y1: def.core.y + b.y1 };
+}
 /** Altitude par classe (uniforme dans un archipel). */
 export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e': 6, '3e': 9 };
 /** Un archipel du ciel : pas de mer, les îles flottent au-dessus d'un plancher de nuages (les Îles du Ciel). */
@@ -40,36 +90,60 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
 export const MAP: IslandDef[] = [
-  // Premiers Rivages (6e), au niveau de la mer. Port : la Plaine.
+  // Premiers Rivages (6e), au niveau de la mer. Port : la Plaine. La Forêt, île-école, a un cœur de 20 (`COTE_DU_COEUR`)
+  // et sa côte autour : sa terre a deux cases de plus de chaque côté. Ses voisines se sont écartées d'autant (01/10/2026)
+  // pour garder les bras de mer et la longueur des ouvrages (à deux cases près), chacune avec son dessin (`deplacee`) :
+  // la Ferme de 2 vers l'ouest, la Mine de 2 vers l'est, la Plaine de 2 devant ; derrière, la Baie (2 vers l'ouest) et
+  // l'Horloge d'une case seulement, pour que la mer semée au large ne s'étende pas d'un rang (l'îlot du Gardien de
+  // l'Horloge est à deux cases d'eau de la Forêt, comme celui de la Forêt l'est de la Plaine). Les îles du bord (la
+  // Tour, la Carrière, le Volcan, la Rivière) ne bougent pas : rien de la Forêt ne les approche, et l'archipel garde sa
+  // colonne centrale (le cadrage des caméras) et sa largeur (la mer). L'isthme de la Ferme à la Tour, les ponts de la
+  // Mine à la Carrière et à la Rivière, et le bac de la Ferme au Volcan y perdent deux cases.
   { id: 'foret', region: 'basses-terres', core: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
-  { id: 'ferme', region: 'basses-terres', core: { x: 27, y: 61 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
-  { id: 'mine', region: 'montagne', core: { x: 96, y: 61 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
+  { id: 'ferme', region: 'basses-terres', core: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
+  { id: 'mine', region: 'montagne', core: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
   { id: 'tour', region: 'basses-terres', core: { x: -3, y: 56 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
   { id: 'carriere', region: 'montagne', core: { x: 136, y: 56 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
-  { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 21 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
+  { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
   { id: 'riviere', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
   { id: 'volcan', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
-  // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché.
-  { id: 'glacier', region: 'montagne', core: { x: 40, y: 320 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
+  // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
+  // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
+  // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
+  // dessin (`deplacee`) ; le grand phare du large recule (monuments.ts). Le Marais, le Carrefour et le Relais ne bougent
+  // pas : le pont du Marché au Marais était long (30 cases), celui du Comptoir au Relais y perd deux cases ; écarter
+  // aussi le Relais, pour garder la colonne centrale, élargissait la mer semée de 157 triangles de décor, au-delà de son
+  // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°.
+  { id: 'glacier', region: 'montagne', core: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
   { id: 'marche', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
   { id: 'carrefour', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
   { id: 'marais', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
-  // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier.
-  { id: 'forge', region: 'feu', core: { x: 30, y: 618 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
+  // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier. L'Atelier, île-école, a un cœur
+  // de 20 et sa côte autour (01/10/2026) : la Forge s'écarte de 2 vers l'ouest, la Falaise de 2 vers l'est, chacune
+  // avec son dessin (`deplacee`) ; leurs ponts vers l'Atelier gardent leur longueur, ceux de la Forge à la Gare et de
+  // la Falaise au Cabinet y perdent deux cases. Les îles du bout de la crête ne bougent pas : l'archipel garde sa
+  // colonne centrale et sa largeur. La grue suit la côte repoussée (decor/4e.ts).
+  { id: 'forge', region: 'feu', core: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
   { id: 'atelier', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
-  { id: 'falaise', region: 'montagne', core: { x: 94, y: 618 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
+  { id: 'falaise', region: 'montagne', core: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
   { id: 'cabinet', region: 'hauteurs', core: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
-  // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare.
-  { id: 'belvedere', region: 'montagne', core: { x: 20, y: 930 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
+  // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare. Le Phare, île-école, a un
+  // cœur de 20 et sa côte autour (01/10/2026) : le Belvédère s'écarte de 2 vers l'ouest, l'Observatoire des données de
+  // 2 vers l'est (leurs ponts vers le Phare gardent leur longueur, ceux du Studio et du Château y perdent deux cases),
+  // chacun avec son dessin (`deplacee`). L'Observatoire des textes avance de 2 vers le Phare : la mer de nuages, qui
+  // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
+  // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
+  // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
+  { id: 'belvedere', region: 'montagne', core: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
   { id: 'phare', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
-  { id: 'donnees', region: 'hauteurs', core: { x: 96, y: 930 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: 58, y: 960 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'donnees', region: 'hauteurs', core: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
+  { id: 'textes', region: 'hauteurs', core: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
   // Anglais 6e : derrière la Ferme et la Forêt, les deux îles se touchent (un isthme).
-  { id: 'baie', region: 'basses-terres', core: { x: 38, y: 101 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
-  { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 101 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
+  { id: 'baie', region: 'basses-terres', core: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
+  { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'comptoir', region: 'basses-terres', core: { x: 101, y: 320 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
-  { id: 'manoir', region: 'hauteurs', core: { x: 101, y: 366 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
+  { id: 'comptoir', region: 'basses-terres', core: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
+  { id: 'manoir', region: 'hauteurs', core: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
   { id: 'relais', region: 'basses-terres', core: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
   // Anglais 4e : aux deux bouts de la crête, la Gare avant la Forge, le Théâtre après le Cabinet.
@@ -115,6 +189,34 @@ export function islandDef(id: BiomeId): IslandDef {
   return def;
 }
 
+/**
+ * Une case du monde ramenée à la place où le dessin de l'île (sa côte, son relief, son décor) a été tiré : avant son
+ * déplacement (`IslandDef.deplacee`), et autour de son cœur d'origine. Autour d'un cœur agrandi, la terre d'avant est
+ * repoussée d'autant de chaque côté : l'île garde sa silhouette, de la vraie terre en plus ; le long du cœur, le dessin
+ * d'avant s'étire sur la largeur du cœur agrandi.
+ */
+export function tirage(def: IslandDef, x: number, y: number): { x: number; y: number } {
+  const b = bornesDuCoeur(def);
+  const ox = def.core.x - (def.deplacee?.x ?? 0);
+  const oy = def.core.y - (def.deplacee?.y ?? 0);
+  return { x: ox + aLaPlaceDOrigine(x - def.core.x, b.x0, b.x1), y: oy + aLaPlaceDOrigine(y - def.core.y, b.y0, b.y1) };
+}
+
+/**
+ * Une coordonnée relative au cœur d'origine (`rel`), sur un axe où le cœur va de `debut` à `fin` (bornes de
+ * `bornesDuCoeur`), ramenée à sa place autour du cœur d'origine [0, `CORE`).
+ */
+function aLaPlaceDOrigine(rel: number, debut: number, fin: number): number {
+  // Avant le cœur : la côte d'avant, repoussée d'autant que le cœur a grandi de ce côté.
+  if (rel < debut) return rel - debut;
+  // Après le cœur : de même, de l'autre côté.
+  if (rel >= fin) return rel - fin + CORE;
+  // Dans un cœur d'origine (16 de côté) : la case elle-même.
+  if (debut === 0 && fin === CORE) return rel;
+  // Dans un cœur agrandi : le dessin d'avant étiré sur sa largeur.
+  return Math.floor(((rel - debut) * CORE) / (fin - debut));
+}
+
 /** Bruit déterministe dans [0, 1) pour une case. */
 export function noise(seed: number, x: number, y: number): number {
   let h = (seed * 374761393 + x * 668265263 + y * 2147483647) | 0;
@@ -147,10 +249,13 @@ function isthmusPair(def: IslandDef): { owner: IslandDef; other: IslandDef } | n
 
 /** Les rangées de l'isthme entre deux îles côte à côte, pour une colonne x : bornes [y0, y1), bords adoucis par un bruit. */
 function isthmusRows(owner: IslandDef, other: IslandDef, x: number): { y0: number; y1: number } {
-  const y0 = Math.max(owner.core.y, other.core.y) + 1;
-  const y1 = Math.min(owner.core.y + CORE, other.core.y + CORE) - 1;
-  const n0 = Math.floor(smoothNoise(owner.seed + 17, x, 0, 3) * 2.5);
-  const n1 = Math.floor(smoothNoise(owner.seed + 19, x, 7, 3) * 2.5);
+  const a = coeurDe(owner);
+  const b = coeurDe(other);
+  const y0 = Math.max(a.y0, b.y0) + 1;
+  const y1 = Math.min(a.y1, b.y1) - 1;
+  const tx = tirage(owner, x, 0).x;
+  const n0 = Math.floor(smoothNoise(owner.seed + 17, tx, 0, 3) * 2.5);
+  const n1 = Math.floor(smoothNoise(owner.seed + 19, tx, 7, 3) * 2.5);
   return { y0: y0 + n0, y1: y1 - n1 };
 }
 
@@ -161,7 +266,7 @@ export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
   const { owner, other } = pair;
   const left = owner.core.x < other.core.x ? owner : other;
   const right = left === owner ? other : owner;
-  if (x < left.core.x + CORE || x >= right.core.x) return false;
+  if (x < coeurDe(left).x1 || x >= coeurDe(right).x0) return false;
   const { y0, y1 } = isthmusRows(owner, other, x);
   if (y < y0 || y >= y1) return false;
   return !isLandProper(other, x, y);
@@ -169,53 +274,251 @@ export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
 
 /** Boîte englobante de la terre d'une île (bornes hautes exclues), isthme compris. */
 export function landBox(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
-  const box = { x0: def.core.x - def.ext.left, y0: def.core.y - def.ext.front, x1: def.core.x + CORE + def.ext.right, y1: def.core.y + CORE + def.ext.back };
+  const c = coeurDe(def);
+  const box = { x0: c.x0 - def.ext.left, y0: c.y0 - def.ext.front, x1: c.x1 + def.ext.right, y1: c.y1 + def.ext.back };
   const pair = isthmusPair(def);
   if (pair) {
-    box.x0 = Math.min(box.x0, pair.other.core.x + CORE);
-    box.x1 = Math.max(box.x1, pair.other.core.x);
+    const o = coeurDe(pair.other);
+    box.x0 = Math.min(box.x0, o.x1);
+    box.x1 = Math.max(box.x1, o.x0);
   }
   return box;
 }
 
 export function inCore(def: IslandDef, x: number, y: number): boolean {
-  return x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
+  const b = bornesDuCoeur(def);
+  const lx = x - def.core.x;
+  const ly = y - def.core.y;
+  return lx >= b.x0 && lx < b.x1 && ly >= b.y0 && ly < b.y1;
+}
+
+/** La case (x, y) du monde est-elle dans le cœur d'origine 16 × 16 de l'île (le repère des clés, `IslandDef.core`) ? */
+export function inCoeurDOrigine(def: IslandDef, x: number, y: number): boolean {
+  const lx = x - def.core.x;
+  const ly = y - def.core.y;
+  return lx >= 0 && lx < CORE && ly >= 0 && ly < CORE;
+}
+
+const margesCache = new Map<BiomeId, LandCell[]>();
+
+/**
+ * Le décor des marges allégé, île par île, quand celui de la côte n'y tient pas dans l'enveloppe du décor de son
+ * archipel (world/budget.ts) : `genre`, un seul genre, le plus bas de la côte de l'île ; `unSurDeux`, une case sur deux
+ * de son rythme ; `derriere`, rien devant le cœur d'origine (la rangée des bornes reste dégagée, côté caméra). Le Marché
+ * (5e, 01/10/2026) : le port reste bas (intention du 5e, §3), des roseaux sur les côtés et derrière.
+ */
+export const DECOR_DES_MARGES: Readonly<Partial<Record<BiomeId, Readonly<{ genre?: Decor; unSurDeux?: true; derriere?: true }>>>> = Object.freeze({
+  marche: Object.freeze({ genre: 'roseau', unSurDeux: true, derriere: true } as const),
+});
+
+/**
+ * Le seuil du décor : une case de côte porte un élément de décor quand son bruit fin (`noise(seed + 3)`) le passe
+ * (`computeLandscape`, `margesDuCoeur`, `jalonsDesMarges`) ; `pickDecor` choisit l'élément entre ce seuil et 1.
+ */
+const SEUIL_DU_DECOR = 0.62;
+
+/** Le sol d'une terre à plat de l'île, hors de son bord (la côte de `computeLandscape`, l'isthme, les marges du cœur). */
+function solAPlat(def: IslandDef): Ground {
+  if (def.id === 'glacier') return 'glace';
+  if (def.region === 'feu') return 'basalte';
+  if (def.region === 'marais') return 'mousse';
+  return 'herbe';
+}
+
+/**
+ * Les marges du cœur d'une île dont le cœur est plus grand que `CORE` : l'anneau entre le cœur d'origine et le cœur
+ * agrandi (`coeurDe`), vide pour les autres îles. Une terre plate (h = 0) et constructible, au sol du cœur. Sa rangée
+ * extérieure porte le décor de la côte à son rythme (le même bruit que `landscape`) pour ne pas laisser un terrain vide ;
+ * sa rangée intérieure, qui borde le cœur d'origine, reste nue : un passage tout autour, et le décor tient dans son
+ * enveloppe. Le rendu y pose ce décor sans jamais cacher une borne (terrain.ts, `cacheUneBorne`). Mémorisé.
+ */
+export function margesDuCoeur(def: IslandDef): LandCell[] {
+  const cached = margesCache.get(def.id);
+  if (cached) return cached;
+  const c = coeurDe(def);
+  // Le sol à plat de la côte de l'île (comme dans `computeLandscape`), qui choisit son décor.
+  const sol = solAPlat(def);
+  const out: LandCell[] = [];
+  const jalons = jalonsDesMarges(def, c, sol);
+  for (let x = c.x0; x < c.x1; x++)
+    for (let y = c.y0; y < c.y1; y++) {
+      if (inCoeurDOrigine(def, x, y)) continue;
+      const t = tirage(def, x, y);
+      const fine = noise(def.seed + 3, t.x, t.y);
+      // La rangée qui borde le cœur d'origine reste nue : un passage tout autour, où l'on marche et construit.
+      const bord = inCoeurDOrigine(def, x - 1, y) || inCoeurDOrigine(def, x + 1, y) || inCoeurDOrigine(def, x, y - 1) || inCoeurDOrigine(def, x, y + 1);
+      const coin = inCoeurDOrigine(def, x - 1, y - 1) || inCoeurDOrigine(def, x + 1, y - 1) || inCoeurDOrigine(def, x - 1, y + 1) || inCoeurDOrigine(def, x + 1, y + 1);
+      const allege = DECOR_DES_MARGES[def.id];
+      let decor = !bord && !coin && fine > SEUIL_DU_DECOR ? pickDecor(def, sol, 0, fine) : undefined;
+      if (!decor) decor = jalons.get(`${x},${y}`);
+      if (decor && allege) {
+        if (allege.genre) decor = allege.genre;
+        if (allege.unSurDeux && (t.x + t.y) % 2) decor = undefined;
+        if (allege.derriere && y < def.core.y) decor = undefined;
+      }
+      out.push({ x, y, h: 0, ground: sol, decor });
+    }
+  margesCache.set(def.id, out);
+  return out;
+}
+
+/**
+ * Sur la rangée extérieure des marges, une suite de cases nues de `PAS_DES_JALONS` cases ou plus reçoit un jalon, deux
+ * à partir du double, et ainsi de suite, posés à intervalles égaux dans la suite (voir `jalonsDesMarges`).
+ */
+export const PAS_DES_JALONS = 5;
+
+/** Les jalons des marges par région : une pierre, une touffe, un rondin ; rien que de bas. */
+const JALONS: Readonly<Record<RegionId, readonly Decor[]>> = Object.freeze({
+  'basses-terres': ['rocher', 'buisson', 'souche'],
+  marais: ['souche', 'rocher'],
+  hauteurs: ['rocher', 'souche'],
+  montagne: ['rocher'],
+  feu: ['rocher'],
+});
+
+/**
+ * Les jalons de la rangée extérieure des marges d'un cœur agrandi (`c`) : vue de l'archipel, la bande d'herbe nue le
+ * long du cœur faisait une longue ligne droite (relecture du consultant Blocland, 01/10/2026). Chaque côté de la rangée
+ * est parcouru ; une suite de cases sans décor du bruit (le même que dans `margesDuCoeur`) est cassée de loin en loin
+ * (`PAS_DES_JALONS`) par une pierre, une touffe ou un rondin (`JALONS`, selon la région), jamais contre un décor ni
+ * contre un autre jalon. La rangée où l'on marche (contre le cœur d'origine) reste nue. Rend les jalons par case.
+ */
+function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, Decor> {
+  const out = new Map<string, Decor>();
+  const duBruit = (x: number, y: number) => {
+    const t = tirage(def, x, y);
+    const fine = noise(def.seed + 3, t.x, t.y);
+    return fine > SEUIL_DU_DECOR && pickDecor(def, sol, 0, fine) !== undefined;
+  };
+  const genres = JALONS[def.region];
+  const cotes: [number, number][][] = [
+    Array.from({ length: c.x1 - c.x0 }, (_, k) => [c.x0 + k, c.y0]),
+    Array.from({ length: c.x1 - c.x0 }, (_, k) => [c.x0 + k, c.y1 - 1]),
+    Array.from({ length: c.y1 - c.y0 }, (_, k) => [c.x0, c.y0 + k]),
+    Array.from({ length: c.y1 - c.y0 }, (_, k) => [c.x1 - 1, c.y0 + k]),
+  ];
+  for (const rangee of cotes) {
+    const plein = rangee.map(([x, y]) => duBruit(x, y) || out.has(`${x},${y}`));
+    for (let k = 0; k < rangee.length; ) {
+      if (plein[k]) {
+        k++;
+        continue;
+      }
+      let fin = k;
+      while (fin < rangee.length && !plein[fin]) fin++;
+      // La suite nue [k, fin) : ses jalons à intervalles à peu près égaux, ni à ses bouts (contre un décor) ni l'un contre
+      // l'autre. Chacun glisse d'une case au hasard (bruit fixe) et change de genre d'un jalon au suivant : pas de rangée
+      // régulière de rondins identiques (DA, 01/10/2026, sur la rangée de devant des Anciens Ateliers). Les glissements
+      // gardent moins de `PAS_DES_JALONS` cases nues à la suite ; sinon, les places égales.
+      const long = fin - k;
+      const n = Math.floor(long / PAS_DES_JALONS);
+      const egales = Array.from({ length: n }, (_, j) => k + Math.floor(((j + 1) * long) / (n + 1)));
+      // Les glissements (−1, 0 ou +1 par jalon) sont tirés d'un bruit fixe ; le premier tirage qui tient les écarts est gardé.
+      const tient = (ps: number[]) =>
+        ps.every((p, j) => {
+          const avant = j ? ps[j - 1] : k - 1;
+          return p > avant + 1 && p < fin - 1 && p - avant - 1 < PAS_DES_JALONS;
+        }) && fin - ps[ps.length - 1] - 1 < PAS_DES_JALONS;
+      let finales = egales;
+      // (Pas sur une île allégée, `DECOR_DES_MARGES` : le Marché garde ses roseaux, une case sur deux, à leur place.)
+      for (let essai = 0; essai < 4 && n > 0 && !DECOR_DES_MARGES[def.id]; essai++) {
+        const ps = egales.map((p) => p + Math.floor(noise(def.seed + 31 + essai, rangee[p][0], rangee[p][1]) * 3) - 1);
+        if (ps.some((p, j) => p !== egales[j]) && tient(ps)) {
+          finales = ps;
+          break;
+        }
+      }
+      let precedent = -1;
+      for (const p of finales) {
+        const [x, y] = rangee[p];
+        let g = Math.floor(noise(def.seed + 29, x, y) * genres.length) % genres.length;
+        if (g === precedent && genres.length > 1) g = (g + 1) % genres.length;
+        precedent = g;
+        out.set(`${x},${y}`, genres[g]);
+      }
+      k = fin;
+    }
+  }
+  return out;
 }
 
 /** Distance normalisée au cœur (0 sur le cœur, 1 au bord de la boîte). */
 function coreDistance(def: IslandDef, x: number, y: number): number {
-  const dx = x < def.core.x ? (def.core.x - x) / (def.ext.left + 0.5) : x >= def.core.x + CORE ? (x - (def.core.x + CORE - 1)) / (def.ext.right + 0.5) : 0;
-  const dy = y < def.core.y ? (def.core.y - y) / (def.ext.front + 0.5) : y >= def.core.y + CORE ? (y - (def.core.y + CORE - 1)) / (def.ext.back + 0.5) : 0;
+  const b = bornesDuCoeur(def);
+  const c = { x0: def.core.x + b.x0, y0: def.core.y + b.y0, x1: def.core.x + b.x1, y1: def.core.y + b.y1 };
+  const dx = x < c.x0 ? (c.x0 - x) / (def.ext.left + 0.5) : x >= c.x1 ? (x - (c.x1 - 1)) / (def.ext.right + 0.5) : 0;
+  const dy = y < c.y0 ? (c.y0 - y) / (def.ext.front + 0.5) : y >= c.y1 ? (y - (c.y1 - 1)) / (def.ext.back + 0.5) : 0;
   return Math.hypot(dx, dy);
 }
 
 /**
+ * La terre d'une île, calculée une fois (le monde ne change pas de forme en cours de partie) : sa boîte (`landBox`), une
+ * case par octet (1 : terre, isthme compris), et la liste de ses cases. `isLand` et `landCells` la lisent : le dessin
+ * d'une île (sol, paysage, décor, cascades, gués) demande la terre des milliers de fois, et chaque bloc posé redessine
+ * l'archipel (relecture de l'expert frontend, 01/10/2026 : `cubesDeLIle` 2 à 3 fois plus lent avec les cœurs agrandis).
+ */
+interface TerreDeLIle {
+  x0: number;
+  y0: number;
+  w: number;
+  h: number;
+  cases: Uint8Array;
+  liste: readonly Readonly<{ x: number; y: number }>[];
+}
+const terres = new Map<BiomeId, TerreDeLIle>();
+
+function terreDe(def: IslandDef): TerreDeLIle {
+  let t = terres.get(def.id);
+  if (!t) {
+    const { x0, y0, x1, y1 } = landBox(def);
+    const w = x1 - x0;
+    const h = y1 - y0;
+    const cases = new Uint8Array(w * h);
+    const liste: Readonly<{ x: number; y: number }>[] = [];
+    // (Dans l'ordre d'avant : colonne par colonne.)
+    for (let x = x0; x < x1; x++)
+      for (let y = y0; y < y1; y++)
+        if (isLandProper(def, x, y) || inIsthmus(def, x, y)) {
+          cases[(y - y0) * w + (x - x0)] = 1;
+          liste.push(Object.freeze({ x, y }));
+        }
+    t = { x0, y0, w, h, cases, liste: Object.freeze(liste) };
+    terres.set(def.id, t);
+  }
+  return t;
+}
+
+/**
  * La case (x, y) du monde fait-elle partie de la terre de l'île ? Le cœur toujours ; autour, une côte
- * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain.
+ * irrégulière : baies et caps dessinés par un bruit lissé, plus un léger grain. Lu dans la terre calculée (`terreDe`),
+ * sans rien allouer.
  */
 export function isLand(def: IslandDef, x: number, y: number): boolean {
-  return isLandProper(def, x, y) || inIsthmus(def, x, y);
+  const t = terreDe(def);
+  const lx = x - t.x0;
+  const ly = y - t.y0;
+  return lx >= 0 && ly >= 0 && lx < t.w && ly < t.h && t.cases[ly * t.w + lx] === 1;
 }
 
 /** La terre propre d'une île (sans l'isthme). */
 function isLandProper(def: IslandDef, x: number, y: number): boolean {
   if (inCore(def, x, y)) return true;
-  const x0 = def.core.x - def.ext.left;
-  const y0 = def.core.y - def.ext.front;
-  const x1 = def.core.x + CORE + def.ext.right;
-  const y1 = def.core.y + CORE + def.ext.back;
+  const b = bornesDuCoeur(def);
+  const x0 = def.core.x + b.x0 - def.ext.left;
+  const y0 = def.core.y + b.y0 - def.ext.front;
+  const x1 = def.core.x + b.x1 + def.ext.right;
+  const y1 = def.core.y + b.y1 + def.ext.back;
   if (x < x0 || x >= x1 || y < y0 || y >= y1) return false;
   const d = coreDistance(def, x, y);
-  const coast = (smoothNoise(def.seed, x, y, 5) - 0.5) * 0.7 + (noise(def.seed + 1, x, y) - 0.5) * 0.15;
+  const t = tirage(def, x, y);
+  const coast = (smoothNoise(def.seed, t.x, t.y, 5) - 0.5) * 0.7 + (noise(def.seed + 1, t.x, t.y) - 0.5) * 0.15;
   return d + coast < 0.92;
 }
 
-/** Toutes les cases de terre d'une île. */
-export function landCells(def: IslandDef): { x: number; y: number }[] {
-  const { x0, y0, x1, y1 } = landBox(def);
-  const out: { x: number; y: number }[] = [];
-  for (let x = x0; x < x1; x++) for (let y = y0; y < y1; y++) if (isLand(def, x, y)) out.push({ x, y });
-  return out;
+/** Toutes les cases de terre d'une île, colonne par colonne (calculées une fois, à ne pas modifier). */
+export function landCells(def: IslandDef): readonly Readonly<{ x: number; y: number }>[] {
+  return terreDe(def).liste;
 }
 
 /** Nature du sol d'une case hors du cœur. */
@@ -277,14 +580,15 @@ function computeLandscape(def: IslandDef): LandCell[] {
   const out: LandCell[] = [];
   for (const c of cells) {
     if (inCore(def, c.x, c.y)) continue;
-    const n = smoothNoise(def.seed + 7, c.x, c.y, 4);
-    const fine = noise(def.seed + 3, c.x, c.y);
+    const t = tirage(def, c.x, c.y);
+    const n = smoothNoise(def.seed + 7, t.x, t.y, 4);
+    const fine = noise(def.seed + 3, t.x, t.y);
     const edge = !isLandAt(c.x - 1, c.y) || !isLandAt(c.x + 1, c.y) || !isLandAt(c.x, c.y - 1) || !isLandAt(c.x, c.y + 1);
     const nearCore = coreDistance(def, c.x, c.y) < 0.35;
     if (inIsthmus(def, c.x, c.y)) {
       // L'isthme : une bande plate qui relie deux îles, herbe et sable au bord, quelques buissons.
       const sandy = edge && def.altitude === 0 && def.region !== 'feu';
-      const ground: Ground = sandy ? 'sable' : def.region === 'feu' ? 'basalte' : def.region === 'marais' ? 'mousse' : def.id === 'glacier' ? 'glace' : 'herbe';
+      const ground: Ground = sandy ? 'sable' : solAPlat(def);
       out.push({ x: c.x, y: c.y, h: 0, ground, decor: !edge && fine > 0.8 ? pickDecor(def, ground, 0, fine) : undefined });
       continue;
     }
@@ -325,10 +629,10 @@ function computeLandscape(def: IslandDef): LandCell[] {
       out.push({ x: c.x, y: c.y, h: 0, ground: lac === 'bord' ? 'roche' : 'herbe' });
       continue;
     }
-    if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, c.x, c.y, 3) > 0.78 && def.relief !== 'volcan') {
+    if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, t.x, t.y, 3) > 0.78 && def.relief !== 'volcan') {
       ground = 'eau';
       h = -1;
-    } else if (h <= 2 && !edge && fine > 0.62) {
+    } else if (h <= 2 && !edge && fine > SEUIL_DU_DECOR) {
       decor = pickDecor(def, ground, h, fine);
     }
     out.push({ x: c.x, y: c.y, h, ground, decor });
@@ -338,7 +642,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
 
 function pickDecor(def: IslandDef, ground: Ground, h: number, r: number): Decor | undefined {
   if (ground === 'eau' || ground === 'lave' || ground === 'sable') return undefined;
-  const t = (r - 0.62) / 0.38; // 0..1
+  const t = (r - SEUIL_DU_DECOR) / (1 - SEUIL_DU_DECOR); // 0..1
   switch (def.region) {
     case 'basses-terres':
       return t > 0.8 ? 'arbre' : t > 0.55 ? 'buisson' : t > 0.42 ? 'fleur' : t > 0.34 ? 'champignon' : undefined;

@@ -243,7 +243,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
-    islet: { x: 27, y: 84 },
+    islet: { x: 25, y: 84 }, // 2 cases à l'ouest avec la Ferme (la Forêt a grandi, 01/10/2026)
     reward: { xp: 150, chest: {} },
     done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,
@@ -254,7 +254,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de panneaux, pour les navires qui passent.',
-    islet: { x: 62, y: 339 },
+    islet: { x: 58, y: 343 }, // 4 cases à l'ouest et 4 en arrière : le Marché a grandi (01/10/2026), le Glacier s'est écarté
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,
@@ -309,7 +309,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'Le temple de marbre',
     description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes qui brille au soleil.',
-    islet: { x: 5, y: 935 },
+    islet: { x: 3, y: 935 }, // 2 cases à l'ouest avec le Belvédère (le Phare a grandi, 01/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
     draw: temple,

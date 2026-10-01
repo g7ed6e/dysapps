@@ -8,16 +8,22 @@ import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeU
 import { walkPath, type WalkGround } from './paths';
 import {
   CORE,
+  COTE_DU_COEUR,
   archipelagoOfIsland,
+  bornesDuCoeur,
+  coeurDe,
   DANS_LE_CIEL,
+  inCoeurDOrigine,
   inCore,
   isLand,
   islandDef,
   landBox,
   landCells,
   landscape,
+  margesDuCoeur,
   smoothNoise,
   mapOf,
+  tirage,
   noise,
   type ArchipelagoId,
   type Decor,
@@ -35,7 +41,7 @@ import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
-import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
+import { ORIGINE_DES_MONUMENTS, PLAN_ZONE, isPlanDone, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import {
   BASALT,
@@ -61,7 +67,7 @@ import {
   type Put,
 } from './decor';
 
-/** Côté du cœur d'une île (en blocs). */
+/** Côté du cœur d'origine d'une île (en blocs) : le repère des clés ; l'étendue du cœur d'une île est `coeurDe` (./map). */
 export const ISLAND = CORE;
 /** Nombre de couches de terre sous le sol (visibles au-dessus de l'eau, sur les berges). */
 export const DEPTH = 2;
@@ -152,7 +158,8 @@ export function islandOrigin(index: number): { ox: number; oy: number; oz: numbe
 /** Centre du cœur d'une île (coordonnées de grille) et altitude, pour y amener la caméra. */
 export function islandCenter(id: BiomeId): { x: number; y: number; z: number } {
   const def = islandDef(id);
-  return { x: def.core.x + CORE / 2, y: def.core.y + CORE / 2, z: def.altitude };
+  const c = coeurDe(def);
+  return { x: (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2, z: def.altitude };
 }
 
 /** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
@@ -456,6 +463,37 @@ export function cacheUneBorne(bornes: readonly BorneVue[], vers: readonly [numbe
   return false;
 }
 
+const rangeesDevant = new Map<BiomeId, ReadonlySet<string>>();
+/**
+ * La rangée de côte devant les bornes d'une île-école (l'île de l'école de son archipel, `school`) : la première rangée
+ * de côte hors du cœur, côté caméra (y = bord avant du cœur − 1), de la case droit devant la première borne jusqu'à celle
+ * que traverse l'axe de la caméra de la vue de l'île (`versLaCamera`, pivot compris) depuis la dernière, une case de plus
+ * de chaque côté. Aucun décor n'y est posé : rien de rouge ni de touffu entre l'élève et les bornes (DA, 01/10/2026 :
+ * trois champignons rouges devant celles de la Forêt). Cases du monde (« x,y ») ; vide hors des îles-écoles.
+ * La bande reste dans la portée des bornes (`PORTEE_DEVANT_LA_BORNE`), où `poserLIle` essaie chaque élément du décor.
+ */
+export function rangeeDevantLesBornes(id: BiomeId): ReadonlySet<string> {
+  const connue = rangeesDevant.get(id);
+  if (connue) return connue;
+  const out = new Set<string>();
+  if (isSchoolIsland(id)) {
+    const def = islandDef(id);
+    const y = coeurDe(def).y0 - 1;
+    const [vx, vy] = versLaCamera(id);
+    for (const st of questStations(id)) {
+      const bx = def.core.x + st.x + 0.5;
+      const by = def.core.y + st.y + 0.5;
+      // Où l'axe borne → caméra traverse le milieu de la rangée (la caméra est devant : vy < 0).
+      const xr = vy < -1e-9 ? bx + (vx * (by - (y + 0.5))) / -vy : bx;
+      const lo = Math.min(bx, xr) - 1.5;
+      const hi = Math.max(bx, xr) + 1.5;
+      for (let x = Math.ceil(lo - 0.5); x + 0.5 <= hi; x++) out.add(`${x},${y}`);
+    }
+  }
+  rangeesDevant.set(id, out);
+  return out;
+}
+
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
 
@@ -483,13 +521,16 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
   const a = islandDef(def.from);
   const b = islandDef(def.to);
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
-  const anchor = (d: IslandDef) => ({ x: d.core.x + (vertical ? CORE - 1 : CORE / 2), y: d.core.y + CORE / 2 });
+  const anchor = (d: IslandDef) => {
+    const c = coeurDe(d);
+    return { x: vertical ? c.x1 - 1 : (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2 };
+  };
   const ca = anchor(a);
   const cb = anchor(b);
   const points = [ca];
   if (vertical && ca.x !== cb.x) {
     const front = a.core.y < b.core.y ? a : b;
-    const jog = front.core.y + CORE + front.ext.back + 1;
+    const jog = coeurDe(front).y1 + front.ext.back + 1;
     points.push({ x: ca.x, y: jog }, { x: cb.x, y: jog });
   }
   points.push(cb);
@@ -609,6 +650,33 @@ function nearSentier(x: number, y: number): boolean {
   if (!sentierCache) sentierCache = new Set(BRIDGES.filter((b) => b.kind === 'sentier').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (sentierCache.has(`${x + dx},${y + dy}`)) return true;
   return false;
+}
+
+/**
+ * Les abords des ouvrages d'une île dans les marges de son cœur (`margesDuCoeur`) : de l'amorce de chaque ouvrage au
+ * cœur d'origine, la case du passage et ses voisines. Le décor des marges les laisse libres : le bonhomme y va tout
+ * droit du cœur à l'ouvrage. Vide pour une île sans marges. Mémorisé (les ouvrages et les marges ne bougent pas).
+ */
+const abordsCache = new Map<BiomeId, ReadonlySet<string>>();
+
+function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
+  const connus = abordsCache.get(def.id);
+  if (connus) return connus;
+  const out = new Set<string>();
+  abordsCache.set(def.id, out);
+  if (!margesDuCoeur(def).length) return out;
+  for (const b of bridgesOf(def.id)) {
+    const path = bridgePath(b);
+    if (!path.length) continue;
+    const depart = b.from === def.id;
+    const bout = depart ? path[0] : path[path.length - 1];
+    // Vers l'intérieur de l'île : à rebours du tracé à son départ, dans son sens à son arrivée.
+    const [sx, sy] = depart ? [-bout.dx, -bout.dy] : [bout.dx, bout.dy];
+    if (!sx && !sy) continue;
+    for (let k = 0, x = bout.x, y = bout.y; k <= CORE && !inCoeurDOrigine(def, x, y); k++, x += sx, y += sy)
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(`${x + dx},${y + dy}`);
+  }
+  return out;
 }
 
 /** Où le bonhomme se tient sur une île, en coordonnées relatives au cœur (à côté de la créature, loin des plans). */
@@ -799,12 +867,15 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (const k of placeCells(id)) blocked.add(k);
-  for (let x = 0; x < CORE; x++) for (let y = 0; y < CORE; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
+  // Le décor des marges du cœur (un cœur agrandi) : la créature ne s'y pose pas.
+  for (const m of margesDuCoeur(def)) if (m.decor) blocked.add(`${m.x - def.core.x},${m.y - def.core.y}`);
+  const coeur = bornesDuCoeur(def);
+  for (let x = coeur.x0; x < coeur.x1; x++) for (let y = coeur.y0; y < coeur.y1; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
   // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
   const scenery = new Map(landscape(def).map((c) => [`${c.x - def.core.x},${c.y - def.core.y}`, c]));
   const free = (x: number, y: number) => {
     if (blocked.has(`${x},${y}`)) return false;
-    if (x >= 0 && y >= 0 && x < CORE && y < CORE) return true;
+    if (x >= coeur.x0 && y >= coeur.y0 && x < coeur.x1 && y < coeur.y1) return true;
     const c = scenery.get(`${x},${y}`);
     return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
@@ -812,8 +883,8 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const fits = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
-  for (let x = -2; x < CORE; x++) {
-    for (let y = 0; y < CORE; y++) {
+  for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
+    for (let y = coeur.y0; y < coeur.y1; y++) {
       if (!fits(x, y, [0, 0])) continue;
       const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
       const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
@@ -853,8 +924,48 @@ const ISLET_CENTER = { x: 6, y: 5.5 };
 const ARENA = { rx: 4.5, ry: 4 };
 
 export function bossIsletOrigin(index: number): { x: number; y: number; z: number } {
-  const def = islandDef(BIOMES[index].id);
-  return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+  return origineDeLIlot(islandDef(BIOMES[index].id));
+}
+
+/**
+ * Sur une île au cœur agrandi (`COTE_DU_COEUR`), l'îlot glisse de tant de cases vers la gauche, sur sa rangée : le
+ * Gardien quitte l'axe de la caméra vers le cœur (créature, école, salle des trophées) et se tient devant la côte
+ * gauche, l'eau s'ouvre en biais entre l'îlot et la terre (relecture du DA, 01/10/2026). À gauche sur les quatre
+ * îles-écoles : à droite, le navire est à quai au Marché et à l'Atelier.
+ */
+export const ILOT_DE_COTE = 9;
+
+/**
+ * Les retouches de l'îlot d'une île-école, pour qu'il ait au moins trois cases d'eau de tous les côtés et se lise comme
+ * celui de son île, plus près de sa côte que de toute autre terre (relectures du 01/10/2026, un test le tient) :
+ * `glisse` remplace `ILOT_DE_COTE` ; `recul`, de combien de cases il se rapproche de sa terre ; `rogne`, combien de ses
+ * rangées de devant il perd, hors de l'emprise de son Gardien. La Forêt : la Plaine, devant à droite, frôlait la
+ * pointe de l'îlot (deux cases d'eau) ; il recule d'une case vers sa côte et perd sa rangée de devant. L'Atelier : la
+ * Forge, à gauche, était plus près de l'îlot que l'Atelier lui-même ; il glisse de 7 cases au lieu de 9.
+ */
+export const RETOUCHES_DE_L_ILOT: Readonly<Partial<Record<BiomeId, Readonly<{ glisse?: number; recul?: number; rogne?: number }>>>> = Object.freeze({
+  foret: Object.freeze({ recul: 1, rogne: 1 }),
+  atelier: Object.freeze({ glisse: 7 }),
+});
+
+/**
+ * Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition : devant la terre
+ * de l'île, au droit du bord gauche de son cœur (`coeurDe`) et au-delà de sa côte ; il suit le cœur quand il grandit,
+ * et glisse sur le côté s'il est agrandi (`ILOT_DE_COTE`, `RETOUCHES_DE_L_ILOT`), sans s'avancer vers la caméra.
+ */
+export function origineDeLIlot(def: IslandDef): { x: number; y: number; z: number } {
+  const c = coeurDe(def);
+  return { x: c.x0 - glisseDeLIlot(def.id), y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP + reculDeLIlot(def.id), z: def.altitude };
+}
+
+/** De combien de cases l'îlot d'une île a glissé sur le côté (`ILOT_DE_COTE`) : sa côte et son décor restent tirés là où il était. */
+function glisseDeLIlot(id: BiomeId): number {
+  return COTE_DU_COEUR[id] ? (RETOUCHES_DE_L_ILOT[id]?.glisse ?? ILOT_DE_COTE) : 0;
+}
+
+/** De combien de cases l'îlot d'une île s'est rapproché de sa terre (`RETOUCHES_DE_L_ILOT`) : même dessin. */
+function reculDeLIlot(id: BiomeId): number {
+  return RETOUCHES_DE_L_ILOT[id]?.recul ?? 0;
 }
 
 /**
@@ -898,13 +1009,19 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
   const off = guardianOffset(id);
   const under = new Set(gardienDuMonde(id).map((c) => `${off.x + c.x},${off.y + c.y}`));
+  const glisse = glisseDeLIlot(id);
+  const recul = reculDeLIlot(id);
+  const rogne = RETOUCHES_DE_L_ILOT[id]?.rogne ?? 0;
   const land = new Set<string>();
   for (let x = 0; x < ISLET_W; x++)
     for (let y = 0; y < ISLET_H; y++) {
       const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
       const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
-      const coast = (smoothNoise(def.seed + 7, o.x + x, o.y + y, 3) - 0.5) * 0.3;
-      if (under.has(`${x},${y}`) || Math.hypot(dx, dy) + coast < 0.98) land.add(`${x},${y}`);
+      // Sa côte est tirée là où il se tenait avant de glisser sur le côté : il garde sa forme.
+      const t = tirage(def, o.x + glisse + x, o.y - recul + y);
+      const coast = (smoothNoise(def.seed + 7, t.x, t.y, 3) - 0.5) * 0.3;
+      // Ses rangées de devant rognées (`RETOUCHES_DE_L_ILOT`) ne portent que l'emprise du Gardien.
+      if (under.has(`${x},${y}`) || (y >= rogne && Math.hypot(dx, dy) + coast < 0.98)) land.add(`${x},${y}`);
     }
   const cells: IsletCell[] = [];
   for (const key of land) {
@@ -925,17 +1042,29 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
 
 /**
  * Les pas japonais : des pierres en quinconce dans l'eau, du fond de l'îlot à la côte de l'île, dans l'axe du
- * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle).
+ * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle). Quand l'îlot a glissé sur le
+ * côté (`ILOT_DE_COTE`), le gué le plus court à trois colonnes au plus de l'axe.
  */
 export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }[] {
   const def = islandDef(id);
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const x = o.x + Math.round(ISLET_CENTER.x);
-  const back = Math.max(...bossIsletCells(id).filter((c) => c.x === x).map((c) => c.y));
-  let coast = back + 1;
-  while (!isLand(def, x, coast)) coast++;
+  const axe = o.x + Math.round(ISLET_CENTER.x);
+  const ilot = bossIsletCells(id);
+  let gue: { x: number; back: number; coast: number } | null = null;
+  for (const d of glisseDeLIlot(id) ? [0, 1, -1, 2, -2, 3, -3] : [0]) {
+    const x = axe + d;
+    const colonne = ilot.filter((c) => c.x === x);
+    if (!colonne.length) continue;
+    const back = Math.max(...colonne.map((c) => c.y));
+    // La côte, droit derrière (l'îlot est toujours devant sa terre : un test le tient) ; sans elle, pas de gué.
+    let coast = back + 1;
+    while (coast <= back + ISLET_H + ISLET_GAP && !isLand(def, x, coast)) coast++;
+    if (!isLand(def, x, coast)) continue;
+    if (!gue || coast - back < gue.coast - gue.back) gue = { x, back, coast };
+  }
+  if (!gue) return [];
   const steps: { x: number; y: number; z: number }[] = [];
-  for (let y = back + 1; y < coast; y++) steps.push({ x: x + ((y - back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
+  for (let y = gue.back + 1; y < gue.coast; y++) steps.push({ x: gue.x + ((y - gue.back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
   return steps;
 }
 
@@ -960,23 +1089,34 @@ function isletGround(def: IslandDef): string {
 /** Le petit décor de l'îlot : celui de l'île, sans les arbres (ils cacheraient le Gardien). */
 const SMALL_DECOR: Decor[] = ['buisson', 'fleur', 'rocher', 'roseau', 'cristal', 'souche', 'champignon'];
 
-/** Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient au-dessus. */
-function taperLayers(cells: { x: number; y: number }[]): { x: number; y: number; d: number }[] {
+/**
+ * Une case du monde (x, y, et une hauteur z) en un nombre, pour les ensembles de cases chauds (ce qu'une île a déjà
+ * posé, ce que ses voisines occupent) : sans chaîne construite à chaque cube. x et y de −4 096 à 4 095, z de −64 à 63.
+ */
+export function cleDeCube(x: number, y: number, z = 0): number {
+  return ((x + 4096) * 8192 + (y + 4096)) * 128 + (z + 64);
+}
+
+const couchesCache = new WeakMap<readonly { x: number; y: number }[], readonly { x: number; y: number; d: number }[]>();
+
+/**
+ * Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient
+ * au-dessus. Mémorisé par liste de cases (celles de `landCells` et de `bossIsletCells` le sont déjà).
+ */
+function taperLayers(cells: readonly { x: number; y: number }[]): readonly { x: number; y: number; d: number }[] {
+  const known = couchesCache.get(cells);
+  if (known) return known;
   const out: { x: number; y: number; d: number }[] = [];
-  let layer = new Set(cells.map((c) => `${c.x},${c.y}`));
+  let layer: readonly { x: number; y: number }[] = cells;
+  let dessus = new Set(layer.map((c) => cleDeCube(c.x, c.y)));
   for (let d = 1; d <= TAPER; d++) {
-    const next = new Set<string>();
-    for (const key of layer) {
-      const [x, y] = key.split(',').map(Number);
-      if ([`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].every((k) => layer.has(k))) next.add(key);
-    }
-    layer = next;
-    for (const key of layer) {
-      const [x, y] = key.split(',').map(Number);
-      out.push({ x, y, d });
-    }
-    if (layer.size === 0) break;
+    const ici = dessus;
+    layer = layer.filter((c) => ici.has(cleDeCube(c.x - 1, c.y)) && ici.has(cleDeCube(c.x + 1, c.y)) && ici.has(cleDeCube(c.x, c.y - 1)) && ici.has(cleDeCube(c.x, c.y + 1)));
+    dessus = new Set(layer.map((c) => cleDeCube(c.x, c.y)));
+    for (const c of layer) out.push({ x: c.x, y: c.y, d });
+    if (layer.length === 0) break;
   }
+  couchesCache.set(cells, out);
   return out;
 }
 
@@ -1009,7 +1149,10 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   if (kinds.length === 0) kinds.push('rocher');
   const spots = cells
     .filter((c) => !c.arena && !c.guardian)
-    .map((c) => ({ c, r: noise(def.seed + 8, c.x, c.y) }))
+    .map((c) => {
+      const t = tirage(def, c.x + glisseDeLIlot(def.id), c.y - reculDeLIlot(def.id));
+      return { c, r: noise(def.seed + 8, t.x, t.y) };
+    })
     .sort((p, q) => q.r - p.r)
     .slice(0, 5);
   const trophy = beaten ? trophySpot(biome.id) : null;
@@ -1088,6 +1231,16 @@ function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): str
   return BLOCKS.terre.side;
 }
 
+/**
+ * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
+ * de l'archipel depuis le port (DA, 01/10/2026 : au 5e, celle de 91, 345 nageait derrière le Marché et seul son souffle
+ * se voyait). `de` : la clairière choisie ; `vers` : la nouvelle, en eau libre ; le rond y garde trois cases de toute
+ * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/baleines.test.ts.
+ */
+export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
+  '5e': [{ de: { x: 91, y: 345 }, vers: { x: 97, y: 344 } }],
+};
+
 const whaleCache = new Map<ArchipelagoId, { x: number; y: number; r: number }[]>();
 export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
   const known = whaleCache.get(a);
@@ -1124,13 +1277,28 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
       candidates.push({ x, y, r, score: Math.min(r, 9) + Math.hypot(x - cx, y - cy) * 0.12 });
     }
   candidates.sort((p, q) => q.score - p.score);
+  // Une baleine ne plonge pas sur l'îlot d'un monument (à deux cases près, comme `monumentBlocked`).
+  const surUnMonument = (x: number, y: number, r: number) =>
+    monumentsOf(a).some((m) => {
+      const px = Math.max(m.islet.x, Math.min(x, m.islet.x + MONUMENT_ISLET - 1));
+      const py = Math.max(m.islet.y, Math.min(y, m.islet.y + MONUMENT_ISLET - 1));
+      return Math.hypot(px - x, py - y) < r + 2;
+    });
   const spots: { x: number; y: number; r: number }[] = [];
   for (const c of candidates) {
     if (c.r < 4) continue;
+    if (surUnMonument(c.x, c.y, Math.min(c.r, 9))) continue;
     if (spots.some((s) => Math.hypot(s.x - c.x, s.y - c.y) < s.r + c.r + 20)) continue;
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
     if (spots.length === 4) break;
   }
+  for (const { de, vers } of BALEINES_REPLACEES[a] ?? []) {
+    const i = spots.findIndex((s) => s.x === de.x && s.y === de.y);
+    if (i >= 0) spots[i] = { x: vers.x, y: vers.y, r: Math.min(clearance(vers.x, vers.y) - 3, 9) };
+  }
+  // Dans un ordre qui ne dépend que de leur place (d'ouest en est, puis de l'avant vers l'arrière) : chaque baleine garde son rythme
+  // (`three/large.ts` le tire de son rang) quand une île grandit et que les notes des clairières changent.
+  spots.sort((p, q) => p.x - q.x || p.y - q.y);
   whaleCache.set(a, spots);
   return spots;
 }
@@ -1243,6 +1411,11 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
     core(x, y);
   }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
+  // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
+  // objets du quai restent sur la grève, devant elles, comme avant.
+  for (const m of margesDuCoeur(def)) ban(m.x, m.y);
+  // La rangée de côte devant les bornes d'une île-école reste nue (`rangeeDevantLesBornes`, DA, 01/10/2026).
+  for (const k of rangeeDevantLesBornes(port)) banned.add(k);
   const spot = creatureSpot(port);
   for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of creatureDuMonde(port)) core(spot.x + sx + c.x, spot.y + sy + c.y);
   // Le chemin du bonhomme vers le navire (en ligne droite, d'un point au suivant), jusqu'à la jetée.
@@ -1597,10 +1770,37 @@ export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, bloc
   return true;
 }
 
-/** Le point du monde où se trouve la case (0, 0, 0) d'un monument (le dessus de son îlot). */
+/**
+ * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
+ * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
+ * (`m.islet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur) ; les clés des sauvegardes, elles, ne bougent pas
+ * si l'îlot ou le cœur bougent.
+ */
 export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: number } {
-  const def = islandDef(m.biome);
-  return { x: def.core.x, y: def.core.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 };
+  const fige = ORIGINE_DES_MONUMENTS[m.id];
+  if (!fige) throw new Error(`Monument sans origine : ${m.id}`);
+  return { x: m.islet.x + 1 - fige.x, y: m.islet.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
+}
+
+/**
+ * Le point du monde où tombe la clé (0, 0, 0) d'une étape du Bloc-Navire (plan du port) : une case de son plan est
+ * dessinée en `ancreDuQuai + case`, comme le navire au quai (`dockOrigin`, ses cases locales). Le rendu suit le quai ;
+ * les clés des sauvegardes restent celles de `ORIGINE_DU_QUAI`.
+ */
+export function ancreDuQuai(plan: PlanDef): { x: number; y: number; z: number } {
+  const o = dockOrigin(plan.biome);
+  const cle = planOrigin(plan);
+  return { x: o.x - cle.x, y: o.y - cle.y, z: o.z - cle.z };
+}
+
+/**
+ * Ce qui sépare la clé d'une case du Bloc-Navire de la case du plan de son île-port où elle est dessinée (le repère de
+ * l'île, un cran plus bas : `rappelsDeLaVue`) : (0, 0, 0) tant que le quai est là où ses clés ont été figées.
+ */
+export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number } {
+  const a = ancreDuQuai(plan);
+  const ile = origineDe(plan.biome);
+  return { x: a.x - ile.x, y: a.y - ile.y, z: a.z - ile.z - 1 };
 }
 
 /** Le milieu de l'îlot d'un monument, à mi-hauteur du monument (pour y cadrer la caméra). */
@@ -1655,7 +1855,7 @@ export function origineDe(id: BiomeId): { x: number; y: number; z: number } {
  * Les cubes d'une île dans son repère (étape J5). Pour l'instant, l'île est calculée en cases du monde (map.ts place
  * son cœur dans le monde) puis ramenée à son origine ; R4b et la suite écrivent en repère d'île. Le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
  * Gardien, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
- * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en cases du monde
+ * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en clés `cleDeCube` du monde
  * (une cascade ne tombe jamais sur la terre de l'île voisine) ; l'île y ajoute ses cubes.
  */
 export function cubesDeLIle(
@@ -1665,7 +1865,7 @@ export function cubesDeLIle(
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
-  voisins: Set<string> = new Set(),
+  voisins: Set<number> = new Set(),
   /** Archipéo (lot 6) : l'îlot et la sentinelle, avant que le défi soit prêt. */
   sentinelles = false,
 ): VoxelCube[] {
@@ -1697,7 +1897,7 @@ export function worldCubes(
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
-  const placed = new Set<string>();
+  const placed = new Set<number>();
   for (const biome of BIOMES) {
     if (biome.classe !== a) continue;
     const o = origineDe(biome.id);
@@ -1719,7 +1919,7 @@ function poserLIle(
   village: Village,
   withCreatures: boolean,
   trophies: (keyof typeof BLOCKS)[],
-  placed: Set<string>,
+  placed: Set<number>,
   cubes: VoxelCube[],
   sentinelles = false,
 ): void {
@@ -1741,10 +1941,10 @@ function poserLIle(
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
-  const taken = new Set<string>();
+  const taken = new Set<number>();
   const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
-    taken.add(`${x},${y},${z}`);
-    placed.add(`${x},${y},${oz + z}`);
+    taken.add(cleDeCube(x, y, z));
+    placed.add(cleDeCube(x, y, oz + z));
     cubes.push({
       x,
       y,
@@ -1812,8 +2012,8 @@ function poserLIle(
       quest,
       muted,
     });
-    taken.add(`${ox + st.x},${oy + st.y},${base + 1}`);
-    taken.add(`${ox + st.x},${oy + st.y},${base + 2}`);
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 1));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 2));
   }
   // L'école et la salle des trophées (sur l'île de l'école de l'archipel) : on les touche pour entrer, comme une borne.
   for (const place of PLACE_IDS) {
@@ -1827,31 +2027,40 @@ function poserLIle(
     for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
       cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
   }
-  landmark(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && putWorld(x, y, z, color, decor));
-  cascades(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
-  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(`${x},${y},${z}`) && !placed.has(`${x},${y},${oz + z}`) && putWorld(x, y, z, color, decor));
+  landmark(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && putWorld(x, y, z, color, decor));
+  cascades(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
+  pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
   const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
   const vers = versLaCamera(biome.id);
-  for (const c of scenery) {
+  // Sur une île-école, la rangée de côte devant les bornes reste nue (`rangeeDevantLesBornes`).
+  const devant = rangeeDevantLesBornes(biome.id);
+  // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
+  const abords = abordsDansLesMarges(def);
+  const marges = margesDuCoeur(def);
+  for (let k = 0; k < scenery.length + marges.length; k++) {
+    const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(c.x, c.y)) continue;
-    const r = noise(def.seed + 5, c.x, c.y);
+    if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
+    const t = tirage(def, c.x, c.y);
+    const r = noise(def.seed + 5, t.x, t.y);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
-    // … ni ne déborde au-dessus du cœur (la zone des plans doit rester libre).
-    const poser: Put = (x, y, z, color, decor) => !inCore(def, x, y) && !taken.has(`${x},${y},${c.h + z}`) && putWorld(x, y, c.h + z, color, decor);
+    // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
+    const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
-    // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`).
+    // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
+    // la rangée de côte devant les bornes d'une île-école.
     if (!presDUneBorne(bornes, c.x, c.y, 1)) {
       decorate(poser, c.decor, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)
-    for (const t of taperLayers(land)) if (!taken.has(`${t.x},${t.y},${-DEPTH - t.d}`)) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+    for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
   // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
   // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
   const guardian = guardianStatus(biome, progress, village.bridges, sentinelles);

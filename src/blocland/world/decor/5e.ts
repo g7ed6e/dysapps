@@ -4,7 +4,7 @@
 // repères restent ceux de Blocland, seule leur forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';
-import { CORE, inCore, islandDef } from '../map';
+import { coeurDe, inCore, islandDef } from '../map';
 import { NIVEAU_EAU, type ChampDuSol, type Colonne } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
@@ -176,11 +176,12 @@ export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDeco
   for (const e of elements) for (const c of e.cubes) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) occupees.add(`${c.x + dx},${c.y + dy}`);
   // Le Carrefour : une case libre derrière le cœur, jamais dedans, loin de son axe pour ne pas passer sous le nom de l'île.
   const carrefour = islandDef('carrefour');
-  const axe = carrefour.core.x + CORE / 2;
+  const coeurDuCarrefour = coeurDe(carrefour);
+  const axe = (coeurDuCarrefour.x0 + coeurDuCarrefour.x1) / 2;
   let tour: Colonne | null = null;
   let meilleur = -Infinity;
   for (const c of champ.colonnes) {
-    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < carrefour.core.y + CORE) continue;
+    if (c.ile !== 'carrefour' || c.liquide || c.fixe || inCore(carrefour, c.x, c.y) || c.y < coeurDuCarrefour.y1) continue;
     if (occupees.has(`${c.x},${c.y}`)) continue;
     // Le plus loin de l'axe (le nom de l'île se place au-dessus de son axe) ; à égalité, la plus près du cœur.
     const score = Math.abs(c.x - axe) * 4 - (c.y - carrefour.core.y);
@@ -194,19 +195,20 @@ export function horsGrille5e(champ: ChampDuSol, elements: readonly ElementDeDeco
   // Le Relais des voyageurs : le ponton sur son rivage est (le plus à l'est, au milieu du cœur), et la girouette sur la
   // première ou la deuxième rangée derrière le cœur, juste derrière l'auberge (vers les colonnes 9 et 10 du cœur).
   const relais = islandDef('relais');
-  const milieu = relais.core.y + CORE / 2;
+  const coeurDuRelais = coeurDe(relais);
+  const milieu = (coeurDuRelais.y0 + coeurDuRelais.y1) / 2;
   let rive: Colonne | null = null;
   let mat: Colonne | null = null;
   // L'écart d'une case à la place voulue de la girouette : derrière la cheminée de l'auberge, au plus près du cœur.
-  const ecart = (c: Colonne) => Math.abs(c.x - relais.core.x - 9.5) + 2 * (c.y - relais.core.y - CORE);
+  const ecart = (c: Colonne) => Math.abs(c.x - relais.core.x - 9.5) + 2 * (c.y - coeurDuRelais.y1);
   // Le ponton et la girouette ne se posent que sur une case sans décor (un arbre voisin ne les gêne pas : le ponton part
   // vers le large, le mât de la girouette dépasse les arbres).
   const portees = new Set(elements.flatMap((e) => e.cubes.map((c) => `${c.x},${c.y}`)));
   for (const c of champ.colonnes) {
     if (c.ile !== 'relais' || c.liquide || c.fixe || portees.has(`${c.x},${c.y}`)) continue;
-    if (!inCore(relais, c.x, c.y) && c.x >= relais.core.x + CORE && Math.abs(c.y - milieu) <= 3 && (!rive || c.x > rive.x || (c.x === rive.x && Math.abs(c.y - milieu) < Math.abs(rive.y - milieu))))
+    if (!inCore(relais, c.x, c.y) && c.x >= coeurDuRelais.x1 && Math.abs(c.y - milieu) <= 3 && (!rive || c.x > rive.x || (c.x === rive.x && Math.abs(c.y - milieu) < Math.abs(rive.y - milieu))))
       rive = c;
-    if (c.y >= relais.core.y + CORE && c.y <= relais.core.y + CORE + 1 && (!mat || ecart(c) < ecart(mat))) mat = c;
+    if (c.y >= coeurDuRelais.y1 && c.y <= coeurDuRelais.y1 + 1 && (!mat || ecart(c) < ecart(mat))) mat = c;
   }
   if (rive) out.push({ id: `hors-grille/ponton@${rive.x},${rive.y}`, genre: 'ponton', cubes: [], x: rive.x, y: rive.y, z: rive.haut + 1, emprise: 1, muted: rive.muted, horsGrille: true });
   if (mat) out.push({ id: `hors-grille/girouette@${mat.x},${mat.y}`, genre: 'girouette', cubes: [], x: mat.x, y: mat.y, z: mat.haut + 1, emprise: 1, muted: mat.muted, horsGrille: true });
