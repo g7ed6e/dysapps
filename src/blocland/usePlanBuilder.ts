@@ -71,7 +71,14 @@ export function placeAll(
  * La construction guidée d'une île : le plan en cours, la pose d'un bloc (par le bouton ou en touchant un fantôme
  * dans le monde), les sons, les éclats, le coffre et la phrase de la créature quand le plan est terminé.
  */
-export function usePlanBuilder(island: BiomeId): PlanBuilder {
+/** Le carillon de fin de plan (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms. */
+const CARILLON_MS = 610;
+
+/**
+ * `avecGeste` : la vue dessine le geste du dernier bloc (le monde en 3D) ; ailleurs (vue simple), rien ne tombe et le
+ * « clac » sonne tout de suite.
+ */
+export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
   const { completePlan } = useProgress();
@@ -118,14 +125,18 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     const msg = `${done.name} : terminé ! ${done.done} Coffre : ${chest}. +${done.reward.xp} XP.`;
     setNotice(msg);
     completePlan(done.reward.xp);
-    // Dans Blocland, le bloc descend et s'enclenche (world/pose.ts) : le « clac » sonne à l'arrêt, le carillon juste après.
-    // Sans le geste (Archipéo, ou l'appareil demande moins d'animations), le carillon tout de suite.
+    // Dans Blocland, le bloc descend et s'enclenche (world/pose.ts) : le « clac » sonne à l'arrêt, le carillon juste après,
+    // puis la voix (les sons se taisent pendant qu'elle parle). Sans le geste (vue simple, ou l'appareil demande moins
+    // d'animations), l'arrêt est immédiat. Archipéo : le carillon tout de suite.
     if (pose === 'geste' && settings.sounds) {
-      const arret = moinsDAnimations() ? 0 : GESTE_DE_POSE.dureeMs;
+      const arret = avecGeste && !moinsDAnimations() ? GESTE_DE_POSE.dureeMs : 0;
       window.setTimeout(playPlace, arret);
       window.setTimeout(playDone, arret + 120);
-    } else sound(playDone);
-    if (settings.autoRead) speak(msg);
+      if (settings.autoRead) window.setTimeout(() => speak(msg), arret + 120 + CARILLON_MS);
+    } else {
+      sound(playDone);
+      if (settings.autoRead) speak(msg);
+    }
   };
   const fillAll = () => {
     if (!plan) return;

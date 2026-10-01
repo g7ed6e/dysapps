@@ -65,7 +65,7 @@ export function BloclandPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallume]);
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(!rallume);
+  const renommage = useRenommage(!rallume, 1200);
   const whale = useWhaleWord(state, here, !rallume && !renommage.ouvert);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   return (

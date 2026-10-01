@@ -327,9 +327,9 @@ export const BLOCLAND = {
     parle: 'ecole',
     arrivee: {
       '6e': 'Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide.',
-      '5e': 'Le Bloc-Navire a fait sa traversée ! Bienvenue dans les Collines du Large. Ici, on compte ses blocs avant de bâtir.',
-      '4e': 'Bip. Le Bloc-Navire a fait sa traversée. Bienvenue dans les Monts de Feu ! Les machines attendent qu’on les remette en route.',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Bienvenue dans les Îles du Ciel ! Je t’éclaire, bâtisseur : on bâtit tout en haut.',
+      '5e': 'Le Bloc-Navire a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
+      '4e': 'Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
+      '3e': 'Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} sont vaincus ! Leurs statues gardent maintenant ton chantier.`,
     port: (ile) => `Chantier fini : ${ile} ! Bloc après bloc, ton archipel grandit.`,
@@ -343,7 +343,7 @@ export const BLOCLAND = {
   succes: {
     'rang-argent': { title: 'Maçon', description: 'Devenir Maçon : tu poses les blocs bien droits.' },
     'rang-or': { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
-    'rang-diamant': { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes comment ça marche.' },
+    'rang-diamant': { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
     'rang-legende': { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
     aeronaute: { title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.' },
   },

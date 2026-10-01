@@ -16,11 +16,9 @@ Blocland est le monde en blocs du jeu, **l’univers par défaut** (décision 7 
 
 Garder un univers en blocs complet et soigné, univers de preuve de l’habillage pédagogique (U5), sans rien emprunter à un jeu existant.
 
-## Décidé, à construire
+## Construit avec GD-1
 
-Le caractère de Blocland se bâtit autour du **chantier du bâtisseur** ([GD-1](propositions/GD-1.md), décidée le 30 septembre 2026). Les points 1 à 3 (qui parle, les noms des archipels, les rôles) sont construits (voir plus haut). Reste :
-
-- un geste de pose (un bloc qui tombe et se pose, à la fin d’un plan et à l’écran titre) et un son de pose propres à Blocland, par un dégel ciblé du dessin (point 4, artiste technique 3D).
+Le caractère de Blocland se bâtit autour du **chantier du bâtisseur** ([GD-1](propositions/GD-1.md), décidée le 30 septembre 2026). Les quatre points sont construits : qui parle, les noms des archipels, les rôles, et le geste et le son de pose (le dernier bloc d’un plan s’enclenche, le logo se construit, un « clac » mat).
 
 ## Questions ouvertes
 

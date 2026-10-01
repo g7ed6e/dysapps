@@ -402,7 +402,7 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
   localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure');
-  const noms = await screen.findByRole('dialog', { name: /De nouveaux noms/ });
+  const noms = await screen.findByRole('dialog', { name: /De nouveaux noms/ }, { timeout: 3000 });
   expect(noms).toHaveTextContent('Les Îles Brumeuses s’appellent maintenant les Collines du Large.');
   await new Promise((r) => setTimeout(r, 1500));
   expect(screen.queryByRole('dialog', { name: 'Le mot de Bazar' })).not.toBeInTheDocument();

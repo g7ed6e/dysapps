@@ -23,6 +23,8 @@ export interface Celebration {
   icon: IconName;
   title: string;
   message: string;
+  /** Reste affiché jusqu'au toucher : un rôle nouveau s'explique, l'élève doit avoir le temps de le lire (GD-1). */
+  garder?: boolean;
 }
 
 interface ProgressContextValue {
@@ -85,7 +87,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       });
     }
     for (const b of update.newBadges) {
-      items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: texteDuSucces(textesRef.current, b).title });
+      const texte = texteDuSucces(textesRef.current, b);
+      // Un succès de rôle dit ce que fait le métier, la première fois qu'on l'obtient.
+      const role = b.id.startsWith('rang-');
+      items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: role ? texte.description : texte.title, garder: role });
     }
     if (items.length) setCelebrations((prev) => [...prev, ...items]);
     return update;

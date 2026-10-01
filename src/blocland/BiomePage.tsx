@@ -24,6 +24,7 @@ import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RenommagePanel, useRenommage } from './Renommage';
 import { useTextes } from '../univers';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
@@ -40,7 +41,9 @@ export function BiomePage() {
   const univers = useUnivers();
   const biome = getBiome(biomeId);
   const builder = usePlanBuilder(biome?.id ?? 'foret');
-  const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe);
+  // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
+  const renommage = useRenommage(true, 1200);
+  const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe, !renommage.ouvert);
   const ship = useVehicleBuilder(biome?.id ?? 'foret');
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
@@ -64,7 +67,11 @@ export function BiomePage() {
       </p>
 
       {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
-      {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
+      {renommage.ouvert ? (
+        <RenommagePanel onClose={renommage.fermer} />
+      ) : (
+        whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
+      )}
 
       <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels)} />
 

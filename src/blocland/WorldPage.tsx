@@ -235,7 +235,7 @@ export function WorldPage() {
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0);
+  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0, 1200);
   const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
@@ -285,7 +285,7 @@ export function WorldPage() {
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
   // Bloc-Navire sur le port.
-  const builder = usePlanBuilder(island?.id ?? archipelago.port);
+  const builder = usePlanBuilder(island?.id ?? archipelago.port, true);
   const ship = useVehicleBuilder(island?.id ?? archipelago.port);
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
   // Les éclats : ceux du plan, du navire ou du monument, le dernier qui a bougé.
@@ -930,7 +930,7 @@ export function WorldPage() {
             </button>
           )}
           {renommageOuvert ? (
-            <RenommagePanel onClose={renommage.fermer} />
+            <RenommagePanel onClose={renommage.fermer} aSuivre={bullesSuite} />
           ) : motRallume ? (
             <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (

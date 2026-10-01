@@ -232,7 +232,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
     expect(['rang-argent', 'rang-or', 'rang-diamant', 'rang-legende'].map(succes)).toEqual([
       { title: 'Maçon', description: 'Devenir Maçon : tu poses les blocs bien droits.' },
       { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
-      { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes comment ça marche.' },
+      { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
       { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
     ]);
     expect(succes('aeronaute').description).toBe('Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.');

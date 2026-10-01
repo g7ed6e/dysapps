@@ -1,6 +1,6 @@
 # GD-1 : Le caractère de Blocland, le chantier du bâtisseur
 
-**État** : Décidée le 30 septembre 2026 ; points 1 à 3 construits le 1er octobre 2026 (le point 4 suit, à part)
+**État** : Décidée le 30 septembre 2026 ; construite le 1er octobre 2026 (points 1 à 4)
 **Portée** : Blocland
 
 ## Le constat

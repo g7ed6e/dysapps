@@ -97,10 +97,12 @@ export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false 
   const ecole = quiParle(word, textes);
   const [page, setPage] = useState(0);
   const text = pages[page] ?? pages[0];
+  // Dans Blocland, la voix dit d'abord qui parle (« Le mot de Bazar. »), à la première page : le nom est écrit et entendu.
+  const lu = ecole && page === 0 ? `${titreDuMot(word, textes)}. ${text}` : text;
   const last = page >= pages.length - 1;
   useEffect(() => setPage(0), [word.id]);
   useEffect(() => {
-    if (settings.autoRead) speak(frenchTypography(text));
+    if (settings.autoRead) speak(frenchTypography(lu));
     // Relu à chaque page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [word.id, page]);
@@ -128,7 +130,7 @@ export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false 
       </p>
       <div className={`whale-word-actions${aSuivre ? ' a-suivre' : ''}`}>
         {aSuivre && <Icon name="chevronDown" className="whale-word-suite" />}
-        <SpeakButton text={text} />
+        <SpeakButton text={lu} />
         {pages.length > 1 && (
           <span className="whale-word-dots" aria-label={`Page ${page + 1} sur ${pages.length}`}>
             {pages.map((_, i) => (

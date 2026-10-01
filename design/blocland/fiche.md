@@ -130,13 +130,13 @@ Selon univers.md, §4 :
 
 Identité, par le mainteneur : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie. Le bloc c’est l’unité de base pour construire. »
 
-Décidé par le mainteneur le 30 septembre 2026 ([GD-1](../../docs/pilotage/game-design/propositions/GD-1.md)) : le caractère de Blocland se bâtit du point de vue de celui qui construit. Ce qui est **construit** (points 1 à 3 de la fiche), dans Blocland seulement, Archipéo gardant ses textes :
+Décidé par le mainteneur le 30 septembre 2026 ([GD-1](../../docs/pilotage/game-design/propositions/GD-1.md)) : le caractère de Blocland se bâtit du point de vue de celui qui construit. Ce qui est **construit** (les quatre points de la fiche), dans Blocland seulement, Archipéo gardant ses textes :
 
 - **Qui parle aux grandes étapes** : la créature de l’île-école de l’archipel (Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e), son nom écrit dans le titre de la bulle (« Le mot de Mousso ») et son portrait en cubes à côté, la bulle lue à voix haute et relançable. Ses mots : « Salut, bâtisseur ! Moi, c’est Mousso… », « Tous les Gardiens des … sont vaincus ! Leurs statues gardent maintenant ton chantier. », « Chantier fini : … ! », « Ton ouvrage tient bon ! ». Les baleines en cubes restent au large, sans parler (`baleine.parle: 'ecole'`, `src/univers/baleine.ts`, `src/blocland/WhaleWord.tsx`).
 - **Les noms des archipels** : les Basses Terres, les Collines du Large, les Monts de Feu, les Îles du Ciel, partout où l’élève les lit (`archipels`). Un élève qui jouait déjà les voit annoncés une fois, sur l’écran opaque « De nouveaux noms » (une ligne par archipel, lu, un seul bouton, jamais pendant un exercice ; `src/blocland/Renommage.tsx`) ; un nouvel élève ne le voit jamais.
 - **Les rôles** : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte (`roles`), et leurs succès, qui expliquent le métier (`succes`). Identifiants et seuils inchangés.
 
-Reste à construire : le geste et le son de pose (point 4), par un dégel ciblé du dessin, sans rien redessiner, confié à l’artiste technique 3D.
+Le geste et le son de pose (point 4) sont construits par un dégel ciblé du dessin du 1er octobre 2026 (§3). En vue 2D et en vue simple, le dernier bloc garde ses trois poussières et le « clac » sonne tout de suite.
 
 ## 6. Points de vigilance
 

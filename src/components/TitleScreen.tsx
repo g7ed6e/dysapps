@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useOptionalBlocland } from '../blocland/BloclandContext';
 import { LogoQuiSeConstruit } from '../blocland/LogoQuiSeConstruit';
@@ -25,6 +25,24 @@ function seenThisSession(): boolean {
   }
 }
 
+// L'écran titre ouvert : les panneaux qui se lisent à voix haute à l'arrivée (les nouveaux noms des archipels)
+// attendent qu'il soit fermé, pour ne pas parler dessous ni se fermer à son Échap.
+let titreOuvert = false;
+const abonnesDuTitre = new Set<() => void>();
+function noterTitre(ouvert: boolean) {
+  if (titreOuvert === ouvert) return;
+  titreOuvert = ouvert;
+  for (const f of abonnesDuTitre) f();
+}
+const abonnerAuTitre = (f: () => void) => {
+  abonnesDuTitre.add(f);
+  return () => abonnesDuTitre.delete(f);
+};
+/** L'écran titre est-il à l'écran ? */
+export function useTitreOuvert(): boolean {
+  return useSyncExternalStore(abonnerAuTitre, () => titreOuvert, () => false);
+}
+
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
   return PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
@@ -45,6 +63,10 @@ const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
  */
 export function TitleScreen() {
   const [open, setOpen] = useState(() => !seenThisSession());
+  useLayoutEffect(() => {
+    noterTitre(open);
+    return () => noterTitre(false);
+  }, [open]);
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
   const universId = useUnivers();
