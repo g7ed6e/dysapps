@@ -43,6 +43,8 @@ Le build échoue si une page du sommaire manque.
 4. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
 5. **deploy** (sur `main` seulement, après **build** et **docs**) : publie l’artefact sur GitHub Pages. Ce job n’exécute aucun code du dépôt et il est le seul à avoir les permissions Pages.
 
+`.github/workflows/references.yml` s’exécute à chaque publication sur `main` : le job **captures** (lecture seule) refait le socle des captures de rendu (`npm run rendu:mesures -- --familles jour,nuit`, l’île, l’archipel et la Carte des quatre archipels, de jour et de nuit) dans les deux univers ; le job **publier** les range sur la branche `captures-main`, un dossier par commit, les cinq derniers, en une seule version de la branche (poussée forcée : son poids ne grandit pas). Ce job n’exécute aucun code du dépôt (git seulement) et il est le seul à pouvoir écrire. Les fils de rendu s’y comparent (`.claude/skills/captures/SKILL.md`).
+
 Aucune permission par défaut, actions épinglées par SHA et mises à jour par Dependabot, `persist-credentials: false`, pas de cache partagé.
 
 Réglage à faire une seule fois dans le dépôt : **Settings → Pages → Source : GitHub Actions**.

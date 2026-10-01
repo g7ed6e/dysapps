@@ -1,26 +1,26 @@
 ---
 name: captures
-description: Prendre vite les captures d'écran de DysApps (manuel, lots de rendu Archipéo et Blocland, avant/après) et les publier sur la branche captures. À lire avant toute capture.
+description: Prendre vite les captures d'écran de DysApps (manuel, lots de rendu Archipéo et Blocland), les comparer à main et ne publier que ce qui change sur la branche captures. À lire avant toute capture.
 ---
 
 # Les captures d'écran, vite
 
-Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite de refaire ce qui n'a pas changé et d'attendre pour rien.
+Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite de refaire ce qui n'a pas changé, d'attendre pour rien et de faire relire des images identiques (décision du mainteneur, 1er octobre 2026, sur l'avis du directeur artistique).
 
 ## Quel script
 
 - **Le manuel** (`www/_captures/`, jamais commitées) : `npm run www:captures -- <nom> [<nom>…]`, les noms de `SHOTS` dans `scripts/www/captures.mjs`. Ne refaire que les écrans qui changent ; la CI refait tout sur `main`.
-- **Un lot de rendu** : `npm run rendu:mesures -- --sans-poids --captures <dossier> --archipel <6e|5e|4e|3e> --familles <liste>`, les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs` (familles : jour, nuit, contraste, reduit, chantier, ponts, et celles que les lots ajoutent, comme relais, jardin et jardin-pres, les vues de près recadrées ; plus de famille 2d : ni Archipéo ni Blocland n'ont de 2D au choix, elle reviendra avec un univers dessiné en 2D). Ajouter `--rendu archipeo` pour le rendu Archipéo.
+- **Un lot de rendu** : `npm run rendu:mesures -- --sans-poids --captures <dossier> --comparer <références> --archipel <6e|5e|4e|3e> --familles <liste>`, les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs`. Ajouter `--rendu archipeo` pour le rendu Archipéo (un dossier par univers). Le déroulé : « Un lot de rendu, pas à pas » ci-dessous.
   - Toujours `--sans-poids` sauf si le poids de Three.js est demandé : il lance un build complet.
-  - Toujours `--archipel` quand le lot ne touche qu'un archipel : les quatre archipels, c'est environ 120 vues.
-  - `--familles` : seulement celles que le lot change ; les trois vues de jour (les mesures) se font toujours.
-  - Une capture qui manque à la liste s'ajoute dans `CAPTURES` (ou `SHOTS`), jamais par un script à côté.
+  - Familles : le socle (`jour`, `nuit`), refait par la CI à chaque publication sur main ; `personnages` et `lisibilite` (grand texte, test en gris des créatures), communes ; et celles des lots en cours. Un lot qui a besoin d'une vue de plus ajoute sa famille dans `CAPTURES` (jamais un script à côté), et la retire de la liste une fois fusionné.
+  - Les trois vues de jour (les mesures) se font toujours.
 
 ## Pièges connus
 
 - Lancer depuis le dépôt principal, pas depuis un worktree : dans un worktree, les polices ne sont pas servies et les textes changent de forme.
 - Rendu logiciel (SwiftShader, pas de carte graphique) : la page demanderait 60 images/s que le processus graphique ne peut pas dessiner (il occupe les quatre cœurs), et chaque prise attendait 11 à 18 s que les images en retard se vident. Les deux scripts passent par `scripts/prise-de-vue.mjs`, qui bride la boucle de rendu à 8 images/s et la fige le temps de la prise. Une nouvelle prise d'image passe par `capturer(page, …)`, jamais par `page.screenshot` directement, et la page reçoit `page.addInitScript(figeable)` avant de charger l'application.
 - Les captures de rendu (`rendu:mesures`) pilotent l'horloge de la page (`piloterLHorloge`, `preparerLaScene`) : elle n'avance que pas à pas, jusqu'au monde construit puis d'un nombre fixe de pas, et le hasard part d'une graine fixe (`hasardFixe`). Deux prises du même état donnent la même image (au plus 0,3 % de pixels différents, contre 1 à 2 % avant), animations comprises : une capture d'avant et une d'après ne diffèrent que par ce que le lot change. La caméra est posée d'un coup à son cadrage (`Camera.poser`). Pas d'attente fixe avant une capture 3D. Le 6e de jour et de nuit (six vues) : 35 s, contre 149 s avant le 01/10/2026 ; avec les personnages (19 vues) : 66 s.
+- Un défi tire encore parfois ses questions dans un autre ordre d'une prise à l'autre (la Ferme, le Soleil de cuivre) : sa planche ressort changée alors que le rendu ne l'est pas. Le dire dans la pull request plutôt que de la faire relire.
 - Le manuel (`www:captures`) garde l'heure figée et ses attentes (les gestes ont besoin des minuteries) ; `attendreLaScene` y pose la caméra avant chaque capture d'un écran 3D.
 - Les images par seconde affichées par les mesures en rendu logiciel varient beaucoup d'une fois à l'autre : ne pas en tirer de conclusion. Elles se mesurent sur la tablette de référence (`/?mesures#/aventure`).
 - Heure figée ou pilotée (`page.clock`) : pas de `waitForFunction` qui sonde, utiliser des attentes (`waitForTimeout`) ou `page.evaluate`.
@@ -29,17 +29,46 @@ Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite d
 
 ## Ce qu'un lot de rendu montre
 
-Voir `docs/conception/cadrage-archipeo.md` (les captures déclarées d'avance) et `docs/conception/bonnes-pratiques-dys.md` : jour et nuit, en 3D. Ni 2D, ni Contraste élevé, ni « Réduire les animations » : ces captures sont retirées le 28 septembre 2026 (les deux réglages reviennent au lot 11 du cadrage Archipéo, avec leurs captures). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
+Jour et nuit, en 3D (`docs/conception/cadrage-archipeo.md`, `docs/conception/bonnes-pratiques-dys.md`). Ni 2D, ni Contraste élevé, ni « Réduire les animations » : ces captures sont retirées le 28 septembre 2026 (les deux réglages reviennent au lot 11 du cadrage Archipéo, avec leurs captures). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
+
+Le périmètre par défaut d'un lot :
+
+- **L'univers** : tout dans l'univers où le lot est conçu (Archipéo pour la migration), et une vue témoin dans l'autre (l'île et l'archipel de jour). Les deux en entier si le changement prend une forme propre à chaque univers (comme GD-3).
+- **L'archipel** touché seulement (`--archipel`), dont toujours sa vue de l'archipel de jour, pour juger de loin.
+- **La nuit** si le lot touche la lumière, les couleurs ou les lueurs, ou s'il ajoute ou change une construction visible (ses fenêtres se jugent de nuit).
+- **Le téléphone et le grand texte** (`lisibilite`, les familles qui ont des vues 390 × 844 ou 800 × 1280) si le lot touche l'interface, le cadrage ou la taille d'une île.
+- **Les personnages** si le lot touche une créature ou un Gardien.
+
+## Un lot de rendu, pas à pas
+
+1. **La branche à jour avec main** (`git fetch origin main && git rebase origin/main`) : sinon un lot voisin fusionné entre-temps ressort comme un changement.
+2. **Les références** : la CI range le socle des cinq derniers commits de main sur la branche `captures-main` (`.github/workflows/references.yml`), un dossier par commit, `blocland/` et `archipeo/`.
+   ```sh
+   git fetch origin captures-main
+   git worktree add ../references origin/captures-main   # des images seulement : un worktree suffit
+   base=$(git merge-base HEAD origin/main)
+   ls ../references/$base/blocland
+   ```
+   Si le dossier de `$base` manque : la CI de ce commit tourne encore (attendre sa fin), ou il est trop ancien (se remettre sur main), ou la CI l'a sauté parce que deux fusions se suivaient de près (prendre le commit précédent de `commits.txt`, et faire soi-même l'avant des vues que le commit sauté a pu changer, comme à l'étape 3).
+3. **L'avant des vues hors socle** (la famille du lot, `lieux-salle`, `ciel`…) : le prendre soi-même sur `$base`, avec les mêmes options, dans un dossier qui commence par une copie des références :
+   ```sh
+   cp -r ../references/$base/blocland /tmp/avant-blocland
+   git stash -u && git checkout $base
+   npm run rendu:mesures -- --sans-poids --captures /tmp/avant-blocland --archipel 6e --familles lieux-salle
+   git checkout - && git stash pop
+   ```
+4. **L'après, comparé** : `npm run rendu:mesures -- --sans-poids --captures /tmp/apres-blocland --comparer /tmp/avant-blocland --archipel 6e --familles jour,nuit,lieux-salle`. Le script écrit une planche avant/après par vue changée (au-delà de 0,3 % de pixels différents, `scripts/rendu/comparer.mjs`) dans `planches/`, et la liste des vues inchangées, avec leur écart, dans `comparaison.md`.
+5. **La relecture** : le directeur artistique et les consultants ne relisent que les planches et `comparaison.md`. Un écart inattendu dans une vue que le lot ne devait pas toucher se dit dans la pull request.
 
 ## Publier sur la branche `captures`
 
-Branche à part, jamais fusionnée, un dossier par lot (`r5/`, `r4b-4e/`…). Seules les captures validées par le directeur artistique y vont.
+Branche à part, jamais fusionnée, un dossier par lot (`r5/`, `r4b-4e/`…). Seules les planches des vues changées et `comparaison.md` y vont, une fois validées par le directeur artistique ; les vues inchangées ne se publient pas.
 
 ```sh
 git fetch origin captures
 git worktree add ../captures origin/captures   # un worktree suffit ici : on n'y lance pas l'application
 cd ../captures && git switch -c captures-maj
-mkdir -p <lot> && cp <dossier>/*.jpg <lot>/
+mkdir -p <lot>/blocland && cp /tmp/apres-blocland/planches/*.jpg /tmp/apres-blocland/comparaison.md <lot>/blocland/
 git add <lot> && git commit -m "Captures du lot <lot> : <ce qu'elles montrent>"
 git push origin HEAD:captures
 ```
