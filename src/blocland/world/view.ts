@@ -8,10 +8,23 @@ import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention } from './disposition';
-import { dispositionEnGrille } from './grille';
+import { grilleDe } from './grille';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
+
+/**
+ * Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche), `seq` qui change à chaque
+ * trajet. `flanerie` : il marche sur l'île où il est, vers une case touchée ; la caméra ne le suit pas (elle garde son
+ * cadrage, et le décalage d'un glissé). `vise` : le but vient d'un toucher sur le sol ; un rond, posé sur le dernier
+ * point, le montre jusqu'à l'arrivée.
+ */
+export interface Bonhomme<P> {
+  route: P[];
+  seq: number;
+  flanerie?: boolean;
+  vise?: boolean;
+}
 
 export interface WorldFocus {
   /** Île à cadrer, ou `null` pour la vue d'ensemble. */
@@ -22,12 +35,22 @@ export interface WorldFocus {
   spot?: Ancrage;
 }
 
+/** Ce qu'une vue sait en plus d'une face touchée en chantier. */
+export interface OptionsDeLaFace {
+  /** L'île dont le plan est touché, quand la vue la connaît (le navire : son port) ; sinon l'île la plus proche. */
+  ile?: BiomeId;
+  /**
+   * La face est sur le sol d'une île (pas sur le navire) : si elle n'est pas une case d'un plan, le bonhomme y va,
+   * depuis `enRoute` s'il marchait.
+   */
+  terrain?: { enRoute?: Cell };
+}
+
 /**
  * En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`), en cases du monde.
- * `ile` : l'île dont le plan est touché, quand la vue la connaît (le navire : son port) ; sinon l'île la plus proche.
  */
 export interface BuildProps {
-  onPickFace: (cell: Cell, next: Cell, ile?: BiomeId) => void;
+  onPickFace: (cell: Cell, next: Cell, options?: OptionsDeLaFace) => void;
 }
 
 export interface QuestMark {
@@ -88,7 +111,7 @@ export interface WorldViewProps {
   /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'un point (le chantier du navire). */
   marker?: BiomeId | Ancrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
-  avatar?: { route: Ancrage[]; seq: number };
+  avatar?: Bonhomme<Ancrage>;
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
   map?: boolean;
   /** L'île où le bonhomme se tient (ou se rend) : la caméra cadre cette île et ses voisines, tournée vers le continent. */
@@ -130,7 +153,7 @@ export interface WorldViewProps {
 export interface EnCasesDuMonde {
   focus: Omit<WorldFocus, 'spot'> & { spot?: Cell };
   marker: BiomeId | Cell | null;
-  avatar?: { route: Cell[]; seq: number };
+  avatar?: Bonhomme<Cell>;
   trail?: Cell[];
   quests?: (Omit<QuestMark, 'place'> & { cell: Cell })[];
   burst?: Omit<Burst, 'cell'> & { cell: Cell };
@@ -141,7 +164,8 @@ export interface EnCasesDuMonde {
  * change pas. Un rappel absent veut dire « ce geste ne fait rien » ; `build` n'existe qu'en chantier.
  */
 export interface RappelsDeLaVue {
-  onPickIsland?: (id: BiomeId) => void;
+  /** Une île : touchée sur le sol en `sol` (le bonhomme en route en `enRoute`), ou choisie au clavier. En cases du monde. */
+  onPickIsland?: (id: BiomeId, sol?: Cell, enRoute?: Cell) => void;
   onPickBridge?: (id: string) => void;
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   onPickPlace?: (place: PlaceId, island: BiomeId) => void;
@@ -156,21 +180,26 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
   if (!onIntent) return {};
   // Une face touchée passe du monde aux cases du plan de son île : le repère de l'île, un cran plus bas (le plan compte
   // depuis le sol de l'île).
-  const face = (cell: Cell, next: Cell, ile?: BiomeId): Intention => {
-    const g = dispositionEnGrille(archipel);
+  const face = (cell: Cell, next: Cell, { ile, terrain }: OptionsDeLaFace = {}): Intention => {
+    const g = grilleDe(archipel);
     const c = g.versIle(cell, ile);
     const n = g.versIle(next, c.ile);
     const duPlan = (p: Cell): Cell => ({ x: p.x, y: p.y, z: p.z - 1 });
-    return { genre: 'face', ile: c.ile, case: duPlan(c.local), voisine: duPlan(n.local) };
+    const sol = terrain ? { sol: c, ...(terrain.enRoute ? { enRoute: g.versIle(terrain.enRoute) } : {}) } : {};
+    return { genre: 'face', ile: c.ile, case: duPlan(c.local), voisine: duPlan(n.local), ...sol };
   };
   return {
-    onPickIsland: (id) => onIntent({ genre: 'ile', id }),
+    onPickIsland: (id, sol, enRoute) => {
+      if (!sol) return onIntent({ genre: 'ile', id });
+      const g = grilleDe(archipel);
+      onIntent({ genre: 'ile', id, sol: g.versIle(sol, id), ...(enRoute ? { enRoute: g.versIle(enRoute) } : {}) });
+    },
     onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
     onPickQuest: (ile, mission) => onIntent({ genre: 'borne', ile, mission }),
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
     onPickVehicle: (port) => onIntent({ genre: 'navire', port }),
-    build: chantier ? { onPickFace: (cell, next, ile) => onIntent(face(cell, next, ile)) } : undefined,
+    build: chantier ? { onPickFace: (cell, next, options) => onIntent(face(cell, next, options)) } : undefined,
     onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
   };

@@ -44,6 +44,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 - Galets en colonnes (Rivière) : les cases de la multiplication et la potence en 1024 × 768 ; la voix des nombres de 1 000 et plus (« 2 550 ») et des décimaux (« 5,69 »).
 - Voix : « Bâtie », la phrase de la baleine, « −1 » et « (0 ; 2) », « COD », « p.m. » en voix anglaise, les voix allemande et espagnole (heures, nombres, « Tú », « Sí »).
 - Écrans sans défilement en OpenDyslexic grande taille (ticket #231 : en 1024 × 768, les écrans avec document défilent).
+- Toucher le sol pour promener le bonhomme : aucune marche lancée par un glissé, borne ou créature jamais ratée au profit du sol, rond du but lisible sur chaque sol (sable, herbe, neige, pierre claire). Reste connu : toucher une autre île pendant une marche fait repasser le bonhomme par la place de l’île visée.
 - Faire glisser le monde au doigt (Recentrer) : confort du glissé, aucun toucher d’île déclenché par erreur après un glissé, second doigt ignoré ; sur téléphone en grand texte, « Recentrer » et une bulle du haut ne se chevauchent pas.
 - Sur téléphone en grand texte : le défilement du panneau de la Carte et le nom de destination jamais sous le panneau (DA-31) ; les noms d’îles sous la bulle de la baleine (DA-10).
 

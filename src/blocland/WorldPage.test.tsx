@@ -22,8 +22,9 @@ vi.mock('./three', () => ({
     onVueDeplacee,
     recentrage,
     forceDay,
+    avatar,
   }: {
-    focus: { island: string | null; spot?: { ile: string; local: { x: number; y: number } } };
+    focus: { island: string | null; seq: number; spot?: { ile: string; local: { x: number; y: number } } };
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
@@ -31,10 +32,17 @@ vi.mock('./three', () => ({
     onVueDeplacee?: (deplacee: boolean) => void;
     recentrage?: number;
     forceDay: boolean;
+    avatar?: { route: { ile: string; local: { x: number; y: number } }[]; seq: number; flanerie?: boolean; vise?: boolean };
   }) => (
     <div className="voxel-canvas" tabIndex={0}>
       <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
+      <p data-testid="demandes-de-cadrage">{focus.seq}</p>
+      <p data-testid="bonhomme">
+        {avatar
+          ? `${avatar.route.length > 1 ? 'marche' : 'se tient'} ${avatar.flanerie ? 'sur son île' : ''} ${avatar.vise ? 'rond' : 'sans rond'} ${avatar.route[avatar.route.length - 1].ile} ${avatar.route[avatar.route.length - 1].local.x},${avatar.route[avatar.route.length - 1].local.y}`
+          : 'aucun'}
+      </p>
       <p data-testid="point">{focus.spot ? `${focus.spot.ile} ${focus.spot.local.x},${focus.spot.local.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
       <p data-testid="recentrage">{recentrage ?? 0}</p>
@@ -51,6 +59,15 @@ vi.mock('./three', () => ({
       <p data-testid="navire">{vehicle ? `${vehicle.port} ${vehicle.cubes.filter((c) => c.ghost).length}` : 'aucun'}</p>
       <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret' })}>
         Toucher la Forêt dans le monde
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret', sol: { ile: 'foret', local: { x: 12, y: 6, z: 0 } } })}>
+        Toucher le sol de la Forêt
+      </button>
+      <button
+        type="button"
+        onClick={() => onIntent({ genre: 'face', ile: 'foret', case: { x: 12, y: 6, z: -1 }, voisine: { x: 12, y: 6, z: 0 }, sol: { ile: 'foret', local: { x: 12, y: 6, z: 0 } } })}
+      >
+        Toucher le sol de la Forêt ouverte
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'lieu', id: 'ecole', ile: 'foret' })}>
         Toucher l’école dans le monde
@@ -155,6 +172,44 @@ it('le panneau replié reste replié quand on touche l’île où l’on est ; u
   renderAt('/aventure');
   await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
   expect(sheet()).toBeInTheDocument();
+});
+
+it('toucher le sol de l’île où l’on est : le bonhomme y marche, un rond sur le but ; ni le panneau ni la caméra ne bougent', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure/foret');
+  const bonhomme = () => screen.getByTestId('bonhomme').textContent ?? '';
+  expect(bonhomme()).toMatch(/^se tient .*sans rond foret 1,1$/);
+  // Panneau ouvert : il reste ouvert.
+  const cadrages = screen.getByTestId('demandes-de-cadrage').textContent;
+  // L'île ouverte est en chantier : le sol touché est une face, qui n'est pas une case d'un plan.
+  await user.click(screen.getByRole('button', { name: 'Toucher le sol de la Forêt ouverte' }));
+  expect(bonhomme()).toMatch(/^marche sur son île rond foret /);
+  expect(bonhomme()).not.toMatch(/foret 1,1$/);
+  expect(sheet()).toBeInTheDocument();
+  expect(screen.getByTestId('demandes-de-cadrage')).toHaveTextContent(cadrages!);
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  // Panneau replié : il le reste, et la créature ne parle pas (c'est la marche qui répond).
+  await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
+  await user.click(screen.getByRole('button', { name: 'Toucher le sol de la Forêt ouverte' }));
+  // Il y est déjà : il ne marche pas, le rond se pose sur sa case.
+  expect(bonhomme()).toMatch(/^se tient sur son île rond foret /);
+  expect(sheet()).not.toBeInTheDocument();
+  expect(screen.queryAllByRole('status').find((el) => el.classList.contains('world-line'))).toBeUndefined();
+  expect(screen.getByTestId('demandes-de-cadrage')).toHaveTextContent(cadrages!);
+  // La Carte ouverte puis fermée : il reste là où on l'a envoyé, sans revenir à sa place.
+  const ou = bonhomme().split(' ').pop();
+  const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
+  await user.click(carte());
+  await user.click(carte());
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(bonhomme().split(' ').pop()).toBe(ou);
+  // Depuis le village sans île : le panneau s'ouvre, et il va à la case touchée, un rond sur le but.
+  cleanup();
+  renderAt('/aventure');
+  await user.click(screen.getByRole('button', { name: 'Toucher le sol de la Forêt' }));
+  expect(sheet()).toBeInTheDocument();
+  expect(bonhomme()).toMatch(/^marche +rond foret /);
+  expect(bonhomme().split(' ').pop()).toBe(ou);
 });
 
 it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre le panneau du port sur sa section', async () => {
