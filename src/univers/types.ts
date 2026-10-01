@@ -1,8 +1,9 @@
 // Les textes d'un univers (lot 6, une tranche de J8 avancée) : ce que disent les Gardiens, l'espèce des créatures, les
-// libellés qui disent où en sont les Gardiens et le mot de la baleine. Du texte brut, affiché par React ; les clés
+// libellés qui disent où en sont les Gardiens, le mot des grandes étapes, les noms des archipels et des rôles (GD-1). Du texte brut, affiché par React ; les clés
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
 import type { BiomeId } from '../blocland/biomes';
-import type { ArchipelagoId } from '../blocland/world/archipelago';
+import type { ArchipelagoId, NomsArchipels } from '../blocland/world/archipelago';
+import type { Tier } from '../core/progress';
 import type { IslandStateId } from '../blocland/world/islandState';
 
 export type { UniversChoice as UniversId } from '../core/univers';
@@ -100,11 +101,16 @@ export interface TextesSentinelles {
   rallume: (gardien: string) => string;
 }
 
-/** Le mot de la baleine (lot 5), aux grandes étapes d'un archipel. */
+/**
+ * Le mot des grandes étapes d'un archipel (lot 5) : la baleine le dit dans Archipéo ; dans Blocland, la créature de
+ * l'île-école de l'archipel (GD-1).
+ */
 export interface TextesBaleine {
+  /** Qui parle : la baleine, ou la créature de l'île-école de l'archipel (`school` de world/archipelago.ts). */
+  parle: 'baleine' | 'ecole';
   /** La première page, à l'arrivée dans un archipel. */
   arrivee: Record<ArchipelagoId, string>;
-  /** Tous les Gardiens d'un archipel (`archipel` : son nom, « Premiers Rivages »). */
+  /** Tous les Gardiens d'un archipel (`archipel` : son nom dans l'univers, « Premiers Rivages »). */
   gardiens: (archipel: string) => string;
   /** L'île-port restaurée. */
   port: (ile: string) => string;
@@ -112,10 +118,27 @@ export interface TextesBaleine {
   ouvrage: (ile: string) => string;
 }
 
-/** Ce que dit le panneau d'un monument dont l'univers change le dessin (sa description, son message de fin). */
+/** Ce que dit le panneau d'un monument dont l'univers change le dessin ou les mots (sa description, son message de fin). */
 export interface TextesMonument {
   description: string;
   done: string;
+}
+
+/** Un succès que l'univers nomme autrement (les rôles, un archipel nommé) : son titre et sa condition. */
+export interface TextesSucces {
+  title: string;
+  description: string;
+}
+
+/**
+ * L'écran qui annonce, une fois par appareil, que des archipels changent de nom (GD-1, U4) : une phrase par archipel,
+ * sur un seul écran, un seul bouton.
+ */
+export interface TextesRenommage {
+  titre: string;
+  intro: string;
+  lignes: string[];
+  bouton: string;
 }
 
 export interface TextesUnivers {
@@ -131,8 +154,16 @@ export interface TextesUnivers {
   sentinelles: TextesSentinelles | null;
   baleine: TextesBaleine;
   /**
-   * Les monuments que l'univers dessine autrement, par identifiant (`world/monuments.ts`) : leur nom, leurs cases et
-   * leur coût restent communs ; les autres gardent le texte de `world/monuments.ts`.
+   * Les monuments que l'univers dessine ou dit autrement, par identifiant (`world/monuments.ts`) : leur nom, leurs cases
+   * et leur coût restent communs ; ce qui n'est pas donné ici garde le texte de `world/monuments.ts`.
    */
-  monuments: Partial<Record<string, TextesMonument>>;
+  monuments: Partial<Record<string, Partial<TextesMonument>>>;
+  /** Le nom de chaque archipel, sans article (« Basses Terres » → « les Basses Terres ») : les identifiants restent. */
+  archipels: NomsArchipels;
+  /** Le nom de chaque rôle (`Tier` de core/progress.ts) : les identifiants et les seuils restent. */
+  roles: Record<Tier, string>;
+  /** Les succès que l'univers nomme autrement, par identifiant (`BADGES` de core/progress.ts) ; les autres restent. */
+  succes: Partial<Record<string, TextesSucces>>;
+  /** L'écran des nouveaux noms, dit une fois par appareil ; `null` : rien à annoncer dans cet univers. */
+  renommage: TextesRenommage | null;
 }

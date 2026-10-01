@@ -12,7 +12,7 @@ import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
 import type { PlanBuilder } from './usePlanBuilder';
 import type { VehicleBuilder } from './useVehicleBuilder';
-import { getArchipelago, type ArchipelagoId } from './world/archipelago';
+import type { ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { levelFor } from './engine';
@@ -60,7 +60,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
-  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.libelles) : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
   const port = unlocked && archipelagoOf(biome.id).port === biome.id;
   // L'accueil de la créature : une ligne écrite visible, la suite dans un pli. Un message d'île fermée (ou « pas de
   // LV2 ») dit quoi faire : il reste entier.
@@ -242,7 +242,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
 
       {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
       <p className="island-sheet-module island-sheet-foot">
-        {biome.module} · Niveau {biome.classe} · Les {getArchipelago(biome.classe).name}
+        {biome.module} · Niveau {biome.classe} · Les {textes.archipels[biome.classe]}
       </p>
     </section>
   );

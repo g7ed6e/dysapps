@@ -1,20 +1,21 @@
 import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { textesDe } from '../../univers';
-import { BRIDGES } from './archipelago';
+import { BRIDGES, NOMS_ARCHIPELS } from './archipelago';
 import { lockedHint as lockedHintDe, nextGoal as nextGoalDe, nextGoalInfo as nextGoalInfoDe } from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
 
-// L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut).
+// L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut),
+// et les archipels avec les noms communs des données ; les noms d'un univers sont essayés dans src/univers/univers.test.ts.
 type Etat = Parameters<typeof lockedHintDe>[0];
 type Ile = Parameters<typeof lockedHintDe>[1];
 type Univers = 'blocland' | 'archipeo';
-const lockedHint = (state: Etat, island: Ile, univers: Univers = 'blocland') => lockedHintDe(state, island, textesDe(univers).libelles);
-const nextGoal = (state: Etat, island: Ile, univers: Univers = 'blocland') => nextGoalDe(state, island, textesDe(univers).libelles);
-const nextGoalInfo = (state: Etat, island: Ile) => nextGoalInfoDe(state, island, textesDe('blocland').libelles);
+const lockedHint = (state: Etat, island: Ile, univers: Univers = 'blocland') => lockedHintDe(state, island, NOMS_ARCHIPELS, textesDe(univers).libelles);
+const nextGoal = (state: Etat, island: Ile, univers: Univers = 'blocland') => nextGoalDe(state, island, NOMS_ARCHIPELS, textesDe(univers).libelles);
+const nextGoalInfo = (state: Etat, island: Ile) => nextGoalInfoDe(state, island, NOMS_ARCHIPELS, textesDe('blocland').libelles);
 
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));

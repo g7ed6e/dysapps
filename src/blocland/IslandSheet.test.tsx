@@ -115,7 +115,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   renderSheet('plaine');
   expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3 : La coque et la voile/)).toBeInTheDocument();
   expect(screen.getByRole('progressbar', { name: 'Avancement du Bloc-Navire' })).toHaveAttribute('aria-valuenow', '0');
-  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Premiers Rivages pour la voile.');
+  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Basses Terres pour la voile.');
   expect(screen.queryByRole('button', { name: /Embarquer/ })).not.toBeInTheDocument();
   // Pas de section navire sur une île qui n'est pas un port.
   expect(screen.queryByText(/Le Bloc-Navire —/, { selector: 'h3' })).toBeInTheDocument();
@@ -126,14 +126,14 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   cleanup();
   renderSheet('plaine');
   expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
-  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
-  await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Îles Brumeuses/ }));
+  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Collines du Large !');
+  await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Collines du Large/ }));
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
 it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
   renderSheet('marche');
-  expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer.');
+  expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
   expect(document.body.textContent).toContain('Finis le Bloc-Navire sur Plaine des nombres');
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
@@ -201,7 +201,7 @@ it('la matière, la classe et l’archipel descendent au pied du panneau ; les m
   expect(sheet.querySelector('.island-sheet-head')!.textContent).not.toContain('Niveau');
   const foot = sheet.lastElementChild!;
   expect(foot).toHaveClass('island-sheet-foot');
-  expect(foot.textContent).toContain('Niveau 6e · Les Premiers Rivages');
+  expect(foot.textContent).toContain('Niveau 6e · Les Basses Terres');
   // Rien entre l'accueil et les missions sur une île ouverte (l'objectif vient après le Gardien).
   const heading = screen.getByRole('heading', { name: 'Missions' });
   const quests = screen.getByRole('list', { name: 'Missions de l’île' });

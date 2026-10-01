@@ -1,6 +1,7 @@
-import { useEffect, useEffectEvent, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useOptionalBlocland } from '../blocland/BloclandContext';
+import { LogoQuiSeConstruit } from '../blocland/LogoQuiSeConstruit';
 import { unlockSounds } from '../blocland/sound';
 import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
@@ -24,6 +25,24 @@ function seenThisSession(): boolean {
   }
 }
 
+// L'écran titre ouvert : les panneaux qui se lisent à voix haute à l'arrivée (les nouveaux noms des archipels)
+// attendent qu'il soit fermé, pour ne pas parler dessous ni se fermer à son Échap.
+let titreOuvert = false;
+const abonnesDuTitre = new Set<() => void>();
+function noterTitre(ouvert: boolean) {
+  if (titreOuvert === ouvert) return;
+  titreOuvert = ouvert;
+  for (const f of abonnesDuTitre) f();
+}
+const abonnerAuTitre = (f: () => void) => {
+  abonnesDuTitre.add(f);
+  return () => abonnesDuTitre.delete(f);
+};
+/** L'écran titre est-il à l'écran ? */
+export function useTitreOuvert(): boolean {
+  return useSyncExternalStore(abonnerAuTitre, () => titreOuvert, () => false);
+}
+
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
   return PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
@@ -44,9 +63,14 @@ const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
  */
 export function TitleScreen() {
   const [open, setOpen] = useState(() => !seenThisSession());
+  useLayoutEffect(() => {
+    noterTitre(open);
+    return () => noterTitre(false);
+  }, [open]);
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
-  const univers = UNIVERS[useUnivers()];
+  const universId = useUnivers();
+  const univers = UNIVERS[universId];
   // L'adresse d'ouverture (l'accueil mène ensuite au village : on la garde telle qu'elle était au lancement).
   const [launchedAt] = useState(useLocation().pathname);
   // Le message unique, une fois montré : la page où l'élève allait (`to` absent : l'accueil).
@@ -55,7 +79,8 @@ export function TitleScreen() {
   const batisseur = blocland?.batisseur ?? false;
   const suite = useRef(0);
   const depart = useRef<{ id: number; x: number; y: number; zone: DOMRect } | null>(null);
-  const logo = useRef<HTMLImageElement>(null);
+  // Le logo : une image (Archipéo) ou le dessin qui se construit (Blocland) ; les gestes et le toucher gardé sont les mêmes.
+  const logo = useRef<HTMLImageElement & SVGSVGElement>(null);
   const geste = useEffectEvent((g: Geste) => {
     suite.current = avancer(suite.current, g);
     if (suite.current === LONGUEUR_SUITE) {
@@ -93,17 +118,25 @@ export function TitleScreen() {
   // Au doigt (ou à la souris), les gestes se font sur le logo : toucher son bord (ou glisser) pour les flèches, toucher
   // son centre pour B et A.
   // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
-  const logoDown = (e: PointerEvent<HTMLImageElement>) => {
+  const logoDown = (e: PointerEvent<Element>) => {
     if (depart.current) return;
     depart.current = { id: e.pointerId, x: e.clientX, y: e.clientY, zone: e.currentTarget.getBoundingClientRect() };
     e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-  const logoUp = (e: PointerEvent<HTMLImageElement>) => {
+  const logoUp = (e: PointerEvent<Element>) => {
     if (depart.current?.id !== e.pointerId) return;
     const { x, y, zone } = depart.current;
     depart.current = null;
     const g = gesteDeGlissement(e.clientX - x, e.clientY - y);
     geste(g === 'toucher' ? gesteDeZone(x - zone.left, y - zone.top, zone.width, zone.height) : g);
+  };
+  const gestesDuLogo = {
+    onPointerDown: logoDown,
+    onPointerUp: logoUp,
+    onPointerCancel: () => (depart.current = null),
+    onLostPointerCapture: (e: PointerEvent<Element>) => {
+      if (depart.current?.id === e.pointerId) depart.current = null;
+    },
   };
   // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
   const resume = launchedAt === '/' ? lastPlace() : null;
@@ -163,21 +196,12 @@ export function TitleScreen() {
   return (
     <div className="title-screen" role="dialog" aria-modal="true" aria-labelledby="titre-appli">
       <div className="title-card">
-        <img
-          ref={logo}
-          className="title-logo"
-          src={`${import.meta.env.BASE_URL}${univers.logo}`}
-          alt=""
-          width={160}
-          height={160}
-          draggable={false}
-          onPointerDown={logoDown}
-          onPointerUp={logoUp}
-          onPointerCancel={() => (depart.current = null)}
-          onLostPointerCapture={(e) => {
-            if (depart.current?.id === e.pointerId) depart.current = null;
-          }}
-        />
+        {universId === 'blocland' ? (
+          // Blocland : le logo se construit, quatre cubes posés en moins d'une seconde ; le toucher n'attend pas.
+          <LogoQuiSeConstruit ref={logo} className="title-logo title-logo-construit" {...gestesDuLogo} />
+        ) : (
+          <img ref={logo} className="title-logo" src={`${import.meta.env.BASE_URL}${univers.logo}`} alt="" width={160} height={160} draggable={false} {...gestesDuLogo} />
+        )}
         <h1 id="titre-appli" className="title-name">
           {univers.nom}
         </h1>

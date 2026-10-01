@@ -92,8 +92,8 @@ J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes 
 | Étape | État | Suite |
 | --- | --- | --- |
 | U0 à U3 | Faites | — |
-| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Restent le retour des noms propres à Blocland (décidé par [GD-1](game-design/propositions/GD-1.md) : Basses Terres, Collines du Large, Monts de Feu), le lexique court et l’écran « L’île X s’appelle maintenant Y » |
-| Le caractère de Blocland ([GD-1](game-design/propositions/GD-1.md)) | Décidé le 30 septembre 2026, rien de construit | Créatures des îles-écoles aux grandes étapes, noms d’origine des archipels, rôles en métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte) (avec U4) ; geste et son de pose (lot à ouvrir, dégel ciblé du dessin, artiste technique 3D). Attend le « go » du mainteneur pour lancer la construction |
+| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Les noms propres à Blocland sont revenus avec [GD-1](game-design/propositions/GD-1.md) (Basses Terres, Collines du Large, Monts de Feu), avec leur écran de renommage, une fois par appareil ; reste le lexique court |
+| Le caractère de Blocland ([GD-1](game-design/propositions/GD-1.md)) | Construit : la créature de l’île-école parle aux grandes étapes (Mousso, Bazar, Ixe, Fi, nom écrit et portrait dans la bulle) ; noms d’origine des archipels (Basses Terres, Collines du Large, Monts de Feu, Îles du Ciel), annoncés une fois à un élève qui jouait déjà (écran « De nouveaux noms ») ; rôles en métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte) et leurs succès ; geste et son de pose (logo qui se construit à l’écran titre, dernier bloc d’un plan qui s’enclenche, « clac » de pose ; dégel ciblé du dessin). Archipéo garde ses textes | Attend la fusion, puis la vidéo sur tablette du mainteneur |
 | U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
 | U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
 

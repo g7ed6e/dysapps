@@ -2,6 +2,7 @@ import { Syllabified } from '../components/Syllabified';
 import type { Village } from './engine';
 import type { ArchipelagoId } from './world/archipelago';
 import { villageStage } from './world/villageStage';
+import { useTextes } from '../univers';
 
 /**
  * L'état du village d'un archipel, en HTML : son nom et son rang (« Le village : Reconstruction, 3 sur 5 »), une jauge
@@ -19,7 +20,7 @@ export function VillageStageLine({
   /** Dire ce qu'il faut pour la suite (le menu s'en passe : « Reprendre l'aventure » le dit déjà). */
   withNext?: boolean;
 }) {
-  const stage = villageStage(village, archipelago);
+  const stage = villageStage(village, archipelago, useTextes().archipels);
   return (
     <div className={`village-stage${className ? ` ${className}` : ''}`}>
       <p>

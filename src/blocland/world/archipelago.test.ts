@@ -10,6 +10,7 @@ import {
   LEGACY_BRIDGES,
   VOYAGES,
   archipelagoOf,
+  NOMS_ARCHIPELS,
   archipelagoTitle,
   bridgeState,
   bridgesFromLegacyProgress,
@@ -63,7 +64,7 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
   expect(ARCHIPELAGOS.map((a) => a.classe)).toEqual(['6e', '5e', '4e', '3e']);
-  expect(archipelagoTitle('5e')).toBe('Archipel de 5e — Les Îles Brumeuses');
+  expect(archipelagoTitle('5e', NOMS_ARCHIPELS)).toBe('Archipel de 5e — Les Îles Brumeuses');
   for (const a of ARCHIPELAGOS) {
     const islands = islandsOf(a.classe).map((b) => b.id);
     expect(islands).toContain(a.port);

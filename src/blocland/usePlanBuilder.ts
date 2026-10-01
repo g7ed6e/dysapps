@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, blockCount, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { currentPlan, nextFillable, planCellAt, planStatus, type FillResult, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
+import { moinsDAnimations } from '../core/mouvement';
+import { GESTE_DE_POSE } from './world/pose';
 import { planCells, plansFor, type PlanDef } from './world/plans';
 import { whereToEarn } from './world/uses';
 import type { Ancrage } from './world/disposition';
@@ -68,7 +71,14 @@ export function placeAll(
  * La construction guidée d'une île : le plan en cours, la pose d'un bloc (par le bouton ou en touchant un fantôme
  * dans le monde), les sons, les éclats, le coffre et la phrase de la créature quand le plan est terminé.
  */
-export function usePlanBuilder(island: BiomeId): PlanBuilder {
+/** Le carillon de fin de plan (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms. */
+const CARILLON_MS = 610;
+
+/**
+ * `avecGeste` : la vue dessine le geste du dernier bloc (le monde en 3D) ; ailleurs (vue simple), rien ne tombe et le
+ * « clac » sonne tout de suite.
+ */
+export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
   const { completePlan } = useProgress();
@@ -82,6 +92,13 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
   const status = plan ? planStatus(state, plan) : null;
   const sound = (f: () => void) => settings.sounds && f();
   const haptics = useHaptics();
+  // La pose de l'univers, lue une fois : dans Blocland, le « clac » à chaque bloc et le geste du dernier bloc d'un plan.
+  const [pose] = useState(() => habillageDuMonde().pose);
+  const [playPlace] = useState(() => sonDePose(pose));
+  // Le clac, le carillon et la voix de fin de plan, différés le temps du geste : annulés si l'écran se ferme avant.
+  const differes = useRef<number[]>([]);
+  useEffect(() => () => differes.current.forEach((t) => window.clearTimeout(t)), []);
+  const plusTard = (f: () => void, ms: number) => differes.current.push(window.setTimeout(f, ms));
 
   const fillAt = (x: number, y: number, z: number) => {
     if (!plan) return;
@@ -92,7 +109,7 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       sound(playNope);
       return;
     }
-    burstAt(x, y, z, r.block);
+    burstAt(x, y, z, r.block, r.completed);
     if (r.completed) finished(plan);
     else {
       setNotice(`Bloc posé : ${status ? status.done + 1 : 1} sur ${status?.total ?? '?'}.`);
@@ -100,9 +117,9 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
       haptics.place();
     }
   };
-  const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
+  const burstAt = (x: number, y: number, z: number, block: BlockId, last = false) => {
+    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1). Le dernier bloc d'un plan : le geste.
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top, ...(last ? { pose: true } : {}) }));
   };
   // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
   const finished = (done: PlanDef) => {
@@ -112,14 +129,24 @@ export function usePlanBuilder(island: BiomeId): PlanBuilder {
     const msg = `${done.name} : terminé ! ${done.done} Coffre : ${chest}. +${done.reward.xp} XP.`;
     setNotice(msg);
     completePlan(done.reward.xp);
-    sound(playDone);
-    if (settings.autoRead) speak(msg);
+    // Dans Blocland, le bloc descend et s'enclenche (world/pose.ts) : le « clac » sonne à l'arrêt, le carillon juste après,
+    // puis la voix (les sons se taisent pendant qu'elle parle). Sans le geste (vue simple, ou l'appareil demande moins
+    // d'animations), l'arrêt est immédiat. Archipéo : le carillon tout de suite.
+    if (pose === 'geste' && settings.sounds) {
+      const arret = avecGeste && !moinsDAnimations() ? GESTE_DE_POSE.dureeMs : 0;
+      plusTard(playPlace, arret);
+      plusTard(playDone, arret + 120);
+      if (settings.autoRead) plusTard(() => speak(msg), arret + 120 + CARILLON_MS);
+    } else {
+      sound(playDone);
+      if (settings.autoRead) speak(msg);
+    }
   };
   const fillAll = () => {
     if (!plan) return;
     const { placed, last, completed } = placeAll(plan, state.village.plans[plan.id] ?? [], fillPlan);
     if (!last) return;
-    burstAt(last.x, last.y, last.z, last.block);
+    burstAt(last.x, last.y, last.z, last.block, completed);
     if (completed) return finished(plan);
     const left = (status?.total ?? 0) - (status?.done ?? 0) - placed;
     setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''}. ${left > 0 ? `Il en reste ${left} à poser : gagne les blocs qui manquent.` : ''}`.trim());
