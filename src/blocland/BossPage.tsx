@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -15,6 +15,7 @@ import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { CreatureBubble } from './CreatureBubble';
+import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { FONDU, lueursDuDefi } from './world/personnages/allumage';
@@ -58,6 +59,12 @@ export function BossPage() {
   const [mood, setMood] = useState<GuardianMood>('idle');
   const [seq, setSeq] = useState(0);
   const [line, setLine] = useState<string | null>(null);
+  // La réplique du Gardien, entière au lancement, repliée en une ligne dès la première épreuve jouée (DA-34).
+  const [repliqueOuverte, setRepliqueOuverte] = useState(false);
+  // La ligne repliée déborde-t-elle ? Mesuré à l'écran : la première phrase peut ne pas tenir sur une ligne.
+  const [deborde, setDeborde] = useState(false);
+  const ligneRef = useRef<HTMLParagraphElement>(null);
+  const ligneId = useId();
   // Ce Gardien vaincu fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
@@ -67,12 +74,25 @@ export function BossPage() {
     setPlayed(0);
     setMood('idle');
     setLine(null);
+    setRepliqueOuverte(false);
     // Pas de tambour pour une sentinelle : rien ne se combat. Sa règle est lue au lancement, comme une consigne.
     if (def && !sent) sound(playDrum);
     if (def && sent && settings.autoRead) speak(frenchTypography(def.instruction));
     // Au lancement et à chaque revanche.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def]);
+
+  // Mesurée tant que la réplique est repliée, et à chaque changement de taille ; ouverte, on garde la dernière mesure.
+  useLayoutEffect(() => {
+    const el = ligneRef.current;
+    if (!el || played === 0 || repliqueOuverte) return;
+    const mesure = () => setDeborde(el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1);
+    mesure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(mesure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [line, played, repliqueOuverte]);
 
   if (!biome) return <NotFoundPage />;
   const { challenge, guardianSays: says } = textes.gardiens[biome.id];
@@ -81,6 +101,11 @@ export function BossPage() {
   const finished = def ? played >= total : false;
   const beatenNow = finished && won >= needed;
   const remaining = Math.max(0, total - won);
+  const repliee = played > 0 && !repliqueOuverte;
+  // Repliée, la ligne montre la première phrase (coupée par « … » si elle ne tient pas) ; le reste, caché à l'écran,
+  // reste lu par un lecteur d'écran. Le chevron n'est là que si la réplique est vraiment coupée.
+  const { first: premiere, rest: suite } = firstSentences(arenaLine);
+  const coupee = suite !== '' || deborde;
 
   const onRound = ({ correct }: { correct: boolean }) => {
     const nextWon = won + (correct ? 1 : 0);
@@ -93,6 +118,8 @@ export function BossPage() {
     const text = victory ? says.beaten : correct ? says.hit : says.miss;
     setMood(victory ? 'beaten' : correct ? 'hit' : 'miss');
     setLine(text);
+    // La règle, ouverte au premier défi, se replie avec la réplique dès la première épreuve jouée ; rouverte, elle le reste.
+    if (played === 0) setRegleOuverte(false);
     if (victory) sound(playVictory);
     // Une épreuve ratée n'a jamais de son dans Archipéo (rien ne s'éteint) ; Blocland garde le grognement.
     else if (!correct && !sent) sound(playGrowl);
@@ -105,7 +132,8 @@ export function BossPage() {
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}${sent ? ' defi-titre' : ''}`}>
-        {/* Archipéo : le nom de l'écran (« Le défi du Grand Chêne ») ; le nom du Gardien est dans l'arène. */}
+        {/* Le nom du Gardien, une seule fois à l'écran (DA-34) : son nom dans Blocland, le nom de l'écran dans Archipéo
+            (« Le défi du Grand Chêne ») ; l'arène ne le répète pas. */}
         <Icon name={sent ? 'flame' : 'shield'} /> {sent ? textes.libelles.arene(biome.guardian) : guardianTitle(biome)}
       </h1>
       {unlocked && loaded === undefined ? (
@@ -146,34 +174,36 @@ export function BossPage() {
             </div>
             {/* Le texte de l'arène sur un panneau uni, clair, collé à la vitrine (DA-26). */}
             <div className="arena-info">
-              <p className="arena-name">{guardianTitle(biome)}</p>
               {sent ? (
                 <>
-                  <div className="arena-gauge-label" aria-hidden="true">
-                    <span>{sent.jauge}</span>
-                    <span>{sent.compte(won, total)}</span>
-                  </div>
-                  <div
-                    className="arena-pastilles"
-                    role="progressbar"
-                    aria-label={sent.jauge}
-                    aria-valuemin={0}
-                    aria-valuemax={total}
-                    aria-valuenow={won}
-                    aria-valuetext={sent.jaugeLue(won, total, needed)}
-                  >
-                    {/* Les réussites d'abord, dans l'ordre où elles viennent : une pastille vide ne dit pas laquelle a raté. */}
-                    {Array.from({ length: total }, (_, i) => (
-                      <span key={i} className={`arena-pastille${i < won ? ' on' : ''}`}>
-                        {i < won && <Icon name="flame" size="14px" />}
-                      </span>
-                    ))}
+                  <div className="arena-jauge">
+                    <div className="arena-gauge-label">
+                      <span aria-hidden="true">{sent.jauge}</span>
+                      <span aria-hidden="true">{sent.compte(won, total)}</span>
+                    </div>
+                    <div
+                      className="arena-pastilles"
+                      role="progressbar"
+                      aria-label={sent.jauge}
+                      aria-valuemin={0}
+                      aria-valuemax={total}
+                      aria-valuenow={won}
+                      aria-valuetext={sent.jaugeLue(won, total, needed)}
+                    >
+                      {/* Les réussites d'abord, dans l'ordre où elles viennent : une pastille vide ne dit pas laquelle a raté. */}
+                      {Array.from({ length: total }, (_, i) => (
+                        <span key={i} className={`arena-pastille${i < won ? ' on' : ''}`}>
+                          {i < won && <Icon name="flame" size="14px" />}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <p className="arena-seuil">
                     <Syllabified text={sent.seuil(needed, won >= needed)} />
                   </p>
                   {/* La règle du rallumage, à côté de la jauge qu'elle explique : sa phrase courte toujours lue, la règle
-                      entière dans un pli ouvert au premier défi contre ce Gardien ; le haut-parleur la lit en entier (DA-28). */}
+                      entière dans un pli ouvert au premier défi contre ce Gardien, jusqu'à la première épreuve jouée (DA-28, DA-34) ;
+                      le haut-parleur la lit en entier. */}
                   <div className="arena-regle">
                     <details open={regleOuverte} onToggle={(e) => setRegleOuverte(e.currentTarget.open)}>
                       <summary>
@@ -190,10 +220,10 @@ export function BossPage() {
                   </div>
                 </>
               ) : (
-                <>
-                  <div className="arena-gauge-label" aria-hidden="true">
-                    <span>Résistance</span>
-                    <span>
+                <div className="arena-jauge">
+                  <div className="arena-gauge-label">
+                    <span aria-hidden="true">Résistance</span>
+                    <span aria-hidden="true">
                       {remaining} / {total}
                     </span>
                   </div>
@@ -208,12 +238,43 @@ export function BossPage() {
                   >
                     <div className="arena-gauge-fill" style={{ width: `${total ? (remaining / total) * 100 : 0}%` }} />
                   </div>
-                </>
+                </div>
               )}
-              <p className="arena-line" role="status" aria-live="polite">
-                <Syllabified text={arenaLine} />
-              </p>
-              <SpeakButton text={arenaLine} label="Écouter" />
+              {/* La réplique : entière au lancement ; dès la première épreuve jouée, repliée en une ligne, que le chevron
+                  des plis des îles (ou un toucher sur la ligne) ouvre en entier. Le texte reste entier pour un lecteur
+                  d'écran, et le haut-parleur, à sa droite, le lit toujours en entier (DA-34). */}
+              <div className={`arena-replique${repliee ? ' repliee' : ''}`}>
+                {played > 0 && coupee && (
+                  <button
+                    type="button"
+                    className="arena-replique-pli"
+                    aria-expanded={repliqueOuverte}
+                    aria-controls={ligneId}
+                    onClick={() => setRepliqueOuverte((o) => !o)}
+                  >
+                    <Icon name={repliqueOuverte ? 'chevronDown' : 'chevronRight'} />
+                    <span className="visually-hidden">Toute la réplique</span>
+                  </button>
+                )}
+                <p
+                  ref={ligneRef}
+                  id={ligneId}
+                  className="arena-line"
+                  role="status"
+                  aria-live="polite"
+                  onClick={repliee && coupee ? () => setRepliqueOuverte(true) : undefined}
+                >
+                  {repliee && suite ? (
+                    <>
+                      <Syllabified text={premiere} />
+                      <span className="visually-hidden"> {suite}</span>
+                    </>
+                  ) : (
+                    <Syllabified text={arenaLine} />
+                  )}
+                </p>
+                <SpeakButton text={arenaLine} label="Écouter" compact />
+              </div>
             </div>
           </section>
           {shipHint && (
