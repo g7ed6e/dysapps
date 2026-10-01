@@ -8,7 +8,7 @@ import { BADGES } from '../../../core/progress';
 import { trophyBlock } from '../../trophies';
 import { toutConstruit } from '../budget';
 import { batimentsDe, caseDeLaConstruction, caseDeLaPiece, caseDuLieu, maillageDeLaConstruction, type GroupeDeConstruction } from '../construction';
-import { atelierModel, schoolModel, trophyModel, TROPHY_SLOTS, worldCubes } from '../terrain';
+import { atelierModel, HALLE, schoolModel, trophyModel, TROPHY_SLOTS, worldCubes } from '../terrain';
 import { architectureDe, estUnLieuDuVillage, MOTIF, pieceDe, type Voisinage } from '.';
 import { KIT_6E } from './kits/6e';
 
@@ -107,14 +107,21 @@ describe('Les lieux du village au kit du 6e', () => {
   it('la Halle aux matériaux : ses murs de bois sur leur rang de pierre en colombage sur soubassement, son toit à deux pentes en versants et faîte ; la porte reste ouverte, la cour reste en blocs', () => {
     const { cubes } = lieux('6e');
     const archi = archiDe('6e', cubes);
-    const halle = cubes.filter((c) => c.place === 'assemblage');
-    const rel = (c: VoxelCube) => caseDuLieu(c)!;
+    // Les blocs de la Halle et leur case dans son modèle, filtrés une fois (le soubassement qui rattrape le sol n'en a pas).
+    const halle = cubes.flatMap((c) => {
+      const m = c.place === 'assemblage' ? caseDuLieu(c) : null;
+      return m ? [{ c, m }] : [];
+    });
+    const caseDe = new Map(halle.map(({ c, m }) => [cle(c), m]));
+    const blocsDeLaHalle = new Set(cubes.filter((c) => c.place === 'assemblage').map(cle));
     // Les murs : les deux rangs de la halle (pierre, puis bois), sans la porte (creuse sur deux rangs, jusqu'au fond).
     const murs = [...archi.peints.values()].filter((p) => p.cube.place === 'assemblage');
     expect(murs.length).toBe(2 * (9 - 2));
     for (const { cube: c, peinture } of murs) {
-      const m = rel(c);
-      expect(m.y, cle(c)).toBeGreaterThanOrEqual(2);
+      const m = caseDe.get(cle(c));
+      expect(m, cle(c)).toBeDefined();
+      if (!m) continue;
+      expect(m.y, cle(c)).toBeGreaterThanOrEqual(HALLE.rang);
       expect(peinture.fond, cle(c)).toBe('remplissage');
       // Le rang de pierre devient le soubassement du colombage ; le rang de bois porte la sablière haute sous le toit.
       if (m.z === 1) expect(peinture.motifs.slice(0, 4).every((f) => f & MOTIF.soubassement)).toBe(true);
@@ -129,10 +136,10 @@ describe('Les lieux du village au kit du 6e', () => {
     const toits = archi.pieces.filter((p) => p.cube.place === 'assemblage');
     expect(toits.map((p) => p.piece.split('.')[1]).sort()).toEqual([...Array(6).fill('versant'), ...Array(3).fill('faite')].sort());
     // La porte : creuse (aucun bloc), à la même place ; la cour (la potence, le bloc suspendu, les blocs de la recette) : des blocs.
-    const occupees = new Set(halle.map((c) => `${rel(c)?.x},${rel(c)?.y},${rel(c)?.z}`));
+    const occupees = new Set(halle.map(({ m }) => `${m.x},${m.y},${m.z}`));
     for (const y of [2, 3]) for (const z of [1, 2]) expect(occupees.has(`1,${y},${z}`)).toBe(false);
-    for (const c of halle.filter((c) => rel(c) && rel(c).y < 2)) expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
-    expect([...archi.couverts].filter((k) => halle.some((c) => cle(c) === k))).toEqual([]);
+    for (const { c } of halle.filter(({ m }) => m.y < HALLE.rang)) expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
+    expect([...archi.couverts].filter((k) => blocsDeLaHalle.has(k))).toEqual([]);
   });
 
   it('un trophée posé sur le toit ou le faîte : le toit sous lui reste un bloc, le trophée ne flotte jamais au-dessus d’une pente', () => {

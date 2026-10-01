@@ -14,6 +14,7 @@ import { MOTIF } from '../peinture';
 import { piecesDeToit } from '../toits';
 import type { IdDeMur, Forme, Tete } from '../choix';
 import type { VillagePlaceId } from '../../cube';
+import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 
 /** La hauteur des pilotis sous le plancher : celle du soubassement, qu'ils remplacent. */
@@ -54,10 +55,10 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
 /** Un pilier de la salle des trophées : un coin du pavillon. */
 const pilier = ({ x, y, w, d }: CaseDuLieu) => (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
 /**
- * Les rangs de la halle du lieu où l'on assemble (world/terrain.ts, `atelierModel`) : les trois du fond ; devant, la
- * cour (la potence, le bloc suspendu, les blocs de la recette), qui reste en blocs.
+ * Les rangs de la halle du lieu où l'on assemble (world/terrain.ts, `atelierModel`, `HALLE`) : à partir de son premier
+ * rang ; devant, la cour (la potence, le bloc suspendu, les blocs de la recette), qui reste en blocs.
  */
-const dansLaHalle = ({ y, d }: CaseDuLieu) => y >= d - 3;
+const dansLaHalle = ({ y }: CaseDuLieu) => y >= HALLE.rang;
 /** La souche du clocheton de l'école : la case du toit sous lui, au milieu de la façade, au deuxième rang (schoolModel). */
 const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 5;
 
@@ -96,7 +97,7 @@ export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
   assemblage: (m) =>
     !dansLaHalle(m)
       ? undefined
-      : m.z <= 2 && (m.texture === 'planches' || m.texture === 'pierre')
+      : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
         ? { famille: 'bois' }
         : m.texture === 'toit'
           ? { famille: 'toit' }

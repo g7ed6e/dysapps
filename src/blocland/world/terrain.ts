@@ -1570,6 +1570,13 @@ export function trophyModel(trophies: (keyof typeof BLOCKS)[] = []): ModelCube[]
   return out;
 }
 
+/**
+ * La halle du lieu où l'on assemble (`atelierModel`) : son premier rang (devant lui, la cour, qui reste en blocs) et la
+ * hauteur de ses murs dans la Halle d'Archipéo (le rang de pierre, puis le bois ; le toit au-dessus). Le kit du 6e les
+ * lit pour reprendre la halle en colombage (world/architecture/kits/6e.ts).
+ */
+export const HALLE = { rang: 2, haut: 2 } as const;
+
 /** La silhouette du lieu où l'on assemble, selon l'univers (l'habillage, `atelier`) : même place, même porte. */
 export type Atelier = 'fabrique' | 'halle';
 
@@ -1589,21 +1596,21 @@ export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
   const suspendu = recette?.bloc ?? 'bois';
   const [premier, second] = recette ? [recette.ingredients[0].bloc, recette.ingredients[recette.ingredients.length - 1].bloc] : (['bois', 'pierre'] as const);
   const halle = atelier === 'halle';
-  const haut = halle ? 2 : 3;
+  const haut = halle ? HALLE.haut : 3;
   // La halle : les rangs 2 à 4 ; la porte (x = 1) ouverte sur deux cases de haut, et creuse jusqu'au mur du fond.
   for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++)
-    for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++)
+    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++)
       for (let z = 1; z <= haut; z++) {
         if (x === 1 && y <= 3 && z <= 2) continue;
         out.push({ x, y, z, block: z === 1 ? 'pierre' : halle ? 'bois' : 'brique' });
       }
   if (halle) {
     // Le toit à deux pentes : un rang de tuiles, puis le faîte au milieu, dans le sens de la profondeur (le pignon en façade).
-    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 3, block: 'toit' });
-    for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: 4, block: 'toit' });
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: haut + 1, block: 'toit' });
+    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: haut + 2, block: 'toit' });
   } else {
     // Le toit plat, et la haute cheminée au coin du fond.
-    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = 2; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: 'taille' });
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: 'taille' });
     for (const z of [5, 6, 7]) out.push({ x: 2, y: 4, z, block: 'pierre' });
   }
   // La potence, sur le côté gauche de la cour : un mât de bois contre la façade, un bras vers l'avant, le bloc suspendu
