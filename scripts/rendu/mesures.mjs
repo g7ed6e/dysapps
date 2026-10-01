@@ -20,6 +20,7 @@ import { gzipSync } from 'node:zlib';
 import { build, createServer } from 'vite';
 import { chromium } from 'playwright-core';
 import { capturer, figeable, hasardFixe, piloterLHorloge, preparerLaScene } from '../prise-de-vue.mjs';
+import { comparer } from './comparer.mjs';
 
 const root = process.cwd();
 const TABLET = { width: 1024, height: 768 };
@@ -42,6 +43,8 @@ const QUERY = (() => {
   return s ? `?${s}` : '';
 })();
 const ONLY = option('--archipel');
+/** Avec `--comparer <dossier>` : les captures de main (mêmes noms), à comparer à celles-ci (scripts/rendu/comparer.mjs). */
+const REFERENCES = option('--comparer');
 const WAIT = Number(option('--attente') ?? 10) * 1000;
 /** Les vues sans monde 3D (le défi, la bulle d'une créature) : rien à attendre avant la prise. */
 const VUES_SANS_MONDE = new Set(['défi', 'bulle']);
@@ -508,6 +511,10 @@ async function scenes() {
       }
       await page.close();
     }
+  }
+  if (SHOTS && REFERENCES) {
+    const { changees, inchangees, sansAvant } = await comparer(outil, REFERENCES, SHOTS);
+    console.log(`\nComparaison avec ${REFERENCES} : ${changees.length} changées (planches dans ${join(SHOTS, 'planches')}), ${inchangees.length} inchangées, ${sansAvant.length} sans référence ; détail dans ${join(SHOTS, 'comparaison.md')}.`);
   }
   await browser.close();
   await server.close();
