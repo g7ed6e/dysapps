@@ -2,7 +2,7 @@
 // l'aventure » au menu et la Carte. Code pur, déduit de la sauvegarde à chaque rendu, sans rien y ajouter.
 import { getBiome, type BiomeId } from '../biomes';
 import { canLaunch, type BloclandState } from '../engine';
-import { archipelagoOf, islandsOf, reachableIslands } from './archipelago';
+import { archipelagoOf, islandsOf, reachableIslands, type MotsDesGardiens } from './archipelago';
 import { nextGoalInfo } from './goals';
 import { isUnexplored } from './islandState';
 import { villageStage } from './villageStage';
@@ -25,7 +25,7 @@ export interface Destination {
  * explorée ; sinon l'objectif qui demande le moins de blocs. Rien à faire : le port, avec ce qu'il faut pour que le
  * village avance.
  */
-export function nextDestination(state: BloclandState): Destination {
+export function nextDestination(state: BloclandState, mots: MotsDesGardiens): Destination {
   const at = state.village.at ?? 'foret';
   const archipelago = archipelagoOf(at);
   const open = reachableIslands(state.village.bridges);
@@ -38,10 +38,10 @@ export function nextDestination(state: BloclandState): Destination {
   const port = archipelago.port;
   const stage = stageAt(port);
   if (stage && open.has(port) && canLaunch(state, stage).ok) {
-    const goal = nextGoalInfo(state, port);
+    const goal = nextGoalInfo(state, port, mots);
     return make(port, goal?.text ?? 'Le Bloc-Navire est prêt.', 1, 1);
   }
-  const goals = ordered.map((island) => ({ island, goal: nextGoalInfo(state, island) }));
+  const goals = ordered.map((island) => ({ island, goal: nextGoalInfo(state, island, mots) }));
   const ready = goals.find(({ goal }) => goal && goal.need > 0 && goal.have >= goal.need);
   if (ready?.goal) return make(ready.island, ready.goal.text, ready.goal.have, ready.goal.need);
   const fresh = ordered.find((island) => isUnexplored(state, island));

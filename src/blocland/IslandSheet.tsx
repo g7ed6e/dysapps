@@ -60,7 +60,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
-  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.libelles) : null;
   const port = unlocked && archipelagoOf(biome.id).port === biome.id;
   // L'accueil de la créature : une ligne écrite visible, la suite dans un pli. Un message d'île fermée (ou « pas de
   // LV2 ») dit quoi faire : il reste entier.

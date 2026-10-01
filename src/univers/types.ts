@@ -39,8 +39,8 @@ export interface LibellesGardiens {
   dejaFaitArene: (gardien: string) => string;
   /** Ce qu'il manque pour le kit du Bloc-Navire, en bref. */
   encoreAFaire: (n: number) => string;
-  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens. */
-  navireAttend: (n: number) => string;
+  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
+  navireAttend: (n: number, piece?: string) => string;
   /**
    * Ce que dit la créature du port sur les Gardiens qu'attend le kit du Bloc-Navire (`piece` : « la voile »), ou qu'il
    * est arrivé.
@@ -70,6 +70,8 @@ export interface LibellesGardiens {
   ouvrageGardien: string;
   /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
   navireGardiensManquants: (n: number, archipel: string) => string;
+  /** Ce qu'il reste à faire pour un tunnel ou un col, dans la liste des ouvrages (`ile` : l'île de l'autre côté). */
+  gardienDabord: (ile: string) => string;
   /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
   decouverteNavire: string;
 }

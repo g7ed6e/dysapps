@@ -2,15 +2,19 @@ import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { textesDe } from '../../univers';
 import { BRIDGES } from './archipelago';
-import { lockedHint as lockedHintDe, nextGoal, nextGoalInfo } from './goals';
+import { lockedHint as lockedHintDe, nextGoal as nextGoalDe, nextGoalInfo as nextGoalInfoDe } from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
 
-// L'indice d'une île fermée dit les Gardiens avec les mots de l'univers (Blocland par défaut).
-const lockedHint = (state: Parameters<typeof lockedHintDe>[0], island: Parameters<typeof lockedHintDe>[1], univers: 'blocland' | 'archipeo' = 'blocland') =>
-  lockedHintDe(state, island, textesDe(univers).libelles);
+// L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut).
+type Etat = Parameters<typeof lockedHintDe>[0];
+type Ile = Parameters<typeof lockedHintDe>[1];
+type Univers = 'blocland' | 'archipeo';
+const lockedHint = (state: Etat, island: Ile, univers: Univers = 'blocland') => lockedHintDe(state, island, textesDe(univers).libelles);
+const nextGoal = (state: Etat, island: Ile, univers: Univers = 'blocland') => nextGoalDe(state, island, textesDe(univers).libelles);
+const nextGoalInfo = (state: Etat, island: Ile) => nextGoalInfoDe(state, island, textesDe('blocland').libelles);
 
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
@@ -47,6 +51,7 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const posed = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret']) });
   expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
+  expect(nextGoal(posed, 'plaine', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
   const ready = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');

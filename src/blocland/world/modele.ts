@@ -6,7 +6,7 @@ import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { levelFor } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
-import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId } from './archipelago';
+import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId, type MotsDesGardiens } from './archipelago';
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
 import { stageTo } from './vehicle';
@@ -59,13 +59,13 @@ export function ilesDuModele(state: Pick<BloclandState, 'progress' | 'village'>,
 }
 
 /** Tout ce qui existe dans un archipel, et son état. */
-export function modeleDuMonde(state: BloclandState, a: ArchipelagoId): ModeleDuMonde {
+export function modeleDuMonde(state: BloclandState, a: ArchipelagoId, mots: MotsDesGardiens): ModeleDuMonde {
   const iles = islandsOf(a);
   return {
     archipel: a,
     iles: ilesDuModele(state, a),
     bornes: iles.flatMap((b) => missionsDe(b.id).map((mission) => ({ id: `${b.id}:${mission}`, ile: b.id, mission, etat: etatDeBorne(state, b.id, mission) }))),
-    destination: nextDestination(state),
+    destination: nextDestination(state, mots),
   };
 }
 

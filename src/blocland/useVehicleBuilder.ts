@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../univers';
 import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
@@ -35,6 +36,7 @@ export interface VehicleBuilder {
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
@@ -72,7 +74,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const finished = (done: VehicleStage) => {
     const msg = kit
       ? `Le Bloc-Navire a tous ses blocs ! ${done.done}`
-      : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
+      : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
     if (settings.autoRead) speak(msg);

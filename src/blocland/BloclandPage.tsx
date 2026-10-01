@@ -53,9 +53,9 @@ export function BloclandPage() {
   const { state } = useBlocland();
   const at = state.village.at ?? 'foret';
   const here = archipelagoOf(at).classe;
-  const destination = nextDestination(state);
-  // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const textes = useTextes();
+  const destination = nextDestination(state, textes.libelles);
+  // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRallumage(state.progress, here, textes.sentinelles !== null);
   const rallume = rallumage.enAttente[0] ?? null;

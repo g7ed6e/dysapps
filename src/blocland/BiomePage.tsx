@@ -48,7 +48,7 @@ export function BiomePage() {
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const port = archipelagoOf(biome.id).port === biome.id;
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
-  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.libelles) : null;
 
   return (
     <>
