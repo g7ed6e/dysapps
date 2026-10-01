@@ -1,13 +1,17 @@
-// Comparer les captures d'un lot à celles de main (`npm run rendu:mesures -- --captures <dossier> --comparer <références>`) :
-// les captures sont reproductibles (scripts/prise-de-vue.mjs, horloge pilotée), deux prises du même état ne diffèrent que
-// de quelques pixels. Une vue qui diffère de plus de `SEUIL` est « changée » : sa planche avant/après (l'avant à gauche,
-// l'après à droite) va dans `<dossier>/planches/`. Les autres sont listées « inchangées » dans `<dossier>/comparaison.md`,
-// et ne se publient pas. Le calcul se fait dans une page vide du navigateur (canvas) : aucune dépendance de plus.
+// Comparer les captures d'un lot à celles de main (`npm run rendu:mesures -- --captures <dossier> --comparer <références>`).
+// Les captures sont reproductibles (scripts/prise-de-vue.mjs, horloge pilotée) : deux prises du même état ne diffèrent
+// que de quelques pixels. Une vue qui diffère de plus de `SEUIL` est « changée » : sa planche avant/après (le nom de la
+// vue écrit dessus, l'avant à gauche, l'après à droite, à la même échelle) va dans `<dossier>/planches/`. Les autres sont
+// listées « inchangées », avec leur écart, dans `<dossier>/comparaison.md`, et ne se publient pas. Le calcul se fait dans
+// une page vide du navigateur (canvas) : aucune dépendance de plus.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-/** Part des pixels qui diffèrent au-delà de laquelle une vue est changée (deux prises du même état : 0,3 % au plus). */
-export const SEUIL = 0.005;
+/**
+ * Part des pixels qui diffèrent au-delà de laquelle une vue est changée : deux prises du même état diffèrent de 0,3 % au
+ * plus (seuil demandé par le directeur artistique, 01/10/2026).
+ */
+export const SEUIL = 0.003;
 /** Écart d'un canal (sur 255) au-delà duquel un pixel diffère : la compression JPEG en laisse quelques-uns en dessous. */
 const ECART = 24;
 
@@ -28,7 +32,7 @@ export async function comparer(outil, avant, apres) {
       continue;
     }
     const { part, planche } = await outil.evaluate(
-      async ({ a, b, seuil, ecart }) => {
+      async ({ a, b, seuil, ecart, titre }) => {
         const charger = async (b64) => {
           const img = new Image();
           img.src = `data:image/jpeg;base64,${b64}`;
@@ -68,11 +72,11 @@ export async function comparer(outil, avant, apres) {
         g.fillStyle = '#ffffff';
         g.font = 'bold 22px sans-serif';
         g.textBaseline = 'middle';
-        g.fillText('Avant (main)', 12, bandeau / 2);
-        g.fillText('Après', ia.width + marge + 12, bandeau / 2);
+        g.fillText(`${titre} · avant (main)`, 12, bandeau / 2);
+        g.fillText(`${titre} · après`, ia.width + marge + 12, bandeau / 2);
         return { part, planche: c.toDataURL('image/jpeg', 0.85).split(',')[1] };
       },
-      { a: readFileSync(ref).toString('base64'), b: readFileSync(join(apres, nom)).toString('base64'), seuil: SEUIL, ecart: ECART },
+      { a: readFileSync(ref).toString('base64'), b: readFileSync(join(apres, nom)).toString('base64'), seuil: SEUIL, ecart: ECART, titre: nom.replace(/\.jpg$/, '') },
     );
     if (planche) {
       writeFileSync(join(planches, nom), Buffer.from(planche, 'base64'));

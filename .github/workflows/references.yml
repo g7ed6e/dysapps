@@ -1,0 +1,102 @@
+name: Captures de référence de main
+
+# À chaque publication sur main, le socle des captures de rendu (l'île, l'archipel et la Carte, de jour et de nuit, des
+# quatre archipels, dans les deux univers) est refait et rangé sur la branche `captures-main`, un dossier par commit,
+# les cinq derniers. Un fil de rendu ne prend plus l'« avant » de son lot : il compare ses captures à celles du commit
+# de main dont il part (`npm run rendu:mesures -- --comparer`, voir .claude/skills/captures/SKILL.md). Les captures sont
+# reproductibles (horloge de la page pilotée) : seules les vues que le lot change ressortent.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Aucune permission par défaut : chaque job ne reçoit que ce dont il a besoin.
+permissions: {}
+
+concurrency:
+  group: references-main
+  cancel-in-progress: false
+
+jobs:
+  # Rejoue le jeu (code du dépôt) : lecture seule.
+  captures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        univers: [blocland, archipeo]
+    steps:
+      # Actions épinglées par SHA (mises à jour par Dependabot).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Installer Chromium
+        run: npx playwright-core install --with-deps chromium
+      # Le code de sortie des mesures (une lueur de nuit au-dessus du plafond) n'empêche pas de garder les captures :
+      # elles restent la référence de ce commit.
+      - name: Faire le socle des captures
+        env:
+          RENDU: ${{ matrix.univers == 'archipeo' && '--rendu archipeo' || '' }}
+        run: npm run rendu:mesures -- --sans-poids --familles jour,nuit --captures "references/${{ matrix.univers }}" $RENDU || echo "Mesures en échec : captures gardées."
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: references-${{ matrix.univers }}
+          path: references/
+          if-no-files-found: error
+          retention-days: 7
+
+  # Range les captures sur `captures-main`. N'exécute aucun code du dépôt (git seulement) : seul ce job peut écrire.
+  publier:
+    needs: captures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: references-*
+          path: nouvelles
+          merge-multiple: true
+      - name: Ranger sur captures-main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GARDER: 5
+        run: |
+          set -eu
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git init -q depot
+          cd depot
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          # Les dossiers déjà rangés (la branche n'existe pas encore au premier passage).
+          if git -c http.extraheader="$auth" fetch -q --depth 1 origin captures-main; then
+            git checkout -q FETCH_HEAD -- .
+          fi
+          touch commits.txt
+          # Le commit publié en tête, puis les précédents ; au-delà de GARDER, les plus anciens partent.
+          { echo "$GITHUB_SHA"; grep -vx "$GITHUB_SHA" commits.txt || true; } > liste.txt
+          head -n "$GARDER" liste.txt > commits.txt
+          tail -n +"$((GARDER + 1))" liste.txt | while read -r ancien; do rm -rf "$ancien"; done
+          rm liste.txt
+          rm -rf "$GITHUB_SHA"
+          cp -r ../nouvelles "$GITHUB_SHA"
+          printf '%s\n' \
+            "# Captures de référence de main" "" \
+            "Le socle des captures de rendu des derniers commits publiés sur main (le plus récent en tête de commits.txt)," \
+            "un dossier par commit, blocland/ et archipeo/. Refait par .github/workflows/references.yml ; jamais fusionnée." > README.md
+          # Une seule version de la branche : son poids reste celui des derniers dossiers.
+          git checkout -q --orphan publie
+          git add -A
+          git commit -q -m "Captures de référence de main : $GITHUB_SHA"
+          git -c http.extraheader="$auth" push -q -f origin HEAD:captures-main
+          echo "Rangées dans captures-main/$GITHUB_SHA."
