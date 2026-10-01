@@ -57,7 +57,10 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // Îles Brumeuses, 4 594 aux Anciens Ateliers, 4 858 aux Îles du Ciel. L'enveloppe « autres » de la construction passe
   // de 7 100 à 7 240 ; 60 triangles sont pris au bonhomme (25), à la faune (20), au navire (10) et aux bornes (5)
   // (mesurés : 472, 1 274, 420, 700), et aucun autre poste n'a de marge depuis le sol en 20 × 20 : la somme des
-  // « autres » passe de 52 960 à 53 040 (toujours sous les 60 000 des tablettes).
+  // « autres » passe de 52 960 à 53 040 (toujours sous les 60 000 des tablettes). Puis, enveloppe commune avec la salle
+  // des trophées agrandie (GD-3), validée par le mainteneur le 01/10/2026 : la construction du 5e monte à 7 249 avec les
+  // trophées sur le toit, à environ 7 241 au pire de GD-3 (20 succès) ; l'enveloppe passe à 7 260 et la somme à 53 060,
+  // pris sur la réserve sous les 60 000 (aucun autre poste n'a de marge).
   // Le cœur agrandi de l'Atelier (4e, 01/10/2026), enveloppe validée par le mainteneur le 01/10/2026 : 20 × 20 et sa côte autour, l'île gagne 184 colonnes de terre et 694 triangles de sol (Anciens Ateliers :
   // 24 043 → 24 756). Rien à alléger sans retirer de la terre (les marges sont déjà plates, deux triangles par case), et
   // aucun poste « autres » n'a 660 triangles de marge dans les trois archipels (100 en tout) : l'enveloppe du sol passe
@@ -87,7 +90,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 6_500, drawCalls: 3 },
-    autres: { triangles: 7_240, drawCalls: 3 },
+    autres: { triangles: 7_260, drawCalls: 3 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
