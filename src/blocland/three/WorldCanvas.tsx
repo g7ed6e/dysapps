@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
-import { ARROW_DIRS, cubeTags, finishWalk, groundTap, islandInDirection, toucheRetenue, type Touche, type VoyageRun } from '../world/scene';
+import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
@@ -25,6 +25,7 @@ import { creerPersonnages, type Personnages } from './personnages';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
+import { creerRond } from './rond';
 import { glisseCommence, pointDuPlan, SEUIL_DU_GLISSE } from './glisse';
 import { lecteurDePlaceLibre } from '../placeLibre';
 
@@ -177,6 +178,7 @@ export default function WorldCanvas({
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
+    const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
@@ -196,7 +198,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, rond, etiquettes];
 
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
@@ -217,8 +219,8 @@ export default function WorldCanvas({
     };
     el.addEventListener('keydown', onKey);
 
-    // Toucher une île, une face ou une créature : un tap, pas un glissé. Un glissé d'un doigt (ou à la souris) fait
-    // glisser la vue à plat (./glisse.ts) ; un second doigt est ignoré (pas de pincer).
+    // Toucher une île (son sol : le bonhomme y va), une face ou une créature : un tap, pas un glissé. Un glissé d'un
+    // doigt (ou à la souris) fait glisser la vue à plat (./glisse.ts) ; un second doigt est ignoré (pas de pincer).
     const ray = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     /**
@@ -285,7 +287,8 @@ export default function WorldCanvas({
       }
     };
     /**
-     * Le glissé est permis : la page montre « Recentrer », ni marche ni voyage en cours (le toucher y fait arriver). Pas
+     * Le glissé est permis : la page montre « Recentrer », ni marche suivie par la caméra ni voyage en cours (le toucher
+     * y change le but ou fait arriver ; une flânerie sur son île, que la caméra ne suit pas, n'empêche rien). Pas
      * sur la Carte : elle montre déjà l'archipel entier (DA-31), et son panneau tient la place de « Recentrer ».
      */
     const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue && !derniers.current.carte;
@@ -347,22 +350,28 @@ export default function WorldCanvas({
       if (glisse || moved >= SEUIL_DU_GLISSE) return;
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
-      // Pendant un trajet, un tap n'importe où fait arriver le bonhomme tout de suite.
-      if (finishWalk(personnages.marche, performance.now())) return;
       const { creature, hit } = aim(e);
+      // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
+      // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
+      const now = performance.now();
+      const marche = personnages.marche;
+      if (!creature && !hit && finishWalk(marche, now)) return;
+      const ici = enRoute(marche, now) ? walkPose(marche, now) : null;
+      const enRouteIci = ici ? { x: ici.x, y: ici.y, z: ici.z } : undefined;
       if (creature && vehicleRef.current && isInside(creature.object, navire.groupe)) {
         // Une case du navire : en coordonnées locales (le navire tangue), puis dans le monde ; un fantôme se pose.
         const v = vehicleRef.current;
         const n = creature.face?.normal ?? new THREE.Vector3(0, 1, 0);
         const local = navire.groupe.worldToLocal(creature.point.clone().addScaledVector(n, -0.5));
         const cell = { x: v.origin.x + Math.floor(local.x), y: v.origin.y + Math.floor(local.z), z: v.origin.z + Math.floor(local.y) };
-        if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, v.port);
+        if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, { ile: v.port });
         return pickVehicleRef.current?.(v.port);
       }
-      // Une cible touchée : l'application reprend la main, la vue revient à son cadrage. Pas en chantier, où l'on pose
-      // bloc après bloc là où l'on regarde.
+      // Une cible touchée : l'application reprend la main, la vue revient à son cadrage. Pas sur le sol (world/scene.ts,
+      // `recentrerApres`) : en chantier on pose bloc après bloc là où l'on regarde, et le bonhomme qui y va ne déplace
+      // pas la vue.
       const tap = !creature && hit ? tapSur(hit) : null;
-      if (creature || (tap && tap.kind !== 'face')) recentrer();
+      if (recentrerApres(tap, Boolean(creature))) recentrer();
       if (creature) {
         const quest = questIdOf(creature.object);
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
@@ -374,8 +383,10 @@ export default function WorldCanvas({
       if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
       else if (tap.kind === 'place') pickPlaceRef.current?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
-      else if (tap.kind === 'face') buildRef.current?.onPickFace(tap.cell, tap.next);
-      else pickRef.current?.(tap.id);
+      // En chantier (une île ouverte), le sol touché est une face : une case d'un plan s'y pose, sinon le bonhomme y va.
+      else if (tap.kind === 'face') buildRef.current?.onPickFace(tap.cell, tap.next, { terrain: { enRoute: enRouteIci } });
+      // Le sol d'une île : la colonne touchée (celle où pousse un élément du décor touché), le bonhomme y va.
+      else pickRef.current?.(tap.id, tap.cell, enRouteIci);
     };
     const onHover = (e: PointerEvent) => {
       // Un doigt posé : c'est un geste (toucher ou glissé), pas un survol.

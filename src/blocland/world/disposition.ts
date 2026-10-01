@@ -70,7 +70,11 @@ export interface Disposition {
 
 /** Ce qu'une vue renvoie : un geste traduit en intention ; le jeu décide. */
 export type Intention =
-  | { genre: 'ile'; id: BiomeId }
+  /**
+   * Une île touchée (ou choisie au clavier). Touchée sur le sol : `sol`, la case touchée (le bonhomme y va) ; s'il était
+   * en route, `enRoute`, là où il en est (le nouveau trajet part de là).
+   */
+  | { genre: 'ile'; id: BiomeId; sol?: Ancrage; enRoute?: Ancrage }
   | { genre: 'borne'; ile: BiomeId; mission: string }
   /** Un lieu du village (l'école, la salle des trophées) ou un monument (« monument:<id> »). */
   | { genre: 'lieu'; id: string; ile: BiomeId }
@@ -79,8 +83,9 @@ export type Intention =
   | { genre: 'navire'; port: BiomeId }
   /**
    * En chantier, une face touchée sur l'île `ile` (ou sur le navire amarré à son port) : le bloc touché et la case
-   * voisine, devant la face, en cases du plan de l'île (celles de la sauvegarde).
+   * voisine, devant la face, en cases du plan de l'île (celles de la sauvegarde). Sur le terrain, `sol` : le bloc touché,
+   * dans le repère de l'île (s'il n'est pas une case d'un plan, le bonhomme y va, comme pour `ile`), et `enRoute`.
    */
-  | { genre: 'face'; ile: BiomeId; case: Point; voisine: Point }
+  | { genre: 'face'; ile: BiomeId; case: Point; voisine: Point; sol?: Ancrage; enRoute?: Ancrage }
   | { genre: 'fin-du-voyage' }
   | { genre: 'voyage-saute' };

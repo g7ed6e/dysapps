@@ -627,10 +627,21 @@ export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
  * L'itinéraire du bonhomme d'une île à une autre, en marchant sur les ouvrages construits (le plus court chemin en
  * nombre d'ouvrages), ou `null` s'il n'y en a pas. Une suite de points (x, y, z du sol sous ses pieds). Une île
  * traversée n'est pas un détour par sa place : il va d'un ouvrage au suivant. Avec la grille de marche (`ground`), il
- * suit le sol et contourne arbres, bornes, maisons et créatures ; sans elle, il va en ligne droite.
+ * suit le sol et contourne arbres, bornes, maisons et créatures ; sans elle, il va en ligne droite. Il s'arrête à sa
+ * place sur l'île d'arrivée, ou en `end` (la case du sol qu'on a touchée) ; il part de sa place, ou de `start`.
  */
-export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[], ground?: WalkGround): { x: number; y: number; z: number }[] | null {
-  if (from === to) return [avatarHome(from)];
+export function avatarRoute(
+  from: BiomeId,
+  to: BiomeId,
+  bridges: string[],
+  ground?: WalkGround,
+  /**
+   * `end` : là où il s'arrête sur l'île d'arrivée (la case touchée), plutôt qu'à sa place ; `start` : là d'où il part sur
+   * l'île de départ (là où l'élève l'a envoyé), plutôt que de sa place.
+   */
+  { end, start }: { end?: { x: number; y: number; z: number }; start?: { x: number; y: number; z: number } } = {},
+): { x: number; y: number; z: number }[] | null {
+  if (from === to) return [end ?? avatarHome(from)];
   const built = (b: BridgeDef) => bridgeState(b, bridges) === 'built';
   const prev = new Map<BiomeId, BridgeDef | null>([[from, null]]);
   const queue: BiomeId[] = [from];
@@ -653,7 +664,7 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[], groun
     hops.unshift({ def: b, from: before, to: at });
     at = before;
   }
-  const route: { x: number; y: number; z: number }[] = [avatarHome(from)];
+  const route: { x: number; y: number; z: number }[] = [start ?? avatarHome(from)];
   // Sur une île : de là où il est jusqu'au point suivant, à pied (ou tout droit, sans grille).
   const walkTo = (next: { x: number; y: number; z: number }) => {
     const here = route[route.length - 1];
@@ -675,7 +686,7 @@ export function avatarRoute(from: BiomeId, to: BiomeId, bridges: string[], groun
     walkTo(deck[0]);
     route.push(...deck.slice(1));
   }
-  walkTo(avatarHome(to));
+  walkTo(end ?? avatarHome(to));
   return route;
 }
 
