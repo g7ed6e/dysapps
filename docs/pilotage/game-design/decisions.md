@@ -19,4 +19,4 @@ Les décisions prises avant cette page restent dans les tableaux où elles ont �
 | Date | Décision | Fiche | Lot |
 | --- | --- | --- | --- |
 | 30 septembre 2026 | Le game design se tient dans cette section, et chaque changement passe par une fiche GD-n | — | — |
-| 30 septembre 2026 | Combiner les blocs : un bloc assemblé par archipel, à la Fabrique (Blocland) ou à la Halle aux matériaux (Archipéo), sur l’île de l’école ; les huit monuments en demandent ; noms propres à chaque univers, écrits dans `docs/contenu/assemblage.md` | [GD-2](propositions/GD-2.md) | GD-2 |
+| 30 septembre 2026 | Combiner les blocs : un bloc assemblé par archipel, à la Fabrique (Blocland) ou à la Halle aux matériaux (Archipéo), sur l’île de l’école ; les huit monuments en demandent ; noms propres à chaque univers, écrits dans `docs/contenu/assemblage.md` ; le 1er octobre, un bloc assemblé en poche se défait | [GD-2](propositions/GD-2.md) | GD-2 |

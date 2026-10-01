@@ -15,7 +15,7 @@ import { useBlocland } from './BloclandContext';
 import { EarnLink } from './PlanSection';
 import { useSchoolIsland } from './School';
 import { BlockIcon } from './Voxel';
-import { blocsAttendus, planStatus } from './engine';
+import { planStatus } from './engine';
 import { ASSEMBLAGE_PATH, assemblables, manquePour, RECETTES, type Recette } from './world/assemblage';
 import { archipelagoOf, getArchipelago, reachableIslands } from './world/archipelago';
 import { archipelagoOfIsland, type ArchipelagoId } from './world/archipels';
@@ -62,13 +62,11 @@ function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
  * le bloc, chacun avec son nombre.
  */
 function RecetteCarte({ recette }: { recette: Recette }) {
-  const { state, assemble } = useBlocland();
+  const { state, assemble, disassemble } = useBlocland();
   const [dit, setDit] = useState<{ texte: string; retour: MonumentDef | null } | null>(null);
   const nom = nomDuBloc(recette.bloc);
   const un = blockName(recette.bloc, 1);
-  const attendus = blocsAttendus(state, recette.bloc);
-  const assez = assemblables(state.inventory, recette) > 0;
-  const peut = assez && attendus > 0;
+  const peut = assemblables(state.inventory, recette) > 0;
   const manque = manquePour(state.inventory, recette);
   const en = state.inventory[recette.bloc] ?? 0;
   const pour = monumentsOf(recette.archipelago)
@@ -79,7 +77,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const pocheEnMots = `Dans ta poche : ${blockCount(recette.bloc, en)}.`;
   const attendEnMots = pour.map(({ m, n }) => `${m.name} attend ${blockCount(recette.bloc, n)}.`).join(' ');
   // Le bouton « Écouter la recette » redit tout ce qui est écrit sur la carte (référent dys : rien à lire sans voix).
-  const aEcouter = `${phrase} ${pocheEnMots} ${attendus > 0 ? manqueEnMots : ''} ${attendEnMots}`;
+  const aEcouter = `${phrase} ${pocheEnMots} ${manqueEnMots} ${attendEnMots}`;
   const titreId = `recette-${recette.bloc}`;
   const bloc = BLOCKS[recette.bloc];
 
@@ -92,6 +90,13 @@ function RecetteCarte({ recette }: { recette: Recette }) {
     // Assez pour un monument : on propose d'y retourner (rien à retenir).
     const retour = pour.find(({ n }) => apres >= n)?.m ?? null;
     setDit({ texte: `Tu as assemblé 1 ${un}. Tu en as ${apres.toString()}.`, retour });
+  };
+  // Un bloc assemblé se défait : ses blocs reviennent, rien ne se perd (choix du mainteneur, relecture UX UI).
+  const onDefaire = () => {
+    if (en < 1) return;
+    const r = disassemble(recette.bloc);
+    if (!r.ok) return;
+    setDit({ texte: `Tu as défait 1 ${un} : tu récupères ${enMots(recette)}.`, retour: null });
   };
 
   return (
@@ -125,24 +130,25 @@ function RecetteCarte({ recette }: { recette: Recette }) {
       <p className="assemblage-en-poche">
         Dans ta poche : <strong>{en}</strong> {blockName(recette.bloc, en)}.
       </p>
-      {attendus === 0 ? (
-        <p className="assemblage-pourquoi">
-          <Icon name="check" /> Les monuments n’attendent plus de {un} : garde tes blocs pour les plans et les ponts.
-        </p>
-      ) : (
-        manque.length > 0 && (
-          <ul className="assemblage-pourquoi" aria-label="Ce qu’il te manque">
-            {manque.map((m) => (
-              <li key={m.bloc}>
-                Il te manque {blockCount(m.bloc, m.n)}, <EarnLink block={m.bloc} />.
-              </li>
-            ))}
-          </ul>
-        )
+      {manque.length > 0 && (
+        <ul className="assemblage-pourquoi" aria-label="Ce qu’il te manque">
+          {manque.map((m) => (
+            <li key={m.bloc}>
+              Il te manque {blockCount(m.bloc, m.n)}, <EarnLink block={m.bloc} />.
+            </li>
+          ))}
+        </ul>
       )}
-      <button type="button" className="button primary" aria-disabled={!peut} onClick={onAssemble}>
-        <Icon name="hammer" /> Assembler 1 {un}
-      </button>
+      <div className="assemblage-actions">
+        <button type="button" className="button primary" aria-disabled={!peut} onClick={onAssemble}>
+          <Icon name="hammer" /> Assembler 1 {un}
+        </button>
+        {en > 0 && (
+          <button type="button" className="button" onClick={onDefaire}>
+            <Icon name="back" /> Défaire 1 {un}
+          </button>
+        )}
+      </div>
       <p className="assemblage-dit">
         <span role="status" aria-live="polite">
           {dit?.texte ?? ''}

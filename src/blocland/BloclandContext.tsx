@@ -4,6 +4,7 @@ import { bacASable, remplir } from './batisseur';
 import {
   EMPTY_STATE,
   assembleBlock,
+  disassembleBlock,
   buildBridge as buildBridgePure,
   completeExercise,
   completePortalQuest,
@@ -50,6 +51,8 @@ interface BloclandContextValue {
   fillPlan: (plan: PlanDef, x: number, y: number, z: number) => FillResult;
   /** Assemble un bloc (GD-2), avec les blocs de l'inventaire. */
   assemble: (bloc: BlockId) => AssembleResult;
+  /** Défait un bloc assemblé en poche : ses blocs reviennent (GD-2). */
+  disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
   /** Le bonhomme va sur une île ouverte. */
@@ -110,14 +113,15 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }
     return r;
   }, []);
-  const assemble = useCallback((bloc: BlockId) => {
-    const r = assembleBlock(stateRef.current, bloc);
+  const appliquer = useCallback((r: AssembleResult): AssembleResult => {
     if (!r.ok) return r;
     const next = batisseurRef.current ? remplir(r.state) : r.state;
     stateRef.current = next;
     setState(next);
     return { ...r, state: next };
   }, []);
+  const assemble = useCallback((bloc: BlockId) => appliquer(assembleBlock(stateRef.current, bloc)), [appliquer]);
+  const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
     const next = batisseurRef.current ? remplir(r.state) : r.state;
@@ -174,6 +178,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       assemble,
+      disassemble,
       buildBridge,
       moveTo,
       launch,
@@ -181,7 +186,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       batisseur,
       ouvrirBatisseur,
     }),
-    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, assemble, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
+    [state, complete, completePortal, dueCount, sessionCount, pauseAfterNext, continueSession, recordFluence, fillPlan, assemble, disassemble, buildBridge, moveTo, launch, reset, batisseur, ouvrirBatisseur],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;
 }

@@ -5927,6 +5927,11 @@ fieldset {
 .assemblage-recette .button.primary {
   min-height: 48px;
 }
+.assemblage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 .assemblage-dit {
   display: flex;
   flex-wrap: wrap;

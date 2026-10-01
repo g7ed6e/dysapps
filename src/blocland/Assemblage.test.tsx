@@ -69,9 +69,13 @@ it('venue d’un monument, la Fabrique montre d’abord la recette du bloc deman
   expect(screen.getByText('Les autres archipels')).toBeInTheDocument();
 });
 
-it('n’assemble plus quand les monuments n’attendent plus ce bloc, et dit pourquoi', () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 9, pierre: 9, poutre: 99 } }));
+it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
+  const user = userEvent.setup();
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { poutre: 1 } }));
   renderIn(<AssemblagePage />);
-  expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toHaveAttribute('aria-disabled', 'true');
-  expect(document.body.textContent).toContain('Les monuments n’attendent plus de poutre');
+  await user.click(screen.getByRole('button', { name: /Défaire 1 poutre/ }));
+  expect(screen.getByText('Tu as défait 1 poutre : tu récupères 2 blocs de bois et 1 bloc de pierre.')).toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toMatchObject({ bois: 2, pierre: 1, poutre: 0 });
+  // Plus de poutre en poche : le bouton s'en va.
+  expect(screen.queryByRole('button', { name: /Défaire 1 poutre/ })).toBeNull();
 });

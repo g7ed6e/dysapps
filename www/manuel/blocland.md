@@ -238,7 +238,7 @@ Sur l’île de l’école de chaque archipel se tient **l’école du village**
 - **la recette**, toujours affichée : une vignette par bloc à donner, le nombre et le nom, « tu en as … » à côté de chaque bloc, et le bouton **Écouter la recette**, qui lit toute la carte ;
 - combien on en a déjà (« Dans ta poche ») ;
 - juste au-dessus du bouton, ce qu’il manque, s’il manque quelque chose (« Il te manque 1 bloc de pierre, à gagner dans la Mine ») ;
-- le bouton **Assembler**, qui fait **un bloc à la fois**. Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé. Un bloc assemblé ne se défait pas et ne sert qu’aux monuments : la Fabrique n’en fait pas plus que les monuments de l’archipel n’en attendent encore, et le dit (« Les monuments n’attendent plus de poutre : garde tes blocs pour les plans et les ponts ») ;
+- le bouton **Assembler**, qui fait **un bloc à la fois**. Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé. Les blocs assemblés ne servent qu’aux monuments : quand on en a en poche, le bouton **Défaire 1 poutre** rend tous ses blocs (« Tu as défait 1 poutre : tu récupères 2 blocs de bois et 1 bloc de pierre. ») ; un bloc déjà posé dans un monument reste posé ;
 - après un assemblage, ce qu’on vient de faire (« Tu as assemblé 1 poutre. Tu en as 5. »), et un lien pour retourner au monument dès qu’on en a assez pour lui ;
 - les monuments qui attendent ce bloc, chacun avec son nombre (« L’observatoire des baleines attend 5 poutres »), avec un lien.
 

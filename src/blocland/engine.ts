@@ -20,7 +20,7 @@ import {
   type BuildBridgeResult,
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
-import { getMonument, monumentsOf } from './world/monuments';
+import { getMonument } from './world/monuments';
 import { assemblables, recetteDe } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
 
@@ -308,34 +308,33 @@ export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: 
   };
 }
 
-export type AssembleResult =
-  | { state: BloclandState; ok: true }
-  | { state: BloclandState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' | 'plus-attendu' };
-
-/**
- * Combien de blocs assemblés les monuments de son archipel attendent encore, ceux déjà en poche déduits (GD-2, relecture
- * UX UI : un bloc assemblé ne se défait pas et ne sert qu'aux monuments ; on n'en fait pas plus qu'ils n'en attendent,
- * pour ne jamais prendre au bois ou à la pierre ce qu'un plan ou un pont demandera).
- */
-export function blocsAttendus(state: BloclandState, bloc: BlockId): number {
-  const recette = recetteDe(bloc);
-  if (!recette) return 0;
-  const attendus = monumentsOf(recette.archipelago).reduce((n, m) => n + (planStatus(state, m).missing[bloc] ?? 0), 0);
-  return Math.max(0, attendus - (state.inventory[bloc] ?? 0));
-}
+export type AssembleResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' };
 
 /**
  * Assemble un bloc (GD-2) : retire les ingrédients de la recette et ajoute le bloc assemblé. Un seul à la fois, et
- * rien ne se perd : sans assez de blocs, ou quand les monuments n'en attendent plus, l'inventaire ne bouge pas.
+ * rien ne se perd : sans assez de blocs, l'inventaire ne bouge pas.
  */
 export function assembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
   const recette = recetteDe(bloc);
   if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
-  if (blocsAttendus(state, bloc) < 1) return { state, ok: false, reason: 'plus-attendu' };
   if (assemblables(state.inventory, recette) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
   const inventory = { ...state.inventory };
   for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) - i.n;
   inventory[bloc] = (inventory[bloc] ?? 0) + 1;
+  return { state: { ...state, inventory }, ok: true };
+}
+
+/**
+ * Défait un bloc assemblé en poche (GD-2, choix du mainteneur après la relecture UX UI) : rend tous ses ingrédients.
+ * Un bloc déjà posé dans un monument reste posé ; sans bloc en poche, l'inventaire ne bouge pas.
+ */
+export function disassembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+  const recette = recetteDe(bloc);
+  if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
+  if ((state.inventory[bloc] ?? 0) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.inventory };
+  for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) + i.n;
+  inventory[bloc] = (inventory[bloc] ?? 0) - 1;
   return { state: { ...state, inventory }, ok: true };
 }
 
