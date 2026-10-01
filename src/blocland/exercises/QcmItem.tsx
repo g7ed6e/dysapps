@@ -41,7 +41,7 @@ export function QcmItem({ items, answered, onAnswer, ruledOut, lang = 'fr', plai
       </div>
       {aid && (
         <div className="aid calcul-aid">
-          <Aid aid={aid} />
+          <Aid aid={aid} lang={lang} />
         </div>
       )}
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">

@@ -421,7 +421,7 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Suivre un récit » :
-  - Qui parle ? Écoute le nom juste avant ou après said (a dit), asked (a demandé), answered (a répondu).
+  - Qui parle ? Écoute le nom juste avant ou après : said = a dit, asked = a demandé, answered = a répondu.
   - first = d’abord ; then = ensuite ; when = quand ; so = alors ; but = mais
   - lost = a perdu ; found = a trouvé ; broke = a cassé ; ran away = s’est sauvé
   - a bench = un banc ; a ticket office = un guichet ; snow = la neige ; a cook = un cuisinier
