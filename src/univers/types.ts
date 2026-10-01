@@ -61,6 +61,13 @@ export interface LibellesGardiens {
   defiFerme: (gardien: string, etoiles: number) => string;
   /** Le nom de l'écran du défi, pour un lecteur d'écran (`gardien` : son nom avec son article, « le Grand Chêne »). */
   arene: (gardien: string) => string;
+  /**
+   * Dite une fois par appareil, au premier toucher d'une île pâle, par sa créature, après l'indice d'île fermée : ce
+   * qu'est un ouvrage et ce qu'il demande (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
+   */
+  decouverteOuvrages: string;
+  /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
+  decouverteNavire: string;
 }
 
 /**
