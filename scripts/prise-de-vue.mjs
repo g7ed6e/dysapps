@@ -73,15 +73,21 @@ export async function attendreLaScene(page, max) {
   return false;
 }
 
-/** À passer à `page.addInitScript` : un hasard à graine fixe, les mêmes tirages à chaque chargement (promenades des créatures, questions, phrases). */
+/**
+ * À passer à `page.addInitScript` : un hasard à graine fixe, les mêmes tirages à chaque chargement (promenades des
+ * créatures, questions, phrases). Les identifiants que Three.js tire pour chaque objet (`generateUUID`, des milliers, au
+ * gré des chargements) puisent dans une suite à part : ils ne décalent pas les tirages du jeu.
+ */
 export function hasardFixe() {
-  let seed = 20260928;
-  Math.random = () => {
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  const suite = (graine) => () => {
+    graine = (graine + 0x6d2b79f5) | 0;
+    let t = Math.imul(graine ^ (graine >>> 15), 1 | graine);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  const jeu = suite(20260928);
+  const identifiants = suite(1);
+  Math.random = () => (new Error().stack?.includes('generateUUID') ? identifiants() : jeu());
 }
 
 /** Un pas de l'horloge pilotée : une image bridée (`figeable`). */
@@ -105,6 +111,9 @@ export async function piloterLHorloge(page, time) {
  * instant d'une prise à l'autre (avec `hasardFixe`). Rend `false` si aucun monde 3D n'est apparu (un défi, une bulle).
  */
 export async function preparerLaScene(page, max) {
+  // Les modules de l'écran d'abord, l'horloge arrêtée : les tirages au hasard (questions d'un défi) se font ensuite dans
+  // le même ordre d'une prise à l'autre, pas au gré des images jouées pendant un chargement.
+  await page.waitForLoadState('networkidle').catch(() => {});
   const debut = Date.now();
   let monde = false;
   while (!monde && Date.now() - debut < max) {
