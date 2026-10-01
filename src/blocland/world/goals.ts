@@ -30,6 +30,8 @@ export interface Goal {
   text: string;
   have: number;
   need: number;
+  /** Tout est là pour le faire tout de suite (la jauge, pleine, n'a plus rien à dire). */
+  ready?: boolean;
 }
 
 /** Ce qu'il manque d'un plan, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
@@ -53,7 +55,7 @@ function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
 export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
-  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`, have: 1, need: 1 };
+  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`, have: 1, need: 1, ready: true };
   type Candidate = Goal & { ready: boolean };
   const candidates: Candidate[] = [];
   const current = currentPlan(state, island);
@@ -109,7 +111,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null
   }
   if (!candidates.length) return null;
   const pick = candidates.find((c) => c.ready) ?? candidates.reduce((a, b) => (b.need - b.have < a.need - a.have ? b : a));
-  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need };
+  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need, ready: pick.ready };
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */

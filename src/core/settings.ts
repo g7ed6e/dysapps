@@ -7,6 +7,8 @@ export type ThemeChoice = 'creme' | 'nuit' | 'clair';
  * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
  */
 export type WorldViewChoice = '3d' | 'liste';
+/** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
+export type WorldLightChoice = 'reelle' | 'jour';
 /** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
 export type StartChoice = 'village' | 'menu';
 export type { UniversChoice } from './univers';
@@ -33,6 +35,8 @@ export interface Settings {
   syllables: boolean;
   /** La vue de Blocland ; sans WebGL, le monde en 3D laisse la place à la liste, accessible. */
   worldView: WorldViewChoice;
+  /** La lumière du monde en 3D : l'heure réelle, ou toujours le jour (Réglages, « Vue du monde »). */
+  worldLight: WorldLightChoice;
   /** Sons d'action dans le village (poser, retirer, plan terminé). */
   sounds: boolean;
   /** Ambiance sonore du village (vent, oiseaux le jour, grillons la nuit), en option. */
@@ -67,6 +71,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoRead: true,
   syllables: true,
   worldView: '3d',
+  worldLight: 'reelle',
   sounds: true,
   ambience: false,
   haptics: true,
@@ -85,6 +90,11 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
   liste: 'La liste des îles',
+};
+
+export const WORLD_LIGHT_LABELS: Record<WorldLightChoice, string> = {
+  reelle: 'L’heure réelle',
+  jour: 'Toujours le jour',
 };
 
 export const START_LABELS: Record<StartChoice, string> = {
@@ -142,6 +152,7 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     autoRead: s.autoRead === undefined ? DEFAULT_SETTINGS.autoRead : Boolean(s.autoRead),
     syllables: s.syllables === undefined ? DEFAULT_SETTINGS.syllables : Boolean(s.syllables),
     worldView: s.worldView in WORLD_VIEW_LABELS ? s.worldView : DEFAULT_SETTINGS.worldView,
+    worldLight: Object.hasOwn(WORLD_LIGHT_LABELS, s.worldLight) ? s.worldLight : DEFAULT_SETTINGS.worldLight,
     sounds: s.sounds === undefined ? DEFAULT_SETTINGS.sounds : Boolean(s.sounds),
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),

@@ -974,6 +974,7 @@ function baremePage(d) {
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
         ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
         ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
+        ['Lumière du monde', d.settings.WORLD_LIGHT_LABELS[DEFAULT_SETTINGS.worldLight], Object.values(d.settings.WORLD_LIGHT_LABELS).join(', ')],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],
         ['Ambiance sonore', DEFAULT_SETTINGS.ambience ? 'oui' : 'non', ''],
         ['Univers', d.UNIVERS[d.UNIVERS_PAR_DEFAUT].nom, Object.values(d.UNIVERS).map((u) => u.nom).join(', ')],

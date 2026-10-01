@@ -315,6 +315,9 @@ export const ARCHIPEO = {
     defiPretCourt: 'Défi prêt',
     defiFerme: (gardien, etoiles) => `${gardien} attend encore. Obtiens ${etoiles} étoiles dans chaque mission de l’île, puis reviens relever son défi.`,
     arene: (gardien) => `Le défi ${du(gardien)}`,
+    decouverteOuvrages:
+      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien rallumé.',
+    decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
   sentinelles: {
@@ -333,7 +336,7 @@ export const ARCHIPEO = {
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
     'monument-phare-large': {
-      description: 'Une haute tour ronde de pierre grise, percée de hublots. À son sommet, un feu brûle pour guider les navires dans la brume.',
+      description: 'Une haute tour ronde de pierre grise, percée de hublots, dont le feu guide les navires dans la brume.',
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },

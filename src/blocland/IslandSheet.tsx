@@ -5,7 +5,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { SANS_LV2, estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -19,8 +19,10 @@ import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
 import { Stars } from './Stars';
-import { lockedHint, nextGoalInfo } from './world/goals';
-import { GoalLine } from './GoalLine';
+import { nextGoalInfo } from './world/goals';
+import { accueilDeLIle } from './decouvertes';
+import { GoalFold, GoalLine } from './GoalLine';
+import { firstSentences } from './firstSentences';
 import { VillageStageLine } from './VillageStageLine';
 import { SchoolLink } from './School';
 import { AssemblageLink } from './Assemblage';
@@ -44,9 +46,10 @@ interface Props {
 }
 
 /**
- * Le panneau d'une île, qui glisse depuis le bas du monde : la créature, ses missions, le Gardien, puis le plan en cours,
- * le Bloc-Navire (sur un port) et les ouvrages, repliés quand il n'y a rien à y faire. Tout est en HTML (police dys),
- * on ne quitte pas le monde.
+ * Le panneau d'une île, qui glisse depuis le bas du monde : la créature (une ligne, la suite dans un pli), ses missions,
+ * le Gardien, le prochain objectif, puis le plan en cours, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
+ * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
+ * pas le monde.
  */
 export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
@@ -55,10 +58,14 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id);
+  const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
+  const port = unlocked && archipelagoOf(biome.id).port === biome.id;
+  // L'accueil de la créature : une ligne écrite visible, la suite dans un pli. Un message d'île fermée (ou « pas de
+  // LV2 ») dit quoi faire : il reste entier.
+  const says = unlocked && !sansLv2 ? firstSentences(greeting) : { first: greeting, rest: '' };
   const [bossSaid, setBossSaid] = useState<string | null>(null);
   // En 3D, le plan, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
@@ -89,22 +96,29 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
           <h2 id={`ile-${biome.id}`} className="island-sheet-title">
             <Icon name={biome.icon} /> {biome.name}
           </h2>
-          <p className="island-sheet-module">
-            {biome.module} · Niveau {biome.classe} · Les {getArchipelago(biome.classe).name}
-          </p>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
           <Icon name="close" />
         </button>
       </div>
-      <p className="island-sheet-says" role="status" aria-live="polite">
-        <strong>{biome.creature.name} :</strong> <Syllabified text={greeting} />
+      {/* « Réécouter » sur la ligne du nom de la créature ; sa phrase dessous, sur toute la largeur. */}
+      <p className="island-sheet-says island-sheet-says-nom" role="status" aria-live="polite">
+        <strong>{biome.creature.name} :</strong>
         <SpeakButton text={greeting} label="Réécouter" compact />
+        <span className="island-sheet-says-texte">
+          <Syllabified text={says.first} />
+        </span>
       </p>
+      {says.rest && (
+        // La suite de l'accueil, écrite dans un pli : rien n'est seulement à l'écoute. « Réécouter » lit le tout.
+        <details key={`suite-${biome.id}`} className="sheet-more island-says-more">
+          <summary>La suite</summary>
+          <p>
+            <Syllabified text={says.rest} />
+          </p>
+        </details>
+      )}
 
-      {goal && <GoalLine goal={goal} />}
-      {/* Sur l'île-port : l'état du village de l'archipel, qui se voit aussi au port en cubes. */}
-      {unlocked && archipelagoOf(biome.id).port === biome.id && <VillageStageLine village={state.village} archipelago={biome.classe} />}
       {sansLv2 ? (
         // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
         <p>
@@ -213,11 +227,27 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         {bossSaid ? <Syllabified text={bossSaid} /> : ''}
       </p>
 
+      {/* Le prochain objectif et, sur l'île-port, l'état du village (qui se voit aussi au port en cubes) : un seul pli. */}
+      {goal && port ? (
+        <GoalFold key={`objectif-${biome.id}`} goal={goal}>
+          <VillageStageLine village={state.village} archipelago={biome.classe} />
+        </GoalFold>
+      ) : goal ? (
+        <GoalLine goal={goal} />
+      ) : (
+        port && <VillageStageLine village={state.village} archipelago={biome.classe} className="island-village" />
+      )}
+
       {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'plan'} />}
 
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} fold={fold} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} />}
+
+      {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
+      <p className="island-sheet-module island-sheet-foot">
+        {biome.module} · Niveau {biome.classe} · Les {getArchipelago(biome.classe).name}
+      </p>
     </section>
   );
 }

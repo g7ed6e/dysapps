@@ -310,6 +310,9 @@ export const BLOCLAND = {
     defiPretCourt: 'Prêt à t’affronter',
     defiFerme: (gardien, etoiles) => `${gardien} n’accepte que les bâtisseurs entraînés. Obtiens ${etoiles} étoiles dans chaque mission, puis reviens.`,
     arene: () => 'L’arène du Gardien',
+    decouverteOuvrages:
+      'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien vaincu.',
+    decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
   sentinelles: null,
   monuments: {},
