@@ -273,6 +273,17 @@ export function eauxDe(a: ArchipelagoId): Eaux {
   };
 }
 
+// ---------- Le rond au sol ----------
+
+/** Le rond au sol (./rondAuSol.ts), là où va le bonhomme : un plein ivoire, cerné d'encre brune. */
+export const IVOIRE = 0xfff3d6;
+export const ENCRE = 0x3b2a20;
+/**
+ * La nuit, l'ivoire du rond prend un peu de la nuit de l'archipel (cette part, au cœur de la nuit) : sans lumière, il
+ * paraîtrait collé sur la scène, mais il reste nettement plus clair que l'herbe de nuit.
+ */
+export const IVOIRE_DE_NUIT = 0.25;
+
 // ---------- Les surfaces ----------
 
 /** Les sols, de jour, avant le voile de l'archipel : la planche (herbe chaude, sable clair, roche tiède). */

@@ -21,7 +21,7 @@ export function useEnCasesDuMonde({
       return spot ? { ...f, spot: enMonde(spot) } : f;
     }, [focus, enMonde]),
     marker: useMemo(() => (marker === null || typeof marker === 'string' ? marker : enMonde(marker)), [marker, enMonde]),
-    avatar: useMemo(() => avatar && { route: avatar.route.map(enMonde), seq: avatar.seq }, [avatar, enMonde]),
+    avatar: useMemo(() => avatar && { ...avatar, route: avatar.route.map(enMonde) }, [avatar, enMonde]),
     trail: useMemo(() => trail?.map(enMonde), [trail, enMonde]),
     quests: useMemo(() => quests?.map(({ place, ...q }) => ({ ...q, cell: enMonde(place) })), [quests, enMonde]),
     burst: useMemo(() => burst && { ...burst, cell: enMonde(burst.cell) }, [burst, enMonde]),

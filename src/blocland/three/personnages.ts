@@ -18,8 +18,10 @@ export interface Personnages extends PartieDeLaScene {
   avatar: THREE.Group;
   /** Les créatures et les Gardiens (on les touche). */
   creatures: THREE.Group;
-  /** La marche en cours du bonhomme (un tap la fait finir ; le navire le fait embarquer et débarquer). */
+  /** La marche en cours du bonhomme (un tap dans le vide la fait finir ; le navire le fait embarquer et débarquer). */
   marche: Walk | null;
+  /** Le dernier itinéraire demandé par la vue (`marcher`), gardé après l'arrivée : le rond au sol le lit (./rond.ts). */
+  trajet: Walk | null;
   /** Son cap, autour de la verticale : il s'y tourne en douceur. */
   cap: number;
   montrerLeBonhomme(visible: boolean): void;
@@ -165,14 +167,15 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     avatar: avatarGroup,
     creatures: creaturesGroup,
     marche: null,
+    trajet: null,
     // Face à la caméra tant qu'il n'a pas marché.
     cap: 0,
     montrerLeBonhomme: (visible) => {
       avatarGroup.visible = visible;
     },
     marcher: (avatar) => {
-      // Six cases par seconde, mais jamais plus de six secondes de marche (un tap fait arriver tout de suite).
-      p.marche = avatarWalk(avatar, performance.now());
+      // Six cases par seconde, mais jamais plus de six secondes de marche (un tap dans le vide fait arriver tout de suite).
+      p.marche = p.trajet = avatarWalk(avatar, performance.now());
     },
     poserLesCreatures: (creatures) => {
       places = creatures;
@@ -194,8 +197,9 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       // Il regarde là où il va. Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on
       // tourne de atan2(-dx, -dy).
       if (pose.facing) p.cap = Math.atan2(-pose.facing.dx, -pose.facing.dy);
+      // Une flânerie sur son île (vers une case touchée) n'est pas une marche pour la caméra : elle garde son cadrage.
       if (!pose.moving) p.marche = null;
-      else instant.marche = true;
+      else if (!p.marche.flanerie) instant.marche = true;
     },
     animer: (t, dt, reduit) => {
       // Il se tourne vers son cap en douceur, par le plus court.

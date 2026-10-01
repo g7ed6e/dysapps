@@ -5,9 +5,9 @@ import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
 import { CREATURE_STEPS, boardingRoute, routeAt, routeLengths } from './terrain';
-import { WALK_MAX_MS, WALK_SPEED, dispositionEnGrille, dureeDeMarche, type DispositionEnGrille } from './grille';
+import { WALK_MAX_MS, WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
-import type { Cell, CreaturePlacement } from './view';
+import type { Bonhomme, Cell, CreaturePlacement } from './view';
 
 /** Accélère au début, ralentit à la fin. */
 export const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
@@ -17,13 +17,6 @@ export const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 
 // La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grille.ts).
 export { WALK_MAX_MS, WALK_SPEED };
 
-/** La disposition en grille d'un archipel, pour le clavier et le toucher (ce qu'ils lisent ne dépend que de l'archipel). */
-const grilles = new Map<ArchipelagoId, DispositionEnGrille>();
-function grilleDe(a: ArchipelagoId): DispositionEnGrille {
-  let g = grilles.get(a);
-  if (!g) grilles.set(a, (g = dispositionEnGrille(a)));
-  return g;
-}
 
 /** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
 export interface Walk {
@@ -31,6 +24,10 @@ export interface Walk {
   cum: number[];
   start: number;
   duration: number;
+  /** Sur l'île où il est, vers une case touchée : la caméra ne le suit pas. */
+  flanerie?: boolean;
+  /** Le but vient d'un toucher sur le sol : un rond le montre jusqu'à l'arrivée. */
+  vise?: boolean;
 }
 
 export function startWalk(route: Cell[], start: number, duration: number): Walk {
@@ -41,10 +38,18 @@ export function startWalk(route: Cell[], start: number, duration: number): Walk 
  * Le trajet demandé par la vue (`avatar`) : un seul point, il se tient là ; plusieurs, il marche. Six cases par
  * seconde, jamais plus de six secondes ; le premier placement (`seq` 0) est immédiat.
  */
-export function avatarWalk(avatar: { route: Cell[]; seq: number }, now: number): Walk | null {
+export function avatarWalk(avatar: Bonhomme<Cell>, now: number): Walk | null {
   if (!avatar.route.length) return null;
   const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
-  return startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
+  const walk = startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
+  if (avatar.flanerie) walk.flanerie = true;
+  if (avatar.vise) walk.vise = true;
+  return walk;
+}
+
+/** Le bonhomme est encore en route. */
+export function enRoute(walk: Walk | null, now: number): walk is Walk {
+  return walk !== null && now - walk.start < walk.duration;
 }
 
 /** Le temps d'un trajet du bonhomme : six cases par seconde, jamais plus de six secondes. */
@@ -73,9 +78,12 @@ export function walkPose(walk: Walk, now: number, reduceMotion = false): WalkPos
   return { ...at, moving: k < 1, facing: Math.hypot(dx, dy) > 0.05 ? { dx, dy } : null };
 }
 
-/** Un toucher pendant un trajet fait arriver le bonhomme tout de suite ; vrai s'il était en route. */
+/**
+ * Un toucher dans le vide pendant un trajet fait arriver le bonhomme tout de suite ; vrai s'il était en route. (Un
+ * toucher sur le sol change son but : la page lui donne un nouveau trajet.)
+ */
 export function finishWalk(walk: Walk | null, now: number): boolean {
-  if (!walk || now - walk.start >= walk.duration) return false;
+  if (!enRoute(walk, now)) return false;
   walk.start = now - walk.duration;
   return true;
 }
@@ -247,7 +255,8 @@ export type GroundTap =
   | { kind: 'place'; place: PlaceId; island: BiomeId }
   | { kind: 'bridge'; id: string }
   | { kind: 'face'; cell: Cell; next: Cell }
-  | { kind: 'island'; id: BiomeId };
+  /** Le sol d'une île : l'île, et la colonne touchée (le bonhomme y va). */
+  | { kind: 'island'; id: BiomeId; cell: Cell };
 
 /**
  * Ce que fait un toucher sur le terrain : la borne de mission touchée, sinon l'ouvrage (plutôt que l'île la plus proche),
@@ -271,7 +280,18 @@ export function groundTap(
   const bridge = tags.bridges.get(key);
   if (bridge && can.bridge) return { kind: 'bridge', id: bridge };
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };
-  return { kind: 'island', id: grilleDe(a).ileEn({ ...hit.ground, z: 0 }) };
+  return { kind: 'island', id: grilleDe(a).ileEn({ ...hit.ground, z: 0 }), cell: hit.cell };
+}
+
+/**
+ * Après un toucher, la vue revient-elle à son cadrage (le décalage d'un glissé s'efface) ? Oui sur une cible (une
+ * créature, le navire, une borne, un lieu, un ouvrage) : l'application reprend la main. Non sur le sol (une face en
+ * chantier, ou le sol d'une île) : on pose bloc après bloc là où l'on regarde, ou le bonhomme y va sans que la vue
+ * bouge ; si le toucher mène sur une autre île, c'est son nouveau cadrage qui efface le décalage.
+ */
+export function recentrerApres(tap: GroundTap | null, cible: boolean): boolean {
+  if (cible) return true;
+  return tap !== null && tap.kind !== 'face' && tap.kind !== 'island';
 }
 
 /** Un objet sous le doigt, le long du rayon : le décor en primitives, ou autre chose (cube, sol, créature). */
