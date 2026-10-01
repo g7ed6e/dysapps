@@ -1,6 +1,6 @@
 ---
 name: captures
-description: Prendre vite les captures d'écran de DysApps (manuel, lots de rendu Archipéo et Blocland), les comparer à main et ne publier que ce qui change sur la branche captures. À lire avant toute capture.
+description: Prendre vite les captures d'écran de DysApps (manuel en local, lots de rendu Archipéo et Blocland sur la CI), les comparer à main et ne publier que ce qui change sur la branche captures. À lire avant toute capture.
 ---
 
 # Les captures d'écran, vite
@@ -10,7 +10,7 @@ Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite d
 ## Quel script
 
 - **Le manuel** (`www/_captures/`, jamais commitées) : `npm run www:captures -- <nom> [<nom>…]`, les noms de `SHOTS` dans `scripts/www/captures.mjs`. Ne refaire que les écrans qui changent ; la CI refait tout sur `main`.
-- **Un lot de rendu** : `npm run rendu:mesures -- --sans-poids --captures <dossier> --comparer <références> --archipel <6e|5e|4e|3e> --familles <liste>`, les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs`. Ajouter `--rendu archipeo` pour le rendu Archipéo (un dossier par univers). Le déroulé : « Un lot de rendu, pas à pas » ci-dessous.
+- **Un lot de rendu** : le workflow « Captures d'un lot » sur la CI, qui lance `npm run rendu:mesures` (les captures déclarées dans `CAPTURES` de `scripts/rendu/mesures.mjs`) sur plusieurs machines. Le déroulé, et la commande en local : « Un lot de rendu, pas à pas » ci-dessous.
   - Toujours `--sans-poids` sauf si le poids de Three.js est demandé : il lance un build complet.
   - Familles : le socle (`jour`, `nuit`), refait par la CI à chaque publication sur main ; `personnages` et `lisibilite` (grand texte, test en gris des créatures), communes ; et celles des lots en cours. Un lot qui a besoin d'une vue de plus ajoute sa famille dans `CAPTURES` (jamais un script à côté), et la retire de la liste une fois fusionné.
   - Les trois vues de jour (les mesures) se font toujours.
@@ -41,28 +41,35 @@ Le périmètre par défaut d'un lot :
 
 ## Un lot de rendu, pas à pas
 
-1. **La branche à jour avec main** (`git fetch origin main && git rebase origin/main`) : sinon un lot voisin fusionné entre-temps ressort comme un changement.
-2. **Les références** : la CI range le socle des cinq derniers commits de main sur la branche `captures-main` (`.github/workflows/references.yml`), un dossier par commit, `blocland/` et `archipeo/`.
-   ```sh
-   git fetch origin captures-main
-   git worktree add ../references origin/captures-main   # des images seulement : un worktree suffit
-   base=$(git merge-base HEAD origin/main)
-   ls ../references/$base/blocland
-   ```
-   Si le dossier de `$base` manque : la CI de ce commit tourne encore (attendre sa fin), ou il est trop ancien (se remettre sur main), ou la CI l'a sauté parce que deux fusions se suivaient de près (prendre le commit précédent de `commits.txt`, et faire soi-même l'avant des vues que le commit sauté a pu changer, comme à l'étape 3).
-3. **L'avant des vues hors socle** (la famille du lot, `lieux-salle`, `ciel`…) : le prendre soi-même sur `$base`, avec les mêmes options, dans un dossier qui commence par une copie des références :
-   ```sh
-   cp -r ../references/$base/blocland /tmp/avant-blocland
-   git stash -u && git checkout $base
-   npm run rendu:mesures -- --sans-poids --captures /tmp/avant-blocland --archipel 6e --familles lieux-salle
-   git checkout - && git stash pop
-   ```
-4. **L'après, comparé** : `npm run rendu:mesures -- --sans-poids --captures /tmp/apres-blocland --comparer /tmp/avant-blocland --archipel 6e --familles jour,nuit,lieux-salle`. Le script écrit une planche avant/après par vue changée (au-delà de 0,3 % de pixels différents, `scripts/rendu/comparer.mjs`) dans `planches/`, et la liste des vues inchangées, avec leur écart, dans `comparaison.md`.
-5. **La relecture** : le directeur artistique et les consultants ne relisent que les planches et `comparaison.md`. Un écart inattendu dans une vue que le lot ne devait pas toucher se dit dans la pull request.
+Les captures d'un lot se font sur la CI, pas dans le conteneur du fil (décision du mainteneur, 1er octobre 2026) : une machine par univers, archipel et côté (avant, après), en parallèle (`.github/workflows/captures-lot.yml`).
+
+1. **La branche à jour avec main** (`git fetch origin main && git rebase origin/main`), poussée : sinon un lot voisin fusionné entre-temps ressort comme un changement, et le workflow n'est pas sur la branche.
+2. **Lancer le workflow « Captures d'un lot »** sur la branche du lot (outil GitHub `actions_run_trigger`, méthode `run_workflow`, `workflow_id` `captures-lot.yml`, `ref` la branche), avec :
+   - `lot` : le dossier sur la branche `captures` (minuscules, chiffres, tirets : `r5`, `gd-3`) ;
+   - `familles` : celles du périmètre (`jour,nuit,lieux-salle`) ; les vues de jour se font toujours ;
+   - `archipels` : l'archipel touché (`6e`), ou plusieurs (`6e,3e`) ;
+   - `univers` : `blocland`, `archipeo` ou `les-deux`.
+   L'avant se prend sur le commit de main dont la branche part (merge-base), l'après sur la branche : rien à préparer, pas de `captures-main` à lire. Relancer sur la même branche annule le passage en cours.
+3. **Attendre la fin** (`actions_list`, `list_workflow_runs` sur `captures-lot.yml` et la branche) : deux à trois minutes pour un archipel (2 min 20 mesurées, le 6e de jour), à peine plus pour quatre : les machines travaillent en même temps. Une machine en erreur arrête tout le passage (ni comparaison, ni publication) : lire le journal du job **prendre** en échec, corriger, relancer.
+4. **Lire le résultat** : `git fetch origin captures`, puis `<lot>/<univers>/` : les planches avant/après des seules vues changées (au-delà de 0,3 % de pixels différents) et des vues nouvelles, et `comparaison.md` (les vues inchangées, avec leur écart). Le résumé du passage reprend `comparaison.md`.
+5. **La relecture** : le directeur artistique et les consultants ne relisent que les planches et `comparaison.md`. Un écart inattendu dans une vue que le lot ne devait pas toucher se dit dans la pull request ; un nouveau passage remplace le dossier de l'univers.
+
+**En local, si la CI n'est pas joignable** : l'avant du socle est sur la branche `captures-main` (`.github/workflows/references.yml`, un dossier par commit de main, les cinq derniers), le reste se prend sur le commit de départ.
+
+```sh
+git fetch origin captures-main
+git worktree add ../references origin/captures-main   # des images seulement : un worktree suffit
+base=$(git merge-base HEAD origin/main)
+cp -r ../references/$base/blocland /tmp/avant-blocland    # si le dossier manque : la CI de ce commit tourne encore, ou il est trop ancien
+git stash -u && git checkout $base
+npm run rendu:mesures -- --sans-poids --captures /tmp/avant-blocland --archipel 6e --familles lieux-salle   # l'avant des vues hors socle
+git checkout - && git stash pop
+npm run rendu:mesures -- --sans-poids --captures /tmp/apres-blocland --comparer /tmp/avant-blocland --archipel 6e --familles jour,nuit,lieux-salle
+```
 
 ## Publier sur la branche `captures`
 
-Branche à part, jamais fusionnée, un dossier par lot (`r5/`, `r4b-4e/`…). Seules les planches des vues changées et `comparaison.md` y vont, une fois validées par le directeur artistique ; les vues inchangées ne se publient pas.
+Branche à part, jamais fusionnée, un dossier par lot (`r5/`, `r4b-4e/`…). Seules les planches des vues changées et `comparaison.md` y vont ; les vues inchangées ne se publient pas. Le workflow « Captures d'un lot » les y range lui-même ; à la main, seulement pour des captures prises en local :
 
 ```sh
 git fetch origin captures
