@@ -80,7 +80,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
         {stage && status && (
           <>
             <p className="ship-purpose">
-              <Syllabified text={`Quand il est prêt, il t’emmène dans les ${next.name}, l’archipel de ${next.classe}.`} />
+              <Syllabified text={`Quand il est prêt, il t’emmène dans les ${textes.archipels[next.classe]}, l’archipel de ${next.classe}.`} />
             </p>
             <div
               className="plan-track"
@@ -109,7 +109,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               </ul>
             )}
             <p className="ship-guardians">
-              <Icon name="shield" /> <Syllabified text={textes.libelles.navireGardiens(beatenGuardians(stage.from, state.progress), stage.guardians, getArchipelago(stage.from).name, stage.short)} />
+              <Icon name="shield" /> <Syllabified text={textes.libelles.navireGardiens(beatenGuardians(stage.from, state.progress), stage.guardians, textes.archipels[stage.from], stage.short)} />
             </p>
             {!status.complete && (
               <>
@@ -131,7 +131,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             )}
             {ready && (
               <button type="button" className="button primary ship-board" onClick={() => onBoard(here.to, false)}>
-                <Icon name="ship" /> Embarquer vers l’archipel de {next.classe} — Les {next.name}
+                <Icon name="ship" /> Embarquer vers l’archipel de {next.classe} — Les {textes.archipels[next.classe]}
               </button>
             )}
           </>
@@ -142,7 +142,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               text={
                 complete
                   ? 'Le Bloc-Navire est complet : voile, ballon, réacteur. Il te porte où tu veux.'
-                  : `Le Bloc-Navire a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${getArchipelago(here.to).name}.` : ''}`
+                  : `Le Bloc-Navire a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${textes.archipels[here.to]}.` : ''}`
               }
             />
           </p>
@@ -157,7 +157,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               return (
                 <li key={a.classe}>
                   <button type="button" className="button" onClick={() => onBoard(a.classe, true)}>
-                    <Icon name="ship" /> {forward ? 'Repartir vers' : 'Revenir en'} {a.classe} — Les {a.name}
+                    <Icon name="ship" /> {forward ? 'Repartir vers' : 'Revenir en'} {a.classe} — Les {textes.archipels[a.classe]}
                   </button>
                 </li>
               );

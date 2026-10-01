@@ -1,4 +1,5 @@
 import { ARCHIPELAGOS, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
+import { useTextes } from '../univers';
 
 interface Props {
   bridges: string[];
@@ -26,8 +27,9 @@ const ISLETS = [
  * es ici », « Dans la brume ») sont dans la liste qui l'accompagne, et la phrase de l'image les redit.
  */
 export function ArchipelagoMap({ bridges, here, className = '' }: Props) {
+  const textes = useTextes();
   const label = ARCHIPELAGOS.map(
-    (a) => `${a.classe}, les ${a.name} : ${a.classe === here ? 'tu es ici' : isArchipelagoReached(a.classe, bridges) ? 'atteint' : 'dans la brume'}`,
+    (a) => `${a.classe}, les ${textes.archipels[a.classe]} : ${a.classe === here ? 'tu es ici' : isArchipelagoReached(a.classe, bridges) ? 'atteint' : 'dans la brume'}`,
   ).join(' ; ');
   const route = ARCHIPELAGOS.map((a, i) => `${i ? 'L' : 'M'}${PLACES[a.classe].x} ${PLACES[a.classe].y}`).join(' ');
   return (

@@ -1,6 +1,6 @@
 # GD-1 : Le caractère de Blocland, le chantier du bâtisseur
 
-**État** : Décidée le 30 septembre 2026
+**État** : Décidée le 30 septembre 2026 ; points 1 à 3 construits le 1er octobre 2026 (le point 4 suit, à part)
 **Portée** : Blocland
 
 ## Le constat
@@ -8,7 +8,7 @@
 Le mainteneur veut donner plus de caractère à Blocland, l’univers par défaut. Le dessin en a déjà : cubes texturés de 16 × 16, interface en blocs vus de face, 31 créatures qui tutoient le « bâtisseur », Gardiens qui deviennent statues et « aiment les revanches ». Ce qui lui manque, c’est sa voix et ses noms, parce qu’il parle encore avec les mots d’Archipéo :
 
 - la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/univers/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../../conception/univers.md), §4.1) ;
-- les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/blocland/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo ; « Le village d’Archipéo » s’affiche dans les Réglages ;
+- les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/blocland/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo (le réglage « Au démarrage », lui, dit « Le village » dans les deux univers) ;
 - trois des cinq rôles ont un lexique d’explorateur marin (Explorateur, Cartographe, Navigateur, Architecte de l’archipel) ;
 - aucun geste ni aucun son n’est propre à Blocland.
 
@@ -17,7 +17,7 @@ Le mainteneur veut donner plus de caractère à Blocland, l’univers par défau
 Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit et se fête du point de vue de celui qui construit. Le mainteneur l’a précisé : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie. Le bloc c’est l’unité de base pour construire. » Formulation proposée par le directeur artistique : dans Blocland, on bâtit bloc à bloc, et les mécanismes font vivre ce qu’on a bâti. Il se décline en quatre changements :
 
 1. **Qui parle aux grandes étapes** d’un archipel (l’arrivée, le premier ouvrage, le dernier Gardien vaincu, l’île-port bâtie) : la créature de l’île-école de l’archipel, avec son portrait dans la bulle. Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e. Les baleines en cubes restent au large, sans parler.
-2. **Les noms des archipels** : retour des noms d’origine de Blocland, les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) ; les Îles du Ciel (3e) ne changent pas ; « Le village de Blocland » dans les Réglages. Un élève qui a déjà une partie voit une fois « L’archipel X s’appelle maintenant Y » (U4).
+2. **Les noms des archipels** : retour des noms d’origine de Blocland, les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) ; les Îles du Ciel (3e) ne changent pas. Un élève qui a déjà une partie voit une fois « L’archipel X s’appelle maintenant Y » (U4).
 3. **Les rôles** : des métiers qui vont de la construction à l’ingénierie, et qui suivent les insignes de la terre à l’or : **Apprenti, Maçon, Mécanicien, Ingénieur, Architecte** (identifiants `explorateur`, `cartographe`, `batisseur`, `navigateur`, `architecte` et seuils 1, 4, 10, 18, 28 inchangés). « Bâtisseur » sort de la liste des rôles : il reste le nom que les créatures donnent à l’élève. Listes écartées : Apprenti, Compagnon, Bâtisseur, Maître bâtisseur, Architecte de Blocland (première proposition du directeur artistique) ; Apprenti, Maçon, Bâtisseur, Maître bâtisseur, Architecte (« compagnon » s’entend « ami » à 11 ans ; « Bâtisseur » se confondait avec le nom donné à l’élève).
 4. **Le geste et le son de pose** : un bloc qui tombe et se pose, à la fin d’un plan et à l’écran titre (le logo se construit en quelques cubes, comme l’ancien écran titre de Blocland) ; un son de pose propre à Blocland, plus mat que le « toc » commun.
 

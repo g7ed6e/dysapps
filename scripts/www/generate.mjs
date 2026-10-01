@@ -582,7 +582,17 @@ export async function generatePersonnages() {
   }
 }
 
-/** Les personnages : la baleine, puis une créature et un Gardien par île, avec ce qui change d'un univers à l'autre. */
+/**
+ * Les personnages : qui parle aux grandes étapes (la créature de l'île-école dans Blocland, la baleine dans Archipéo),
+ * puis une créature et un Gardien par île, avec ce qui change d'un univers à l'autre (noms des archipels compris).
+ */
+/** Qui dit le mot des grandes étapes dans un univers, en une phrase. */
+function parleDe(univers, t, d) {
+  if (t.baleine.parle === 'baleine') return `Dans ${univers}, la **baleine** le dit.`;
+  const ecoles = d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).creature.name} en ${a.classe}`).join(', ');
+  return `Dans ${univers}, la **créature de l’île-école** de l’archipel le dit, son nom écrit et son portrait dans la bulle : ${ecoles}.`;
+}
+
 function personnagesPage(d) {
   const { BIOMES, TEXTES_DE, UNIVERS } = d;
   const bl = TEXTES_DE.blocland;
@@ -590,7 +600,7 @@ function personnagesPage(d) {
   for (const [u, t] of Object.entries(TEXTES_DE))
     for (const b of BIOMES)
       if (!t.gardiens[b.id] || !t.creatures[b.id] || !t.especes[b.id]) throw new Error(`generate.mjs : textes de ${u} incomplets pour l’île ${b.id}`);
-  // Les exemples du mot de la baleine : le premier archipel, son île-port, la première île ouverte par un ouvrage.
+  // Les exemples du mot des grandes étapes : le premier archipel, son île-port, la première île ouverte par un ouvrage.
   const premier = d.ARCHIPELAGOS[0];
   const nom = (id) => BIOMES.find((b) => b.id === id).name;
   const port = nom(premier.port);
@@ -602,15 +612,17 @@ function personnagesPage(d) {
     '',
     'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
     '',
-    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans ${UNIVERS.blocland.nom}, on **vainc** le Gardien, qui devient une statue ; dans ${UNIVERS.archipeo.nom}, c’est une sentinelle de pierre éteinte que l’élève **rallume**. La **baleine** parle rarement, aux grandes étapes d’un archipel, dans les deux univers.`,
+    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans ${UNIVERS.blocland.nom}, on **vainc** le Gardien, qui devient une statue ; dans ${UNIVERS.archipeo.nom}, c’est une sentinelle de pierre éteinte que l’élève **rallume**. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.`,
     '',
-    '## La baleine',
+    '## Le mot des grandes étapes',
+    '',
+    `Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l’île-port, le premier ouvrage). ${parleDe(UNIVERS.blocland.nom, bl, d)} ${parleDe(UNIVERS.archipeo.nom, ar, d)}`,
     '',
     table(
       ['Moment', UNIVERS.blocland.nom, UNIVERS.archipeo.nom],
       [
         ...CLASSES.map((c) => [`Arrivée en ${c}`, bl.baleine.arrivee[c], ar.baleine.arrivee[c]]),
-        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(premier.name), ar.baleine.gardiens(premier.name)],
+        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(bl.archipels[premier.classe]), ar.baleine.gardiens(ar.archipels[premier.classe])],
         ['Île-port terminée (exemple)', bl.baleine.port(port), ar.baleine.port(port)],
         ['Premier ouvrage payé (exemple)', bl.baleine.ouvrage(ouverte), ar.baleine.ouvrage(ouverte)],
       ],
@@ -619,7 +631,7 @@ function personnagesPage(d) {
   ];
   for (const a of d.ARCHIPELAGOS) {
     const list = BIOMES.filter((b) => b.classe === a.classe);
-    lines.push(`## Les ${a.name} (${a.classe})`, '');
+    lines.push(`## ${bl.archipels[a.classe] === ar.archipels[a.classe] ? `Les ${bl.archipels[a.classe]}` : `Les ${bl.archipels[a.classe]} (${UNIVERS.blocland.nom}), les ${ar.archipels[a.classe]} (${UNIVERS.archipeo.nom})`}, ${a.classe}`, '');
     lines.push(
       table(
         ['Île', 'Créature', `Espèce (${UNIVERS.blocland.nom})`, `Espèce (${UNIVERS.archipeo.nom})`, 'Gardien'],

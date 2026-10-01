@@ -4,7 +4,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { pagesBaleine } from '../univers/baleine';
+import { pagesBaleine, quiParle, titreDuMot } from '../univers/baleine';
 import { useTextes } from '../univers';
 import { loadJSON, saveJSON } from '../core/storage';
 import type { BloclandState } from './engine';
@@ -12,6 +12,7 @@ import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import type { ArchipelagoId } from './world/archipelago';
 import { reachedWhaleMoments, type WhaleMoment } from './world/whale';
 import { useHoldCelebrations } from '../components/Celebrations';
+import { Creature } from './Creatures';
 
 // Ce que la baleine a déjà dit, par appareil (comme les tutoriels), jamais dans la sauvegarde. L'arrivée dans un
 // archipel garde la clé de l'ancienne bulle d'accueil, dans les tutoriels : qui l'a vue ne l'entend pas deux fois.
@@ -82,13 +83,18 @@ interface Props {
   aSuivre?: boolean;
 }
 
-/** Le panneau « Le mot de la baleine » : une ou deux pages lues à voix haute, fermé par « J'ai compris », « Passer » (avant la dernière page) ou Échap. */
+/**
+ * Le panneau du mot des grandes étapes : « Le mot de la baleine » dans Archipéo ; dans Blocland, la créature de
+ * l'île-école de l'archipel, son nom écrit dans le titre et son portrait en cubes (une illustration, GD-1). Une ou deux
+ * pages lues à voix haute, fermé par « J'ai compris », « Passer » (avant la dernière page) ou Échap.
+ */
 export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false }: Props) {
   const { settings, speak, stop } = useSettings();
   const textes = useTextes();
   // Un bandeau de récompense attend que le mot soit fermé, dans le monde comme en vue simple (DA-9).
   useHoldCelebrations(true);
   const pages = pagesBaleine(word, textes);
+  const ecole = quiParle(word, textes);
   const [page, setPage] = useState(0);
   const text = pages[page] ?? pages[0];
   const last = page >= pages.length - 1;
@@ -108,7 +114,14 @@ export function WhaleWordPanel({ word, onClose, className = '', aSuivre = false 
   return (
     <section className={`panel whale-word ${className}`} role="dialog" aria-labelledby="mot-baleine" aria-live="polite">
       <h2 id="mot-baleine" className="whale-word-title">
-        <WhaleIcon /> Le mot de la baleine
+        {ecole ? (
+          <span className="whale-portrait" aria-hidden="true">
+            <Creature biome={ecole.id} />
+          </span>
+        ) : (
+          <WhaleIcon />
+        )}{' '}
+        {titreDuMot(word, textes)}
       </h2>
       <p className="whale-word-text">
         <Syllabified text={text} />

@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
 import { BIOMES } from '../blocland/biomes';
 import { sanitizeState } from '../blocland/engine';
-import { ARCHIPELAGOS } from '../blocland/world/archipelago';
-import { reachedWhaleMoments } from '../blocland/world/whale';
-import { pagesBaleine } from './baleine';
-import { textesDe, universAffiche, type TextesUnivers, type UniversId } from '.';
+import { ARCHIPELAGOS, NOMS_ARCHIPELS } from '../blocland/world/archipelago';
+import { reachedWhaleMoments, type WhaleMoment } from '../blocland/world/whale';
+import { BADGES, ROLES } from '../core/progress';
+import { pagesBaleine, quiParle, titreDuMot } from './baleine';
+import { nomDuRole, texteDuMonument, texteDuSucces, textesDe, universAffiche, type TextesUnivers, type UniversId } from '.';
 
 const UNIVERS: UniversId[] = ['archipeo', 'blocland'];
 
@@ -15,11 +16,15 @@ function tousLesTextes(t: TextesUnivers): string[] {
   for (const g of Object.values(t.gardiens)) out.push(g.challenge, g.guardianSays.hit, g.guardianSays.miss, g.guardianSays.beaten);
   for (const n of [1, 2]) {
     out.push(l.etoilesSur3(n), l.resistance(n, 3), l.encoreAFaire(n), l.navireAttend(n), l.faitsSur(n, 6), l.progres(n, 28));
-    out.push(l.navireGardiens(n, 2, 'Premiers Rivages', 'la voile'), l.navireGardiens(0, n, 'Premiers Rivages', 'la voile'));
+    out.push(l.navireGardiens(n, 2, t.archipels['6e'], 'la voile'), l.navireGardiens(0, n, t.archipels['6e'], 'la voile'));
   }
-  out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens('Premiers Rivages'), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
+  out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens(t.archipels['6e']), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
   out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
   out.push(l.decouverteOuvrages, l.decouverteNavire);
+  out.push(...Object.values(t.archipels), ...Object.values(t.roles));
+  for (const s of Object.values(t.succes)) if (s) out.push(s.title, s.description);
+  for (const m of Object.values(t.monuments)) if (m) out.push(...Object.values(m));
+  if (t.renommage) out.push(t.renommage.titre, t.renommage.intro, ...t.renommage.lignes, t.renommage.bouton);
   const d = t.sentinelles;
   if (d) {
     out.push(d.consigne, d.jauge, d.seuil(5, false), d.seuil(5, true), d.rallume('Le Grand Chêne'));
@@ -40,7 +45,8 @@ describe('les textes d’univers', () => {
 
   it('Blocland garde les textes d’avant le lot 6, sans un mot changé', () => {
     // L'empreinte des textes des Gardiens et des espèces tels qu'ils étaient dans biomes.ts avant le lot 6 : un mot
-    // changé dans Blocland la change. Les libellés et le mot de la baleine sont écrits en entier ci-dessous. Trois
+    // changé dans Blocland la change. Les libellés sont écrits en entier ci-dessous ; le mot des grandes étapes, les noms
+    // des archipels et des rôles, que GD-1 a changés, ont leurs propres cas plus bas. Trois
     // exceptions voulues : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
     // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique), et celle du
     // Brochet d'argent (« regarde les parts ou l'opération posée »), changée avec « Galets en colonnes », dont les manches
@@ -112,16 +118,17 @@ describe('les textes d’univers', () => {
     }
   });
 
-  it('le mot de la baleine : mêmes étapes dans les deux univers, seul le mot des Gardiens change', () => {
+  it('le mot des grandes étapes : les mêmes étapes dans les deux univers', () => {
     const guardians = Object.fromEntries(BIOMES.filter((b) => b.classe === '6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
     const moments = reachedWhaleMoments(sanitizeState({ progress: guardians }), '6e');
     const gardiens = moments.find((m) => m.kind === 'gardiens');
     if (!gardiens) throw new Error('étape « gardiens » non atteinte');
-    expect(pagesBaleine(gardiens, textesDe('blocland'))).toEqual(['Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large.']);
+    expect(pagesBaleine(gardiens, textesDe('blocland'))).toEqual(['Tous les Gardiens des Basses Terres sont vaincus ! Leurs statues gardent maintenant ton chantier.']);
     expect(pagesBaleine(gardiens, textesDe('archipeo'))).toEqual(['Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.']);
+    // La bulle pratique sur le navire suit la phrase d'arrivée, dans les deux univers (rien en 6e, où l'on commence).
     for (const a of ARCHIPELAGOS) {
       const arrivee = { id: `archipel-${a.classe}`, kind: 'arrivee' as const, archipelago: a.classe, island: a.port };
-      expect(pagesBaleine(arrivee, textesDe('archipeo'))).toEqual(pagesBaleine(arrivee, textesDe('blocland')));
+      for (const u of UNIVERS) expect(pagesBaleine(arrivee, textesDe(u))).toHaveLength(a.classe === '6e' ? 1 : 2);
     }
   });
 
@@ -171,5 +178,87 @@ describe('les textes communs (J8, U4)', () => {
     const communs = { fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier' };
     expect(textesDe('archipeo').etatsDIle).toEqual({ ...communs, restauree: 'Restaurée' });
     expect(textesDe('blocland').etatsDIle).toEqual({ ...communs, restauree: 'Bâtie' });
+  });
+});
+
+describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
+  const arrivee = (a: (typeof ARCHIPELAGOS)[number]): WhaleMoment => ({ id: `archipel-${a.classe}`, kind: 'arrivee', archipelago: a.classe, island: a.port });
+
+  it('Archipéo garde ses textes d’avant GD-1, sans un mot changé', () => {
+    const t = textesDe('archipeo');
+    expect(t.baleine.parle).toBe('baleine');
+    expect(t.baleine.arrivee).toEqual({
+      '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
+      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+    });
+    expect([t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
+      'Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
+      'Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.',
+    ]);
+    // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.
+    expect(t.archipels).toEqual(NOMS_ARCHIPELS);
+    expect(t.archipels).toEqual({ '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' });
+    expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(['Explorateur', 'Cartographe', 'Bâtisseur', 'Navigateur', 'Architecte de l’archipel']);
+    expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(ROLES.map((r) => r.name));
+    for (const b of BADGES) expect(texteDuSucces(t, b)).toEqual({ title: b.title, description: b.description });
+    expect(t.renommage).toBeNull();
+    for (const a of ARCHIPELAGOS) {
+      expect(quiParle(arrivee(a), t)).toBeNull();
+      expect(titreDuMot(arrivee(a), t)).toBe('Le mot de la baleine');
+    }
+  });
+
+  it('Blocland : les noms d’origine des archipels', () => {
+    const t = textesDe('blocland');
+    expect(t.archipels).toEqual({ '6e': 'Basses Terres', '5e': 'Collines du Large', '4e': 'Monts de Feu', '3e': 'Îles du Ciel' });
+    expect(t.libelles.navireGardiens(1, 3, t.archipels['6e'], 'la voile')).toBe('Gardiens : encore 2 à vaincre dans les Basses Terres pour la voile.');
+    // Les monuments qui nommaient un archipel prennent le nom de Blocland, et gardent leur description.
+    const moulin = { id: 'monument-moulin', description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.' };
+    expect(texteDuMonument(t, moulin)).toEqual({ description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' });
+    expect(texteDuMonument(textesDe('archipeo'), moulin)).toEqual({ description: moulin.description, done: moulin.done });
+    // Aucun ancien nom d'archipel dans ce que dit Blocland, hors de l'écran qui les annonce.
+    expect(tousLesTextes({ ...t, renommage: null }).join('\n')).not.toMatch(/Premiers Rivages|Îles Brumeuses|Anciens Ateliers/);
+  });
+
+  it('Blocland : les rôles sont des métiers du chantier, distincts, sans « Bâtisseur »', () => {
+    const t = textesDe('blocland');
+    const roles = ROLES.map((r) => nomDuRole(t, r.id));
+    expect(roles).toEqual(['Apprenti', 'Maçon', 'Mécanicien', 'Ingénieur', 'Architecte']);
+    expect(new Set(roles).size).toBe(5);
+    expect(roles.join()).not.toMatch(/bâtisseur/i);
+    const succes = (id: string) => texteDuSucces(t, BADGES.find((b) => b.id === id)!);
+    expect(['rang-argent', 'rang-or', 'rang-diamant', 'rang-legende'].map(succes)).toEqual([
+      { title: 'Maçon', description: 'Devenir Maçon : tu poses les blocs bien droits.' },
+      { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
+      { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes comment ça marche.' },
+      { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
+    ]);
+    expect(succes('aeronaute').description).toBe('Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.');
+    // Seuls des succès qui existent sont renommés, et leurs identifiants ne changent pas.
+    for (const id of Object.keys(t.succes)) expect(BADGES.some((b) => b.id === id)).toBe(true);
+  });
+
+  it('Blocland : la créature de l’île-école parle aux grandes étapes, son nom écrit dans le titre', () => {
+    const t = textesDe('blocland');
+    expect(t.baleine.parle).toBe('ecole');
+    expect(ARCHIPELAGOS.map((a) => quiParle(arrivee(a), t)?.creature.name)).toEqual(['Mousso', 'Bazar', 'Ixe', 'Fi']);
+    expect(ARCHIPELAGOS.map((a) => titreDuMot(arrivee(a), t))).toEqual(['Le mot de Mousso', 'Le mot de Bazar', 'Le mot d’Ixe', 'Le mot de Fi']);
+    expect(pagesBaleine(arrivee(ARCHIPELAGOS[0]), t)).toEqual(['Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide.']);
+    expect([t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
+      'Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit.',
+      'Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres.',
+    ]);
+    expect(tousLesTextes(t).join('\n')).not.toMatch(/baleine/i);
+  });
+
+  it('Blocland : l’écran de renommage, une phrase par archipel renommé, un seul bouton', () => {
+    const t = textesDe('blocland');
+    const r = t.renommage!;
+    expect(r.titre).toBe('De nouveaux noms');
+    expect(r.bouton).toBe('D’accord');
+    const renommes = ARCHIPELAGOS.filter((a) => t.archipels[a.classe] !== a.name);
+    expect(r.lignes).toEqual(renommes.map((a) => `Les ${a.name} s’appellent maintenant les ${t.archipels[a.classe]}.`));
   });
 });
