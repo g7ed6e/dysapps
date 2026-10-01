@@ -13,7 +13,9 @@
 // 2026 : « chaperon » est réservé aux murs) :
 // - la pente : `versant` quand le toit monte d'un seul côté (un toit un cran plus haut, à côté) ; sinon `aretier` quand
 //   il monte vers un seul coin (le coin d'une pyramide) ; sinon `faite` quand il descend de deux côtés opposés, `croupe`
-//   de trois, `pointe` de quatre ; sinon `plat` (rien de lisible : il reste un bloc) ;
+//   de trois, `pointe` de quatre ; sinon encore `versant` quand il descend d'un seul côté et file, au même niveau, du
+//   côté opposé (le haut d'un toit de quatre rangées, celui de l'école : deux versants qui se rejoignent au faîte) ;
+//   sinon `plat` (rien de lisible : il reste un bloc) ;
 // - la rive : `rive` au bout d'une rangée de versants ou de faîtes (une voisine manque le long de la rangée), sinon
 //   `courant` ;
 // - la tête : `ciel` quand rien du plan n'est au-dessus, sinon `toit` ou `mur` (un toit sous un bloc reste un bloc).
@@ -100,6 +102,12 @@ function penteDe(v: Voisinage): { pente: Pente; rotation: Rotation } {
   for (const p of lus) {
     const r = rotationVers(p.bits, v[p.masque] & 0b1111);
     if (r !== null) return { pente: p.pente, rotation: r };
+  }
+  // Le haut d'un versant : il descend d'un seul côté (−x dans l'orientation de référence) et sa voisine de même niveau
+  // est du côté opposé (+x), vers où il monte.
+  if (!v.monte && !v.coins) {
+    const r = rotationVers(0b0100, v.descend & 0b1111);
+    if (r !== null && v.cotes & tournerCotes(0b0001, r)) return { pente: 'versant', rotation: r };
   }
   return { pente: 'plat', rotation: 0 };
 }

@@ -130,6 +130,17 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
       expect(batiments.has(cle(p.cube))).toBe(true);
     }
     expect([...archi.peints.values()].some((p) => p.cube.texture === 'barriere' || p.cube.texture === 'escalier')).toBe(false);
+    // Le haut d'un versant (un versant qui ne monte pas : ./choix.ts) ne sert qu'aux lieux du village, au toit de quatre
+    // rangées de l'école : aucun versant d'un plan ne le prend.
+    const index = indexDuPlan(
+      [...batiments].map(([k, texture]) => {
+        const [x, y, z] = k.split(',').map(Number);
+        return { x, y, z, texture, color: '' };
+      }),
+    );
+    const versants = archi.pieces.filter((p) => p.piece.startsWith('toit.versant'));
+    expect(versants.length).toBeGreaterThan(0);
+    for (const p of versants) expect(voisinageDe(p.cube, index)?.monte, cle(p.cube)).not.toBe(0);
   }, 30_000);
 
   it('un mur ne change pas quand l’étape suivante de son bâtiment arrive dans le monde (la règle lit le bâtiment entier)', () => {
