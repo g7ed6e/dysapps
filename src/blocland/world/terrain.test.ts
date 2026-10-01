@@ -1,8 +1,9 @@
 import { BIOMES, missionsJouables } from '../biomes';
-import { ARCHIPELAGO_IDS, CORE, MAP, isLand, islandDef, landBox, landCells, mapOf } from './map';
+import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { BADGES } from '../../core/progress';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
-import { monumentsOf } from './monuments';
+import { MONUMENT_ISLET, monumentsOf } from './monuments';
+import { archipelagoOfIsland } from './archipels';
 import { villageStage } from './villageStage';
 import { CREATURE_CUBES } from './personnages/creatures';
 import { GUARDIAN_CUBES } from './personnages/gardiens';
@@ -15,6 +16,8 @@ import { toutConstruit } from './budget';
 import { decorPose } from './decor';
 import {
   avatarHome,
+  BALEINES_REPLACEES,
+  rangeeDevantLesBornes,
   avatarRoute,
   boardingRoute,
   bossIsletCells,
@@ -214,7 +217,8 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(guardianPlacements('6e', {}, [])).toEqual([]);
   const front = bossIsletOrigin(0).y;
   // Caché, l'îlot et ses pas japonais n'existent pas.
-  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H + ISLET_GAP)).toBe(false);
+  // (Devant la terre de la Forêt : l'îlot s'en est rapproché d'une case, `RETOUCHES_DE_L_ILOT`.)
+  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < landBox(islandDef('foret')).y0)).toBe(false);
   const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
   const islet = worldCubes('6e', ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
@@ -447,6 +451,51 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
           if (Math.hypot(x - s.x, y - s.y) <= s.r + 2) expect(land.has(`${x},${y}`), `baleine sur la terre en ${x},${y}`).toBe(false);
     }
   }
+});
+
+it('une baleine replacée à la main nage en eau libre, à trois cases au moins de toute terre, îlot, ponton, ouvrage ou monument', () => {
+  for (const a of ARCHIPELAGO_IDS)
+    for (const { vers } of BALEINES_REPLACEES[a] ?? []) {
+      const s = whaleSpots(a).find((w) => w.x === vers.x && w.y === vers.y);
+      expect(s, `${a} : la baleine replacée en ${vers.x}, ${vers.y}`).toBeDefined();
+      expect(s!.r).toBeGreaterThanOrEqual(4);
+      const pres: { x: number; y: number }[] = [];
+      for (const def of mapOf(a)) {
+        pres.push(...landCells(def));
+        const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
+        for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) pres.push({ x: o.x + x, y: o.y + y });
+      }
+      const dock = dockBox(ARCHIPELAGOS.find((x) => x.classe === a)!.port);
+      for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) pres.push({ x, y });
+      for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) pres.push({ x: m.islet.x + x, y: m.islet.y + y });
+      for (const br of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a)) pres.push(...bridgePath(br));
+      const ecart = Math.min(...pres.map((c) => Math.hypot(c.x - s!.x, c.y - s!.y))) - s!.r;
+      expect(ecart, `${a} : la baleine replacée en ${vers.x}, ${vers.y}`).toBeGreaterThanOrEqual(3);
+    }
+});
+
+it('sur une île-école, la rangée de côte devant les bornes reste nue : aucun décor, rien posé sur le sol', () => {
+  const tout = toutConstruit();
+  for (const archipel of ARCHIPELAGOS) {
+    const id = archipel.school;
+    const def = islandDef(id);
+    const rangee = rangeeDevantLesBornes(id);
+    // La rangée de côte, droit devant toutes les bornes (et plus loin sur l'axe de la caméra).
+    const y = def.core.y + bornesDuCoeur(def).y0 - 1;
+    for (const st of questStations(id)) expect(rangee.has(`${def.core.x + st.x},${y}`), `${id}, borne ${st.typeId}`).toBe(true);
+    for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout])
+      for (const sentinelles of [false, true]) {
+        const surLaRangee = worldCubes(archipel.classe, partie.progress, partie.village, true, [], sentinelles).filter(
+          (c) => c.y === y && rangee.has(`${c.x},${c.y}`) && (c.decor !== undefined || !c.sol),
+        );
+        expect(
+          surLaRangee.map((c) => `${c.x - def.core.x},${c.y - def.core.y},${c.z}:${c.decor ?? c.color}`),
+          id,
+        ).toEqual([]);
+      }
+  }
+  // Les autres îles n'en ont pas.
+  expect(rangeeDevantLesBornes('ferme').size).toBe(0);
 });
 
 it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {

@@ -3,7 +3,7 @@
 // artistique dans design/archipeo/intentions/3e-iles-du-ciel.md). Rien n'y change le monde en blocs : les cubes du grand
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
-import { CORE, islandDef } from '../map';
+import { coeurDe, islandDef } from '../map';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
 import { enRepere, type Forme } from './outils';
@@ -31,9 +31,10 @@ export const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.
  * Phare (l'arrivée), la caméra passe plein sud au lieu du sud-sud-est, pour que la lanterne se découpe sur le ciel et
  * le massif, et non plus sur l'île de l'Observatoire des textes, juste derrière elle ; depuis cette île des textes,
  * dont le phare est au premier plan, le même pivot l'écarte du cœur de l'île, sa lanterne sur le ciel (radians,
- * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare).
+ * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare). Depuis que le cœur du Phare a 20
+ * cases (01/10/2026), le phare suit la côte repoussée, deux cases plus loin en x et en y (75,5 et 929,5 avant).
  */
-export const GRAND_PHARE_3E = { ile: 'phare', x: 75.5, y: 929.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
+export const GRAND_PHARE_3E = { ile: 'phare', x: 77.5, y: 931.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
 
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);
@@ -44,7 +45,8 @@ const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }
  */
 export function empriseDuSocle(e: { x: number; y: number; emprise: number }): { x0: number; y0: number } {
   const def = islandDef('phare');
-  const [mx, my] = [def.core.x + CORE / 2, def.core.y + CORE / 2];
+  const c = coeurDe(def);
+  const [mx, my] = [(c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2];
   const plus = SOCLE_3E.cote - e.emprise;
   return { x0: e.x + e.emprise / 2 < mx ? e.x - plus : e.x, y0: e.y + e.emprise / 2 < my ? e.y - plus : e.y };
 }

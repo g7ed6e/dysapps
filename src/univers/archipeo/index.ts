@@ -305,7 +305,7 @@ export const ARCHIPEO = {
     resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour le rallumer`,
     dejaFaitArene: (gardien) => `${gardien} brille déjà. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
-    navireAttend: (n) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}.`,
+    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
@@ -317,6 +317,9 @@ export const ARCHIPEO = {
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien rallumé.',
+    ouvrageGardien: 'Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+    navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
+    gardienDabord: (ile) => `Rallume d’abord le Gardien de ${ile}.`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
@@ -329,9 +332,18 @@ export const ARCHIPEO = {
     jaugeLue: (reussies, total, n) => `${reussies} épreuve${s(reussies)} réussie${s(reussies)} sur ${total}, il en faut ${n}`,
     rallume: (gardien) => `${gardien} brille à nouveau.`,
   },
+  // La baleine parle aux grandes étapes : ses textes sont ceux d'avant GD-1, gardés ici (Blocland a pris sa propre voix).
   baleine: {
-    ...BLOCLAND.baleine,
+    parle: 'baleine',
+    arrivee: {
+      '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
+      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+    },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
+    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
+    ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
   },
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
@@ -343,4 +355,10 @@ export const ARCHIPEO = {
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
   assemblage: lieuDAssemblage('archipeo'),
+  // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
+  archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
+  // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.
+  roles: { explorateur: 'Explorateur', cartographe: 'Cartographe', batisseur: 'Bâtisseur', navigateur: 'Navigateur', architecte: 'Architecte de l’archipel' },
+  succes: {},
+  renommage: null,
 } satisfies TextesUnivers;

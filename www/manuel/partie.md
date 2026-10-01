@@ -1,6 +1,6 @@
 # Une partie commentée
 
-Cette page suit une élève, de sa première séance à la fin des Premiers Rivages, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run www:captures`), sur une tablette en paysage, sauf mention contraire.
+Cette page suit une élève, de sa première séance à la fin des Basses Terres, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run www:captures`), sur une tablette en paysage, sauf mention contraire.
 
 ## Première séance : le village en ruine
 
@@ -52,7 +52,7 @@ Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut constru
 
 La **Carte** montre tout l'archipel vu d'en haut : le fanion jaune marque l'élève, les îles pâles sont encore fermées.
 
-![La Carte des Premiers Rivages : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la flèche jaune sur la Forêt des sons, et en haut la prochaine destination avec Y aller.](/captures/carte.jpg)
+![La Carte des Basses Terres : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la flèche jaune sur la Forêt des sons, et en haut la prochaine destination avec Y aller.](/captures/carte.jpg)
 
 ## Le Gardien, le navire, l'école
 
@@ -74,13 +74,13 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ![L'observatoire des baleines en chantier sur son îlot : la plateforme de galets posée, la tour de brique commencée, le reste en fantômes ; le panneau montre 50 sur 116 blocs posés.](/captures/monument.jpg)
 
-## Les Premiers Rivages reconstruits
+## Les Basses Terres reconstruites
 
-À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens vaincus devenus statues. Le Bloc-Navire emmène alors l'élève dans les **Îles Brumeuses**, l'archipel de 5e.
+À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens vaincus devenus statues. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
 
-![Les Premiers Rivages reconstruits : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
+![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
 
-![Le Marché des proportions, port des Îles Brumeuses : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
+![Le Marché des proportions, port des Collines du Large : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
 
 ## Sur téléphone, en liste
 

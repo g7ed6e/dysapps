@@ -10,6 +10,7 @@ import { rgb } from '../world/decor/pinceau';
 import { LUEUR } from '../world/personnages/couleurs';
 import { modeleDuPortrait } from '../world/personnages/portrait';
 import { couleursAllumees, degresDAllumage, type Allumage } from '../world/personnages/sentinelle';
+import { cadrageSerre } from './cadrageSerre';
 import { materiauALueur } from './personnagesPeints';
 
 export interface PersonnageCanvasProps {
@@ -26,6 +27,8 @@ export interface PersonnageCanvasProps {
   cameraDirection?: [number, number];
   elevation?: number;
   fit?: number;
+  /** Une vitrine serrée (le Gardien du défi, DA-34) : au plus près où il tient entier dans le cadre ; `fit` est ignoré. */
+  remplir?: boolean;
   className?: string;
   label: string;
 }
@@ -44,6 +47,7 @@ export default function PersonnageCanvas({
   cameraDirection = [-0.35, -1],
   elevation = 0.3,
   fit = 1,
+  remplir = false,
   className,
   label,
 }: PersonnageCanvasProps) {
@@ -119,9 +123,24 @@ export default function PersonnageCanvas({
     const centre = box.getCenter(new THREE.Vector3());
     const taille = box.getSize(new THREE.Vector3());
     const camera = new THREE.PerspectiveCamera(30, el.clientWidth / Math.max(1, el.clientHeight), 0.1, 200);
-    const d = (Math.max(taille.y, taille.x, taille.z) / 2 / Math.tan((camera.fov * Math.PI) / 360)) * fit * 1.15;
     const dir = new THREE.Vector3(cameraDirection[0], elevation, cameraDirection[1]).normalize();
-    camera.position.copy(centre).addScaledVector(dir, d);
+    if (remplir) {
+      // Au plus près où chaque sommet tient dans le cadre (la sentinelle ne respire pas ; la créature, à peine).
+      const sommets = g.getAttribute('position').array;
+      const points = new Float64Array(sommets.length);
+      const respire = kind === 'creature' ? RESPIRATION.amplitude : 0;
+      for (let i = 0; i < sommets.length; i += 3) {
+        points[i] = sommets[i] - centre.x;
+        points[i + 1] = sommets[i + 1] - centre.y + Math.sign(sommets[i + 1] - centre.y) * respire;
+        points[i + 2] = sommets[i + 2] - centre.z;
+      }
+      const { cible, distance } = cadrageSerre(points, [cameraDirection[0], elevation, cameraDirection[1]], camera.fov, camera.aspect || 1);
+      centre.add(new THREE.Vector3(...cible));
+      camera.position.copy(centre).addScaledVector(dir, distance);
+    } else {
+      const d = (Math.max(taille.y, taille.x, taille.z) / 2 / Math.tan((camera.fov * Math.PI) / 360)) * fit * 1.15;
+      camera.position.copy(centre).addScaledVector(dir, d);
+    }
     camera.lookAt(centre);
 
     const resize = () => {
@@ -187,7 +206,7 @@ export default function PersonnageCanvas({
     // Le cadrage se lit en nombres : un nouveau tableau de même valeur ne refait pas la scène. L'allumage ne la refait
     // pas non plus : la boucle le rejoint en fondu.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kind, id, autoRotate, reduceMotion, cameraDirection[0], cameraDirection[1], elevation, fit]);
+  }, [kind, id, autoRotate, reduceMotion, cameraDirection[0], cameraDirection[1], elevation, fit, remplir]);
 
   // Un nouvel allumage : la scène immobile repart le temps du fondu.
   useEffect(() => relancer.current?.(), [pierre, lueurs]);

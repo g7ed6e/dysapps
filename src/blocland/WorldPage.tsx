@@ -32,6 +32,7 @@ import { accueilDeLIle, decouverteDeLIle } from './decouvertes';
 import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RenommagePanel, useRenommage } from './Renommage';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
@@ -196,7 +197,7 @@ export function WorldPage() {
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(state, a), [a, state, settings.lv2]);
+  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels, textes.libelles), [a, state, settings.lv2, textes]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -238,7 +239,9 @@ export function WorldPage() {
   // instant (la fin d'une pose, d'une arrivée), puis la caméra cadre l'île concernée et la baleine passe au large.
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
-  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0);
+  // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
+  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0, 1200);
+  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
@@ -287,7 +290,7 @@ export function WorldPage() {
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
   // Bloc-Navire sur le port.
-  const builder = usePlanBuilder(island?.id ?? archipelago.port);
+  const builder = usePlanBuilder(island?.id ?? archipelago.port, true);
   const ship = useVehicleBuilder(island?.id ?? archipelago.port);
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
   // Les éclats : ceux du plan, du navire ou du monument, le dernier qui a bougé.
@@ -346,7 +349,7 @@ export function WorldPage() {
     const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion };
     if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     const stage = etapeDuVoyage(to, back, state.village.bridges);
-    const text = voyageSentence(to, back, a);
+    const text = voyageSentence(to, back, textes.archipels, a);
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
     const port = archipelago.port;
@@ -563,9 +566,11 @@ export function WorldPage() {
   const [moment, setMoment] = useState<{ id: BiomeId; phase: 'camera' | 'fondu'; seq: number } | null>(null);
   const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
   // La bulle du bas défile (grand texte, téléphone) : dit s'il reste du texte sous ses boutons (DA-25).
-  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(whaleWord?.id ?? motRallume);
+  // Les nouveaux noms, hors voyage.
+  const renommageOuvert = renommage.ouvert && !voyage;
+  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(renommageOuvert ? 'renommage' : (whaleWord?.id ?? motRallume));
   usePlaceDesBulles(stageRef, !!voyage);
-  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
+  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume && !renommageOuvert, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -745,8 +750,8 @@ export function WorldPage() {
   // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
   const ligneDuVoyage = voyage?.mode === 'cinema';
   // Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
-  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume;
-  const phraseDuVillage = villageSaid && !whaleWord;
+  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume && !renommageOuvert;
+  const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert;
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || said);
   /**
    * « Recentrer » : le focus passe d'abord au monde (le bouton va disparaître, le focus ne tombe pas sur la page), puis
@@ -759,7 +764,7 @@ export function WorldPage() {
 
   return (
     <div
-      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume ? ' bulle-ouverte' : ''}`}
+      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
@@ -788,7 +793,7 @@ export function WorldPage() {
             recentrage={recentrage}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
@@ -826,8 +831,8 @@ export function WorldPage() {
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
-              <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
-              <SpeakButton text={voyageSentence(voyage.to, voyage.back, voyage.from)} compact />
+              <Syllabified text={voyageSentence(voyage.to, voyage.back, textes.archipels, voyage.from)} />
+              <SpeakButton text={voyageSentence(voyage.to, voyage.back, textes.archipels, voyage.from)} compact />
               <button type="button" className="button" onClick={onLegEnd}>
                 <Icon name="flag" /> Arriver
               </button>
@@ -896,7 +901,7 @@ export function WorldPage() {
           )}
           {hopTo && (
             <div className="creature-line world-line hop-line" role="status" aria-live="polite">
-              <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
+              <Icon name="ship" /> Archipel de {hopTo} : les {textes.archipels[hopTo]}
             </div>
           )}
           {phraseDuVillage && (
@@ -931,7 +936,9 @@ export function WorldPage() {
               <Icon name="play" /> Passer
             </button>
           )}
-          {motRallume ? (
+          {renommageOuvert ? (
+            <RenommagePanel onClose={renommage.fermer} aSuivre={bullesSuite} />
+          ) : motRallume ? (
             <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (
             whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} aSuivre={bullesSuite} />

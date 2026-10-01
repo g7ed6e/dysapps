@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { ARCHIPELAGOS, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
+import { useTextes } from '../univers';
 
 interface Props {
   current: ArchipelagoId;
@@ -16,6 +17,7 @@ interface Props {
 
 export function ArchipelSwitcher({ current, bridges, onGo, onMore }: Props) {
   const [open, setOpen] = useState(false);
+  const textes = useTextes();
   const box = useRef<HTMLDivElement>(null);
   const reached = ARCHIPELAGOS.filter((a) => isArchipelagoReached(a.classe, bridges));
   // Fermé d'un toucher ailleurs ou avec Échap.
@@ -36,7 +38,6 @@ export function ArchipelSwitcher({ current, bridges, onGo, onMore }: Props) {
   }, [open]);
   // Un seul archipel atteint : rien à choisir.
   if (reached.length < 2) return null;
-  const here = ARCHIPELAGOS.find((a) => a.classe === current)!;
   return (
     <div className="world-archipel" data-couvre="bouton" ref={box}>
       <button
@@ -44,7 +45,7 @@ export function ArchipelSwitcher({ current, bridges, onGo, onMore }: Props) {
         className="button world-archipel-button"
         aria-expanded={open}
         aria-controls="liste-archipels"
-        aria-label={`Archipel de ${current}, les ${here.name} : changer d’archipel`}
+        aria-label={`Archipel de ${current}, les ${textes.archipels[current]} : changer d’archipel`}
         onClick={() => setOpen((o) => !o)}
       >
         <Icon name="ship" /> {current}
@@ -66,7 +67,7 @@ export function ArchipelSwitcher({ current, bridges, onGo, onMore }: Props) {
                       onGo(a.classe);
                     }}
                   >
-                    <strong>{a.classe}</strong> Les {a.name}{' '}
+                    <strong>{a.classe}</strong> Les {textes.archipels[a.classe]}{' '}
                     <span className="world-archipel-state">{isHere ? 'Tu es ici' : ok ? '' : 'Fermé'}</span>
                   </button>
                 </li>

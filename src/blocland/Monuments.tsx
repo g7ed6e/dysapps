@@ -14,7 +14,7 @@ import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { firstSentences } from './firstSentences';
 import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
-import { ARCHIPELAGOS, archipelagoTitle, getArchipelago, isArchipelagoReached } from './world/archipelago';
+import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, type NomsArchipels } from './world/archipelago';
 import { MONUMENTS, monumentsOf, type MonumentDef } from './world/monuments';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
@@ -46,8 +46,9 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   // Plus rien à poser, et seules des cases de blocs assemblés attendent : la ligne dit d'aller les assembler.
   const manquants = missing.filter(([b]) => (state.inventory[b] ?? 0) < 1);
   const aAssembler = !builder.canFill && manquants.length > 0 && manquants.every(([b]) => BLOCKS[b].assemble) ? manquants[0] : undefined;
-  const lieu = useTextes().assemblage;
-  const texte = texteDuMonument(useTextes(), monument);
+  const textes = useTextes();
+  const lieu = textes.assemblage;
+  const texte = texteDuMonument(textes, monument);
   const said = firstSentences(texte.description);
   return (
     <div className="monument">
@@ -66,7 +67,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
       )}
       {!open ? (
         <p className="plan-done">
-          <Icon name="lock" /> Archipel fermé : rejoins d’abord les {getArchipelago(monument.archipelago).name} avec le Bloc-Navire.
+          <Icon name="lock" /> Archipel fermé : rejoins d’abord les {textes.archipels[monument.archipelago]} avec le Bloc-Navire.
         </p>
       ) : (
         <section className="plan-section" aria-labelledby={`monument-avancement-${monument.id}`}>
@@ -160,13 +161,14 @@ export function lackingLine(missing: [BlockId, number][], inventory: Partial<Rec
   return `Il manque ${list}.`;
 }
 
-function subtitle(m: MonumentDef): string {
-  return `Monument des ${getArchipelago(m.archipelago).name}, au large de ${getBiome(m.biome)?.name ?? m.biome}`;
+function subtitle(m: MonumentDef, noms: NomsArchipels): string {
+  return `Monument des ${noms[m.archipelago]}, au large de ${getBiome(m.biome)?.name ?? m.biome}`;
 }
 
 /** Le panneau d'un monument, qui glisse depuis le bas du monde (comme celui d'une île). */
 export function MonumentSheet({ builder, onClose }: { builder: MonumentBuilder; onClose: () => void }) {
   const m = builder.monument;
+  const textes = useTextes();
   return (
     <section id="panneau-monument" className={`island-sheet monument-sheet biome-${m.biome}`} role="dialog" aria-labelledby="monument-titre" aria-modal="false">
       <div className="island-sheet-head">
@@ -174,7 +176,7 @@ export function MonumentSheet({ builder, onClose }: { builder: MonumentBuilder; 
           <h2 id="monument-titre" className="island-sheet-title">
             <Icon name="castle" /> {m.name}
           </h2>
-          <p className="island-sheet-module">{subtitle(m)}</p>
+          <p className="island-sheet-module">{subtitle(m, textes.archipels)}</p>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
           <Icon name="close" />
@@ -188,6 +190,7 @@ export function MonumentSheet({ builder, onClose }: { builder: MonumentBuilder; 
 /** Un monument en vue simple : une page. */
 export function MonumentPage({ builder }: { builder: MonumentBuilder }) {
   const m = builder.monument;
+  const textes = useTextes();
   return (
     <>
       <Link to={MONUMENTS_PATH} className="back-link">
@@ -196,7 +199,7 @@ export function MonumentPage({ builder }: { builder: MonumentBuilder }) {
       <h1 className="page-title">
         <Icon name="castle" /> {m.name}
       </h1>
-      <p className="section-intro">{subtitle(m)}.</p>
+      <p className="section-intro">{subtitle(m, textes.archipels)}.</p>
       <MonumentBody builder={builder} />
     </>
   );
@@ -208,6 +211,7 @@ const INTRO =
 /** La liste des monuments, par archipel : leur avancement, ou l'archipel à rejoindre. */
 export function MonumentsList() {
   const { state } = useBlocland();
+  const textes = useTextes();
   return (
     <div className="monuments">
       <p className="section-intro">
@@ -218,7 +222,7 @@ export function MonumentsList() {
         return (
           <section key={a.classe} aria-labelledby={`monuments-${a.classe}`}>
             <h3 id={`monuments-${a.classe}`} className="island-sheet-heading">
-              <Icon name="map" /> {archipelagoTitle(a.classe)}
+              <Icon name="map" /> {archipelagoTitle(a.classe, textes.archipels)}
             </h3>
             <ul className="island-quests">
               {monumentsOf(a.classe).map((m) => {

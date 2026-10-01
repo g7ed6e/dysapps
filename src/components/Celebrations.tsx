@@ -15,13 +15,16 @@ export function useHoldCelebrations(active: boolean) {
   }, [active, holdCelebrations]);
 }
 
-/** Récompenses (succès, niveau supérieur) en bandeau qui se ferme seul ; retenues pendant une partie. */
+/**
+ * Récompenses (succès, niveau supérieur) en bandeau qui se ferme seul, sauf un succès de rôle, qui attend le toucher ;
+ * retenues pendant une partie.
+ */
 export function Celebrations() {
   const { celebrations, dismissCelebration, celebrationsHeld } = useProgress();
   const first = celebrationsHeld ? undefined : celebrations[0];
 
   useEffect(() => {
-    if (!first) return;
+    if (!first || first.garder) return;
     const timer = window.setTimeout(() => dismissCelebration(first.id), 5000);
     return () => window.clearTimeout(timer);
   }, [first, dismissCelebration]);

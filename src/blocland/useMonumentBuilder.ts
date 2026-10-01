@@ -5,7 +5,8 @@ import { useHaptics } from '../core/haptics';
 import { BLOCKS, blockCount, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { nextFillable, planStatus, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
 import { placeAll, type Burst } from './usePlanBuilder';
 import { allerChercher } from './world/uses';
 import type { MonumentDef } from './world/monuments';
@@ -39,6 +40,8 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
   useEffect(() => setNotice(null), [monument.id]);
   const status = planStatus(state, monument);
   const sound = (f: () => void) => settings.sounds && f();
+  // Le son de pose de l'univers (le « clac » de Blocland, le « toc » d'Archipéo), lu une fois.
+  const [playPlace] = useState(() => sonDePose(habillageDuMonde().pose));
 
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
     // L'îlot du monument est au large de son île : la case, dans le repère de l'île.

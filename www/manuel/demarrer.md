@@ -21,7 +21,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Quand la place manque (tablette en portrait, grande taille de texte), les boutons ne gardent que leur icône, et leur nom reste lu par le lecteur d’écran ; l’endroit où l’on est garde son fond doré et un trait sous l’icône. La jauge ne coupe jamais un mot : le niveau (déjà dans l’insigne), puis le rôle laissent leur place, et, avec un texte encore plus grand sur téléphone, le logo aussi (le bouton Menu mène au même endroit). Rien ne sort de l’écran, jusqu’à 32 px en OpenDyslexic. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée). Le village en 3D n’a pas de barre du haut : le monde prend tout l’écran, et le bouton ⏸ (ou le bouton retour) ouvre le menu du village, qui donne le rôle, la jauge d’XP, les Missions, les Succès, les Réglages et l’Accueil. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : Blocland, le village des Premiers Rivages en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
+![Le menu en page sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
 
 ![Le menu sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
@@ -51,7 +51,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), « Blocland » et un gros bouton **Jouer**, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le bouton Jouer.](/captures/titre.jpg)
 

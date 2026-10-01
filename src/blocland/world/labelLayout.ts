@@ -278,6 +278,25 @@ export function placerEtiquettes(
       break;
     }
   }
+  // Sur la Carte, chaque île qui se voit garde son nom (référent dys, 01/10/2026) : un nom encore tu cherche une place
+  // près de son île, quitte à pousser un seul nom voisin, plus léger ou de même poids, vers une autre place libre près
+  // de la sienne (jamais celui de la destination).
+  if (carte) {
+    const autreQueLaDestination = (j: number) => j !== destination;
+    // Un autre nom ne se pose ni sur l'île de destination ni contre sa flèche (voir plus haut).
+    const horsDeLaGarde = (i: number, at: LabelBox) => !garde || i === destination || overlap(at, garde, gap) <= 0;
+    // Le nom de la destination se lit au-dessus de sa flèche (DA-31) : posé dessous par l'écart, il y remonte si la place
+    // est libre, ou si les noms qui l'occupent trouvent une autre place.
+    let dessus: { i: number; at: LabelBox } | null = null;
+    if (destination !== undefined && visibles[destination] && offsets[destination].dy > 0) {
+      const b = boxes[destination];
+      const ile = iles[destination];
+      const fleches = obstacles.filter((v) => overlap({ ...b, x: ile.x, y: ile.y - b.h / 2 - gap }, v, gap) > 0);
+      const at = { ...b, x: ile.x, y: Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2)) - b.h / 2 - gap };
+      if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
+    }
+    reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
+  }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
   // l'écart (rentrée dans le cadre, hors de l'interface), et les noms plus légers qu'elle couvre se taisent. Elle ne se
   // pose jamais sur un obstacle (un grand repère d'Archipéo, la flèche ou le fanion) : là, le repère l'emporte. Deux
@@ -296,6 +315,89 @@ export function placerEtiquettes(
     vues.set(i, at);
   }
   return { offsets, visibles };
+}
+
+/** Sur la Carte, combien de noms un nom tu peut pousser en chaîne pour trouver sa place (voir `reparerLaCarte`). */
+const POUSSEES_MAX = 2;
+
+/** Les places essayées autour d'une étiquette (décalages de `TRIES`), rentrées dans le cadre, de la plus proche à la plus loin. */
+function placesAutour(b: LabelBox, bounds: { w: number; h: number }, gap: number): LabelBox[] {
+  const x = clamp(b.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap);
+  const y = clamp(b.y, b.h / 2 + gap, bounds.h - b.h / 2 - gap);
+  return TRIES.map(([fx, fy]) => ({ x: x + fx * b.w, y: y + fy * b.h, w: b.w, h: b.h }));
+}
+
+/**
+ * Sur la Carte, la dernière chance des noms tus (voir `placerEtiquettes`) : chacun, le plus lourd d'abord, essaie les
+ * places autour de sa place voulue ; une place se prend si le nom y est entier, hors de l'interface et des repères,
+ * pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une autre île que de la sienne, et
+ * libre. Sinon, une place qu'un ou deux noms (`poussable`, pas plus lourds) occupent se prend si chacun trouve, lui, une autre
+ * place qui tient aux mêmes conditions (deux noms au plus à chaque pas, `POUSSEES_MAX` pas en chaîne). `libre` : une
+ * condition de plus (la garde de la destination). `voulue` : une place à donner d'abord à un nom déjà montré (le nom de
+ * la destination au-dessus de sa flèche), aux mêmes conditions de poussée. Modifie `offsets`, `visibles` et `vues`.
+ */
+function reparerLaCarte(
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  offsets: LabelOffset[],
+  visibles: boolean[],
+  vues: Map<number, LabelBox>,
+  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
+  poids: (i: number) => number,
+  libre: (i: number, at: LabelBox) => boolean,
+  poussable: (j: number) => boolean,
+  voulue: { i: number; at: LabelBox } | null = null,
+): void {
+  const { couvert, obstacles, bounds, gap } = vue;
+  const ileVue = (i: number) => {
+    const p = { ...iles[i], w: 1, h: 1 };
+    return outside(p, bounds) === 0 && !couvert.some((z) => overlap(p, z, 0) > 0);
+  };
+  /** La place `at` tient-elle pour le nom `i`, sans compter les autres noms ? */
+  const tient = (i: number, at: LabelBox) => {
+    const b = boxes[i];
+    const ile = iles[i];
+    if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) return false;
+    if (obstacles.some((v) => overlap(at, v, gap) > 0) || !libre(i, at)) return false;
+    const d = distanceA(at, ile);
+    if (d > distanceA(b, ile) + ECART_MAX * b.h) return false;
+    return !iles.some((q, j) => j !== i && distanceA(at, q) < d);
+  };
+  const genes = (at: LabelBox, sauf: number[]) => [...vues].filter(([j, v]) => !sauf.includes(j) && overlap(at, v, gap) > 0).map(([j]) => j);
+  const poser = (i: number, at: LabelBox) => {
+    offsets[i] = { dx: at.x - boxes[i].x, dy: at.y - boxes[i].y };
+    visibles[i] = true;
+    vues.set(i, at);
+  };
+  /**
+   * Une place pour le nom `j` qui ne touche pas `pris` (les places déjà promises) : libre, ou occupée par un ou deux
+   * noms poussables, pas plus lourds, qui trouvent chacun une autre place (`reste` : la profondeur de la chaîne).
+   * `chaine` : les noms qui quittent déjà leur place (elle ne compte plus).
+   */
+  const deplacer = (j: number, pris: LabelBox[], chaine: number[], reste: number, places?: LabelBox[]): [number, LabelBox][] | null => {
+    for (const q of places ?? placesAutour(boxes[j], bounds, gap)) {
+      if (pris.some((p) => overlap(q, p, gap) > 0) || (!places && !tient(j, q))) continue;
+      const g = genes(q, [...chaine, j]);
+      if (!g.length) return [[j, q]];
+      if (reste <= 0 || g.length > 2 || g.some((k) => !poussable(k) || poids(k) > poids(j))) continue;
+      const suite: [number, LabelBox][] = [[j, q]];
+      const promis = [...pris, q];
+      const partis = [...chaine, j, ...g];
+      const tous = g.every((k) => {
+        const r = deplacer(k, promis, partis, reste - 1);
+        if (r) {
+          suite.push(...r);
+          promis.push(...r.map(([, at]) => at));
+        }
+        return r !== null;
+      });
+      if (tous) return suite;
+    }
+    return null;
+  };
+  if (voulue) for (const [j, at] of deplacer(voulue.i, [], [], POUSSEES_MAX, [voulue.at]) ?? []) poser(j, at);
+  const tus = boxes.map((_, i) => i).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
+  for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
 }
 
 /**

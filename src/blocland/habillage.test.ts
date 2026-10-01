@@ -22,6 +22,7 @@ describe('L’habillage du monde', () => {
       defi: 'arene',
       reperes: 'libres',
       atelier: 'fabrique',
+      pose: 'geste',
     });
   });
 
@@ -39,6 +40,7 @@ describe('L’habillage du monde', () => {
       defi: 'sentinelle',
       reperes: 'cadres',
       atelier: 'halle',
+      pose: 'eclats',
     });
   });
 });

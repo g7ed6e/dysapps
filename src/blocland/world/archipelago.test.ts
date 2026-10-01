@@ -1,3 +1,4 @@
+import { textesDe } from '../../univers';
 import { BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
@@ -9,6 +10,7 @@ import {
   LEGACY_BRIDGES,
   VOYAGES,
   archipelagoOf,
+  NOMS_ARCHIPELS,
   archipelagoTitle,
   bridgeState,
   bridgesFromLegacyProgress,
@@ -62,7 +64,7 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
 
 it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses îles de départ', () => {
   expect(ARCHIPELAGOS.map((a) => a.classe)).toEqual(['6e', '5e', '4e', '3e']);
-  expect(archipelagoTitle('5e')).toBe('Archipel de 5e — Les Îles Brumeuses');
+  expect(archipelagoTitle('5e', NOMS_ARCHIPELS)).toBe('Archipel de 5e — Les Îles Brumeuses');
   for (const a of ARCHIPELAGOS) {
     const islands = islandsOf(a.classe).map((b) => b.id);
     expect(islands).toContain(a.port);
@@ -205,7 +207,7 @@ it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; u
   const stairs = BRIDGES.find((b) => b.id === 'falaise-cabinet')!;
   expect(bridgeState(stairs, reached, empty)).toBe('blocked');
   expect(bridgeState(stairs, reached)).toBe('buildable');
-  expect(conditionText(stairs, reached)).toContain('Termine d’abord le plan');
+  expect(conditionText(stairs, reached, textesDe('blocland').libelles)).toContain('Termine d’abord le plan');
   expect(buildBridge('falaise-cabinet', reached, { bois: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
   // Le premier plan de la Falaise terminé : l'escalier se construit.
   const bergerie = plansFor('falaise')[0];
@@ -216,7 +218,8 @@ it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; u
   const sky = ['voyage-5e', 'voyage-4e', 'voyage-3e'];
   const pass = BRIDGES.find((b) => b.id === 'phare-textes')!;
   expect(bridgeState(pass, sky, empty)).toBe('blocked');
-  expect(conditionText(pass, sky)).toBe('Bats d’abord le Gardien de Phare des fonctions.');
+  expect(conditionText(pass, sky, textesDe('blocland').libelles)).toBe('Bats d’abord le Gardien de Phare des fonctions.');
+  expect(conditionText(pass, sky, textesDe('archipeo').libelles)).toBe('Rallume d’abord le Gardien de Phare des fonctions.');
   expect(buildBridge('phare-textes', sky, { bois: 9 }, empty)).toEqual({ ok: false, reason: 'gardien' });
   expect(bridgeState(pass, sky, { progress: { 'phare-gardien': { stars: 2 } }, plans: {} })).toBe('buildable');
   // Les ouvrages proposés comprennent ceux qui sont bloqués (on explique la condition), pas ceux qui sont loin.

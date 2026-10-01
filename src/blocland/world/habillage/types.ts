@@ -41,4 +41,10 @@ export interface Habillage {
    * toit à deux pentes, une potence de bois). Même place, même porte : seule la silhouette change (world/terrain.ts).
    */
   atelier: Atelier;
+  /**
+   * La pose d'un bloc (GD-1, point 4) : le geste de Blocland, où le dernier bloc d'un plan descend et s'enclenche
+   * (world/pose.ts, sans poussière), et le « clac » de cliquet à chaque pose ; les autres poses gardent
+   * leurs poussières claires. Archipéo : poussières et « toc » commun.
+   */
+  pose: 'geste' | 'eclats';
 }

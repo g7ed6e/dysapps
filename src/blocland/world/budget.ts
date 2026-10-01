@@ -51,16 +51,18 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // la crête, à six blocs d'altitude, l'île ajoute 2 775 triangles au sol des Anciens Ateliers (21 268 → 24 043). Les
   // enveloppes « autres » en passent 1 100 au sol, pris sur la mer, la faune, le décor, la construction, le navire et
   // les créatures, où les trois archipels gardent de la marge (mesurée, tout construit) ; la somme ne change pas (52 300).
-  // Proposition de l'artiste technique 3D pour la Halle aux matériaux (GD-2), à valider par le mainteneur : le lieu où
-  // l'on assemble, sur l'île de l'école de chaque archipel, coûte de 108 à 118 triangles de construction, hublots du
-  // phare du large compris (mesuré tout construit, après le colombage du lot 7b : 5 964 → 6 080 aux Premiers Rivages,
-  // qui gardent leur marge sur 6 500 ; 7 067 → 7 185 aux Îles Brumeuses ; 4 528 → 4 644 aux Anciens Ateliers ; 4 732 →
-  // 4 840 aux Îles du Ciel). Les enveloppes « autres »
-  // passent 100 triangles à la construction (7 100 → 7 200), pris au sol (40), au bonhomme (25), à la faune (20), au
-  // navire (10) et aux bornes (5), mesurés tout construit (le plus gourmand : 24 043 au sol aux Anciens Ateliers, 472
-  // pour le bonhomme, 1 274 pour la faune aux Îles du Ciel, 420 pour le navire, 700 pour les bornes) ; la somme ne
-  // change pas (52 300).
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_060, drawCalls: 1 } },
+  // Proposition pour la Halle aux matériaux (GD-2), à valider par le mainteneur : le lieu où l'on assemble, sur l'île de
+  // l'école de chaque archipel, coûte de 108 à 118 triangles de construction, hublots du phare du large compris. Après
+  // les îles-écoles en 20 × 20 (01/10/2026), mesuré tout construit : 6 097 aux Premiers Rivages (sur 6 500), 7 217 aux
+  // Îles Brumeuses, 4 594 aux Anciens Ateliers, 4 858 aux Îles du Ciel. L'enveloppe « autres » de la construction passe
+  // de 7 100 à 7 240 ; 60 triangles sont pris au bonhomme (25), à la faune (20), au navire (10) et aux bornes (5)
+  // (mesurés : 472, 1 274, 420, 700), et aucun autre poste n'a de marge depuis le sol en 20 × 20 : la somme des
+  // « autres » passe de 52 960 à 53 040 (toujours sous les 60 000 des tablettes).
+  // Le cœur agrandi de l'Atelier (4e, 01/10/2026), enveloppe validée par le mainteneur le 01/10/2026 : 20 × 20 et sa côte autour, l'île gagne 184 colonnes de terre et 694 triangles de sol (Anciens Ateliers :
+  // 24 043 → 24 756). Rien à alléger sans retirer de la terre (les marges sont déjà plates, deux triangles par case), et
+  // aucun poste « autres » n'a 660 triangles de marge dans les trois archipels (100 en tout) : l'enveloppe du sol passe
+  // de 24 100 à 24 760, et la somme des « autres » de 52 300 à 52 960 (toujours sous les 60 000 des tablettes).
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_760, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -85,7 +87,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 6_500, drawCalls: 3 },
-    autres: { triangles: 7_200, drawCalls: 3 },
+    autres: { triangles: 7_240, drawCalls: 3 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },

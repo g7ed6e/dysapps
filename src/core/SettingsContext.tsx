@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { applySettings, DEFAULT_SETTINGS, retenirReglages, sanitizeSettings, SETTINGS_KEY, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
 import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
-import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, universAffiche, type UniversChoice } from './univers';
+import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, RENOMMAGE_KEY, renommageANoter, universAffiche, type UniversChoice } from './univers';
 
 interface SettingsContextValue {
   settings: Settings;
@@ -28,8 +28,24 @@ export function lireReglages(): { settings: Settings; message: boolean } {
   return { settings: { ...settings, univers }, message };
 }
 
+/**
+ * Les nouveaux noms des archipels (GD-1), notés une seule fois, au premier lancement qui les connaît : à dire à un
+ * appareil qui a déjà une progression, déjà dits pour un appareil neuf. Noté avant le premier rendu du monde, qui le lit,
+ * et avant que l'élève ne gagne quoi que ce soit dans la séance. Idempotent.
+ */
+export function noterRenommage(): void {
+  const deja = loadJSON<unknown>(RENOMMAGE_KEY, null);
+  // Déjà notée : rien à relire (le chemin de démarrage).
+  if (deja !== null) return;
+  const note = renommageANoter(deja, aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})));
+  if (note) saveJSON(RENOMMAGE_KEY, note);
+}
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [lus] = useState(() => lireReglages());
+  const [lus] = useState(() => {
+    noterRenommage();
+    return lireReglages();
+  });
   const [settings, setSettings] = useState<Settings>(lus.settings);
   // Le rendu lit les réglages en mémoire dès le premier rendu du monde, avant les effets : posés ici, pendant le rendu.
   // Idempotent (la même valeur à chaque rendu), donc sans risque sous StrictMode.

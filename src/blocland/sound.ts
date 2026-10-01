@@ -78,6 +78,54 @@ export function playPlace(): void {
   blip(220, 110, 0.12, 0.18, 'triangle');
 }
 
+/** Le bruit court du « clac » (30 ms), tiré une fois. */
+let clacBuffer: AudioBuffer | null = null;
+
+/**
+ * « Clac » mat de cliquet : un bloc s'enclenche (Blocland, GD-1, point 4). Un claquement de bruit filtré et un corps
+ * grave, tous deux à hauteur fixe (rien ne monte ni ne descend, à la différence des sons de réussite et d'erreur),
+ * éteints en moins d'un dixième de seconde. Plus mat et plus court que le « toc » commun.
+ */
+export function playClac(): void {
+  const ac = context();
+  if (!ac || speaking()) return;
+  const t = ac.currentTime;
+  if (!clacBuffer || clacBuffer.sampleRate !== ac.sampleRate) {
+    clacBuffer = ac.createBuffer(1, Math.ceil(ac.sampleRate * CLAC.bruit), ac.sampleRate);
+    const data = clacBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  }
+  // Le claquement : le bruit passé par un filtre passe-bande, assez bas pour rester mat.
+  const src = ac.createBufferSource();
+  src.buffer = clacBuffer;
+  const filter = ac.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = CLAC.filtreHz;
+  filter.Q.value = 1.4;
+  const clic = ac.createGain();
+  clic.gain.setValueAtTime(CLAC.volume, t);
+  clic.gain.exponentialRampToValueAtTime(0.001, t + CLAC.bruit);
+  src.connect(filter).connect(clic).connect(ac.destination);
+  src.start(t);
+  src.stop(t + CLAC.bruit);
+  // Le corps : une note grave tenue à la même hauteur, très brève.
+  const osc = ac.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(CLAC.corpsHz, t);
+  const corps = ac.createGain();
+  corps.gain.setValueAtTime(CLAC.volume * 0.8, t);
+  corps.gain.exponentialRampToValueAtTime(0.001, t + CLAC.duree);
+  osc.connect(corps).connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + CLAC.duree);
+}
+
+/** Les valeurs du « clac » : durée du bruit et du corps (secondes), filtre et corps (Hz), volume. */
+export const CLAC = { bruit: 0.03, duree: 0.07, filtreHz: 1500, corpsHz: 150, volume: 0.2 } as const;
+
+/** Le son de pose de l'univers : le « clac » de Blocland (geste `geste`), le « toc » commun d'Archipéo. */
+export const sonDePose = (pose: 'geste' | 'eclats'): (() => void) => (pose === 'geste' ? playClac : playPlace);
+
 /** « Pop » clair : un bloc se retire. */
 export function playRemove(): void {
   blip(330, 660, 0.1, 0.12, 'triangle');

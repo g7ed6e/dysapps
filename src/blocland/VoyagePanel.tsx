@@ -6,8 +6,9 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useBlocland } from './BloclandContext';
 import { VoxelScene } from './Voxel';
-import { ARCHIPELAGOS, archipelagoOf, getArchipelago, launchedCount, type ArchipelagoId } from './world/archipelago';
+import { ARCHIPELAGOS, archipelagoOf, launchedCount, type ArchipelagoId, type NomsArchipels } from './world/archipelago';
 import { VEHICLE_NAME, vehicleModel } from './world/vehicle';
+import { useTextes } from '../univers';
 
 interface Props {
   /** L'archipel de destination. */
@@ -19,10 +20,10 @@ interface Props {
 
 /**
  * La phrase du voyage, lue à voix haute. Vers un archipel déjà atteint : « Retour vers… » si l'on revient en arrière
- * (depuis `from`), « Cap sur… » si l'on repart vers un archipel plus loin.
+ * (depuis `from`), « Cap sur… » si l'on repart vers un archipel plus loin. `noms` : ceux de l'univers affiché.
  */
-export function voyageSentence(to: ArchipelagoId, back: boolean, from?: ArchipelagoId): string {
-  const a = getArchipelago(to);
+export function voyageSentence(to: ArchipelagoId, back: boolean, noms: NomsArchipels, from?: ArchipelagoId): string {
+  const a = { name: noms[to] };
   const forward = from !== undefined && ARCHIPELAGOS.findIndex((x) => x.classe === to) > ARCHIPELAGOS.findIndex((x) => x.classe === from);
   if (back && forward) return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name}.`;
   if (back) return `Tu embarques sur ${VEHICLE_NAME}. Retour vers les ${a.name}.`;
@@ -38,7 +39,8 @@ export function voyageSentence(to: ArchipelagoId, back: boolean, from?: Archipel
 export function VoyagePanel({ to, back, onArrive }: Props) {
   const { settings, speak } = useSettings();
   const { state } = useBlocland();
-  const text = voyageSentence(to, back, archipelagoOf(state.village.at ?? 'foret').classe);
+  const textes = useTextes();
+  const text = voyageSentence(to, back, textes.archipels, archipelagoOf(state.village.at ?? 'foret').classe);
   useEffect(() => {
     if (settings.autoRead) speak(frenchTypography(text));
     // Une lecture par voyage.

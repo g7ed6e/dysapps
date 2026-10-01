@@ -15,4 +15,5 @@ export const HABILLAGE_ARCHIPEO = {
   defi: 'sentinelle',
   reperes: 'cadres',
   atelier: 'halle',
+  pose: 'eclats',
 } as const satisfies Readonly<Habillage> & { univers: 'archipeo' };

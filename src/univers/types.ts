@@ -1,8 +1,9 @@
 // Les textes d'un univers (lot 6, une tranche de J8 avancée) : ce que disent les Gardiens, l'espèce des créatures, les
-// libellés qui disent où en sont les Gardiens et le mot de la baleine. Du texte brut, affiché par React ; les clés
+// libellés qui disent où en sont les Gardiens, le mot des grandes étapes, les noms des archipels et des rôles (GD-1). Du texte brut, affiché par React ; les clés
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
 import type { BiomeId, BlockId } from '../blocland/biomes';
-import type { ArchipelagoId } from '../blocland/world/archipelago';
+import type { ArchipelagoId, NomsArchipels } from '../blocland/world/archipelago';
+import type { Tier } from '../core/progress';
 import type { IslandStateId } from '../blocland/world/islandState';
 import type { LieuDAssemblage, NomDeBloc } from '../blocland/world/assemblage';
 
@@ -40,8 +41,8 @@ export interface LibellesGardiens {
   dejaFaitArene: (gardien: string) => string;
   /** Ce qu'il manque pour le kit du Bloc-Navire, en bref. */
   encoreAFaire: (n: number) => string;
-  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens. */
-  navireAttend: (n: number) => string;
+  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
+  navireAttend: (n: number, piece?: string) => string;
   /**
    * Ce que dit la créature du port sur les Gardiens qu'attend le kit du Bloc-Navire (`piece` : « la voile »), ou qu'il
    * est arrivé.
@@ -67,6 +68,12 @@ export interface LibellesGardiens {
    * qu'est un ouvrage et ce qu'il demande (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
    */
   decouverteOuvrages: string;
+  /** Ce que dit la créature d'une île fermée quand l'ouvrage qui y mène demande aussi le Gardien de l'autre côté. */
+  ouvrageGardien: string;
+  /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
+  navireGardiensManquants: (n: number, archipel: string) => string;
+  /** Ce qu'il reste à faire pour un tunnel ou un col, dans la liste des ouvrages (`ile` : l'île de l'autre côté). */
+  gardienDabord: (ile: string) => string;
   /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
   decouverteNavire: string;
 }
@@ -95,11 +102,16 @@ export interface TextesSentinelles {
   rallume: (gardien: string) => string;
 }
 
-/** Le mot de la baleine (lot 5), aux grandes étapes d'un archipel. */
+/**
+ * Le mot des grandes étapes d'un archipel (lot 5) : la baleine le dit dans Archipéo ; dans Blocland, la créature de
+ * l'île-école de l'archipel (GD-1).
+ */
 export interface TextesBaleine {
+  /** Qui parle : la baleine, ou la créature de l'île-école de l'archipel (`school` de world/archipelago.ts). */
+  parle: 'baleine' | 'ecole';
   /** La première page, à l'arrivée dans un archipel. */
   arrivee: Record<ArchipelagoId, string>;
-  /** Tous les Gardiens d'un archipel (`archipel` : son nom, « Premiers Rivages »). */
+  /** Tous les Gardiens d'un archipel (`archipel` : son nom dans l'univers, « Premiers Rivages »). */
   gardiens: (archipel: string) => string;
   /** L'île-port restaurée. */
   port: (ile: string) => string;
@@ -107,10 +119,27 @@ export interface TextesBaleine {
   ouvrage: (ile: string) => string;
 }
 
-/** Ce que dit le panneau d'un monument dont l'univers change le dessin (sa description, son message de fin). */
+/** Ce que dit le panneau d'un monument dont l'univers change le dessin ou les mots (sa description, son message de fin). */
 export interface TextesMonument {
   description: string;
   done: string;
+}
+
+/** Un succès que l'univers nomme autrement (les rôles, un archipel nommé) : son titre et sa condition. */
+export interface TextesSucces {
+  title: string;
+  description: string;
+}
+
+/**
+ * L'écran qui annonce, une fois par appareil, que des archipels changent de nom (GD-1, U4) : une phrase par archipel,
+ * sur un seul écran, un seul bouton.
+ */
+export interface TextesRenommage {
+  titre: string;
+  intro: string;
+  lignes: string[];
+  bouton: string;
 }
 
 export interface TextesUnivers {
@@ -126,10 +155,18 @@ export interface TextesUnivers {
   sentinelles: TextesSentinelles | null;
   baleine: TextesBaleine;
   /**
-   * Les monuments que l'univers dessine autrement, par identifiant (`world/monuments.ts`) : leur nom, leurs cases et
-   * leur coût restent communs ; les autres gardent le texte de `world/monuments.ts`.
+   * Les monuments que l'univers dessine ou dit autrement, par identifiant (`world/monuments.ts`) : leur nom, leurs cases
+   * et leur coût restent communs ; ce qui n'est pas donné ici garde le texte de `world/monuments.ts`.
    */
-  monuments: Partial<Record<string, TextesMonument>>;
+  monuments: Partial<Record<string, Partial<TextesMonument>>>;
+  /** Le nom de chaque archipel, sans article (« Basses Terres » → « les Basses Terres ») : les identifiants restent. */
+  archipels: NomsArchipels;
+  /** Le nom de chaque rôle (`Tier` de core/progress.ts) : les identifiants et les seuils restent. */
+  roles: Record<Tier, string>;
+  /** Les succès que l'univers nomme autrement, par identifiant (`BADGES` de core/progress.ts) ; les autres restent. */
+  succes: Partial<Record<string, TextesSucces>>;
+  /** L'écran des nouveaux noms, dit une fois par appareil ; `null` : rien à annoncer dans cet univers. */
+  renommage: TextesRenommage | null;
   /**
    * Les noms des blocs que l'univers nomme autrement (GD-2 : les blocs assemblés), par identifiant : leur recette, leur
    * place dans les monuments et leur identifiant restent communs ; les autres gardent le nom de `BLOCKS` (biomes.ts).
