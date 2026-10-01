@@ -40,12 +40,16 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Installer Chromium
         run: npx playwright-core install --with-deps chromium
-      # Le code de sortie des mesures (une lueur de nuit au-dessus du plafond) n'empêche pas de garder les captures :
-      # elles restent la référence de ce commit.
+      # Une lueur de nuit au-dessus du plafond (code 2) n'empêche pas de garder les captures : elles restent la référence
+      # de ce commit. Une vue en erreur (code 1) arrête tout : un socle incomplet ne se publie pas.
       - name: Faire le socle des captures
         env:
+          UNIVERS: ${{ matrix.univers }}
           RENDU: ${{ matrix.univers == 'archipeo' && '--rendu archipeo' || '' }}
-        run: npm run rendu:mesures -- --sans-poids --familles jour,nuit --captures "references/${{ matrix.univers }}" $RENDU || echo "Mesures en échec : captures gardées."
+        run: |
+          code=0
+          npm run rendu:mesures -- --sans-poids --familles jour,nuit --captures "references/$UNIVERS" $RENDU || code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: references-${{ matrix.univers }}
@@ -86,7 +90,10 @@ jobs:
           # Le commit publié en tête, puis les précédents ; au-delà de GARDER, les plus anciens partent.
           { echo "$GITHUB_SHA"; grep -vx "$GITHUB_SHA" commits.txt || true; } > liste.txt
           head -n "$GARDER" liste.txt > commits.txt
-          tail -n +"$((GARDER + 1))" liste.txt | while read -r ancien; do rm -rf "$ancien"; done
+          # (commits.txt vient de la branche : seuls des noms de commit y sont acceptés.)
+          tail -n +"$((GARDER + 1))" liste.txt | while read -r ancien; do
+            if [[ "$ancien" =~ ^[0-9a-f]{40}$ ]]; then rm -rf "$ancien"; fi
+          done
           rm liste.txt
           rm -rf "$GITHUB_SHA"
           cp -r ../nouvelles "$GITHUB_SHA"

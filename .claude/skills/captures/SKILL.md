@@ -49,7 +49,7 @@ Le périmètre par défaut d'un lot :
    base=$(git merge-base HEAD origin/main)
    ls ../references/$base/blocland
    ```
-   Si le dossier de `$base` manque (la CI de ce commit tourne encore, ou il est trop ancien) : attendre la fin de la CI, ou se remettre sur main.
+   Si le dossier de `$base` manque : la CI de ce commit tourne encore (attendre sa fin), ou il est trop ancien (se remettre sur main), ou la CI l'a sauté parce que deux fusions se suivaient de près (prendre le commit précédent de `commits.txt`, et faire soi-même l'avant des vues que le commit sauté a pu changer, comme à l'étape 3).
 3. **L'avant des vues hors socle** (la famille du lot, `lieux-salle`, `ciel`…) : le prendre soi-même sur `$base`, avec les mêmes options, dans un dossier qui commence par une copie des références :
    ```sh
    cp -r ../references/$base/blocland /tmp/avant-blocland

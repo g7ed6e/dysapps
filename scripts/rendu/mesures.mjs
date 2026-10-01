@@ -402,4 +402,5 @@ if (js) {
   console.log('| --- | ---: | ---: | --- |');
   for (const f of js.slice(0, 6)) console.log(`| ${f.file} | ${kilo(f.raw)} | ${kilo(f.gzip)} | ${f.three ? 'oui' : ''} |`);
 }
-process.exit(rows.some((r) => r.erreur) || lueurs.some((l) => l.vue === 'île' && l.part > LUEUR_MAX) ? 1 : 0);
+// 1 : une vue en erreur ; 2 : seulement une lueur de nuit au-dessus du plafond (la CI des références garde alors ses captures).
+process.exit(rows.some((r) => r.erreur) ? 1 : lueurs.some((l) => l.vue === 'île' && l.part > LUEUR_MAX) ? 2 : 0);
