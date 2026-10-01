@@ -1235,6 +1235,9 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
     if (spots.length === 4) break;
   }
+  // Dans un ordre qui ne dépend que de leur place (d'ouest en est, puis de l'avant vers l'arrière) : chaque baleine garde son rythme
+  // (`three/large.ts` le tire de son rang) quand une île grandit et que les notes des clairières changent.
+  spots.sort((p, q) => p.x - q.x || p.y - q.y);
   whaleCache.set(a, spots);
   return spots;
 }
