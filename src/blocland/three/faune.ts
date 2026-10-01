@@ -4,7 +4,7 @@
 // tous les nuages en un ; le liseré d'écume du passage de la baleine en un, seulement quand il se voit. Matériaux mats à
 // facettes, couleurs par sommet ; faits une fois par scène et libérés avec elle.
 import * as THREE from 'three';
-import { couleursDeLaBaleine, EVENT, formeDeBaleine, formeDEcume, formeDeNuage, formeDOiseau, PIVOT_QUEUE, type Forme, type PoseDeBaleine } from '../world/faune';
+import { allongementDuNuage, couleursDeLaBaleine, EPAISSEUR_DU_NUAGE, EVENT, formeDeBaleine, formeDEcume, formeDeNuage, formeDOiseau, PIVOT_QUEUE, type Forme, type PoseDeBaleine } from '../world/faune';
 
 export interface FauneEn3D {
   group: THREE.Group;
@@ -14,8 +14,11 @@ export interface FauneEn3D {
    * (1 par défaut ; le planeur des Îles du Ciel est plus grand).
    */
   poserOiseau(i: number, x: number, y: number, z: number, cap: number, ailes: number, echelle?: number): void;
-  /** Un nuage : sa place (le milieu du dessous), sa longueur (en blocs, comme les nuages en cubes) et son cap. */
-  poserNuage(i: number, x: number, y: number, z: number, longueur: number, cap: number): void;
+  /**
+   * Un nuage : sa place (le milieu du dessous), sa longueur (en blocs, comme les nuages en cubes), son cap et sa taille
+   * (1 par défaut ; 0 : défait, au bout de sa dérive).
+   */
+  poserNuage(i: number, x: number, y: number, z: number, longueur: number, cap: number, taille?: number): void;
   /** Le liseré d'écume du passage, sous la baleine qui passe (`null` : caché). */
   poserEcume(p: PoseDeBaleine | null, surLEau: number): void;
   /** La nuit (0 : jour, 1 : pleine nuit) : un reflet de lune garde les baleines et l'écume lisibles sur la mer sombre. */
@@ -111,10 +114,10 @@ export function creerFaune(n: { baleines: number; oiseaux: number; nuages: numbe
       tmp.scale.set(echelle, ailes * echelle, echelle);
       poser(oiseaux, i);
     },
-    poserNuage(i, x, y, z, longueur, cap) {
+    poserNuage(i, x, y, z, longueur, cap, taille = 1) {
       tmp.position.set(x, y, z);
       tmp.rotation.set(0, cap, 0);
-      tmp.scale.set(Math.max(0.7, longueur / 3.5) * 1.15, 1.1, 1.1);
+      tmp.scale.set(allongementDuNuage(longueur) * taille, EPAISSEUR_DU_NUAGE * taille, EPAISSEUR_DU_NUAGE * taille);
       poser(nuages, i);
     },
     poserEcume(p, surLEau) {
