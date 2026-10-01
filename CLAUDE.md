@@ -47,6 +47,11 @@ Le site de documentation public (dossier `www/`, publié sur https://g7ed6e.gith
 
 Ne pas modifier le build de l'application (`vite.config.ts`, `npm run build`) pour la documentation : l'application est publiée par Cloudflare, la documentation par GitHub Pages.
 
+## Proposer avant de construire
+
+- Une demande qui change un parcours, la navigation, le game design ou ce qu'un univers montre commence par deux ou trois pistes écrites (le `consultant-ux-ui` pour un parcours ou la navigation, le `directeur-artistique` pour le game design et le rendu), avec une recommandation. Le mainteneur en choisit une avant que le code ou la 3D commence ; le concept qu'il valide est la référence du lot.
+- Les relecteurs lisent un commit figé, jamais l'arbre de travail pendant qu'on le modifie ; une deuxième passe ne relit que ce qui a changé, et seulement chez le relecteur qui avait demandé un ajustement. L'artiste technique 3D code, commite et s'arrête : les captures d'un lot se lancent sur la CI par le fil (`.claude/skills/captures/SKILL.md`).
+
 ## Relecture dys (systématique)
 
 - Toute pull request qui touche l'interface, les textes affichés, le contenu, le monde (3D ou 2D), les sons, les animations ou les réglages passe par l'agent `referent-dys` avant d'être ouverte. Sa description donne son verdict (Adapté, À ajuster, Bloquant) et ce qui en a été fait ; un avis Bloquant arrête la pull request tant qu'il n'est pas levé ou tranché par le mainteneur.
