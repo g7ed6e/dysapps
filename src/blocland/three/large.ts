@@ -14,7 +14,6 @@ import { playWhaleBlow } from '../sound';
 import { ISLAND_VIEW } from './camera';
 import { creerFaune } from './faune';
 import type { Lumiere } from './lumiere';
-import { mistTexture } from './maillage';
 import { creerMer } from './mer';
 import type { Derniers, Monde, PartieDeLaScene } from './partie';
 import { blockMaterial } from './textures';
@@ -60,7 +59,7 @@ export function creerLarge(
   const water = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), waterMat);
   water.rotation.x = -Math.PI / 2;
   water.position.set(center.x, WATER_LEVEL, center.y);
-  // Les Îles du Ciel : pas de mer, un plancher de nuages qui dérive lentement sous les îles.
+  // Les Îles du Ciel : pas de mer, un plancher de nuages sous les îles.
   water.visible = !ambience.sky && !peinte;
   scene.add(water);
   // Archipéo (lot R3) : la mer en dégradé de profondeur, l'écume du rivage et la houle (ou le plancher de nuages), en
@@ -71,13 +70,9 @@ export function creerLarge(
     scene.add(mer.mesh);
   }
   let merSignature = '';
-  const floorTex = ambience.sky ? mistTexture() : null;
-  if (floorTex) {
-    floorTex.wrapS = THREE.RepeatWrapping;
-    floorTex.wrapT = THREE.RepeatWrapping;
-    floorTex.repeat.set(width / 6, width / 6);
-  }
-  const cloudFloorMat = new THREE.MeshBasicMaterial({ map: floorTex, color: 0xf6f9fc, transparent: true, opacity: 0.92, depthWrite: false });
+  // Le plancher de nuages des Îles du Ciel (Blocland) : uni et opaque, de la couleur de l'eau de la palette, qui suit le
+  // jour comme l'eau des autres archipels (DA-35 : la nappe en dégradé répété faisait un damier de ronds blancs).
+  const cloudFloorMat = new THREE.MeshBasicMaterial({ color: palette(1, archipel).water });
   const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
   cloudFloor.rotation.x = -Math.PI / 2;
   cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
@@ -228,7 +223,11 @@ export function creerLarge(
       waterMat.color.setHex(teinteSur(c.mer, EAU_MOYENNE));
       if (ambience.sky) cloudFloorMat.color.setHex(c.mer);
       faune?.nuit(1 - jour);
-    } else waterMat.color.setHex(palette(jour, archipel).water);
+    } else {
+      const eau = palette(jour, archipel).water;
+      waterMat.color.setHex(eau);
+      if (ambience.sky) cloudFloorMat.color.setHex(eau);
+    }
   });
 
   return {
@@ -258,7 +257,6 @@ export function creerLarge(
       if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
       // La houle et l'écume d'Archipéo.
       mer?.temps(t);
-      if (floorTex) floorTex.offset.set(t * 0.004, t * 0.002);
       poserPlaneur(t, false);
       for (const [i, b] of birds.entries()) {
         const o = birdAt(b, t);
@@ -347,7 +345,6 @@ export function creerLarge(
       waterMat.dispose();
       cloudFloor.geometry.dispose();
       cloudFloorMat.dispose();
-      floorTex?.dispose();
       cloudGeo.dispose();
       wingGeo.dispose();
       birdMat.dispose();
