@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut ; roue dentée sur téléphone) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (barre du haut, roue dentée sur téléphone ; dans le village, menu ⏸) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -69,6 +69,8 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
 
   Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
+
+  Dessous, **La lumière du monde** : deux choix. **L’heure réelle** (par défaut) : la nuit tombe le soir sur le village (crépuscule à 20 h, aube à 7 h, nuit toujours claire). **Toujours le jour** : le village reste en plein jour. Tant que le tutoriel du village n’a pas été vu, c’est le jour, quel que soit ce choix.
 - **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.

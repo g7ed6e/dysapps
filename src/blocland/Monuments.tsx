@@ -5,11 +5,12 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, blockName, getBiome, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, getBiome, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { InventoryLink } from './Inventory';
 import { EarnLink } from './PlanSection';
+import { firstSentences } from './firstSentences';
 import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoTitle, getArchipelago, isArchipelagoReached } from './world/archipelago';
@@ -39,12 +40,22 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const open = useMonumentOpen(monument);
   const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
   const texte = texteDuMonument(useTextes(), monument);
+  const said = firstSentences(texte.description);
   return (
     <div className="monument">
       <p className="island-sheet-says">
-        <Syllabified text={texte.description} />
+        <Syllabified text={said.first} />
         <SpeakButton text={texte.description} label="Écouter" compact />
       </p>
+      {said.rest && (
+        // Une phrase visible ; une description plus longue (celle d'un univers) garde sa suite écrite, dans un pli.
+        <details key={monument.id} className="sheet-more">
+          <summary>La suite</summary>
+          <p>
+            <Syllabified text={said.rest} />
+          </p>
+        </details>
+      )}
       {!open ? (
         <p className="plan-done">
           <Icon name="lock" /> Archipel fermé : rejoins d’abord les {getArchipelago(monument.archipelago).name} avec le Bloc-Navire.
@@ -74,20 +85,29 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
             </p>
           ) : (
             <>
-              <ul className="plan-missing" aria-label="Blocs qu’il manque">
-                {missing.map(([block, n]) => {
-                  const have = state.inventory[block] ?? 0;
-                  return (
-                    <li key={block}>
-                      <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
-                      <span>
-                        <strong>{n}</strong> {blockName(block, n)}
-                        {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
+              {!builder.canFill && (
+                // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
+                <p className="monument-lacking">
+                  <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.inventory)} />
+                </p>
+              )}
+              <details className="sheet-more monument-blocks">
+                <summary>Les blocs qu’il faut</summary>
+                <ul className="plan-missing" aria-label="Blocs qu’il manque">
+                  {missing.map(([block, n]) => {
+                    const have = state.inventory[block] ?? 0;
+                    return (
+                      <li key={block}>
+                        <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
+                        <span>
+                          <strong>{n}</strong> {blockName(block, n)}
+                          {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </details>
               <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                 <Icon name="hammer" /> Poser le bloc suivant
               </button>
@@ -102,10 +122,26 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
         {builder.notice ?? ''}
       </p>
       <p className="island-inventory-link">
-        <InventoryLink /> · <Link to={MONUMENTS_PATH}>Tous les monuments</Link>
+        <InventoryLink /> · <Link to={MONUMENTS_PATH} className="island-inventory-more">Tous les monuments</Link>
       </p>
     </div>
   );
+}
+
+/**
+ * Ce qui manque pour poser, en une ligne : « Il manque 30 briques et 12 blocs de bois. » (les deux plus gros manques ;
+ * « et d’autres blocs » s'il y en a encore).
+ */
+export function lackingLine(missing: [BlockId, number][], inventory: Partial<Record<BlockId, number>>): string {
+  const left = missing
+    .map(([b, n]) => [b, n - Math.min(n, inventory[b] ?? 0)] as const)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const words = left.slice(0, 2).map(([b, n]) => blockCount(b, n));
+  if (left.length > 2) words.push('d’autres blocs');
+  if (!words.length) return '';
+  const list = words.length > 1 ? `${words.slice(0, -1).join(', ')} et ${words[words.length - 1]}` : words[0];
+  return `Il manque ${list}.`;
 }
 
 function subtitle(m: MonumentDef): string {

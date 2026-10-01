@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { DEFAULT_SETTINGS, FONT_LABELS, LV2_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_VIEW_LABELS, type FontChoice, type Lv2Choice, type StartChoice, type ThemeChoice, type WorldViewChoice } from '../core/settings';
+import { DEFAULT_SETTINGS, FONT_LABELS, LV2_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, START_LABELS, THEME_LABELS, spacingWord, speedWord, WORLD_LIGHT_LABELS, WORLD_VIEW_LABELS, type FontChoice, type Lv2Choice, type StartChoice, type ThemeChoice, type WorldLightChoice, type WorldViewChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -217,7 +217,18 @@ export function SettingsPage() {
               </label>
             ))}
           </div>
-          <p>Si l’appareil ne sait pas dessiner le monde en 3D, l’appli montre le monde en 2D ; s’il ne sait rien dessiner, la liste des îles.</p>
+          <p>Si l’appareil ne sait pas dessiner le monde en 3D, l’appli montre la liste des îles.</p>
+          {/* Le soleil et la lune de la barre du village vivent ici : un réglage qui reste (allègement, point 2). */}
+          <p id="reglage-lumiere">La lumière du monde</p>
+          <div className="option-row" role="radiogroup" aria-labelledby="reglage-lumiere">
+            {(Object.keys(WORLD_LIGHT_LABELS) as WorldLightChoice[]).map((worldLight) => (
+              <label key={worldLight} className={`option${settings.worldLight === worldLight ? ' selected' : ''}`}>
+                <input type="radio" name="worldLight" value={worldLight} checked={settings.worldLight === worldLight} onChange={() => update({ worldLight })} />
+                {WORLD_LIGHT_LABELS[worldLight]}
+              </label>
+            ))}
+          </div>
+          <p>Avec l’heure réelle, la nuit tombe le soir sur le village.</p>
         </fieldset>
 
         <fieldset className="panel">

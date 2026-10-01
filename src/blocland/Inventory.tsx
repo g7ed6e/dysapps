@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
@@ -14,6 +15,18 @@ const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : use.kind === 'garder' ? 'flag' : use.kind === 'monument' ? 'castle' : 'hammer');
 const useKey = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
+
+/** « Tu peux construire » en montre trois ; « Tout voir » montre le reste. */
+export const READY_SHOWN = 3;
+
+/**
+ * L'ordre des chantiers prêts : ceux de l'île du bonhomme d'abord, dans l'ordre de son prochain objectif (le plan,
+ * l'ouvrage, le Bloc-Navire), puis les autres.
+ */
+function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
+  const order = ['plan', 'ouvrage', 'navire', 'monument'].indexOf(kind);
+  return (here ? 0 : 10) + (order < 0 ? 9 : order);
+}
 
 /** « Plan de Forêt des sons : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « À garder pour … ». */
 function useLabel(use: Use, count: number): string {
@@ -41,6 +54,25 @@ export function InventoryBody() {
     .flatMap((row) => row.uses.filter((u) => (u.enough || u.kind === 'monument') && u.kind !== 'garder'))
     .filter((u) => (seen.has(useKey(u)) ? false : (seen.add(useKey(u)), true)));
   const readyOuvrages = ouvrages.filter((o) => o.enough);
+  // Les trois premiers chantiers prêts, celui du prochain objectif de l'île du bonhomme en tête ; le reste sur demande.
+  type Ready = { key: string; rank: number } & ({ genre: 'usage'; use: Use } | { genre: 'ouvrage'; ouvrage: (typeof ouvrages)[number] });
+  const ready = [
+    ...readyUses.map((use): Ready => ({ genre: 'usage', key: useKey(use), rank: readyRank(use.kind, use.island === at), use })),
+    ...readyOuvrages.map((o): Ready => ({ genre: 'ouvrage', key: o.bridge.id, rank: readyRank('ouvrage', o.from === at || o.to === at), ouvrage: o })),
+  ]
+    .map((item, i) => ({ item, i }))
+    .sort((a, b) => a.item.rank - b.item.rank || a.i - b.i)
+    .map(({ item }) => item);
+  const [all, setAll] = useState(false);
+  const list = useRef<HTMLUListElement>(null);
+  // « Tout voir » disparaît une fois touché : le focus passe au premier chantier qui vient d'apparaître.
+  const showAll = () => {
+    setAll(true);
+    requestAnimationFrame(() => list.current?.querySelectorAll('a')[READY_SHOWN]?.focus());
+  };
+  const shown = all ? ready : ready.slice(0, READY_SHOWN);
+  // « Dans ta poche » ne redit pas les chantiers que « Tu peux construire » montre déjà.
+  const listed = new Set(shown.map((r) => r.key));
   // Les ouvrages pas encore payables : les trois moins chers suffisent, une longue liste de coûts noierait l'essentiel.
   const laterOuvrages = ouvrages
     .filter((o) => !o.enough)
@@ -54,7 +86,7 @@ export function InventoryBody() {
         <h3 id="inventaire-maintenant" className="island-sheet-heading">
           <Icon name="hammer" /> Tu peux construire
         </h3>
-        {readyUses.length + readyOuvrages.length === 0 ? (
+        {ready.length === 0 ? (
           <p className="inventory-line">
             <Syllabified text="Rien pour l’instant : fais une mission pour gagner des blocs." />{' '}
             <Link to={`/aventure/${at}`} className="tag">
@@ -62,23 +94,29 @@ export function InventoryBody() {
             </Link>
           </p>
         ) : (
-          <ul className="inventory-uses" aria-labelledby="inventaire-maintenant">
-            {readyUses.map((use) => (
-              <li key={useKey(use)}>
-                <Link to={use.to ?? `/aventure/${use.island}`} className="tag tag-ok">
-                  <Icon name={useIcon(use)} />{' '}
-                  {use.kind === 'navire' ? cap(VEHICLE_NAME) : use.kind === 'monument' ? use.name : `Plan de ${getBiome(use.island)?.name ?? use.island}`}
-                </Link>
-              </li>
-            ))}
-            {readyOuvrages.map((o) => (
-              <li key={o.bridge.id}>
-                <Link to={`/aventure/${o.from}`} className="tag tag-ok">
-                  <Icon name="map" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul ref={list} className="inventory-uses" aria-labelledby="inventaire-maintenant">
+              {shown.map((r) => (
+                <li key={r.key}>
+                  {r.genre === 'usage' ? (
+                    <Link to={r.use.to ?? `/aventure/${r.use.island}`} className="tag tag-ok">
+                      <Icon name={useIcon(r.use)} />{' '}
+                      {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.kind === 'monument' ? r.use.name : `Plan de ${getBiome(r.use.island)?.name ?? r.use.island}`}
+                    </Link>
+                  ) : (
+                    <Link to={`/aventure/${r.ouvrage.from}`} className="tag tag-ok">
+                      <Icon name="map" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {ready.length > READY_SHOWN && !all && (
+              <button type="button" className="button inventory-all" onClick={showAll}>
+                <Icon name="chevronDown" /> Tout voir ({ready.length})
+              </button>
+            )}
+          </>
         )}
       </section>
 
@@ -91,25 +129,30 @@ export function InventoryBody() {
         </p>
       ) : (
         <ul className="inventory-list" aria-labelledby="inventaire-blocs">
-          {rows.map((row) => (
-            <li key={row.block} className="inventory-row">
-              <span className="inventory-block">
-                <BlockIcon top={BLOCKS[row.block].top} side={BLOCKS[row.block].side} size={28} />
-                <strong>{row.count}</strong> {blockName(row.block, row.count)}
-              </span>
-              <span className="inventory-uses">
-                {row.uses.length === 0 ? (
-                  <span className="inventory-none">Rien à construire pour l’instant</span>
-                ) : (
-                  row.uses.map((use) => (
-                    <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
-                      <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
-                    </Link>
-                  ))
-                )}
-              </span>
-            </li>
-          ))}
+          {rows.map((row) => {
+            const uses = row.uses.filter((u) => !listed.has(useKey(u)));
+            return (
+              <li key={row.block} className="inventory-row">
+                <span className="inventory-block">
+                  <BlockIcon top={BLOCKS[row.block].top} side={BLOCKS[row.block].side} size={28} />
+                  <strong>{row.count}</strong> {blockName(row.block, row.count)}
+                </span>
+                <span className="inventory-uses">
+                  {row.uses.length === 0 ? (
+                    <span className="inventory-none">Rien à construire pour l’instant</span>
+                  ) : uses.length === 0 ? (
+                    <span className="inventory-none">Pour un chantier plus haut</span>
+                  ) : (
+                    uses.map((use) => (
+                      <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
+                        <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
+                      </Link>
+                    ))
+                  )}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -188,7 +231,7 @@ export function InventorySheet({ onClose }: SheetProps) {
             <Icon name="blocks" /> Mes blocs
           </h2>
           <p className="island-sheet-module">
-            {total} bloc{total > 1 ? 's' : ''} en poche. Touche une île pour y aller.
+            {total} bloc{total > 1 ? 's' : ''} en poche.
           </p>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
