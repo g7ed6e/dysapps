@@ -5,11 +5,12 @@
 // (la chasse lue dans son fichier, `policesDeTest.ts`) ; l'interface est celle relevée sur les captures de la tablette.
 // Ce que le test ne couvre pas :
 // - OpenDyslexic. En taille normale, son panneau est plus haut que celui relevé ici (non mesuré sans navigateur) ; avec
-//   un panneau de 250 à 310 px, un nom se tait encore au 6e (la Ferme) et, à 310 px, au 5e (le Marais). En grand texte,
+//   un panneau de 214 px, un nom se tait encore au 3e (les Données) ; à 310 px, aussi au 6e (la Carrière) et au 5e (le
+//   Marais). C'était déjà le cas avant les îles-écoles agrandies, et plus souvent (référent dys). En grand texte,
 //   la Carte est au plancher (`PLANCHER_DE_LA_CARTE`) : les îles y sont à 115 px les unes des autres, leurs noms en
 //   OpenDyslexic font de 240 à 400 px de large dans une bande de 180 px de haut ; tous ne peuvent pas se montrer.
 // - Au 6e, une autre destination que le port : onze îles serrées, le fanion du bonhomme sur la Forêt ; un nom peut
-//   s'y taire (la Forêt, la Ferme, la Baie, l'Horloge selon la destination).
+//   s'y taire (la Ferme, quand la destination est la Tour).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
