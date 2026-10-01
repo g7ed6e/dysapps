@@ -184,4 +184,51 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.animer!(0.4, 0.016, false);
     expect(new Set(lues)).toEqual(new Set(['1|gare', '2|gare']));
   });
+
+  it('glisser déplace la vue à plat, borné à l’archipel ; une nouvelle île ou la Carte l’efface, « Recentrer » aussi', () => {
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: 'foret', seq: 1 }, home: 'foret', forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
+    cam.animer!(0, 0.016, true);
+    const t0 = cam.cible.clone();
+    const p0 = camera.position.clone();
+    const q0 = camera.quaternion.clone();
+    expect(cam.decale()).toBe(false);
+    // Glisser : la caméra y est tout de suite, cible et position ensemble ; même hauteur, même direction de vue.
+    cam.glisser(3, -2);
+    expect(cam.decale()).toBe(true);
+    expect(cam.cible.x - t0.x).toBeCloseTo(3);
+    expect(cam.cible.z - t0.z).toBeCloseTo(-2);
+    expect(camera.position.x - p0.x).toBeCloseTo(3);
+    expect(camera.position.y).toBeCloseTo(p0.y);
+    expect(camera.position.z - p0.z).toBeCloseTo(-2);
+    expect(camera.quaternion.angleTo(q0)).toBeCloseTo(0);
+    // L'image suivante garde le décalage.
+    cam.animer!(0.1, 0.016, true);
+    expect(cam.cible.x - t0.x).toBeCloseTo(3);
+    // Très loin : la cible s'arrête au bord de l'archipel.
+    cam.glisser(10_000, 10_000);
+    expect(cam.cible.x).toBeCloseTo(b.maxX);
+    expect(cam.cible.z).toBeCloseTo(b.maxY);
+    // « Recentrer » : le décalage s'efface, la caméra revient (d'un coup ici, moins d'animations).
+    cam.recentrer();
+    expect(cam.decale()).toBe(false);
+    cam.animer!(0.2, 0.016, true);
+    expect(cam.cible.distanceTo(t0)).toBeCloseTo(0);
+    // Une nouvelle demande de cadrage efface le décalage, comme la Carte ouverte et la marche du bonhomme.
+    for (const reprendre of [
+      () => (derniers.current = { ...derniers.current, focus: { island: 'foret', seq: 2 } }),
+      () => (derniers.current = { ...derniers.current, carte: true }),
+      () => (instant.marche = true),
+    ]) {
+      cam.glisser(2, 2);
+      expect(cam.decale()).toBe(true);
+      reprendre();
+      cam.animer!(0.3, 0.016, true);
+      expect(cam.decale()).toBe(false);
+    }
+  });
 });

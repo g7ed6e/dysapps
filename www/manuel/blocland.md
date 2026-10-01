@@ -8,6 +8,10 @@ L’aventure a deux univers, qui se choisissent dans les [Réglages](reglages.md
 
 L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le menu, **Blocland** l’ouvre aussi. Le village est en 3D sur tout l’écran, sous la barre du haut. La caméra est gérée par l’application : pas de zoom ni de rotation à gérer, le nord reste toujours le même. Elle cadre l’île où se tient le bonhomme et ses voisines, se rapproche quand un panneau s’ouvre, suit le bonhomme quand il marche. Un toucher n’importe où pendant un trajet le fait arriver tout de suite. Au clavier, les flèches vont à l’île voisine.
 
+Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris) : la vue suit le doigt, sans zoom ni rotation, et s’arrête au bord de l’archipel. Un petit mouvement compte encore comme un toucher ; un vrai glissé n’ouvre rien quand on lève le doigt.
+
+Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une île, ouvrir la Carte ou faire marcher le bonhomme recentre aussi la vue. Le glissé n’est pas possible sur la Carte, qui montre déjà tout l’archipel, ni pendant un trajet ou un voyage. Tout reste faisable sans glisser, par un simple toucher.
+
 ![Les Premiers Rivages en 3D, reconstruits : les îles reliées par des ponts, leurs maisons, les statues des Gardiens vaincus, les étiquettes des noms d'îles et la barre du bas (Carte, Blocs, École).](/captures/village-reconstruit.jpg)
 
 - **Quatre archipels**, un par classe. On voit un archipel à la fois : celui où se tient le bonhomme. Chacun a sa mer, son ciel et sa Carte : la mer tempérée des Premiers Rivages avec ses récifs et ses bancs de sable ; la mer turquoise des Îles Brumeuses sous un ciel plus froid, avec des plaques de glace ; le bleu profond des Anciens Ateliers, la brume plus proche et des aiguilles d’ardoise qui sortent de l’eau ; et, dans les Îles du Ciel, plus de mer du tout : un plancher de nuages sous les îles, des nuages qui passent entre elles, aucune baleine. Les îles de 6e sont au niveau de la mer, celles de 5e sur les collines, celles de 4e sur les monts, celles de 3e sur les sommets, où elles flottent sur une roche qui s’amincit. Les régions ont leur paysage, leurs plantes et un repère (grand chêne, champignon géant, volcan qui fume, tour de guet, grand phare, aiguille de glace du Glacier, haut-fourneau de la Forge).
@@ -284,6 +288,8 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher l’école, ou bouton École | Le bonhomme marche jusqu’à sa porte, le panneau de l’école s’ouvre (le bouton le referme) |
 | Toucher pendant un trajet | Le bonhomme arrive tout de suite |
 | Flèches du clavier | Île voisine dans cette direction |
+| Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans zoom ni rotation ; le bouton « Recentrer » apparaît |
+| Bouton « Recentrer » (en haut à droite) | La caméra revient sur l’île ou le bonhomme |
 | Bouton Menu (⏸, en haut à droite) | Le menu du village ; « Reprendre » le referme |
 | Toucher la salle des trophées (ou un trophée) | Le bonhomme y marche, le panneau de la salle (le profil et les succès) s’ouvre |
 | Bouton Carte | L’archipel vu du ciel, l’état de chaque île, la prochaine destination (« Y aller ») et le bouton « Les quatre archipels » |

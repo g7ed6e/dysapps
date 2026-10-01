@@ -1,5 +1,6 @@
-// Le village en 3D : un seul maillage par matériau (faces visibles seulement), caméra libre bornée,
-// eau autour des îles, vol vers une île, jour et nuit, créatures qui se promènent. Chargé à la demande (voir ./index.ts).
+// Le village en 3D : un seul maillage par matériau (faces visibles seulement), caméra gérée que l'élève peut faire
+// glisser à plat (bornée à l'archipel), eau autour des îles, vol vers une île, jour et nuit, créatures qui se
+// promènent. Chargé à la demande (voir ./index.ts).
 // La scène est faite de parties (cubes, navire, bornes, personnages, lumière, brume, étiquettes, le large, la caméra) :
 // ce composant les crée, leur passe les props, écoute le toucher et le clavier, et sa boucle ne fait qu'itérer sur elles.
 import { useEffect, useRef } from 'react';
@@ -24,7 +25,16 @@ import { creerPersonnages, type Personnages } from './personnages';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
+import { glisseCommence, pointDuPlan, SEUIL_DU_GLISSE } from './glisse';
 import { lecteurDePlaceLibre } from '../placeLibre';
+
+/** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
+interface Appui {
+  id: number;
+  x: number;
+  y: number;
+  ancre: THREE.Vector3 | null;
+}
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
 interface Scene3D {
@@ -35,6 +45,8 @@ interface Scene3D {
   personnages: Personnages;
   cubes: Cubes;
   navire: Navire;
+  /** Efface le décalage de l'élève et le dit à la page. */
+  recentrer(): void;
 }
 
 export default function WorldCanvas({
@@ -57,6 +69,8 @@ export default function WorldCanvas({
   whalePass = null,
   rallumage = null,
   burst: burstEnAncrage,
+  onVueDeplacee,
+  recentrage = 0,
   className,
   label,
   onIntent,
@@ -111,6 +125,8 @@ export default function WorldCanvas({
   bridgesRef.current = bridges;
   const archRef = useRef(archipelago);
   archRef.current = archipelago;
+  const vueDeplaceeRef = useRef(onVueDeplacee);
+  vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
   // Les props que la scène lit à chaque image (elle n'est pas refaite quand elles changent).
   const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, onVoyageLegEnd });
@@ -164,7 +180,19 @@ export default function WorldCanvas({
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    world.current = { camera, cadrage, bornes, etiquettes, personnages, cubes: cubesDuMonde, navire };
+    world.current = { camera, cadrage, bornes, etiquettes, personnages, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
+    /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
+    let deplacee = false;
+    const signaler = () => {
+      const d = cadrage.decale();
+      if (d === deplacee) return;
+      deplacee = d;
+      vueDeplaceeRef.current?.(d);
+    };
+    const recentrer = () => {
+      cadrage.recentrer();
+      signaler();
+    };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
@@ -189,14 +217,22 @@ export default function WorldCanvas({
     };
     el.addEventListener('keydown', onKey);
 
-    // Toucher une île, une face ou une créature : un tap, pas un glissé.
+    // Toucher une île, une face ou une créature : un tap, pas un glissé. Un glissé d'un doigt (ou à la souris) fait
+    // glisser la vue à plat (./glisse.ts) ; un second doigt est ignoré (pas de pincer).
     const ray = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
-    let down: { x: number; y: number } | null = null;
-    const aim = (e: PointerEvent) => {
+    /**
+     * Le doigt posé : où, et, une fois le seuil passé, le point du sol saisi (`ancre`), qui reste sous le doigt tant
+     * qu'il glisse. Sans ancre, ce n'est encore qu'un toucher.
+     */
+    let down: Appui | null = null;
+    const viser = (x: number, y: number) => {
       const rect = renderer.domElement.getBoundingClientRect();
-      pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+      pointer.set(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(pointer, camera);
+    };
+    const aim = (e: PointerEvent) => {
+      viser(e.clientX, e.clientY);
       const creature = ray.intersectObjects([...personnages.creatures.children, ...bornes.missions.children, navire.groupe], true)[0];
       const grounds = ray.intersectObjects(cubesDuMonde.cibles(), false);
       // Le décor en primitives déborde de sa case (une couronne d'arbre) : une cible derrière lui, sous le doigt, gagne
@@ -238,7 +274,59 @@ export default function WorldCanvas({
       return false;
     };
     const onDown = (e: PointerEvent) => {
-      down = { x: e.clientX, y: e.clientY };
+      // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
+      if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, ancre: null };
+      // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
+      try {
+        renderer.domElement.setPointerCapture(e.pointerId);
+      } catch {
+        // Un pointeur déjà relâché : rien à capturer.
+      }
+    };
+    /**
+     * Le glissé est permis : la page montre « Recentrer », ni marche ni voyage en cours (le toucher y fait arriver). Pas
+     * sur la Carte : elle montre déjà l'archipel entier (DA-31), et son panneau tient la place de « Recentrer ».
+     */
+    const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue && !derniers.current.carte;
+    /** Le point du sol sous le doigt, sur le plan horizontal de l'ancre (au ras de l'horizon : rien). */
+    const loinMax = monde.largeur * 3;
+    const solSous = (x: number, y: number, hauteur: number) => {
+      viser(x, y);
+      return pointDuPlan(ray.ray.origin, ray.ray.direction, hauteur, loinMax);
+    };
+    /** Le point saisi sous l'appui : le sol (ou le décor), sinon le plan de la cible de la caméra ; ou rien (le ciel). */
+    const ancreSous = (x: number, y: number): THREE.Vector3 | null => {
+      viser(x, y);
+      const sol = ray.intersectObjects(cubesDuMonde.cibles(), false)[0]?.point;
+      if (sol) return sol.clone();
+      const plan = pointDuPlan(ray.ray.origin, ray.ray.direction, cadrage.cible.y, loinMax);
+      return plan ? new THREE.Vector3(plan.x, cadrage.cible.y, plan.z) : null;
+    };
+    /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui. */
+    const glisser = (e: PointerEvent, appui: Appui) => {
+      let ancre = appui.ancre;
+      if (!ancre) {
+        if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y) || !glissePermis()) return;
+        ancre = ancreSous(appui.x, appui.y);
+        if (!ancre) return;
+        appui.ancre = ancre;
+        cadrage.glissant = true;
+        renderer.domElement.style.cursor = 'grabbing';
+        cubesDuMonde.viser(null);
+      }
+      const p = solSous(e.clientX, e.clientY, ancre.y);
+      if (p) cadrage.glisser(ancre.x - p.x, ancre.z - p.z);
+      signaler();
+    };
+    const lacher = (e: PointerEvent) => {
+      if (renderer.domElement.hasPointerCapture?.(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId);
+      down = null;
+      cadrage.glissant = false;
+      if (renderer.domElement.style.cursor === 'grabbing') renderer.domElement.style.cursor = 'grab';
+    };
+    const onCancel = (e: PointerEvent) => {
+      if (down && e.pointerId === down.id) lacher(e);
     };
     /** Ce que dit un tap sur un cube : borne, lieu, ouvrage, face à construire en chantier, ou l'île. */
     const tapSur = (h: THREE.Intersection) =>
@@ -251,10 +339,12 @@ export default function WorldCanvas({
     /** Un cube touché qui est une cible : borne, lieu, ouvrage, ou face à construire en chantier. */
     const estUneCible = (h: THREE.Intersection): boolean => tapSur(h).kind !== 'island';
     const onUp = (e: PointerEvent) => {
-      if (!down) return;
+      if (!down || e.pointerId !== down.id) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-      down = null;
-      if (moved > 8) return;
+      const glisse = down.ancre !== null;
+      lacher(e);
+      // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
+      if (glisse || moved >= SEUIL_DU_GLISSE) return;
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
       // Pendant un trajet, un tap n'importe où fait arriver le bonhomme tout de suite.
@@ -269,6 +359,10 @@ export default function WorldCanvas({
         if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, v.port);
         return pickVehicleRef.current?.(v.port);
       }
+      // Une cible touchée : l'application reprend la main, la vue revient à son cadrage. Pas en chantier, où l'on pose
+      // bloc après bloc là où l'on regarde.
+      const tap = !creature && hit ? tapSur(hit) : null;
+      if (creature || (tap && tap.kind !== 'face')) recentrer();
       if (creature) {
         const quest = questIdOf(creature.object);
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
@@ -276,8 +370,7 @@ export default function WorldCanvas({
         if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
-      if (!hit) return;
-      const tap = tapSur(hit);
+      if (!tap) return;
       if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
       else if (tap.kind === 'place') pickPlaceRef.current?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
@@ -285,6 +378,11 @@ export default function WorldCanvas({
       else pickRef.current?.(tap.id);
     };
     const onHover = (e: PointerEvent) => {
+      // Un doigt posé : c'est un geste (toucher ou glissé), pas un survol.
+      if (down) {
+        if (e.pointerId === down.id) glisser(e, down);
+        return;
+      }
       if (e.pointerType === 'touch' || (!pickRef.current && !buildRef.current && !creatureRef.current)) return;
       const { creature, hit } = aim(e);
       renderer.domElement.style.cursor = creature || hit ? 'pointer' : 'grab';
@@ -295,6 +393,7 @@ export default function WorldCanvas({
     renderer.domElement.addEventListener('pointerup', onUp);
     renderer.domElement.addEventListener('pointermove', onHover);
     renderer.domElement.addEventListener('pointerleave', onLeave);
+    renderer.domElement.addEventListener('pointercancel', onCancel);
 
     const resize = () => {
       const w = el.clientWidth;
@@ -348,6 +447,8 @@ export default function WorldCanvas({
       for (const p of deplacements) p.deplacer?.(t, dt, reduceMotion);
       instant.carte = derniers.current.carte && !instant.marche && !instant.navigue;
       for (const p of parties) p.animer?.(t, dt, reduceMotion);
+      // La caméra efface le décalage quand l'application reprend la main (Carte, marche, voyage, nouvelle île).
+      signaler();
       renderer.render(scene, camera);
       meter?.tick(renderer.info, nowMs);
     };
@@ -367,16 +468,24 @@ export default function WorldCanvas({
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointermove', onHover);
       renderer.domElement.removeEventListener('pointerleave', onLeave);
+      renderer.domElement.removeEventListener('pointercancel', onCancel);
       for (const p of parties) p.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
+      // La scène refaite (un autre archipel) part de son cadrage : « Recentrer » n'a plus lieu d'être.
+      if (deplacee) vueDeplaceeRef.current?.(false);
     };
     // La scène est construite une fois par archipel (sa mer, sa brume, ses baleines) ; le terrain, les créatures et la
     // caméra sont mis à jour à part. Le changement d'archipel se fait derrière l'écran du voyage.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion, archipelago]);
+
+  // ---- « Recentrer » : la vue efface son décalage, la caméra revient en douceur à son cadrage
+  useEffect(() => {
+    if (recentrage) world.current?.recentrer();
+  }, [recentrage]);
 
   // ---- Terrain : une géométrie par matériau, faces visibles seulement
   useEffect(() => {
@@ -465,6 +574,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. Au clavier : les flèches vont à l'île voisine.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine.`} />
   );
 }
