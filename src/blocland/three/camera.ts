@@ -1,5 +1,7 @@
 // La caméra de la scène 3D : gérée par l'application (pas de zoom ni de rotation ; on touche une île pour y aller).
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
+// L'élève peut faire glisser la vue à plat pour explorer (./glisse.ts) : un décalage s'ajoute à ce cadrage, borné à
+// l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
@@ -8,6 +10,7 @@ import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
 import { mapOf } from '../world/map';
 import { DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
+import { bornerLeDecalage, estDecale, type Decalage } from './glisse';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
@@ -173,6 +176,20 @@ export interface Camera extends PartieDeLaScene {
   cible: THREE.Vector3;
   /** Au premier cadrage : la caméra y est d'un coup. */
   cadrer(focus: Derniers['focus'], carte: boolean, home: BiomeId | null): void;
+  /**
+   * Fait glisser la vue de (`dx`, `dz`) cases sur le plan horizontal, borné à l'archipel : la caméra y est tout de suite
+   * (la vue suit le doigt), et sa place visée aussi. Le nord, la hauteur et la direction de vue ne changent pas.
+   */
+  glisser(dx: number, dz: number): void;
+  /** Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). */
+  recentrer(): void;
+  /** La vue a été déplacée (un décalage non nul). */
+  decale(): boolean;
+  /**
+   * Un glissé est en cours : les étiquettes gardent l'écart calculé au début (pas de nouveau calcul à chaque image) ;
+   * elles le refont une fois le doigt levé.
+   */
+  glissant: boolean;
 }
 
 /**
@@ -214,8 +231,8 @@ export function creerCamera(
   };
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
-   * l'application : pas de zoom ni de rotation ; on touche une île pour y aller. En portrait, un peu plus loin pour
-   * que tout tienne dans la largeur.
+   * l'application : pas de zoom ni de rotation ; on touche une île pour y aller, ou on fait glisser la vue (le décalage
+   * s'ajoute après, dans `animer`). En portrait, un peu plus loin pour que tout tienne dans la largeur.
    */
   const framing = (
     island: BiomeId | null,
@@ -272,21 +289,64 @@ export function creerCamera(
   const camTarget = new THREE.Vector3();
   const camPos = new THREE.Vector3();
   const { but } = instant;
+  const etendue = worldBounds(monde.archipel);
+  /** Le décalage de l'élève (glissé), et celui que voient les étiquettes (gelé pendant un glissé). */
+  const decalage: Decalage = { x: 0, z: 0 };
+  const decalageDuBut: Decalage = { x: 0, z: 0 };
+  /** La cible du cadrage géré, sans décalage, à la dernière image : le bornage se fait autour d'elle. */
+  const base: Decalage = { x: 0, z: 0 };
+  /** La place visée à cette image, décalage compris (sans allocation : le cadrage de la Carte est gardé tel quel). */
+  const vise = new THREE.Vector3();
+  const place = new THREE.Vector3();
+  /** Ce qui, en changeant, rend la main à l'application : la demande de cadrage, la Carte ouverte ou fermée. */
+  const demande = { seq: -1, ile: null as BiomeId | null, carte: false };
+  /** Le décalage voulu par un glissé, avant bornage (gardé d'un appel à l'autre : pas d'allocation). */
+  const voulu: Decalage = { x: 0, z: 0 };
+  const zero = () => {
+    decalage.x = 0;
+    decalage.z = 0;
+  };
 
-  return {
+  const self: Camera = {
     cible: camTarget,
+    glissant: false,
     cadrer: (focus, carteOuverte, home) => {
       const { target, pos } = framing(focus.island, avatar.position, camera.aspect, carteOuverte, home, focus.spot ?? null);
+      zero();
       camTarget.copy(target);
       camPos.copy(pos);
       camera.position.copy(pos);
       camera.lookAt(target);
     },
+    glisser: (dx, dz) => {
+      voulu.x = decalage.x + dx;
+      voulu.z = decalage.z + dz;
+      bornerLeDecalage(base, voulu, etendue, voulu);
+      const fait = { x: voulu.x - decalage.x, z: voulu.z - decalage.z };
+      decalage.x = voulu.x;
+      decalage.z = voulu.z;
+      // La caméra suit le doigt tout de suite, sans attendre son pas : le point du sol saisi reste sous le doigt.
+      camTarget.x += fait.x;
+      camTarget.z += fait.z;
+      camPos.x += fait.x;
+      camPos.z += fait.z;
+      camera.position.copy(camPos);
+      camera.lookAt(camTarget);
+      camera.updateMatrixWorld();
+    },
+    recentrer: zero,
+    decale: () => estDecale(decalage),
     animer: (_t, _dt, reduit) => {
       if (!instant.carte) surLaCarte = false;
       const sailing = instant.navigue;
       const walking = instant.marche;
-      const { focus, home } = derniers.current;
+      const { focus, home, carte: carteDemandee } = derniers.current;
+      // L'application reprend la main : une nouvelle demande de cadrage, la Carte ouverte ou fermée, une marche, un voyage.
+      const ile = focus.island ?? null;
+      if (focus.seq !== demande.seq || ile !== demande.ile || carteDemandee !== demande.carte || sailing || walking) zero();
+      demande.seq = focus.seq;
+      demande.ile = ile;
+      demande.carte = carteDemandee;
       // En mer (ou dans les airs) : vue de côté sur le navire, la caméra s'écarte à mesure qu'il s'éloigne.
       const frame = sailing
         ? (() => {
@@ -304,9 +364,23 @@ export function creerCamera(
             walking ? null : home,
             walking ? null : (focus.spot ?? null),
           );
-      const { target, pos } = frame;
-      but.target.copy(target);
-      but.pos.copy(pos);
+      // Le cadrage de la Carte est gardé d'une image à l'autre : le décalage s'ajoute à une copie.
+      const target = vise.copy(frame.target);
+      const pos = place.copy(frame.pos);
+      base.x = target.x;
+      base.z = target.z;
+      // La place visée a pu bouger (la vue a changé de taille) : le décalage reste dans l'archipel.
+      bornerLeDecalage(base, decalage, etendue, decalage);
+      if (!self.glissant) {
+        decalageDuBut.x = decalage.x;
+        decalageDuBut.z = decalage.z;
+      }
+      but.target.set(target.x + decalageDuBut.x, target.y, target.z + decalageDuBut.z);
+      but.pos.set(pos.x + decalageDuBut.x, pos.y, pos.z + decalageDuBut.z);
+      target.x += decalage.x;
+      target.z += decalage.z;
+      pos.x += decalage.x;
+      pos.z += decalage.z;
       const k = reduit ? 1 : 1 - Math.exp(-PAS * 3.5);
       // La taille du texte a changé sur la Carte : la caméra se recadre d'un coup, sans mouvement.
       const saut = 'saut' in frame && frame.saut;
@@ -322,4 +396,5 @@ export function creerCamera(
     },
     dispose: () => {},
   };
+  return self;
 }

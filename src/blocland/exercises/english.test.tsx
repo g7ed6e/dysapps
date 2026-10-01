@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
 import { CalculScreen } from './CalculScreen';
@@ -195,4 +195,21 @@ it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout 
   renderScreen(RecitScreen, { question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', choices: ['À la cuisine', 'À la piscine'], answer: 'À la cuisine' }, 'en');
   expect(screen.getAllByRole('listitem').map((l) => l.textContent)).toEqual(['He goes to the kitchen.']);
   expect(screen.queryByText(/Écoute l’histoire/)).toBeNull();
+});
+
+it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglais en voix anglaise ; une ligne de méthode non', async () => {
+  const user = userEvent.setup();
+  const aid = { kind: 'rule-card', props: { title: 'Lire un panneau', lines: ['Lis d’abord la question.', 'push = pousser, pull = tirer'] } };
+  renderScreen(CalculScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
+  const [methode, lexique] = within(screen.getByRole('figure')).getAllByRole('listitem');
+  expect(within(methode).queryByRole('button')).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Écouter : push, pull' }));
+  expect(utterances.at(-1)).toMatchObject({ text: 'push, pull', lang: 'en-GB' });
+  expect(lexique.textContent).toBe('push = pousser, pull = tirer');
+});
+
+it('lexique en français : pas de bouton par ligne', () => {
+  const aid = { kind: 'rule-card', props: { lines: ['nombre = quantité'] } };
+  renderScreen(CalculScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4', aid }, 'fr');
+  expect(within(screen.getByRole('figure')).queryByRole('button')).toBeNull();
 });

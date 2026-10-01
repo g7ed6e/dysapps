@@ -1,7 +1,10 @@
 // Aides visuelles des îles du collège, dessinées à partir de données (voir maths.ts / college.ts).
 
 import { frenchTypography } from '../../components/math/RichText';
+import { SpeakButton } from '../../components/SpeakButton';
+import type { Lang } from '../../core/speech';
 import { GRAPH_FRAME, type GraphFrame } from './graph';
+import { motsAEcouter } from './lexique';
 
 /** Droite graduée d'entiers (relatifs compris), avec des points marqués et, au besoin, un bond. */
 export function NumberLineInt({ min, max, points = [], jump }: { min: number; max: number; points?: number[]; jump?: [number, number] }) {
@@ -81,15 +84,31 @@ export function RatioTable({ cols, rows, caption }: { cols: string[]; rows: (str
   );
 }
 
-/** Rappel de règle : quelques lignes courtes, toujours visibles. */
-export function RuleCard({ title, lines }: { title?: string; lines: string[] }) {
+/**
+ * Rappel de règle : quelques lignes courtes, toujours visibles. En anglais (`lang: 'en'`, passé par l'écran), une ligne de
+ * lexique (« push = pousser, pull = tirer ») porte à sa droite un bouton Écouter qui lit ses mots anglais en voix anglaise
+ * (« push, pull », voir `lexique.ts`) ; une ligne de méthode, en français, n'en a pas.
+ */
+export function RuleCard({ title, lines, lang = 'fr' }: { title?: string; lines: string[]; lang?: Lang }) {
   return (
     <figure className="rule-card">
       {title && <figcaption>{title}</figcaption>}
       <ul>
-        {lines.map((l, i) => (
-          <li key={i}>{frenchTypography(l)}</li>
-        ))}
+        {lines.map((l, i) => {
+          const mots = lang === 'en' ? motsAEcouter(l) : '';
+          return (
+            <li key={i}>
+              {mots ? (
+                <span className="rule-line-listen">
+                  <span>{frenchTypography(l)}</span>
+                  <SpeakButton text={mots} lang={lang} compact />
+                </span>
+              ) : (
+                frenchTypography(l)
+              )}
+            </li>
+          );
+        })}
       </ul>
     </figure>
   );

@@ -24,8 +24,9 @@ www/             le site public (Markdown) : index.md, manuel/, pedagogie/ ; www
 design/          archipeo/ : le dossier de game design et la planche d’Archipéo (voir cadrage-archipeo.md) ;
                  blocland/ : la fiche de l’univers Blocland (voir univers.md) ;
                  référence de conception, ni publiée ni embarquée dans l’application
-.claude/agents/  les sept agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
-                 referent-dys, expert-frontend, consultant-archipeo et consultant-blocland (voir contribuer.md)
+.claude/agents/  les huit agents partagés : directeur-contenu-pedagogique, directeur-artistique, artiste-technique-3d,
+                 referent-dys, expert-frontend, consultant-archipeo, consultant-blocland et consultant-ux-ui
+                 (voir contribuer.md)
 scripts/         calcul de la version depuis git, index des exercices au build (exerciseMeta.mjs),
                  construction du site public (www/), extraction du texte d'un programme
                  officiel (programme/extract.mjs, écrit dans .programme/, ignoré par git)

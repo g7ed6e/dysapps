@@ -111,6 +111,13 @@ export interface WorldViewProps {
    */
   rallumage?: { id: BiomeId; seq: number; dureeMs: number } | null;
   burst?: Burst;
+  /**
+   * Faire glisser le monde pour l'explorer (la 3D) : la vue dit quand elle a été déplacée (`true`) et quand elle est
+   * revenue à son cadrage (`false`), pour le bouton « Recentrer ». Sans ce rappel, la vue ne glisse pas.
+   */
+  onVueDeplacee?: (deplacee: boolean) => void;
+  /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
+  recentrage?: number;
   className?: string;
   label: string;
 }

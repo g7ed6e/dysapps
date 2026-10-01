@@ -24,7 +24,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -50,7 +50,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -76,7 +76,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -102,7 +102,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -128,7 +128,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -154,7 +154,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -180,7 +180,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"
@@ -206,7 +206,7 @@
           "title": "Manger et boire",
           "lines": [
             "hungry = avoir faim ; thirsty = avoir soif",
-            "breakfast (le matin), lunch (le midi), dinner (le soir)",
+            "breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)",
             "chips = des frites ; crisps = des chips !",
             "the menu = la carte ; the bill = l’addition",
             "the fridge = le réfrigérateur"

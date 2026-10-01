@@ -241,7 +241,8 @@ describe('lecture automatique', () => {
     renderAt('/aventure/relais/es-familia');
     await loaded();
     const [first, second] = runItems(dictee, runSeed(dictee));
-    expect(dit).toEqual([frenchTypography(dictee.instruction)]);
+    // La première lecture part après le rendu de l'écran : on l'attend (une CI lente la lance plus tard).
+    await waitFor(() => expect(dit).toEqual([frenchTypography(dictee.instruction)]));
     enCours!.onend?.();
     expect(dit).toEqual([frenchTypography(dictee.instruction), first.spoken]);
     expect(langues).toEqual(['fr-FR', 'es-ES']);
