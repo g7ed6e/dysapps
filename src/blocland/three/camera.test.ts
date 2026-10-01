@@ -231,4 +231,29 @@ describe('La Carte dans la place libre (DA-31)', () => {
       expect(cam.decale()).toBe(false);
     }
   });
+
+  it('poser met la caméra d’un coup à son cadrage et rend l’écart qu’il restait (les captures)', () => {
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: 'foret', seq: 1 }, home: 'foret', forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
+    // Avant la première image, aucun cadrage à rejoindre.
+    expect(cam.poser()).toBe(Infinity);
+    cam.animer!(0, 0.016, false);
+    const t0 = cam.cible.clone();
+    // Une autre île : la caméra part en douceur, une image ne suffit pas.
+    derniers.current = { ...derniers.current, focus: { island: 'ferme', seq: 2 } };
+    cam.animer!(0.1, 0.016, false);
+    const enRoute = cam.cible.clone();
+    expect(enRoute.distanceTo(t0)).toBeGreaterThan(0);
+    expect(cam.poser()).toBeGreaterThan(0.01);
+    // Posée : la cible ne bouge plus à l'image suivante, et un nouvel appel ne trouve plus d'écart.
+    const posee = cam.cible.clone();
+    expect(posee.distanceTo(enRoute)).toBeGreaterThan(0);
+    cam.animer!(0.2, 0.016, false);
+    expect(cam.cible.distanceTo(posee)).toBeCloseTo(0);
+    expect(cam.poser()).toBeLessThan(0.01);
+  });
 });
