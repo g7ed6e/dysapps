@@ -7,9 +7,9 @@
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
 // `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle, ecoles). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
-// `--attente 20` le plus long temps laissé à la scène avant la mesure (en secondes, 10 par défaut) : la caméra est posée à
-// son cadrage dès que le monde est construit et ne bouge plus (`attendreLaScene`, scripts/prise-de-vue.mjs), souvent
-// bien avant.
+// `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
+// page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
+// animations au même instant ; les images par seconde du tableau sont donc celles de l'horloge pilotée (8), pas une mesure.
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
 // tard le phare : proches de la lueur `#FFD866`, voir `estUneLueur`) : au plus `LUEUR_MAX` à la vue île (décision du
 // directeur artistique, lot R5), affichée dans un second tableau.
@@ -19,7 +19,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { build, createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { attendreLaScene, capturer, figeable } from '../prise-de-vue.mjs';
+import { capturer, figeable, hasardFixe, piloterLHorloge, preparerLaScene } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const TABLET = { width: 1024, height: 768 };
@@ -43,6 +43,8 @@ const QUERY = (() => {
 })();
 const ONLY = option('--archipel');
 const WAIT = Number(option('--attente') ?? 10) * 1000;
+/** Les vues sans monde 3D (le défi, la bulle d'une créature) : rien à attendre avant la prise. */
+const VUES_SANS_MONDE = new Set(['défi', 'bulle']);
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
 const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
@@ -452,7 +454,8 @@ async function scenes() {
     ];
     for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
-      await page.clock.setFixedTime(time);
+      await piloterLHorloge(page, time);
+      await page.addInitScript(hasardFixe);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
@@ -479,7 +482,7 @@ async function scenes() {
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
-        if (!(await attendreLaScene(page, WAIT))) console.warn(`${a}-${nom} : la caméra n'est pas arrivée à son cadrage en ${WAIT / 1000} s`);
+        await preparerLaScene(page, VUES_SANS_MONDE.has(vue) ? 0 : WAIT);
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés
@@ -494,9 +497,8 @@ async function scenes() {
         continue;
       }
       try {
-        // Le monde se construit en quelques secondes (rendu logiciel), puis la caméra rejoint son cadrage en douceur.
-        // (Pas de waitForFunction : l'horloge figée de la page l'empêche de sonder.)
-        if (!(await attendreLaScene(page, WAIT))) console.warn(`${a}-${nom} : la caméra n'est pas arrivée à son cadrage en ${WAIT / 1000} s`);
+        // Le monde se construit en quelques secondes (rendu logiciel) ; l'horloge pilotée le fait avancer pas à pas.
+        if (!(await preparerLaScene(page, WAIT))) throw new Error(`aucun monde 3D en ${WAIT / 1000} s`);
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
         rows.push({ archipel: a, vue, ...s });
@@ -518,7 +520,7 @@ const lueurs = [];
 // Le build d'abord : le serveur de développement le passerait en mode développement.
 const js = process.argv.includes('--sans-poids') ? null : await weights();
 const rows = await scenes();
-console.log('\n| Archipel | Vue | Appels de dessin | Triangles | Géométries | Textures | Images/s (rendu logiciel) |');
+console.log('\n| Archipel | Vue | Appels de dessin | Triangles | Géométries | Textures | Images/s (horloge pilotée, non mesuré) |');
 console.log('| --- | --- | ---: | ---: | ---: | ---: | ---: |');
 for (const r of rows) {
   if (r.erreur) console.log(`| ${r.archipel} | ${r.vue} | ${r.erreur} | | | | |`);

@@ -8,7 +8,7 @@ import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { attendreLaScene, capturer, figeable } from '../prise-de-vue.mjs';
+import { attendreLaScene, capturer, figeable, hasardFixe } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const OUT = join(root, 'www', '_captures');
@@ -297,15 +297,7 @@ async function take(shot) {
   const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1, reducedMotion: shot.reduit ? 'reduce' : 'no-preference' });
   await page.clock.setFixedTime(DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
-  await page.addInitScript(() => {
-    let seed = 20260928;
-    Math.random = () => {
-      seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  });
+  await page.addInitScript(hasardFixe);
   await page.addInitScript(figeable);
   if (process.env.CAPTURES_DEBUG) page.on('pageerror', (e) => console.error(`  (page) ${e.message}`));
   try {

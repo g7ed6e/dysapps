@@ -5,8 +5,10 @@
 // - la boucle de rendu (les `requestAnimationFrame` de la page) est bridée à `IMAGES_PAR_SECONDE` : le processus
 //   graphique suit, rien ne s'empile ;
 // - elle est figée le temps de la prise : la capture montre la dernière image dessinée.
-// Avec la caméra posée à son cadrage (`attendreLaScene`) plutôt que des attentes fixes, mesuré sur le 6e, jour et nuit
-// (01/10/2026) : 149 s → 36 s pour les six vues, la même image au mouvement des créatures et des vagues près.
+// Les captures de rendu (`rendu:mesures`) pilotent en plus l'horloge de la page (`piloterLHorloge`, `preparerLaScene`) et
+// tirent le hasard d'une graine fixe (`hasardFixe`) : deux prises du même état donnent la même image, animations
+// comprises. Le manuel garde l'heure figée et pose la caméra avec `attendreLaScene`.
+// Mesuré sur le 6e, jour et nuit (01/10/2026) : 149 s → 35 s pour les six vues.
 
 /** À passer à `page.addInitScript` avant de charger l'application : bride la boucle de rendu et la rend figeable. */
 export function figeable() {
@@ -69,6 +71,58 @@ export async function attendreLaScene(page, max) {
     if (deSuite >= 4) return true;
   }
   return false;
+}
+
+/** À passer à `page.addInitScript` : un hasard à graine fixe, les mêmes tirages à chaque chargement (promenades des créatures, questions, phrases). */
+export function hasardFixe() {
+  let seed = 20260928;
+  Math.random = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Un pas de l'horloge pilotée : une image bridée (`figeable`). */
+const PAS_MS = 125;
+/** Les pas joués une fois le monde construit : trois secondes de la page, les promenades et les vagues partent. */
+const PAS_APRES_LE_MONDE = 24;
+
+/**
+ * Pilote l'horloge de la page (heure, minuteries, images, `performance.now`), arrêtée à `time` : elle n'avance que par
+ * `preparerLaScene`. À appeler avant de charger l'application, avant `page.addInitScript(figeable)`.
+ */
+export async function piloterLHorloge(page, time) {
+  await page.clock.install({ time });
+  await page.clock.pauseAt(time);
+}
+
+/**
+ * Prépare une scène 3D à horloge pilotée (`piloterLHorloge`), pour que deux prises du même état donnent la même image :
+ * fait avancer l'horloge pas à pas jusqu'à ce que le monde soit construit (au plus `max` millisecondes réelles), puis
+ * toujours du même nombre de pas, et pose la caméra à son cadrage. Les animations restent : elles sont seulement au même
+ * instant d'une prise à l'autre (avec `hasardFixe`). Rend `false` si aucun monde 3D n'est apparu (un défi, une bulle).
+ */
+export async function preparerLaScene(page, max) {
+  const debut = Date.now();
+  let monde = false;
+  while (!monde && Date.now() - debut < max) {
+    await page.clock.runFor(PAS_MS);
+    // Le temps réel que le rendu logiciel dessine l'image, et que les chargements avancent.
+    await page.waitForTimeout(50);
+    monde = await page.evaluate(() => Boolean(window.__dysappsCamera)).catch(() => false);
+  }
+  for (let i = 0; i < PAS_APRES_LE_MONDE; i++) {
+    await page.clock.runFor(PAS_MS);
+    await page.waitForTimeout(30);
+  }
+  if (monde) {
+    await page.evaluate(() => window.__dysappsCamera?.poser());
+    await page.clock.runFor(PAS_MS);
+    await page.waitForTimeout(100);
+  }
+  return monde;
 }
 
 /**
