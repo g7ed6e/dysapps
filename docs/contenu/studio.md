@@ -30,10 +30,10 @@ créature : Écho
 
 Pour tous les items :
 - aide « Comprendre un texte » :
-  - Lis d’abord la question : who (qui), when (quand), where (où), why (pourquoi), how many (combien).
+  - Lis d’abord la question : who = qui, when = quand, where = où, why = pourquoi, how many = combien.
   - Cherche dans le texte le mot qui répond.
-  - but (mais) change le sens : regarde bien ce qui vient après.
-  - so (donc) donne une conséquence, because (parce que) une cause.
+  - but = mais : il change le sens, regarde bien ce qui vient après.
+  - so = donc (une conséquence), because = parce que (une cause).
 
 1. énoncé : Tom lives in Leeds. He goes to school by bus. How does Tom go to school?
    - lu : Tom lives in Leeds. He goes to school by bus. How does Tom go to school?
@@ -90,9 +90,9 @@ Pour tous les items :
 - indice : La réponse n’est pas écrite : quels indices donne le texte ?
 - aide « Lire entre les lignes » :
   - La réponse n’est pas toujours écrite : cherche les indices.
-  - coat, scarf, gloves (manteau, écharpe, gants) → il fait froid.
-  - yawning (il bâille), hasn’t slept (n’a pas dormi) → tired (fatigué).
-  - Sentiments : happy, sad, angry, tired, proud (fier), worried (inquiet).
+  - umbrella = parapluie, boots = bottes : il pleut.
+  - shaking = il tremble : scared = il a peur.
+  - Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet.
 
 1. énoncé : Emma put on her coat, her scarf and her gloves before going out. What’s the weather like?
    - lu : Emma put on her coat, her scarf and her gloves before going out. What’s the weather like?
@@ -402,7 +402,7 @@ Pour tous les items :
   - Year 7 = la sixième (11 ans) ; Year 8 = la cinquième.
   - Year 9 = la quatrième ; Year 10 = la troisième.
   - Faux ami : college = école après 16 ans ; collège = secondary school.
-  - uniform : blazer (veste), tie (cravate) ; trainers = baskets.
+  - uniform = uniforme : blazer = veste, tie = cravate ; trainers = chaussures de sport.
   - lunch = déjeuner ; report = bulletin ; drama = théâtre.
   - to pay = payer ; work = travail ; a company = une entreprise.
 
@@ -472,7 +472,7 @@ Pour tous les items :
   - tickets = billets ; sold out = complet ; review = critique ; ending = fin.
   - post = message sur un réseau ; share = partager ; followers = abonnés.
   - cartoon = dessin animé ; bookshop = librairie ; podcast = émission audio.
-  - En anglais, une virgule sépare les milliers (five thousand : cinq mille).
+  - five thousand = cinq mille : en anglais, une virgule sépare les milliers (5,000).
   - pm = après midi : 7 pm, c’est 19 heures.
 
 1. énoncé : "TV guide – Tonight\n6 pm: The News\n7 pm: Wild Islands\n8 pm: Quiz Night"

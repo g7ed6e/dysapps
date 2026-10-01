@@ -35,8 +35,8 @@ Pour tous les items :
 - aide « Au magasin » :
   - Can I help you? = Je peux vous aider ?
   - I’d like… = je voudrais… (poli).
-  - How much is it? — It’s two pounds. (2 £)
-  - a bottle of (une bouteille de), a piece of (un morceau de), a carton of (une brique de)
+  - how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.
+  - a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de
   - Here you are. = Voilà.
 
 1. énoncé : Can I have a … of water, please?
@@ -85,7 +85,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « Manger et boire » :
   - hungry = avoir faim ; thirsty = avoir soif
-  - breakfast (le matin), lunch (le midi), dinner (le soir)
+  - breakfast = le petit déjeuner (le matin), lunch = le déjeuner (le midi), dinner = le dîner (le soir)
   - chips = des frites ; crisps = des chips !
   - the menu = la carte ; the bill = l’addition
   - the fridge = le réfrigérateur
@@ -153,10 +153,10 @@ Pour tous les items :
 Pour tous les items :
 - indice : Relis la règle : get, have, go ou do ?
 - aide « Ma journée » :
-  - get up (se lever), get dressed (s’habiller)
-  - have breakfast, have a shower (prendre)
-  - go to school, go to bed (aller)
-  - do homework, do the dishes (faire)
+  - get up = se lever, get dressed = s’habiller
+  - have breakfast = prendre le petit déjeuner, have a shower = prendre une douche
+  - go to school = aller à l’école, go to bed = aller se coucher
+  - do homework = faire ses devoirs, do the dishes = faire la vaisselle
   - he / she : + s (she gets up, he does, she has)
 
 1. énoncé : I … up at seven o’clock.
@@ -196,10 +196,10 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Always, often, never » :
-  - always (toujours) > often (souvent) > sometimes (parfois) > never (jamais)
+  - always = toujours, often = souvent, sometimes = parfois, never = jamais (du plus souvent au moins souvent)
   - L’adverbe se place avant le verbe : She often plays.
   - … mais après be : She is often late.
-  - How often? — once (une fois), twice (deux fois) a week.
+  - how often? = combien de fois ? once = une fois, twice = deux fois.
 
 1. énoncé : I … eat vegetables: every day!
    - choix : always · never · sometimes
@@ -362,7 +362,7 @@ Pour tous les items :
 - aide « Lire un panneau, une consigne » :
   - Lis d’abord la question, puis cherche dans le document le mot qui répond.
   - push = pousser, pull = tirer ; keep off = ne pas aller sur ; do not = ne pas
-  - closed = fermé, open = ouvert ; out of order : la machine ne marche pas ; wet = mouillé, frais
+  - closed = fermé, open = ouvert ; out of order = la machine ne marche pas ; wet = mouillé, frais
   - Faux amis : library = bibliothèque (une librairie = a bookshop) ; pen = stylo, pencil = crayon
   - am = avant midi, pm = après midi : on ajoute 12 (3 pm = 15 h)
 
@@ -475,7 +475,7 @@ Pour tous les items :
    - explication : Saturday = samedi : le premier bus du samedi part à 9:30, donc à 9 h 30. 7:45, c’est du lundi au vendredi ; 11:30, c’est le dernier bus du samedi.
    - aide « Lire un horaire » :
      - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
-     - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
+     - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
 5. énoncé : "Trains to London\nWeekdays: every 30 minutes\nWeekends: every hour"
@@ -488,7 +488,7 @@ Pour tous les items :
    - explication : Le dimanche, c’est le week-end : weekends, every hour, un train toutes les heures. weekdays = les jours de semaine, du lundi au vendredi.
    - aide « Lire un horaire » :
      - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
-     - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
+     - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
 6. énoncé : "Swimming pool\nOpen Tuesday to Sunday, 10 am to 6 pm\nClosed on Mondays"
@@ -501,7 +501,7 @@ Pour tous les items :
    - explication : closed on Mondays = fermé le lundi. De Tuesday (mardi) à Sunday (dimanche), la piscine est ouverte, le jeudi (Thursday) aussi.
    - aide « Lire un horaire » :
      - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
-     - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
+     - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
 7. énoncé : "Museum\nOpen every day: 9 am to 5 pm\nLast entry: 4:30 pm"
@@ -514,7 +514,7 @@ Pour tous les items :
    - explication : last entry = la dernière entrée : 4:30 pm, soit 16 h 30 (pm : on ajoute 12). Le musée ferme à 5 pm, 17 h, mais on n’entre plus après 16 h 30.
    - aide « Lire un horaire » :
      - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
-     - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
+     - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
 8. énoncé : "Cinema, screen 2\nMonday to Thursday: 5:30 pm, 8 pm\nFriday to Sunday: 2:30 pm, 5:30 pm, 8 pm"
@@ -527,7 +527,7 @@ Pour tous les items :
    - explication : Thursday = jeudi : sur la ligne Monday to Thursday, la première séance est à 5:30 pm, soit 17 h 30 (pm : on ajoute 12). 2:30 pm, c’est du vendredi au dimanche.
    - aide « Lire un horaire » :
      - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
-     - Monday lundi, Tuesday mardi, Wednesday mercredi, Thursday jeudi, Friday vendredi, Saturday samedi, Sunday dimanche
+     - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
 

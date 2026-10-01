@@ -41,7 +41,7 @@ export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang 
       </div>
       {aid && (
         <div className="aid calcul-aid">
-          <Aid aid={aid} />
+          <Aid aid={aid} lang={lang} />
         </div>
       )}
       <div className="notice recit">

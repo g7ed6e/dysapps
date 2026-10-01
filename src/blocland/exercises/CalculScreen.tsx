@@ -71,7 +71,7 @@ export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang
       {figure && <div className="calcul-figure">{<Aid aid={figure} />}</div>}
       {aid && (
         <div className="aid calcul-aid">
-          <Aid aid={aid} />
+          <Aid aid={aid} lang={lang} />
         </div>
       )}
       <div className={`choices${choices.every((c) => c.length <= 12) ? ' short' : ''}`} role="group" aria-label="Réponses possibles">
