@@ -48,7 +48,7 @@ export function BiomePage() {
   const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
   const port = archipelagoOf(biome.id).port === biome.id;
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
-  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id) : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.libelles) : null;
 
   return (
     <>
@@ -66,7 +66,7 @@ export function BiomePage() {
       {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
       {whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />}
 
-      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id)} />
+      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.libelles)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}

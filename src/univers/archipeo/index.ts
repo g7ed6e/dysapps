@@ -304,7 +304,7 @@ export const ARCHIPEO = {
     resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour le rallumer`,
     dejaFaitArene: (gardien) => `${gardien} brille déjà. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
-    navireAttend: (n) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}.`,
+    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
@@ -316,6 +316,9 @@ export const ARCHIPEO = {
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien rallumé.',
+    ouvrageGardien: 'Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+    navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
+    gardienDabord: (ile) => `Rallume d’abord le Gardien de ${ile}.`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.

@@ -14,6 +14,7 @@ import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { useTextes } from '../univers';
 
 /** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
 const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais', 'lv2'];
@@ -32,7 +33,8 @@ export function HomePage() {
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.village.bridges);
   const here = archipelagoOf(state.village.at ?? 'foret').classe;
-  const destination = nextDestination(state);
+  const textes = useTextes();
+  const destination = nextDestination(state, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.village.bridges).length;
   const univers = UNIVERS[useUnivers()];
