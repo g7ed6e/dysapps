@@ -249,6 +249,7 @@ const CAPTURES = [
   // Le lieu de près (recadré sur la halle, derrière la salle des trophées), et son panneau ouvert, aux réglages par
   // défaut puis en OpenDyslexic 32 px, avec des blocs en poche (`inventaire`) : la poutre s'assemble, le vitrail non.
   { nom: 'assemblage-lieu', vue: 'île', famille: 'assemblage', ile: 'foret', recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
+  { nom: 'assemblage-lieu-nuit', vue: 'île', famille: 'assemblage', ile: 'foret', nuit: true, recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
   { nom: 'assemblage-panneau', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'assemblage', inventaire: { bois: 5, pierre: 3, glace: 2 } },
   {
     nom: 'assemblage-panneau-od32',

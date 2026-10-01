@@ -28,8 +28,8 @@
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
 // peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
 // laisse sa case à cette pièce, assemblée (./architecture/assemblage.ts) et peinte dans l'opaque, à la fin. Seul le kit
-// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école et la salle des trophées de ce kit
-// le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
+// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école, la salle des trophées et la Halle aux
+// matériaux de ce kit le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case
@@ -698,8 +698,8 @@ const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
  * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
- * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; l'école et la salle des
- * trophées non plus (elles prennent le kit par `caseDuLieu`).
+ * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; les lieux du village non
+ * plus (l'école, la salle des trophées, le lieu où l'on assemble : ils prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   const deja = batiments.get(a);
@@ -717,8 +717,8 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
 const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
 
 /**
- * La case d'un bloc de l'école ou de la salle des trophées dans le modèle de son lieu (world/terrain.ts : `schoolModel`,
- * `trophyModel`, et les trophées posés), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
+ * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et
+ * les trophées posés, `atelierModel`), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
  * marche du sol) ou hors d'un lieu du village (un monument).
  */
 export function caseDuLieu(c: VoxelCube): CaseDuLieu | null {
