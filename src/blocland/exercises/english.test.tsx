@@ -196,3 +196,20 @@ it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout 
   expect(screen.getAllByRole('listitem').map((l) => l.textContent)).toEqual(['He goes to the kitchen.']);
   expect(screen.queryByText(/Écoute l’histoire/)).toBeNull();
 });
+
+it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglais en voix anglaise ; une ligne de méthode non', async () => {
+  const user = userEvent.setup();
+  const aid = { kind: 'rule-card', props: { title: 'Lire un panneau', lines: ['Lis d’abord la question.', 'push = pousser, pull = tirer'] } };
+  renderScreen(CalculScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
+  const [methode, lexique] = [...document.querySelectorAll('.rule-card li')];
+  expect(methode.querySelector('button')).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Écouter : push, pull' }));
+  expect(utterances.at(-1)).toMatchObject({ text: 'push, pull', lang: 'en-GB' });
+  expect(lexique.textContent).toBe('push = pousser, pull = tirer');
+});
+
+it('lexique en français : pas de bouton par ligne', () => {
+  const aid = { kind: 'rule-card', props: { lines: ['nombre = quantité'] } };
+  renderScreen(CalculScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4', aid }, 'fr');
+  expect(document.querySelector('.rule-card button')).toBeNull();
+});

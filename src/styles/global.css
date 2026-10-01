@@ -4153,6 +4153,11 @@ button.island-quest:active {
   margin: 0;
   padding-left: 1.2rem;
 }
+/* Une ligne de lexique d'anglais porte au bout son bouton Écouter (l'icône seule, centrée sur la ligne). */
+.rule-card li .speak-button {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
 
 /* Le rappel de règle dans l'aide : un seul cadre. */
 .calcul-aid .rule-card {
