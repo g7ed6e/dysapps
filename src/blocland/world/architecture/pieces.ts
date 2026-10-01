@@ -3,9 +3,8 @@
 // faces de la case qu'elle ferme entièrement (une voisine n'y montre pas sa face). Rien ne sort de la case : le toucher
 // retrouve la case d'une pièce, toute la case, par la table triangle → case (world/construction.ts, `caseDeLaPiece`).
 //
-// La couleur n'est pas ici : une facette dit seulement si elle prend le dessus ou le côté de la matière du bloc (la
-// palette de l'archipel), et son motif peint (0 : aucun ; le colombage viendra peint, sans un triangle de plus).
-// Code pur, sans Three.js.
+// La couleur n'est pas ici : une facette dit si elle prend le dessus ou le côté de la matière du bloc (la palette de
+// l'archipel), ou un rôle du kit (les pilotis), et son motif peint (./peinture.ts : 0, aucun). Code pur, sans Three.js.
 
 export type V3 = [number, number, number];
 
@@ -13,12 +12,20 @@ export type V3 = [number, number, number];
 export const FACES = { est: 1, nord: 2, ouest: 4, sud: 8, haut: 16, bas: 32 } as const;
 export const TOUTES_LES_FACES = 0b111111;
 
+/**
+ * Les rôles des couleurs d'un kit (./kits/types.ts) : une pièce peut en montrer plusieurs dans sa case (le colombage sur
+ * son remplissage, les pilotis sous le plancher).
+ */
+export type Role = 'poteau' | 'remplissage' | 'soubassement' | 'bardage' | 'pilotis' | 'chaperon';
+
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {
   points: V3[];
   normale: V3;
   /** La couleur de la matière qu'elle prend : son dessus ou son côté. */
   face: 'dessus' | 'cote';
+  /** La couleur d'un rôle du kit, au lieu de la matière du bloc. */
+  role?: Role;
   /** Le motif peint (0 ou absent : aucun). */
   motif?: number;
 }
@@ -28,6 +35,11 @@ export interface DessinDePiece {
   facettes: readonly Facette[];
   /** Les faces de la case qu'elle ferme entièrement (bits de `FACES`). */
   couvre: number;
+  /**
+   * La pièce file le long de y (dans son orientation de référence) : une rangée de pièces pareilles se dessine d'un
+   * tenant (./assemblage.ts).
+   */
+  filant?: boolean;
 }
 
 /** Un point de la case tourné de `r` quarts de tour, dans le sens direct, autour de l'axe vertical du centre de la case. */
@@ -68,10 +80,11 @@ export const trianglesDe = (d: DessinDePiece) => d.facettes.reduce((n, f) => n +
 
 /**
  * Une boîte dans la case, de (x0, y0, z0) à (x1, y1, z1) (de 0 à 1) : ses six faces, et les faces de la case qu'elle
- * ferme (celles qu'elle touche sur toute leur étendue). Une brique pour dessiner les pièces des kits.
+ * ferme (celles qu'elle touche sur toute leur étendue). Une brique pour dessiner les pièces des kits ; `role` : la
+ * couleur d'un rôle du kit au lieu de la matière du bloc.
  */
-export function boiteDansLaCase(x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, motif = 0): DessinDePiece {
-  const f = (points: V3[], normale: V3, face: 'dessus' | 'cote'): Facette => ({ points, normale, face, motif });
+export function boiteDansLaCase(x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, motif = 0, role?: Role): DessinDePiece {
+  const f = (points: V3[], normale: V3, face: 'dessus' | 'cote'): Facette => ({ points, normale, face, motif, ...(role ? { role } : {}) });
   const facettes = [
     f([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], 'dessus'),
     f([[x0, y0, z0], [x0, y1, z0], [x1, y1, z0], [x1, y0, z0]], [0, 0, -1], 'cote'),

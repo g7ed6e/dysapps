@@ -49,6 +49,8 @@ import { sansToursDuCoeur } from './construction';
 import { BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
 import { phareDuLarge } from './phareDuLarge';
+import { kitVide } from './architecture';
+import { batimentsDe, ETAPES_DU_BATIMENT } from './construction';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -194,7 +196,9 @@ describe('La construction taillée (lot R5)', () => {
       const bloc = blocEn(pleins);
       const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
       for (const mode of ['aucun', 'peint'] as const) {
-        const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode });
+        // Les blocs seuls, sans le kit d'architecture (lot 7b) : ses pièces et ses murs peints ont leurs propres tests
+        // (./architecture/toucher.test.ts).
+        const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode, kit: kitVide() });
         let aire = 0;
         for (const [nom, g] of [['opaque', m.opaque], ['fenetres', m.fenetres]] as const) {
           expect(sensJuste(g), `${a} ${mode}`).toBe(true);
@@ -224,7 +228,7 @@ describe('La construction taillée (lot R5)', () => {
     const { pleins, lanternes } = rangerLesLanternes(cubes);
     const occupe = new Set(pleins.map((c) => cle(c.x, c.y, c.z)));
     const bloc = blocEn(pleins);
-    const m = maillageDeLaConstruction('6e', cubes, sol, { biseau: 'taille' });
+    const m = maillageDeLaConstruction('6e', cubes, sol, { biseau: 'taille', kit: kitVide() });
     expect(sensJuste(m.opaque)).toBe(true);
     let bandes = 0;
     for (const [i, t] of triangles(m.opaque).entries()) {
@@ -641,8 +645,9 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
         expect(Math.hypot(r.cell.x + 0.5 - p.x, r.cell.y + 0.5 - p.z, r.cell.z + 0.5 - p.y)).toBeLessThan(1.6);
       }
     }
-    // Hors du phare : rien.
-    expect(caseDeLaPiece(m, 'opaque', m.phare!.opaque[1], { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
+    // Hors du phare et des pièces d'architecture (un bloc, dessiné avant eux) : rien.
+    expect(m.phare!.opaque[0]).toBeGreaterThan(0);
+    expect(caseDeLaPiece(m, 'opaque', 0, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
   }, 30_000);
 
   it('dans l’enveloppe de la construction du 6e, à chaque étape (6 500 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
@@ -655,6 +660,30 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
       expect(c.drawCalls, nom).toBeLessThanOrEqual(3);
     }
   }, 30_000);
+});
+
+describe('Les bâtiments du kit d’architecture (lot 7b)', () => {
+  it('les deux premiers plans de chaque île sont ses murs et son toit ; la cour vient après, hors du bâtiment', () => {
+    // `batimentsDe` prend les `ETAPES_DU_BATIMENT` premiers plans : il faut que ce soient les murs (debout sur le sol)
+    // puis le toit (posé sur les murs), et que le plan suivant, la cour, ne se pose jamais sur eux. Un ordre des plans
+    // changé (dans docs/contenu/<île>.md) donnerait le kit à la cour et laisserait le toit en blocs.
+    expect(ETAPES_DU_BATIMENT).toBe(2);
+    const k = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
+    const dessous = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z - 1}`;
+    let iles = 0;
+    for (const b of BIOMES) {
+      const plans = plansFor(b.id);
+      if (!plans.length) continue;
+      iles++;
+      const [murs, toit, cour] = plans.map((p) => p.cells);
+      expect(murs.some((c) => c.z === 0), `${b.id} : les murs au sol`).toBe(true);
+      const deMur = new Set(murs.map(k));
+      expect(toit.some((c) => deMur.has(dessous(c))), `${b.id} : le toit sur les murs`).toBe(true);
+      const duBatiment = new Set([...murs, ...toit].map(k));
+      expect((cour ?? []).some((c) => duBatiment.has(dessous(c)) || duBatiment.has(k(c))), `${b.id} : la cour hors du bâtiment`).toBe(false);
+    }
+    expect(iles).toBeGreaterThan(0);
+  });
 });
 
 describe('Un maillage par île (lot R5)', () => {
@@ -683,6 +712,23 @@ describe('Un maillage par île (lot R5)', () => {
       expect(coutDeLaConstruction(apres.maillage).triangles, a).toBe(coutDeLaConstruction(construireParIle(a, pose, sol, cacheDeLaConstruction()).maillage).triangles);
     }
   }, 60_000);
+
+  it('les pilotis se décident de même, île par île ou d’un tenant : le sol se cherche plus bas que la case juste dessous', () => {
+    const { cubes, sol } = monde('6e', 'tout');
+    // Un bloc de bois au pied d'une maison de la Forêt, son sol descendu d'une case : rien juste dessous, du sol plus bas.
+    const batis = batimentsDe('6e');
+    const solEn = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
+    const pied = cubes.find((c) => c.tag === 'foret' && !c.ghost && batis.get(cle(c.x, c.y, c.z)) === 'planches' && solEn.has(cle(c.x, c.y, c.z - 1)))!;
+    expect(pied).toBeDefined();
+    const sous = solEn.get(cle(pied.x, pied.y, pied.z - 1))!;
+    const solBas = sol.map((c) => (c === sous ? { ...c, z: c.z - 1 } : c));
+    const foret = cubes.filter((c) => c.tag === 'foret');
+    const parIle = construireParIle('6e', foret, solBas, cacheDeLaConstruction()).maillage;
+    const entier = maillageDeLaConstruction('6e', foret, solBas);
+    // Pas de pilotis sur la terre ferme, ni d'un côté ni de l'autre : les mêmes triangles, les mêmes pièces.
+    expect(coutDeLaConstruction(parIle).triangles).toBe(coutDeLaConstruction(entier).triangles);
+    expect(parIle.pieces?.map((p) => p.opaque[1] - p.opaque[0])).toEqual(entier.pieces?.map((p) => p.opaque[1] - p.opaque[0]));
+  }, 30_000);
 
   it('le phare garde ses triangles, décalés, une fois mis bout à bout', () => {
     const { cubes, sol } = mondeDuPhare(getPlan('tour-phare')!.cells.length, getPlan('tour-lanterne')!.cells.length);

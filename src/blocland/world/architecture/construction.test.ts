@@ -4,15 +4,15 @@ import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
 import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
 import { worldCubes } from '../terrain';
-import { boiteDansLaCase, FORMES, type DessinDePiece, type IdDePiece, type Kit } from '.';
+import { boiteDansLaCase, FORMES, kitVide, type DessinDePiece, type IdDePiece, type Kit } from '.';
 
 const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
 
 /** Un kit d'essai : la pierre seule, dessinée partout par `dessin`. */
 function kitDEssai(dessin: DessinDePiece): Kit {
   const pieces: Partial<Record<IdDePiece, DessinDePiece>> = {};
-  for (const { forme } of FORMES) for (const pied of ['pied', 'haut'] as const) for (const tete of ['chaperon', 'toit', 'mur'] as const) pieces[`mur.${forme}.${pied}.${tete}`] = dessin;
-  return { matieres: { pierre: 'pierre' }, pieces: { pierre: pieces } };
+  for (const { forme } of FORMES) for (const pied of ['pied', 'haut', 'pilotis'] as const) for (const tete of ['chaperon', 'toit', 'mur'] as const) pieces[`mur.${forme}.${pied}.${tete}`] = dessin;
+  return { ...kitVide(), matieres: { pierre: 'pierre' }, pieces: { pierre: pieces } };
 }
 
 const cube = (x: number, y: number, z: number, texture = 'pierre', autre: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', texture, tag: 'port', ...autre });
@@ -54,11 +54,11 @@ const batiment = (dx = 0, tag = 'port'): VoxelCube[] => [
 ];
 
 describe('Les pièces d’architecture dans la construction', () => {
-  it('au socle (kits vides), rien ne change : ni pièce, ni motif, sur une île construite', () => {
+  it('hors des Premiers Rivages (kits vides), rien ne change : ni pièce, ni motif, sur une île construite', () => {
     const { progress, village } = toutConstruit();
-    const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
+    const tous = worldCubes('5e', progress, village, false).filter((c) => !c.sol);
     const ile = tous.find((c) => c.tag)!.tag;
-    const m = maillageDeLaConstruction('6e', tous.filter((c) => c.tag === ile));
+    const m = maillageDeLaConstruction('5e', tous.filter((c) => c.tag === ile));
     expect(m.pieces).toBeUndefined();
     expect(m.opaque.motifs.length).toBe(m.opaque.positions.length / 3);
     expect([...m.opaque.motifs].every((v) => v === 0)).toBe(true);

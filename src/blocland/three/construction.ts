@@ -7,6 +7,9 @@
 //   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
 //   16 pixels, elle s'efface, pour ne pas scintiller) ; le verre hors d'un mur, cerné
 //   d'une arête fine par case ;
+//   les murs de l'architecture modulaire (lot 7), peints d'après leur motif (world/architecture/peinture.ts,
+//   `MOTIF_GLSL`) : le colombage, le bardage, le soubassement et le chaperon, aux couleurs du kit de l'archipel (l'uniforme
+//   `uRoles`) ; de loin, les traits fins s'effacent jusqu'au mur uni ; la nuit, rien ne s'allume ;
 // - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
 // - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
 //
@@ -31,6 +34,7 @@ import {
   type GroupeDeConstruction,
   type MaillageDeLaConstruction,
 } from '../world/construction';
+import { MOTIF_GLSL, ROLES_PEINTS } from '../world/architecture';
 import type { Lumiere } from './lumiere';
 
 /** Les trois matériaux de la construction, partagés par ses maillages (le monde, le navire). */
@@ -41,30 +45,41 @@ export interface MateriauxDeConstruction {
   dispose(): void;
 }
 
-export function creerMateriaux(lumiere: Lumiere | null): MateriauxDeConstruction {
+/**
+ * Les matériaux de la construction. `roles` : les couleurs linéaires des rôles peints du kit de l'archipel
+ * (world/construction.ts, `couleursDesRoles`), pour les murs de l'architecture modulaire ; sans elles, du noir (aucun
+ * motif ne les lit).
+ */
+export function creerMateriaux(lumiere: Lumiere | null, roles?: Float32Array): MateriauxDeConstruction {
   const biseau = { value: ECLAT_DU_BISEAU };
+  const couleursDesRoles = Array.from({ length: ROLES_PEINTS.length * 2 }, (_, i) =>
+    roles ? new THREE.Color(roles[3 * i], roles[3 * i + 1], roles[3 * i + 2]) : new THREE.Color(0, 0, 0),
+  );
   const opaque = new THREE.MeshLambertMaterial({ vertexColors: true });
   opaque.onBeforeCompile = (s) => {
     s.uniforms.uBiseau = biseau;
     s.uniforms.uArete = { value: new THREE.Color(ARETE) };
+    s.uniforms.uRoles = { value: couleursDesRoles };
     s.vertexShader = s.vertexShader
       .replace(
         '#include <common>',
-        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;',
+        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nattribute float motif;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nflat varying float vMotif;',
       )
       // La case d'un sommet : un quart de case derrière sa face (world/construction.ts, `caseDeLaConstruction`).
       .replace(
         '#include <begin_vertex>',
-        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;',
+        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;\nvMotif = motif;',
       );
     s.fragmentShader = s.fragmentShader
       .replace(
         '#include <common>',
-        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\n${TEINTE_GLSL}\n${BISEAU_GLSL}`,
+        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nflat varying float vMotif;\n${TEINTE_GLSL}\n${BISEAU_GLSL}\n${MOTIF_GLSL}`,
       )
       .replace(
         '#include <color_fragment>',
         `#include <color_fragment>
+// Le motif d'un mur de l'architecture modulaire (lot 7), sur son fond, avant la teinte de sa case.
+diffuseColor.rgb = peindreLeMotif(diffuseColor.rgb, vMotif, vPos, vN);
 diffuseColor.rgb *= vTeinte > 0.0 ? pow(vTeinte, 2.2) : teinteDeCase(floor(vCase));
 {
   // Le biseau peint : 1 au bord saillant, 0 au-delà de la bande. La bande garde au moins un pixel et demi (jamais un
@@ -203,7 +218,7 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     group,
     peindre(m) {
       vider();
-      // `motif` : le motif peint d'une pièce d'architecture (lot 7), inerte au socle (7a) : le shader ne le lit pas encore.
+      // `motif` : le motif peint d'un mur ou d'une pièce d'architecture (lot 7).
       ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque');
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
