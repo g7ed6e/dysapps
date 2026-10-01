@@ -14,7 +14,7 @@ import { lockedHint } from './world/goals';
  */
 export function accueilDeLIle(state: BloclandState, id: BiomeId, sansLv2: boolean, textes: TextesUnivers): string {
   if (sansLv2) return SANS_LV2;
-  return isBiomeUnlocked(id, state.village.bridges) ? textes.creatures[id].greeting : lockedHint(state, id, textes.archipels);
+  return isBiomeUnlocked(id, state.village.bridges) ? textes.creatures[id].greeting : lockedHint(state, id, textes.archipels, textes.libelles);
 }
 
 /**

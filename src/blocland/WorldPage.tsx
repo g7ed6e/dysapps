@@ -192,7 +192,7 @@ export function WorldPage() {
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels), [a, state, settings.lv2, textes]);
+  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels, textes.libelles), [a, state, settings.lv2, textes]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({

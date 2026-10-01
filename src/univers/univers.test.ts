@@ -17,10 +17,11 @@ function tousLesTextes(t: TextesUnivers): string[] {
   for (const n of [1, 2]) {
     out.push(l.etoilesSur3(n), l.resistance(n, 3), l.encoreAFaire(n), l.navireAttend(n), l.faitsSur(n, 6), l.progres(n, 28));
     out.push(l.navireGardiens(n, 2, t.archipels['6e'], 'la voile'), l.navireGardiens(0, n, t.archipels['6e'], 'la voile'));
+    out.push(l.navireGardiensManquants(n, t.archipels['6e']), l.navireAttend(n, 'la voile'));
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens(t.archipels['6e']), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
   out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
-  out.push(l.decouverteOuvrages, l.decouverteNavire);
+  out.push(l.decouverteOuvrages, l.decouverteNavire, l.ouvrageGardien, l.gardienDabord('Phare des fonctions'));
   out.push(...Object.values(t.archipels), ...Object.values(t.roles));
   for (const s of Object.values(t.succes)) if (s) out.push(s.title, s.description);
   for (const m of Object.values(t.monuments)) if (m) out.push(...Object.values(m));

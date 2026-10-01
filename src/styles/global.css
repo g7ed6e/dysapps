@@ -5920,6 +5920,13 @@ button.island-quest {
 .defi-titre {
   padding-right: calc(56px + 0.6rem);
 }
+/* Sur téléphone, le nom de l'écran (« Le défi du Golem de roche ») tient en deux lignes au lieu de trois. Sans effet en
+   grand texte, dont la taille de titre l'emporte. */
+@media (max-width: 640px) {
+  .defi-titre {
+    font-size: 1.3rem;
+  }
+}
 .rallumage-passer {
   min-height: 48px;
   justify-self: end;

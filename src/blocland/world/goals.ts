@@ -16,6 +16,7 @@ import {
   previousArchipelago,
   reachableIslands,
   remainingVoyages,
+  type MotsDesGardiens,
   type NomsArchipels,
 } from './archipelago';
 import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
@@ -53,7 +54,7 @@ function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
  * blocs d'un plan, construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de
  * blocs à gagner), le plan en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
  */
-export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsArchipels): Goal | null {
+export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
   if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
@@ -93,7 +94,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsAr
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
       candidates.push({
-        text: `Bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${noms[stage.from]} pour ${stage.short}`,
+        text: `${cap(mots.navireGardiensManquants(left, noms[stage.from]))} pour ${stage.short}`,
         have: Math.max(0, stage.guardians - left),
         need: stage.guardians,
         ready: false,
@@ -116,15 +117,15 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsAr
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */
-export function nextGoal(state: BloclandState, island: BiomeId, noms: NomsArchipels): string | null {
-  return nextGoalInfo(state, island, noms)?.text ?? null;
+export function nextGoal(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string | null {
+  return nextGoalInfo(state, island, noms, mots)?.text ?? null;
 }
 
 /**
  * Ce que dit la créature d'une île fermée : l'ouvrage précis qui mène ici (depuis quelle île, combien de blocs,
  * quelle condition), ou l'île à ouvrir d'abord quand on est encore trop loin.
  */
-export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArchipels): string {
+export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
   const bridges = state.village.bridges;
   const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.village.plans };
@@ -141,7 +142,7 @@ export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArch
     if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
     if (launch.reason === 'gardiens') {
       const k = stage.guardians - beatenGuardians(stage.from, state.progress);
-      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : bats encore ${k} Gardien${k > 1 ? 's' : ''} des ${noms[stage.from]}, puis embarque.`;
+      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : ${mots.navireGardiensManquants(k, noms[stage.from])}, puis embarque.`;
     }
     const status = planStatus(state, stage);
     const n = status.total - status.done;
@@ -151,7 +152,7 @@ export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArch
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b)}`;
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, mots.ouvrageGardien)}`;
     return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
   // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
@@ -165,10 +166,7 @@ export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArch
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }): string {
-  return b.kind === 'escalier'
-    ? 'Il faut aussi un premier plan terminé de l’autre côté.'
-    : b.kind === 'tunnel' || b.kind === 'col'
-      ? 'Il faut aussi avoir vaincu le Gardien de l’autre côté.'
-      : '';
+// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
+function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, gardien: string): string {
+  return b.kind === 'escalier' ? 'Il faut aussi un premier plan terminé de l’autre côté.' : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
 }

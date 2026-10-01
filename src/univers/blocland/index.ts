@@ -303,7 +303,7 @@ export const BLOCLAND = {
     resistance: (reste, total) => `${reste} épreuves sur ${total} avant de le vaincre`,
     dejaFaitArene: (gardien) => `${gardien} est déjà vaincu, mais il aime les revanches.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à vaincre`,
-    navireAttend: (n) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} vaincu${s(n)}.`,
+    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} vaincu${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à vaincre dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} vaincu${s(n)} sur ${total}`,
@@ -314,6 +314,9 @@ export const BLOCLAND = {
     arene: () => 'L’arène du Gardien',
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien vaincu.',
+    ouvrageGardien: 'Il faut aussi avoir vaincu le Gardien de l’autre côté.',
+    navireGardiensManquants: (n, archipel) => `bats encore ${n} Gardien${s(n)} des ${archipel}`,
+    gardienDabord: (ile) => `Bats d’abord le Gardien de ${ile}.`,
     decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
   sentinelles: null,

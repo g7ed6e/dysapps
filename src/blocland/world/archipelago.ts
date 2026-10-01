@@ -342,14 +342,25 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
     });
 }
 
+/**
+ * Les mots de l'univers pour les Gardiens dans ce que disent les ouvrages et les objectifs (vaincus dans Blocland,
+ * rallumés dans Archipéo) : les libellés de l'univers en cours (`textes.libelles`), passés par l'écran, la règle
+ * n'important pas d'univers.
+ */
+export interface MotsDesGardiens {
+  ouvrageGardien: string;
+  navireGardiensManquants: (n: number, archipel: string) => string;
+  gardienDabord: (ile: string) => string;
+}
+
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
-export function conditionText(bridge: BridgeDef, bridges: string[]): string | null {
+export function conditionText(bridge: BridgeDef, bridges: string[], mots: MotsDesGardiens): string | null {
   const condition = CONDITION_OF[bridge.kind];
   if (condition === 'aucune') return null;
   const open = reachableIslands(bridges);
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
   const name = getBiome(island)?.name ?? island;
-  if (condition === 'gardien') return `Bats d’abord le Gardien de ${name}.`;
+  if (condition === 'gardien') return mots.gardienDabord(name);
   const first = plansFor(island)[0];
   return `Termine d’abord le plan « ${first?.name ?? 'premier plan'} » de ${name}.`;
 }

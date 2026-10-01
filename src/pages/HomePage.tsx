@@ -34,7 +34,7 @@ export function HomePage() {
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.village.bridges);
   const here = archipelagoOf(state.village.at ?? 'foret').classe;
-  const destination = nextDestination(state, textes.archipels);
+  const destination = nextDestination(state, textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.village.bridges).length;
   const univers = UNIVERS[useUnivers()];

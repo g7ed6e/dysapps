@@ -6,7 +6,7 @@ import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { levelFor } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
-import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId, type NomsArchipels } from './archipelago';
+import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId, type MotsDesGardiens, type NomsArchipels } from './archipelago';
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
 import { stageTo } from './vehicle';
@@ -58,14 +58,17 @@ export function ilesDuModele(state: Pick<BloclandState, 'progress' | 'village'>,
   return islandsOf(a).map((b) => ({ id: b.id, nom: b.name, ouverte: isBiomeUnlocked(b.id, state.village.bridges), etat: islandState(state, b.id) }));
 }
 
-/** Tout ce qui existe dans un archipel, et son état ; `noms` : les noms des archipels de l'univers affiché (la destination). */
-export function modeleDuMonde(state: BloclandState, a: ArchipelagoId, noms: NomsArchipels): ModeleDuMonde {
+/**
+ * Tout ce qui existe dans un archipel, et son état ; `noms` et `mots` : les noms des archipels et les mots des Gardiens
+ * de l'univers affiché (la destination).
+ */
+export function modeleDuMonde(state: BloclandState, a: ArchipelagoId, noms: NomsArchipels, mots: MotsDesGardiens): ModeleDuMonde {
   const iles = islandsOf(a);
   return {
     archipel: a,
     iles: ilesDuModele(state, a),
     bornes: iles.flatMap((b) => missionsDe(b.id).map((mission) => ({ id: `${b.id}:${mission}`, ile: b.id, mission, etat: etatDeBorne(state, b.id, mission) }))),
-    destination: nextDestination(state, noms),
+    destination: nextDestination(state, noms, mots),
   };
 }
 

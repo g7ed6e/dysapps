@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../univers';
 import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
@@ -9,7 +10,6 @@ import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
-import { useTextes } from '../univers';
 
 export interface VehicleBuilder {
   /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
@@ -77,7 +77,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const finished = (done: VehicleStage) => {
     const msg = kit
       ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
-      : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
+      : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
     if (settings.autoRead) speak(msg);
