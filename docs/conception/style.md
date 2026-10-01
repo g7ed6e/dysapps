@@ -69,7 +69,7 @@ Dans Blocland, le monde est en blocs, comme décrit plus haut. L’élève qui c
 - **une palette commune** (`src/blocland/world/palette.ts`) : par archipel, le ciel, la mer, la lumière, et une couleur de dessus et de côté pour chaque sol et chaque matière, de jour et de nuit ; les nuits restent un bleu de crépuscule, jamais un noir ;
 - **un ciel en dôme dégradé**, du zénith à l’horizon, avec une lueur claire sur la ligne d’horizon ; **une brume de profondeur** de la couleur de l’horizon, qui fond les îles lointaines dans le ciel, jamais les noms d’îles ;
 - **un soleil chaud et une ambiance froide** (la lune, froide, la nuit) : les faces au soleil sont dorées, les faces à l’ombre bleutées ;
-- une ambiance par archipel : ciel d’été franc des Premiers Rivages, brume froide et plus proche des Îles Brumeuses, horizon couleur de poussière des Anciens Ateliers, ciel pâle et lavande des Îles du Ciel, sur leur plancher de nuages.
+- une ambiance par archipel : ciel d’été franc des Premiers Rivages, brume froide et plus proche des Îles Brumeuses, horizon couleur de poussière des Anciens Ateliers, ciel bleu franc des Îles du Ciel, sur leur plancher de nuages blanc bleuté.
 
 Depuis le lot R2, **le terrain n’est plus en cubes** : le sol et la roche des îles, des îlots des Gardiens et des îlots des monuments deviennent un maillage à facettes tiré de la grille de hauteurs (`src/blocland/world/landMesh.ts`) :
 

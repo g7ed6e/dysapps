@@ -72,8 +72,9 @@ Tous les lots R sont construits : R0 à R7, S, les quatre R4b (6e, 5e, 4e, 3e), 
 | DA-3 à DA-6, DA-8 à DA-10, DA-14 à DA-18, DA-23 à DA-31 | Fusionnées |
 | DA-7, DA-32 | Sans objet |
 | DA-19 (lueur de nuit du 3e au-dessus de 3 %) | Close sans code : les 3 % venaient du bouton doré du lieu posé sur la scène ; la scène seule reste sous 0,3 %, et la mesure masque l’interface depuis #252 |
-| **DA-11** (nuages au ras de l’eau, nuage sur un pont du 3e) | En pull request : les nuages d’Archipéo partent au loin, au nord de l’archipel, jamais au-dessus d’une île, d’un pont ni d’un chemin |
-| DA-20 (massif du 3e), DA-21 (nuit lilas du 3e) | À faire, dans cet ordre, après DA-11 |
+| **DA-11** (nuages au ras de l’eau, nuage sur un pont du 3e) | Fusionnée (#278, 1er octobre) : les nuages d’Archipéo partent au loin, au nord de l’archipel, jamais au-dessus d’une île, d’un pont ni d’un chemin |
+| **DA-21** (nuit lilas du 3e) | En pull request : la nuit des Îles du Ciel perd son lilas (204-213° à l’image, comme le 6e et le 5e), l’horizon, le jour et Blocland ne changent pas |
+| DA-20 (massif du 3e) | À faire, après la fusion des îles-écoles agrandies (mêmes fichiers du décor) |
 | DA-22 (oiseau planeur) | Attend la vidéo du mainteneur |
 | DA-1 (fumée plus grise), DA-2 (fourneau du 4e), DA-13 (lointain du 6e, facultatif), DA-12 (capture du pont Marché–Marais) | À faire, en dernier |
 | DA-33 (à la revanche, « brille déjà » alors que la sentinelle repart éteinte) | À valider par le directeur artistique |
