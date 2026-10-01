@@ -39,6 +39,14 @@ Le périmètre par défaut d'un lot :
 - **Le téléphone et le grand texte** (`lisibilite`, les familles qui ont des vues 390 × 844 ou 800 × 1280) si le lot touche l'interface, le cadrage ou la taille d'une île.
 - **Les personnages** si le lot touche une créature ou un Gardien.
 
+## Qui fait quoi (décision du mainteneur, 1er octobre 2026)
+
+- **L'artiste technique 3D code, commite et s'arrête.** Il ne lance pas les captures d'un lot et ne les attend pas : c'est le fil qui l'a missionné qui lance le workflow et qui reprend à sa fin. Une attente active de plusieurs minutes par un agent au long contexte coûte cher et n'avance rien (constat du 01/10 : 330 000 tokens réécrits à chaque réveil).
+- **Une retouche, un artiste neuf.** Après la relecture des planches, le fil lance un nouvel artiste avec un brief court (ce qui change, le lien des planches, le commit de départ), plutôt que de relancer le même agent avec tout l'historique du lot.
+- **Pas de captures finales quand une pull request qui passe avant va fusionner** (ordre de fusion, CI verte, mot du mainteneur donné) : le merge-base serait dépassé et tout serait à refaire. Attendre sa fusion, se remettre sur main, puis lancer.
+- **Les relecteurs lisent un commit figé.** Le fil donne à l'expert frontend et aux autres relecteurs un commit poussé ou commité, et ne remet pas la branche sur main ni ne fait retoucher pendant leur relecture. Un relecteur ne lance ni captures ni `rendu:mesures`.
+- **Les triangles** se comptent avec `npm run rendu:budget` (poste par poste, enveloppe et marge, sans navigateur), jamais avec un test jetable.
+
 ## Un lot de rendu, pas à pas
 
 Les captures d'un lot se font sur la CI, pas dans le conteneur du fil (décision du mainteneur, 1er octobre 2026) : une machine par univers, archipel et côté (avant, après), en parallèle (`.github/workflows/captures-lot.yml`).
