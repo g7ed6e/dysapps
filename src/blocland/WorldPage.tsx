@@ -606,8 +606,11 @@ export function WorldPage() {
   };
 
   // Toucher une île : on y va (le bonhomme marche si un chemin y mène). Sur la Carte, une île fermée montre son chemin.
+  // Le panneau replié reste replié quand on touche l'île où l'on est : on regarde le monde sans qu'il remonte ; le bouton
+  // de l'île, dans la barre du bas, le rouvre.
   const onIsland = (id: BiomeId) => {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
+    if (island?.id === id && !sheetOpen) return;
     openIsland(id);
   };
   // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide.
@@ -627,7 +630,7 @@ export function WorldPage() {
         return onPickVehicle(i.port);
       case 'face':
         // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
-        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || openIsland(i.ile);
+        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || onIsland(i.ile);
         return;
       case 'fin-du-voyage':
       case 'voyage-saute':
@@ -642,8 +645,8 @@ export function WorldPage() {
     if (!biome) return;
     if (kind === 'guardian') return navigate(`/aventure/${id}/gardien`);
     // La créature est ce qu'on touche d'abord sur une île : on ouvre son panneau (elle y accueille, à voix haute).
-    // Une fois dans le panneau de son île, la toucher la fait parler.
-    if (island?.id !== id || !sheetOpen) {
+    // Sur son île, panneau ouvert ou replié, la toucher la fait parler.
+    if (island?.id !== id) {
       setSaid(null);
       return openIsland(id);
     }

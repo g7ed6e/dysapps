@@ -119,11 +119,20 @@ it('la créature touchée parle dans une bulle qu’on peut fermer', async () =>
   expect(bulle()).toBeUndefined();
 });
 
-it('rouvre le panneau replié quand on touche à nouveau l’île dans le monde', async () => {
+it('le panneau replié reste replié quand on touche l’île où l’on est ; une autre île ouvre le sien', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/foret');
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(sheet()).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
+  expect(sheet()).not.toBeInTheDocument();
+  // La créature de l'île parle, le panneau reste replié.
+  await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
+  expect(sheet()).not.toBeInTheDocument();
+  expect(screen.queryAllByRole('status').some((el) => el.classList.contains('world-line'))).toBe(true);
+  // Depuis le village sans île, toucher la Forêt ouvre son panneau.
+  document.body.innerHTML = '';
+  renderAt('/aventure');
   await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
   expect(sheet()).toBeInTheDocument();
 });

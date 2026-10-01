@@ -65,7 +65,7 @@ Le plan, le Bloc-Navire et les ouvrages sont des **sections repliables**. Elles 
 
 Dans le monde, chaque île a **une borne par mission** (un socle et un panneau) : la toucher lance la mission. Après un exercice, on revient au même endroit, panneau ouvert.
 
-La **croix** du panneau le replie sans quitter l’île : la caméra reste cadrée sur elle. Un bouton au nom de l’île, dans la barre du bas, le rouvre ou le replie ; toucher à nouveau l’île, une de ses bornes ou un ouvrage le rouvre aussi.
+La **croix** du panneau le replie sans quitter l’île : la caméra reste cadrée sur elle. Un bouton au nom de l’île, dans la barre du bas, le rouvre ou le replie. Tant qu’il est replié, toucher l’île où l’on est ne le rouvre pas : on peut regarder le monde, et sa créature parle quand on la touche ; toucher une autre île ouvre le panneau de celle-ci.
 
 ## Les missions et les étoiles
 
@@ -284,7 +284,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher une borne de mission | Lance la mission (ou explique pourquoi elle ne l’est pas) |
 | Toucher un ouvrage (construit ou fantôme) | Ouvre l’île qu’il touche, avec sa proposition mise en avant |
 | Toucher un fantôme de bâtiment | Pose le bloc attendu |
-| Toucher une créature | Ouvre le panneau de son île, où elle accueille ; si ce panneau est déjà ouvert, elle dit une phrase, lue à voix haute ; une croix ferme sa bulle |
+| Toucher une créature | Ouvre le panneau de son île, où elle accueille ; sur son île, panneau ouvert ou replié, elle dit une phrase, lue à voix haute ; une croix ferme sa bulle |
 | Toucher le Bloc-Navire au quai (île-port) | Ouvre le panneau du port sur sa section Bloc-Navire ; une case transparente pose le bloc attendu |
 | Bouton « Embarquer » (panneau du port) | Le premier voyage vers l’archipel suivant, joué en entier |
 | Bouton « Revenir en … » ou « Repartir vers … », « Aller au port », sélecteur d’archipel (sous le bouton Menu), lien vers une île d’un autre archipel | Un archipel déjà atteint, d’un fondu court |
