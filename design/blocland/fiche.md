@@ -125,6 +125,12 @@ Selon univers.md, §4 :
 - **Le monde, dans ce qu’il porte** : un univers ne change jamais le relief qui porte la marche, ni les cases d’un plan (univers.md, §4.1).
 - **L’objectif pédagogique, l’interface et les règles dys** : rien à lire dans le monde, jamais la couleur seule, les mêmes sons de réussite et d’erreur (univers.md, §4), aucun univers ne rend un exercice plus facile ni ne donne plus de blocs ou d’étoiles.
 
+## 5 bis. Le chantier du bâtisseur (GD-1)
+
+Identité, par le mainteneur : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie. Le bloc c’est l’unité de base pour construire. »
+
+Décidé par le mainteneur le 30 septembre 2026 ([GD-1](../../docs/pilotage/game-design/propositions/GD-1.md)) : le caractère de Blocland se bâtit du point de vue de celui qui construit. Les créatures des îles-écoles parlent aux grandes étapes d’un archipel à la place de la baleine ; les archipels reprennent leurs noms d’origine (les Basses Terres, les Collines du Large, les Monts de Feu, les Îles du Ciel) et le village s’appelle « Le village de Blocland » ; les rôles deviennent des métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte) ; un geste et un son de pose propres à Blocland s’ajoutent par un dégel ciblé du dessin, sans rien redessiner. Rien n’est encore construit.
+
 ## 6. Points de vigilance
 
 À examiner, sans décision prise ici :
