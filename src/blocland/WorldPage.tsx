@@ -506,7 +506,10 @@ export function WorldPage() {
     if (island && (island.id !== at || !enPlace || but) && isBiomeUnlocked(island.id, state.village.bridges)) {
       // Il part de là où il en est en route (`enRoute`), ou de la case où l'élève l'avait envoyé, sans repasser par sa place.
       const depart = touchee?.enRoute ?? (flanee.current && samePoint(ici, flanee.current) ? ici : undefined);
-      const route = chemin(at, { genre: 'ile', id: island.id }, { arrivee: but ?? undefined, depart });
+      // En route, `at` est déjà l'île où il allait (moveTo) : le trajet part de l'île où il se trouve, sans finir de
+      // traverser l'ouvrage pour revenir sur ses pas.
+      const de = touchee?.enRoute ? grille.ileEn(touchee.enRoute) : at;
+      const route = chemin(de, { genre: 'ile', id: island.id }, { arrivee: but ?? undefined, depart });
       const vise = but ? { vise: true } : {};
       if (route) setWalk((w) => ({ route: fromHere(depart ? [depart] : w.route, route), seq: w.seq + 1, ...vise }));
       else setWalk((w) => ({ route: [but ?? seTenir(island.id)], seq: w.seq + 1 }));
