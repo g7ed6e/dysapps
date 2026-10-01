@@ -1,10 +1,16 @@
 import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { lockedHint, nextGoal, nextGoalInfo } from './goals';
+import { textesDe } from '../../univers';
+import { BRIDGES } from './archipelago';
+import { lockedHint as lockedHintDe, nextGoal, nextGoalInfo } from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
+
+// L'indice d'une île fermée dit les Gardiens avec les mots de l'univers (Blocland par défaut).
+const lockedHint = (state: Parameters<typeof lockedHintDe>[0], island: Parameters<typeof lockedHintDe>[1], univers: 'blocland' | 'archipeo' = 'blocland') =>
+  lockedHintDe(state, island, textesDe(univers).libelles);
 
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
@@ -117,4 +123,19 @@ it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardien
     'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
   );
   expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
+});
+
+it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jamais vaincu ni battu', () => {
+  const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
+  expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine']) }), 'marche', 'archipeo')).toBe(
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
+  );
+  // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées.
+  const voisines: string[] = BRIDGES.filter((b) => b.from === 'textes' || b.to === 'textes').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'phare');
+  const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
+  const col = sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e', 'voyage-3e', ...ouverts] } });
+  expect(lockedHint(col, 'textes', 'archipeo')).toBe(
+    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 6 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+  );
+  expect(lockedHint(col, 'textes')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
 });

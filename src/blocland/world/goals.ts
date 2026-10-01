@@ -120,10 +120,19 @@ export function nextGoal(state: BloclandState, island: BiomeId): string | null {
 }
 
 /**
+ * Les mots de l'univers pour les Gardiens dans l'indice d'une île fermée (vaincus dans Blocland, rallumés dans
+ * Archipéo) : les libellés de l'univers en cours (`textes.libelles`), passés par l'écran, la règle n'important pas d'univers.
+ */
+export interface MotsDesGardiens {
+  ouvrageGardien: string;
+  navireGardiensManquants: (n: number, archipel: string) => string;
+}
+
+/**
  * Ce que dit la créature d'une île fermée : l'ouvrage précis qui mène ici (depuis quelle île, combien de blocs,
  * quelle condition), ou l'île à ouvrir d'abord quand on est encore trop loin.
  */
-export function lockedHint(state: BloclandState, island: BiomeId): string {
+export function lockedHint(state: BloclandState, island: BiomeId, libelles: MotsDesGardiens): string {
   const bridges = state.village.bridges;
   const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.village.plans };
@@ -140,7 +149,7 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
     if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
     if (launch.reason === 'gardiens') {
       const k = stage.guardians - beatenGuardians(stage.from, state.progress);
-      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : bats encore ${k} Gardien${k > 1 ? 's' : ''} des ${getArchipelago(stage.from).name}, puis embarque.`;
+      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : ${libelles.navireGardiensManquants(k, getArchipelago(stage.from).name)}, puis embarque.`;
     }
     const status = planStatus(state, stage);
     const n = status.total - status.done;
@@ -150,7 +159,7 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b)}`;
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, libelles.ouvrageGardien)}`;
     return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
   // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
@@ -164,10 +173,7 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }): string {
-  return b.kind === 'escalier'
-    ? 'Il faut aussi un premier plan terminé de l’autre côté.'
-    : b.kind === 'tunnel' || b.kind === 'col'
-      ? 'Il faut aussi avoir vaincu le Gardien de l’autre côté.'
-      : '';
+// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
+function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, gardien: string): string {
+  return b.kind === 'escalier' ? 'Il faut aussi un premier plan terminé de l’autre côté.' : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
 }

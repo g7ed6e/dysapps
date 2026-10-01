@@ -66,6 +66,10 @@ export interface LibellesGardiens {
    * qu'est un ouvrage et ce qu'il demande (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
    */
   decouverteOuvrages: string;
+  /** Ce que dit la créature d'une île fermée quand l'ouvrage qui y mène demande aussi le Gardien de l'autre côté. */
+  ouvrageGardien: string;
+  /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
+  navireGardiensManquants: (n: number, archipel: string) => string;
   /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
   decouverteNavire: string;
 }

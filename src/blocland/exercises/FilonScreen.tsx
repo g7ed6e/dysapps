@@ -42,8 +42,10 @@ export function FilonScreen({ items, answered, onAnswer, level, target }: Screen
 
   return (
     <div className="panel question filon">
+      {/* Le repère de la cible, court et toujours au même endroit, au-dessus du bloc : la consigne dit la règle, ce repère
+          garde la lettre sous les yeux, y compris quand elle change d'un bloc à l'autre (`target`). */}
       <p className="question-prompt">
-        Pioche seulement la lettre <strong className="filon-target">{wanted}</strong>
+        Lettre à piocher&nbsp;: <strong className="filon-target">{wanted}</strong>
       </p>
       <div className="filon-lane" style={{ ['--filon-duration' as string]: `${duration}s` }}>
         <button

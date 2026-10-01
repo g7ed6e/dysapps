@@ -316,6 +316,8 @@ export const ARCHIPEO = {
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande un plan terminé, un col un Gardien rallumé.',
+    ouvrageGardien: 'Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+    navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.

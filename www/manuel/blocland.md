@@ -81,7 +81,7 @@ La **croix** du panneau le replie sans quitter l’île : la caméra reste cadr�
 Chaque île propose deux ou trois **missions**. Une partie enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
 
 - la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la partie ; le bouton 🔊 « Consigne » la relit. Une mission qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
-- l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ;
+- l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ; dans le Filon, un repère court, « Lettre à piocher : d », garde la lettre cible sous les yeux, juste au-dessus du bloc qui passe ;
 - **un deuxième essai**, comme dans les missions du portail : après une erreur, « Presque ! » s’affiche avec l’indice de l’item s’il en a un, la réponse déjà tentée est barrée, et l’on réessaie une fois. Ce n’est pas proposé quand il ne reste qu’une réponse possible (deux choix, ou le Filon : piocher ou laisser passer), ni au Gardien, qui est l’épreuve. Pour un tri (Chasse au son, Rimes-échelle, Enclos), tout l’écran se refait, sans dire quelles cartes sont fausses ;
 - la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe en bas de l’écran. Le bandeau ne cache pas la question : l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou, si elles sont trop hautes (téléphone), au moins l’énoncé, la réponse touchée et la bonne réponse ;
 - dans un tri, la correction **nomme toutes les erreurs** : « Tu as oublié gant et éléphant : on y entend [an]. Dans pain, on entend [in], pas [an]. » Sur les cartes, un bon mot trouvé est vert avec une coche, un bon mot oublié est orangé avec « oublié », un intrus touché est orangé avec « pas [an] » (ou « ne rime pas »), un intrus bien laissé reste neutre ;
@@ -290,7 +290,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | --- | --- |
 | Toucher une île ouverte | La caméra s’approche, son panneau s’ouvre, le bonhomme y marche et s’arrête là où l’on a touché |
 | Toucher le sol de l’île où l’on est | Le bonhomme y marche (un rond marque le but) ; le panneau et la caméra ne bougent pas |
-| Toucher une île fermée | Sa créature dit l’ouvrage qui y mène |
+| Toucher une île fermée | Sa créature dit l’ouvrage qui y mène (et, pour un tunnel ou un col, le Gardien de l’autre côté à vaincre dans Blocland, à rallumer dans Archipéo) |
 | Toucher une borne de mission | Lance la mission (ou explique pourquoi elle ne l’est pas) |
 | Toucher un ouvrage (construit ou fantôme) | Ouvre l’île qu’il touche, avec sa proposition mise en avant |
 | Toucher un fantôme de bâtiment | Pose le bloc attendu |
