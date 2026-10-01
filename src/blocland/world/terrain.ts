@@ -900,18 +900,36 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
 export const ILOT_DE_COTE = 9;
 
 /**
+ * Les retouches de l'îlot d'une île-école, pour qu'il ait au moins trois cases d'eau de tous les côtés et se lise comme
+ * celui de son île, plus près de sa côte que de toute autre terre (relectures du 01/10/2026, un test le tient) :
+ * `glisse` remplace `ILOT_DE_COTE` ; `recul`, de combien de cases il se rapproche de sa terre ; `rogne`, combien de ses
+ * rangées de devant il perd, hors de l'emprise de son Gardien. La Forêt : la Plaine, devant à droite, frôlait la
+ * pointe de l'îlot (deux cases d'eau) ; il recule d'une case vers sa côte et perd sa rangée de devant. L'Atelier : la
+ * Forge, à gauche, était plus près de l'îlot que l'Atelier lui-même ; il glisse de 7 cases au lieu de 9.
+ */
+export const RETOUCHES_DE_L_ILOT: Readonly<Partial<Record<BiomeId, Readonly<{ glisse?: number; recul?: number; rogne?: number }>>>> = Object.freeze({
+  foret: Object.freeze({ recul: 1, rogne: 1 }),
+  atelier: Object.freeze({ glisse: 7 }),
+});
+
+/**
  * Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition : devant la terre
  * de l'île, au droit du bord gauche de son cœur (`coeurDe`) et au-delà de sa côte ; il suit le cœur quand il grandit,
- * et glisse sur le côté s'il est agrandi (`ILOT_DE_COTE`), sans s'avancer vers la caméra.
+ * et glisse sur le côté s'il est agrandi (`ILOT_DE_COTE`, `RETOUCHES_DE_L_ILOT`), sans s'avancer vers la caméra.
  */
 export function origineDeLIlot(def: IslandDef): { x: number; y: number; z: number } {
   const c = coeurDe(def);
-  return { x: c.x0 - glisseDeLIlot(def.id), y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+  return { x: c.x0 - glisseDeLIlot(def.id), y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP + reculDeLIlot(def.id), z: def.altitude };
 }
 
 /** De combien de cases l'îlot d'une île a glissé sur le côté (`ILOT_DE_COTE`) : sa côte et son décor restent tirés là où il était. */
 function glisseDeLIlot(id: BiomeId): number {
-  return COTE_DU_COEUR[id] ? ILOT_DE_COTE : 0;
+  return COTE_DU_COEUR[id] ? (RETOUCHES_DE_L_ILOT[id]?.glisse ?? ILOT_DE_COTE) : 0;
+}
+
+/** De combien de cases l'îlot d'une île s'est rapproché de sa terre (`RETOUCHES_DE_L_ILOT`) : même dessin. */
+function reculDeLIlot(id: BiomeId): number {
+  return RETOUCHES_DE_L_ILOT[id]?.recul ?? 0;
 }
 
 /**
@@ -956,15 +974,18 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
   const off = guardianOffset(id);
   const under = new Set(gardienDuMonde(id).map((c) => `${off.x + c.x},${off.y + c.y}`));
   const glisse = glisseDeLIlot(id);
+  const recul = reculDeLIlot(id);
+  const rogne = RETOUCHES_DE_L_ILOT[id]?.rogne ?? 0;
   const land = new Set<string>();
   for (let x = 0; x < ISLET_W; x++)
     for (let y = 0; y < ISLET_H; y++) {
       const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
       const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
       // Sa côte est tirée là où il se tenait avant de glisser sur le côté : il garde sa forme.
-      const t = tirage(def, o.x + glisse + x, o.y + y);
+      const t = tirage(def, o.x + glisse + x, o.y - recul + y);
       const coast = (smoothNoise(def.seed + 7, t.x, t.y, 3) - 0.5) * 0.3;
-      if (under.has(`${x},${y}`) || Math.hypot(dx, dy) + coast < 0.98) land.add(`${x},${y}`);
+      // Ses rangées de devant rognées (`RETOUCHES_DE_L_ILOT`) ne portent que l'emprise du Gardien.
+      if (under.has(`${x},${y}`) || (y >= rogne && Math.hypot(dx, dy) + coast < 0.98)) land.add(`${x},${y}`);
     }
   const cells: IsletCell[] = [];
   for (const key of land) {
@@ -1082,7 +1103,7 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   const spots = cells
     .filter((c) => !c.arena && !c.guardian)
     .map((c) => {
-      const t = tirage(def, c.x + glisseDeLIlot(def.id), c.y);
+      const t = tirage(def, c.x + glisseDeLIlot(def.id), c.y - reculDeLIlot(def.id));
       return { c, r: noise(def.seed + 8, t.x, t.y) };
     })
     .sort((p, q) => q.r - p.r)

@@ -203,14 +203,12 @@ it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau f
     const def = islandDef(id);
     const c = coeurDe(def);
     // Sa rangée, devant la côte repoussée (pas plus près de la caméra) ; sur le côté, à gauche (à droite, le navire).
-    expect(origineDeLIlot(def), id).toEqual({ x: def.core.x - 2 - 9, y: def.core.y - 2 - def.ext.front - ISLET_H - 3, z: def.altitude });
+    // (Retouches : la Forêt recule d'une case vers sa terre, l'Atelier glisse de 7 cases.)
+    const glisse = id === 'atelier' ? 7 : 9;
+    const recul = id === 'foret' ? 1 : 0;
+    expect(origineDeLIlot(def), id).toEqual({ x: def.core.x - 2 - glisse, y: def.core.y - 2 - def.ext.front - ISLET_H - 3 + recul, z: def.altitude });
     const ilot = bossIsletCells(id);
     expect(ilot.every((p) => !isLand(def, p.x, p.y)), id).toBe(true);
-    // Au moins trois cases d'eau entre l'îlot et la terre de son île : deux d'eau franche entre les liserés, plus qu'il
-    // n'en faut (deux) ; quatre à la Forêt.
-    let eau = Infinity;
-    for (const p of ilot) for (const q of landCells(def)) eau = Math.min(eau, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
-    expect(eau, id).toBeGreaterThanOrEqual(id === 'foret' ? 4 : 3);
     // Le Gardien quitte l'axe du cœur : le milieu de l'îlot est à gauche de son bord.
     const o = origineDeLIlot(def);
     expect(o.x + ISLET_W / 2, id).toBeLessThan(c.x0);
@@ -225,6 +223,44 @@ it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau f
       expect(ilot.every((p) => p.x < d.x0 - 2 || p.x > d.x1 + 2 || p.y < d.y0 - 2 || p.y > d.y1 + 2), id).toBe(true);
     }
   }
+});
+
+it('l’îlot du Gardien d’une île-école : au moins trois cases d’eau de tous les côtés, plus près de sa côte que de toute autre terre', () => {
+  // Relectures du 01/10/2026 (consultant Archipéo, référent dys) : l'îlot de la Forêt frôlait la Plaine, la seconde ligne
+  // d'écume n'y passait pas, et il semblait appartenir à la voisine. Toute terre de l'archipel compte : les îles, leurs
+  // isthmes, les îlots des autres Gardiens.
+  const mesures: Record<string, { eau: number; propre: number; autre: number }> = {};
+  for (const id of IDS) {
+    const def = islandDef(id);
+    const ilot = bossIsletCells(id);
+    const propre = landCells(def);
+    const autres = mapOf(ECOLES[id]!.archipel)
+      .filter((d) => d.id !== id)
+      .flatMap((d) => [...landCells(d), ...bossIsletCells(d.id)]);
+    const m = { eau: Infinity, propre: Infinity, autre: Infinity };
+    for (const p of ilot) {
+      for (const q of propre) {
+        m.eau = Math.min(m.eau, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
+        m.propre = Math.min(m.propre, Math.hypot(p.x - q.x, p.y - q.y));
+      }
+      for (const q of autres) {
+        m.eau = Math.min(m.eau, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
+        m.autre = Math.min(m.autre, Math.hypot(p.x - q.x, p.y - q.y));
+      }
+    }
+    mesures[id] = { eau: m.eau, propre: Math.round(m.propre * 10) / 10, autre: Math.round(m.autre * 10) / 10 };
+    expect(m.eau, id).toBeGreaterThanOrEqual(3);
+    expect(m.propre, id).toBeLessThan(m.autre);
+    // Le Gardien garde toute son emprise sur l'îlot.
+    expect(ilot.filter((c) => c.guardian).length, id).toBeGreaterThan(0);
+  }
+  // Les mesures (eau : en cases, au plus court en tous sens ; distances : de case à case).
+  expect(mesures).toEqual({
+    foret: { eau: 3, propre: 4, autre: 5 },
+    marche: { eau: 3, propre: 4, autre: 8.5 },
+    atelier: { eau: 3, propre: 4.1, autre: 6.1 },
+    phare: { eau: 4, propre: 5, autre: 24.8 },
+  });
 });
 
 it('le quai d’une île-école qui est un port suit sa côte repoussée ; les clés de ses étapes ne bougent pas', () => {

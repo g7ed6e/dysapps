@@ -211,7 +211,8 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(guardianPlacements('6e', {}, [])).toEqual([]);
   const front = bossIsletOrigin(0).y;
   // Caché, l'îlot et ses pas japonais n'existent pas.
-  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < front + ISLET_H + ISLET_GAP)).toBe(false);
+  // (Devant la terre de la Forêt : l'îlot s'en est rapproché d'une case, `RETOUCHES_DE_L_ILOT`.)
+  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < landBox(islandDef('foret')).y0)).toBe(false);
   const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
   const islet = worldCubes('6e', ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
