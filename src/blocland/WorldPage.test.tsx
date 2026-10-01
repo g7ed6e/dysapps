@@ -18,14 +18,17 @@ vi.mock('./three', () => ({
     vehicle,
     archipelago,
     voyage,
+    forceDay,
   }: {
     focus: { island: string | null; spot?: { ile: string; local: { x: number; y: number } } };
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
     voyage: { leg: string; stage: number; back: boolean } | null;
+    forceDay: boolean;
   }) => (
     <div>
+      <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="point">{focus.spot ? `${focus.spot.ile} ${focus.spot.local.x},${focus.spot.local.y}` : 'aucun'}</p>
       <p data-testid="archipel">{archipelago}</p>
@@ -83,7 +86,7 @@ function renderAt(path: string) {
   );
 }
 
-const sheet = () => screen.queryByRole('dialog', { name: /Forêt des sons/ });
+const sheet = () => screen.queryByRole('dialog', { name: /^Forêt des sons/ });
 
 it('replie le panneau d’une île et le rouvre, sans quitter l’île', async () => {
   const user = userEvent.setup();
@@ -364,15 +367,15 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
-  expect(screen.getByRole('dialog', { name: /Forêt des sons/ })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: /^Forêt des sons/ })).toBeInTheDocument();
   // Depuis l'inventaire, la croix rend le monde : on reste sur l'île du bonhomme, sans rouvrir son panneau.
   await user.click(screen.getByRole('button', { name: 'Mes blocs' }));
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
-  expect(screen.queryByRole('dialog', { name: /Forêt des sons|Mes blocs/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('dialog', { name: /^(Forêt des sons|Mes blocs)/ })).not.toBeInTheDocument();
   // Le bouton de l'île, dans la barre, rouvre son panneau.
   await user.click(screen.getByRole('button', { name: 'Ouvrir le panneau de Forêt des sons' }));
-  expect(screen.getByRole('dialog', { name: /Forêt des sons/ })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: /^Forêt des sons/ })).toBeInTheDocument();
 });
 
 it('« À aller chercher » mène à l’île où gagner le bloc qui manque', async () => {
@@ -439,6 +442,10 @@ it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » l
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/aventure/trophees');
   expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
+  // En tête, le rôle et la jauge d'XP ; en bas, l'accueil (plus de « Tutoriel » ni de « Le menu en page »).
+  expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
+  expect(within(menu).getByRole('link', { name: /Accueil/ })).toHaveAttribute('href', '/menu');
+  expect(within(menu).queryByRole('link', { name: /Tutoriel|Le menu en page/ })).not.toBeInTheDocument();
   await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/aventure$/);
@@ -464,4 +471,97 @@ it('le bouton retour, dans le village, ouvre le menu du village au lieu de quitt
   window.history.back();
   expect(await screen.findByRole('dialog', { name: 'Menu' })).toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/menu');
+});
+
+it('le panneau replié reste replié après la Carte ; « Y aller » le rouvre', async () => {
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  const user = userEvent.setup();
+  renderAt('/aventure/foret');
+  await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
+  const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
+  await user.click(carte());
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/carte');
+  // Fermer la Carte : retour sur l'île où l'on est, son panneau toujours replié.
+  await user.click(carte());
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(sheet()).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Ouvrir le panneau de Forêt des sons' })).toBeInTheDocument();
+  // « Y aller », sur la Carte, ouvre le panneau de la destination.
+  await user.click(carte());
+  await user.click(screen.getByRole('button', { name: /Y aller/ }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/foret');
+  expect(sheet()).toBeInTheDocument();
+});
+
+it('le panneau replié reste replié au retour d’un exercice (le monde se remonte) ; une autre île ouvre le sien', async () => {
+  const user = userEvent.setup();
+  const premier = renderAt('/aventure/foret');
+  await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
+  premier.unmount();
+  // Le retour d'un exercice de la Forêt : le monde revient, le panneau reste replié.
+  const second = renderAt('/aventure/foret');
+  expect(sheet()).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Ouvrir le panneau de Forêt des sons' })).toBeInTheDocument();
+  second.unmount();
+  // Vers une autre île, son panneau s'ouvre, et le repli de la Forêt est oublié.
+  const troisieme = renderAt('/aventure/plaine');
+  expect(screen.getByRole('dialog', { name: /^Plaine des nombres/ })).toBeInTheDocument();
+  troisieme.unmount();
+  renderAt('/aventure/foret');
+  expect(sheet()).toBeInTheDocument();
+});
+
+it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bouton Menu', async () => {
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  const tuto = () => screen.getByRole('dialog', { name: /Bienvenue|bornes|bouton Menu/ });
+  expect(tuto()).toHaveTextContent('1/3');
+  expect(tuto()).toHaveTextContent(/Bienvenue à Blocland !.*Touche la Forêt des sons, sous la flèche jaune\./);
+  await user.click(screen.getByRole('button', { name: /Suivant/ }));
+  expect(tuto()).toHaveTextContent(/touche une borne pour jouer.*Chaque mission te donne des blocs pour construire l’île\./);
+  await user.click(screen.getByRole('button', { name: /Suivant/ }));
+  expect(tuto()).toHaveTextContent('Le bouton Menu ouvre le menu : missions, succès, réglages, accueil.');
+  // La bulle montre le bouton Menu.
+  expect(document.querySelector('[data-tuto="menu"]')!.classList.contains('tuto-target')).toBe(true);
+  await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
+  expect(screen.queryByRole('dialog', { name: /bouton Menu/ })).not.toBeInTheDocument();
+});
+
+it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {
+  const { PHRASE_OUVRAGES } = await import('./WorldPage');
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('Les îles pâles sont fermées'));
+  const premier = renderAt('/aventure/mine');
+  expect(ligne()).toBeDefined();
+  expect(ligne()!.textContent).toContain(PHRASE_OUVRAGES.slice(0, 40));
+  premier.unmount();
+  renderAt('/aventure/riviere');
+  expect(ligne()).toBeUndefined();
+});
+
+it('à la première arrivée au port, sa créature parle du Bloc-Navire, une seule fois par appareil', async () => {
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('le Bloc-Navire attend ses blocs'));
+  const premier = renderAt('/aventure/plaine');
+  expect(ligne()).toBeDefined();
+  premier.unmount();
+  renderAt('/aventure/plaine');
+  expect(ligne()).toBeUndefined();
+});
+
+it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant que le tutoriel n’est pas vu, puis le réglage décide', () => {
+  const premier = renderAt('/aventure');
+  expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
+  expect(screen.queryByRole('button', { name: /Forcer le jour|heure réelle/ })).not.toBeInTheDocument();
+  premier.unmount();
+  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  const second = renderAt('/aventure');
+  expect(screen.getByTestId('lumiere')).toHaveTextContent('heure réelle');
+  second.unmount();
+  localStorage.setItem('dysapps:settings', JSON.stringify({ worldLight: 'jour' }));
+  renderAt('/aventure');
+  expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
 });

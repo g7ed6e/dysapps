@@ -8,13 +8,13 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de huit bulles, lues à voix haute, présente les lieux. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de trois bulles, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne pour jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
-Toucher l'île ouvre son **panneau** : Mousso se présente (sa phrase est lue, syllabes en couleurs), puis le **prochain objectif** et la liste des missions de l'île.
+Toucher l'île ouvre son **panneau** : Mousso se présente (tout son accueil est lu ; la première ligne est écrite, la suite dans le pli « La suite »), puis la liste des missions de l'île, et plus bas le **prochain objectif**.
 
-![Le panneau de la Forêt des sons : Mousso accueille, le prochain objectif « Tu peux construire le sentier vers Mine des lettres » est à 3 sur 3.](/captures/panneau-ile.jpg)
+![Le panneau de la Forêt des sons : Mousso accueille en une ligne, puis les missions.](/captures/panneau-ile.jpg)
 
 ## Une mission
 
@@ -66,7 +66,7 @@ Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs,
 
 L'**école du village** ouvre les missions du portail (français, maths, anglais). Elles rapportent les blocs de l'île de l'école.
 
-![Le panneau de l'École du village : Mousso accueille, « Une mission finie : des blocs de bois », puis les trois portes.](/captures/ecole.jpg)
+![Le panneau de l'École du village : « Chaque mission ici donne des blocs », le pli En savoir plus, puis les trois portes.](/captures/ecole.jpg)
 
 ## Pour les blocs en trop : les monuments
 

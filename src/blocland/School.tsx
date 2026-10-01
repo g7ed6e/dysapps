@@ -28,7 +28,7 @@ export function useSchoolIsland(): BiomeDef {
 }
 
 function greetingOf(island: BiomeDef): string {
-  return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque mission finie ici te donne des blocs ${ofBlock(island.block)} pour le village.`;
+  return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque mission finie ici te donne des blocs ${ofBlock(island.block)} pour le village, plus si tu as des étoiles.`;
 }
 
 /** Les trois portes, ou les missions de la porte choisie (`?porte=maths` : on y revient après une mission). */
@@ -50,13 +50,17 @@ export function SchoolBody() {
 
   return (
     <div className="school">
-      <p className="island-sheet-says" role="status" aria-live="polite">
-        <strong>{island.creature.name} :</strong> <Syllabified text={greeting} />
-        <SpeakButton text={greeting} label="Réécouter" compact />
-      </p>
+      {/* Une ligne pour l'essentiel ; l'accueil de la créature est écrit dans un pli, avec Écouter : les portes se voient tout de suite. */}
       <p className="school-reward">
-        <BlockIcon top={block.top} side={block.side} size={28} /> Une mission finie : des blocs {ofBlock(island.block)}, plus si tu as des étoiles.
+        <BlockIcon top={block.top} side={block.side} size={28} /> Chaque mission ici donne des blocs.
       </p>
+      <details className="sheet-more">
+        <summary>En savoir plus</summary>
+        <p>
+          <strong>{island.creature.name} :</strong> <Syllabified text={greeting} />
+          <SpeakButton text={greeting} label="Écouter" compact />
+        </p>
+      </details>
       {door ? (
         <section aria-labelledby="ecole-porte">
           <div className="school-door-head">

@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
-import { MonumentPage, MonumentsList } from './Monuments';
+import { MonumentPage, MonumentsList, lackingLine } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentNeeds } from './world/monuments';
 
@@ -61,4 +61,27 @@ it('la liste des monuments : par archipel, ceux des archipels pas encore atteint
   renderIn(<MonumentsList />);
   expect(screen.getByRole('link', { name: /L’observatoire des baleines\s*0 \/ \d+ blocs posés/ })).toHaveAttribute('href', '/aventure/monument-observatoire');
   expect(screen.getByRole('link', { name: /Le temple de marbre\s*Archipel fermé/ })).toBeInTheDocument();
+});
+
+it('« Poser » impossible : une ligne visible dit ce qui manque ; la liste des blocs est repliée', () => {
+  renderIn(<Page />);
+  const line = document.querySelector('.monument-lacking')!;
+  expect(line.textContent).toMatch(/^\s*Il manque \d+ /);
+  const blocks = document.querySelector<HTMLDetailsElement>('.monument-blocks')!;
+  expect(blocks).not.toHaveAttribute('open');
+  expect(blocks.querySelector('summary')).toHaveTextContent('Les blocs qu’il faut');
+  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
+  // Des blocs en poche : on peut poser, la ligne s'efface.
+  document.body.innerHTML = '';
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { brique: 2 } }));
+  renderIn(<Page />);
+  expect(document.querySelector('.monument-lacking')).toBeNull();
+  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeEnabled();
+});
+
+it('la ligne de ce qui manque : les deux plus gros manques, puis « d’autres blocs »', () => {
+  expect(lackingLine([['pierre', 3]], {})).toBe('Il manque 3 blocs de pierre.');
+  expect(lackingLine([['bois', 5], ['brique', 30]], { bois: 2 })).toBe('Il manque 30 briques et 3 blocs de bois.');
+  expect(lackingLine([['bois', 5], ['brique', 30], ['pierre', 1]], {})).toBe('Il manque 30 briques, 5 blocs de bois et d’autres blocs.');
+  expect(lackingLine([['bois', 5]], { bois: 5 })).toBe('');
 });

@@ -38,10 +38,14 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
           <Icon name="close" />
         </button>
       </div>
-      <p className="island-sheet-says" role="status" aria-live="polite">
-        <Syllabified text={says} />
-        <SpeakButton text={says} label="Réécouter" compact />
-      </p>
+      {/* L'accueil de la salle, écrit dans un pli avec Écouter : les trophées se voient tout de suite. */}
+      <details className="sheet-more">
+        <summary>En savoir plus</summary>
+        <p>
+          <Syllabified text={says} />
+          <SpeakButton text={says} label="Écouter" compact />
+        </p>
+      </details>
       <ProgressBody />
       <p className="school-more">
         <Link to="/succes">

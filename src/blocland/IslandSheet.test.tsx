@@ -169,3 +169,59 @@ it('« Poser tout ce que j’ai » pose d’un coup les blocs que l’inventaire
   expect(screen.getByText(/La cabane de Mousso : terminé !/)).toBeInTheDocument();
   expect(screen.getByText(/Plan 2 \/ 3/)).toBeInTheDocument();
 });
+
+it('l’accueil de la créature : une ligne écrite visible, la suite dans un pli « La suite » ; Réécouter lit le tout', () => {
+  renderSheet('foret');
+  const says = document.querySelector('.island-sheet-says')!;
+  const more = document.querySelector<HTMLDetailsElement>('.island-says-more')!;
+  expect(more).not.toHaveAttribute('open');
+  expect(more.querySelector('summary')).toHaveTextContent('La suite');
+  // Rien n'est seulement à l'écoute : la ligne et la suite font tout l'accueil, que le bouton lit d'un coup.
+  const speak = says.querySelector('button');
+  if (speak) expect(speak.getAttribute('aria-label')).toContain(more.querySelector('p')!.textContent!.trim().slice(0, 20));
+  expect(says.textContent!.length).toBeGreaterThan(30);
+  expect(says.textContent).not.toContain(more.querySelector('p')!.textContent!.trim());
+});
+
+it('la matière, la classe et l’archipel descendent au pied du panneau ; les missions suivent l’accueil', () => {
+  renderSheet('foret');
+  const sheet = screen.getByRole('dialog', { name: /Forêt/ });
+  expect(sheet.querySelector('.island-sheet-head')!.textContent).not.toContain('Niveau');
+  const foot = sheet.lastElementChild!;
+  expect(foot).toHaveClass('island-sheet-foot');
+  expect(foot.textContent).toContain('Niveau 6e · Les Premiers Rivages');
+  // Rien entre l'accueil et les missions sur une île ouverte (l'objectif vient après le Gardien).
+  const heading = screen.getByRole('heading', { name: 'Missions' });
+  const quests = screen.getByRole('list', { name: 'Missions de l’île' });
+  expect(heading.compareDocumentPosition(document.querySelector('.island-goal')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(quests.compareDocumentPosition(document.querySelector('.island-goal')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+it('la jauge du prochain objectif se compte tant qu’il manque des blocs, et s’efface quand tout est là', () => {
+  renderSheet('foret');
+  expect(document.querySelector('.island-goal .goal-gauge')).toHaveTextContent('0 / 3');
+  document.body.innerHTML = '';
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  renderSheet('foret');
+  expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux construire le sentier');
+  // Plus de « 3 / 3 » à côté d'un ouvrage pas encore construit.
+  expect(document.querySelector('.island-goal .goal-gauge')).toBeNull();
+});
+
+it('sur l’île-port, le prochain objectif et le village sont un seul pli, titré par l’objectif et sa jauge', async () => {
+  renderSheet('plaine');
+  const fold = document.querySelector<HTMLDetailsElement>('.island-fold-objectif')!;
+  expect(fold).not.toHaveAttribute('open');
+  const summary = fold.querySelector('summary')!;
+  expect(summary.textContent).toContain('Prochain objectif :');
+  expect(summary.querySelector('.goal-gauge')).not.toBeNull();
+  expect(summary.textContent).not.toContain('Le village :');
+  expect(fold.querySelector('.village-stage')).toHaveTextContent('Le village :');
+  await userEvent.click(summary);
+  expect(fold).toHaveAttribute('open');
+  // Une île qui n'est pas un port : l'objectif seul, sans pli.
+  document.body.innerHTML = '';
+  renderSheet('foret');
+  expect(document.querySelector('.island-fold-objectif')).toBeNull();
+  expect(document.querySelector('.village-stage')).toBeNull();
+});
