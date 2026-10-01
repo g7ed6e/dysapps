@@ -28,7 +28,8 @@
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
 // peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
 // laisse sa case à cette pièce, assemblée (./architecture/assemblage.ts) et peinte dans l'opaque, à la fin. Seul le kit
-// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé.
+// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école et la salle des trophées de ce kit
+// le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case
@@ -38,8 +39,8 @@
 // Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
 // les trois groupes.
 import type { VoxelCube } from '../Voxel';
-import { architectureDe, assemblerLesPieces, KITS, MOTIF, ROLES_PEINTS, type Kit, type Role } from './architecture';
-import { BLOCKS } from '../biomes';
+import { architectureDe, assemblerLesPieces, estUnLieuDuVillage, KITS, MOTIF, ROLES_PEINTS, type CaseDuLieu, type Kit, type Role } from './architecture';
+import { BLOCKS, type BiomeId } from '../biomes';
 import { mixColor } from './daylight';
 import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
@@ -47,7 +48,7 @@ import { lineaire } from './landMesh';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, mapOf, type ArchipelagoId } from './map';
-import { LAYOUT_PAD, origineDe } from './terrain';
+import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from './terrain';
 import { getPlan, planCells, plansFor } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
@@ -697,7 +698,8 @@ const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
  * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
- * le décor, les ponts, les bornes, les monuments, l'école et la salle des trophées n'y sont pas : ils gardent leur dessin.
+ * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; l'école et la salle des
+ * trophées non plus (elles prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   const deja = batiments.get(a);
@@ -709,6 +711,31 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
       for (const c of planCells(plan)) out.set(`${def.core.x + c.x},${def.core.y + c.y},${def.altitude + c.z + 1}`, BLOCKS[c.block].texture);
   batiments.set(a, out);
   return out;
+}
+
+/** Le coin de chaque lieu du village posé (clé `<lieu>|<île>`) : x, y, et z du rang posé sur le sol (`null` ailleurs). */
+const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
+
+/**
+ * La case d'un bloc de l'école ou de la salle des trophées dans le modèle de son lieu (world/terrain.ts : `schoolModel`,
+ * `trophyModel`, et les trophées posés), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
+ * marche du sol) ou hors d'un lieu du village (un monument).
+ */
+export function caseDuLieu(c: VoxelCube): CaseDuLieu | null {
+  if (!estUnLieuDuVillage(c.place) || !c.tag) return null;
+  const k = `${c.place}|${c.tag}`;
+  let coin = coinsDesLieux.get(k);
+  if (coin === undefined) {
+    const ile = c.tag as BiomeId;
+    const s = placeSpot(c.place, ile);
+    coin = s && { x: s.x, y: s.y, z: islandDef(ile).altitude + s.h };
+    coinsDesLieux.set(k, coin);
+  }
+  if (!coin) return null;
+  const z = c.z - coin.z;
+  if (z < 1) return null;
+  const { w, d } = VILLAGE_PLACES[c.place].size;
+  return { x: c.x - coin.x, y: c.y - coin.y, z, w, d, texture: c.texture ?? '' };
 }
 
 /** Un groupe en cours de remplissage. */
@@ -836,6 +863,7 @@ export function maillageDeLaConstruction(
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
         surLeVide,
+        caseDuLieu,
       });
   const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
@@ -856,13 +884,18 @@ export function maillageDeLaConstruction(
   const couleursDe = (c: VoxelCube): Faces => {
     const g = genres.get(c);
     const fond = peintDe(c)?.peinture.fond ?? '';
-    const k = `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.texture === 'toit' ? c.tag : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
+    // Un toit prend la couverture de son île ; un bloc d'un lieu aussi, quand le kit le dit (le toit de la salle des trophées).
+    const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
+    // Un bloc d'un lieu peut prendre la couleur d'une autre matière (la souche du clocheton, en pierre de taille).
+    const repeint = c.place ? archi?.matieres.get(cle(c.x, c.y, c.z)) : undefined;
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
     const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
-    else if (c.texture === 'toit') f = couleursDuToit(a, c.tag, c.muted);
+    else if (repeint) f = delave(couleurDeMatiere(a, repeint));
+    else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
     else if (g === 'bloc' && cremeDuPhare(c)) {
       const [teinte, force] = ambianceDe(a).voile;
       const creme = mixColor(CREME_DU_PHARE, teinte, force);
