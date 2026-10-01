@@ -3,7 +3,7 @@
 // artistique dans design/archipeo/intentions/3e-iles-du-ciel.md). Rien n'y change le monde en blocs : les cubes du grand
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
-import { CORE, islandDef } from '../map';
+import { coeurDe, islandDef } from '../map';
 import type { Couleur, Faces } from '../palette';
 import type { Lointain } from './lointain';
 import { enRepere, type Forme } from './outils';
@@ -44,7 +44,8 @@ const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }
  */
 export function empriseDuSocle(e: { x: number; y: number; emprise: number }): { x0: number; y0: number } {
   const def = islandDef('phare');
-  const [mx, my] = [def.core.x + CORE / 2, def.core.y + CORE / 2];
+  const c = coeurDe(def);
+  const [mx, my] = [(c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2];
   const plus = SOCLE_3E.cote - e.emprise;
   return { x0: e.x + e.emprise / 2 < mx ? e.x - plus : e.x, y0: e.y + e.emprise / 2 < my ? e.y - plus : e.y };
 }

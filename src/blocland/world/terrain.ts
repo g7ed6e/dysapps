@@ -9,6 +9,8 @@ import { walkPath, type WalkGround } from './paths';
 import {
   CORE,
   archipelagoOfIsland,
+  bornesDuCoeur,
+  coeurDe,
   DANS_LE_CIEL,
   inCore,
   isLand,
@@ -35,7 +37,7 @@ import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
-import { PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
+import { ORIGINE_DES_MONUMENTS, PLAN_ZONE, isPlanDone, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import {
   BASALT,
@@ -61,7 +63,7 @@ import {
   type Put,
 } from './decor';
 
-/** Côté du cœur d'une île (en blocs). */
+/** Côté du cœur d'origine d'une île (en blocs) : le repère des clés ; l'étendue du cœur d'une île est `coeurDe` (./map). */
 export const ISLAND = CORE;
 /** Nombre de couches de terre sous le sol (visibles au-dessus de l'eau, sur les berges). */
 export const DEPTH = 2;
@@ -152,7 +154,8 @@ export function islandOrigin(index: number): { ox: number; oy: number; oz: numbe
 /** Centre du cœur d'une île (coordonnées de grille) et altitude, pour y amener la caméra. */
 export function islandCenter(id: BiomeId): { x: number; y: number; z: number } {
   const def = islandDef(id);
-  return { x: def.core.x + CORE / 2, y: def.core.y + CORE / 2, z: def.altitude };
+  const c = coeurDe(def);
+  return { x: (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2, z: def.altitude };
 }
 
 /** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
@@ -483,13 +486,16 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
   const a = islandDef(def.from);
   const b = islandDef(def.to);
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
-  const anchor = (d: IslandDef) => ({ x: d.core.x + (vertical ? CORE - 1 : CORE / 2), y: d.core.y + CORE / 2 });
+  const anchor = (d: IslandDef) => {
+    const c = coeurDe(d);
+    return { x: vertical ? c.x1 - 1 : (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2 };
+  };
   const ca = anchor(a);
   const cb = anchor(b);
   const points = [ca];
   if (vertical && ca.x !== cb.x) {
     const front = a.core.y < b.core.y ? a : b;
-    const jog = front.core.y + CORE + front.ext.back + 1;
+    const jog = coeurDe(front).y1 + front.ext.back + 1;
     points.push({ x: ca.x, y: jog }, { x: cb.x, y: jog });
   }
   points.push(cb);
@@ -799,12 +805,13 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (const k of placeCells(id)) blocked.add(k);
-  for (let x = 0; x < CORE; x++) for (let y = 0; y < CORE; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
+  const coeur = bornesDuCoeur(def);
+  for (let x = coeur.x0; x < coeur.x1; x++) for (let y = coeur.y0; y < coeur.y1; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
   // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
   const scenery = new Map(landscape(def).map((c) => [`${c.x - def.core.x},${c.y - def.core.y}`, c]));
   const free = (x: number, y: number) => {
     if (blocked.has(`${x},${y}`)) return false;
-    if (x >= 0 && y >= 0 && x < CORE && y < CORE) return true;
+    if (x >= coeur.x0 && y >= coeur.y0 && x < coeur.x1 && y < coeur.y1) return true;
     const c = scenery.get(`${x},${y}`);
     return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
@@ -812,8 +819,8 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const fits = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
-  for (let x = -2; x < CORE; x++) {
-    for (let y = 0; y < CORE; y++) {
+  for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
+    for (let y = coeur.y0; y < coeur.y1; y++) {
       if (!fits(x, y, [0, 0])) continue;
       const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
       const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
@@ -853,7 +860,11 @@ const ISLET_CENTER = { x: 6, y: 5.5 };
 const ARENA = { rx: 4.5, ry: 4 };
 
 export function bossIsletOrigin(index: number): { x: number; y: number; z: number } {
-  const def = islandDef(BIOMES[index].id);
+  return origineDeLIlot(islandDef(BIOMES[index].id));
+}
+
+/** Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition. */
+export function origineDeLIlot(def: IslandDef): { x: number; y: number; z: number } {
   return { x: def.core.x, y: def.core.y - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
 }
 
@@ -1597,10 +1608,37 @@ export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, bloc
   return true;
 }
 
-/** Le point du monde où se trouve la case (0, 0, 0) d'un monument (le dessus de son îlot). */
+/**
+ * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
+ * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
+ * (`m.islet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur) ; les clés des sauvegardes, elles, ne bougent pas
+ * si l'îlot ou le cœur bougent.
+ */
 export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: number } {
-  const def = islandDef(m.biome);
-  return { x: def.core.x, y: def.core.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 };
+  const fige = ORIGINE_DES_MONUMENTS[m.id];
+  if (!fige) throw new Error(`Monument sans origine : ${m.id}`);
+  return { x: m.islet.x + 1 - fige.x, y: m.islet.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
+}
+
+/**
+ * Le point du monde où tombe la clé (0, 0, 0) d'une étape du Bloc-Navire (plan du port) : une case de son plan est
+ * dessinée en `ancreDuQuai + case`, comme le navire au quai (`dockOrigin`, ses cases locales). Le rendu suit le quai ;
+ * les clés des sauvegardes restent celles de `ORIGINE_DU_QUAI`.
+ */
+export function ancreDuQuai(plan: PlanDef): { x: number; y: number; z: number } {
+  const o = dockOrigin(plan.biome);
+  const cle = planOrigin(plan);
+  return { x: o.x - cle.x, y: o.y - cle.y, z: o.z - cle.z };
+}
+
+/**
+ * Ce qui sépare la clé d'une case du Bloc-Navire de la case du plan de son île-port où elle est dessinée (le repère de
+ * l'île, un cran plus bas : `rappelsDeLaVue`) : (0, 0, 0) tant que le quai est là où ses clés ont été figées.
+ */
+export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number } {
+  const a = ancreDuQuai(plan);
+  const ile = origineDe(plan.biome);
+  return { x: a.x - ile.x, y: a.y - ile.y, z: a.z - ile.z - 1 };
 }
 
 /** Le milieu de l'îlot d'un monument, à mi-hauteur du monument (pour y cadrer la caméra). */

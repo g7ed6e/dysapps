@@ -11,7 +11,7 @@ import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
-import { CORE, MAP } from '../map';
+import { coeurDe, inCore, MAP } from '../map';
 import type { Couleur, Faces } from '../palette';
 import type { TextureKind } from '../pixels';
 import { PLAN_ZONE } from '../plans';
@@ -205,8 +205,11 @@ const rocher: Forme = (o) => {
  */
 export const GRUE = {
   ile: 'atelier',
-  /** La case voulue, depuis le coin du cœur ; on prend la plus proche qui soit libre. */
-  voulue: { dx: -2, dy: CORE - 9 },
+  /**
+   * La case voulue, depuis les bornes du cœur (`coeurDe`) : `dx` depuis son bord gauche, `dyDuFond` depuis son bord du
+   * fond (bornes hautes exclues : −9, la septième rangée d'un cœur de 16) ; on prend la plus proche qui soit libre.
+   */
+  voulue: { dx: -2, dyDuFond: -9 },
   hauteur: 9,
   section: 1,
   fleche: 6,
@@ -224,8 +227,9 @@ export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDeco
   // Les cases prises par le décor posé (toute l'emprise d'un repère) : le décor du paysage, le même à toute étape de la partie.
   const pris = new Set<string>();
   for (const e of elements) for (let dx = 0; dx < e.emprise; dx++) for (let dy = 0; dy < e.emprise; dy++) pris.add(`${e.x + dx},${e.y + dy}`);
-  const dansLeCoeur = (x: number, y: number) => x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
-  const [wx, wy] = [def.core.x + GRUE.voulue.dx, def.core.y + GRUE.voulue.dy];
+  const dansLeCoeur = (x: number, y: number) => inCore(def, x, y);
+  const coeur = coeurDe(def);
+  const [wx, wy] = [coeur.x0 + GRUE.voulue.dx, coeur.y1 + GRUE.voulue.dyDuFond];
   let best: { x: number; y: number; z: number } | null = null;
   let bestD = Infinity;
   for (let x = wx - 2; x <= wx + 4; x++)

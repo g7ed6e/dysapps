@@ -10,7 +10,7 @@
 import type { BiomeId } from '../../biomes';
 import { BRIDGES } from '../archipelago';
 import { archipelagoOfIsland } from '../archipels';
-import { CORE, islandDef, landCells } from '../map';
+import { bornesDuCoeur, islandDef, landCells } from '../map';
 import { bridgePath, origineDe } from '../terrain';
 import type { Modele } from './types';
 
@@ -28,7 +28,9 @@ function repere(id: BiomeId) {
   const abords: { x: number; y: number }[] = [];
   for (const b of BRIDGES) if ((b.from === id || b.to === id) && archipelagoOfIsland(b.from) === '3e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
-  return { cases, pres };
+  // Le bord du fond du cœur (borne exclue), en repère d'île : la première rangée derrière le cœur.
+  const fond = bornesDuCoeur(islandDef(id)).y1;
+  return { cases, pres, fond };
 }
 
 /**
@@ -36,7 +38,7 @@ function repere(id: BiomeId) {
  * rangée derrière le cœur et depuis les deux flancs de l'île ; le plus haut est enneigé.
  */
 function gradinsDesTextes(): Modele {
-  const { cases, pres } = repere('textes');
+  const { cases, pres, fond } = repere('textes');
   const G = GRADINS_3E;
   // Les bords de chaque rangée, pour le retrait sur les flancs.
   const bords = new Map<number, [number, number]>();
@@ -45,7 +47,7 @@ function gradinsDesTextes(): Modele {
     bords.set(c.y, b ? [Math.min(b[0], c.x), Math.max(b[1], c.x)] : [c.x, c.x]);
   }
   const niveau = (x: number, y: number) => {
-    const dy = y - CORE;
+    const dy = y - fond;
     const [x0, x1] = bords.get(y) ?? [x, x];
     const cote = Math.min(x - x0, x1 - x);
     const k = (d: number) => Math.floor(d / G.retrait) + 1;
@@ -53,11 +55,11 @@ function gradinsDesTextes(): Modele {
   };
   return {
     hauteur(x, y, h) {
-      if (y - CORE < 1 || pres(x, y)) return h;
+      if (y - fond < 1 || pres(x, y)) return h;
       return Math.max(h, G.marche * niveau(x, y));
     },
     dessus(x, y, dh, matiere) {
-      if (y - CORE < 1 || pres(x, y)) return matiere;
+      if (y - fond < 1 || pres(x, y)) return matiere;
       const n = niveau(x, y);
       return n >= G.gradins ? 'neige' : n >= 1 && dh >= G.marche ? 'roche' : matiere;
     },
@@ -69,7 +71,7 @@ function gradinsDesTextes(): Modele {
  * de roche dessous. Seul l'anneau du fond bouge ; ailleurs, l'île garde ses collines basses.
  */
 function domeDuBelvedere(): Modele {
-  const { pres } = repere('belvedere');
+  const { pres, fond } = repere('belvedere');
   const D = DOME_DU_BELVEDERE;
   const dome = (x: number, y: number) => {
     const d = ((x - D.x) / D.rx) ** 2 + ((y - D.y) / D.ry) ** 2;
@@ -77,12 +79,12 @@ function domeDuBelvedere(): Modele {
   };
   return {
     hauteur(x, y, h) {
-      if (y - CORE < 1 || pres(x, y)) return h;
+      if (y - fond < 1 || pres(x, y)) return h;
       // Un pic (plus haut que les collines, 2 blocs au plus) redescend sur le dôme ; ailleurs, le dôme monte le sol.
       return h > 2 ? Math.max(2, dome(x, y)) : Math.max(h, dome(x, y));
     },
     dessus(x, y, dh, matiere) {
-      if (y - CORE < 1 || pres(x, y)) return matiere;
+      if (y - fond < 1 || pres(x, y)) return matiere;
       if (dh >= D.h) return 'neige';
       return matiere === 'neige' ? 'roche' : matiere;
     },

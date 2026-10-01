@@ -15,18 +15,56 @@ export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 export interface IslandDef {
   id: BiomeId;
   region: RegionId;
-  /** Coin (x, y) du cœur 16 × 16 dans le monde. */
+  /** Origine (x, y) du repère de l'île dans le monde : le coin du cœur d'origine 16 × 16 (ses bornes : `coeurDe`). */
   core: { x: number; y: number };
   /** Altitude du sol : 0 (mer), 3 (collines), 6 (monts), 9 (sommets). */
   altitude: number;
-  /** Terre en plus autour du cœur : à gauche (x plus petit), à droite, devant (y plus petit), derrière. */
+  /** Terre en plus autour du cœur (de ses bornes, `coeurDe`) : à gauche (x plus petit), à droite, devant (y plus petit), derrière. */
   ext: { left: number; right: number; front: number; back: number };
   relief: Relief;
   seed: number;
 }
 
-/** Côté du cœur d'une île. */
+/**
+ * Côté du cœur d'origine (16) : le repère des clés de sauvegarde et des plans, posé sur `IslandDef.core`. L'étendue du
+ * cœur d'une île ne se lit plus ici mais avec `coeurDe` (ou `bornesDuCoeur`), qui suit le réglage de son archipel.
+ */
 export const CORE = 16;
+
+/**
+ * Côté du cœur, par archipel (cadrage : le cœur passe de 16 × 16 à 20 × 20, un archipel à la fois). Il grandit
+ * également des deux côtés autour du cœur d'origine : à 20, le cœur couvre [−2, 18) en coordonnées relatives à
+ * `IslandDef.core`, qui reste l'origine du repère de l'île (et des clés de sauvegarde) ; son milieu ne bouge pas.
+ */
+export const COTE_DU_COEUR: Record<ArchipelagoId, number> = { '6e': 16, '5e': 16, '4e': 16, '3e': 16 };
+
+/** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
+export interface Bornes {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+const bornesLocales = new Map<BiomeId, Readonly<Bornes>>();
+
+/** Les bornes du cœur d'une île relatives à son origine `def.core` (0..16 aujourd'hui, −2..18 à 20 de côté). */
+export function bornesDuCoeur(def: IslandDef): Readonly<Bornes> {
+  let b = bornesLocales.get(def.id);
+  if (!b) {
+    const cote = COTE_DU_COEUR[archipelagoOfIsland(def.id)];
+    const marge = (cote - CORE) / 2;
+    b = Object.freeze({ x0: -marge, y0: -marge, x1: cote - marge, y1: cote - marge });
+    bornesLocales.set(def.id, b);
+  }
+  return b;
+}
+
+/** Les bornes du cœur d'une île en cases du monde (bornes hautes exclues). */
+export function coeurDe(def: IslandDef): Bornes {
+  const b = bornesDuCoeur(def);
+  return { x0: def.core.x + b.x0, y0: def.core.y + b.y0, x1: def.core.x + b.x1, y1: def.core.y + b.y1 };
+}
 /** Altitude par classe (uniforme dans un archipel). */
 export const ALTITUDE: Record<ArchipelagoId, number> = { '6e': 0, '5e': 3, '4e': 6, '3e': 9 };
 /** Un archipel du ciel : pas de mer, les îles flottent au-dessus d'un plancher de nuages (les Îles du Ciel). */
@@ -147,8 +185,10 @@ function isthmusPair(def: IslandDef): { owner: IslandDef; other: IslandDef } | n
 
 /** Les rangées de l'isthme entre deux îles côte à côte, pour une colonne x : bornes [y0, y1), bords adoucis par un bruit. */
 function isthmusRows(owner: IslandDef, other: IslandDef, x: number): { y0: number; y1: number } {
-  const y0 = Math.max(owner.core.y, other.core.y) + 1;
-  const y1 = Math.min(owner.core.y + CORE, other.core.y + CORE) - 1;
+  const a = coeurDe(owner);
+  const b = coeurDe(other);
+  const y0 = Math.max(a.y0, b.y0) + 1;
+  const y1 = Math.min(a.y1, b.y1) - 1;
   const n0 = Math.floor(smoothNoise(owner.seed + 17, x, 0, 3) * 2.5);
   const n1 = Math.floor(smoothNoise(owner.seed + 19, x, 7, 3) * 2.5);
   return { y0: y0 + n0, y1: y1 - n1 };
@@ -161,7 +201,7 @@ export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
   const { owner, other } = pair;
   const left = owner.core.x < other.core.x ? owner : other;
   const right = left === owner ? other : owner;
-  if (x < left.core.x + CORE || x >= right.core.x) return false;
+  if (x < coeurDe(left).x1 || x >= coeurDe(right).x0) return false;
   const { y0, y1 } = isthmusRows(owner, other, x);
   if (y < y0 || y >= y1) return false;
   return !isLandProper(other, x, y);
@@ -169,23 +209,30 @@ export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
 
 /** Boîte englobante de la terre d'une île (bornes hautes exclues), isthme compris. */
 export function landBox(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
-  const box = { x0: def.core.x - def.ext.left, y0: def.core.y - def.ext.front, x1: def.core.x + CORE + def.ext.right, y1: def.core.y + CORE + def.ext.back };
+  const c = coeurDe(def);
+  const box = { x0: c.x0 - def.ext.left, y0: c.y0 - def.ext.front, x1: c.x1 + def.ext.right, y1: c.y1 + def.ext.back };
   const pair = isthmusPair(def);
   if (pair) {
-    box.x0 = Math.min(box.x0, pair.other.core.x + CORE);
-    box.x1 = Math.max(box.x1, pair.other.core.x);
+    const o = coeurDe(pair.other);
+    box.x0 = Math.min(box.x0, o.x1);
+    box.x1 = Math.max(box.x1, o.x0);
   }
   return box;
 }
 
 export function inCore(def: IslandDef, x: number, y: number): boolean {
-  return x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
+  const b = bornesDuCoeur(def);
+  const lx = x - def.core.x;
+  const ly = y - def.core.y;
+  return lx >= b.x0 && lx < b.x1 && ly >= b.y0 && ly < b.y1;
 }
 
 /** Distance normalisée au cœur (0 sur le cœur, 1 au bord de la boîte). */
 function coreDistance(def: IslandDef, x: number, y: number): number {
-  const dx = x < def.core.x ? (def.core.x - x) / (def.ext.left + 0.5) : x >= def.core.x + CORE ? (x - (def.core.x + CORE - 1)) / (def.ext.right + 0.5) : 0;
-  const dy = y < def.core.y ? (def.core.y - y) / (def.ext.front + 0.5) : y >= def.core.y + CORE ? (y - (def.core.y + CORE - 1)) / (def.ext.back + 0.5) : 0;
+  const b = bornesDuCoeur(def);
+  const c = { x0: def.core.x + b.x0, y0: def.core.y + b.y0, x1: def.core.x + b.x1, y1: def.core.y + b.y1 };
+  const dx = x < c.x0 ? (c.x0 - x) / (def.ext.left + 0.5) : x >= c.x1 ? (x - (c.x1 - 1)) / (def.ext.right + 0.5) : 0;
+  const dy = y < c.y0 ? (c.y0 - y) / (def.ext.front + 0.5) : y >= c.y1 ? (y - (c.y1 - 1)) / (def.ext.back + 0.5) : 0;
   return Math.hypot(dx, dy);
 }
 
@@ -200,10 +247,11 @@ export function isLand(def: IslandDef, x: number, y: number): boolean {
 /** La terre propre d'une île (sans l'isthme). */
 function isLandProper(def: IslandDef, x: number, y: number): boolean {
   if (inCore(def, x, y)) return true;
-  const x0 = def.core.x - def.ext.left;
-  const y0 = def.core.y - def.ext.front;
-  const x1 = def.core.x + CORE + def.ext.right;
-  const y1 = def.core.y + CORE + def.ext.back;
+  const b = bornesDuCoeur(def);
+  const x0 = def.core.x + b.x0 - def.ext.left;
+  const y0 = def.core.y + b.y0 - def.ext.front;
+  const x1 = def.core.x + b.x1 + def.ext.right;
+  const y1 = def.core.y + b.y1 + def.ext.back;
   if (x < x0 || x >= x1 || y < y0 || y >= y1) return false;
   const d = coreDistance(def, x, y);
   const coast = (smoothNoise(def.seed, x, y, 5) - 0.5) * 0.7 + (noise(def.seed + 1, x, y) - 0.5) * 0.15;
