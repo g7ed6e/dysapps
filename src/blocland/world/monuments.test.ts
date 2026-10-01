@@ -5,14 +5,20 @@ import { MONUMENTS, MONUMENT_ISLET, getMonument, monumentNeeds, monumentsOf } fr
 import { planCells } from './plans';
 import { monumentAnchor, monumentBlocked, monumentIsletFree, worldBounds, worldCubes } from './terrain';
 import { earnIsland } from './uses';
+import { recetteDe, recetteDeLArchipel } from './assemblage';
 
-it('deux monuments par archipel, chacun avec ses blocs gagnés dans les îles de son archipel', () => {
+it('deux monuments par archipel, chacun avec ses blocs gagnés dans les îles de son archipel ou assemblés avec eux', () => {
   for (const a of ARCHIPELAGOS) expect(monumentsOf(a.classe)).toHaveLength(2);
   expect(getMonument('monument-observatoire')?.name).toBe('L’observatoire des baleines');
   for (const m of MONUMENTS) {
     expect(m.cells.length, m.id).toBeGreaterThanOrEqual(60);
     expect(Object.keys(monumentNeeds(m)).length, m.id).toBeGreaterThanOrEqual(4);
-    for (const block of Object.keys(monumentNeeds(m)) as (keyof typeof BLOCKS)[]) expect(earnIsland(block)?.classe, `${m.id} ${block}`).toBe(m.archipelago);
+    for (const block of Object.keys(monumentNeeds(m)) as (keyof typeof BLOCKS)[])
+      expect(earnIsland(block)?.classe ?? recetteDe(block)?.archipelago, `${m.id} ${block}`).toBe(m.archipelago);
+    // Le bloc assemblé de son archipel (GD-2) : de 4 à 8, aux endroits qui comptent.
+    const assembles = monumentNeeds(m)[recetteDeLArchipel(m.archipelago)!.bloc] ?? 0;
+    expect(assembles, m.id).toBeGreaterThanOrEqual(4);
+    expect(assembles, m.id).toBeLessThanOrEqual(8);
     // Le dessin tient dans les 7 × 7 du milieu de l'îlot, posé dessus.
     expect(m.cells.every((c) => c.x >= 0 && c.x < MONUMENT_ISLET - 2 && c.y >= 0 && c.y < MONUMENT_ISLET - 2 && c.z >= 0)).toBe(true);
     expect(new Set(m.cells.map((c) => `${c.x},${c.y},${c.z}`)).size).toBe(m.cells.length);

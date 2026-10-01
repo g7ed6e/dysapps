@@ -10,6 +10,8 @@ function parIle() {
   const iles = new Map();
   for (const f of readdirSync(DATA).sort()) {
     const ex = JSON.parse(readFileSync(join(DATA, f), 'utf8'));
+    // Les questions des blocs assemblés ne sont pas dans une île (scripts/contenu/assemblage.mjs, assemblage.test.mjs).
+    if (ex.type === 'assemblage') continue;
     if (!iles.has(ex.biome)) iles.set(ex.biome, []);
     iles.get(ex.biome).push(ex);
   }

@@ -30,7 +30,8 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../../www/pedagogie/princi
 | Blocs | Proportionnels au score, bonus d’étoiles et de première fois ; un bloc par île, tout bloc d’île paie tout ouvrage | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html), [Mes blocs](../../../www/manuel/blocland.md#mes-blocs) |
 | Plans et coffres | Trois plans guidés par île (murs, toit, cour) ; le coffre donne les blocs de finition du plan suivant | [Cadrage de Blocland](../../conception/cadrage-blocland.md#le-village-les-plans-et-les-coffres) |
 | Ouvrages | Pont, bac, sentier, escalier (premier plan), tunnel et col (Gardien) | [Ouvrages et plans](https://g7ed6e.github.io/dysapps/pedagogie/ouvrages.html) |
-| Monuments | Deux par archipel, 60 à 125 blocs, n’ouvrent rien | [Cadrage de Blocland](../../conception/cadrage-blocland.md#les-monuments) |
+| Monuments | Deux par archipel, 60 à 125 blocs, dont 4 à 8 blocs assemblés ; n’ouvrent rien | [Cadrage de Blocland](../../conception/cadrage-blocland.md#les-monuments) |
+| Blocs assemblés | Un par archipel, qu’aucune île ne donne : trois blocs de deux îles de l’archipel, assemblés un à un sur l’île de l’école (la Fabrique, la Halle aux matériaux) ; recette fixe, toujours affichée | [GD-2](propositions/GD-2.md), `docs/contenu/assemblage.md` |
 | Gardiens | Un par île ; défi ouvert par les étoiles des missions de l’île ; réussi, il le reste | [Personnages et Gardiens](personnages.md) |
 | Village en cinq états | Abandonné, réactivation, reconstruction, développement, port ; déduits, jamais enregistrés | [Cadrage Archipéo](../../conception/cadrage-archipeo.md), §5 |
 | États des îles | Fermée, À explorer, En chantier, Restaurée (« Bâtie » dans Blocland) | [Cadrage Archipéo](../../conception/cadrage-archipeo.md), §5 |

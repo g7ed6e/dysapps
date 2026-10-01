@@ -25,6 +25,7 @@ import { GoalFold, GoalLine } from './GoalLine';
 import { firstSentences } from './firstSentences';
 import { VillageStageLine } from './VillageStageLine';
 import { SchoolLink } from './School';
+import { AssemblageLink } from './Assemblage';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
@@ -176,6 +177,9 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
           <>
             <li>
               <SchoolLink />
+            </li>
+            <li>
+              <AssemblageLink />
             </li>
             <li>
               <Link to={TROPHIES_PATH} className="island-quest">

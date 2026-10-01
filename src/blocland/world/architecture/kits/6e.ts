@@ -6,14 +6,15 @@
 // - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
 // - Les toits : les pentes de ./toits.ts, dans la couverture de leur île (world/toits.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
-// - L'école et la salle des trophées (décision du directeur artistique, 30 septembre 2026 : des lieux du village, au
-//   milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
+// - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
+//   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
 // Le verre et les lanternes ne deviennent jamais des pièces ; les monuments gardent leurs blocs taillés.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../pieces';
 import { MOTIF } from '../peinture';
 import { piecesDeToit } from '../toits';
 import type { IdDeMur, Forme, Tete } from '../choix';
 import type { VillagePlaceId } from '../../cube';
+import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 
 /** La hauteur des pilotis sous le plancher : celle du soubassement, qu'ils remplacent. */
@@ -53,6 +54,11 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
 
 /** Un pilier de la salle des trophées : un coin du pavillon. */
 const pilier = ({ x, y, w, d }: CaseDuLieu) => (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
+/**
+ * Les rangs de la halle du lieu où l'on assemble (world/terrain.ts, `atelierModel`, `HALLE`) : à partir de son premier
+ * rang ; devant, la cour (la potence, le bloc suspendu, les blocs de la recette), qui reste en blocs.
+ */
+const dansLaHalle = ({ y }: CaseDuLieu) => y >= HALLE.rang;
 /** La souche du clocheton de l'école : la case du toit sous lui, au milieu de la façade, au deuxième rang (schoolModel). */
 const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 5;
 
@@ -63,7 +69,12 @@ const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z
  *   du clocheton prend sa pierre de taille : un seul fût de deux cases (décision du directeur artistique, 1er octobre) ;
  * - la salle des trophées : ses quatre piliers de marbre en colombage, sans décharge (des piliers isolés : poteaux et
  *   sablières seulement) ; son toit de pierre de taille en pentes, dans la couverture de l'île, et son faîte d'or en
- *   faîte ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs.
+ *   faîte ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs ;
+ * - la Halle aux matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
+ *   de bois sur leur rang de pierre en colombage (le rang de pierre devient le soubassement, comme aux maisons), son toit
+ *   à deux pentes en pentes et son faîte ; la porte reste ouverte, et la cour (la potence, le bloc suspendu, les blocs de
+ *   la recette) reste en blocs. Le dessin de Blocland (la Fabrique) n'est jamais repris : la construction taillée est
+ *   celle d'Archipéo.
  */
 export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
   ecole: (m) =>
@@ -81,6 +92,14 @@ export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
         ? { famille: 'toit', couverture: true }
         : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 4 × 3), sinon il n'y en a pas.
           m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
+          ? { famille: 'toit' }
+          : undefined,
+  assemblage: (m) =>
+    !dansLaHalle(m)
+      ? undefined
+      : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
+        ? { famille: 'bois' }
+        : m.texture === 'toit'
           ? { famille: 'toit' }
           : undefined,
 };

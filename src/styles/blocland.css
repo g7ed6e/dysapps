@@ -125,7 +125,7 @@
   transition: none;
 }
 /* L'appui : le bloc descend de 3 px et sa face se réduit d'autant ; l'encombrement ne change pas. */
-:root[data-univers="blocland"] .button:active:not(:disabled),
+:root[data-univers="blocland"] .button:active:not(:disabled):not([aria-disabled="true"]),
 :root[data-univers="blocland"] .nav-button:active,
 :root[data-univers="blocland"] .back-link:active,
 :root[data-univers="blocland"] .option:active,
@@ -145,6 +145,7 @@
 }
 /* Fermé : pas de face, il ne s'enfonce pas (son libellé ou son cadenas dit pourquoi). */
 :root[data-univers="blocland"] .button:disabled,
+:root[data-univers="blocland"] .button[aria-disabled="true"],
 :root[data-univers="blocland"] .app-card.locked,
 :root[data-univers="blocland"] button.app-card:disabled,
 :root[data-univers="blocland"] button.island-quest:disabled {

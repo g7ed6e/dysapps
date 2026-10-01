@@ -184,6 +184,11 @@ export function lv2Courante(): Lv2Choice {
   return courants?.lv2 ?? DEFAULT_SETTINGS.lv2;
 }
 
+/** L'univers des réglages en mémoire ; hors de l'application (un test, le générateur), l'univers par défaut. */
+export function universCourant(): UniversChoice {
+  return universAffiche(courants?.univers);
+}
+
 /**
  * Un texte grand (DA-16) : les lettres, espacement compris, sont nettement plus larges qu'avec les réglages par défaut
  * (20 px, lettres à 0,03 em). Sur téléphone, les titres et les en-têtes se disposent alors autrement pour tenir dans

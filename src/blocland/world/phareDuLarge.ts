@@ -55,6 +55,30 @@ export const MESURES_DU_PHARE_DU_LARGE = {
   ],
 } as const;
 
+/**
+ * Les hublots du fût (GD-2, proposition du consultant Archipéo) : les vitraux du monument, ronds, à mi-hauteur, sur les
+ * deux pans tournés vers la caméra (vers +x et vers le devant, −y de la grille). Chacun est un carré de `cote` case, posé
+ * sur son pan à `ecart` case en avant, calé sur la grille (le centre de la tour est au milieu d'une case) : le shader y
+ * peint le hublot du bloc assemblé (world/construction.ts, `MOTIF_ASSEMBLE.vitrail`).
+ */
+export const HUBLOTS_DU_PHARE_DU_LARGE = { haut: 4.5, cote: 0.66, ecart: 0.012 } as const;
+
+/** Les hublots d'un phare du large fini, en coordonnées de grille (x, y, hauteur) : leurs quatre coins et leur normale. */
+export function hublotsDuPhareDuLarge(o: PoseDuPhareDuLarge): { points: V3[]; normale: V3 }[] {
+  const M = MESURES_DU_PHARE_DU_LARGE;
+  const H = HUBLOTS_DU_PHARE_DU_LARGE;
+  const d = H.cote / 2;
+  const [z0, z1] = [o.pied + H.haut - d, o.pied + H.haut + d];
+  // Le rayon du fût au bas du hublot (le fût s'amincit en montant) : le pan est là à son plus en avant.
+  const rayon = (h: number) => M.tour.rayon[0] + ((M.tour.rayon[1] - M.tour.rayon[0]) * (h - M.tour.bas)) / (M.tour.haut - M.tour.bas);
+  const a = rayon(H.haut - d) * Math.cos(Math.PI / M.pans) + H.ecart;
+  const [cx, cy] = [o.cx, o.cz];
+  return [
+    { points: [[cx + a, cy - d, z0], [cx + a, cy + d, z0], [cx + a, cy + d, z1], [cx + a, cy - d, z1]], normale: [1, 0, 0] },
+    { points: [[cx - d, cy - a, z0], [cx + d, cy - a, z0], [cx + d, cy - a, z1], [cx - d, cy - a, z1]], normale: [0, -1, 0] },
+  ];
+}
+
 /** Le phare du large tel que le monde le montre : son pied, le centre de sa tour, ses cases, fini ou non. */
 export interface PoseDuPhareDuLarge {
   /** Le centre de la tour (repère Three : x, et z pour y) et le bas de son socle. */

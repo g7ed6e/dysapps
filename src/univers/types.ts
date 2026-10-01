@@ -1,10 +1,11 @@
 // Les textes d'un univers (lot 6, une tranche de J8 avancée) : ce que disent les Gardiens, l'espèce des créatures, les
 // libellés qui disent où en sont les Gardiens, le mot des grandes étapes, les noms des archipels et des rôles (GD-1). Du texte brut, affiché par React ; les clés
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
-import type { BiomeId } from '../blocland/biomes';
+import type { BiomeId, BlockId } from '../blocland/biomes';
 import type { ArchipelagoId, NomsArchipels } from '../blocland/world/archipelago';
 import type { Tier } from '../core/progress';
 import type { IslandStateId } from '../blocland/world/islandState';
+import type { LieuDAssemblage, NomDeBloc } from '../blocland/world/assemblage';
 
 export type { UniversChoice as UniversId } from '../core/univers';
 
@@ -166,4 +167,17 @@ export interface TextesUnivers {
   succes: Partial<Record<string, TextesSucces>>;
   /** L'écran des nouveaux noms, dit une fois par appareil ; `null` : rien à annoncer dans cet univers. */
   renommage: TextesRenommage | null;
+  /**
+   * Les noms des blocs que l'univers nomme autrement (GD-2 : les blocs assemblés), par identifiant : leur recette, leur
+   * place dans les monuments et leur identifiant restent communs ; les autres gardent le nom de `BLOCKS` (biomes.ts).
+   */
+  blocs: NomsDesBlocs;
+  /** Le lieu du village où l'on assemble les blocs (GD-2), sur l'île de l'école, à côté de la salle des trophées. */
+  assemblage: TextesAssemblage;
 }
+
+/** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */
+export type NomsDesBlocs = Partial<Record<BlockId, NomDeBloc>>;
+
+/** Le lieu où l'on assemble les blocs (GD-2). */
+export type TextesAssemblage = LieuDAssemblage;

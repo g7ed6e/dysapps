@@ -20,6 +20,8 @@ import { ExercisePage } from './blocland/ExercisePage';
 import { BloclandProvider } from './blocland/BloclandContext';
 import { WorldPage } from './blocland/WorldPage';
 import { SchoolPage } from './blocland/School';
+import { AssemblagePage } from './blocland/Assemblage';
+import { AssemblageQuestionPage } from './blocland/AssemblageQuestion';
 import { MonumentPage, MonumentsPage } from './blocland/Monuments';
 import { useMonumentBuilder } from './blocland/useMonumentBuilder';
 import { getMonument, type MonumentDef } from './blocland/world/monuments';
@@ -55,6 +57,8 @@ export function AppRoutes() {
         <Route path="aventure" element={<AventureEntry />} />
         <Route path="aventure/:biomeId" element={<IslandEntry />} />
         <Route path="aventure/voyage/:vers" element={<VoyageEntry />} />
+        {/* La question d'un bloc assemblé (GD-2), en plein écran comme une mission, en 3D comme en vue simple. */}
+        <Route path="aventure/assemblage/:bloc" element={<AssemblageQuestionPage />} />
         <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
         <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
         <Route path="reglages" element={<SettingsPage />} />
@@ -90,6 +94,8 @@ function IslandEntry() {
   if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
   if (biomeId === 'ecole') return <SchoolPage />;
+  // Le lieu où l'on assemble les blocs (GD-2) : un panneau dans le monde, une page en vue simple.
+  if (biomeId === 'assemblage') return <AssemblagePage />;
   // Les monuments : des panneaux dans le monde, des pages en vue simple.
   if (biomeId === 'monuments') return <MonumentsPage />;
   const monument = biomeId ? getMonument(biomeId) : undefined;

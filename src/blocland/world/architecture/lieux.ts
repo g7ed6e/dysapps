@@ -1,6 +1,6 @@
 // Les lieux du village dans l'architecture modulaire (lot 7b d'Archipéo, décision du directeur artistique du
-// 30 septembre 2026) : l'école et la salle des trophées prennent le kit de leur archipel, comme les maisons qui les
-// entourent. Elles ne sont pas des plans : elles sont là dès le début, sans chantier ni fantôme, posées par
+// 30 septembre 2026) : l'école, la salle des trophées et le lieu où l'on assemble (GD-2) prennent le kit de leur
+// archipel, comme les maisons qui les entourent. Elles ne sont pas des plans : elles sont là dès le début, sans chantier ni fantôme, posées par
 // world/terrain.ts. Leur plan se lit donc sur les blocs du monde, et la famille de chaque bloc sur sa place dans le
 // modèle du lieu (le kit, `lieux`), pas sur sa seule texture : une même pierre de taille fait un mur à l'école et un toit
 // à la salle des trophées. Code pur, sans Three.js.
@@ -9,8 +9,8 @@ import type { TextureKind } from '../pixels';
 import type { CaseDuLieu, Famille, Kit } from './kits';
 import { classeDe, type Classe, type IndexDuPlan } from './voisinage';
 
-/** Le lieu d'un cube est-il un lieu du village (l'école, la salle des trophées), et non un monument ? */
-export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'ecole' || place === 'trophees';
+/** Le lieu d'un cube est-il un lieu du village (l'école, la salle des trophées, le lieu où l'on assemble), et non un monument ? */
+export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'ecole' || place === 'trophees' || place === 'assemblage';
 
 /** Un bloc d'un lieu que le kit reprend : sa famille et sa classe dans le plan du lieu, et s'il se passe de décharge. */
 export interface BlocDuLieu {

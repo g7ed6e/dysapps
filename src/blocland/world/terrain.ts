@@ -43,6 +43,7 @@ import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
 import { ORIGINE_DES_MONUMENTS, PLAN_ZONE, isPlanDone, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
+import { recetteDeLArchipel } from './assemblage';
 import {
   BASALT,
   CRYSTAL,
@@ -123,6 +124,10 @@ const TEXTURES: Record<string, string> = {
   [BLOCKS.dalle.side]: 'dalle',
   [BLOCKS.osier.side]: 'osier',
   [BLOCKS.bardeau.side]: 'bardeau',
+  [BLOCKS.poutre.side]: 'poutre',
+  [BLOCKS.vitrail.side]: 'vitrail',
+  [BLOCKS.engrenage.side]: 'engrenage',
+  [BLOCKS.miroir.side]: 'miroir',
   [BLOCKS.lanterne.side]: 'lanterne',
   [BLOCKS.barriere.side]: 'barriere',
   [BLOCKS.escalier.side]: 'escalier',
@@ -1604,7 +1609,7 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
   return { port, origin, cubes, afloat: !DANS_LE_CIEL[a], building: building?.id ?? null };
 }
 
-// ---------- Les lieux du village : l'école et la salle des trophées ----------
+// ---------- Les lieux du village : l'école, la salle des trophées et le lieu où l'on assemble ----------
 
 /** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
 export const SCHOOL_SIZE = { w: 5, d: 4 };
@@ -1613,11 +1618,20 @@ export const SCHOOL_AT = { x: 11, y: 1 };
 /** La salle des trophées : 4 × 3 cases, ouverte devant, au milieu du cœur (derrière les bornes, à côté de la place de la créature, devant la zone des plans). */
 export const TROPHY_SIZE = { w: 4, d: 3 };
 export const TROPHY_AT = { x: 4, y: 8 };
+/**
+ * Le lieu où l'on assemble les blocs (GD-2) : 3 × 5 cases, à droite au fond du cœur agrandi des îles-écoles, derrière
+ * l'école et à côté de la zone des plans, hors de l'emprise que la salle des trophées prend en grandissant (GD-3 : de
+ * (0,8) à (7,10)) ; la halle au fond (trois rangs), la cour devant (deux rangs : la potence, les blocs empilés). La
+ * porte au milieu, sa case devant la cour. Loin de la créature (et de ses pas), des bornes et du port.
+ */
+export const ASSEMBLAGE_SIZE = { w: 3, d: 5 };
+export const ASSEMBLAGE_AT = { x: 14, y: 11 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
   ecole: { at: SCHOOL_AT, size: SCHOOL_SIZE, door: 2 },
   trophees: { at: TROPHY_AT, size: TROPHY_SIZE, door: 2 },
+  assemblage: { at: ASSEMBLAGE_AT, size: ASSEMBLAGE_SIZE, door: 1 },
 };
 const PLACE_IDS = Object.keys(VILLAGE_PLACES) as VillagePlaceId[];
 
@@ -1738,6 +1752,62 @@ export function trophyModel(trophies: (keyof typeof BLOCKS)[] = []): ModelCube[]
   for (let x = 0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: 'taille' });
   for (let x = 0; x < w; x++) out.push({ x, y: 1, z: 5, block: 'or' });
   trophies.slice(0, TROPHY_SLOTS.length).forEach((block, i) => out.push({ ...TROPHY_SLOTS[i], block }));
+  return out;
+}
+
+/**
+ * La halle du lieu où l'on assemble (`atelierModel`) : son premier rang (devant lui, la cour, qui reste en blocs) et la
+ * hauteur de ses murs dans la Halle d'Archipéo (le rang de pierre, puis le bois ; le toit au-dessus). Le kit du 6e les
+ * lit pour reprendre la halle en colombage (world/architecture/kits/6e.ts).
+ */
+export const HALLE = { rang: 2, haut: 2 } as const;
+
+/** La silhouette du lieu où l'on assemble, selon l'univers (l'habillage, `atelier`) : même place, même porte. */
+export type Atelier = 'fabrique' | 'halle';
+
+/**
+ * Le lieu où l'on assemble les blocs (GD-2 ; coordonnées relatives à son coin, z = 1 au-dessus du sol) : une halle de
+ * 3 × 3 au fond, sa grande porte ouverte au milieu de la façade (la halle est creuse derrière elle), et devant, dans la
+ * cour, une potence qui porte le bloc assemblé de l'archipel, suspendu, et les blocs de sa recette empilés. Rien à lire.
+ * - `fabrique` (Blocland) : des murs de brique sur un soubassement de pierre (ce qui la sépare des maisons), un toit plat
+ *   de pierre de taille, une haute cheminée de pierre (son sommet à 7, au-dessus de la salle des trophées vue de la
+ *   caméra de l'île), une potence de bois, d'où le bloc suspendu se détache.
+ * - `halle` (Archipéo) : une halle basse en bois sur un socle de pierre, un toit à deux pentes, et une haute potence de
+ *   bois (son bras à 6) qui porte le bloc assemblé au-dessus du toit de la salle des trophées : le repère du lieu.
+ */
+export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
+  const out: ModelCube[] = [];
+  const recette = recetteDeLArchipel(a);
+  const suspendu = recette?.bloc ?? 'bois';
+  const [premier, second] = recette ? [recette.ingredients[0].bloc, recette.ingredients[recette.ingredients.length - 1].bloc] : (['bois', 'pierre'] as const);
+  const halle = atelier === 'halle';
+  const haut = halle ? HALLE.haut : 3;
+  // La halle : les rangs 2 à 4 ; la porte (x = 1) ouverte sur deux cases de haut, et creuse jusqu'au mur du fond.
+  for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++)
+    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++)
+      for (let z = 1; z <= haut; z++) {
+        if (x === 1 && y <= 3 && z <= 2) continue;
+        out.push({ x, y, z, block: z === 1 ? 'pierre' : halle ? 'bois' : 'brique' });
+      }
+  if (halle) {
+    // Le toit à deux pentes : un rang de tuiles, puis le faîte au milieu, dans le sens de la profondeur (le pignon en façade).
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: haut + 1, block: 'toit' });
+    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: haut + 2, block: 'toit' });
+  } else {
+    // Le toit plat, et la haute cheminée au coin du fond.
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: 'taille' });
+    for (const z of [5, 6, 7]) out.push({ x: 2, y: 4, z, block: 'pierre' });
+  }
+  // La potence, sur le côté gauche de la cour : un mât de bois contre la façade, un bras vers l'avant, le bloc suspendu
+  // dessous, une case sous le bras (rien ne le touche). Dans la Halle, plus haute : elle est son repère.
+  const bras = halle ? 6 : 4;
+  for (let z = 1; z <= bras; z++) out.push({ x: 0, y: 1, z, block: 'bois' });
+  out.push({ x: 0, y: 0, z: bras, block: 'bois' });
+  out.push({ x: 0, y: 0, z: bras - 2, block: suspendu });
+  // Les blocs de la recette, empilés à droite de la cour.
+  out.push({ x: 2, y: 0, z: 1, block: premier });
+  out.push({ x: 2, y: 1, z: 1, block: premier });
+  out.push({ x: 2, y: 1, z: 2, block: second });
   return out;
 }
 
@@ -1868,10 +1938,12 @@ export function cubesDeLIle(
   voisins: Set<number> = new Set(),
   /** Archipéo (lot 6) : l'îlot et la sentinelle, avant que le défi soit prêt. */
   sentinelles = false,
+  /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage). */
+  atelier: Atelier = 'fabrique',
 ): VoxelCube[] {
   const index = BIOMES.findIndex((b) => b.id === id);
   const cubes: VoxelCube[] = [];
-  poserLIle(BIOMES[index], index, progress, village, withCreatures, trophies, voisins, cubes, sentinelles);
+  poserLIle(BIOMES[index], index, progress, village, withCreatures, trophies, voisins, cubes, sentinelles, atelier);
   const { ox, oy, oz } = islandOrigin(index);
   for (const c of cubes) {
     c.x -= ox;
@@ -1894,6 +1966,8 @@ export function worldCubes(
   trophies: (keyof typeof BLOCKS)[] = [],
   /** Archipéo (lot 6) : l'îlot et la sentinelle de chaque île ouverte, avant que son défi soit prêt. */
   sentinelles = false,
+  /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage) : la Fabrique ou la Halle. */
+  atelier: Atelier = 'fabrique',
 ): VoxelCube[] {
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
@@ -1901,7 +1975,7 @@ export function worldCubes(
   for (const biome of BIOMES) {
     if (biome.classe !== a) continue;
     const o = origineDe(biome.id);
-    for (const c of cubesDeLIle(biome.id, progress, village, withCreatures, trophies, placed, sentinelles)) {
+    for (const c of cubesDeLIle(biome.id, progress, village, withCreatures, trophies, placed, sentinelles, atelier)) {
       c.x += o.x;
       c.y += o.y;
       c.z += o.z;
@@ -1922,6 +1996,7 @@ function poserLIle(
   placed: Set<number>,
   cubes: VoxelCube[],
   sentinelles = false,
+  atelier: Atelier = 'fabrique',
 ): void {
   const def = islandDef(biome.id);
   const { ox, oy, oz } = islandOrigin(index);
@@ -1962,7 +2037,7 @@ function poserLIle(
   // (Le décor du cœur est en coordonnées du cœur : son nom le dit, pour ne pas croiser celui du paysage.)
   const put: Put = (x, y, z, color, decor) => putWorld(ox + x, oy + y, z, color, decor && `cœur:${decor}`);
   // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
-  // … sauf sur les cases de l’école et de la salle des trophées (un feuillage voisin ne traverse pas leur toit).
+  // … sauf sur les cases des lieux du village (un feuillage voisin ne traverse pas leur toit).
   const placesAt = placeCells(biome.id);
   const putDecor: Put = (x, y, z, color, decor) =>
     !placesAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) && put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
@@ -2015,7 +2090,8 @@ function poserLIle(
     taken.add(cleDeCube(ox + st.x, oy + st.y, base + 1));
     taken.add(cleDeCube(ox + st.x, oy + st.y, base + 2));
   }
-  // L'école et la salle des trophées (sur l'île de l'école de l'archipel) : on les touche pour entrer, comme une borne.
+  // L'école, la salle des trophées et le lieu où l'on assemble (sur l'île de l'école de l'archipel) : on les touche pour
+  // entrer, comme une borne.
   for (const place of PLACE_IDS) {
     const spot = placeSpot(place, biome.id);
     if (!spot) continue;
@@ -2024,7 +2100,7 @@ function poserLIle(
     for (let dx = 0; dx < size.w; dx++)
       for (let dy = 0; dy < size.d; dy++)
         for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
-    for (const m of place === 'ecole' ? schoolModel() : trophyModel(trophies))
+    for (const m of place === 'ecole' ? schoolModel() : place === 'trophees' ? trophyModel(trophies) : atelierModel(atelier, biome.classe))
       cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
   }
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && putWorld(x, y, z, color, decor));

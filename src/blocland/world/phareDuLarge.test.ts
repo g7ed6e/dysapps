@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { toutConstruit } from './budget';
-import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, type GroupeDeConstruction, type MaillageDeLaConstruction } from './construction';
+import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, MOTIF_ASSEMBLE, type GroupeDeConstruction, type MaillageDeLaConstruction } from './construction';
 import { Pinceau } from './decor/pinceau';
 import { getMonument, MONUMENTS } from './monuments';
 import { planCells } from './plans';
-import { COULEURS_DU_PHARE_DU_LARGE, dessinerPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './phareDuLarge';
+import { COULEURS_DU_PHARE_DU_LARGE, dessinerPhareDuLarge, hublotsDuPhareDuLarge, MESURES_DU_PHARE_DU_LARGE, PHARE_DU_LARGE, phareDuLarge } from './phareDuLarge';
 import { monumentAnchor, worldCubes } from './terrain';
 
 /** Le centre et la normale du triangle `t` d'un groupe (repère Three : x, hauteur, y). */
@@ -45,6 +45,27 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     const enCours = phareDuLarge(worldCubes('5e', progress, moitie, false));
     expect(enCours.pose).toBeNull();
     expect(enCours.remplacees.size).toBe(0);
+  });
+
+  it('ses hublots (GD-2) : deux, ronds, à mi-hauteur sur les pans tournés vers la caméra, peints en hublot, dans ses triangles', () => {
+    const cubes = worldCubes('5e', progress, village, false).filter((c) => c.tag === m.biome && !c.sol);
+    const { pose } = phareDuLarge(cubes);
+    const hublots = hublotsDuPhareDuLarge(pose!);
+    expect(hublots).toHaveLength(2);
+    // Posés sur le fût, un peu en avant de son pan, dans ses cases ; calés sur la grille pour que le hublot soit centré.
+    for (const h of hublots)
+      for (const p of h.points) {
+        const r = Math.hypot(p[0] - pose!.cx, p[1] - pose!.cz);
+        expect(r).toBeLessThan(MESURES_DU_PHARE_DU_LARGE.tour.rayon[0] + 0.1);
+        expect(p[2] - pose!.pied).toBeGreaterThan(MESURES_DU_PHARE_DU_LARGE.tour.bas);
+        expect(p[2] - pose!.pied).toBeLessThan(MESURES_DU_PHARE_DU_LARGE.tour.haut);
+      }
+    expect(Math.abs(((pose!.cx % 1) + 1) % 1 - 0.5)).toBeLessThan(1e-9);
+    const g = maillageDeLaConstruction('5e', cubes);
+    const [t0, t1] = g.phareDuLarge!.opaque;
+    const peints = new Set<number>();
+    for (let t = t0; t < t1; t++) if (g.opaque.motifs[g.opaque.indices[3 * t]] === MOTIF_ASSEMBLE.vitrail) peints.add(t);
+    expect(peints.size).toBe(2 * hublots.length);
   });
 
   it('tient dans les cases du monument : 5 × 5 au pied, 3 × 3 pour la tour, sous ses 11 cases de haut', () => {

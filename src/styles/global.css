@@ -6144,6 +6144,136 @@ fieldset {
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Le lieu où l'on assemble les blocs (GD-2) : la carte de l'archipel en entier, les autres sous un pli ; dans chaque
+   carte, les blocs à donner en vignettes, ce qu'il manque juste au-dessus du bouton, puis les monuments qui attendent. */
+.assemblage-recette {
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+}
+.assemblage-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-recette .island-sheet-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.assemblage-archipel {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+}
+.assemblage-ingredients,
+.assemblage-pourquoi,
+.assemblage-pour {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  display: grid;
+  gap: 0.4rem;
+}
+/* Vignettes | texte : le texte passe à la ligne à côté des vignettes, les lignes restent alignées d'une carte à l'autre. */
+.assemblage-ingredients li {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-vignettes {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+.assemblage-en-poche {
+  margin: 0 0 0.6rem;
+}
+.assemblage-recette .button.primary {
+  min-height: 48px;
+}
+.assemblage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Sous « Défaire » : refaire le bloc demandera une question (rien de caché). */
+.assemblage-refaire {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+.assemblage-dit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.assemblage-dit:empty {
+  margin: 0;
+}
+.assemblage-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 48px;
+}
+.assemblage-autres > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.plan-pourquoi {
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+}
+/* La question d'un bloc assemblé (GD-2), sur l'écran d'une mission. Le résultat suit les réponses dans la page (pas de
+   bandeau fixe : il passait sous la question) : le cri et le message, puis le bouton pour continuer (revenir au lieu,
+   ou une autre question) et l'autre choix, l'un sous l'autre sur téléphone. La page y défile à la réponse. */
+.assemblage-resultat {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  /* Un résultat plus haut que l'écran s'ouvre sur son début, sous le bouton Pause fixé en haut à droite. */
+  scroll-margin-top: calc(56px + 1.2rem + env(safe-area-inset-top));
+  scroll-margin-bottom: 1rem;
+}
+/* En grand texte, tout le résultat se lit en colonne : le cri, le message sur toute la largeur, Écouter, puis les
+   boutons. Le message ne passe plus sous le bouton Pause. */
+:root[data-texte="grand"] .assemblage-resultat .feedback-compact,
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex-direction: column;
+  align-items: flex-start;
+}
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex: none;
+  align-self: stretch;
+}
+:root[data-texte="grand"] .assemblage-resultat .feedback-body p {
+  align-self: stretch;
+}
+/* Côte à côte, chaque bouton a la largeur de son texte ; l'un sous l'autre, les deux prennent toute la largeur
+   (la même), texte centré. */
+.assemblage-question-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  max-width: 48rem;
+  flex-shrink: 0;
+}
+.assemblage-question-actions .button {
+  flex: 1 1 auto;
+  min-height: 48px;
+  text-align: center;
+}
+/* Grisé sans quitter l'ordre du clavier (aria-disabled) : le focus reste sur le bouton après le dernier bloc assemblé. */
+.assemblage-recette .button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* Le rôle et la jauge d'XP en tête du menu du village : la barre du haut de l'appli n'est pas sur l'écran du monde. */
 .menu-role {
   margin: 0.1rem 0 0.2rem;

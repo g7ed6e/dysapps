@@ -1,34 +1,34 @@
-// L'école et la salle des trophées des Premiers Rivages au kit du 6e (lot 7b, décision du directeur artistique du
-// 30 septembre 2026) : leurs murs en colombage, leurs toits en pentes ; la porte, les fenêtres, le clocheton, le fond de
-// velours, les socles et les trophées restent des blocs ; le toucher prend toute la case ; les monuments et les autres
-// archipels ne changent pas.
+// L'école, la salle des trophées et la Halle aux matériaux des Premiers Rivages au kit du 6e (lot 7b, décision du
+// directeur artistique du 30 septembre 2026) : leurs murs en colombage, leurs toits en pentes ; la porte, les fenêtres,
+// le clocheton, le fond de velours, les socles, les trophées et la cour de la Halle restent des blocs ; le toucher prend
+// toute la case ; les monuments et les autres archipels ne changent pas.
 import type { BlockId } from '../../biomes';
 import type { VoxelCube } from '../cube';
 import { BADGES } from '../../../core/progress';
 import { trophyBlock } from '../../trophies';
 import { toutConstruit } from '../budget';
 import { batimentsDe, caseDeLaConstruction, caseDeLaPiece, caseDuLieu, maillageDeLaConstruction, type GroupeDeConstruction } from '../construction';
-import { schoolModel, trophyModel, TROPHY_SLOTS, worldCubes } from '../terrain';
-import { architectureDe, MOTIF, pieceDe, type Voisinage } from '.';
+import { atelierModel, HALLE, schoolModel, trophyModel, TROPHY_SLOTS, worldCubes } from '../terrain';
+import { architectureDe, estUnLieuDuVillage, MOTIF, pieceDe, type Voisinage } from '.';
 import { KIT_6E } from './kits/6e';
 
 const TOUS: BlockId[] = BADGES.map((b) => trophyBlock(b.id));
 
-/** Les blocs des lieux du village d'un archipel tout construit, avec `n` trophées, et le sol. */
+/** Les blocs des lieux du village d'un archipel tout construit (le lieu où l'on assemble : la Halle d'Archipéo), avec `n` trophées, et le sol. */
 function lieux(a: '6e' | '5e' | '4e' | '3e', trophees: BlockId[] = []) {
   const { progress, village } = toutConstruit();
-  const tous = worldCubes(a, progress, village, false, trophees);
-  return { tous, cubes: tous.filter((c) => c.place === 'ecole' || c.place === 'trophees'), sol: tous.filter((c) => c.sol) };
+  const tous = worldCubes(a, progress, village, false, trophees, false, 'halle');
+  return { tous, cubes: tous.filter((c) => estUnLieuDuVillage(c.place)), sol: tous.filter((c) => c.sol) };
 }
 
 const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
 const archiDe = (a: '6e' | '5e' | '4e' | '3e', cubes: VoxelCube[]) => architectureDe(a, cubes, { batiments: batimentsDe(a), caseDuLieu });
 
 describe('Les lieux du village au kit du 6e', () => {
-  it('chaque bloc de l’école et de la salle retrouve sa case dans le modèle de son lieu (hors la marche qui rattrape le sol)', () => {
+  it('chaque bloc de l’école, de la salle et de la Halle retrouve sa case dans le modèle de son lieu (hors la marche qui rattrape le sol)', () => {
     const { cubes } = lieux('6e', TOUS.slice(0, 8));
-    const modeles = { ecole: schoolModel(), trophees: trophyModel(TOUS.slice(0, 8)) };
-    for (const place of ['ecole', 'trophees'] as const) {
+    const modeles = { ecole: schoolModel(), trophees: trophyModel(TOUS.slice(0, 8)), assemblage: atelierModel('halle', '6e') };
+    for (const place of ['ecole', 'trophees', 'assemblage'] as const) {
       const attendu = new Set(modeles[place].map((m) => `${m.x},${m.y},${m.z}`));
       const lus = cubes
         .filter((c) => c.place === place)
@@ -104,6 +104,44 @@ describe('Les lieux du village au kit du 6e', () => {
     }
   });
 
+  it('la Halle aux matériaux : ses murs de bois sur leur rang de pierre en colombage sur soubassement, son toit à deux pentes en versants et faîte ; la porte reste ouverte, la cour reste en blocs', () => {
+    const { cubes } = lieux('6e');
+    const archi = archiDe('6e', cubes);
+    // Les blocs de la Halle et leur case dans son modèle, filtrés une fois (le soubassement qui rattrape le sol n'en a pas).
+    const halle = cubes.flatMap((c) => {
+      const m = c.place === 'assemblage' ? caseDuLieu(c) : null;
+      return m ? [{ c, m }] : [];
+    });
+    const caseDe = new Map(halle.map(({ c, m }) => [cle(c), m]));
+    const blocsDeLaHalle = new Set(cubes.filter((c) => c.place === 'assemblage').map(cle));
+    // Les murs : les deux rangs de la halle (pierre, puis bois), sans la porte (creuse sur deux rangs, jusqu'au fond).
+    const murs = [...archi.peints.values()].filter((p) => p.cube.place === 'assemblage');
+    expect(murs.length).toBe(2 * (9 - 2));
+    for (const { cube: c, peinture } of murs) {
+      const m = caseDe.get(cle(c));
+      expect(m, cle(c)).toBeDefined();
+      if (!m) continue;
+      expect(m.y, cle(c)).toBeGreaterThanOrEqual(HALLE.rang);
+      expect(peinture.fond, cle(c)).toBe('remplissage');
+      // Le rang de pierre devient le soubassement du colombage ; le rang de bois porte la sablière haute sous le toit.
+      if (m.z === 1) expect(peinture.motifs.slice(0, 4).every((f) => f & MOTIF.soubassement)).toBe(true);
+      else expect(peinture.motifs.slice(0, 4).every((f) => f & MOTIF.sabliereHaute && !(f & (MOTIF.chaperon | MOTIF.soubassement)))).toBe(true);
+      // Au plus une décharge par face, au rez seulement, jamais deux sur la même face (ni X, ni V).
+      const decharges = peinture.motifs.filter((f) => f & (MOTIF.montante | MOTIF.descendante));
+      if (m.z > 1) expect(decharges).toEqual([]);
+      else expect(decharges.length).toBeLessThanOrEqual(2);
+      for (const f of peinture.motifs) expect(f & MOTIF.montante && f & MOTIF.descendante).toBeFalsy();
+    }
+    // Le toit : deux rangs de versants (gauche, droite), le faîte au milieu ; le rang sous le faîte reste un bloc caché.
+    const toits = archi.pieces.filter((p) => p.cube.place === 'assemblage');
+    expect(toits.map((p) => p.piece.split('.')[1]).sort()).toEqual([...Array(6).fill('versant'), ...Array(3).fill('faite')].sort());
+    // La porte : creuse (aucun bloc), à la même place ; la cour (la potence, le bloc suspendu, les blocs de la recette) : des blocs.
+    const occupees = new Set(halle.map(({ m }) => `${m.x},${m.y},${m.z}`));
+    for (const y of [2, 3]) for (const z of [1, 2]) expect(occupees.has(`1,${y},${z}`)).toBe(false);
+    for (const { c } of halle.filter(({ m }) => m.y < HALLE.rang)) expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
+    expect([...archi.couverts].filter((k) => blocsDeLaHalle.has(k))).toEqual([]);
+  });
+
   it('un trophée posé sur le toit ou le faîte : le toit sous lui reste un bloc, le trophée ne flotte jamais au-dessus d’une pente', () => {
     const { cubes } = lieux('6e', TOUS);
     const archi = archiDe('6e', cubes);
@@ -129,7 +167,7 @@ describe('Les lieux du village au kit du 6e', () => {
     }
   });
 
-  it.each([0, 6])('le toucher, avec %i trophées : toute la case d’un bloc, et toujours le lieu de la facette touchée (un toit de la salle ouvre la salle, jamais l’école)', (n) => {
+  it.each([0, 6])('le toucher, avec %i trophées : toute la case d’un bloc, et toujours le lieu de la facette touchée (un toit de la salle ouvre la salle, jamais l’école ; un toit de la Halle, la Halle)', (n) => {
     const { cubes, sol } = lieux('6e', TOUS.slice(0, n));
     const m = maillageDeLaConstruction('6e', cubes, sol);
     const parCase = new Map(cubes.map((c) => [cle(c), c]));
@@ -148,16 +186,16 @@ describe('Les lieux du village au kit du 6e', () => {
       // Le lieu de la facette, lu sous elle (un peu en dedans) : repère Three (x, hauteur, y).
       const attendu = emprise.get(`${Math.floor(c.x - nor.x * 0.01)},${Math.floor(c.z - nor.z * 0.01)}`);
       const touche = parCase.get(cle(r.cell));
-      expect(touche?.place, `${t} → ${JSON.stringify(r.cell)}`).toMatch(/^(ecole|trophees)$/);
+      expect(touche?.place, `${t} → ${JSON.stringify(r.cell)}`).toMatch(/^(ecole|trophees|assemblage)$/);
       expect(touche?.place, `${t} → ${JSON.stringify(r.cell)}`).toBe(attendu);
       lieuxTouches.add(touche?.place ?? '');
       if (piece) pieces++;
     }
     expect(pieces).toBeGreaterThan(0);
-    expect([...lieuxTouches].sort()).toEqual(['ecole', 'trophees']);
+    expect([...lieuxTouches].sort()).toEqual(['assemblage', 'ecole', 'trophees']);
   });
 
-  it('les monuments gardent leurs blocs taillés ; au 5e, au 4e et au 3e, l’école et la salle gardent leur dessin', () => {
+  it('les monuments gardent leurs blocs taillés ; au 5e, au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
     const { progress, village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const archi = archiDe('6e', tous);
@@ -172,7 +210,7 @@ describe('Les lieux du village au kit du 6e', () => {
 });
 
 describe('KIT_6E nomme ses lieux', () => {
-  it('l’école et la salle des trophées, et rien d’autre', () => {
-    expect(Object.keys(KIT_6E.lieux ?? {}).sort()).toEqual(['ecole', 'trophees']);
+  it('l’école, la salle des trophées et le lieu où l’on assemble, et rien d’autre', () => {
+    expect(Object.keys(KIT_6E.lieux ?? {}).sort()).toEqual(['assemblage', 'ecole', 'trophees']);
   });
 });

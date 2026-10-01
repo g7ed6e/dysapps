@@ -122,6 +122,45 @@ Les tests de chaque mission (`src/apps/<mission>/data.test.*`, lancés par `npm 
 - **lecture** : au moins 10 vers ou phrases par texte, 5 questions par texte, 3 choix différents dont la réponse, la bonne réponse pas toujours à la même place, un passage `lignes` qui tient dans le texte ;
 - **vocabulaire** : au moins 8 mots par thème, sans doublon, et deux pièges par mot.
 
+## L’assemblage des blocs
+
+`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../pilotage/game-design/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assemblage-<bloc>.json`. Deux tableaux, puis les questions :
+
+- **« ## Le lieu »** : une rangée par univers (`` `blocland` ``, `` `archipeo` ``), avec le nom du lieu (le titre de sa page), où il est (« à la Fabrique ») et la phrase lue sous le titre.
+- **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`bois × 2 · pierre × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).
+
+Les cases des monuments qui demandent ces blocs restent dans le code (`src/blocland/world/monuments.ts`).
+
+### Les questions
+
+**« ## Les questions »**, à la fin du fichier, donne la question posée à chaque bloc assemblé (décision du mainteneur du 1er octobre 2026) : un **« ### Nom · `bloc` »** par bloc du tableau, écrit comme une mission d’île à un seul niveau (mêmes champs, même lecteur, `scripts/contenu/format.mjs`), sur l’écran des documents à lire (type `assemblage`, qui reprend `CalculScreen`) :
+
+```md
+### La poutre · `poutre`
+
+- compétences : c3.fr.langue.genre-nombre · c3.ma.nombres.problemes
+- consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien assemblé !
+- erreur : {explanation}
+
+1. énoncé : "Léa a 5 billes.\nElle en donne 4 à Tom."
+   - question : Quelle phrase est juste ?
+   - lu : Léa a 5 billes. Elle en donne 4 à Tom.
+   - choix : Il lui reste 1 bille. · Il lui reste 1 billes. · Il lui reste 9 billes.
+   - réponse : Il lui reste 1 bille.
+   - indice : Combien en reste-t-il ? Puis : une seule, ou plusieurs ?
+   - explication : 5 − 4 = 1. Avec 1, le nom reste au singulier : 1 bille, sans s.
+   - aide « Un ou plusieurs ? » :
+     - Donner, c’est enlever.
+     - 1 : pas de s (1 bille). À partir de 2 : un s (2 billes).
+```
+
+- **Les champs du bloc**, avant la première question : `compétences` (pour tout le bloc, jamais par question), `consigne`, `bravo`, `erreur`, et `langue : en` quand l’énoncé est en anglais (l’engrenage). Un bloc « Pour tous les items : » peut suivre, après une ligne vide (`langue des choix : fr` pour des réponses lues en français). Ni `description`, ni `blocs`, ni `XP`, ni `monte à` : une question d’assemblage ne rapporte que le bloc et n’adapte aucun niveau ; le générateur les refuse.
+- **Une question** : `énoncé` (le document, une ligne par `\n`), `question` (courte, lue à part par l’écran), `lu` (le document seul, sans la question, sans « … », les nombres et les symboles écrits comme on les dit : « moins 3 degrés »), trois `choix` dont la `réponse`, `indice`, `explication` et une `aide` (le rappel des deux matières, toujours affiché).
+- **Les clés** : `<bloc>-<rang>` par défaut (`poutre-0`, `poutre-1`…), ou `- clé :` pour garder celle d’une question déplacée, comme dans une île. Elles servent au tirage de l’élève : une question s’ajoute à la fin.
+- **Les choix** : des nombres (même unité, milliers avec une espace insécable, ou « 8 × 10⁹ ») sont toujours affichés du plus petit au plus grand ; des phrases sont mélangées avec la graine de l’élève, la bonne réponse autant de fois à chaque place sur les questions du bloc. Un piège de chaque matière, écrit dans le fichier : aucun n’est calculé.
+- **Vérifié par `src/blocland/exercises/assemblage.test.ts`** : chaque bloc a au moins 8 questions ; ses compétences existent dans `src/programme/`, couvrent les deux matières des îles de sa recette, sont déjà travaillées par une île ou le portail, et sont du cycle 3 seul en 6e, avec au moins une du cycle 4 de la 5e à la 3e ; trois choix différents dont la réponse ; une aide sur chaque question ; ni « … » ni la question dans `lu` ; des apostrophes typographiques.
+
 ## Ajouter une île
 
 Écrire `<île>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/blocland/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).

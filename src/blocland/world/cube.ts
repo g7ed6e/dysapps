@@ -1,8 +1,11 @@
 // Le monde en cubes (la disposition en grille) : un cube, en cases du monde, et ce qu'on touche pour entrer quelque part.
 // Les vues le dessinent (Voxel.tsx en isométrique, three/ en 3D, pixel/ en 2D) ; la grille et la simulation le lisent.
 
-/** Les lieux du village où l'on entre : l'école (ses trois portes, une par matière) et la salle des trophées. */
-export type VillagePlaceId = 'ecole' | 'trophees';
+/**
+ * Les lieux du village où l'on entre : l'école (ses trois portes, une par matière), la salle des trophées, et le lieu où
+ * l'on assemble les blocs (GD-2 : la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo).
+ */
+export type VillagePlaceId = 'ecole' | 'trophees' | 'assemblage';
 /** Ce qu'on touche pour y entrer : un lieu du village, ou un monument (« monument:<identifiant du monument> »). */
 export type PlaceId = VillagePlaceId | `monument:${string}`;
 

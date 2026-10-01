@@ -1,10 +1,13 @@
 // Les îles écrites en Markdown (docs/contenu/<île>.md) et les missions du portail (docs/contenu/portail/), avec les
-// JSON qu'ils produisent (src/blocland/iles.ts, src/blocland/exercises/data/, src/blocland/world/plans/, src/apps/<mission>/).
+// JSON qu'ils produisent (src/blocland/iles.ts, src/blocland/exercises/data/, src/blocland/world/plans/, src/apps/<mission>/),
+// et l'assemblage des blocs (docs/contenu/assemblage.md → src/blocland/world/recettes.ts, et ses questions →
+// src/blocland/exercises/data/assemblage-<bloc>.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { lireIle, principal } from './format.mjs';
 import { MISSIONS_PORTAIL } from './portail.mjs';
+import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } from './assemblage.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -12,6 +15,7 @@ export const CONTENU = join(racine, 'docs/contenu');
 export const DATA = join(racine, 'src/blocland/exercises/data');
 export const ILES = join(racine, 'src/blocland/iles.ts');
 export const PLANS = join(racine, 'src/blocland/world/plans');
+export const RECETTES = join(racine, 'src/blocland/world/recettes.ts');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
@@ -33,7 +37,7 @@ export function produire() {
   const sortie = new Map();
   const iles = new Set();
   const biomes = new Map();
-  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md').sort()) {
+  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE).sort()) {
     const fichier = join('docs/contenu', f);
     const { ile, biome, exercices, plans } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
@@ -65,6 +69,21 @@ export function produire() {
   // compétences…), sans rien coûter à l'exécution.
   const entete = "// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.\n";
   sortie.set(ILES, `${entete}import type { BiomeDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies BiomeDef[];\n`);
+  // L'assemblage des blocs (GD-2) : docs/contenu/assemblage.md → src/blocland/world/recettes.ts, et la question de chaque
+  // bloc assemblé → src/blocland/exercises/data/assemblage-<bloc>.json.
+  const mdAssemblage = readFileSync(join(CONTENU, FICHIER_ASSEMBLAGE), 'utf8');
+  const fichierAssemblage = join('docs/contenu', FICHIER_ASSEMBLAGE);
+  const assemblage = lireAssemblage(mdAssemblage, fichierAssemblage);
+  sortie.set(RECETTES, ecrireRecettes(assemblage));
+  for (const q of lireQuestions(
+    mdAssemblage,
+    fichierAssemblage,
+    assemblage.recettes.map((r) => r.bloc),
+  )) {
+    const chemin = join(DATA, `${q.id}.json`);
+    if (sortie.has(chemin)) throw new Error(`${fichierAssemblage} : « ${q.id} » est déjà l’identifiant d’un exercice d’île`);
+    sortie.set(chemin, JSON.stringify(q, null, 2) + '\n');
+  }
   // Les missions du portail : docs/contenu/portail/<mission>.md → src/apps/<mission>/….json.
   for (const m of MISSIONS_PORTAIL) {
     const fichier = join('docs/contenu/portail', `${m.id}.md`);

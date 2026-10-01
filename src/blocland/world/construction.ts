@@ -28,8 +28,8 @@
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
 // peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
 // laisse sa case à cette pièce, assemblée (./architecture/assemblage.ts) et peinte dans l'opaque, à la fin. Seul le kit
-// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école et la salle des trophées de ce kit
-// le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
+// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école, la salle des trophées et la Halle aux
+// matériaux de ce kit le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case
@@ -46,11 +46,11 @@ import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseD
 import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
 import { lineaire } from './landMesh';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
-import { dessinerPhareDuLarge, phareDuLarge } from './phareDuLarge';
+import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, mapOf, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from './terrain';
 import { getPlan, planCells, plansFor } from './plans';
-import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, MATIERES, type Couleur, type Faces } from './palette';
+import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
 import type { Cell } from './view';
@@ -249,8 +249,10 @@ export interface GroupeOpaque extends GroupeDeConstruction {
   /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
   aretes: Float32Array;
   /**
-   * Par sommet : le motif peint d'un mur ou d'une pièce d'architecture (./architecture/peinture.ts, `MOTIF` ; 0 :
-   * aucun). Le shader y peint le colombage, le bardage, le soubassement et le chaperon, sans un triangle de plus.
+   * Par sommet : le motif peint (0 : aucun). Celui d'un mur ou d'une pièce d'architecture (./architecture/peinture.ts,
+   * `MOTIF`, en bits, sous `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint le colombage, le bardage, le soubassement et le
+   * chaperon. Celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, à partir de `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint
+   * sa forme (`MOTIF_ASSEMBLE_GLSL`). Ni l'un ni l'autre n'ajoute un triangle.
    */
   motifs: Float32Array;
 }
@@ -390,6 +392,125 @@ vec3 biseauPeint(vec3 c, float k, float force) {
   return mix(c, fort, k);
 }
 `;
+
+// ---------- Les motifs des blocs assemblés (GD-2) ----------
+
+/**
+ * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/peinture.ts,
+ * `MOTIF`), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un bloc assemblé, ni
+ * l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
+ */
+export const MOTIF_ASSEMBLE_DEBUT = 2 * Math.max(...Object.values(MOTIF));
+
+/**
+ * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, qu'il partage avec les murs peints du lot 7 :
+ * les blocs assemblés prennent `MOTIF_ASSEMBLE_DEBUT` + 1 à + 4, au-delà de leurs bits ; 1025 à 1028 aujourd'hui, des
+ * entiers exacts en flottant). Il se peint dans le shader, sans un triangle de plus, par-dessus la couleur de fond du
+ * bloc (world/palette.ts, `MATIERES`) : deux blocs ne se distinguent jamais par la couleur seule. Un bloc délavé (île
+ * fermée) n'a pas de motif.
+ */
+export const MOTIF_ASSEMBLE = {
+  poutre: MOTIF_ASSEMBLE_DEBUT + 1,
+  vitrail: MOTIF_ASSEMBLE_DEBUT + 2,
+  engrenage: MOTIF_ASSEMBLE_DEBUT + 3,
+  miroir: MOTIF_ASSEMBLE_DEBUT + 4,
+} as const;
+export type BlocAssemble = keyof typeof MOTIF_ASSEMBLE;
+
+/** Les mesures des motifs, en part de case, depuis le milieu de la face (le même dessin en JS et en GLSL). */
+export const MESURES_DES_MOTIFS = {
+  /** Le madrier : deux veines en long, et un collier à mi-hauteur ; sur le dessus, un cerne. */
+  poutre: { veines: [-0.22, 0.18], veine: 0.025, collier: 0.09, cerne: 0.28, epaisseurDuCerne: 0.035 },
+  /** Le hublot : un disque de verre dans son bord sombre, un reflet en haut à gauche. */
+  vitrail: { bord: 0.35, verre: 0.3, reflet: [-0.1, 0.1, 0.07] },
+  /** La poulie : la roue, sa gorge, son axe. */
+  engrenage: { roue: 0.38, gorge: 0.26, epaisseurDeGorge: 0.035, axe: 0.07 },
+  /** La loupe : l'anneau, le verre, l'éclat, et le manche vers le coin bas-droit. */
+  miroir: { anneau: 0.32, verre: 0.23, eclat: [-0.08, 0.08, 0.06], manche: [0.2, -0.2, 0.46, -0.46], epaisseurDuManche: 0.05 },
+} as const;
+
+/** Le détail peint au point (`u`, `v`) d'une face d'un bloc assemblé, de −0,5 à 0,5 depuis son milieu (`v` monte sur un côté) ; `null` : son fond. */
+export function detailDuMotif(bloc: BlocAssemble, u: number, v: number, dessus: boolean): string | null {
+  const r = Math.hypot(u, v);
+  if (bloc === 'poutre') {
+    const M = MESURES_DES_MOTIFS.poutre;
+    if (dessus) return Math.abs(r - M.cerne) < M.epaisseurDuCerne ? 'veine' : null;
+    if (Math.abs(v) < M.collier) return 'collier';
+    return M.veines.some((x) => Math.abs(u - x) < M.veine) ? 'veine' : null;
+  }
+  if (bloc === 'vitrail') {
+    const M = MESURES_DES_MOTIFS.vitrail;
+    if (Math.hypot(u - M.reflet[0], v - M.reflet[1]) < M.reflet[2]) return 'reflet';
+    return r < M.verre ? 'verre' : r < M.bord ? 'bord' : null;
+  }
+  if (bloc === 'engrenage') {
+    const M = MESURES_DES_MOTIFS.engrenage;
+    if (r < M.axe || Math.abs(r - M.gorge) < M.epaisseurDeGorge) return 'gorge';
+    return r < M.roue ? 'roue' : null;
+  }
+  const M = MESURES_DES_MOTIFS.miroir;
+  if (Math.hypot(u - M.eclat[0], v - M.eclat[1]) < M.eclat[2]) return 'eclat';
+  if (r < M.verre) return 'verre';
+  if (r < M.anneau) return 'laiton';
+  const [ax, ay, bx, by] = M.manche;
+  const t = Math.min(1, Math.max(0, ((u - ax) * (bx - ax) + (v - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
+  return Math.hypot(u - ax - (bx - ax) * t, v - ay - (by - ay) * t) < M.epaisseurDuManche ? 'laiton' : null;
+}
+
+const glslLin = (c: Couleur) => {
+  const [r, g, b] = rgb(c).map((v) => srgbVersLineaire(v / 255).toFixed(4));
+  return `vec3(${r}, ${g}, ${b})`;
+};
+const f3 = (v: number) => v.toFixed(3);
+
+/**
+ * Les motifs en GLSL : `motifAssemble(c, m, pos, n)` peint le bloc assemblé `m` (son rang : 1 poutre, 2 vitrail,
+ * 3 engrenage, 4 miroir ; 0 : aucun) sur la couleur linéaire `c`, à la position `pos` d'une face de normale `n` (repère
+ * Three). Le shader lui passe `motif − MOTIF_ASSEMBLE_DEBUT` pour un bloc assemblé, 0 sinon (three/construction.ts).
+ * Bords adoucis sur un pixel ; de loin, quand une case tient en moins de 12 pixels, le motif s'efface vers le fond (rien
+ * sous 6 pixels) : jamais de moiré. Les dérivées se prennent avant tout branchement.
+ */
+export const MOTIF_ASSEMBLE_GLSL = (() => {
+  const D = DETAILS_ASSEMBLES;
+  const P = MESURES_DES_MOTIFS;
+  return `
+float dansLeMotif(float d, float fw) { return 1.0 - smoothstep(-fw, fw, d); }
+vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n) {
+  vec3 an = abs(n);
+  bool dessus = an.y > 0.5;
+  vec2 q = an.x > 0.5 ? pos.zy : (dessus ? pos.xz : pos.xy);
+  vec2 fq = fwidth(q);
+  float fw = max(max(fq.x, fq.y), 1e-5);
+  if (m < 0.5) return c;
+  float k = clamp((1.0 / fw - 6.0) / 6.0, 0.0, 1.0);
+  vec2 p = fract(q) - 0.5;
+  float r = length(p);
+  if (m < 1.5) {
+    if (dessus) return mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(abs(r - ${f3(P.poutre.cerne)}) - ${f3(P.poutre.epaisseurDuCerne)}, fw) * k);
+    float v = min(abs(p.x - (${f3(P.poutre.veines[0])})), abs(p.x - ${f3(P.poutre.veines[1])})) - ${f3(P.poutre.veine)};
+    c = mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(v, fw) * k);
+    return mix(c, ${glslLin(D.poutre.collier)}, dansLeMotif(abs(p.y) - ${f3(P.poutre.collier)}, fw) * k);
+  }
+  if (m < 2.5) {
+    c = mix(c, ${glslLin(D.vitrail.bord)}, dansLeMotif(r - ${f3(P.vitrail.bord)}, fw) * k);
+    c = mix(c, ${glslLin(D.vitrail.verre)}, dansLeMotif(r - ${f3(P.vitrail.verre)}, fw) * k);
+    return mix(c, ${glslLin(D.vitrail.reflet)}, dansLeMotif(length(p - vec2(${f3(P.vitrail.reflet[0])}, ${f3(P.vitrail.reflet[1])})) - ${f3(P.vitrail.reflet[2])}, fw) * k);
+  }
+  if (m < 3.5) {
+    c = mix(c, ${glslLin(D.engrenage.roue)}, dansLeMotif(r - ${f3(P.engrenage.roue)}, fw) * k);
+    c = mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(abs(r - ${f3(P.engrenage.gorge)}) - ${f3(P.engrenage.epaisseurDeGorge)}, fw) * k);
+    return mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(r - ${f3(P.engrenage.axe)}, fw) * k);
+  }
+  vec2 a = vec2(${f3(P.miroir.manche[0])}, ${f3(P.miroir.manche[1])});
+  vec2 ab = vec2(${f3(P.miroir.manche[2])}, ${f3(P.miroir.manche[3])}) - a;
+  float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
+  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(length(p - a - ab * t) - ${f3(P.miroir.epaisseurDuManche)}, fw) * k);
+  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(r - ${f3(P.miroir.anneau)}, fw) * k);
+  c = mix(c, ${glslLin(D.miroir.verre)}, dansLeMotif(r - ${f3(P.miroir.verre)}, fw) * k);
+  return mix(c, ${glslLin(D.miroir.eclat)}, dansLeMotif(length(p - vec2(${f3(P.miroir.eclat[0])}, ${f3(P.miroir.eclat[1])})) - ${f3(P.miroir.eclat[2])}, fw) * k);
+}
+`;
+})();
 
 /**
  * Le genre de chaque bloc : une vitre est une lanterne ou un verre pris dans un mur (deux blocs pleins de part et
@@ -577,8 +698,8 @@ const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
  * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
- * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; l'école et la salle des
- * trophées non plus (elles prennent le kit par `caseDuLieu`).
+ * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; les lieux du village non
+ * plus (l'école, la salle des trophées, le lieu où l'on assemble : ils prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   const deja = batiments.get(a);
@@ -596,8 +717,8 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
 const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
 
 /**
- * La case d'un bloc de l'école ou de la salle des trophées dans le modèle de son lieu (world/terrain.ts : `schoolModel`,
- * `trophyModel`, et les trophées posés), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
+ * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et
+ * les trophées posés, `atelierModel`), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
  * marche du sol) ou hors d'un lieu du village (un monument).
  */
 export function caseDuLieu(c: VoxelCube): CaseDuLieu | null {
@@ -810,8 +931,12 @@ export function maillageDeLaConstruction(
   const FACE_DE_CASE = [1, 4, 2, 8, 16, 32];
   /** L'ordre des faces d'une peinture (./architecture/peinture.ts : +x, +y, −x, −y, haut, bas) pour la direction `d`. */
   const FACE_PEINTE = [0, 2, 1, 3, 4, 5];
-  /** Le motif de la face `d` d'un bloc : celui de son mur peint, délavé sur une île fermée ; 0 hors d'un mur peint. */
+  /**
+   * Le motif de la face `d` d'un bloc : celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, aucun sur une île fermée), sinon
+   * celui de son mur peint, délavé sur une île fermée ; 0 hors d'un mur peint.
+   */
   const motifDe = (c: VoxelCube, d: number) => {
+    if (c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
     const m = peintDe(c)?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
     return m && c.muted ? m | MOTIF.delave : m;
   };
@@ -1211,8 +1336,17 @@ export function maillageDeLaConstruction(
     const P = new Pinceau();
     const L = new Pinceau();
     dessinerPhareDuLarge(P, L, large.pose);
+    const [t0] = O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
+    // Ses hublots (GD-2, consultant Archipéo) : les vitraux du monument, ronds sur le fût, à mi-hauteur ; un carré de
+    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée.
+    if (!large.pose.muted) {
+      const cadre = couleurDeMatiere(a, 'vitrail').cote;
+      const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+      for (const h of hublotsDuPhareDuLarge(large.pose))
+        O.poly(h.points, h.normale, h.points.map(() => cadre), { biseaux: sansBiseau, teinte: 1, motif: MOTIF_ASSEMBLE.vitrail });
+    }
     dessinDuLarge = {
-      opaque: O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 }),
+      opaque: [t0, O.idx.length / 3],
       fenetres: F.facettes(L.fin(), { extra: 0 }),
       cellules: large.pose.cellules,
     };
