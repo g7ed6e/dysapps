@@ -94,7 +94,7 @@ function QuestionDAssemblage({
   lieu: LieuDAssemblage;
   onAutre: () => void;
 }) {
-  const { state, repondreAssemblage } = useBlocland();
+  const { state, repondreAssemblage, pauseAfterNext, continueSession } = useBlocland();
   const { settings, speak } = useSettings();
   const haptics = useHaptics();
   const navigate = useNavigate();
@@ -113,6 +113,10 @@ function QuestionDAssemblage({
   const [answered, setAnswered] = useState<ScreenAnswer | null>(null);
   const [fin, setFin] = useState<Fin | null>(null);
   const [encore, setEncore] = useState(false);
+  // L'horloge de séance (trois exercices ou dix minutes, questions d'assemblage comprises) : la pause s'affiche à la
+  // place des boutons, comme au bilan d'une mission.
+  const [pause, setPause] = useState(false);
+  const textePause = `Tu as bien travaillé. Ton cerveau retient mieux avec des pauses. Tu pourras revenir ${lieu.a} plus tard.`;
   // Les essais déjà comptés, lus sans attendre un rendu : un double toucher ne compte jamais deux erreurs, ni
   // n'assemble deux blocs.
   const essais = useRef<'aucun' | 'premier' | 'fini'>('aucun');
@@ -137,7 +141,7 @@ function QuestionDAssemblage({
     const block = resultat.getBoundingClientRect().height > place ? 'start' : 'end';
     resultat.scrollIntoView?.({ block, behavior: moinsDAnimations() ? 'auto' : 'smooth' });
     principalRef.current?.focus({ preventScroll: true });
-  }, [fin]);
+  }, [fin, pause]);
   // La consigne et la question sont lues en ouvrant, comme au début d'une mission ; le document, à la demande.
   useEffect(() => {
     if (settings.autoRead && item && possible) speak(autoReadText(def.instruction, [item]));
@@ -163,6 +167,7 @@ function QuestionDAssemblage({
     setAnswered(a);
     const reponse: ReponseDonnee = { cles, cle: item.key, juste, tirage };
     const r = repondreAssemblage(recette.bloc, reponse);
+    setPause(pauseAfterNext);
     if (r.assemble) {
       haptics.success();
       setFin({ juste: true, assemble: true, texte: messageAssemble(recette.bloc, r.state.inventory[recette.bloc] ?? 0) });
@@ -220,35 +225,59 @@ function QuestionDAssemblage({
             speakKey="fin"
             autoSpeak={false}
           />
-          <div className="assemblage-question-actions">
-            {fin.juste ? (
-              <>
-                <Link
-                  ref={principalRef}
-                  to={retour}
-                  replace
-                  state={fin.assemble ? { assemble: recette.bloc } : undefined}
-                  className="button primary next-button"
+          {pause ? (
+            <div className="pause-panel">
+              <p>
+                <strong>Belle séance !</strong> {textePause}
+              </p>
+              <SpeakButton text={`Belle séance ! ${textePause}`} compact />
+              <div className="actions">
+                <Link ref={principalRef} to="/aventure" replace className="button primary">
+                  <Icon name="check" /> J’arrête pour aujourd’hui
+                </Link>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => {
+                    continueSession();
+                    setPause(false);
+                  }}
                 >
-                  <Icon name="back" /> Revenir {lieu.a}
-                </Link>
-                {encore && (
-                  <button type="button" className="button" onClick={onAutre}>
-                    <Icon name="hammer" /> Assembler 1 autre {un}
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                <button ref={principalRef} type="button" className="button primary next-button" onClick={onAutre}>
-                  <Icon name="replay" /> Une autre question
+                  Encore un peu
                 </button>
-                <Link to={retour} replace className="button">
-                  <Icon name="back" /> Revenir {lieu.a}
-                </Link>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="assemblage-question-actions">
+              {fin.juste ? (
+                <>
+                  <Link
+                    ref={principalRef}
+                    to={retour}
+                    replace
+                    state={fin.assemble ? { assemble: recette.bloc } : undefined}
+                    className="button primary next-button"
+                  >
+                    <Icon name="back" /> Revenir {lieu.a}
+                  </Link>
+                  {encore && (
+                    <button type="button" className="button" onClick={onAutre}>
+                      <Icon name="hammer" /> Assembler 1 autre {un}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <button ref={principalRef} type="button" className="button primary next-button" onClick={onAutre}>
+                    <Icon name="replay" /> Une autre question
+                  </button>
+                  <Link to={retour} replace className="button">
+                    <Icon name="back" /> Revenir {lieu.a}
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>

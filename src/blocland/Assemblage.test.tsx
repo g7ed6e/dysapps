@@ -247,3 +247,33 @@ it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
   expect(screen.queryByRole('group', { name: 'Réponses possibles' })).toBeNull();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).assemblageTirage).toBeUndefined();
 });
+
+it('les questions d’assemblage comptent dans l’horloge de séance : la pause s’affiche à la troisième', async () => {
+  const user = userEvent.setup();
+  partie({ bois: 6, brique: 3 });
+  renderFabrique();
+  await user.click(screen.getByRole('button', { name: /Assembler 1 poutre/ }));
+  // La bonne réponse de la question tirée, lue dans le tirage que la sauvegarde garde.
+  const repondreJuste = async () => {
+    await screen.findByRole('group', { name: 'Réponses possibles' });
+    const tirage = sauvegarde().assemblageTirage.poutre as TirageAssemblage;
+    const item = POUTRE.items.find((it) => it.key === prochaineQuestion(CLES, tirage))!;
+    await user.click(choix(String(item.answer)));
+  };
+  await repondreJuste();
+  expect(screen.queryByText(/Belle séance/)).toBeNull();
+  await user.click(screen.getByRole('button', { name: /Assembler 1 autre poutre/ }));
+  await repondreJuste();
+  expect(screen.queryByText(/Belle séance/)).toBeNull();
+  await user.click(screen.getByRole('button', { name: /Assembler 1 autre poutre/ }));
+  await repondreJuste();
+  // La troisième : la pause remplace les boutons, le bloc est bien assemblé.
+  expect(screen.getByText(/Belle séance/)).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /J’arrête pour aujourd’hui/ })).toHaveFocus();
+  expect(screen.queryByRole('link', { name: /Revenir à la Fabrique/ })).toBeNull();
+  expect(sauvegarde().inventory).toMatchObject({ poutre: 3 });
+  // « Encore un peu » : une nouvelle petite séance, les boutons reviennent.
+  await user.click(screen.getByRole('button', { name: 'Encore un peu' }));
+  expect(screen.queryByText(/Belle séance/)).toBeNull();
+  expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toHaveFocus();
+});

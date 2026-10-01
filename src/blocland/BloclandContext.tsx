@@ -129,6 +129,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const repondreAssemblage = useCallback(
     (bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage => {
       const r = repondreAssemblagePure(stateRef.current, bloc, reponse);
+      // Une question d'assemblage compte dans l'horloge de séance comme un exercice (GD-2, choix du mainteneur).
+      setSessionCount((n) => n + 1);
       return r.state === stateRef.current ? r : { ...r, state: pousser(r.state) };
     },
     [pousser],
