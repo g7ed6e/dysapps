@@ -254,7 +254,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de panneaux, pour les navires qui passent.',
-    islet: { x: 62, y: 339 },
+    islet: { x: 58, y: 343 }, // 4 cases à l'ouest et 4 en arrière : le Marché a grandi (01/10/2026), le Glacier s'est écarté
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,

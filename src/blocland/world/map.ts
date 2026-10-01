@@ -45,9 +45,9 @@ export const CORE = 16;
  * C'est de la vraie terre en plus : la côte (`ext`) garde sa largeur autour du cœur agrandi, la terre de l'île gagne
  * deux cases de chaque côté, et ses voisines s'écartent d'autant dans `MAP` (choix du mainteneur, 01/10/2026). Les
  * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
- * (`margesDuCoeur`). La Forêt d'abord.
+ * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché.
  */
-export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20 };
+export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20 };
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -107,8 +107,14 @@ export const MAP: IslandDef[] = [
   { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
   { id: 'riviere', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
   { id: 'volcan', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
-  // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché.
-  { id: 'glacier', region: 'montagne', core: { x: 40, y: 320 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
+  // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
+  // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
+  // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
+  // dessin (`deplacee`) ; le grand phare du large recule (monuments.ts). Le Marais, le Carrefour et le Relais ne bougent
+  // pas : le pont du Marché au Marais était long (30 cases), celui du Comptoir au Relais y perd deux cases ; écarter
+  // aussi le Relais, pour garder la colonne centrale, élargissait la mer semée de 157 triangles de décor, au-delà de son
+  // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°.
+  { id: 'glacier', region: 'montagne', core: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
   { id: 'marche', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
   { id: 'carrefour', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
   { id: 'marais', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
@@ -126,8 +132,8 @@ export const MAP: IslandDef[] = [
   { id: 'baie', region: 'basses-terres', core: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
   { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'comptoir', region: 'basses-terres', core: { x: 101, y: 320 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
-  { id: 'manoir', region: 'hauteurs', core: { x: 101, y: 366 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
+  { id: 'comptoir', region: 'basses-terres', core: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
+  { id: 'manoir', region: 'hauteurs', core: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
   { id: 'relais', region: 'basses-terres', core: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
   // Anglais 4e : aux deux bouts de la crête, la Gare avant la Forge, le Théâtre après le Cabinet.
@@ -273,6 +279,16 @@ export function inCoeurDOrigine(def: IslandDef, x: number, y: number): boolean {
 const margesCache = new Map<BiomeId, LandCell[]>();
 
 /**
+ * Le décor des marges allégé, île par île, quand celui de la côte n'y tient pas dans l'enveloppe du décor de son
+ * archipel (world/budget.ts) : `genre`, un seul genre, le plus bas de la côte de l'île ; `unSurDeux`, une case sur deux
+ * de son rythme ; `derriere`, rien devant le cœur d'origine (la rangée des bornes reste dégagée, côté caméra). Le Marché
+ * (5e, 01/10/2026) : le port reste bas (intention du 5e, §3), des roseaux sur les côtés et derrière.
+ */
+export const DECOR_DES_MARGES: Partial<Record<BiomeId, { genre?: Decor; unSurDeux?: true; derriere?: true }>> = {
+  marche: { genre: 'roseau', unSurDeux: true, derriere: true },
+};
+
+/**
  * Les marges du cœur d'une île dont le cœur est plus grand que `CORE` : l'anneau entre le cœur d'origine et le cœur
  * agrandi (`coeurDe`), vide pour les autres îles. Une terre plate (h = 0) et constructible, au sol du cœur. Sa rangée
  * extérieure porte le décor de la côte à son rythme (le même bruit que `landscape`) pour ne pas laisser un terrain vide ;
@@ -294,7 +310,14 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
       // La rangée qui borde le cœur d'origine reste nue : un passage tout autour, où l'on marche et construit.
       const bord = inCoeurDOrigine(def, x - 1, y) || inCoeurDOrigine(def, x + 1, y) || inCoeurDOrigine(def, x, y - 1) || inCoeurDOrigine(def, x, y + 1);
       const coin = inCoeurDOrigine(def, x - 1, y - 1) || inCoeurDOrigine(def, x + 1, y - 1) || inCoeurDOrigine(def, x - 1, y + 1) || inCoeurDOrigine(def, x + 1, y + 1);
-      out.push({ x, y, h: 0, ground: sol, decor: !bord && !coin && fine > 0.62 ? pickDecor(def, sol, 0, fine) : undefined });
+      const allege = DECOR_DES_MARGES[def.id];
+      let decor = !bord && !coin && fine > 0.62 ? pickDecor(def, sol, 0, fine) : undefined;
+      if (decor && allege) {
+        if (allege.genre) decor = allege.genre;
+        if (allege.unSurDeux && (t.x + t.y) % 2) decor = undefined;
+        if (allege.derriere && y < def.core.y) decor = undefined;
+      }
+      out.push({ x, y, h: 0, ground: sol, decor });
     }
   margesCache.set(def.id, out);
   return out;

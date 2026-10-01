@@ -98,50 +98,50 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 }
 `;
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"87edbec2"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"63428f5f"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
-  "embarquement": "1e3d043d",
-  "ouvrages": "3157f47e",
+  "embarquement": "38718b43",
+  "ouvrages": "8a134614",
   "voyages": "4ee15b98",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "497998fe",
-  "cubes": "90952201",
-  "cubes avec créatures": "dea280ac",
-  "décor posé sur la pente": "c9dab942",
-  "navire": "7a093947",
-  "sol (facettes)": "39747e2d",
+  "créatures et Gardiens": "6ac2b636",
+  "cubes": "dddeb98c",
+  "cubes avec créatures": "6cad676d",
+  "décor posé sur la pente": "0a01b72c",
+  "navire": "2a983891",
+  "sol (facettes)": "48f7c473",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "2371cee9",
+  "trajets depuis le port": "621104e0",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "8887cfb9",
-  "cubes": "47b7c86e",
-  "cubes avec créatures": "2904da39",
-  "décor posé sur la pente": "5ffcf197",
-  "navire": "7a093947",
-  "sol (facettes)": "48823806",
+  "créatures et Gardiens": "e44b2f3f",
+  "cubes": "cfb27563",
+  "cubes avec créatures": "9ccf0ec8",
+  "décor posé sur la pente": "75bfa5d7",
+  "navire": "2a983891",
+  "sol (facettes)": "80a891c4",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "167166af",
+  "trajets depuis le port": "b729d996",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "913b58ef",
-  "cubes avec créatures": "913b58ef",
-  "décor posé sur la pente": "eeabe073",
-  "navire": "3d3b7c21",
-  "sol (facettes)": "1905b4e4",
+  "cubes": "5b017811",
+  "cubes avec créatures": "5b017811",
+  "décor posé sur la pente": "5332cefb",
+  "navire": "d2c15feb",
+  "sol (facettes)": "9a4a57e4",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "df6cb45b",
 }

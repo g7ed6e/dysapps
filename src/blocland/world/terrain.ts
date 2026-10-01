@@ -1289,6 +1289,9 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
     core(x, y);
   }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
+  // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
+  // objets du quai restent sur la grève, devant elles, comme avant.
+  for (const m of margesDuCoeur(def)) ban(m.x, m.y);
   const spot = creatureSpot(port);
   for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of creatureDuMonde(port)) core(spot.x + sx + c.x, spot.y + sy + c.y);
   // Le chemin du bonhomme vers le navire (en ligne droite, d'un point au suivant), jusqu'à la jetée.
