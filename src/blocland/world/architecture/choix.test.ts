@@ -147,7 +147,11 @@ describe('Le choix d’un toit : le sens de la pente', () => {
       const a = pieceDe(v);
       const pente = a.piece.split('.')[1];
       const ref = PENTES.find((p) => p.pente === pente);
-      if (ref) expect(tournerCotes(ref.bits, a.rotation), a.piece).toBe(v[ref.masque]);
+      // Le haut d'un versant (il ne monte pas : il descend d'un côté, sa voisine de même niveau est en face) se lit sur
+      // la descente.
+      const haut = pente === 'versant' && !v.monte;
+      if (ref && !haut) expect(tournerCotes(ref.bits, a.rotation), a.piece).toBe(v[ref.masque]);
+      if (haut) expect(tournerCotes(0b0100, a.rotation), a.piece).toBe(v.descend);
       for (let r = 1; r < 4; r++) {
         const b = pieceDe(tournerVoisinage(v, r));
         expect(b.piece).toBe(a.piece);

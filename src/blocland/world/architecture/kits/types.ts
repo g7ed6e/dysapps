@@ -2,6 +2,7 @@
 // l'archipel (décision du directeur artistique : la matière du bloc reste lisible par famille), les couleurs de
 // l'archipel par rôle, la manière de peindre les murs de chaque famille, et les pièces dessinées, par famille. Un bloc
 // que le kit ne peint ni ne dessine reste un bloc taillé tel quel : un kit vide ne change rien.
+import type { VillagePlaceId } from '../../cube';
 import type { Couleur } from '../../palette';
 import type { TextureKind } from '../../pixels';
 import type { IdDePiece } from '../choix';
@@ -16,6 +17,25 @@ export type { Role } from '../pieces';
  */
 export type Famille = 'bois' | 'pierre' | 'toit';
 
+/**
+ * Une case du modèle d'un lieu du village (world/terrain.ts : `schoolModel`, `trophyModel`, et les trophées posés),
+ * relative au coin du lieu (z = 1 : le rang posé sur le sol), la taille du lieu (`w` × `d`) et la texture de son bloc.
+ */
+export interface CaseDuLieu {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+  d: number;
+  texture: string;
+}
+
+/**
+ * Ce que le kit fait d'un bloc d'un lieu du village : sa famille (un mur de bois ou de pierre, un toit), et s'il prend la
+ * couverture de son île (world/toits.ts) au lieu de sa matière ; `undefined` : il reste un bloc taillé.
+ */
+export type LieuDuKit = (m: CaseDuLieu) => { famille: Famille; couverture?: boolean } | undefined;
+
 export interface Kit {
   /** La table « bloc vers matière » : la famille de chaque texture de bloc (une texture absente n'est pas remplacée). */
   matieres: Partial<Record<TextureKind, Famille>>;
@@ -27,6 +47,12 @@ export interface Kit {
   bardes: readonly string[];
   /** Les pièces dessinées, par famille et par nom de pièce (./choix.ts). */
   pieces: Partial<Record<Famille, Partial<Record<IdDePiece, DessinDePiece>>>>;
+  /**
+   * Les lieux du village qui prennent le kit (l'école, la salle des trophées) : la famille de chacun de leurs blocs, lue
+   * sur sa place dans le modèle du lieu, pas sur la seule texture (la table « bloc vers matière » reste celle des plans).
+   * Un lieu absent garde son dessin.
+   */
+  lieux?: Partial<Record<VillagePlaceId, LieuDuKit>>;
 }
 
 /** Un kit vide : aucun bloc remplacé. */

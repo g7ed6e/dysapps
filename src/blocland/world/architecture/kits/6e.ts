@@ -6,13 +6,15 @@
 // - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
 // - Les toits : les pentes de ./toits.ts, dans la couverture de leur île (world/toits.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
-// Le verre et les lanternes ne deviennent jamais des pièces ; les monuments, l'école et la salle des trophées gardent
-// leur dessin (ils ont un lieu, et n'ont pas de plan d'île : ./plans.ts).
+// - L'école et la salle des trophées (décision du directeur artistique, 30 septembre 2026 : des lieux du village, au
+//   milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
+// Le verre et les lanternes ne deviennent jamais des pièces ; les monuments gardent leurs blocs taillés.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../pieces';
 import { MOTIF } from '../peinture';
 import { piecesDeToit } from '../toits';
 import type { IdDeMur, Forme, Tete } from '../choix';
-import type { Kit } from './types';
+import type { VillagePlaceId } from '../../cube';
+import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 
 /** La hauteur des pilotis sous le plancher : celle du soubassement, qu'ils remplacent. */
 export const PILOTIS = { haut: 0.35, cote: 0.14 } as const;
@@ -49,6 +51,29 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
   return out;
 }
 
+/** Un pilier de la salle des trophées : un coin du pavillon. */
+const pilier = ({ x, y, w, d }: CaseDuLieu) => (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
+
+/**
+ * Les lieux du village des Premiers Rivages (world/terrain.ts) :
+ * - l'école : ses murs de brique aux coins de pierre de taille (les trois rangs posés sur le sol) en colombage, son toit
+ *   à deux pans en pentes ; la porte, les deux fenêtres, le clocheton et sa cloche d'or restent des blocs ;
+ * - la salle des trophées : ses quatre piliers de marbre en colombage ; son toit de pierre de taille en pentes, dans la
+ *   couverture de l'île, et son faîte d'or en faîte ; le fond de velours (le fond des trophées), les socles de marbre et
+ *   les trophées restent des blocs.
+ */
+export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
+  ecole: ({ z, texture }) => (z <= 3 && (texture === 'brique' || texture === 'taille') ? { famille: 'bois' } : texture === 'toit' ? { famille: 'toit' } : undefined),
+  trophees: (m) =>
+    m.texture === 'marbre' && m.z <= 3 && pilier(m)
+      ? { famille: 'bois' }
+      : m.z === 4 && m.texture === 'taille'
+        ? { famille: 'toit', couverture: true }
+        : m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
+          ? { famille: 'toit' }
+          : undefined,
+};
+
 export const KIT_6E: Kit = {
   // La Ferme (terre) : le torchis d'un colombage, dans la famille du bois (décision du directeur artistique, 30/09).
   matieres: { planches: 'bois', terre: 'bois', pierre: 'pierre', galet: 'pierre', brique: 'pierre', obsidienne: 'pierre', toit: 'toit' },
@@ -59,4 +84,5 @@ export const KIT_6E: Kit = {
   // les bâtiments de bois qu'on y posera.
   bardes: ['baie', 'riviere', 'tour'],
   pieces: { toit: piecesDeToit(), bois: piecesSurPilotis() },
+  lieux: LIEUX_6E,
 };
