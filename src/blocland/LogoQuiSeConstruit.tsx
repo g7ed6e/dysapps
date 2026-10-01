@@ -2,10 +2,19 @@
 // tombait et se posait) : le dessin de public/blocland.svg, sans un trait changé (LogoQuiSeConstruit.test.tsx le
 // compare au fichier), rangé en quatre cubes qui se posent l'un après l'autre sur la mer : le pied de l'île, son dessus
 // d'herbe et de terre, le tronc, le feuillage. Chaque cube descend en accélérant et s'arrête d'un coup, sans rebond ni
-// flash ; le dernier est posé avant une seconde (world/pose.ts). Le toucher n'attend pas : rien ne couvre « Jouer », et
+// flash ; le dernier est posé avant une seconde (LOGO_QUI_SE_CONSTRUIT). Le toucher n'attend pas : rien ne couvre « Jouer », et
 // le logo reçoit ses gestes dès le début. Sans animation quand l'appareil en demande moins (global.css).
 import type { PointerEventHandler, Ref } from 'react';
-import { LOGO_QUI_SE_CONSTRUIT } from './world/pose';
+
+/**
+ * Le logo de Blocland qui se construit à l'écran titre : ses quatre cubes (le pied de l'île, le dessus d'herbe et de
+ * terre, le tronc, le feuillage) se posent l'un après l'autre, de la même chute en un cran. Délais en millisecondes ;
+ * le dernier cube est posé avant une seconde.
+ */
+export const LOGO_QUI_SE_CONSTRUIT = { chuteMs: 280, ecartMs: 170, cubes: 4 } as const;
+
+/** La fin de la construction du logo : le dernier cube s'arrête à ce moment-là (en millisecondes). */
+export const finDuLogo = (): number => LOGO_QUI_SE_CONSTRUIT.ecartMs * (LOGO_QUI_SE_CONSTRUIT.cubes - 1) + LOGO_QUI_SE_CONSTRUIT.chuteMs;
 
 type Rect = readonly [x: number, y: number, width: number, height: number, fill: string];
 

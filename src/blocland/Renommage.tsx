@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { useTitreOuvert } from '../components/TitleScreen';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -60,22 +60,23 @@ export function RenommagePanel({ onClose, className = '', aSuivre = false }: Pro
   // Un bandeau de récompense attend que le panneau soit fermé (DA-9).
   useHoldCelebrations(true);
   const lu = textes ? frenchTypography(texteDuRenommage(textes)) : '';
-  useEffect(() => {
+  // Lu une fois, à l'ouverture.
+  const lire = useEffectEvent(() => {
     if (lu && settings.autoRead) speak(lu);
-    // Lu une fois, à l'ouverture.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
+  useEffect(() => lire(), []);
   const fermer = () => {
     stop();
     onClose();
   };
+  const toucheEchap = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key === 'Escape') fermer();
+  });
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') fermer();
-    };
+    const onKey = (e: KeyboardEvent) => toucheEchap(e);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  });
+  }, []);
   if (!textes) return null;
   return (
     <section className={`panel whale-word renommage ${className}`} role="dialog" aria-labelledby="renommage-titre" aria-live="polite">

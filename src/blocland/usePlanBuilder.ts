@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { BLOCKS, blockCount, ofBlock, type BiomeId, type BlockId } from './biomes';
@@ -94,7 +94,11 @@ export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder 
   const haptics = useHaptics();
   // La pose de l'univers, lue une fois : dans Blocland, le « clac » à chaque bloc et le geste du dernier bloc d'un plan.
   const [pose] = useState(() => habillageDuMonde().pose);
-  const playPlace = sonDePose(pose);
+  const [playPlace] = useState(() => sonDePose(pose));
+  // Le clac, le carillon et la voix de fin de plan, différés le temps du geste : annulés si l'écran se ferme avant.
+  const differes = useRef<number[]>([]);
+  useEffect(() => () => differes.current.forEach((t) => window.clearTimeout(t)), []);
+  const plusTard = (f: () => void, ms: number) => differes.current.push(window.setTimeout(f, ms));
 
   const fillAt = (x: number, y: number, z: number) => {
     if (!plan) return;
@@ -130,9 +134,9 @@ export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder 
     // d'animations), l'arrêt est immédiat. Archipéo : le carillon tout de suite.
     if (pose === 'geste' && settings.sounds) {
       const arret = avecGeste && !moinsDAnimations() ? GESTE_DE_POSE.dureeMs : 0;
-      window.setTimeout(playPlace, arret);
-      window.setTimeout(playDone, arret + 120);
-      if (settings.autoRead) window.setTimeout(() => speak(msg), arret + 120 + CARILLON_MS);
+      plusTard(playPlace, arret);
+      plusTard(playDone, arret + 120);
+      if (settings.autoRead) plusTard(() => speak(msg), arret + 120 + CARILLON_MS);
     } else {
       sound(playDone);
       if (settings.autoRead) speak(msg);

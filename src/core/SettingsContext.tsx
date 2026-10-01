@@ -34,7 +34,10 @@ export function lireReglages(): { settings: Settings; message: boolean } {
  * et avant que l'élève ne gagne quoi que ce soit dans la séance. Idempotent.
  */
 export function noterRenommage(): void {
-  const note = renommageANoter(loadJSON<unknown>(RENOMMAGE_KEY, null), aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})));
+  const deja = loadJSON<unknown>(RENOMMAGE_KEY, null);
+  // Déjà notée : rien à relire (le chemin de démarrage).
+  if (deja !== null) return;
+  const note = renommageANoter(deja, aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})));
   if (note) saveJSON(RENOMMAGE_KEY, note);
 }
 

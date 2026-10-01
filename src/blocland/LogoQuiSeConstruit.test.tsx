@@ -7,8 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { TitleScreen } from '../components/TitleScreen';
 import { SettingsProvider } from '../core/SettingsContext';
-import { CUBES_DU_LOGO, LogoQuiSeConstruit, MER_DU_LOGO } from './LogoQuiSeConstruit';
-import { finDuLogo, LOGO_QUI_SE_CONSTRUIT } from './world/pose';
+import { CUBES_DU_LOGO, finDuLogo, LOGO_QUI_SE_CONSTRUIT, LogoQuiSeConstruit, MER_DU_LOGO } from './LogoQuiSeConstruit';
 
 const rectsDe = (svg: string) =>
   [...svg.matchAll(/<rect\b([^>]*)\/>/g)]

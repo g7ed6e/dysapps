@@ -6,6 +6,8 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressPage } from './ProgressPage';
 
+afterEach(() => localStorage.clear());
+
 function renderPage() {
   return render(
     <SettingsProvider>
@@ -82,5 +84,4 @@ it('dans Blocland, les succès de rôle nomment les métiers et les expliquent ;
   const roles = within(screen.getByRole('list', { name: 'Rôles' })).getAllByRole('listitem');
   expect(roles.map((r) => r.querySelector('strong')?.textContent)).toEqual(['Explorateur', 'Cartographe', 'Bâtisseur', 'Navigateur', 'Architecte de l’archipel']);
   expect(badges().find((b) => b.textContent?.includes('Devenir Cartographe'))).toHaveTextContent('CartographeDevenir Cartographe.');
-  localStorage.clear();
 });

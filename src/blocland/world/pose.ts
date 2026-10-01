@@ -18,12 +18,3 @@ export function hauteurDuGeste(ms: number): number {
 /** Le geste est-il fini, `ms` millisecondes après son début ? */
 export const gesteFini = (ms: number): boolean => ms >= GESTE_DE_POSE.dureeMs;
 
-/**
- * Le logo de Blocland qui se construit à l'écran titre : ses quatre cubes (le pied de l'île, le dessus d'herbe et de
- * terre, le tronc, le feuillage) se posent l'un après l'autre, de la même chute en un cran. Délais en millisecondes ;
- * le dernier cube est posé avant une seconde.
- */
-export const LOGO_QUI_SE_CONSTRUIT = { chuteMs: 280, ecartMs: 170, cubes: 4 } as const;
-
-/** La fin de la construction du logo : le dernier cube s'arrête à ce moment-là (en millisecondes). */
-export const finDuLogo = (): number => LOGO_QUI_SE_CONSTRUIT.ecartMs * (LOGO_QUI_SE_CONSTRUIT.cubes - 1) + LOGO_QUI_SE_CONSTRUIT.chuteMs;

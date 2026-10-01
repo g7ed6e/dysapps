@@ -506,7 +506,9 @@ export default function WorldCanvas({
     if (!w || !burst || burst.seq === 0 || !geste || reduceMotion) return;
     const { x, y, z } = burst.cell;
     const cube = cubes.find((c) => c.x === x && c.y === y && c.z === z && !c.ghost);
+    // Le cube pas encore là (la scène suit d'un rendu) : les poussières, pour que la pose se voie quand même.
     if (cube) w.cubes.enclencher(cube);
+    else w.cubes.eclater(burst);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
 
