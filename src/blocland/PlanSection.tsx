@@ -30,7 +30,7 @@ export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   if (BLOCKS[block].assemble)
     return (
       <>
-        à assembler <Link to={ASSEMBLAGE_PATH}>{lieu.a}</Link>
+        à assembler <Link to={`${ASSEMBLAGE_PATH}?bloc=${block}`}>{lieu.a}</Link>
       </>
     );
   const island = earnIsland(block);

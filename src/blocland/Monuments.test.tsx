@@ -7,6 +7,7 @@ import { BloclandProvider } from './BloclandContext';
 import { MonumentPage, MonumentsList } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentNeeds } from './world/monuments';
+import { planCells } from './world/plans';
 
 const OBS = getMonument('monument-observatoire')!;
 
@@ -55,6 +56,19 @@ it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapport
   const progress = JSON.parse(localStorage.getItem('dysapps:progress')!);
   expect(progress.monumentsCompleted).toBe(1);
   expect(progress.badges.patrimoine).toBeTruthy();
+});
+
+it('quand il ne reste que des blocs assemblés à poser, il dit pourquoi les boutons sont grisés et où aller', () => {
+  const poutres = monumentNeeds(OBS).poutre!;
+  // Tout le reste est posé : les cases restantes attendent des poutres.
+  const posees = planCells(OBS)
+    .filter((c) => c.block !== 'poutre')
+    .map((c) => c.key);
+  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 0 }, village: { plans: { [OBS.id]: posees } } }));
+  renderIn(<Page />);
+  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
+  expect(document.body.textContent).toContain(`Il te reste ${poutres} poutres à poser : va à la Fabrique pour les assembler.`);
+  for (const l of screen.getAllByRole('link', { name: 'à la Fabrique' })) expect(l).toHaveAttribute('href', '/aventure/assemblage?bloc=poutre');
 });
 
 it('la liste des monuments : par archipel, ceux des archipels pas encore atteints sont fermés', () => {

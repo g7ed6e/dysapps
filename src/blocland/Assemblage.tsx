@@ -3,7 +3,7 @@
 // lue à voix haute) ; un toucher sur « Assembler » fait un bloc. Pas de grille, rien à deviner, rien ne se perd
 // (référent dys). Un panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -15,21 +15,28 @@ import { useBlocland } from './BloclandContext';
 import { EarnLink } from './PlanSection';
 import { useSchoolIsland } from './School';
 import { BlockIcon } from './Voxel';
-import { planStatus } from './engine';
+import { blocsAttendus, planStatus } from './engine';
 import { ASSEMBLAGE_PATH, assemblables, manquePour, RECETTES, type Recette } from './world/assemblage';
 import { archipelagoOf, getArchipelago, reachableIslands } from './world/archipelago';
 import { archipelagoOfIsland, type ArchipelagoId } from './world/archipels';
-import { monumentsOf } from './world/monuments';
+import { monumentsOf, type MonumentDef } from './world/monuments';
 
 export { ASSEMBLAGE_PATH };
 
-/** Les recettes des archipels où l'élève a une île ouverte, celle de l'archipel où il se tient en premier. */
-function useRecettes(): Recette[] {
+/**
+ * Les recettes des archipels où l'élève a une île ouverte : d'abord celle du bloc demandé (`?bloc=`, depuis un
+ * monument), sinon celle de l'archipel où il se tient ; puis les autres.
+ */
+function useRecettes(): { premiere: Recette | undefined; autres: Recette[] } {
   const { state } = useBlocland();
+  const [params] = useSearchParams();
   const ici = archipelagoOf(state.village.at ?? 'foret').classe;
   const atteints = new Set<ArchipelagoId>([...reachableIslands(state.village.bridges)].map(archipelagoOfIsland));
   atteints.add(ici);
-  return [...RECETTES.filter((r) => r.archipelago === ici), ...RECETTES.filter((r) => r.archipelago !== ici && atteints.has(r.archipelago))];
+  const ouvertes = RECETTES.filter((r) => atteints.has(r.archipelago));
+  const demande = params.get('bloc');
+  const premiere = ouvertes.find((r) => r.bloc === demande) ?? ouvertes.find((r) => r.archipelago === ici);
+  return { premiere, autres: ouvertes.filter((r) => r !== premiere) };
 }
 
 /** « 2 blocs de bois et 1 bloc de pierre » */
@@ -49,40 +56,54 @@ function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
   );
 }
 
+/**
+ * Une recette (relecture UX UI) : le titre et « Écouter la recette », les blocs à donner en vignettes et en chiffres,
+ * ce qu'il manque juste au-dessus du bouton, le bouton, ce qu'il vient de se passer, puis les monuments qui attendent
+ * le bloc, chacun avec son nombre.
+ */
 function RecetteCarte({ recette }: { recette: Recette }) {
   const { state, assemble } = useBlocland();
-  const [dit, setDit] = useState<string | null>(null);
+  const [dit, setDit] = useState<{ texte: string; retour: MonumentDef | null } | null>(null);
   const nom = nomDuBloc(recette.bloc);
-  const peut = assemblables(state.inventory, recette) > 0;
+  const un = blockName(recette.bloc, 1);
+  const attendus = blocsAttendus(state, recette.bloc);
+  const assez = assemblables(state.inventory, recette) > 0;
+  const peut = assez && attendus > 0;
   const manque = manquePour(state.inventory, recette);
   const en = state.inventory[recette.bloc] ?? 0;
-  const pour = monumentsOf(recette.archipelago).filter((m) => (planStatus(state, m).missing[recette.bloc] ?? 0) > 0);
-  const phrase = `Pour 1 ${blockName(recette.bloc, 1)}, il faut ${enMots(recette)}.`;
+  const pour = monumentsOf(recette.archipelago)
+    .map((m) => ({ m, n: planStatus(state, m).missing[recette.bloc] ?? 0 }))
+    .filter((x) => x.n > 0);
+  const phrase = `Pour 1 ${un}, il faut ${enMots(recette)}.`;
   const manqueEnMots = manque.length ? `Il te manque ${manque.map((m) => blockCount(m.bloc, m.n)).join(' et ')}.` : 'Tu as tout ce qu’il faut.';
   const pocheEnMots = `Dans ta poche : ${blockCount(recette.bloc, en)}.`;
+  const attendEnMots = pour.map(({ m, n }) => `${m.name} attend ${blockCount(recette.bloc, n)}.`).join(' ');
   // Le bouton « Écouter la recette » redit tout ce qui est écrit sur la carte (référent dys : rien à lire sans voix).
-  const aEcouter = `${phrase} ${manqueEnMots} ${pocheEnMots}`;
+  const aEcouter = `${phrase} ${pocheEnMots} ${attendus > 0 ? manqueEnMots : ''} ${attendEnMots}`;
   const titreId = `recette-${recette.bloc}`;
   const bloc = BLOCKS[recette.bloc];
 
   const onAssemble = () => {
-    // Le bouton reste dans l'ordre du clavier quand les blocs manquent (aria-disabled) : le focus ne se perd pas.
+    // Le bouton reste dans l'ordre du clavier quand il ne peut rien faire (aria-disabled) : le focus ne se perd pas.
     if (!peut) return;
     const r = assemble(recette.bloc);
-    if (r.ok) setDit(`Tu as assemblé 1 ${blockName(recette.bloc, 1)}. Tu en as ${(r.state.inventory[recette.bloc] ?? 0).toString()}.`);
+    if (!r.ok) return;
+    const apres = r.state.inventory[recette.bloc] ?? 0;
+    // Assez pour un monument : on propose d'y retourner (rien à retenir).
+    const retour = pour.find(({ n }) => apres >= n)?.m ?? null;
+    setDit({ texte: `Tu as assemblé 1 ${un}. Tu en as ${apres.toString()}.`, retour });
   };
 
   return (
     <section className="assemblage-recette panel" aria-labelledby={titreId}>
-      <h3 id={titreId} className="island-sheet-heading">
-        <BlockIcon top={bloc.top} side={bloc.side} size={32} /> {nom}
-        <span className="assemblage-archipel"> · {getArchipelago(recette.archipelago).name}</span>
-      </h3>
-      <p className="assemblage-phrase">
-        <Syllabified text={phrase} />
+      <div className="assemblage-tete">
+        <h3 id={titreId} className="island-sheet-heading">
+          <BlockIcon top={bloc.top} side={bloc.side} size={32} /> {nom}
+        </h3>
         <SpeakButton text={aEcouter} label="Écouter la recette" compact />
-      </p>
-      <ul className="assemblage-ingredients" aria-label={`Ce qu’il faut pour 1 ${blockName(recette.bloc, 1)}`}>
+      </div>
+      <p className="assemblage-archipel">{getArchipelago(recette.archipelago).name}</p>
+      <ul className="assemblage-ingredients" aria-label={`Pour 1 ${un}, il faut`}>
         {recette.ingredients.map((i) => {
           const a = state.inventory[i.bloc] ?? 0;
           return (
@@ -101,56 +122,70 @@ function RecetteCarte({ recette }: { recette: Recette }) {
           );
         })}
       </ul>
-      {manque.length > 0 && (
-        <ul className="assemblage-manque" aria-label="Ce qu’il te manque">
-          {manque.map((m) => (
-            <li key={m.bloc}>
-              Il te manque {blockCount(m.bloc, m.n)}, <EarnLink block={m.bloc} />.
+      <p className="assemblage-en-poche">
+        Dans ta poche : <strong>{en}</strong> {blockName(recette.bloc, en)}.
+      </p>
+      {attendus === 0 ? (
+        <p className="assemblage-pourquoi">
+          <Icon name="check" /> Les monuments n’attendent plus de {un} : garde tes blocs pour les plans et les ponts.
+        </p>
+      ) : (
+        manque.length > 0 && (
+          <ul className="assemblage-pourquoi" aria-label="Ce qu’il te manque">
+            {manque.map((m) => (
+              <li key={m.bloc}>
+                Il te manque {blockCount(m.bloc, m.n)}, <EarnLink block={m.bloc} />.
+              </li>
+            ))}
+          </ul>
+        )
+      )}
+      <button type="button" className="button primary" aria-disabled={!peut} onClick={onAssemble}>
+        <Icon name="hammer" /> Assembler 1 {un}
+      </button>
+      <p className="assemblage-dit">
+        <span role="status" aria-live="polite">
+          {dit?.texte ?? ''}
+        </span>
+        {dit && <SpeakButton text={dit.texte} label="Écouter" compact />}
+        {dit?.retour && (
+          <Link to={`/aventure/${dit.retour.id}`} className="assemblage-retour">
+            <Icon name="castle" /> Retourner à {dit.retour.name}
+          </Link>
+        )}
+      </p>
+      {pour.length > 0 && (
+        <ul className="assemblage-pour" aria-label={`Les monuments qui attendent des ${blockName(recette.bloc, 2)}`}>
+          {pour.map(({ m, n }) => (
+            <li key={m.id}>
+              <Icon name="castle" /> <Link to={`/aventure/${m.id}`}>{m.name}</Link> attend {blockCount(recette.bloc, n)}.
             </li>
           ))}
         </ul>
       )}
-      {pour.length > 0 && (
-        <p className="assemblage-pour">
-          <Icon name="castle" /> Pour{' '}
-          {pour.map((m, k) => (
-            <span key={m.id}>
-              {k > 0 ? ' et ' : ''}
-              <Link to={`/aventure/${m.id}`}>{m.name}</Link>
-            </span>
-          ))}
-          .
-        </p>
-      )}
-      <p className="assemblage-en-poche">
-        Dans ta poche : <strong>{en}</strong> {blockName(recette.bloc, en)}.
-      </p>
-      <button type="button" className="button primary" aria-disabled={!peut} onClick={onAssemble}>
-        <Icon name="hammer" /> Assembler 1 {blockName(recette.bloc, 1)}
-      </button>
-      <p className="build-status assemblage-dit">
-        <span role="status" aria-live="polite">
-          {dit ?? ''}
-        </span>
-        {dit && <SpeakButton text={dit} label="Écouter" compact />}
-      </p>
     </section>
   );
 }
 
-/** Ce qu'on y fait, puis une carte par recette. */
+/** Ce qu'on y fait, puis la recette de l'archipel (ou du bloc demandé) ; les autres sous un pli, un bouton principal à la fois. */
 export function AssemblageBody() {
   const { assemblage } = useTextes();
-  const recettes = useRecettes();
+  const { premiere, autres } = useRecettes();
   return (
     <div className="assemblage">
       <p className="section-intro">
         <Syllabified text={assemblage.presentation} />
         <SpeakButton text={assemblage.presentation} label="Réécouter" compact />
       </p>
-      {recettes.map((r) => (
-        <RecetteCarte key={r.bloc} recette={r} />
-      ))}
+      {premiere && <RecetteCarte key={premiere.bloc} recette={premiere} />}
+      {autres.length > 0 && (
+        <details className="assemblage-autres">
+          <summary>Les autres archipels</summary>
+          {autres.map((r) => (
+            <RecetteCarte key={r.bloc} recette={r} />
+          ))}
+        </details>
+      )}
     </div>
   );
 }

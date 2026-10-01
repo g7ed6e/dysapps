@@ -19,7 +19,7 @@ Le mainteneur, le 30 septembre 2026 : « Dans Blocland la collecte de blocs doit
    | 4e | 2 acier + 1 rail | Engrenage | Poulie |
    | 3e | 2 lentilles + 1 quartz | Miroir | Loupe |
 
-3. **Recette fixe et toujours affichée** : vignettes, nombres et noms, lue à voix haute, « tu en as … » à côté de chaque bloc ; un toucher sur « Assembler » fait un bloc. Ni grille, ni place des blocs qui compte, ni recette à deviner. Sans assez de blocs, le bouton reste grisé : rien ne se perd.
+3. **Recette fixe et toujours affichée** : vignettes, nombres et noms, lue à voix haute, « tu en as … » à côté de chaque bloc ; un toucher sur « Assembler » fait un bloc. Ni grille, ni place des blocs qui compte, ni recette à deviner. Sans assez de blocs, le bouton reste grisé : rien ne se perd. Un bloc assemblé ne se défait pas et ne sert qu’aux monuments : on n’en assemble pas plus que les monuments de son archipel n’en attendent encore (relecture UX UI du 1er octobre 2026 ; proposé au mainteneur, à confirmer), pour ne jamais prendre au bois ou à la pierre ce qu’un plan ou un pont demandera.
 4. **Les huit monuments existants** en demandent 4 à 8 chacun, aux endroits qui comptent (poteaux et longue-vue de l’observatoire des baleines, ailes du grand moulin, lanterne du phare du large, hublots de son fût dans Archipéo, lanterneau du kiosque, roues de la locomotive du viaduc, machinerie de l’amphithéâtre, grande lunette de l’observatoire des étoiles, faîte du temple). Aucun monument n’est créé.
 5. **Rien ne recule** : une case déjà posée reste posée, quel que soit le bloc qu’elle demande maintenant.
 
@@ -46,6 +46,7 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 - Consultant d’Archipéo : « À ajuster », repris : « la Halle aux matériaux », un récit de savoir-faire retrouvé, les noms Madrier, Hublot, Poulie, Loupe ; rien ne recule.
 - Référent dys : « À ajuster », conditions reprises : quantités en chiffres et en vignettes, dites à voix haute ; un toucher, un bloc à la fois ; noms distincts à l’écrit ; rien à retenir ; rien ne se perd.
 - Directeur contenu pédagogique : trois pour un, 4 à 8 blocs assemblés par monument.
+- Consultant UX UI (parcours, 1er octobre 2026) : « À ajuster », repris : la Fabrique n’assemble pas plus que les monuments n’attendent (à confirmer par le mainteneur) ; au monument, une ligne au-dessus des boutons grisés dit d’aller à la Fabrique ; une seule carte en entier (celle du bloc demandé ou de l’archipel), les autres sous un pli ; chaque monument dit combien il attend ; un lien pour y retourner ; la Fabrique dans le menu du village.
 
 ## La décision
 

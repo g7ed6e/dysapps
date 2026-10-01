@@ -9,6 +9,8 @@ import { questsToReview } from './review';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { TROPHIES_PATH } from './trophies';
+import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { useTextes } from '../univers';
 
 interface Props {
   /** Reprendre : le panneau se ferme, on est dans le village. */
@@ -35,6 +37,7 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
 
 export function MenuSheet({ onClose, onHelp }: Props) {
   const { state } = useBlocland();
+  const { assemblage } = useTextes();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.village.bridges);
   return (
@@ -64,6 +67,7 @@ export function MenuSheet({ onClose, onHelp }: Props) {
         )}
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Des blocs en trop ? Construis l’observatoire des baleines et les autres" />
+        <Row to={ASSEMBLAGE_PATH} icon="hammer" title={assemblage.titre} desc="Assemble tes blocs pour les monuments" />
         <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes les missions, par matière" />
         <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="La salle des trophées : ton rôle, tes succès, ce qui est à retravailler" />
         <Row to="/reglages" icon="settings" title="Réglages" desc="Police, couleurs, voix, vue du monde" />

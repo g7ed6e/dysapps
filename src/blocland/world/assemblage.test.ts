@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { BLOCKS, BIOMES, blockCount, nomDuBloc } from '../biomes';
-import { EMPTY_STATE, assembleBlock, fillPlanCell, planStatus, sanitizeState } from '../engine';
+import { EMPTY_STATE, assembleBlock, blocsAttendus, fillPlanCell, planStatus, sanitizeState } from '../engine';
 import { retenirReglages } from '../../core/settings';
 import { DEFAULT_SETTINGS } from '../../core/settings';
 import { textesDe } from '../../univers';
@@ -47,6 +47,16 @@ it('assemble un bloc à la fois, sans rien perdre quand il manque des blocs', ()
     ok: false,
     reason: 'pas-de-recette',
   });
+});
+
+it('n’assemble pas plus de blocs que les monuments de l’archipel n’en attendent encore (un bloc assemblé ne se défait pas)', () => {
+  const attendus = monumentsOf('6e').reduce((n, m) => n + (planStatus(EMPTY_STATE, m).missing.poutre ?? 0), 0);
+  expect(blocsAttendus(EMPTY_STATE, 'poutre')).toBe(attendus);
+  // Assez de poutres en poche pour tous les monuments : la Fabrique n'en fait plus, le bois et la pierre restent.
+  const plein = { ...EMPTY_STATE, inventory: { bois: 10, pierre: 10, poutre: attendus } };
+  expect(blocsAttendus(plein, 'poutre')).toBe(0);
+  expect(assembleBlock(plein, 'poutre')).toMatchObject({ ok: false, reason: 'plus-attendu', state: plein });
+  expect(blocsAttendus(EMPTY_STATE, 'bois')).toBe(0);
 });
 
 it('garde les blocs assemblés d’une sauvegarde, et une case déjà posée d’un monument le reste', () => {

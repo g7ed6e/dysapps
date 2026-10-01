@@ -39,7 +39,7 @@ Le bouton **Menu** (⏸), toujours en haut à droite du monde, ouvre le **menu d
 
 - **Reprendre** (le gros bouton bleu, ou la croix) : on revient au village ;
 - **Continuer** : la dernière mission ouverte ; **À revoir aujourd’hui**, s’il y a des révisions ;
-- **École du village**, **Monuments**, **Missions**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
+- **École du village**, **Monuments**, **La Fabrique** (la Halle aux matériaux dans Archipéo), **Missions**, **Succès** (la salle des trophées, dans le village), **Réglages** ;
 - **Revoir l’aide du village** (les huit bulles), **Tutoriel** ;
 - **Le menu en page** : le même menu hors du village (`#/menu`).
 
@@ -179,7 +179,7 @@ Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les
 | Îles du Ciel | l’observatoire des étoiles (Textes), le temple de marbre (Belvédère) |
 
 - **Toucher l’îlot** d’un monument dans le monde ouvre son panneau et la caméra y va. On l’ouvre aussi par **Monuments** dans le menu du village (la liste, par archipel, avec l’avancement), par les liens de **Mes blocs**, ou, en vue simple, par le bouton **Monuments** de la page Blocland.
-- Le panneau lit ce qu’est le monument (bouton **Écouter**), montre l’avancement, les blocs qu’il manque avec « tu les as » ou l’île où les gagner, et les boutons **Poser le bloc suivant** et **Poser tout ce que j’ai**.
+- Le panneau lit ce qu’est le monument (bouton **Écouter**), montre l’avancement, les blocs qu’il manque (les blocs assemblés en premier) avec « tu les as » ou l’île où les gagner, et les boutons **Poser le bloc suivant** et **Poser tout ce que j’ai**. Quand il ne reste à poser que des blocs assemblés qu’on n’a pas, une ligne au-dessus des boutons grisés le dit : « Il te reste 5 poutres à poser : va à la Fabrique pour les assembler. »
 - Un monument demande **60 à 125 blocs** de plusieurs îles de son archipel, dont 4 à 8 **blocs assemblés** aux endroits qui comptent (les poteaux et la longue-vue de l’observatoire, la lanterne du phare, les roues de la locomotive…). Pour ceux-là, le panneau dit « à assembler à la Fabrique », avec un lien. On le construit à son rythme, il n’ouvre rien et ne bloque rien.
 - Fini : sa phrase (lue à voix haute), de l’XP (150 dans les Premiers Rivages, jusqu’à 240 dans les Îles du Ciel), et le premier monument donne le succès **Patrimoine**. Il reste construit dans le monde.
 - Le monument d’un archipel pas encore atteint est fermé : son panneau dit de le rejoindre d’abord avec le Bloc-Navire.
@@ -233,42 +233,14 @@ Dans Archipéo, choisi dans les Réglages, les Gardiens sont des **sentinelles d
 
 ## L’école du village
 
-Sur l’île de l’école de chaque archipel se tient **l’école du village**. On y entre en touchant le bâtiment dans le monde, avec le bouton **École** de la barre du bas, ou avec la ligne « École du village » du panneau de l’île. Le bonhomme marche jusqu’à sa porte et le panneau de l’école s’ouvre à la place de celui de l’île.
+Sur l’île de l’école de chaque archipel se tient **l’école du village**. On y entre en touchant le bâtiment dans le monde, avec la ligne « La Fabrique » du panneau de l’île de l’école ou du menu du village, ou avec le lien « à assembler à la Fabrique » du panneau d’un monument. Le panneau lit ce qu’on y fait, puis montre en entier **une carte** : celle du bloc demandé quand on vient d’un monument, sinon celle de l’archipel où l’on est. Les cartes des autres archipels atteints sont rangées sous le pli **Les autres archipels**. Dans une carte :
 
-![Le panneau de l'École du village : la créature accueille, les blocs gagnés par mission, puis les trois portes.](/captures/ecole.jpg)
-
-La créature de l’île accueille à voix haute. Puis **trois portes**, une par matière : **Français**, **Maths**, **Anglais**. Derrière chaque porte, les mêmes missions que dans la page Missions (Homophones, Lecture, Tables & calcul mental, Fractions, Nombres décimaux, Vocabulaire, Verbes irréguliers), avec leurs étoiles, et un lien vers les îles de la matière. Le bouton **Les trois portes** ramène au choix. Après une mission, son lien de retour **École** ramène à la même porte.
-
-Une mission du portail finie, d’où qu’on l’ait lancée, rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme** (du bois dans les Premiers Rivages, de la toile dans les Îles Brumeuses, du calque dans les Anciens Ateliers, du prisme dans les Îles du Ciel), au même barème qu’une mission d’île : proportionnels au score, jamais zéro dès qu’une réponse est juste, un ou deux de plus avec deux ou trois étoiles, deux de plus la première fois. Le bilan de la mission les montre (« +8 blocs de bois pour le village »). Elle compte aussi pour la série de jours et ses coffres, mais ni pour les étoiles des îles ni pour les Gardiens.
-
-L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une page) ; `#/aventure/ecole?porte=maths` l’ouvre directement sur une porte.
-
-## La salle des trophées
-
-À côté de l’école, sur la même île, se tient la **salle des trophées** : un pavillon ouvert devant, quatre colonnes de marbre, un fond de velours rouge, des socles de marbre et un toit au faîte d’or. **Chaque succès gagné y pose un trophée** : un bloc d’or pour les exploits (combos, missions, bâtiments), de cristal pour les rôles, de quartz pour les Gardiens, une lentille pour les voyages du Bloc-Navire. Les trophées remplissent d’abord les socles, puis le faîte, puis un second rang sur les socles, puis le bord du toit : la salle se remplit à mesure qu’on joue, et il y a une place pour chacun des succès.
-
-![Le panneau de la salle des trophées : 9 trophées sur 24, le rôle et l'échelle des rôles.](/captures/trophees.jpg)
-
-On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : une phrase lue à voix haute (« 10 trophées sur 23 »…), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
-
-L’adresse de la salle est `#/aventure/trophees` ; en vue simple, elle mène à la page Succès.
-
-## La Fabrique
-
-Sur l’île de l’école, à côté de la salle des trophées, se tient la **Fabrique** (la **Halle aux matériaux** dans Archipéo). On y **assemble des blocs** qu’aucune île ne donne, et que les monuments demandent : un par archipel.
-
-| Archipel | Bloc assemblé | Il faut | Dans Archipéo |
-| --- | --- | --- | --- |
-| Premiers Rivages | Poutre | 2 blocs de bois et 1 bloc de pierre | Madrier |
-| Îles Brumeuses | Vitrail | 2 blocs de glace et 1 panneau | Hublot |
-| Anciens Ateliers | Engrenage | 2 blocs d’acier et 1 rail | Poulie |
-| Îles du Ciel | Miroir | 2 lentilles et 1 bloc de quartz | Loupe |
-
-On y entre en touchant le bâtiment dans le monde, avec la ligne « La Fabrique » du panneau de l’île de l’école, ou avec le lien « à assembler à la Fabrique » du panneau d’un monument. Le panneau lit ce qu’on y fait, puis montre une carte par archipel atteint, celle de l’archipel où l’on est en premier :
-
-- **la recette**, toujours affichée : une vignette par bloc à donner, le nombre et le nom, « tu en as … » à côté de chaque bloc, et le bouton **Écouter la recette** ;
-- ce qu’il manque, s’il manque quelque chose (« Il te manque 1 bloc de pierre, à gagner dans la Mine »), et le monument qui attend ce bloc, avec un lien ;
-- combien on en a déjà, et le bouton **Assembler**, qui fait **un bloc à la fois**. Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé.
+- **la recette**, toujours affichée : une vignette par bloc à donner, le nombre et le nom, « tu en as … » à côté de chaque bloc, et le bouton **Écouter la recette**, qui lit toute la carte ;
+- combien on en a déjà (« Dans ta poche ») ;
+- juste au-dessus du bouton, ce qu’il manque, s’il manque quelque chose (« Il te manque 1 bloc de pierre, à gagner dans la Mine ») ;
+- le bouton **Assembler**, qui fait **un bloc à la fois**. Il n’y a ni grille ni recette à deviner, et rien ne se perd : sans assez de blocs, le bouton reste grisé. Un bloc assemblé ne se défait pas et ne sert qu’aux monuments : la Fabrique n’en fait pas plus que les monuments de l’archipel n’en attendent encore, et le dit (« Les monuments n’attendent plus de poutre : garde tes blocs pour les plans et les ponts ») ;
+- après un assemblage, ce qu’on vient de faire (« Tu as assemblé 1 poutre. Tu en as 5. »), et un lien pour retourner au monument dès qu’on en a assez pour lui ;
+- les monuments qui attendent ce bloc, chacun avec son nombre (« L’observatoire des baleines attend 5 poutres »), avec un lien.
 
 Les cases d’un monument déjà posées avant l’arrivée des blocs assemblés restent posées. L’adresse de la Fabrique est `#/aventure/assemblage` (en vue simple, c’est une page).
 

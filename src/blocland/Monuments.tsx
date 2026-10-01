@@ -5,11 +5,12 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, blockName, getBiome, type BlockId } from './biomes';
+import { BLOCKS, blockCount, blockName, getBiome, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { InventoryLink } from './Inventory';
 import { EarnLink } from './PlanSection';
+import { ASSEMBLAGE_PATH } from './world/assemblage';
 import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoTitle, getArchipelago, isArchipelagoReached } from './world/archipelago';
@@ -37,7 +38,13 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const { state } = useBlocland();
   const { monument, status } = builder;
   const open = useMonumentOpen(monument);
-  const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
+  // Les blocs assemblés d'abord : ce sont eux qu'il faut aller faire à la Fabrique (relecture UX UI).
+  const missing = (Object.entries(status.missing) as [BlockId, number][])
+    .filter(([, n]) => n > 0)
+    .sort(([a], [b]) => Number(Boolean(BLOCKS[b].assemble)) - Number(Boolean(BLOCKS[a].assemble)));
+  // Plus rien à poser mais des cases attendent un bloc assemblé : les boutons grisés disent pourquoi, juste au-dessus.
+  const aAssembler = builder.canFill ? undefined : missing.find(([b]) => BLOCKS[b].assemble && (state.inventory[b] ?? 0) < 1);
+  const lieu = useTextes().assemblage;
   const texte = texteDuMonument(useTextes(), monument);
   return (
     <div className="monument">
@@ -88,6 +95,12 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
                   );
                 })}
               </ul>
+              {aAssembler && (
+                <p className="plan-pourquoi">
+                  Il te reste {blockCount(aAssembler[0], aAssembler[1])} à poser : va{' '}
+                  <Link to={`${ASSEMBLAGE_PATH}?bloc=${aAssembler[0]}`}>{lieu.a}</Link> pour {aAssembler[1] > 1 ? 'les assembler' : 'l’assembler'}.
+                </p>
+              )}
               <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                 <Icon name="hammer" /> Poser le bloc suivant
               </button>
