@@ -9,13 +9,31 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const args = process.argv.slice(2);
+// Deux options seulement ; une option inconnue ou sans valeur arrête le script plutôt que d'être ignorée.
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--json') continue;
+  if (args[i] === '--archipel' && args[i + 1] && !args[i + 1].startsWith('--')) {
+    i++;
+    continue;
+  }
+  console.error(`Option inconnue ou sans valeur : ${args[i]} (--archipel 6e,3e ; --json)`);
+  process.exit(1);
+}
 const option = (nom) => {
   const i = args.indexOf(nom);
   return i >= 0 ? args[i + 1] : undefined;
 };
 const JSON_SEUL = args.includes('--json');
 
-const server = await createServer({ root, logLevel: 'error', server: { middlewareMode: true, hmr: false }, appType: 'custom' });
+// Rien que du `ssrLoadModule` : pas de découverte des dépendances, qui écrirait dans node_modules/.vite pendant qu'un
+// autre script Vite tourne peut-être dans le même conteneur.
+const server = await createServer({
+  root,
+  logLevel: 'error',
+  server: { middlewareMode: true, hmr: false },
+  appType: 'custom',
+  optimizeDeps: { noDiscovery: true, include: [] },
+});
 try {
   const load = (p) => server.ssrLoadModule(p);
   const [budget, { ARCHIPELAGO_IDS }] = await Promise.all([load('/src/blocland/world/budget.ts'), load('/src/blocland/world/map.ts')]);
@@ -24,21 +42,10 @@ try {
   if (inconnus.length) throw new Error(`Archipel inconnu : ${inconnus.join(', ')} (${ARCHIPELAGO_IDS.join(', ')})`);
   const archipels = ARCHIPELAGO_IDS.filter((a) => !demandes || demandes.includes(a));
 
-  // Les postes que le code compte, avec la fonction que vérifie world/budget.test.ts.
-  const COUTS = {
-    sol: budget.solCost,
-    mer: budget.merCost,
-    faune: budget.fauneCost,
-    decor: budget.decorCost,
-    construction: budget.constructionCost,
-    bornes: budget.bornesCost,
-    navire: budget.navireCost,
-  };
   const resultats = archipels.map((a) => {
-    const personnages = budget.personnagesCost(a);
     const postes = Object.keys(budget.ENVELOPPES).map((poste) => {
       const enveloppe = budget.enveloppeDe(poste, a);
-      const mesure = COUTS[poste]?.(a) ?? personnages[poste] ?? null;
+      const mesure = budget.COUTS_DES_POSTES[poste]?.(a) ?? null;
       return { poste, nom: budget.ENVELOPPES[poste].nom, mesure, enveloppe };
     });
     const comptes = postes.filter((p) => p.mesure);
@@ -73,7 +80,7 @@ try {
       }
       const t = r.total;
       console.log(`| **total compté** | **${n(t.mesure.triangles)}** | ${n(t.enveloppes.triangles)} | ${n(t.enveloppes.triangles - t.mesure.triangles)} | **${t.mesure.drawCalls}** | ${t.enveloppes.drawCalls} |`);
-      console.log(`\nPlafond des tablettes : ${n(r.plafond.triangles)} triangles, ${r.plafond.drawCalls} appels (objectif du plan, jamais mesuré sur tablette).`);
+      console.log(`\nPlafond des tablettes : ${n(r.plafond.triangles)} triangles, ${r.plafond.drawCalls} appels (objectif du plan, jamais mesuré sur tablette), « Dans la scène » compris, que le total compté laisse de côté.`);
     }
   }
 } finally {

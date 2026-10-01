@@ -282,3 +282,21 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
     navire,
   };
 }
+
+/**
+ * Chaque poste que le code compte, avec sa fonction de coût (celle que vérifie world/budget.test.ts) : `npm run
+ * rendu:budget` (scripts/rendu/budget.mjs) les lit ici. « Dans la scène » ne se compte que dans le navigateur. Un poste
+ * ajouté à `ENVELOPPES` sans sa fonction ne compile pas.
+ */
+export const COUTS_DES_POSTES = {
+  sol: solCost,
+  mer: merCost,
+  faune: fauneCost,
+  decor: decorCost,
+  construction: constructionCost,
+  bornes: bornesCost,
+  navire: navireCost,
+  bonhomme: (a: ArchipelagoId) => personnagesCost(a).bonhomme,
+  creatures: (a: ArchipelagoId) => personnagesCost(a).creatures,
+  gardiens: (a: ArchipelagoId) => personnagesCost(a).gardiens,
+} satisfies Record<Exclude<Poste, 'scene'>, (a: ArchipelagoId) => Enveloppe>;
