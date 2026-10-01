@@ -36,7 +36,7 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../../www/pedagogie/princi
 | États des îles | Fermée, À explorer, En chantier, Restaurée (« Bâtie » dans Blocland) | [Cadrage Archipéo](../../conception/cadrage-archipeo.md), §5 |
 | Bloc-Navire et voyage | Un véhicule qui s’améliore par étapes ; le kit arrive avec les Gardiens (3, 2, 2) ; embarquer est un acte explicite | [Cadrage de Blocland](../../conception/cadrage-blocland.md#le-bloc-navire-et-le-voyage) |
 | XP et rôles | Cinq rôles selon l’XP, sans divisions | [Progression et récompenses](../../../www/manuel/progression.md) |
-| Succès | Peu nombreux ; un trophée par succès dans la salle des trophées, jamais sur son toit : la salle s’agrandit d’une travée tous les 6 succès (GD-3, à construire) | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html) |
+| Succès | Peu nombreux ; un trophée par succès dans la salle des trophées, jamais sur son toit : la salle s’agrandit d’une travée tous les 6 succès après les 12 premiers (GD-3) | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html) |
 | École du village | Les missions du portail, sur l’île de l’école de chaque archipel ; elles rapportent des blocs, pas d’étoiles d’île | [Cadrage de Blocland](../../conception/cadrage-blocland.md#lappli-entière) |
 | Le mot de la baleine | Un mot par grande étape et par archipel, dit une fois par appareil | [Personnages et Gardiens](personnages.md) |
 

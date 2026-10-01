@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle, ecoles). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,chantier` n'en refait que certaines familles (jour, nuit, personnages, chantier, architecture, architecture-pres, ponts, brumeuses, relais, jardin, jardin-pres, refuge, refuge-pres, revue, ciel, lieux, lieux-pres, lieux-salle, salle, ecoles). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le temps laissé à la scène avant la mesure (en secondes, 10 par défaut : en rendu logiciel, une scène
 // plus lente à dessiner met plus longtemps à rejoindre son cadrage, la Carte surtout).
@@ -249,24 +249,41 @@ const CAPTURES = [
   { nom: 'lieux-sans-trophee', vue: 'île', famille: 'lieux', ile: 'foret' },
   { nom: 'lieux-archipel', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous' },
   { nom: 'lieux-archipel-nuit', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
-  // De près (famille `lieux-pres`) : l'école, puis la salle des trophées avec six trophées (les socles) et avec tous (les
-  // socles, le faîte et le bord du toit), de jour et de nuit.
+  // De près (famille `lieux-pres`) : l'école, puis la salle des trophées avec six trophées (les socles) et avec tous (la
+  // salle et ses deux travées, GD-3 : le cadre s'élargit), de jour et de nuit.
   { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'foret', recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
   { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', nuit: true, recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
-  { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
   // La salle de près (famille `lieux-salle`) : sans trophée (l'ouverture devant, le fond de velours), avec huit (le
-  // faîte), avec dix-huit (le bord du toit), de jour et de nuit ; le fond de velours au plus près, par l'ouverture (la
+  // second rang), avec dix-huit (une travée, GD-3), de jour et de nuit ; le fond de velours au plus près, par l'ouverture (la
   // caméra de l'île ne se tourne pas : on le voit de biais), avec deux trophées.
-  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'foret', recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 8, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
-  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, nuit: true, recadre: { x: 170, y: 250, width: 200, height: 175 }, finesse: 3 },
+  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'foret', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 8, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
   { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
   { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
+  // La salle des trophées qui s'agrandit (GD-3, famille `salle`) : à la Forêt des sons, avec 0, 6, 12, 13, 18 et 24
+  // succès (une travée au 13e, une autre au 19e), de jour et de nuit, de près (recadrée) et de loin (la vue de
+  // l'archipel) ; la vue de l'île entière avec les 24 ; la même en téléphone, en grand texte ; puis la vue de chaque autre
+  // île-école avec les 24 (la salle de 8 × 3 et ce qui l'entoure, la créature du Marché tournée d'un quart).
+  ...[0, 6, 12, 13, 18, 24].flatMap((succes) => [
+    { nom: `salle-${succes}`, vue: 'île', famille: 'salle', ile: 'foret', succes, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+    { nom: `salle-${succes}-nuit`, vue: 'île', famille: 'salle', ile: 'foret', succes, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+    { nom: `salle-${succes}-loin`, vue: 'archipel', famille: 'salle', ile: 'foret', succes },
+    { nom: `salle-${succes}-loin-nuit`, vue: 'archipel', famille: 'salle', ile: 'foret', succes, nuit: true },
+  ]),
+  { nom: 'salle-24-ile', vue: 'île', famille: 'salle', ile: 'foret', succes: 24 },
+  { nom: 'salle-24-390x844-od32', vue: 'île', famille: 'salle', ile: 'foret', succes: 24, reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 390, height: 844 } },
+  ...['marche', 'atelier', 'phare'].flatMap((ile) => [
+    { nom: `salle-24-${ile}`, vue: 'île', famille: 'salle', ile, succes: 24 },
+    { nom: `salle-24-${ile}-nuit`, vue: 'île', famille: 'salle', ile, succes: 24, nuit: true },
+  ]),
+  { nom: 'salle-0-marche', vue: 'île', famille: 'salle', ile: 'marche' },
   // Les îles-écoles au cœur de 20 × 20 (famille `ecoles`) : la vue de l'île de chacune, de jour, en tablette, puis en
   // téléphone portrait (390 × 844), pour juger le cadrage, les marges et l'îlot du Gardien (relectures du 01/10/2026).
   ...['marche', 'atelier', 'phare', 'foret'].flatMap((ile) => [
